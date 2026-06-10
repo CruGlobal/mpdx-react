@@ -25,12 +25,17 @@ import { useNsGoalCalculator } from '../Shared/NsGoalCalculatorContext';
 import { NsGoalCalculatorLayout } from '../Shared/NsGoalCalculatorLayout';
 import { ChartPlaceholderCard } from './ChartPlaceholderCard';
 
-const PrintableContent = styled(Box)({
+const PrintableContent = styled('div')(({ theme }) => ({
+  marginInline: theme.spacing(4),
+  display: 'flex',
+  flexDirection: 'column',
+  gap: theme.spacing(3),
+
   // Scale down the page to fit on one page
   '@media print': {
     zoom: 0.4,
   },
-});
+}));
 
 // Mock data for building out the layout. Will be replaced with real goal
 // calculation data once the new staff goal API is available.
@@ -144,12 +149,10 @@ export const PresentingYourGoalStep: React.FC = () => {
   return (
     <NsGoalCalculatorLayout
       mainContent={
-        <PrintableContent mx={4} my={2}>
-          <Typography variant="h6" mb={2}>
-            {t('Presenting Your Goal')}
-          </Typography>
+        <PrintableContent>
+          <Typography variant="h6">{t('Presenting Your Goal')}</Typography>
 
-          <Typography variant="body1" mb={2} className="print-hidden">
+          <Typography variant="body1" className="print-hidden">
             {t(
               "Now that you've reviewed your goal, you can share your Support Needs Presentation by printing the presentation below.",
             )}
@@ -159,7 +162,6 @@ export const PresentingYourGoalStep: React.FC = () => {
             severity="info"
             icon={<InfoOutlinedIcon />}
             className="print-hidden"
-            sx={{ mb: 3 }}
           >
             <Typography variant="body1" fontWeight="bold">
               {t('Some tips for printing:')}
@@ -182,11 +184,12 @@ export const PresentingYourGoalStep: React.FC = () => {
             startIcon={<PrintIcon />}
             onClick={handlePrint}
             className="print-hidden"
+            sx={{ alignSelf: 'flex-start' }}
           >
             {t('Print Support Needs Presentation')}
           </Button>
 
-          <Divider className="print-hidden" sx={{ my: 4 }} />
+          <Divider className="print-hidden" />
 
           <PresentationSectionCard title={t('Personal Information')}>
             <PersonalInfoTable rows={personalInfoRows} />
@@ -213,7 +216,7 @@ export const PresentingYourGoalStep: React.FC = () => {
             variant="contained"
             onClick={handleContinue}
             className="print-hidden"
-            sx={{ mt: 1, mb: 2 }}
+            sx={{ alignSelf: 'flex-start' }}
           >
             {t('Continue')}
           </Button>

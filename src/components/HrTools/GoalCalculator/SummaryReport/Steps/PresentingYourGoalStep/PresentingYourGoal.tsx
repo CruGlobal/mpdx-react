@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Box, Grid, styled, useMediaQuery } from '@mui/material';
+import { Box, styled, useMediaQuery } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import {
   Cell,
@@ -24,6 +24,17 @@ import theme from 'src/theme';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
 import { hasStaffSpouse } from '../../../Shared/calculateTotals';
 
+const PrintableContent = styled('div')(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: theme.spacing(3),
+
+  // Scale down the page to fit on one page
+  '@media print': {
+    zoom: 0.4,
+  },
+}));
+
 const ChartContainer = styled(Box)({
   '@media print': {
     width: '100% !important',
@@ -40,6 +51,7 @@ const ChartContainer = styled(Box)({
       fontSize: '16px !important',
       paddingRight: '20px !important',
       textAlign: 'center !important',
+      top: '100px !important',
     },
   },
 
@@ -179,68 +191,59 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
   );
 
   return (
-    <Grid container spacing={theme.spacing(6)}>
-      <Grid item xs={12}>
-        <PresentationSectionCard title={t('Personal Information')}>
-          <PersonalInfoTable rows={personalInfoRows} />
-        </PresentationSectionCard>
+    <PrintableContent>
+      <PresentationSectionCard title={t('Personal Information')}>
+        <PersonalInfoTable rows={personalInfoRows} />
+      </PresentationSectionCard>
 
-        <PresentationSectionCard title={t('Monthly Support Needs')}>
-          <SupportNeedsTable rows={rows} />
-        </PresentationSectionCard>
+      <PresentationSectionCard title={t('Monthly Support Needs')}>
+        <SupportNeedsTable rows={rows} />
+      </PresentationSectionCard>
 
-        <PresentationSectionCard
-          title={t('Monthly Support Breakdown')}
-          sx={{
-            '@media print': {
-              pageBreakInside: 'avoid',
-            },
-          }}
-        >
-          <ChartContainer height={500}>
-            <ResponsiveContainer width="100%">
-              <PieChart>
-                <Pie
-                  data={presentationData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={isMobile ? 130 : 180}
-                  cornerRadius={theme.shape.borderRadius}
-                >
-                  {presentationData.map((entry, index) => (
-                    <Cell
-                      key={entry.name}
-                      fill={chartColors[index % chartColors.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(value) => {
-                    return `${currencyFormat(
-                      Number(value),
-                      'USD',
-                      locale,
-                    )} (${percentageFormat(Number(value) / total, locale)})`;
-                  }}
-                />
-                <Legend
-                  layout="vertical"
-                  align={isMobile ? 'center' : 'right'}
-                  verticalAlign={isMobile ? 'bottom' : 'middle'}
-                  wrapperStyle={{
-                    fontSize: isMobile
-                      ? theme.typography.subtitle1.fontSize
-                      : theme.typography.h5.fontSize,
-                    maxWidth: isMobile ? 600 : 300,
-                  }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </ChartContainer>
-        </PresentationSectionCard>
-      </Grid>
-    </Grid>
+      <PresentationSectionCard title={t('Monthly Support Breakdown')}>
+        <ChartContainer height={500}>
+          <ResponsiveContainer width="100%">
+            <PieChart>
+              <Pie
+                data={presentationData}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={isMobile ? 130 : 180}
+                cornerRadius={theme.shape.borderRadius}
+              >
+                {presentationData.map((entry, index) => (
+                  <Cell
+                    key={entry.name}
+                    fill={chartColors[index % chartColors.length]}
+                  />
+                ))}
+              </Pie>
+              <Tooltip
+                formatter={(value) => {
+                  return `${currencyFormat(
+                    Number(value),
+                    'USD',
+                    locale,
+                  )} (${percentageFormat(Number(value) / total, locale)})`;
+                }}
+              />
+              <Legend
+                layout="vertical"
+                align={isMobile ? 'center' : 'right'}
+                verticalAlign={isMobile ? 'bottom' : 'middle'}
+                wrapperStyle={{
+                  fontSize: isMobile
+                    ? theme.typography.subtitle1.fontSize
+                    : theme.typography.h5.fontSize,
+                  maxWidth: isMobile ? 600 : 300,
+                }}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        </ChartContainer>
+      </PresentationSectionCard>
+    </PrintableContent>
   );
 };
