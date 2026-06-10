@@ -139,7 +139,7 @@ export const GoalCalculatorPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>{`${appName} | ${t('Reports - Goal Calculation')}`}</title>
+        <title>{`${appName} | ${t('HR Tools | Goal Calculation')}`}</title>
       </Head>
       {accountListId ? (
         <UserTypeAccess requireUserGroups={RequiredUserGroupEnum.MpdGoalCalc}>
