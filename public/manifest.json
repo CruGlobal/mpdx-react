@@ -1,11 +1,15 @@
 {
+  "id": "/",
   "name": "MPDX",
+  "short_name": "MPDX",
+  "description": "Fundraising software built for ministries, missionaries and churches.",
   "theme_color": "#05699b",
   "background_color": "#05699b",
   "display": "standalone",
-  "Scope": "/",
+  "scope": "/",
   "start_url": "/",
-  "short_name": "MPDX",
+  "orientation": "any",
+  "categories": ["productivity", "business"],
   "icons": [
     {
       "src": "/icons/icon-72x72.png",
@@ -48,6 +52,5 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ],
-  "splash_pages": null
+  ]
 }

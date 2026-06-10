@@ -36,6 +36,10 @@ module.exports = {
         ],
         alphabetize: { order: 'asc' },
         'newlines-between': 'never',
+        // By default pathGroups don't apply to 'external' imports, which
+        // breaks the next/react-first ordering below now that packages
+        // resolve from node_modules; only exclude builtins
+        pathGroupsExcludedImportTypes: ['builtin'],
         pathGroups: [
           {
             pattern: '{next,next/**,react}',
@@ -102,6 +106,15 @@ module.exports = {
         'jsx-a11y/anchor-is-valid': 'off',
         'jsx-a11y/click-events-have-key-events': 'off',
         'jsx-a11y/no-static-element-interactions': 'off',
+      },
+    },
+    {
+      // The service worker runs in a browser worker context, not Node.js.
+      // eslint-plugin-import's node resolver cannot resolve @serwist/next/worker
+      // (a package.json subpath export) so we disable the unresolved check here.
+      files: ['src/service-worker/**'],
+      rules: {
+        'import/no-unresolved': 'off',
       },
     },
   ],
