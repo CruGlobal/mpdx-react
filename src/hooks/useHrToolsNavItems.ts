@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDeveloperBypass } from './useDeveloperBypass';
 import { useIneligibleByGroup } from './useIneligibleByGroup';
 import { NavItems } from './useReportNavItems';
 
@@ -18,6 +19,7 @@ export function useHrToolsNavItems(): {
     hasNoStaffAccount,
     userLoading,
   } = useIneligibleByGroup();
+  const developerBypass = useDeveloperBypass();
 
   const items = useMemo(() => {
     if (userLoading) {
@@ -67,7 +69,7 @@ export function useHrToolsNavItems(): {
         title: t('Ministry Partner Reminders'),
         hideItem: hasNoStaffAccount,
       },
-    ].filter((item) => !item.hideItem);
+    ].filter((item) => developerBypass || !item.hideItem);
   }, [
     t,
     inAsrIneligibleGroup,
@@ -78,6 +80,7 @@ export function useHrToolsNavItems(): {
     inPdsGoalCalcIneligibleGroup,
     userLoading,
     hasNoStaffAccount,
+    developerBypass,
   ]);
 
   return { items, loading: userLoading };

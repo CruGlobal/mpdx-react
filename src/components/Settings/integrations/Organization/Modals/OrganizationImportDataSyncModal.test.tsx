@@ -11,8 +11,6 @@ import {
   validateFile,
 } from './OrganizationImportDataSyncModal';
 
-jest.mock('next-auth/react');
-
 process.env.REST_API_URL = 'https://api.stage.mpdx.org/api/v2/';
 const accountListId = 'account-list-1';
 const organizationId = 'organizationId';

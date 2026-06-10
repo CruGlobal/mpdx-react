@@ -8,8 +8,6 @@ import theme from 'src/theme';
 import { getPersonSchema } from '../personModalHelper';
 import { PersonEmail } from './PersonEmail';
 
-jest.mock('next-auth/react');
-
 const accountListId = 'account-list-1';
 const router = {
   query: { accountListId },

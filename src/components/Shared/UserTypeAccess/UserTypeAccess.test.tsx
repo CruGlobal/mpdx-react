@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { mockSession } from '__tests__/util/mockSession';
 import { render } from '__tests__/util/testingLibraryReactMock';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
@@ -47,6 +48,10 @@ const TestComponent: React.FC<TestComponentProps> = ({
 );
 
 describe('UserTypeAccess', () => {
+  afterEach(() => {
+    process.env.DEVELOPMENT_ENV = 'false';
+  });
+
   it('should render child component when user type is allowed', async () => {
     const { findByText } = render(<TestComponent />);
     expect(await findByText('Test Content')).toBeInTheDocument();
@@ -219,6 +224,76 @@ describe('UserTypeAccess', () => {
     ).toBeInTheDocument();
     expect(
       getByText(/something went wrong while loading your account information/i),
+    ).toBeInTheDocument();
+  });
+
+  it('should render child component in a development env for a developer even when user is ineligible by group', async () => {
+    process.env.DEVELOPMENT_ENV = 'true';
+    mockSession({ developer: true });
+
+    const { findByText } = render(
+      <TestComponent
+        requireUserGroups={RequiredUserGroupEnum.Asr}
+        usStaffGroup={UsStaffGroupEnum.PartTimeFieldStaff}
+      />,
+    );
+
+    expect(await findByText('Test Content')).toBeInTheDocument();
+  });
+
+  it('should render child component in a development env for a developer even when user type is not allowed', async () => {
+    process.env.DEVELOPMENT_ENV = 'true';
+    mockSession({ developer: true });
+
+    const { findByText } = render(
+      <TestComponent userType={UserTypeEnum.NonCru} />,
+    );
+
+    expect(await findByText('Test Content')).toBeInTheDocument();
+  });
+
+  it('should render LimitedAccess in a development env for a developer when staff account is required but not present', async () => {
+    process.env.DEVELOPMENT_ENV = 'true';
+    mockSession({ developer: true });
+
+    const { findByRole } = render(
+      <TestComponent requireStaffAccount staffAccountId={null} />,
+    );
+
+    expect(
+      await findByRole('heading', {
+        name: 'Access to this feature is limited.',
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it('should not bypass eligibility gating in a development env for a non-developer', async () => {
+    process.env.DEVELOPMENT_ENV = 'true';
+    mockSession({ developer: false });
+
+    const { findByRole } = render(
+      <TestComponent userType={UserTypeEnum.NonCru} />,
+    );
+
+    expect(
+      await findByRole('heading', {
+        name: 'Access to this feature is limited.',
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it('should not bypass eligibility gating for a developer outside a development env', async () => {
+    process.env.DEVELOPMENT_ENV = 'false';
+    mockSession({ developer: true });
+
+    const { findByRole } = render(
+      <TestComponent userType={UserTypeEnum.NonCru} />,
+    );
+
+    expect(
+      await findByRole('heading', {
+        name: 'Access to this feature is limited.',
+      }),
     ).toBeInTheDocument();
   });
 });

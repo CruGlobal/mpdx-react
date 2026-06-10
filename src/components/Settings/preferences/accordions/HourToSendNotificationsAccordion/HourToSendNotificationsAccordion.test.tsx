@@ -8,8 +8,6 @@ import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/Acco
 import theme from 'src/theme';
 import { HourToSendNotificationsAccordion } from './HourToSendNotificationsAccordion';
 
-jest.mock('next-auth/react');
-
 const accountListId = 'account-list-1';
 const router = {
   query: { accountListId },

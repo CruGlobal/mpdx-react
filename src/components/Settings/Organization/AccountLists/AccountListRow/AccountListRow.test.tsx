@@ -10,8 +10,6 @@ import theme from '../../../../../theme';
 import { AccountListsMocks } from '../AccountLists.mock';
 import { AccountListRow } from './AccountListRow';
 
-jest.mock('next-auth/react');
-
 const accountListId = 'account-list-1';
 const contactId = 'contact-1';
 const router = {

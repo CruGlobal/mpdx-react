@@ -12,7 +12,6 @@ import {
   makeGetServerSideProps,
 } from './pagePropsHelpers';
 
-jest.mock('next-auth/react');
 jest.mock('src/lib/apollo/ssrClient', () => jest.fn());
 
 const context = {

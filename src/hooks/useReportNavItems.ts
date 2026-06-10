@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
+import { useDeveloperBypass } from './useDeveloperBypass';
 import { useReportsDisabled } from './useReportsDisabled';
 
 export type NavItems = {
@@ -15,6 +16,7 @@ export function useReportNavItems(): NavItems[] {
   const { t } = useTranslation();
   const { data } = useGetUserQuery();
   const { reportsDisabled } = useReportsDisabled();
+  const developerBypass = useDeveloperBypass();
 
   const userType = data?.user.userType;
   const usStaff = userType === UserTypeEnum.UsStaff;
@@ -76,7 +78,14 @@ export function useReportNavItems(): NavItems[] {
   ];
 
   return useMemo(
-    () => reportNavItems.filter((item) => !item.hideItem),
-    [t, usStaff, globalStaff, reportsDisabled, hasNoStaffAccount],
+    () => reportNavItems.filter((item) => developerBypass || !item.hideItem),
+    [
+      t,
+      usStaff,
+      globalStaff,
+      reportsDisabled,
+      hasNoStaffAccount,
+      developerBypass,
+    ],
   );
 }

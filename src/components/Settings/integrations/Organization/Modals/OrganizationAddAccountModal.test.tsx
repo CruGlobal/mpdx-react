@@ -6,8 +6,6 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { OrganizationAddAccountModal } from './OrganizationAddAccountModal';
 
-jest.mock('next-auth/react');
-
 const accountListId = 'account-list-1';
 const router = {
   query: { accountListId },

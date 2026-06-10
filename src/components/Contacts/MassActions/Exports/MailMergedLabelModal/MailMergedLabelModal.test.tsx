@@ -10,7 +10,6 @@ import theme from 'src/theme';
 import { exportRest } from '../exportRest';
 import { MailMergedLabelModal } from './MailMergedLabelModal';
 
-jest.mock('next-auth/react');
 jest.mock('../exportRest');
 
 const mockEnqueue = jest.fn();

@@ -10,8 +10,6 @@ import theme from '../../../../theme';
 import { MailchimpAccordion } from './MailchimpAccordion';
 import { MailchimpAccountQuery } from './MailchimpAccount.generated';
 
-jest.mock('next-auth/react');
-
 const accountListId = 'account-list-1';
 const contactId = 'contact-1';
 const router = {

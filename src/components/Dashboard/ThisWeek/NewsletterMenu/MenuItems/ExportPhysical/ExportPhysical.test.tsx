@@ -14,7 +14,6 @@ import { CreateExportedContactsMutation } from './ExportPhysical.generated';
 
 const accountListId = '111';
 const handleClose = jest.fn();
-jest.mock('next-auth/react');
 
 describe('ExportPhysical', () => {
   const mocks = {

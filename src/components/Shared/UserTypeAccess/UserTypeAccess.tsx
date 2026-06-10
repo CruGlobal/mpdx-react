@@ -1,5 +1,6 @@
 import Loading from 'src/components/Loading';
 import { UserTypeEnum } from 'src/graphql/types.generated';
+import { useDeveloperBypass } from 'src/hooks/useDeveloperBypass';
 import { useIneligibleByGroup } from 'src/hooks/useIneligibleByGroup';
 import { LimitedAccess } from '../LimitedAccess/LimitedAccess';
 
@@ -39,6 +40,7 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     userLoading,
     userError,
   } = useIneligibleByGroup();
+  const developerBypass = useDeveloperBypass();
 
   const ineligibleByGroup: Record<RequiredUserGroupEnum, boolean> = {
     [RequiredUserGroupEnum.Asr]: inAsrIneligibleGroup,
@@ -66,7 +68,7 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     return <Loading loading />;
   }
 
-  if (limitedAccess) {
+  if (limitedAccess && !developerBypass) {
     return <LimitedAccess />;
   }
 

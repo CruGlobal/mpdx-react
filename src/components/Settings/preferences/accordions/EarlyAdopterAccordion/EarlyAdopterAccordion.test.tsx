@@ -9,8 +9,6 @@ import { UserPreferenceContext } from 'src/components/User/Preferences/UserPrefe
 import theme from 'src/theme';
 import { EarlyAdopterAccordion } from './EarlyAdopterAccordion';
 
-jest.mock('next-auth/react');
-
 const accountListId = 'account-list-1';
 const router = {
   query: { accountListId },

@@ -10,8 +10,6 @@ import theme from 'src/theme';
 import { UpdateAccountPreferencesDocument } from '../UpdateAccountPreferences.generated';
 import { AccountNameAccordion } from './AccountNameAccordion';
 
-jest.mock('next-auth/react');
-
 const accountListId = 'account-list-1';
 const router = {
   query: { accountListId },

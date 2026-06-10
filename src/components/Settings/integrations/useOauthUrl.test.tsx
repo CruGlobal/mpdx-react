@@ -1,13 +1,9 @@
 import React, { PropsWithChildren } from 'react';
 import { renderHook } from '@testing-library/react';
-import { Session } from 'next-auth';
-import { useSession } from 'next-auth/react';
 import { renderToString } from 'react-dom/server';
 import TestRouter from '__tests__/util/TestRouter';
 import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { useOauthUrl } from './useOauthUrl';
-
-jest.mock('next-auth/react');
 
 const accountListId = 'account-list-1';
 const apiToken = 'apiToken';
@@ -21,9 +17,6 @@ const renderUseOauthUrl = () =>
 
 beforeEach(() => {
   process.env.OAUTH_URL = 'https://auth.mpdx.org';
-  (useSession as jest.Mock).mockReturnValue({
-    data: { user: { apiToken } } as Session,
-  });
 });
 
 describe('useOauthUrl', () => {

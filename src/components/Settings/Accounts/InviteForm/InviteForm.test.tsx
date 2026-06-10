@@ -9,8 +9,6 @@ import { InviteTypeEnum } from 'src/graphql/types.generated';
 import theme from '../../../../theme';
 import { InviteForm } from './InviteForm';
 
-jest.mock('next-auth/react');
-
 const accountListId = 'account-list-1';
 const contactId = 'contact-1';
 const router = {
