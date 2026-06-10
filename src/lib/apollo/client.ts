@@ -17,6 +17,7 @@ import {
 } from './accountListRedirect';
 import { createCache } from './cache';
 import { batchLink, makeAuthLink } from './link';
+import { isOffline, offlineLink } from './offlineLink';
 
 const cache = createCache();
 
@@ -41,6 +42,7 @@ if (cachePersistor) {
 const makeClient = (apiToken: string) => {
   const client = new ApolloClient({
     link: from([
+      offlineLink,
       makeAuthLink(apiToken),
       onError(({ graphQLErrors, networkError, operation }) => {
         const suppressErrors = operation.getContext().suppressErrors === true;
@@ -72,7 +74,7 @@ const makeClient = (apiToken: string) => {
           }
         });
 
-        if (networkError) {
+        if (networkError && !isOffline()) {
           dispatch('mpdx-api-error');
           snackNotifications.error(networkError.message);
         }
