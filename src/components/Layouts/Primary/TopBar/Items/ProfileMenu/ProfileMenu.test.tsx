@@ -205,7 +205,9 @@ describe('ProfileMenu', () => {
     );
     await waitFor(() => expect(getByText(/sign out/i)).toBeInTheDocument());
     userEvent.click(getByText(/sign out/i));
-    expect(signOut).toHaveBeenCalledWith({ callbackUrl: 'signOut' });
+    await waitFor(() =>
+      expect(signOut).toHaveBeenCalledWith({ callbackUrl: 'signOut' }),
+    );
   });
 
   it('hides links during the setup tour', async () => {

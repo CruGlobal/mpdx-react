@@ -408,11 +408,10 @@ const ProfileMenu = (): ReactElement => {
             <MenuButton
               variant="outlined"
               color="inherit"
-              onClick={() => {
-                signOut({ callbackUrl: 'signOut' }).then(() => {
-                  clearDataDogUser();
-                  clearApolloData(client);
-                });
+              onClick={async () => {
+                clearDataDogUser();
+                await clearApolloData(client);
+                await signOut({ callbackUrl: 'signOut' });
               }}
             >
               {t('Sign Out')}

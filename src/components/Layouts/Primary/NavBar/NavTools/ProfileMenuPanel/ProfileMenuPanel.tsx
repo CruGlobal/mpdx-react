@@ -197,12 +197,11 @@ export const ProfileMenuPanel: React.FC = () => {
           <Button
             variant="outlined"
             color="secondary"
-            onClick={() =>
-              signOut({ callbackUrl: 'signOut' }).then(() => {
-                clearDataDogUser();
-                clearApolloData(client);
-              })
-            }
+            onClick={async () => {
+              clearDataDogUser();
+              await clearApolloData(client);
+              await signOut({ callbackUrl: 'signOut' });
+            }}
           >
             {t('Sign Out')}
           </Button>
