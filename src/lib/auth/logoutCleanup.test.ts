@@ -131,6 +131,36 @@ describe('logoutCleanup', () => {
       expect(lastCall(mutate)).toBeLessThan(lastCall(mockedPersistor.purge));
     });
 
+    it('waits for the DestroyUserDevice mutation to complete before any CacheStorage or Apollo teardown', async () => {
+      // Completion-order guard: invocation order alone would still pass if an
+      // await were dropped, letting the DELETE race the Apollo teardown
+      let resolveMutate!: (value: unknown) => void;
+      const mutate = jest.fn().mockImplementation(
+        () =>
+          new Promise((resolve) => {
+            resolveMutate = resolve;
+          }),
+      );
+      const { client, clearStore } = makeClient(mutate);
+
+      const cleanup = logoutCleanup(client);
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      expect(mutate).toHaveBeenCalledTimes(1);
+      expect(cachesDelete).not.toHaveBeenCalled();
+      expect(mockedClearDataDogUser).not.toHaveBeenCalled();
+      expect(clearStore).not.toHaveBeenCalled();
+      expect(mockedPersistor.purge).not.toHaveBeenCalled();
+
+      resolveMutate({ data: { destroyUserDevice: { success: true } } });
+      await cleanup;
+
+      expect(cachesDelete).toHaveBeenCalledTimes(2);
+      expect(mockedClearDataDogUser).toHaveBeenCalledTimes(1);
+      expect(clearStore).toHaveBeenCalledTimes(1);
+      expect(mockedPersistor.purge).toHaveBeenCalledTimes(1);
+    });
+
     it('still clears Apollo data and resolves when the DestroyUserDevice mutation rejects', async () => {
       const { client, clearStore } = makeClient(
         jest.fn().mockRejectedValue(new Error('401 token already dead')),
@@ -174,6 +204,31 @@ describe('logoutCleanup', () => {
 
       await expect(logoutCleanup(client)).resolves.toBeUndefined();
 
+      expect(mockedClearDataDogUser).toHaveBeenCalledTimes(1);
+      expect(clearStore).toHaveBeenCalledTimes(1);
+      expect(mockedPersistor.purge).toHaveBeenCalledTimes(1);
+    });
+
+    it('still clears DataDog and Apollo data and resolves when caches.delete rejects', async () => {
+      cachesDelete.mockRejectedValue(new Error('cache delete denied'));
+      const { client, clearStore } = makeClient();
+
+      await expect(logoutCleanup(client)).resolves.toBeUndefined();
+
+      expect(mockedClearDataDogUser).toHaveBeenCalledTimes(1);
+      expect(clearStore).toHaveBeenCalledTimes(1);
+      expect(mockedPersistor.purge).toHaveBeenCalledTimes(1);
+    });
+
+    it('still clears DataDog and Apollo data and resolves when caches.keys throws', async () => {
+      cachesKeys.mockRejectedValue(
+        new DOMException('access denied', 'SecurityError'),
+      );
+      const { client, clearStore } = makeClient();
+
+      await expect(logoutCleanup(client)).resolves.toBeUndefined();
+
+      expect(cachesDelete).not.toHaveBeenCalled();
       expect(mockedClearDataDogUser).toHaveBeenCalledTimes(1);
       expect(clearStore).toHaveBeenCalledTimes(1);
       expect(mockedPersistor.purge).toHaveBeenCalledTimes(1);

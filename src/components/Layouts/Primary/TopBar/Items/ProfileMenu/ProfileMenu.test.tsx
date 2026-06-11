@@ -199,6 +199,13 @@ describe('ProfileMenu', () => {
   });
 
   it('Ensure Sign Out is called with callback', async () => {
+    let resolveCleanup!: () => void;
+    jest.mocked(logoutCleanup).mockImplementationOnce(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveCleanup = resolve;
+        }),
+    );
     const { findByText, getByTestId, getByText, queryByTestId } = render(
       <TestComponent router={routerNoAccountListId} />,
     );
@@ -210,14 +217,16 @@ describe('ProfileMenu', () => {
     );
     await waitFor(() => expect(getByText(/sign out/i)).toBeInTheDocument());
     userEvent.click(getByText(/sign out/i));
+
+    await waitFor(() => expect(logoutCleanup).toHaveBeenCalledTimes(1));
+    // The full logout cleanup chain (push unregister + CacheStorage +
+    // DataDog + clearApolloData) must finish — not merely be invoked —
+    // before signOut navigates away
+    expect(signOut).not.toHaveBeenCalled();
+
+    resolveCleanup();
     await waitFor(() =>
       expect(signOut).toHaveBeenCalledWith({ callbackUrl: 'signOut' }),
-    );
-    // The full logout cleanup chain (push unregister + CacheStorage +
-    // DataDog + clearApolloData) runs before signOut navigates away
-    expect(logoutCleanup).toHaveBeenCalledTimes(1);
-    expect(jest.mocked(logoutCleanup).mock.invocationCallOrder[0]).toBeLessThan(
-      jest.mocked(signOut).mock.invocationCallOrder[0],
     );
   });
 

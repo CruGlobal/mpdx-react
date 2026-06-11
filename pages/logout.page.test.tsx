@@ -28,17 +28,25 @@ describe('Logout page', () => {
     ).toBeInTheDocument();
   });
 
-  it('runs the full logout cleanup chain before signing out', async () => {
+  it('runs the full logout cleanup chain to completion before signing out', async () => {
+    let resolveCleanup!: () => void;
+    jest.mocked(logoutCleanup).mockImplementationOnce(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveCleanup = resolve;
+        }),
+    );
     render(<TestComponent />);
 
+    await waitFor(() => expect(logoutCleanup).toHaveBeenCalledTimes(1));
+    // logoutCleanup (push unregister + CacheStorage + DataDog +
+    // clearApolloData) must finish — not merely be invoked — before signOut
+    // navigates away
+    expect(signOut).not.toHaveBeenCalled();
+
+    resolveCleanup();
     await waitFor(() =>
       expect(signOut).toHaveBeenCalledWith({ callbackUrl: 'signOut' }),
-    );
-    // logoutCleanup (push unregister + CacheStorage + DataDog +
-    // clearApolloData) must finish before signOut navigates away
-    expect(logoutCleanup).toHaveBeenCalledTimes(1);
-    expect(jest.mocked(logoutCleanup).mock.invocationCallOrder[0]).toBeLessThan(
-      jest.mocked(signOut).mock.invocationCallOrder[0],
     );
   });
 });

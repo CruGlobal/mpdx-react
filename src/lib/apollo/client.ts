@@ -1,12 +1,10 @@
 import router from 'next/router';
 import { ApolloClient, from } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
-import { signOut } from 'next-auth/react';
 import {
   GetDefaultAccountDocument,
   GetDefaultAccountQuery,
 } from 'pages/api/getDefaultAccount.generated';
-import { logoutCleanup } from 'src/lib/auth/logoutCleanup';
 import snackNotifications from '../../components/Snackbar/Snackbar';
 import { dispatch } from '../analytics';
 import {
@@ -14,6 +12,7 @@ import {
   replaceUrlAccountList,
 } from './accountListRedirect';
 import { cache, cachePersistor } from './cachePersistor';
+import { handleAuthenticationError } from './handleAuthenticationError';
 import { batchLink, makeAuthLink } from './link';
 import { isOffline, offlineLink } from './offlineLink';
 
@@ -36,12 +35,10 @@ const makeClient = (apiToken: string) => {
 
         graphQLErrors?.forEach((graphQLError) => {
           if (graphQLError?.extensions?.code === 'AUTHENTICATION_ERROR') {
-            signOut({ redirect: true, callbackUrl: 'signOut' }).then(() => {
-              // The token is already dead here, so the DestroyUserDevice
-              // DELETE inside logoutCleanup will 401 — it swallows that, but
-              // still unregisters the push plugin and clears local state.
-              logoutCleanup(client);
-            });
+            // Runs logoutCleanup to completion BEFORE the signOut redirect so
+            // the cleanup cannot race the page unload, and coalesces
+            // concurrent authentication errors into one cleanup + signOut.
+            handleAuthenticationError(client);
           }
           if (isAccountListNotFoundError(graphQLError)) {
             client

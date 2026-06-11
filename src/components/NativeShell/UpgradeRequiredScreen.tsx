@@ -4,8 +4,8 @@ import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
 import { Box, Button, Typography } from '@mui/material';
 import { signOut } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
-import { clearApolloData } from 'src/lib/apollo/clearApolloData';
-import { clearDataDogUser } from 'src/lib/dataDog';
+import { logoutCleanup } from 'src/lib/auth/logoutCleanup';
+import { getAppName } from 'src/lib/getAppName';
 import { getDevicePlatform } from 'src/lib/nativeShell/nativeShell';
 
 // PLACEHOLDER store URLs (capacitor-shell.md §8/§13): the final listing ids
@@ -21,12 +21,15 @@ const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=org.mpdx';
  * `upgradeRequired`.
  *
  * Must be mounted inside the ApolloProvider: the sign out affordance (which
- * this screen must never block) clears local Apollo data before signing out,
- * matching every other sign out path in the app.
+ * this screen must never block — logoutCleanup is best-effort throughout)
+ * runs the canonical logoutCleanup() chain (push unregister + CacheStorage +
+ * DataDog + clearApolloData) to completion before signing out, matching
+ * every other sign out path in the app.
  */
 export const UpgradeRequiredScreen: React.FC = () => {
   const { t } = useTranslation();
   const client = useApolloClient();
+  const appName = getAppName();
   const [signingOut, setSigningOut] = useState(false);
 
   const storeUrl =
@@ -35,8 +38,7 @@ export const UpgradeRequiredScreen: React.FC = () => {
   const handleSignOut = async () => {
     setSigningOut(true);
     try {
-      clearDataDogUser();
-      await clearApolloData(client);
+      await logoutCleanup(client);
       await signOut({ callbackUrl: 'signOut' });
     } finally {
       setSigningOut(false);
@@ -63,11 +65,12 @@ export const UpgradeRequiredScreen: React.FC = () => {
       </Typography>
       <Typography color="textSecondary">
         {t(
-          'This version of the MPDX app is no longer supported. Update to the latest version to keep using MPDX.',
+          'This version of the {{appName}} app is no longer supported. Update to the latest version to keep using {{appName}}.',
+          { appName },
         )}
       </Typography>
       <Button variant="contained" href={storeUrl}>
-        {t('Update MPDX')}
+        {t('Update {{appName}}', { appName })}
       </Button>
       <Button color="inherit" disabled={signingOut} onClick={handleSignOut}>
         {t('Sign Out')}

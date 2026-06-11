@@ -23,9 +23,15 @@ export const logoutCleanup = async (
   client: ApolloClient<object>,
 ): Promise<void> => {
   await disablePush(client).catch(() => undefined);
-  if (typeof caches !== 'undefined') {
-    const keys = await caches.keys();
-    await Promise.all(keys.map((key) => caches.delete(key)));
+  try {
+    if (typeof caches !== 'undefined') {
+      const keys = await caches.keys();
+      await Promise.all(keys.map((key) => caches.delete(key)));
+    }
+  } catch {
+    // CacheStorage can reject (e.g. SecurityError in some webview or
+    // private-browsing contexts). A signout must never be blocked, so a
+    // failure here must not abort the rest of the chain or propagate.
   }
   clearDataDogUser();
   await clearApolloData(client);
