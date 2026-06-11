@@ -42,4 +42,16 @@ describe('NsGoalCalculator', () => {
     userEvent.click(getByRole('button', { name: '3. Next Steps' }));
     expect(getByRole('heading', { name: 'Next Steps' })).toBeInTheDocument();
   });
+
+  it('advances to the next step when the continue button is clicked', () => {
+    const { getByRole } = render(<TestComponent />);
+
+    userEvent.click(getByRole('button', { name: '2. Presenting Your Goal' }));
+    expect(
+      getByRole('heading', { name: 'Presenting Your Goal' }),
+    ).toBeInTheDocument();
+
+    userEvent.click(getByRole('button', { name: 'Continue' }));
+    expect(getByRole('heading', { name: 'Next Steps' })).toBeInTheDocument();
+  });
 });

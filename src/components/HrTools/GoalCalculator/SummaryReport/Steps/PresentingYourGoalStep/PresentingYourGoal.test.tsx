@@ -55,9 +55,7 @@ describe('PresentingYourGoal', () => {
   });
 
   it('renders the presentation cards with goal calculation data', async () => {
-    const { getByRole, findByRole, getAllByTestId } = render(
-      <TestComponent />,
-    );
+    const { getByRole, findByRole, getAllByTestId } = render(<TestComponent />);
 
     expect(
       getByRole('heading', { name: 'Personal Information' }),

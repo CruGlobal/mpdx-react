@@ -65,7 +65,7 @@ export const PresentingYourGoalStep: React.FC = () => {
   const { data } = useAccountListSupportRaisedQuery({
     variables: { accountListId },
   });
-  const supportRaised = data?.accountList.receivedPledges ?? 0;
+  const supportRaised = data?.accountList.receivedPledges ?? null;
 
   const handlePrint = () => {
     window.print();

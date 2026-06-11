@@ -64,4 +64,12 @@ describe('MonthlyNeedsCard', () => {
     expect(getByText('Total Solid Support')).toBeInTheDocument();
     expect(getByText('$1,234')).toBeInTheDocument();
   });
+
+  it('omits the total solid support row while the support raised is unavailable', () => {
+    const { queryByText } = render(
+      <MonthlyNeedsCard monthlyNeeds={monthlyNeeds} supportRaised={null} />,
+    );
+
+    expect(queryByText('Total Solid Support')).not.toBeInTheDocument();
+  });
 });

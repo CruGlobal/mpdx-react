@@ -6,7 +6,7 @@ import { MonthlyNeeds, useMonthlyNeedsRows } from './useMonthlyNeedsRows';
 
 export interface MonthlyNeedsCardProps {
   monthlyNeeds: MonthlyNeeds;
-  supportRaised: number;
+  supportRaised: number | null;
 }
 
 export const MonthlyNeedsCard: React.FC<MonthlyNeedsCardProps> = ({
@@ -30,11 +30,15 @@ export const MonthlyNeedsCard: React.FC<MonthlyNeedsCardProps> = ({
         amount: totalSupportGoal,
         bold: true,
       },
-      {
-        title: t('Total Solid Support'),
-        amount: supportRaised,
-        titleBold: false,
-      },
+      ...(supportRaised === null
+        ? []
+        : [
+            {
+              title: t('Total Solid Support'),
+              amount: supportRaised,
+              titleBold: false,
+            },
+          ]),
     ];
   }, [needsRows, supportRaised, t]);
 

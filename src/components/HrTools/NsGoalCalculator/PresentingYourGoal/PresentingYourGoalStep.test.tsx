@@ -80,8 +80,15 @@ describe('PresentingYourGoalStep', () => {
     expect(getByText('$1,795')).toBeInTheDocument();
     expect(getByText('Total Support Goal')).toBeInTheDocument();
     expect(getByText('$15,860')).toBeInTheDocument();
-    expect(getByText('Total Solid Support')).toBeInTheDocument();
+    expect(await findByText('Total Solid Support')).toBeInTheDocument();
     expect(await findByText('$1,200')).toBeInTheDocument();
+  });
+
+  it('hides the total solid support row until the support raised data loads', async () => {
+    const { queryByText, findByText } = render(<TestComponent />);
+
+    expect(queryByText('Total Solid Support')).not.toBeInTheDocument();
+    expect(await findByText('Total Solid Support')).toBeInTheDocument();
   });
 
   it('renders the special needs section', () => {

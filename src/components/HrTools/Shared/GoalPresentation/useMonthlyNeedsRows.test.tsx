@@ -15,16 +15,14 @@ describe('useMonthlyNeedsRows', () => {
   it('returns the rows in order with their amounts', () => {
     const { result } = renderHook(() => useMonthlyNeedsRows(monthlyNeeds));
 
-    expect(result.current.map(({ title, amount }) => [title, amount])).toEqual(
-      [
-        ['Salary', 5000],
-        ['Ministry Expenses', 1000],
-        ['Benefits', 800],
-        ['Social Security and Taxes', 600],
-        ['Voluntary 403b Retirement Plan', 400],
-        ['Administrative Charge', 200],
-      ],
-    );
+    expect(result.current.map(({ title, amount }) => [title, amount])).toEqual([
+      ['Salary', 5000],
+      ['Ministry Expenses', 1000],
+      ['Benefits', 800],
+      ['Social Security and Taxes', 600],
+      ['Voluntary 403b Retirement Plan', 400],
+      ['Administrative Charge', 200],
+    ]);
   });
 
   it('uses the combined salary title when married', () => {
