@@ -138,6 +138,58 @@ const TestComponent: React.FC<TestComponentProps> = ({ contactData }) => (
   </SnackbarProvider>
 );
 
+describe('PersonModal - native camera avatar integration', () => {
+  beforeEach(() => {
+    window.URL.createObjectURL = jest.fn().mockReturnValue('blob:1');
+    window.URL.revokeObjectURL = jest.fn();
+    (uploadAvatar as jest.Mock).mockResolvedValue(undefined);
+    // Use the real validator to prove a camera-shaped file passes validation
+    (validateAvatar as jest.Mock).mockImplementation(
+      jest.requireActual<typeof import('./uploadAvatar')>('./uploadAvatar')
+        .validateAvatar,
+    );
+  });
+
+  it('uploads a camera-shaped file that survives validateAvatar on save', async () => {
+    const { getByTestId, getByText } = render(
+      <TestComponent
+        contactData={{
+          id: '123-456',
+          name: 'Hill, Jack and Jill',
+          people: mock.people,
+          greeting: 'Jack and Jill',
+          envelopeGreeting: 'Jack and Jill Hill',
+        }}
+      />,
+    );
+
+    // Shaped exactly like useNativeCamera output: avatar.jpeg, image/jpeg, < 1MB
+    const cameraFile = new File([new Uint8Array(150_000)], 'avatar.jpeg', {
+      type: 'image/jpeg',
+    });
+    userEvent.upload(getByTestId('PersonNameUpload'), cameraFile);
+
+    // The real validateAvatar accepted the file — no validation error snackbar
+    expect(mockEnqueue).not.toHaveBeenCalled();
+
+    userEvent.click(getByText('Save'));
+
+    await waitFor(() =>
+      expect(uploadAvatar).toHaveBeenCalledWith(
+        expect.objectContaining({
+          personId: mockPerson.id,
+          file: cameraFile,
+        }),
+      ),
+    );
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Person updated successfully', {
+        variant: 'success',
+      }),
+    );
+  });
+});
+
 describe('PersonModal - Saving Deceased', () => {
   const cache = new InMemoryCache();
   jest.spyOn(cache, 'readQuery');

@@ -1,13 +1,31 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
+import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined';
+import PhotoLibraryOutlinedIcon from '@mui/icons-material/PhotoLibraryOutlined';
 import UploadIcon from '@mui/icons-material/Upload';
-import { Avatar, Grid, IconButton, TextField, Typography } from '@mui/material';
+import {
+  Avatar,
+  Grid,
+  IconButton,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { FormikProps } from 'formik';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import {
   PersonCreateInput,
   PersonUpdateInput,
 } from 'src/graphql/types.generated';
+import { useIsOnline } from 'src/hooks/useIsOnline';
+import {
+  NativePhotoSource,
+  useNativeCamera,
+} from 'src/hooks/useNativeCamera';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { NewSocial, Person } from '../PersonModal';
 
@@ -59,9 +77,61 @@ export const PersonName: React.FC<PersonNameProps> = ({
     errors,
   } = formikProps;
 
+  const { enqueueSnackbar } = useSnackbar();
+  const { isNative, getAvatarPhoto } = useNativeCamera();
+  const isOnline = useIsOnline();
+  const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement | null>(null);
+
   const fileRef = useRef<HTMLInputElement>(null);
-  const handleFileClick = () => {
-    fileRef.current?.click();
+  const handleAvatarClick: React.MouseEventHandler<HTMLButtonElement> = (
+    event,
+  ) => {
+    if (!isNative) {
+      // Web/browser path, unchanged: open the hidden file input
+      fileRef.current?.click();
+      return;
+    }
+    if (!isOnline) {
+      // Avatar upload is online-only — degrade cleanly in the native shell
+      enqueueSnackbar(t('Cannot change the photo while offline.'), {
+        variant: 'warning',
+      });
+      return;
+    }
+    setMenuAnchorEl(event.currentTarget);
+  };
+  const handleMenuClose = () => {
+    setMenuAnchorEl(null);
+  };
+  const handleNativePhoto = async (source: NativePhotoSource) => {
+    setMenuAnchorEl(null);
+    const result = await getAvatarPhoto(source);
+    switch (result.outcome) {
+      case 'success':
+        // Existing pipeline: validate, preview, upload on save
+        setAvatar(result.file);
+        break;
+      case 'canceled':
+        // Backing out of the camera/picker is not an error
+        break;
+      case 'permission-denied':
+        enqueueSnackbar(
+          result.source === 'camera'
+            ? t(
+                'MPDX does not have permission to use the camera. Enable camera access for MPDX in your device settings and try again.',
+              )
+            : t(
+                'MPDX does not have permission to access your photos. Enable photo access for MPDX in your device settings and try again.',
+              ),
+          { variant: 'error' },
+        );
+        break;
+      case 'error':
+        enqueueSnackbar(t('Failed to get the photo. Please try again.'), {
+          variant: 'error',
+        });
+        break;
+    }
   };
   const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = (
     event,
@@ -80,7 +150,10 @@ export const PersonName: React.FC<PersonNameProps> = ({
     <>
       {person && (
         <ModalSectionContainer>
-          <StyledIconButton onClick={handleFileClick}>
+          <StyledIconButton
+            onClick={handleAvatarClick}
+            aria-label={t('Change photo')}
+          >
             <StyledAvatarIcon>
               <UploadIcon />
             </StyledAvatarIcon>
@@ -98,6 +171,24 @@ export const PersonName: React.FC<PersonNameProps> = ({
             ref={fileRef}
             onChange={handleFileChange}
           />
+          <Menu
+            anchorEl={menuAnchorEl}
+            open={Boolean(menuAnchorEl)}
+            onClose={handleMenuClose}
+          >
+            <MenuItem onClick={() => handleNativePhoto('camera')}>
+              <ListItemIcon>
+                <PhotoCameraOutlinedIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>{t('Take Photo')}</ListItemText>
+            </MenuItem>
+            <MenuItem onClick={() => handleNativePhoto('photos')}>
+              <ListItemIcon>
+                <PhotoLibraryOutlinedIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>{t('Choose from Library')}</ListItemText>
+            </MenuItem>
+          </Menu>
           <Typography component="span" fontWeight="bold">
             {`${person.firstName || ''} ${person.lastName || ''}`}
           </Typography>
