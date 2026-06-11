@@ -4,6 +4,7 @@ import { Box, Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { NotificationsTable } from 'src/components/Settings/notifications/NotificationsTable';
+import { PushNotificationsCard } from 'src/components/Settings/notifications/PushNotificationsCard/PushNotificationsCard';
 import { SetupBanner } from 'src/components/Settings/preferences/SetupBanner';
 import { useSetupContext } from 'src/components/Setup/SetupProvider';
 import { StickyBox } from 'src/components/Shared/Header/styledComponents';
@@ -73,6 +74,8 @@ const Notifications: React.FC = () => {
           )}
         </p>
       </Box>
+      {/* Gated on isNativeShell() inside the card — renders nothing in browsers */}
+      <PushNotificationsCard />
       <NotificationsTable handleSetupChange={handleSetupChange} />
     </SettingsWrapper>
   );

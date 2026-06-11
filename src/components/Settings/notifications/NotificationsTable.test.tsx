@@ -50,6 +50,20 @@ describe('NotificationsTable', () => {
   beforeEach(() => {
     mutationSpy.mockReset();
   });
+  it('Should label the app channel column Mobile App with a push notification tooltip', async () => {
+    const { findByText, getByText, queryByText } = render(<Components />);
+
+    expect(await findByText('Mobile App')).toBeInTheDocument();
+    expect(queryByText('In App')).not.toBeInTheDocument();
+
+    userEvent.hover(getByText('Mobile App'));
+    expect(
+      await findByText(
+        'Delivered as push notifications in the MPDX mobile app',
+      ),
+    ).toBeInTheDocument();
+  });
+
   it('Should render the Table and request data', async () => {
     const { getByTestId, queryByTestId, getByText } = render(<Components />);
 

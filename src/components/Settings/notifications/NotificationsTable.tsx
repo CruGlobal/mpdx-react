@@ -8,6 +8,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Tooltip,
 } from '@mui/material';
 import { FieldArray, Formik } from 'formik';
 import { useSnackbar } from 'notistack';
@@ -16,6 +17,7 @@ import * as yup from 'yup';
 import { SubmitButton } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import { NotificationTypeTypeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { getAppName } from 'src/lib/getAppName';
 import {
   NotificationsPreferencesQuery,
   useNotificationTypesQuery,
@@ -87,6 +89,7 @@ export const NotificationsTable: React.FC<NotificationsTableProps> = ({
 }) => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const appName = getAppName();
   const { enqueueSnackbar } = useSnackbar();
   const [appSelectAll, setAppSelectAll] = useState(false);
   const [emailSelectAll, setEmailSelectAll] = useState(false);
@@ -220,7 +223,18 @@ export const NotificationsTable: React.FC<NotificationsTableProps> = ({
                           </StyledTableHeadCell>
                           <StyledTableHeadCell align="right">
                             <StyledSmartphone />
-                            <Box>{t('In App')}</Box>
+                            {/* The `app` flag now gates mobile push sends —
+                                final "Mobile App" label + tooltip copy pending
+                                product decision (Daniel, PWA master plan open
+                                question Q10) */}
+                            <Tooltip
+                              title={t(
+                                'Delivered as push notifications in the {{appName}} mobile app',
+                                { appName },
+                              )}
+                            >
+                              <Box>{t('Mobile App')}</Box>
+                            </Tooltip>
                           </StyledTableHeadCell>
                           <StyledTableHeadCell align="right">
                             <StyledEmail />
