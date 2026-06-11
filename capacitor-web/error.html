@@ -1,0 +1,105 @@
+<!doctype html>
+<!--
+  Bundled server.errorPath page (capacitor-shell.md §1.2). Shown by the
+  Capacitor shell when the remote app fails to load (first-ever launch
+  offline, server down).
+
+  KEEP IT DUMB: on Android the errorPath page has no Capacitor plugin access,
+  so this must stay vanilla HTML/JS — no framework, no bridge calls, no data.
+  This is the only bundled web content in shell v1.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>MPDX</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: #ffffff;
+        color: #383f43;
+        padding: env(safe-area-inset-top) env(safe-area-inset-right)
+          env(safe-area-inset-bottom) env(safe-area-inset-left);
+      }
+      main {
+        text-align: center;
+        padding: 24px;
+        max-width: 420px;
+      }
+      .logo {
+        font-size: 32px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        color: #05699b;
+        margin-bottom: 16px;
+      }
+      h1 {
+        font-size: 20px;
+        font-weight: 600;
+        margin: 0 0 8px;
+      }
+      p {
+        font-size: 15px;
+        line-height: 1.5;
+        margin: 0 0 24px;
+        color: #6b7172;
+      }
+      button {
+        font: inherit;
+        font-weight: 600;
+        color: #ffffff;
+        background: #05699b;
+        border: none;
+        border-radius: 4px;
+        padding: 12px 32px;
+        cursor: pointer;
+      }
+      button:active {
+        opacity: 0.8;
+      }
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #1a1a1a;
+          color: #e6e6e6;
+        }
+        p {
+          color: #9e9e9e;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="logo">MPDX</div>
+      <h1 id="headline">You're offline</h1>
+      <p>
+        MPDX needs an internet connection to start. Check your connection and
+        try again &mdash; this page will retry automatically when you're back
+        online.
+      </p>
+      <button type="button" onclick="window.location.reload()">Retry</button>
+    </main>
+    <script>
+      // Reload automatically when connectivity returns.
+      window.addEventListener('online', function () {
+        window.location.reload();
+      });
+      // If we got here while online, the server itself failed to respond.
+      if (navigator.onLine) {
+        document.getElementById('headline').textContent = 'MPDX is unreachable';
+      }
+    </script>
+  </body>
+</html>

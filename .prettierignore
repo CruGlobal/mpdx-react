@@ -24,3 +24,7 @@ yarn-error.log*
 
 # Generated translation files
 /public/locales/
+
+# Capacitor native projects (Xcode/Gradle-generated files; do not reformat)
+/ios/
+/android/
