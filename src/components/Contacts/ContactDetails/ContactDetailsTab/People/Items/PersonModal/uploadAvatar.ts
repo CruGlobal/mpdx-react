@@ -1,4 +1,5 @@
 import { TFunction } from 'react-i18next';
+import { MAX_AVATAR_BYTES } from 'src/lib/images/compressAvatar';
 
 export const validateAvatar = ({
   file,
@@ -21,10 +22,11 @@ export const validateAvatar = ({
       ),
     };
   }
-  // The /api/upload-person-avatar lambda appears to truncate the source body at 2^20 bytes
-  // Conservatively set the limit at 1MB, which is a little lower than 1MiB because of the
-  // overhead of encoding multipart/form-data and the other fields in the POST body
-  if (file.size > 1_000_000) {
+  // The /api/upload-person-avatar lambda appears to truncate the source body at 2^20 bytes.
+  // MAX_AVATAR_BYTES (single source of truth, shared with compressAvatar) is conservatively
+  // set at 1MB, a little lower than 1MiB because of the overhead of encoding
+  // multipart/form-data and the other fields in the POST body
+  if (file.size > MAX_AVATAR_BYTES) {
     return {
       success: false,
       message: t('Cannot upload avatar: file size cannot exceed 1MB'),

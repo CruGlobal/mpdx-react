@@ -1,4 +1,5 @@
-import { uploadAvatar } from './uploadAvatar';
+import { MAX_AVATAR_BYTES } from 'src/lib/images/compressAvatar';
+import { uploadAvatar, validateAvatar } from './uploadAvatar';
 
 describe('uploadAvatar', () => {
   const fetch = jest.fn().mockResolvedValue({
@@ -63,6 +64,23 @@ describe('uploadAvatar', () => {
     ).rejects.toThrow(
       'Cannot upload avatar: Unfortunately we do not support AVIF files.',
     );
+  });
+
+  it('accepts files exactly at MAX_AVATAR_BYTES and rejects one byte over', () => {
+    const atLimit = new File([new ArrayBuffer(MAX_AVATAR_BYTES)], 'image.png', {
+      type: 'image/png',
+    });
+    const overLimit = new File(
+      [new ArrayBuffer(MAX_AVATAR_BYTES + 1)],
+      'image.png',
+      { type: 'image/png' },
+    );
+
+    expect(validateAvatar({ file: atLimit, t })).toEqual({ success: true });
+    expect(validateAvatar({ file: overLimit, t })).toEqual({
+      success: false,
+      message: 'Cannot upload avatar: file size cannot exceed 1MB',
+    });
   });
 
   it('handles server errors', () => {
