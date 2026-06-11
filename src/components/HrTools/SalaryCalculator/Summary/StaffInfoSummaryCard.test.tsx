@@ -66,20 +66,18 @@ const TestComponent: React.FC<TestComponentProps> = ({
 
 describe('StaffInfoSummaryCard', () => {
   it('should render table cells', async () => {
-    const { getAllByRole } = render(<TestComponent />);
-
-    const expectedCells = [
-      ['Staff Account Number', '123456'],
-      ['Full Names', 'John Doe and Jane Doe'],
-      ['Phone Number', '555-0123'],
-      ['Email Address', 'john.doe@example.comjane.doe@example.com'],
-      ['Effective for Paycheck Dated', '1/15/2024'],
-    ].flat();
+    const { getByRole } = render(<TestComponent />);
 
     await waitFor(() =>
-      expect(getAllByRole('cell').map((cell) => cell.textContent)).toEqual(
-        expectedCells,
-      ),
+      expect(getByRole('table')).toHaveTableStructure({
+        cells: [
+          ['Staff Account Number', '123456'],
+          ['Full Names', 'John Doe and Jane Doe'],
+          ['Phone Number', '555-0123'],
+          ['Email Address', 'john.doe@example.comjane.doe@example.com'],
+          ['Effective for Paycheck Dated', '1/15/2024'],
+        ],
+      }),
     );
   });
 
@@ -91,20 +89,18 @@ describe('StaffInfoSummaryCard', () => {
 
   describe('single', () => {
     it('should render table cells', async () => {
-      const { getAllByRole } = render(<TestComponent hasSpouse={false} />);
-
-      const expectedCells = [
-        ['Staff Account Number', '123456'],
-        ['Full Names', 'John Doe'],
-        ['Phone Number', '555-0123'],
-        ['Email Address', 'john.doe@example.com'],
-        ['Effective for Paycheck Dated', '1/15/2024'],
-      ].flat();
+      const { getByRole } = render(<TestComponent hasSpouse={false} />);
 
       await waitFor(() =>
-        expect(getAllByRole('cell').map((cell) => cell.textContent)).toEqual(
-          expectedCells,
-        ),
+        expect(getByRole('table')).toHaveTableStructure({
+          cells: [
+            ['Staff Account Number', '123456'],
+            ['Full Names', 'John Doe'],
+            ['Phone Number', '555-0123'],
+            ['Email Address', 'john.doe@example.com'],
+            ['Effective for Paycheck Dated', '1/15/2024'],
+          ],
+        }),
       );
     });
   });
