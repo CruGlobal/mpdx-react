@@ -41,63 +41,54 @@ const TestComponent: React.FC<SalaryCalculatorTestWrapperProps> = (props) => (
 );
 
 describe('MhaCard', () => {
-  it('should render table headers', async () => {
-    const { getAllByRole } = render(<TestComponent />);
+  it('should render table headers and cells with formatted currency values', async () => {
+    const { getByRole } = render(<TestComponent />);
 
     await waitFor(() =>
-      expect(
-        getAllByRole('columnheader').map((cell) => cell.textContent),
-      ).toEqual(['Category', 'John', 'Jane']),
-    );
-  });
-
-  it('should render table cells with formatted currency values', async () => {
-    const { getAllByRole } = render(<TestComponent />);
-
-    const expectedCells = [
-      ['15. Minimum Required Salary', '$10,001.00', '$20,001.00'],
-      ['16. SubtotalLine 12 - Line 15', '$10,002.00', '$20,002.00'],
-      [
-        "17. Minister's Housing AllowanceUse the lesser of line 16 or your CCC Board approved amount.",
-        '$10,003.00',
-        '$20,003.00',
-      ],
-      [
-        '18. SubtotalLine 16 - Line 17Enter the greater of this amount or zero.',
-        '$10,004.00',
-        '$20,004.00',
-      ],
-      ['19. Minimum Required Salary', '$10,001.00', '$20,001.00'],
-      ['20. CompensationLine 18 + Line 19', '$10,005.00', '$20,005.00'],
-      ['21. 403(b) AmountLine 14 - Line 12', '$10,006.00', '$20,006.00'],
-      [
-        'a. Tax-deferred (before tax) AmountNot taxed now',
-        '$10,007.00',
-        '$20,007.00',
-      ],
-      ['b. Roth (after-tax) AmountTaxed now', '$10,008.00', '$20,008.00'],
-      ['c. Total AmountLine 21a + Line 21b', '$10,006.00', '$20,006.00'],
-      [
-        '22. Annual Compensation RateLine 20 + Line 21c',
-        '$10,009.00',
-        '$20,009.00',
-      ],
-    ].flat();
-
-    await waitFor(() =>
-      expect(getAllByRole('cell').map((cell) => cell.textContent)).toEqual(
-        expectedCells,
-      ),
+      expect(getByRole('table')).toHaveTableStructure({
+        columnHeaders: ['Category', 'John', 'Jane'],
+        cells: [
+          ['15. Minimum Required Salary', '$10,001.00', '$20,001.00'],
+          ['16. SubtotalLine 12 - Line 15', '$10,002.00', '$20,002.00'],
+          [
+            "17. Minister's Housing AllowanceUse the lesser of line 16 or your CCC Board approved amount.",
+            '$10,003.00',
+            '$20,003.00',
+          ],
+          [
+            '18. SubtotalLine 16 - Line 17Enter the greater of this amount or zero.',
+            '$10,004.00',
+            '$20,004.00',
+          ],
+          ['19. Minimum Required Salary', '$10,001.00', '$20,001.00'],
+          ['20. CompensationLine 18 + Line 19', '$10,005.00', '$20,005.00'],
+          ['21. 403(b) AmountLine 14 - Line 12', '$10,006.00', '$20,006.00'],
+          [
+            'a. Tax-deferred (before tax) AmountNot taxed now',
+            '$10,007.00',
+            '$20,007.00',
+          ],
+          ['b. Roth (after-tax) AmountTaxed now', '$10,008.00', '$20,008.00'],
+          ['c. Total AmountLine 21a + Line 21b', '$10,006.00', '$20,006.00'],
+          [
+            '22. Annual Compensation RateLine 20 + Line 21c',
+            '$10,009.00',
+            '$20,009.00',
+          ],
+        ],
+      }),
     );
   });
 
   it('should render fewer table headers and cells when single', async () => {
-    const { getAllByRole } = render(<TestComponent hasSpouse={false} />);
+    const { getAllByRole, getByRole } = render(
+      <TestComponent hasSpouse={false} />,
+    );
 
     await waitFor(() =>
-      expect(
-        getAllByRole('columnheader').map((cell) => cell.textContent),
-      ).toEqual(['Category', 'John']),
+      expect(getByRole('table')).toHaveTableStructure({
+        columnHeaders: ['Category', 'John'],
+      }),
     );
 
     // 11 rows with 2 cells each

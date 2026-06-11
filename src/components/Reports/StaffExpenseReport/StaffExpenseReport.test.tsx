@@ -2,7 +2,11 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import { render, waitFor } from '@testing-library/react';
+import {
+  render,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Settings } from 'luxon';
 import { SnackbarProvider } from 'notistack';
@@ -268,7 +272,7 @@ describe('StaffExpenseReport', () => {
   });
 
   it('shows month title and navigation when only category filters are applied', async () => {
-    const { getByRole, findByLabelText, findByRole } = render(
+    const { getByRole, findByLabelText, queryByRole } = render(
       <TestComponent />,
     );
 
@@ -279,9 +283,12 @@ describe('StaffExpenseReport', () => {
       expect(getByRole('button', { name: 'Apply Filters' })).not.toBeDisabled(),
     );
     userEvent.click(getByRole('button', { name: 'Apply Filters' }));
+    await waitForElementToBeRemoved(() => queryByRole('dialog'), {
+      timeout: 5000,
+    });
 
     expect(
-      await findByRole('heading', { name: 'January 2020', level: 6 }),
+      getByRole('heading', { name: 'January 2020', level: 6 }),
     ).toBeInTheDocument();
     expect(getByRole('button', { name: 'Previous Month' })).toBeInTheDocument();
     expect(getByRole('button', { name: 'Next Month' })).toBeInTheDocument();
@@ -301,6 +308,9 @@ describe('StaffExpenseReport', () => {
     userEvent.click(getByRole('option', { name: 'Month to Date' }));
 
     userEvent.click(await findByRole('button', { name: 'Apply Filters' }));
+    await waitForElementToBeRemoved(() => queryByRole('dialog'), {
+      timeout: 5000,
+    });
 
     expect(
       queryByRole('button', { name: 'Previous Month' }),

@@ -95,40 +95,33 @@ const TestComponent: React.FC<TestComponentProps> = ({
 );
 
 describe('SalarySummaryCard', () => {
-  it('should render table headers', async () => {
+  it('should render table headers and cells', async () => {
     const { getAllByRole } = render(<TestComponent />);
 
-    const expectedHeaders = [
-      ['John', 'Old', 'New'],
-      ['Jane', 'Old', 'New'],
-    ].flat();
+    await waitFor(() => {
+      const tables = getAllByRole('table');
+      expect(tables).toHaveLength(2);
 
-    await waitFor(() =>
-      expect(
-        getAllByRole('columnheader').map((cell) => cell.textContent),
-      ).toEqual(expectedHeaders),
-    );
-  });
-
-  it('should render table cells', async () => {
-    const { getAllByRole } = render(<TestComponent />);
-
-    const expectedCells = [
-      ['Requested Salary', '$10,001.00', '$30,001.00'],
-      ['MHA', '$10,002.00', '$30,002.00'],
-      ['403(b) Contribution', '10.00%', '30.00%'],
-      ['Max Allowable Salary', '$10,003.00', '$30,003.00'],
-      ['Requested Salary', '$20,001.00', '$40,001.00'],
-      ['MHA', '$20,002.00', '$40,002.00'],
-      ['403(b) Contribution', '20.00%', '40.00%'],
-      ['Max Allowable Salary', '$20,003.00', '$40,003.00'],
-    ].flat();
-
-    await waitFor(() =>
-      expect(getAllByRole('cell').map((cell) => cell.textContent)).toEqual(
-        expectedCells,
-      ),
-    );
+      const [userTable, spouseTable] = tables;
+      expect(userTable).toHaveTableStructure({
+        columnHeaders: ['John', 'Old', 'New'],
+        cells: [
+          ['Requested Salary', '$10,001.00', '$30,001.00'],
+          ['MHA', '$10,002.00', '$30,002.00'],
+          ['403(b) Contribution', '10.00%', '30.00%'],
+          ['Max Allowable Salary', '$10,003.00', '$30,003.00'],
+        ],
+      });
+      expect(spouseTable).toHaveTableStructure({
+        columnHeaders: ['Jane', 'Old', 'New'],
+        cells: [
+          ['Requested Salary', '$20,001.00', '$40,001.00'],
+          ['MHA', '$20,002.00', '$40,002.00'],
+          ['403(b) Contribution', '20.00%', '40.00%'],
+          ['Max Allowable Salary', '$20,003.00', '$40,003.00'],
+        ],
+      });
+    });
   });
 
   it('swaps fields when the spouse created the request', async () => {
@@ -136,91 +129,77 @@ describe('SalarySummaryCard', () => {
       <TestComponent hasSpouseApprovedCalculation />,
     );
 
-    const expectedCells = [
-      ['Requested Salary', '$20,001.00', '$30,001.00'],
-      ['MHA', '$20,002.00', '$30,002.00'],
-      ['403(b) Contribution', '20.00%', '30.00%'],
-      ['Max Allowable Salary', '$20,003.00', '$30,003.00'],
-      ['Requested Salary', '$10,001.00', '$40,001.00'],
-      ['MHA', '$10,002.00', '$40,002.00'],
-      ['403(b) Contribution', '10.00%', '40.00%'],
-      ['Max Allowable Salary', '$10,003.00', '$40,003.00'],
-    ].flat();
+    await waitFor(() => {
+      const tables = getAllByRole('table');
+      expect(tables).toHaveLength(2);
 
-    await waitFor(() =>
-      expect(getAllByRole('cell').map((cell) => cell.textContent)).toEqual(
-        expectedCells,
-      ),
-    );
+      const [userTable, spouseTable] = tables;
+      expect(userTable).toHaveTableStructure({
+        cells: [
+          ['Requested Salary', '$20,001.00', '$30,001.00'],
+          ['MHA', '$20,002.00', '$30,002.00'],
+          ['403(b) Contribution', '20.00%', '30.00%'],
+          ['Max Allowable Salary', '$20,003.00', '$30,003.00'],
+        ],
+      });
+      expect(spouseTable).toHaveTableStructure({
+        cells: [
+          ['Requested Salary', '$10,001.00', '$40,001.00'],
+          ['MHA', '$10,002.00', '$40,002.00'],
+          ['403(b) Contribution', '10.00%', '40.00%'],
+          ['Max Allowable Salary', '$10,003.00', '$40,003.00'],
+        ],
+      });
+    });
   });
 
   describe('no approved calculation', () => {
-    it('should hide the Old column headers', async () => {
+    it('should hide the Old column headers and cells', async () => {
       const { getAllByRole } = render(
         <TestComponent hasApprovedCalculation={false} />,
       );
 
-      const expectedHeaders = [
-        ['John', 'New'],
-        ['Jane', 'New'],
-      ].flat();
+      await waitFor(() => {
+        const tables = getAllByRole('table');
+        expect(tables).toHaveLength(2);
 
-      await waitFor(() =>
-        expect(
-          getAllByRole('columnheader').map((cell) => cell.textContent),
-        ).toEqual(expectedHeaders),
-      );
-    });
-
-    it('should hide the Old column cells', async () => {
-      const { getAllByRole } = render(
-        <TestComponent hasApprovedCalculation={false} />,
-      );
-
-      const expectedCells = [
-        ['Requested Salary', '$30,001.00'],
-        ['MHA', '$30,002.00'],
-        ['403(b) Contribution', '30.00%'],
-        ['Max Allowable Salary', '$30,003.00'],
-        ['Requested Salary', '$40,001.00'],
-        ['MHA', '$40,002.00'],
-        ['403(b) Contribution', '40.00%'],
-        ['Max Allowable Salary', '$40,003.00'],
-      ].flat();
-
-      await waitFor(() =>
-        expect(getAllByRole('cell').map((cell) => cell.textContent)).toEqual(
-          expectedCells,
-        ),
-      );
+        const [userTable, spouseTable] = tables;
+        expect(userTable).toHaveTableStructure({
+          columnHeaders: ['John', 'New'],
+          cells: [
+            ['Requested Salary', '$30,001.00'],
+            ['MHA', '$30,002.00'],
+            ['403(b) Contribution', '30.00%'],
+            ['Max Allowable Salary', '$30,003.00'],
+          ],
+        });
+        expect(spouseTable).toHaveTableStructure({
+          columnHeaders: ['Jane', 'New'],
+          cells: [
+            ['Requested Salary', '$40,001.00'],
+            ['MHA', '$40,002.00'],
+            ['403(b) Contribution', '40.00%'],
+            ['Max Allowable Salary', '$40,003.00'],
+          ],
+        });
+      });
     });
   });
 
   describe('single', () => {
-    it('should render table headers', async () => {
-      const { getAllByRole } = render(<TestComponent hasSpouse={false} />);
+    it('should render table headers and cells', async () => {
+      const { getByRole } = render(<TestComponent hasSpouse={false} />);
 
       await waitFor(() =>
-        expect(
-          getAllByRole('columnheader').map((cell) => cell.textContent),
-        ).toEqual(['John', 'Old', 'New']),
-      );
-    });
-
-    it('should render table cells', async () => {
-      const { getAllByRole } = render(<TestComponent hasSpouse={false} />);
-
-      const expectedCells = [
-        ['Requested Salary', '$10,001.00', '$30,001.00'],
-        ['MHA', '$10,002.00', '$30,002.00'],
-        ['403(b) Contribution', '10.00%', '30.00%'],
-        ['Max Allowable Salary', '$10,003.00', '$30,003.00'],
-      ].flat();
-
-      await waitFor(() =>
-        expect(getAllByRole('cell').map((cell) => cell.textContent)).toEqual(
-          expectedCells,
-        ),
+        expect(getByRole('table')).toHaveTableStructure({
+          columnHeaders: ['John', 'Old', 'New'],
+          cells: [
+            ['Requested Salary', '$10,001.00', '$30,001.00'],
+            ['MHA', '$10,002.00', '$30,002.00'],
+            ['403(b) Contribution', '10.00%', '30.00%'],
+            ['Max Allowable Salary', '$10,003.00', '$30,003.00'],
+          ],
+        }),
       );
     });
   });

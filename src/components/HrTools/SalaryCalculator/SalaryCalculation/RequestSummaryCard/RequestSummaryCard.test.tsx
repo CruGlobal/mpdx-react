@@ -209,47 +209,27 @@ This may affect your selected effective date.',
   });
 
   describe('table', () => {
-    it('renders table headers', async () => {
-      const { getAllByRole } = render(<TestComponent />);
+    it('renders table headers, row headers, and cells', async () => {
+      const { getByRole } = render(<TestComponent />);
 
       await waitFor(() =>
-        expect(
-          getAllByRole('columnheader').map((cell) => cell.textContent),
-        ).toEqual(['Description', 'John', 'Jane']),
-      );
-    });
-
-    it('renders row headers', async () => {
-      const { getAllByRole } = render(<TestComponent />);
-
-      await waitFor(() =>
-        expect(
-          getAllByRole('rowheader').map((cell) => cell.textContent),
-        ).toEqual([
-          'Requested Salary (includes MHA)',
-          'SECA and Related Federal Taxes',
-          '403b Contribution',
-          'Gross Requested Salary',
-          'Maximum Allowable Salary',
-        ]),
-      );
-    });
-
-    it('renders table cells', async () => {
-      const { getAllByRole } = render(<TestComponent />);
-
-      const expectedCells = [
-        ['$10,001.00', '$20,001.00'],
-        ['$10,002.00', '$20,002.00'],
-        ['$10,003.00', '$20,003.00'],
-        ['$10,004.00', '$20,004.00'],
-        ['$10,005.00', '$20,005.00'],
-      ].flat();
-
-      await waitFor(() =>
-        expect(getAllByRole('cell').map((cell) => cell.textContent)).toEqual(
-          expectedCells,
-        ),
+        expect(getByRole('table')).toHaveTableStructure({
+          columnHeaders: ['Description', 'John', 'Jane'],
+          rowHeaders: [
+            'Requested Salary (includes MHA)',
+            'SECA and Related Federal Taxes',
+            '403b Contribution',
+            'Gross Requested Salary',
+            'Maximum Allowable Salary',
+          ],
+          cells: [
+            ['$10,001.00', '$20,001.00'],
+            ['$10,002.00', '$20,002.00'],
+            ['$10,003.00', '$20,003.00'],
+            ['$10,004.00', '$20,004.00'],
+            ['$10,005.00', '$20,005.00'],
+          ],
+        }),
       );
     });
 
@@ -272,7 +252,7 @@ This may affect your selected effective date.',
 
   describe('single user', () => {
     it('modifies labels and hides table cells', async () => {
-      const { getByTestId, getAllByRole } = render(
+      const { getByTestId, getByRole } = render(
         <TestComponent hasSpouse={false} />,
       );
 
@@ -289,28 +269,24 @@ This may affect your selected effective date.',
       );
 
       await waitFor(() =>
-        expect(
-          getAllByRole('columnheader').map((cell) => cell.textContent),
-        ).toEqual(['Description', 'John']),
+        expect(getByRole('table')).toHaveTableStructure({
+          columnHeaders: ['Description', 'John'],
+          rowHeaders: [
+            'Requested Salary (includes MHA)',
+            'SECA and Related Federal Taxes',
+            '403b Contribution',
+            'Gross Requested Salary',
+            'Maximum Allowable Salary',
+          ],
+          cells: [
+            '$10,001.00',
+            '$10,002.00',
+            '$10,003.00',
+            '$10,004.00',
+            '$10,005.00',
+          ],
+        }),
       );
-
-      expect(getAllByRole('rowheader').map((cell) => cell.textContent)).toEqual(
-        [
-          'Requested Salary (includes MHA)',
-          'SECA and Related Federal Taxes',
-          '403b Contribution',
-          'Gross Requested Salary',
-          'Maximum Allowable Salary',
-        ],
-      );
-
-      expect(getAllByRole('cell').map((cell) => cell.textContent)).toEqual([
-        '$10,001.00',
-        '$10,002.00',
-        '$10,003.00',
-        '$10,004.00',
-        '$10,005.00',
-      ]);
     });
 
     describe('requires above division head approval', () => {

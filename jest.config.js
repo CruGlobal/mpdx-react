@@ -35,7 +35,7 @@ const customJestConfig = {
   moduleDirectories: ['node_modules', '<rootDir>/'],
   collectCoverageFrom: [
     '{src,pages}/**/*.{js,jsx,ts,tsx}',
-    '__tests__/util/extensions/**/*.{js,jsx,ts,tsx}',
+    '__tests__/extensions/**/*.{js,jsx,ts,tsx}',
     'lighthouse/**/*.mjs',
     '!pages/api/**',
     '!**/*.generated.ts',
