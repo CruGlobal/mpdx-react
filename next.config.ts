@@ -187,6 +187,17 @@ const config: NextConfig = {
       permanent: true,
     },
   ],
+
+  headers: async () => [
+    {
+      // Apple fetches the AASA at the extensionless path and requires a
+      // direct 200 with an application/json content type. Next.js serves
+      // extensionless public/ files as application/octet-stream, so force
+      // the header here (and again in customHttp.yml for Amplify's CDN).
+      source: '/.well-known/apple-app-site-association',
+      headers: [{ key: 'Content-Type', value: 'application/json' }],
+    },
+  ],
 };
 
 module.exports = withSerwist(withOptimizedImages(withBundleAnalyzer(config)));

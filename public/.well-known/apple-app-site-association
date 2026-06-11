@@ -1,0 +1,22 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["DQ48D9BF2V.org.cru.mpdx"],
+        "components": [
+          {
+            "/": "/accountLists/*",
+            "comment": "All app screens incl. contacts, tasks, reports. The appID above is the legacy production appID inherited from the old native app and is a PLACEHOLDER until the Apple team ID and bundle ID are confirmed (phase3-4-master-plan.md open question Q5)."
+          },
+          {
+            "/": "/auth/native-callback",
+            "comment": "Exact-match OAuth return path (deep-links.md section 2.2, capacitor-shell.md section 4.4). iOS prefers the ASWebAuthenticationSession custom-scheme callback; this is the universal-link fallback. Other /auth/* and /api/* paths are deliberately excluded so iOS never hijacks the browser OAuth flow."
+          }
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": ["DQ48D9BF2V.org.cru.mpdx"]
+  }
+}
