@@ -15,7 +15,9 @@ export interface SupportNeedsRow {
   title: string;
   description?: string;
   amount: number;
-  bold?: boolean;
+  /** Bolds the amount cell. Defaults to false (amounts are normal weight). */
+  amountBold?: boolean;
+  /** Bolds the title cell. Defaults to true (titles are bold). */
   titleBold?: boolean;
 }
 
@@ -67,7 +69,7 @@ export const SupportNeedsTable: React.FC<SupportNeedsTableProps> = ({
                 <Typography
                   data-testid="amount-typography"
                   variant="body1"
-                  fontWeight={item.bold ? 'bold' : 'normal'}
+                  fontWeight={item.amountBold ? 'bold' : 'normal'}
                 >
                   {currencyFormat(item.amount, 'USD', locale)}
                 </Typography>

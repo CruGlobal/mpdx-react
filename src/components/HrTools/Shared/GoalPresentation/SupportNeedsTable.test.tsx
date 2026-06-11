@@ -11,7 +11,7 @@ const rows: SupportNeedsRow[] = [
   {
     title: 'Total Support Goal',
     amount: 8000,
-    bold: true,
+    amountBold: true,
   },
   {
     title: 'Administrative Charge',
@@ -49,7 +49,7 @@ describe('SupportNeedsTable', () => {
     expect(getAllByRole('row')[1].textContent).toBe('Total Support Goal$8,000');
   });
 
-  it('bolds amounts only for bold rows', () => {
+  it('bolds amounts only for amountBold rows', () => {
     const { getAllByTestId } = render(<SupportNeedsTable rows={rows} />);
 
     const amounts = getAllByTestId('amount-typography');
@@ -64,5 +64,19 @@ describe('SupportNeedsTable', () => {
     expect(getByText('Administrative Charge')).toHaveStyle({
       fontWeight: 'normal',
     });
+  });
+
+  it('renders no rows when rows is empty', () => {
+    const { queryAllByRole } = render(<SupportNeedsTable rows={[]} />);
+
+    expect(queryAllByRole('row')).toHaveLength(0);
+  });
+
+  it('formats zero amounts as currency', () => {
+    const { getByText } = render(
+      <SupportNeedsTable rows={[{ title: 'Special Needs', amount: 0 }]} />,
+    );
+
+    expect(getByText('$0')).toBeInTheDocument();
   });
 });

@@ -24,7 +24,7 @@ export const MonthlyNeedsCard: React.FC<MonthlyNeedsCardProps> = ({
       {
         title: t('Total Support Goal'),
         amount: totalSupportGoal,
-        bold: true,
+        amountBold: true,
       },
       ...(supportRaised === null
         ? []
