@@ -15,14 +15,10 @@ export const MonthlyNeedsCard: React.FC<MonthlyNeedsCardProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const needsRows = useMonthlyNeedsRows(monthlyNeeds);
+  const { rows: needsRows, total: totalSupportGoal } =
+    useMonthlyNeedsRows(monthlyNeeds);
 
   const rows: SupportNeedsRow[] = useMemo(() => {
-    const totalSupportGoal = needsRows.reduce(
-      (sum, row) => sum + row.amount,
-      0,
-    );
-
     return [
       ...needsRows,
       {
@@ -40,7 +36,7 @@ export const MonthlyNeedsCard: React.FC<MonthlyNeedsCardProps> = ({
             },
           ]),
     ];
-  }, [needsRows, supportRaised, t]);
+  }, [needsRows, totalSupportGoal, supportRaised, t]);
 
   return (
     <PresentationCard title={t('Monthly Support Needs')}>

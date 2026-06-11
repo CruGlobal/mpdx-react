@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Box, styled, useMediaQuery } from '@mui/material';
 import {
   Cell,
@@ -64,12 +64,7 @@ export const SupportNeedsChart: React.FC<SupportNeedsChartProps> = ({
   const locale = useLocale();
   const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
 
-  const rows = useMonthlyNeedsRows(monthlyNeeds);
-
-  const total = useMemo(
-    () => rows.reduce((sum, row) => sum + row.amount, 0),
-    [rows],
-  );
+  const { rows, total } = useMonthlyNeedsRows(monthlyNeeds);
 
   return (
     <ChartContainer height={500}>

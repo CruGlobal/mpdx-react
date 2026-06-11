@@ -12,8 +12,14 @@ export interface MonthlyNeeds {
   adminCharge: number;
 }
 
+export interface MonthlyNeedsRows {
+  rows: SupportNeedsRow[];
+  total: number;
+}
+
 /**
- * Build the monthly support needs rows shared by the goal presentation table and chart.
+ * Build the monthly support needs rows and their total shared by the goal
+ * presentation table and chart.
  */
 export const useMonthlyNeedsRows = ({
   married,
@@ -23,11 +29,11 @@ export const useMonthlyNeedsRows = ({
   socialSecurityAndTaxes,
   voluntaryRetirement,
   adminCharge,
-}: MonthlyNeeds): SupportNeedsRow[] => {
+}: MonthlyNeeds): MonthlyNeedsRows => {
   const { t } = useTranslation();
 
-  return useMemo(
-    () => [
+  return useMemo(() => {
+    const rows: SupportNeedsRow[] = [
       {
         title: married ? t('Salary (Combined)') : t('Salary'),
         description: t(
@@ -68,16 +74,19 @@ export const useMonthlyNeedsRows = ({
         amount: adminCharge,
         titleBold: false,
       },
-    ],
-    [
-      married,
-      salary,
-      ministryExpenses,
-      benefits,
-      socialSecurityAndTaxes,
-      voluntaryRetirement,
-      adminCharge,
-      t,
-    ],
-  );
+    ];
+
+    const total = rows.reduce((sum, row) => sum + row.amount, 0);
+
+    return { rows, total };
+  }, [
+    married,
+    salary,
+    ministryExpenses,
+    benefits,
+    socialSecurityAndTaxes,
+    voluntaryRetirement,
+    adminCharge,
+    t,
+  ]);
 };
