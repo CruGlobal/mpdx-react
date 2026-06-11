@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!--
+		Push Notifications capability (phase3-4-master-plan.md T26 push-build
+		wiring): without aps-environment, PushNotifications.register() fails
+		and T30 device QA dead-ends. "development" is correct for dev builds;
+		App Store / TestFlight export re-signs with aps-environment=production
+		automatically (release signing, T29 Fastlane lanes). Do NOT hand-edit
+		this to "production".
+	-->
+	<key>aps-environment</key>
+	<string>development</string>
+	<!--
+		Associated Domains — deep-links.md §2.2 / capacitor-shell.md.
+		applinks:mpdx.org   → universal links (AASA at
+		https://mpdx.org/.well-known/apple-app-site-association; note the
+		domain here must be the FINAL host after any apex<->www redirect —
+		release-checklist curl check in deep-links.md §2.3).
+		webcredentials:mpdx.org → password-autofill / passkey association.
+
+		Dev variant (documented, not enabled by default): add
+			applinks:next.stage.mpdx.org?mode=developer
+		for dev builds — ?mode=developer bypasses Apple's AASA CDN (~24h
+		cache) and is only honored on developer-signed builds, so it is safe
+		to leave in dev entitlements but is kept out of this committed file
+		until the stage host is confirmed (t1-gate-runbook.md §0 stage host
+		check; deep-links.md §2.2 cites stage.mpdx.org — reconcile with the
+		actual stage host before adding).
+	-->
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:mpdx.org</string>
+		<string>webcredentials:mpdx.org</string>
+	</array>
+</dict>
+</plist>

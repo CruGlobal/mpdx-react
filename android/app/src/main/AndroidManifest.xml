@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -8,7 +7,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation"
             android:name=".MainActivity"
@@ -16,12 +14,27 @@
             android:theme="@style/AppTheme.NoActionBarLaunch"
             android:launchMode="singleTask"
             android:exported="true">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <!--
+                Android App Links (deep-links.md §3): autoVerify against
+                https://mpdx.org/.well-known/assetlinks.json. Deliberately
+                scoped to /accountLists (not /) so marketing/auth URLs on
+                mpdx.org are NOT captured by the app — assetlinks.json may
+                stay handle_all_urls; this filter is what scopes capture.
+                Debug builds fail autoVerify (assetlinks lists only the Play
+                App Signing fingerprint) — use the adb set-app-links override,
+                t1-gate-runbook.md §5.
+            -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="mpdx.org" android:pathPrefix="/accountLists" />
+            </intent-filter>
         </activity>
 
         <provider
@@ -29,13 +42,26 @@
             android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths" />
         </provider>
     </application>
 
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!--
+        Legacy storage access for the photo picker on older devices
+        (camera-contact-photo.md §6, per @capacitor/camera docs).
+        API 33+ uses the permissionless system Photo Picker — no
+        READ_MEDIA_IMAGES needed.
+
+        Deliberately NO android.permission.CAMERA: the plugin captures via
+        the system camera intent; declaring CAMERA would force a runtime
+        grant before the intent fires (strictly worse UX). Release
+        checklist: audit the merged manifest
+        (./gradlew :app:processDebugManifest) in case another plugin adds it.
+    -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29" />
 </manifest>

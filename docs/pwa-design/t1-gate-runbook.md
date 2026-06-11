@@ -259,3 +259,75 @@ instead of the app. Two options during dev (deep-links.md §3, T19):
    `keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android`).
    Decision deferred to T19 — until then, prefer the `adb` override so the
    published assetlinks file stays production-only.
+
+---
+
+## 6. Appendix — T26 native platform config: placeholder inventory
+
+Everything T26 committed that is deliberately not production-final. Each item
+names the owning follow-up task; nothing here blocks local builds or gates.
+
+| #   | Placeholder                                                                                                       | Where                                                                                  | Replaced by / when                                                                                                                                                                                                                                                                                                                                                            |
+| --- | ----------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | **`android/app/google-services.json`** — fake Firebase config, `project_id: mpdx-placeholder-replace-via-t8`      | `android/app/google-services.json`                                                     | **Ops T8.** Real file must come from the **same Firebase project** as the SNS GCM/FCM platform-application credentials (SENDER_ID_MISMATCH trap, fcm-v1-backend.md), with `package_name` matching the final applicationId. Until swapped: Gradle config parses and `:app:processDebugGoogleServices` succeeds (verified), but Android FCM token registration fails at runtime. |
+| 2   | **`applicationId "org.mpdx"`**                                                                                      | `android/app/build.gradle`                                                              | Master-plan open question Q4 (reuse legacy Play listing vs new id). If it changes, update `google-services.json` `package_name` AND add a new `assetlinks.json` entry (deep-links.md §3) in the same commit.                                                                                                                                                                     |
+| 3   | **iOS bundle id `org.cru.mpdx`**                                                                                    | `ios/App/App.xcodeproj` (`PRODUCT_BUNDLE_IDENTIFIER`)                                   | Apple account info (capacitor-shell.md §13 Q3). The AASA `appID` prefix (Team ID `DQ48D9BF2V` cited in shell doc §11) must match whatever final Team ID + bundle id is registered.                                                                                                                                                                                               |
+| 4   | **`aps-environment` = `development`**                                                                               | `ios/App/App/App.entitlements`                                                          | Not hand-edited — App Store / TestFlight export re-signs to `production` automatically (T29 Fastlane lanes). Requires the Push Notifications capability enabled on the App ID in the Apple Developer portal (automatic signing handles this once the account exists) plus the APNs `.p8` key on the SNS side (T8).                                                              |
+| 5   | **Associated Domains dev variant** — `applinks:next.stage.mpdx.org?mode=developer` documented but NOT committed     | `ios/App/App/App.entitlements` (comment)                                                | Add for dev builds after the §0 stage-host check confirms the real stage host (deep-links.md §2.2 cites `stage.mpdx.org`; the shell config uses `next.stage.mpdx.org` — reconcile first). `?mode=developer` bypasses Apple's AASA CDN and is only honored on developer-signed builds.                                                                                            |
+| 6   | **No `android.permission.CAMERA`** (deliberate omission, not a placeholder)                                         | `android/app/src/main/AndroidManifest.xml`                                              | Permanent (camera-contact-photo.md §6) — but release checklist must audit the **merged** manifest (`./gradlew :app:processDebugManifest`) in case a future plugin injects it.                                                                                                                                                                                                    |
+| 7   | **App Links `autoVerify` scope `/accountLists`** on host `mpdx.org` only                                            | `android/app/src/main/AndroidManifest.xml`                                              | Permanent scope per deep-links.md §3. Debug builds still fail verification (Play-signing fingerprint only) — use the §5 `adb` override.                                                                                                                                                                                                                                          |
+
+Verification performed for T26: `plutil -lint` on `Info.plist` +
+`App.entitlements` (OK), manifest `xmllint` (OK), and
+`cd android && ./gradlew tasks --quiet` plus
+`./gradlew :app:processDebugGoogleServices` (BUILD SUCCESSFUL — the gated
+`com.google.gms.google-services` apply in `app/build.gradle` fires now that
+the JSON exists). Note: `gradlew` needs a JDK 17+; with no system JDK, point
+at Android Studio's bundled one:
+`JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"`.
+
+---
+
+## 7. Dogfooding — native polish decisions (T27)
+
+### 7.1 Pull-to-refresh / overscroll
+
+**Decision (default, binding unless overridden during dogfooding):** v1 ships
+with **NO custom pull-to-refresh**. iOS rubber-band overscroll and the Android
+overscroll glow stay at WKWebView/WebView defaults — SSR pages refresh via
+navigation, and a webview reload control adds complexity for little gain
+(master plan T27; capacitor-shell.md §9).
+
+- **Owner:** Daniel, during device dogfooding.
+- **Acceptance criterion:** the decision + rationale are recorded here (this
+  section) before T32 store submission. If the default is overridden, the
+  chosen mechanism (e.g. a `CSS overscroll-behavior` tweak or an explicit
+  reload gesture) gets its own follow-up task with device QA on both
+  platforms — it does not ride along inside T27/T32.
+- **What to watch for while dogfooding:** rubber-band artifacts that expose
+  the webview background behind fixed chrome, accidental page-refresh
+  gestures, and overscroll glow fighting with horizontally scrollable tables.
+  First remedy is CSS `overscroll-behavior`; native config second.
+
+### 7.2 Device QA checklist for the rest of the T27 polish
+
+Unit-testable parts are covered in-repo (`nativeChrome.test.ts`,
+`useHaptics.test.tsx`, `safeArea.test.ts`); the items below are device-only:
+
+- [ ] Cold launch on both platforms: native splash (blue `#05699B`, centered
+      logo) holds until the app paints — no white flash. `launchAutoHide:
+      false` + `hideSplashScreen()` after hydration.
+- [ ] Splash never sticks: kill app → relaunch with airplane mode ON — the
+      shell's `error.html` path must still hide the splash (or the OS
+      watchdog kills us). Verify the error screen is reachable.
+- [ ] Status bar: light text over the dark app-bar color on both platforms;
+      Android status bar background matches the app bar
+      (`theme.palette.mpdxGrayDark.main`), webview not under the status bar.
+- [ ] iOS safe areas: app bar content clears the notch/Dynamic Island in
+      portrait, no dead band in landscape (left/right insets), home-indicator
+      area looks right on list pages, modals, and snackbars.
+- [ ] Haptics (shell only, restraint check): completing a task fires a
+      success tap; confirming a destructive delete fires a warning tap;
+      nothing else in the app vibrates.
+- [ ] App icons: Android 13+ themed icon renders sanely
+      (adaptive foreground/background), iOS icon has no alpha halo.

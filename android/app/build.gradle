@@ -49,6 +49,16 @@ dependencies {
 
 apply from: 'capacitor.build.gradle'
 
+// Push build wiring (phase3-4-master-plan.md T26): the classpath for
+// com.google.gms:google-services lives in the root build.gradle; the apply
+// below is gated on google-services.json being present and non-empty.
+// The committed google-services.json is a PLACEHOLDER (project_id
+// "mpdx-placeholder-replace-via-t8", package_name matching the org.mpdx
+// applicationId placeholder above) so the Gradle config parses — FCM token
+// registration will NOT succeed until ops task T8 swaps in the real file,
+// which MUST come from the SAME Firebase project as the SNS platform-app
+// credentials (SENDER_ID_MISMATCH trap, fcm-v1-backend.md). See
+// docs/pwa-design/t1-gate-runbook.md §6 for the full placeholder inventory.
 try {
     def servicesJSON = file('google-services.json')
     if (servicesJSON.text) {
