@@ -278,6 +278,7 @@ Project-specific testing conventions added to the Testing agent's universal chec
 
 - **`GqlMockedProvider` is the only GraphQL mock pattern.** All component tests that hit GraphQL must wrap in `<GqlMockedProvider<{ OperationName: OperationNameQuery }> mocks={...}>` with typed generics so mock shapes are type-checked at compile time
 - **`mutationSpy` + `toHaveGraphqlOperation(...)` pattern** is preferred over brittle snapshot-based assertions for verifying mutations
+- **`toHaveTableStructure(...)` for full table contents** — when asserting more than a couple table cells, use `expect(getByRole('table')).toHaveTableStructure({ columnHeaders, rowHeaders, cells })` instead of ad-hoc `getByRole('cell')`
 - **`findBy*` for async assertions** — prefer `await findByText(...)` over `await waitFor(() => getByText(...))`
 - **No `fetch` mocking** — never mock `global.fetch` or `window.fetch`; use Apollo operation-level mocks
 - **No `any` in test types** — mock shapes use generated operation types (`ContactDetailsQuery`, etc.) from `.generated.ts` files
