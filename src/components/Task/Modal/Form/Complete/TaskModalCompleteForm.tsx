@@ -26,6 +26,7 @@ import {
   ResultEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
+import { useHaptics } from 'src/hooks/useHaptics';
 import { usePhaseData } from 'src/hooks/usePhaseData';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { dispatch } from 'src/lib/analytics';
@@ -92,6 +93,7 @@ const TaskModalCompleteForm = ({
   const { t } = useTranslation();
   const { openTaskModal } = useTaskModal();
   const { enqueueSnackbar } = useSnackbar();
+  const { triggerHaptic } = useHaptics();
   const activityType = task.activityType || null;
   const taskPhase = useMemo(() => getPhaseByActivityType(activityType), [task]);
   const { phaseData, setPhaseId, activityTypes, allPhaseTags } =
@@ -211,6 +213,8 @@ const TaskModalCompleteForm = ({
     update();
 
     dispatch('mpdx-task-completed');
+    // Fire-and-forget; no-op outside the native shell
+    triggerHaptic('success');
     enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
     if (updatingContactStatus) {
       enqueueSnackbar(t('Updated contact(s) status successfully'), {

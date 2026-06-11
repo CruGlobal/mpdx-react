@@ -11,6 +11,10 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useSetupContext } from 'src/components/Setup/SetupProvider';
+import {
+  topChromeSafeAreaOffset,
+  topChromeSafeAreaPadding,
+} from 'src/components/Shared/SafeArea/safeArea';
 import { LogoLink } from '../LogoLink/LogoLink';
 import AddMenu from './Items/AddMenu/AddMenu';
 import NavMenu from './Items/NavMenu/NavMenu';
@@ -25,6 +29,7 @@ interface TopBarProps {
 
 const Offset = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
+  ...topChromeSafeAreaOffset,
   '@media print': {
     display: 'none',
   },
@@ -32,6 +37,7 @@ const Offset = styled('div')(({ theme }) => ({
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   backgroundColor: theme.palette.mpdxGrayDark.main,
+  ...topChromeSafeAreaPadding,
 }));
 
 const TopBar = ({

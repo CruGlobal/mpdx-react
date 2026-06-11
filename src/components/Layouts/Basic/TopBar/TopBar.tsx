@@ -2,12 +2,14 @@ import React, { ReactElement, ReactNode } from 'react';
 import { AppBar, Grid, Theme, Toolbar, useScrollTrigger } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { makeStyles } from 'tss-react/mui';
+import {
+  topChromeSafeAreaOffset,
+  topChromeSafeAreaPadding,
+} from 'src/components/Shared/SafeArea/safeArea';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   appBar: {
-    paddingTop: `env(safe-area-inset-top)`,
-    paddingLeft: `env(safe-area-inset-left)`,
-    paddingRight: `env(safe-area-inset-right)`,
+    ...topChromeSafeAreaPadding,
     backgroundColor: theme.palette.mpdxBlue.main,
   },
   toolbar: {
@@ -18,7 +20,10 @@ const useStyles = makeStyles()((theme: Theme) => ({
   },
 }));
 
-const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
+const Offset = styled('div')(({ theme }) => ({
+  ...theme.mixins.toolbar,
+  ...topChromeSafeAreaOffset,
+}));
 
 interface Props {
   children?: ReactNode;

@@ -13,6 +13,7 @@ import {
   SubmitButton,
 } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
+import { useHaptics } from 'src/hooks/useHaptics';
 import { useDeleteTaskMutation } from '../../../Task/Modal/Form/TaskModal.generated';
 
 interface DeleteConfirmationProps {
@@ -40,6 +41,7 @@ export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
+  const { triggerHaptic } = useHaptics();
   const [deleteTask, { loading: deletingTask }] = useDeleteTaskMutation();
 
   const onDeleteTask = async (): Promise<void> => {
@@ -65,6 +67,16 @@ export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
       onClose && onClose();
       onClickConfirm && onClickConfirm();
       removeSelectedIds && removeSelectedIds([taskId]);
+    }
+  };
+
+  const handleConfirm = (): void => {
+    // Fire-and-forget; no-op outside the native shell
+    triggerHaptic('warning');
+    if (taskId) {
+      onDeleteTask();
+    } else {
+      onClickConfirm?.();
     }
   };
 
@@ -95,10 +107,7 @@ export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
         <CancelButton onClick={() => onClickDecline(false)}>
           {t('No')}
         </CancelButton>
-        <SubmitButton
-          type="button"
-          onClick={taskId ? onDeleteTask : onClickConfirm}
-        >
+        <SubmitButton type="button" onClick={handleConfirm}>
           {t('Yes')}
         </SubmitButton>
       </DialogActions>

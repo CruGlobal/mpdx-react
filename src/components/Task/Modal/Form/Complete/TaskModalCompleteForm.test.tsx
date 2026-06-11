@@ -14,6 +14,7 @@ import {
   NotificationTypeEnum,
   ResultEnum,
 } from 'src/graphql/types.generated';
+import { useHaptics } from 'src/hooks/useHaptics';
 import { dispatch } from 'src/lib/analytics';
 import theme from 'src/theme';
 import useTaskModal from '../../../../../hooks/useTaskModal';
@@ -23,19 +24,23 @@ import { taskModalTests } from '../TaskModalTests';
 import TaskModalCompleteForm from './TaskModalCompleteForm';
 
 jest.mock('../../../../../hooks/useTaskModal');
+jest.mock('src/hooks/useHaptics');
 
 const openTaskModal = jest.fn();
 const onClose = jest.fn();
 const onErrorMock = jest.fn();
 const mutationSpy = jest.fn();
+const triggerHaptic = jest.fn();
 
 beforeEach(() => {
   (useTaskModal as jest.Mock).mockReturnValue({
     openTaskModal,
     preloadTaskModal: jest.fn(),
   });
+  (useHaptics as jest.Mock).mockReturnValue({ triggerHaptic });
   onClose.mockClear();
   onErrorMock.mockClear();
+  triggerHaptic.mockClear();
 });
 
 jest.mock('src/lib/analytics');
@@ -318,6 +323,20 @@ describe('TaskModalCompleteForm', () => {
     await waitFor(() => expect(onClose).toHaveBeenCalled());
     expect(dispatch).toHaveBeenCalledWith('mpdx-task-completed');
     expect(openTaskModal).not.toHaveBeenCalled();
+  });
+
+  it('fires a success haptic when the task is completed', async () => {
+    const { getByText } = render(
+      <Components
+        taskOverrides={{
+          activityType: null,
+          completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
+        }}
+      />,
+    );
+    userEvent.click(getByText('Save'));
+    await waitFor(() => expect(onClose).toHaveBeenCalled());
+    expect(triggerHaptic).toHaveBeenCalledWith('success');
   });
 
   it('saves complex', async () => {

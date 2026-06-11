@@ -3,11 +3,20 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { useHaptics } from 'src/hooks/useHaptics';
 import theme from 'src/theme';
 import { DeleteConfirmation } from './DeleteConfirmation';
 
+jest.mock('src/hooks/useHaptics');
+
 const onClickConfirm = jest.fn();
 const onClickDecline = jest.fn();
+const triggerHaptic = jest.fn();
+
+beforeEach(() => {
+  (useHaptics as jest.Mock).mockReturnValue({ triggerHaptic });
+  triggerHaptic.mockClear();
+});
 
 const mockEnqueue = jest.fn();
 
@@ -79,5 +88,27 @@ describe('DeleteConfirmation', () => {
     await waitFor(() => expect(getByText('Yes')).toBeInTheDocument());
     userEvent.click(getByRole('button', { name: 'Yes' }));
     expect(onClickConfirm).toHaveBeenCalled();
+  });
+
+  it('fires a warning haptic when the destructive action is confirmed', async () => {
+    const { getByRole, findByRole } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider>
+          <DeleteConfirmation
+            open={true}
+            deleting={false}
+            deleteType={'person'}
+            onClickConfirm={onClickConfirm}
+            onClickDecline={onClickDecline}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+    userEvent.click(await findByRole('button', { name: 'Yes' }));
+    expect(triggerHaptic).toHaveBeenCalledWith('warning');
+
+    triggerHaptic.mockClear();
+    userEvent.click(getByRole('button', { name: 'No' }));
+    expect(triggerHaptic).not.toHaveBeenCalled();
   });
 });

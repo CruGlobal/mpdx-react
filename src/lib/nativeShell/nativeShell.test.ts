@@ -2,7 +2,11 @@ import {
   mockCapacitorCore,
   setNativePlatform,
 } from '__tests__/util/capacitorMocks';
-import { getDevicePlatform, isNativeShell } from './nativeShell';
+import {
+  getDevicePlatform,
+  isAndroidShell,
+  isNativeShell,
+} from './nativeShell';
 
 jest.mock('@capacitor/core', () => mockCapacitorCore);
 
@@ -16,6 +20,18 @@ describe('nativeShell', () => {
       setNativePlatform(platform);
 
       expect(isNativeShell()).toBe(expected);
+    });
+  });
+
+  describe('isAndroidShell', () => {
+    it.each([
+      ['ios', false],
+      ['android', true],
+      ['web', false],
+    ] as const)('returns %s -> %s', (platform, expected) => {
+      setNativePlatform(platform);
+
+      expect(isAndroidShell()).toBe(expected);
     });
   });
 

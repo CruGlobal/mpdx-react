@@ -13,6 +13,13 @@ import { Capacitor } from '@capacitor/core';
 export const isNativeShell = (): boolean => Capacitor.isNativePlatform();
 
 /**
+ * True only inside the Android shell. Used to gate Android-only plugin calls
+ * (e.g. `StatusBar.setBackgroundColor`) that reject on iOS.
+ */
+export const isAndroidShell = (): boolean =>
+  Capacitor.getPlatform() === 'android';
+
+/**
  * The SNS platform name for device registration against
  * `/api/v2/user/devices`: 'APNS' on iOS, 'GCM' on Android (Android FCM tokens
  * register under the SNS 'GCM' platform name — do not "fix" it), null on web.

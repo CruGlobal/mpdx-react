@@ -71,6 +71,40 @@ export const mockPushNotifications = {
   removeAllListeners: jest.fn(async () => undefined),
 };
 
+/**
+ * Mock for the `SplashScreen` plugin. Use with
+ * `jest.mock('@capacitor/splash-screen', () => ({ SplashScreen: mockSplashScreen }))`.
+ */
+export const mockSplashScreen = {
+  show: jest.fn(async () => undefined),
+  hide: jest.fn(async () => undefined),
+};
+
+/**
+ * Mock for the `StatusBar` plugin. Use with
+ * `jest.mock('@capacitor/status-bar', () => ({ StatusBar: mockStatusBar, Style: {...} }))`.
+ * Re-declare the `Style` enum inline in the factory (`requireActual` would
+ * load the real plugin, which imports `@capacitor/core` before these mocks
+ * initialize).
+ */
+export const mockStatusBar = {
+  setStyle: jest.fn(async () => undefined),
+  setBackgroundColor: jest.fn(async () => undefined),
+  setOverlaysWebView: jest.fn(async () => undefined),
+};
+
+/**
+ * Mock for the `Haptics` plugin. Use with
+ * `jest.mock('@capacitor/haptics', () => ({ Haptics: mockHaptics, NotificationType: {...} }))`.
+ * Re-declare the `NotificationType` enum inline in the factory (see
+ * `mockStatusBar` note above).
+ */
+export const mockHaptics = {
+  impact: jest.fn(async () => undefined),
+  notification: jest.fn(async () => undefined),
+  vibrate: jest.fn(async () => undefined),
+};
+
 const emitToListeners = async (
   eventName: string,
   event: unknown,
