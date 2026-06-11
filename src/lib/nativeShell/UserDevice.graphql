@@ -1,0 +1,14 @@
+mutation RegisterUserDevice($input: RegisterUserDeviceInput!) {
+  registerUserDevice(input: $input) {
+    id
+    platform
+    version
+    locale
+  }
+}
+
+mutation DestroyUserDevice($input: DestroyUserDeviceInput!) {
+  destroyUserDevice(input: $input) {
+    success
+  }
+}
