@@ -42,13 +42,13 @@ export const SupportNeedsTable: React.FC<SupportNeedsTableProps> = ({
             <TableRow
               key={item.title}
               sx={{
-                td: {
+                'td, th': {
                   borderBottom: index < array.length - 1 ? '1px solid' : 'none',
                   borderBottomColor: 'divider',
                 },
               }}
             >
-              <TableCell>
+              <TableCell component="th" scope="row">
                 <Typography
                   variant="body1"
                   fontWeight={item.titleBold === false ? 'normal' : 'bold'}

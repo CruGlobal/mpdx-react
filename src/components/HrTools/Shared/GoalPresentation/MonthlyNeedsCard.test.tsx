@@ -15,25 +15,35 @@ const monthlyNeeds: MonthlyNeeds = {
 
 describe('MonthlyNeedsCard', () => {
   it('renders the card title and all monthly needs rows', () => {
-    const { getByRole, getByText } = render(
+    const { getByRole } = render(
       <MonthlyNeedsCard monthlyNeeds={monthlyNeeds} supportRaised={1234} />,
     );
 
     expect(
       getByRole('heading', { name: 'Monthly Support Needs' }),
     ).toBeInTheDocument();
-    expect(getByText('Salary (Combined)')).toBeInTheDocument();
-    expect(getByText('$5,000')).toBeInTheDocument();
-    expect(getByText('Ministry Expenses')).toBeInTheDocument();
-    expect(getByText('$1,000')).toBeInTheDocument();
-    expect(getByText('Benefits')).toBeInTheDocument();
-    expect(getByText('$800')).toBeInTheDocument();
-    expect(getByText('Social Security and Taxes')).toBeInTheDocument();
-    expect(getByText('$600')).toBeInTheDocument();
-    expect(getByText('Voluntary 403b Retirement Plan')).toBeInTheDocument();
-    expect(getByText('$400')).toBeInTheDocument();
-    expect(getByText('Administrative Charge')).toBeInTheDocument();
-    expect(getByText('$200')).toBeInTheDocument();
+    expect(getByRole('table')).toHaveTableStructure({
+      rowHeaders: [
+        expect.stringContaining('Salary (Combined)'),
+        expect.stringContaining('Ministry Expenses'),
+        expect.stringContaining('Benefits'),
+        expect.stringContaining('Social Security and Taxes'),
+        expect.stringContaining('Voluntary 403b Retirement Plan'),
+        'Administrative Charge',
+        'Total Support Goal',
+        'Total Solid Support',
+      ],
+      cells: [
+        '$5,000',
+        '$1,000',
+        '$800',
+        '$600',
+        '$400',
+        '$200',
+        '$8,000',
+        '$1,234',
+      ],
+    });
   });
 
   it('renders the single salary title when not married', () => {

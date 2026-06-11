@@ -21,32 +21,17 @@ const rows: SupportNeedsRow[] = [
 ];
 
 describe('SupportNeedsTable', () => {
-  it('renders a row for each item with its title', () => {
-    const { getByText, getAllByRole } = render(
-      <SupportNeedsTable rows={rows} />,
-    );
+  it('renders a row header with the title and description and a currency-formatted amount for each row', () => {
+    const { getByRole } = render(<SupportNeedsTable rows={rows} />);
 
-    expect(getAllByRole('row')).toHaveLength(3);
-    expect(getByText('Salary')).toBeInTheDocument();
-    expect(getByText('Total Support Goal')).toBeInTheDocument();
-    expect(getByText('Administrative Charge')).toBeInTheDocument();
-  });
-
-  it('formats amounts as currency', () => {
-    const { getByText } = render(<SupportNeedsTable rows={rows} />);
-
-    expect(getByText('$5,000')).toBeInTheDocument();
-    expect(getByText('$8,000')).toBeInTheDocument();
-    expect(getByText('$200')).toBeInTheDocument();
-  });
-
-  it('renders the description only when provided', () => {
-    const { getByText, getAllByRole } = render(
-      <SupportNeedsTable rows={rows} />,
-    );
-
-    expect(getByText('Monthly salary description')).toBeInTheDocument();
-    expect(getAllByRole('row')[1].textContent).toBe('Total Support Goal$8,000');
+    expect(getByRole('table')).toHaveTableStructure({
+      rowHeaders: [
+        'SalaryMonthly salary description',
+        'Total Support Goal',
+        'Administrative Charge',
+      ],
+      cells: ['$5,000', '$8,000', '$200'],
+    });
   });
 
   it('bolds amounts only for amountBold rows', () => {
@@ -67,16 +52,22 @@ describe('SupportNeedsTable', () => {
   });
 
   it('renders no rows when rows is empty', () => {
-    const { queryAllByRole } = render(<SupportNeedsTable rows={[]} />);
+    const { getByRole } = render(<SupportNeedsTable rows={[]} />);
 
-    expect(queryAllByRole('row')).toHaveLength(0);
+    expect(getByRole('table')).toHaveTableStructure({
+      rowHeaders: [],
+      cells: [],
+    });
   });
 
   it('formats zero amounts as currency', () => {
-    const { getByText } = render(
+    const { getByRole } = render(
       <SupportNeedsTable rows={[{ title: 'Special Needs', amount: 0 }]} />,
     );
 
-    expect(getByText('$0')).toBeInTheDocument();
+    expect(getByRole('table')).toHaveTableStructure({
+      rowHeaders: ['Special Needs'],
+      cells: ['$0'],
+    });
   });
 });
