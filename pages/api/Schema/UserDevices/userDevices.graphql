@@ -1,0 +1,31 @@
+extend type Mutation {
+  registerUserDevice(input: RegisterUserDeviceInput!): UserDevice!
+  destroyUserDevice(input: DestroyUserDeviceInput!): UserDeviceDeletion!
+}
+
+enum UserDevicePlatformEnum {
+  APNS
+  GCM
+}
+
+input RegisterUserDeviceInput {
+  platform: UserDevicePlatformEnum!
+  token: String!
+  version: String!
+  locale: String!
+}
+
+input DestroyUserDeviceInput {
+  id: ID!
+}
+
+type UserDevice {
+  id: ID!
+  platform: String!
+  version: String!
+  locale: String!
+}
+
+type UserDeviceDeletion {
+  success: Boolean!
+}

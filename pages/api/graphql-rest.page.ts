@@ -10,6 +10,7 @@ import {
   ExportSortEnum,
   MergeContactsInput,
   MergePeopleBulkInput,
+  RegisterUserDeviceInput,
 } from 'src/graphql/types.generated';
 import schema from './Schema';
 import { getAccountListAnalytics } from './Schema/AccountListAnalytics/dataHandler';
@@ -81,6 +82,11 @@ import {
   UpdateComment,
   UpdateCommentResponse,
 } from './Schema/Tasks/Comments/UpdateComments/datahandler';
+import {
+  DestroyUserDevice,
+  RegisterUserDevice,
+  UserDeviceResponse,
+} from './Schema/UserDevices/datahandler';
 import {
   DonationReponseData,
   DonationReponseIncluded,
@@ -626,6 +632,33 @@ class MpdxRestApi extends RESTDataSource {
       },
     );
     return UpdateComment(data);
+  }
+
+  async registerUserDevice(attributes: RegisterUserDeviceInput) {
+    const { data }: { data: UserDeviceResponse } = await this.post(
+      'user/devices',
+      {
+        body: {
+          data: {
+            type: 'user_devices',
+            attributes: {
+              platform: attributes.platform,
+              token: attributes.token,
+              version: attributes.version,
+              locale: attributes.locale,
+            },
+          },
+        },
+      },
+    );
+    return RegisterUserDevice(data);
+  }
+
+  async destroyUserDevice(id: string) {
+    await this.delete(`user/devices/${id}`, {
+      body: { data: { type: 'user_devices' } },
+    });
+    return DestroyUserDevice();
   }
 
   async getDesginationDisplayNames(

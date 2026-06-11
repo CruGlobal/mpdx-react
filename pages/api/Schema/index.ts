@@ -28,6 +28,8 @@ import DeleteCommentTypeDefs from './Tasks/Comments/DeleteComments/deleteComment
 import { DeleteCommentResolvers } from './Tasks/Comments/DeleteComments/resolvers';
 import { UpdateCommentResolvers } from './Tasks/Comments/UpdateComments/resolvers';
 import UpdateCommentTypeDefs from './Tasks/Comments/UpdateComments/updateComments.graphql';
+import { UserDevicesResolvers } from './UserDevices/resolvers';
+import UserDevicesTypeDefs from './UserDevices/userDevices.graphql';
 import DesginationDisplayNamesTypeDefs from './donations/getDesignationDisplayNames.graphql';
 import { DesginationDisplayNamesResolvers } from './donations/resolvers';
 import AppointmentResultsTypeDefs from './reports/appointmentResults/appointmentResults.graphql';
@@ -126,6 +128,10 @@ const schema = buildSubgraphSchema([
   {
     typeDefs: FinancialAccountEntriesTypeDefs,
     resolvers: financialAccountEntriesResolvers,
+  },
+  {
+    typeDefs: UserDevicesTypeDefs,
+    resolvers: UserDevicesResolvers,
   },
   ...integrationSchema,
   ...organizationSchema,
