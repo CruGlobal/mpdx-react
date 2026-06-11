@@ -15,8 +15,7 @@ import {
   TermsOfUseLink,
 } from 'src/components/Shared/Links/Links';
 import { useNavPages } from 'src/hooks/useNavPages';
-import { clearApolloData } from 'src/lib/apollo/clearApolloData';
-import { clearDataDogUser } from 'src/lib/dataDog';
+import { logoutCleanup } from 'src/lib/auth/logoutCleanup';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import theme from '../../../../../../theme';
 import { useGetTopBarQuery } from '../../../TopBar/GetTopBar.generated';
@@ -198,8 +197,7 @@ export const ProfileMenuPanel: React.FC = () => {
             variant="outlined"
             color="secondary"
             onClick={async () => {
-              clearDataDogUser();
-              await clearApolloData(client);
+              await logoutCleanup(client);
               await signOut({ callbackUrl: 'signOut' });
             }}
           >

@@ -10,6 +10,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import { TestSetupProvider } from 'src/components/Setup/SetupProvider';
+import { logoutCleanup } from 'src/lib/auth/logoutCleanup';
 import theme from '../../../../../../theme';
 import {
   getTopBarMock,
@@ -18,6 +19,10 @@ import {
 import ProfileMenu from './ProfileMenu';
 
 const mockEnqueue = jest.fn();
+
+jest.mock('src/lib/auth/logoutCleanup', () => ({
+  logoutCleanup: jest.fn().mockResolvedValue(undefined),
+}));
 
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -207,6 +212,12 @@ describe('ProfileMenu', () => {
     userEvent.click(getByText(/sign out/i));
     await waitFor(() =>
       expect(signOut).toHaveBeenCalledWith({ callbackUrl: 'signOut' }),
+    );
+    // The full logout cleanup chain (push unregister + CacheStorage +
+    // DataDog + clearApolloData) runs before signOut navigates away
+    expect(logoutCleanup).toHaveBeenCalledTimes(1);
+    expect(jest.mocked(logoutCleanup).mock.invocationCallOrder[0]).toBeLessThan(
+      jest.mocked(signOut).mock.invocationCallOrder[0],
     );
   });
 

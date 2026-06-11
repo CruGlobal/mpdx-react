@@ -5,8 +5,7 @@ import ExitToAppRoundedIcon from '@mui/icons-material/ExitToAppRounded';
 import { Box, Typography } from '@mui/material';
 import { signOut } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
-import { clearApolloData } from 'src/lib/apollo/clearApolloData';
-import { clearDataDogUser } from 'src/lib/dataDog';
+import { logoutCleanup } from 'src/lib/auth/logoutCleanup';
 import { getAppName } from 'src/lib/getAppName';
 import { ensureSessionAndAccountList } from './api/utils/pagePropsHelpers';
 import { StatusPageWrapper } from './styledComponents/StatusPageWrapper';
@@ -18,14 +17,7 @@ const LogoutPage = ({}): ReactElement => {
 
   useEffect(() => {
     (async () => {
-      // Clear service-worker CacheStorage before signOut() navigates away,
-      // so the next user of a shared device cannot read this user's caches.
-      if (typeof caches !== 'undefined') {
-        const keys = await caches.keys();
-        await Promise.all(keys.map((key) => caches.delete(key)));
-      }
-      clearDataDogUser();
-      await clearApolloData(client);
+      await logoutCleanup(client);
       await signOut({ callbackUrl: 'signOut' });
     })();
   }, []);

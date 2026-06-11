@@ -6,9 +6,14 @@ import { signOut } from 'next-auth/react';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { TestSetupProvider } from 'src/components/Setup/SetupProvider';
+import { logoutCleanup } from 'src/lib/auth/logoutCleanup';
 import theme from '../../../../../../theme';
 import { getTopBarMock } from '../../../TopBar/TopBar.mock';
 import { ProfileMenuPanel } from './ProfileMenuPanel';
+
+jest.mock('src/lib/auth/logoutCleanup', () => ({
+  logoutCleanup: jest.fn().mockResolvedValue(undefined),
+}));
 
 const router = {
   isReady: false,
@@ -87,6 +92,12 @@ describe('ProfileMenuPanelForNavBar', () => {
     userEvent.click(getByRole('button', { name: 'Sign Out' }));
     await waitFor(() =>
       expect(signOut).toHaveBeenCalledWith({ callbackUrl: 'signOut' }),
+    );
+    // The full logout cleanup chain (push unregister + CacheStorage +
+    // DataDog + clearApolloData) runs before signOut navigates away
+    expect(logoutCleanup).toHaveBeenCalledTimes(1);
+    expect(jest.mocked(logoutCleanup).mock.invocationCallOrder[0]).toBeLessThan(
+      jest.mocked(signOut).mock.invocationCallOrder[0],
     );
   });
 

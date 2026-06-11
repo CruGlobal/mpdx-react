@@ -6,7 +6,7 @@ import {
   GetDefaultAccountDocument,
   GetDefaultAccountQuery,
 } from 'pages/api/getDefaultAccount.generated';
-import { clearDataDogUser } from 'src/lib/dataDog';
+import { logoutCleanup } from 'src/lib/auth/logoutCleanup';
 import snackNotifications from '../../components/Snackbar/Snackbar';
 import { dispatch } from '../analytics';
 import {
@@ -14,7 +14,6 @@ import {
   replaceUrlAccountList,
 } from './accountListRedirect';
 import { cache, cachePersistor } from './cachePersistor';
-import { clearApolloData } from './clearApolloData';
 import { batchLink, makeAuthLink } from './link';
 import { isOffline, offlineLink } from './offlineLink';
 
@@ -38,8 +37,10 @@ const makeClient = (apiToken: string) => {
         graphQLErrors?.forEach((graphQLError) => {
           if (graphQLError?.extensions?.code === 'AUTHENTICATION_ERROR') {
             signOut({ redirect: true, callbackUrl: 'signOut' }).then(() => {
-              clearDataDogUser();
-              clearApolloData(client);
+              // The token is already dead here, so the DestroyUserDevice
+              // DELETE inside logoutCleanup will 401 — it swallows that, but
+              // still unregisters the push plugin and clears local state.
+              logoutCleanup(client);
             });
           }
           if (isAccountListNotFoundError(graphQLError)) {

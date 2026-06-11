@@ -30,8 +30,7 @@ import {
 } from 'src/components/Shared/Links/Links';
 import { AccountList } from 'src/graphql/types.generated';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
-import { clearApolloData } from 'src/lib/apollo/clearApolloData';
-import { clearDataDogUser } from 'src/lib/dataDog';
+import { logoutCleanup } from 'src/lib/auth/logoutCleanup';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import theme from '../../../../../../theme';
 import { useGetTopBarQuery } from '../../GetTopBar.generated';
@@ -409,8 +408,7 @@ const ProfileMenu = (): ReactElement => {
               variant="outlined"
               color="inherit"
               onClick={async () => {
-                clearDataDogUser();
-                await clearApolloData(client);
+                await logoutCleanup(client);
                 await signOut({ callbackUrl: 'signOut' });
               }}
             >
