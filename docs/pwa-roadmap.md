@@ -98,40 +98,58 @@ strategies, offline detail data beyond what the user has already visited,
 background cache refresh. Revisit only if real usage shows the cache is too
 empty to be useful.
 
-## Phase 3 — Push notifications (native only)
+## Phase 3 — Push notifications (native only) — ✅ CODE-COMPLETE (2026-06-11)
+
+Designed, implemented (TDD), and multi-agent-reviewed on branches
+`pwa-phase3-4-push-shell` (this repo) and `pwa-push-fcm-v1` (mpdx_api).
+Design docs + ordered task list live in `docs/pwa-design/` (master plan +
+five area docs); deferred review suggestions in
+`docs/pwa-design/review-follow-ups.md`. Remaining items below are gated on
+accounts/credentials only Daniel can provide, or on physical-device QA.
 
 ### Backend (mpdx_api)
 
 - [x] **Code-level verification done (2026-06-10):** pipeline is well-built and maintained (specs pass-shaped, idempotent registration, stale-device cleanup on `EndpointDisabled`). **Confirmed: `publish_service.rb` `gcm_payload` uses the legacy GCM format** (`{ data: ... }`) — incompatible with FCM v1. APNs payload format is valid. ARNs come from `SNS_APNS_APPLICATION_ARN` / `SNS_GCM_APPLICATION_ARN` env vars.
-- [ ] **AWS-console verification still needed:** GCM platform app credential type (legacy server key = dead; FCM v1 service-account JSON = needs payload change either way), APNs cert/key validity + bundle ID, ARNs active. Env values live in the deploy config (cru-deploy / ECS task defs), not this repo.
-- [ ] Migrate `gcm_payload` in `publish_service.rb` to FCM v1 message format (`message: { notification, data }`) + SNS platform app to FCM v1 credentials
-- [ ] Confirm APNs platform app uses a current `.p8` token-based key and the bundle ID of the new shell app
-- [ ] Wire the existing `NotificationPreference` `app` channel to gate push sends per notification type
-- [ ] Add deep-link data to notification payloads (route to open on tap)
+- [ ] **AWS-console verification still needed (Daniel):** GCM platform app credential type (legacy server key = dead; FCM v1 service-account JSON = needs payload change either way), APNs cert/key validity + bundle ID, ARNs active. Env values live in the deploy config (cru-deploy / ECS task defs), not this repo. Runbook: `docs/pwa-design/fcm-v1-backend.md` §5.
+- [x] Migrate `gcm_payload` in `publish_service.rb` to FCM v1 message format — code done (SNS `fcmV1Message` envelope, string-coerced `message.data`, wire format verified against the Capacitor plugin source). SNS platform-app credential swap is the ops runbook above.
+- [ ] Confirm APNs platform app uses a current `.p8` token-based key and the bundle ID of the new shell app (Daniel)
+- [x] Wire the existing `NotificationPreference` `app` channel to gate push sends — was already wired; regression specs added
+- [x] Add deep-link data to notification payloads — `DeepLinkBuilder` maps all 22 notification types to web paths, carried as `deepLink` in FCM `message.data` and APNs custom keys
 
 ### Frontend / shell
 
-- [ ] `@capacitor/push-notifications` plugin → obtain native FCM/APNs tokens → register via existing `/api/v2/user/devices`; unregister on logout
-- [ ] Permission UX: in-context prompt (from notification settings), never on first launch
-- [ ] Notification tap → deep link to the right screen
-- [ ] Surface push toggles in the existing notification-preferences settings UI (`src/components/Settings/notifications/`)
-- [ ] Handle FCM token rotation (re-register on token refresh events)
+- [x] `@capacitor/push-notifications` → native tokens → registered via new REST-proxy `UserDevices` schema; unregister on logout via the consolidated `logoutCleanup()` chain
+- [x] Permission UX: in-context prompt from the notification-settings card (the app's only `requestPermissions` call site, invariant-tested); recovers from denied via visibilitychange re-check
+- [x] Notification tap → deep link (`NativeDeepLinkProvider`, sanitized same-origin paths, cold/warm start)
+- [x] Push toggles in settings (`PushNotificationsCard` + "Mobile App" column relabel; final copy pending Daniel)
+- [x] FCM token rotation (registration-listener path re-registers; session-scoped idempotent skip)
 
-## Phase 4 — Capacitor shell
+## Phase 4 — Capacitor shell — ✅ CODE-COMPLETE except auth gates + store ops (2026-06-11)
 
-- [ ] Set up Capacitor project; evaluate `server.url` mode (webview points at hosted app — likely, given SSR) vs. bundled static build; decide repo location
-- [ ] **Prototype auth first** — NextAuth OAuth redirects inside a webview are fragile and Okta/Google may block embedded webviews; likely system-browser flow (Custom Tabs / `ASWebAuthenticationSession`) + universal link / custom scheme back into the app
-- [ ] Deep links: wire universal links / app links using the existing `.well-known` files
-- [ ] **Contact photo capture/upload** (Apple 4.2 anchor feature):
-  - [ ] `@capacitor/camera` plugin — take photo or pick from library
-  - [ ] Bridge from the contact detail page: detect shell context (Capacitor), offer camera/library options; browsers keep the existing file-upload path
-  - [ ] Wire captured image into the existing contact avatar upload endpoint (resize/compress client-side first)
-  - [ ] Handle camera/photo permissions and denial states (online-only feature this release — no offline upload queue)
-- [ ] Native polish: splash screen, status bar styling, safe-area insets, haptics on key actions, pull-to-refresh behavior in webview
-- [ ] App icons/splash assets for both stores
-- [ ] CI: Fastlane (or similar) build + signing pipelines for iOS/Android
-- [ ] Store accounts, listings, privacy declarations (Apple privacy labels, Google data safety), review submission
-- [ ] Shell version handshake: since the web app updates server-side, define a minimum-supported-shell-version check + upgrade prompt
+- [x] Capacitor 7 project set up in-repo; **`server.url` mode chosen** (3-proposal judge panel, unanimous) with empty `allowNavigation` + iOS `WKAppBoundDomains`; architecture in `docs/pwa-design/capacitor-shell.md`
+- [ ] **Prototype auth — gates pending (Daniel, on device):** system-browser PKCE → NextAuth `CredentialsProvider` design is locked; the three go/no-go gates (bridge injection, cookie round-trip, cookie persistence) are scripted in `docs/pwa-design/t1-gate-runbook.md`. Production auth tasks (T20/T21) deliberately wait on these gates. ⚠️ Verify the stage host first — `next.stage.mpdx.org` in `capacitor.config.ts` is an unconfirmed placeholder.
+- [x] Deep links: AASA recreated extensionless with forced `application/json` (placeholder `DQ48D9BF2V.org.cru.mpdx` pending identity decisions); assetlinks dev-override documented; Android `autoVerify` intent filter scoped to `/accountLists`
+- [x] **Contact photo capture/upload** (Apple 4.2 anchor): `useNativeCamera` hook (Base64, permissions, cancel/denial states) → existing `setAvatar(file)` pipeline; web path regression-tested byte-for-byte unchanged; compress ladder caps at 1MB; online-only with offline gating
+- [x] Native polish: splash (generated assets + programmatic hide), status bar, safe-area wrappers on both top bars, haptics on task-complete/delete-confirm; pull-to-refresh decision deferred to dogfooding (runbook §7)
+- [x] App icons/splash assets generated for both stores (`assets/logo.png` source; regenerate command documented)
+- [ ] CI: Fastlane build + signing pipelines (T29 — blocked on Apple/Google accounts, Daniel)
+- [ ] Store accounts, listings, privacy declarations, review submission (T32 — Daniel; Apple 4.2 receipts checklist in capacitor-shell.md §11)
+- [x] Shell version handshake: `MPDXShell/x.y.z` UA token + `MIN_SUPPORTED_SHELL_VERSION` gate + blocking upgrade screen (signout never blocked)
+
+**Review outcomes (2026-06-11):** 7-dimension adversarial review confirmed 23
+findings; all fixed. Headline: `removeAllListeners()` was wiping the deep-link
+tap listener (a contradiction *between* two design docs — caught only by
+cross-module review); signout paths now all run the canonical `logoutCleanup()`
+to completion before navigation; push registration is user-/session-scoped and
+race-hardened; Android backups disabled (webview cookie store carries the
+session). Deferred suggestions + refuted findings: `docs/pwa-design/review-follow-ups.md`.
+
+**Blocked-on-Daniel checklist (the only path to shipping):** stage-host
+confirmation → run the 3 auth gates (t1-gate-runbook.md) → SNS/Firebase/APNs
+credentials (fcm-v1-backend.md §5) → Okta native PKCE client →
+Android/Apple identity decisions (org.mpdx / team DQ48D9BF2V reuse) → then
+T20/T21 (production native auth), T29 (CI signing), T30 (device push QA),
+T32 (store submission).
 
 ## Future release (explicitly out of scope now)
 
