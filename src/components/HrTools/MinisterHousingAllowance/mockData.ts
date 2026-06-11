@@ -8,7 +8,6 @@ export const mockMHARequest: MHARequest = {
   status: MhaStatusEnum.Pending,
   feedback: null,
   requestAttributes: {
-    approvedOverallAmount: 15000,
     submittedAt: '2019-10-01T15:30:45.123Z',
     deadlineDate: '2019-10-23T15:30:45.123Z',
     boardApprovedAt: '2019-10-30T15:30:45.123Z',
@@ -27,8 +26,6 @@ export const mockMHARequest: MHARequest = {
     emailAddress: null,
     iUnderstandMhaPolicy: true,
     hrApprovedAt: '2019-11-01T15:30:45.123Z',
-    spouseSpecific: null,
-    staffSpecific: 15000,
     changesRequestedAt: null,
   },
 };
