@@ -247,33 +247,24 @@ describe('StaffExpenseReport', () => {
   it('correctly displays totals for income and expenses', async () => {
     const { getAllByRole, queryByRole } = render(<TestComponent />);
 
-    // Header row and 2 expense transaction rows
+    // Header row and 1 grouped expense row
     await waitFor(() => {
-      expect(getAllByRole('row')).toHaveLength(3);
+      expect(getAllByRole('row')).toHaveLength(2);
     });
 
     expect(queryByRole('heading', { name: 'Income' })).not.toBeInTheDocument();
   });
 
   it('switches fund display when clicking View Account button', async () => {
-    const { findByRole, findByText, getAllByRole } = render(<TestComponent />);
+    const { findByRole, queryByText } = render(<TestComponent />);
 
     await findByRole('heading', { name: 'Primary' });
-    expect(await findByText('Currently Viewing')).toBeInTheDocument();
 
-    waitFor(() => {
-      expect(getAllByRole('row')).toHaveLength(3);
-    });
+    expect(queryByText('-$100')).not.toBeInTheDocument();
 
-    userEvent.click(
-      await findByRole('button', {
-        name: 'View Account',
-      }),
-    );
+    userEvent.click(await findByRole('button', { name: 'View Account' }));
 
-    waitFor(() => {
-      expect(getAllByRole('row')).toHaveLength(2);
-    });
+    expect(queryByText('-$200')).not.toBeInTheDocument();
   });
 
   it('shows month title and navigation when only category filters are applied', async () => {

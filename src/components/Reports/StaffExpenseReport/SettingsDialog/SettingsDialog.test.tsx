@@ -93,10 +93,17 @@ const TestComponent: React.FC<
   </TestRouter>
 );
 
+const baseFilters: Filters = {
+  selectedDateRange: null,
+  startDate: null,
+  endDate: null,
+  categories: [],
+};
+
 describe('SettingsDialog', () => {
   const defaultProps = {
     isOpen: true,
-    onClose: jest.fn(),
+    onClose: mutationSpy,
     selectedFundType: 'Primary',
   };
 
@@ -152,9 +159,8 @@ describe('SettingsDialog', () => {
 
   it('should populate form with selectedFilters when provided', async () => {
     const selectedFilters: Filters = {
+      ...baseFilters,
       selectedDateRange: DateRange.MonthToDate,
-      startDate: null,
-      endDate: null,
       categories: [
         StaffExpenseCategoryEnum.Benefits,
         StaffExpenseCategoryEnum.Salary,
@@ -181,10 +187,9 @@ describe('SettingsDialog', () => {
 
   it('should preserve custom dates when no selectedDateRange is set', () => {
     const selectedFilters: Filters = {
-      selectedDateRange: null,
+      ...baseFilters,
       startDate: DateTime.fromISO('2025-01-01'),
       endDate: DateTime.fromISO('2025-01-31'),
-      categories: [],
     };
 
     const { getByLabelText } = render(
@@ -248,6 +253,16 @@ describe('SettingsDialog', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('checks all available categories by default when no selection exists', async () => {
+    const { findByLabelText, getByLabelText } = render(
+      <TestComponent {...defaultProps} />,
+    );
+
+    expect(await findByLabelText('Benefits')).toBeChecked();
+    expect(getByLabelText('Salary')).toBeChecked();
+    expect(getByLabelText('Donation')).toBeChecked();
+  });
+
   it('should toggle category selection', async () => {
     const { getByLabelText, findByLabelText } = render(
       <TestComponent {...defaultProps} />,
@@ -256,49 +271,80 @@ describe('SettingsDialog', () => {
     expect(await findByLabelText('Benefits')).toBeInTheDocument();
 
     const benefitsCheckbox = getByLabelText('Benefits');
-    const salaryCheckbox = getByLabelText('Salary');
-
-    expect(benefitsCheckbox).not.toBeChecked();
-    expect(salaryCheckbox).not.toBeChecked();
-
-    userEvent.click(benefitsCheckbox);
-    userEvent.click(salaryCheckbox);
-
     expect(benefitsCheckbox).toBeChecked();
-    expect(salaryCheckbox).toBeChecked();
-
     userEvent.click(benefitsCheckbox);
     expect(benefitsCheckbox).not.toBeChecked();
   });
 
-  it('should call onClose with form values when Apply Filters is clicked', async () => {
-    const onClose = jest.fn();
-
+  it('should call onClose with the remaining categories when one is deselected', async () => {
     const { findByLabelText, getByLabelText, getByRole } = render(
-      <TestComponent {...defaultProps} onClose={onClose} />,
+      <TestComponent {...defaultProps} />,
     );
 
-    expect(await findByLabelText('Benefits')).toBeInTheDocument();
+    expect(await findByLabelText('Benefits')).toBeChecked();
 
     userEvent.click(getByLabelText('Benefits'));
 
     userEvent.click(getByRole('button', { name: 'Apply Filters' }));
 
     await waitFor(() => {
-      expect(onClose).toHaveBeenCalledWith({
-        selectedDateRange: null,
-        startDate: null,
-        endDate: null,
-        categories: [StaffExpenseCategoryEnum.Benefits],
+      expect(mutationSpy).toHaveBeenCalledWith({
+        ...baseFilters,
+        categories: [
+          StaffExpenseCategoryEnum.Donation,
+          StaffExpenseCategoryEnum.Salary,
+        ],
       });
     });
   });
 
-  it('should calculate dates for predefined ranges on submission', async () => {
-    const onClose = jest.fn();
+  it('should submit an empty categories array when all are deselected', async () => {
+    const { findByLabelText, getByLabelText, getByRole } = render(
+      <TestComponent {...defaultProps} />,
+    );
 
+    expect(await findByLabelText('Benefits')).toBeChecked();
+
+    userEvent.click(getByLabelText('Benefits'));
+    userEvent.click(getByLabelText('Donation'));
+    userEvent.click(getByLabelText('Salary'));
+
+    userEvent.click(getByRole('button', { name: 'Apply Filters' }));
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveBeenCalledWith({
+        ...baseFilters,
+        categories: [],
+      });
+    });
+  });
+
+  it('should preserve default when only the date range changes', async () => {
+    const { findByLabelText, getByLabelText, getByRole } = render(
+      <TestComponent {...defaultProps} />,
+    );
+
+    expect(await findByLabelText('Benefits')).toBeChecked();
+
+    const dropdown = getByLabelText('Select Date Range');
+    userEvent.click(dropdown);
+    userEvent.click(getByRole('option', { name: 'Month to Date' }));
+
+    userEvent.click(getByRole('button', { name: 'Apply Filters' }));
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          selectedDateRange: DateRange.MonthToDate,
+          categories: null,
+        }),
+      );
+    });
+  });
+
+  it('should calculate dates for predefined ranges on submission', async () => {
     const { getByLabelText, getByRole } = render(
-      <TestComponent {...defaultProps} onClose={onClose} />,
+      <TestComponent {...defaultProps} />,
     );
 
     // Select predefined range
@@ -309,7 +355,7 @@ describe('SettingsDialog', () => {
     userEvent.click(getByRole('button', { name: 'Apply Filters' }));
 
     await waitFor(() => {
-      expect(onClose).toHaveBeenCalledWith(
+      expect(mutationSpy).toHaveBeenCalledWith(
         expect.objectContaining({
           selectedDateRange: DateRange.MonthToDate,
           startDate: expect.any(Object),
@@ -320,20 +366,14 @@ describe('SettingsDialog', () => {
   });
 
   it('should call onClose with original filters when Cancel is clicked', async () => {
-    const onClose = jest.fn();
     const originalFilters: Filters = {
+      ...baseFilters,
       selectedDateRange: DateRange.WeekToDate,
-      startDate: null,
-      endDate: null,
       categories: [StaffExpenseCategoryEnum.Salary],
     };
 
     const { findByLabelText, getByRole, getByLabelText } = render(
-      <TestComponent
-        {...defaultProps}
-        onClose={onClose}
-        selectedFilters={originalFilters}
-      />,
+      <TestComponent {...defaultProps} selectedFilters={originalFilters} />,
     );
 
     expect(await findByLabelText('Benefits')).toBeInTheDocument();
@@ -341,24 +381,7 @@ describe('SettingsDialog', () => {
     userEvent.click(getByLabelText('Benefits'));
     userEvent.click(getByRole('button', { name: 'Cancel' }));
 
-    expect(onClose).toHaveBeenCalledWith(originalFilters);
-  });
-
-  it('should reset form when Cancel is clicked', async () => {
-    const onClose = jest.fn();
-
-    const { findByLabelText, getByLabelText, getByRole } = render(
-      <TestComponent {...defaultProps} onClose={onClose} />,
-    );
-
-    expect(await findByLabelText('Benefits')).toBeInTheDocument();
-
-    userEvent.click(getByLabelText('Benefits'));
-    expect(getByLabelText('Benefits')).toBeChecked();
-
-    userEvent.click(getByRole('button', { name: 'Cancel' }));
-
-    expect(onClose).toHaveBeenCalled();
+    expect(mutationSpy).toHaveBeenCalledWith(originalFilters);
   });
 
   it('should disable Apply Filters button when form is not dirty and enable when dirty', async () => {
@@ -379,47 +402,36 @@ describe('SettingsDialog', () => {
   });
 
   it('should call onClose with original filters when dialog backdrop is clicked', () => {
-    const onClose = jest.fn();
-    const originalFilters: Filters = {
-      selectedDateRange: null,
-      startDate: null,
-      endDate: null,
-      categories: [],
-    };
-
     const { getByRole } = render(
       <TestComponent
         {...defaultProps}
-        onClose={onClose}
-        selectedFilters={originalFilters}
+        onClose={mutationSpy}
+        selectedFilters={baseFilters}
       />,
     );
     const dialog = getByRole('dialog');
     userEvent.click(dialog.parentElement!);
 
-    expect(onClose).toHaveBeenCalledWith(originalFilters);
+    expect(mutationSpy).toHaveBeenCalledWith(baseFilters);
   });
 
-  it('should handle undefined selectedFilters and undefined categories', async () => {
+  it('checks all categories when selectedFilters or its categories are null', async () => {
     const { findByLabelText, rerender } = render(
       <TestComponent {...defaultProps} selectedFilters={undefined} />,
     );
 
-    expect(await findByLabelText('Benefits')).not.toBeChecked();
+    expect(await findByLabelText('Benefits')).toBeChecked();
 
-    // Also test with defined filters but undefined categories
     const selectedFilters: Filters = {
-      selectedDateRange: null,
-      startDate: null,
-      endDate: null,
-      categories: undefined,
+      ...baseFilters,
+      categories: null,
     };
 
     rerender(
       <TestComponent {...defaultProps} selectedFilters={selectedFilters} />,
     );
 
-    expect(await findByLabelText('Benefits')).not.toBeChecked();
+    expect(await findByLabelText('Benefits')).toBeChecked();
   });
 
   it('should query using the time prop month when no date filter is set', async () => {

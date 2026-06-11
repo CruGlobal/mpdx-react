@@ -40,7 +40,11 @@ export interface Filters {
   selectedDateRange: DateRange | null;
   startDate?: DateTime | null;
   endDate?: DateTime | null;
-  categories?: string[];
+  /**
+   * `null` means no explicit selection: every available category is shown as
+   * checked and the report aggregates all of them.
+   */
+  categories: string[] | null;
 }
 
 const validationSchema = yup.object({
@@ -75,7 +79,7 @@ const validationSchema = yup.object({
         return startDate <= value;
       },
     ),
-  categories: yup.array().of(yup.string()),
+  categories: yup.array().of(yup.string()).nullable(),
 });
 
 const calculateDateRange = (
@@ -174,7 +178,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
     }, 0);
   };
 
-  const initialValues = {
+  const initialValues: Filters = {
     selectedDateRange: selectedFilters?.selectedDateRange ?? null,
     startDate:
       selectedFilters?.selectedDateRange === null
@@ -184,7 +188,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
       selectedFilters?.selectedDateRange === null
         ? selectedFilters?.endDate
         : null,
-    categories: selectedFilters?.categories ?? [],
+    categories: selectedFilters?.categories ?? null,
   };
 
   const handleSubmit = (values: Filters) => {
@@ -213,6 +217,16 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
           validateForm,
           setTouched,
         }) => {
+          const handleCategoryToggle = (category: string, checked: boolean) => {
+            const selectedCategories = values.categories ?? availableCategories;
+            const newCategories = checked
+              ? [...selectedCategories, category]
+              : selectedCategories.filter(
+                  (selectedCategory) => selectedCategory !== category,
+                );
+            setFieldValue('categories', newCategories);
+          };
+
           return (
             <Form>
               <DialogContent>
@@ -310,8 +324,8 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
 
                 <Typography sx={{ mt: 2, whiteSpace: 'pre-line' }}>
                   {t(
-                    `You can combine certain categories of data into single rows. This may be useful for long date ranges (e.g., "Year to Date").
-                    Select which categories to consolidate. Each category remains separate.`,
+                    `Income and expenses are combined by categories by default. This may be useful for long date ranges (e.g., "Year to Date").
+                    Select which categories to keep consolidated.`,
                   )}
                 </Typography>
 
@@ -347,15 +361,13 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                           key={category}
                           control={
                             <Checkbox
-                              checked={values.categories.includes(category)}
-                              onChange={(e) => {
-                                const newCategories = e.target.checked
-                                  ? [...values.categories, category]
-                                  : values.categories.filter(
-                                      (c) => c !== category,
-                                    );
-                                setFieldValue('categories', newCategories);
-                              }}
+                              checked={
+                                !values.categories ||
+                                values.categories.includes(category)
+                              }
+                              onChange={(e) =>
+                                handleCategoryToggle(category, e.target.checked)
+                              }
                             />
                           }
                           label={localizedCategory}

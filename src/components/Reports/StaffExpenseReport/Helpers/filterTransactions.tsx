@@ -41,16 +41,20 @@ interface FilterTransactionsParams {
  */
 const groupTransactionsByCategory = (
   transactions: Transaction[],
-  groupedCategories: string[],
+  groupedCategories: string[] | null,
   fundType: string,
   t: TFunction,
 ): (Transaction | GroupedTransaction)[] => {
-  // Group transactions by category if the category is in groupedCategories
+  // Group a transaction when its category is selected. `null` means no explicit
+  // selection, so every category is consolidated.
   const grouped: Map<string, Transaction[]> = new Map();
   const ungrouped: Transaction[] = [];
 
   transactions.forEach((transaction) => {
-    if (groupedCategories.includes(transaction.category)) {
+    if (
+      groupedCategories === null ||
+      groupedCategories.includes(transaction.category)
+    ) {
       const key = transaction.category;
       if (!grouped.has(key)) {
         grouped.set(key, []);
@@ -108,7 +112,6 @@ export const filterTransactions = ({
   tableType,
 }: FilterTransactionsParams): (Transaction | GroupedTransaction)[] => {
   const isInDateRange = createDateRangeFilter(filters, targetTime);
-  const selectedCategories = filters?.categories ?? [];
 
   const filteredTransactions =
     fund.categories?.flatMap((category) =>
@@ -152,9 +155,11 @@ export const filterTransactions = ({
       ),
     ) ?? [];
 
+  const groupedCategories = filters?.categories ?? null;
+
   return groupTransactionsByCategory(
     filteredTransactions,
-    selectedCategories,
+    groupedCategories,
     fund.fundType,
     t,
   );
