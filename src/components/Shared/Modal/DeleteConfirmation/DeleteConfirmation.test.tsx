@@ -90,6 +90,56 @@ describe('DeleteConfirmation', () => {
     expect(onClickConfirm).toHaveBeenCalled();
   });
 
+  it('disables the confirm button while the delete mutation is in flight', async () => {
+    const { findByRole, getByRole } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider>
+          <DeleteConfirmation
+            open={true}
+            deleting={false}
+            deleteType={'task'}
+            accountListId={'account-list-1'}
+            taskId={'task-1'}
+            onClickDecline={onClickDecline}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    const confirmButton = await findByRole('button', { name: 'Yes' });
+    expect(confirmButton).not.toBeDisabled();
+
+    // The mocked mutation result is delivered asynchronously, so the
+    // promise is still held when we assert on the in-flight state
+    userEvent.click(confirmButton);
+    expect(confirmButton).toBeDisabled();
+
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Task deleted successfully', {
+        variant: 'success',
+      }),
+    );
+    expect(getByRole('button', { name: 'Yes' })).not.toBeDisabled();
+  });
+
+  it('disables the confirm button while an external delete is in flight', async () => {
+    const { findByRole } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider>
+          <DeleteConfirmation
+            open={true}
+            deleting={true}
+            deleteType={'person'}
+            onClickConfirm={onClickConfirm}
+            onClickDecline={onClickDecline}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    expect(await findByRole('button', { name: 'Yes' })).toBeDisabled();
+  });
+
   it('fires a warning haptic when the destructive action is confirmed', async () => {
     const { getByRole, findByRole } = render(
       <ThemeProvider theme={theme}>

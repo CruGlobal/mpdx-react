@@ -64,6 +64,28 @@ describe('NotificationsTable', () => {
     ).toBeInTheDocument();
   });
 
+  it('opens the Mobile App tooltip via keyboard focus and describes the header', async () => {
+    const { findByText, findByRole } = render(<Components />);
+
+    const header = await findByText('Mobile App');
+    expect(header).toHaveAttribute('tabindex', '0');
+
+    // Tab until the header receives keyboard (focus-visible) focus
+    for (let i = 0; i < 20 && document.activeElement !== header; i++) {
+      userEvent.tab();
+    }
+    expect(header).toHaveFocus();
+
+    const tooltip = await findByRole('tooltip');
+    expect(tooltip).toHaveTextContent(
+      'Delivered as push notifications in the MPDX mobile app',
+    );
+    // describeChild wires the tooltip up as the header's description
+    await waitFor(() =>
+      expect(header).toHaveAttribute('aria-describedby', tooltip.id),
+    );
+  });
+
   it('Should render the Table and request data', async () => {
     const { getByTestId, queryByTestId, getByText } = render(<Components />);
 

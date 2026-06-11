@@ -103,6 +103,10 @@ describe('PersonName', () => {
       expect(clickSpy).toHaveBeenCalledTimes(1);
       expect(queryByRole('menu')).not.toBeInTheDocument();
       expect(getAvatarPhoto).not.toHaveBeenCalled();
+      // No menu on the web, so the trigger must not advertise one
+      expect(getByRole('button', { name: 'Change photo' })).not.toHaveAttribute(
+        'aria-haspopup',
+      );
     });
 
     it('passes the selected file to setAvatar and resets the input', () => {
@@ -159,6 +163,22 @@ describe('PersonName', () => {
       expect(clickSpy).not.toHaveBeenCalled();
     });
 
+    it('wires menu ARIA attributes onto the avatar trigger', async () => {
+      const { findByRole, getByRole } = render(<TestComponent />);
+
+      const trigger = getByRole('button', { name: 'Change photo' });
+      expect(trigger).toHaveAttribute('aria-haspopup', 'menu');
+      expect(trigger).toHaveAttribute('aria-expanded', 'false');
+      expect(trigger).not.toHaveAttribute('aria-controls');
+
+      userEvent.click(trigger);
+
+      const menu = await findByRole('menu');
+      expect(trigger).toHaveAttribute('aria-expanded', 'true');
+      expect(trigger).toHaveAttribute('aria-controls', menu.id);
+      expect(menu).toHaveAttribute('aria-labelledby', trigger.id);
+    });
+
     it('takes a photo and passes the file to setAvatar', async () => {
       const file = new File(['camera-bytes'], 'avatar.jpeg', {
         type: 'image/jpeg',
@@ -171,9 +191,7 @@ describe('PersonName', () => {
 
       await waitFor(() => expect(setAvatar).toHaveBeenCalledWith(file));
       expect(getAvatarPhoto).toHaveBeenCalledWith('camera');
-      await waitFor(() =>
-        expect(queryByRole('menu')).not.toBeInTheDocument(),
-      );
+      await waitFor(() => expect(queryByRole('menu')).not.toBeInTheDocument());
     });
 
     it('chooses a photo from the library and passes the file to setAvatar', async () => {
@@ -232,6 +250,30 @@ describe('PersonName', () => {
       expect(setAvatar).not.toHaveBeenCalled();
     });
 
+    it('brands the permission-denied messages with the configured app name', async () => {
+      const originalAppName = process.env.APP_NAME;
+      process.env.APP_NAME = 'StaffApp';
+      try {
+        getAvatarPhoto.mockResolvedValue({
+          outcome: 'permission-denied',
+          source: 'camera',
+        });
+        const { findByRole, getByRole } = render(<TestComponent />);
+
+        userEvent.click(getByRole('button', { name: 'Change photo' }));
+        userEvent.click(await findByRole('menuitem', { name: 'Take Photo' }));
+
+        await waitFor(() =>
+          expect(mockEnqueue).toHaveBeenCalledWith(
+            'StaffApp does not have permission to use the camera. Enable camera access for StaffApp in your device settings and try again.',
+            { variant: 'error' },
+          ),
+        );
+      } finally {
+        process.env.APP_NAME = originalAppName;
+      }
+    });
+
     it('does nothing when the user cancels the capture', async () => {
       getAvatarPhoto.mockResolvedValue({ outcome: 'canceled' });
       const { findByRole, getByRole } = render(<TestComponent />);
@@ -239,7 +281,9 @@ describe('PersonName', () => {
       userEvent.click(getByRole('button', { name: 'Change photo' }));
       userEvent.click(await findByRole('menuitem', { name: 'Take Photo' }));
 
-      await waitFor(() => expect(getAvatarPhoto).toHaveBeenCalledWith('camera'));
+      await waitFor(() =>
+        expect(getAvatarPhoto).toHaveBeenCalledWith('camera'),
+      );
       expect(setAvatar).not.toHaveBeenCalled();
       expect(mockEnqueue).not.toHaveBeenCalled();
     });

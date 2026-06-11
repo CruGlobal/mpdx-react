@@ -22,10 +22,8 @@ import {
   PersonUpdateInput,
 } from 'src/graphql/types.generated';
 import { useIsOnline } from 'src/hooks/useIsOnline';
-import {
-  NativePhotoSource,
-  useNativeCamera,
-} from 'src/hooks/useNativeCamera';
+import { NativePhotoSource, useNativeCamera } from 'src/hooks/useNativeCamera';
+import { getAppName } from 'src/lib/getAppName';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { NewSocial, Person } from '../PersonModal';
 
@@ -78,6 +76,7 @@ export const PersonName: React.FC<PersonNameProps> = ({
   } = formikProps;
 
   const { enqueueSnackbar } = useSnackbar();
+  const appName = getAppName();
   const { isNative, getAvatarPhoto } = useNativeCamera();
   const isOnline = useIsOnline();
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement | null>(null);
@@ -118,10 +117,12 @@ export const PersonName: React.FC<PersonNameProps> = ({
         enqueueSnackbar(
           result.source === 'camera'
             ? t(
-                'MPDX does not have permission to use the camera. Enable camera access for MPDX in your device settings and try again.',
+                '{{appName}} does not have permission to use the camera. Enable camera access for {{appName}} in your device settings and try again.',
+                { appName },
               )
             : t(
-                'MPDX does not have permission to access your photos. Enable photo access for MPDX in your device settings and try again.',
+                '{{appName}} does not have permission to access your photos. Enable photo access for {{appName}} in your device settings and try again.',
+                { appName },
               ),
           { variant: 'error' },
         );
@@ -151,8 +152,16 @@ export const PersonName: React.FC<PersonNameProps> = ({
       {person && (
         <ModalSectionContainer>
           <StyledIconButton
+            id="person-avatar-photo-button"
             onClick={handleAvatarClick}
             aria-label={t('Change photo')}
+            // The menu only exists in the native shell; on the web the
+            // button opens the hidden file input instead
+            aria-haspopup={isNative ? 'menu' : undefined}
+            aria-expanded={isNative ? Boolean(menuAnchorEl) : undefined}
+            aria-controls={
+              menuAnchorEl ? 'person-avatar-photo-menu' : undefined
+            }
           >
             <StyledAvatarIcon>
               <UploadIcon />
@@ -175,6 +184,10 @@ export const PersonName: React.FC<PersonNameProps> = ({
             anchorEl={menuAnchorEl}
             open={Boolean(menuAnchorEl)}
             onClose={handleMenuClose}
+            MenuListProps={{
+              id: 'person-avatar-photo-menu',
+              'aria-labelledby': 'person-avatar-photo-button',
+            }}
           >
             <MenuItem onClick={() => handleNativePhoto('camera')}>
               <ListItemIcon>

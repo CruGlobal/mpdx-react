@@ -232,8 +232,12 @@ export const NotificationsTable: React.FC<NotificationsTableProps> = ({
                                 'Delivered as push notifications in the {{appName}} mobile app',
                                 { appName },
                               )}
+                              // Describe (not relabel) the header, and make it
+                              // focusable so keyboard/SR users can reach the
+                              // tooltip too
+                              describeChild
                             >
-                              <Box>{t('Mobile App')}</Box>
+                              <Box tabIndex={0}>{t('Mobile App')}</Box>
                             </Tooltip>
                           </StyledTableHeadCell>
                           <StyledTableHeadCell align="right">

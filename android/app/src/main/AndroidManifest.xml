@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--
+        Backups are deliberately disabled (MASVS MSTG-STORAGE-8): the app data
+        directory carries auth material — the WebView cookie store holds the
+        NextAuth session cookie for mpdx.org, and localStorage holds the push
+        token/device id. Auto Backup or device-to-device transfer would let an
+        authenticated session be restored onto another device or extracted
+        from a backup. allowBackup + fullBackupContent cover API <31;
+        dataExtractionRules (res/xml/data_extraction_rules.xml) excludes all
+        app data from cloud backup AND device transfer on API 31+.
+    -->
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"

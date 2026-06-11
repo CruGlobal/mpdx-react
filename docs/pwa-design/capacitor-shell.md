@@ -671,6 +671,12 @@ major (and any WKWebView-relevant iOS major):
 - [ ] Play listing + Data safety form
 - [ ] App Links verification passes (`assetlinks.json` fingerprint matches
       release signing cert — check Play App Signing's cert, not the upload key)
+- [ ] Backups stay disabled (`android:allowBackup="false"` +
+      `data_extraction_rules.xml` excluding all data from cloud backup and
+      device transfer) — the webview cookie store carries the NextAuth
+      session, so a backup/restore would move an authenticated session to
+      another device. Re-verify in the merged manifest after any Capacitor
+      or plugin upgrade
 - [ ] Internal testing track soak before production rollout
 
 **Both**

@@ -107,7 +107,12 @@ export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
         <CancelButton onClick={() => onClickDecline(false)}>
           {t('No')}
         </CancelButton>
-        <SubmitButton type="button" onClick={handleConfirm}>
+        <SubmitButton
+          type="button"
+          onClick={handleConfirm}
+          // Prevent double-fires while the delete is in flight
+          disabled={deleting || deletingTask}
+        >
           {t('Yes')}
         </SubmitButton>
       </DialogActions>

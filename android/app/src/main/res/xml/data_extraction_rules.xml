@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    API 31+ backup/transfer rules (referenced by android:dataExtractionRules
+    in AndroidManifest.xml; API <31 is covered by android:allowBackup="false"
+    + android:fullBackupContent="false").
+
+    Exclude ALL app data from both cloud backup and device-to-device
+    transfer: the webview cookie store carries the NextAuth session cookie
+    and localStorage carries the push token/device id, so any backup or
+    transfer of app data would move an authenticated session off-device
+    (MASVS MSTG-STORAGE-8). See capacitor-shell.md §11 release checklist.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="root" path="." />
+        <exclude domain="file" path="." />
+        <exclude domain="database" path="." />
+        <exclude domain="sharedpref" path="." />
+        <exclude domain="external" path="." />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="root" path="." />
+        <exclude domain="file" path="." />
+        <exclude domain="database" path="." />
+        <exclude domain="sharedpref" path="." />
+        <exclude domain="external" path="." />
+    </device-transfer>
+</data-extraction-rules>
