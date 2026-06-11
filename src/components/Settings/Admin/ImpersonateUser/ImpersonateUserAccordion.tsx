@@ -34,6 +34,14 @@ const ImpersonateUserSchema: yup.ObjectSchema<ImpersonateUserFormType> =
     reason: yup.string().required(),
   });
 
+// Query param impersonation is only available in local and staging
+// environments. NODE_ENV is "production" in deployed staging builds, so we
+// also check whether the app is pointed at a non-production API.
+export const isQueryParamImpersonationEnabled = (): boolean =>
+  process.env.NODE_ENV !== 'production' ||
+  !!process.env.API_URL?.includes('stage.mpdx.org') ||
+  !!process.env.API_URL?.includes('localhost');
+
 export const ImpersonateUserAccordion: React.FC<
   AccordionProps<AdminAccordion>
 > = ({ handleAccordionChange, expandedAccordion }) => {
@@ -43,9 +51,13 @@ export const ImpersonateUserAccordion: React.FC<
   const appName = getAppName();
   const { push, query, isReady } = useRouter();
 
-  // Optional query params that prefill and auto-submit the form
-  const initialUser = typeof query.email === 'string' ? query.email : '';
-  const initialReason = typeof query.reason === 'string' ? query.reason : '';
+  // Optional query params that prefill and auto-submit the form, ignored
+  // entirely in production
+  const paramsEnabled = isQueryParamImpersonationEnabled();
+  const initialUser =
+    paramsEnabled && typeof query.email === 'string' ? query.email : '';
+  const initialReason =
+    paramsEnabled && typeof query.reason === 'string' ? query.reason : '';
   // Surface an invalid email param explicitly since Formik only shows
   // validation errors after interaction
   const invalidEmailParam =

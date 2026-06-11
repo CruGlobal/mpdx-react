@@ -495,4 +495,87 @@ describe('ImpersonateUserAccordion', () => {
       expect(queryByRole('alert')).not.toBeInTheDocument();
     });
   });
+
+  describe('Environment gating', () => {
+    const fetch = jest.fn().mockResolvedValue({
+      json: () => Promise.resolve({ errors: [] }),
+      status: 200,
+    });
+    const originalNodeEnv = process.env.NODE_ENV;
+    const originalApiUrl = process.env.API_URL;
+
+    beforeEach(() => {
+      fetch.mockClear();
+      window.fetch = fetch;
+    });
+
+    afterEach(() => {
+      (process.env as Record<string, string | undefined>).NODE_ENV =
+        originalNodeEnv;
+      process.env.API_URL = originalApiUrl;
+    });
+
+    it('should ignore query params in production', async () => {
+      (process.env as Record<string, string | undefined>).NODE_ENV =
+        'production';
+      process.env.API_URL = 'https://api.mpdx.org/graphql';
+
+      const { getByRole } = render(
+        <Components
+          expandedAccordion={AdminAccordion.ImpersonateUser}
+          routerOverride={{
+            ...router,
+            query: {
+              ...router.query,
+              email: 'test@test.org',
+              reason: 'HS-1234',
+            },
+          }}
+        />,
+      );
+
+      await waitFor(() => {
+        expect(
+          getByRole('textbox', { name: /Okta User Name \/ Email/i }),
+        ).toHaveValue('');
+      });
+      expect(
+        getByRole('textbox', { name: /reason \/ helpscout ticket link/i }),
+      ).toHaveValue('');
+      expect(fetch).not.toHaveBeenCalled();
+    });
+
+    it('should allow query params in a production build pointed at the staging API', async () => {
+      (process.env as Record<string, string | undefined>).NODE_ENV =
+        'production';
+      process.env.API_URL = 'https://api.stage.mpdx.org/graphql';
+
+      render(
+        <Components
+          expandedAccordion={AdminAccordion.ImpersonateUser}
+          routerOverride={{
+            ...router,
+            query: {
+              ...router.query,
+              email: 'test@test.org',
+              reason: 'HS-1234',
+            },
+          }}
+        />,
+      );
+
+      await waitFor(() => {
+        expect(fetch).toHaveBeenCalledWith(
+          '/api/auth/impersonate/impersonateUser',
+          {
+            method: 'POST',
+            body: JSON.stringify({
+              user: 'test@test.org',
+              reason: 'HS-1234',
+            }),
+          },
+        );
+      });
+    });
+  });
 });
