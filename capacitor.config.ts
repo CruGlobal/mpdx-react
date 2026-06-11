@@ -1,10 +1,11 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 /**
- * Shell version, appended to the webview user agent as the version-handshake
- * transport (docs/pwa-design/capacitor-shell.md §8). T22 moves the canonical
- * constant into src/lib/nativeShell/shellVersion.ts; bump both together until
- * then.
+ * Shell BINARY version, appended to the webview user agent as the
+ * version-handshake transport (docs/pwa-design/capacitor-shell.md §8). The
+ * web side enforces MIN_SUPPORTED_SHELL_VERSION from
+ * src/lib/nativeShell/shellVersion.ts against this token; bump this constant
+ * when cutting a new shell release.
  */
 const shellVersion = '0.1.0';
 
