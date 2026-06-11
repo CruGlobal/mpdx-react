@@ -1,7 +1,7 @@
 import { NextPage } from 'next';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
-import React, { ReactElement, useMemo } from 'react';
+import React, { ReactElement, useEffect, useMemo } from 'react';
 import { ApolloProvider } from '@apollo/client';
 import createEmotionCache from '@emotion/cache';
 import { CacheProvider } from '@emotion/react';
@@ -25,6 +25,10 @@ import { GlobalStyles } from 'src/components/GlobalStyles/GlobalStyles';
 import { Helpjuice } from 'src/components/Helpjuice/Helpjuice';
 import PrimaryLayout from 'src/components/Layouts/Primary';
 import Loading from 'src/components/Loading';
+import { NativeDeepLinkProvider } from 'src/components/NativeShell/NativeDeepLinkProvider';
+import { PushBootstrap } from 'src/components/NativeShell/PushBootstrap/PushBootstrap';
+import { UpgradeRequiredScreen } from 'src/components/NativeShell/UpgradeRequiredScreen';
+import { useShellVersionGate } from 'src/components/NativeShell/useShellVersionGate';
 import { OfflineNotifier } from 'src/components/Offline/OfflineNotifier';
 import { RouterGuard } from 'src/components/RouterGuard/RouterGuard';
 import { ServiceWorkerUpdatePrompt } from 'src/components/ServiceWorker/ServiceWorkerUpdatePrompt';
@@ -36,6 +40,10 @@ import { useLocale } from 'src/hooks/useLocale';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import makeClient from 'src/lib/apollo/client';
 import i18n from 'src/lib/i18n';
+import {
+  applyStatusBarStyle,
+  hideSplashScreen,
+} from 'src/lib/nativeShell/nativeChrome';
 import theme from 'src/theme';
 import './helpjuice.css';
 import './print.css';
@@ -60,14 +68,32 @@ const GraphQLProviders: React.FC<{
 }> = ({ children = null }) => {
   const { apiToken } = useRequiredSession();
   const client = useMemo(() => makeClient(apiToken), [apiToken]);
+  // Shell version handshake (capacitor-shell.md §8): a Capacitor shell binary
+  // older than MIN_SUPPORTED_SHELL_VERSION gets a blocking upgrade screen in
+  // place of the page tree. Always false in the browser. The screen lives
+  // inside the ApolloProvider because its sign out affordance (which must
+  // never be blocked) clears local Apollo data like every other signout path.
+  const { upgradeRequired } = useShellVersionGate();
 
   return (
     <ApolloProvider client={client}>
-      <SetupProvider>
-        <UserPreferenceProvider>
-          <TaskModalProvider>{children}</TaskModalProvider>
-        </UserPreferenceProvider>
-      </SetupProvider>
+      {upgradeRequired ? (
+        <UpgradeRequiredScreen />
+      ) : (
+        <SetupProvider>
+          <UserPreferenceProvider>
+            {/* Native shell wiring: both render null and are inert in the
+                browser (isNativeShell() is false, no plugin code loads).
+                NativeDeepLinkProvider mounts at the app level so the
+                cold-start push-tap replay is caught (deep-links.md §4.3);
+                PushBootstrap needs the Apollo client and the user's locale
+                (push-registration-frontend.md §3.3). */}
+            <NativeDeepLinkProvider />
+            <PushBootstrap />
+            <TaskModalProvider>{children}</TaskModalProvider>
+          </UserPreferenceProvider>
+        </SetupProvider>
+      )}
     </ApolloProvider>
   );
 };
@@ -82,6 +108,17 @@ const App = ({
   session?: Session;
 }>): ReactElement => {
   const { t } = useTranslation();
+
+  useEffect(() => {
+    // Native shell chrome (capacitor-shell.md §9): hide the native splash
+    // screen at first paint after hydration (launchAutoHide is off so the
+    // splash covers the remote load, avoiding a white flash) and match the
+    // status bar to the app chrome. Both helpers are no-ops in the browser;
+    // failures are best-effort (the shell auto-hides the splash eventually).
+    hideSplashScreen().catch(() => undefined);
+    applyStatusBarStyle().catch(() => undefined);
+  }, []);
+
   const Layout = (Component as PageWithLayout).layout || PrimaryLayout;
   const { session } = pageProps;
   const rollbarConfig: Rollbar.Configuration = {
