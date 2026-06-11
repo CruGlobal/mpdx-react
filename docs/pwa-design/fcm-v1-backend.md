@@ -68,16 +68,31 @@ Two problems with the GCM payload beyond the dead API:
   We send `message.notification` (display) + `message.data` (custom keys, all
   string values) + `message.android.priority: "high"`.
 - **APNs (iOS):** unchanged transport. Custom keys ride **flattened at the top
-  level alongside `aps`** — the working assumption is that
-  `@capacitor/push-notifications` surfaces these as `notification.data.<key>` on
-  iOS (plugin `data` = full APNs `userInfo`), giving the frontend one uniform
-  shape (`notification.data.deepLink`) on both platforms. **UNVERIFIED — no
-  plugin-doc citation yet; plugin README documents the `data` field but not the
-  userInfo→`data` mapping. Master plan T2 step 0 requires a plugin-source check
-  of this mapping (both platforms, incl. Android background-tap intent-extras
-  path) before T2 merges; record the citation here.** The legacy
-  `link: { data: ... }` key is kept for the still-fielded legacy iOS app and
-  dropped once that app is retired.
+  level alongside `aps`** — `@capacitor/push-notifications` surfaces these as
+  `notification.data.<key>` on iOS (plugin `data` = full APNs `userInfo`),
+  giving the frontend one uniform shape (`notification.data.deepLink`) on both
+  platforms. **VERIFIED 2026-06-10 against plugin source
+  (ionic-team/capacitor-plugins, branches `7.x` and `main`/v8.1.1 — identical
+  mapping):**
+  - iOS: `push-notifications/ios/Sources/PushNotificationsPlugin/PushNotificationsHandler.swift`,
+    `makeNotificationRequestJSObject` sets
+    `"data": JSTypes.coerceDictionaryToJSObject(request.content.userInfo) ?? [:]`
+    for both `willPresent` (foreground) and `didReceive` (tap →
+    `pushNotificationActionPerformed`). So `data` is the **entire** `userInfo`:
+    top-level `deepLink` arrives as `data.deepLink`, and `data.aps` /
+    `data.link` (legacy key) are also present — readers must pick fields, not
+    assume `data` contains only our custom keys.
+  - Android: `push-notifications/android/src/main/java/com/capacitorjs/plugins/pushnotifications/PushNotificationsPlugin.java`
+    — `fireNotification` copies every `remoteMessage.getData()` entry into
+    `data`; the background/killed tap path (`handleOnNewIntent`, fired when the
+    launch intent extras contain `google.message_id`) copies all bundle extras
+    into `data` (mapping `google.message_id` → `id`), so FCM v1 `message.data`
+    entries (incl. `deepLink`) surface as `data.deepLink` on tap, alongside FCM
+    bookkeeping extras (`google.*`, `from`, `collapse_key`) that readers must
+    ignore.
+
+  The legacy `link: { data: ... }` key is kept for the still-fielded legacy iOS
+  app and dropped once that app is retired.
 - `deepLink` is camelCase on the wire (frontend-friendly); `:deep_link` snake_case
   inside Ruby `opts`.
 

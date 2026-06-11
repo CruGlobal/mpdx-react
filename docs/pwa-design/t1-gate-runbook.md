@@ -230,3 +230,32 @@ the permanent justification for the system-browser auth decision.
 
 After Gates 1–2 pass: unblock Track C (T20+) and continue Track B. After a
 Gate 1 failure: stop Phase 4 shell work and escalate per shell doc §1.3/§7.
+
+---
+
+## 5. Appendix — Android App Links on dev builds (fingerprint note)
+
+`public/.well-known/assetlinks.json` lists only the Play App Signing
+certificate fingerprint, so debug builds (signed with the local debug
+keystore) will **fail** `autoVerify` — universal-link taps open the browser
+instead of the app. Two options during dev (deep-links.md §3, T19):
+
+1. **Override verification on the device/emulator** (no file changes):
+
+   ```bash
+   # Force-approve the domain for the app (2 = STATE_APPROVED)
+   adb shell pm set-app-links --package org.mpdx 2 mpdx.org
+
+   # Inspect the result — should show "verified"/approved for mpdx.org
+   adb shell pm get-app-links org.mpdx
+   ```
+
+   Re-run after each reinstall; the override is per-install. Use the actual
+   applicationId if it differs from the `org.mpdx` placeholder (master plan
+   open question Q4).
+
+2. **Add the debug keystore fingerprint** as an additional entry in
+   `assetlinks.json` (get it via
+   `keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android`).
+   Decision deferred to T19 — until then, prefer the `adb` override so the
+   published assetlinks file stays production-only.
