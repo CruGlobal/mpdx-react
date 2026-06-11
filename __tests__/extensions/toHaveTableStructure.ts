@@ -28,6 +28,12 @@ export const toHaveTableStructure: TableStructureMatcher = function (
   received,
   expected,
 ) {
+  if (!expected.cells && !expected.columnHeaders && !expected.rowHeaders) {
+    throw new Error(
+      'toHaveTableStructure requires at least one of cells, columnHeaders, or rowHeaders',
+    );
+  }
+
   const mismatches: string[] = [];
   structureRoles.forEach(([property, role]) => {
     const expectedContents = expected[property];
@@ -35,6 +41,9 @@ export const toHaveTableStructure: TableStructureMatcher = function (
       return;
     }
 
+    // Nested arrays are flattened, so row grouping is for readability only.
+    // Contents are compared as one flat list in DOM order, and row boundaries
+    // are not verified.
     const expectedFlattened = expectedContents.flat();
     const actualContents = within(received)
       .queryAllByRole(role)

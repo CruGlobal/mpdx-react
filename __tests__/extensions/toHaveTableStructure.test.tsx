@@ -59,6 +59,8 @@ describe('toHaveTableStructure', () => {
     const { getByRole } = render(<TestTable />);
 
     expect(getByRole('table')).toHaveTableStructure({
+      columnHeaders: ['Category', expect.stringContaining('Jo'), 'Jane'],
+      rowHeaders: [expect.stringContaining('Sal'), 'MHA'],
       cells: [
         [expect.stringContaining('10,001'), '$20,001.00'],
         ['$10,002.00', '$20,002.00'],
@@ -86,6 +88,51 @@ describe('toHaveTableStructure', () => {
     expect(getByRole('table')).not.toHaveTableStructure({
       rowHeaders: ['Salary', 'MHA', 'Total'],
     });
+  });
+
+  it('matches an empty table', () => {
+    const { getByRole } = render(
+      <table>
+        <tbody></tbody>
+      </table>,
+    );
+
+    expect(getByRole('table')).toHaveTableStructure({
+      cells: [],
+      columnHeaders: [],
+      rowHeaders: [],
+    });
+  });
+
+  it('throws when no structure properties are provided', () => {
+    const { getByRole } = render(<TestTable />);
+
+    expect(() => expect(getByRole('table')).toHaveTableStructure({})).toThrow(
+      'toHaveTableStructure requires at least one of cells, columnHeaders, or rowHeaders',
+    );
+  });
+
+  it('describes the mismatched properties in the failure message', () => {
+    const { getByRole } = render(<TestTable />);
+
+    expect(() =>
+      expect(getByRole('table')).toHaveTableStructure({
+        columnHeaders: ['Category', 'John'],
+        rowHeaders: ['Salary', 'MHA'],
+      }),
+    ).toThrow(
+      /Expected table to match the expected structure[\s\S]*columnHeaders:[\s\S]*Expected columnHeaders[\s\S]*Received columnHeaders/,
+    );
+  });
+
+  it('explains the failure when the table unexpectedly matches', () => {
+    const { getByRole } = render(<TestTable />);
+
+    expect(() =>
+      expect(getByRole('table')).not.toHaveTableStructure({
+        rowHeaders: ['Salary', 'MHA'],
+      }),
+    ).toThrow('Expected table not to match the expected structure');
   });
 
   it('only inspects the received table', () => {
