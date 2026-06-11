@@ -152,7 +152,8 @@
     "@mui/base@5.0.0-beta.40": "patch:@mui/base@npm%3A5.0.0-beta.40#./.yarn/patches/@mui-base-npm-5.0.0-beta.40-248417914d.patch"
   },
   "lint-staged": {
-    "*.{js,ts,tsx}": "eslint --cache --fix"
+    "*.{js,ts,tsx}": "eslint --cache --fix",
+    "*": "prettier --write --ignore-unknown"
   },
   "packageManager": "yarn@4.14.1"
 }

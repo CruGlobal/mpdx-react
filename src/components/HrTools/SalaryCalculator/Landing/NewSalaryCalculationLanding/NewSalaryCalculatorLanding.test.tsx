@@ -34,52 +34,48 @@ describe('NewSalaryCalculatorLanding', () => {
   });
 
   it('renders table with correct cell data', async () => {
-    const { getAllByRole } = render(<TestComponent hasApprovedCalculation />);
-
-    const expectedCells = [
-      ['Maximum Allowable Salary', '$60,000.00', '$70,000.00'],
-      ['Requested Salary', '$50,000.00', '$60,000.00'],
-      ['Tax-deferred 403(b) Contribution', '5%', '6%'],
-      ['Roth 403(b) Contribution', '12%', '10%'],
-      ['Security (SECA/FICA) Status', 'Subject to SECA', 'Subject to SECA'],
-      ['Current Gross Salary', '$55,000.00', '$10,000.00'],
-      [
-        'Current MHA (Included in Current Gross Salary)',
-        '$10,000.00View MHA Form',
-        '$12,000.00',
-      ],
-    ].flat();
+    const { getByRole } = render(<TestComponent hasApprovedCalculation />);
 
     await waitFor(() =>
-      expect(getAllByRole('cell').map((cell) => cell.textContent)).toEqual(
-        expectedCells,
-      ),
+      expect(getByRole('table')).toHaveTableStructure({
+        cells: [
+          ['Maximum Allowable Salary', '$60,000.00', '$70,000.00'],
+          ['Requested Salary', '$50,000.00', '$60,000.00'],
+          ['Tax-deferred 403(b) Contribution', '5%', '6%'],
+          ['Roth 403(b) Contribution', '12%', '10%'],
+          ['Security (SECA/FICA) Status', 'Subject to SECA', 'Subject to SECA'],
+          ['Current Gross Salary', '$55,000.00', '$10,000.00'],
+          [
+            'Current MHA (Included in Current Gross Salary)',
+            '$10,000.00View MHA Form',
+            '$12,000.00',
+          ],
+        ],
+      }),
     );
   });
 
   it('swaps effective request fields when the spouse created the request', async () => {
-    const { getAllByRole } = render(
+    const { getByRole } = render(
       <TestComponent hasApprovedCalculation hasSpouseApprovedCalculation />,
     );
 
-    const expectedCells = [
-      ['Maximum Allowable Salary', '$70,000.00', '$60,000.00'],
-      ['Requested Salary', '$60,000.00', '$50,000.00'],
-      ['Tax-deferred 403(b) Contribution', '5%', '6%'],
-      ['Roth 403(b) Contribution', '12%', '10%'],
-      ['Security (SECA/FICA) Status', 'Subject to SECA', 'Subject to SECA'],
-      ['Current Gross Salary', '$55,000.00', '$10,000.00'],
-      [
-        'Current MHA (Included in Current Gross Salary)',
-        '$10,000.00View MHA Form',
-        '$12,000.00',
-      ],
-    ].flat();
-
     await waitFor(() =>
-      expect(getAllByRole('cell').map((cell) => cell.textContent)).toEqual(
-        expectedCells,
-      ),
+      expect(getByRole('table')).toHaveTableStructure({
+        cells: [
+          ['Maximum Allowable Salary', '$70,000.00', '$60,000.00'],
+          ['Requested Salary', '$60,000.00', '$50,000.00'],
+          ['Tax-deferred 403(b) Contribution', '5%', '6%'],
+          ['Roth 403(b) Contribution', '12%', '10%'],
+          ['Security (SECA/FICA) Status', 'Subject to SECA', 'Subject to SECA'],
+          ['Current Gross Salary', '$55,000.00', '$10,000.00'],
+          [
+            'Current MHA (Included in Current Gross Salary)',
+            '$10,000.00View MHA Form',
+            '$12,000.00',
+          ],
+        ],
+      }),
     );
   });
 

@@ -74,68 +74,55 @@ As you set your salary level, the amount you receive should reflect the amount o
       );
     });
 
-    it('should render table headers', async () => {
-      const { getAllByRole } = render(<TestComponent />);
+    it('should render table headers and cells with formatted currency', async () => {
+      const { getByRole } = render(<TestComponent />);
 
       await waitFor(() =>
-        expect(
-          getAllByRole('columnheader').map((cell) => cell.textContent),
-        ).toEqual(['Category', 'John', 'Jane']),
-      );
-
-      await waitFor(() =>
-        expect(
-          getAllByRole('rowheader').map((cell) => cell.textContent),
-        ).toEqual([
-          'Current Requested Salary',
-          'Minimum Salary',
-          'Maximum Allowable Salary (CAP)',
-          'Requested Salary',
-        ]),
-      );
-    });
-
-    it('should render table cells with formatted currency', async () => {
-      const { getAllByRole } = render(<TestComponent />);
-
-      const expectedCells = [
-        ['$11,111.00', '$22,222.00'],
-        ['$10,003.00', '$20,003.00'],
-        ['$10,004.00', '$20,004.00'],
-      ].flat();
-
-      await waitFor(() =>
-        expect(
-          getAllByRole('cell')
-            .slice(0, -2)
-            .map((cell) => cell.textContent),
-        ).toEqual(expectedCells),
+        expect(getByRole('table')).toHaveTableStructure({
+          columnHeaders: ['Category', 'John', 'Jane'],
+          rowHeaders: [
+            'Current Requested Salary',
+            'Minimum Salary',
+            'Maximum Allowable Salary (CAP)',
+            'Requested Salary',
+          ],
+          cells: [
+            ['$11,111.00', '$22,222.00'],
+            ['$10,003.00', '$20,003.00'],
+            ['$10,004.00', '$20,004.00'],
+            // The requested salary inputs
+            [
+              expect.stringContaining('Requested salary'),
+              expect.stringContaining('Spouse requested salary'),
+            ],
+          ],
+        }),
       );
     });
 
     it('should render a dash when there is no approved salary request', async () => {
-      const { getAllByRole } = render(
+      const { getByRole } = render(
         <TestComponent effectiveSalaryRequestMock={null} />,
       );
 
-      const expectedCells = [
-        ['–', '–'],
-        ['$10,003.00', '$20,003.00'],
-        ['$10,004.00', '$20,004.00'],
-      ].flat();
-
       await waitFor(() =>
-        expect(
-          getAllByRole('cell')
-            // Skip the two inputs
-            .slice(0, -2)
-            .map((cell) => cell.textContent),
-        ).toEqual(expectedCells),
+        expect(getByRole('table')).toHaveTableStructure({
+          cells: [
+            ['–', '–'],
+            ['$10,003.00', '$20,003.00'],
+            ['$10,004.00', '$20,004.00'],
+            // The requested salary inputs
+            [
+              expect.stringContaining('Requested salary'),
+              expect.stringContaining('Spouse requested salary'),
+            ],
+          ],
+        }),
       );
     });
 
     it('swaps the requested salary when the spouse created the request', async () => {
-      const { getAllByRole } = render(
+      const { getByRole } = render(
         <TestComponent
           effectiveSalaryRequestMock={{
             ...approvedSalaryMock,
@@ -145,17 +132,18 @@ As you set your salary level, the amount you receive should reflect the amount o
       );
 
       await waitFor(() =>
-        expect(
-          getAllByRole('cell')
-            .slice(0, -2)
-            .map((cell) => cell.textContent),
-        ).toEqual(
-          [
+        expect(getByRole('table')).toHaveTableStructure({
+          cells: [
             ['$22,222.00', '$11,111.00'],
             ['$10,003.00', '$20,003.00'],
             ['$10,004.00', '$20,004.00'],
-          ].flat(),
-        ),
+            // The requested salary inputs
+            [
+              expect.stringContaining('Requested salary'),
+              expect.stringContaining('Spouse requested salary'),
+            ],
+          ],
+        }),
       );
     });
 
@@ -193,55 +181,44 @@ As you set your salary level, the amount you receive should reflect the amount o
       );
     });
 
-    it('should render table headers', async () => {
-      const { getAllByRole } = render(<TestComponent hasSpouse={false} />);
+    it('should render table headers and cells with formatted currency', async () => {
+      const { getByRole } = render(<TestComponent hasSpouse={false} />);
 
       await waitFor(() =>
-        expect(
-          getAllByRole('columnheader').map((cell) => cell.textContent),
-        ).toEqual(['Category', 'John']),
-      );
-
-      await waitFor(() =>
-        expect(
-          getAllByRole('rowheader').map((cell) => cell.textContent),
-        ).toEqual([
-          'Current Requested Salary',
-          'Minimum Salary',
-          'Maximum Allowable Salary (CAP)',
-          'Requested Salary',
-        ]),
-      );
-    });
-
-    it('should render table cells with formatted currency', async () => {
-      const { getAllByRole } = render(<TestComponent hasSpouse={false} />);
-
-      const expectedCells = ['$11,111.00', '$10,003.00', '$10,004.00'];
-
-      await waitFor(() =>
-        expect(
-          getAllByRole('cell')
-            .slice(0, -1)
-            .map((cell) => cell.textContent),
-        ).toEqual(expectedCells),
+        expect(getByRole('table')).toHaveTableStructure({
+          columnHeaders: ['Category', 'John'],
+          rowHeaders: [
+            'Current Requested Salary',
+            'Minimum Salary',
+            'Maximum Allowable Salary (CAP)',
+            'Requested Salary',
+          ],
+          cells: [
+            '$11,111.00',
+            '$10,003.00',
+            '$10,004.00',
+            // The requested salary input
+            expect.stringContaining('Requested salary'),
+          ],
+        }),
       );
     });
 
     it('should render a dash when there is no approved salary request', async () => {
-      const { getAllByRole } = render(
+      const { getByRole } = render(
         <TestComponent hasSpouse={false} effectiveSalaryRequestMock={null} />,
       );
 
-      const expectedCells = ['–', '$10,003.00', '$10,004.00'];
-
       await waitFor(() =>
-        expect(
-          getAllByRole('cell')
-            // Skip the one input
-            .slice(0, -1)
-            .map((cell) => cell.textContent),
-        ).toEqual(expectedCells),
+        expect(getByRole('table')).toHaveTableStructure({
+          cells: [
+            '–',
+            '$10,003.00',
+            '$10,004.00',
+            // The requested salary input
+            expect.stringContaining('Requested salary'),
+          ],
+        }),
       );
     });
   });

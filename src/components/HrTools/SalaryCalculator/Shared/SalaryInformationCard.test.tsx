@@ -27,37 +27,26 @@ describe('SalaryInformationCard', () => {
     expect(await findByTestId('last-updated')).toBeInTheDocument();
   });
 
-  it('renders category column headers', async () => {
-    const { getAllByRole } = render(<TestComponent />);
+  it('renders category column headers and salary category names', async () => {
+    const { getByRole } = render(<TestComponent />);
 
     await waitFor(() =>
-      expect(
-        getAllByRole('columnheader').map((cell) => cell.textContent),
-      ).toEqual(['Category', 'John', 'Jane']),
-    );
-  });
-
-  it('renders salary category names', async () => {
-    const { getAllByRole } = render(<TestComponent />);
-
-    const expectedCells = [
-      ['Maximum Allowable Salary', '$60,000.00', '$70,000.00'],
-      ['Requested Salary', '$50,000.00', '$60,000.00'],
-      ['Tax-deferred 403(b) Contribution', '5%', '6%'],
-      ['Roth 403(b) Contribution', '12%', '10%'],
-      ['Security (SECA/FICA) Status', 'Subject to SECA', 'Subject to SECA'],
-      ['Current Gross Salary', '$55,000.00', '$10,000.00'],
-      [
-        'Current MHA (Included in Current Gross Salary)',
-        '$10,000.00View MHA Form',
-        '$12,000.00',
-      ],
-    ].flat();
-
-    await waitFor(() =>
-      expect(getAllByRole('cell').map((cell) => cell.textContent)).toEqual(
-        expectedCells,
-      ),
+      expect(getByRole('table')).toHaveTableStructure({
+        columnHeaders: ['Category', 'John', 'Jane'],
+        cells: [
+          ['Maximum Allowable Salary', '$60,000.00', '$70,000.00'],
+          ['Requested Salary', '$50,000.00', '$60,000.00'],
+          ['Tax-deferred 403(b) Contribution', '5%', '6%'],
+          ['Roth 403(b) Contribution', '12%', '10%'],
+          ['Security (SECA/FICA) Status', 'Subject to SECA', 'Subject to SECA'],
+          ['Current Gross Salary', '$55,000.00', '$10,000.00'],
+          [
+            'Current MHA (Included in Current Gross Salary)',
+            '$10,000.00View MHA Form',
+            '$12,000.00',
+          ],
+        ],
+      }),
     );
   });
 

@@ -8,6 +8,7 @@ import { session } from '__tests__/fixtures/session';
 import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { toHaveGraphqlOperation } from '../extensions/toHaveGraphqlOperation';
+import { toHaveTableStructure } from '../extensions/toHaveTableStructure';
 import matchMediaMock from './matchMediaMock';
 // Configure i18next in tests
 import 'src/lib/i18n';
@@ -34,6 +35,7 @@ jest.mock('next-auth/react', () => {
 
 expect.extend({
   toHaveGraphqlOperation,
+  toHaveTableStructure,
 });
 
 Object.defineProperty(window, 'crypto', {
