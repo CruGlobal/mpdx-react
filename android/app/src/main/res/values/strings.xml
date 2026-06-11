@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">MPDX</string>
+    <string name="title_activity_main">MPDX</string>
+    <string name="package_name">org.cru.mpdx</string>
+    <string name="custom_url_scheme">org.cru.mpdx</string>
+</resources>
