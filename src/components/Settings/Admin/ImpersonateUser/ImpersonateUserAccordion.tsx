@@ -1,12 +1,13 @@
 import { useRouter } from 'next/router';
-import { ReactElement } from 'react';
+import { ReactElement, useCallback, useEffect, useRef } from 'react';
 import {
+  Alert,
   DialogActions,
   FormHelperText,
   TextField,
   Typography,
 } from '@mui/material';
-import { Formik } from 'formik';
+import { Formik, FormikProps } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -25,11 +26,21 @@ type ImpersonateUserFormType = {
   reason: string;
 };
 
+const userSchema = yup.string().email().required();
+
 const ImpersonateUserSchema: yup.ObjectSchema<ImpersonateUserFormType> =
   yup.object({
-    user: yup.string().email().required(),
+    user: userSchema,
     reason: yup.string().required(),
   });
+
+// Query param impersonation is only available in local and staging
+// environments. NODE_ENV is "production" in deployed staging builds, so we
+// also check whether the app is pointed at a non-production API.
+export const isQueryParamImpersonationEnabled = (): boolean =>
+  process.env.NODE_ENV !== 'production' ||
+  !!process.env.API_URL?.includes('stage.mpdx.org') ||
+  !!process.env.API_URL?.includes('localhost');
 
 export const ImpersonateUserAccordion: React.FC<
   AccordionProps<AdminAccordion>
@@ -38,44 +49,81 @@ export const ImpersonateUserAccordion: React.FC<
   const accordionName = t('Impersonate User');
   const { enqueueSnackbar } = useSnackbar();
   const appName = getAppName();
-  const { push } = useRouter();
+  const { push, query, isReady } = useRouter();
 
-  const onSubmit = async (attributes: ImpersonateUserFormType) => {
-    try {
-      const { user, reason } = attributes;
-      const setupImpersonate = await fetch(
-        '/api/auth/impersonate/impersonateUser',
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            user,
-            reason,
-          }),
-        },
-      );
-      const setupImpersonateJson = await setupImpersonate.json();
+  // Optional query params that prefill and auto-submit the form, ignored
+  // entirely in production
+  const paramsEnabled = isQueryParamImpersonationEnabled();
+  const initialUser =
+    paramsEnabled && typeof query.email === 'string' ? query.email : '';
+  const initialReason =
+    paramsEnabled && typeof query.reason === 'string' ? query.reason : '';
+  // Surface an invalid email param explicitly since Formik only shows
+  // validation errors after interaction
+  const invalidEmailParam =
+    Boolean(initialUser) && !userSchema.isValidSync(initialUser);
+  const autoSubmitted = useRef(false);
+  const formikRef = useRef<FormikProps<ImpersonateUserFormType>>(null);
 
-      if (setupImpersonate.status === 200) {
-        enqueueSnackbar(
-          t('Redirecting you to home screen to impersonate user...'),
+  const onSubmit = useCallback(
+    async (attributes: ImpersonateUserFormType) => {
+      try {
+        const { user, reason } = attributes;
+        const setupImpersonate = await fetch(
+          '/api/auth/impersonate/impersonateUser',
           {
-            variant: 'success',
+            method: 'POST',
+            body: JSON.stringify({
+              user,
+              reason,
+            }),
           },
         );
-        push('/login');
-      } else {
-        setupImpersonateJson.errors.forEach((error) => {
-          enqueueSnackbar(error.detail, {
-            variant: 'error',
+        const setupImpersonateJson = await setupImpersonate.json();
+
+        if (setupImpersonate.status === 200) {
+          enqueueSnackbar(
+            t('Redirecting you to home screen to impersonate user...'),
+            {
+              variant: 'success',
+            },
+          );
+          push('/login');
+        } else {
+          setupImpersonateJson.errors.forEach((error) => {
+            enqueueSnackbar(error.detail, {
+              variant: 'error',
+            });
           });
+        }
+      } catch (err) {
+        enqueueSnackbar(getErrorMessage(err), {
+          variant: 'error',
         });
       }
-    } catch (err) {
-      enqueueSnackbar(getErrorMessage(err), {
-        variant: 'error',
-      });
+    },
+    [enqueueSnackbar, push, t],
+  );
+
+  // Auto-submit when both query params are present and valid
+  useEffect(() => {
+    if (autoSubmitted.current || !isReady) {
+      return;
     }
-  };
+    const values = { user: initialUser, reason: initialReason };
+    if (
+      initialUser &&
+      initialReason &&
+      ImpersonateUserSchema.isValidSync(values) &&
+      // The form is only mounted while the accordion is expanded
+      formikRef.current
+    ) {
+      autoSubmitted.current = true;
+      // Submit through Formik to keep the submission lifecycle consistent
+      // with the manual path
+      void formikRef.current.submitForm();
+    }
+  }, [isReady, initialUser, initialReason]);
 
   return (
     <AccordionItem
@@ -96,11 +144,23 @@ export const ImpersonateUserAccordion: React.FC<
         )}
       </Typography>
 
+      {invalidEmailParam && (
+        <PaddedBox marginTop={2}>
+          <Alert severity="error">
+            {t(
+              'The email address provided in the link is not a valid email address, so impersonation could not start automatically. Correct the email below to impersonate the user.',
+            )}
+          </Alert>
+        </PaddedBox>
+      )}
+
       <Formik
+        innerRef={formikRef}
         initialValues={{
-          user: '',
-          reason: '',
+          user: initialUser,
+          reason: initialReason,
         }}
+        enableReinitialize
         validationSchema={ImpersonateUserSchema}
         onSubmit={onSubmit}
         isInitialValid={false}
@@ -138,7 +198,7 @@ export const ImpersonateUserAccordion: React.FC<
                   required
                   id="reason"
                   label={t('Reason / HelpScout Ticket Link')}
-                  type="reason"
+                  type="text"
                   value={reason}
                   disabled={isSubmitting}
                   name="reason"
