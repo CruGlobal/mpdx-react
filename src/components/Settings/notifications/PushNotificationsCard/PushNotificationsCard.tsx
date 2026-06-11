@@ -5,6 +5,8 @@ import {
   Button,
   Card,
   CardContent,
+  CircularProgress,
+  Skeleton,
   Typography,
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
@@ -42,8 +44,11 @@ const loadPushPlugin = async () =>
   ).PushNotifications;
 
 /**
- * Reads the OS notification permission on mount with the non-prompting
- * `checkPermissions()`. `null` until known (or forever on the web).
+ * Reads the OS notification permission with the non-prompting
+ * `checkPermissions()`. `null` until known (or forever on the web). Re-checks
+ * whenever the document becomes visible again: in the Capacitor shell,
+ * returning from OS Settings resumes the webview without a remount, and the
+ * denied state must be able to clear within the session.
  */
 const usePushPermission = (): PermissionState | null => {
   const [permission, setPermission] = useState<PermissionState | null>(null);
@@ -52,10 +57,33 @@ const usePushPermission = (): PermissionState | null => {
     if (!isNativeShell()) {
       return;
     }
-    loadPushPlugin()
-      .then((PushNotifications) => PushNotifications.checkPermissions())
-      .then(({ receive }) => setPermission(receive))
-      .catch(() => undefined);
+    let active = true;
+    const checkPermission = () => {
+      loadPushPlugin()
+        .then((PushNotifications) => PushNotifications.checkPermissions())
+        .then(({ receive }) => {
+          if (active) {
+            setPermission(receive);
+          }
+        })
+        .catch(() => {
+          // Plugin unavailable — assume promptable so the card stays usable
+          if (active) {
+            setPermission('prompt');
+          }
+        });
+    };
+    checkPermission();
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        checkPermission();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      active = false;
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, []);
 
   return permission;
@@ -74,8 +102,17 @@ export const PushNotificationsCard: React.FC = () => {
   const [inFlight, setInFlight] = useState(false);
 
   useEffect(() => {
+    if (permission === null) {
+      return;
+    }
     if (permission === 'denied') {
       setCardState('denied');
+    } else {
+      // The user granted (or reset) notifications in OS Settings and came
+      // back — the denied dead-end must clear without a remount
+      setCardState((current) =>
+        current === 'denied' ? (isPushEnabled() ? 'enabled' : 'off') : current,
+      );
     }
   }, [permission]);
 
@@ -123,7 +160,18 @@ export const PushNotificationsCard: React.FC = () => {
         <Typography variant="h6" component="h2" gutterBottom>
           {t('Push Notifications')}
         </Typography>
-        {cardState === 'off' && (
+        {permission === null && (
+          // The OS permission read is still in flight — rendering the off
+          // state here would flash an active enable button at
+          // previously-denied users
+          <Skeleton
+            data-testid="PushNotificationsCardSkeleton"
+            variant="rounded"
+            height={36}
+            width={240}
+          />
+        )}
+        {permission !== null && cardState === 'off' && (
           <>
             <Typography paragraph>
               {t(
@@ -134,12 +182,17 @@ export const PushNotificationsCard: React.FC = () => {
               variant="contained"
               onClick={handleEnable}
               disabled={inFlight}
+              startIcon={
+                inFlight ? (
+                  <CircularProgress color="inherit" size={16} />
+                ) : undefined
+              }
             >
               {t('Enable Push Notifications')}
             </Button>
           </>
         )}
-        {cardState === 'enabled' && (
+        {permission !== null && cardState === 'enabled' && (
           <>
             <Alert severity="success" sx={{ marginBottom: 2 }}>
               {t('Push notifications are enabled on this device.')}
@@ -153,7 +206,7 @@ export const PushNotificationsCard: React.FC = () => {
             </Button>
           </>
         )}
-        {cardState === 'denied' && (
+        {permission !== null && cardState === 'denied' && (
           <Alert severity="warning">
             {getDevicePlatform() === 'APNS'
               ? t(
@@ -166,7 +219,7 @@ export const PushNotificationsCard: React.FC = () => {
                 )}
           </Alert>
         )}
-        {cardState === 'error' && (
+        {permission !== null && cardState === 'error' && (
           <>
             <Alert severity="error" sx={{ marginBottom: 2 }}>
               {t(
@@ -177,6 +230,11 @@ export const PushNotificationsCard: React.FC = () => {
               variant="contained"
               onClick={handleEnable}
               disabled={inFlight}
+              startIcon={
+                inFlight ? (
+                  <CircularProgress color="inherit" size={16} />
+                ) : undefined
+              }
             >
               {t('Retry')}
             </Button>

@@ -655,7 +655,7 @@ class MpdxRestApi extends RESTDataSource {
   }
 
   async destroyUserDevice(id: string) {
-    await this.delete(`user/devices/${id}`, {
+    await this.delete(`user/devices/${encodeURIComponent(id)}`, {
       body: { data: { type: 'user_devices' } },
     });
     return DestroyUserDevice();

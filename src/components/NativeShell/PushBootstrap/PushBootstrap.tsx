@@ -25,10 +25,11 @@ const loadPushPlugin = async () =>
  * - **Silent.** Permission revoked in OS settings, a missing opt-in flag, or
  *   a failed re-registration are all no-ops — the next launch retries
  *   naturally.
- * - **Idempotent.** `startPushRegistration`'s `registration` listener skips
- *   the network when the token + locale are unchanged and re-POSTs the
- *   device when the token rotates, so the steady-state relaunch makes zero
- *   network calls.
+ * - **Idempotent.** `startPushRegistration`'s `registration` listener makes
+ *   exactly one upserting `RegisterUserDevice` POST per app launch (the
+ *   backend upsert fixes device ownership and recreates server-deleted
+ *   rows), then skips the network for repeat events within the session
+ *   unless the token or locale changes.
  */
 export const PushBootstrap: React.FC = () => {
   const client = useApolloClient();
@@ -53,7 +54,9 @@ export const PushBootstrap: React.FC = () => {
       // swallowed by design — nothing is stored, so the next launch retries.
     });
     // Re-running when the user preference locale settles/changes is safe
-    // (idempotent skip) and re-registers the device under the new locale.
+    // (startPushRegistration replaces only its own listeners and the
+    // registration POST is an idempotent upsert) and re-registers the device
+    // under the new locale.
   }, [client, locale]);
 
   return null;

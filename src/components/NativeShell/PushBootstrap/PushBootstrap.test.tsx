@@ -10,6 +10,7 @@ import {
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { UserDevicePlatformEnum } from 'src/graphql/types.generated';
 import { RegisterUserDeviceMutation } from 'src/lib/nativeShell/UserDevice.generated';
+import { resetPushRegistrationStateForTesting } from 'src/lib/nativeShell/pushRegistration';
 import {
   isPushEnabled,
   setPushEnabled,
@@ -65,6 +66,7 @@ describe('PushBootstrap', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     window.localStorage.clear();
+    resetPushRegistrationStateForTesting();
     mockGetInfo.mockResolvedValue({ version: '1.0.0' });
     mockPushNotifications.checkPermissions.mockResolvedValue({
       receive: 'prompt',
@@ -132,14 +134,30 @@ describe('PushBootstrap', () => {
       expectNeverPrompted();
     });
 
-    it('makes zero network calls when the token and locale are unchanged', async () => {
+    it('POSTs one upserting registration per launch, even when the token and locale are unchanged', async () => {
       const { mutationSpy } = renderBootstrap();
       await flushBootstrap();
 
-      // The OS re-issues the same token on a steady-state relaunch
+      // The OS re-issues the same token on a steady-state relaunch. The
+      // first registration of the session must still POST (the backend
+      // upsert fixes ownership after a user switch and recreates
+      // server-deleted device rows)…
       await emitRegistration('apns-token');
+      expect(mutationSpy).toHaveGraphqlOperation('RegisterUserDevice', {
+        input: {
+          platform: UserDevicePlatformEnum.Apns,
+          token: 'apns-token',
+          version: '1.0.0',
+          locale: 'en-US',
+        },
+      });
 
-      expect(mutationSpy).not.toHaveGraphqlOperation('RegisterUserDevice');
+      // …but repeat events within the session short-circuit
+      await emitRegistration('apns-token');
+      const registerCalls = mutationSpy.mock.calls.filter(
+        ([call]) => call.operation.operationName === 'RegisterUserDevice',
+      );
+      expect(registerCalls).toHaveLength(1);
       expectNeverPrompted();
     });
 

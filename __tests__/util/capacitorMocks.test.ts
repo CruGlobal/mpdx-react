@@ -1,4 +1,5 @@
 import {
+  emitPushNotificationActionPerformed,
   emitRegistration,
   emitRegistrationError,
   mockCapacitorCore,
@@ -7,6 +8,10 @@ import {
 } from './capacitorMocks';
 
 describe('capacitorMocks', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('setNativePlatform + mockCapacitorCore', () => {
     it('defaults to web', () => {
       expect(mockCapacitorCore.Capacitor.isNativePlatform()).toBe(false);
@@ -66,18 +71,81 @@ describe('capacitorMocks', () => {
     });
   });
 
+  describe('listener removal semantics', () => {
+    it('stops emitting to a listener after handle.remove()', async () => {
+      const handler = jest.fn();
+      const handle = await mockPushNotifications.addListener(
+        'registration',
+        handler,
+      );
+
+      await handle.remove();
+      await emitRegistration('token-123');
+
+      expect(handler).not.toHaveBeenCalled();
+    });
+
+    it('keeps emitting to listeners whose handles were not removed', async () => {
+      const removed = jest.fn();
+      const surviving = jest.fn();
+      const handle = await mockPushNotifications.addListener(
+        'registration',
+        removed,
+      );
+      await mockPushNotifications.addListener('registration', surviving);
+
+      await handle.remove();
+      await emitRegistration('token-123');
+
+      expect(removed).not.toHaveBeenCalled();
+      expect(surviving).toHaveBeenCalledWith({ value: 'token-123' });
+    });
+
+    it('removeAllListeners() detaches every listener, regardless of owner', async () => {
+      const registration = jest.fn();
+      const pushAction = jest.fn();
+      await mockPushNotifications.addListener('registration', registration);
+      await mockPushNotifications.addListener(
+        'pushNotificationActionPerformed',
+        pushAction,
+      );
+
+      await mockPushNotifications.removeAllListeners();
+      await emitRegistration('token-123');
+      await emitPushNotificationActionPerformed('tap', { deepLink: '/x' });
+
+      expect(registration).not.toHaveBeenCalled();
+      expect(pushAction).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('emitPushNotificationActionPerformed', () => {
+    it('invokes pushNotificationActionPerformed listeners like a tap would', async () => {
+      const handler = jest.fn();
+      await mockPushNotifications.addListener(
+        'pushNotificationActionPerformed',
+        handler,
+      );
+
+      await emitPushNotificationActionPerformed('tap', { deepLink: '/a' });
+
+      expect(handler).toHaveBeenCalledWith({
+        actionId: 'tap',
+        notification: { data: { deepLink: '/a' } },
+      });
+    });
+  });
+
   describe('mockPushNotifications defaults', () => {
     it('resolves permission checks and registration calls', async () => {
       await expect(mockPushNotifications.checkPermissions()).resolves.toEqual({
         receive: 'prompt',
       });
-      await expect(
-        mockPushNotifications.requestPermissions(),
-      ).resolves.toEqual({ receive: 'granted' });
+      await expect(mockPushNotifications.requestPermissions()).resolves.toEqual(
+        { receive: 'granted' },
+      );
       await expect(mockPushNotifications.register()).resolves.toBeUndefined();
-      await expect(
-        mockPushNotifications.unregister(),
-      ).resolves.toBeUndefined();
+      await expect(mockPushNotifications.unregister()).resolves.toBeUndefined();
       await expect(
         mockPushNotifications.removeAllListeners(),
       ).resolves.toBeUndefined();

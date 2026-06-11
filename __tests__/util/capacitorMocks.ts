@@ -46,6 +46,16 @@ export const mockCapacitorCore = {
 type ListenerHandler = (event: never) => void | Promise<void>;
 
 /**
+ * Handlers detached via `handle.remove()` or `removeAllListeners()`. The
+ * `emit*` helpers skip these, mirroring real plugin semantics so listener
+ * ownership bugs (one module wiping another's listeners) are reproducible in
+ * jest. Handler references are unique per `addListener` call in practice, so
+ * entries from previous tests are inert; `jest.clearAllMocks()` resetting
+ * `addListener.mock.calls` is what isolates tests from each other.
+ */
+const removedHandlers = new Set<ListenerHandler>();
+
+/**
  * Mock for the `PushNotifications` plugin. Use with
  * `jest.mock('@capacitor/push-notifications', () => ({ PushNotifications: mockPushNotifications }))`.
  * Override per test, e.g.
@@ -63,12 +73,18 @@ export const mockPushNotifications = {
   addListener: jest.fn(
     async (
       _eventName: string,
-      _handler: ListenerHandler,
+      handler: ListenerHandler,
     ): Promise<PluginListenerHandle> => ({
-      remove: jest.fn(async () => undefined),
+      remove: jest.fn(async () => {
+        removedHandlers.add(handler);
+      }),
     }),
   ),
-  removeAllListeners: jest.fn(async () => undefined),
+  removeAllListeners: jest.fn(async () => {
+    for (const [, handler] of mockPushNotifications.addListener.mock.calls) {
+      removedHandlers.add(handler);
+    }
+  }),
 };
 
 /**
@@ -111,7 +127,9 @@ const emitToListeners = async (
 ): Promise<void> => {
   const handlers = mockPushNotifications.addListener.mock.calls
     .filter(([registeredEvent]) => registeredEvent === eventName)
-    .map(([, handler]) => handler as (event: unknown) => void | Promise<void>);
+    .map(([, handler]) => handler)
+    .filter((handler) => !removedHandlers.has(handler))
+    .map((handler) => handler as (event: unknown) => void | Promise<void>);
   for (const handler of handlers) {
     await handler(event);
   }
@@ -124,3 +142,13 @@ export const emitRegistration = (token: string): Promise<void> =>
 /** Fires attached 'registrationError' listeners. */
 export const emitRegistrationError = (error: string): Promise<void> =>
   emitToListeners('registrationError', { error });
+
+/** Fires attached 'pushNotificationActionPerformed' listeners, like a notification tap would. */
+export const emitPushNotificationActionPerformed = (
+  actionId: string,
+  data: unknown,
+): Promise<void> =>
+  emitToListeners('pushNotificationActionPerformed', {
+    actionId,
+    notification: { data },
+  });

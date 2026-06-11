@@ -1,22 +1,25 @@
 import { NextRouter } from 'next/router';
 import React from 'react';
+import { ApolloClient } from '@apollo/client';
 import { act, render } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import {
+  emitPushNotificationActionPerformed,
   mockCapacitorCore,
   mockPushNotifications,
   setNativePlatform,
 } from '__tests__/util/capacitorMocks';
+import {
+  disablePush,
+  resetPushRegistrationStateForTesting,
+  startPushRegistration,
+} from 'src/lib/nativeShell/pushRegistration';
 import {
   NativeDeepLinkProvider,
   resetLaunchUrlLatchForTesting,
 } from './NativeDeepLinkProvider';
 
 type AppUrlOpenHandler = (event: { url: string }) => void | Promise<void>;
-type PushActionHandler = (event: {
-  actionId: string;
-  notification: { data: unknown };
-}) => void | Promise<void>;
 
 const mockAppListenerHandles: Array<{ remove: jest.Mock }> = [];
 const mockAppAddListener = jest.fn(
@@ -68,19 +71,14 @@ const emitAppUrlOpen = (url: string) =>
     }
   });
 
-/** Fires attached 'pushNotificationActionPerformed' listeners. */
+/**
+ * Fires attached 'pushNotificationActionPerformed' listeners. Delegates to
+ * the shared removal-aware emitter so listeners detached via
+ * `handle.remove()` (or a stray `removeAllListeners()`) genuinely stop
+ * receiving events, like the real plugin.
+ */
 const emitPushAction = (actionId: string, data: unknown) =>
-  act(async () => {
-    for (const [eventName, handler] of mockPushNotifications.addListener.mock
-      .calls) {
-      if (eventName === 'pushNotificationActionPerformed') {
-        await (handler as unknown as PushActionHandler)({
-          actionId,
-          notification: { data },
-        });
-      }
-    }
-  });
+  act(() => emitPushNotificationActionPerformed(actionId, data));
 
 describe('NativeDeepLinkProvider', () => {
   beforeEach(() => {
@@ -222,14 +220,43 @@ describe('NativeDeepLinkProvider', () => {
       });
     });
 
+    describe('listener survival across the push registration lifecycle', () => {
+      // Regression: pushRegistration used to call removeAllListeners(),
+      // wiping this provider's pushNotificationActionPerformed listener
+      // whenever registration re-ran (locale settle, settings enable) or
+      // push was disabled — killing tap routing for the session.
+      beforeEach(() => {
+        window.localStorage.clear();
+        resetPushRegistrationStateForTesting();
+      });
+
+      it('keeps routing push taps after startPushRegistration and disablePush run', async () => {
+        const client = {
+          mutate: jest.fn(async () => ({ data: {} })),
+        } as unknown as ApolloClient<object>;
+        const { push } = renderProvider();
+        await flushEffects();
+
+        // PushBootstrap / the settings card re-run registration after this
+        // provider attached its tap listener
+        await act(() => startPushRegistration(client, 'en'));
+        await emitPushAction('tap', { deepLink: '/accountLists/al-1' });
+        expect(push).toHaveBeenCalledWith('/accountLists/al-1');
+
+        await act(() => disablePush(client));
+        await emitPushAction('tap', { deepLink: '/accountLists/al-2' });
+        expect(push).toHaveBeenCalledWith('/accountLists/al-2');
+      });
+    });
+
     describe('cleanup', () => {
       it('removes both plugin listeners on unmount', async () => {
         const { unmount } = renderProvider();
         await flushEffects();
 
         expect(mockAppListenerHandles).toHaveLength(1);
-        const pushHandle = await mockPushNotifications.addListener.mock
-          .results[0].value;
+        const pushHandle =
+          await mockPushNotifications.addListener.mock.results[0].value;
 
         unmount();
 

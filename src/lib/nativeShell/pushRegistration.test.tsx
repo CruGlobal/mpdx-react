@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import { ApolloClient, Operation, useApolloClient } from '@apollo/client';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { DeepPartial } from 'ts-essentials';
 import {
+  emitPushNotificationActionPerformed,
   emitRegistration,
   emitRegistrationError,
   mockCapacitorCore,
@@ -12,12 +13,15 @@ import {
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { UserDevicePlatformEnum } from 'src/graphql/types.generated';
 import {
+  DestroyUserDeviceDocument,
   DestroyUserDeviceMutation,
+  RegisterUserDeviceDocument,
   RegisterUserDeviceMutation,
 } from './UserDevice.generated';
 import {
   disablePush,
   enablePush,
+  resetPushRegistrationStateForTesting,
   startPushRegistration,
 } from './pushRegistration';
 import {
@@ -93,10 +97,37 @@ const operationCount = (spy: jest.Mock, operationName: string): number =>
       call.operation.operationName === operationName,
   ).length;
 
+/**
+ * Kicks off `enablePush` and waits until its listeners are attached and
+ * `register()` has been called, so the test can emit the OS `registration`
+ * event. `enablePush` itself only resolves once registration completes, so
+ * the pending promise is returned wrapped (returning it directly would let
+ * `await` flatten it and deadlock).
+ */
+const startEnablePush = async (
+  client: ApolloClient<object>,
+  locale: string,
+  onRegistrationError?: (error: unknown) => void,
+) => {
+  const enablePromise = enablePush(client, locale, onRegistrationError);
+  await waitFor(() =>
+    expect(mockPushNotifications.register).toHaveBeenCalled(),
+  );
+  return { enablePromise };
+};
+
+/** Drains pending microtasks without advancing timers. */
+const flushMicrotasks = async () => {
+  for (let i = 0; i < 20; i++) {
+    await Promise.resolve();
+  }
+};
+
 describe('pushRegistration', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     window.localStorage.clear();
+    resetPushRegistrationStateForTesting();
     mockGetInfo.mockResolvedValue({ version: '1.0.0' });
   });
 
@@ -148,12 +179,12 @@ describe('pushRegistration', () => {
     it('registers the device under the APNS platform when the OS issues a token', async () => {
       const { client, mutationSpy } = renderClient(registerMocks);
 
-      await expect(enablePush(client, 'en')).resolves.toBe('granted');
+      const { enablePromise } = await startEnablePush(client, 'en');
       expect(mockPushNotifications.requestPermissions).toHaveBeenCalled();
-      expect(mockPushNotifications.register).toHaveBeenCalled();
       expect(mutationSpy).not.toHaveBeenCalled();
 
       await emitRegistration('apns-token');
+      await expect(enablePromise).resolves.toBe('granted');
 
       expect(mutationSpy).toHaveGraphqlOperation('RegisterUserDevice', {
         input: {
@@ -165,11 +196,49 @@ describe('pushRegistration', () => {
       });
     });
 
+    it('resolves only after the registration mutation completes', async () => {
+      const { client } = renderClient(registerMocks);
+
+      const { enablePromise } = await startEnablePush(client, 'en');
+      let resolved = false;
+      enablePromise.then(() => {
+        resolved = true;
+      });
+
+      await flushMicrotasks();
+      // register() returned, but no OS token has arrived yet — the promise
+      // must stay pending so callers cannot claim success prematurely
+      expect(resolved).toBe(false);
+
+      await emitRegistration('apns-token');
+      await expect(enablePromise).resolves.toBe('granted');
+    });
+
+    it('rejects when no registration event arrives within the timeout', async () => {
+      jest.useFakeTimers();
+      try {
+        const { client } = renderClient(registerMocks);
+
+        const enablePromise = enablePush(client, 'en');
+        // Attach a handler immediately so the timeout rejection is never
+        // reported as unhandled before the assertion below runs
+        enablePromise.catch(() => undefined);
+        await flushMicrotasks();
+        expect(mockPushNotifications.register).toHaveBeenCalled();
+
+        jest.advanceTimersByTime(30_000);
+        await expect(enablePromise).rejects.toThrow(/timed out/i);
+      } finally {
+        jest.useRealTimers();
+      }
+    });
+
     it('stores the server device id, token, and locale and sets the enabled flag', async () => {
       const { client } = renderClient(registerMocks);
 
-      await enablePush(client, 'en');
+      const { enablePromise } = await startEnablePush(client, 'en');
       await emitRegistration('apns-token');
+      await enablePromise;
 
       expect(getStoredDeviceId()).toBe('device-1');
       expect(getStoredToken()).toBe('apns-token');
@@ -180,8 +249,9 @@ describe('pushRegistration', () => {
     it('maps the frontend locale to an API-accepted locale', async () => {
       const { client, mutationSpy } = renderClient(registerMocks);
 
-      await enablePush(client, 'fr');
+      const { enablePromise } = await startEnablePush(client, 'fr');
       await emitRegistration('apns-token');
+      await enablePromise;
 
       expect(mutationSpy).toHaveGraphqlOperation('RegisterUserDevice', {
         input: {
@@ -198,8 +268,9 @@ describe('pushRegistration', () => {
       mockGetInfo.mockRejectedValueOnce(new Error('no bridge'));
       const { client, mutationSpy } = renderClient(registerMocks);
 
-      await enablePush(client, 'en');
+      const { enablePromise } = await startEnablePush(client, 'en');
       await emitRegistration('apns-token');
+      await enablePromise;
 
       expect(mutationSpy).toHaveGraphqlOperation('RegisterUserDevice', {
         input: {
@@ -217,8 +288,9 @@ describe('pushRegistration', () => {
       setNativePlatform('android');
       const { client, mutationSpy } = renderClient(registerMocks);
 
-      await enablePush(client, 'en');
+      const { enablePromise } = await startEnablePush(client, 'en');
       await emitRegistration('fcm-token');
+      await enablePromise;
 
       expect(mutationSpy).toHaveGraphqlOperation('RegisterUserDevice', {
         input: {
@@ -247,28 +319,96 @@ describe('pushRegistration', () => {
     });
   });
 
-  describe('idempotent re-registration and token rotation', () => {
+  describe('listener ownership', () => {
     beforeEach(() => {
       setNativePlatform('ios');
     });
 
-    it('skips the network when the same token is issued again', async () => {
-      const { client, mutationSpy } = renderClient(registerMocks);
-      await enablePush(client, 'en');
+    it("never calls removeAllListeners — another consumer's push-tap listener survives registration and disable", async () => {
+      // NativeDeepLinkProvider owns the pushNotificationActionPerformed
+      // listener (deep-links design §4.3) — this module must not wipe it
+      const foreignTapListener = jest.fn();
+      await mockPushNotifications.addListener(
+        'pushNotificationActionPerformed',
+        foreignTapListener,
+      );
+      const { client } = renderClient(registerMocks);
 
-      await emitRegistration('apns-token');
+      await startPushRegistration(client, 'en');
+      await emitPushNotificationActionPerformed('tap', {
+        deepLink: '/accountLists/al-1',
+      });
+      expect(foreignTapListener).toHaveBeenCalledTimes(1);
+
+      await disablePush(client);
+      await emitPushNotificationActionPerformed('tap', {
+        deepLink: '/accountLists/al-1',
+      });
+      expect(foreignTapListener).toHaveBeenCalledTimes(2);
+
+      expect(mockPushNotifications.removeAllListeners).not.toHaveBeenCalled();
+    });
+
+    it('re-running startPushRegistration replaces its own listeners instead of stacking them', async () => {
+      const { client, mutationSpy } = renderClient(registerMocks);
+
+      await startPushRegistration(client, 'en');
+      await startPushRegistration(client, 'en');
       await emitRegistration('apns-token');
 
       expect(operationCount(mutationSpy, 'RegisterUserDevice')).toBe(1);
     });
 
-    it('makes zero network calls on a steady-state relaunch registration', async () => {
+    it('disablePush detaches the registration listeners this module attached', async () => {
       const { client, mutationSpy } = renderClient(registerMocks);
-      await enablePush(client, 'en');
+      await startPushRegistration(client, 'en');
+
+      await disablePush(client);
       await emitRegistration('apns-token');
+
+      expect(mutationSpy).not.toHaveGraphqlOperation('RegisterUserDevice');
+    });
+  });
+
+  describe('session-scoped registration and token rotation', () => {
+    beforeEach(() => {
+      setNativePlatform('ios');
+    });
+
+    it('POSTs an upserting registration once per session even when localStorage matches', async () => {
+      // Stale keys from a previous session (or a previous user on this
+      // shell): the launch-time POST must still happen so the backend's
+      // delete_conflicting_device upsert fixes ownership and recreates
+      // server-deleted rows
+      storeRegistration('device-1', 'apns-token', 'en');
+      setPushEnabled(true);
+      const { client, mutationSpy } = renderClient(registerMocks);
+
+      await startPushRegistration(client, 'en');
+      await emitRegistration('apns-token');
+
+      expect(operationCount(mutationSpy, 'RegisterUserDevice')).toBe(1);
+    });
+
+    it('skips the network when the same token is issued again within the session', async () => {
+      const { client, mutationSpy } = renderClient(registerMocks);
+      const { enablePromise } = await startEnablePush(client, 'en');
+
+      await emitRegistration('apns-token');
+      await enablePromise;
+      await emitRegistration('apns-token');
+
+      expect(operationCount(mutationSpy, 'RegisterUserDevice')).toBe(1);
+    });
+
+    it('makes no further network calls when the registration flow re-runs within the session', async () => {
+      const { client, mutationSpy } = renderClient(registerMocks);
+      const { enablePromise } = await startEnablePush(client, 'en');
+      await emitRegistration('apns-token');
+      await enablePromise;
       expect(operationCount(mutationSpy, 'RegisterUserDevice')).toBe(1);
 
-      // Next launch: PushBootstrap re-runs the registration flow
+      // e.g. PushBootstrap re-runs when the user-preference locale settles
       await startPushRegistration(client, 'en');
       await emitRegistration('apns-token');
 
@@ -277,8 +417,9 @@ describe('pushRegistration', () => {
 
     it('re-registers when the token rotates', async () => {
       const { client, mutationSpy } = renderClient(registerMocks);
-      await enablePush(client, 'en');
+      const { enablePromise } = await startEnablePush(client, 'en');
       await emitRegistration('apns-token');
+      await enablePromise;
 
       await emitRegistration('rotated-token');
 
@@ -297,8 +438,9 @@ describe('pushRegistration', () => {
 
     it('re-registers when the locale changes', async () => {
       const { client, mutationSpy } = renderClient(registerMocks);
-      await enablePush(client, 'en');
+      const { enablePromise } = await startEnablePush(client, 'en');
       await emitRegistration('apns-token');
+      await enablePromise;
 
       await startPushRegistration(client, 'de');
       await emitRegistration('apns-token');
@@ -320,16 +462,40 @@ describe('pushRegistration', () => {
       setNativePlatform('ios');
     });
 
-    it('surfaces registrationError events through the callback', async () => {
+    it('surfaces registrationError events through the callback and rejects enablePush', async () => {
       const onRegistrationError = jest.fn();
       const { client } = renderClient();
 
-      await enablePush(client, 'en', onRegistrationError);
+      const { enablePromise } = await startEnablePush(
+        client,
+        'en',
+        onRegistrationError,
+      );
       await emitRegistrationError('apns offline');
 
+      await expect(enablePromise).rejects.toThrow();
       expect(onRegistrationError).toHaveBeenCalledWith({
         error: 'apns offline',
       });
+    });
+
+    it('rejects enablePush when the register mutation fails', async () => {
+      const onRegistrationError = jest.fn();
+      const failingClient = makeFailingClient();
+
+      const enablePromise = enablePush(
+        failingClient,
+        'en',
+        onRegistrationError,
+      );
+      await waitFor(() =>
+        expect(mockPushNotifications.register).toHaveBeenCalled(),
+      );
+      await emitRegistration('apns-token');
+
+      await expect(enablePromise).rejects.toThrow('offline');
+      expect(onRegistrationError).toHaveBeenCalled();
+      expect(isPushEnabled()).toBe(false);
     });
 
     it('stores nothing and surfaces the error when the register mutation fails', async () => {
@@ -361,7 +527,6 @@ describe('pushRegistration', () => {
       expect(mutationSpy).toHaveGraphqlOperation('DestroyUserDevice', {
         input: { id: 'device-1' },
       });
-      expect(mockPushNotifications.removeAllListeners).toHaveBeenCalled();
       expect(mockPushNotifications.unregister).toHaveBeenCalled();
       expect(getStoredDeviceId()).toBeNull();
       expect(getStoredToken()).toBeNull();
@@ -401,7 +566,6 @@ describe('pushRegistration', () => {
       await disablePush(client);
 
       expect(mutationSpy).not.toHaveGraphqlOperation('DestroyUserDevice');
-      expect(mockPushNotifications.removeAllListeners).toHaveBeenCalled();
       expect(mockPushNotifications.unregister).toHaveBeenCalled();
       expect(isPushEnabled()).toBe(false);
     });
@@ -418,6 +582,57 @@ describe('pushRegistration', () => {
 
       expect(getStoredDeviceId()).toBeNull();
       expect(isPushEnabled()).toBe(false);
+    });
+
+    it('compensates with DestroyUserDevice when disable runs while a registration mutation is in flight', async () => {
+      let resolveRegister: (result: {
+        data: RegisterUserDeviceMutation;
+      }) => void = () => undefined;
+      const destroyMutate = jest.fn().mockResolvedValue({ data: {} });
+      const client = {
+        mutate: jest.fn((options: { mutation: unknown }) => {
+          if (options.mutation === RegisterUserDeviceDocument) {
+            return new Promise((resolve) => {
+              resolveRegister = resolve;
+            });
+          }
+          return destroyMutate(options);
+        }),
+      } as unknown as ApolloClient<object>;
+
+      await startPushRegistration(client, 'en');
+      const emitPromise = emitRegistration('apns-token');
+      await waitFor(() =>
+        expect(client.mutate as jest.Mock).toHaveBeenCalled(),
+      );
+
+      // The user (or logout) disables push while the register mutation is
+      // still in flight — no device id is stored yet, so no DELETE fires here
+      await disablePush(client);
+
+      resolveRegister({
+        data: {
+          registerUserDevice: {
+            id: 'device-1',
+            platform: 'APNS',
+            version: '1.0.0',
+            locale: 'en',
+          },
+        },
+      });
+      await emitPromise;
+
+      // The late-resolving registration must not resurrect local state…
+      expect(getStoredDeviceId()).toBeNull();
+      expect(getStoredToken()).toBeNull();
+      expect(isPushEnabled()).toBe(false);
+      // …and the server row it just created must be destroyed
+      expect(destroyMutate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          mutation: DestroyUserDeviceDocument,
+          variables: { input: { id: 'device-1' } },
+        }),
+      );
     });
   });
 });
