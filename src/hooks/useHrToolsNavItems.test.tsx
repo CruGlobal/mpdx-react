@@ -51,6 +51,7 @@ describe('useHrToolsNavItems', () => {
       'salaryCalculator',
       'staffSavingFund',
       'nsGoalCalculator',
+      'nsoMpdQuestionnaire',
       'goalCalculator',
       'mhaCalculator',
       'additionalSalaryRequest',
