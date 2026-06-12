@@ -26,11 +26,10 @@ export const AutosaveCustomTextField: React.FC<
     setFieldValue,
     setFieldTouched,
     submitCount,
-    values: formValues,
     validationSchema: schema,
   } = formikContext;
 
-  const saveField = useSaveField({ formValues });
+  const saveField = useSaveField();
 
   const fieldProps = useCustomAutoSave({
     value: request?.[fieldName],

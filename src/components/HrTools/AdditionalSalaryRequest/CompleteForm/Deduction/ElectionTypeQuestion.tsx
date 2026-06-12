@@ -33,7 +33,7 @@ export const ElectionTypeQuestion: React.FC = () => {
     errors,
     submitCount,
   } = useFormikContext<CompleteFormValues>();
-  const saveField = useSaveField({ formValues });
+  const saveField = useSaveField();
 
   const { calculatedTraditionalDeduction, calculatedRothDeduction } =
     useSalaryCalculations({ values: formValues });
