@@ -1,0 +1,85 @@
+import React from 'react';
+import { render } from '@testing-library/react';
+import { MonthlyNeedsCard } from './MonthlyNeedsCard';
+import { MonthlyNeeds } from './useMonthlyNeedsRows';
+
+const monthlyNeeds: MonthlyNeeds = {
+  married: true,
+  salary: 5000,
+  ministryExpenses: 1000,
+  benefits: 800,
+  socialSecurityAndTaxes: 600,
+  voluntaryRetirement: 400,
+  adminCharge: 200,
+};
+
+describe('MonthlyNeedsCard', () => {
+  it('renders the card title and all monthly needs rows', () => {
+    const { getByRole } = render(
+      <MonthlyNeedsCard monthlyNeeds={monthlyNeeds} supportRaised={1234} />,
+    );
+
+    expect(
+      getByRole('heading', { name: 'Monthly Support Needs' }),
+    ).toBeInTheDocument();
+    expect(getByRole('table')).toHaveTableStructure({
+      rowHeaders: [
+        expect.stringContaining('Salary (Combined)'),
+        expect.stringContaining('Ministry Expenses'),
+        expect.stringContaining('Benefits'),
+        expect.stringContaining('Social Security and Taxes'),
+        expect.stringContaining('Voluntary 403b Retirement Plan'),
+        'Administrative Charge',
+        'Total Support Goal',
+        'Total Solid Support',
+      ],
+      cells: [
+        '$5,000',
+        '$1,000',
+        '$800',
+        '$600',
+        '$400',
+        '$200',
+        '$8,000',
+        '$1,234',
+      ],
+    });
+  });
+
+  it('renders the single salary title when not married', () => {
+    const { getByText } = render(
+      <MonthlyNeedsCard
+        monthlyNeeds={{ ...monthlyNeeds, married: false }}
+        supportRaised={1234}
+      />,
+    );
+
+    expect(getByText('Salary')).toBeInTheDocument();
+  });
+
+  it('totals the monthly needs rows into the support goal', () => {
+    const { getByText } = render(
+      <MonthlyNeedsCard monthlyNeeds={monthlyNeeds} supportRaised={1234} />,
+    );
+
+    expect(getByText('Total Support Goal')).toBeInTheDocument();
+    expect(getByText('$8,000')).toBeInTheDocument();
+  });
+
+  it('renders the support raised as total solid support', () => {
+    const { getByText } = render(
+      <MonthlyNeedsCard monthlyNeeds={monthlyNeeds} supportRaised={1234} />,
+    );
+
+    expect(getByText('Total Solid Support')).toBeInTheDocument();
+    expect(getByText('$1,234')).toBeInTheDocument();
+  });
+
+  it('omits the total solid support row while the support raised is unavailable', () => {
+    const { queryByText } = render(
+      <MonthlyNeedsCard monthlyNeeds={monthlyNeeds} supportRaised={null} />,
+    );
+
+    expect(queryByText('Total Solid Support')).not.toBeInTheDocument();
+  });
+});
