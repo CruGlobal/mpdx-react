@@ -19,6 +19,8 @@ export interface SupportNeedsRow {
   amountBold?: boolean;
   /** Bolds the title cell. Defaults to true (titles are bold). */
   titleBold?: boolean;
+  /** Hides the row's bottom border. The last row never has a border. */
+  hideBorder?: boolean;
 }
 
 export interface SupportNeedsTableProps {
@@ -46,6 +48,7 @@ export const SupportNeedsTable: React.FC<SupportNeedsTableProps> = ({
                 amount,
                 amountBold = false,
                 titleBold = true,
+                hideBorder = false,
               },
               index,
               array,
@@ -55,7 +58,9 @@ export const SupportNeedsTable: React.FC<SupportNeedsTableProps> = ({
                 sx={{
                   'td, th': {
                     borderBottom:
-                      index < array.length - 1 ? '1px solid' : 'none',
+                      hideBorder || index === array.length - 1
+                        ? 'none'
+                        : '1px solid',
                     borderBottomColor: 'divider',
                   },
                 }}

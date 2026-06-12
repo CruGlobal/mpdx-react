@@ -73,6 +73,7 @@ export const useMonthlyNeedsRows = ({
         title: t('Administrative Charge'),
         amount: adminCharge,
         titleBold: false,
+        hideBorder: true,
       },
     ];
 

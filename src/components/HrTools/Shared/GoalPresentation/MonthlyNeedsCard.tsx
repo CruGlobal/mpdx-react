@@ -25,6 +25,7 @@ export const MonthlyNeedsCard: React.FC<MonthlyNeedsCardProps> = ({
         title: t('Total Support Goal'),
         amount: totalSupportGoal,
         amountBold: true,
+        hideBorder: true,
       },
       ...(supportRaised === null
         ? []
@@ -33,6 +34,7 @@ export const MonthlyNeedsCard: React.FC<MonthlyNeedsCardProps> = ({
               title: t('Total Solid Support'),
               amount: supportRaised,
               titleBold: false,
+              hideBorder: true,
             },
           ]),
     ];

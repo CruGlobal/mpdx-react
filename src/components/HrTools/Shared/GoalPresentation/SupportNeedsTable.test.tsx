@@ -51,6 +51,28 @@ describe('SupportNeedsTable', () => {
     });
   });
 
+  it('hides the bottom border for hideBorder rows and the last row', () => {
+    const { getByText } = render(
+      <SupportNeedsTable
+        rows={[
+          { title: 'First', amount: 1 },
+          { title: 'Second', amount: 2, hideBorder: true },
+          { title: 'Third', amount: 3 },
+        ]}
+      />,
+    );
+
+    expect(getByText('First').closest('th')).toHaveStyle({
+      borderBottomStyle: 'solid',
+    });
+    expect(getByText('Second').closest('th')).toHaveStyle({
+      borderBottomStyle: 'none',
+    });
+    expect(getByText('Third').closest('th')).toHaveStyle({
+      borderBottomStyle: 'none',
+    });
+  });
+
   it('renders no rows when rows is empty', () => {
     const { getByRole } = render(<SupportNeedsTable rows={[]} />);
 
