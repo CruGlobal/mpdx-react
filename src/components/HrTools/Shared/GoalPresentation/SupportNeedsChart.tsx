@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, styled, useMediaQuery } from '@mui/material';
+import { Box, styled } from '@mui/material';
 import {
   Cell,
   Legend,
@@ -8,6 +8,7 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from 'recharts';
+import { useContainerWidth } from 'src/hooks/useContainerWidth';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
@@ -62,12 +63,15 @@ export const SupportNeedsChart: React.FC<SupportNeedsChartProps> = ({
   monthlyNeeds,
 }) => {
   const locale = useLocale();
-  const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
+  const { containerRef, width } = useContainerWidth();
+
+  // In narrower containers, the pie shrinks and the legend moves below the chart
+  const isCompact = typeof width === 'number' && width < 700;
 
   const { rows, total } = useMonthlyNeedsRows(monthlyNeeds);
 
   return (
-    <ChartContainer height={500}>
+    <ChartContainer ref={containerRef} height={500}>
       <ResponsiveContainer width="100%">
         <PieChart>
           <Pie
@@ -76,7 +80,7 @@ export const SupportNeedsChart: React.FC<SupportNeedsChartProps> = ({
             nameKey="title"
             cx="50%"
             cy="50%"
-            outerRadius={isMobile ? 130 : 180}
+            outerRadius={isCompact ? 130 : 180}
             cornerRadius={theme.shape.borderRadius}
           >
             {rows.map((row, index) => (
@@ -97,13 +101,13 @@ export const SupportNeedsChart: React.FC<SupportNeedsChartProps> = ({
           />
           <Legend
             layout="vertical"
-            align={isMobile ? 'center' : 'right'}
-            verticalAlign={isMobile ? 'bottom' : 'middle'}
+            align={isCompact ? 'center' : 'right'}
+            verticalAlign={isCompact ? 'bottom' : 'middle'}
             wrapperStyle={{
-              fontSize: isMobile
+              fontSize: isCompact
                 ? theme.typography.subtitle1.fontSize
                 : theme.typography.h5.fontSize,
-              maxWidth: isMobile ? 600 : 300,
+              maxWidth: isCompact ? 600 : 300,
             }}
           />
         </PieChart>
