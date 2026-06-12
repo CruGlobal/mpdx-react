@@ -10,6 +10,7 @@ import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
+import { getTotal } from '../../Shared/Helper/getTotal';
 
 export const CapSubContent: React.FC = () => {
   const { t } = useTranslation();
@@ -21,6 +22,8 @@ export const CapSubContent: React.FC = () => {
   const reason = latestRequest?.progressiveApprovalTierReason;
 
   const { values } = useFormikContext<CompleteFormValues>();
+
+  const total = getTotal(values);
 
   if (reason === ProgressiveApprovalTierReasonEnum.BoardCapException) {
     return null;
@@ -47,12 +50,9 @@ export const CapSubContent: React.FC = () => {
                 primary={t(
                   'For the {{amount}} you are requesting, this will take {{approvalTimeframe}} as it needs to be signed off by {{approver}}.',
                   {
-                    amount: currencyFormat(
-                      Number(values.totalAdditionalSalaryRequested),
-                      currency,
-                      locale,
-                      { showTrailingZeros: true },
-                    ),
+                    amount: currencyFormat(total, currency, locale, {
+                      showTrailingZeros: true,
+                    }),
                     approvalTimeframe:
                       progressiveApprovalTier.approvalTimeframe,
                     approver: progressiveApprovalTier.approver,

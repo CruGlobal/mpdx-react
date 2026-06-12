@@ -644,7 +644,7 @@ describe('useAdditionalSalaryRequestForm', () => {
       });
     });
 
-    it('should calculate total correctly when submitting', async () => {
+    it('should not calculate total when submitting', async () => {
       const { result } = renderHook(
         () =>
           useAdditionalSalaryRequestForm({
@@ -673,16 +673,18 @@ describe('useAdditionalSalaryRequestForm', () => {
         expect(mutationSpy).toHaveBeenCalled();
       });
 
-      // Verify the mutation was called with the correct total (100 + 200 + 300 = 600)
       const updateCall = mutationSpy.mock.calls.find(
         (call: { operation: { operationName: string } }[]) =>
           call[0]?.operation?.operationName === 'UpdateAdditionalSalaryRequest',
       );
       expect(updateCall).toBeDefined();
-      expect(
-        updateCall[0].operation.variables.attributes
-          .totalAdditionalSalaryRequested,
-      ).toBe(600);
+      const { attributes } = updateCall[0].operation.variables;
+      expect(attributes.currentYearSalaryNotReceived).toBe(100);
+      expect(attributes.previousYearSalaryNotReceived).toBe(200);
+      expect(attributes.adoption).toBe(300);
+
+      // The total is computed server-side now — the client must not send it
+      expect(attributes).not.toHaveProperty('totalAdditionalSalaryRequested');
     });
 
     it('should call handleNextStep after successful submit', async () => {

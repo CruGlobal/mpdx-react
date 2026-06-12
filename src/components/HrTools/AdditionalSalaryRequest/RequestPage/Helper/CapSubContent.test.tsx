@@ -24,7 +24,9 @@ const FormikWrapper: React.FC<{ children: React.ReactNode }> = ({
   const formik = useFormik<CompleteFormValues>({
     initialValues: {
       ...defaultCompleteFormValues,
-      totalAdditionalSalaryRequested: '5000',
+      currentYearSalaryNotReceived: '5000',
+      previousYearSalaryNotReceived: '3000',
+      additionalSalaryWithinMax: '2000',
     },
     onSubmit: jest.fn(),
   });
@@ -87,5 +89,24 @@ describe('CapSubContent', () => {
       queryByText(/You have a Board approved Maximum Allowable Salary/),
     ).not.toBeInTheDocument();
     expect(queryByText(/Progressive Approvals/)).not.toBeInTheDocument();
+  });
+
+  it('displays the correct total from form values', () => {
+    mockUseAdditionalSalaryRequest.mockReturnValue({
+      requestData: {
+        latestAdditionalSalaryRequest: {
+          progressiveApprovalTier: {
+            approver: 'Division Head',
+            approvalTimeframe: '1-2 weeks',
+          },
+          progressiveApprovalTierReason:
+            ProgressiveApprovalTierReasonEnum.OverUserCap,
+        },
+      },
+    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+    const { getByText } = renderCapSubContent();
+
+    expect(getByText(/\$10,000\.00/)).toBeInTheDocument();
   });
 });
