@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useMemo, useState } from 'react';
 import { NsoMpdQuestionnaireStepEnum } from '../NsoMpdQuestionnaireHelper';
+import { HouseholdStaff, useHouseholdStaff } from './useHouseholdStaff';
 import { NsoMpdQuestionnaireStep, useSteps } from './useSteps';
 
 export type NsoMpdQuestionnaireType = {
@@ -12,7 +13,7 @@ export type NsoMpdQuestionnaireType = {
   handleContinue: () => void;
   toggleDrawer: () => void;
   setDrawerOpen: (open: boolean) => void;
-};
+} & HouseholdStaff;
 
 const NsoMpdQuestionnaireContext =
   createContext<NsoMpdQuestionnaireType | null>(null);
@@ -33,6 +34,7 @@ interface Props {
 
 export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
   const steps = useSteps();
+  const householdStaff = useHouseholdStaff();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
 
@@ -74,6 +76,7 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
       handleContinue,
       toggleDrawer,
       setDrawerOpen,
+      ...householdStaff,
     }),
     [
       steps,
@@ -85,6 +88,7 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
       handleContinue,
       toggleDrawer,
       setDrawerOpen,
+      householdStaff,
     ],
   );
 
