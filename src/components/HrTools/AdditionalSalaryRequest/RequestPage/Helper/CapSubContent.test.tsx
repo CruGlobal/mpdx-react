@@ -107,6 +107,6 @@ describe('CapSubContent', () => {
 
     const { getByText } = renderCapSubContent();
 
-    expect(getByText(/\$10,000.00/)).toBeInTheDocument();
+    expect(getByText(/\$10,000\.00/)).toBeInTheDocument();
   });
 });

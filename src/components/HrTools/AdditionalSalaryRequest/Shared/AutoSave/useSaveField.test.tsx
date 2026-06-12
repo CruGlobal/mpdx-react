@@ -1,9 +1,12 @@
 import { ThemeProvider } from '@mui/material/styles';
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/HrTools/Shared/CalculationReports/Shared/sharedTypes';
+import { ElectionType403bEnum } from 'src/graphql/types.generated';
+import { createCache } from 'src/lib/apollo/cache';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
+import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { UpdateAdditionalSalaryRequestMutation } from '../../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../../AdditionalSalaryRequestHelper';
 import {
@@ -32,6 +35,28 @@ const mutationSpy = jest.fn();
 
 const mockTrackMutation = jest.fn((mutation) => mutation);
 
+const defaultFormValues: CompleteFormValues = {
+  currentYearSalaryNotReceived: '0',
+  previousYearSalaryNotReceived: '0',
+  additionalSalaryWithinMax: '0',
+  adoption: '0',
+  counselingNonMedical: '0',
+  healthcareExpensesExceedingLimit: '0',
+  babysittingMinistryEvents: '0',
+  childrenMinistryTripExpenses: '0',
+  childrenCollegeEducation: '0',
+  movingExpense: '0',
+  seminary: '0',
+  housingDownPayment: '0',
+  autoPurchase: '0',
+  expensesNotApprovedWithin90Days: '0',
+  electionType403b: ElectionType403bEnum.None,
+  phoneNumber: '',
+  emailAddress: '',
+  totalAdditionalSalaryRequested: '0',
+  additionalInfo: '',
+};
+
 const defaultMockContextValue: AdditionalSalaryRequestType = {
   staffAccountId: 'staff-account-1',
   staffAccountIdLoading: false,
@@ -45,6 +70,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   toggleDrawer: jest.fn(),
   requestData: {
     latestAdditionalSalaryRequest: {
+      __typename: 'AdditionalSalaryRequest',
       id: 'request-id',
       calculations: {
         currentSalaryCap: 50000,
@@ -102,9 +128,12 @@ describe('useSaveField', () => {
   });
 
   it('should update additional salary request with new attributes', async () => {
-    const { result } = renderHook(() => useSaveField(), {
-      wrapper: TestComponent,
-    });
+    const { result } = renderHook(
+      () => useSaveField({ formValues: defaultFormValues }),
+      {
+        wrapper: TestComponent,
+      },
+    );
 
     result.current({ currentYearSalaryNotReceived: 200 });
 
@@ -121,15 +150,76 @@ describe('useSaveField', () => {
     );
   });
 
+  it('should not send a client-calculated total to the server', async () => {
+    const { result } = renderHook(
+      () => useSaveField({ formValues: defaultFormValues }),
+      {
+        wrapper: TestComponent,
+      },
+    );
+
+    result.current({ currentYearSalaryNotReceived: 200 });
+
+    await waitFor(() => expect(mutationSpy).toHaveBeenCalled());
+
+    const updateCall = mutationSpy.mock.calls.find(
+      (call: { operation: { operationName: string } }[]) =>
+        call[0]?.operation?.operationName === 'UpdateAdditionalSalaryRequest',
+    );
+    expect(updateCall).toBeDefined();
+    // The total is computed server-side now — it must not be in the variables
+    expect(updateCall[0].operation.variables.attributes).not.toHaveProperty(
+      'totalAdditionalSalaryRequested',
+    );
+  });
+
+  it('optimistically writes the client-calculated total to the cache before the server responds', async () => {
+    const cache = createCache();
+
+    const { result } = renderHook(
+      () => useSaveField({ formValues: defaultFormValues }),
+      {
+        wrapper: ({ children }: { children: React.ReactElement }) => (
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<{
+              UpdateAdditionalSalaryRequest: UpdateAdditionalSalaryRequestMutation;
+            }>
+              cache={cache}
+              onCall={mutationSpy}
+            >
+              {children}
+            </GqlMockedProvider>
+          </ThemeProvider>
+        ),
+      },
+    );
+
+    let optimistic: { totalAdditionalSalaryRequested?: number } | undefined;
+    await act(async () => {
+      const pending = result.current({ currentYearSalaryNotReceived: 200 });
+      optimistic = cache.extract(true)[
+        'AdditionalSalaryRequest:request-id'
+      ] as {
+        totalAdditionalSalaryRequested?: number;
+      };
+      await pending;
+    });
+
+    expect(optimistic?.totalAdditionalSalaryRequested).toBe(200);
+  });
+
   it('should not call mutation when requestId is missing', async () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
       ...defaultMockContextValue,
       requestData: null,
     });
 
-    const { result } = renderHook(() => useSaveField(), {
-      wrapper: TestComponent,
-    });
+    const { result } = renderHook(
+      () => useSaveField({ formValues: defaultFormValues }),
+      {
+        wrapper: TestComponent,
+      },
+    );
 
     await result.current({ currentYearSalaryNotReceived: 200 });
 
@@ -137,9 +227,12 @@ describe('useSaveField', () => {
   });
 
   it('should track mutation through context trackMutation', async () => {
-    const { result } = renderHook(() => useSaveField(), {
-      wrapper: TestComponent,
-    });
+    const { result } = renderHook(
+      () => useSaveField({ formValues: defaultFormValues }),
+      {
+        wrapper: TestComponent,
+      },
+    );
 
     result.current({ adoption: 500 });
 
