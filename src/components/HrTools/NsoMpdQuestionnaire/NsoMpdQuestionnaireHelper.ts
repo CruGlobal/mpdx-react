@@ -1,7 +1,7 @@
 export enum NsoMpdQuestionnaireStepEnum {
-  StepOne = 'step-one',
-  StepTwo = 'step-two',
-  StepThree = 'step-three',
-  StepFour = 'step-four',
-  StepFive = 'step-five',
+  PersonalInformation = 'personal-information',
+  MinistryInformation = 'ministry-information',
+  FinancialInformation = 'financial-information',
+  NsoInformation = 'nso-information',
+  Summary = 'summary',
 }

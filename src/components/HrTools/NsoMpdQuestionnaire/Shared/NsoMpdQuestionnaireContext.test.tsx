@@ -35,7 +35,9 @@ const InnerComponent: React.FC<InnerComponentProps> = ({ initialStep }) => {
         Last step: {isLastStep ? 'yes' : 'no'}
       </div>
       <button
-        onClick={() => handleStepChange(NsoMpdQuestionnaireStepEnum.StepThree)}
+        onClick={() =>
+          handleStepChange(NsoMpdQuestionnaireStepEnum.FinancialInformation)
+        }
       >
         Change Step
       </button>
@@ -74,7 +76,7 @@ describe('NsoMpdQuestionnaireContext', () => {
 
   it('does not continue past the last step', () => {
     const { getByRole } = render(
-      <TestComponent initialStep={NsoMpdQuestionnaireStepEnum.StepFive} />,
+      <TestComponent initialStep={NsoMpdQuestionnaireStepEnum.Summary} />,
     );
     expect(getByRole('heading')).toHaveTextContent('Summary');
 

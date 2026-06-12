@@ -11,15 +11,15 @@ export const NsoMpdQuestionnaire: React.FC = () => {
   const { currentStep } = useNsoMpdQuestionnaire();
 
   switch (currentStep.step) {
-    case NsoMpdQuestionnaireStepEnum.StepOne:
+    case NsoMpdQuestionnaireStepEnum.PersonalInformation:
       return <PersonalInformation />;
-    case NsoMpdQuestionnaireStepEnum.StepTwo:
+    case NsoMpdQuestionnaireStepEnum.MinistryInformation:
       return <MinistryInformation />;
-    case NsoMpdQuestionnaireStepEnum.StepThree:
+    case NsoMpdQuestionnaireStepEnum.FinancialInformation:
       return <FinancialInformation />;
-    case NsoMpdQuestionnaireStepEnum.StepFour:
+    case NsoMpdQuestionnaireStepEnum.NsoInformation:
       return <NsoInformation />;
-    case NsoMpdQuestionnaireStepEnum.StepFive:
+    case NsoMpdQuestionnaireStepEnum.Summary:
       return <Summary />;
   }
 };

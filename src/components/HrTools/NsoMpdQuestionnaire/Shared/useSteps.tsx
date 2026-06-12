@@ -19,27 +19,27 @@ export const useSteps = (): NsoMpdQuestionnaireStep[] => {
   const steps = useMemo(
     () => [
       {
-        step: NsoMpdQuestionnaireStepEnum.StepOne,
+        step: NsoMpdQuestionnaireStepEnum.PersonalInformation,
         title: t('Questionnaire Step 1'),
         icon: <PersonIcon />,
       },
       {
-        step: NsoMpdQuestionnaireStepEnum.StepTwo,
+        step: NsoMpdQuestionnaireStepEnum.MinistryInformation,
         title: t('Questionnaire Step 2'),
         icon: <ChurchIcon />,
       },
       {
-        step: NsoMpdQuestionnaireStepEnum.StepThree,
+        step: NsoMpdQuestionnaireStepEnum.FinancialInformation,
         title: t('Questionnaire Step 3'),
         icon: <AccountBalanceIcon />,
       },
       {
-        step: NsoMpdQuestionnaireStepEnum.StepFour,
+        step: NsoMpdQuestionnaireStepEnum.NsoInformation,
         title: t('Questionnaire Step 4'),
         icon: <HotelIcon />,
       },
       {
-        step: NsoMpdQuestionnaireStepEnum.StepFive,
+        step: NsoMpdQuestionnaireStepEnum.Summary,
         title: t('Summary'),
         icon: <RequestQuoteIcon />,
       },
