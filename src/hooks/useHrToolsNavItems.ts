@@ -45,6 +45,13 @@ export function useHrToolsNavItems(): {
           inNsGoalCalcIneligibleGroup,
       },
       {
+        id: 'nsoMpdQuestionnaire',
+        title: t('NSO MPD Questionnaire'),
+        hideItem:
+          process.env.DISABLE_NS_GOAL_CALCULATOR === 'true' ||
+          inNsGoalCalcIneligibleGroup,
+      },
+      {
         id: 'goalCalculator',
         title: t('MPD Goal Calculator'),
         hideItem: inMpdGoalCalcIneligibleGroup,
