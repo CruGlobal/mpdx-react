@@ -8,10 +8,8 @@ interface ContinueButtonProps {
 }
 
 const StyledButton = styled(Button)(({ theme }) => ({
-  paddingLeft: theme.spacing(4),
-  paddingRight: theme.spacing(4),
-  paddingTop: theme.spacing(1),
-  paddingBottom: theme.spacing(1),
+  paddingInline: theme.spacing(4),
+  paddingBlock: theme.spacing(1),
 }));
 
 export const ContinueButton: React.FC<ContinueButtonProps> = ({ onClick }) => {
