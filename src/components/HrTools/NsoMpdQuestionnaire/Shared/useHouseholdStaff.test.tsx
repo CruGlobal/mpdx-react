@@ -107,4 +107,38 @@ describe('useHouseholdStaff', () => {
 
     expect(result.current.scenario).toBe(NsoMpdScenarioEnum.Unknown);
   });
+
+  it('returns Unknown while the queries are loading', () => {
+    const { result } = renderHousehold([staff], {
+      usStaffGroup: UsStaffGroupEnum.NewStaff,
+      spouseUsStaffGroup: null,
+    });
+
+    expect(result.current.loading).toBe(true);
+    expect(result.current.scenario).toBe(NsoMpdScenarioEnum.Unknown);
+  });
+
+  it('falls back to Unknown for a non-RMO-spouse household where the user is not new staff', async () => {
+    const { result, waitForNextUpdate } = renderHousehold(
+      [userWithNonRmoSpouse, staff],
+      {
+        usStaffGroup: UsStaffGroupEnum.SeniorStaff,
+        spouseUsStaffGroup: UsStaffGroupEnum.NewStaff,
+      },
+    );
+    await waitForNextUpdate();
+
+    expect(result.current.hasNonRmoSpouse).toBe(true);
+    expect(result.current.scenario).toBe(NsoMpdScenarioEnum.Unknown);
+  });
+
+  it('falls back to Unknown when both spouses are senior staff', async () => {
+    const { result, waitForNextUpdate } = renderHousehold([staff, staff], {
+      usStaffGroup: UsStaffGroupEnum.SeniorStaff,
+      spouseUsStaffGroup: UsStaffGroupEnum.SeniorStaff,
+    });
+    await waitForNextUpdate();
+
+    expect(result.current.scenario).toBe(NsoMpdScenarioEnum.Unknown);
+  });
 });
