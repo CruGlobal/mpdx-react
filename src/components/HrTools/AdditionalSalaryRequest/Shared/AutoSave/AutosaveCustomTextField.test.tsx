@@ -185,7 +185,6 @@ describe('AutosaveCustomTextField', () => {
           id: 'request-id',
           attributes: {
             currentYearSalaryNotReceived: 1500,
-            totalAdditionalSalaryRequested: 1500,
           },
         },
       ),

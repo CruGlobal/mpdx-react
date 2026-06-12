@@ -20,25 +20,29 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
     async (
       attributes: Partial<AdditionalSalaryRequestAttributesInput>,
     ): Promise<void> => {
-      const requestId = requestData?.latestAdditionalSalaryRequest?.id;
+      const request = requestData?.latestAdditionalSalaryRequest;
+      const requestId = request?.id;
       if (!requestId) {
         return;
       }
 
-      // Merge the new attributes with current form values to calculate total
-      const updatedValues = {
-        ...formValues,
-        ...attributes,
-      } as CompleteFormValues;
-      const totalAdditionalSalaryRequested = getTotal(updatedValues);
+      // Keeps the displayed total in sync with the line items
+      const optimisticTotal = getTotal({ ...formValues, ...attributes });
 
       await trackMutation(
         updateAdditionalSalaryRequest({
           variables: {
             id: requestId,
-            attributes: {
-              ...attributes,
-              totalAdditionalSalaryRequested,
+            attributes,
+          },
+          optimisticResponse: {
+            updateAdditionalSalaryRequest: {
+              __typename: 'AdditionalSalaryRequestUpdateMutationPayload',
+              additionalSalaryRequest: {
+                ...request,
+                ...attributes,
+                totalAdditionalSalaryRequested: optimisticTotal,
+              },
             },
           },
         }),

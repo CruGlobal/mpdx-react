@@ -211,17 +211,19 @@ export const useAdditionalSalaryRequestForm = (
           id: requestId,
           attributes: {
             ...Object.fromEntries(
-              Object.entries(values).map(([key, value]) =>
-                typeof value === 'string' &&
-                key !== 'phoneNumber' &&
-                key !== 'emailAddress' &&
-                key !== 'additionalInfo' &&
-                key !== 'electionType403b'
-                  ? [key, parseFloat(value) || 0]
-                  : [key, value],
-              ),
+              Object.entries(values)
+                // The total is computed server-side
+                .filter(([key]) => key !== 'totalAdditionalSalaryRequested')
+                .map(([key, value]) =>
+                  typeof value === 'string' &&
+                  key !== 'phoneNumber' &&
+                  key !== 'emailAddress' &&
+                  key !== 'additionalInfo' &&
+                  key !== 'electionType403b'
+                    ? [key, parseFloat(value) || 0]
+                    : [key, value],
+                ),
             ),
-            totalAdditionalSalaryRequested: getTotal(values),
           },
         },
         onCompleted: () => {
