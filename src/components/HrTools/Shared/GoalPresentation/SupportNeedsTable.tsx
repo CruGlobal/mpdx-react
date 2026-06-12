@@ -38,44 +38,57 @@ export const SupportNeedsTable: React.FC<SupportNeedsTableProps> = ({
     <Box sx={{ width: '100%', overflowX: 'auto' }}>
       <Table size="small">
         <TableBody>
-          {rows.map((item, index, array) => (
-            <TableRow
-              key={item.title}
-              sx={{
-                'td, th': {
-                  borderBottom: index < array.length - 1 ? '1px solid' : 'none',
-                  borderBottomColor: 'divider',
-                },
-              }}
-            >
-              <TableCell component="th" scope="row">
-                <Typography
-                  variant="body1"
-                  fontWeight={item.titleBold === false ? 'normal' : 'bold'}
-                >
-                  {item.title}
-                </Typography>
-                {item.description && (
+          {rows.map(
+            (
+              {
+                title,
+                description,
+                amount,
+                amountBold = false,
+                titleBold = true,
+              },
+              index,
+              array,
+            ) => (
+              <TableRow
+                key={title}
+                sx={{
+                  'td, th': {
+                    borderBottom:
+                      index < array.length - 1 ? '1px solid' : 'none',
+                    borderBottomColor: 'divider',
+                  },
+                }}
+              >
+                <TableCell component="th" scope="row">
                   <Typography
-                    variant="body2"
-                    color={theme.palette.text.secondary}
-                    sx={{ mt: 1 }}
+                    variant="body1"
+                    fontWeight={titleBold ? 'bold' : 'normal'}
                   >
-                    {item.description}
+                    {title}
                   </Typography>
-                )}
-              </TableCell>
-              <TableCell sx={{ verticalAlign: 'top' }}>
-                <Typography
-                  data-testid="amount-typography"
-                  variant="body1"
-                  fontWeight={item.amountBold ? 'bold' : 'normal'}
-                >
-                  {currencyFormat(item.amount, 'USD', locale)}
-                </Typography>
-              </TableCell>
-            </TableRow>
-          ))}
+                  {description && (
+                    <Typography
+                      variant="body2"
+                      color={theme.palette.text.secondary}
+                      sx={{ mt: 1 }}
+                    >
+                      {description}
+                    </Typography>
+                  )}
+                </TableCell>
+                <TableCell sx={{ verticalAlign: 'top' }}>
+                  <Typography
+                    data-testid="amount-typography"
+                    variant="body1"
+                    fontWeight={amountBold ? 'bold' : 'normal'}
+                  >
+                    {currencyFormat(amount, 'USD', locale)}
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            ),
+          )}
         </TableBody>
       </Table>
     </Box>
