@@ -1,8 +1,10 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Divider } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { StepPage } from '../Shared/StepPage';
 import { SubStep } from '../Shared/SubStepList';
+import { ContactInformation } from './ContactInformation';
+import { Settings } from './Settings';
 
 export const PersonalInformation: React.FC = () => {
   const { t } = useTranslation();
@@ -15,9 +17,9 @@ export const PersonalInformation: React.FC = () => {
   return (
     <StepPage subSteps={subSteps}>
       <Box mx={4} my={2}>
-        <Typography variant="body1" color="textSecondary">
-          {t('This step is coming soon.')}
-        </Typography>
+        <Settings />
+        <Divider sx={{ mx: -4, my: 4 }} />
+        <ContactInformation />
       </Box>
     </StepPage>
   );
