@@ -34,6 +34,7 @@ export interface SettingsDialogProps {
   selectedFundType: string | null;
   onClose: (filters?: Filters) => void;
   time?: DateTime;
+  isMpgaReport?: boolean;
 }
 
 export interface Filters {
@@ -111,7 +112,7 @@ const calculateDateRange = (
   }
 };
 
-const getFiltersWithCalculatedDates = (values: Filters): Filters => {
+export const getFiltersWithCalculatedDates = (values: Filters): Filters => {
   const finalValues = { ...values };
   if (values.selectedDateRange !== null) {
     const { startDate, endDate } = calculateDateRange(values.selectedDateRange);
@@ -127,6 +128,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   selectedFilters,
   selectedFundType,
   time,
+  isMpgaReport,
 }) => {
   const { t } = useTranslation();
   const [previewFilters, setPreviewFilters] = useState<Filters | null>(null);
@@ -230,99 +232,111 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
           return (
             <Form>
               <DialogContent>
-                <TextField
-                  select
-                  label={t('Select Date Range')}
-                  fullWidth
-                  value={values.selectedDateRange ?? ''}
-                  onChange={(e) => {
-                    const value = e.target.value === '' ? null : e.target.value;
-                    setFieldValue('selectedDateRange', value);
-                    if (value !== null) {
-                      setFieldValue('startDate', null);
-                      setFieldValue('endDate', null);
+                {!isMpgaReport && (
+                  <>
+                    <TextField
+                      select
+                      label={t('Select Date Range')}
+                      fullWidth
+                      value={values.selectedDateRange ?? ''}
+                      onChange={(e) => {
+                        const value =
+                          e.target.value === '' ? null : e.target.value;
+                        setFieldValue('selectedDateRange', value);
+                        if (value !== null) {
+                          setFieldValue('startDate', null);
+                          setFieldValue('endDate', null);
 
-                      setTouched({
-                        ...touched,
-                        startDate: false,
-                        endDate: false,
-                      });
-                    }
-                    validateAndRefetch(validateForm, {
-                      ...values,
-                      selectedDateRange: value as DateRange | null,
-                      ...(value !== null && { startDate: null, endDate: null }),
-                    });
-                  }}
+                          setTouched({
+                            ...touched,
+                            startDate: false,
+                            endDate: false,
+                          });
+                        }
+                        validateAndRefetch(validateForm, {
+                          ...values,
+                          selectedDateRange: value as DateRange | null,
+                          ...(value !== null && {
+                            startDate: null,
+                            endDate: null,
+                          }),
+                        });
+                      }}
+                    >
+                      <MenuItem value="">{t('None')}</MenuItem>
+                      <MenuItem value={DateRange.WeekToDate}>
+                        {t('Week to Date')}
+                      </MenuItem>
+                      <MenuItem value={DateRange.MonthToDate}>
+                        {t('Month to Date')}
+                      </MenuItem>
+                      <MenuItem value={DateRange.YearToDate}>
+                        {t('Year to Date')}
+                      </MenuItem>
+                    </TextField>
+
+                    <Typography variant="body2" sx={{ mt: 2, mb: 2 }}>
+                      {t('Or enter a custom date range:')}
+                    </Typography>
+
+                    <Box display="flex" gap={2}>
+                      <CustomDateField
+                        label={t('Start Date')}
+                        value={values.startDate ?? null}
+                        onChange={(date) => {
+                          setFieldValue('startDate', date);
+                          setTouched({ ...touched, startDate: true });
+                          if (date) {
+                            setFieldValue('selectedDateRange', null);
+                          }
+                          validateAndRefetch(validateForm, {
+                            ...values,
+                            startDate: date,
+                            selectedDateRange: date
+                              ? null
+                              : values.selectedDateRange,
+                          });
+                        }}
+                        fullWidth
+                        error={Boolean(errors.startDate && touched.startDate)}
+                        helperText={
+                          errors.startDate && touched.startDate
+                            ? errors.startDate
+                            : ''
+                        }
+                      />
+                      <CustomDateField
+                        label={t('End Date')}
+                        value={values.endDate ?? null}
+                        onChange={(date) => {
+                          setFieldValue('endDate', date);
+                          setTouched({ ...touched, endDate: true });
+                          if (date) {
+                            setFieldValue('selectedDateRange', null);
+                          }
+                          validateAndRefetch(validateForm, {
+                            ...values,
+                            endDate: date,
+                            selectedDateRange: date
+                              ? null
+                              : values.selectedDateRange,
+                          });
+                        }}
+                        fullWidth
+                        error={Boolean(errors.endDate && touched.endDate)}
+                        helperText={
+                          errors.endDate && touched.endDate
+                            ? errors.endDate
+                            : ''
+                        }
+                      />
+                    </Box>
+                  </>
+                )}
+
+                <Typography
+                  sx={{ mt: isMpgaReport ? 0 : 2, whiteSpace: 'pre-line' }}
                 >
-                  <MenuItem value="">{t('None')}</MenuItem>
-                  <MenuItem value={DateRange.WeekToDate}>
-                    {t('Week to Date')}
-                  </MenuItem>
-                  <MenuItem value={DateRange.MonthToDate}>
-                    {t('Month to Date')}
-                  </MenuItem>
-                  <MenuItem value={DateRange.YearToDate}>
-                    {t('Year to Date')}
-                  </MenuItem>
-                </TextField>
-
-                <Typography variant="body2" sx={{ mt: 2, mb: 2 }}>
-                  {t('Or enter a custom date range:')}
-                </Typography>
-
-                <Box display="flex" gap={2}>
-                  <CustomDateField
-                    label={t('Start Date')}
-                    value={values.startDate ?? null}
-                    onChange={(date) => {
-                      setFieldValue('startDate', date);
-                      setTouched({ ...touched, startDate: true });
-                      if (date) {
-                        setFieldValue('selectedDateRange', null);
-                      }
-                      validateAndRefetch(validateForm, {
-                        ...values,
-                        startDate: date,
-                        selectedDateRange: date
-                          ? null
-                          : values.selectedDateRange,
-                      });
-                    }}
-                    fullWidth
-                    error={Boolean(errors.startDate && touched.startDate)}
-                    helperText={
-                      errors.startDate && touched.startDate
-                        ? errors.startDate
-                        : ''
-                    }
-                  />
-                  <CustomDateField
-                    label={t('End Date')}
-                    value={values.endDate ?? null}
-                    onChange={(date) => {
-                      setFieldValue('endDate', date);
-                      setTouched({ ...touched, endDate: true });
-                      if (date) {
-                        setFieldValue('selectedDateRange', null);
-                      }
-                      validateAndRefetch(validateForm, {
-                        ...values,
-                        endDate: date,
-                        selectedDateRange: date
-                          ? null
-                          : values.selectedDateRange,
-                      });
-                    }}
-                    fullWidth
-                    error={Boolean(errors.endDate && touched.endDate)}
-                    helperText={
-                      errors.endDate && touched.endDate ? errors.endDate : ''
-                    }
-                  />
-                </Box>
-
-                <Typography sx={{ mt: 2, whiteSpace: 'pre-line' }}>
                   {t(
                     `Income and expenses are combined by categories by default. This may be useful for long date ranges (e.g., "Year to Date").
                     Select which categories to keep consolidated.`,

@@ -64,7 +64,7 @@ const StyledTimeNavBox = styled(Box)({
   gap: theme.spacing(2),
 });
 
-const StyledFilterButton = styled(Button)({
+export const StyledFilterButton = styled(Button)({
   color: theme.palette.mpdxGrayDark.main,
   borderColor: theme.palette.mpdxGrayDark.main,
   '&:hover': {
@@ -421,7 +421,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               size="small"
               onClick={handleSettingsClick}
             >
-              {t('Filter Settings')}
+              {t('Report Settings')}
             </StyledFilterButton>
           </Box>
         </Container>

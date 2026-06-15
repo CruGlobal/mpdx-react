@@ -1,12 +1,20 @@
-import { HourglassDisabled } from '@mui/icons-material';
+import { useState } from 'react';
+import { HourglassDisabled, Settings } from '@mui/icons-material';
 import { Box, Container, Grid } from '@mui/material';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { EmptyTable } from '../../../HrTools/Shared/EmptyTable/EmptyTable';
+import {
+  Filters,
+  SettingsDialog,
+  getFiltersWithCalculatedDates,
+} from '../../StaffExpenseReport/SettingsDialog/SettingsDialog';
+import { StyledFilterButton } from '../../StaffExpenseReport/StaffExpenseReport';
 import { CardSkeleton } from '../Card/CardSkeleton';
 import { ExpensesPieChart } from '../Charts/ExpensesPieChart';
 import { MonthlySummaryChart } from '../Charts/MonthlySummaryChart';
 import { SummaryBarChart } from '../Charts/SummaryBarChart';
-import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
+import { FundTypes, ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { TableCard } from '../Tables/TableCard';
 import { AllData } from '../mockData';
 
@@ -22,6 +30,21 @@ export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
   currency,
 }) => {
   const { t } = useTranslation();
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  const startDate = DateTime.now().minus({ months: 11 }).startOf('month');
+  const endDate = DateTime.now().endOf('month');
+
+  const handleSettingsClick = () => {
+    setIsSettingsOpen(true);
+  };
+
+  const selectedFilters: Filters = getFiltersWithCalculatedDates({
+    selectedDateRange: null,
+    startDate: startDate,
+    endDate: endDate,
+    categories: [],
+  });
 
   return (
     <Box mt={2}>
@@ -43,7 +66,17 @@ export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
             </Grid>
           </Grid>
         </Box>
-        <Box>
+        <Box display="flex" justifyContent="flex-end" mb={2}>
+          <StyledFilterButton
+            variant="outlined"
+            startIcon={<Settings />}
+            size="small"
+            onClick={handleSettingsClick}
+          >
+            {t('Report Settings')}
+          </StyledFilterButton>
+        </Box>
+        <Box mt={2}>
           <TableCard
             type={ReportTypeEnum.Income}
             data={data.income ?? []}
@@ -89,6 +122,15 @@ export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
           </CardSkeleton>
         </Box>
       </Container>
+      {isSettingsOpen && (
+        <SettingsDialog
+          selectedFilters={selectedFilters}
+          selectedFundType={FundTypes.Primary}
+          isOpen={isSettingsOpen}
+          onClose={() => setIsSettingsOpen(false)}
+          isMpgaReport
+        />
+      )}
     </Box>
   );
 };
