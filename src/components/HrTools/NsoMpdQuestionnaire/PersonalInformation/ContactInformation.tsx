@@ -41,9 +41,6 @@ export const ContactInformation: React.FC = () => {
           ),
         }}
         {...fieldProps}
-        onBlur={() => {
-          fieldProps.onBlur();
-        }}
       />
     </Stack>
   );
