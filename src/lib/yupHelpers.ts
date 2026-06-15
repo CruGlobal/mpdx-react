@@ -2,6 +2,14 @@ import { DateTime } from 'luxon';
 import { TFunction } from 'react-i18next';
 import * as yup from 'yup';
 
+const disallowedPhoneCharacters = /[^\d+() -]/g;
+/**
+ * Strip any characters that aren't valid in a phone number, keeping digits, spaces, parentheses,
+ * plus signs, and hyphens.
+ */
+export const sanitizePhoneNumber = (value: string) =>
+  value.replace(disallowedPhoneCharacters, '');
+
 /**
  * Validation for phone numbers that satisfy these conditions:
  * - May include digits, spaces, parentheses, plus signs, and hyphens
@@ -14,7 +22,7 @@ export const phoneNumber = (t: TFunction) =>
       return false;
     }
     const cleaned = val.replace(/\D/g, '');
-    return !/[^\d+() -]/.test(val) && /^\d{7,15}$/.test(cleaned);
+    return sanitizePhoneNumber(val) === val && /^\d{7,15}$/.test(cleaned);
   });
 
 export const dateTime = () =>

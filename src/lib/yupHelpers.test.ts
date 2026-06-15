@@ -1,5 +1,5 @@
 import i18n from './i18n';
-import { phoneNumber } from './yupHelpers';
+import { phoneNumber, sanitizePhoneNumber } from './yupHelpers';
 
 const schema = phoneNumber(i18n.t);
 
@@ -58,5 +58,31 @@ describe('phoneNumber validation', () => {
 
   it('rejects special characters', () => {
     expect(() => schema.validateSync('123@456#7890')).toThrow();
+  });
+});
+
+describe('sanitizePhoneNumber', () => {
+  it('keeps digits, spaces, parentheses, plus signs, and hyphens', () => {
+    expect(sanitizePhoneNumber('+1 (234) 567-8901')).toBe('+1 (234) 567-8901');
+  });
+
+  it('strips letters surrounding an otherwise valid number', () => {
+    expect(sanitizePhoneNumber('abc(123) 456-7890xyz')).toBe('(123) 456-7890');
+  });
+
+  it('strips special characters', () => {
+    expect(sanitizePhoneNumber('123@456#7890')).toBe('1234567890');
+  });
+
+  it('strips disallowed characters interleaved between allowed ones', () => {
+    expect(sanitizePhoneNumber('1.2*3 4_5')).toBe('123 45');
+  });
+
+  it('returns an empty string when no allowed characters remain', () => {
+    expect(sanitizePhoneNumber('abc')).toBe('');
+  });
+
+  it('leaves an already-clean value unchanged', () => {
+    expect(sanitizePhoneNumber('1234567')).toBe('1234567');
   });
 });
