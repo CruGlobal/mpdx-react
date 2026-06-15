@@ -12,7 +12,7 @@ This document is authoritative where area docs disagree. Contradiction resolutio
 ## 1. Decision summary (one paragraph per area)
 
 **Capacitor shell (architecture).** A thin **Capacitor 7 shell in `server.url` mode** pointed at
-the hosted Amplify SSR app (prod `https://mpdx.org`, stage builds at `https://next.stage.mpdx.org`),
+the hosted Amplify SSR app (prod `https://mpdx.org`, stage builds at `https://stage.mpdx.org`),
 living in-repo in `mpdx-react` (`capacitor.config.ts`, `ios/`, `android/`, `capacitor-web/error.html`
 stub, `src/lib/nativeShell/`). The single-host rule — `allowNavigation` empty, all external URLs to
 the system browser — sidesteps every documented Capacitor remote-URL bug. iOS sets

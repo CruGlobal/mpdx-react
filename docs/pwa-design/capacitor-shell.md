@@ -84,7 +84,7 @@ Rejected alternatives, for the record:
 The Capacitor 7 webview loads the hosted Amplify SSR app:
 
 - prod: `https://mpdx.org`
-- stage: `https://next.stage.mpdx.org` (debug/stage builds, env-switched at
+- stage: `https://stage.mpdx.org` (debug/stage builds, env-switched at
   build time)
 
 Forced by reality: 64 of 69 pages export `getServerSideProps`
@@ -157,7 +157,7 @@ const config: CapacitorConfig = {
   webDir: 'capacitor-web', // error.html stub; server.url overrides everything else
   server: {
     url: process.env.SHELL_TARGET === 'stage'
-      ? 'https://next.stage.mpdx.org'
+      ? 'https://stage.mpdx.org'
       : 'https://mpdx.org',
     errorPath: 'error.html',
     // allowNavigation: deliberately ABSENT (empty) — single-host rule, §1.1
@@ -171,7 +171,7 @@ const config: CapacitorConfig = {
 
 `ios/App/App/Info.plist` additions:
 
-- `WKAppBoundDomains = [mpdx.org]` (+ `next.stage.mpdx.org` in debug builds).
+- `WKAppBoundDomains = [mpdx.org]` (+ `stage.mpdx.org` in debug builds).
   This single key is load-bearing: it is what unlocks **service workers and
   durable storage in WKWebView** (iOS 14+, max 10 domains), and per Capacitor
   iOS troubleshooting docs, `limitsNavigationsToAppBoundDomains: true` must

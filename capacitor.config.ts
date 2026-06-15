@@ -19,12 +19,11 @@ const config: CapacitorConfig = {
   // error.html stub only; server.url overrides everything else (shell doc §1.2)
   webDir: 'capacitor-web',
   server: {
-    // Stage host per capacitor-shell.md §1.1. NOTE: https://next.stage.mpdx.org
-    // is the design doc's stage host; it does not appear in any repo env/config
-    // file — verify it serves the Next.js stage app before the Gate 1 run.
+    // Stage/prod hosts confirmed 2026-06-15: stage app is https://stage.mpdx.org,
+    // production is https://mpdx.org (capacitor-shell.md §1.1).
     url:
       process.env.SHELL_TARGET === 'stage'
-        ? 'https://next.stage.mpdx.org'
+        ? 'https://stage.mpdx.org'
         : 'https://mpdx.org',
     errorPath: 'error.html',
     // allowNavigation: deliberately ABSENT (empty) — single-host rule

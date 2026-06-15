@@ -26,10 +26,10 @@ This is a prototype, not TDD — **the gates are the tests.**
 
   `capacitor.config.ts` is evaluated at sync time and baked into the native
   projects as `capacitor.config.json` (gitignored). `SHELL_TARGET=stage`
-  points `server.url` at `https://next.stage.mpdx.org`; omitting it bakes
+  points `server.url` at `https://stage.mpdx.org`; omitting it bakes
   prod (`https://mpdx.org`). **Re-run sync after every config change.**
 
-- ⚠️ **Stage host check (do this first):** `https://next.stage.mpdx.org` comes
+- ⚠️ **Stage host check (do this first):** `https://stage.mpdx.org` comes
   from the shell design doc — it appears in no repo env/config file (repo only
   references `api.stage.mpdx.org` / `auth.stage.mpdx.org`). Before Gate 1,
   open it in a normal browser and confirm it serves the Next.js stage app and
@@ -37,7 +37,7 @@ This is a prototype, not TDD — **the gates are the tests.**
   AND `ios/App/App/Info.plist` (`WKAppBoundDomains`) in the same commit.
 
 - iOS note: `WKAppBoundDomains` (Info.plist) lists `mpdx.org` +
-  `next.stage.mpdx.org`; `limitsNavigationsToAppBoundDomains: true` lives in
+  `stage.mpdx.org`; `limitsNavigationsToAppBoundDomains: true` lives in
   `capacitor.config.ts` (it is a WKWebView configuration flag Capacitor sets
   at runtime, not a plist key). Both must be present or iOS bridge injection
   fails with "plugin not implemented".
@@ -129,7 +129,7 @@ Notes:
 - For the spike, the custom scheme `org.mpdx://auth-callback` is acceptable on
   BOTH platforms (verified App Links are the production hardening, T19/T21).
   If you want the Android production shape early, add a second redirect URI
-  `https://next.stage.mpdx.org/auth/native-callback`.
+  `https://stage.mpdx.org/auth/native-callback`.
 - Verify stage Doorkeeper's authorize/token endpoints (defaults:
   `https://api.stage.mpdx.org/oauth/authorize`, `/oauth/token` — these match
   `next.config.ts` API_OAUTH defaults).
@@ -273,7 +273,7 @@ names the owning follow-up task; nothing here blocks local builds or gates.
 | 2   | **`applicationId "org.mpdx"`**                                                                                      | `android/app/build.gradle`                                                              | Master-plan open question Q4 (reuse legacy Play listing vs new id). If it changes, update `google-services.json` `package_name` AND add a new `assetlinks.json` entry (deep-links.md §3) in the same commit.                                                                                                                                                                     |
 | 3   | **iOS bundle id `org.cru.mpdx`**                                                                                    | `ios/App/App.xcodeproj` (`PRODUCT_BUNDLE_IDENTIFIER`)                                   | Apple account info (capacitor-shell.md §13 Q3). The AASA `appID` prefix (Team ID `DQ48D9BF2V` cited in shell doc §11) must match whatever final Team ID + bundle id is registered.                                                                                                                                                                                               |
 | 4   | **`aps-environment` = `development`**                                                                               | `ios/App/App/App.entitlements`                                                          | Not hand-edited — App Store / TestFlight export re-signs to `production` automatically (T29 Fastlane lanes). Requires the Push Notifications capability enabled on the App ID in the Apple Developer portal (automatic signing handles this once the account exists) plus the APNs `.p8` key on the SNS side (T8).                                                              |
-| 5   | **Associated Domains dev variant** — `applinks:next.stage.mpdx.org?mode=developer` documented but NOT committed     | `ios/App/App/App.entitlements` (comment)                                                | Add for dev builds after the §0 stage-host check confirms the real stage host (deep-links.md §2.2 cites `stage.mpdx.org`; the shell config uses `next.stage.mpdx.org` — reconcile first). `?mode=developer` bypasses Apple's AASA CDN and is only honored on developer-signed builds.                                                                                            |
+| 5   | **Associated Domains dev variant** — `applinks:stage.mpdx.org?mode=developer` documented but NOT committed     | `ios/App/App/App.entitlements` (comment)                                                | Add for dev builds after the §0 stage-host check confirms the real stage host (deep-links.md §2.2 cites `stage.mpdx.org`; the shell config uses `stage.mpdx.org` — reconcile first). `?mode=developer` bypasses Apple's AASA CDN and is only honored on developer-signed builds.                                                                                            |
 | 6   | **No `android.permission.CAMERA`** (deliberate omission, not a placeholder)                                         | `android/app/src/main/AndroidManifest.xml`                                              | Permanent (camera-contact-photo.md §6) — but release checklist must audit the **merged** manifest (`./gradlew :app:processDebugManifest`) in case a future plugin injects it.                                                                                                                                                                                                    |
 | 7   | **App Links `autoVerify` scope `/accountLists`** on host `mpdx.org` only                                            | `android/app/src/main/AndroidManifest.xml`                                              | Permanent scope per deep-links.md §3. Debug builds still fail verification (Play-signing fingerprint only) — use the §5 `adb` override.                                                                                                                                                                                                                                          |
 

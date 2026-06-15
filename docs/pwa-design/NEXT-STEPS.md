@@ -11,10 +11,11 @@ accounts/credentials and runs three on-device auth gates. The remaining code
 (production native auth, CI signing, store submission) is deliberately blocked
 on those gates because its assumptions can't be validated without a device.
 
-**The single most important gotcha:** the stage host
-`next.stage.mpdx.org` in `capacitor.config.ts` is an **unverified placeholder**
-— it appears nowhere in repo config. Confirm the real stage URL before doing
-anything else, or every device gate fails for the wrong reason.
+**Stage/prod hosts (confirmed 2026-06-15):** stage is `https://stage.mpdx.org`,
+production is `https://mpdx.org`. These are now baked into `capacitor.config.ts`,
+`WKAppBoundDomains`, and the associated-domains entitlement. Before Gate 1, just
+sanity-check that `https://stage.mpdx.org` serves the Next.js stage app and you
+can log in.
 
 ## Where everything lives
 
@@ -58,26 +59,24 @@ worktrees hold them — that's expected.
 
 Do these top to bottom — each unblocks the next.
 
-1. **Confirm the stage host.** Replace the `next.stage.mpdx.org` placeholder in
-   `capacitor.config.ts` (and the `WKAppBoundDomains` / associated-domains
-   entries) with the real stage URL. See `t1-gate-runbook.md` §0.
-2. **Create the stage Doorkeeper/Okta public PKCE client** for the auth gate
-   (runbook §2.2).
-3. **Run the three auth go/no-go gates on a device** — `t1-gate-runbook.md`:
+1. **Create the stage Doorkeeper/Okta public PKCE client** for the auth gate
+   (runbook §2.2). _(Stage host already confirmed as `stage.mpdx.org` and baked
+   into the config — just sanity-check it loads.)_
+2. **Run the three auth go/no-go gates on a device** — `t1-gate-runbook.md`:
    - Gate 1: bridge injection on the remote origin (SW registers, IndexedDB
      readable). _Only Gate 1 failure invalidates the architecture._
    - Gate 2: system-browser PKCE round-trip lands a working session cookie.
    - Gate 3: cookie survives kill / relaunch / reboot + 48h soak.
      _Gate 3 failure activates Plan B (Keychain refresh token)._
-4. **AWS SNS / Firebase / APNs credentials** — `fcm-v1-backend.md` §5: confirm
+3. **AWS SNS / Firebase / APNs credentials** — `fcm-v1-backend.md` §5: confirm
    the GCM platform-app credential type, upload the FCM v1 service-account JSON,
    confirm the APNs `.p8` + bundle ID, update the `SNS_*_APPLICATION_ARN` deploy
    config. **Trap:** the Firebase project for `google-services.json` must be the
    _same_ project as the SNS credentials (SENDER_ID_MISMATCH otherwise).
-5. **Register the Okta native PKCE client** and append its client ID to
+4. **Register the Okta native PKCE client** and append its client ID to
    `OKTA_AUTH_CLIENT_IDS` in the mpdx_api deploy config (or sign-in rejects with
    "Invalid access_token cid").
-6. **Identity decisions** (drive everything else):
+5. **Identity decisions** (drive everything else):
    - Android: reuse `org.mpdx` Play listing + signing key? (recommended — keeps
      `assetlinks.json` fingerprint valid)
    - Apple: is team `DQ48D9BF2V` still Cru's, and reuse bundle `org.cru.mpdx`?

@@ -21,13 +21,11 @@
 		webcredentials:mpdx.org → password-autofill / passkey association.
 
 		Dev variant (documented, not enabled by default): add
-			applinks:next.stage.mpdx.org?mode=developer
+			applinks:stage.mpdx.org?mode=developer
 		for dev builds — ?mode=developer bypasses Apple's AASA CDN (~24h
 		cache) and is only honored on developer-signed builds, so it is safe
 		to leave in dev entitlements but is kept out of this committed file
-		until the stage host is confirmed (t1-gate-runbook.md §0 stage host
-		check; deep-links.md §2.2 cites stage.mpdx.org — reconcile with the
-		actual stage host before adding).
+		(stage host confirmed 2026-06-15 as stage.mpdx.org).
 	-->
 	<key>com.apple.developer.associated-domains</key>
 	<array>

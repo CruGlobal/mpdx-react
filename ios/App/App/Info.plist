@@ -69,7 +69,7 @@
 	<key>WKAppBoundDomains</key>
 	<array>
 		<string>mpdx.org</string>
-		<string>next.stage.mpdx.org</string>
+		<string>stage.mpdx.org</string>
 	</array>
 </dict>
 </plist>
