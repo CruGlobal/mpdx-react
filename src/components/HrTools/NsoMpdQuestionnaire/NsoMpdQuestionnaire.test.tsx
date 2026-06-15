@@ -28,4 +28,17 @@ describe('NsoMpdQuestionnaire', () => {
       getByRole('heading', { name: 'Questionnaire Step 2' }),
     ).toBeInTheDocument();
   });
+
+  it('keeps Continue disabled until the step is valid', () => {
+    const { getByRole } = render(<TestComponent />);
+
+    expect(getByRole('button', { name: 'Continue' })).toBeDisabled();
+
+    userEvent.type(
+      getByRole('textbox', { name: 'Cell Phone Number' }),
+      '1234567',
+    );
+
+    expect(getByRole('button', { name: 'Continue' })).toBeEnabled();
+  });
 });
