@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { AutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import {
   IconPanelItem,
@@ -73,14 +74,16 @@ export const NsoMpdQuestionnaireLayout: React.FC<
       isSidebarOpen={isDrawerOpen}
       sidebarAriaLabel={t('Steps')}
       mainContent={
-        <Stack spacing={4}>
-          {mainContent}
-          {!isLastStep && (
-            <Box mx={4}>
-              <ContinueButton onClick={handleContinue} />
-            </Box>
-          )}
-        </Stack>
+        <AutosaveForm>
+          <Stack spacing={4}>
+            {mainContent}
+            {!isLastStep && (
+              <Box mx={4}>
+                <ContinueButton onClick={handleContinue} />
+              </Box>
+            )}
+          </Stack>
+        </AutosaveForm>
       }
     />
   );
