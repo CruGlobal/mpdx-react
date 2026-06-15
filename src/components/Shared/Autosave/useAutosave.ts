@@ -48,6 +48,21 @@ export const useAutoSave = <Value extends string | number>({
     [fieldName, schema],
   );
 
+  const transformValue = useCallback(
+    (rawValue: string): string => {
+      try {
+        // Apply any schema transforms defined on the field
+        const transformed = yup
+          .reach(schema, fieldName)
+          .cast(rawValue, { assert: false });
+        return typeof transformed === 'string' ? transformed : rawValue;
+      } catch {
+        return rawValue;
+      }
+    },
+    [schema, fieldName],
+  );
+
   const { parsedValue, errorMessage } = useMemo(
     () => parseValue(internalValue),
     [parseValue, internalValue],
@@ -69,7 +84,7 @@ export const useAutoSave = <Value extends string | number>({
   return {
     value: internalValue,
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
-      const newValue = event.target.value;
+      const newValue = transformValue(event.target.value);
       setInternalValue(newValue);
 
       if (saveOnChange) {
