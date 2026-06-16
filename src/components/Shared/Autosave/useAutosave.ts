@@ -50,15 +50,14 @@ export const useAutoSave = <Value extends string | number>({
 
   const transformValue = useCallback(
     (rawValue: string): string => {
-      try {
-        // Apply any schema transforms defined on the field
-        const transformed = yup
-          .reach(schema, fieldName)
-          .cast(rawValue, { assert: false });
-        return typeof transformed === 'string' ? transformed : rawValue;
-      } catch {
-        return rawValue;
-      }
+      // Apply any schema transforms defined on the field as the user types (e.g. stripping
+      // disallowed characters). Transforms must be idempotent.
+      const transformed = yup
+        .reach(schema, fieldName)
+        .cast(rawValue, { assert: false });
+      // Only apply string transforms. Number/select schemas cast to non-strings, so keep the raw
+      // keystrokes and let parseValue coerce them on save.
+      return typeof transformed === 'string' ? transformed : rawValue;
     },
     [schema, fieldName],
   );
