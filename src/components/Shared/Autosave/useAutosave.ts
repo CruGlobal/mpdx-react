@@ -48,6 +48,20 @@ export const useAutoSave = <Value extends string | number>({
     [fieldName, schema],
   );
 
+  const transformValue = useCallback(
+    (rawValue: string): string => {
+      // Apply any schema transforms defined on the field as the user types (e.g. stripping
+      // disallowed characters). Transforms must be idempotent.
+      const transformed = yup
+        .reach(schema, fieldName)
+        .cast(rawValue, { assert: false });
+      // Only apply string transforms. Number/select schemas cast to non-strings, so keep the raw
+      // keystrokes and let parseValue coerce them on save.
+      return typeof transformed === 'string' ? transformed : rawValue;
+    },
+    [schema, fieldName],
+  );
+
   const { parsedValue, errorMessage } = useMemo(
     () => parseValue(internalValue),
     [parseValue, internalValue],
@@ -69,7 +83,7 @@ export const useAutoSave = <Value extends string | number>({
   return {
     value: internalValue,
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
-      const newValue = event.target.value;
+      const newValue = transformValue(event.target.value);
       setInternalValue(newValue);
 
       if (saveOnChange) {

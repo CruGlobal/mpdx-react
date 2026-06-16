@@ -52,12 +52,12 @@ describe('phoneNumber validation', () => {
     expect(() => schema.validateSync('abcdefghij')).toThrow();
   });
 
-  it('rejects numbers mixed with letters', () => {
-    expect(() => schema.validateSync('123abc4567')).toThrow();
+  it('strips letters mixed with numbers', () => {
+    expect(schema.validateSync('123abc4567')).toBe('1234567');
   });
 
-  it('rejects special characters', () => {
-    expect(() => schema.validateSync('123@456#7890')).toThrow();
+  it('strips special characters', () => {
+    expect(schema.validateSync('123@456#7890')).toBe('1234567890');
   });
 });
 

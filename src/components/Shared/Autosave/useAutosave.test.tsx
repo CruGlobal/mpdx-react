@@ -55,6 +55,21 @@ const SelectTestComponent: React.FC = () => {
   );
 };
 
+const TransformTestComponent: React.FC = () => {
+  const schema = yup.object({
+    field: yup.string().transform((val) => val.replace(/\D/g, '')),
+  });
+
+  const props = useAutoSave({
+    value: '',
+    saveValue,
+    fieldName: 'field',
+    schema,
+  });
+
+  return <TextField label="Field" {...props} />;
+};
+
 describe('AutosaveTextField', () => {
   it('initializes with value and no errors', () => {
     const { getByRole } = render(<TestComponent />);
@@ -124,6 +139,15 @@ describe('AutosaveTextField', () => {
     userEvent.clear(input);
     userEvent.type(input, 'abc');
     expect(input).toHaveAccessibleDescription('Field must be a number');
+  });
+
+  it('transforms the input value', () => {
+    const { getByRole } = render(<TransformTestComponent />);
+
+    const input = getByRole('textbox', { name: 'Field' });
+    userEvent.type(input, 'a1b2c3');
+
+    expect(input).toHaveValue('123');
   });
 
   describe('select input', () => {

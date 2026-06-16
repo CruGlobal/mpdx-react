@@ -3,7 +3,7 @@ import Phone from '@mui/icons-material/Phone';
 import { InputAdornment, Stack, TextField, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { phoneNumber, sanitizePhoneNumber } from 'src/lib/yupHelpers';
+import { phoneNumber } from 'src/lib/yupHelpers';
 import { useQuestionnaireAutoSave } from '../Shared/useQuestionnaireAutoSave';
 
 const placeholder = '000-000-0000';
@@ -41,13 +41,6 @@ export const ContactInformation: React.FC = () => {
           ),
         }}
         {...fieldProps}
-        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-          event.target.value = sanitizePhoneNumber(event.target.value);
-          fieldProps.onChange(event);
-        }}
-        onBlur={() => {
-          fieldProps.onBlur();
-        }}
       />
     </Stack>
   );
