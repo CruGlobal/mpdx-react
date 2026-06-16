@@ -17,13 +17,18 @@ export const sanitizePhoneNumber = (value: string) =>
  * - Must contain between 7 and 15 digits (after removing non-digit characters)
  */
 export const phoneNumber = (t: TFunction) =>
-  yup.string().test('is-phone-number', t('Invalid phone number'), (val) => {
-    if (!val) {
-      return false;
-    }
-    const cleaned = val.replace(/\D/g, '');
-    return sanitizePhoneNumber(val) === val && /^\d{7,15}$/.test(cleaned);
-  });
+  yup
+    .string()
+    .transform((val) =>
+      typeof val === 'string' ? sanitizePhoneNumber(val) : val,
+    )
+    .test('is-phone-number', t('Invalid phone number'), (val) => {
+      if (!val) {
+        return false;
+      }
+      const cleaned = val.replace(/\D/g, '');
+      return /^\d{7,15}$/.test(cleaned);
+    });
 
 export const dateTime = () =>
   yup
