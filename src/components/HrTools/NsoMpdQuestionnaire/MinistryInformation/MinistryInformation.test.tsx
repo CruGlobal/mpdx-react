@@ -12,9 +12,7 @@ const TestComponent: React.FC = () => (
 
 describe('MinistryInformation', () => {
   it('keeps Continue disabled until all four fields are answered', async () => {
-    const { getByRole, getByPlaceholderText, findByRole } = render(
-      <TestComponent />,
-    );
+    const { getByRole, findByRole } = render(<TestComponent />);
 
     const continueButton = getByRole('button', { name: 'Continue' });
     expect(continueButton).toBeDisabled();
@@ -27,9 +25,9 @@ describe('MinistryInformation', () => {
     userEvent.click(getByRole('option', { name: 'Cru' }));
 
     userEvent.type(
-      getByPlaceholderText(
-        'What is your expected ministry assignment location?',
-      ),
+      getByRole('textbox', {
+        name: 'What is your expected ministry assignment location?',
+      }),
       'Orlando, FL',
     );
 
