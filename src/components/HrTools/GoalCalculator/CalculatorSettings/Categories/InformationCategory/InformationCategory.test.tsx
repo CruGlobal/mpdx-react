@@ -95,9 +95,9 @@ describe('InformationCategory', () => {
   });
 
   it("renders the user's first name", async () => {
-    const { getByTestId } = render(<TestComponent />);
+    const { getByRole } = render(<TestComponent />);
     await waitFor(() => {
-      expect(getByTestId('info-name-typography')).toHaveTextContent('John');
+      expect(getByRole('heading', { name: 'John' })).toBeInTheDocument();
     });
   });
 

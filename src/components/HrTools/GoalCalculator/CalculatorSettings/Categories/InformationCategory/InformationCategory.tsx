@@ -1,7 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import RightArrowIcon from '@mui/icons-material/ArrowForward';
-import { Avatar, Box, Button, Card, Typography } from '@mui/material';
-import { styled } from '@mui/system';
+import { Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
@@ -12,14 +10,11 @@ import {
   MpdGoalBenefitsConstantSizeEnum,
 } from 'src/graphql/types.generated';
 import { amount, integer, percentage } from 'src/lib/yupHelpers';
+import { StaffInfoCard } from '../../../../Shared/StaffInfoCard/StaffInfoCard';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
 import { hasStaffSpouse } from '../../../Shared/calculateTotals';
 import { InformationCategoryFinancialForm } from './InformationCategoryForm/InformationCategoryFinancialForm';
 import { InformationCategoryPersonalForm } from './InformationCategoryForm/InformationCategoryPersonalForm';
-
-const StyledCard = styled(Card)({
-  width: '100%',
-});
 
 export const InformationCategory: React.FC = () => {
   const { t } = useTranslation();
@@ -109,71 +104,38 @@ export const InformationCategory: React.FC = () => {
     setViewingSpouse(!viewingSpouse);
   };
 
+  const toggleName = viewingSpouse
+    ? (firstName ?? t('Your Information'))
+    : (spouseFirstName ?? t('Spouse Information'));
+
   return (
-    <StyledCard>
+    <StaffInfoCard
+      person={{
+        name: (viewingSpouse ? spouseFirstName : firstName) ?? t('User'),
+        avatarSrc: viewingSpouse ? undefined : userData?.user.avatar,
+      }}
+      toggle={
+        hasSpouse
+          ? { name: toggleName, onClick: onClickSpouseInformation }
+          : undefined
+      }
+    >
       <Box
-        display="flex"
-        gap={2}
-        m={2}
-        alignItems="center"
-        justifyContent="space-between"
+        data-testid={
+          viewingSpouse ? 'spouse-information-form' : 'user-information-form'
+        }
       >
-        <Box display="flex" alignItems="center" justifyContent="center" gap={1}>
-          <Avatar
-            data-testid="info-avatar"
-            src={viewingSpouse ? undefined : userData?.user.avatar}
-            alt={(viewingSpouse ? spouseFirstName : firstName) ?? t('User')}
-            variant="rounded"
-            sx={{ width: 36, height: 36, marginRight: 1 }}
+        <InformationCategoryPersonalForm
+          schema={validationSchema}
+          isSpouse={viewingSpouse}
+        />
+        <Box sx={{ mt: 3 }}>
+          <InformationCategoryFinancialForm
+            schema={validationSchema}
+            isSpouse={viewingSpouse}
           />
-          <Typography data-testid="info-name-typography" sx={{ fontSize: 18 }}>
-            {(viewingSpouse ? spouseFirstName : firstName) ?? t('User')}
-          </Typography>
         </Box>
-        {hasSpouse && (
-          <Button
-            endIcon={<RightArrowIcon />}
-            onClick={onClickSpouseInformation}
-            sx={{ fontWeight: 'bold', fontSize: '15px' }}
-          >
-            {viewingSpouse
-              ? t('View {{name}}', {
-                  name: firstName ?? t('Your Information'),
-                })
-              : t('View {{name}}', {
-                  name: spouseFirstName ?? t('Spouse Information'),
-                })}
-          </Button>
-        )}
       </Box>
-
-      {!viewingSpouse && (
-        <StyledCard>
-          <Box sx={{ p: 3 }} data-testid="user-information-form">
-            <InformationCategoryPersonalForm schema={validationSchema} />
-            <Box sx={{ mt: 3 }}>
-              <InformationCategoryFinancialForm schema={validationSchema} />
-            </Box>
-          </Box>
-        </StyledCard>
-      )}
-
-      {viewingSpouse && (
-        <StyledCard>
-          <Box sx={{ p: 3 }} data-testid="spouse-information-form">
-            <InformationCategoryPersonalForm
-              schema={validationSchema}
-              isSpouse
-            />
-            <Box sx={{ mt: 3 }}>
-              <InformationCategoryFinancialForm
-                schema={validationSchema}
-                isSpouse
-              />
-            </Box>
-          </Box>
-        </StyledCard>
-      )}
-    </StyledCard>
+    </StaffInfoCard>
   );
 };
