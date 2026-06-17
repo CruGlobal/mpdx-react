@@ -61,7 +61,11 @@ export const ApprovalProcess: React.FC<ApprovalProcessProps> = ({
             multiline
             rows={6}
             fullWidth
-            inputProps={{ style: { overflowY: 'auto' } }}
+            inputProps={{
+              id: 'asr-additional-info',
+              'aria-label': t('Additional Information'),
+              style: { overflowY: 'auto' },
+            }}
           />
         </Box>
       </CardContent>
