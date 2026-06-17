@@ -83,7 +83,7 @@ export const InformationCategoryFinancialForm: React.FC<
 
         <Grid item xs={12}>
           <TextField
-            value={data?.goalCalculation[secaField]?.toString()}
+            value={data?.goalCalculation[secaField]?.toString() ?? ''}
             onChange={(event) => {
               saveField({ [secaField]: event.target.value === 'true' });
             }}

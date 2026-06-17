@@ -5,6 +5,7 @@ import { StepPage } from '../Shared/StepPage';
 import { SubStep } from '../Shared/SubStepList';
 import { ContactInformation } from './ContactInformation';
 import { Settings } from './Settings';
+import { StaffInformation } from './StaffInformation';
 
 export const PersonalInformation: React.FC = () => {
   const { t } = useTranslation();
@@ -18,6 +19,8 @@ export const PersonalInformation: React.FC = () => {
     <StepPage subSteps={subSteps}>
       <Box mx={4} my={2}>
         <Settings />
+        <Divider sx={{ mx: -4, my: 4 }} />
+        <StaffInformation />
         <Divider sx={{ mx: -4, my: 4 }} />
         <ContactInformation />
       </Box>
