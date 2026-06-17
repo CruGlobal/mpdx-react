@@ -1,6 +1,9 @@
 import React, { createContext, useCallback, useMemo, useState } from 'react';
+import { HcmQuery, useHcmQuery } from '../../Shared/HcmData/Hcm.generated';
 import { NsoMpdQuestionnaireStepEnum } from '../NsoMpdQuestionnaireHelper';
 import { NsoMpdQuestionnaireStep, useSteps } from './useSteps';
+
+export type HcmPerson = HcmQuery['hcm'][number];
 
 export type NsoMpdQuestionnaireType = {
   steps: NsoMpdQuestionnaireStep[];
@@ -12,6 +15,8 @@ export type NsoMpdQuestionnaireType = {
   handleContinue: () => void;
   toggleDrawer: () => void;
   setDrawerOpen: (open: boolean) => void;
+  hcmUser: HcmPerson | null;
+  hcmSpouse: HcmPerson | null;
 };
 
 const NsoMpdQuestionnaireContext =
@@ -38,6 +43,10 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
 
   const currentStep = steps[currentIndex];
   const isLastStep = currentIndex === steps.length - 1;
+
+  const { data: hcmData } = useHcmQuery();
+  const hcmUser = hcmData?.hcm[0] ?? null;
+  const hcmSpouse = hcmData?.hcm[1] ?? null;
 
   const toggleDrawer = useCallback(() => {
     setIsDrawerOpen((prev) => !prev);
@@ -74,6 +83,8 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
       handleContinue,
       toggleDrawer,
       setDrawerOpen,
+      hcmUser,
+      hcmSpouse,
     }),
     [
       steps,
@@ -85,6 +96,8 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
       handleContinue,
       toggleDrawer,
       setDrawerOpen,
+      hcmUser,
+      hcmSpouse,
     ],
   );
 
