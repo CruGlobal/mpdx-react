@@ -29,6 +29,7 @@ export const ContactInformation: React.FC = () => {
       <Typography variant="h6">{t('Contact Information')}</Typography>
       <Typography>{t('Please provide your cell phone number.')}</Typography>
       <TextField
+        required
         label={t('Cell Phone Number')}
         placeholder={placeholder}
         size="small"
