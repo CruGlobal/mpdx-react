@@ -114,6 +114,7 @@ describe('AutosaveTextField', () => {
 
     userEvent.clear(input);
     userEvent.type(input, '-100');
+    userEvent.tab();
 
     expect(input).toHaveAccessibleDescription(
       'Pay Rate must be a positive number',
@@ -234,6 +235,7 @@ describe('AutosaveTextField', () => {
 
     userEvent.clear(input);
     userEvent.type(input, '-100');
+    userEvent.tab();
 
     expect(input).toHaveAccessibleDescription(
       'Pay Rate must be a positive number',
@@ -259,11 +261,17 @@ describe('AutosaveTextField', () => {
         </PdsGoalCalculatorTestWrapper>,
       );
 
-    it('shows validation error for an empty required field on load', async () => {
+    it('defers the validation error for an empty required field until touched', async () => {
       const { findByRole } = renderRequired();
 
       const input = await findByRole('textbox', { name: 'Goal Name' });
-      await waitFor(() => expect(input).toHaveValue(''));
+      await waitFor(() => expect(input).toBeEnabled());
+
+      expect(input).toHaveAccessibleDescription('Enter the goal name');
+      expect(input).not.toHaveAttribute('aria-invalid', 'true');
+
+      input.focus();
+      userEvent.tab();
 
       await waitFor(() =>
         expect(input).toHaveAccessibleDescription('Goal Name is required'),
@@ -275,6 +283,10 @@ describe('AutosaveTextField', () => {
       const { findByRole } = renderRequired();
 
       const input = await findByRole('textbox', { name: 'Goal Name' });
+      await waitFor(() => expect(input).toBeEnabled());
+
+      input.focus();
+      userEvent.tab();
       await waitFor(() =>
         expect(input).toHaveAttribute('aria-invalid', 'true'),
       );
