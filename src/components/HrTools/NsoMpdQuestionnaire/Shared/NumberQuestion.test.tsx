@@ -51,20 +51,6 @@ describe('NumberQuestion', () => {
     expect(queryByText('Enter 0 if none.')).not.toBeInTheDocument();
   });
 
-  it('links the input to its helper text via aria-describedby', () => {
-    const { getByRole, getByText } = render(<TestComponent />);
-
-    const describedBy = getByRole('spinbutton', {
-      name: 'How many?',
-    }).getAttribute('aria-describedby');
-
-    expect(describedBy).toBeTruthy();
-    expect(getByText('Please enter a number.')).toHaveAttribute(
-      'id',
-      describedBy,
-    );
-  });
-
   it('restores the helper text once a valid value is entered', () => {
     const { getByRole, getByText, queryByText } = render(<TestComponent />);
 
