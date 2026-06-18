@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { TextFieldProps } from '@mui/material';
 import { prepareDataForValidation } from 'formik';
 import * as yup from 'yup';
@@ -25,6 +25,7 @@ export const useAutoSave = <Value extends string | number>({
   const [internalValue, setInternalValue] = useSyncedState(
     value?.toString() ?? '',
   );
+  const [touched, setTouched] = useState(false);
   const { markValid, markInvalid } = useOptionalAutosaveForm() ?? {};
 
   const parseValue = useCallback(
@@ -80,6 +81,8 @@ export const useAutoSave = <Value extends string | number>({
     };
   }, [fieldName, errorMessage, markValid, markInvalid]);
 
+  const showError = !disabled && errorMessage !== null && touched;
+
   return {
     value: internalValue,
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,6 +90,7 @@ export const useAutoSave = <Value extends string | number>({
       setInternalValue(newValue);
 
       if (saveOnChange) {
+        setTouched(true);
         const { parsedValue, errorMessage } = parseValue(newValue);
         if (errorMessage === null && parsedValue !== value) {
           saveValue(parsedValue);
@@ -94,13 +98,12 @@ export const useAutoSave = <Value extends string | number>({
       }
     },
     onBlur: () => {
+      setTouched(true);
       if (!saveOnChange && errorMessage === null && parsedValue !== value) {
         saveValue(parsedValue);
       }
     },
     disabled,
-    ...(!disabled && errorMessage !== null
-      ? { error: true, helperText: errorMessage }
-      : {}),
+    ...(showError ? { error: true, helperText: errorMessage } : {}),
   } satisfies Partial<TextFieldProps>;
 };
