@@ -75,6 +75,7 @@ export const MinistryDetails: React.FC = () => {
     <Stack spacing={4}>
       <TextField
         select
+        required
         label={t('What ministry are you expecting to serve with?')}
         size="small"
         SelectProps={{ displayEmpty: true }}
@@ -101,9 +102,9 @@ export const MinistryDetails: React.FC = () => {
       </TextField>
 
       <TextField
+        required
         label={t('What is your expected ministry assignment location?')}
         size="small"
-        InputLabelProps={{ shrink: true }}
         {...locationProps}
       />
 
@@ -112,6 +113,7 @@ export const MinistryDetails: React.FC = () => {
       ) : (
         <TextField
           select
+          required
           label={t(
             'Is your ministry assignment location within 50 miles of one of these cities?',
           )}

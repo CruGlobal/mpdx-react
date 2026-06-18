@@ -44,7 +44,7 @@ export const RadioQuestion: React.FC<RadioQuestionProps> = ({
   });
 
   return (
-    <FormControl error={error}>
+    <FormControl error={error} required>
       <FormLabel id={labelId} sx={{ color: 'text.primary' }}>
         {label}
       </FormLabel>
@@ -53,6 +53,7 @@ export const RadioQuestion: React.FC<RadioQuestionProps> = ({
         sx={{ paddingInline: 2 }}
         aria-labelledby={labelId}
         aria-describedby={helperText ? helperTextId : undefined}
+        aria-required
         {...fieldProps}
       >
         {options.map((option) => (
