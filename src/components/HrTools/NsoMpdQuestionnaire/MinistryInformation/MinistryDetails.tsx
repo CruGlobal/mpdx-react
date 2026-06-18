@@ -101,7 +101,7 @@ export const MinistryDetails: React.FC = () => {
       </TextField>
 
       <TextField
-        placeholder={t('What is your expected ministry assignment location?')}
+        label={t('What is your expected ministry assignment location?')}
         size="small"
         InputLabelProps={{ shrink: true }}
         {...locationProps}
