@@ -35,8 +35,20 @@ describe('RadioQuestion', () => {
     expect(getByRole('radio', { name: 'Option B' })).toBeInTheDocument();
   });
 
-  it('shows the required error while no option is selected', () => {
-    const { getByText } = render(<TestComponent />);
+  it('marks the radio group as required', () => {
+    const { getByRole } = render(<TestComponent />);
+
+    expect(getByRole('radiogroup', { name: 'Pick one' })).toHaveAttribute(
+      'aria-required',
+      'true',
+    );
+  });
+
+  it('shows the required error once the group is touched without a selection', () => {
+    const { getByRole, getByText } = render(<TestComponent />);
+
+    getByRole('radio', { name: 'Option A' }).focus();
+    userEvent.tab();
 
     expect(getByText('Please select an answer.')).toBeInTheDocument();
   });
@@ -51,6 +63,9 @@ describe('RadioQuestion', () => {
 
   it('links the error to the radio group via aria-describedby', () => {
     const { getByRole, getByText } = render(<TestComponent />);
+
+    getByRole('radio', { name: 'Option A' }).focus();
+    userEvent.tab();
 
     const describedBy = getByRole('radiogroup', {
       name: 'Pick one',

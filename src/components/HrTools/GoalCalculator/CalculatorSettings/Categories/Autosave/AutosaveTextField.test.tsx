@@ -124,9 +124,9 @@ describe('AutosaveTextField', () => {
 
     userEvent.clear(input);
     userEvent.type(input, '-100');
-    expect(input).toHaveAccessibleDescription('MHA Amount must be positive');
+    userEvent.tab();
 
-    input.blur();
+    expect(input).toHaveAccessibleDescription('MHA Amount must be positive');
 
     await Promise.resolve();
     await waitFor(() =>
@@ -153,6 +153,8 @@ describe('AutosaveTextField', () => {
 
     userEvent.clear(input);
     userEvent.type(input, 'abc');
+    userEvent.tab();
+
     expect(input).toHaveAccessibleDescription('MHA Amount must be a number');
   });
 

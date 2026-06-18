@@ -54,6 +54,16 @@ describe('MinistryDetails', () => {
     ).toBeInTheDocument();
   });
 
+  it('marks the location field as required', () => {
+    const { getByRole } = render(<TestComponent />);
+
+    expect(
+      getByRole('textbox', {
+        name: 'What is your expected ministry assignment location?',
+      }),
+    ).toBeRequired();
+  });
+
   it('offers the dummy ministry options', () => {
     const { getByRole } = render(<TestComponent />);
 

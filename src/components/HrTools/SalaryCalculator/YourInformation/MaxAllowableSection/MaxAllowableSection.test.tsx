@@ -122,7 +122,7 @@ describe('MaxAllowableSection', () => {
     });
 
     it('warns when cap exceeds hard cap', async () => {
-      const { findByRole, getByText, getByRole } = render(<TestComponent />);
+      const { findByRole, findByText, getByRole } = render(<TestComponent />);
 
       userEvent.click(
         await findByRole('checkbox', { name: /Check if you prefer to split/ }),
@@ -136,7 +136,9 @@ describe('MaxAllowableSection', () => {
       input.blur();
 
       expect(
-        getByText('Maximum Allowable Salary must not exceed cap of $80,000'),
+        await findByText(
+          'Maximum Allowable Salary must not exceed cap of $80,000',
+        ),
       ).toBeInTheDocument();
     });
 
@@ -166,8 +168,8 @@ describe('MaxAllowableSection', () => {
       );
     });
 
-    it('shows required errors when split cap fields are empty', async () => {
-      const { findByText } = render(
+    it('shows required errors when split cap fields are empty and touched', async () => {
+      const { findByRole, findByText, getByRole } = render(
         <TestComponent
           salaryRequestMock={{
             manuallySplitCap: true,
@@ -176,6 +178,19 @@ describe('MaxAllowableSection', () => {
           }}
         />,
       );
+
+      const input = await findByRole('textbox', {
+        name: 'John Maximum Allowable Salary',
+      });
+      await waitFor(() => expect(input).toBeEnabled());
+      const spouseInput = getByRole('textbox', {
+        name: 'Jane Maximum Allowable Salary',
+      });
+
+      input.focus();
+      userEvent.tab();
+      spouseInput.focus();
+      userEvent.tab();
 
       expect(
         await findByText('Maximum Allowable Salary is required'),

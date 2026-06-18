@@ -64,14 +64,16 @@ describe('NsoDetails', () => {
     ).toBeInTheDocument();
   });
 
-  it('shows required errors on the empty numeric fields', () => {
-    const { getByText } = render(<TestComponent />);
+  it('shows the required error on a numeric field once it is touched', () => {
+    const { getByRole, getByText } = render(<TestComponent />);
+
+    getByRole('spinbutton', {
+      name: 'How much special needs support have you already received for NSO?',
+    }).focus();
+    userEvent.tab();
 
     expect(
       getByText('Please enter an amount, or 0 if you have none.'),
-    ).toBeInTheDocument();
-    expect(
-      getByText('Please enter a number, or 0 if you have none.'),
     ).toBeInTheDocument();
   });
 

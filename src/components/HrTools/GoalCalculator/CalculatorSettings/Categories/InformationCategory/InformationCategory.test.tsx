@@ -290,8 +290,10 @@ describe('InformationCategory', () => {
       userEvent.type(input, '-1000');
       input.blur();
 
-      expect(input).toHaveAccessibleDescription(
-        'MHA Amount Per Paycheck must be positive',
+      await waitFor(() =>
+        expect(input).toHaveAccessibleDescription(
+          'MHA Amount Per Paycheck must be positive',
+        ),
       );
 
       await waitFor(() =>

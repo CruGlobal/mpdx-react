@@ -67,10 +67,15 @@ describe('FinancialDetails', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('shows a required error on each empty payment field', () => {
+  it('shows a required error on each payment field once it is touched', () => {
     const { getByRole, getAllByText } = render(<TestComponent />);
 
     userEvent.click(getByRole('radio', { name: 'Yes' }));
+
+    [studentLoanQuestion, carQuestion, creditCardQuestion].forEach((name) => {
+      getByRole('spinbutton', { name }).focus();
+      userEvent.tab();
+    });
 
     expect(getAllByText(requiredError)).toHaveLength(3);
   });

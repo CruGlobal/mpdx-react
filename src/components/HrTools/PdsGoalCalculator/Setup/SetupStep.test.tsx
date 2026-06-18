@@ -84,16 +84,19 @@ describe('SetupStep', () => {
     await waitFor(() => expect(goalNameInput).toHaveValue('Test Goal'));
 
     userEvent.clear(goalNameInput);
+    userEvent.tab();
 
     const payRateInput = await findByRole('spinbutton', {
       name: 'Hourly Pay Rate',
     });
     userEvent.clear(payRateInput);
+    userEvent.tab();
 
     const hoursInput = await findByRole('spinbutton', {
       name: 'Hours Worked',
     });
     userEvent.clear(hoursInput);
+    userEvent.tab();
 
     expect(
       await findByText('Goal Name is a required field'),

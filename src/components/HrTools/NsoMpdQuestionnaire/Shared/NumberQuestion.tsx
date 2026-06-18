@@ -34,6 +34,7 @@ export const NumberQuestion: React.FC<NumberQuestionProps> = ({
       label={question}
       helperText={error ? errorText : helperText}
       error={error}
+      required
       size="small"
       type="number"
       inputProps={{ min: 0, inputMode: 'numeric' }}
