@@ -3,7 +3,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { Box, Button, Grid, IconButton, TextField } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { CurrencyAdornment } from '../../../../Shared/Adornments';
+import { CurrencyAdornment } from 'src/components/HrTools/Shared/Adornments';
 
 interface MileageCategoryFormValues {
   // Mileage entries
