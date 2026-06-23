@@ -115,6 +115,7 @@
         "enabled": { "type": "boolean" },
         "path": { "type": "string" },
         "approval_required": { "type": "boolean" },
+        "min_support": { "type": "integer", "minimum": 1 },
         "scope": { "type": "string", "enum": ["local", "global"] }
       }
     },

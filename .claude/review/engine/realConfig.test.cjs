@@ -24,6 +24,7 @@ test('real config enables the index layer and reserves inert learning', () => {
   const cfg = loadConfig({ configPath, schemaPath });
   assert.equal(cfg.index.enabled, true);
   assert.equal(cfg.index.path, '.claude/review/index');
-  assert.equal(cfg.learning.enabled, false);
+  assert.equal(cfg.learning.enabled, true);
   assert.equal(cfg.learning.approval_required, true);
+  assert.equal(cfg.learning.min_support, 3);
 });

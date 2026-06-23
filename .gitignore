@@ -74,5 +74,9 @@ lighthouse-results.md
 # Agent-review index cache (HEAD-keyed, regenerated; never committed)
 .claude/review/index/
 
+# Agent-review learning transient artifacts (regenerated; never committed)
+.claude/review/learnings/pending/
+.claude/review/learnings/findings.json
+
 # Note: .claude/review-history/, .claude/review-metrics/, and .claude/pr-metrics/
 # are intentionally NOT ignored - these track quality trends and should be committed

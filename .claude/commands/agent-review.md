@@ -283,6 +283,22 @@ Display: "🚀 Launching [N] specialized review agents in parallel..."
 
 Use the agent's `model` field from the plan when launching (falling back to the mode default).
 
+**Inject approved learnings (learning layer):** Before launching agents, fetch any approved `rule`
+learnings so they can be added to the matching agents' prompts (gated on the learning layer being
+enabled in config):
+
+```bash
+REVIEW_DIR=".claude/review"
+if grep -q "learning:" "$REVIEW_DIR/config.yml" 2>/dev/null; then
+  yarn node "$REVIEW_DIR/engine/learningsStore.cjs" --rules > /tmp/review_rules.json 2>/dev/null || echo "[]" > /tmp/review_rules.json
+fi
+```
+
+For each entry in `/tmp/review_rules.json` (`{ paths, ruleText, agent }`), inject `ruleText` into
+the prompt of the matching agent (the agent named by `agent`, for files under `paths`) using the
+same mechanism as `path_rules` — append it under that agent's `PROJECT-SPECIFIC RULES` section.
+These are repository-specific learnings ratified by a human from prior review feedback.
+
 ### Agent 1: Security Review 🔒
 
 Use the Task tool with:
@@ -1639,6 +1655,22 @@ echo ""
 ---
 
 ## Stage 6 — Generate Review Report
+
+**Capture consensus for the learning layer (gated on learning being enabled):** Write the consensus
+findings as a JSON array to `/tmp/consensus_findings.json` — each entry shaped
+`{ agent, category, severity, file, line, message }` — then emit them and apply approved learnings:
+
+```bash
+REVIEW_DIR=".claude/review"
+yarn node "$REVIEW_DIR/engine/learningsStore.cjs" --emit --in /tmp/consensus_findings.json --review "${REVIEW_ID:-local}"
+yarn node "$REVIEW_DIR/engine/learningsStore.cjs" --filter --in .claude/review/learnings/findings.json > /tmp/review_filtered.json
+```
+
+Report the `kept` findings from `/tmp/review_filtered.json` in the report below, and note the count
+of `suppressed` findings (suppressed by approved learnings). Tell the user they can mark outcomes in
+the emitted `pending/<reviewId>.yml` (set each finding's `outcome` to `accepted` or `dismissed`),
+then run `yarn review:feedback <that file>` and `yarn review:learn` to mine new proposed learnings.
+Leave `plan.cjs`, the index, agent selection, and the debate/consensus logic unchanged.
 
 Create the comprehensive review report in markdown format:
 

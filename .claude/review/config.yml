@@ -137,10 +137,11 @@ index: { enabled: true, path: ".claude/review/index" }
 
 # ── Forward-looking sections (present but INERT until Layer 3 ships) ──────────
 learning:
-  enabled: false
+  enabled: true
   path: ".claude/review/learnings"
-  approval_required: true       # human ratifies a proposed learning before it affects reviews
-  scope: local                  # local (repo) | global (org)
+  approval_required: true
+  min_support: 3
+  scope: local
 
 enforcement:
   mode: warn                    # warn | block — reserved for future merge-gating
