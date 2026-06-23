@@ -93,6 +93,36 @@ function main(argv) {
       out(`${rest[0]} -> ${status}`);
       return 0;
     }
+    case 'run': {
+      const { writeFileSync } = require('node:fs');
+      const os = require('node:os');
+      const base = flag(rest, '--base');
+      const mode = rest.find((a) => !a.startsWith('--') && a !== base) || 'standard';
+      const { base: b, files } = changedFiles(base);
+      const diff = execFileSync('git', ['-C', ROOT, 'diff', `${b}...HEAD`], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+      const stat = execFileSync('git', ['-C', ROOT, 'diff', '--stat', `${b}...HEAD`], { encoding: 'utf8' });
+      const ins = stat.match(/(\d+) insertions?\(\+\)/);
+      const del = stat.match(/(\d+) deletions?\(-\)/);
+      const linesChanged = (ins ? Number(ins[1]) : 0) + (del ? Number(del[1]) : 0);
+      const cfg = loadConfig({ configPath: CONFIG, schemaPath: SCHEMA });
+      const plan = buildPlan({ files, diffText: diff, linesChanged, scope: 'multi_feature' }, cfg);
+      let impact = null;
+      if (cfg.index && cfg.index.enabled) impact = queryImpact(files, loadIndex(), {});
+      out(preflightSummary(plan, impact));
+      writeFileSync(join(os.tmpdir(), 'review_plan.json'), JSON.stringify({ ...plan, impact }, null, 2));
+      if (rest.includes('--no-launch')) {
+        out(`\nwould run: claude -p "/agent-review ${mode}"`);
+        return 0;
+      }
+      out(`\nlaunching: claude -p "/agent-review ${mode}" ...\n`);
+      try {
+        execFileSync('claude', ['-p', `/agent-review ${mode}`], { stdio: 'inherit' });
+      } catch (e) {
+        out(`(could not launch claude automatically: ${e.message})`);
+        out(`Run it manually in Claude Code:  /agent-review ${mode}`);
+      }
+      return 0;
+    }
     case 'help':
     case undefined:
       out(USAGE);
