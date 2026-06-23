@@ -1,0 +1,147 @@
+version: 1
+
+# Global severity/verbosity dial (CodeRabbit `profile` model).
+# chill     → fewer, high-confidence findings; raises consensus threshold
+# standard  → current behavior (default)
+# assertive → more findings, lower threshold, may be nitpicky
+profile: standard
+
+# ── Risk scoring (migrated from code-review.md) ───────────────────────────────
+risk:
+  # File-pattern contributions. `tier` is descriptive; `points` drives the score.
+  patterns:
+    - { glob: "pages/api/auth/**",                    points: 3, tier: critical }
+    - { glob: "pages/api/graphql-rest.page.ts",       points: 3, tier: critical }
+    - { glob: "pages/api/Schema/index.ts",            points: 3, tier: critical }
+    - { glob: "src/lib/apollo/{client,link,cache,ssrClient}.ts", points: 3, tier: critical }
+    - { glob: "next.config.{js,ts}",                  points: 3, tier: critical }
+    - { glob: ".github/workflows/**",                 points: 3, tier: critical }
+    - { glob: ".claude/**",                           points: 3, tier: critical }
+    - { glob: "pages/api/Schema/**/*.{ts,graphql}",   points: 2, tier: high }
+    - { glob: "src/components/Shared/**",             points: 2, tier: high }
+    - { glob: "src/components/**/*.graphql",          points: 2, tier: high }
+    - { glob: "src/components/**/*.{ts,tsx}",         points: 1, tier: medium }
+    - { glob: "src/hooks/**/*.ts",                    points: 1, tier: medium }
+    - { glob: "pages/**/*.page.tsx",                  points: 1, tier: medium }
+    # Low-risk overrides (explicit 0 points)
+    - { glob: "**/*.test.{ts,tsx}",                   points: 0, tier: low }
+    - { glob: "public/locales/**",                    points: 0, tier: low }
+    - { glob: "**/*.snap",                            points: 0, tier: low }
+
+  # Change-volume → points (lines changed across the diff).
+  volume_multiplier:
+    - { upTo: 50,    points: 0 }
+    - { upTo: 200,   points: 1 }
+    - { upTo: 500,   points: 2 }
+    - { upTo: 1000,  points: 3 }
+    - { upTo: null,  points: 4 }   # 1000+
+
+  # Scope multiplier applied to the pattern+volume subtotal.
+  scope_multiplier:
+    single_file: 1.0
+    single_feature: 1.0
+    multi_feature: 1.3
+    cross_cutting: 1.7
+    core_infra: 2.0
+
+  # Special detections (from code-review.md "Special Pattern Detection").
+  special:
+    - { when: new_dependency,      points: 2 }
+    - { when: critical_pkg_update, points: 3,
+        packages: [next, react, "@apollo/client", "@mui/material", formik, next-auth, typescript, graphql-codegen] }
+    - { when: lockfile_only_change, points: 1 }
+    - { when: graphql_without_codegen_check, points: 2 }
+    - { when: next_config_security_change, points: 2 }   # rewrites/headers/CSP/image domains
+    - { when: apollo_cache_typepolicy_change, points: 2 }
+
+  # Score → risk level + required reviewer (from code-review.md classification).
+  levels:
+    - { range: [0, 3],   level: LOW,      reviewer: entry }
+    - { range: [4, 6],   level: MEDIUM,   reviewer: entry }
+    - { range: [7, 9],   level: HIGH,     reviewer: experienced }
+    - { range: [10, null], level: CRITICAL, reviewer: "Caleb Cox (senior)" }
+
+# ── Agents (the 7 specialists, declaratively) ─────────────────────────────────
+agents:
+  - id: security
+    enabled: true
+    model: smart            # smart | opus | sonnet | haiku
+    always: false           # if true, runs regardless of triggers
+    triggers:
+      paths:   ["pages/api/**", "src/lib/apollo/{link,client,ssrClient}.ts",
+                "next.config.{js,ts}", "pages/_app.page.tsx", ".github/workflows/**", ".claude/**"]
+      content: ["process.env.", "dangerouslySetInnerHTML", "router.push("]
+    rules:    ["rules/security.md"]
+
+  - id: architecture
+    enabled: true
+    always: true
+    rules:    ["rules/architecture.md"]
+
+  - id: data-integrity
+    enabled: true
+    triggers:
+      paths:   ["pages/api/Schema/**/*.{ts,graphql}", "src/lib/apollo/cache.ts",
+                "src/components/**/*.graphql", "src/graphql/rootFields.generated.ts"]
+      content: ["mutation", "optimisticResponse", "refetchQueries", "cache.modify", "__typename",
+                "first:", "after:", "pageInfo", "nodes"]
+    rules:    ["rules/data-integrity.md"]
+
+  - id: testing
+    enabled: true
+    always: true
+    rules:    ["rules/testing.md"]
+
+  - id: ux
+    enabled: true
+    triggers:
+      paths:   ["src/components/**/*.tsx", "pages/**/*.page.tsx", "src/theme.ts", "src/theme/**"]
+      content: ["<Formik", "useFormik", "<Field", "ErrorMessage"]
+    rules:    ["rules/ux.md"]
+
+  - id: financial
+    enabled: true
+    triggers:
+      paths:   ["src/components/Reports/**", "src/components/HrTools/**",
+                "src/components/EditDonationModal/**", "src/components/Dashboard/MonthlyGoal/**",
+                "src/components/Dashboard/DonationHistories/**"]
+      content: ["amount", "currency", "convertedAmount", "pledgeAmount", "goal", "balance",
+                "total", "reduce((", ".toFixed(", "Math.round(", "parseFloat("]
+    rules:    ["rules/financial.md"]
+
+  - id: standards
+    enabled: true
+    always: true
+    rules:    ["rules/standards.md"]
+
+# ── Per-path rules (CodeRabbit path_instructions model) ───────────────────────
+# Applied to ALL agents reviewing matching files, in addition to agent-specific rules.
+path_rules:
+  - { paths: ["src/components/**/*.tsx"],         rules: ["rules/ux.md"] }
+  - { paths: ["pages/api/**"],                    rules: ["rules/security.md"] }
+  - { paths: ["src/components/Reports/**", "src/components/HrTools/**"], rules: ["rules/financial.md"] }
+
+# ── Exclusions (from code-review.md "Excluded Paths") ─────────────────────────
+excluded_paths:
+  - "**/*.generated.ts"
+  - "public/locales/**"
+  - "public/static/**"
+  - "public/fonts/**"
+  - "public/images/**"
+  - "**/*.snap"
+  - ".github/ISSUE_TEMPLATE/**"
+  - "docs/**"
+
+# ── Forward-looking sections (present but INERT until Layers 2/3 ship) ────────
+index:
+  enabled: false
+  path: ".claude/review/index"
+
+learning:
+  enabled: false
+  path: ".claude/review/learnings"
+  approval_required: true       # human ratifies a proposed learning before it affects reviews
+  scope: local                  # local (repo) | global (org)
+
+enforcement:
+  mode: warn                    # warn | block — reserved for future merge-gating
