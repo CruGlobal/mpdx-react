@@ -75,7 +75,7 @@ describe('BalanceCard', () => {
     const { getByText } = render(
       <BalanceCard {...defaultProps} transfersIn={0} isSelected={true} />,
     );
-    expect(getByText('+ Transfers in: $0')).toBeInTheDocument();
+    expect(getByText('+ Transfers in: $0.00')).toBeInTheDocument();
   });
 
   it('should handle large numbers correctly', () => {
@@ -87,6 +87,17 @@ describe('BalanceCard', () => {
       />,
     );
     expect(getByText('= Ending Balance: $1,000,000.99')).toBeInTheDocument();
+  });
+
+  it('should handle negative end balance correctly', () => {
+    const { getByText } = render(
+      <BalanceCard
+        {...defaultProps}
+        endBalance={-1234.56}
+        isSelected={false}
+      />,
+    );
+    expect(getByText('($1,234.56)')).toBeInTheDocument();
   });
 
   it('should use Math.abs for transfers out display', () => {

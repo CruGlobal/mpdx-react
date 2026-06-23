@@ -246,6 +246,11 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     return null;
   }, [filters, locale, t]);
 
+  const overallBalance = allFunds.reduce(
+    (sum, fund) => sum + (fund.endBalance ?? 0),
+    0,
+  );
+
   return (
     <Box>
       <SimpleScreenOnly>
@@ -295,9 +300,13 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               ) : null}
             </StyledHeaderBox>
             {loading ? (
-              <AccountInfoBoxSkeleton />
+              <AccountInfoBoxSkeleton hasOverallBalance />
             ) : (
-              <AccountInfoBox name={name} accountId={id} />
+              <AccountInfoBox
+                name={name}
+                accountId={id}
+                overallBalance={overallBalance}
+              />
             )}
             <SimpleScreenOnly>
               <Box
