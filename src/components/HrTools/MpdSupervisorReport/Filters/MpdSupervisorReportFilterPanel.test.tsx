@@ -173,4 +173,30 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
       'allPeople',
     );
   });
+
+  it('selecting a Team option updates team in context', async () => {
+    renderWithConsumer();
+    expect(screen.getByTestId('team').textContent).toBe(
+      MpdSupervisorReportTeamsEnum.All,
+    );
+
+    await userEvent.click(screen.getByLabelText('Team'));
+    await userEvent.click(screen.getByRole('option', { name: 'Campus' }));
+
+    expect(screen.getByTestId('team').textContent).toBe('Campus');
+  });
+
+  it('selecting an Employment type option updates employmentType in context', async () => {
+    renderWithConsumer();
+    expect(screen.getByTestId('employmentType').textContent).toBe(
+      MpdSupervisorReportEmploymentTypeEnum.All,
+    );
+
+    await userEvent.click(screen.getByLabelText('Employment type'));
+    await userEvent.click(screen.getByRole('option', { name: 'Part time' }));
+
+    expect(screen.getByTestId('employmentType').textContent).toBe(
+      MpdSupervisorReportEmploymentTypeEnum.PartTime,
+    );
+  });
 });

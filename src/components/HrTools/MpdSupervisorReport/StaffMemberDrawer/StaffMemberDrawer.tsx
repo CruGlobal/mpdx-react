@@ -37,10 +37,10 @@ const DetailRow: React.FC<DetailRowProps> = ({ label, value }) => (
   </Box>
 );
 
-const StaffInfo = styled(Box)(() => ({
+const StaffInfo = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'row',
-  gap: 2,
+  gap: theme.spacing(2),
   flexWrap: 'wrap',
 }));
 
@@ -51,16 +51,11 @@ const ContactTabsWrapper = styled(Box)(({}) => ({
   borderBottom: `1px solid ${theme.palette.divider}`,
 }));
 
-const ContactTabs = styled(TabList)(({}) => ({
+const ContactTabs = styled(TabList)(({ theme }) => ({
   width: '100%',
   minHeight: 40,
-  indicator: {
-    display: 'flex',
-    '& > span': {
-      width: '100%',
-      height: 2,
-      backgroundColor: '#FFCF07',
-    },
+  '& .MuiTabs-indicator': {
+    backgroundColor: theme.palette.progressBarYellow.main,
   },
 }));
 
@@ -148,10 +143,7 @@ export const StaffMemberDrawer: React.FC = () => {
 
       <TabContext value={selectedTabKey}>
         <ContactTabsWrapper>
-          <ContactTabs
-            onChange={handleChange}
-            TabIndicatorProps={{ children: <span /> }}
-          >
+          <ContactTabs onChange={handleChange} aria-label={t('Staff details')}>
             <ContactTab
               value={StaffDetailTabEnum.MonthlySummary}
               label={t('Monthly Summary')}

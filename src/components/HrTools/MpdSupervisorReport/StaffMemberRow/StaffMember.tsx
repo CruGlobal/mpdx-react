@@ -11,9 +11,22 @@ import {
 import { styled } from '@mui/material/styles';
 import { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
+import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { EmployeeData, QuarterHealthEnum } from '../mockData';
+
+const healthLabel = (t: TFunction, health: QuarterHealthEnum): string => {
+  switch (health) {
+    case QuarterHealthEnum.Green:
+      return t('on track');
+    case QuarterHealthEnum.Red:
+      return t('at risk');
+    case QuarterHealthEnum.Yellow:
+    default:
+      return t('needs attention');
+  }
+};
 
 const healthColor = (
   health: QuarterHealthEnum,
@@ -45,17 +58,17 @@ const StyledCard = styled(Card)(({ theme }) => ({
   width: '100%',
 }));
 
-const GridItem = styled(Grid)(() => ({
+const GridItem = styled(Grid)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
-  gap: 2,
+  gap: theme.spacing(2),
   width: '100%',
 }));
 
-const GridQuarter = styled(Grid)(() => ({
+const GridQuarter = styled(Grid)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
-  gap: 3,
+  gap: theme.spacing(3),
   width: '100%',
   flexWrap: 'wrap',
   justifyContent: 'flex-end',
@@ -143,7 +156,6 @@ export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
                   staffAccountID={staffAccountID}
                   userPersonType={userPersonType}
                   team={team}
-                  t={t}
                 />
               </Box>
             </Box>
@@ -163,16 +175,28 @@ interface FiscalYearQuartersProps {
 const FiscalYearQuartersBase: React.FC<FiscalYearQuartersProps> = ({
   quarters,
 }) => {
+  const { t } = useTranslation();
+  const locale = useLocale();
   return (
     <Stack direction="row" spacing={2} sx={{ mr: 1 }}>
-      {quarters.map((quarter) => (
-        <QuarterChip
-          key={quarter.label}
-          label={currencyFormat(quarter.payroll, 'USD', 'en-US')}
-          health={quarter.health}
-          size="small"
-        />
-      ))}
+      {quarters.map((quarter) => {
+        const amount = currencyFormat(quarter.payroll, 'USD', locale);
+        return (
+          <QuarterChip
+            key={quarter.label}
+            label={amount}
+            // Health is also conveyed by color; include it in the label for
+            // screen-reader users (WCAG 1.4.1 — not color alone).
+            aria-label={t('{{label}}: {{amount}} ({{status}})', {
+              label: quarter.label,
+              amount,
+              status: healthLabel(t, quarter.health),
+            })}
+            health={quarter.health}
+            size="small"
+          />
+        );
+      })}
     </Stack>
   );
 };
@@ -183,14 +207,12 @@ interface StaffInfoProps {
   staffAccountID: string;
   userPersonType: string;
   team: string;
-  t: TFunction;
 }
 const StaffInfoBase: React.FC<StaffInfoProps> = ({
   names,
   staffAccountID,
   userPersonType,
   team,
-  t,
 }) => {
   return (
     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -201,7 +223,7 @@ const StaffInfoBase: React.FC<StaffInfoProps> = ({
           sx={{ color: 'text.secondary' }}
           data-testid="person-numbers"
         >
-          {t('{{staffAccountID}}', { staffAccountID })}
+          {staffAccountID}
           {' · '}
           {userPersonType}
           {' · '}

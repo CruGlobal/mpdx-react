@@ -40,6 +40,8 @@ const StickyHeaderInner = styled(Box)(() => ({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
+  flexWrap: 'wrap',
+  gap: theme.spacing(1),
   lineHeight: 1.1,
 }));
 
@@ -58,15 +60,13 @@ const QuartersContainer = styled(Box)(() => ({
   paddingInline: theme.spacing(4),
   paddingBottom: theme.spacing(1),
   gap: theme.spacing(2),
-  mb: theme.spacing(2),
+  marginBottom: theme.spacing(2),
 }));
 
 const Quarter = styled(Box)(() => ({
-  borderRight: '1px solid',
-  borderColor: 'divider',
+  borderRight: `1px solid ${theme.palette.divider}`,
   '&:first-of-type': {
-    borderLeft: '1px solid',
-    borderColor: 'divider',
+    borderLeft: `1px solid ${theme.palette.divider}`,
   },
 }));
 
@@ -88,6 +88,9 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
     useMpdSupervisorReport();
 
   // TODO(MPDX): Replace this client-side filtering with server-side filtering.
+  // Note: `activeQuickFilter` (Negative last month / 3+ months negative /
+  // Trending down) is tracked in context and highlights the chip, but is not
+  // yet applied here — it needs MPD-health history that the mock data lacks.
   const staffMembers = useMemo(
     () =>
       mockStaffMembers.filter((data) => {
@@ -111,7 +114,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
 
   return (
     <>
-      <StickyHeader p={2} test-dataid="MultiPageHeader">
+      <StickyHeader p={2} data-testid="MultiPageHeader">
         <StickyHeaderInner>
           <NavListButton
             panelOpen={panelOpen === Panel.Navigation}
@@ -134,14 +137,11 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
             />
           </NavListButton>
           <TitleBox>
-            <Typography variant="h5" sx={{ justifyContent: 'center' }}>
-              {title}
-            </Typography>
+            <Typography variant="h5">{title}</Typography>
             <Typography
               variant="body2"
               color="text.secondary"
-              marginRight={2}
-              sx={{ justifyContent: 'center' }}
+              sx={{ display: { xs: 'none', md: 'block' } }}
             >
               {t('Showing {{count}} of {{total}} · sorted by MPD health', {
                 count: staffMembers.length,
@@ -154,7 +154,10 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
             onChange={(event) => setSearch(event.target.value)}
             placeholder={t('Search name')}
             size="small"
-            sx={{ minWidth: 220 }}
+            sx={{
+              minWidth: { xs: '100%', sm: 220 },
+              width: { xs: '100%', sm: 'auto' },
+            }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">

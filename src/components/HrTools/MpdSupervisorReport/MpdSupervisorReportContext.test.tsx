@@ -11,6 +11,7 @@ import {
   Panel,
   useMpdSupervisorReport,
 } from './MpdSupervisorReportContext';
+import { StaffDetailTabEnum } from './StaffDetailsTabs/StaffDetailTab';
 import { EmployeeData, QuarterHealthEnum } from './mockData';
 
 const sampleMember: EmployeeData = {
@@ -187,5 +188,40 @@ describe('Panel enum', () => {
   it('has correct Navigation and Filters values', () => {
     expect(Panel.Navigation).toBe('Navigation');
     expect(Panel.Filters).toBe('Filters');
+  });
+});
+
+const TabConsumer: React.FC = () => {
+  const { selectedTabKey } = useMpdSupervisorReport();
+  return <span data-testid="tab">{selectedTabKey}</span>;
+};
+
+const renderWithTab = (tab?: string) =>
+  render(
+    <TestRouter router={{ query: tab ? { tab } : {} }}>
+      <MpdSupervisorReportProvider>
+        <TabConsumer />
+      </MpdSupervisorReportProvider>
+    </TestRouter>,
+  );
+
+describe('MpdSupervisorReportContext — selectedTabKey from URL', () => {
+  it('defaults to MonthlySummary when no ?tab= is present', () => {
+    const { getByTestId } = renderWithTab();
+    expect(getByTestId('tab').textContent).toBe(
+      StaffDetailTabEnum.MonthlySummary,
+    );
+  });
+
+  it('seeds selectedTabKey from a valid ?tab= query param', () => {
+    const { getByTestId } = renderWithTab('Payroll');
+    expect(getByTestId('tab').textContent).toBe(StaffDetailTabEnum.Payroll);
+  });
+
+  it('falls back to MonthlySummary for an unknown ?tab= value', () => {
+    const { getByTestId } = renderWithTab('not-a-real-tab');
+    expect(getByTestId('tab').textContent).toBe(
+      StaffDetailTabEnum.MonthlySummary,
+    );
   });
 });

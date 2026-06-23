@@ -96,4 +96,12 @@ describe('useMockInfiniteStaff', () => {
     expect(result.current.data.pageInfo.hasNextPage).toBe(false);
     expect(result.current.data.pageInfo.endCursor).toBe('10');
   });
+
+  it('handles an empty array (drives the empty state)', () => {
+    const { result } = renderHook(() => useMockInfiniteStaff([], 25));
+
+    expect(result.current.data.nodes).toHaveLength(0);
+    expect(result.current.data.pageInfo.hasNextPage).toBe(false);
+    expect(result.current.data.pageInfo.endCursor).toBe('0');
+  });
 });

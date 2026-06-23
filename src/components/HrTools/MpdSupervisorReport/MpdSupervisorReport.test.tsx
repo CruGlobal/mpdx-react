@@ -120,7 +120,7 @@ describe('MpdSupervisorReport', () => {
     const firstMember = mockStaffMembers[0];
     const searchInput = screen.getByRole('textbox', { name: 'Search name' });
 
-    userEvent.type(searchInput, firstMember.user.lastName);
+    await userEvent.type(searchInput, firstMember.user.lastName);
 
     const matching = mockStaffMembers.filter((m) =>
       `${m.user.preferredName} ${m.user.lastName}`
@@ -138,7 +138,7 @@ describe('MpdSupervisorReport', () => {
     renderReport();
     const searchInput = screen.getByRole('textbox', { name: 'Search name' });
 
-    userEvent.type(searchInput, 'zzzzzz_no_match_at_all');
+    await userEvent.type(searchInput, 'zzzzzz_no_match_at_all');
 
     expect(
       await screen.findByText('No staff members found'),
