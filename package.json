@@ -14,6 +14,7 @@
     "lint:ts": "tsc",
     "test": "jest --silent",
     "test:review": "yarn node .claude/review/engine/run-tests.cjs",
+    "review": "yarn node .claude/review/cli.cjs",
     "review:index": "yarn node .claude/review/engine/indexStore.cjs --build",
     "review:feedback": "yarn node .claude/review/engine/learningsStore.cjs --ingest",
     "review:learn": "yarn node .claude/review/engine/learningsStore.cjs --mine",
