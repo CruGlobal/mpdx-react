@@ -14,6 +14,7 @@
     "lint:ts": "tsc",
     "test": "jest --silent",
     "test:review": "yarn node .claude/review/engine/run-tests.cjs",
+    "review:index": "yarn node .claude/review/engine/indexStore.cjs --build",
     "test:log": "jest",
     "test:watch": "jest --watch",
     "localtest": "yarn test --runInBand --verbose",

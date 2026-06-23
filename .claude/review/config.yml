@@ -132,11 +132,10 @@ excluded_paths:
   - ".github/ISSUE_TEMPLATE/**"
   - "docs/**"
 
-# ── Forward-looking sections (present but INERT until Layers 2/3 ship) ────────
-index:
-  enabled: false
-  path: ".claude/review/index"
+# ── Index layer (Phase B): file-level import graph for impact analysis ────────
+index: { enabled: true, path: ".claude/review/index" }
 
+# ── Forward-looking sections (present but INERT until Layer 3 ships) ──────────
 learning:
   enabled: false
   path: ".claude/review/learnings"

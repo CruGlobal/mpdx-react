@@ -445,6 +445,8 @@ INSTRUCTIONS:
 2. Read FULL content of changed files for context
 3. Read CLAUDE.md for project patterns
 4. Search for usage patterns of modified components/functions
+5. Read /tmp/review_impact.json (if present) for `directDependents`/`topImpacted`.
+   This change affects these dependent files — verify the change does not break them.
 
 CRITICAL FOCUS:
 
@@ -557,6 +559,8 @@ INSTRUCTIONS:
 2. Read FULL files for data flow context
 3. Search for related GraphQL operations
 4. Check for financial calculation changes
+5. Read /tmp/review_impact.json (if present) for `directDependents`/`topImpacted`.
+   This change affects these dependent files — verify the change does not break them.
 
 CRITICAL FOCUS:
 
@@ -1162,50 +1166,47 @@ After launching selected agents, display:
 
 ## Stage 1B — Dependency Impact Analysis (Parallel)
 
-While agents are running, analyze dependency impact in parallel:
+While agents are running, analyze dependency impact in parallel using the index engine
+(the persisted import graph), not grep. This is gated on the index being enabled in
+`config.yml`. Use **`yarn node`** (plain `node` cannot resolve under Yarn PnP):
 
 ```bash
-echo "🔍 Analyzing dependency impact..."
+echo "🔍 Analyzing dependency impact (index engine)..."
 echo ""
 
-# For each changed TypeScript/TSX file, find dependents
-while IFS= read -r changed_file; do
-  # Skip non-code files
-  [[ ! "$changed_file" =~ \.(ts|tsx|js|jsx)$ ]] && continue
-
-  # Extract filename without extension
-  filename=$(basename "$changed_file" | sed 's/\.[^.]*$//')
-
-  # Search for imports of this file
-  grep -r "from.*['\"].*$filename['\"]" src/ \
-    --include="*.ts" --include="*.tsx" \
-    2>/dev/null | cut -d: -f1 | sort -u > "/tmp/dependents_${filename}.txt"
-
-  dependent_count=$(wc -l < "/tmp/dependents_${filename}.txt" 2>/dev/null || echo 0)
-
-  if [ "$dependent_count" -gt 15 ]; then
-    echo "🚨 CRITICAL IMPACT: $changed_file has $dependent_count dependents" | tee -a /tmp/dependency_impact.txt
-  elif [ "$dependent_count" -gt 10 ]; then
-    echo "⚠️  HIGH IMPACT: $changed_file has $dependent_count dependents" | tee -a /tmp/dependency_impact.txt
-  elif [ "$dependent_count" -gt 5 ]; then
-    echo "📊 MEDIUM IMPACT: $changed_file has $dependent_count dependents" | tee -a /tmp/dependency_impact.txt
-  fi
-done < /tmp/changed_files.txt
-
-echo "" | tee -a /tmp/dependency_impact.txt
-
-# Check for breaking changes (removed exports)
-echo "Checking for breaking changes..." | tee -a /tmp/dependency_impact.txt
-git diff $BASE_REF..$HEAD_REF 2>/dev/null | grep "^-export" | grep -v "^---" > /tmp/breaking_changes.txt 2>/dev/null || true
-
-if [ -s /tmp/breaking_changes.txt ]; then
-  echo "⚠️  BREAKING CHANGES DETECTED:" | tee -a /tmp/dependency_impact.txt
-  cat /tmp/breaking_changes.txt | tee -a /tmp/dependency_impact.txt
+REVIEW_DIR=".claude/review"
+if grep -q "enabled: true" "$REVIEW_DIR/config.yml" 2>/dev/null; then
+  yarn node "$REVIEW_DIR/engine/impact.cjs" \
+    --root "$(pwd)" \
+    --index "$REVIEW_DIR/index" \
+    --changed /tmp/changed_files.txt \
+    > /tmp/review_impact.json
+  cat /tmp/review_impact.json
+else
+  echo "ℹ️  Index disabled in config.yml — skipping impact analysis."
 fi
 
+echo ""
 echo "✅ Dependency analysis complete"
 echo ""
-````
+```
+
+`impact.cjs` builds (or reuses the HEAD-keyed cache of) the import graph and emits a JSON
+report on stdout with these fields:
+
+- `directDependents` — `{ [changedFile]: string[] }`, the immediate importers of each changed file
+- `transitiveDependents` — flat list of all files transitively reachable as dependents (blast radius set)
+- `blastRadius` — count of `transitiveDependents`
+- `topImpacted` — `[{ file, dependentCount }]` sorted by direct-dependent count (highest impact first)
+- `truncated` — `true` if the `maxNodes` traversal cap was hit
+
+**Display** the `blastRadius` and `topImpacted` files to the user as the dependency-impact
+summary (highest-impact changed files first; flag `truncated` if set).
+
+**Feed dependents into the Architecture and Data Integrity agents** (Stage 1): when launching
+those two agents, append the affected `directDependents` / `topImpacted` files from
+`/tmp/review_impact.json` to their prompts with the instruction: "This change affects these
+dependent files — verify the change does not break them."
 
 ---
 
