@@ -19,6 +19,8 @@ import {
   MpdGoalBenefitsConstantSizeEnum,
 } from 'src/graphql/types.generated';
 import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
+import { getLocalizedAge } from 'src/lib/functions/getLocalizedAge';
+import { getLocalizedRole } from 'src/lib/functions/getLocalizedRole';
 import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
 import { useSaveField } from '../../Autosave/useSaveField';
 import { BenefitsPlanHelperPanel } from '../InformationHelperPanel/BenefitsPlanHelperPanel';
@@ -145,12 +147,13 @@ export const InformationCategoryPersonalForm: React.FC<
               select
               label={t('Role Type')}
             >
-              <MenuItem value={GoalCalculationRole.Office}>
-                {t('Office')}
-              </MenuItem>
-              <MenuItem value={GoalCalculationRole.Field}>
-                {t('Field')}
-              </MenuItem>
+              {[GoalCalculationRole.Office, GoalCalculationRole.Field].map(
+                (role) => (
+                  <MenuItem key={role} value={role}>
+                    {getLocalizedRole(t, role)}
+                  </MenuItem>
+                ),
+              )}
             </AutosaveTextField>
           </Grid>
         )}
@@ -244,18 +247,16 @@ export const InformationCategoryPersonalForm: React.FC<
             label={isSpouse ? t('Spouse Age') : t('Age')}
             helperText={t('For new staff reference goal')}
           >
-            <MenuItem value={GoalCalculationAge.UnderThirty}>
-              {t('Under 30')}
-            </MenuItem>
-            <MenuItem value={GoalCalculationAge.ThirtyToThirtyFour}>
-              {t('30-34')}
-            </MenuItem>
-            <MenuItem value={GoalCalculationAge.ThirtyFiveToThirtyNine}>
-              {t('35-39')}
-            </MenuItem>
-            <MenuItem value={GoalCalculationAge.OverForty}>
-              {t('Over 40')}
-            </MenuItem>
+            {[
+              GoalCalculationAge.UnderThirty,
+              GoalCalculationAge.ThirtyToThirtyFour,
+              GoalCalculationAge.ThirtyFiveToThirtyNine,
+              GoalCalculationAge.OverForty,
+            ].map((age) => (
+              <MenuItem key={age} value={age}>
+                {getLocalizedAge(t, age)}
+              </MenuItem>
+            ))}
           </AutosaveTextField>
         </Grid>
 

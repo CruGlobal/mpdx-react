@@ -14,10 +14,10 @@ import {
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { CurrencyAdornment } from 'src/components/HrTools/Shared/Adornments';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
-import { CurrencyAdornment } from '../Shared/Adornments';
 import { useGoalCalculator } from '../Shared/GoalCalculatorContext';
 import { calculateFamilyTotal } from '../Shared/calculateTotals';
 import { useUpdateHouseholdDirectInputMutation } from './HouseholdDirectInput.generated';
