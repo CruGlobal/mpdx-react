@@ -91,10 +91,10 @@ describe('BalanceCardList', () => {
       <TestComponent {...defaultProps} />,
     );
 
-    expect(await findByText('+ Transfers in: $500')).toBeInTheDocument();
-    expect(getByText('- Transfers out: $100')).toBeInTheDocument();
-    expect(getByText('Starting Balance: $1,000')).toBeInTheDocument();
-    expect(getByText('= Ending Balance: $1,400')).toBeInTheDocument();
+    expect(await findByText('+ Transfers in: $500.00')).toBeInTheDocument();
+    expect(getByText('- Transfers out: $100.00')).toBeInTheDocument();
+    expect(getByText('Starting Balance: $1,000.00')).toBeInTheDocument();
+    expect(getByText('= Ending Balance: $1,400.00')).toBeInTheDocument();
   });
 
   it('renders empty when no funds provided', () => {

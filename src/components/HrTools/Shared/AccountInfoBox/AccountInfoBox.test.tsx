@@ -51,4 +51,9 @@ describe('AccountInfoBox', () => {
     expect(queryByTestId('account-id')).not.toBeInTheDocument();
     expect(queryByTestId('InfoOutlinedIcon')).not.toBeInTheDocument();
   });
+
+  it('renders zero overallBalance correctly', () => {
+    const { getByTestId } = render(<AccountInfoBox overallBalance={0} />);
+    expect(getByTestId('overall-balance').textContent).toBe('$0.00');
+  });
 });

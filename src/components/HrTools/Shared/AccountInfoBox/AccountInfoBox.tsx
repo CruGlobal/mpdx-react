@@ -1,7 +1,8 @@
 import React from 'react';
 import { InfoOutlined } from '@mui/icons-material';
 import { Box, Tooltip, Typography } from '@mui/material';
-import { Trans } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
+import { SimpleScreenOnly } from 'src/components/Reports/styledComponents';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 
@@ -16,11 +17,12 @@ export const AccountInfoBox: React.FC<AccountInfoBoxProps> = ({
   accountId,
   overallBalance,
 }) => {
+  const { t } = useTranslation();
   const locale = useLocale();
   const currency = 'USD';
 
   const title = (
-    <Trans>
+    <Trans t={t}>
       Your Person Number is unique and assigned to you by Oracle HCM, Cru&apos;s
       new HR system. It replaces the Employee ID (EMPLID) previously used in
       PeopleSoft. If you need help with anything related to HR or payroll —
@@ -41,12 +43,18 @@ export const AccountInfoBox: React.FC<AccountInfoBoxProps> = ({
       {accountId && (
         <Box display="flex" alignItems="center" gap={0.5}>
           <Typography data-testid="account-id">{accountId}</Typography>
-          <Tooltip title={title}>
-            <InfoOutlined fontSize="small" />
-          </Tooltip>
+          <SimpleScreenOnly display="flex" alignItems="center">
+            <Tooltip title={title}>
+              <InfoOutlined
+                fontSize="small"
+                tabIndex={0}
+                titleAccess={t('Person number information')}
+              />
+            </Tooltip>
+          </SimpleScreenOnly>
         </Box>
       )}
-      {overallBalance && (
+      {overallBalance !== undefined && (
         <Typography data-testid="overall-balance">
           {currencyFormat(overallBalance, currency, locale, {
             showTrailingZeros: true,

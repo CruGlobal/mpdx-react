@@ -246,9 +246,9 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     return null;
   }, [filters, locale, t]);
 
-  const overallBalance = allFunds.reduce(
-    (sum, fund) => sum + (fund.endBalance ?? 0),
-    0,
+  const overallBalance = useMemo(
+    () => allFunds.reduce((sum, fund) => sum + (fund.endBalance ?? 0), 0),
+    [allFunds],
   );
 
   return (
@@ -311,7 +311,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
             <SimpleScreenOnly>
               <Box
                 display="flex"
-                flexWrap="nowrap"
+                flexWrap="wrap"
                 gap={2}
                 sx={{
                   flexDirection: { xs: 'column', sm: 'row' },
