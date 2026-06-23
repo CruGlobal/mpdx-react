@@ -98,7 +98,13 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 
   const { data, loading } = useReportsStaffExpensesQuery({
     variables: {
-      fundTypes: ['Primary', 'Savings', 'Staff Conference Savings'],
+      fundTypes: [
+        'Primary',
+        'Savings',
+        'Staff Conference Savings',
+        'Return Travel',
+        'Re-Entry',
+      ],
       ...getStaffExpenseMonthRange(filters, time),
     },
   });
@@ -296,7 +302,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
             <SimpleScreenOnly>
               <Box
                 display="flex"
-                flexWrap="wrap"
+                flexWrap="nowrap"
                 gap={2}
                 sx={{
                   flexDirection: { xs: 'column', sm: 'row' },

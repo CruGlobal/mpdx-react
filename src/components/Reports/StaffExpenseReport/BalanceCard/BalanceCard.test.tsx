@@ -51,35 +51,47 @@ describe('BalanceCard', () => {
 
   it('should format positive balances correctly', () => {
     const { getByText } = render(
-      <BalanceCard {...defaultProps} startBalance={1234.56} />,
+      <BalanceCard
+        {...defaultProps}
+        startBalance={1234.56}
+        isSelected={true}
+      />,
     );
     expect(getByText('Starting Balance: $1,234.56')).toBeInTheDocument();
   });
 
   it('should format negative balances correctly', () => {
     const { getByText } = render(
-      <BalanceCard {...defaultProps} startBalance={-500.25} />,
+      <BalanceCard
+        {...defaultProps}
+        startBalance={-500.25}
+        isSelected={true}
+      />,
     );
     expect(getByText('Starting Balance: -$500.25')).toBeInTheDocument();
   });
 
   it('should format zero values correctly', () => {
     const { getByText } = render(
-      <BalanceCard {...defaultProps} transfersIn={0} />,
+      <BalanceCard {...defaultProps} transfersIn={0} isSelected={true} />,
     );
     expect(getByText('+ Transfers in: $0')).toBeInTheDocument();
   });
 
   it('should handle large numbers correctly', () => {
     const { getByText } = render(
-      <BalanceCard {...defaultProps} endBalance={1000000.99} />,
+      <BalanceCard
+        {...defaultProps}
+        endBalance={1000000.99}
+        isSelected={true}
+      />,
     );
     expect(getByText('= Ending Balance: $1,000,000.99')).toBeInTheDocument();
   });
 
   it('should use Math.abs for transfers out display', () => {
     const { getByText } = render(
-      <BalanceCard {...defaultProps} transfersOut={-250.5} />,
+      <BalanceCard {...defaultProps} transfersOut={-250.5} isSelected={true} />,
     );
     expect(getByText('- Transfers out: $250.50')).toBeInTheDocument();
   });

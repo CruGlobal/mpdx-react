@@ -48,10 +48,12 @@ interface BalanceCardProps {
   isSelected?: boolean;
 }
 
-const StyledHeaderBox = styled(Box)(({ theme }) => ({
+const StyledHeaderBox = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'isSelected',
+})<{ isSelected: boolean }>(({ theme, isSelected }) => ({
   display: 'flex',
   flex: 1,
-  flexDirection: 'row',
+  flexDirection: isSelected ? 'row' : 'column',
   alignItems: 'start',
   gap: theme.spacing(1),
 }));
@@ -79,30 +81,45 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
 
   return (
     <StyledCard variant="outlined" isSelected={isSelected}>
-      <StyledHeaderBox>
+      <StyledHeaderBox isSelected={isSelected}>
         <StyledIconBox iconBgColor={iconBgColor}>
           <Icon />
         </StyledIconBox>
-        <Typography variant="h6">{title}</Typography>
+        <Typography
+          variant="h6"
+          sx={{ whiteSpace: isSelected ? 'nowrap' : 'normal' }}
+        >
+          {title}
+        </Typography>
       </StyledHeaderBox>
-      <Box display="flex" flexDirection="column" mt={3} mb={2}>
-        <Typography>
-          {t('Starting Balance: ')}
-          {currencyFormat(startBalance, 'USD', locale)}
-        </Typography>
-        <Typography>
-          {t('+ Transfers in: ')}
-          {currencyFormat(transfersIn, 'USD', locale)}
-        </Typography>
-        <Typography>
-          {t('- Transfers out: ')}
-          {currencyFormat(Math.abs(transfersOut), 'USD', locale)}
-        </Typography>
-        <Typography>
-          {t('= Ending Balance: ')}
-          {currencyFormat(endBalance, 'USD', locale)}
-        </Typography>
-      </Box>
+      {isSelected && (
+        <Box
+          display="flex"
+          flexDirection="column"
+          mt={3}
+          mb={2}
+          sx={{ whiteSpace: 'nowrap' }}
+        >
+          <Typography>
+            {t('Starting Balance: ')}
+            {currencyFormat(startBalance, 'USD', locale)}
+          </Typography>
+          <Typography>
+            {t('+ Transfers in: ')}
+            {currencyFormat(transfersIn, 'USD', locale)}
+          </Typography>
+          <Typography>
+            {t('- Transfers out: ')}
+            {currencyFormat(Math.abs(transfersOut), 'USD', locale)}
+          </Typography>
+          <Typography>
+            <strong>
+              {t('= Ending Balance: ')}
+              {currencyFormat(endBalance, 'USD', locale)}
+            </strong>
+          </Typography>
+        </Box>
+      )}
 
       <ScreenOnly>
         <StyledCardActionArea
@@ -117,6 +134,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
               color="primary.main"
               fontWeight={600}
               textAlign="center"
+              sx={{ whiteSpace: 'nowrap' }}
             >
               {t('Currently Viewing')}
             </Typography>
