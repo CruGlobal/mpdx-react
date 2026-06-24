@@ -21,7 +21,6 @@ import {
 import { getHeaderTitleAccess } from 'src/components/Shared/MultiPageLayout/helpers';
 import { NavFilterIcon } from 'src/components/Shared/styledComponents/NavFilterIcon';
 import theme from 'src/theme';
-import { preloadMpdSupervisorReportFilterPanel } from './Filters/DynamicMpdSupervisorReportFilterPanel';
 import { ALL_TEAMS, ALL_TYPES } from './Filters/mpdSupervisorReportFilters';
 import { Panel, useMpdSupervisorReport } from './MpdSupervisorReportContext';
 import { StaffMember } from './StaffMemberRow/StaffMember';
@@ -88,9 +87,9 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
     useMpdSupervisorReport();
 
   // TODO(MPDX): Replace this client-side filtering with server-side filtering.
-  // Note: `activeQuickFilter` (Negative last month / 3+ months negative /
-  // Trending down) is tracked in context and highlights the chip, but is not
-  // yet applied here — it needs MPD-health history that the mock data lacks.
+  // Note: `activeQuickFilter` (Negative last month / 3+ months negative) is
+  // tracked in context and highlights the chip, but is not yet applied here —
+  // it needs MPD-health history that the mock data lacks.
   const staffMembers = useMemo(
     () =>
       mockStaffMembers.filter((data) => {
@@ -129,7 +128,6 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
           <NavListButton
             panelOpen={panelOpen === Panel.Filters}
             onClick={onFilterListToggle}
-            onMouseEnter={preloadMpdSupervisorReportFilterPanel}
           >
             <NavFilterIcon
               titleAccess={getHeaderTitleAccess(HeaderTypeEnum.Filters, t)}

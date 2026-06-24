@@ -1,9 +1,10 @@
 import React from 'react';
-import { Chip, Theme, Typography } from '@mui/material';
+import { Chip, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { useTranslation } from 'react-i18next';
 import { useMpdSupervisorReport } from '../../MpdSupervisorReportContext';
-import { QuarterHealthEnum, QuarterStatus } from '../../mockData';
+import { healthColor } from '../../helpers';
+import { QuarterStatus } from '../../mockData';
 
 export const StaffTabQuarterly: React.FC = () => {
   const { t } = useTranslation();
@@ -52,27 +53,3 @@ const QuarterChips: React.FC<QuarterChipsProps> = ({ quarters }) => (
     ))}
   </Box>
 );
-
-const healthColor = (
-  theme: Theme,
-  health: QuarterHealthEnum,
-): { bg: string; color: string } => {
-  switch (health) {
-    case QuarterHealthEnum.Green:
-      return {
-        bg: theme.palette.chipGreenLight.main,
-        color: theme.palette.chipGreenDark.main,
-      };
-    case QuarterHealthEnum.Red:
-      return {
-        bg: theme.palette.chipRedLight.main,
-        color: theme.palette.chipRedDark.main,
-      };
-    case QuarterHealthEnum.Yellow:
-    default:
-      return {
-        bg: theme.palette.chipYellowLight.main,
-        color: theme.palette.chipYellowDark.main,
-      };
-  }
-};

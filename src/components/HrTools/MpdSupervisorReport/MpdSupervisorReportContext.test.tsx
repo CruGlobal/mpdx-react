@@ -175,11 +175,11 @@ describe('MpdSupervisorReportContext', () => {
     const { getByTestId } = renderConsumer();
     act(() => {
       consumerResult.setActiveQuickFilter(
-        MpdSupervisorReportQuickFilterEnum.TrendingDown,
+        MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative,
       );
     });
     expect(getByTestId('activeQuickFilter').textContent).toBe(
-      MpdSupervisorReportQuickFilterEnum.TrendingDown,
+      MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative,
     );
   });
 });

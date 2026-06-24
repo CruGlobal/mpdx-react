@@ -2,7 +2,10 @@ import Head from 'next/head';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
-import { DynamicMpdSupervisorReportFilterPanel } from 'src/components/HrTools/MpdSupervisorReport/Filters/DynamicMpdSupervisorReportFilterPanel';
+// The filter panel renders immediately on load (it defaults to open), so it
+// must not be lazy-loaded — a dynamic import shows a spinner on the client
+// while the server renders the real panel, causing a hydration mismatch.
+import { MpdSupervisorReportFilterPanel } from 'src/components/HrTools/MpdSupervisorReport/Filters/MpdSupervisorReportFilterPanel';
 import { MpdSupervisorReport } from 'src/components/HrTools/MpdSupervisorReport/MpdSupervisorReport';
 import {
   MpdSupervisorReportProvider,
@@ -46,9 +49,7 @@ const MpdSupervisorReportContent: React.FC = () => {
             navType={NavTypeEnum.HrTools}
           />
         ) : panelOpen === Panel.Filters ? (
-          <DynamicMpdSupervisorReportFilterPanel
-            onClose={() => setPanelOpen(null)}
-          />
+          <MpdSupervisorReportFilterPanel onClose={() => setPanelOpen(null)} />
         ) : undefined
       }
       leftOpen={panelOpen !== null}

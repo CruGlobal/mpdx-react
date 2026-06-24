@@ -4,7 +4,6 @@ export enum MpdSupervisorReportQuickFilterEnum {
   AllPeople = 'allPeople',
   NegativeLastMonth = 'negativeLastMonth',
   ThreeMonthsNegative = 'threeMonthsNegative',
-  TrendingDown = 'trendingDown',
 }
 
 // Order the quick-filter chips are rendered in. Labels are translated at
@@ -13,7 +12,6 @@ export const quickFilterIds: MpdSupervisorReportQuickFilterEnum[] = [
   MpdSupervisorReportQuickFilterEnum.AllPeople,
   MpdSupervisorReportQuickFilterEnum.NegativeLastMonth,
   MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative,
-  MpdSupervisorReportQuickFilterEnum.TrendingDown,
 ];
 
 export const quickFilterLabel = (
@@ -25,8 +23,6 @@ export const quickFilterLabel = (
       return t('Negative last month');
     case MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative:
       return t('3+ months negative');
-    case MpdSupervisorReportQuickFilterEnum.TrendingDown:
-      return t('Trending down');
     case MpdSupervisorReportQuickFilterEnum.AllPeople:
     default:
       return t('All people');

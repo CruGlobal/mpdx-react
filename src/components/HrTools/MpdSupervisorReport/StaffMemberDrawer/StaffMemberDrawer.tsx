@@ -20,6 +20,7 @@ import {
 import { StaffDetailTabEnum } from '../StaffDetailsTabs/StaffDetailTab';
 import { preloadStaffExpenseReport } from '../StaffDetailsTabs/StaffExpenseReport/DynamicStaffExpenseReport';
 import { StaffTabStaffExpenseReport } from '../StaffDetailsTabs/StaffExpenseReport/StaffExpenseReport';
+import { getInitials } from '../helpers';
 
 interface DetailRowProps {
   label: string;
@@ -91,8 +92,7 @@ export const StaffMemberDrawer: React.FC = () => {
     userPersonType,
     team,
   } = user;
-  const initials =
-    (preferredName[0] ?? '').toUpperCase() + (lastName[0] ?? '').toUpperCase();
+  const initials = getInitials(preferredName, lastName);
   const fullName = `${preferredName} ${lastName}`;
 
   return (

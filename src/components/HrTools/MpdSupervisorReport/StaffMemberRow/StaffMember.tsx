@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
+import { getInitials, healthColor } from '../helpers';
 import { EmployeeData, QuarterHealthEnum } from '../mockData';
 
 const healthLabel = (t: TFunction, health: QuarterHealthEnum): string => {
@@ -28,32 +29,11 @@ const healthLabel = (t: TFunction, health: QuarterHealthEnum): string => {
   }
 };
 
-const healthColor = (
-  health: QuarterHealthEnum,
-): { bg: string; color: string } => {
-  switch (health) {
-    case QuarterHealthEnum.Green:
-      return {
-        bg: theme.palette.chipGreenLight.main,
-        color: theme.palette.chipGreenDark.main,
-      };
-    case QuarterHealthEnum.Red:
-      return {
-        bg: theme.palette.chipRedLight.main,
-        color: theme.palette.chipRedDark.main,
-      };
-    case QuarterHealthEnum.Yellow:
-    default:
-      return {
-        bg: theme.palette.chipYellowLight.main,
-        color: theme.palette.chipYellowDark.main,
-      };
-  }
-};
-
 const StyledCard = styled(Card)(({ theme }) => ({
   marginBottom: theme.spacing(1),
   boxShadow: theme.shadows[1],
+  border: '1px solid',
+  borderColor: theme.palette.divider,
   cursor: 'pointer',
   width: '100%',
 }));
@@ -77,7 +57,7 @@ const GridQuarter = styled(Grid)(({ theme }) => ({
 const QuarterChip = styled(Chip, {
   shouldForwardProp: (prop) => prop !== 'health',
 })<{ health: QuarterHealthEnum }>(({ health }) => {
-  const { bg, color } = healthColor(health);
+  const { bg, color } = healthColor(theme, health);
   return {
     height: 22,
     fontWeight: 600,
@@ -89,15 +69,6 @@ const QuarterChip = styled(Chip, {
     },
   };
 });
-
-const initials = (name: string): string =>
-  name
-    .split(' ')
-    .map((part) => part[0])
-    .filter(Boolean)
-    .slice(0, 2)
-    .join('')
-    .toUpperCase();
 
 interface StaffMemberProps {
   data: EmployeeData;
@@ -141,7 +112,7 @@ export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
             <Avatar
               sx={{ bgcolor: 'mpdxGrayLight.main', color: 'text.primary' }}
             >
-              {initials(`${name ?? ''} ${lastName ?? ''}`)}
+              {getInitials(name, lastName)}
             </Avatar>
             <Box sx={{ flexGrow: 1, minWidth: 200, ml: 1 }}>
               <Box

@@ -61,26 +61,23 @@ describe('MpdSupervisorReportFilterPanel', () => {
     expect(
       screen.getByRole('button', { name: '3+ months negative' }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: 'Trending down' }),
-    ).toBeInTheDocument();
   });
 
   it('clicking a quick-filter chip toggles active state', async () => {
     renderFilterPanel();
     // 'All people' chip is active by default (filled variant)
     const allPeopleChip = screen.getByRole('button', { name: 'All people' });
-    const trendingDownChip = screen.getByRole('button', {
-      name: 'Trending down',
+    const threeMonthsChip = screen.getByRole('button', {
+      name: '3+ months negative',
     });
 
-    // Click Trending Down to make it active
-    await userEvent.click(trendingDownChip);
+    // Click 3+ months negative to make it active
+    await userEvent.click(threeMonthsChip);
 
-    // After click, 'Trending down' should be filled (active)
+    // After click, '3+ months negative' should be filled (active)
     // We can't easily check MUI variant in RTL, so we check re-render with a consumer
     // that reads context. Instead we verify the chip is still rendered and clickable.
-    expect(trendingDownChip).toBeInTheDocument();
+    expect(threeMonthsChip).toBeInTheDocument();
 
     // Click All People to switch back
     await userEvent.click(allPeopleChip);
@@ -147,24 +144,24 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
 
   it('clicking a quick-filter chip updates activeQuickFilter in context', async () => {
     renderWithConsumer();
-    const trendingDownChip = screen.getByRole('button', {
-      name: 'Trending down',
+    const threeMonthsChip = screen.getByRole('button', {
+      name: '3+ months negative',
     });
-    await userEvent.click(trendingDownChip);
+    await userEvent.click(threeMonthsChip);
     expect(screen.getByTestId('activeQuickFilter').textContent).toBe(
-      'trendingDown',
+      'threeMonthsNegative',
     );
   });
 
   it('clicking All people chip sets activeQuickFilter back to allPeople', async () => {
     renderWithConsumer();
 
-    // First switch to trending down
+    // First switch to 3+ months negative
     await userEvent.click(
-      screen.getByRole('button', { name: 'Trending down' }),
+      screen.getByRole('button', { name: '3+ months negative' }),
     );
     expect(screen.getByTestId('activeQuickFilter').textContent).toBe(
-      'trendingDown',
+      'threeMonthsNegative',
     );
 
     // Then click All people to switch back
