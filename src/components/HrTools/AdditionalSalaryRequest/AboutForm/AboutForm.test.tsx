@@ -155,7 +155,7 @@ describe('AboutForm', () => {
 
     expect(getByRole('link', { name: 'paper version' })).toHaveAttribute(
       'href',
-      'https://drive.google.com/file/d/17Xe-OTtC8em41PASIWR_ew8mZ9pUYqYF/view?usp=sharing',
+      'https://drive.google.com/file/d/1BXoJGnr9Gc3_KAek8jI8RsKAOo_We0JV/view?usp=drive_link',
     );
   });
 });

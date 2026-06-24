@@ -6,6 +6,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
+import { progressiveApprovalsLink } from '../../Shared/pdfLinks';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 
 interface SplitCapSubContentProps {
@@ -58,7 +59,7 @@ export const SplitCapSubContent: React.FC<SplitCapSubContentProps> = ({
         salary, any additional requests can be submitted online but will require
         approval through our{' '}
         <Link
-          href="https://drive.google.com/file/d/1Z1WuiIUMrmfrUUV0V-ACCdhyuSd1Cgzg/view?usp=drive_link"
+          href={progressiveApprovalsLink}
           target="_blank"
           rel="noopener noreferrer"
           style={{ display: 'inline', color: theme.palette.primary.main }}

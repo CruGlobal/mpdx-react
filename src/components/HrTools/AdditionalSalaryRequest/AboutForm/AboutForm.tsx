@@ -5,6 +5,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { NameDisplay } from '../../Shared/CalculationReports/NameDisplay/NameDisplay';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { getHeader } from '../Shared/Helper/getHeader';
+import { paperVersionLink, progressiveApprovalsLink } from '../Shared/pdfLinks';
 import { useFormUserInfo } from '../Shared/useFormUserInfo';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
 import { SpouseComponent } from '../SharedComponents/SpouseComponent';
@@ -60,7 +61,7 @@ export const AboutForm: React.FC = () => {
           In special cases where requests exceed the remaining allowable salary,
           we require additional review through our{' '}
           <Link
-            href="https://drive.google.com/file/d/1Z1WuiIUMrmfrUUV0V-ACCdhyuSd1Cgzg/view?usp=drive_link"
+            href={progressiveApprovalsLink}
             target="_blank"
             rel="noopener noreferrer"
             underline="always"
@@ -73,7 +74,7 @@ export const AboutForm: React.FC = () => {
         <Typography variant="body1" paragraph>
           Alternatively, you may download and submit the{' '}
           <Link
-            href="https://drive.google.com/file/d/17Xe-OTtC8em41PASIWR_ew8mZ9pUYqYF/view?usp=sharing"
+            href={paperVersionLink}
             target="_blank"
             rel="noopener noreferrer"
             underline="always"

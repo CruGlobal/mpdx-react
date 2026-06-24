@@ -1,8 +1,13 @@
-import { useTranslation } from 'react-i18next';
+import Link from 'next/link';
+import React from 'react';
+import { Box } from '@mui/material';
+import { Trans, useTranslation } from 'react-i18next';
 import {
   ProgressiveApprovalTierEnum,
   ProgressiveApprovalTierReasonEnum,
 } from 'src/graphql/types.generated';
+import theme from 'src/theme';
+import { progressiveApprovalsLink } from '../../AdditionalSalaryRequest/Shared/pdfLinks';
 import { useCaps } from '../SalaryCalculation/useCaps';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { useFormatters } from '../Shared/useFormatters';
@@ -10,7 +15,7 @@ import { useFormatters } from '../Shared/useFormatters';
 interface DialogContent {
   title: string;
   content: string;
-  subContent: string;
+  subContent: React.ReactNode;
 }
 
 export const useSubmitDialogContent = (): DialogContent => {
@@ -36,7 +41,7 @@ export const useSubmitDialogContent = (): DialogContent => {
   let title = t(
     'Your request requires additional approval because your Gross Salary exceeds your Maximum Allowable Salary. Do you want to continue?',
   );
-  let subContent: string;
+  let subContent: React.ReactNode;
   if (reason === ProgressiveApprovalTierReasonEnum.BoardCapException) {
     subContent = t(
       "You have a Board approved Maximum Allowable Salary (CAP) and your salary request exceeds that amount. As a result we need to get their approval for this request. We'll forward your request to them and get back to you with their decision.",
@@ -53,13 +58,26 @@ export const useSubmitDialogContent = (): DialogContent => {
       },
     );
   } else {
-    subContent = t(
-      'We will review your request through our Progressive Approvals process. For the {{amount}} you are requesting, this will take {{timeframe}} as it needs to be signed off by {{approvers}}. This may affect your selected effective date.',
-      {
-        amount: formatCurrency(combinedGross),
-        timeframe: progressiveApprovalTier?.approvalTimeframe,
-        approvers: progressiveApprovalTier?.approver,
-      },
+    subContent = (
+      <Box>
+        <Trans t={t}>
+          We will review your request through our{' '}
+          <Link
+            href={progressiveApprovalsLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ display: 'inline', color: theme.palette.primary.main }}
+          >
+            Progressive Approvals
+          </Link>{' '}
+          process. For the {{ amount: formatCurrency(combinedGross) }} you are
+          requesting, this will take{' '}
+          {{ timeframe: progressiveApprovalTier?.approvalTimeframe }} as it
+          needs to be signed off by{' '}
+          {{ approvers: progressiveApprovalTier?.approver }}. This may affect
+          your selected effective date.
+        </Trans>
+      </Box>
     );
   }
 
