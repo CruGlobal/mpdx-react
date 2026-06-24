@@ -1,8 +1,9 @@
-import { renderHook, waitFor } from '@testing-library/react';
+import { render, renderHook, waitFor } from '@testing-library/react';
 import {
   ProgressiveApprovalTierEnum,
   ProgressiveApprovalTierReasonEnum,
 } from 'src/graphql/types.generated';
+import { progressiveApprovalsLink } from '../../AdditionalSalaryRequest/Shared/pdfLinks';
 import { SalaryCalculatorTestWrapper } from '../SalaryCalculatorTestWrapper';
 import { useSubmitDialogContent } from './useSubmitDialogContent';
 
@@ -86,9 +87,16 @@ describe('useSubmitDialogContent', () => {
       );
     });
 
-    expect(result.current.subContent).toContain('$80,000.00');
-    expect(result.current.subContent).toContain('2-3 weeks');
-    expect(result.current.subContent).toContain('Vice President');
+    const { container, getByRole } = render(
+      <div>{result.current.subContent}</div>,
+    );
+
+    expect(container).toHaveTextContent('$80,000.00');
+    expect(container).toHaveTextContent('2-3 weeks');
+    expect(container).toHaveTextContent('Vice President');
+    expect(
+      getByRole('link', { name: 'Progressive Approvals' }),
+    ).toHaveAttribute('href', progressiveApprovalsLink);
   });
 
   it('returns board cap exception content when the reason is BoardCapException', async () => {

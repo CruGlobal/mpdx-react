@@ -71,6 +71,17 @@ describe('CapSubContent', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('should link to the Progressive Approvals document', () => {
+    const { getByRole } = renderCapSubContent();
+
+    expect(
+      getByRole('link', { name: 'Progressive Approvals' }),
+    ).toHaveAttribute(
+      'href',
+      'https://drive.google.com/file/d/1Z1WuiIUMrmfrUUV0V-ACCdhyuSd1Cgzg/view?usp=drive_link',
+    );
+  });
+
   it('renders nothing when reason is board cap exception (message is carried by getCapOverrides)', () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
       requestData: {

@@ -11,6 +11,7 @@ import theme from 'src/theme';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 import { getTotal } from '../../Shared/Helper/getTotal';
+import { progressiveApprovalsLink } from '../../Shared/pdfLinks';
 
 export const CapSubContent: React.FC = () => {
   const { t } = useTranslation();
@@ -35,7 +36,9 @@ export const CapSubContent: React.FC = () => {
         Please complete the Approval Process section below and we will review
         your request through our{' '}
         <Link
-          href="/"
+          href={progressiveApprovalsLink}
+          target="_blank"
+          rel="noopener noreferrer"
           style={{ display: 'inline', color: theme.palette.primary.main }}
         >
           Progressive Approvals
