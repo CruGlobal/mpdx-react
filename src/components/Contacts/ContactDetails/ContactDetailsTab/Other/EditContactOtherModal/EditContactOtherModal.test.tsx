@@ -492,8 +492,115 @@ describe('EditContactOtherModal', () => {
         userId: 'user-2',
         greeting: newGreeting,
         envelopeGreeting: newEnvelopeGreeting,
-        contactReferralsToMe: [{}],
+        contactReferralsToMe: [],
       },
     });
+  });
+
+  it('does not re-create the referral when the referred by is unchanged', async () => {
+    const mutationSpy = jest.fn();
+    const { getByLabelText, getByText } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<{
+              UpdateContactOther: UpdateContactOtherMutation;
+            }>
+              onCall={mutationSpy}
+            >
+              <ContactDetailProvider>
+                <EditContactOtherModal
+                  accountListId={accountListId}
+                  isOpen={true}
+                  handleClose={handleClose}
+                  contact={mockContact}
+                  referral={referral}
+                />
+              </ContactDetailProvider>
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+
+    // Edit a field other than the Connecting Partner and save
+    const website = getByLabelText('Website');
+    userEvent.clear(website);
+    userEvent.type(website, 'unchanged-referral.com');
+    userEvent.click(getByText('Save'));
+
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Contact updated successfully', {
+        variant: 'success',
+      }),
+    );
+
+    const updateCall = mutationSpy.mock.calls
+      .map(([{ operation }]) => operation)
+      .find(({ operationName }) => operationName === 'UpdateContactOther');
+
+    // The existing referral must not be re-submitted, otherwise the API's
+    // nested-attributes handling creates a duplicate ContactReferral row.
+    expect(updateCall?.variables.attributes.contactReferralsToMe).toEqual([]);
+  });
+
+  it('destroys the old referral and creates the new one when the referred by changes', async () => {
+    const mutationSpy = jest.fn();
+    const { getByRole, getByText } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<{
+              ContactOptions: ContactOptionsQuery;
+              UpdateContactOther: UpdateContactOtherMutation;
+            }>
+              onCall={mutationSpy}
+              mocks={{
+                ContactOptions: {
+                  contacts: {
+                    nodes: [{ id: 'new-partner', name: 'Aaa Bbb' }],
+                  },
+                },
+              }}
+            >
+              <ContactDetailProvider>
+                <EditContactOtherModal
+                  accountListId={accountListId}
+                  isOpen={true}
+                  handleClose={handleClose}
+                  contact={mockContact}
+                  referral={referral}
+                />
+              </ContactDetailProvider>
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+
+    const referredByElement = getByRole('combobox', {
+      hidden: true,
+      name: 'Connecting Partner',
+    });
+    userEvent.click(referredByElement);
+    userEvent.type(referredByElement, 'Aa');
+    await waitFor(() => expect(getByText('Aaa Bbb')).toBeInTheDocument());
+    userEvent.click(getByText('Aaa Bbb'));
+    userEvent.click(getByText('Save'));
+
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Contact updated successfully', {
+        variant: 'success',
+      }),
+    );
+
+    const updateCall = mutationSpy.mock.calls
+      .map(([{ operation }]) => operation)
+      .find(({ operationName }) => operationName === 'UpdateContactOther');
+
+    expect(updateCall?.variables.attributes.contactReferralsToMe).toEqual([
+      { id: referral.id, destroy: true },
+      { referredById: 'new-partner' },
+    ]);
   });
 });
