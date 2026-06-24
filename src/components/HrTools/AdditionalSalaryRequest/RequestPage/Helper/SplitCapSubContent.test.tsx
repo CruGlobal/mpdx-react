@@ -75,15 +75,21 @@ describe('SplitCapSubContent', () => {
 
     const { getByText, getByRole } = renderSplitCapSubContent('Jane');
 
+    const progressiveApprovalsLink = getByRole('link', {
+      name: 'Progressive Approvals',
+    });
+
     expect(
       getByText(/Please make adjustments to your request/),
     ).toBeInTheDocument();
     expect(
       getByText(/separate request up to Jane's maximum allowable salary/),
     ).toBeInTheDocument();
-    expect(
-      getByRole('link', { name: 'Progressive Approvals' }),
-    ).toBeInTheDocument();
+    expect(progressiveApprovalsLink).toBeInTheDocument();
+    expect(progressiveApprovalsLink).toHaveAttribute(
+      'href',
+      'https://drive.google.com/file/d/1Z1WuiIUMrmfrUUV0V-ACCdhyuSd1Cgzg/view?usp=drive_link',
+    );
   });
 
   it('renders status bar header with spouse salary and cap amounts', () => {

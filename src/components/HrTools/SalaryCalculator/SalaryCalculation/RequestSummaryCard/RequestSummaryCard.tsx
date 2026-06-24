@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React, { useId } from 'react';
 import InfoIcon from '@mui/icons-material/Info';
 import {
@@ -18,6 +19,7 @@ import {
   ProgressiveApprovalTierEnum,
   ProgressiveApprovalTierReasonEnum,
 } from 'src/graphql/types.generated';
+import { progressiveApprovalsLink } from '../../../AdditionalSalaryRequest/Shared/pdfLinks';
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
 import { StepCard } from '../../Shared/StepCard';
 import { useFormatters } from '../../Shared/useFormatters';
@@ -118,7 +120,15 @@ export const RequestSummaryCard: React.FC = () => {
       Your {{ combined: combinedModifier }} Gross Requested Salary exceeds your{' '}
       {{ combined: combinedModifier }} Maximum Allowable Salary. Please make
       adjustments to your Salary Request above or fill out the Approval Process
-      Section below to request a higher amount through our Progressive Approvals
+      Section below to request a higher amount through our{' '}
+      <Link
+        href={progressiveApprovalsLink}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ display: 'inline', color: theme.palette.primary.main }}
+      >
+        Progressive Approvals
+      </Link>{' '}
       process. This will take{' '}
       {{ timeframe: progressiveApprovalTier.approvalTimeframe }} as it needs to
       be signed off by the {{ approver: progressiveApprovalTier.approver }}.
