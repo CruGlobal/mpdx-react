@@ -64,6 +64,13 @@ export interface StaffReportRow {
   groupedTransaction?: GroupedTransaction;
 }
 
+const descriptionName = (displayCategory: string): string => {
+  if (displayCategory === 'Donation') {
+    return 'Total Donations';
+  }
+  return displayCategory;
+};
+
 export const createStaffReportRow = (
   transaction: Transaction | GroupedTransaction,
   index: number,
@@ -72,7 +79,7 @@ export const createStaffReportRow = (
   return {
     id: index.toString(),
     date: DateTime.fromISO(transaction.transactedAt),
-    description: transaction.displayCategory,
+    description: descriptionName(transaction.displayCategory),
     amount: transaction.amount,
     isGrouped,
     groupedTransaction: isGrouped ? transaction : undefined,

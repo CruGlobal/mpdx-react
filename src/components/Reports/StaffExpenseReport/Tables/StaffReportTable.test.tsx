@@ -85,6 +85,30 @@ describe('StaffReportTable', () => {
     expect(getByRole('gridcell', { name: '-$100' })).toBeInTheDocument();
   });
 
+  it('relabels a Donation category as "Total Donations"', async () => {
+    const { findByRole } = render(
+      <TestComponent
+        tableProps={{
+          tableType: ReportType.Income,
+          transactions: [
+            {
+              id: 'donation-1',
+              fundType: 'Primary',
+              category: StaffExpenseCategoryEnum.Donation,
+              transactedAt: '2025-01-15',
+              amount: 250,
+              displayCategory: 'Donation',
+            },
+          ],
+        }}
+      />,
+    );
+
+    expect(
+      await findByRole('gridcell', { name: 'Total Donations' }),
+    ).toBeInTheDocument();
+  });
+
   it('renders loading spinner when loading prop is true', async () => {
     const { findByTestId } = render(
       <TestComponent tableProps={{ loading: true }} />,
