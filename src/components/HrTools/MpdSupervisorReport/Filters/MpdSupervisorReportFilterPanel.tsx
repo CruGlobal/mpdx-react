@@ -18,7 +18,8 @@ import {
   MpdSupervisorReportEmploymentTypeEnum,
   MpdSupervisorReportQuickFilterEnum,
   MpdSupervisorReportTeamsEnum,
-  quickFilters,
+  quickFilterIds,
+  quickFilterLabel,
 } from './mpdSupervisorReportFilters';
 
 interface MpdSupervisorReportFilterPanelProps {
@@ -82,20 +83,20 @@ export const MpdSupervisorReportFilterPanel: React.FC<
 
       <Stack spacing={2} sx={{ p: 2 }}>
         <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
-          {quickFilters.map((filter) => (
+          {quickFilterIds.map((filterId) => (
             <Chip
-              key={filter.id}
-              label={filter.label}
-              variant={activeQuickFilter === filter.id ? 'filled' : 'outlined'}
+              key={filterId}
+              label={quickFilterLabel(t, filterId)}
+              variant={activeQuickFilter === filterId ? 'filled' : 'outlined'}
               sx={{
                 backgroundColor:
-                  activeQuickFilter === filter.id ? 'primary.main' : 'default',
+                  activeQuickFilter === filterId ? 'primary.main' : 'default',
                 color:
-                  activeQuickFilter === filter.id
+                  activeQuickFilter === filterId
                     ? 'primary.contrastText'
                     : 'default',
               }}
-              onClick={() => handleQuickFilter(filter.id)}
+              onClick={() => handleQuickFilter(filterId)}
             />
           ))}
         </Stack>

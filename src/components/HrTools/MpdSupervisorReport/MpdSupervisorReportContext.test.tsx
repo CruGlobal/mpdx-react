@@ -224,4 +224,54 @@ describe('MpdSupervisorReportContext — selectedTabKey from URL', () => {
       StaffDetailTabEnum.MonthlySummary,
     );
   });
+
+  it('uses the first value when ?tab= is an array', () => {
+    const { getByTestId } = render(
+      <TestRouter router={{ query: { tab: ['Payroll', 'Quarterly'] } }}>
+        <MpdSupervisorReportProvider>
+          <TabConsumer />
+        </MpdSupervisorReportProvider>
+      </TestRouter>,
+    );
+    expect(getByTestId('tab').textContent).toBe(StaffDetailTabEnum.Payroll);
+  });
+});
+
+const TabSwitcher: React.FC = () => {
+  const { selectedTabKey, handleTabChange } = useMpdSupervisorReport();
+  return (
+    <button
+      data-testid="tab"
+      onClick={(event) => handleTabChange(event, StaffDetailTabEnum.Payroll)}
+    >
+      {selectedTabKey}
+    </button>
+  );
+};
+
+describe('MpdSupervisorReportContext — selectedTabKey to URL', () => {
+  it('syncs the selected tab back to the URL on change', async () => {
+    const replace = jest.fn();
+    const { getByTestId } = render(
+      <TestRouter
+        router={{ query: { accountListId: 'account-list-1' }, replace }}
+      >
+        <MpdSupervisorReportProvider>
+          <TabSwitcher />
+        </MpdSupervisorReportProvider>
+      </TestRouter>,
+    );
+
+    await act(async () => {
+      getByTestId('tab').click();
+    });
+
+    expect(replace).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: expect.objectContaining({ tab: StaffDetailTabEnum.Payroll }),
+      }),
+      undefined,
+      { shallow: true },
+    );
+  });
 });

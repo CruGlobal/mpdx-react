@@ -46,6 +46,17 @@ export const MpdSupervisorReportContext = createContext<
   MpdSupervisorReportContextValue | undefined
 >(undefined);
 
+// Resolve the selected tab from the `?tab=` query param, guarding against
+// arbitrary URL input (arrays or values that aren't a real tab).
+const parseTabFromQuery = (
+  tab: string | string[] | undefined,
+): StaffDetailTabEnum => {
+  const value = Array.isArray(tab) ? tab[0] : tab;
+  return Object.values(StaffDetailTabEnum).includes(value as StaffDetailTabEnum)
+    ? (value as StaffDetailTabEnum)
+    : StaffDetailTabEnum.MonthlySummary;
+};
+
 export const MpdSupervisorReportProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
@@ -63,17 +74,17 @@ export const MpdSupervisorReportProvider: React.FC<{
     useState<MpdSupervisorReportQuickFilterEnum>(
       MpdSupervisorReportQuickFilterEnum.AllPeople,
     );
-  const [selectedTabKey, setSelectedTabKey] = React.useState(
-    query?.tab
-      ? (StaffDetailTabEnum[query.tab.toString()] ??
-          StaffDetailTabEnum.MonthlySummary)
-      : StaffDetailTabEnum.MonthlySummary,
+  const [selectedTabKey, setSelectedTabKey] = useState<StaffDetailTabEnum>(() =>
+    parseTabFromQuery(query?.tab),
   );
   const handleTabChange = useCallback(
     (_event: React.SyntheticEvent, newKey: StaffDetailTabEnum) => {
       setSelectedTabKey(newKey);
+      router?.replace({ query: { ...router.query, tab: newKey } }, undefined, {
+        shallow: true,
+      });
     },
-    [],
+    [router],
   );
 
   const value = useMemo<MpdSupervisorReportContextValue>(

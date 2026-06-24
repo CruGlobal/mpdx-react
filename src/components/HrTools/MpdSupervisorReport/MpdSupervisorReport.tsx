@@ -152,7 +152,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
           <TextField
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder={t('Search name')}
+            label={t('Search name')}
             size="small"
             sx={{
               minWidth: { xs: '100%', sm: 220 },
@@ -165,7 +165,6 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
                 </InputAdornment>
               ),
             }}
-            inputProps={{ 'aria-label': t('Search name') }}
           />
         </StickyHeaderInner>
       </StickyHeader>

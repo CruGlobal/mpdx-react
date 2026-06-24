@@ -1,4 +1,4 @@
-import i18n from 'src/lib/i18n';
+import { TFunction } from 'react-i18next';
 
 export enum MpdSupervisorReportQuickFilterEnum {
   AllPeople = 'allPeople',
@@ -7,29 +7,31 @@ export enum MpdSupervisorReportQuickFilterEnum {
   TrendingDown = 'trendingDown',
 }
 
-export interface QuickFilter {
-  id: MpdSupervisorReportQuickFilterEnum;
-  label: string;
-}
-
-export const quickFilters: QuickFilter[] = [
-  {
-    id: MpdSupervisorReportQuickFilterEnum.AllPeople,
-    label: i18n.t('All people'),
-  },
-  {
-    id: MpdSupervisorReportQuickFilterEnum.NegativeLastMonth,
-    label: i18n.t('Negative last month'),
-  },
-  {
-    id: MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative,
-    label: i18n.t('3+ months negative'),
-  },
-  {
-    id: MpdSupervisorReportQuickFilterEnum.TrendingDown,
-    label: i18n.t('Trending down'),
-  },
+// Order the quick-filter chips are rendered in. Labels are translated at
+// render time (see quickFilterLabel) so they react to language changes.
+export const quickFilterIds: MpdSupervisorReportQuickFilterEnum[] = [
+  MpdSupervisorReportQuickFilterEnum.AllPeople,
+  MpdSupervisorReportQuickFilterEnum.NegativeLastMonth,
+  MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative,
+  MpdSupervisorReportQuickFilterEnum.TrendingDown,
 ];
+
+export const quickFilterLabel = (
+  t: TFunction,
+  id: MpdSupervisorReportQuickFilterEnum,
+): string => {
+  switch (id) {
+    case MpdSupervisorReportQuickFilterEnum.NegativeLastMonth:
+      return t('Negative last month');
+    case MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative:
+      return t('3+ months negative');
+    case MpdSupervisorReportQuickFilterEnum.TrendingDown:
+      return t('Trending down');
+    case MpdSupervisorReportQuickFilterEnum.AllPeople:
+    default:
+      return t('All people');
+  }
+};
 
 export enum MpdSupervisorReportTeamsEnum {
   All = 'all',
