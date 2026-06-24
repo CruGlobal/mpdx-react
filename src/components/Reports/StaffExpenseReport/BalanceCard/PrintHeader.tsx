@@ -77,14 +77,14 @@ export const PrintHeader: React.FC<PrintHeaderProps> = ({
           </Box>
           <Box>
             <Typography>
-              {t('+ Transfers in: {{transfersIn}}', {
+              {t('Income: {{transfersIn}}', {
                 transfersIn: currencyFormat(transfersIn, 'USD', locale, {
                   showTrailingZeros: true,
                 }),
               })}
             </Typography>
             <Typography>
-              {t('- Transfers out: {{transfersOut}}', {
+              {t('Expenses: {{transfersOut}}', {
                 transfersOut: currencyFormat(
                   Math.abs(transfersOut),
                   'USD',

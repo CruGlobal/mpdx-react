@@ -1,6 +1,6 @@
 import React from 'react';
 import { Wallet } from '@mui/icons-material';
-import { render } from '@testing-library/react';
+import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BalanceCard } from './BalanceCard';
 
@@ -75,7 +75,8 @@ describe('BalanceCard', () => {
     const { getByText } = render(
       <BalanceCard {...defaultProps} transfersIn={0} isSelected={true} />,
     );
-    expect(getByText('+ Transfers in: $0.00')).toBeInTheDocument();
+    const income = getByText('Income:');
+    expect(within(income).getByText('$0.00')).toBeInTheDocument();
   });
 
   it('should handle large numbers correctly', () => {
@@ -100,10 +101,11 @@ describe('BalanceCard', () => {
     expect(getByText('($1,234.56)')).toBeInTheDocument();
   });
 
-  it('should use Math.abs for transfers out display', () => {
+  it('should display transfers out with its sign preserved', () => {
     const { getByText } = render(
       <BalanceCard {...defaultProps} transfersOut={-250.5} isSelected={true} />,
     );
-    expect(getByText('- Transfers out: $250.50')).toBeInTheDocument();
+    const expenses = getByText('Expenses:');
+    expect(within(expenses).getByText('-$250.50')).toBeInTheDocument();
   });
 });
