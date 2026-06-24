@@ -196,13 +196,12 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
   const onSubmit = async (
     attributes: ContactUpdateInput & { referredById: string },
   ) => {
-    // When the referred-by contact is unchanged, don't re-submit it. Sending a
-    // referral without its `id` makes the API's nested-attributes handling
-    // create a brand new ContactReferral row, duplicating the existing one.
     const referralsInput =
       referral?.referredBy.id === selectedId
-        ? []
-        : [
+        ? // No changes
+          []
+        : // Remove the old referral and add the new referral (if any)
+          [
             ...(referral ? [{ id: referral.id, destroy: true }] : []),
             ...(selectedId ? [{ referredById: selectedId }] : []),
           ];
