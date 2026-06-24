@@ -102,7 +102,7 @@ describe('BalanceCard', () => {
         />,
       );
 
-      expect(getByTestId('GroupsIcon')).toBeInTheDocument();
+      expect(getByTestId('Diversity1Icon')).toBeInTheDocument();
     });
 
     it('should display staff account icon', () => {

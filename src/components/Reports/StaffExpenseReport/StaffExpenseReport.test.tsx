@@ -225,6 +225,7 @@ describe('StaffExpenseReport', () => {
     expect(getByRole('heading', { name: 'Report title' })).toBeInTheDocument();
     expect(await findByText('Test Account')).toBeInTheDocument();
     expect(await findByText('1000000001')).toBeInTheDocument();
+    expect(await findByText('$4,000.00')).toBeInTheDocument();
   });
 
   it('initializes with month from query', () => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Groups, Outbox, Savings, Wallet } from '@mui/icons-material';
+import { Diversity1, Outbox, Savings, Wallet } from '@mui/icons-material';
 import { Box, Button, Card, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { SimpleScreenOnly } from 'src/components/Reports/styledComponents';
@@ -29,7 +29,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
       ? Wallet
       : fund.fundType === FundTypeEnum.Savings
         ? Savings
-        : Groups;
+        : Diversity1;
   const iconBgColor =
     fund.fundType === FundTypeEnum.Primary
       ? theme.palette.chartOrange.main

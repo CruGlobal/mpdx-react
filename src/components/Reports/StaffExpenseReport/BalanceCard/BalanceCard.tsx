@@ -48,10 +48,12 @@ interface BalanceCardProps {
   isSelected?: boolean;
 }
 
-const StyledHeaderBox = styled(Box)(({ theme }) => ({
+const StyledHeaderBox = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'isSelected',
+})<{ isSelected: boolean }>(({ theme, isSelected }) => ({
   display: 'flex',
   flex: 1,
-  flexDirection: 'row',
+  flexDirection: isSelected ? 'row' : 'column',
   alignItems: 'start',
   gap: theme.spacing(1),
 }));
@@ -77,32 +79,65 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
 
+  const formatBalance = (amount: number) =>
+    currencyFormat(amount, 'USD', locale, {
+      showTrailingZeros: true,
+    });
+
+  const isNegative = endBalance < 0;
+
   return (
     <StyledCard variant="outlined" isSelected={isSelected}>
-      <StyledHeaderBox>
+      <StyledHeaderBox isSelected={isSelected}>
         <StyledIconBox iconBgColor={iconBgColor}>
           <Icon />
         </StyledIconBox>
-        <Typography variant="h6">{title}</Typography>
+        <Typography
+          variant="h6"
+          sx={{ whiteSpace: isSelected ? 'nowrap' : 'normal' }}
+        >
+          {title}
+        </Typography>
       </StyledHeaderBox>
-      <Box display="flex" flexDirection="column" mt={3} mb={2}>
-        <Typography>
-          {t('Starting Balance: ')}
-          {currencyFormat(startBalance, 'USD', locale)}
+      {isSelected ? (
+        <Box
+          display="flex"
+          flexDirection="column"
+          mt={3}
+          mb={2}
+          sx={{ whiteSpace: 'nowrap' }}
+        >
+          <Typography>
+            {t('Starting Balance: ')}
+            {formatBalance(startBalance)}
+          </Typography>
+          <Typography>
+            {t('+ Transfers in: ')}
+            {formatBalance(transfersIn)}
+          </Typography>
+          <Typography>
+            {t('- Transfers out: ')}
+            {formatBalance(Math.abs(transfersOut))}
+          </Typography>
+          <Typography>
+            <strong>
+              {t('= Ending Balance: ')}
+              {formatBalance(endBalance)}
+            </strong>
+          </Typography>
+        </Box>
+      ) : (
+        <Typography
+          variant="h6"
+          color={isNegative ? 'error.main' : 'text.primary'}
+        >
+          {isNegative ? '(' : ''}
+          {currencyFormat(Math.abs(endBalance), 'USD', locale, {
+            showTrailingZeros: true,
+          })}
+          {isNegative ? ')' : ''}
         </Typography>
-        <Typography>
-          {t('+ Transfers in: ')}
-          {currencyFormat(transfersIn, 'USD', locale)}
-        </Typography>
-        <Typography>
-          {t('- Transfers out: ')}
-          {currencyFormat(Math.abs(transfersOut), 'USD', locale)}
-        </Typography>
-        <Typography>
-          {t('= Ending Balance: ')}
-          {currencyFormat(endBalance, 'USD', locale)}
-        </Typography>
-      </Box>
+      )}
 
       <ScreenOnly>
         <StyledCardActionArea
@@ -117,6 +152,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
               color="primary.main"
               fontWeight={600}
               textAlign="center"
+              sx={{ whiteSpace: 'nowrap' }}
             >
               {t('Currently Viewing')}
             </Typography>

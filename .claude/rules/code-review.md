@@ -179,6 +179,7 @@ Every item here is mandatory. The Standards agent must report compliance per ite
 - [ ] Every user-visible string uses `useTranslation` / `t()` — no hard-coded display text in JSX, `Alert`, `Snackbar`, error messages, `aria-label`, or form labels
 - [ ] No string interpolation inside `t()` calls — use interpolation variables: `t('Hello {{name}}', { name })`, not `t(`Hello ${name}`)`
 - [ ] No dynamic `t()` keys (`t(varName)`) — extraction tool can't find them
+- [ ] Every `<Trans>` component is passed a `t` prop (`<Trans t={t}>...</Trans>`)
 
 **GraphQL & Apollo**
 

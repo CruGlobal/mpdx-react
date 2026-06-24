@@ -17,4 +17,11 @@ describe('AccountInfoBoxSkeleton', () => {
     const { getByTestId } = render(<AccountInfoBoxSkeleton />);
     expect(getByTestId('account-id-skeleton')).toBeInTheDocument();
   });
+
+  it('renders the overall balance skeleton when provided', () => {
+    const { getByTestId } = render(
+      <AccountInfoBoxSkeleton hasOverallBalance />,
+    );
+    expect(getByTestId('overall-balance-skeleton')).toBeInTheDocument();
+  });
 });
