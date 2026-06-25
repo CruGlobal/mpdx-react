@@ -86,6 +86,37 @@ describe('CategoryBreakdownDialog', () => {
     expect(getByRole('cell', { name: '$300' })).toBeInTheDocument();
   });
 
+  it('renders four column headers including Display Category', () => {
+    const { getAllByRole, getByRole } = render(
+      <TestComponent {...defaultProps} />,
+    );
+
+    expect(getAllByRole('columnheader')).toHaveLength(4);
+    expect(getByRole('columnheader', { name: 'Date' })).toBeInTheDocument();
+    expect(
+      getByRole('columnheader', { name: 'Description' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('columnheader', { name: 'Display Category' }),
+    ).toBeInTheDocument();
+    expect(getByRole('columnheader', { name: 'Amount' })).toBeInTheDocument();
+  });
+
+  it('displays the transaction description in its own column', () => {
+    const { getByRole } = render(<TestComponent {...defaultProps} />);
+
+    expect(getByRole('cell', { name: 'Salary Payment 1' })).toBeInTheDocument();
+    expect(getByRole('cell', { name: 'Salary Payment 2' })).toBeInTheDocument();
+  });
+
+  it('displays the display category in its own column', () => {
+    const { getAllByRole } = render(<TestComponent {...defaultProps} />);
+
+    expect(
+      getAllByRole('cell', { name: 'Salary - Salary Other' }),
+    ).toHaveLength(2);
+  });
+
   it('displays total amount', () => {
     const { getByRole } = render(<TestComponent {...defaultProps} />);
 
