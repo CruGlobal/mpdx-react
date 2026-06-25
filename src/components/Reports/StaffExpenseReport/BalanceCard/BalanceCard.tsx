@@ -128,10 +128,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
             <Typography
               component="span"
               sx={{
-                color:
-                  Math.abs(transfersOut) > 0
-                    ? theme.palette.error.main
-                    : 'inherit',
+                color: transfersOut < 0 ? theme.palette.error.main : 'inherit',
               }}
             >
               {formatBalance(transfersOut)}

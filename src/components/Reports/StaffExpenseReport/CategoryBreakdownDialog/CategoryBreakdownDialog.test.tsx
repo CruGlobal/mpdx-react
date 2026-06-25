@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@emotion/react';
-import { render } from '@testing-library/react';
+import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
   StaffExpenseCategoryEnum,
@@ -109,12 +109,14 @@ describe('CategoryBreakdownDialog', () => {
     expect(getByRole('cell', { name: 'Salary Payment 2' })).toBeInTheDocument();
   });
 
-  it('displays the display category in its own column', () => {
+  it('places description and display category in separate, adjacent columns', () => {
     const { getAllByRole } = render(<TestComponent {...defaultProps} />);
 
-    expect(
-      getAllByRole('cell', { name: 'Salary - Salary Other' }),
-    ).toHaveLength(2);
+    // rows[0] is the header; rows[1] is the first sorted transaction.
+    const firstRowCells = within(getAllByRole('row')[1]).getAllByRole('cell');
+    // Columns: Date | Description | Display Category | Amount
+    expect(firstRowCells[1]).toHaveTextContent('Salary Payment 1');
+    expect(firstRowCells[2]).toHaveTextContent('Salary - Salary Other');
   });
 
   it('displays total amount', () => {

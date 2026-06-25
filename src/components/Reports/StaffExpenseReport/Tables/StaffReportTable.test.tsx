@@ -85,7 +85,7 @@ describe('StaffReportTable', () => {
     expect(getByRole('gridcell', { name: '-$100' })).toBeInTheDocument();
   });
 
-  it('relabels a Donation category as "Total Donations"', async () => {
+  it('relabels a Donation category as "Total Donations" regardless of locale', async () => {
     const { findByRole } = render(
       <TestComponent
         tableProps={{
@@ -97,7 +97,9 @@ describe('StaffReportTable', () => {
               category: StaffExpenseCategoryEnum.Donation,
               transactedAt: '2025-01-15',
               amount: 250,
-              displayCategory: 'Donation',
+              // A localized displayCategory that does NOT equal the English
+              // literal "Donation" — proves the relabel keys off the enum.
+              displayCategory: 'Don',
             },
           ],
         }}

@@ -12,7 +12,7 @@ const defaultProps = {
   startBalance: 1000,
   endBalance: 1500,
   transfersIn: 500,
-  transfersOut: 100,
+  transfersOut: -100,
   isSelected: false,
   onClick: jest.fn(),
 };

@@ -9,8 +9,10 @@ import {
 } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import { DataGrid, GridColDef, GridSortModel } from '@mui/x-data-grid';
+import { TFunction } from 'i18next';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { CategoryBreakdownDialog } from '../CategoryBreakdownDialog/CategoryBreakdownDialog';
@@ -64,22 +66,28 @@ export interface StaffReportRow {
   groupedTransaction?: GroupedTransaction;
 }
 
-const descriptionName = (displayCategory: string): string => {
-  if (displayCategory === 'Donation') {
-    return 'Total Donations';
+const descriptionName = (
+  transaction: Transaction | GroupedTransaction,
+  t: TFunction,
+): string => {
+  // Compare against the locale-invariant enum, not the localized
+  // displayCategory, so the relabel works in every locale.
+  if (transaction.category === StaffExpenseCategoryEnum.Donation) {
+    return t('Total Donations');
   }
-  return displayCategory;
+  return transaction.displayCategory;
 };
 
 export const createStaffReportRow = (
   transaction: Transaction | GroupedTransaction,
   index: number,
+  t: TFunction,
 ): StaffReportRow => {
   const isGrouped = 'groupedTransactions' in transaction;
   return {
     id: index.toString(),
     date: DateTime.fromISO(transaction.transactedAt),
-    description: descriptionName(transaction.displayCategory),
+    description: descriptionName(transaction, t),
     amount: transaction.amount,
     isGrouped,
     groupedTransaction: isGrouped ? transaction : undefined,
@@ -133,8 +141,10 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
   };
 
   const staffReportRows = useMemo(() => {
-    return transactions.map((data, index) => createStaffReportRow(data, index));
-  }, [transactions]);
+    return transactions.map((data, index) =>
+      createStaffReportRow(data, index, t),
+    );
+  }, [transactions, t]);
 
   const date: RenderCell = ({ row }) => {
     return dateFormat(row.date, locale);
