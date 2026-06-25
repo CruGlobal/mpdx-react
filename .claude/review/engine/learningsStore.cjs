@@ -45,7 +45,12 @@ function saveLearnings(path, obj) {
 }
 function loadFeedback(path) {
   if (!existsSync(path)) return [];
-  return readFileSync(path, 'utf8').split('\n').filter(Boolean).map((l) => JSON.parse(l));
+  const out = [];
+  for (const line of readFileSync(path, 'utf8').split('\n')) {
+    if (!line.trim()) continue;
+    try { out.push(JSON.parse(line)); } catch { /* skip malformed line */ }
+  }
+  return out;
 }
 function appendFeedback(path, entries) {
   mkdirSync(dirname(path), { recursive: true });

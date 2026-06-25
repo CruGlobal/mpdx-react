@@ -7,30 +7,39 @@ const { queryImpact } = require('./queryImpact.cjs');
 function parseArgs(argv) {
   const a = {};
   for (let i = 0; i < argv.length; i++) {
-    if (argv[i].startsWith('--')) {
-      a[argv[i].slice(2)] = argv[i + 1];
+    if (!argv[i].startsWith('--')) continue;
+    const key = argv[i].slice(2);
+    const next = argv[i + 1];
+    if (next === undefined || next.startsWith('--')) {
+      a[key] = true;
+    } else {
+      a[key] = next;
       i++;
     }
   }
   return a;
 }
 
-if (require.main === module) {
-  const a = parseArgs(process.argv.slice(2));
-  const repoRoot = a.root || process.cwd();
-  const indexPath = a.index || join(repoRoot, '.claude/review/index');
-  const graph = loadOrBuildIndex({
-    repoRoot,
-    indexPath,
-    head: gitHead(repoRoot),
-    files: listRepoFiles(repoRoot),
-  });
-  const changed = readFileSync(a.changed, 'utf8').split('\n').map((s) => s.trim()).filter(Boolean);
-  const opts = {
-    maxDepth: a['max-depth'] ? Number(a['max-depth']) : 3,
-    maxNodes: a['max-nodes'] ? Number(a['max-nodes']) : 200,
-  };
-  process.stdout.write(JSON.stringify(queryImpact(changed, graph, opts), null, 2) + '\n');
+function posInt(value, def) {
+  if (value === undefined || value === true) return def;
+  const n = Number(value);
+  if (!Number.isInteger(n) || n < 1) throw new Error(`expected a positive integer, got "${value}"`);
+  return n;
 }
 
-module.exports = { parseArgs };
+if (require.main === module) {
+  try {
+    const a = parseArgs(process.argv.slice(2));
+    const repoRoot = a.root || process.cwd();
+    const indexPath = a.index || join(repoRoot, '.claude/review/index');
+    const graph = loadOrBuildIndex({ repoRoot, indexPath, head: gitHead(repoRoot), files: listRepoFiles(repoRoot) });
+    const changed = readFileSync(a.changed, 'utf8').split('\n').map((s) => s.trim()).filter(Boolean);
+    const opts = { maxDepth: posInt(a['max-depth'], 3), maxNodes: posInt(a['max-nodes'], 200) };
+    process.stdout.write(JSON.stringify(queryImpact(changed, graph, opts), null, 2) + '\n');
+  } catch (e) {
+    process.stderr.write(`error: ${e.message}\n`);
+    process.exit(1);
+  }
+}
+
+module.exports = { parseArgs, posInt };

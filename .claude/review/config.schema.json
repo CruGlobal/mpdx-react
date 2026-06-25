@@ -86,7 +86,7 @@
               "content": { "type": "array", "items": { "type": "string" } }
             }
           },
-          "rules": { "type": "array", "items": { "type": "string" } }
+          "rules": { "type": "array", "items": { "type": "string", "pattern": "^rules/[A-Za-z0-9._-]+\\.md$" } }
         }
       }
     },
@@ -98,7 +98,7 @@
         "required": ["paths", "rules"],
         "properties": {
           "paths": { "type": "array", "items": { "type": "string" } },
-          "rules": { "type": "array", "items": { "type": "string" } }
+          "rules": { "type": "array", "items": { "type": "string", "pattern": "^rules/[A-Za-z0-9._-]+\\.md$" } }
         }
       }
     },

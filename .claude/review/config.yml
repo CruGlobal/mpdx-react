@@ -16,7 +16,11 @@ risk:
     - { glob: "src/lib/apollo/{client,link,cache,ssrClient}.ts", points: 3, tier: critical }
     - { glob: "next.config.{js,ts}",                  points: 3, tier: critical }
     - { glob: ".github/workflows/**",                 points: 3, tier: critical }
-    - { glob: ".claude/**",                           points: 3, tier: critical }
+    # Review-harness integrity (commands/rules/settings) is critical; engine source is ordinary code.
+    - { glob: ".claude/commands/**",                  points: 3, tier: critical }
+    - { glob: ".claude/settings.json",                points: 3, tier: critical }
+    - { glob: ".claude/rules/**",                     points: 2, tier: high }
+    - { glob: ".claude/review/engine/**",             points: 1, tier: medium }
     - { glob: "pages/api/Schema/**/*.{ts,graphql}",   points: 2, tier: high }
     - { glob: "src/components/Shared/**",             points: 2, tier: high }
     - { glob: "src/components/**/*.graphql",          points: 2, tier: high }
@@ -69,7 +73,8 @@ agents:
     always: false           # if true, runs regardless of triggers
     triggers:
       paths:   ["pages/api/**", "src/lib/apollo/{link,client,ssrClient}.ts",
-                "next.config.{js,ts}", "pages/_app.page.tsx", ".github/workflows/**", ".claude/**"]
+                "next.config.{js,ts}", "pages/_app.page.tsx", ".github/workflows/**",
+                ".claude/commands/**", ".claude/rules/**", ".claude/settings.json"]
       content: ["process.env.", "dangerouslySetInnerHTML", "router.push("]
     rules:    ["rules/security.md"]
 
@@ -131,11 +136,19 @@ excluded_paths:
   - "**/*.snap"
   - ".github/ISSUE_TEMPLATE/**"
   - "docs/**"
+  - ".claude/review/rules/**"   # prose rule docs — config/guidance, not reviewable code
+  - ".claude/docs/**"           # research/reference docs
+  # Package-manager artifacts — generated/vendored, never reviewable (and full of foreign vocab)
+  - ".yarn/**"
+  - ".pnp.*"
+  - "yarn.lock"
+  - "package-lock.json"
+  - "pnpm-lock.yaml"
 
 # ── Index layer (Phase B): file-level import graph for impact analysis ────────
 index: { enabled: true, path: ".claude/review/index" }
 
-# ── Forward-looking sections (present but INERT until Layer 3 ships) ──────────
+# ── Learning layer (Phase C): approval-gated feedback loop ────────────────────
 learning:
   enabled: true
   path: ".claude/review/learnings"

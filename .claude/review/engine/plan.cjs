@@ -16,7 +16,18 @@ function buildPlan({ files, diffText, linesChanged, scope }, config) {
 
 function parseArgs(argv) {
   const args = {};
-  for (let i = 0; i < argv.length; i += 2) args[argv[i].replace(/^--/, '')] = argv[i + 1];
+  for (let i = 0; i < argv.length; i++) {
+    const tok = argv[i];
+    if (!tok.startsWith('--')) continue;
+    const key = tok.slice(2);
+    const next = argv[i + 1];
+    if (next === undefined || next.startsWith('--')) {
+      args[key] = true;
+    } else {
+      args[key] = next;
+      i++;
+    }
+  }
   return args;
 }
 
