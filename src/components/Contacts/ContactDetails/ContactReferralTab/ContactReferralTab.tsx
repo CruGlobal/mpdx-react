@@ -83,7 +83,20 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const { enqueueSnackbar } = useSnackbar();
-  const [deleteContactReferral] = useDeleteContactReferralMutation();
+  // The shared Confirmation modal swallows the mutation rejection, so success
+  // and error feedback are handled via the mutation callbacks.
+  const [deleteContactReferral] = useDeleteContactReferralMutation({
+    onCompleted: () => {
+      enqueueSnackbar(t('Connection removed successfully'), {
+        variant: 'success',
+      });
+    },
+    onError: () => {
+      enqueueSnackbar(t('Unable to remove connection'), {
+        variant: 'error',
+      });
+    },
+  });
   const [modalContactReferralOpen, setModalContactReferralOpen] =
     useState(false);
   const [referralToRemove, setReferralToRemove] = useState<{
@@ -103,26 +116,23 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
     if (!referralToRemove) {
       return;
     }
-    try {
-      await deleteContactReferral({
-        variables: {
-          accountListId,
-          contactId,
-          referralId: referralToRemove.id,
-        },
-        update: (cache) => {
-          cache.evict({ id: `Referral:${referralToRemove.id}` });
+    await deleteContactReferral({
+      variables: {
+        accountListId,
+        contactId,
+        referralId: referralToRemove.id,
+      },
+      update: (cache) => {
+        const cacheId = cache.identify({
+          __typename: 'Referral',
+          id: referralToRemove.id,
+        });
+        if (cacheId) {
+          cache.evict({ id: cacheId });
           cache.gc();
-        },
-      });
-      enqueueSnackbar(t('Connection removed successfully'), {
-        variant: 'success',
-      });
-    } catch {
-      enqueueSnackbar(t('Unable to remove connection'), {
-        variant: 'error',
-      });
-    }
+        }
+      },
+    });
   };
 
   return (
@@ -195,7 +205,7 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
                   )
                 ) : (
                   <TableRow key="no_data">
-                    <TableCell>{t('No Connections')}</TableCell>
+                    <TableCell colSpan={3}>{t('No Connections')}</TableCell>
                   </TableRow>
                 )}
               </TableBody>
@@ -222,6 +232,7 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
               'Are you sure you want to remove {{name}} as a connection?',
               { name: referralToRemove?.name ?? '' },
             )}
+            confirmButtonProps={{ color: 'error' }}
             handleClose={() => setReferralToRemove(null)}
             mutation={handleRemoveReferral}
           />
