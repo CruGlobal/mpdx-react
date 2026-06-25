@@ -4,6 +4,7 @@ import { Box, Card, CardActionArea, Typography, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import theme from 'src/theme';
 import { StyledIconBox } from '../styledComponents/StyledIconBox';
 
 const StyledCardActionArea = styled(CardActionArea, {
@@ -112,12 +113,26 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
             {formatBalance(startBalance)}
           </Typography>
           <Typography>
-            {t('+ Transfers in: ')}
-            {formatBalance(transfersIn)}
+            {t('Income: ')}
+            <Typography
+              component="span"
+              sx={{
+                color: transfersIn > 0 ? theme.palette.success.main : 'inherit',
+              }}
+            >
+              {formatBalance(transfersIn)}
+            </Typography>
           </Typography>
           <Typography>
-            {t('- Transfers out: ')}
-            {formatBalance(Math.abs(transfersOut))}
+            {t('Expenses: ')}
+            <Typography
+              component="span"
+              sx={{
+                color: transfersOut < 0 ? theme.palette.error.main : 'inherit',
+              }}
+            >
+              {formatBalance(transfersOut)}
+            </Typography>
           </Typography>
           <Typography>
             <strong>
