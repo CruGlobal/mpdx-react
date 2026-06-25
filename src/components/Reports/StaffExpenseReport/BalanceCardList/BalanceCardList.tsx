@@ -13,10 +13,10 @@ const StyledCardsBox = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'isSelected',
 })<{ isSelected: boolean }>(({ theme, isSelected }) => ({
   flex: isSelected ? 2 : 1,
-  minWidth: 0,
+  minWidth: isSelected ? 250 : 200,
   display: 'flex',
   gap: theme.spacing(4),
-  transition: 'flex 0.3s ease-in-out',
+  transition: 'flex 0.3s ease-in-out, min-width 0.3s ease-in-out',
 }));
 
 export interface BalanceCardListProps {
