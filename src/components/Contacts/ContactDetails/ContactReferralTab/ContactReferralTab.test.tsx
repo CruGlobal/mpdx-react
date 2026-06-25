@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -49,7 +50,13 @@ type Mocks = {
   DeleteContactReferral: DeleteContactReferralMutation;
 };
 
-const buildMocks = (nodes: unknown[]) => ({
+type ReferralMockNode = {
+  id: string;
+  createdAt: string;
+  referredTo: { id: string; name: string };
+};
+
+const buildMocks = (nodes: ReferralMockNode[]): ApolloErgonoMockMap => ({
   ContactReferralTab: {
     contact: {
       id: 'contact-id',
@@ -65,8 +72,7 @@ const buildMocks = (nodes: unknown[]) => ({
 const oneReferralMock = buildMocks([referralNode]);
 
 interface TestComponentProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  mocks?: any;
+  mocks?: ApolloErgonoMockMap;
   onCall?: jest.Mock;
 }
 
@@ -77,7 +83,10 @@ const TestComponent: React.FC<TestComponentProps> = ({
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
       <SnackbarProvider>
-        <GqlMockedProvider<Mocks> mocks={mocks} onCall={onCall}>
+        <GqlMockedProvider<Mocks>
+          mocks={mocks as ApolloErgonoMockMap}
+          onCall={onCall}
+        >
           <ContactPanelProvider>
             <ContactReferralTab
               accountListId={accountListId}
