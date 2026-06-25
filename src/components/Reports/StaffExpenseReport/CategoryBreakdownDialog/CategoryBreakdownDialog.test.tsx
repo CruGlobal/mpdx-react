@@ -86,7 +86,7 @@ describe('CategoryBreakdownDialog', () => {
     expect(getByRole('cell', { name: '$300' })).toBeInTheDocument();
   });
 
-  it('renders four column headers including Display Category', () => {
+  it('renders four column headers including Category', () => {
     const { getAllByRole, getByRole } = render(
       <TestComponent {...defaultProps} />,
     );
@@ -96,9 +96,7 @@ describe('CategoryBreakdownDialog', () => {
     expect(
       getByRole('columnheader', { name: 'Description' }),
     ).toBeInTheDocument();
-    expect(
-      getByRole('columnheader', { name: 'Display Category' }),
-    ).toBeInTheDocument();
+    expect(getByRole('columnheader', { name: 'Category' })).toBeInTheDocument();
     expect(getByRole('columnheader', { name: 'Amount' })).toBeInTheDocument();
   });
 
@@ -109,12 +107,12 @@ describe('CategoryBreakdownDialog', () => {
     expect(getByRole('cell', { name: 'Salary Payment 2' })).toBeInTheDocument();
   });
 
-  it('places description and display category in separate, adjacent columns', () => {
+  it('places description and Category in separate, adjacent columns', () => {
     const { getAllByRole } = render(<TestComponent {...defaultProps} />);
 
     // rows[0] is the header; rows[1] is the first sorted transaction.
     const firstRowCells = within(getAllByRole('row')[1]).getAllByRole('cell');
-    // Columns: Date | Description | Display Category | Amount
+    // Columns: Date | Description | Category | Amount
     expect(firstRowCells[1]).toHaveTextContent('Salary Payment 1');
     expect(firstRowCells[2]).toHaveTextContent('Salary - Salary Other');
   });

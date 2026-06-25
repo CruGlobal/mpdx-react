@@ -77,7 +77,7 @@ export const CategoryBreakdownDialog: React.FC<
               >
                 <TableCell width={150}>{t('Date')}</TableCell>
                 <TableCell width={200}>{t('Description')}</TableCell>
-                <TableCell width={200}>{t('Display Category')}</TableCell>
+                <TableCell width={200}>{t('Category')}</TableCell>
                 <TableCell align="right" width={150}>
                   {t('Amount')}
                 </TableCell>
