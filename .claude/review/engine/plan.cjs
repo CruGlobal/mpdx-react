@@ -1,5 +1,6 @@
 'use strict';
 const { readFileSync } = require('node:fs');
+const { parseArgs } = require('./args.cjs');
 const { loadConfig } = require('./loadConfig.cjs');
 const { scoreRisk } = require('./scoreRisk.cjs');
 const { selectAgents } = require('./selectAgents.cjs');
@@ -12,23 +13,6 @@ function buildPlan({ files, diffText, linesChanged, scope }, config) {
   const selected = selectAgents({ files, diffText }, config);
   const agents = selected.map((a) => ({ ...a, rules: resolveRules(a.id, files, config) }));
   return { profile: config.profile, risk: { ...risk, special }, agents };
-}
-
-function parseArgs(argv) {
-  const args = {};
-  for (let i = 0; i < argv.length; i++) {
-    const tok = argv[i];
-    if (!tok.startsWith('--')) continue;
-    const key = tok.slice(2);
-    const next = argv[i + 1];
-    if (next === undefined || next.startsWith('--')) {
-      args[key] = true;
-    } else {
-      args[key] = next;
-      i++;
-    }
-  }
-  return args;
 }
 
 function linesChangedFromStat(statText) {

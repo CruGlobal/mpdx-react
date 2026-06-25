@@ -76,3 +76,26 @@ test('#12 loadConfig: throws a friendly error on an invalid config', () => {
   assert.throws(() => loadConfig({ configPath: cfgPath, schemaPath }), /Invalid review config/);
   rmSync(dir, { recursive: true, force: true });
 });
+
+test('#23 resolveImport: honors config-driven aliases + extensions', () => {
+  const { resolveImport } = require('./resolveImport.cjs');
+  const fileSet = new Set(['app/foo.mjs', 'lib/bar.ts']);
+  assert.equal(resolveImport('x.ts', 'app/foo', fileSet, { aliases: ['app/', 'lib/'], exts: ['.mjs', '.ts'] }), 'app/foo.mjs');
+  assert.equal(resolveImport('x.ts', 'src/foo', fileSet, { aliases: ['app/'], exts: ['.ts'] }), null);
+});
+
+test('#23 indexRegex: built from config roots + extensions', () => {
+  const { indexRegex } = require('./indexStore.cjs');
+  const re = indexRegex(['app'], ['.mjs']);
+  assert.ok(re.test('app/x.mjs'));
+  assert.ok(!re.test('src/x.ts')); // src not a configured root
+  assert.ok(!re.test('app/x.ts')); // .ts not a configured extension
+});
+
+test('#4 shared args.parseArgs: one parser, boolean-flag safe', () => {
+  const { parseArgs } = require('./args.cjs');
+  const a = parseArgs(['--build', '--root', '/r', 'positional', '--max-depth', '2']);
+  assert.equal(a.build, true);
+  assert.equal(a.root, '/r');
+  assert.equal(a['max-depth'], '2');
+});

@@ -106,7 +106,13 @@
     "index": {
       "type": "object",
       "additionalProperties": false,
-      "properties": { "enabled": { "type": "boolean" }, "path": { "type": "string" } }
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "path": { "type": "string" },
+        "roots": { "type": "array", "items": { "type": "string" } },
+        "aliases": { "type": "array", "items": { "type": "string" } },
+        "extensions": { "type": "array", "items": { "type": "string" } }
+      }
     },
     "learning": {
       "type": "object",

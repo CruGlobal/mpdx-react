@@ -1,7 +1,7 @@
 'use strict';
 const { join } = require('node:path');
 const { execFileSync } = require('node:child_process');
-const { readFileSync, writeFileSync } = require('node:fs');
+const { readFileSync, writeFileSync, existsSync, rmSync } = require('node:fs');
 const os = require('node:os');
 const { loadConfig } = require('./engine/loadConfig.cjs');
 const { buildPlan, linesChangedFromStat } = require('./engine/plan.cjs');
@@ -50,10 +50,20 @@ function changedFiles(base) {
   return { base: b, files: raw.split('\n').map((s) => s.trim()).filter(Boolean) };
 }
 
-function loadIndex(cfg) {
+function indexOpts(cfg) {
+  const ix = (cfg && cfg.index) || {};
+  return { aliases: ix.aliases, exts: ix.extensions, roots: ix.roots };
+}
+
+function loadIndex(cfg, { force } = {}) {
   const c = cfg || loadConfig({ configPath: CONFIG, schemaPath: SCHEMA });
   const indexPath = c.index && c.index.path ? join(ROOT, c.index.path) : INDEX;
-  return loadOrBuildIndex({ repoRoot: ROOT, indexPath, head: gitHead(ROOT), files: listRepoFiles(ROOT) });
+  if (force) {
+    const gf = join(indexPath, 'graph.json');
+    if (existsSync(gf)) rmSync(gf);
+  }
+  const opts = indexOpts(c);
+  return loadOrBuildIndex({ repoRoot: ROOT, indexPath, head: gitHead(ROOT), files: listRepoFiles(ROOT, opts), opts });
 }
 
 const USAGE = `usage: yarn review <command>
@@ -84,7 +94,7 @@ function main(argv) {
       return 0;
     }
     case 'index': {
-      const g = loadIndex();
+      const g = loadIndex(undefined, { force: rest.includes('--force') });
       out(`Indexed ${g.fileCount} files; ${Object.keys(g.importedBy).length} have dependents.`);
       return 0;
     }

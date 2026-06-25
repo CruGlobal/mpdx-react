@@ -289,7 +289,7 @@ enabled in config):
 
 ```bash
 REVIEW_DIR=".claude/review"
-if grep -q "learning:" "$REVIEW_DIR/config.yml" 2>/dev/null; then
+if [ "$(yarn node "$REVIEW_DIR/cli.cjs" config get learning.enabled 2>/dev/null)" = "true" ]; then
   yarn node "$REVIEW_DIR/engine/learningsStore.cjs" --rules > /tmp/review_rules.json 2>/dev/null || echo "[]" > /tmp/review_rules.json
 fi
 ```
@@ -1191,7 +1191,7 @@ echo "🔍 Analyzing dependency impact (index engine)..."
 echo ""
 
 REVIEW_DIR=".claude/review"
-if grep -q "enabled: true" "$REVIEW_DIR/config.yml" 2>/dev/null; then
+if [ "$(yarn node "$REVIEW_DIR/cli.cjs" config get index.enabled 2>/dev/null)" = "true" ]; then
   yarn node "$REVIEW_DIR/engine/impact.cjs" \
     --root "$(pwd)" \
     --index "$REVIEW_DIR/index" \
@@ -1280,13 +1280,27 @@ if [ "$FIX_COUNT" -gt 0 ]; then
   echo "" | tee -a /tmp/fix_summary.txt
   cat /tmp/fix_summary.txt
 
-  # Create master apply script
+  # Create master apply script.
+  # SECURITY: these fix_*.sh scripts are MODEL-GENERATED from (attacker-influenceable) PR content
+  # and are UNTRUSTED. apply_all.sh therefore DRY-RUNS by default — it prints each fix for human
+  # review and applies nothing unless explicitly re-run with `--yes`.
   cat > /tmp/automated_fixes/apply_all.sh << 'EOF'
 #!/bin/bash
+set -euo pipefail
+# fix_*.sh are model-generated from PR content and UNTRUSTED — review each before applying.
+if [ "${1:-}" != "--yes" ]; then
+  echo "DRY RUN — review each fix, then re-run with --yes to apply. Nothing applied yet."
+  for fix in /tmp/automated_fixes/fix_*.sh; do
+    [ -f "$fix" ] || continue
+    echo ""; echo "===== $(basename "$fix") ====="; cat "$fix"
+  done
+  echo ""; echo "To apply after review:  bash /tmp/automated_fixes/apply_all.sh --yes"
+  exit 0
+fi
 echo "Applying all automated fixes..."
 for fix in /tmp/automated_fixes/fix_*.sh; do
   if [ -f "$fix" ]; then
-    echo "Applying: $(basename $fix)"
+    echo "Applying: $(basename "$fix")"
     bash "$fix"
   fi
 done

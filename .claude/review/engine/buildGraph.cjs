@@ -19,7 +19,7 @@ function extractSpecifiers(text) {
   return [...specs];
 }
 
-function buildGraph(files, readFile, fileSet) {
+function buildGraph(files, readFile, fileSet, opts = {}) {
   const imports = {};
   const importedBy = {};
   for (const file of files) {
@@ -31,7 +31,7 @@ function buildGraph(files, readFile, fileSet) {
     }
     const targets = new Set();
     for (const spec of extractSpecifiers(text)) {
-      const resolved = resolveImport(file, spec, fileSet);
+      const resolved = resolveImport(file, spec, fileSet, opts);
       if (resolved && resolved !== file) targets.add(resolved);
     }
     imports[file] = [...targets];

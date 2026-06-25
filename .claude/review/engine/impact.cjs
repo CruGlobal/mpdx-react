@@ -1,24 +1,9 @@
 'use strict';
 const { readFileSync } = require('node:fs');
 const { join } = require('node:path');
+const { parseArgs } = require('./args.cjs');
 const { loadOrBuildIndex, gitHead, listRepoFiles } = require('./indexStore.cjs');
 const { queryImpact } = require('./queryImpact.cjs');
-
-function parseArgs(argv) {
-  const a = {};
-  for (let i = 0; i < argv.length; i++) {
-    if (!argv[i].startsWith('--')) continue;
-    const key = argv[i].slice(2);
-    const next = argv[i + 1];
-    if (next === undefined || next.startsWith('--')) {
-      a[key] = true;
-    } else {
-      a[key] = next;
-      i++;
-    }
-  }
-  return a;
-}
 
 function posInt(value, def) {
   if (value === undefined || value === true) return def;
@@ -30,8 +15,8 @@ function posInt(value, def) {
 if (require.main === module) {
   try {
     const a = parseArgs(process.argv.slice(2));
-    const repoRoot = a.root || process.cwd();
-    const indexPath = a.index || join(repoRoot, '.claude/review/index');
+    const repoRoot = typeof a.root === 'string' ? a.root : process.cwd();
+    const indexPath = typeof a.index === 'string' ? a.index : join(repoRoot, '.claude/review/index');
     const graph = loadOrBuildIndex({ repoRoot, indexPath, head: gitHead(repoRoot), files: listRepoFiles(repoRoot) });
     const changed = readFileSync(a.changed, 'utf8').split('\n').map((s) => s.trim()).filter(Boolean);
     const opts = { maxDepth: posInt(a['max-depth'], 3), maxNodes: posInt(a['max-nodes'], 200) };
