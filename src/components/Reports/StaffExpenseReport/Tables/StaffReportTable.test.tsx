@@ -85,6 +85,32 @@ describe('StaffReportTable', () => {
     expect(getByRole('gridcell', { name: '-$100' })).toBeInTheDocument();
   });
 
+  it('relabels a Donation category as "Total Donations" regardless of locale', async () => {
+    const { findByRole } = render(
+      <TestComponent
+        tableProps={{
+          tableType: ReportType.Income,
+          transactions: [
+            {
+              id: 'donation-1',
+              fundType: 'Primary',
+              category: StaffExpenseCategoryEnum.Donation,
+              transactedAt: '2025-01-15',
+              amount: 250,
+              // A localized displayCategory that does NOT equal the English
+              // literal "Donation" — proves the relabel keys off the enum.
+              displayCategory: 'Don',
+            },
+          ],
+        }}
+      />,
+    );
+
+    expect(
+      await findByRole('gridcell', { name: 'Total Donations' }),
+    ).toBeInTheDocument();
+  });
+
   it('renders loading spinner when loading prop is true', async () => {
     const { findByTestId } = render(
       <TestComponent tableProps={{ loading: true }} />,

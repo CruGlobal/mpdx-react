@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Fund } from 'src/graphql/types.generated';
 import theme from 'src/theme';
@@ -37,10 +37,11 @@ const mockFunds: Fund[] = [
 const defaultProps = {
   funds: mockFunds,
   selectedFundType: 'Primary',
+  // Expenses are summed from negative-amount transactions, so `out` is negative.
   transferTotals: {
-    Primary: { in: 500, out: 100 },
-    Savings: { in: 300, out: 50 },
-    ConferenceSavings: { in: 0, out: 200 },
+    Primary: { in: 500, out: -100 },
+    Savings: { in: 300, out: -50 },
+    ConferenceSavings: { in: 0, out: -200 },
   },
   onCardClick: onCardClick,
   loading: false,
@@ -91,8 +92,10 @@ describe('BalanceCardList', () => {
       <TestComponent {...defaultProps} />,
     );
 
-    expect(await findByText('+ Transfers in: $500.00')).toBeInTheDocument();
-    expect(getByText('- Transfers out: $100.00')).toBeInTheDocument();
+    const income = await findByText('Income:');
+    expect(within(income).getByText('$500.00')).toBeInTheDocument();
+    const expenses = getByText('Expenses:');
+    expect(within(expenses).getByText('-$100.00')).toBeInTheDocument();
     expect(getByText('Starting Balance: $1,000.00')).toBeInTheDocument();
     expect(getByText('= Ending Balance: $1,400.00')).toBeInTheDocument();
   });

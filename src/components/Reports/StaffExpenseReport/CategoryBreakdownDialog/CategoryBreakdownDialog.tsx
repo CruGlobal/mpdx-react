@@ -75,9 +75,12 @@ export const CategoryBreakdownDialog: React.FC<
                   fontWeight: 'bold',
                 }}
               >
-                <TableCell>{t('Date')}</TableCell>
-                <TableCell>{t('Description')}</TableCell>
-                <TableCell align="right">{t('Amount')}</TableCell>
+                <TableCell width={150}>{t('Date')}</TableCell>
+                <TableCell width={200}>{t('Description')}</TableCell>
+                <TableCell width={200}>{t('Category')}</TableCell>
+                <TableCell align="right" width={150}>
+                  {t('Amount')}
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -89,6 +92,7 @@ export const CategoryBreakdownDialog: React.FC<
                       locale,
                     )}
                   </TableCell>
+                  <TableCell>{transaction.description}</TableCell>
                   <TableCell>{transaction.displayCategory}</TableCell>
                   <TableCell align="right">
                     {currencyFormat(transaction.amount, 'USD', locale)}
@@ -104,7 +108,7 @@ export const CategoryBreakdownDialog: React.FC<
               }}
             >
               <TableRow>
-                <TableCell colSpan={2}>
+                <TableCell colSpan={3}>
                   <Typography
                     color={theme.palette.text.primary}
                     fontWeight="bold"

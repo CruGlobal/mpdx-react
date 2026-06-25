@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@emotion/react';
-import { render } from '@testing-library/react';
+import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
   StaffExpenseCategoryEnum,
@@ -84,6 +84,37 @@ describe('CategoryBreakdownDialog', () => {
 
     expect(getByRole('cell', { name: '$500' })).toBeInTheDocument();
     expect(getByRole('cell', { name: '$300' })).toBeInTheDocument();
+  });
+
+  it('renders four column headers including Category', () => {
+    const { getAllByRole, getByRole } = render(
+      <TestComponent {...defaultProps} />,
+    );
+
+    expect(getAllByRole('columnheader')).toHaveLength(4);
+    expect(getByRole('columnheader', { name: 'Date' })).toBeInTheDocument();
+    expect(
+      getByRole('columnheader', { name: 'Description' }),
+    ).toBeInTheDocument();
+    expect(getByRole('columnheader', { name: 'Category' })).toBeInTheDocument();
+    expect(getByRole('columnheader', { name: 'Amount' })).toBeInTheDocument();
+  });
+
+  it('displays the transaction description in its own column', () => {
+    const { getByRole } = render(<TestComponent {...defaultProps} />);
+
+    expect(getByRole('cell', { name: 'Salary Payment 1' })).toBeInTheDocument();
+    expect(getByRole('cell', { name: 'Salary Payment 2' })).toBeInTheDocument();
+  });
+
+  it('places description and Category in separate, adjacent columns', () => {
+    const { getAllByRole } = render(<TestComponent {...defaultProps} />);
+
+    // rows[0] is the header; rows[1] is the first sorted transaction.
+    const firstRowCells = within(getAllByRole('row')[1]).getAllByRole('cell');
+    // Columns: Date | Description | Category | Amount
+    expect(firstRowCells[1]).toHaveTextContent('Salary Payment 1');
+    expect(firstRowCells[2]).toHaveTextContent('Salary - Salary Other');
   });
 
   it('displays total amount', () => {
