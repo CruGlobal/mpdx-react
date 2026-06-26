@@ -30,6 +30,7 @@ import {
 } from '../styledComponents';
 import { PrintOnlyReport } from './DisplayModes/PrintOnlyReport';
 import { ScreenOnlyReport } from './DisplayModes/ScreenOnlyReport';
+import { ExportCsvButton } from './ExportCsvButton/ExportCsvButton';
 import { FundTypes, Funds } from './Helper/MPGAReportEnum';
 import { convertMonths } from './Helper/convertMonths';
 import { useMpgaTransactionsQuery } from './MPGATransactions.generated';
@@ -139,11 +140,16 @@ export const MPGAIncomeExpensesReport: React.FC<
                   {t('Income & Expenses Analysis: Last 12 Months')}
                 </Typography>
               </SimplePrintOnly>
-              <SimpleScreenOnly>
+              <SimpleScreenOnly
+                display="flex"
+                alignItems="center"
+                sx={{ gap: 2, '& > button': { ml: 0 } }}
+              >
+                <ExportCsvButton data={allData} months={last12Months} />
                 <StyledPrintButton
                   startIcon={
                     <SvgIcon fontSize="small">
-                      <PrintIcon titleAccess={t('Print')} />
+                      <PrintIcon />
                     </SvgIcon>
                   }
                   onClick={handlePrint}

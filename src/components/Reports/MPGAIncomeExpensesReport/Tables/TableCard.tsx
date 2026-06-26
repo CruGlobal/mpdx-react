@@ -37,14 +37,8 @@ export const descriptionWidth = 175;
 export const monthWidth = 65;
 export const summaryWidth = 98.5;
 
-const createToolbar = (
-  data: DataFields[],
-  type: ReportTypeEnum,
-  months: string[],
-) => {
-  const Toolbar = () => (
-    <CustomToolbar data={data} type={type} months={months} />
-  );
+const createToolbar = (months: string[]) => {
+  const Toolbar = () => <CustomToolbar months={months} />;
   Toolbar.displayName = 'MPGATableCustomToolbar';
   return Toolbar;
 };
@@ -162,7 +156,7 @@ export const TableCard: React.FC<TableCardProps> = ({
           pagination
           disableColumnMenu
           slots={{
-            toolbar: createToolbar(data, type, months),
+            toolbar: createToolbar(months),
           }}
           showToolbar
         />
