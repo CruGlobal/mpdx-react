@@ -23,24 +23,31 @@ type RenderCell = GridColDef<StaffReportRow>['renderCell'];
 
 export interface StaffReportTableProps {
   transactions: (Transaction | GroupedTransaction)[];
-  tableType: ReportType;
+  tableType: ReportType.Income | ReportType.Expense;
   transferTotal: number;
   emptyPlaceholder: React.ReactElement;
   loading?: boolean;
 }
 
-const StyledGrid = styled(DataGrid)(({ theme }) => ({
-  '.MuiDataGrid-row:nth-of-type(2n + 1):not(:hover)': {
-    backgroundColor: theme.palette.mpdxGrayLight.main,
-  },
-  '.MuiDataGrid-cell': {
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-    display: 'flex',
-    alignItems: 'center',
-  },
-}));
+const StyledGrid = styled(DataGrid, {
+  shouldForwardProp: (prop) => prop !== 'tableType',
+})<{ tableType: ReportType.Income | ReportType.Expense }>(
+  ({ theme, tableType }) => ({
+    '.MuiDataGrid-row:nth-of-type(2n + 1):not(:hover)': {
+      backgroundColor:
+        tableType === ReportType.Expense
+          ? theme.palette.chipRedLight.main
+          : theme.palette.mpdxGrayLight.main,
+    },
+    '.MuiDataGrid-cell': {
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis',
+      display: 'flex',
+      alignItems: 'center',
+    },
+  }),
+);
 
 const LoadingBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mpdxGrayLight.main,
@@ -255,6 +262,7 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
         )}
       </Box>
       <StyledGrid
+        tableType={tableType}
         rows={rowsWithSortPriority || []}
         columns={columns}
         getRowId={(row) => row.id}
