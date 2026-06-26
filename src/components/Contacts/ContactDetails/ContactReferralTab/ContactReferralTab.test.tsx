@@ -119,7 +119,7 @@ describe('ContactReferralTab', () => {
   it('opens a confirmation when the remove button is clicked', async () => {
     const { findByRole } = render(<TestComponent />);
 
-    await userEvent.click(
+    userEvent.click(
       await findByRole('button', { name: 'Remove Connection name-2' }),
     );
 
@@ -135,10 +135,10 @@ describe('ContactReferralTab', () => {
       <TestComponent onCall={mutationSpy} />,
     );
 
-    await userEvent.click(
+    userEvent.click(
       await findByRole('button', { name: 'Remove Connection name-2' }),
     );
-    await userEvent.click(await findByRole('button', { name: 'No' }));
+    userEvent.click(await findByRole('button', { name: 'No' }));
 
     // The dialog closes, the connection is still shown, and no mutation fired.
     await waitFor(() =>
@@ -154,10 +154,10 @@ describe('ContactReferralTab', () => {
       <TestComponent onCall={mutationSpy} />,
     );
 
-    await userEvent.click(
+    userEvent.click(
       await findByRole('button', { name: 'Remove Connection name-2' }),
     );
-    await userEvent.click(await findByRole('button', { name: 'Yes' }));
+    userEvent.click(await findByRole('button', { name: 'Yes' }));
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('DeleteContactReferral', {
@@ -184,10 +184,10 @@ describe('ContactReferralTab', () => {
       />,
     );
 
-    await userEvent.click(
+    userEvent.click(
       await findByRole('button', { name: 'Remove Connection name-3' }),
     );
-    await userEvent.click(await findByRole('button', { name: 'Yes' }));
+    userEvent.click(await findByRole('button', { name: 'Yes' }));
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('DeleteContactReferral', {
@@ -210,10 +210,10 @@ describe('ContactReferralTab', () => {
       />,
     );
 
-    await userEvent.click(
+    userEvent.click(
       await findByRole('button', { name: 'Remove Connection name-2' }),
     );
-    await userEvent.click(await findByRole('button', { name: 'Yes' }));
+    userEvent.click(await findByRole('button', { name: 'Yes' }));
 
     expect(await findByText('Unable to remove connection')).toBeInTheDocument();
     // The connection remains because the deletion did not succeed.
