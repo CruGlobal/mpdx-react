@@ -1,0 +1,32 @@
+name: Review Engine
+
+# Runs the agent-review engine's unit suite (`yarn test:review`) — but ONLY when the review
+# tooling itself changes. PRs that don't touch these paths skip this workflow entirely.
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.claude/review/**'
+      - '.claude/commands/agent-review.md'
+      - '.github/workflows/review-engine.yml'
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.claude/review/**'
+      - '.claude/commands/agent-review.md'
+      - '.github/workflows/review-engine.yml'
+  workflow_dispatch:
+
+jobs:
+  test-review:
+    runs-on: ubuntu-latest
+    name: review engine tests
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .tool-versions
+      - name: Install dependencies
+        run: yarn cache clean && yarn install
+      - name: Run review engine tests
+        run: yarn test:review
