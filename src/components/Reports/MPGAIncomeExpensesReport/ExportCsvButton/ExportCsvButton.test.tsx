@@ -5,16 +5,16 @@ import userEvent from '@testing-library/user-event';
 import theme from 'src/theme';
 import { exportToCsv } from '../CustomExport/CustomExport';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
-import { mockData, months } from '../mockData';
+import { AllData, mockData, months } from '../mockData';
 import { ExportCsvButton } from './ExportCsvButton';
 
 jest.mock('../CustomExport/CustomExport', () => ({
   exportToCsv: jest.fn(),
 }));
 
-const TestComponent: React.FC = () => (
+const TestComponent: React.FC<{ data?: AllData }> = ({ data = mockData }) => (
   <ThemeProvider theme={theme}>
-    <ExportCsvButton data={mockData} months={months} />
+    <ExportCsvButton data={data} months={months} />
   </ThemeProvider>
 );
 
@@ -52,7 +52,7 @@ describe('ExportCsvButton', () => {
       mockData.income,
       ReportTypeEnum.Income,
       months,
-      expect.any(String),
+      'en-US',
     );
   });
 
@@ -66,8 +66,42 @@ describe('ExportCsvButton', () => {
       mockData.expenses,
       ReportTypeEnum.Expenses,
       months,
-      expect.any(String),
+      'en-US',
     );
+  });
+
+  it('disables an export option when its dataset is empty', async () => {
+    const { getByRole, findByRole } = render(
+      <TestComponent data={{ income: mockData.income, expenses: [] }} />,
+    );
+
+    userEvent.click(getByRole('button', { name: 'Export CSV' }));
+
+    expect(
+      await findByRole('menuitem', { name: 'Income' }),
+    ).not.toHaveAttribute('aria-disabled');
+
+    const expenses = await findByRole('menuitem', { name: 'Expenses' });
+    expect(expenses).toHaveAttribute('aria-disabled', 'true');
+    expect(exportToCsv).not.toHaveBeenCalled();
+  });
+
+  it('disables both export options when all datasets are empty', async () => {
+    const { getByRole, findByRole } = render(
+      <TestComponent data={{ income: [], expenses: [] }} />,
+    );
+
+    userEvent.click(getByRole('button', { name: 'Export CSV' }));
+
+    expect(await findByRole('menuitem', { name: 'Income' })).toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
+    expect(await findByRole('menuitem', { name: 'Expenses' })).toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
+    expect(exportToCsv).not.toHaveBeenCalled();
   });
 
   it('closes the menu after an export is selected', async () => {

@@ -32,7 +32,19 @@ export const ExportCsvButton: React.FC<ExportCsvButtonProps> = ({
   };
 
   const handleExport = (type: ReportTypeEnum) => {
-    const rows = type === ReportTypeEnum.Income ? data.income : data.expenses;
+    let rows: AllData['income'];
+    switch (type) {
+      case ReportTypeEnum.Income:
+        rows = data.income;
+        break;
+      case ReportTypeEnum.Expenses:
+        rows = data.expenses;
+        break;
+      default:
+        // Exhaustiveness check: adding a ReportTypeEnum member without
+        // handling it here becomes a compile-time error.
+        return ((_exhaustive: never) => _exhaustive)(type);
+    }
     exportToCsv(rows, type, months, locale);
     handleClose();
   };
@@ -46,7 +58,7 @@ export const ExportCsvButton: React.FC<ExportCsvButtonProps> = ({
         aria-expanded={open ? 'true' : undefined}
         startIcon={
           <SvgIcon fontSize="small">
-            <FileDownloadIcon titleAccess={t('Export CSV')} />
+            <FileDownloadIcon />
           </SvgIcon>
         }
         endIcon={<ArrowDropDownIcon />}
@@ -61,10 +73,16 @@ export const ExportCsvButton: React.FC<ExportCsvButtonProps> = ({
         onClose={handleClose}
         MenuListProps={{ 'aria-labelledby': 'export-csv-button' }}
       >
-        <MenuItem onClick={() => handleExport(ReportTypeEnum.Income)}>
+        <MenuItem
+          disabled={!data.income.length}
+          onClick={() => handleExport(ReportTypeEnum.Income)}
+        >
           {t('Income')}
         </MenuItem>
-        <MenuItem onClick={() => handleExport(ReportTypeEnum.Expenses)}>
+        <MenuItem
+          disabled={!data.expenses.length}
+          onClick={() => handleExport(ReportTypeEnum.Expenses)}
+        >
           {t('Expenses')}
         </MenuItem>
       </Menu>
