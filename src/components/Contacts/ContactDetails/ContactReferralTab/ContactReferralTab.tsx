@@ -57,6 +57,11 @@ const AddButton = styled(Button)(({ theme }) => ({
   color: theme.palette.info.main,
 }));
 
+interface ReferralToRemove {
+  id: string;
+  name: string;
+}
+
 interface ContactReferralTabProps {
   accountListId: string;
   contactId: string;
@@ -83,26 +88,11 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const { enqueueSnackbar } = useSnackbar();
-  // The shared Confirmation modal swallows the mutation rejection, so success
-  // and error feedback are handled via the mutation callbacks.
-  const [deleteContactReferral] = useDeleteContactReferralMutation({
-    onCompleted: () => {
-      enqueueSnackbar(t('Connection removed successfully'), {
-        variant: 'success',
-      });
-    },
-    onError: () => {
-      enqueueSnackbar(t('Unable to remove connection'), {
-        variant: 'error',
-      });
-    },
-  });
+  const [deleteContactReferral] = useDeleteContactReferralMutation();
   const [modalContactReferralOpen, setModalContactReferralOpen] =
     useState(false);
-  const [referralToRemove, setReferralToRemove] = useState<{
-    id: string;
-    name: string;
-  } | null>(null);
+  const [referralToRemove, setReferralToRemove] =
+    useState<ReferralToRemove | null>(null);
 
   const handleModalOpen = () => {
     setModalContactReferralOpen(true);
@@ -131,6 +121,16 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
           cache.evict({ id: cacheId });
           cache.gc();
         }
+      },
+      onCompleted: () => {
+        enqueueSnackbar(t('Connection removed successfully'), {
+          variant: 'success',
+        });
+      },
+      onError: () => {
+        enqueueSnackbar(t('Unable to remove connection'), {
+          variant: 'error',
+        });
       },
     });
   };
