@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GoalCalculationsQuery } from './GoalCalculations.generated';
@@ -84,6 +85,23 @@ describe('GoalsList', () => {
     const { findByRole } = render(<TestComponent noGoals />);
 
     expect(await findByRole('img')).toBeInTheDocument();
+  });
+
+  it('disables the create button while creating a goal', async () => {
+    const { getByRole } = render(<TestComponent />);
+
+    const button = getByRole('button', { name: 'Create a New Goal' });
+    expect(button).not.toBeDisabled();
+
+    userEvent.click(button);
+
+    expect(button).toBeDisabled();
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('CreateGoalCalculation', {
+        accountListId: 'account-list-1',
+      }),
+    );
   });
 
   it('fetches additional pages when hasNextPage is true', async () => {

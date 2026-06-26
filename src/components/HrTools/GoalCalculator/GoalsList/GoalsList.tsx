@@ -35,9 +35,10 @@ export const GoalsList: React.FC = () => {
     error,
     pageInfo: data?.goalCalculations.pageInfo,
   });
-  const [createGoalCalculation] = useCreateGoalCalculationMutation({
-    variables: { accountListId },
-  });
+  const [createGoalCalculation, { loading: creating }] =
+    useCreateGoalCalculationMutation({
+      variables: { accountListId },
+    });
   const goals = data?.goalCalculations.nodes
     ?.slice()
     .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
@@ -60,7 +61,12 @@ export const GoalsList: React.FC = () => {
     <Container>
       <GoalsListWelcome firstName={firstName} />
       <Stack direction="row" gap={2} pb={3}>
-        <Button variant="contained" onClick={handleCreateGoal}>
+        <Button
+          variant="contained"
+          onClick={handleCreateGoal}
+          disabled={creating}
+          startIcon={creating && <CircularProgress size={16} color="inherit" />}
+        >
           {t('Create a New Goal')}
         </Button>
         <Button
