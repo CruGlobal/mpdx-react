@@ -29,9 +29,14 @@ export interface StaffReportTableProps {
   loading?: boolean;
 }
 
-const StyledGrid = styled(DataGrid)(({ theme }) => ({
+const StyledGrid = styled(DataGrid, {
+  shouldForwardProp: (prop) => prop !== 'tableType',
+})<{ tableType: ReportType }>(({ theme, tableType }) => ({
   '.MuiDataGrid-row:nth-of-type(2n + 1):not(:hover)': {
-    backgroundColor: theme.palette.mpdxGrayLight.main,
+    backgroundColor:
+      tableType === ReportType.Expense
+        ? theme.palette.chipRedLight.main
+        : theme.palette.mpdxGrayLight.main,
   },
   '.MuiDataGrid-cell': {
     overflow: 'hidden',
@@ -255,6 +260,7 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
         )}
       </Box>
       <StyledGrid
+        tableType={tableType}
         rows={rowsWithSortPriority || []}
         columns={columns}
         getRowId={(row) => row.id}
