@@ -9,9 +9,11 @@ interface RenderOptions {
   staffAccountId?: string | null;
 }
 
+const mutationSpy = jest.fn();
+
 const renderCard = ({
   hasSpouse = true,
-  onClick = jest.fn(),
+  onClick = mutationSpy,
   staffAccountId,
 }: RenderOptions = {}) =>
   render(
@@ -36,12 +38,11 @@ describe('StaffInfoCard', () => {
   });
 
   it('shows the toggle button and fires onClick when a spouse is provided', () => {
-    const onClick = jest.fn();
-    const { getByRole } = renderCard({ onClick });
+    const { getByRole } = renderCard();
 
     userEvent.click(getByRole('button', { name: 'View Jane' }));
 
-    expect(onClick).toHaveBeenCalledTimes(1);
+    expect(mutationSpy).toHaveBeenCalledTimes(1);
   });
 
   it('hides the toggle button when no spouse is provided', () => {
@@ -55,12 +56,12 @@ describe('StaffInfoCard', () => {
   it('renders the staff account number when provided', () => {
     const { getByText } = renderCard({ staffAccountId: '000123456' });
 
-    expect(getByText('Staff Account Number: 000123456')).toBeInTheDocument();
+    expect(getByText('Person Number: 000123456')).toBeInTheDocument();
   });
 
   it('omits the staff account number when not provided', () => {
     const { queryByText } = renderCard();
 
-    expect(queryByText(/Staff Account Number/)).not.toBeInTheDocument();
+    expect(queryByText(/Person Number/)).not.toBeInTheDocument();
   });
 });

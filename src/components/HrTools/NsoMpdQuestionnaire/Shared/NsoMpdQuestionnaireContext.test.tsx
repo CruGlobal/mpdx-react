@@ -1,9 +1,18 @@
 import React, { useEffect } from 'react';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NsoMpdQuestionnaireStepEnum } from '../NsoMpdQuestionnaireHelper';
 import { NsoMpdQuestionnaireTestWrapper } from '../NsoMpdQuestionnaireTestWrapper';
 import { useNsoMpdQuestionnaire } from './NsoMpdQuestionnaireContext';
+
+const SaveComponent: React.FC = () => {
+  const { saveField } = useNsoMpdQuestionnaire();
+  return (
+    <button onClick={() => saveField({ phoneNumber: '305-555-1234' })}>
+      Save
+    </button>
+  );
+};
 
 interface InnerComponentProps {
   initialStep?: NsoMpdQuestionnaireStepEnum;
@@ -101,5 +110,28 @@ describe('NsoMpdQuestionnaireContext', () => {
 
     userEvent.click(getByRole('button', { name: 'Toggle Drawer' }));
     expect(drawerState).toHaveAttribute('data-open', 'false');
+  });
+
+  it('fires the upsert mutation with coerced attributes', async () => {
+    const mutationSpy = jest.fn();
+    const { getByRole } = render(
+      <NsoMpdQuestionnaireTestWrapper onCall={mutationSpy}>
+        <SaveComponent />
+      </NsoMpdQuestionnaireTestWrapper>,
+    );
+
+    userEvent.click(getByRole('button', { name: 'Save' }));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'UpdateNewStaffQuestionnaire',
+        {
+          input: {
+            accountListId: 'account-list-1',
+            attributes: { phoneNumber: '305-555-1234' },
+          },
+        },
+      ),
+    );
   });
 });
