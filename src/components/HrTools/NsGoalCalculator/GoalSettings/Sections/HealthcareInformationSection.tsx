@@ -1,14 +1,28 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { MpdGoalBenefitsConstantPlanEnum } from 'src/graphql/types.generated';
+import { getLocalizedBenefitsPlan } from 'src/lib/functions/getLocalizedBenefitsPlan';
 import { GoalSettingsNumberField } from '../Fields/GoalSettingsNumberField';
-import { GoalSettingsSelect } from '../Fields/GoalSettingsSelect';
+import { GoalSettingsSelect, SelectOption } from '../Fields/GoalSettingsSelect';
 import { ColumnHeaderRow, FieldRow, Section } from '../GoalSettingsLayout';
 import { GoalSettingsSectionProps } from '../goalSettingsSectionProps';
 
 export const HealthcareInformationSection: React.FC<
   GoalSettingsSectionProps
-> = ({ sharedHeader, options }) => {
+> = ({ sharedHeader }) => {
   const { t } = useTranslation();
+
+  const benefitsPlanOptions = useMemo<SelectOption[]>(
+    () =>
+      [
+        MpdGoalBenefitsConstantPlanEnum.Select,
+        MpdGoalBenefitsConstantPlanEnum.Plus,
+        MpdGoalBenefitsConstantPlanEnum.Base,
+        MpdGoalBenefitsConstantPlanEnum.Minimum,
+        MpdGoalBenefitsConstantPlanEnum.Exempt,
+      ].map((value) => ({ value, label: getLocalizedBenefitsPlan(t, value) })),
+    [t],
+  );
 
   return (
     <Section title={t('Healthcare Information')}>
@@ -18,7 +32,7 @@ export const HealthcareInformationSection: React.FC<
         <GoalSettingsSelect
           name="benefitsPlan"
           label={t('Benefits Selection')}
-          options={options.benefitsPlan}
+          options={benefitsPlanOptions}
         />
       </FieldRow>
 

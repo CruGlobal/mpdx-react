@@ -1,11 +1,11 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material';
-import { render } from '@testing-library/react';
+import { render, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Form, Formik } from 'formik';
 import theme from 'src/theme';
 import { GoalSettingsHeader } from './GoalSettingsHeader';
 import { GoalSettingsPerson } from './goalSettingsFormValues';
-import { GoalSettingsOptions } from './useGoalSettingsOptions';
 
 const primaryPerson: GoalSettingsPerson = {
   firstName: 'John',
@@ -25,41 +25,25 @@ const spousePerson: GoalSettingsPerson = {
   address: '1 Lake Hart',
 };
 
-// Header only consumes `options.calculationsYear`; the rest are required by the
-// type but unused here, so they stay empty.
-const options: GoalSettingsOptions = {
-  age: [],
-  spouseJoining: [],
-  allowSalaryOverCap: [],
-  maritalStatus: [],
-  role: [],
-  benefitsPlan: [],
-  geographicLocation: [],
-  nsoHousing: [],
-  nsoSessions: [],
-  calculationsYear: [
-    { value: '2026', label: '2026' },
-    { value: '2025', label: '2025' },
-  ],
-};
-
 interface TestComponentProps {
   spouse?: GoalSettingsPerson | null;
   mpdGoal?: number;
+  joinedStaffYear?: number | null;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   spouse = spousePerson,
   mpdGoal = 50000,
+  joinedStaffYear = 2018,
 }) => (
   <ThemeProvider theme={theme}>
-    <Formik initialValues={{ calculationsYear: '2026' }} onSubmit={jest.fn()}>
+    <Formik initialValues={{ calculationsYear: '2020' }} onSubmit={jest.fn()}>
       <Form>
         <GoalSettingsHeader
           primaryPerson={primaryPerson}
           spousePerson={spouse}
           mpdGoal={mpdGoal}
-          options={options}
+          joinedStaffYear={joinedStaffYear}
         />
       </Form>
     </Formik>
@@ -131,7 +115,7 @@ describe('GoalSettingsHeader', () => {
 
     expect(getByText('Calculate using:')).toBeInTheDocument();
     // The select's only combobox displays the chosen year.
-    expect(getByRole('combobox')).toHaveTextContent('2026');
+    expect(getByRole('combobox')).toHaveTextContent('2020');
   });
 
   it('exposes an accessible label on the calculation-year help button', () => {
@@ -140,5 +124,36 @@ describe('GoalSettingsHeader', () => {
     expect(
       getByRole('button', { name: 'About the calculation year' }),
     ).toBeInTheDocument();
+  });
+
+  it('spans calculation years from joinedStaffYear to the current year, newest first', () => {
+    const { getByRole } = render(<TestComponent joinedStaffYear={2018} />);
+
+    userEvent.click(getByRole('combobox'));
+    const options = within(getByRole('listbox')).getAllByRole('option');
+
+    expect(options.map((option) => option.textContent)).toEqual([
+      '2020',
+      '2019',
+      '2018',
+    ]);
+  });
+
+  it('offers only the current year when joinedStaffYear is missing', () => {
+    const { getByRole } = render(<TestComponent joinedStaffYear={null} />);
+
+    userEvent.click(getByRole('combobox'));
+    const options = within(getByRole('listbox')).getAllByRole('option');
+
+    expect(options.map((option) => option.textContent)).toEqual(['2020']);
+  });
+
+  it('offers only the current year when joinedStaffYear is in the future', () => {
+    const { getByRole } = render(<TestComponent joinedStaffYear={2030} />);
+
+    userEvent.click(getByRole('combobox'));
+    const options = within(getByRole('listbox')).getAllByRole('option');
+
+    expect(options.map((option) => option.textContent)).toEqual(['2020']);
   });
 });

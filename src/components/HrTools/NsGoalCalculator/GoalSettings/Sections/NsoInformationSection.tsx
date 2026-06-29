@@ -1,19 +1,45 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import {
+  NewStaffQuestionnaireNsoHousingEnum,
+  NewStaffQuestionnaireNsoSessionsEnum,
+} from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
+import { getLocalizedNsoHousing } from 'src/lib/functions/getLocalizedNsoHousing';
+import { getLocalizedNsoSessions } from 'src/lib/functions/getLocalizedNsoSessions';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { GoalSettingsNumberField } from '../Fields/GoalSettingsNumberField';
 import { GoalSettingsPlaceholder } from '../Fields/GoalSettingsPlaceholder';
-import { GoalSettingsSelect } from '../Fields/GoalSettingsSelect';
+import { GoalSettingsSelect, SelectOption } from '../Fields/GoalSettingsSelect';
 import { ColumnHeaderRow, FieldRow, Section } from '../GoalSettingsLayout';
 import { GoalSettingsSectionProps } from '../goalSettingsSectionProps';
 
 export const NsoInformationSection: React.FC<GoalSettingsSectionProps> = ({
   sharedHeader,
-  options,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+
+  const nsoHousingOptions = useMemo<SelectOption[]>(
+    () =>
+      [
+        NewStaffQuestionnaireNsoHousingEnum.SingleRoom,
+        NewStaffQuestionnaireNsoHousingEnum.SharedRoom,
+        NewStaffQuestionnaireNsoHousingEnum.CoupleRoom,
+        NewStaffQuestionnaireNsoHousingEnum.FamilyRoom,
+        NewStaffQuestionnaireNsoHousingEnum.LocalCommuting,
+      ].map((value) => ({ value, label: getLocalizedNsoHousing(t, value) })),
+    [t],
+  );
+
+  const nsoSessionsOptions = useMemo<SelectOption[]>(
+    () =>
+      [
+        NewStaffQuestionnaireNsoSessionsEnum.IbsAndNso,
+        NewStaffQuestionnaireNsoSessionsEnum.Nso,
+      ].map((value) => ({ value, label: getLocalizedNsoSessions(t, value) })),
+    [t],
+  );
 
   return (
     <Section title={t('NSO Information')}>
@@ -31,7 +57,7 @@ export const NsoInformationSection: React.FC<GoalSettingsSectionProps> = ({
         <GoalSettingsSelect
           name="nsoHousing"
           label={t('Housing')}
-          options={options.nsoHousing}
+          options={nsoHousingOptions}
         />
       </FieldRow>
 
@@ -39,7 +65,7 @@ export const NsoInformationSection: React.FC<GoalSettingsSectionProps> = ({
         <GoalSettingsSelect
           name="nsoSessions"
           label={t('Trainings Attending')}
-          options={options.nsoSessions}
+          options={nsoSessionsOptions}
         />
       </FieldRow>
 

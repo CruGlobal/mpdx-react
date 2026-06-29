@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import {
+  GoalCalculationAge,
+  NewStaffQuestionnaireMaritalStatusEnum,
+} from 'src/graphql/types.generated';
+import { getLocalizedAge } from 'src/lib/functions/getLocalizedAge';
 import { GoalSettingsNumberField } from '../Fields/GoalSettingsNumberField';
-import { GoalSettingsSelect } from '../Fields/GoalSettingsSelect';
+import { GoalSettingsSelect, SelectOption } from '../Fields/GoalSettingsSelect';
 import { ColumnHeaderRow, FieldRow, Section } from '../GoalSettingsLayout';
 import { GoalSettingsSectionProps } from '../goalSettingsSectionProps';
 
@@ -11,9 +16,45 @@ export const PersonalInformationSection: React.FC<GoalSettingsSectionProps> = ({
   primaryName,
   spouseName,
   visibleHeaders,
-  options,
 }) => {
   const { t } = useTranslation();
+
+  const maritalStatusOptions = useMemo<SelectOption[]>(
+    () => [
+      {
+        value: NewStaffQuestionnaireMaritalStatusEnum.Single,
+        label: t('Single'),
+      },
+      {
+        value: NewStaffQuestionnaireMaritalStatusEnum.Sosa,
+        label: t('SOSA'),
+      },
+      {
+        value: NewStaffQuestionnaireMaritalStatusEnum.Married,
+        label: t('Married'),
+      },
+    ],
+    [t],
+  );
+
+  const spouseJoiningOptions = useMemo<SelectOption[]>(
+    () => [
+      { value: 'true', label: t('Joining Staff') },
+      { value: 'false', label: t('Senior Staff') },
+    ],
+    [t],
+  );
+
+  const ageOptions = useMemo<SelectOption[]>(
+    () =>
+      [
+        GoalCalculationAge.UnderThirty,
+        GoalCalculationAge.ThirtyToThirtyFour,
+        GoalCalculationAge.ThirtyFiveToThirtyNine,
+        GoalCalculationAge.OverForty,
+      ].map((value) => ({ value, label: getLocalizedAge(t, value) })),
+    [t],
+  );
 
   return (
     <Section title={t('Personal Information')}>
@@ -23,7 +64,7 @@ export const PersonalInformationSection: React.FC<GoalSettingsSectionProps> = ({
         <GoalSettingsSelect
           name="maritalStatus"
           label={t('Marital Status')}
-          options={options.maritalStatus}
+          options={maritalStatusOptions}
         />
       </FieldRow>
 
@@ -36,7 +77,7 @@ export const PersonalInformationSection: React.FC<GoalSettingsSectionProps> = ({
             name="spouseJoining"
             label={t('Staff Status')}
             personName={spouseName}
-            options={options.spouseJoining}
+            options={spouseJoiningOptions}
           />
         )}
       </FieldRow>
@@ -46,14 +87,14 @@ export const PersonalInformationSection: React.FC<GoalSettingsSectionProps> = ({
           name="age"
           label={t('Age')}
           personName={primaryName}
-          options={options.age}
+          options={ageOptions}
         />
         {hasSpouse && (
           <GoalSettingsSelect
             name="spouseAge"
             label={t('Age')}
             personName={spouseName}
-            options={options.age}
+            options={ageOptions}
           />
         )}
       </FieldRow>

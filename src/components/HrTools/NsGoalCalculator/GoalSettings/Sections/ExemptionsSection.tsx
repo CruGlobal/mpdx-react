@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { GoalSettingsSelect } from '../Fields/GoalSettingsSelect';
+import { NewStaffGoalCalculationSalaryOverCapEnum } from 'src/graphql/types.generated';
+import { GoalSettingsSelect, SelectOption } from '../Fields/GoalSettingsSelect';
 import { GoalSettingsYesNoField } from '../Fields/GoalSettingsYesNoField';
 import { ColumnHeaderRow, FieldRow, Section } from '../GoalSettingsLayout';
 import { GoalSettingsSectionProps } from '../goalSettingsSectionProps';
@@ -10,9 +11,27 @@ export const ExemptionsSection: React.FC<GoalSettingsSectionProps> = ({
   primaryName,
   spouseName,
   visibleHeaders,
-  options,
 }) => {
   const { t } = useTranslation();
+
+  const allowSalaryOverCapOptions = useMemo<SelectOption[]>(
+    () => [
+      { value: NewStaffGoalCalculationSalaryOverCapEnum.No, label: t('No') },
+      {
+        value: NewStaffGoalCalculationSalaryOverCapEnum.UpToBcc,
+        label: t('Up to BCC'),
+      },
+      {
+        value: NewStaffGoalCalculationSalaryOverCapEnum.UpToMcc,
+        label: t('Up to MCC'),
+      },
+      {
+        value: NewStaffGoalCalculationSalaryOverCapEnum.YesAny,
+        label: t('Yes, any amount'),
+      },
+    ],
+    [t],
+  );
 
   return (
     <Section title={t('Exemptions & Exceptions')}>
@@ -52,7 +71,7 @@ export const ExemptionsSection: React.FC<GoalSettingsSectionProps> = ({
         <GoalSettingsSelect
           name="allowSalaryOverCap"
           label={t('Allow Salary Over Cap')}
-          options={options.allowSalaryOverCap}
+          options={allowSalaryOverCapOptions}
         />
       </FieldRow>
 

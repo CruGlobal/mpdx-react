@@ -1,5 +1,3 @@
-import { GoalSettingsOptions } from './useGoalSettingsOptions';
-
 export interface GoalSettingsSectionProps {
   hasSpouse: boolean;
   /** Primary person's first name, e.g. "John". */
@@ -13,5 +11,4 @@ export interface GoalSettingsSectionProps {
   visibleHeaders: string[];
   /** Combined household header, e.g. "John (Joining) & Jane (Senior)". */
   sharedHeader: string;
-  options: GoalSettingsOptions;
 }

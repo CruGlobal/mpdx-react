@@ -31,7 +31,6 @@ import {
   GoalSettingsPerson,
 } from './goalSettingsFormValues';
 import { GoalSettingsSectionProps } from './goalSettingsSectionProps';
-import { useGoalSettingsOptions } from './useGoalSettingsOptions';
 
 /**
  * Sticky save/cancel bar pinned to the bottom of the scroll area.
@@ -70,7 +69,6 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = ({
     variables: { accountListId },
   });
   const calculation = data?.newStaffGoalCalculation;
-  const options = useGoalSettingsOptions(calculation?.joinedStaffYear);
   const [updateCalculation] = useUpdateNewStaffGoalCalculationMutation();
 
   if (loading) {
@@ -159,7 +157,6 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = ({
           sharedHeader: hasSpouse
             ? `${primaryHeader} & ${spouseHeader}`
             : primaryHeader,
-          options,
         };
 
         return (
@@ -168,7 +165,7 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = ({
               primaryPerson={primaryPerson}
               spousePerson={spousePerson}
               mpdGoal={mpdGoal}
-              options={options}
+              joinedStaffYear={calculation.joinedStaffYear}
             />
 
             <Divider sx={{ mb: 3 }} />

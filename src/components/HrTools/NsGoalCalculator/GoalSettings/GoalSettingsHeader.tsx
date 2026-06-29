@@ -1,4 +1,4 @@
-import React, { useId } from 'react';
+import React, { useId, useMemo } from 'react';
 import InfoOutlined from '@mui/icons-material/InfoOutlined';
 import LocationOn from '@mui/icons-material/LocationOnOutlined';
 import MailOutline from '@mui/icons-material/MailOutline';
@@ -12,13 +12,13 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { GoalSettingsPlaceholder } from './Fields/GoalSettingsPlaceholder';
-import { GoalSettingsSelect } from './Fields/GoalSettingsSelect';
+import { GoalSettingsSelect, SelectOption } from './Fields/GoalSettingsSelect';
 import { GoalSettingsPerson } from './goalSettingsFormValues';
-import { GoalSettingsOptions } from './useGoalSettingsOptions';
 
 interface ContactLineProps {
   icon: React.ReactNode;
@@ -70,18 +70,33 @@ interface GoalSettingsHeaderProps {
   primaryPerson: GoalSettingsPerson;
   spousePerson: GoalSettingsPerson | null;
   mpdGoal: number;
-  options: GoalSettingsOptions;
+  /**
+   * Year the staff member joined staff. The calculation year options span from
+   * this year up to the current year (newest first).
+   */
+  joinedStaffYear?: number | null;
 }
 
 export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
   primaryPerson,
   spousePerson,
   mpdGoal,
-  options,
+  joinedStaffYear,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const yearLabelId = useId();
+
+  // Years from joinedStaffYear to the current year, newest first. Falls back to
+  // just the current year when joinedStaffYear is missing or in the future.
+  const calculationsYearOptions = useMemo<SelectOption[]>(() => {
+    const currentYear = DateTime.local().year;
+    const startYear = Math.min(joinedStaffYear ?? currentYear, currentYear);
+    return Array.from({ length: currentYear - startYear + 1 }, (_, index) => {
+      const year = String(currentYear - index);
+      return { value: year, label: year };
+    });
+  }, [joinedStaffYear]);
 
   const householdTitle = spousePerson
     ? `${primaryPerson.firstName} & ${spousePerson.firstName} ${primaryPerson.lastName}`
@@ -118,7 +133,7 @@ export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
         <Box sx={{ width: 120 }}>
           <GoalSettingsSelect
             name="calculationsYear"
-            options={options.calculationsYear}
+            options={calculationsYearOptions}
             inputProps={{
               'aria-labelledby': yearLabelId,
             }}

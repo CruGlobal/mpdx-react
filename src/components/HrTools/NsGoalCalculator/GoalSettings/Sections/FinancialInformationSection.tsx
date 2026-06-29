@@ -1,22 +1,26 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { GoalSettingsNumberField } from '../Fields/GoalSettingsNumberField';
-import { GoalSettingsSelect } from '../Fields/GoalSettingsSelect';
+import { GoalSettingsSelect, SelectOption } from '../Fields/GoalSettingsSelect';
 import { ColumnHeaderRow, FieldRow, Section } from '../GoalSettingsLayout';
 import { GoalSettingsSectionProps } from '../goalSettingsSectionProps';
 
 export const FinancialInformationSection: React.FC<
   GoalSettingsSectionProps
-> = ({
-  hasSpouse,
-  primaryName,
-  spouseName,
-  visibleHeaders,
-  sharedHeader,
-  options,
-}) => {
+> = ({ hasSpouse, primaryName, spouseName, visibleHeaders, sharedHeader }) => {
   const { t } = useTranslation();
   const seniorStaffOnly = t('Senior Staff Only');
+  const { goalGeographicConstantMap } = useGoalCalculatorConstants();
+
+  const geographicLocationOptions = useMemo<SelectOption[]>(
+    () =>
+      Array.from(goalGeographicConstantMap.keys(), (location) => ({
+        value: location,
+        label: location,
+      })),
+    [goalGeographicConstantMap],
+  );
 
   return (
     <Section title={t('Financial Information')}>
@@ -114,7 +118,7 @@ export const FinancialInformationSection: React.FC<
         <GoalSettingsSelect
           name="geographicLocation"
           label={t('Geo Multiplier')}
-          options={options.geographicLocation}
+          options={geographicLocationOptions}
         />
       </FieldRow>
 

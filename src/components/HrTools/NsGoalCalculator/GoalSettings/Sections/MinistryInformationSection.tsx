@@ -1,17 +1,27 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { GoalCalculationRole } from 'src/graphql/types.generated';
+import { getLocalizedRole } from 'src/lib/functions/getLocalizedRole';
 import { GoalSettingsNumberField } from '../Fields/GoalSettingsNumberField';
 import { GoalSettingsPlaceholder } from '../Fields/GoalSettingsPlaceholder';
-import { GoalSettingsSelect } from '../Fields/GoalSettingsSelect';
+import { GoalSettingsSelect, SelectOption } from '../Fields/GoalSettingsSelect';
 import { GoalSettingsTextField } from '../Fields/GoalSettingsTextField';
 import { ColumnHeaderRow, FieldRow, Section } from '../GoalSettingsLayout';
 import { GoalSettingsSectionProps } from '../goalSettingsSectionProps';
 
 export const MinistryInformationSection: React.FC<GoalSettingsSectionProps> = ({
   sharedHeader,
-  options,
 }) => {
   const { t } = useTranslation();
+
+  const roleOptions = useMemo<SelectOption[]>(
+    () =>
+      [GoalCalculationRole.Field, GoalCalculationRole.Office].map((value) => ({
+        value,
+        label: getLocalizedRole(t, value),
+      })),
+    [t],
+  );
 
   return (
     <Section title={t('Ministry Information')}>
@@ -33,7 +43,7 @@ export const MinistryInformationSection: React.FC<GoalSettingsSectionProps> = ({
         <GoalSettingsSelect
           name="assignmentType"
           label={t('Field or Office')}
-          options={options.role}
+          options={roleOptions}
         />
       </FieldRow>
 
