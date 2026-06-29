@@ -2,6 +2,7 @@ import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { gqlMock } from '__tests__/util/graphqlMocking';
+import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
 import {
   NsGoalCalculatorTestWrapper,
   NsGoalCalculatorTestWrapperProps,
@@ -26,6 +27,7 @@ const singleMock = gqlMock<
       firstName: 'John',
       lastName: 'Doe',
       spouseFirstName: null,
+      maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
     },
   },
 });

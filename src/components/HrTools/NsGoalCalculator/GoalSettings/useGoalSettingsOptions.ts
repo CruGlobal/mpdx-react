@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import {
   GoalCalculationAge,
@@ -32,8 +33,13 @@ export interface GoalSettingsOptions {
 
 /**
  * Select options for the Goal Settings form.
+ *
+ * @param joinedStaffYear Year the staff member joined staff. The calculation
+ *   year options span from this year up to the current year (newest first).
  */
-export const useGoalSettingsOptions = (): GoalSettingsOptions => {
+export const useGoalSettingsOptions = (
+  joinedStaffYear?: number | null,
+): GoalSettingsOptions => {
   const { t } = useTranslation();
   const { goalGeographicConstantMap } = useGoalCalculatorConstants();
 
@@ -45,6 +51,17 @@ export const useGoalSettingsOptions = (): GoalSettingsOptions => {
       })),
     [goalGeographicConstantMap],
   );
+
+  // Years from joinedStaffYear to the current year, newest first. Falls back to
+  // just the current year when joinedStaffYear is missing or in the future.
+  const calculationsYear = useMemo<SelectOption[]>(() => {
+    const currentYear = DateTime.local().year;
+    const startYear = Math.min(joinedStaffYear ?? currentYear, currentYear);
+    return Array.from({ length: currentYear - startYear + 1 }, (_, index) => {
+      const year = String(currentYear - index);
+      return { value: year, label: year };
+    });
+  }, [joinedStaffYear]);
 
   return useMemo(
     () => ({
@@ -109,11 +126,8 @@ export const useGoalSettingsOptions = (): GoalSettingsOptions => {
         NewStaffQuestionnaireNsoSessionsEnum.IbsAndNso,
         NewStaffQuestionnaireNsoSessionsEnum.Nso,
       ].map((value) => ({ value, label: getLocalizedNsoSessions(t, value) })),
-      calculationsYear: [
-        { value: '2026', label: t('2026') },
-        { value: '2025', label: t('2025') },
-      ],
+      calculationsYear,
     }),
-    [t, geographicLocation],
+    [t, geographicLocation, calculationsYear],
   );
 };

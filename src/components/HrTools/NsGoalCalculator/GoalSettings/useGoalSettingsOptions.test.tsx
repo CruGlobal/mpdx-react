@@ -68,6 +68,36 @@ const wrapper = ({ children }: { children: ReactElement }) => (
 );
 
 describe('useGoalSettingsOptions', () => {
+  it('spans calculation years from joinedStaffYear to the current year, newest first', () => {
+    const { result } = renderHook(() => useGoalSettingsOptions(2018), {
+      wrapper,
+    });
+
+    expect(result.current.calculationsYear).toEqual([
+      { value: '2020', label: '2020' },
+      { value: '2019', label: '2019' },
+      { value: '2018', label: '2018' },
+    ]);
+  });
+
+  it('offers only the current year when joinedStaffYear is missing', () => {
+    const { result } = renderHook(() => useGoalSettingsOptions(), { wrapper });
+
+    expect(result.current.calculationsYear).toEqual([
+      { value: '2020', label: '2020' },
+    ]);
+  });
+
+  it('offers only the current year when joinedStaffYear is in the future', () => {
+    const { result } = renderHook(() => useGoalSettingsOptions(2030), {
+      wrapper,
+    });
+
+    expect(result.current.calculationsYear).toEqual([
+      { value: '2020', label: '2020' },
+    ]);
+  });
+
   it('derives age options from the GoalCalculationAge enum', () => {
     const { result } = renderHook(() => useGoalSettingsOptions(), { wrapper });
 

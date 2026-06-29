@@ -65,12 +65,12 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = ({
   accountListId,
 }) => {
   const { t } = useTranslation();
-  const options = useGoalSettingsOptions();
 
   const { data, loading } = useNewStaffGoalCalculationQuery({
     variables: { accountListId },
   });
   const calculation = data?.newStaffGoalCalculation;
+  const options = useGoalSettingsOptions(calculation?.joinedStaffYear);
   const [updateCalculation] = useUpdateNewStaffGoalCalculationMutation();
 
   if (loading) {

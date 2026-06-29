@@ -16,6 +16,7 @@ fragment NewStaffGoalCalculationFields on NewStaffGoalCalculation {
   spousePersonNumber
 
   # Personal
+  joinedStaffYear
   maritalStatus
   spouseJoining
   age
