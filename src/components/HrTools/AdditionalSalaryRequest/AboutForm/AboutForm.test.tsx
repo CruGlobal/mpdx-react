@@ -139,23 +139,15 @@ describe('AboutForm', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('should link to the Progressive Approvals document', () => {
-    const { getByRole } = render(<TestWrapper />);
+  it('should have Progressive Approvals link', () => {
+    const { getByText } = render(<TestWrapper />);
 
-    expect(
-      getByRole('link', { name: 'Progressive Approvals' }),
-    ).toHaveAttribute(
-      'href',
-      'https://drive.google.com/file/d/1Z1WuiIUMrmfrUUV0V-ACCdhyuSd1Cgzg/view?usp=drive_link',
-    );
+    expect(getByText('Progressive Approvals')).toBeInTheDocument();
   });
 
-  it('should link to the paper version document', () => {
-    const { getByRole } = render(<TestWrapper />);
+  it('should have paper version download link', () => {
+    const { getByText } = render(<TestWrapper />);
 
-    expect(getByRole('link', { name: 'paper version' })).toHaveAttribute(
-      'href',
-      'https://drive.google.com/file/d/1BXoJGnr9Gc3_KAek8jI8RsKAOo_We0JV/view?usp=drive_link',
-    );
+    expect(getByText('paper version')).toBeInTheDocument();
   });
 });

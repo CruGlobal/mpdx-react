@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Stack, TextField, Typography } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
-import { getLocalizedAssignmentStatus } from 'src/lib/functions/getLocalizedAssignmentStatus';
+import { getLocalizedAssignmentStatus } from '../../Shared/Helpers/getLocalizedAssignmentStatus';
 import { StaffInfoCard } from '../../Shared/StaffInfoCard/StaffInfoCard';
 import { useNsoMpdQuestionnaire } from '../Shared/NsoMpdQuestionnaireContext';
 

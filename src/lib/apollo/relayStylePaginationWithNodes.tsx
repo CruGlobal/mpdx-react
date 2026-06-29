@@ -56,19 +56,11 @@ export function relayStylePaginationWithNodes<TNode = Reference>(
 
       const { startCursor, endCursor } = existing.pageInfo || {};
 
-      // `nodes` holds direct references, so filter out any that can no longer
-      // be read (e.g. evicted from the cache) to avoid dangling references —
-      // mirroring the `canRead` filtering applied to `edges` above.
-      const nodes = (existing.nodes ?? []).filter((node) =>
-        canRead(node as Reference),
-      );
-
       return {
         // Some implementations return additional Connection fields, such
         // as existing.totalCount. These fields are saved by the merge
         // function, so the read function should also preserve them.
         ...getExtras(existing),
-        nodes,
         edges,
         pageInfo: {
           ...existing.pageInfo,
@@ -249,7 +241,7 @@ export function relayStylePaginationWithNodes<TNode = Reference>(
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getExtras = (obj: Record<string, any>) => __rest(obj, notExtras);
-const notExtras = ['edges', 'nodes', 'pageInfo'];
+const notExtras = ['edges', 'pageInfo'];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function makeEmptyData(): TExistingRelayWithNodes<any> {

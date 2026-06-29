@@ -55,37 +55,6 @@ const SelectTestComponent: React.FC = () => {
   );
 };
 
-const SaveOnChangeTextComponent: React.FC = () => {
-  const schema = yup.object({
-    field: amount('Field', i18n.t, { required: true }),
-  });
-
-  const props = useAutoSave({
-    value: 100,
-    saveValue,
-    fieldName: 'field',
-    schema,
-    saveOnChange: true,
-  });
-
-  return <TextField label="Field" {...props} />;
-};
-
-const TouchedTestComponent: React.FC = () => {
-  const schema = yup.object({
-    field: amount('Field', i18n.t, { required: true }),
-  });
-
-  const props = useAutoSave({
-    value: null,
-    saveValue,
-    fieldName: 'field',
-    schema,
-  });
-
-  return <TextField label="Field" {...props} />;
-};
-
 const TransformTestComponent: React.FC = () => {
   const schema = yup.object({
     field: yup.string().transform((val) => val.replace(/\D/g, '')),
@@ -142,15 +111,16 @@ describe('AutosaveTextField', () => {
     expect(saveValue).not.toHaveBeenCalled();
   });
 
-  it('shows validation error after blur', () => {
+  it('shows validation error', () => {
     const { getByRole } = render(<TestComponent />);
 
     const input = getByRole('textbox', { name: 'Field' });
     userEvent.clear(input);
     userEvent.type(input, '-100');
-    userEvent.tab();
-
     expect(input).toHaveAccessibleDescription('Field must be positive');
+
+    input.blur();
+
     expect(saveValue).not.toHaveBeenCalled();
   });
 
@@ -162,14 +132,12 @@ describe('AutosaveTextField', () => {
     expect(input).toHaveAccessibleDescription('');
   });
 
-  it('shows validation error for invalid type after blur', () => {
+  it('shows validation error for invalid type', () => {
     const { getByRole } = render(<TestComponent />);
 
     const input = getByRole('textbox', { name: 'Field' });
     userEvent.clear(input);
     userEvent.type(input, 'abc');
-    userEvent.tab();
-
     expect(input).toHaveAccessibleDescription('Field must be a number');
   });
 
@@ -180,42 +148,6 @@ describe('AutosaveTextField', () => {
     userEvent.type(input, 'a1b2c3');
 
     expect(input).toHaveValue('123');
-  });
-
-  describe('error visibility', () => {
-    it('hides the validation error until the field is blurred', () => {
-      const { getByRole } = render(<TouchedTestComponent />);
-
-      const input = getByRole('textbox', { name: 'Field' });
-      expect(input).toHaveAccessibleDescription('');
-
-      input.focus();
-      userEvent.tab();
-
-      expect(input).toHaveAccessibleDescription('Field is required');
-    });
-
-    it('does not show the validation error while the user types', () => {
-      const { getByRole } = render(<TouchedTestComponent />);
-
-      const input = getByRole('textbox', { name: 'Field' });
-      userEvent.type(input, '-100');
-      expect(input).toHaveAccessibleDescription('');
-
-      userEvent.tab();
-
-      expect(input).toHaveAccessibleDescription('Field must be positive');
-    });
-
-    it('shows the validation error while typing when saveOnChange is true', () => {
-      const { getByRole } = render(<SaveOnChangeTextComponent />);
-
-      const input = getByRole('textbox', { name: 'Field' });
-      userEvent.clear(input);
-      userEvent.type(input, '-100');
-
-      expect(input).toHaveAccessibleDescription('Field must be positive');
-    });
   });
 
   describe('select input', () => {

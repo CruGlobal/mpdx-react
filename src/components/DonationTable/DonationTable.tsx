@@ -261,14 +261,14 @@ export const DonationTable: React.FC<DonationTableProps> = ({
       field: 'date',
       headerName: t('Date'),
       flex: 1,
-      minWidth: 90,
+      minWidth: 80,
       renderCell: date,
     },
     {
       field: 'donorAccountName',
       headerName: hideDisplayName ? t('Partner No.') : t('Partner'),
-      flex: hideDisplayName ? 1 : 3,
-      minWidth: hideDisplayName ? 100 : 200,
+      flex: 3,
+      minWidth: 200,
       renderCell: donor,
     },
     {

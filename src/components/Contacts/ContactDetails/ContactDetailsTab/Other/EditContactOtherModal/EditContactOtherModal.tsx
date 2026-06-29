@@ -197,14 +197,23 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
     attributes: ContactUpdateInput & { referredById: string },
   ) => {
     const referralsInput =
-      referral?.referredBy.id === selectedId
-        ? // No changes
-          []
-        : // Remove the old referral and add the new referral (if any)
-          [
-            ...(referral ? [{ id: referral.id, destroy: true }] : []),
-            ...(selectedId ? [{ referredById: selectedId }] : []),
-          ];
+      referral && referral.referredBy.id !== selectedId
+        ? [
+            {
+              id: referral.id,
+              destroy: true,
+            },
+            {
+              referredById: attributes.referredById,
+            },
+          ]
+        : selectedId
+          ? [
+              {
+                referredById: attributes.referredById,
+              },
+            ]
+          : [{}];
     await updateContactOther({
       variables: {
         accountListId,

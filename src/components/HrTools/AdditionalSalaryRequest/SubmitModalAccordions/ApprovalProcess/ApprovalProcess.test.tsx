@@ -94,12 +94,4 @@ describe('ApprovalProcess', () => {
 
     expect(getByRole('textbox')).toBeInTheDocument();
   });
-
-  it('gives the comment textarea a stable accessible name and id', () => {
-    const { getByRole } = render(<TestComponent onForm={true} />);
-
-    const textbox = getByRole('textbox', { name: 'Additional Information' });
-    expect(textbox).toBeInTheDocument();
-    expect(textbox).toHaveAttribute('id', 'asr-additional-info');
-  });
 });

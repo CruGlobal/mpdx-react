@@ -58,14 +58,10 @@ export const ApprovalProcess: React.FC<ApprovalProcessProps> = ({
           <AutosaveCustomTextField
             fieldName="additionalInfo"
             variant="outlined"
-            label={t('Additional Information')}
-            id="asr-additional-info"
             multiline
             rows={6}
             fullWidth
-            inputProps={{
-              style: { overflowY: 'auto' },
-            }}
+            inputProps={{ style: { overflowY: 'auto' } }}
           />
         </Box>
       </CardContent>

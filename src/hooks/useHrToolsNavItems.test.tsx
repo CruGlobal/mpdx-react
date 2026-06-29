@@ -57,7 +57,6 @@ describe('useHrToolsNavItems', () => {
       'additionalSalaryRequest',
       'pdsGoalCalculator',
       'partnerReminders',
-      'mpdSupervisorReport',
     ]);
   });
 

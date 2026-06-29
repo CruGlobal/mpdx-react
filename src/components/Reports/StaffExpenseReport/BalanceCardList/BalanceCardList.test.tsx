@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, within } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Fund } from 'src/graphql/types.generated';
 import theme from 'src/theme';
@@ -36,12 +36,11 @@ const mockFunds: Fund[] = [
 
 const defaultProps = {
   funds: mockFunds,
-  selectedFundType: 'Primary',
-  // Expenses are summed from negative-amount transactions, so `out` is negative.
+  selectedFundType: null,
   transferTotals: {
-    Primary: { in: 500, out: -100 },
-    Savings: { in: 300, out: -50 },
-    ConferenceSavings: { in: 0, out: -200 },
+    Primary: { in: 500, out: 100 },
+    Savings: { in: 300, out: 50 },
+    ConferenceSavings: { in: 0, out: 200 },
   },
   onCardClick: onCardClick,
   loading: false,
@@ -73,7 +72,7 @@ describe('BalanceCardList', () => {
     const { getAllByRole } = render(<TestComponent {...defaultProps} />);
 
     userEvent.click(getAllByRole('button', { name: 'View Account' })[0]);
-    expect(onCardClick).toHaveBeenCalledWith('Savings');
+    expect(onCardClick).toHaveBeenCalledWith('Primary');
   });
 
   it('displays selected state on correct card', () => {
@@ -87,17 +86,20 @@ describe('BalanceCardList', () => {
     expect(getAllByRole('button', { name: 'View Account' })).toHaveLength(2);
   });
 
-  it('displays values for the selected card', async () => {
-    const { getByText, findByText } = render(
-      <TestComponent {...defaultProps} />,
-    );
-
-    const income = await findByText('Income:');
-    expect(within(income).getByText('$500.00')).toBeInTheDocument();
-    const expenses = getByText('Expenses:');
-    expect(within(expenses).getByText('-$100.00')).toBeInTheDocument();
-    expect(getByText('Starting Balance: $1,000.00')).toBeInTheDocument();
-    expect(getByText('= Ending Balance: $1,400.00')).toBeInTheDocument();
+  it('displays values for each card', () => {
+    const { getByText } = render(<TestComponent {...defaultProps} />);
+    expect(getByText('+ Transfers in: $500')).toBeInTheDocument();
+    expect(getByText('- Transfers out: $100')).toBeInTheDocument();
+    expect(getByText('+ Transfers in: $300')).toBeInTheDocument();
+    expect(getByText('- Transfers out: $50')).toBeInTheDocument();
+    expect(getByText('+ Transfers in: $0')).toBeInTheDocument();
+    expect(getByText('- Transfers out: $200')).toBeInTheDocument();
+    expect(getByText('Starting Balance: $1,000')).toBeInTheDocument();
+    expect(getByText('Starting Balance: $2,000')).toBeInTheDocument();
+    expect(getByText('Starting Balance: $500')).toBeInTheDocument();
+    expect(getByText('= Ending Balance: $1,400')).toBeInTheDocument();
+    expect(getByText('= Ending Balance: $2,250')).toBeInTheDocument();
+    expect(getByText('= Ending Balance: $300')).toBeInTheDocument();
   });
 
   it('renders empty when no funds provided', () => {

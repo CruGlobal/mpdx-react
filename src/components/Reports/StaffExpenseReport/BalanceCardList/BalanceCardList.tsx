@@ -9,14 +9,11 @@ import {
   getIconForFundType,
 } from '../Helpers/fundTypeHelpers';
 
-const StyledCardsBox = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'isSelected',
-})<{ isSelected: boolean }>(({ theme, isSelected }) => ({
-  flex: isSelected ? 2 : 1,
-  minWidth: isSelected ? 250 : 200,
+const StyledCardsBox = styled(Box)(({ theme }) => ({
+  flex: 1,
+  minWidth: 240,
   display: 'flex',
   gap: theme.spacing(4),
-  transition: 'flex 0.3s ease-in-out, min-width 0.3s ease-in-out',
 }));
 
 export interface BalanceCardListProps {
@@ -38,7 +35,7 @@ export const BalanceCardList: React.FC<BalanceCardListProps> = ({
 
   if (loading) {
     return (
-      <StyledCardsBox isSelected={false}>
+      <StyledCardsBox>
         <BalanceCardSkeleton />
         <BalanceCardSkeleton />
         <BalanceCardSkeleton />
@@ -49,10 +46,7 @@ export const BalanceCardList: React.FC<BalanceCardListProps> = ({
   return (
     <>
       {funds.map((fund) => (
-        <StyledCardsBox
-          key={fund.fundType}
-          isSelected={selectedFundType === fund.fundType}
-        >
+        <StyledCardsBox key={fund.fundType}>
           <BalanceCard
             fundType={fund.fundType}
             icon={getIconForFundType(fund.fundType)}

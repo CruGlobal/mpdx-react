@@ -3,8 +3,14 @@ import LocationOn from '@mui/icons-material/LocationOn';
 import MuseumSharp from '@mui/icons-material/MuseumSharp';
 import {
   CircularProgress,
+  FormControl,
+  FormControlLabel,
+  FormHelperText,
+  FormLabel,
   InputAdornment,
   MenuItem,
+  Radio,
+  RadioGroup,
   Stack,
   TextField,
   Typography,
@@ -12,7 +18,6 @@ import {
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
-import { RadioQuestion } from '../Shared/RadioQuestion';
 import { useQuestionnaireAutoSave } from '../Shared/useQuestionnaireAutoSave';
 
 // TODO(MPDX-9758): Replace with the real ministry list from OneApp.
@@ -71,11 +76,20 @@ export const MinistryDetails: React.FC = () => {
     saveOnChange: true,
   });
 
+  const {
+    error: assignmentTypeError,
+    helperText: assignmentTypeHelperText,
+    ...assignmentTypeProps
+  } = useQuestionnaireAutoSave({
+    fieldName: 'assignmentType',
+    schema,
+    saveOnChange: true,
+  });
+
   return (
     <Stack spacing={4}>
       <TextField
         select
-        required
         label={t('What ministry are you expecting to serve with?')}
         size="small"
         SelectProps={{ displayEmpty: true }}
@@ -102,9 +116,9 @@ export const MinistryDetails: React.FC = () => {
       </TextField>
 
       <TextField
-        required
-        label={t('What is your expected ministry assignment location?')}
+        placeholder={t('What is your expected ministry assignment location?')}
         size="small"
+        InputLabelProps={{ shrink: true }}
         {...locationProps}
       />
 
@@ -113,7 +127,6 @@ export const MinistryDetails: React.FC = () => {
       ) : (
         <TextField
           select
-          required
           label={t(
             'Is your ministry assignment location within 50 miles of one of these cities?',
           )}
@@ -142,16 +155,31 @@ export const MinistryDetails: React.FC = () => {
         </TextField>
       )}
 
-      <RadioQuestion
-        fieldName="assignmentType"
-        schema={schema}
-        row
-        label={t('What type of assignment are you expecting?')}
-        options={[
-          { value: 'Field', label: t('Field') },
-          { value: 'Office', label: t('Office') },
-        ]}
-      />
+      <FormControl error={assignmentTypeError}>
+        <FormLabel id="assignment-type-label" sx={{ color: 'text.primary' }}>
+          {t('What type of assignment are you expecting?')}
+        </FormLabel>
+        <RadioGroup
+          row
+          sx={{ paddingInline: 2 }}
+          aria-labelledby="assignment-type-label"
+          {...assignmentTypeProps}
+        >
+          <FormControlLabel
+            value="Field"
+            control={<Radio />}
+            label={t('Field')}
+          />
+          <FormControlLabel
+            value="Office"
+            control={<Radio />}
+            label={t('Office')}
+          />
+        </RadioGroup>
+        {assignmentTypeHelperText && (
+          <FormHelperText>{assignmentTypeHelperText}</FormHelperText>
+        )}
+      </FormControl>
     </Stack>
   );
 };

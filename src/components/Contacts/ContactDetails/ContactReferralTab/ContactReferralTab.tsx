@@ -1,11 +1,9 @@
 import NextLink from 'next/link';
 import React, { useState } from 'react';
 import Add from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Box,
   Button,
-  IconButton,
   Link,
   Paper,
   Skeleton,
@@ -19,22 +17,17 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
-import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import {
   DynamicCreateMultipleContacts,
   preloadCreateMultipleContacts,
 } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/DynamicCreateMultipleContacts';
 import { useContactPanel } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
-import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
 import Modal from 'src/components/Shared/Modal/Modal';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat';
-import {
-  useContactReferralTabQuery,
-  useDeleteContactReferralMutation,
-} from './ContactReferralTab.generated';
+import { useContactReferralTabQuery } from './ContactReferralTab.generated';
 
 const ContactReferralContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(0),
@@ -56,11 +49,6 @@ const AddButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(0.5),
   color: theme.palette.info.main,
 }));
-
-interface ReferralToRemove {
-  id: string;
-  name: string;
-}
 
 interface ContactReferralTabProps {
   accountListId: string;
@@ -87,12 +75,8 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
 
   const { t } = useTranslation();
   const locale = useLocale();
-  const { enqueueSnackbar } = useSnackbar();
-  const [deleteContactReferral] = useDeleteContactReferralMutation();
   const [modalContactReferralOpen, setModalContactReferralOpen] =
     useState(false);
-  const [referralToRemove, setReferralToRemove] =
-    useState<ReferralToRemove | null>(null);
 
   const handleModalOpen = () => {
     setModalContactReferralOpen(true);
@@ -100,39 +84,6 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
 
   const handleModalClose = () => {
     setModalContactReferralOpen(false);
-  };
-
-  const handleRemoveReferral = async () => {
-    if (!referralToRemove) {
-      return;
-    }
-    await deleteContactReferral({
-      variables: {
-        accountListId,
-        contactId,
-        referralId: referralToRemove.id,
-      },
-      update: (cache) => {
-        const cacheId = cache.identify({
-          __typename: 'Referral',
-          id: referralToRemove.id,
-        });
-        if (cacheId) {
-          cache.evict({ id: cacheId });
-          cache.gc();
-        }
-      },
-      onCompleted: () => {
-        enqueueSnackbar(t('Connection removed successfully'), {
-          variant: 'success',
-        });
-      },
-      onError: () => {
-        enqueueSnackbar(t('Unable to remove connection'), {
-          variant: 'error',
-        });
-      },
-    });
   };
 
   return (
@@ -160,7 +111,6 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
                 <TableRow>
                   <TableCell>{t('Name')}</TableCell>
                   <TableCell>{t('Date of Connection')}</TableCell>
-                  <TableCell align="right">{t('Actions')}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -185,27 +135,12 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
                             {dateFormat(DateTime.fromISO(createdAt), locale)}
                           </Typography>
                         </TableCell>
-                        <TableCell align="right">
-                          <IconButton
-                            aria-label={t('Remove Connection {{name}}', {
-                              name: referredTo.name,
-                            })}
-                            onClick={() =>
-                              setReferralToRemove({
-                                id,
-                                name: referredTo.name,
-                              })
-                            }
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </TableCell>
                       </TableRow>
                     ),
                   )
                 ) : (
                   <TableRow key="no_data">
-                    <TableCell colSpan={3}>{t('No Connections')}</TableCell>
+                    <TableCell>{t('No Connections')}</TableCell>
                   </TableRow>
                 )}
               </TableBody>
@@ -225,17 +160,6 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
               referredById={contactId}
             />
           </Modal>
-          <Confirmation
-            isOpen={!!referralToRemove}
-            title={t('Remove Connection')}
-            message={t(
-              'Are you sure you want to remove {{name}} as a connection?',
-              { name: referralToRemove?.name ?? '' },
-            )}
-            confirmButtonProps={{ color: 'error' }}
-            handleClose={() => setReferralToRemove(null)}
-            mutation={handleRemoveReferral}
-          />
         </>
       )}
     </ContactReferralContainer>

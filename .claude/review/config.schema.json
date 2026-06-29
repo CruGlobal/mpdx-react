@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mpdx.org/review/config.schema.json",
+  "title": "MPDX Agent-Review Config",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "profile", "risk", "agents", "excluded_paths"],
+  "properties": {
+    "version": { "type": "integer", "enum": [1] },
+    "profile": { "type": "string", "enum": ["chill", "standard", "assertive"] },
+    "risk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["patterns", "volume_multiplier", "scope_multiplier", "special", "levels"],
+      "properties": {
+        "patterns": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["glob", "points"],
+            "properties": {
+              "glob": { "type": "string" },
+              "points": { "type": "integer", "minimum": 0 },
+              "tier": { "type": "string", "enum": ["critical", "high", "medium", "low"] }
+            }
+          }
+        },
+        "volume_multiplier": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["upTo", "points"],
+            "properties": {
+              "upTo": { "type": ["integer", "null"] },
+              "points": { "type": "integer", "minimum": 0 }
+            }
+          }
+        },
+        "scope_multiplier": { "type": "object", "additionalProperties": { "type": "number" } },
+        "special": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["when", "points"],
+            "properties": {
+              "when": { "type": "string" },
+              "points": { "type": "integer", "minimum": 0 },
+              "packages": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "levels": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["range", "level", "reviewer"],
+            "properties": {
+              "range": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "type": ["integer", "null"] } },
+              "level": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"] },
+              "reviewer": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "agents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id"],
+        "properties": {
+          "id": { "type": "string" },
+          "enabled": { "type": "boolean" },
+          "always": { "type": "boolean" },
+          "model": { "type": "string", "enum": ["smart", "opus", "sonnet", "haiku"] },
+          "triggers": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "paths": { "type": "array", "items": { "type": "string" } },
+              "content": { "type": "array", "items": { "type": "string" } }
+            }
+          },
+          "rules": { "type": "array", "items": { "type": "string", "pattern": "^rules/[A-Za-z0-9._-]+\\.md$" } }
+        }
+      }
+    },
+    "path_rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["paths", "rules"],
+        "properties": {
+          "paths": { "type": "array", "items": { "type": "string" } },
+          "rules": { "type": "array", "items": { "type": "string", "pattern": "^rules/[A-Za-z0-9._-]+\\.md$" } }
+        }
+      }
+    },
+    "excluded_paths": { "type": "array", "items": { "type": "string" } },
+    "index": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "path": { "type": "string" },
+        "roots": { "type": "array", "items": { "type": "string" } },
+        "aliases": { "type": "array", "items": { "type": "string" } },
+        "extensions": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "learning": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "path": { "type": "string" },
+        "approval_required": { "type": "boolean" },
+        "min_support": { "type": "integer", "minimum": 1 },
+        "scope": { "type": "string", "enum": ["local", "global"] }
+      }
+    },
+    "enforcement": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": { "mode": { "type": "string", "enum": ["warn", "block"] } }
+    }
+  }
+}

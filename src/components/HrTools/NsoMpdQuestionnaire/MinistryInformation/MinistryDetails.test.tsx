@@ -30,7 +30,9 @@ const TestComponent: React.FC = () => (
 
 describe('MinistryDetails', () => {
   it('renders the four questions', async () => {
-    const { getByRole, findByRole } = render(<TestComponent />);
+    const { getByRole, getByPlaceholderText, findByRole } = render(
+      <TestComponent />,
+    );
 
     expect(
       getByRole('combobox', {
@@ -38,9 +40,9 @@ describe('MinistryDetails', () => {
       }),
     ).toBeInTheDocument();
     expect(
-      getByRole('textbox', {
-        name: 'What is your expected ministry assignment location?',
-      }),
+      getByPlaceholderText(
+        'What is your expected ministry assignment location?',
+      ),
     ).toBeInTheDocument();
     expect(
       await findByRole('combobox', {
@@ -52,16 +54,6 @@ describe('MinistryDetails', () => {
         name: 'What type of assignment are you expecting?',
       }),
     ).toBeInTheDocument();
-  });
-
-  it('marks the location field as required', () => {
-    const { getByRole } = render(<TestComponent />);
-
-    expect(
-      getByRole('textbox', {
-        name: 'What is your expected ministry assignment location?',
-      }),
-    ).toBeRequired();
   });
 
   it('offers the dummy ministry options', () => {

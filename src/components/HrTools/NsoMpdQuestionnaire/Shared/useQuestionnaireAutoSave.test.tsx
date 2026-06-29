@@ -32,11 +32,10 @@ describe('useQuestionnaireAutoSave', () => {
     expect(input).toHaveValue('1234567890');
   });
 
-  it('surfaces the schema validation error for an invalid value once touched', () => {
+  it('surfaces the schema validation error for an invalid value', () => {
     const { getByRole, getByText } = render(<TestComponent />);
 
     userEvent.type(getByRole('textbox', { name: 'Field' }), '123');
-    userEvent.tab();
 
     expect(getByText('Too short')).toBeInTheDocument();
   });

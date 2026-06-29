@@ -26,7 +26,7 @@ interface MultiPageHeaderProps {
   rightExtra?: ReactNode;
 }
 
-export const StickyHeader = styled(Box)(() => ({
+const StickyHeader = styled(Box)(() => ({
   position: 'sticky',
   top: 0,
   borderBottom: '1px solid',
@@ -39,7 +39,7 @@ export const StickyHeader = styled(Box)(() => ({
   },
 }));
 
-export const NavListButton = styled(IconButton, {
+const NavListButton = styled(IconButton, {
   shouldForwardProp: (prop) => prop !== 'panelOpen',
 })(({ panelOpen }: { panelOpen: boolean }) => ({
   display: 'inline-block',
@@ -52,7 +52,7 @@ export const NavListButton = styled(IconButton, {
   padding: '11px',
 }));
 
-export const NavMenuIcon = styled(MenuIcon)(() => ({
+const NavMenuIcon = styled(MenuIcon)(() => ({
   width: 24,
   height: 24,
   color: theme.palette.primary.dark,

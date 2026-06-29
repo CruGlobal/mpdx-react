@@ -4,7 +4,6 @@ import { Box, Card, CardActionArea, Typography, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
-import theme from 'src/theme';
 import { StyledIconBox } from '../styledComponents/StyledIconBox';
 
 const StyledCardActionArea = styled(CardActionArea, {
@@ -49,12 +48,10 @@ interface BalanceCardProps {
   isSelected?: boolean;
 }
 
-const StyledHeaderBox = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'isSelected',
-})<{ isSelected: boolean }>(({ theme, isSelected }) => ({
+const StyledHeaderBox = styled(Box)(({ theme }) => ({
   display: 'flex',
   flex: 1,
-  flexDirection: isSelected ? 'row' : 'column',
+  flexDirection: 'row',
   alignItems: 'start',
   gap: theme.spacing(1),
 }));
@@ -80,79 +77,32 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const formatBalance = (amount: number) =>
-    currencyFormat(amount, 'USD', locale, {
-      showTrailingZeros: true,
-    });
-
-  const isNegative = endBalance < 0;
-
   return (
     <StyledCard variant="outlined" isSelected={isSelected}>
-      <StyledHeaderBox isSelected={isSelected}>
+      <StyledHeaderBox>
         <StyledIconBox iconBgColor={iconBgColor}>
           <Icon />
         </StyledIconBox>
-        <Typography
-          variant="h6"
-          sx={{ whiteSpace: isSelected ? 'nowrap' : 'normal' }}
-        >
-          {title}
-        </Typography>
+        <Typography variant="h6">{title}</Typography>
       </StyledHeaderBox>
-      {isSelected ? (
-        <Box
-          display="flex"
-          flexDirection="column"
-          mt={3}
-          mb={2}
-          sx={{ whiteSpace: 'nowrap' }}
-        >
-          <Typography>
-            {t('Starting Balance: ')}
-            {formatBalance(startBalance)}
-          </Typography>
-          <Typography>
-            {t('Income: ')}
-            <Typography
-              component="span"
-              sx={{
-                color: transfersIn > 0 ? theme.palette.success.main : 'inherit',
-              }}
-            >
-              {formatBalance(transfersIn)}
-            </Typography>
-          </Typography>
-          <Typography>
-            {t('Expenses: ')}
-            <Typography
-              component="span"
-              sx={{
-                color: transfersOut < 0 ? theme.palette.error.main : 'inherit',
-              }}
-            >
-              {formatBalance(transfersOut)}
-            </Typography>
-          </Typography>
-          <Typography>
-            <strong>
-              {t('= Ending Balance: ')}
-              {formatBalance(endBalance)}
-            </strong>
-          </Typography>
-        </Box>
-      ) : (
-        <Typography
-          variant="h6"
-          color={isNegative ? 'error.main' : 'text.primary'}
-        >
-          {isNegative ? '(' : ''}
-          {currencyFormat(Math.abs(endBalance), 'USD', locale, {
-            showTrailingZeros: true,
-          })}
-          {isNegative ? ')' : ''}
+      <Box display="flex" flexDirection="column" mt={3} mb={2}>
+        <Typography>
+          {t('Starting Balance: ')}
+          {currencyFormat(startBalance, 'USD', locale)}
         </Typography>
-      )}
+        <Typography>
+          {t('+ Transfers in: ')}
+          {currencyFormat(transfersIn, 'USD', locale)}
+        </Typography>
+        <Typography>
+          {t('- Transfers out: ')}
+          {currencyFormat(Math.abs(transfersOut), 'USD', locale)}
+        </Typography>
+        <Typography>
+          {t('= Ending Balance: ')}
+          {currencyFormat(endBalance, 'USD', locale)}
+        </Typography>
+      </Box>
 
       <ScreenOnly>
         <StyledCardActionArea
@@ -167,7 +117,6 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
               color="primary.main"
               fontWeight={600}
               textAlign="center"
-              sx={{ whiteSpace: 'nowrap' }}
             >
               {t('Currently Viewing')}
             </Typography>

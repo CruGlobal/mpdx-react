@@ -12,8 +12,6 @@ import {
 import { Trans, useTranslation } from 'react-i18next';
 import { ProgressiveApprovalTierReasonEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import theme from 'src/theme';
-import { progressiveApprovalsLink } from '../../AdditionalSalaryRequest/Shared/pdfLinks';
 import { useCaps } from '../SalaryCalculation/useCaps';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { useFormatters } from '../Shared/useFormatters';
@@ -78,17 +76,8 @@ export const ReceiptStep: React.FC = () => {
               needs to be signed off by the{' '}
               {{ approver: progressiveApprovalTier.approver }}. This may affect
               your selected effective date. We will review your request through
-              our{' '}
-              <NextLink
-                href={progressiveApprovalsLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ display: 'inline', color: theme.palette.primary.main }}
-              >
-                Progressive Approvals
-              </NextLink>{' '}
-              process and notify you of any changes to the status of this
-              request.
+              our Progressive Approvals process and notify you of any changes to
+              the status of this request.
             </Trans>
           )}
         </Typography>

@@ -98,13 +98,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 
   const { data, loading } = useReportsStaffExpensesQuery({
     variables: {
-      fundTypes: [
-        'Primary',
-        'Savings',
-        'Staff Conference Savings',
-        'Return Travel',
-        'Re-Entry',
-      ],
+      fundTypes: ['Primary', 'Savings', 'Staff Conference Savings'],
       ...getStaffExpenseMonthRange(filters, time),
     },
   });
@@ -246,11 +240,6 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     return null;
   }, [filters, locale, t]);
 
-  const overallBalance = useMemo(
-    () => allFunds.reduce((sum, fund) => sum + (fund.endBalance ?? 0), 0),
-    [allFunds],
-  );
-
   return (
     <Box>
       <SimpleScreenOnly>
@@ -300,13 +289,9 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               ) : null}
             </StyledHeaderBox>
             {loading ? (
-              <AccountInfoBoxSkeleton hasOverallBalance />
+              <AccountInfoBoxSkeleton />
             ) : (
-              <AccountInfoBox
-                name={name}
-                accountId={id}
-                overallBalance={overallBalance}
-              />
+              <AccountInfoBox name={name} accountId={id} />
             )}
             <SimpleScreenOnly>
               <Box

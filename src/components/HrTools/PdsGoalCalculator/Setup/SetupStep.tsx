@@ -17,10 +17,6 @@ import {
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import {
-  CurrencyAdornment,
-  PercentageAdornment,
-} from 'src/components/HrTools/Shared/Adornments';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   DesignationSupportFormType,
@@ -30,6 +26,10 @@ import {
 import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { useLocale } from 'src/hooks/useLocale';
 import { percentageFormat } from 'src/lib/intlFormat';
+import {
+  CurrencyAdornment,
+  PercentageAdornment,
+} from '../../GoalCalculator/Shared/Adornments';
 import { AutosaveTextField } from '../Shared/Autosave/AutosaveTextField';
 import { useSaveField } from '../Shared/Autosave/useSaveField';
 import { usePdsGoalCalculator } from '../Shared/PdsGoalCalculatorContext';

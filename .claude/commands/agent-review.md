@@ -128,97 +128,78 @@ done < /tmp/changed_files.txt
 
 Read `CLAUDE.md` to understand the project's coding standards and conventions. This context will be shared with all agents.
 
-### Calculate Risk Score
+### Build the Review Plan (config engine)
 
-Now calculate the risk score with improved algorithm:
+Risk scoring, agent selection, special-pattern detection, and rule resolution are now driven
+by the declarative review core (`.claude/review/config.yml`). Run the engine against the diff
+manifest gathered above (note **`yarn node`** — plain `node` cannot resolve deps under Yarn PnP):
 
-**Process:**
+```bash
+REVIEW_DIR=".claude/review"
+yarn node "$REVIEW_DIR/engine/plan.cjs" \
+  --config "$REVIEW_DIR/config.yml" \
+  --schema "$REVIEW_DIR/config.schema.json" \
+  --files /tmp/changed_files.txt \
+  --stat /tmp/diff_stat.txt \
+  --diff /tmp/pr_diff.txt \
+  --scope "${REVIEW_SCOPE:-single_feature}" \
+  > /tmp/review_plan.json
+cat /tmp/review_plan.json
+```
 
-1. Read the list of changed files from `/tmp/changed_files.txt`
-2. Count lines changed from `/tmp/diff_stat.txt`
-3. Apply the risk scoring algorithm:
+`REVIEW_SCOPE` is the heuristic scope the model sets based on the change footprint (default
+`single_feature`; use `cross_cutting` for changes spanning unrelated feature areas or core
+infrastructure). The plan JSON has this shape:
 
-**Critical File Patterns (+4 points each):**
+```json
+{
+  "profile": "standard",
+  "risk": {
+    "score": 0,
+    "level": "LOW",
+    "reviewer": "...",
+    "factors": { "patternScore": 0, "volumeScore": 0, "specialScore": 0, "scopeMultiplier": 1.0, "subtotal": 0 },
+    "special": ["..."]
+  },
+  "agents": [
+    { "id": "standards", "model": "smart", "matchedBy": "always", "rules": ["rules/standards.md"] }
+  ]
+}
+```
 
-- `pages/api/auth/[...nextauth].page.ts`
-- `pages/api/auth/helpers.ts`
-- `pages/api/auth/impersonate/`
-- `pages/api/graphql-rest.page.ts`
-- `pages/api/Schema/index.ts`
-- `src/lib/apollo/client.ts`
-- `src/lib/apollo/link.ts`
-- `src/lib/apollo/cache.ts`
-- `next.config.ts`
-- `.env` files
-- Database migrations
-- Payment processing code
+### Risk Assessment
 
-**High-Risk Patterns (+3 points each):**
-
-- `pages/api/Schema/**/resolvers.ts`
-- `**/*.graphql` (excluding tests)
-- Financial/donation code (`**/Donation**`, `**/Pledge**`, `**/Gift**`)
-- Organization management
-- Shared components (`src/components/Shared/**`)
-- Authentication flows
-- Data synchronization code
-
-**Medium-Risk (+2 points each):**
-
-- Main app pages
-- Custom hooks
-- Utility functions with business logic
-- Report generation
-- Export/import features
-
-**Low-Risk (+1 point each):**
-
-- UI-only components
-- Styling changes
-- Test files
-- Documentation
-
-**Change Volume Multiplier:**
-
-- <50 lines: +0
-- 50-200 lines: +1
-- 200-500 lines: +2
-- 500-1000 lines: +3
-- 1000+ lines: +4
-
-**Scope Multiplier:**
-
-- Single file: 1.0x
-- Single feature area: 1.0x
-- Multiple related features: 1.3x
-- Cross-cutting changes: 1.7x
-- Core infrastructure: 2.0x
-
-**Final Risk Level Classification:**
+Read `risk.score`, `risk.level`, `risk.reviewer`, and `risk.special` from `/tmp/review_plan.json`
+(do NOT compute the score inline — the engine is the single source of truth). The classification
+the engine applies is:
 
 - 0-3 points: **LOW** → Entry-level+ can review
 - 4-6 points: **MEDIUM** → Entry-level+ can review
 - 7-9 points: **HIGH** → Experienced dev+ should review
 - 10+ points: **CRITICAL** → Senior dev (Caleb Cox) must review
 
-Calculate and display the summary:
+`risk.special[]` lists any special patterns that fired (e.g. `new_dependency`,
+`critical_pkg_update`, `lockfile_only_change`, `graphql_without_codegen_check`,
+`next_config_security_change`, `apollo_cache_typepolicy_change`) — surface these as risk factors.
+
+Calculate the day-of-week warning and display the summary:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📊 PR RISK ASSESSMENT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Risk Score: [X]/[max]
-Risk Level: [LOW | MEDIUM | HIGH | CRITICAL]
+Risk Score: [risk.score]            ← from /tmp/review_plan.json
+Risk Level: [risk.level]            ← from /tmp/review_plan.json (LOW | MEDIUM | HIGH | CRITICAL)
 Day: [DAY_OF_WEEK]
 
 Files Changed: [N]
 Lines Changed: +[X] -[Y]
 
 Risk Factors Detected:
-• [List specific risk factors found]
+• [List risk.special[] entries from /tmp/review_plan.json, plus factor highlights]
 
-Required Reviewer Level:
+Required Reviewer: [risk.reviewer]  ← from /tmp/review_plan.json
 [LOW/MEDIUM]: ✅ Entry-level or above can review
 [HIGH]: ⚠️ Experienced developer or above should review
 [CRITICAL]: 🚨 Senior developer (Caleb Cox) must review
@@ -232,90 +213,40 @@ Required Reviewer Level:
 
 ---
 
-## Stage 0B — Smart Agent Selection (Standard Mode Only)
+## Stage 0B — Agent Selection (from the config engine)
 
-If `AGENT_MODE="standard"`, analyze which agents are actually needed:
+The set of agents to launch is determined by the engine, not by hardcoded `grep` checks. In
+`standard` mode, read the `agents[]` array from `/tmp/review_plan.json` — that list **is** the set
+of agents to launch. Each entry has:
+
+- `id` — the agent identifier (`security`, `architecture`, `data-integrity`, `testing`, `ux`,
+  `financial`, `standards`)
+- `model` — the model to use (`smart` | `opus` | `sonnet` | `haiku`)
+- `matchedBy` — why the agent was selected (`always`, `path:<glob>`, or `content:<substring>`)
+- `rules` — the rule docs (relative to `.claude/review/`) to load into that agent's prompt
+
+`deep` mode launches all 7 agents; `quick` mode launches a fixed subset (Testing, UX, Standards).
+
+Announce the selection, including each agent's `matchedBy` reason:
 
 ```bash
 if [ "$AGENT_MODE" = "standard" ]; then
-  echo "🤖 Analyzing PR to select relevant agents..."
+  echo "🤖 Agents selected by the config engine:"
   echo ""
-
-  # Initialize agent list
-  SELECTED_AGENTS=()
-
-  # Always include these
-  SELECTED_AGENTS+=("Architecture" "Testing" "Standards")
-  echo "✅ Architecture Agent - Always included"
-  echo "✅ Testing Agent - Always included"
-  echo "✅ Standards Agent - Always included"
-
-  # Security Agent - if auth/API code changed
-  if grep -q -E "(pages/api/auth|session|jwt|impersonate|authentication)" /tmp/changed_files.txt 2>/dev/null; then
-    SELECTED_AGENTS+=("Security")
-    echo "✅ Security Agent - Auth/API code detected"
-    SECURITY_NEEDED=true
-  else
-    echo "❌ Security Agent - No auth/API changes (saved ~\$1.50)"
-    SECURITY_NEEDED=false
-  fi
-
-  # Data Integrity Agent - if GraphQL or Apollo changes
-  if grep -q -E "(\.graphql|apollo|src/lib/apollo)" /tmp/changed_files.txt 2>/dev/null; then
-    SELECTED_AGENTS+=("Data")
-    echo "✅ Data Integrity Agent - GraphQL/Apollo changes detected"
-    DATA_NEEDED=true
-  else
-    echo "❌ Data Integrity Agent - No GraphQL changes (saved ~\$1.00)"
-    DATA_NEEDED=false
-  fi
-
-  # UX Agent - if UI components changed
-  if grep -q -E "(\.tsx|components/.*\.tsx)" /tmp/changed_files.txt 2>/dev/null; then
-    SELECTED_AGENTS+=("UX")
-    echo "✅ UX Agent - UI components modified"
-    UX_NEEDED=true
-  else
-    echo "❌ UX Agent - No UI changes (saved ~\$1.00)"
-    UX_NEEDED=false
-  fi
-
-  # Financial Agent - if financial code changed
-  if grep -q -iE "(donation|pledge|gift|amount|currency|balance|financial)" /tmp/pr_diff.txt 2>/dev/null; then
-    SELECTED_AGENTS+=("Financial")
-    echo "✅ Financial Agent - Financial code detected"
-    FINANCIAL_NEEDED=true
-  else
-    echo "❌ Financial Agent - No financial code (saved ~\$1.50)"
-    FINANCIAL_NEEDED=false
-  fi
-
-  echo ""
-  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  echo "Selected: ${#SELECTED_AGENTS[@]} of 7 agents"
-  SAVED_COST=$(( (7 - ${#SELECTED_AGENTS[@]}) * 1 ))
-  echo "Estimated savings: ~\$$SAVED_COST"
-  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  echo ""
-
-  # Save for later stages
-  echo "${SELECTED_AGENTS[@]}" > /tmp/selected_agents.txt
+  # Each agent in /tmp/review_plan.json's agents[] is launched in Stage 1.
+  # Announce id + matchedBy reason for each (e.g. "✅ ux — path:src/components/**/*.tsx").
 elif [ "$AGENT_MODE" = "quick" ]; then
-  # Quick mode: only 3 agents
+  # Quick mode: fixed subset, ignore engine selection
   echo "Testing UX Standards" > /tmp/selected_agents.txt
-  SECURITY_NEEDED=false
-  DATA_NEEDED=false
-  UX_NEEDED=true
-  FINANCIAL_NEEDED=false
 elif [ "$AGENT_MODE" = "deep" ]; then
-  # Deep mode: all 7 agents
+  # Deep mode: all 7 agents regardless of triggers
   echo "Security Architecture Data Testing UX Financial Standards" > /tmp/selected_agents.txt
-  SECURITY_NEEDED=true
-  DATA_NEEDED=true
-  UX_NEEDED=true
-  FINANCIAL_NEEDED=true
 fi
 ```
+
+In `standard` mode, do not assemble `SELECTED_AGENTS` or `*_NEEDED` flags by hand — the engine's
+`agents[]` is authoritative. Launch exactly the agents it lists (mapping `id` → the matching
+Stage 1 agent prompt).
 
 ---
 
@@ -325,17 +256,48 @@ Now launch the selected review agents in parallel using the Task tool.
 
 **IMPORTANT:** Use a SINGLE message with multiple Task tool invocations to run them in parallel.
 
-Read `/tmp/selected_agents.txt` to determine which agents to launch.
+In `standard` mode, the agents to launch come from `/tmp/review_plan.json`'s `agents[]` array (see
+Stage 0B). In `quick`/`deep` mode, use the fixed list written to `/tmp/selected_agents.txt`. Map
+each engine `id` to the matching agent prompt below:
+
+- `security` → Agent 1 (Security)
+- `architecture` → Agent 2 (Architecture)
+- `data-integrity` → Agent 3 (Data Integrity)
+- `testing` → Agent 4 (Testing & Quality)
+- `ux` → Agent 5 (UX)
+- `financial` → Agent 6 (Financial Accuracy)
+- `standards` → Agent 7 (MPDX Standards Compliance)
 
 Display: "🚀 Launching [N] specialized review agents in parallel..."
 
-**Note**: Only launch agents that are needed based on the mode and smart selection. Check the variables:
+**Wire rules + profile into each agent prompt:**
 
-- `$SECURITY_NEEDED` - Launch Security Agent if true
-- `$DATA_NEEDED` - Launch Data Integrity Agent if true
-- `$UX_NEEDED` - Launch UX Agent if true
-- `$FINANCIAL_NEEDED` - Launch Financial Agent if true
-- Always launch: Architecture, Testing, Standards (in all modes except quick which uses Testing, UX, Standards)
+1. **Rules** — For each agent, read every rule doc listed in its `rules[]` (paths are relative to
+   `.claude/review/`, e.g. `.claude/review/rules/security.md`) and inject the full contents into
+   that agent's prompt under a `PROJECT-SPECIFIC RULES` section. These prose docs hold the MPDX
+   focus areas migrated from `code-review.md` and are authoritative for what the agent checks.
+2. **Profile** — Apply the plan's `profile` (from `/tmp/review_plan.json`) to every agent prompt:
+   - `chill` → "Report only high-confidence, severity ≥ 7 findings; suppress nits."
+   - `standard` → current behavior (report all severities per the agent's output format).
+   - `assertive` → "Report all findings including low-severity suggestions."
+
+Use the agent's `model` field from the plan when launching (falling back to the mode default).
+
+**Inject approved learnings (learning layer):** Before launching agents, fetch any approved `rule`
+learnings so they can be added to the matching agents' prompts (gated on the learning layer being
+enabled in config):
+
+```bash
+REVIEW_DIR=".claude/review"
+if [ "$(yarn node "$REVIEW_DIR/cli.cjs" config get learning.enabled 2>/dev/null)" = "true" ]; then
+  yarn node "$REVIEW_DIR/engine/learningsStore.cjs" --rules > /tmp/review_rules.json 2>/dev/null || echo "[]" > /tmp/review_rules.json
+fi
+```
+
+For each entry in `/tmp/review_rules.json` (`{ paths, ruleText, agent }`), inject `ruleText` into
+the prompt of the matching agent (the agent named by `agent`, for files under `paths`) using the
+same mechanism as `path_rules` — append it under that agent's `PROJECT-SPECIFIC RULES` section.
+These are repository-specific learnings ratified by a human from prior review feedback.
 
 ### Agent 1: Security Review 🔒
 
@@ -499,6 +461,8 @@ INSTRUCTIONS:
 2. Read FULL content of changed files for context
 3. Read CLAUDE.md for project patterns
 4. Search for usage patterns of modified components/functions
+5. Read /tmp/review_impact.json (if present) for `directDependents`/`topImpacted`.
+   This change affects these dependent files — verify the change does not break them.
 
 CRITICAL FOCUS:
 
@@ -611,6 +575,8 @@ INSTRUCTIONS:
 2. Read FULL files for data flow context
 3. Search for related GraphQL operations
 4. Check for financial calculation changes
+5. Read /tmp/review_impact.json (if present) for `directDependents`/`topImpacted`.
+   This change affects these dependent files — verify the change does not break them.
 
 CRITICAL FOCUS:
 
@@ -1216,50 +1182,47 @@ After launching selected agents, display:
 
 ## Stage 1B — Dependency Impact Analysis (Parallel)
 
-While agents are running, analyze dependency impact in parallel:
+While agents are running, analyze dependency impact in parallel using the index engine
+(the persisted import graph), not grep. This is gated on the index being enabled in
+`config.yml`. Use **`yarn node`** (plain `node` cannot resolve under Yarn PnP):
 
 ```bash
-echo "🔍 Analyzing dependency impact..."
+echo "🔍 Analyzing dependency impact (index engine)..."
 echo ""
 
-# For each changed TypeScript/TSX file, find dependents
-while IFS= read -r changed_file; do
-  # Skip non-code files
-  [[ ! "$changed_file" =~ \.(ts|tsx|js|jsx)$ ]] && continue
-
-  # Extract filename without extension
-  filename=$(basename "$changed_file" | sed 's/\.[^.]*$//')
-
-  # Search for imports of this file
-  grep -r "from.*['\"].*$filename['\"]" src/ \
-    --include="*.ts" --include="*.tsx" \
-    2>/dev/null | cut -d: -f1 | sort -u > "/tmp/dependents_${filename}.txt"
-
-  dependent_count=$(wc -l < "/tmp/dependents_${filename}.txt" 2>/dev/null || echo 0)
-
-  if [ "$dependent_count" -gt 15 ]; then
-    echo "🚨 CRITICAL IMPACT: $changed_file has $dependent_count dependents" | tee -a /tmp/dependency_impact.txt
-  elif [ "$dependent_count" -gt 10 ]; then
-    echo "⚠️  HIGH IMPACT: $changed_file has $dependent_count dependents" | tee -a /tmp/dependency_impact.txt
-  elif [ "$dependent_count" -gt 5 ]; then
-    echo "📊 MEDIUM IMPACT: $changed_file has $dependent_count dependents" | tee -a /tmp/dependency_impact.txt
-  fi
-done < /tmp/changed_files.txt
-
-echo "" | tee -a /tmp/dependency_impact.txt
-
-# Check for breaking changes (removed exports)
-echo "Checking for breaking changes..." | tee -a /tmp/dependency_impact.txt
-git diff $BASE_REF..$HEAD_REF 2>/dev/null | grep "^-export" | grep -v "^---" > /tmp/breaking_changes.txt 2>/dev/null || true
-
-if [ -s /tmp/breaking_changes.txt ]; then
-  echo "⚠️  BREAKING CHANGES DETECTED:" | tee -a /tmp/dependency_impact.txt
-  cat /tmp/breaking_changes.txt | tee -a /tmp/dependency_impact.txt
+REVIEW_DIR=".claude/review"
+if [ "$(yarn node "$REVIEW_DIR/cli.cjs" config get index.enabled 2>/dev/null)" = "true" ]; then
+  yarn node "$REVIEW_DIR/engine/impact.cjs" \
+    --root "$(pwd)" \
+    --index "$REVIEW_DIR/index" \
+    --changed /tmp/changed_files.txt \
+    > /tmp/review_impact.json
+  cat /tmp/review_impact.json
+else
+  echo "ℹ️  Index disabled in config.yml — skipping impact analysis."
 fi
 
+echo ""
 echo "✅ Dependency analysis complete"
 echo ""
-````
+```
+
+`impact.cjs` builds (or reuses the HEAD-keyed cache of) the import graph and emits a JSON
+report on stdout with these fields:
+
+- `directDependents` — `{ [changedFile]: string[] }`, the immediate importers of each changed file
+- `transitiveDependents` — flat list of all files transitively reachable as dependents (blast radius set)
+- `blastRadius` — count of `transitiveDependents`
+- `topImpacted` — `[{ file, dependentCount }]` sorted by direct-dependent count (highest impact first)
+- `truncated` — `true` if the `maxNodes` traversal cap was hit
+
+**Display** the `blastRadius` and `topImpacted` files to the user as the dependency-impact
+summary (highest-impact changed files first; flag `truncated` if set).
+
+**Feed dependents into the Architecture and Data Integrity agents** (Stage 1): when launching
+those two agents, append the affected `directDependents` / `topImpacted` files from
+`/tmp/review_impact.json` to their prompts with the instruction: "This change affects these
+dependent files — verify the change does not break them."
 
 ---
 
@@ -1317,13 +1280,27 @@ if [ "$FIX_COUNT" -gt 0 ]; then
   echo "" | tee -a /tmp/fix_summary.txt
   cat /tmp/fix_summary.txt
 
-  # Create master apply script
+  # Create master apply script.
+  # SECURITY: these fix_*.sh scripts are MODEL-GENERATED from (attacker-influenceable) PR content
+  # and are UNTRUSTED. apply_all.sh therefore DRY-RUNS by default — it prints each fix for human
+  # review and applies nothing unless explicitly re-run with `--yes`.
   cat > /tmp/automated_fixes/apply_all.sh << 'EOF'
 #!/bin/bash
+set -euo pipefail
+# fix_*.sh are model-generated from PR content and UNTRUSTED — review each before applying.
+if [ "${1:-}" != "--yes" ]; then
+  echo "DRY RUN — review each fix, then re-run with --yes to apply. Nothing applied yet."
+  for fix in /tmp/automated_fixes/fix_*.sh; do
+    [ -f "$fix" ] || continue
+    echo ""; echo "===== $(basename "$fix") ====="; cat "$fix"
+  done
+  echo ""; echo "To apply after review:  bash /tmp/automated_fixes/apply_all.sh --yes"
+  exit 0
+fi
 echo "Applying all automated fixes..."
 for fix in /tmp/automated_fixes/fix_*.sh; do
   if [ -f "$fix" ]; then
-    echo "Applying: $(basename $fix)"
+    echo "Applying: $(basename "$fix")"
     bash "$fix"
   fi
 done
@@ -1519,6 +1496,13 @@ Now analyze all findings, debates, and final severity scores to build consensus.
 - **Average 3-5, 1-2 agents**: SUGGESTION
 - **Unresolved Debate** (agents couldn't agree, severity differs by 4+): NEEDS HUMAN REVIEW
 
+**Profile-scaled reporting cutoff** (from `/tmp/review_plan.json`'s `profile`): apply the same
+floor the agents used so consensus output stays consistent with what was collected:
+
+- `chill` → only surface consensus findings with average severity ≥ 7; drop MEDIUM/SUGGESTION tiers.
+- `standard` → report all tiers above (default).
+- `assertive` → report all tiers, including low-severity suggestions, and do not collapse them.
+
 For each grouped finding, determine:
 
 - Final severity: Average of all agent severity scores
@@ -1685,6 +1669,22 @@ echo ""
 ---
 
 ## Stage 6 — Generate Review Report
+
+**Capture consensus for the learning layer (gated on learning being enabled):** Write the consensus
+findings as a JSON array to `/tmp/consensus_findings.json` — each entry shaped
+`{ agent, category, severity, file, line, message }` — then emit them and apply approved learnings:
+
+```bash
+REVIEW_DIR=".claude/review"
+yarn node "$REVIEW_DIR/engine/learningsStore.cjs" --emit --in /tmp/consensus_findings.json --review "${REVIEW_ID:-local}"
+yarn node "$REVIEW_DIR/engine/learningsStore.cjs" --filter --in .claude/review/learnings/findings.json > /tmp/review_filtered.json
+```
+
+Report the `kept` findings from `/tmp/review_filtered.json` in the report below, and note the count
+of `suppressed` findings (suppressed by approved learnings). Tell the user they can mark outcomes in
+the emitted `pending/<reviewId>.yml` (set each finding's `outcome` to `accepted` or `dismissed`),
+then run `yarn review:feedback <that file>` and `yarn review:learn` to mine new proposed learnings.
+Leave `plan.cjs`, the index, agent selection, and the debate/consensus logic unchanged.
 
 Create the comprehensive review report in markdown format:
 

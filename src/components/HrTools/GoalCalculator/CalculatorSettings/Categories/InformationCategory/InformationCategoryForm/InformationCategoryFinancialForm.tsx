@@ -13,7 +13,7 @@ import { useGoalCalculator } from 'src/components/HrTools/GoalCalculator/Shared/
 import {
   CurrencyAdornment,
   PercentageAdornment,
-} from 'src/components/HrTools/Shared/Adornments';
+} from '../../../../Shared/Adornments';
 import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
 import { useSaveField } from '../../Autosave/useSaveField';
 import { Contribution403bHelperPanel } from '../InformationHelperPanel/Contribution403bHelperPanel';

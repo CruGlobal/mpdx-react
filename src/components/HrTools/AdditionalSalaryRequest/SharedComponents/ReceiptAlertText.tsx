@@ -4,8 +4,8 @@ import { Box, List, ListItemText } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { StyledListItem } from 'src/components/HrTools/SavingsFundTransfer/styledComponents/StyledListItem';
 import theme from 'src/theme';
-import { progressiveApprovalsLink } from '../Shared/pdfLinks';
 
+//TODO [MPDX-9303]: Add link for Progressive Approvals
 //TODO [MPDX-9303]: Get number of days for approval time frame
 
 interface BulletListProps {
@@ -38,9 +38,7 @@ export const ExceedsCapAlertText: React.FC = () => {
       Because your request exceeds your remaining allowable salary it requires
       additional review. We will review your request through{' '}
       <Link
-        href={progressiveApprovalsLink}
-        target="_blank"
-        rel="noopener noreferrer"
+        href="/"
         style={{ display: 'inline', color: theme.palette.primary.main }}
       >
         Progressive Approvals

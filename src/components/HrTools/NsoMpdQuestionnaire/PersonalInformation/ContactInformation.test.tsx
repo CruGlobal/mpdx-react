@@ -20,12 +20,6 @@ describe('ContactInformation', () => {
     ).toBeInTheDocument();
   });
 
-  it('marks the cell phone number field as required', () => {
-    const { getByRole } = render(<TestComponent />);
-
-    expect(getByRole('textbox', { name: 'Cell Phone Number' })).toBeRequired();
-  });
-
   it('strips disallowed characters as the user types', () => {
     const { getByRole } = render(<TestComponent />);
 

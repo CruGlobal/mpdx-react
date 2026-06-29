@@ -22,23 +22,3 @@ fragment ContactReferral on Referral {
     name
   }
 }
-
-mutation DeleteContactReferral(
-  $accountListId: ID!
-  $contactId: ID!
-  $referralId: ID!
-) {
-  updateContact(
-    input: {
-      accountListId: $accountListId
-      attributes: {
-        id: $contactId
-        contactReferralsByMe: [{ id: $referralId, destroy: true }]
-      }
-    }
-  ) {
-    contact {
-      id
-    }
-  }
-}

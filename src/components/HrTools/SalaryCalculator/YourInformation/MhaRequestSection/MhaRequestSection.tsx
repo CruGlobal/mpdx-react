@@ -228,6 +228,7 @@ export const MhaRequestSection: React.FC = () => {
                     label={t('New Requested {{kind}}', { kind: userKind })}
                     fieldName="mhaAmount"
                     schema={schema}
+                    required
                   />
                 )}
                 {showSpouseFields && (
@@ -235,6 +236,7 @@ export const MhaRequestSection: React.FC = () => {
                     label={t('New Requested {{kind}}', { kind: spouseKind })}
                     fieldName="spouseMhaAmount"
                     schema={schema}
+                    required
                   />
                 )}
               </SpouseLayout>

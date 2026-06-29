@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { Trans, useTranslation } from 'react-i18next';
 import theme from 'src/theme';
-import { progressiveApprovalsLink } from '../../Shared/pdfLinks';
 
 interface SpouseOverCapSubContentProps {
   spouseName: string;
@@ -18,9 +17,7 @@ export const SpouseOverCapSubContent: React.FC<
       to reduce the amount on {spouseName}&apos;s request, which may avoid
       requiring approval through our{' '}
       <Link
-        href={progressiveApprovalsLink}
-        target="_blank"
-        rel="noopener noreferrer"
+        href="/"
         style={{ display: 'inline', color: theme.palette.primary.main }}
       >
         Progressive Approvals

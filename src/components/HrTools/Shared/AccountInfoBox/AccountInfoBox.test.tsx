@@ -3,57 +3,29 @@ import { render } from '@testing-library/react';
 import { AccountInfoBox } from './AccountInfoBox';
 
 describe('AccountInfoBox', () => {
-  it('renders name, accountId, and overallBalance when provided', () => {
+  it('renders name and accountId when provided', () => {
     const { getByTestId } = render(
-      <AccountInfoBox
-        name="Test Name"
-        accountId="12345"
-        overallBalance={1000}
-      />,
+      <AccountInfoBox name="Test Name" accountId="12345" />,
     );
     expect(getByTestId('account-info')).toBeInTheDocument();
     expect(getByTestId('name')).toBeInTheDocument();
     expect(getByTestId('account-id')).toBeInTheDocument();
-    expect(getByTestId('InfoOutlinedIcon')).toBeInTheDocument();
-    expect(getByTestId('overall-balance')).toBeInTheDocument();
   });
 
-  it('renders empty strings when name, accountId, and overallBalance are not provided', () => {
-    const { getByTestId, queryByTestId } = render(<AccountInfoBox />);
+  it('renders empty strings when name and accountId are not provided', () => {
+    const { getByTestId } = render(<AccountInfoBox />);
     expect(getByTestId('name').textContent).toBe('');
-    expect(queryByTestId('account-id')).not.toBeInTheDocument();
-    expect(queryByTestId('InfoOutlinedIcon')).not.toBeInTheDocument();
-    expect(queryByTestId('overall-balance')).not.toBeInTheDocument();
+    expect(getByTestId('account-id').textContent).toBe('');
   });
 
-  it('displays only name when accountId and overallBalance are not provided', () => {
-    const { getByTestId, queryByTestId } = render(
-      <AccountInfoBox name="Only Name" />,
-    );
+  it('displays only name when accountId is not provided', () => {
+    const { getByTestId } = render(<AccountInfoBox name="Only Name" />);
     expect(getByTestId('name').textContent).toBe('Only Name');
-    expect(queryByTestId('account-id')).not.toBeInTheDocument();
-    expect(queryByTestId('InfoOutlinedIcon')).not.toBeInTheDocument();
+    expect(getByTestId('account-id').textContent).toBe('');
   });
 
-  it('renders only accountId when name and overallBalance are not provided', () => {
+  it('renders only accountId when name is not provided', () => {
     const { getByTestId } = render(<AccountInfoBox accountId="OnlyId" />);
     expect(getByTestId('account-id').textContent).toBe('OnlyId');
-    expect(getByTestId('InfoOutlinedIcon')).toBeInTheDocument();
-    expect(getByTestId('name').textContent).toBe('');
-  });
-
-  it('renders only overallBalance when name and accountId are not provided', () => {
-    const { getByTestId, queryByTestId } = render(
-      <AccountInfoBox overallBalance={1000} />,
-    );
-    expect(getByTestId('overall-balance').textContent).toBe('$1,000.00');
-    expect(getByTestId('name').textContent).toBe('');
-    expect(queryByTestId('account-id')).not.toBeInTheDocument();
-    expect(queryByTestId('InfoOutlinedIcon')).not.toBeInTheDocument();
-  });
-
-  it('renders zero overallBalance correctly', () => {
-    const { getByTestId } = render(<AccountInfoBox overallBalance={0} />);
-    expect(getByTestId('overall-balance').textContent).toBe('$0.00');
   });
 });

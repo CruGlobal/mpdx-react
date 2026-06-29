@@ -76,11 +76,6 @@ export function useHrToolsNavItems(): {
         title: t('Ministry Partner Reminders'),
         hideItem: hasNoStaffAccount,
       },
-      {
-        id: 'mpdSupervisorReport',
-        title: t('MPD Supervisor Report'),
-        hideItem: hasNoStaffAccount,
-      },
     ].filter((item) => developerBypass || !item.hideItem);
   }, [
     t,

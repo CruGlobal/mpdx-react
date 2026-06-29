@@ -9,10 +9,8 @@ import {
 } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import { DataGrid, GridColDef, GridSortModel } from '@mui/x-data-grid';
-import { TFunction } from 'i18next';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { CategoryBreakdownDialog } from '../CategoryBreakdownDialog/CategoryBreakdownDialog';
@@ -23,31 +21,24 @@ type RenderCell = GridColDef<StaffReportRow>['renderCell'];
 
 export interface StaffReportTableProps {
   transactions: (Transaction | GroupedTransaction)[];
-  tableType: ReportType.Income | ReportType.Expense;
+  tableType: ReportType;
   transferTotal: number;
   emptyPlaceholder: React.ReactElement;
   loading?: boolean;
 }
 
-const StyledGrid = styled(DataGrid, {
-  shouldForwardProp: (prop) => prop !== 'tableType',
-})<{ tableType: ReportType.Income | ReportType.Expense }>(
-  ({ theme, tableType }) => ({
-    '.MuiDataGrid-row:nth-of-type(2n + 1):not(:hover)': {
-      backgroundColor:
-        tableType === ReportType.Expense
-          ? theme.palette.chipRedLight.main
-          : theme.palette.mpdxGrayLight.main,
-    },
-    '.MuiDataGrid-cell': {
-      overflow: 'hidden',
-      whiteSpace: 'nowrap',
-      textOverflow: 'ellipsis',
-      display: 'flex',
-      alignItems: 'center',
-    },
-  }),
-);
+const StyledGrid = styled(DataGrid)(({ theme }) => ({
+  '.MuiDataGrid-row:nth-of-type(2n + 1):not(:hover)': {
+    backgroundColor: theme.palette.mpdxGrayLight.main,
+  },
+  '.MuiDataGrid-cell': {
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
+    display: 'flex',
+    alignItems: 'center',
+  },
+}));
 
 const LoadingBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mpdxGrayLight.main,
@@ -73,28 +64,15 @@ export interface StaffReportRow {
   groupedTransaction?: GroupedTransaction;
 }
 
-const descriptionName = (
-  transaction: Transaction | GroupedTransaction,
-  t: TFunction,
-): string => {
-  // Compare against the locale-invariant enum, not the localized
-  // displayCategory, so the relabel works in every locale.
-  if (transaction.category === StaffExpenseCategoryEnum.Donation) {
-    return t('Total Donations');
-  }
-  return transaction.displayCategory;
-};
-
 export const createStaffReportRow = (
   transaction: Transaction | GroupedTransaction,
   index: number,
-  t: TFunction,
 ): StaffReportRow => {
   const isGrouped = 'groupedTransactions' in transaction;
   return {
     id: index.toString(),
     date: DateTime.fromISO(transaction.transactedAt),
-    description: descriptionName(transaction, t),
+    description: transaction.displayCategory,
     amount: transaction.amount,
     isGrouped,
     groupedTransaction: isGrouped ? transaction : undefined,
@@ -148,10 +126,8 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
   };
 
   const staffReportRows = useMemo(() => {
-    return transactions.map((data, index) =>
-      createStaffReportRow(data, index, t),
-    );
-  }, [transactions, t]);
+    return transactions.map((data, index) => createStaffReportRow(data, index));
+  }, [transactions]);
 
   const date: RenderCell = ({ row }) => {
     return dateFormat(row.date, locale);
@@ -262,7 +238,6 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
         )}
       </Box>
       <StyledGrid
-        tableType={tableType}
         rows={rowsWithSortPriority || []}
         columns={columns}
         getRowId={(row) => row.id}
