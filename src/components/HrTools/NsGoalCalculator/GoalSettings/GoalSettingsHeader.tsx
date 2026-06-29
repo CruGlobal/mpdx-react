@@ -15,6 +15,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { GoalSettingsPlaceholder } from './Fields/GoalSettingsPlaceholder';
 import { GoalSettingsSelect } from './Fields/GoalSettingsSelect';
 import { GoalSettingsPerson } from './goalSettingsFormValues';
 import { GoalSettingsOptions } from './useGoalSettingsOptions';
@@ -53,9 +54,8 @@ const PersonInfoCard: React.FC<PersonInfoCardProps> = ({ person }) => {
       <Typography variant="subtitle1" fontWeight="medium">
         {person.firstName} {person.lastName}
       </Typography>
-      {/* FIXME: Show the person number */}
       <Typography variant="body2" color="text.secondary">
-        {t('Staff ID: {{id}}', { id: person.staffAccountId })}
+        {t('Person Number: {{number}}', { number: person.personNumber })}
       </Typography>
       <Stack spacing={0.75} sx={{ mt: 0.5 }}>
         <ContactLine icon={<MailOutline />}>{person.emailAddress}</ContactLine>
@@ -157,17 +157,17 @@ export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
         </Grid>
         <Grid item xs={12} md={4}>
           <Stack spacing={3}>
-            <GoalSettingsSelect
-              name="coach"
+            {/* TODO(MPDX-9764): Replace with a real Coach field once the API exposes it. */}
+            <GoalSettingsPlaceholder
               label={t('Coach')}
+              value={t('Amy Wilson')}
               showLabel
-              options={options.coach}
             />
-            <GoalSettingsSelect
-              name="coordinator"
+            {/* TODO(MPDX-9764): Replace with a real Coordinator field once the API exposes it. */}
+            <GoalSettingsPlaceholder
               label={t('Coordinator')}
+              value={t('Nancy Coleman')}
               showLabel
-              options={options.coordinator}
             />
           </Stack>
         </Grid>

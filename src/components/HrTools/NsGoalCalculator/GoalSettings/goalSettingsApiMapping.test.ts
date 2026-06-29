@@ -179,21 +179,8 @@ describe('formValuesToAttributes', () => {
 
     expect(attributes.annualRequestedSalary).toBeNull();
     expect(attributes.age).toBeNull();
-    expect(attributes.allowSalaryOverCap).toBeNull();
     expect(attributes.geographicLocation).toBeNull();
     expect(attributes.calculationsYear).toBeNull();
     expect(attributes.maritalStatus).toBeNull();
-  });
-
-  it('does not send UI-only fields that have no API counterpart', () => {
-    const attributes = formValuesToAttributes(coupleValues);
-
-    expect(attributes).not.toHaveProperty('dependents');
-    expect(attributes).not.toHaveProperty('coach');
-    expect(attributes).not.toHaveProperty('coordinator');
-    expect(attributes).not.toHaveProperty('nsoTraining');
-    expect(attributes).not.toHaveProperty('nsoIbsCost');
-    expect(attributes).not.toHaveProperty('leftToRaise');
-    expect(attributes).not.toHaveProperty('spouseMinistry');
   });
 });

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { GoalSettingsNumberField } from '../Fields/GoalSettingsNumberField';
+import { GoalSettingsPlaceholder } from '../Fields/GoalSettingsPlaceholder';
 import { GoalSettingsSelect } from '../Fields/GoalSettingsSelect';
 import { GoalSettingsTextField } from '../Fields/GoalSettingsTextField';
 import { ColumnHeaderRow, FieldRow, Section } from '../GoalSettingsLayout';
@@ -20,11 +21,13 @@ export const MinistryInformationSection: React.FC<GoalSettingsSectionProps> = ({
         <GoalSettingsTextField name="ministryLocation" label={t('Location')} />
       </FieldRow>
 
+      {/* TODO(MPDX-9764): No API field yet — placeholder value.
+          Replace with a real field bound to `ministryName` once the API
+          exposes the data. */}
       <FieldRow label={t('Ministry')}>
-        <GoalSettingsSelect
-          name="ministryName"
+        <GoalSettingsPlaceholder
           label={t('Ministry')}
-          options={options.ministry}
+          value={t('Campus: University')}
         />
       </FieldRow>
 

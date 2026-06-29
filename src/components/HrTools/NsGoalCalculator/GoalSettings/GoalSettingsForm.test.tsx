@@ -147,7 +147,9 @@ describe('GoalSettingsForm', () => {
     );
 
     expect(
-      await findByText('No goal calculation exists yet for this account.'),
+      await findByText(
+        'No new staff goal calculation exists for this account.',
+      ),
     ).toBeInTheDocument();
   });
 

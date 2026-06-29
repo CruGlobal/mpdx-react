@@ -10,10 +10,16 @@ const TestComponent: React.FC<{ initialValue?: 'true' | 'false' }> = ({
   initialValue = 'false',
 }) => (
   <ThemeProvider theme={theme}>
-    <Formik initialValues={{ flag: initialValue }} onSubmit={jest.fn()}>
+    <Formik
+      initialValues={{ healthcareExempt: initialValue }}
+      onSubmit={jest.fn()}
+    >
       {({ values }) => (
         <Form>
-          <GoalSettingsYesNoField name="flag" label="Healthcare Exempt" />
+          <GoalSettingsYesNoField
+            name="healthcareExempt"
+            label="Healthcare Exempt"
+          />
           <output data-testid="values">{JSON.stringify(values)}</output>
         </Form>
       )}
@@ -37,6 +43,8 @@ describe('GoalSettingsYesNoField', () => {
     userEvent.click(getByRole('option', { name: 'Yes' }));
 
     // Quoted value confirms the string is kept (coerced to boolean at submit).
-    expect(getByTestId('values')).toHaveTextContent('"flag":"true"');
+    expect(getByTestId('values')).toHaveTextContent(
+      '"healthcareExempt":"true"',
+    );
   });
 });

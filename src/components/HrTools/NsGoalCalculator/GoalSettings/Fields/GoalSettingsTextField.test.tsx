@@ -10,10 +10,13 @@ const TestComponent: React.FC<{ initialValue?: string }> = ({
   initialValue = '',
 }) => (
   <ThemeProvider theme={theme}>
-    <Formik initialValues={{ location: initialValue }} onSubmit={jest.fn()}>
+    <Formik
+      initialValues={{ geographicLocation: initialValue }}
+      onSubmit={jest.fn()}
+    >
       {({ values }) => (
         <Form>
-          <GoalSettingsTextField name="location" label="Location" />
+          <GoalSettingsTextField name="geographicLocation" label="Location" />
           <output data-testid="values">{JSON.stringify(values)}</output>
         </Form>
       )}
@@ -35,6 +38,8 @@ describe('GoalSettingsTextField', () => {
 
     userEvent.type(getByRole('textbox', { name: 'Location' }), 'Denver');
 
-    expect(getByTestId('values')).toHaveTextContent('"location":"Denver"');
+    expect(getByTestId('values')).toHaveTextContent(
+      '"geographicLocation":"Denver"',
+    );
   });
 });

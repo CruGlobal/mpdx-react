@@ -1,6 +1,6 @@
 /**
  * Conversions between the `NewStaffGoalCalculation` API shape and the Goal
- * Settings form values (MPDX-9764).
+ * Settings form values.
  *
  * Form keys already match API field names, so this module only handles
  * value-shape differences: Boolean <-> Yes/No strings, enum <-> "", "" <-> null,
@@ -21,27 +21,25 @@ import {
 const toYesNo = (value?: boolean | null): YesNo => (value ? 'true' : 'false');
 const toBoolean = (value: YesNo): boolean => value === 'true';
 const toNumberInput = (value?: number | null): number | '' => value ?? '';
-const toNumberOrNull = (value: number | ''): number | null =>
-  value === '' ? null : value;
+const toNumberOrNull = (value: number | ''): number | null => value || null;
 
 /** Optional enum dropdowns edit "" for "not set"; convert to/from null. */
 const toEnumInput = <T>(value?: T | null): T | '' => value ?? '';
-const toEnumOrNull = <T>(value: T | ''): T | null =>
-  value === '' ? null : value;
+const toEnumOrNull = <T>(value: T | ''): T | null => value || null;
 
 /** Maps a loaded calculation onto the form's initial values. */
 export const calculationToFormValues = (
   calc: NewStaffGoalCalculationFieldsFragment,
 ): GoalSettingsFormValues => ({
-  // UI-only fields with no API value keep their defaults.
+  // Start from blank defaults, then overlay the loaded API values.
   ...defaultGoalSettingsValues,
 
   calculationsYear:
-    calc.calculationsYear === null || calc.calculationsYear === undefined
-      ? ''
-      : String(calc.calculationsYear),
+    typeof calc.calculationsYear === 'number'
+      ? String(calc.calculationsYear)
+      : '',
 
-  maritalStatus: calc.maritalStatus ?? '',
+  maritalStatus: calc.maritalStatus,
   spouseJoining: toYesNo(calc.spouseJoining),
   age: toEnumInput(calc.age),
   spouseAge: toEnumInput(calc.spouseAge),
@@ -96,11 +94,6 @@ export const calculationToFormValues = (
  *
  * `hasSpouse` gates the spouse fields so a single person's save clears spouse
  * data rather than persisting stale values.
- *
- * Intentionally NOT sent — no API field (MPDX-9764): coach, coordinator,
- * dependents, nsoTraining, staffPerRoom, leftToRaise, and the spouse-only-in-UI
- * fields (spouseStaffConferenceTransfer, spouseAccountTransfers,
- * spouseAdvocacy).
  */
 export const formValuesToAttributes = (
   values: GoalSettingsFormValues,
@@ -109,9 +102,7 @@ export const formValuesToAttributes = (
     values.maritalStatus === NewStaffQuestionnaireMaritalStatusEnum.Married;
 
   return {
-    // Personal — marital status is household-level on the API.
-    maritalStatus: values.maritalStatus === '' ? null : values.maritalStatus,
-
+    maritalStatus: values.maritalStatus || null,
     spouseJoining: hasSpouse ? toBoolean(values.spouseJoining) : null,
     age: toEnumOrNull(values.age),
     spouseAge: hasSpouse ? toEnumOrNull(values.spouseAge) : null,
@@ -120,33 +111,26 @@ export const formValuesToAttributes = (
 
     // Financial
     annualRequestedSalary: toNumberOrNull(values.annualRequestedSalary),
-
     spouseRequestedAnnualSalary: hasSpouse
       ? toNumberOrNull(values.spouseRequestedAnnualSalary)
       : null,
-
     contribution403bPercentage: toNumberOrNull(
       values.contribution403bPercentage,
     ),
-
     spouseContribution403bPercentage: hasSpouse
       ? toNumberOrNull(values.spouseContribution403bPercentage)
       : null,
-
     mhaAmount: toNumberOrNull(values.mhaAmount),
     spouseMhaAmount: hasSpouse ? toNumberOrNull(values.spouseMhaAmount) : null,
 
     staffConferenceTransfer: toNumberOrNull(values.staffConferenceTransfer),
-
     accountTransfers: toNumberOrNull(values.accountTransfers),
     advocacyTransfers: toNumberOrNull(values.advocacyTransfers),
 
-    geographicLocation:
-      values.geographicLocation === '' ? null : values.geographicLocation,
+    geographicLocation: values.geographicLocation || null,
 
     studentLoanMonthlyPayment: toNumberOrNull(values.studentLoanMonthlyPayment),
     carLoanMonthlyPayment: toNumberOrNull(values.carLoanMonthlyPayment),
-
     creditCardDebtMonthlyPayment: toNumberOrNull(
       values.creditCardDebtMonthlyPayment,
     ),
@@ -154,38 +138,29 @@ export const formValuesToAttributes = (
     solidSupportRaised: toNumberOrNull(values.solidSupportRaised),
 
     // Healthcare
-    benefitsPlan: values.benefitsPlan === '' ? null : values.benefitsPlan,
-
+    benefitsPlan: values.benefitsPlan || null,
     reimbursableExpenses: toNumberOrNull(values.reimbursableExpenses),
     healthcareDependentsCount: toNumberOrNull(values.healthcareDependentsCount),
 
     // Ministry (spouse variants have no API field — dropped)
-    ministryName: values.ministryName === '' ? null : values.ministryName,
-
-    ministryLocation:
-      values.ministryLocation === '' ? null : values.ministryLocation,
-
-    assignmentType: values.assignmentType === '' ? null : values.assignmentType,
+    ministryName: values.ministryName || null,
+    ministryLocation: values.ministryLocation || null,
+    assignmentType: values.assignmentType || null,
     ministryExpenses: toNumberOrNull(values.ministryExpenses),
 
     // NSO
-    nsoHousing: values.nsoHousing === '' ? null : values.nsoHousing,
-
-    nsoSessions: values.nsoSessions === '' ? null : values.nsoSessions,
-
+    nsoHousing: values.nsoHousing || null,
+    nsoSessions: values.nsoSessions || null,
     nsoSpecialNeedsSupportReceived: toNumberOrNull(
       values.nsoSpecialNeedsSupportReceived,
     ),
-
     childcareChildrenCount: toNumberOrNull(values.childcareChildrenCount),
 
     // Exemptions
     healthcareExempt: toBoolean(values.healthcareExempt),
-
     spouseHealthcareExempt: hasSpouse
       ? toBoolean(values.spouseHealthcareExempt)
       : null,
-
     secaExempt: toBoolean(values.secaExempt),
     spouseSecaExempt: hasSpouse ? toBoolean(values.spouseSecaExempt) : null,
     allowSalaryOverCap: toEnumOrNull(values.allowSalaryOverCap),

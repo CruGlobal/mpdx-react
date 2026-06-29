@@ -15,11 +15,14 @@ const TestComponent: React.FC<{ initialValue?: string }> = ({
   initialValue = 'a',
 }) => (
   <ThemeProvider theme={theme}>
-    <Formik initialValues={{ ministry: initialValue }} onSubmit={jest.fn()}>
+    <Formik
+      initialValues={{ maritalStatus: initialValue }}
+      onSubmit={jest.fn()}
+    >
       {({ values }) => (
         <Form>
           <GoalSettingsSelect
-            name="ministry"
+            name="maritalStatus"
             label="Ministry"
             options={options}
           />
@@ -45,6 +48,6 @@ describe('GoalSettingsSelect', () => {
     userEvent.click(getByRole('combobox'));
     userEvent.click(getByRole('option', { name: 'Beta' }));
 
-    expect(getByTestId('values')).toHaveTextContent('"ministry":"b"');
+    expect(getByTestId('values')).toHaveTextContent('"maritalStatus":"b"');
   });
 });

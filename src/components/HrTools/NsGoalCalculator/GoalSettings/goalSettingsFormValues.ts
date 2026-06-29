@@ -1,5 +1,5 @@
 /**
- * Form-state types for the Goal Settings page (MPDX-9764).
+ * Form-state types for the Goal Settings page.
  *
  * Field keys match the `NewStaffGoalCalculation` API field names so the form
  * maps cleanly onto the `updateNewStaffGoalCalculation` mutation. Conversions
@@ -26,7 +26,7 @@ export type YesNo = 'true' | 'false';
 export interface GoalSettingsPerson {
   firstName: string;
   lastName: string;
-  staffAccountId: string;
+  personNumber: string;
   emailAddress: string;
   phoneNumber: string;
   address: string;
@@ -35,8 +35,6 @@ export interface GoalSettingsPerson {
 export interface GoalSettingsFormValues {
   // --- Header ---
   calculationsYear: string; // API Int, edited as a string for the Select
-  coach: string; // No API field — UI only (MPDX-9764)
-  coordinator: string; // No API field — UI only (MPDX-9764)
 
   // --- 1. Personal Information ---
   maritalStatus: NewStaffQuestionnaireMaritalStatusEnum | '';
@@ -45,7 +43,6 @@ export interface GoalSettingsFormValues {
   spouseAge: GoalCalculationAge | '';
   tenure: number | '';
   spouseTenure: number | '';
-  dependents: number | ''; // No API field — UI only (MPDX-9764)
 
   // --- 2. Financial Information ---
   annualRequestedSalary: number | '';
@@ -55,14 +52,8 @@ export interface GoalSettingsFormValues {
   mhaAmount: number | '';
   spouseMhaAmount: number | '';
   staffConferenceTransfer: number | '';
-  // FIXME: Remove this
-  spouseStaffConferenceTransfer: number | ''; // No API field — UI only (MPDX-9764)
   accountTransfers: number | '';
-  // FIXME: Remove this
-  spouseAccountTransfers: number | ''; // No API field — UI only (MPDX-9764)
   advocacyTransfers: number | '';
-  // FIXME: Remove this
-  spouseAdvocacy: number | ''; // No API field — UI only (MPDX-9764)
   // shared
   geographicLocation: string;
   studentLoanMonthlyPayment: number | '';
@@ -82,13 +73,10 @@ export interface GoalSettingsFormValues {
   ministryExpenses: number | '';
 
   // --- 5. NSO Information (shared) ---
-  nsoTraining: string; // No API field — UI only (MPDX-9764)
   nsoHousing: NewStaffQuestionnaireNsoHousingEnum | '';
-  staffPerRoom: number | ''; // No API field — UI only (MPDX-9764)
   nsoSessions: NewStaffQuestionnaireNsoSessionsEnum | '';
   childcareChildrenCount: number | '';
   nsoSpecialNeedsSupportReceived: number | '';
-  leftToRaise: number | ''; // No API field — UI only, computed (MPDX-9764)
 
   // --- 6. Exemptions & Exceptions ---
   healthcareExempt: YesNo;
@@ -102,8 +90,6 @@ export interface GoalSettingsFormValues {
 /** Blank form values, used as the base before merging in loaded API data. */
 export const defaultGoalSettingsValues: GoalSettingsFormValues = {
   calculationsYear: '',
-  coach: '',
-  coordinator: '',
 
   maritalStatus: '',
   spouseJoining: 'false',
@@ -111,7 +97,6 @@ export const defaultGoalSettingsValues: GoalSettingsFormValues = {
   spouseAge: '',
   tenure: '',
   spouseTenure: '',
-  dependents: '',
 
   annualRequestedSalary: '',
   spouseRequestedAnnualSalary: '',
@@ -120,11 +105,8 @@ export const defaultGoalSettingsValues: GoalSettingsFormValues = {
   mhaAmount: '',
   spouseMhaAmount: '',
   staffConferenceTransfer: '',
-  spouseStaffConferenceTransfer: '',
   accountTransfers: '',
-  spouseAccountTransfers: '',
   advocacyTransfers: '',
-  spouseAdvocacy: '',
   geographicLocation: '',
   studentLoanMonthlyPayment: '',
   carLoanMonthlyPayment: '',
@@ -140,13 +122,10 @@ export const defaultGoalSettingsValues: GoalSettingsFormValues = {
   assignmentType: '',
   ministryExpenses: '',
 
-  nsoTraining: '',
   nsoHousing: '',
-  staffPerRoom: '',
   nsoSessions: '',
   childcareChildrenCount: '',
   nsoSpecialNeedsSupportReceived: '',
-  leftToRaise: '',
 
   healthcareExempt: 'false',
   spouseHealthcareExempt: 'false',

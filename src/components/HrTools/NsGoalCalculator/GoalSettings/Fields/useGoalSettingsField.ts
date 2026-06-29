@@ -1,9 +1,10 @@
 import { TextFieldProps } from '@mui/material';
 import { useField } from 'formik';
+import { NewStaffGoalCalculationAttributesInput } from 'src/graphql/types.generated';
 
 export type GoalSettingsFieldBaseProps = Omit<TextFieldProps, 'name'> & {
   /** Formik field key. Required here even though MUI's `name` is optional. */
-  name: string;
+  name: keyof NewStaffGoalCalculationAttributesInput;
   /**
    * Appended to `label` to form the accessible name, e.g.
    * "Annual Requested Salary — John". Used for per-person columns.

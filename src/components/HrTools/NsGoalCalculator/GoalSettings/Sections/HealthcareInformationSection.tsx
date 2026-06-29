@@ -30,7 +30,10 @@ export const HealthcareInformationSection: React.FC<
         />
       </FieldRow>
 
-      <FieldRow label={t('Healthcare Dependents')}>
+      <FieldRow
+        label={t('Healthcare Dependents')}
+        helperText={t('If SOSA, can include spouse')}
+      >
         <GoalSettingsNumberField
           name="healthcareDependentsCount"
           label={t('Healthcare Dependents')}

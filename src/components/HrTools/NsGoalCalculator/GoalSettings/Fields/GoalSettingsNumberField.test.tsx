@@ -14,11 +14,14 @@ const TestComponent: React.FC<{
   initialValue?: number | '';
 }> = ({ fieldProps, initialValue = '' }) => (
   <ThemeProvider theme={theme}>
-    <Formik initialValues={{ amount: initialValue }} onSubmit={jest.fn()}>
+    <Formik
+      initialValues={{ annualRequestedSalary: initialValue }}
+      onSubmit={jest.fn()}
+    >
       {({ values }) => (
         <Form>
           <GoalSettingsNumberField
-            name="amount"
+            name="annualRequestedSalary"
             label="Amount"
             {...fieldProps}
           />
@@ -42,7 +45,9 @@ describe('GoalSettingsNumberField', () => {
     userEvent.type(getByRole('spinbutton', { name: 'Amount' }), '42');
 
     // Number, not the string "42" — Formik coerces via type="number".
-    expect(getByTestId('values')).toHaveTextContent('"amount":42');
+    expect(getByTestId('values')).toHaveTextContent(
+      '"annualRequestedSalary":42',
+    );
   });
 
   it('renders a currency adornment', () => {

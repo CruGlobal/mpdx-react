@@ -86,15 +86,6 @@ export const FinancialInformationSection: React.FC<
           adornment="currency"
           disabled
         />
-        {hasSpouse && (
-          <GoalSettingsNumberField
-            name="spouseStaffConferenceTransfer"
-            label={t('Staff Conference Transfer')}
-            personName={spouseName}
-            adornment="currency"
-            disabled
-          />
-        )}
       </FieldRow>
 
       <FieldRow label={t('Account Transfers')} helperText={seniorStaffOnly}>
@@ -105,17 +96,6 @@ export const FinancialInformationSection: React.FC<
           adornment="currency"
           disabled
         />
-        {hasSpouse && (
-          // No API field — UI only (MPDX-9764). Account transfers are
-          // household-level on the API.
-          <GoalSettingsNumberField
-            name="spouseAccountTransfers"
-            label={t('Account Transfers')}
-            personName={spouseName}
-            adornment="currency"
-            disabled
-          />
-        )}
       </FieldRow>
 
       <FieldRow label={t('Advocacy')} helperText={seniorStaffOnly}>

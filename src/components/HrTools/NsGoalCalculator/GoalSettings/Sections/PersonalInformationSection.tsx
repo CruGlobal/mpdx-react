@@ -72,14 +72,6 @@ export const PersonalInformationSection: React.FC<GoalSettingsSectionProps> = ({
           />
         )}
       </FieldRow>
-
-      {/* No API field — UI only (MPDX-9764). */}
-      <FieldRow
-        label={t('Dependents')}
-        helperText={t('If SOSA, can include spouse')}
-      >
-        <GoalSettingsNumberField name="dependents" label={t('Dependents')} />
-      </FieldRow>
     </Section>
   );
 };

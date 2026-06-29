@@ -1,5 +1,13 @@
 import React from 'react';
-import { Alert, Box, Button, Divider, Skeleton, Stack } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Button,
+  Divider,
+  Skeleton,
+  Stack,
+  styled,
+} from '@mui/material';
 import { Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
@@ -24,6 +32,30 @@ import {
 } from './goalSettingsFormValues';
 import { GoalSettingsSectionProps } from './goalSettingsSectionProps';
 import { useGoalSettingsOptions } from './useGoalSettingsOptions';
+
+/**
+ * Sticky save/cancel bar pinned to the bottom of the scroll area.
+ *
+ * MainContent (the scrolling ancestor) wraps this form in spacing(4) = 32px
+ * padding on every side. This bar breaks out of that padding so it spans the
+ * full width and sits flush against the scroll-area edges. Each side cancels the
+ * 32px:
+ *   marginX -4 + paddingX 4 -> full-bleed width, content stays inset
+ *   marginBottom -4         -> flush at the bottom once fully scrolled
+ *   bottom spacing(-4)      -> flush while the bar is still stuck
+ */
+const StickyActionBar = styled(Box)(({ theme }) => ({
+  position: 'sticky',
+  bottom: theme.spacing(-4),
+  zIndex: 1,
+  marginInline: theme.spacing(-4),
+  marginTop: theme.spacing(2),
+  marginBottom: theme.spacing(-4),
+  paddingInline: theme.spacing(4),
+  paddingBlock: theme.spacing(2),
+  backgroundColor: theme.palette.background.paper,
+  borderTop: `1px solid ${theme.palette.divider}`,
+}));
 
 interface GoalSettingsFormProps {
   accountListId: string;
@@ -67,7 +99,7 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = ({
   const primaryPerson: GoalSettingsPerson = {
     firstName: calculation.firstName ?? '',
     lastName: calculation.lastName ?? '',
-    staffAccountId: calculation.personNumber ?? '',
+    personNumber: calculation.personNumber ?? '',
     emailAddress: calculation.emailAddress ?? '',
     phoneNumber: calculation.phoneNumber ?? '',
     address: calculation.address ?? '',
@@ -76,7 +108,7 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = ({
     ? {
         firstName: calculation.spouseFirstName ?? '',
         lastName: calculation.lastName ?? '',
-        staffAccountId: calculation.spousePersonNumber ?? '',
+        personNumber: calculation.spousePersonNumber ?? '',
         emailAddress: calculation.spouseEmailAddress ?? '',
         phoneNumber: calculation.spousePhoneNumber ?? '',
         address: calculation.address ?? '',
@@ -148,30 +180,7 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = ({
             <NsoInformationSection {...sectionProps} />
             <ExemptionsSection {...sectionProps} />
 
-            {/* FIXME: Create a styled-component */}
-            <Box
-              sx={{
-                // MainContent (the scrolling ancestor) wraps this form in
-                // spacing(4) = 32px padding on every side. This sticky action
-                // bar breaks out of that padding so it spans the full width and
-                // sits flush against the scroll-area edges. Each side cancels
-                // the 32px:
-                //   mx: -4 + px: 4      -> full-bleed width, content stays inset
-                //   mb: -4              -> flush at the bottom once fully scrolled
-                //   bottom: spacing(-4) -> flush while the bar is still stuck
-                position: 'sticky',
-                bottom: (theme) => theme.spacing(-4),
-                zIndex: 1,
-                mt: 2,
-                mx: -4,
-                mb: -4,
-                px: 4,
-                py: 2,
-                backgroundColor: 'background.paper',
-                borderTop: 1,
-                borderColor: 'divider',
-              }}
-            >
+            <StickyActionBar>
               <Stack direction="row" spacing={2} justifyContent="flex-end">
                 <Button color="inherit" onClick={() => resetForm()}>
                   {t('Cancel')}
@@ -184,7 +193,7 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = ({
                   {t('Save & Share')}
                 </Button>
               </Stack>
-            </Box>
+            </StickyActionBar>
           </Form>
         );
       }}

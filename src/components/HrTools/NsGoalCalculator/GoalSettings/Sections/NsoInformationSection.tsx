@@ -1,6 +1,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
 import { GoalSettingsNumberField } from '../Fields/GoalSettingsNumberField';
+import { GoalSettingsPlaceholder } from '../Fields/GoalSettingsPlaceholder';
 import { GoalSettingsSelect } from '../Fields/GoalSettingsSelect';
 import { ColumnHeaderRow, FieldRow, Section } from '../GoalSettingsLayout';
 import { GoalSettingsSectionProps } from '../goalSettingsSectionProps';
@@ -10,17 +13,18 @@ export const NsoInformationSection: React.FC<GoalSettingsSectionProps> = ({
   options,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
 
   return (
     <Section title={t('NSO Information')}>
       <ColumnHeaderRow columns={[sharedHeader]} />
 
-      {/* No API field — UI only (MPDX-9764). */}
+      {/* TODO(MPDX-9764): Not editable — comes from the attendee's cohort.
+          Replace with the real cohort value once the API exposes it. */}
       <FieldRow label={t('Training')}>
-        <GoalSettingsSelect
-          name="nsoTraining"
+        <GoalSettingsPlaceholder
           label={t('Training')}
-          options={options.nsoTraining}
+          value={t('Fall NSO 2026')}
         />
       </FieldRow>
 
@@ -29,14 +33,6 @@ export const NsoInformationSection: React.FC<GoalSettingsSectionProps> = ({
           name="nsoHousing"
           label={t('Housing')}
           options={options.nsoHousing}
-        />
-      </FieldRow>
-
-      {/* No API field — UI only (MPDX-9764). */}
-      <FieldRow label={t('Staff Per Room')}>
-        <GoalSettingsNumberField
-          name="staffPerRoom"
-          label={t('Staff Per Room')}
         />
       </FieldRow>
 
@@ -63,13 +59,11 @@ export const NsoInformationSection: React.FC<GoalSettingsSectionProps> = ({
         />
       </FieldRow>
 
-      {/* No API field — UI only, computed (MPDX-9764). */}
+      {/* TODO(MPDX-9764): Computed value — wire up once the calc engine lands. */}
       <FieldRow label={t('Left to Raise')}>
-        <GoalSettingsNumberField
-          name="leftToRaise"
+        <GoalSettingsPlaceholder
           label={t('Left to Raise')}
-          adornment="currency"
-          disabled
+          value={currencyFormat(0, 'USD', locale)}
         />
       </FieldRow>
     </Section>
