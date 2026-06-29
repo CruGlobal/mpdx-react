@@ -1,0 +1,38 @@
+fragment NewStaffInformationFields on NewStaffQuestionnaire {
+  id
+  personNumber
+  firstName
+  lastName
+  spousePersonNumber
+  spouseFirstName
+  spouseJoining
+  maritalStatus
+  age
+  spouseAge
+  tenure
+  spouseTenure
+  address
+}
+
+fragment NewStaffQuestionnaireFields on NewStaffQuestionnaire {
+  id
+  phoneNumber
+  ministryName
+  ministryLocation
+  geographicLocation
+  assignmentType
+  nsoHousing
+  nsoSessions
+  nsoSpecialNeedsSupportReceived
+  childcareChildrenCount
+  studentLoanMonthlyPayment
+  carLoanMonthlyPayment
+  creditCardDebtMonthlyPayment
+}
+
+query NewStaffQuestionnaire($accountListId: ID!) {
+  newStaffQuestionnaire(accountListId: $accountListId) {
+    ...NewStaffInformationFields
+    ...NewStaffQuestionnaireFields
+  }
+}
