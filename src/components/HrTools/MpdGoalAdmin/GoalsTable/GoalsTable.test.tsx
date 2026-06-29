@@ -80,4 +80,37 @@ describe('GoalsTable', () => {
     expect(queryByText('Person 10')).not.toBeInTheDocument();
     expect(queryByText('Person 11')).not.toBeInTheDocument();
   });
+
+  it('returns to the first page when the row set shrinks below the current page', async () => {
+    const manyRows = Array.from({ length: 12 }, (_index, i) => ({
+      ...rows[0],
+      id: `page-row-${i}`,
+      name: `Person ${i}`,
+    }));
+    const { getByText, queryByText, rerender } = render(
+      <ThemeProvider theme={theme}>
+        <MpdGoalAdminProvider>
+          <Capture rows={manyRows} />
+        </MpdGoalAdminProvider>
+      </ThemeProvider>,
+    );
+    // Verify page 1 is rendered first.
+    expect(getByText('Person 9')).toBeInTheDocument();
+    // Advance to the next page via the pagination "next page" button.
+    await userEvent.click(
+      document.querySelector('[aria-label="Go to next page"]') as HTMLElement,
+    );
+    expect(getByText('Person 10')).toBeInTheDocument();
+
+    // Now shrink the data to a single row; the table must show page 1, not a blank page 2.
+    rerender(
+      <ThemeProvider theme={theme}>
+        <MpdGoalAdminProvider>
+          <Capture rows={[manyRows[0]]} />
+        </MpdGoalAdminProvider>
+      </ThemeProvider>,
+    );
+    expect(getByText('Person 0')).toBeInTheDocument();
+    expect(queryByText('Person 10')).not.toBeInTheDocument();
+  });
 });

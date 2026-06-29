@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import {
   Box,
@@ -32,6 +32,12 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
   const { selectedRowIds, toggleRow, toggleRows, openRow } = useMpdGoalAdmin();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  // Reset to the first page when the filtered row set changes, so a search
+  // that shrinks the results doesn't strand the user on an empty page.
+  useEffect(() => {
+    setPage(0);
+  }, [rows.length]);
 
   const pageRows = rows.slice(
     page * rowsPerPage,
