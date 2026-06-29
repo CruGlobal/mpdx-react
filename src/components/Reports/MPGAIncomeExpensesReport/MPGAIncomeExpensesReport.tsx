@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import PrintIcon from '@mui/icons-material/Print';
 import {
   Box,
@@ -20,9 +20,9 @@ import { useLocale } from 'src/hooks/useLocale';
 import { AccountInfoBox } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBox';
 import { AccountInfoBoxSkeleton } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBoxSkeleton';
 import {
-  getLocalizedCategory,
-  getLocalizedSubCategory,
-} from '../Shared/Helpers/transformStaffExpenseEnums';
+  Filters,
+  getFiltersWithCalculatedDates,
+} from '../StaffExpenseReport/SettingsDialog/SettingsDialog';
 import {
   SimplePrintOnly,
   SimpleScreenOnly,
@@ -51,14 +51,29 @@ export const MPGAIncomeExpensesReport: React.FC<
   const locale = useLocale();
   const currency = 'USD';
 
-  const handlePrint = () => {
-    window.print();
-  };
-
   const last12Months = useGetLastTwelveMonths(locale, true);
 
   const start = convertMonths(last12Months[0], locale);
-  const end = DateTime.now().toISODate();
+  const end = DateTime.now();
+
+  const startDate = DateTime.now().minus({ months: 11 }).startOf('month');
+
+  const [filters, setFilters] = useState<Filters>(() =>
+    getFiltersWithCalculatedDates({
+      selectedDateRange: null,
+      startDate: startDate,
+      endDate: end.endOf('month'),
+      categories: null,
+    }),
+  );
+
+  const onFiltersChange = (newFilters: Filters) => {
+    setFilters(newFilters);
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
 
   const { data: staffAccountData, error } = useStaffAccountQuery();
 
@@ -66,7 +81,7 @@ export const MPGAIncomeExpensesReport: React.FC<
     variables: {
       fundTypes: [FundTypes.Primary],
       startMonth: start,
-      endMonth: end,
+      endMonth: end.toISODate(),
     },
   });
 
@@ -76,13 +91,13 @@ export const MPGAIncomeExpensesReport: React.FC<
         ...fund,
         categories: (fund.categories ?? []).map((category) => ({
           ...category,
-          category: getLocalizedCategory(category.category, t),
+          category: category.category,
           breakdownByMonth: category.breakdownByMonth.map((month) => ({
             ...month,
           })),
           subcategories: (category.subcategories ?? []).map((subcategory) => ({
             ...subcategory,
-            subCategory: getLocalizedSubCategory(subcategory.subCategory, t),
+            subCategory: subcategory.subCategory,
             breakdownByMonth: subcategory.breakdownByMonth.map((month) => ({
               ...month,
             })),
@@ -92,7 +107,11 @@ export const MPGAIncomeExpensesReport: React.FC<
     [reportData],
   );
 
-  const { incomeData, expenseData } = useFilteredFunds(transformedData);
+  const { incomeData, expenseData } = useFilteredFunds(
+    transformedData,
+    filters?.categories ?? null,
+    t,
+  );
 
   const allData: AllData = useMemo(() => {
     return {
@@ -174,6 +193,8 @@ export const MPGAIncomeExpensesReport: React.FC<
               data={allData}
               last12Months={last12Months}
               currency={currency}
+              selectedFilters={filters}
+              onFiltersChange={onFiltersChange}
             />
           </TotalsProvider>
         </SimpleScreenOnly>

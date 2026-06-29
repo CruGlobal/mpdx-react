@@ -1,3 +1,8 @@
+import {
+  StaffExpenseCategoryEnum,
+  StaffExpensesSubCategoryEnum,
+} from 'src/graphql/types.generated';
+
 export enum ReportTypeEnum {
   Income = 'income',
   Expenses = 'expenses',
@@ -15,13 +20,13 @@ interface BreakdownByMonth {
 interface SubCategories {
   averagePerMonth: number;
   total: number;
-  subCategory: string;
+  subCategory: StaffExpensesSubCategoryEnum;
   breakdownByMonth: BreakdownByMonth[];
 }
 interface Categories {
   averagePerMonth: number;
   total: number;
-  category: string;
+  category: StaffExpenseCategoryEnum;
   subcategories: SubCategories[];
   breakdownByMonth: BreakdownByMonth[];
 }

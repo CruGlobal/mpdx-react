@@ -1,6 +1,11 @@
 import { useMemo } from 'react';
+import { TFunction } from 'react-i18next';
 import { Funds } from 'src/components/Reports/MPGAIncomeExpensesReport/Helper/MPGAReportEnum';
 import { DataFields } from '../components/Reports/MPGAIncomeExpensesReport/mockData';
+import {
+  getLocalizedCategory,
+  getLocalizedSubCategory,
+} from '../components/Reports/Shared/Helpers/transformStaffExpenseEnums';
 
 const average = (data: number[]) => {
   const total = data.reduce((acc, item) => acc + item, 0);
@@ -11,7 +16,11 @@ const sum = (data: number[]) => {
   return data.reduce((acc, item) => acc + item, 0);
 };
 
-export function useFilteredFunds(funds: Funds[]) {
+export function useFilteredFunds(
+  funds: Funds[],
+  selectedCategories: string[] | null,
+  t: TFunction,
+) {
   return useMemo(() => {
     const incomeData: DataFields[] = [];
     const expenseData: DataFields[] = [];
@@ -67,40 +76,80 @@ export function useFilteredFunds(funds: Funds[]) {
       const base = fund.fundType;
       fund.categories?.forEach((category) => {
         const baseId = `${base}-${category.category}`;
-        if (category.subcategories?.length) {
+        const isSelected =
+          selectedCategories === null ||
+          selectedCategories.includes(category.category);
+
+        if (category.subcategories?.length && !isSelected) {
+          // Unchecked category with subcategories: one row per subcategory
+          const categoryName = getLocalizedCategory(category.category, t);
           category.subcategories.forEach((subcategory) => {
+            const subcategoryName = getLocalizedSubCategory(
+              subcategory.subCategory,
+              t,
+            );
             const id = `${baseId}-${subcategory.subCategory}`;
             const description =
-              category.category === subcategory.subCategory
-                ? category.category
-                : `${category.category} - ${subcategory.subCategory}`;
+              categoryName === subcategoryName
+                ? categoryName
+                : `${categoryName} - ${subcategoryName}`;
             const monthly = subcategory.breakdownByMonth.map((month) =>
               Number(month.total.toFixed(2)),
             );
-            const average = subcategory.averagePerMonth;
-            const total = subcategory.total;
             pushData({
               id,
               description,
               monthly,
-              average,
-              total,
+              average: subcategory.averagePerMonth,
+              total: subcategory.total,
             });
           });
+        } else if (category.subcategories?.length) {
+          // Checked category with subcategories: combine its subcategories into one row
+          const monthCount = category.breakdownByMonth.length;
+          const incomeMonthly = new Array(monthCount).fill(0);
+          const expenseMonthly = new Array(monthCount).fill(0);
+
+          category.subcategories.forEach((subcategory) => {
+            subcategory.breakdownByMonth.forEach((month, index) => {
+              const value = Number((month.total ?? 0).toFixed(2));
+              if (value >= 0) {
+                incomeMonthly[index] += value;
+              } else {
+                expenseMonthly[index] += value;
+              }
+            });
+          });
+
+          if (incomeMonthly.some((amount) => amount !== 0)) {
+            pushData({
+              id: `${baseId}-income`,
+              description: getLocalizedCategory(category.category, t),
+              monthly: incomeMonthly,
+              average: average(incomeMonthly),
+              total: sum(incomeMonthly),
+            });
+          }
+          if (expenseMonthly.some((amount) => amount !== 0)) {
+            pushData({
+              id: `${baseId}-expense`,
+              description: getLocalizedCategory(category.category, t),
+              monthly: expenseMonthly,
+              average: average(expenseMonthly),
+              total: sum(expenseMonthly),
+            });
+          }
         } else {
-          const id = baseId;
-          const description = category.category;
+          // Checked or unchecked category with no subcategories: use the category-level rollup
           const monthly = category.breakdownByMonth.map((month) =>
             Number(month.total.toFixed(2)),
           );
-          const average = category.averagePerMonth;
-          const total = category.total;
           pushData({
-            id,
-            description,
+            id: baseId,
+            description: getLocalizedCategory(category.category, t),
             monthly,
-            average,
-            total,
+            average: category.averagePerMonth,
+            total: category.total,
           });
         }
       });
@@ -110,5 +159,5 @@ export function useFilteredFunds(funds: Funds[]) {
       incomeData,
       expenseData,
     };
-  }, [funds]);
+  }, [funds, selectedCategories, t]);
 }

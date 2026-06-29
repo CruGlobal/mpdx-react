@@ -26,6 +26,13 @@ const TestComponent: React.FC = () => (
             data={mockData}
             last12Months={months}
             currency={currency}
+            selectedFilters={{
+              selectedDateRange: null,
+              startDate: null,
+              endDate: null,
+              categories: null,
+            }}
+            onFiltersChange={() => {}}
           />
         </TotalsProvider>
       </GqlMockedProvider>
@@ -65,6 +72,13 @@ describe('ScreenOnlyReport', () => {
                 data={emptyData}
                 last12Months={months}
                 currency={currency}
+                selectedFilters={{
+                  selectedDateRange: null,
+                  startDate: null,
+                  endDate: null,
+                  categories: null,
+                }}
+                onFiltersChange={() => {}}
               />
             </TotalsProvider>
           </GqlMockedProvider>

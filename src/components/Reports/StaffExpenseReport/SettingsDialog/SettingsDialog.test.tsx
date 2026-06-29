@@ -21,6 +21,7 @@ const TestComponent: React.FC<
   selectedFundType,
   time,
   onCallMock,
+  showDateRange = false,
 }) => (
   <TestRouter>
     <GqlMockedProvider<{ ReportsStaffExpenses: ReportsStaffExpensesQuery }>
@@ -87,6 +88,7 @@ const TestComponent: React.FC<
           selectedFilters={selectedFilters}
           selectedFundType={selectedFundType}
           time={time}
+          showDateRange={showDateRange}
         />
       </LocalizationProvider>
     </GqlMockedProvider>
@@ -459,6 +461,34 @@ describe('SettingsDialog', () => {
         endMonth: '2020-01-31',
         fundTypes: ['Primary'],
       });
+    });
+  });
+
+  describe('MPGA report specific behavior', () => {
+    const defaultProps = {
+      isOpen: true,
+      onClose: mutationSpy,
+      selectedFundType: 'Primary',
+      showDateRange: true,
+    };
+
+    it('displays the category checkboxes only', async () => {
+      const { queryByLabelText, getByLabelText, findByLabelText, getByText } =
+        render(<TestComponent {...defaultProps} />);
+
+      expect(
+        getByText(
+          'Income and expenses are combined by categories by default. Select which categories to keep consolidated.',
+        ),
+      ).toBeInTheDocument();
+
+      expect(await findByLabelText('Benefits')).toBeInTheDocument();
+      expect(getByLabelText('Salary')).toBeInTheDocument();
+      expect(getByLabelText('Donation')).toBeInTheDocument();
+
+      expect(queryByLabelText('Select Date Range')).not.toBeInTheDocument();
+      expect(queryByLabelText('Start Date')).not.toBeInTheDocument();
+      expect(queryByLabelText('End Date')).not.toBeInTheDocument();
     });
   });
 });

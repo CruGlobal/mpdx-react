@@ -34,7 +34,7 @@ export interface SettingsDialogProps {
   selectedFundType: string | null;
   onClose: (filters?: Filters) => void;
   time?: DateTime;
-  isMpgaReport?: boolean;
+  showDateRange?: boolean;
 }
 
 export interface Filters {
@@ -128,7 +128,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   selectedFilters,
   selectedFundType,
   time,
-  isMpgaReport,
+  showDateRange,
 }) => {
   const { t } = useTranslation();
   const [previewFilters, setPreviewFilters] = useState<Filters | null>(null);
@@ -232,7 +232,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
           return (
             <Form>
               <DialogContent>
-                {!isMpgaReport && (
+                {!showDateRange && (
                   <>
                     <TextField
                       select
@@ -335,12 +335,14 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                 )}
 
                 <Typography
-                  sx={{ mt: isMpgaReport ? 0 : 2, whiteSpace: 'pre-line' }}
+                  sx={{ mt: showDateRange ? 0 : 2, whiteSpace: 'pre-line' }}
                 >
-                  {t(
-                    `Income and expenses are combined by categories by default. This may be useful for long date ranges (e.g., "Year to Date").
-                    Select which categories to keep consolidated.`,
-                  )}
+                  {showDateRange
+                    ? t(
+                        `Income and expenses are combined by categories by default. Select which categories to keep consolidated.`,
+                      )
+                    : t(`Income and expenses are combined by categories by default. This may be useful for long date ranges (e.g., "Year to Date").
+                    Select which categories to keep consolidated.`)}
                 </Typography>
 
                 <Typography sx={{ mt: 2, mb: 1 }}>

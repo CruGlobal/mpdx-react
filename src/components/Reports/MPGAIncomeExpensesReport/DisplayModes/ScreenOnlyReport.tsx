@@ -1,13 +1,11 @@
 import { useState } from 'react';
 import { HourglassDisabled, Settings } from '@mui/icons-material';
 import { Box, Container, Grid } from '@mui/material';
-import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { EmptyTable } from '../../../HrTools/Shared/EmptyTable/EmptyTable';
 import {
   Filters,
   SettingsDialog,
-  getFiltersWithCalculatedDates,
 } from '../../StaffExpenseReport/SettingsDialog/SettingsDialog';
 import { StyledFilterButton } from '../../StaffExpenseReport/StaffExpenseReport';
 import { CardSkeleton } from '../Card/CardSkeleton';
@@ -22,29 +20,23 @@ interface ScreenOnlyReportProps {
   data: AllData;
   last12Months: string[];
   currency: string;
+  selectedFilters: Filters;
+  onFiltersChange: (newFilters: Filters) => void;
 }
 
 export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
   data,
   last12Months,
   currency,
+  selectedFilters,
+  onFiltersChange,
 }) => {
   const { t } = useTranslation();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-  const startDate = DateTime.now().minus({ months: 11 }).startOf('month');
-  const endDate = DateTime.now().endOf('month');
-
   const handleSettingsClick = () => {
     setIsSettingsOpen(true);
   };
-
-  const selectedFilters: Filters = getFiltersWithCalculatedDates({
-    selectedDateRange: null,
-    startDate: startDate,
-    endDate: endDate,
-    categories: [],
-  });
 
   return (
     <Box mt={2}>
@@ -127,8 +119,13 @@ export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
           selectedFilters={selectedFilters}
           selectedFundType={FundTypes.Primary}
           isOpen={isSettingsOpen}
-          onClose={() => setIsSettingsOpen(false)}
-          isMpgaReport
+          onClose={(newFilters) => {
+            if (newFilters) {
+              onFiltersChange(newFilters);
+            }
+            setIsSettingsOpen(false);
+          }}
+          showDateRange
         />
       )}
     </Box>
