@@ -57,6 +57,11 @@ export function useHrToolsNavItems(): {
         hideItem: inMpdGoalCalcIneligibleGroup,
       },
       {
+        id: 'mpdGoalAdmin',
+        title: t('MPD Goal Calculator Admin Table'),
+        hideItem: inMpdGoalCalcIneligibleGroup,
+      },
+      {
         id: 'mhaCalculator',
         title: t('MHA Calculation Tool'),
         hideItem: inMhaIneligibleGroup,
