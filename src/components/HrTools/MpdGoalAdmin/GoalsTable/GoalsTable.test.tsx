@@ -56,4 +56,28 @@ describe('GoalsTable', () => {
     await userEvent.click(getByText('John & Jane Doe'));
     expect(ctx.openMember?.id).toBe('row-1');
   });
+
+  it('selects every row on the page via the header checkbox', async () => {
+    const { getAllByRole } = renderTable();
+    // index 0 is the header "select all" checkbox
+    await userEvent.click(getAllByRole('checkbox')[0]);
+    rows.forEach((row) => {
+      expect(ctx.selectedRowIds.has(row.id)).toBe(true);
+    });
+  });
+
+  it('paginates: only the first page of rows is shown at a time', () => {
+    // 12 rows with the default page size of 10 forces a second page.
+    const manyRows = Array.from({ length: 12 }, (_index, i) => ({
+      ...rows[0],
+      id: `page-row-${i}`,
+      name: `Person ${i}`,
+    }));
+    const { getByText, queryByText } = renderTable(manyRows);
+    expect(getByText('Person 0')).toBeInTheDocument();
+    expect(getByText('Person 9')).toBeInTheDocument();
+    // Person 10 and 11 are on page 2, not rendered yet.
+    expect(queryByText('Person 10')).not.toBeInTheDocument();
+    expect(queryByText('Person 11')).not.toBeInTheDocument();
+  });
 });

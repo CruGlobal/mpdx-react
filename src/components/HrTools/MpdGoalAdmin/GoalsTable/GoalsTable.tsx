@@ -125,7 +125,10 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
               </TableCell>
               <TableCell>{row.coordinator}</TableCell>
               <TableCell>
-                <IconButton size="small" aria-label={t('Row actions')}>
+                <IconButton
+                  size="small"
+                  aria-label={t('Actions for {{name}}', { name: row.name })}
+                >
                   <MoreVertIcon fontSize="small" />
                 </IconButton>
               </TableCell>
