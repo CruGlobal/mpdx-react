@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Alert,
   Box,
@@ -30,6 +30,7 @@ import {
   GoalSettingsFormValues,
   GoalSettingsPerson,
 } from './goalSettingsFormValues';
+import { getGoalSettingsSchema } from './goalSettingsSchema';
 import { GoalSettingsSectionProps } from './goalSettingsSectionProps';
 
 /**
@@ -64,6 +65,7 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = ({
   accountListId,
 }) => {
   const { t } = useTranslation();
+  const validationSchema = useMemo(() => getGoalSettingsSchema(t), [t]);
 
   const { data, loading, error } = useNewStaffGoalCalculationQuery({
     variables: { accountListId },
@@ -142,10 +144,12 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = ({
   return (
     <Formik
       initialValues={initialValues}
+      validationSchema={validationSchema}
       enableReinitialize
+      validateOnMount
       onSubmit={handleSubmit}
     >
-      {({ isSubmitting, resetForm, values }) => {
+      {({ isSubmitting, isValid, resetForm, values }) => {
         // Spouse columns follow the live form value, so they appear the moment
         // marital status is set to married — before the change is saved.
         const hasSpouse =
@@ -189,7 +193,7 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = ({
                 <Button
                   type="submit"
                   variant="contained"
-                  disabled={isSubmitting}
+                  disabled={!isValid || isSubmitting}
                 >
                   {t('Save & Share')}
                 </Button>

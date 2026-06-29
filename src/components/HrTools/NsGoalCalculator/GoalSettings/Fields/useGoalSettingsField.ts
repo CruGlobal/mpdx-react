@@ -37,7 +37,7 @@ export const useGoalSettingsField = ({
   inputProps,
   ...props
 }: GoalSettingsFieldBaseProps): TextFieldProps => {
-  const [field] = useField(name);
+  const [field, meta] = useField(name);
 
   const accessibleName =
     typeof label === 'string'
@@ -45,6 +45,8 @@ export const useGoalSettingsField = ({
         ? `${label} — ${personName}`
         : label
       : undefined;
+
+  const showError = Boolean(meta.touched && meta.error);
 
   return {
     id: name,
@@ -54,7 +56,8 @@ export const useGoalSettingsField = ({
     ...(showLabel ? { label } : {}),
     ...props,
     ...field,
-    value: field.value ?? '',
+    error: showError,
+    helperText: showError ? meta.error : undefined,
     inputProps: {
       ...(!showLabel && accessibleName ? { 'aria-label': accessibleName } : {}),
       ...inputProps,

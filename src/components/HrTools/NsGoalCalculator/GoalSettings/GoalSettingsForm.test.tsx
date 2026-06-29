@@ -246,6 +246,50 @@ describe('GoalSettingsForm', () => {
     );
   });
 
+  it('blocks submit and flags the field for an out-of-range value', async () => {
+    const mutationSpy = jest.fn();
+    const { findByRole, getByText } = render(
+      <TestComponent onCall={mutationSpy} />,
+    );
+
+    const contribution = await findByRole('spinbutton', {
+      name: '403(b) Contribution — John',
+    });
+    userEvent.clear(contribution);
+    userEvent.type(contribution, '9999');
+
+    const form = getByText('Save & Share').closest('form');
+    if (!form) {
+      throw new Error('Goal settings form not found');
+    }
+    fireEvent.submit(form);
+
+    await waitFor(() => expect(contribution).toBeInvalid());
+    expect(mutationSpy).not.toHaveGraphqlOperation(
+      'UpdateNewStaffGoalCalculation',
+    );
+  });
+
+  it('disables Save & Share while the form is invalid', async () => {
+    const { findByRole, getByRole } = render(<TestComponent />);
+
+    const saveButton = await findByRole('button', { name: 'Save & Share' });
+    expect(saveButton).toBeEnabled();
+
+    const contribution = getByRole('spinbutton', {
+      name: '403(b) Contribution — John',
+    });
+    userEvent.clear(contribution);
+    userEvent.type(contribution, '9999');
+
+    await waitFor(() => expect(saveButton).toBeDisabled());
+
+    userEvent.clear(contribution);
+    userEvent.type(contribution, '5');
+
+    await waitFor(() => expect(saveButton).toBeEnabled());
+  });
+
   it('discards edits when Cancel is clicked', async () => {
     const { findByRole, getByRole } = render(<TestComponent />);
 
