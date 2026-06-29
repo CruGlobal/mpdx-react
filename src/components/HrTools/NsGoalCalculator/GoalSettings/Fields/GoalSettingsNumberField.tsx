@@ -25,7 +25,13 @@ export const GoalSettingsNumberField: React.FC<
     <TextField
       {...textFieldProps}
       type="number"
-      inputProps={{ ...textFieldProps.inputProps, min: 0 }}
+      // `step="any"` so decimal amounts/percentages (e.g. $1,234.56, 7.5%) pass
+      // the browser's native number validation
+      inputProps={{
+        ...textFieldProps.inputProps,
+        min: 0,
+        step: adornment ? 'any' : 1,
+      }}
       InputProps={{
         ...textFieldProps.InputProps,
         ...(adornment === 'currency'

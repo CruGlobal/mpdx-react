@@ -3,6 +3,7 @@ import {
   Alert,
   Box,
   Button,
+  CircularProgress,
   Divider,
   Skeleton,
   Stack,
@@ -194,6 +195,11 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = ({
                   type="submit"
                   variant="contained"
                   disabled={!isValid || isSubmitting}
+                  startIcon={
+                    isSubmitting ? (
+                      <CircularProgress color="inherit" size={20} />
+                    ) : undefined
+                  }
                 >
                   {t('Save & Share')}
                 </Button>

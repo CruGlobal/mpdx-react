@@ -34,7 +34,7 @@ export const calculationToFormValues = (
       ? String(calc.calculationsYear)
       : '',
 
-  maritalStatus: calc.maritalStatus,
+  maritalStatus: toEnumInput(calc.maritalStatus),
   spouseJoining: toYesNo(calc.spouseJoining),
   age: toEnumInput(calc.age),
   spouseAge: toEnumInput(calc.spouseAge),

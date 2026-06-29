@@ -62,4 +62,43 @@ describe('useGoalSettingsField', () => {
 
     expect(getByRole('textbox', { name: 'Custom name' })).toBeInTheDocument();
   });
+
+  it('surfaces the Formik error as helperText once the field is touched', () => {
+    const { getByRole, getByText } = render(
+      <ThemeProvider theme={theme}>
+        <Formik
+          initialValues={{ age: '' }}
+          initialErrors={{ age: 'Age is required' }}
+          initialTouched={{ age: true }}
+          onSubmit={jest.fn()}
+        >
+          <Form>
+            <GoalSettingsTextField name="age" label="Age" />
+          </Form>
+        </Formik>
+      </ThemeProvider>,
+    );
+
+    expect(getByRole('textbox', { name: 'Age' })).toBeInvalid();
+    expect(getByText('Age is required')).toBeInTheDocument();
+  });
+
+  it('hides the error until the field is touched', () => {
+    const { getByRole, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <Formik
+          initialValues={{ age: '' }}
+          initialErrors={{ age: 'Age is required' }}
+          onSubmit={jest.fn()}
+        >
+          <Form>
+            <GoalSettingsTextField name="age" label="Age" />
+          </Form>
+        </Formik>
+      </ThemeProvider>,
+    );
+
+    expect(getByRole('textbox', { name: 'Age' })).toBeValid();
+    expect(queryByText('Age is required')).not.toBeInTheDocument();
+  });
 });

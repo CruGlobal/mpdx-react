@@ -1,7 +1,8 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
@@ -35,10 +36,12 @@ const singleMock = gqlMock<
   },
 });
 
+const mutationSpy = jest.fn();
+
 const TestComponent: React.FC<
   Omit<NsGoalCalculatorTestWrapperProps, 'children'>
 > = (props) => (
-  <NsGoalCalculatorTestWrapper {...props}>
+  <NsGoalCalculatorTestWrapper onCall={mutationSpy} {...props}>
     <GoalSettingsForm accountListId={accountListId} />
   </NsGoalCalculatorTestWrapper>
 );
@@ -124,8 +127,8 @@ describe('GoalSettingsForm', () => {
       queryByRole('spinbutton', { name: 'Annual Requested Salary — Spouse' }),
     ).not.toBeInTheDocument();
 
-    fireEvent.mouseDown(getByRole('combobox', { name: 'Marital Status' }));
-    fireEvent.click(await findByRole('option', { name: 'Married' }));
+    userEvent.click(getByRole('combobox', { name: 'Marital Status' }));
+    userEvent.click(await findByRole('option', { name: 'Married' }));
 
     expect(
       await findByRole('spinbutton', {
@@ -139,8 +142,8 @@ describe('GoalSettingsForm', () => {
 
     await findByRole('spinbutton', { name: 'Annual Requested Salary — Jane' });
 
-    fireEvent.mouseDown(getByRole('combobox', { name: 'Marital Status' }));
-    fireEvent.click(await findByRole('option', { name: 'Single' }));
+    userEvent.click(getByRole('combobox', { name: 'Marital Status' }));
+    userEvent.click(await findByRole('option', { name: 'Single' }));
 
     await waitFor(() =>
       expect(
@@ -165,14 +168,18 @@ describe('GoalSettingsForm', () => {
     const { findByRole, queryByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter>
-          <GqlMockedProvider
-            mocks={{
-              NewStaffGoalCalculation: {
-                newStaffGoalCalculation: () => {
-                  throw new Error('Failed to load calculation');
+          <GqlMockedProvider<{
+            NewStaffGoalCalculation: NewStaffGoalCalculationQuery;
+          }>
+            mocks={
+              {
+                NewStaffGoalCalculation: {
+                  newStaffGoalCalculation: () => {
+                    throw new Error('Failed to load calculation');
+                  },
                 },
-              },
-            }}
+              } as ApolloErgonoMockMap
+            }
           >
             <GoalSettingsForm accountListId={accountListId} />
           </GqlMockedProvider>
@@ -189,17 +196,11 @@ describe('GoalSettingsForm', () => {
   });
 
   it('saves edits through the updateNewStaffGoalCalculation mutation', async () => {
-    const mutationSpy = jest.fn();
-    const { findByText, getByText } = render(
-      <TestComponent onCall={mutationSpy} />,
-    );
+    const { findByRole } = render(<TestComponent onCall={mutationSpy} />);
 
-    await findByText('Save & Share');
-    const form = getByText('Save & Share').closest('form');
-    if (!form) {
-      throw new Error('Goal settings form not found');
-    }
-    fireEvent.submit(form);
+    const saveButton = await findByRole('button', { name: 'Save & Share' });
+    await waitFor(() => expect(saveButton).toBeEnabled());
+    userEvent.click(saveButton);
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation(
@@ -215,10 +216,7 @@ describe('GoalSettingsForm', () => {
   });
 
   it('sends edited field values through to the mutation attributes', async () => {
-    const mutationSpy = jest.fn();
-    const { findByRole, getByText } = render(
-      <TestComponent onCall={mutationSpy} />,
-    );
+    const { findByRole, getByRole } = render(<TestComponent />);
 
     const salary = await findByRole('spinbutton', {
       name: 'Annual Requested Salary — John',
@@ -226,11 +224,7 @@ describe('GoalSettingsForm', () => {
     userEvent.clear(salary);
     userEvent.type(salary, '54321');
 
-    const form = getByText('Save & Share').closest('form');
-    if (!form) {
-      throw new Error('Goal settings form not found');
-    }
-    fireEvent.submit(form);
+    userEvent.click(getByRole('button', { name: 'Save & Share' }));
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation(
@@ -246,23 +240,60 @@ describe('GoalSettingsForm', () => {
     );
   });
 
-  it('blocks submit and flags the field for an out-of-range value', async () => {
-    const mutationSpy = jest.fn();
-    const { findByRole, getByText } = render(
-      <TestComponent onCall={mutationSpy} />,
+  it('clears spouse attributes when marital status changes from married to single', async () => {
+    const { findByRole, getByRole } = render(<TestComponent />);
+
+    userEvent.click(await findByRole('combobox', { name: 'Marital Status' }));
+    userEvent.click(getByRole('option', { name: 'Single' }));
+    userEvent.click(getByRole('button', { name: 'Save & Share' }));
+
+    // Every spouse attribute is sent as null so the save doesn't persist stale
+    // spouse data for someone who is no longer married.
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'UpdateNewStaffGoalCalculation',
+        {
+          input: {
+            accountListId,
+            id: 'goal-calculation-1',
+            attributes: {
+              maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
+              spouseJoining: null,
+              spouseAge: null,
+              spouseTenure: null,
+              spouseRequestedAnnualSalary: null,
+              spouseContribution403bPercentage: null,
+              spouseMhaAmount: null,
+              spouseHealthcareExempt: null,
+              spouseSecaExempt: null,
+            },
+          },
+        },
+      ),
     );
+  });
+
+  it('shows a spinner on the save button while submitting', async () => {
+    const { findByRole } = render(<TestComponent onCall={jest.fn()} />);
+
+    const saveButton = await findByRole('button', { name: 'Save & Share' });
+    await waitFor(() => expect(saveButton).toBeEnabled());
+    userEvent.click(saveButton);
+
+    // The button stays disabled with a spinner until the save resolves.
+    expect(await findByRole('progressbar')).toBeInTheDocument();
+    expect(saveButton).toBeDisabled();
+  });
+
+  it('blocks submit and flags the field for an invalid value', async () => {
+    const { findByRole } = render(<TestComponent />);
 
     const contribution = await findByRole('spinbutton', {
       name: '403(b) Contribution — John',
     });
     userEvent.clear(contribution);
     userEvent.type(contribution, '9999');
-
-    const form = getByText('Save & Share').closest('form');
-    if (!form) {
-      throw new Error('Goal settings form not found');
-    }
-    fireEvent.submit(form);
+    userEvent.tab();
 
     await waitFor(() => expect(contribution).toBeInvalid());
     expect(mutationSpy).not.toHaveGraphqlOperation(

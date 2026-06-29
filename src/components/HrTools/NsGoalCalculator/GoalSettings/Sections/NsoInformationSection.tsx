@@ -4,10 +4,8 @@ import {
   NewStaffQuestionnaireNsoHousingEnum,
   NewStaffQuestionnaireNsoSessionsEnum,
 } from 'src/graphql/types.generated';
-import { useLocale } from 'src/hooks/useLocale';
 import { getLocalizedNsoHousing } from 'src/lib/functions/getLocalizedNsoHousing';
 import { getLocalizedNsoSessions } from 'src/lib/functions/getLocalizedNsoSessions';
-import { currencyFormat } from 'src/lib/intlFormat';
 import { GoalSettingsNumberField } from '../Fields/GoalSettingsNumberField';
 import { GoalSettingsPlaceholder } from '../Fields/GoalSettingsPlaceholder';
 import { GoalSettingsSelect, SelectOption } from '../Fields/GoalSettingsSelect';
@@ -18,7 +16,6 @@ export const NsoInformationSection: React.FC<GoalSettingsSectionProps> = ({
   sharedHeader,
 }) => {
   const { t } = useTranslation();
-  const locale = useLocale();
 
   const nsoHousingOptions = useMemo<SelectOption[]>(
     () =>
@@ -86,10 +83,7 @@ export const NsoInformationSection: React.FC<GoalSettingsSectionProps> = ({
 
       {/* TODO(MPDX-9797): Computed value — wire up once the calc engine lands. */}
       <FieldRow label={t('Left to Raise')}>
-        <GoalSettingsPlaceholder
-          label={t('Left to Raise')}
-          value={currencyFormat(0, 'USD', locale)}
-        />
+        <GoalSettingsPlaceholder label={t('Left to Raise')} value="—" />
       </FieldRow>
     </Section>
   );
