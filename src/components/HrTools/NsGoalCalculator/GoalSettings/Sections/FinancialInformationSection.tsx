@@ -66,7 +66,6 @@ export const FinancialInformationSection: React.FC<
           label={t('MHA')}
           personName={primaryName}
           adornment="currency"
-          disabled
         />
         {hasSpouse && (
           <GoalSettingsNumberField
@@ -74,7 +73,6 @@ export const FinancialInformationSection: React.FC<
             label={t('MHA')}
             personName={spouseName}
             adornment="currency"
-            disabled
           />
         )}
       </FieldRow>
@@ -88,7 +86,6 @@ export const FinancialInformationSection: React.FC<
           label={t('Staff Conference Transfer')}
           personName={primaryName}
           adornment="currency"
-          disabled
         />
       </FieldRow>
 
@@ -98,7 +95,6 @@ export const FinancialInformationSection: React.FC<
           label={t('Account Transfers')}
           personName={primaryName}
           adornment="currency"
-          disabled
         />
       </FieldRow>
 
@@ -108,7 +104,6 @@ export const FinancialInformationSection: React.FC<
           label={t('Advocacy')}
           personName={primaryName}
           adornment="currency"
-          disabled
         />
       </FieldRow>
 
