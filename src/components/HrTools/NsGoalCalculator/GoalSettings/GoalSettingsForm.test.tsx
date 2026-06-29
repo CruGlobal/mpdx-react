@@ -1,8 +1,11 @@
 import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { gqlMock } from '__tests__/util/graphqlMocking';
+import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
+import theme from 'src/theme';
 import {
   NsGoalCalculatorTestWrapper,
   NsGoalCalculatorTestWrapperProps,
@@ -156,6 +159,33 @@ describe('GoalSettingsForm', () => {
         'No new staff goal calculation exists for this account.',
       ),
     ).toBeInTheDocument();
+  });
+
+  it('shows an error message when the calculation query fails', async () => {
+    const { findByRole, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter>
+          <GqlMockedProvider
+            mocks={{
+              NewStaffGoalCalculation: {
+                newStaffGoalCalculation: () => {
+                  throw new Error('Failed to load calculation');
+                },
+              },
+            }}
+          >
+            <GoalSettingsForm accountListId={accountListId} />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    expect(await findByRole('alert')).toHaveTextContent(
+      'Failed to load calculation',
+    );
+    expect(
+      queryByText('No new staff goal calculation exists for this account.'),
+    ).not.toBeInTheDocument();
   });
 
   it('saves edits through the updateNewStaffGoalCalculation mutation', async () => {

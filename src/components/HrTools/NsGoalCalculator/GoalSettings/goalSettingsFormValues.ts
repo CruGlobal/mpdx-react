@@ -39,7 +39,7 @@ export interface GoalSettingsFormValues {
   // --- 1. Personal Information ---
   maritalStatus: NewStaffQuestionnaireMaritalStatusEnum | '';
   spouseJoining: YesNo; // API spouseJoining (Boolean); edited only when married
-  age: GoalCalculationAge | ''; // API age (GoalCalculationAge enum)
+  age: GoalCalculationAge | '';
   spouseAge: GoalCalculationAge | '';
   tenure: number | '';
   spouseTenure: number | '';
@@ -66,7 +66,7 @@ export interface GoalSettingsFormValues {
   reimbursableExpenses: number | '';
   healthcareDependentsCount: number | '';
 
-  // --- 4. Ministry Information (household-level) ---
+  // --- 4. Ministry Information (shared) ---
   ministryLocation: string;
   ministryName: string;
   assignmentType: GoalCalculationRole | '';
@@ -86,51 +86,3 @@ export interface GoalSettingsFormValues {
   allowSalaryOverCap: NewStaffGoalCalculationSalaryOverCapEnum | '';
   allowDebtOverCap: YesNo;
 }
-
-/** Blank form values, used as the base before merging in loaded API data. */
-export const defaultGoalSettingsValues: GoalSettingsFormValues = {
-  calculationsYear: '',
-
-  maritalStatus: '',
-  spouseJoining: 'false',
-  age: '',
-  spouseAge: '',
-  tenure: '',
-  spouseTenure: '',
-
-  annualRequestedSalary: '',
-  spouseRequestedAnnualSalary: '',
-  contribution403bPercentage: '',
-  spouseContribution403bPercentage: '',
-  mhaAmount: '',
-  spouseMhaAmount: '',
-  staffConferenceTransfer: '',
-  accountTransfers: '',
-  advocacyTransfers: '',
-  geographicLocation: '',
-  studentLoanMonthlyPayment: '',
-  carLoanMonthlyPayment: '',
-  creditCardDebtMonthlyPayment: '',
-  solidSupportRaised: '',
-
-  benefitsPlan: '',
-  reimbursableExpenses: '',
-  healthcareDependentsCount: '',
-
-  ministryLocation: '',
-  ministryName: '',
-  assignmentType: '',
-  ministryExpenses: '',
-
-  nsoHousing: '',
-  nsoSessions: '',
-  childcareChildrenCount: '',
-  nsoSpecialNeedsSupportReceived: '',
-
-  healthcareExempt: 'false',
-  spouseHealthcareExempt: 'false',
-  secaExempt: 'false',
-  spouseSecaExempt: 'false',
-  allowSalaryOverCap: NewStaffGoalCalculationSalaryOverCapEnum.No,
-  allowDebtOverCap: 'false',
-};

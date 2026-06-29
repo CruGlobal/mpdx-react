@@ -12,7 +12,14 @@ import {
   calculationToFormValues,
   formValuesToAttributes,
 } from './goalSettingsApiMapping';
-import { defaultGoalSettingsValues } from './goalSettingsFormValues';
+
+const emptyGoalSettingsValues = {
+  maritalStatus: '',
+  annualRequestedSalary: '',
+  age: '',
+  geographicLocation: '',
+  calculationsYear: '',
+} as const;
 
 const baseCalculation: NewStaffGoalCalculationFieldsFragment = {
   __typename: 'NewStaffGoalCalculation',
@@ -124,7 +131,7 @@ describe('calculationToFormValues', () => {
 
 describe('formValuesToAttributes', () => {
   const coupleValues = calculationToFormValues(baseCalculation);
-  const singleValues: typeof coupleValues = {
+  const singleValues = {
     ...coupleValues,
     maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
   };
@@ -175,12 +182,31 @@ describe('formValuesToAttributes', () => {
   });
 
   it('converts empty strings to null', () => {
-    const attributes = formValuesToAttributes(defaultGoalSettingsValues);
+    const coupleValues = calculationToFormValues(baseCalculation);
+    const attributes = formValuesToAttributes({
+      ...coupleValues,
+      ...emptyGoalSettingsValues,
+    });
 
     expect(attributes.annualRequestedSalary).toBeNull();
     expect(attributes.age).toBeNull();
     expect(attributes.geographicLocation).toBeNull();
     expect(attributes.calculationsYear).toBeNull();
     expect(attributes.maritalStatus).toBeNull();
+  });
+
+  it('preserves a numeric 0 instead of dropping it to null', () => {
+    const attributes = formValuesToAttributes({
+      ...coupleValues,
+      annualRequestedSalary: 0,
+      solidSupportRaised: 0,
+      tenure: 0,
+      childcareChildrenCount: 0,
+    });
+
+    expect(attributes.annualRequestedSalary).toBe(0);
+    expect(attributes.solidSupportRaised).toBe(0);
+    expect(attributes.tenure).toBe(0);
+    expect(attributes.childcareChildrenCount).toBe(0);
   });
 });

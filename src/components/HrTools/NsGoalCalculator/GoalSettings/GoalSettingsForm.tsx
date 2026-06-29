@@ -65,7 +65,7 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const { data, loading } = useNewStaffGoalCalculationQuery({
+  const { data, loading, error } = useNewStaffGoalCalculationQuery({
     variables: { accountListId },
   });
   const calculation = data?.newStaffGoalCalculation;
@@ -73,6 +73,10 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = ({
 
   if (loading) {
     return <Skeleton variant="rectangular" height={400} />;
+  }
+
+  if (error) {
+    return <Alert severity="error">{error.message}</Alert>;
   }
 
   if (!calculation) {

@@ -12,16 +12,14 @@ import {
   NewStaffQuestionnaireMaritalStatusEnum,
 } from 'src/graphql/types.generated';
 import { NewStaffGoalCalculationFieldsFragment } from './NewStaffGoalCalculation.generated';
-import {
-  GoalSettingsFormValues,
-  YesNo,
-  defaultGoalSettingsValues,
-} from './goalSettingsFormValues';
+import { GoalSettingsFormValues, YesNo } from './goalSettingsFormValues';
 
 const toYesNo = (value?: boolean | null): YesNo => (value ? 'true' : 'false');
 const toBoolean = (value: YesNo): boolean => value === 'true';
 const toNumberInput = (value?: number | null): number | '' => value ?? '';
-const toNumberOrNull = (value: number | ''): number | null => value || null;
+// `value === ''` (not falsy) so a real 0 is preserved instead of dropped to null.
+const toNumberOrNull = (value: number | ''): number | null =>
+  value === '' ? null : value;
 
 /** Optional enum dropdowns edit "" for "not set"; convert to/from null. */
 const toEnumInput = <T>(value?: T | null): T | '' => value ?? '';
@@ -31,9 +29,6 @@ const toEnumOrNull = <T>(value: T | ''): T | null => value || null;
 export const calculationToFormValues = (
   calc: NewStaffGoalCalculationFieldsFragment,
 ): GoalSettingsFormValues => ({
-  // Start from blank defaults, then overlay the loaded API values.
-  ...defaultGoalSettingsValues,
-
   calculationsYear:
     typeof calc.calculationsYear === 'number'
       ? String(calc.calculationsYear)
