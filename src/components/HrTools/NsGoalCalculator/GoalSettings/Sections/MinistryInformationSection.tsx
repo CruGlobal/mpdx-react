@@ -21,9 +21,7 @@ export const MinistryInformationSection: React.FC<GoalSettingsSectionProps> = ({
         <GoalSettingsTextField name="ministryLocation" label={t('Location')} />
       </FieldRow>
 
-      {/* TODO(MPDX-9764): No API field yet — placeholder value.
-          Replace with a real field bound to `ministryName` once the API
-          exposes the data. */}
+      {/* TODO(MPDX-9796): Attendee field */}
       <FieldRow label={t('Ministry')}>
         <GoalSettingsPlaceholder
           label={t('Ministry')}

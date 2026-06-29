@@ -115,7 +115,7 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = ({
       }
     : null;
 
-  // TODO: Get goal from calculations
+  // TODO(MPDX-9797): Get goal from calculations
   const mpdGoal =
     (calculation.calculatedResults as { mpdGoal?: number } | null | undefined)
       ?.mpdGoal ?? 0;

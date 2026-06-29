@@ -157,13 +157,13 @@ export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
         </Grid>
         <Grid item xs={12} md={4}>
           <Stack spacing={3}>
-            {/* TODO(MPDX-9764): Replace with a real Coach field once the API exposes it. */}
+            {/* TODO(MPDX-9796): Attendee field */}
             <GoalSettingsPlaceholder
               label={t('Coach')}
               value={t('Amy Wilson')}
               showLabel
             />
-            {/* TODO(MPDX-9764): Replace with a real Coordinator field once the API exposes it. */}
+            {/* TODO(MPDX-9796): Attendee field */}
             <GoalSettingsPlaceholder
               label={t('Coordinator')}
               value={t('Nancy Coleman')}

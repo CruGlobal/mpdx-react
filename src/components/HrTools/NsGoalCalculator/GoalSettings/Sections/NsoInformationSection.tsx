@@ -19,8 +19,7 @@ export const NsoInformationSection: React.FC<GoalSettingsSectionProps> = ({
     <Section title={t('NSO Information')}>
       <ColumnHeaderRow columns={[sharedHeader]} />
 
-      {/* TODO(MPDX-9764): Not editable — comes from the attendee's cohort.
-          Replace with the real cohort value once the API exposes it. */}
+      {/* TODO(MPDX-9796): Attendee field */}
       <FieldRow label={t('Training')}>
         <GoalSettingsPlaceholder
           label={t('Training')}
@@ -59,7 +58,7 @@ export const NsoInformationSection: React.FC<GoalSettingsSectionProps> = ({
         />
       </FieldRow>
 
-      {/* TODO(MPDX-9764): Computed value — wire up once the calc engine lands. */}
+      {/* TODO(MPDX-9797): Computed value — wire up once the calc engine lands. */}
       <FieldRow label={t('Left to Raise')}>
         <GoalSettingsPlaceholder
           label={t('Left to Raise')}
