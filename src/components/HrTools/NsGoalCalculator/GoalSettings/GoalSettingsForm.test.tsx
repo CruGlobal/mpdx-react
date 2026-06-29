@@ -1,5 +1,6 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { gqlMock } from '__tests__/util/graphqlMocking';
 import {
   NsGoalCalculatorTestWrapper,
@@ -72,7 +73,9 @@ describe('GoalSettingsForm', () => {
     const { findByRole, getAllByRole } = render(<TestComponent />);
 
     await findByRole('heading', { name: 'Personal Information' });
-    expect(getAllByRole('spinbutton', { name: 'Dependents' })).toHaveLength(1);
+    expect(
+      getAllByRole('spinbutton', { name: 'Healthcare Dependents' }),
+    ).toHaveLength(1);
     expect(getAllByRole('combobox', { name: 'Marital Status' })).toHaveLength(
       1,
     );
@@ -177,5 +180,67 @@ describe('GoalSettingsForm', () => {
         },
       ),
     );
+  });
+
+  it('sends edited field values through to the mutation attributes', async () => {
+    const mutationSpy = jest.fn();
+    const { findByRole, getByText } = render(
+      <TestComponent onCall={mutationSpy} />,
+    );
+
+    const salary = await findByRole('spinbutton', {
+      name: 'Annual Requested Salary — John',
+    });
+    userEvent.clear(salary);
+    userEvent.type(salary, '54321');
+
+    const form = getByText('Save & Share').closest('form');
+    if (!form) {
+      throw new Error('Goal settings form not found');
+    }
+    fireEvent.submit(form);
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'UpdateNewStaffGoalCalculation',
+        {
+          input: {
+            accountListId,
+            id: 'goal-calculation-1',
+            attributes: { annualRequestedSalary: 54321 },
+          },
+        },
+      ),
+    );
+  });
+
+  it('discards edits when Cancel is clicked', async () => {
+    const { findByRole, getByRole } = render(<TestComponent />);
+
+    const salary = await findByRole('spinbutton', {
+      name: 'Annual Requested Salary — John',
+    });
+    userEvent.clear(salary);
+    userEvent.type(salary, '12345');
+    expect(salary).toHaveValue(12345);
+
+    userEvent.click(getByRole('button', { name: 'Cancel' }));
+
+    await waitFor(() => expect(salary).not.toHaveValue(12345));
+  });
+
+  it('renders a loading skeleton before the calculation resolves', async () => {
+    const { container, findByRole, queryByRole } = render(<TestComponent />);
+
+    // While loading: the skeleton shows and the form is not yet rendered.
+    expect(container.querySelector('.MuiSkeleton-root')).toBeInTheDocument();
+    expect(
+      queryByRole('button', { name: 'Save & Share' }),
+    ).not.toBeInTheDocument();
+
+    // Once the query resolves, the form replaces the skeleton.
+    expect(
+      await findByRole('button', { name: 'Save & Share' }),
+    ).toBeInTheDocument();
   });
 });
