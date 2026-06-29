@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 const Row = styled(Box)(({ theme }) => ({
   display: 'grid',
   gridAutoFlow: 'column',
-  gridTemplateColumns: 'minmax(160px, 260px)',
+  gridTemplateColumns: '180px',
   gridAutoColumns: 'minmax(0, 1fr)',
   columnGap: theme.spacing(4),
   rowGap: theme.spacing(2),
