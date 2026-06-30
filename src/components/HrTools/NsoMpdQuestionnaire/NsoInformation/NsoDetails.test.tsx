@@ -1,14 +1,18 @@
 import React from 'react';
-import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import theme from 'src/theme';
+import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
+import { NsoMpdQuestionnaireTestWrapper } from '../NsoMpdQuestionnaireTestWrapper';
 import { NsoDetails } from './NsoDetails';
 
-const TestComponent: React.FC = () => (
-  <ThemeProvider theme={theme}>
+const mutationSpy = jest.fn();
+
+const TestComponent: React.FC<{ onCall?: MockLinkCallHandler }> = ({
+  onCall,
+}) => (
+  <NsoMpdQuestionnaireTestWrapper onCall={onCall}>
     <NsoDetails />
-  </ThemeProvider>
+  </NsoMpdQuestionnaireTestWrapper>
 );
 
 describe('NsoDetails', () => {
@@ -35,6 +39,48 @@ describe('NsoDetails', () => {
     expect(
       getByRole('radio', { name: 'Local / Commuting' }),
     ).toBeInTheDocument();
+  });
+
+  it('saves the housing enum constant', async () => {
+    const { getByRole } = render(<TestComponent onCall={mutationSpy} />);
+
+    userEvent.click(getByRole('radio', { name: 'Family in a hotel/room' }));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'UpdateNewStaffQuestionnaire',
+        {
+          input: {
+            accountListId: 'account-list-1',
+            attributes: { nsoHousing: 'FAMILY_ROOM' },
+          },
+        },
+      ),
+    );
+  });
+
+  it('saves the childcare count as a number', async () => {
+    const { getByRole } = render(<TestComponent onCall={mutationSpy} />);
+
+    userEvent.type(
+      getByRole('spinbutton', {
+        name: 'If you are a parent with children in Childcare, please enter how many.',
+      }),
+      '3',
+    );
+    userEvent.tab();
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'UpdateNewStaffQuestionnaire',
+        {
+          input: {
+            accountListId: 'account-list-1',
+            attributes: { childcareChildrenCount: 3 },
+          },
+        },
+      ),
+    );
   });
 
   it('renders the sessions question with both options', () => {

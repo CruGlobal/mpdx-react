@@ -1,13 +1,12 @@
 import React from 'react';
-import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as yup from 'yup';
-import theme from 'src/theme';
+import { NsoMpdQuestionnaireTestWrapper } from '../NsoMpdQuestionnaireTestWrapper';
 import { NumberQuestion } from './NumberQuestion';
 
 const schema = yup.object({
-  count: yup
+  childcareChildrenCount: yup
     .string()
     .matches(/^\d+$/, 'Please enter a whole number.')
     .required('Please enter a number.'),
@@ -16,15 +15,15 @@ const schema = yup.object({
 const TestComponent: React.FC<{ startAdornment?: React.ReactNode }> = ({
   startAdornment,
 }) => (
-  <ThemeProvider theme={theme}>
+  <NsoMpdQuestionnaireTestWrapper>
     <NumberQuestion
-      fieldName="count"
+      fieldName="childcareChildrenCount"
       schema={schema}
       question="How many?"
       helperText="Enter 0 if none."
       startAdornment={startAdornment}
     />
-  </ThemeProvider>
+  </NsoMpdQuestionnaireTestWrapper>
 );
 
 describe('NumberQuestion', () => {

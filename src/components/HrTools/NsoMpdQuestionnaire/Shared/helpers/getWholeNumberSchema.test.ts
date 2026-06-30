@@ -22,12 +22,12 @@ describe('getWholeNumberSchema', () => {
     ).toThrow('Please enter a whole number.');
   });
 
-  it('accepts a whole number and normalizes leading zeros', () => {
+  it('accepts a whole number and parses it to a number', () => {
     const schema = getWholeNumberSchema(i18n.t, requiredMessage);
 
-    expect(schema.validateSync('500')).toBe('500');
-    expect(schema.validateSync('007')).toBe('7');
-    expect(schema.validateSync('0')).toBe('0');
+    expect(schema.validateSync('500')).toBe(500);
+    expect(schema.validateSync('007')).toBe(7);
+    expect(schema.validateSync('0')).toBe(0);
   });
 
   it('uses overridden positive and whole messages', () => {

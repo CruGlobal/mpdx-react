@@ -1,13 +1,12 @@
 import React from 'react';
-import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as yup from 'yup';
-import theme from 'src/theme';
+import { NsoMpdQuestionnaireTestWrapper } from '../NsoMpdQuestionnaireTestWrapper';
 import { RadioOption, RadioQuestion } from './RadioQuestion';
 
 const schema = yup.object({
-  choice: yup.string().required('Please select an answer.'),
+  geographicLocation: yup.string().required('Please select an answer.'),
 });
 const options: RadioOption[] = [
   { value: 'A', label: 'Option A' },
@@ -15,15 +14,15 @@ const options: RadioOption[] = [
 ];
 
 const TestComponent: React.FC<{ row?: boolean }> = ({ row }) => (
-  <ThemeProvider theme={theme}>
+  <NsoMpdQuestionnaireTestWrapper>
     <RadioQuestion
-      fieldName="choice"
+      fieldName="geographicLocation"
       schema={schema}
       label="Pick one"
       options={options}
       row={row}
     />
-  </ThemeProvider>
+  </NsoMpdQuestionnaireTestWrapper>
 );
 
 describe('RadioQuestion', () => {

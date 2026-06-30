@@ -5,7 +5,7 @@ import { NsoMpdQuestionnaireTestWrapper } from '../NsoMpdQuestionnaireTestWrappe
 import { StaffInformation } from './StaffInformation';
 
 describe('StaffInformation', () => {
-  it("shows the staff member's information from HCM", async () => {
+  it("shows the staff member's information from the questionnaire", async () => {
     const { findByRole, getByRole, getByText } = render(
       <NsoMpdQuestionnaireTestWrapper>
         <StaffInformation />
@@ -16,21 +16,21 @@ describe('StaffInformation', () => {
       await findByRole('heading', { name: 'John Doe' }),
     ).toBeInTheDocument();
     expect(getByRole('textbox', { name: 'Staff Status' })).toHaveValue(
-      'Active - Payroll Eligible',
+      'New Staff',
     );
     expect(getByRole('textbox', { name: 'Family Status' })).toHaveValue(
       'Married',
     );
-    expect(getByRole('textbox', { name: 'Age' })).toHaveValue('34');
+    expect(getByRole('textbox', { name: 'Age' })).toHaveValue('30-34');
     expect(getByRole('textbox', { name: 'Tenure' })).toHaveValue('4');
     expect(getByRole('textbox', { name: 'Address' })).toHaveValue(
       '123 Main St, Apt 4, Miami, FL 33101',
     );
-    expect(getByText('Staff Account Number: 000123456')).toBeInTheDocument();
+    expect(getByText('Person Number: 000123456')).toBeInTheDocument();
   });
 
   it("toggles to the spouse's information", async () => {
-    const { findByRole, getByRole } = render(
+    const { findByRole, getByRole, getByText } = render(
       <NsoMpdQuestionnaireTestWrapper>
         <StaffInformation />
       </NsoMpdQuestionnaireTestWrapper>,
@@ -39,10 +39,12 @@ describe('StaffInformation', () => {
     userEvent.click(await findByRole('button', { name: 'View Jane' }));
 
     expect(getByRole('heading', { name: 'Jane Doe' })).toBeInTheDocument();
-    expect(getByRole('textbox', { name: 'Age' })).toHaveValue('32');
+    expect(getByRole('textbox', { name: 'Age' })).toHaveValue('Under 30');
+    expect(getByRole('textbox', { name: 'Tenure' })).toHaveValue('2');
     expect(getByRole('textbox', { name: 'Staff Status' })).toHaveValue(
-      'Active - Paid Leave',
+      'Already on Staff',
     );
+    expect(getByText('Person Number: 000789123')).toBeInTheDocument();
   });
 
   it('hides the spouse toggle and shows Single without a spouse', async () => {

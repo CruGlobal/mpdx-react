@@ -1,0 +1,9 @@
+mutation UpdateNewStaffQuestionnaire(
+  $input: NewStaffQuestionnaireUpdateMutationInput!
+) {
+  updateNewStaffQuestionnaire(input: $input) {
+    newStaffQuestionnaire {
+      ...NewStaffQuestionnaireFields
+    }
+  }
+}

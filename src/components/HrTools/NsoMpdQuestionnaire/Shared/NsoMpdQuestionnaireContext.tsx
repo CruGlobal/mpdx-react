@@ -1,9 +1,16 @@
 import React, { createContext, useCallback, useMemo, useState } from 'react';
-import { HcmQuery, useHcmQuery } from '../../Shared/HcmData/Hcm.generated';
+import { NewStaffQuestionnaireAttributesInput } from 'src/graphql/types.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { NsoMpdQuestionnaireStepEnum } from '../NsoMpdQuestionnaireHelper';
+import {
+  NewStaffQuestionnaireQuery,
+  useNewStaffQuestionnaireQuery,
+} from './NewStaffQuestionnaire.generated';
+import { useUpdateNewStaffQuestionnaireMutation } from './UpdateNewStaffQuestionnaire.generated';
 import { NsoMpdQuestionnaireStep, useSteps } from './useSteps';
 
-export type HcmPerson = HcmQuery['hcm'][number];
+export type NewStaffQuestionnaire =
+  NewStaffQuestionnaireQuery['newStaffQuestionnaire'];
 
 export type NsoMpdQuestionnaireType = {
   steps: NsoMpdQuestionnaireStep[];
@@ -15,8 +22,10 @@ export type NsoMpdQuestionnaireType = {
   handleContinue: () => void;
   toggleDrawer: () => void;
   setDrawerOpen: (open: boolean) => void;
-  hcmUser: HcmPerson | null;
-  hcmSpouse: HcmPerson | null;
+  questionnaire: NewStaffQuestionnaire | null;
+  saveField: (
+    attributes: Partial<NewStaffQuestionnaireAttributesInput>,
+  ) => Promise<void>;
 };
 
 const NsoMpdQuestionnaireContext =
@@ -44,9 +53,32 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
   const currentStep = steps[currentIndex];
   const isLastStep = currentIndex === steps.length - 1;
 
-  const { data: hcmData } = useHcmQuery();
-  const hcmUser = hcmData?.hcm[0] ?? null;
-  const hcmSpouse = hcmData?.hcm[1] ?? null;
+  const accountListId = useAccountListId();
+
+  const { data: questionnaireData } = useNewStaffQuestionnaireQuery({
+    variables: { accountListId: accountListId ?? '' },
+    skip: !accountListId,
+  });
+  const questionnaire = questionnaireData?.newStaffQuestionnaire ?? null;
+
+  const [updateNewStaffQuestionnaire] =
+    useUpdateNewStaffQuestionnaireMutation();
+
+  const saveField = useCallback(
+    async (
+      attributes: Partial<NewStaffQuestionnaireAttributesInput>,
+    ): Promise<void> => {
+      if (!accountListId) {
+        return;
+      }
+      await updateNewStaffQuestionnaire({
+        variables: {
+          input: { accountListId, attributes },
+        },
+      });
+    },
+    [accountListId, updateNewStaffQuestionnaire],
+  );
 
   const toggleDrawer = useCallback(() => {
     setIsDrawerOpen((prev) => !prev);
@@ -83,8 +115,8 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
       handleContinue,
       toggleDrawer,
       setDrawerOpen,
-      hcmUser,
-      hcmSpouse,
+      questionnaire,
+      saveField,
     }),
     [
       steps,
@@ -96,8 +128,8 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
       handleContinue,
       toggleDrawer,
       setDrawerOpen,
-      hcmUser,
-      hcmSpouse,
+      questionnaire,
+      saveField,
     ],
   );
 

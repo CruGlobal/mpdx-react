@@ -9,21 +9,17 @@ interface WholeNumberMessages {
 }
 
 /**
- * yup schema for a required, non-negative whole number. Leading zeros
- * are normalized. Callers supply the required message and may override the
+ * yup schema for a required, non-negative whole number. Callers supply the required message and may override the
  * positive/whole validation messages for domain-specific copy.
  */
 export const getWholeNumberSchema = (
   t: TFunction,
   requiredMessage: string,
   messages: WholeNumberMessages = {},
-): yup.StringSchema =>
+): yup.NumberSchema =>
   yup
-    .string()
-    // Normalize leading zeros
-    .transform((value) =>
-      typeof value === 'string' ? value.replace(/^0+(?=\d)/, '') : value,
-    )
-    .matches(/^[^-]/, messages.positive ?? t('Please enter a positive number.'))
-    .matches(/^\d+$/, messages.whole ?? t('Please enter a whole number.'))
+    .number()
+    .typeError(messages.whole ?? t('Please enter a whole number.'))
+    .min(0, messages.positive ?? t('Please enter a positive number.'))
+    .integer(messages.whole ?? t('Please enter a whole number.'))
     .required(requiredMessage);

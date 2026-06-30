@@ -14,9 +14,9 @@ describe('getAmountSchema', () => {
     );
   });
 
-  it('accepts a whole-dollar amount and normalizes leading zeros', () => {
-    expect(getAmountSchema(i18n.t).validateSync('500')).toBe('500');
-    expect(getAmountSchema(i18n.t).validateSync('007')).toBe('7');
-    expect(getAmountSchema(i18n.t).validateSync('0')).toBe('0');
+  it('accepts a whole-dollar amount and parses it to a number', () => {
+    expect(getAmountSchema(i18n.t).validateSync('500')).toBe(500);
+    expect(getAmountSchema(i18n.t).validateSync('007')).toBe(7);
+    expect(getAmountSchema(i18n.t).validateSync('0')).toBe(0);
   });
 });

@@ -1,14 +1,16 @@
 import React from 'react';
-import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import theme from 'src/theme';
+import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
+import { NsoMpdQuestionnaireTestWrapper } from '../NsoMpdQuestionnaireTestWrapper';
 import { ContactInformation } from './ContactInformation';
 
-const TestComponent: React.FC = () => (
-  <ThemeProvider theme={theme}>
+const TestComponent: React.FC<{ onCall?: MockLinkCallHandler }> = ({
+  onCall,
+}) => (
+  <NsoMpdQuestionnaireTestWrapper onCall={onCall}>
     <ContactInformation />
-  </ThemeProvider>
+  </NsoMpdQuestionnaireTestWrapper>
 );
 
 describe('ContactInformation', () => {
@@ -24,6 +26,39 @@ describe('ContactInformation', () => {
     const { getByRole } = render(<TestComponent />);
 
     expect(getByRole('textbox', { name: 'Cell Phone Number' })).toBeRequired();
+  });
+
+  it('saves the cell phone number through the upsert on blur', async () => {
+    const mutationSpy = jest.fn();
+    const { getByRole } = render(<TestComponent onCall={mutationSpy} />);
+
+    const input = getByRole('textbox', { name: 'Cell Phone Number' });
+    userEvent.type(input, '(123) 456-7890');
+    userEvent.tab();
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'UpdateNewStaffQuestionnaire',
+        {
+          input: {
+            accountListId: 'account-list-1',
+            attributes: { phoneNumber: '(123) 456-7890' },
+          },
+        },
+      ),
+    );
+  });
+
+  it('seeds the cell phone number from the loaded questionnaire', async () => {
+    const { findByDisplayValue } = render(
+      <NsoMpdQuestionnaireTestWrapper
+        newStaffQuestionnaire={{ phoneNumber: '(305) 111-2222' }}
+      >
+        <ContactInformation />
+      </NsoMpdQuestionnaireTestWrapper>,
+    );
+
+    expect(await findByDisplayValue('(305) 111-2222')).toBeInTheDocument();
   });
 
   it('strips disallowed characters as the user types', () => {

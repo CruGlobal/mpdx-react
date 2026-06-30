@@ -2,49 +2,70 @@ import React, { useState } from 'react';
 import { Stack, TextField, Typography } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
-import { getLocalizedAssignmentStatus } from 'src/lib/functions/getLocalizedAssignmentStatus';
+import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
+import { getLocalizedAge } from 'src/lib/functions/getLocalizedAge';
 import { StaffInfoCard } from '../../Shared/StaffInfoCard/StaffInfoCard';
 import { useNsoMpdQuestionnaire } from '../Shared/NsoMpdQuestionnaireContext';
 
 export const StaffInformation: React.FC = () => {
   const { t } = useTranslation();
-  const { hcmUser, hcmSpouse } = useNsoMpdQuestionnaire();
+  const { questionnaire } = useNsoMpdQuestionnaire();
   const { data: userData } = useGetUserQuery();
 
   const [viewingSpouse, setViewingSpouse] = useState(false);
 
-  const staffInfo = (viewingSpouse ? hcmSpouse : hcmUser)?.staffInfo;
-  const otherStaffInfo = (viewingSpouse ? hcmUser : hcmSpouse)?.staffInfo;
+  const maritalStatus = questionnaire?.maritalStatus;
+  const hasSpouse =
+    !!maritalStatus &&
+    maritalStatus !== NewStaffQuestionnaireMaritalStatusEnum.Single;
+
+  // Primary user is always new/joining staff
+  const isJoining = viewingSpouse ? questionnaire?.spouseJoining : true;
+
+  const staffStatus =
+    isJoining === false
+      ? t('Already on Staff')
+      : isJoining
+        ? t('New Staff')
+        : '';
+
+  const firstName = viewingSpouse
+    ? questionnaire?.spouseFirstName
+    : questionnaire?.firstName;
+  const otherFirstName = viewingSpouse
+    ? questionnaire?.firstName
+    : questionnaire?.spouseFirstName;
 
   const name =
-    [staffInfo?.preferredName, staffInfo?.lastName].filter(Boolean).join(' ') ||
-    t('User');
+    [firstName, questionnaire?.lastName].filter(Boolean).join(' ') || t('User');
   const toggleName =
-    otherStaffInfo?.preferredName ??
-    (viewingSpouse ? t('Yourself') : t('Spouse'));
+    otherFirstName ?? (viewingSpouse ? t('Yourself') : t('Spouse'));
 
   const fields = [
     {
       label: t('Staff Status'),
-      value: getLocalizedAssignmentStatus(t, staffInfo?.assignmentStatus),
+      value: staffStatus,
     },
     {
       label: t('Family Status'),
-      value: !!hcmSpouse ? t('Married') : t('Single'),
+      value: hasSpouse ? t('Married') : t('Single'),
     },
-    { label: t('Age'), value: staffInfo?.age?.toString() ?? '' },
-    { label: t('Tenure'), value: staffInfo?.tenure?.toString() ?? '' },
     {
-      label: t('Address'),
-      value: [
-        staffInfo?.addressLine1,
-        staffInfo?.addressLine2,
-        staffInfo?.city,
-        [staffInfo?.state, staffInfo?.zipCode].filter(Boolean).join(' '),
-      ]
-        .filter(Boolean)
-        .join(', '),
+      label: t('Age'),
+      value: getLocalizedAge(
+        t,
+        viewingSpouse ? questionnaire?.spouseAge : questionnaire?.age,
+      ),
     },
+    {
+      label: t('Tenure'),
+      value:
+        (viewingSpouse
+          ? questionnaire?.spouseTenure
+          : questionnaire?.tenure
+        )?.toString() ?? '',
+    },
+    { label: t('Address'), value: questionnaire?.address ?? '' },
   ];
 
   return (
@@ -62,10 +83,12 @@ export const StaffInformation: React.FC = () => {
           name,
           // Backend doesn't currently support accessing the spouse's avatar
           avatarSrc: viewingSpouse ? null : userData?.user.avatar,
-          staffAccountId: userData?.user.staffAccountId,
+          staffAccountId: viewingSpouse
+            ? questionnaire?.spousePersonNumber
+            : questionnaire?.personNumber,
         }}
         toggle={
-          hcmSpouse
+          hasSpouse
             ? {
                 name: toggleName,
                 onClick: () => setViewingSpouse((prev) => !prev),
