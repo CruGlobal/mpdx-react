@@ -1,3 +1,4 @@
+import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +16,10 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import {
+  RequiredUserGroupEnum,
+  UserTypeAccess,
+} from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';
@@ -65,11 +70,13 @@ export const MpdGoalAdminPage: React.FC = () => {
         )}`}</title>
       </Head>
       {accountListId ? (
-        <ReportPageWrapper>
-          <MpdGoalAdminProvider>
-            <MpdGoalAdminContent />
-          </MpdGoalAdminProvider>
-        </ReportPageWrapper>
+        <UserTypeAccess requireUserGroups={RequiredUserGroupEnum.MpdGoalCalc}>
+          <ReportPageWrapper>
+            <MpdGoalAdminProvider>
+              <MpdGoalAdminContent />
+            </MpdGoalAdminProvider>
+          </ReportPageWrapper>
+        </UserTypeAccess>
       ) : (
         <Loading loading />
       )}
@@ -77,6 +84,13 @@ export const MpdGoalAdminPage: React.FC = () => {
   );
 };
 
-export const getServerSideProps = blockImpersonatingNonDevelopers;
+// Hide the work-in-progress admin table entirely (404) when the feature flag is
+// set, otherwise fall back to the standard impersonation guard.
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  if (process.env.DISABLE_MPD_GOAL_ADMIN === 'true') {
+    return { notFound: true };
+  }
+  return blockImpersonatingNonDevelopers(context);
+};
 
 export default MpdGoalAdminPage;
