@@ -36,11 +36,11 @@ export const MinistryDetails: React.FC = () => {
   const schema = useMemo(
     () =>
       yup.object({
-        ministry: yup.string().required(t('Please select a ministry')),
-        assignmentLocation: yup
+        ministryName: yup.string().required(t('Please select a ministry')),
+        ministryLocation: yup
           .string()
           .required(t('Please enter an assignment location')),
-        nearestCity: yup
+        geographicLocation: yup
           .string()
           .required(
             t(
@@ -55,18 +55,18 @@ export const MinistryDetails: React.FC = () => {
   );
 
   const ministryProps = useQuestionnaireAutoSave({
-    fieldName: 'ministry',
+    fieldName: 'ministryName',
     schema,
     saveOnChange: true,
   });
 
   const locationProps = useQuestionnaireAutoSave({
-    fieldName: 'assignmentLocation',
+    fieldName: 'ministryLocation',
     schema,
   });
 
   const cityProps = useQuestionnaireAutoSave({
-    fieldName: 'nearestCity',
+    fieldName: 'geographicLocation',
     schema,
     saveOnChange: true,
   });
@@ -148,8 +148,8 @@ export const MinistryDetails: React.FC = () => {
         row
         label={t('What type of assignment are you expecting?')}
         options={[
-          { value: 'Field', label: t('Field') },
-          { value: 'Office', label: t('Office') },
+          { value: 'FIELD', label: t('Field') },
+          { value: 'OFFICE', label: t('Office') },
         ]}
       />
     </Stack>

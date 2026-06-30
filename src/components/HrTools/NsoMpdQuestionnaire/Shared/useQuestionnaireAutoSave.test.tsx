@@ -1,39 +1,52 @@
 import React from 'react';
 import { TextField } from '@mui/material';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as yup from 'yup';
+import { NsoMpdQuestionnaireTestWrapper } from '../NsoMpdQuestionnaireTestWrapper';
 import { useQuestionnaireAutoSave } from './useQuestionnaireAutoSave';
 
 const TestComponent: React.FC = () => {
   const schema = yup.object({
-    field: yup.string().min(7, 'Too short'),
+    phoneNumber: yup.string().min(7, 'Too short'),
   });
-
-  const props = useQuestionnaireAutoSave({ fieldName: 'field', schema });
-
+  const props = useQuestionnaireAutoSave({
+    fieldName: 'phoneNumber',
+    schema,
+  });
   return <TextField label="Field" {...props} />;
 };
 
 describe('useQuestionnaireAutoSave', () => {
-  it('starts empty without an error', () => {
-    const { getByRole, queryByText } = render(<TestComponent />);
+  it('starts empty when there is no loaded questionnaire', () => {
+    const { getByRole } = render(
+      <NsoMpdQuestionnaireTestWrapper onCall={jest.fn()}>
+        <TestComponent />
+      </NsoMpdQuestionnaireTestWrapper>,
+    );
 
     expect(getByRole('textbox', { name: 'Field' })).toHaveValue('');
-    expect(queryByText('Too short')).not.toBeInTheDocument();
   });
 
-  it('stores typed values in local state', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('seeds the field from the loaded questionnaire', async () => {
+    const { findByDisplayValue } = render(
+      <NsoMpdQuestionnaireTestWrapper
+        onCall={jest.fn()}
+        newStaffQuestionnaire={{ phoneNumber: '305-111-2222' }}
+      >
+        <TestComponent />
+      </NsoMpdQuestionnaireTestWrapper>,
+    );
 
-    const input = getByRole('textbox', { name: 'Field' });
-    userEvent.type(input, '1234567890');
-
-    expect(input).toHaveValue('1234567890');
+    expect(await findByDisplayValue('305-111-2222')).toBeInTheDocument();
   });
 
   it('surfaces the schema validation error for an invalid value once touched', () => {
-    const { getByRole, getByText } = render(<TestComponent />);
+    const { getByRole, getByText } = render(
+      <NsoMpdQuestionnaireTestWrapper onCall={jest.fn()}>
+        <TestComponent />
+      </NsoMpdQuestionnaireTestWrapper>,
+    );
 
     userEvent.type(getByRole('textbox', { name: 'Field' }), '123');
     userEvent.tab();
@@ -41,12 +54,28 @@ describe('useQuestionnaireAutoSave', () => {
     expect(getByText('Too short')).toBeInTheDocument();
   });
 
-  it('clears the error once the value becomes valid', () => {
-    const { getByRole, queryByText } = render(<TestComponent />);
+  it('saves a valid value through the upsert on blur', async () => {
+    const mutationSpy = jest.fn();
+    const { getByRole } = render(
+      <NsoMpdQuestionnaireTestWrapper onCall={mutationSpy}>
+        <TestComponent />
+      </NsoMpdQuestionnaireTestWrapper>,
+    );
 
     const input = getByRole('textbox', { name: 'Field' });
-    userEvent.type(input, '1234567');
+    userEvent.type(input, '305-555-1234');
+    userEvent.tab();
 
-    expect(queryByText('Too short')).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'UpdateNewStaffQuestionnaire',
+        {
+          input: {
+            accountListId: 'account-list-1',
+            attributes: { phoneNumber: '305-555-1234' },
+          },
+        },
+      ),
+    );
   });
 });

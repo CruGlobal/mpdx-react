@@ -54,7 +54,7 @@ export const StaffInfoCard: React.FC<StaffInfoCardProps> = ({
               </Typography>
               {person.staffAccountId && (
                 <Typography color="text.secondary" lineHeight={1.2}>
-                  {t('Staff Account Number: {{number}}', {
+                  {t('Person Number: {{number}}', {
                     number: person.staffAccountId,
                   })}
                 </Typography>

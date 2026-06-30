@@ -8,7 +8,10 @@ import {
   RadioGroup,
 } from '@mui/material';
 import * as yup from 'yup';
-import { useQuestionnaireAutoSave } from './useQuestionnaireAutoSave';
+import {
+  QuestionnaireField,
+  useQuestionnaireAutoSave,
+} from './useQuestionnaireAutoSave';
 
 export interface RadioOption {
   value: string;
@@ -16,7 +19,7 @@ export interface RadioOption {
 }
 
 interface RadioQuestionProps {
-  fieldName: string;
+  fieldName: QuestionnaireField;
   schema: yup.Schema;
   label: string;
   options: RadioOption[];

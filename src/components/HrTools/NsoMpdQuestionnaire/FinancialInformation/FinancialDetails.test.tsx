@@ -1,14 +1,24 @@
 import React from 'react';
-import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import theme from 'src/theme';
+import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
+import { NsoMpdQuestionnaireTestWrapper } from '../NsoMpdQuestionnaireTestWrapper';
 import { FinancialDetails } from './FinancialDetails';
 
-const TestComponent: React.FC = () => (
-  <ThemeProvider theme={theme}>
+const mutationSpy = jest.fn();
+
+const TestComponent: React.FC<{
+  onCall?: MockLinkCallHandler;
+  newStaffQuestionnaire?: React.ComponentProps<
+    typeof NsoMpdQuestionnaireTestWrapper
+  >['newStaffQuestionnaire'];
+}> = ({ onCall, newStaffQuestionnaire }) => (
+  <NsoMpdQuestionnaireTestWrapper
+    onCall={onCall}
+    newStaffQuestionnaire={newStaffQuestionnaire}
+  >
     <FinancialDetails />
-  </ThemeProvider>
+  </NsoMpdQuestionnaireTestWrapper>
 );
 
 const studentLoanQuestion =
@@ -29,6 +39,62 @@ describe('FinancialDetails', () => {
     ).toBeInTheDocument();
     expect(getByRole('radio', { name: 'Yes' })).toBeInTheDocument();
     expect(getByRole('radio', { name: 'No' })).toBeInTheDocument();
+  });
+
+  it('seeds "Yes" and reveals the payment fields when debt is already saved', async () => {
+    const { findByRole } = render(
+      <TestComponent
+        newStaffQuestionnaire={{ studentLoanMonthlyPayment: 50 }}
+      />,
+    );
+
+    expect(
+      await findByRole('radio', { name: 'Yes', checked: true }),
+    ).toBeInTheDocument();
+    expect(
+      await findByRole('spinbutton', { name: studentLoanQuestion }),
+    ).toBeInTheDocument();
+  });
+
+  it('seeds "Yes" when some debt fields are saved and the rest are null', async () => {
+    const { findByRole } = render(
+      <TestComponent
+        newStaffQuestionnaire={{
+          studentLoanMonthlyPayment: 50,
+          carLoanMonthlyPayment: null,
+          creditCardDebtMonthlyPayment: null,
+        }}
+      />,
+    );
+
+    expect(
+      await findByRole('radio', { name: 'Yes', checked: true }),
+    ).toBeInTheDocument();
+  });
+
+  it('seeds "No" when all debt fields are saved as 0', async () => {
+    const { findByRole } = render(
+      <TestComponent
+        newStaffQuestionnaire={{
+          studentLoanMonthlyPayment: 0,
+          carLoanMonthlyPayment: 0,
+          creditCardDebtMonthlyPayment: 0,
+        }}
+      />,
+    );
+
+    expect(
+      await findByRole('radio', { name: 'No', checked: true }),
+    ).toBeInTheDocument();
+  });
+
+  it('shows the debt-question error once the group is touched without a selection', () => {
+    const { getByRole, getByText } = render(<TestComponent />);
+
+    getByRole('radio', { name: 'Yes' }).focus();
+    userEvent.tab();
+
+    expect(getByText('Please select an answer.')).toBeInTheDocument();
   });
 
   it('hides the payment fields until Yes is selected', () => {
@@ -89,5 +155,27 @@ describe('FinancialDetails', () => {
     userEvent.type(getByRole('spinbutton', { name: creditCardQuestion }), '0');
 
     expect(queryByText(requiredError)).not.toBeInTheDocument();
+  });
+
+  it('saves zero for every debt field when the user has no debt', async () => {
+    const { getByRole } = render(<TestComponent onCall={mutationSpy} />);
+
+    userEvent.click(getByRole('radio', { name: 'No' }));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'UpdateNewStaffQuestionnaire',
+        {
+          input: {
+            accountListId: 'account-list-1',
+            attributes: {
+              studentLoanMonthlyPayment: 0,
+              carLoanMonthlyPayment: 0,
+              creditCardDebtMonthlyPayment: 0,
+            },
+          },
+        },
+      ),
+    );
   });
 });

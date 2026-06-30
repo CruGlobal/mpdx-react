@@ -1,10 +1,13 @@
 import React from 'react';
 import { TextField } from '@mui/material';
 import * as yup from 'yup';
-import { useQuestionnaireAutoSave } from './useQuestionnaireAutoSave';
+import {
+  QuestionnaireField,
+  useQuestionnaireAutoSave,
+} from './useQuestionnaireAutoSave';
 
 interface NumberQuestionProps {
-  fieldName: string;
+  fieldName: QuestionnaireField;
   schema: yup.Schema;
   question: string;
   helperText: string;

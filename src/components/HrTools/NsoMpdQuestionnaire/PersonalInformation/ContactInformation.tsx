@@ -14,13 +14,15 @@ export const ContactInformation: React.FC = () => {
   const schema = useMemo(
     () =>
       yup.object({
-        cellPhone: phoneNumber(t).required(t('Cell phone number is required')),
+        phoneNumber: phoneNumber(t).required(
+          t('Cell phone number is required'),
+        ),
       }),
     [t],
   );
 
   const fieldProps = useQuestionnaireAutoSave({
-    fieldName: 'cellPhone',
+    fieldName: 'phoneNumber',
     schema,
   });
 

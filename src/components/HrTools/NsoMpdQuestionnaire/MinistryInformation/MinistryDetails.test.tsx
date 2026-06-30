@@ -1,31 +1,16 @@
 import React from 'react';
-import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
-import theme from 'src/theme';
+import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
+import { NsoMpdQuestionnaireTestWrapper } from '../NsoMpdQuestionnaireTestWrapper';
 import { MinistryDetails } from './MinistryDetails';
 
-const TestComponent: React.FC = () => (
-  <ThemeProvider theme={theme}>
-    <GqlMockedProvider<{
-      GoalCalculatorConstants: GoalCalculatorConstantsQuery;
-    }>
-      mocks={{
-        GoalCalculatorConstants: {
-          constant: {
-            mpdGoalGeographicConstants: [
-              { location: 'Atlanta, GA' },
-              { location: 'Miami, FL' },
-            ],
-          },
-        },
-      }}
-    >
-      <MinistryDetails />
-    </GqlMockedProvider>
-  </ThemeProvider>
+const TestComponent: React.FC<{ onCall?: MockLinkCallHandler }> = ({
+  onCall,
+}) => (
+  <NsoMpdQuestionnaireTestWrapper onCall={onCall}>
+    <MinistryDetails />
+  </NsoMpdQuestionnaireTestWrapper>
 );
 
 describe('MinistryDetails', () => {
@@ -101,6 +86,25 @@ describe('MinistryDetails', () => {
 
     expect(getByRole('radio', { name: 'Field' })).toBeInTheDocument();
     expect(getByRole('radio', { name: 'Office' })).toBeInTheDocument();
+  });
+
+  it('saves FIELD when the field assignment is chosen', async () => {
+    const mutationSpy = jest.fn();
+    const { getByRole } = render(<TestComponent onCall={mutationSpy} />);
+
+    userEvent.click(getByRole('radio', { name: 'Field' }));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'UpdateNewStaffQuestionnaire',
+        {
+          input: {
+            accountListId: 'account-list-1',
+            attributes: { assignmentType: 'FIELD' },
+          },
+        },
+      ),
+    );
   });
 
   it('shows a loading indicator in place of the city field until the constants load', () => {
