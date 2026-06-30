@@ -28,6 +28,7 @@ import {
   useLoadCoachingDetailQuery,
 } from './LoadCoachingDetail.generated';
 import { MonthlyCommitment } from './MonthlyCommitment/MonthlyCommitment';
+import { NsGoalCalculatorLink } from './NsGoalCalculatorLink';
 import { OutstandingCommitments } from './OutstandingCommitments/OutstandingCommitments';
 import { OutstandingNeeds } from './OutstandingNeeds/OutstandingNeeds';
 import { PartnersProgress } from './PartnersProgress/PartnersProgress';
@@ -190,6 +191,9 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                 <Typography mx={1} variant="subtitle1">
                   {usersList}
                 </Typography>
+                {accountListType === AccountListTypeEnum.Coaching && (
+                  <NsGoalCalculatorLink coachingId={accountListId} />
+                )}
               </Box>
               <Box style={{ flexGrow: 1 }}>
                 <AppealProgress

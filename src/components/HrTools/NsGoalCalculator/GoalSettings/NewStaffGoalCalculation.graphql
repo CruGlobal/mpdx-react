@@ -1,0 +1,86 @@
+fragment NewStaffGoalCalculationFields on NewStaffGoalCalculation {
+  id
+  # Computed goal-calculation worksheet; null until the API calc engine lands.
+  calculatedResults
+
+  # Identity (read-only display in the header; prepopulated from HCM).
+  firstName
+  lastName
+  emailAddress
+  phoneNumber
+  address
+  personNumber
+  spouseFirstName
+  spouseEmailAddress
+  spousePhoneNumber
+  spousePersonNumber
+
+  # Personal
+  joinedStaffYear
+  maritalStatus
+  spouseJoining
+  age
+  spouseAge
+  tenure
+  spouseTenure
+
+  # Financial
+  annualRequestedSalary
+  spouseRequestedAnnualSalary
+  contribution403bPercentage
+  spouseContribution403bPercentage
+  mhaAmount
+  spouseMhaAmount
+  staffConferenceTransfer
+  accountTransfers
+  advocacyTransfers
+  geographicLocation
+  studentLoanMonthlyPayment
+  carLoanMonthlyPayment
+  creditCardDebtMonthlyPayment
+  solidSupportRaised
+
+  # Healthcare
+  benefitsPlan
+  reimbursableExpenses
+  healthcareDependentsCount
+
+  # Ministry
+  ministryName
+  ministryLocation
+  assignmentType
+  ministryExpenses
+
+  # NSO
+  nsoHousing
+  nsoSessions
+  nsoSpecialNeedsSupportReceived
+  childcareChildrenCount
+
+  # Exemptions
+  healthcareExempt
+  spouseHealthcareExempt
+  secaExempt
+  spouseSecaExempt
+  allowSalaryOverCap
+  allowDebtOverCap
+
+  # Calculation year-versioned constants set
+  calculationsYear
+}
+
+query NewStaffGoalCalculation($accountListId: ID!) {
+  newStaffGoalCalculation(accountListId: $accountListId) {
+    ...NewStaffGoalCalculationFields
+  }
+}
+
+mutation UpdateNewStaffGoalCalculation(
+  $input: NewStaffGoalCalculationUpdateMutationInput!
+) {
+  updateNewStaffGoalCalculation(input: $input) {
+    newStaffGoalCalculation {
+      ...NewStaffGoalCalculationFields
+    }
+  }
+}

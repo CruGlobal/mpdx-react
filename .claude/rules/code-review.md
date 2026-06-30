@@ -208,6 +208,8 @@ Every item here is mandatory. The Standards agent must report compliance per ite
 - [ ] Every new component, hook, and lib function has a colocated `*.test.{ts,tsx}`
 - [ ] Component tests using GraphQL wrap in `GqlMockedProvider<{ OperationName: OperationNameQuery }>` with typed mocks
 - [ ] Tests use `findBy*` for async assertions rather than `waitFor(() => getBy*)`
+- [ ] User interactions use `userEvent`, never `fireEvent`
+- [ ] Never `await` `userEvent` calls like `userEvent.click`
 - [ ] No `any` in test types — use generated operation types for mock shapes
 - [ ] No global `fetch` mocking — use Apollo mocks at the operation level
 
@@ -281,6 +283,7 @@ Project-specific testing conventions added to the Testing agent's universal chec
 - **`mutationSpy` + `toHaveGraphqlOperation(...)` pattern** is preferred over brittle snapshot-based assertions for verifying mutations
 - **`toHaveTableStructure(...)` for full table contents** — when asserting more than a couple table cells, use `expect(getByRole('table')).toHaveTableStructure({ columnHeaders, rowHeaders, cells })` instead of ad-hoc `getByRole('cell')`
 - **`findBy*` for async assertions** — prefer `await findByText(...)` over `await waitFor(() => getByText(...))`
+- **`userEvent`, never `fireEvent`** — drive every user interaction (click, type, select, tab/blur, keyboard) through `@testing-library/user-event`, which dispatches the full event sequence a real user produces
 - **No `fetch` mocking** — never mock `global.fetch` or `window.fetch`; use Apollo operation-level mocks
 - **No `any` in test types** — mock shapes use generated operation types (`ContactDetailsQuery`, etc.) from `.generated.ts` files
 - **`i18next` in tests** — `t()` returns the translation key by default in test env; don't assert on translated strings unless the test specifically exercises i18n
@@ -309,6 +312,8 @@ Project-specific UX/UI conventions layered on top of the UX agent's universal ch
   - Keyboard navigation works (tab order, Enter/Space activation, Escape closes modals)
 - **Translation coverage** — new user-visible strings must have i18n keys added; verify `yarn extract` would pick them up (no dynamic `t()` keys, no string interpolation inside `t()`)
 - **Snackbar / notification usage** — success/error feedback goes through the project's notification system, not ad-hoc `alert()` or inline text
+  - **GraphQL errors show snackbar automatically.** The global Apollo error link (`src/lib/apollo/client.ts`) calls `snackNotifications.error(graphQLError.message)` for every GraphQL/network error. Do NOT add a manual `enqueueSnackbar`/`snackNotifications.error` in a mutation's `catch`/`onError` for a generic GraphQL failure — it double-toasts. Only add manual error handling for a domain-specific message the generic one can't convey.
+  - **Prefer no success snackbar after a successful mutation**. A "Saved!" toast after every save is noise; let the updated UI state communicate success.
 - **Dialog UX** — dialogs have clear primary/secondary actions, disable the primary action while submitting, and close on success
 
 ## Excluded Paths

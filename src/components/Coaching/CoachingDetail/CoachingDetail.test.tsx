@@ -16,6 +16,7 @@ import {
   LoadAccountListCoachingDetailQuery,
   LoadCoachingDetailQuery,
 } from './LoadCoachingDetail.generated';
+import { NewStaffGoalExistsQuery } from './NsGoalCalculatorLink.generated';
 import {
   LoadAccountListCoachingCommitmentsQuery,
   LoadCoachingCommitmentsQuery,
@@ -55,8 +56,12 @@ const TestComponent: React.FC<TestComponentProps> = ({
         LoadCoachingNeeds: LoadCoachingNeedsQuery;
         LoadAccountListCoachingNeeds: LoadAccountListCoachingNeedsQuery;
         LevelOfEffort: LevelOfEffortQuery;
+        NewStaffGoalExists: NewStaffGoalExistsQuery;
       }>
         mocks={{
+          NewStaffGoalExists: {
+            newStaffGoalCalculation: { id: 'goal-calculation-1' },
+          },
           LoadCoachingDetail: {
             coachingAccountList: {
               name: 'John Doe Account',
@@ -154,6 +159,33 @@ describe('LoadCoachingDetail', () => {
       ).toBeVisible();
       expect(getByText('Monthly $0')).toBeVisible();
       expect(getByText('Monthly Giving')).toBeVisible();
+    });
+  });
+
+  describe('New Staff Goal link', () => {
+    it('links to the goal calculator for the coached account list', async () => {
+      const { findByRole } = render(
+        <TestComponent accountListType={AccountListTypeEnum.Coaching} />,
+      );
+
+      const link = await findByRole('link', {
+        name: 'View New Staff Goal',
+      });
+      expect(link).toHaveAttribute(
+        'href',
+        '/accountLists/123/coaching/account-list-1/nsGoalCalculator',
+      );
+    });
+
+    it('is hidden for the user’s own account list', async () => {
+      const { findByRole, queryByRole } = render(
+        <TestComponent accountListType={AccountListTypeEnum.Own} />,
+      );
+
+      await findByRole('heading', { name: 'John Doe Account' });
+      expect(
+        queryByRole('link', { name: 'View New Staff Goal' }),
+      ).not.toBeInTheDocument();
     });
   });
 
