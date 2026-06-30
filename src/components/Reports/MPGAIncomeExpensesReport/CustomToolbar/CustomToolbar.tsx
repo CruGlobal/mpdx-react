@@ -1,6 +1,6 @@
 import FilterListIcon from '@mui/icons-material/FilterList';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
-import { Box, Divider, Tooltip } from '@mui/material';
+import { Tooltip } from '@mui/material';
 import Badge from '@mui/material/Badge';
 import {
   ColumnsPanelTrigger,
@@ -9,17 +9,14 @@ import {
   ToolbarButton,
 } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
-import { TableCardHead } from '../Tables/TableCardHead';
 
-interface CustomToolbarProps {
-  months: string[];
-}
-
-export const CustomToolbar: React.FC<CustomToolbarProps> = ({ months }) => {
+export const CustomToolbar: React.FC = () => {
   const { t } = useTranslation();
 
   return (
-    <Toolbar style={{ display: 'flex', justifyContent: 'left' }}>
+    <Toolbar
+      style={{ display: 'flex', justifyContent: 'left', borderBottom: 'none' }}
+    >
       <Tooltip title={t('Columns')}>
         <ColumnsPanelTrigger render={<ToolbarButton />}>
           <ViewColumnIcon fontSize="small" color="primary" />
@@ -52,17 +49,6 @@ export const CustomToolbar: React.FC<CustomToolbarProps> = ({ months }) => {
           )}
         />
       </Tooltip>
-
-      <Divider
-        orientation="vertical"
-        variant="middle"
-        flexItem
-        sx={{ mx: 0.5, height: 30, alignSelf: 'center' }}
-      />
-
-      <Box mb={2}>
-        <TableCardHead months={months} />
-      </Box>
     </Toolbar>
   );
 };

@@ -1,9 +1,15 @@
 import React, { useMemo, useState } from 'react';
 import { Box, Tooltip, Typography } from '@mui/material';
-import { GridColDef, GridSortModel } from '@mui/x-data-grid';
+import {
+  GridColDef,
+  GridColumnGroupingModel,
+  GridSortModel,
+} from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
+import { useMonthHeaders } from 'src/hooks/useMonthHeaders';
 import { amountFormat, zeroAmountFormat } from 'src/lib/intlFormat';
+import theme from 'src/theme';
 import { LoadingBox, LoadingIndicator } from '../../styledComponents';
 import { CardSkeleton } from '../Card/CardSkeleton';
 import { CustomToolbar } from '../CustomToolbar/CustomToolbar';
@@ -37,12 +43,6 @@ export const descriptionWidth = 175;
 export const monthWidth = 65;
 export const summaryWidth = 98.5;
 
-const createToolbar = (months: string[]) => {
-  const Toolbar = () => <CustomToolbar months={months} />;
-  Toolbar.displayName = 'MPGATableCustomToolbar';
-  return Toolbar;
-};
-
 export const TableCard: React.FC<TableCardProps> = ({
   type,
   data,
@@ -54,6 +54,11 @@ export const TableCard: React.FC<TableCardProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const { incomeTotal, expensesTotal } = useTotals();
+
+  const { monthCount, getBorderColor } = useMonthHeaders(months, {
+    first: theme.palette.primary.main,
+    second: theme.palette.chartOrange.main,
+  });
 
   const overallTotal =
     type === ReportTypeEnum.Income ? incomeTotal : expensesTotal;
@@ -126,6 +131,93 @@ export const TableCard: React.FC<TableCardProps> = ({
     ];
   }, [months]);
 
+  const columnGroupingModel = useMemo<GridColumnGroupingModel>(() => {
+    let monthIndex = 0;
+
+    const yearGroups = monthCount.map(({ year, count }, index) => {
+      const color = getBorderColor(index);
+      const children = Array.from({ length: count }, () => ({
+        field: `month${monthIndex++}`,
+      }));
+
+      return {
+        groupId: year,
+        headerName: year,
+        headerAlign: 'left' as const,
+        children,
+        renderHeaderGroup: () => (
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              width: '100%',
+              height: '100%',
+            }}
+          >
+            <Box component="span" sx={{ alignSelf: 'flex-start' }}>
+              <Typography sx={{ color, fontSize: '14px', fontWeight: 'bold' }}>
+                {year}
+              </Typography>
+            </Box>
+            <Box component="span" sx={{ width: '100%', mt: '7px' }}>
+              <Box
+                sx={{ width: '100%', height: '2px', backgroundColor: color }}
+              />
+            </Box>
+          </Box>
+        ),
+      };
+    });
+
+    return [
+      {
+        groupId: 'controls',
+        headerName: '',
+        headerClassName: 'controls-group',
+        children: [{ field: 'description' }],
+        renderHeaderGroup: () => <CustomToolbar />,
+      },
+      ...yearGroups,
+      {
+        groupId: 'summary',
+        headerName: t('Summary'),
+        headerAlign: 'left' as const,
+        children: [{ field: 'average' }, { field: 'total' }],
+        renderHeaderGroup: () => (
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              width: '100%',
+              height: '100%',
+            }}
+          >
+            <Box component="span" sx={{ alignSelf: 'flex-start' }}>
+              <Typography
+                sx={{
+                  color: theme.palette.chartGray.main,
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                }}
+              >
+                {t('Summary')}
+              </Typography>
+            </Box>
+            <Box component="span" sx={{ width: '100%', mt: '7px' }}>
+              <Box
+                sx={{
+                  width: '100%',
+                  height: '2px',
+                  backgroundColor: theme.palette.chartGray.main,
+                }}
+              />
+            </Box>
+          </Box>
+        ),
+      },
+    ];
+  }, [monthCount, getBorderColor, t]);
+
   return loading ? (
     <LoadingBox>
       <LoadingIndicator
@@ -144,6 +236,7 @@ export const TableCard: React.FC<TableCardProps> = ({
         <StyledGrid
           rows={cardTableRows}
           columns={columns}
+          columnGroupingModel={columnGroupingModel}
           getRowId={(row) => row.id}
           sortingOrder={['desc', 'asc']}
           sortModel={sortModel}
@@ -155,10 +248,6 @@ export const TableCard: React.FC<TableCardProps> = ({
           disableRowSelectionOnClick
           pagination
           disableColumnMenu
-          slots={{
-            toolbar: createToolbar(months),
-          }}
-          showToolbar
         />
         <Box>
           <TotalRow data={data} overallTotal={overallTotal} />
