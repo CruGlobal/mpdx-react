@@ -30,6 +30,25 @@ export const StyledGrid = styled((props: DataGridProps<DataFields>) => (
     fontWeight: 'bold',
     fontSize: '12px',
   },
+  '.MuiDataGrid-columnHeaderTitleContainerContent': {
+    width: '100%',
+  },
+  '.MuiDataGrid-columnHeader--filledGroup .MuiDataGrid-columnSeparator': {
+    display: 'none',
+  },
+  // Keep the default column separator on the controls cell so it shows the
+  // normal partial-height header divider to the right of the buttons.
+  '.MuiDataGrid-columnHeader.controls-group .MuiDataGrid-columnSeparator': {
+    display: 'flex',
+  },
+  '.MuiDataGrid-columnHeader--filledGroup, .MuiDataGrid-columnHeader--filledGroup .MuiDataGrid-columnHeaderTitleContainer':
+    {
+      borderBottom: 'none',
+    },
+  '.MuiDataGrid-columnHeader[data-field="description"], .MuiDataGrid-columnHeader[data-field^="month"], .MuiDataGrid-columnHeader[data-field="average"], .MuiDataGrid-columnHeader[data-field="total"]':
+    {
+      borderTop: `1px solid ${theme.palette.divider}`,
+    },
   '.MuiDataGrid-cell *': {
     fontSize: '11px',
   },

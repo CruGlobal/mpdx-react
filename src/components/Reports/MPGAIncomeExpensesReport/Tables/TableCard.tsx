@@ -1,9 +1,15 @@
 import React, { useMemo, useState } from 'react';
 import { Box, Tooltip, Typography } from '@mui/material';
-import { GridColDef, GridSortModel } from '@mui/x-data-grid';
+import {
+  GridColDef,
+  GridColumnGroupingModel,
+  GridSortModel,
+} from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
+import { useMonthHeaders } from 'src/hooks/useMonthHeaders';
 import { amountFormat, zeroAmountFormat } from 'src/lib/intlFormat';
+import theme from 'src/theme';
 import { LoadingBox, LoadingIndicator } from '../../styledComponents';
 import { CardSkeleton } from '../Card/CardSkeleton';
 import { CustomToolbar } from '../CustomToolbar/CustomToolbar';
@@ -25,6 +31,44 @@ export interface TableCardProps {
   loading?: boolean;
 }
 
+// Visual styling for the grouped-column headers, matching the report's table
+// styling. The font size follows the report-wide 14px convention; the gap and
+// underline thickness are named here rather than inlined as magic numbers.
+const groupHeaderFontSize = '14px';
+const groupHeaderUnderlineGap = '7px';
+const groupHeaderUnderlineHeight = '2px';
+
+const GroupHeader: React.FC<{ label: string; color: string }> = ({
+  label,
+  color,
+}) => (
+  <Box
+    sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      width: '100%',
+      height: '100%',
+    }}
+  >
+    <Box component="span" sx={{ alignSelf: 'flex-start' }}>
+      <Typography
+        sx={{ color, fontSize: groupHeaderFontSize, fontWeight: 'bold' }}
+      >
+        {label}
+      </Typography>
+    </Box>
+    <Box component="span" sx={{ width: '100%', mt: groupHeaderUnderlineGap }}>
+      <Box
+        sx={{
+          width: '100%',
+          height: groupHeaderUnderlineHeight,
+          backgroundColor: color,
+        }}
+      />
+    </Box>
+  </Box>
+);
+
 export const CreateCardTableRows = (data: DataFields): DataFields => ({
   id: data.id,
   description: data.description,
@@ -37,12 +81,6 @@ export const descriptionWidth = 175;
 export const monthWidth = 65;
 export const summaryWidth = 98.5;
 
-const createToolbar = (months: string[]) => {
-  const Toolbar = () => <CustomToolbar months={months} />;
-  Toolbar.displayName = 'MPGATableCustomToolbar';
-  return Toolbar;
-};
-
 export const TableCard: React.FC<TableCardProps> = ({
   type,
   data,
@@ -54,6 +92,15 @@ export const TableCard: React.FC<TableCardProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const { incomeTotal, expensesTotal } = useTotals();
+
+  const monthColors = useMemo(
+    () => ({
+      first: theme.palette.primary.main,
+      second: theme.palette.chartOrange.main,
+    }),
+    [],
+  );
+  const { monthCount, getBorderColor } = useMonthHeaders(months, monthColors);
 
   const overallTotal =
     type === ReportTypeEnum.Income ? incomeTotal : expensesTotal;
@@ -126,6 +173,49 @@ export const TableCard: React.FC<TableCardProps> = ({
     ];
   }, [months]);
 
+  const columnGroupingModel = useMemo<GridColumnGroupingModel>(() => {
+    const yearGroups = monthCount.map(({ year, count }, index) => {
+      const color = getBorderColor(index);
+      const monthOffset = monthCount
+        .slice(0, index)
+        .reduce((sum, group) => sum + group.count, 0);
+      const children = Array.from({ length: count }, (_, monthIndex) => ({
+        field: `month${monthOffset + monthIndex}`,
+      }));
+
+      return {
+        groupId: year,
+        headerName: year,
+        headerAlign: 'left' as const,
+        children,
+        renderHeaderGroup: () => <GroupHeader label={year} color={color} />,
+      };
+    });
+
+    return [
+      {
+        groupId: 'controls',
+        headerName: '',
+        headerClassName: 'controls-group',
+        children: [{ field: 'description' }],
+        renderHeaderGroup: () => <CustomToolbar />,
+      },
+      ...yearGroups,
+      {
+        groupId: 'summary',
+        headerName: t('Summary'),
+        headerAlign: 'left' as const,
+        children: [{ field: 'average' }, { field: 'total' }],
+        renderHeaderGroup: () => (
+          <GroupHeader
+            label={t('Summary')}
+            color={theme.palette.chartGray.main}
+          />
+        ),
+      },
+    ];
+  }, [monthCount, getBorderColor, t]);
+
   return loading ? (
     <LoadingBox>
       <LoadingIndicator
@@ -144,6 +234,7 @@ export const TableCard: React.FC<TableCardProps> = ({
         <StyledGrid
           rows={cardTableRows}
           columns={columns}
+          columnGroupingModel={columnGroupingModel}
           getRowId={(row) => row.id}
           sortingOrder={['desc', 'asc']}
           sortModel={sortModel}
@@ -155,10 +246,6 @@ export const TableCard: React.FC<TableCardProps> = ({
           disableRowSelectionOnClick
           pagination
           disableColumnMenu
-          slots={{
-            toolbar: createToolbar(months),
-          }}
-          showToolbar
         />
         <Box>
           <TotalRow data={data} overallTotal={overallTotal} />
