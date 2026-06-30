@@ -117,6 +117,14 @@ describe('GoalSettingsForm', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('shows the calculated 403(b) contribution amount for each person', async () => {
+    const { findByText, getByText } = render(<TestComponent />);
+
+    // The 403(b) Amount row shows the primary and spouse calculated values.
+    expect(await findByText('$600.00')).toBeInTheDocument();
+    expect(getByText('$390.00')).toBeInTheDocument();
+  });
+
   it('shows the spouse column when marital status is set to married, before saving', async () => {
     const { findByRole, getByRole, queryByRole } = render(
       <TestComponent goalCalculationMock={singleMock} />,

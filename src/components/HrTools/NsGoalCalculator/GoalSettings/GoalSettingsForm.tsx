@@ -120,10 +120,7 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = ({
       }
     : null;
 
-  // TODO(MPDX-9797): Get goal from calculations
-  const mpdGoal =
-    (calculation.calculatedResults as { mpdGoal?: number } | null | undefined)
-      ?.mpdGoal ?? 0;
+  const mpdGoal = calculation.calculations.monthlyGoal;
 
   const primaryHeader = `${primaryName} (${t('Joining')})`;
   const spouseHeader = `${spouseName} (${calculation.spouseJoining ? t('Joining') : t('Senior')})`;
@@ -158,6 +155,7 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = ({
           NewStaffQuestionnaireMaritalStatusEnum.Married;
         const sectionProps: GoalSettingsSectionProps = {
           hasSpouse,
+          calculations: calculation.calculations,
           primaryName,
           spouseName,
           visibleHeaders: hasSpouse
