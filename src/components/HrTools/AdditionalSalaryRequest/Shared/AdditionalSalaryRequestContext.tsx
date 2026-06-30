@@ -22,6 +22,7 @@ import { useStepList } from 'src/hooks/useStepList';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
 import { HcmQuery, useHcmQuery } from '../../Shared/HcmData/Hcm.generated';
+import { useStaffAccountIdQuery } from '../../Shared/StaffAccountId.generated';
 import {
   AdditionalSalaryRequestQuery,
   useAdditionalSalaryRequestQuery,
@@ -29,7 +30,6 @@ import {
 } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { SalaryInfoQuery, useSalaryInfoQuery } from '../SalaryInfo.generated';
-import { useStaffAccountIdQuery } from '../StaffAccountId.generated';
 
 type SalaryInfo = NonNullable<SalaryInfoQuery['salaryInfo']>;
 

@@ -15,8 +15,8 @@ import {
   UserTypeEnum,
 } from 'src/graphql/types.generated';
 import theme from 'src/theme';
+import { StaffAccountIdQuery } from '../../../Shared/StaffAccountId.generated';
 import { AccountBalanceQuery } from '../AccountBalance.generated';
-import { StaffAccountIdQuery } from '../StaffAccountId.generated';
 import { LandingSalaryCalculationsQuery } from './LandingSalaryCalculations.generated';
 
 export interface LandingTestWrapperProps {
