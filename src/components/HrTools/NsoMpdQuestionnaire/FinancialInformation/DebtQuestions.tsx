@@ -10,7 +10,6 @@ import {
   InputAdornment,
   Radio,
   RadioGroup,
-  Stack,
 } from '@mui/material';
 import { TFunction, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -21,26 +20,32 @@ import { NumberQuestion } from '../Shared/NumberQuestion';
 import { getAmountSchema } from '../Shared/helpers/getAmountSchema';
 import { QuestionnaireField } from '../Shared/useQuestionnaireAutoSave';
 
-export const getFinancialDetailsSchema = (t: TFunction) =>
+export const getDebtSchema = (t: TFunction) =>
   yup.object({
     studentLoanMonthlyPayment: getAmountSchema(t),
     carLoanMonthlyPayment: getAmountSchema(t),
     creditCardDebtMonthlyPayment: getAmountSchema(t),
   });
 
-export const FinancialDetails: React.FC = () => {
+export const DebtQuestions: React.FC = () => {
   const { t } = useTranslation();
 
-  const schema = useMemo(() => getFinancialDetailsSchema(t), [t]);
+  const schema = useMemo(() => getDebtSchema(t), [t]);
 
   const { saveField, questionnaire } = useNsoMpdQuestionnaire();
+
+  const {
+    studentLoanMonthlyPayment,
+    carLoanMonthlyPayment,
+    creditCardDebtMonthlyPayment,
+  } = questionnaire ?? {};
 
   // UI-only toggle, seeded from the saved debt fields
   const savedHasDebt = useMemo(() => {
     const debtAmounts = [
-      questionnaire?.studentLoanMonthlyPayment,
-      questionnaire?.carLoanMonthlyPayment,
-      questionnaire?.creditCardDebtMonthlyPayment,
+      studentLoanMonthlyPayment,
+      carLoanMonthlyPayment,
+      creditCardDebtMonthlyPayment,
     ];
     return debtAmounts.some((amount) => (amount ?? 0) > 0)
       ? 'Yes'
@@ -48,13 +53,12 @@ export const FinancialDetails: React.FC = () => {
         ? 'No'
         : '';
   }, [
-    questionnaire?.studentLoanMonthlyPayment,
-    questionnaire?.carLoanMonthlyPayment,
-    questionnaire?.creditCardDebtMonthlyPayment,
+    studentLoanMonthlyPayment,
+    carLoanMonthlyPayment,
+    creditCardDebtMonthlyPayment,
   ]);
   const [hasDebt, setHasDebt] = useSyncedState(savedHasDebt);
   const [hasDebtTouched, setHasDebtTouched] = useState(false);
-  const showDebtFields = hasDebt === 'Yes';
   const hasDebtError = !hasDebt;
   const showHasDebtError = hasDebtError && hasDebtTouched;
 
@@ -103,7 +107,7 @@ export const FinancialDetails: React.FC = () => {
   ];
 
   return (
-    <Stack spacing={4}>
+    <>
       <FormControl error={showHasDebtError}>
         <FormLabel id="has-debt-label" sx={{ color: 'text.primary' }}>
           {t('Do you have any student loan, car, or credit card debt?')}
@@ -124,7 +128,7 @@ export const FinancialDetails: React.FC = () => {
         )}
       </FormControl>
 
-      {showDebtFields &&
+      {hasDebt === 'Yes' &&
         debtFields.map(({ fieldName, debtType, icon }) => (
           <NumberQuestion
             key={fieldName}
@@ -142,6 +146,6 @@ export const FinancialDetails: React.FC = () => {
             }
           />
         ))}
-    </Stack>
+    </>
   );
 };
