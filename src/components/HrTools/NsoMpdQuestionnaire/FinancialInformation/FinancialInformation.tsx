@@ -3,7 +3,8 @@ import { Box, Stack, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { StepPage } from '../Shared/StepPage';
 import { SubStep } from '../Shared/SubStepList';
-import { FinancialDetails } from './FinancialDetails';
+import { DebtQuestions } from './DebtQuestions';
+import { VariantQuestions } from './VariantQuestions';
 
 export const FinancialInformation: React.FC = () => {
   const { t } = useTranslation();
@@ -20,7 +21,10 @@ export const FinancialInformation: React.FC = () => {
           <Typography variant="body1">
             {t('Tell us about your financial situation.')}
           </Typography>
-          <FinancialDetails />
+          <Stack spacing={4}>
+            <VariantQuestions />
+            <DebtQuestions />
+          </Stack>
         </Stack>
       </Box>
     </StepPage>

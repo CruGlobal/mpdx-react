@@ -42,6 +42,7 @@ export const NumberQuestion: React.FC<NumberQuestionProps> = ({
       type="number"
       inputProps={{ min: 0, inputMode: 'numeric' }}
       InputProps={{ startAdornment }}
+      InputLabelProps={{ sx: { color: 'text.primary' } }}
       {...fieldProps}
     />
   );

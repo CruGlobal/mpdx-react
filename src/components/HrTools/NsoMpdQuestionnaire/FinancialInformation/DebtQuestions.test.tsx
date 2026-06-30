@@ -3,7 +3,7 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
 import { NsoMpdQuestionnaireTestWrapper } from '../NsoMpdQuestionnaireTestWrapper';
-import { FinancialDetails } from './FinancialDetails';
+import { DebtQuestions } from './DebtQuestions';
 
 const mutationSpy = jest.fn();
 
@@ -17,7 +17,7 @@ const TestComponent: React.FC<{
     onCall={onCall}
     newStaffQuestionnaire={newStaffQuestionnaire}
   >
-    <FinancialDetails />
+    <DebtQuestions />
   </NsoMpdQuestionnaireTestWrapper>
 );
 
@@ -28,7 +28,7 @@ const creditCardQuestion =
   'What is your monthly payment for all of your credit card debt?';
 const requiredError = 'Please enter an amount, or 0 if you have none.';
 
-describe('FinancialDetails', () => {
+describe('DebtQuestions', () => {
   it('renders the debt question with Yes and No options', () => {
     const { getByRole } = render(<TestComponent />);
 
