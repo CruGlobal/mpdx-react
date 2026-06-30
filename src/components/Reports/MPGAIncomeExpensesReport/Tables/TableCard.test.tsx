@@ -107,6 +107,20 @@ describe('TableCard', () => {
     expect(getByRole('columnheader', { name: '2025' })).toBeInTheDocument();
   });
 
+  it('should apply the correct color to each group header', () => {
+    const { getByText } = render(<TestComponent />);
+
+    expect(getByText('2024')).toHaveStyle({
+      color: theme.palette.primary.main,
+    });
+    expect(getByText('2025')).toHaveStyle({
+      color: theme.palette.chartOrange.main,
+    });
+    expect(getByText('Summary')).toHaveStyle({
+      color: theme.palette.chartGray.main,
+    });
+  });
+
   it('should display empty placeholder when no data is available', () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
