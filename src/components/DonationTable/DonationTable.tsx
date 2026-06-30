@@ -261,7 +261,7 @@ export const DonationTable: React.FC<DonationTableProps> = ({
       field: 'date',
       headerName: t('Date'),
       flex: 1,
-      minWidth: 90,
+      minWidth: 120,
       renderCell: date,
     },
     {
