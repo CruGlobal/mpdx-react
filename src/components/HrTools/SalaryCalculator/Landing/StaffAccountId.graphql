@@ -1,6 +1,0 @@
-query StaffAccountId {
-  user {
-    id
-    staffAccountId
-  }
-}

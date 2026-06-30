@@ -8,9 +8,9 @@ import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { AsrStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
+import { StaffAccountIdQuery } from '../../../Shared/StaffAccountId.generated';
 import { AdditionalSalaryRequestQuery } from '../../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestProvider } from '../../Shared/AdditionalSalaryRequestContext';
-import { StaffAccountIdQuery } from '../../StaffAccountId.generated';
 import { InProgressDisplay } from './InProgressDisplay';
 
 const mutationSpy = jest.fn();
