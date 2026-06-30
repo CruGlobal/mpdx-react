@@ -117,7 +117,6 @@ export const FinancialInformationSection: React.FC<
         />
       </FieldRow>
 
-      {/* The API splits debt into three monthly payments (no single field). */}
       <FieldRow label={t('Student Loan Payment')}>
         <GoalSettingsNumberField
           name="studentLoanMonthlyPayment"
