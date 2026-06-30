@@ -5,12 +5,15 @@ import {
   afterTestResizeObserver,
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
-import { NsGoalCalculatorTestWrapper } from '../NsGoalCalculatorTestWrapper';
+import {
+  NsGoalCalculatorTestWrapper,
+  defaultGoalCalculation,
+} from '../NsGoalCalculatorTestWrapper';
 import { PresentingYourGoalStep } from './PresentingYourGoalStep';
 
 const TestComponent: React.FC = () => (
   <NsGoalCalculatorTestWrapper>
-    <PresentingYourGoalStep />
+    <PresentingYourGoalStep goalCalculation={defaultGoalCalculation} />
   </NsGoalCalculatorTestWrapper>
 );
 
@@ -19,7 +22,7 @@ describe('PresentingYourGoalStep', () => {
     beforeTestResizeObserver();
   });
 
-  afterEach(() => {
+  afterAll(() => {
     afterTestResizeObserver();
   });
 
@@ -48,23 +51,25 @@ describe('PresentingYourGoalStep', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders the personal information section', () => {
-    const { getByRole, getByText, getByTestId } = render(<TestComponent />);
+  it('renders the personal information section', async () => {
+    const { findByText, getByRole, getByText, getByTestId } = render(
+      <TestComponent />,
+    );
 
+    expect(await findByText('John and Jane Doe')).toBeInTheDocument();
     expect(
       getByRole('heading', { name: 'Personal Information' }),
     ).toBeInTheDocument();
-    expect(getByText('John and Jane Doe')).toBeInTheDocument();
     expect(getByText('Campus Crusade for Christ, Inc.')).toBeInTheDocument();
     expect(getByText('Lake Hart')).toBeInTheDocument();
     expect(getByTestId('cru-logo')).toBeInTheDocument();
   });
 
   it('renders the monthly support needs section', async () => {
-    const { getByRole, getByText, findByText } = render(<TestComponent />);
+    const { getByText, findByText, findByRole } = render(<TestComponent />);
 
     expect(
-      getByRole('heading', { name: 'Monthly Support Needs' }),
+      await findByRole('heading', { name: 'Monthly Support Needs' }),
     ).toBeInTheDocument();
     expect(getByText('Salary (Combined)')).toBeInTheDocument();
     expect(getByText('$8,774')).toBeInTheDocument();
@@ -91,19 +96,21 @@ describe('PresentingYourGoalStep', () => {
     expect(await findByText('Total Solid Support')).toBeInTheDocument();
   });
 
-  it('renders the special needs section', () => {
-    const { getByRole, getByText } = render(<TestComponent />);
+  it('renders the special needs section', async () => {
+    const { findByRole, getByText } = render(<TestComponent />);
 
-    expect(getByRole('heading', { name: 'Special Needs' })).toBeInTheDocument();
+    expect(
+      await findByRole('heading', { name: 'Special Needs' }),
+    ).toBeInTheDocument();
     expect(getByText('Total Special Needs Goal')).toBeInTheDocument();
     expect(getByText('$3,624')).toBeInTheDocument();
   });
 
-  it('renders the monthly support needs chart and the special needs chart placeholder', () => {
-    const { getByRole, getByTestId } = render(<TestComponent />);
+  it('renders the monthly support needs chart and the special needs chart placeholder', async () => {
+    const { findByRole, getByRole, getByTestId } = render(<TestComponent />);
 
     expect(
-      getByRole('heading', { name: 'Monthly Support Needs Chart' }),
+      await findByRole('heading', { name: 'Monthly Support Needs Chart' }),
     ).toBeInTheDocument();
     expect(
       getByRole('heading', { name: 'Special Needs Chart' }),

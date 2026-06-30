@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { NsGoalCalculator } from 'src/components/HrTools/NsGoalCalculator/NsGoalCalculator';
 import { NsGoalCalculatorProvider } from 'src/components/HrTools/NsGoalCalculator/Shared/NsGoalCalculatorContext';
+import { NsGoalCalculatorLayout } from 'src/components/HrTools/NsGoalCalculator/Shared/NsGoalCalculatorLayout';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import {
@@ -56,7 +57,7 @@ const NsGoalCalculatorContent: React.FC<NsGoalCalculatorContentProps> = ({
             title={t('New Staff Goal Calculator')}
             headerType={HeaderTypeEnum.HrTools}
           />
-          <NsGoalCalculator />
+          <NsGoalCalculatorLayout mainContent={<NsGoalCalculator />} />
         </>
       }
     />
