@@ -4,6 +4,7 @@ import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { type HcmQuery, useHcmQuery } from '../../Shared/HcmData/Hcm.generated';
+import { useStaffAccountIdQuery } from '../../Shared/StaffAccountId.generated';
 import { getLocalizedTaxStatus } from '../Shared/getLocalizedTaxStatus';
 import { orientSalaryRequest } from '../Shared/orientSalaryRequest';
 import { useAccountBalanceQuery } from './AccountBalance.generated';
@@ -11,7 +12,6 @@ import {
   type LandingSalaryCalculationsQuery,
   useLandingSalaryCalculationsQuery,
 } from './NewSalaryCalculationLanding/LandingSalaryCalculations.generated';
-import { useStaffAccountIdQuery } from './StaffAccountId.generated';
 import { formatCalculationDates } from './dateHelpers';
 
 interface SalaryCategory {
