@@ -39,6 +39,21 @@ describe('GoalsTableToolbar', () => {
     expect(getByRole('button', { name: 'More Actions' })).toBeInTheDocument();
   });
 
+  it('drops hidden rows from the selected count when a search filters them out', async () => {
+    const { getByRole, getByText, queryByText, queryByRole } = renderToolbar();
+    act(() => ctx.toggleRow('row-1'));
+    expect(getByText('1 selected')).toBeInTheDocument();
+
+    // 'row-1' (John & Jane Doe) is hidden by a search for another member, so
+    // the count must not keep reporting a row the user can no longer see.
+    await userEvent.type(getByRole('textbox', { name: 'Search' }), 'carlos');
+    expect(queryByText('1 selected')).not.toBeInTheDocument();
+    expect(
+      queryByRole('button', { name: 'Run & Send Selected' }),
+    ).not.toBeInTheDocument();
+    expect(getByRole('button', { name: 'Print All' })).toBeInTheDocument();
+  });
+
   it('updates search on typing', async () => {
     const { getByRole } = renderToolbar();
     await userEvent.type(getByRole('textbox', { name: 'Search' }), 'doe');

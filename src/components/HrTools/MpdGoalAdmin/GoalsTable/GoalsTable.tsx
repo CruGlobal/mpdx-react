@@ -29,15 +29,24 @@ interface GoalsTableProps {
 export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { selectedRowIds, toggleRow, toggleRows, openRow } = useMpdGoalAdmin();
+  const {
+    selectedRowIds,
+    toggleRow,
+    toggleRows,
+    openRow,
+    search,
+    selectedCohortId,
+  } = useMpdGoalAdmin();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  // Reset to the first page when the filtered row set changes, so a search
-  // that shrinks the results doesn't strand the user on an empty page.
+  // Reset to the first page whenever the filter inputs change, so the user
+  // isn't stranded on a now-out-of-range page. Keyed on the filter identity
+  // (search + cohort) rather than `rows.length`, which misses a filter change
+  // that swaps which rows match without changing how many do.
   useEffect(() => {
     setPage(0);
-  }, [rows.length]);
+  }, [search, selectedCohortId]);
 
   const pageRows = rows.slice(
     page * rowsPerPage,
@@ -46,6 +55,7 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
   const pageIds = pageRows.map((row) => row.id);
   const allOnPageSelected =
     pageIds.length > 0 && pageIds.every((id) => selectedRowIds.has(id));
+  const someOnPageSelected = pageIds.some((id) => selectedRowIds.has(id));
 
   if (rows.length === 0) {
     return (
@@ -63,6 +73,7 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
             <TableCell padding="checkbox">
               <Checkbox
                 checked={allOnPageSelected}
+                indeterminate={someOnPageSelected && !allOnPageSelected}
                 onChange={() => toggleRows(pageIds)}
                 inputProps={{ 'aria-label': t('Select all') }}
               />

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Box, Tab, Tabs, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
@@ -33,20 +33,7 @@ export const MpdGoalAdmin: React.FC<MpdGoalAdminProps> = ({
   onNavListToggle,
 }) => {
   const { t } = useTranslation();
-  const { activeTab, setActiveTab, selectedCohort, search } = useMpdGoalAdmin();
-
-  const filteredRows = useMemo(() => {
-    const term = search.trim().toLowerCase();
-    const rows = selectedCohort?.rows ?? [];
-    if (!term) {
-      return rows;
-    }
-    return rows.filter(
-      (row) =>
-        row.name.toLowerCase().includes(term) ||
-        row.email.toLowerCase().includes(term),
-    );
-  }, [selectedCohort, search]);
+  const { activeTab, setActiveTab, filteredRows } = useMpdGoalAdmin();
 
   return (
     <>

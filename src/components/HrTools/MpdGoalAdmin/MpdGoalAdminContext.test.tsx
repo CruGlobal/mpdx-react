@@ -25,6 +25,30 @@ describe('MpdGoalAdminContext', () => {
     expect(result.current.selectedRowIds.size).toBe(0);
   });
 
+  it('excludes search-hidden rows from selectedRows without forgetting them', () => {
+    const { result } = renderHook(() => useMpdGoalAdmin(), { wrapper });
+    act(() => result.current.toggleRow('row-1'));
+    expect(result.current.selectedRows.map((row) => row.id)).toEqual(['row-1']);
+
+    // A search that hides row-1 drops it from selectedRows (so the count can't
+    // lie) but keeps its id in the set so clearing the search restores it.
+    act(() => result.current.setSearch('carlos'));
+    expect(result.current.selectedRows).toHaveLength(0);
+    expect(result.current.selectedRowIds.has('row-1')).toBe(true);
+
+    act(() => result.current.setSearch(''));
+    expect(result.current.selectedRows.map((row) => row.id)).toEqual(['row-1']);
+  });
+
+  it('clears the selection when the cohort changes', () => {
+    const { result } = renderHook(() => useMpdGoalAdmin(), { wrapper });
+    act(() => result.current.toggleRow('row-1'));
+    expect(result.current.selectedRowIds.size).toBe(1);
+
+    act(() => result.current.setSelectedCohortId('a-different-cohort'));
+    expect(result.current.selectedRowIds.size).toBe(0);
+  });
+
   it('opens and closes the staff detail drawer', () => {
     const { result } = renderHook(() => useMpdGoalAdmin(), { wrapper });
     const row = mockCohorts[0].rows[0];

@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import theme from 'src/theme';
 import { MpdGoalAdminProvider, useMpdGoalAdmin } from '../MpdGoalAdminContext';
@@ -66,6 +66,26 @@ describe('GoalsTable', () => {
     });
   });
 
+  it('shows the header checkbox as indeterminate when only some rows are selected', async () => {
+    const { getAllByRole } = renderTable();
+    const checkboxes = getAllByRole('checkbox');
+    const headerCheckbox = checkboxes[0] as HTMLInputElement;
+
+    // Nothing selected yet: neither checked nor indeterminate.
+    expect(headerCheckbox.checked).toBe(false);
+    expect(headerCheckbox).toHaveAttribute('data-indeterminate', 'false');
+
+    // Select a single data row.
+    await userEvent.click(checkboxes[1]);
+    expect(headerCheckbox.checked).toBe(false);
+    expect(headerCheckbox).toHaveAttribute('data-indeterminate', 'true');
+
+    // Select the rest via the header, which now reads "select all".
+    await userEvent.click(headerCheckbox);
+    expect(headerCheckbox.checked).toBe(true);
+    expect(headerCheckbox).toHaveAttribute('data-indeterminate', 'false');
+  });
+
   it('paginates: only the first page of rows is shown at a time', () => {
     // 12 rows with the default page size of 10 forces a second page.
     const manyRows = Array.from({ length: 12 }, (_index, i) => ({
@@ -81,13 +101,13 @@ describe('GoalsTable', () => {
     expect(queryByText('Person 11')).not.toBeInTheDocument();
   });
 
-  it('returns to the first page when the row set shrinks below the current page', async () => {
+  it('returns to the first page when the filter changes', async () => {
     const manyRows = Array.from({ length: 12 }, (_index, i) => ({
       ...rows[0],
       id: `page-row-${i}`,
       name: `Person ${i}`,
     }));
-    const { getByText, queryByText, rerender } = render(
+    const { getByText, getByRole, queryByText, rerender } = render(
       <ThemeProvider theme={theme}>
         <MpdGoalAdminProvider>
           <Capture rows={manyRows} />
@@ -97,12 +117,14 @@ describe('GoalsTable', () => {
     // Verify page 1 is rendered first.
     expect(getByText('Person 9')).toBeInTheDocument();
     // Advance to the next page via the pagination "next page" button.
-    await userEvent.click(
-      document.querySelector('[aria-label="Go to next page"]') as HTMLElement,
-    );
+    await userEvent.click(getByRole('button', { name: /Go to next page/i }));
     expect(getByText('Person 10')).toBeInTheDocument();
 
-    // Now shrink the data to a single row; the table must show page 1, not a blank page 2.
+    // Changing the filter shrinks the result set. The table must reset to the
+    // first page rather than stranding the user on a now-out-of-range page.
+    act(() => {
+      ctx.setSearch('Person 0');
+    });
     rerender(
       <ThemeProvider theme={theme}>
         <MpdGoalAdminProvider>

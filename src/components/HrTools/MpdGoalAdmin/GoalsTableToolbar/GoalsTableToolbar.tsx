@@ -13,8 +13,8 @@ import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
 
 export const GoalsTableToolbar: React.FC = () => {
   const { t } = useTranslation();
-  const { search, setSearch, selectedRowIds } = useMpdGoalAdmin();
-  const selectedCount = selectedRowIds.size;
+  const { search, setSearch, selectedRows } = useMpdGoalAdmin();
+  const selectedCount = selectedRows.length;
   const hasSelection = selectedCount > 0;
 
   return (
