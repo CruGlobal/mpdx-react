@@ -109,10 +109,10 @@ export const FinancialInformationSection: React.FC<
 
       <ColumnHeaderRow columns={[sharedHeader]} />
 
-      <FieldRow label={t('Geo Multiplier')}>
+      <FieldRow label={t('Geographic Location')}>
         <GoalSettingsSelect
           name="geographicLocation"
-          label={t('Geo Multiplier')}
+          label={t('Geographic Location')}
           options={geographicLocationOptions}
         />
       </FieldRow>
