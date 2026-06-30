@@ -22,11 +22,11 @@ import * as yup from 'yup';
 import { CustomDateField } from 'src/components/Shared/DateTimePickers/CustomDateField';
 import { Fund, StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
-import { getLocalizedCategory } from '../../Shared/Helpers/transformStaffExpenseEnums';
-import { useReportsStaffExpensesQuery } from '../GetStaffExpense.generated';
-import { DateRange } from '../Helpers/StaffReportEnum';
-import { getAvailableCategories } from '../Helpers/filterTransactions';
-import { getStaffExpenseMonthRange } from '../Helpers/getMonthRange';
+import { useReportsStaffExpensesQuery } from '../../StaffExpenseReport/GetStaffExpense.generated';
+import { DateRange } from '../../StaffExpenseReport/Helpers/StaffReportEnum';
+import { getAvailableCategories } from '../../StaffExpenseReport/Helpers/filterTransactions';
+import { getStaffExpenseMonthRange } from '../../StaffExpenseReport/Helpers/getMonthRange';
+import { getLocalizedCategory } from '../Helpers/transformStaffExpenseEnums';
 
 export interface SettingsDialogProps {
   isOpen: boolean;
@@ -34,7 +34,7 @@ export interface SettingsDialogProps {
   selectedFundType: string | null;
   onClose: (filters?: Filters) => void;
   time?: DateTime;
-  showDateRange?: boolean;
+  hideDateRange?: boolean;
 }
 
 export interface Filters {
@@ -128,7 +128,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   selectedFilters,
   selectedFundType,
   time,
-  showDateRange,
+  hideDateRange,
 }) => {
   const { t } = useTranslation();
   const [previewFilters, setPreviewFilters] = useState<Filters | null>(null);
@@ -232,7 +232,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
           return (
             <Form>
               <DialogContent>
-                {!showDateRange && (
+                {!hideDateRange && (
                   <>
                     <TextField
                       select
@@ -335,14 +335,15 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                 )}
 
                 <Typography
-                  sx={{ mt: showDateRange ? 0 : 2, whiteSpace: 'pre-line' }}
+                  sx={{ mt: hideDateRange ? 0 : 2, whiteSpace: 'pre-line' }}
                 >
-                  {showDateRange
+                  {hideDateRange
                     ? t(
                         `Income and expenses are combined by categories by default. Select which categories to keep consolidated.`,
                       )
-                    : t(`Income and expenses are combined by categories by default. This may be useful for long date ranges (e.g., "Year to Date").
-                    Select which categories to keep consolidated.`)}
+                    : t(
+                        `Income and expenses are combined by categories by default. This may be useful for long date ranges (e.g., "Year to Date").\nSelect which categories to keep consolidated.`,
+                      )}
                 </Typography>
 
                 <Typography sx={{ mt: 2, mb: 1 }}>

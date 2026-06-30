@@ -1,6 +1,6 @@
 import { TFunction } from 'i18next';
 import { DateTime } from 'luxon';
-import { Filters } from 'src/components/Reports/StaffExpenseReport/SettingsDialog/SettingsDialog';
+import { Filters } from 'src/components/Reports/Shared/SettingsDialog/SettingsDialog';
 import {
   Fund,
   StaffExpenseCategoryEnum,

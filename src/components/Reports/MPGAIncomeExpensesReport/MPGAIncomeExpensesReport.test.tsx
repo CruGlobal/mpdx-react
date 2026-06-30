@@ -181,11 +181,9 @@ describe('MPGAIncomeExpensesReport', () => {
       userEvent.click(applyButton);
 
       expect(
-        (await findAllByText('Benefits - Workers Compensation')).length,
-      ).toBeGreaterThan(0);
-      expect(
-        (await findAllByText('Benefits - Program Based')).length,
-      ).toBeGreaterThan(0);
+        await findAllByText('Benefits - Workers Compensation'),
+      ).toHaveLength(1);
+      expect(await findAllByText('Benefits - Program Based')).toHaveLength(1);
     }, 15000);
   });
 });

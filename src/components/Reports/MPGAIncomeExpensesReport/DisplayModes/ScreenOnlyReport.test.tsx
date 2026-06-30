@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { TotalsProvider } from '../TotalsContext/TotalsContext';
@@ -10,6 +11,7 @@ import { mockData, months } from '../mockData';
 import { ScreenOnlyReport } from './ScreenOnlyReport';
 
 const mutationSpy = jest.fn();
+const handleSettingsClick = jest.fn();
 const currency = 'USD';
 
 const emptyData = {
@@ -26,13 +28,7 @@ const TestComponent: React.FC = () => (
             data={mockData}
             last12Months={months}
             currency={currency}
-            selectedFilters={{
-              selectedDateRange: null,
-              startDate: null,
-              endDate: null,
-              categories: null,
-            }}
-            onFiltersChange={() => {}}
+            handleSettingsClick={handleSettingsClick}
           />
         </TotalsProvider>
       </GqlMockedProvider>
@@ -72,13 +68,7 @@ describe('ScreenOnlyReport', () => {
                 data={emptyData}
                 last12Months={months}
                 currency={currency}
-                selectedFilters={{
-                  selectedDateRange: null,
-                  startDate: null,
-                  endDate: null,
-                  categories: null,
-                }}
-                onFiltersChange={() => {}}
+                handleSettingsClick={handleSettingsClick}
               />
             </TotalsProvider>
           </GqlMockedProvider>
@@ -87,5 +77,13 @@ describe('ScreenOnlyReport', () => {
     );
 
     expect(queryAllByRole('grid')).toHaveLength(2);
+  });
+
+  it('calls handleSettingsClick when the Report Settings button is clicked', () => {
+    const { getByRole } = render(<TestComponent />);
+
+    userEvent.click(getByRole('button', { name: 'Report Settings' }));
+
+    expect(handleSettingsClick).toHaveBeenCalledTimes(1);
   });
 });

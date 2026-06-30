@@ -1,18 +1,13 @@
-import { useState } from 'react';
 import { HourglassDisabled, Settings } from '@mui/icons-material';
 import { Box, Container, Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { EmptyTable } from '../../../HrTools/Shared/EmptyTable/EmptyTable';
-import {
-  Filters,
-  SettingsDialog,
-} from '../../StaffExpenseReport/SettingsDialog/SettingsDialog';
-import { StyledFilterButton } from '../../StaffExpenseReport/StaffExpenseReport';
+import { StyledFilterButton } from '../../Shared/SettingsDialog/StyledFilterButton';
 import { CardSkeleton } from '../Card/CardSkeleton';
 import { ExpensesPieChart } from '../Charts/ExpensesPieChart';
 import { MonthlySummaryChart } from '../Charts/MonthlySummaryChart';
 import { SummaryBarChart } from '../Charts/SummaryBarChart';
-import { FundTypes, ReportTypeEnum } from '../Helper/MPGAReportEnum';
+import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { TableCard } from '../Tables/TableCard';
 import { AllData } from '../mockData';
 
@@ -20,23 +15,16 @@ interface ScreenOnlyReportProps {
   data: AllData;
   last12Months: string[];
   currency: string;
-  selectedFilters: Filters;
-  onFiltersChange: (newFilters: Filters) => void;
+  handleSettingsClick: () => void;
 }
 
 export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
   data,
   last12Months,
   currency,
-  selectedFilters,
-  onFiltersChange,
+  handleSettingsClick,
 }) => {
   const { t } = useTranslation();
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-
-  const handleSettingsClick = () => {
-    setIsSettingsOpen(true);
-  };
 
   return (
     <Box mt={2}>
@@ -114,20 +102,6 @@ export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
           </CardSkeleton>
         </Box>
       </Container>
-      {isSettingsOpen && (
-        <SettingsDialog
-          selectedFilters={selectedFilters}
-          selectedFundType={FundTypes.Primary}
-          isOpen={isSettingsOpen}
-          onClose={(newFilters) => {
-            if (newFilters) {
-              onFiltersChange(newFilters);
-            }
-            setIsSettingsOpen(false);
-          }}
-          showDateRange
-        />
-      )}
     </Box>
   );
 };

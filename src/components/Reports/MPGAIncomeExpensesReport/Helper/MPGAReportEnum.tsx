@@ -23,7 +23,7 @@ interface SubCategories {
   subCategory: StaffExpensesSubCategoryEnum;
   breakdownByMonth: BreakdownByMonth[];
 }
-interface Categories {
+export interface Categories {
   averagePerMonth: number;
   total: number;
   category: StaffExpenseCategoryEnum;
