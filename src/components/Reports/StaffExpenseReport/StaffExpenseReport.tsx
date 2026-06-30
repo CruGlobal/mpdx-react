@@ -53,6 +53,7 @@ import { StaffReportTable } from './Tables/StaffReportTable';
 const StyledHeaderBox = styled(Box)({
   display: 'flex',
   alignItems: 'center',
+  flexWrap: 'wrap',
   gap: theme.spacing(2),
   justifyContent: 'space-between',
 });

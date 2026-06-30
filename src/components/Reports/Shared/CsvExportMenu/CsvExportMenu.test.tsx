@@ -64,6 +64,23 @@ describe('CsvExportMenu', () => {
     );
   });
 
+  it('renders items with duplicate labels when distinct values are supplied', async () => {
+    const { getByRole, findAllByRole } = render(
+      <TestComponent
+        items={[
+          { value: 'a', label: 'Download', onClick: jest.fn() },
+          { value: 'b', label: 'Download', onClick: jest.fn() },
+        ]}
+      />,
+    );
+
+    userEvent.click(getByRole('button', { name: 'Export CSV' }));
+
+    expect(await findAllByRole('menuitem', { name: 'Download' })).toHaveLength(
+      2,
+    );
+  });
+
   it('marks an individual item as disabled', async () => {
     const onClick = jest.fn();
     const { getByRole, findByRole } = render(

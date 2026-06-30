@@ -93,10 +93,14 @@ export const TableCard: React.FC<TableCardProps> = ({
   const locale = useLocale();
   const { incomeTotal, expensesTotal } = useTotals();
 
-  const { monthCount, getBorderColor } = useMonthHeaders(months, {
-    first: theme.palette.primary.main,
-    second: theme.palette.chartOrange.main,
-  });
+  const monthColors = useMemo(
+    () => ({
+      first: theme.palette.primary.main,
+      second: theme.palette.chartOrange.main,
+    }),
+    [],
+  );
+  const { monthCount, getBorderColor } = useMonthHeaders(months, monthColors);
 
   const overallTotal =
     type === ReportTypeEnum.Income ? incomeTotal : expensesTotal;
@@ -170,12 +174,13 @@ export const TableCard: React.FC<TableCardProps> = ({
   }, [months]);
 
   const columnGroupingModel = useMemo<GridColumnGroupingModel>(() => {
-    let monthIndex = 0;
-
     const yearGroups = monthCount.map(({ year, count }, index) => {
       const color = getBorderColor(index);
-      const children = Array.from({ length: count }, () => ({
-        field: `month${monthIndex++}`,
+      const monthOffset = monthCount
+        .slice(0, index)
+        .reduce((sum, group) => sum + group.count, 0);
+      const children = Array.from({ length: count }, (_, monthIndex) => ({
+        field: `month${monthOffset + monthIndex}`,
       }));
 
       return {
