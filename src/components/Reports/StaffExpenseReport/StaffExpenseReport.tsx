@@ -33,7 +33,7 @@ import {
 } from '../styledComponents';
 import { PrintHeader } from './BalanceCard/PrintHeader';
 import { BalanceCardList } from './BalanceCardList/BalanceCardList';
-import { DownloadButtonGroup } from './DownloadButtonGroup/DownloadButtonGroup';
+import { ExportCsvButton } from './ExportCsvButton/ExportCsvButton';
 import { useReportsStaffExpensesQuery } from './GetStaffExpense.generated';
 import { ReportType } from './Helpers/StaffReportEnum';
 import { Transaction, filterTransactions } from './Helpers/filterTransactions';
@@ -189,6 +189,13 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     return newTransactions;
   }, [allFunds, time, t, filters]);
 
+  const selectedFundTransactions = selectedFundType
+    ? [
+        ...(transactions[selectedFundType]?.income ?? []),
+        ...(transactions[selectedFundType]?.expenses ?? []),
+      ]
+    : [];
+
   const handleCardClick = (fundType: string) => {
     setSelectedFundType(fundType);
   };
@@ -282,10 +289,10 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               ) ? (
                 <SimpleScreenOnly
                   display="flex"
-                  flexDirection="column"
-                  alignItems="flex-end"
-                  gap={1}
+                  alignItems="center"
+                  sx={{ gap: 2, '& > button': { ml: 0 } }}
                 >
+                  <ExportCsvButton transactions={selectedFundTransactions} />
                   <StyledPrintButton
                     startIcon={
                       <SvgIcon fontSize="small">
@@ -390,16 +397,6 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       </Box>
       <SimpleScreenOnly>
         <Container sx={{ gap: 1, display: 'flex', flexDirection: 'row' }}>
-          <DownloadButtonGroup
-            transactions={
-              selectedFundType
-                ? [
-                    ...(transactions[selectedFundType]?.income ?? []),
-                    ...(transactions[selectedFundType]?.expenses ?? []),
-                  ]
-                : []
-            }
-          />
           <Box display={'flex'} flexGrow={1} justifyContent="flex-end" gap={1}>
             {isFilterDateSelected ? (
               <StyledFilterButton
