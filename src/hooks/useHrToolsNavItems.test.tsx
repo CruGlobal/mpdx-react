@@ -53,6 +53,7 @@ describe('useHrToolsNavItems', () => {
       'nsGoalCalculator',
       'nsoMpdQuestionnaire',
       'goalCalculator',
+      'mpdGoalAdmin',
       'mhaCalculator',
       'additionalSalaryRequest',
       'pdsGoalCalculator',
