@@ -6,6 +6,12 @@ import { StyledPrintButton } from '../../styledComponents';
 
 export interface CsvExportMenuItem {
   label: string;
+  /**
+   * Stable React key for the menu item. Defaults to `label`, which is fine when
+   * labels are unique; supply an explicit value when a caller can render items
+   * with duplicate labels.
+   */
+  value?: string;
   disabled?: boolean;
   onClick: () => void;
 }
@@ -74,7 +80,7 @@ export const CsvExportMenu: React.FC<CsvExportMenuProps> = ({
       >
         {items.map((item) => (
           <MenuItem
-            key={item.label}
+            key={item.value ?? item.label}
             disabled={item.disabled}
             onClick={() => handleItemClick(item.onClick)}
           >

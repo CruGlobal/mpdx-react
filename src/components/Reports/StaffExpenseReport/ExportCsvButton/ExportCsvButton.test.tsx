@@ -166,6 +166,31 @@ describe('ExportCsvButton', () => {
     ).toHaveAttribute('aria-disabled', 'true');
   });
 
+  it('treats a zero-amount transaction as neither income nor expense', async () => {
+    const zeroTransaction: Transaction = {
+      ...mockTransactions[0],
+      id: '0',
+      amount: 0,
+    };
+    const { getByRole, findByRole } = render(
+      <TestComponent
+        transactions={[zeroTransaction, ...incomeOnlyTransactions]}
+      />,
+    );
+
+    userEvent.click(getByRole('button', { name: 'Export CSV' }));
+
+    expect(
+      await findByRole('menuitem', { name: 'Income Report' }),
+    ).not.toHaveAttribute('aria-disabled', 'true');
+    expect(
+      await findByRole('menuitem', { name: 'Expense Report' }),
+    ).toHaveAttribute('aria-disabled', 'true');
+    expect(
+      await findByRole('menuitem', { name: 'Combined Report' }),
+    ).toHaveAttribute('aria-disabled', 'true');
+  });
+
   it('closes the menu after an export is selected', async () => {
     const { getByRole, findByRole, queryByRole } = render(
       <TestComponent transactions={mockTransactions} />,

@@ -31,6 +31,44 @@ export interface TableCardProps {
   loading?: boolean;
 }
 
+// Visual styling for the grouped-column headers, matching the report's table
+// styling. The font size follows the report-wide 14px convention; the gap and
+// underline thickness are named here rather than inlined as magic numbers.
+const groupHeaderFontSize = '14px';
+const groupHeaderUnderlineGap = '7px';
+const groupHeaderUnderlineHeight = '2px';
+
+const GroupHeader: React.FC<{ label: string; color: string }> = ({
+  label,
+  color,
+}) => (
+  <Box
+    sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      width: '100%',
+      height: '100%',
+    }}
+  >
+    <Box component="span" sx={{ alignSelf: 'flex-start' }}>
+      <Typography
+        sx={{ color, fontSize: groupHeaderFontSize, fontWeight: 'bold' }}
+      >
+        {label}
+      </Typography>
+    </Box>
+    <Box component="span" sx={{ width: '100%', mt: groupHeaderUnderlineGap }}>
+      <Box
+        sx={{
+          width: '100%',
+          height: groupHeaderUnderlineHeight,
+          backgroundColor: color,
+        }}
+      />
+    </Box>
+  </Box>
+);
+
 export const CreateCardTableRows = (data: DataFields): DataFields => ({
   id: data.id,
   description: data.description,
@@ -145,27 +183,7 @@ export const TableCard: React.FC<TableCardProps> = ({
         headerName: year,
         headerAlign: 'left' as const,
         children,
-        renderHeaderGroup: () => (
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              width: '100%',
-              height: '100%',
-            }}
-          >
-            <Box component="span" sx={{ alignSelf: 'flex-start' }}>
-              <Typography sx={{ color, fontSize: '14px', fontWeight: 'bold' }}>
-                {year}
-              </Typography>
-            </Box>
-            <Box component="span" sx={{ width: '100%', mt: '7px' }}>
-              <Box
-                sx={{ width: '100%', height: '2px', backgroundColor: color }}
-              />
-            </Box>
-          </Box>
-        ),
+        renderHeaderGroup: () => <GroupHeader label={year} color={color} />,
       };
     });
 
@@ -184,35 +202,10 @@ export const TableCard: React.FC<TableCardProps> = ({
         headerAlign: 'left' as const,
         children: [{ field: 'average' }, { field: 'total' }],
         renderHeaderGroup: () => (
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              width: '100%',
-              height: '100%',
-            }}
-          >
-            <Box component="span" sx={{ alignSelf: 'flex-start' }}>
-              <Typography
-                sx={{
-                  color: theme.palette.chartGray.main,
-                  fontSize: '14px',
-                  fontWeight: 'bold',
-                }}
-              >
-                {t('Summary')}
-              </Typography>
-            </Box>
-            <Box component="span" sx={{ width: '100%', mt: '7px' }}>
-              <Box
-                sx={{
-                  width: '100%',
-                  height: '2px',
-                  backgroundColor: theme.palette.chartGray.main,
-                }}
-              />
-            </Box>
-          </Box>
+          <GroupHeader
+            label={t('Summary')}
+            color={theme.palette.chartGray.main}
+          />
         ),
       },
     ];

@@ -189,12 +189,16 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     return newTransactions;
   }, [allFunds, time, t, filters]);
 
-  const selectedFundTransactions = selectedFundType
-    ? [
-        ...(transactions[selectedFundType]?.income ?? []),
-        ...(transactions[selectedFundType]?.expenses ?? []),
-      ]
-    : [];
+  const selectedFundTransactions = useMemo(
+    () =>
+      selectedFundType
+        ? [
+            ...(transactions[selectedFundType]?.income ?? []),
+            ...(transactions[selectedFundType]?.expenses ?? []),
+          ]
+        : [],
+    [selectedFundType, transactions],
+  );
 
   const handleCardClick = (fundType: string) => {
     setSelectedFundType(fundType);
