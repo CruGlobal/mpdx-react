@@ -1,33 +1,41 @@
 fragment NewStaffInformationFields on NewStaffQuestionnaire {
   id
-  personNumber
+  address
+  age
   firstName
   lastName
-  spousePersonNumber
+  maritalStatus
+  personNumber
+  spouseAge
   spouseFirstName
   spouseJoining
-  maritalStatus
-  age
-  spouseAge
-  tenure
+  spousePersonNumber
   spouseTenure
-  address
+  tenure
+  variant
 }
 
 fragment NewStaffQuestionnaireFields on NewStaffQuestionnaire {
   id
-  phoneNumber
-  ministryName
-  ministryLocation
-  geographicLocation
+  accountTransfers
   assignmentType
+  carLoanMonthlyPayment
+  childcareChildrenCount
+  creditCardDebtMonthlyPayment
+  geographicLocation
+  healthcareDependentsCount
+  ministryLocation
+  ministryName
   nsoHousing
   nsoSessions
   nsoSpecialNeedsSupportReceived
-  childcareChildrenCount
+  phoneNumber
+  solidSupportRaised
+  spouseContribution403bPercentage
+  spouseMhaAmount
+  spouseRequestedAnnualSalary
+  staffConferenceTransfer
   studentLoanMonthlyPayment
-  carLoanMonthlyPayment
-  creditCardDebtMonthlyPayment
 }
 
 query NewStaffQuestionnaire($accountListId: ID!) {
