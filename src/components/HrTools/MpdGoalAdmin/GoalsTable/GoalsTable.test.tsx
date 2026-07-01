@@ -30,8 +30,8 @@ describe('GoalsTable', () => {
     const { getByText, getAllByRole } = renderTable();
     expect(getByText('John & Jane Doe')).toBeInTheDocument();
     expect(getByText('$6,430.25')).toBeInTheDocument();
-    // header row + 5 data rows
-    expect(getAllByRole('row')).toHaveLength(rows.length + 1);
+    // header row + the first page of data rows (default page size 10)
+    expect(getAllByRole('row')).toHaveLength(Math.min(rows.length, 10) + 1);
   });
 
   it('renders an empty placeholder for zero rows', () => {
@@ -40,15 +40,16 @@ describe('GoalsTable', () => {
   });
 
   it('shows an Assign Coach prompt when no coach is set', () => {
-    const { getByText } = renderTable();
-    expect(getByText('Assign Coach')).toBeInTheDocument();
+    const { getAllByText } = renderTable();
+    expect(getAllByText('Assign Coach').length).toBeGreaterThan(0);
   });
 
-  it('renders a View/Edit action and a menu button for each row', () => {
+  it('renders a View/Edit action and a menu button for each row on the page', () => {
     const { getAllByText, getAllByRole } = renderTable();
-    expect(getAllByText('View/Edit')).toHaveLength(rows.length);
+    const onPage = Math.min(rows.length, 10);
+    expect(getAllByText('View/Edit')).toHaveLength(onPage);
     expect(getAllByRole('button', { name: /Actions for/ })).toHaveLength(
-      rows.length,
+      onPage,
     );
   });
 
@@ -63,9 +64,12 @@ describe('GoalsTable', () => {
     const { getAllByRole } = renderTable();
     // index 0 is the header "select all" checkbox
     await userEvent.click(getAllByRole('checkbox')[0]);
-    rows.forEach((row) => {
+    // The header checkbox selects only the rows on the current page (the first
+    // 10 with the default page size), not the entire filtered set.
+    rows.slice(0, 10).forEach((row) => {
       expect(ctx.selectedRowIds.has(row.id)).toBe(true);
     });
+    expect(ctx.selectedRowIds.size).toBe(Math.min(rows.length, 10));
   });
 
   it('shows the header checkbox as indeterminate when only some rows are selected', async () => {

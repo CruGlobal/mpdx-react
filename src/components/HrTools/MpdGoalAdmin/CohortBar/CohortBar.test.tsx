@@ -15,7 +15,7 @@ describe('CohortBar', () => {
     expect(getByRole('combobox', { name: 'Training' })).toHaveTextContent(
       'Fall NSO 2026',
     );
-    expect(getByText('5 New Staff')).toBeInTheDocument();
+    expect(getByText('13 New Staff')).toBeInTheDocument();
     expect(getByText('08/10/2026')).toBeInTheDocument();
     expect(getByText('View/Edit')).toBeInTheDocument();
   });
