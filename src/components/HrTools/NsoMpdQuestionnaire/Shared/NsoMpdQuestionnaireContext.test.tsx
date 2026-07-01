@@ -30,6 +30,7 @@ const InnerComponent: React.FC<InnerComponentProps> = ({ initialStep }) => {
     isDrawerOpen,
     handleStepChange,
     handleContinue,
+    handleBack,
     toggleDrawer,
   } = useNsoMpdQuestionnaire();
 
@@ -56,6 +57,7 @@ const InnerComponent: React.FC<InnerComponentProps> = ({ initialStep }) => {
         Change Step
       </button>
       <button onClick={handleContinue}>Continue</button>
+      <button onClick={handleBack}>Back</button>
       <button onClick={toggleDrawer}>Toggle Drawer</button>
     </div>
   );
@@ -86,6 +88,26 @@ describe('NsoMpdQuestionnaireContext', () => {
 
     userEvent.click(getByRole('button', { name: 'Continue' }));
     expect(getByRole('heading')).toHaveTextContent('Questionnaire Step 2');
+  });
+
+  it('goes back to the previous step', () => {
+    const { getByRole } = render(
+      <TestComponent
+        initialStep={NsoMpdQuestionnaireStepEnum.FinancialInformation}
+      />,
+    );
+    expect(getByRole('heading')).toHaveTextContent('Questionnaire Step 3');
+
+    userEvent.click(getByRole('button', { name: 'Back' }));
+    expect(getByRole('heading')).toHaveTextContent('Questionnaire Step 2');
+  });
+
+  it('does not go back before the first step', () => {
+    const { getByRole } = render(<TestComponent />);
+    expect(getByRole('heading')).toHaveTextContent('Questionnaire Step 1');
+
+    userEvent.click(getByRole('button', { name: 'Back' }));
+    expect(getByRole('heading')).toHaveTextContent('Questionnaire Step 1');
   });
 
   it('does not continue past the last step', () => {

@@ -9,6 +9,7 @@ import {
   useNewStaffQuestionnaireQuery,
 } from './NewStaffQuestionnaire.generated';
 import { useUpdateNewStaffQuestionnaireMutation } from './UpdateNewStaffQuestionnaire.generated';
+import { getCompletionPercentage } from './stepCompletion';
 import { NsoMpdQuestionnaireStep, useSteps } from './useSteps';
 
 export type NewStaffQuestionnaire =
@@ -19,9 +20,11 @@ export type NsoMpdQuestionnaireType = {
   currentStep: NsoMpdQuestionnaireStep;
   currentIndex: number;
   isLastStep: boolean;
+  percentComplete: number;
   isDrawerOpen: boolean;
   handleStepChange: (step: NsoMpdQuestionnaireStepEnum) => void;
   handleContinue: () => void;
+  handleBack: () => void;
   toggleDrawer: () => void;
   setDrawerOpen: (open: boolean) => void;
   questionnaire: NewStaffQuestionnaire | null;
@@ -65,6 +68,11 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
     skip: !accountListId,
   });
   const questionnaire = questionnaireData?.newStaffQuestionnaire ?? null;
+
+  const percentComplete = useMemo(
+    () => getCompletionPercentage(questionnaire),
+    [questionnaire],
+  );
 
   const [updateNewStaffQuestionnaire] =
     useUpdateNewStaffQuestionnaireMutation();
@@ -124,15 +132,23 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
     }
   }, [steps, currentIndex]);
 
+  const handleBack = useCallback(() => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+    }
+  }, [currentIndex]);
+
   const contextValue = useMemo(
     (): NsoMpdQuestionnaireType => ({
       steps,
       currentStep,
       currentIndex,
       isLastStep,
+      percentComplete,
       isDrawerOpen,
       handleStepChange,
       handleContinue,
+      handleBack,
       toggleDrawer,
       setDrawerOpen,
       questionnaire,
@@ -146,9 +162,11 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
       currentStep,
       currentIndex,
       isLastStep,
+      percentComplete,
       isDrawerOpen,
       handleStepChange,
       handleContinue,
+      handleBack,
       toggleDrawer,
       setDrawerOpen,
       questionnaire,

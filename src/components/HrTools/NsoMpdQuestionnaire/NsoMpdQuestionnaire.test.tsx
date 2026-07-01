@@ -24,15 +24,17 @@ describe('NsoMpdQuestionnaire', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders the matching step page when a view step is selected', async () => {
+  it('renders the matching step page after continuing to the next step', async () => {
     const { findByRole, getByRole } = render(<TestComponent />);
 
-    userEvent.click(
-      await findByRole('button', { name: 'Questionnaire Step 2' }),
+    userEvent.type(
+      await findByRole('textbox', { name: 'Cell Phone Number' }),
+      '1234567',
     );
+    userEvent.click(getByRole('button', { name: 'Continue' }));
 
     expect(
-      getByRole('heading', { name: 'Questionnaire Step 2' }),
+      await findByRole('heading', { name: 'Questionnaire Step 2' }),
     ).toBeInTheDocument();
   });
 
