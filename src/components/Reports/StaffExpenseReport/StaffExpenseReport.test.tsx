@@ -277,7 +277,7 @@ describe('StaffExpenseReport', () => {
       <TestComponent />,
     );
 
-    userEvent.click(getByRole('button', { name: 'Filter Settings' }));
+    userEvent.click(getByRole('button', { name: 'Report Settings' }));
 
     userEvent.click(await findByLabelText('Assessment'));
     await waitFor(() =>
@@ -302,7 +302,7 @@ describe('StaffExpenseReport', () => {
       <TestComponent />,
     );
 
-    userEvent.click(getByRole('button', { name: 'Filter Settings' }));
+    userEvent.click(getByRole('button', { name: 'Report Settings' }));
     await findByRole('heading', { name: 'Report Settings' });
 
     userEvent.click(getByLabelText('Select Date Range'));

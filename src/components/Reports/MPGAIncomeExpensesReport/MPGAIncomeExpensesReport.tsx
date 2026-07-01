@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import PrintIcon from '@mui/icons-material/Print';
 import {
   Box,
@@ -20,9 +20,10 @@ import { useLocale } from 'src/hooks/useLocale';
 import { AccountInfoBox } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBox';
 import { AccountInfoBoxSkeleton } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBoxSkeleton';
 import {
-  getLocalizedCategory,
-  getLocalizedSubCategory,
-} from '../Shared/Helpers/transformStaffExpenseEnums';
+  Filters,
+  SettingsDialog,
+  getFiltersWithCalculatedDates,
+} from '../Shared/SettingsDialog/SettingsDialog';
 import {
   SimplePrintOnly,
   SimpleScreenOnly,
@@ -32,7 +33,6 @@ import { PrintOnlyReport } from './DisplayModes/PrintOnlyReport';
 import { ScreenOnlyReport } from './DisplayModes/ScreenOnlyReport';
 import { ExportCsvButton } from './ExportCsvButton/ExportCsvButton';
 import { FundTypes, Funds } from './Helper/MPGAReportEnum';
-import { convertMonths } from './Helper/convertMonths';
 import { useMpgaTransactionsQuery } from './MPGATransactions.generated';
 import { TotalsProvider } from './TotalsContext/TotalsContext';
 import { AllData } from './mockData';
@@ -50,23 +50,46 @@ export const MPGAIncomeExpensesReport: React.FC<
   const { t } = useTranslation();
   const locale = useLocale();
   const currency = 'USD';
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  const last12Months = useGetLastTwelveMonths(locale, true);
+
+  const { startDate, endDate } = useMemo(() => {
+    const now = DateTime.now();
+    return {
+      startDate: now.minus({ months: 11 }).startOf('month'),
+      endDate: now,
+    };
+  }, []);
+
+  const [filters, setFilters] = useState<Filters>(() =>
+    getFiltersWithCalculatedDates({
+      selectedDateRange: null,
+      startDate: startDate,
+      endDate: endDate.endOf('month'),
+      categories: null,
+    }),
+  );
+
+  const onFiltersChange = (newFilters: Filters) => {
+    setFilters(newFilters);
+  };
+
+  const handleSettingsClick = () => {
+    setIsSettingsOpen(true);
+  };
 
   const handlePrint = () => {
     window.print();
   };
-
-  const last12Months = useGetLastTwelveMonths(locale, true);
-
-  const start = convertMonths(last12Months[0], locale);
-  const end = DateTime.now().toISODate();
 
   const { data: staffAccountData, error } = useStaffAccountQuery();
 
   const { data: reportData } = useMpgaTransactionsQuery({
     variables: {
       fundTypes: [FundTypes.Primary],
-      startMonth: start,
-      endMonth: end,
+      startMonth: startDate.toISODate(),
+      endMonth: endDate.toISODate(),
     },
   });
 
@@ -76,13 +99,13 @@ export const MPGAIncomeExpensesReport: React.FC<
         ...fund,
         categories: (fund.categories ?? []).map((category) => ({
           ...category,
-          category: getLocalizedCategory(category.category, t),
+          category: category.category,
           breakdownByMonth: category.breakdownByMonth.map((month) => ({
             ...month,
           })),
           subcategories: (category.subcategories ?? []).map((subcategory) => ({
             ...subcategory,
-            subCategory: getLocalizedSubCategory(subcategory.subCategory, t),
+            subCategory: subcategory.subCategory,
             breakdownByMonth: subcategory.breakdownByMonth.map((month) => ({
               ...month,
             })),
@@ -92,7 +115,11 @@ export const MPGAIncomeExpensesReport: React.FC<
     [reportData],
   );
 
-  const { incomeData, expenseData } = useFilteredFunds(transformedData);
+  const { incomeData, expenseData } = useFilteredFunds(
+    transformedData,
+    filters?.categories ?? null,
+    t,
+  );
 
   const allData: AllData = useMemo(() => {
     return {
@@ -174,6 +201,7 @@ export const MPGAIncomeExpensesReport: React.FC<
               data={allData}
               last12Months={last12Months}
               currency={currency}
+              handleSettingsClick={handleSettingsClick}
             />
           </TotalsProvider>
         </SimpleScreenOnly>
@@ -187,6 +215,20 @@ export const MPGAIncomeExpensesReport: React.FC<
           </TotalsProvider>
         </PrintOnly>
       </Box>
+      {isSettingsOpen && (
+        <SettingsDialog
+          selectedFilters={filters}
+          selectedFundType={FundTypes.Primary}
+          isOpen={isSettingsOpen}
+          onClose={(newFilters) => {
+            if (newFilters) {
+              onFiltersChange(newFilters);
+            }
+            setIsSettingsOpen(false);
+          }}
+          hideDateRange
+        />
+      )}
     </>
   );
 };

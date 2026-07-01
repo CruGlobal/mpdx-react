@@ -5,7 +5,7 @@ import {
   StaffExpensesSubCategoryEnum,
 } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
-import { Filters } from '../SettingsDialog/SettingsDialog';
+import { Filters } from '../../Shared/SettingsDialog/SettingsDialog';
 import { DateRange, ReportType } from './StaffReportEnum';
 import {
   GroupedTransaction,

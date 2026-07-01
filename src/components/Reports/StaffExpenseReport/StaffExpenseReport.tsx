@@ -27,6 +27,11 @@ import { AccountInfoBox } from '../../HrTools/Shared/AccountInfoBox/AccountInfoB
 import { AccountInfoBoxSkeleton } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBoxSkeleton';
 import { EmptyTable } from '../../HrTools/Shared/EmptyTable/EmptyTable';
 import {
+  Filters,
+  SettingsDialog,
+} from '../Shared/SettingsDialog/SettingsDialog';
+import { StyledFilterButton } from '../Shared/SettingsDialog/StyledFilterButton';
+import {
   SimplePrintOnly,
   SimpleScreenOnly,
   StyledPrintButton,
@@ -46,7 +51,6 @@ import {
   getIconForFundType,
 } from './Helpers/fundTypeHelpers';
 import { getStaffExpenseMonthRange } from './Helpers/getMonthRange';
-import { Filters, SettingsDialog } from './SettingsDialog/SettingsDialog';
 import { PrintTables } from './Tables/PrintTables';
 import { StaffReportTable } from './Tables/StaffReportTable';
 
@@ -62,15 +66,6 @@ const StyledTimeNavBox = styled(Box)({
   display: 'flex',
   margin: 0,
   gap: theme.spacing(2),
-});
-
-const StyledFilterButton = styled(Button)({
-  color: theme.palette.mpdxGrayDark.main,
-  borderColor: theme.palette.mpdxGrayDark.main,
-  '&:hover': {
-    backgroundColor: theme.palette.mpdxGrayLight.main,
-    borderColor: theme.palette.mpdxGrayDark.main,
-  },
 });
 
 interface StaffExpenseReportProps {
@@ -421,7 +416,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               size="small"
               onClick={handleSettingsClick}
             >
-              {t('Filter Settings')}
+              {t('Report Settings')}
             </StyledFilterButton>
           </Box>
         </Container>
