@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useMemo, useState } from 'react';
 import { NewStaffQuestionnaireAttributesInput } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { NsoMpdQuestionnaireStepEnum } from '../NsoMpdQuestionnaireHelper';
 import { useCompleteNewStaffQuestionnaireMutation } from './CompleteNewStaffQuestionnaire.generated';
 import {
@@ -25,6 +26,7 @@ export type NsoMpdQuestionnaireType = {
   setDrawerOpen: (open: boolean) => void;
   questionnaire: NewStaffQuestionnaire | null;
   loading: boolean;
+  isMutating: boolean;
   saveField: (
     attributes: Partial<NewStaffQuestionnaireAttributesInput>,
   ) => Promise<void>;
@@ -66,6 +68,7 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
 
   const [updateNewStaffQuestionnaire] =
     useUpdateNewStaffQuestionnaireMutation();
+  const { trackMutation, isMutating } = useTrackMutation();
 
   const [completeNewStaffQuestionnaire] =
     useCompleteNewStaffQuestionnaireMutation();
@@ -86,13 +89,15 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
       if (!accountListId) {
         return;
       }
-      await updateNewStaffQuestionnaire({
-        variables: {
-          input: { accountListId, attributes },
-        },
-      });
+      await trackMutation(
+        updateNewStaffQuestionnaire({
+          variables: {
+            input: { accountListId, attributes },
+          },
+        }),
+      );
     },
-    [accountListId, updateNewStaffQuestionnaire],
+    [accountListId, updateNewStaffQuestionnaire, trackMutation],
   );
 
   const toggleDrawer = useCallback(() => {
@@ -132,6 +137,7 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
       setDrawerOpen,
       questionnaire,
       loading,
+      isMutating,
       saveField,
       completeQuestionnaire,
     }),
@@ -147,6 +153,7 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
       setDrawerOpen,
       questionnaire,
       loading,
+      isMutating,
       saveField,
       completeQuestionnaire,
     ],
