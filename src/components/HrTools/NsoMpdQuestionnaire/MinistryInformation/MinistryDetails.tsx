@@ -118,6 +118,7 @@ export const MinistryDetails: React.FC = () => {
             'Is your ministry assignment location within 50 miles of one of these cities?',
           )}
           size="small"
+          helperText={t('If none of the locations apply, select "None."')}
           SelectProps={{ displayEmpty: true }}
           InputLabelProps={{ shrink: true }}
           InputProps={{
