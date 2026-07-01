@@ -44,9 +44,17 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
     setPage(0);
   }, [search, selectedCohortId]);
 
+  // Clamp on render so a shrinking `rows` (refetch, optimistic removal) can't
+  // leave `page` pointing past the end and render a blank table. The reset
+  // effect above still handles the jump-to-page-1 UX on filter changes.
+  const safePage = Math.min(
+    page,
+    Math.max(0, Math.ceil(rows.length / rowsPerPage) - 1),
+  );
+
   const pageRows = rows.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage,
+    safePage * rowsPerPage,
+    safePage * rowsPerPage + rowsPerPage,
   );
   const pageIds = pageRows.map((row) => row.id);
   const allOnPageSelected =
@@ -149,7 +157,7 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
       <TablePagination
         component="div"
         count={rows.length}
-        page={page}
+        page={safePage}
         onPageChange={(_event, newPage) => setPage(newPage)}
         rowsPerPage={rowsPerPage}
         rowsPerPageOptions={[5, 10, 25]}
