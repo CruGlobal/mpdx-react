@@ -21,7 +21,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import { StaffGoalRow } from '../mockData';
-import { GoalStatusEnum } from '../mpdGoalAdminHelpers';
+import { isSendable } from '../mpdGoalAdminHelpers';
 
 interface GoalsTableProps {
   rows: StaffGoalRow[];
@@ -121,16 +121,8 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
                 <Chip
                   size="small"
                   variant="outlined"
-                  label={
-                    row.goalStatus === GoalStatusEnum.Complete
-                      ? t('Complete')
-                      : t('Incomplete')
-                  }
-                  color={
-                    row.goalStatus === GoalStatusEnum.Complete
-                      ? 'success'
-                      : 'warning'
-                  }
+                  label={isSendable(row) ? t('Complete') : t('Incomplete')}
+                  color={isSendable(row) ? 'success' : 'warning'}
                 />
               </TableCell>
               <TableCell>{row.familyStatus}</TableCell>

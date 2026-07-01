@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { StaffGoalRow } from '../mockData';
-import { GoalStatusEnum } from '../mpdGoalAdminHelpers';
+import { partitionSendable } from '../mpdGoalAdminHelpers';
 
 interface RunAndSendModalProps {
   open: boolean;
@@ -36,11 +36,9 @@ export const RunAndSendModal: React.FC<RunAndSendModalProps> = ({
   const { t } = useTranslation();
 
   const total = rows.length;
-  const incompleteRows = rows.filter(
-    (row) => row.goalStatus === GoalStatusEnum.Incomplete,
-  );
+  const { sendable, notSendable: incompleteRows } = partitionSendable(rows);
   const incompleteCount = incompleteRows.length;
-  const sendableCount = total - incompleteCount;
+  const sendableCount = sendable.length;
 
   return (
     <Dialog
