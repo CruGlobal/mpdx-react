@@ -33,4 +33,23 @@ describe('QuestionnaireActionButton', () => {
 
     expect(getByRole('button', { name: 'Continue' })).toBeDisabled();
   });
+
+  it('renders a contained button by default', () => {
+    const { getByRole } = renderButton();
+
+    expect(getByRole('button', { name: 'Continue' })).toHaveClass(
+      'MuiButton-contained',
+    );
+  });
+
+  it('renders an outlined button when variant is outlined', () => {
+    const { getByRole } = renderButton({
+      variant: 'outlined',
+      children: 'Back',
+    });
+
+    expect(getByRole('button', { name: 'Back' })).toHaveClass(
+      'MuiButton-outlined',
+    );
+  });
 });

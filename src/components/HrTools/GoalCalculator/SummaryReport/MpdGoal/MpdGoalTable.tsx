@@ -7,6 +7,7 @@ import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants
 import { useLocale } from 'src/hooks/useLocale';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
+import { safeProgressRatio } from '../../../Shared/helpers/safeProgressRatio';
 import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
 import {
   calculateNewStaffGoalTotals,
@@ -16,7 +17,6 @@ import {
   GoalTotals,
   calculateCategoryEnumTotal,
 } from '../../Shared/calculateTotals';
-import { safeProgressRatio } from '../../Shared/safeProgressRatio';
 import { MpdGoalHeaderCards } from './MpdGoalHeaderCards/MpdGoalHeaderCards';
 
 interface MpdGoalRow {

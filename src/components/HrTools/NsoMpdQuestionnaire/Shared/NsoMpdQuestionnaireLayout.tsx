@@ -9,7 +9,7 @@ import {
 } from '../../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { useIconPanelItems } from '../../Shared/CalculationReports/PanelLayout/useIconPanelItems';
 import { PanelTypeEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
-import { NsoMpdQuestionnaireStepEnum } from '../NsoMpdQuestionnaireHelper';
+import { BackButton } from './BackButton';
 import { ContinueButton } from './ContinueButton';
 import { useNsoMpdQuestionnaire } from './NsoMpdQuestionnaireContext';
 
@@ -19,10 +19,10 @@ interface NsoMpdQuestionnaireLayoutProps {
 }
 
 /**
- * This is the layout shared by all NSO MPD Questionnaire pages. The icon rail holds the menu
- * toggle, one icon per view step (used to switch views), and a back arrow to the dashboard. The
- * collapsible sidebar shows the current page's own sub-step list, and the main content slot has a
- * Continue button below it on every step except the last.
+ * Layout shared by all NSO MPD Questionnaire pages.
+ * The icon rail holds a completion progress ring, the menu toggle, and one icon per view step.
+ * The sidebar shows the current page's sub-step list, and the main content slot has Back and Continue buttons
+ * below it on every step except the last step which supplies its own Back and Submit buttons.
  */
 export const NsoMpdQuestionnaireLayout: React.FC<
   NsoMpdQuestionnaireLayoutProps
@@ -34,38 +34,39 @@ export const NsoMpdQuestionnaireLayout: React.FC<
     currentStep,
     currentIndex,
     isLastStep,
+    percentComplete,
     isDrawerOpen,
-    handleStepChange,
     handleContinue,
+    handleBack,
     toggleDrawer,
-    setDrawerOpen,
+    loading,
   } = useNsoMpdQuestionnaire();
 
-  const handleStepIconClick = (step: NsoMpdQuestionnaireStepEnum) => {
-    if (currentStep.step === step) {
-      toggleDrawer();
-    } else {
-      handleStepChange(step);
-      setDrawerOpen(true);
-    }
-  };
+  const isFirstStep = currentIndex === 0;
 
   const menuToggleItems = useIconPanelItems(isDrawerOpen, toggleDrawer);
 
-  const stepIcons: IconPanelItem[] = steps.map((step) => ({
-    key: step.step,
-    icon: step.icon,
-    label: step.title,
-    isActive: currentStep.step === step.step,
-    onClick: () => handleStepIconClick(step.step),
-  }));
+  const stepIcons: IconPanelItem[] = steps.map((step) => {
+    const isActive = currentStep.step === step.step;
+    return {
+      key: step.step,
+      icon: step.icon,
+      label: step.title,
+      isActive,
+      // The current step's icon stays interactive and toggles the sidebar while the other steps are
+      // disabled so users move through the questionnaire with the Continue and Back buttons.
+      disabled: !isActive,
+      onClick: isActive ? toggleDrawer : undefined,
+    };
+  });
 
   const iconPanelItems: IconPanelItem[] = [...menuToggleItems, ...stepIcons];
 
   return (
     <PanelLayout
       panelType={PanelTypeEnum.Other}
-      percentComplete={null}
+      percentComplete={percentComplete}
+      progressLoading={loading}
       icons={iconPanelItems}
       currentIndex={currentIndex}
       backHref={`/accountLists/${accountListId}`}
@@ -77,7 +78,12 @@ export const NsoMpdQuestionnaireLayout: React.FC<
         <AutosaveForm>
           <Stack spacing={4}>
             {mainContent}
-            {!isLastStep && <ContinueButton onClick={handleContinue} />}
+            {!isLastStep && (
+              <Stack direction="row" spacing={2} mx={4}>
+                {!isFirstStep && <BackButton onClick={handleBack} />}
+                <ContinueButton onClick={handleContinue} />
+              </Stack>
+            )}
           </Stack>
         </AutosaveForm>
       }

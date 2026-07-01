@@ -115,6 +115,12 @@ describe('Summary', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('renders a Back button', async () => {
+    const { findByRole } = render(<TestComponent />);
+
+    expect(await findByRole('button', { name: 'Back' })).toBeInTheDocument();
+  });
+
   it('submits via the confirmation modal', async () => {
     const { findByRole, getByRole } = render(
       <TestComponent onCall={mutationSpy} />,
