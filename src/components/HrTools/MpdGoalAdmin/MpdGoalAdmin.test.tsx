@@ -1,6 +1,7 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import theme from 'src/theme';
 import { MpdGoalAdmin } from './MpdGoalAdmin';
 import { MpdGoalAdminProvider } from './MpdGoalAdminContext';
@@ -8,9 +9,11 @@ import { MpdGoalAdminProvider } from './MpdGoalAdminContext';
 const renderMain = () =>
   render(
     <ThemeProvider theme={theme}>
-      <MpdGoalAdminProvider>
-        <MpdGoalAdmin onNavListToggle={jest.fn()} navListOpen={false} />
-      </MpdGoalAdminProvider>
+      <SnackbarProvider>
+        <MpdGoalAdminProvider>
+          <MpdGoalAdmin onNavListToggle={jest.fn()} navListOpen={false} />
+        </MpdGoalAdminProvider>
+      </SnackbarProvider>
     </ThemeProvider>,
   );
 

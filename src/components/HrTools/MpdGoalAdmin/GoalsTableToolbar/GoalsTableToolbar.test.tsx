@@ -1,5 +1,8 @@
+import { ThemeProvider } from '@mui/material/styles';
 import { act, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
+import theme from 'src/theme';
 import { MpdGoalAdminProvider, useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import { GoalsTableToolbar } from './GoalsTableToolbar';
 
@@ -12,9 +15,13 @@ const Capture: React.FC = () => {
 
 const renderToolbar = () =>
   render(
-    <MpdGoalAdminProvider>
-      <Capture />
-    </MpdGoalAdminProvider>,
+    <ThemeProvider theme={theme}>
+      <SnackbarProvider>
+        <MpdGoalAdminProvider>
+          <Capture />
+        </MpdGoalAdminProvider>
+      </SnackbarProvider>
+    </ThemeProvider>,
   );
 
 describe('GoalsTableToolbar', () => {
@@ -58,5 +65,35 @@ describe('GoalsTableToolbar', () => {
     const { getByRole } = renderToolbar();
     await userEvent.type(getByRole('textbox', { name: 'Search' }), 'doe');
     expect(ctx.search).toBe('doe');
+  });
+
+  it('opens the run-and-send confirmation from the All button', async () => {
+    const { getByRole } = renderToolbar();
+    await userEvent.click(getByRole('button', { name: 'Run and Send All' }));
+    expect(getByRole('dialog')).toHaveTextContent(
+      'Run and Send All Complete MPD Goals?',
+    );
+  });
+
+  it('confirms and sends only the selected rows', async () => {
+    const { getByRole, findByText } = renderToolbar();
+    // row-1 is Complete, row-7 is Incomplete → 1 sendable of 2.
+    act(() => {
+      ctx.toggleRow('row-1');
+      ctx.toggleRow('row-7');
+    });
+    await userEvent.click(getByRole('button', { name: 'Run & Send Selected' }));
+
+    const dialog = getByRole('dialog');
+    expect(dialog).toHaveTextContent(
+      'Run and Send Selected Complete MPD Goals?',
+    );
+    expect(dialog).toHaveTextContent('1 of the 2 MPD goals cannot be sent.');
+    expect(dialog).toHaveTextContent('Continue with 1 out of 2 MPD goals');
+
+    await userEvent.click(getByRole('button', { name: 'Yes, Continue' }));
+    expect(
+      await findByText('1 MPD Goals were run and sent.'),
+    ).toBeInTheDocument();
   });
 });

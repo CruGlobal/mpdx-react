@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import {
   Box,
@@ -8,14 +8,39 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
+import { RunAndSendModal } from '../RunAndSendModal/RunAndSendModal';
+import { StaffGoalRow } from '../mockData';
 
 export const GoalsTableToolbar: React.FC = () => {
   const { t } = useTranslation();
-  const { search, setSearch, selectedRows } = useMpdGoalAdmin();
+  const { enqueueSnackbar } = useSnackbar();
+  const { search, setSearch, filteredRows, selectedRows } = useMpdGoalAdmin();
   const selectedCount = selectedRows.length;
   const hasSelection = selectedCount > 0;
+
+  const [modalOpen, setModalOpen] = useState(false);
+  // Kept separate from `modalOpen` so the target rows/title persist through the
+  // dialog's close transition instead of flashing empty.
+  const [modalTarget, setModalTarget] = useState<{
+    title: string;
+    rows: StaffGoalRow[];
+  }>({ title: '', rows: [] });
+
+  const openRunAndSend = (title: string, rows: StaffGoalRow[]) => {
+    setModalTarget({ title, rows });
+    setModalOpen(true);
+  };
+
+  const handleConfirm = (sendableCount: number) => {
+    enqueueSnackbar(
+      t('{{count}} MPD Goals were run and sent.', { count: sendableCount }),
+      { variant: 'success' },
+    );
+    setModalOpen(false);
+  };
 
   return (
     <Stack
@@ -48,15 +73,43 @@ export const GoalsTableToolbar: React.FC = () => {
               {t('{{count}} selected', { count: selectedCount })}
             </Typography>
             <Button variant="outlined">{t('More Actions')}</Button>
-            <Button variant="contained">{t('Run & Send Selected')}</Button>
+            <Button
+              variant="contained"
+              onClick={() =>
+                openRunAndSend(
+                  t('Run and Send Selected Complete MPD Goals?'),
+                  selectedRows,
+                )
+              }
+            >
+              {t('Run & Send Selected')}
+            </Button>
           </>
         ) : (
           <>
             <Button variant="outlined">{t('Print All')}</Button>
-            <Button variant="contained">{t('Run and Send All')}</Button>
+            <Button
+              variant="contained"
+              onClick={() =>
+                openRunAndSend(
+                  t('Run and Send All Complete MPD Goals?'),
+                  filteredRows,
+                )
+              }
+            >
+              {t('Run and Send All')}
+            </Button>
           </>
         )}
       </Box>
+
+      <RunAndSendModal
+        open={modalOpen}
+        title={modalTarget.title}
+        rows={modalTarget.rows}
+        onClose={() => setModalOpen(false)}
+        onConfirm={handleConfirm}
+      />
     </Stack>
   );
 };
