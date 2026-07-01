@@ -7,8 +7,6 @@ import AccountListDonorAccountsTypeDefs from './AccountListDonorAccounts/account
 import { AccountListDonorAccountsResolvers } from './AccountListDonorAccounts/resolvers';
 import CoachingAnswerSetsTypeDefs from './CoachingAnswerSets/coachingAnswerSets.graphql';
 import { CoachingAnswerSetsResolvers } from './CoachingAnswerSets/resolvers';
-import ContactPrimaryAddressTypeDefs from './ContactPrimaryAddress/contactPrimaryAddress.graphql';
-import { ContactPrimaryAddressResolvers } from './ContactPrimaryAddress/resolvers';
 import DestroyDonorAccountTypeDefs from './Contacts/DonorAccounts/Destroy/destroyDonorAccount.graphql';
 import { DestroyDonorAccountResolvers } from './Contacts/DonorAccounts/Destroy/resolvers';
 import ExportContactsTypeDefs from './ExportContacts/exportContacts.graphql';
@@ -71,10 +69,6 @@ const schema = buildSubgraphSchema([
   {
     typeDefs: AppointmentResultsTypeDefs,
     resolvers: AppointmentResultsResolvers,
-  },
-  {
-    typeDefs: ContactPrimaryAddressTypeDefs,
-    resolvers: ContactPrimaryAddressResolvers,
   },
   { typeDefs: ExportContactsTypeDefs, resolvers: ExportContactsResolvers },
   { typeDefs: MergeContactsTypeDefs, resolvers: MergeContactsResolvers },
