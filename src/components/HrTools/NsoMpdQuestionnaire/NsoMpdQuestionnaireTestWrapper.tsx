@@ -39,17 +39,24 @@ export interface NsoMpdQuestionnaireTestWrapperProps {
   hasSpouse?: boolean;
   newStaffQuestionnaire?: DeepPartial<
     NewStaffQuestionnaireQuery['newStaffQuestionnaire']
-  >;
+  > | null;
   onCall?: MockLinkCallHandler;
+  mockPush?: jest.Mock;
   children?: React.ReactNode;
 }
 
 export const NsoMpdQuestionnaireTestWrapper: React.FC<
   NsoMpdQuestionnaireTestWrapperProps
-> = ({ hasSpouse = true, newStaffQuestionnaire, onCall, children }) => {
+> = ({
+  hasSpouse = true,
+  newStaffQuestionnaire,
+  onCall,
+  mockPush,
+  children,
+}) => {
   return (
     <ThemeProvider theme={theme}>
-      <TestRouter>
+      <TestRouter router={mockPush ? { push: mockPush } : {}}>
         <GqlMockedProvider<{
           GetUser: GetUserQuery;
           GoalCalculatorConstants: GoalCalculatorConstantsQuery;
@@ -60,17 +67,20 @@ export const NsoMpdQuestionnaireTestWrapper: React.FC<
               user: { avatar: 'avatar.jpg', staffAccountId: '000123456' },
             },
             NewStaffQuestionnaire: {
-              newStaffQuestionnaire: merge(
-                {},
-                newStaffQuestionnaireMock,
-                newStaffQuestionnaire,
-                hasSpouse
-                  ? undefined
-                  : {
-                      maritalStatus:
-                        NewStaffQuestionnaireMaritalStatusEnum.Single,
-                    },
-              ),
+              newStaffQuestionnaire:
+                newStaffQuestionnaire === null
+                  ? null
+                  : merge(
+                      {},
+                      newStaffQuestionnaireMock,
+                      newStaffQuestionnaire,
+                      hasSpouse
+                        ? undefined
+                        : {
+                            maritalStatus:
+                              NewStaffQuestionnaireMaritalStatusEnum.Single,
+                          },
+                    ),
             },
             GoalCalculatorConstants: {
               constant: {
