@@ -44,6 +44,14 @@ describe('GoalsTable', () => {
     expect(getByText('Assign Coach')).toBeInTheDocument();
   });
 
+  it('renders a View/Edit action and a menu button for each row', () => {
+    const { getAllByText, getAllByRole } = renderTable();
+    expect(getAllByText('View/Edit')).toHaveLength(rows.length);
+    expect(getAllByRole('button', { name: /Actions for/ })).toHaveLength(
+      rows.length,
+    );
+  });
+
   it('selects a row via its checkbox', async () => {
     const { getAllByRole } = renderTable();
     // index 0 is the header "select all" checkbox

@@ -81,6 +81,7 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
             <TableCell>{t('Coach')}</TableCell>
             <TableCell>{t('Coordinator')}</TableCell>
             <TableCell>{t('Actions')}</TableCell>
+            <TableCell padding="checkbox" />
           </TableRow>
         </TableHead>
         <TableBody>
@@ -127,6 +128,11 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
               </TableCell>
               <TableCell>{row.coordinator}</TableCell>
               <TableCell>
+                <Link component="button" type="button" underline="hover">
+                  {t('View/Edit')}
+                </Link>
+              </TableCell>
+              <TableCell padding="checkbox" align="right">
                 <IconButton
                   size="small"
                   aria-label={t('Actions for {{name}}', { name: row.name })}
