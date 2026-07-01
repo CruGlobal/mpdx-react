@@ -72,7 +72,11 @@ export const GoalsTableToolbar: React.FC = () => {
             <Typography variant="body2" color="text.secondary">
               {t('{{count}} selected', { count: selectedCount })}
             </Typography>
-            <Button variant="outlined">{t('More Actions')}</Button>
+            {/* Disabled until wired up so assistive tech announces the
+                inert state instead of a dead control (MPDX-9696). */}
+            <Button variant="outlined" disabled>
+              {t('More Actions')}
+            </Button>
             <Button
               variant="contained"
               onClick={() =>
@@ -87,7 +91,11 @@ export const GoalsTableToolbar: React.FC = () => {
           </>
         ) : (
           <>
-            <Button variant="outlined">{t('Print All')}</Button>
+            {/* Disabled until wired up so assistive tech announces the
+                inert state instead of a dead control (MPDX-9696). */}
+            <Button variant="outlined" disabled>
+              {t('Print All')}
+            </Button>
             <Button
               variant="contained"
               onClick={() =>

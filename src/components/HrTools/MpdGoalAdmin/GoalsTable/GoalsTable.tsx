@@ -131,21 +131,38 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
               <TableCell>{row.familyStatus}</TableCell>
               <TableCell>
                 {row.coach ?? (
-                  <Link component="button" type="button" underline="hover">
+                  // Disabled until wired up so assistive tech announces the
+                  // inert state instead of a dead control (MPDX-9696).
+                  <Link
+                    component="button"
+                    type="button"
+                    underline="hover"
+                    disabled
+                  >
                     {t('Assign Coach')}
                   </Link>
                 )}
               </TableCell>
               <TableCell>{row.coordinator}</TableCell>
               <TableCell>
-                <Link component="button" type="button" underline="hover">
+                {/* Disabled until wired up so assistive tech announces the
+                    inert state instead of a dead control (MPDX-9696). */}
+                <Link
+                  component="button"
+                  type="button"
+                  underline="hover"
+                  disabled
+                >
                   {t('View/Edit')}
                 </Link>
               </TableCell>
               <TableCell padding="checkbox" align="right">
+                {/* Disabled until wired up so assistive tech announces the
+                    inert state instead of a dead control (MPDX-9696). */}
                 <IconButton
                   size="small"
                   aria-label={t('Actions for {{name}}', { name: row.name })}
+                  disabled
                 >
                   <MoreVertIcon fontSize="small" />
                 </IconButton>

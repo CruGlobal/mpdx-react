@@ -60,7 +60,9 @@ export const CohortBar: React.FC = () => {
       </Stat>
       <Stat label={t('NSO Date')}>{selectedCohort?.nsoDate ?? '—'}</Stat>
       <Stat label={t('Training Cost')}>
-        <Link component="button" type="button" underline="hover">
+        {/* Disabled until wired up so assistive tech announces the inert
+            state instead of a dead control (MPDX-9696). */}
+        <Link component="button" type="button" underline="hover" disabled>
           {t('View/Edit')}
         </Link>
       </Stat>
