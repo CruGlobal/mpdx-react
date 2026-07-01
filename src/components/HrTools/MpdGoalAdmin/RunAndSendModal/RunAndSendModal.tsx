@@ -13,8 +13,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { StaffGoalRow } from '../mockData';
-import { partitionSendable } from '../mpdGoalAdminHelpers';
+import { StaffGoalRow, partitionSendable } from '../mpdGoalAdminHelpers';
 
 interface RunAndSendModalProps {
   open: boolean;

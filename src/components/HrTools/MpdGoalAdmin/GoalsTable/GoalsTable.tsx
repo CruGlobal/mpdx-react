@@ -20,8 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
-import { StaffGoalRow } from '../mockData';
-import { isSendable } from '../mpdGoalAdminHelpers';
+import { StaffGoalRow, isSendable } from '../mpdGoalAdminHelpers';
 
 interface GoalsTableProps {
   rows: StaffGoalRow[];

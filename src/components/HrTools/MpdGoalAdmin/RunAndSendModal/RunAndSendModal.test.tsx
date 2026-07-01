@@ -2,8 +2,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import theme from 'src/theme';
-import { StaffGoalRow } from '../mockData';
-import { GoalStatusEnum } from '../mpdGoalAdminHelpers';
+import { GoalStatusEnum, StaffGoalRow } from '../mpdGoalAdminHelpers';
 import { RunAndSendModal } from './RunAndSendModal';
 
 const makeRow = (

@@ -12,7 +12,7 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import { RunAndSendModal } from '../RunAndSendModal/RunAndSendModal';
-import { StaffGoalRow } from '../mockData';
+import { StaffGoalRow } from '../mpdGoalAdminHelpers';
 
 export const GoalsTableToolbar: React.FC = () => {
   const { t } = useTranslation();

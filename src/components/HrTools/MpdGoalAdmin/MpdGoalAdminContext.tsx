@@ -5,8 +5,12 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { Cohort, StaffGoalRow, mockCohorts } from './mockData';
-import { MpdGoalAdminTabEnum } from './mpdGoalAdminHelpers';
+import { mockCohorts } from './mockData';
+import {
+  Cohort,
+  MpdGoalAdminTabEnum,
+  StaffGoalRow,
+} from './mpdGoalAdminHelpers';
 
 export interface MpdGoalAdminContextValue {
   activeTab: MpdGoalAdminTabEnum;

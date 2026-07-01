@@ -8,6 +8,31 @@ export enum GoalStatusEnum {
   Incomplete = 'Incomplete',
 }
 
+export interface StaffGoalRow {
+  id: string;
+  name: string;
+  email: string;
+  ministry: string;
+  geography: string;
+  /** MPD goal amount in USD. */
+  mpdGoal: number;
+  goalStatus: GoalStatusEnum;
+  familyStatus: string;
+  /** null renders an "Assign Coach" prompt instead of a name. */
+  coach: string | null;
+  coordinator: string;
+}
+
+export interface Cohort {
+  id: string;
+  name: string;
+  trainingSize: number;
+  /** Display string, e.g. "08/10/2026". */
+  nsoDate: string;
+  trainingCostEntered: boolean;
+  rows: StaffGoalRow[];
+}
+
 /**
  * Single source of truth for whether a goal row can be sent (made active and
  * dispatched to staff and coach). A row is sendable only when its goal is
