@@ -61,4 +61,14 @@ describe('ExpensesPieChart', () => {
     expect(getByText('Other')).toBeInTheDocument();
     expect(getByText('Assessment, Benefits, Salary')).toBeInTheDocument();
   });
+
+  it('shows a percentage label for each non-empty slice', async () => {
+    const { findByText, getByText, queryByText } = render(<TestComponent />);
+
+    expect(await findByText('78%')).toBeInTheDocument();
+    expect(getByText('11%')).toBeInTheDocument();
+    expect(getByText('10%')).toBeInTheDocument();
+
+    expect(queryByText('0%')).not.toBeInTheDocument();
+  });
 });
