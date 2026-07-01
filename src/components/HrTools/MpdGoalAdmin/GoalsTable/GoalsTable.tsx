@@ -29,14 +29,8 @@ interface GoalsTableProps {
 export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const {
-    selectedRowIds,
-    toggleRow,
-    toggleRows,
-    openRow,
-    search,
-    selectedCohortId,
-  } = useMpdGoalAdmin();
+  const { selectedRowIds, toggleRow, toggleRows, search, selectedCohortId } =
+    useMpdGoalAdmin();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -101,16 +95,7 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
                   }}
                 />
               </TableCell>
-              <TableCell>
-                <Link
-                  component="button"
-                  type="button"
-                  underline="hover"
-                  onClick={() => openRow(row)}
-                >
-                  {row.name}
-                </Link>
-              </TableCell>
+              <TableCell>{row.name}</TableCell>
               <TableCell>{row.ministry}</TableCell>
               <TableCell>{row.geography}</TableCell>
               <TableCell>

@@ -51,12 +51,6 @@ describe('GoalsTable', () => {
     expect(ctx.selectedRowIds.has('row-1')).toBe(true);
   });
 
-  it('opens the drawer when a name is clicked', async () => {
-    const { getByText } = renderTable();
-    await userEvent.click(getByText('John & Jane Doe'));
-    expect(ctx.openMember?.id).toBe('row-1');
-  });
-
   it('selects every row on the page via the header checkbox', async () => {
     const { getAllByRole } = renderTable();
     // index 0 is the header "select all" checkbox

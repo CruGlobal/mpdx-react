@@ -49,16 +49,6 @@ describe('MpdGoalAdminContext', () => {
     expect(result.current.selectedRowIds.size).toBe(0);
   });
 
-  it('opens and closes the staff detail drawer', () => {
-    const { result } = renderHook(() => useMpdGoalAdmin(), { wrapper });
-    const row = mockCohorts[0].rows[0];
-    act(() => result.current.openRow(row));
-    expect(result.current.isDrawerOpen).toBe(true);
-    expect(result.current.openMember?.id).toBe(row.id);
-    act(() => result.current.closeDrawer());
-    expect(result.current.isDrawerOpen).toBe(false);
-  });
-
   it('throws when used outside its provider', () => {
     expect(() => renderHook(() => useMpdGoalAdmin())).toThrow(
       'useMpdGoalAdmin must be used within a MpdGoalAdminProvider',

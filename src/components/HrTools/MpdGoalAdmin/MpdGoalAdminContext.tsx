@@ -29,10 +29,6 @@ export interface MpdGoalAdminContextValue {
   toggleRow: (id: string) => void;
   toggleRows: (ids: string[]) => void;
   clearSelection: () => void;
-  openMember: StaffGoalRow | undefined;
-  openRow: (row: StaffGoalRow) => void;
-  closeDrawer: () => void;
-  isDrawerOpen: boolean;
 }
 
 const MpdGoalAdminContext = createContext<MpdGoalAdminContextValue | undefined>(
@@ -51,9 +47,6 @@ export const MpdGoalAdminProvider: React.FC<{
   );
   const [search, setSearch] = useState('');
   const [selectedRowIds, setSelectedRowIds] = useState<Set<string>>(new Set());
-  const [openMember, setOpenMember] = useState<StaffGoalRow | undefined>(
-    undefined,
-  );
 
   const toggleRow = useCallback((id: string) => {
     setSelectedRowIds((prev) => {
@@ -134,10 +127,6 @@ export const MpdGoalAdminProvider: React.FC<{
       toggleRow,
       toggleRows,
       clearSelection,
-      openMember,
-      openRow: (row: StaffGoalRow) => setOpenMember(row),
-      closeDrawer: () => setOpenMember(undefined),
-      isDrawerOpen: openMember !== undefined,
     }),
     [
       activeTab,
@@ -152,7 +141,6 @@ export const MpdGoalAdminProvider: React.FC<{
       toggleRow,
       toggleRows,
       clearSelection,
-      openMember,
     ],
   );
 
