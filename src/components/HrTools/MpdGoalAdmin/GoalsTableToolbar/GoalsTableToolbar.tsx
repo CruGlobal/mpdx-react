@@ -17,7 +17,8 @@ import { StaffGoalRow } from '../mockData';
 export const GoalsTableToolbar: React.FC = () => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const { search, setSearch, filteredRows, selectedRows } = useMpdGoalAdmin();
+  const { search, setSearch, filteredRows, selectedRows, clearSelection } =
+    useMpdGoalAdmin();
   const selectedCount = selectedRows.length;
   const hasSelection = selectedCount > 0;
 
@@ -39,6 +40,7 @@ export const GoalsTableToolbar: React.FC = () => {
       t('{{count}} MPD Goals were run and sent.', { count: sendableCount }),
       { variant: 'success' },
     );
+    clearSelection();
     setModalOpen(false);
   };
 
