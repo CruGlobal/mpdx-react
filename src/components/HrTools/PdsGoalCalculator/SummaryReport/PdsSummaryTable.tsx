@@ -13,7 +13,7 @@ import {
   numberFormat,
   percentageFormat,
 } from 'src/lib/intlFormat';
-import { safeProgressRatio } from '../../GoalCalculator/Shared/safeProgressRatio';
+import { safeProgressRatio } from '../../Shared/helpers/safeProgressRatio';
 import { usePdsGoalCalculator } from '../Shared/PdsGoalCalculatorContext';
 import { PdsSummaryHeaderCards } from './PdsSummaryHeaderCards';
 

@@ -1,10 +1,11 @@
 import React from 'react';
-import { Box, Button } from '@mui/material';
+import { Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 interface QuestionnaireActionButtonProps {
   onClick: () => void;
   disabled?: boolean;
+  variant?: 'contained' | 'outlined';
   children: React.ReactNode;
 }
 
@@ -15,20 +16,17 @@ const StyledButton = styled(Button)(({ theme }) => ({
 }));
 
 /**
- * Primary action button for the questionnaire (Continue / Submit), wrapped in its own spacing
- * container so callers don't repeat the layout Box.
+ * Primary/secondary action button for the questionnaire (Continue / Back / Submit).
  */
 export const QuestionnaireActionButton: React.FC<
   QuestionnaireActionButtonProps
-> = ({ onClick, disabled, children }) => (
-  <Box mx={4}>
-    <StyledButton
-      variant="contained"
-      size="large"
-      onClick={onClick}
-      disabled={disabled}
-    >
-      {children}
-    </StyledButton>
-  </Box>
+> = ({ onClick, disabled, variant = 'contained', children }) => (
+  <StyledButton
+    variant={variant}
+    size="large"
+    onClick={onClick}
+    disabled={disabled}
+  >
+    {children}
+  </StyledButton>
 );

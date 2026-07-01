@@ -21,7 +21,7 @@ export interface IconPanelItem {
   label: string;
   isActive?: boolean;
   disabled?: boolean;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 export interface PanelLayoutProps {

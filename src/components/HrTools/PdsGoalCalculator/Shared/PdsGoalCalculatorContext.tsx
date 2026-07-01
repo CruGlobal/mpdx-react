@@ -13,7 +13,7 @@ import {
   DesignationSupportFormType,
 } from 'src/graphql/types.generated';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
-import { safeProgressRatio } from '../../GoalCalculator/Shared/safeProgressRatio';
+import { safeProgressRatio } from '../../Shared/helpers/safeProgressRatio';
 import {
   PdsGoalCalculationFieldsFragment,
   usePdsGoalCalculationQuery,

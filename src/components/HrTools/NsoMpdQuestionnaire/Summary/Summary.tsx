@@ -4,6 +4,7 @@ import { Box, Divider, Stack, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { BackButton } from '../Shared/BackButton';
 import { useNsoMpdQuestionnaire } from '../Shared/NsoMpdQuestionnaireContext';
 import { QuestionnaireActionButton } from '../Shared/QuestionnaireActionButton';
 import { StepPage } from '../Shared/StepPage';
@@ -15,7 +16,8 @@ export const Summary: React.FC = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const accountListId = useAccountListId();
-  const { handleStepChange, completeQuestionnaire } = useNsoMpdQuestionnaire();
+  const { handleStepChange, handleBack, completeQuestionnaire } =
+    useNsoMpdQuestionnaire();
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   const subSteps: SubStep[] = [{ id: 'summary', title: t('Summary') }];
@@ -52,9 +54,12 @@ export const Summary: React.FC = () => {
         </Stack>
       </Box>
 
-      <QuestionnaireActionButton onClick={() => setConfirmOpen(true)}>
-        {t('Submit')}
-      </QuestionnaireActionButton>
+      <Stack direction="row" spacing={2} mx={4}>
+        <BackButton onClick={handleBack} />
+        <QuestionnaireActionButton onClick={() => setConfirmOpen(true)}>
+          {t('Submit')}
+        </QuestionnaireActionButton>
+      </Stack>
 
       <Confirmation
         isOpen={confirmOpen}
