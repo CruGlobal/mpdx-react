@@ -140,18 +140,6 @@ export const useSummarySections = (): SummarySectionData[] => {
         title: t('Financial Information'),
         step: NsoMpdQuestionnaireStepEnum.FinancialInformation,
         rows: [
-          {
-            label: t('Student loan monthly payment'),
-            value: formatMoney(studentLoanMonthlyPayment),
-          },
-          {
-            label: t('Car loan monthly payment'),
-            value: formatMoney(carLoanMonthlyPayment),
-          },
-          {
-            label: t('Credit card monthly payment'),
-            value: formatMoney(creditCardDebtMonthlyPayment),
-          },
           ...(isSosa
             ? [
                 {
@@ -192,6 +180,18 @@ export const useSummarySections = (): SummarySectionData[] => {
                 },
               ]
             : []),
+          {
+            label: t('Student loan monthly payment'),
+            value: formatMoney(studentLoanMonthlyPayment),
+          },
+          {
+            label: t('Car loan monthly payment'),
+            value: formatMoney(carLoanMonthlyPayment),
+          },
+          {
+            label: t('Credit card monthly payment'),
+            value: formatMoney(creditCardDebtMonthlyPayment),
+          },
         ],
       },
       {
