@@ -44,6 +44,8 @@ export const ExpensesPieChart: React.FC<ExpensesPieChartProps> = ({
             const x = cx + radius * Math.cos(-midAngle * RADIAN);
             const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
+            const percentage = (percent * 100).toFixed(0);
+
             return (
               <text
                 x={x}
@@ -52,7 +54,7 @@ export const ExpensesPieChart: React.FC<ExpensesPieChartProps> = ({
                 textAnchor="middle"
                 dominantBaseline="central"
               >
-                {(percent * 100).toFixed(0)}%
+                {percentage === '0' ? null : `${percentage}%`}
               </text>
             );
           }}
