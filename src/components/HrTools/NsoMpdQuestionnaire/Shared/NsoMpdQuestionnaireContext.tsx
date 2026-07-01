@@ -2,6 +2,7 @@ import React, { createContext, useCallback, useMemo, useState } from 'react';
 import { NewStaffQuestionnaireAttributesInput } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { NsoMpdQuestionnaireStepEnum } from '../NsoMpdQuestionnaireHelper';
+import { useCompleteNewStaffQuestionnaireMutation } from './CompleteNewStaffQuestionnaire.generated';
 import {
   NewStaffQuestionnaireQuery,
   useNewStaffQuestionnaireQuery,
@@ -23,9 +24,11 @@ export type NsoMpdQuestionnaireType = {
   toggleDrawer: () => void;
   setDrawerOpen: (open: boolean) => void;
   questionnaire: NewStaffQuestionnaire | null;
+  loading: boolean;
   saveField: (
     attributes: Partial<NewStaffQuestionnaireAttributesInput>,
   ) => Promise<void>;
+  completeQuestionnaire: () => Promise<void>;
 };
 
 const NsoMpdQuestionnaireContext =
@@ -55,7 +58,7 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
 
   const accountListId = useAccountListId();
 
-  const { data: questionnaireData } = useNewStaffQuestionnaireQuery({
+  const { data: questionnaireData, loading } = useNewStaffQuestionnaireQuery({
     variables: { accountListId: accountListId ?? '' },
     skip: !accountListId,
   });
@@ -63,6 +66,18 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
 
   const [updateNewStaffQuestionnaire] =
     useUpdateNewStaffQuestionnaireMutation();
+
+  const [completeNewStaffQuestionnaire] =
+    useCompleteNewStaffQuestionnaireMutation();
+
+  const completeQuestionnaire = useCallback(async (): Promise<void> => {
+    if (!accountListId) {
+      return;
+    }
+    await completeNewStaffQuestionnaire({
+      variables: { input: { accountListId } },
+    });
+  }, [accountListId, completeNewStaffQuestionnaire]);
 
   const saveField = useCallback(
     async (
@@ -116,7 +131,9 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
       toggleDrawer,
       setDrawerOpen,
       questionnaire,
+      loading,
       saveField,
+      completeQuestionnaire,
     }),
     [
       steps,
@@ -129,7 +146,9 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
       toggleDrawer,
       setDrawerOpen,
       questionnaire,
+      loading,
       saveField,
+      completeQuestionnaire,
     ],
   );
 

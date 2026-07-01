@@ -5,6 +5,11 @@ import { NsoMpdQuestionnaireStepEnum } from '../NsoMpdQuestionnaireHelper';
 import { NsoMpdQuestionnaireTestWrapper } from '../NsoMpdQuestionnaireTestWrapper';
 import { useNsoMpdQuestionnaire } from './NsoMpdQuestionnaireContext';
 
+const CompleteComponent: React.FC = () => {
+  const { completeQuestionnaire } = useNsoMpdQuestionnaire();
+  return <button onClick={() => completeQuestionnaire()}>complete</button>;
+};
+
 const SaveComponent: React.FC = () => {
   const { saveField } = useNsoMpdQuestionnaire();
   return (
@@ -130,6 +135,26 @@ describe('NsoMpdQuestionnaireContext', () => {
             accountListId: 'account-list-1',
             attributes: { phoneNumber: '305-555-1234' },
           },
+        },
+      ),
+    );
+  });
+
+  it('completeQuestionnaire fires the CompleteNewStaffQuestionnaire mutation', async () => {
+    const mutationSpy = jest.fn();
+    const { getByRole } = render(
+      <NsoMpdQuestionnaireTestWrapper onCall={mutationSpy}>
+        <CompleteComponent />
+      </NsoMpdQuestionnaireTestWrapper>,
+    );
+
+    userEvent.click(getByRole('button', { name: 'complete' }));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'CompleteNewStaffQuestionnaire',
+        {
+          input: { accountListId: 'account-list-1' },
         },
       ),
     );

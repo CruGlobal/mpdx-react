@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Stack } from '@mui/material';
+import { Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { AutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -77,11 +77,7 @@ export const NsoMpdQuestionnaireLayout: React.FC<
         <AutosaveForm>
           <Stack spacing={4}>
             {mainContent}
-            {!isLastStep && (
-              <Box mx={4}>
-                <ContinueButton onClick={handleContinue} />
-              </Box>
-            )}
+            {!isLastStep && <ContinueButton onClick={handleContinue} />}
           </Stack>
         </AutosaveForm>
       }
