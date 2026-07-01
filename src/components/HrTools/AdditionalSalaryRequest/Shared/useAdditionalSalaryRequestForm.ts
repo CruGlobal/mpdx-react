@@ -201,12 +201,12 @@ export const useAdditionalSalaryRequestForm = (
   );
 
   const onSubmit = useCallback(
-    (values: CompleteFormValues) => {
+    async (values: CompleteFormValues) => {
       if (!requestId) {
         return;
       }
 
-      updateAdditionalSalaryRequest({
+      await updateAdditionalSalaryRequest({
         variables: {
           id: requestId,
           attributes: {
@@ -226,17 +226,15 @@ export const useAdditionalSalaryRequestForm = (
             ),
           },
         },
-        onCompleted: () => {
-          submitAdditionalSalaryRequest({
-            variables: {
-              id: requestId,
-            },
-            onCompleted: () => {
-              handleNextStep();
-            },
-          });
+      });
+
+      await submitAdditionalSalaryRequest({
+        variables: {
+          id: requestId,
         },
       });
+
+      handleNextStep();
     },
     [
       requestId,

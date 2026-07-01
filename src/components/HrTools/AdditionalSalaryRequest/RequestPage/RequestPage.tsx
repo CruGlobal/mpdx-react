@@ -58,8 +58,15 @@ const MainContent: React.FC = () => {
   const [createRequest, { loading: creatingRequest }] =
     useCreateAdditionalSalaryRequestMutation();
 
-  const { values, submitForm, validateForm, submitCount, isValid, errors } =
-    useFormikContext<CompleteFormValues>();
+  const {
+    values,
+    submitForm,
+    validateForm,
+    submitCount,
+    isValid,
+    isSubmitting,
+    errors,
+  } = useFormikContext<CompleteFormValues>();
 
   const handleContinue = async () => {
     if (
@@ -158,6 +165,7 @@ const MainContent: React.FC = () => {
                 validateForm={validateForm}
                 submitCount={submitCount}
                 isValid={isValid}
+                isSubmitting={isSubmitting}
                 actionRequired={isEdit}
                 isEdit={isEdit}
                 additionalApproval={additionalApproval}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { FormikProvider, useFormik } from 'formik';
 import { SnackbarProvider } from 'notistack';
@@ -84,6 +84,7 @@ interface TestComponentProps {
   actionRequired?: boolean;
   additionalApproval?: boolean;
   splitAsr?: boolean;
+  submitting?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -98,6 +99,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   actionRequired,
   additionalApproval,
   splitAsr,
+  submitting,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
@@ -119,6 +121,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 actionRequired={actionRequired}
                 additionalApproval={additionalApproval}
                 splitAsr={splitAsr}
+                submitting={submitting}
               />
             </MinisterHousingAllowanceProvider>
           </FormikWrapper>
@@ -282,6 +285,53 @@ describe('ConfirmationModal', () => {
       expect(
         await findByRole('button', { name: /Submit For Approval/i }),
       ).toBeInTheDocument();
+    });
+  });
+
+  describe('submitting state', () => {
+    it('shows a loading spinner on the submit button while submitting', async () => {
+      const { findByRole } = render(
+        <TestComponent pageType={PageEnum.New} submitting={true} />,
+      );
+
+      const submitButton = await findByRole('button', {
+        name: /YES, CONTINUE/i,
+      });
+      expect(within(submitButton).getByRole('progressbar')).toBeInTheDocument();
+      expect(submitButton).toHaveAttribute('aria-busy', 'true');
+    });
+
+    it('disables the submit button while submitting', async () => {
+      const { findByRole } = render(
+        <TestComponent pageType={PageEnum.New} submitting={true} />,
+      );
+
+      expect(
+        await findByRole('button', { name: /YES, CONTINUE/i }),
+      ).toBeDisabled();
+    });
+
+    it('disables the GO BACK button while submitting', async () => {
+      const { findByRole } = render(
+        <TestComponent pageType={PageEnum.New} submitting={true} />,
+      );
+
+      expect(await findByRole('button', { name: /BACK/i })).toBeDisabled();
+    });
+
+    it('enables both buttons and hides the spinner when not submitting', async () => {
+      const { findByRole, getByRole } = render(
+        <TestComponent pageType={PageEnum.New} submitting={false} />,
+      );
+
+      const submitButton = await findByRole('button', {
+        name: /YES, CONTINUE/i,
+      });
+      expect(submitButton).toBeEnabled();
+      expect(getByRole('button', { name: /BACK/i })).toBeEnabled();
+      expect(
+        within(submitButton).queryByRole('progressbar'),
+      ).not.toBeInTheDocument();
     });
   });
 });

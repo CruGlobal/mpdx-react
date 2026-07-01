@@ -305,6 +305,46 @@ describe('Calculation', () => {
     });
   }, 10000);
 
+  it('keeps the modal open and does not advance when submit fails', async () => {
+    updateMutation.mockRejectedValueOnce(new Error('Server Error'));
+
+    const { getByRole, findByRole } = render(
+      <TestComponent
+        contextValue={{
+          ...defaultContext,
+          requestData: {
+            ...mockMHARequest,
+            id: 'request-id',
+            requestAttributes: {
+              ...mockMHARequest.requestAttributes,
+              rentOrOwn: MhaRentOrOwnEnum.Rent,
+              iUnderstandMhaPolicy: true,
+              phoneNumber: '1234567890',
+              emailAddress: 'john.doe@cru.org',
+            },
+          },
+        }}
+        rentOrOwn={MhaRentOrOwnEnum.Rent}
+      />,
+    );
+
+    const submitButton = await findByRole('button', { name: /submit/i });
+    userEvent.click(submitButton);
+
+    await findByRole('dialog');
+    const confirmButton = getByRole('button', { name: /yes, continue/i });
+    userEvent.click(confirmButton);
+
+    await waitFor(() => expect(updateMutation).toHaveBeenCalled());
+
+    expect(getByRole('dialog')).toBeInTheDocument();
+    expect(handleNextStep).not.toHaveBeenCalled();
+    expect(mockEnqueue).not.toHaveBeenCalledWith(
+      expect.stringContaining('MHA request submitted successfully.'),
+      { variant: 'success' },
+    );
+  });
+
   it('should show discard modal when Discard is clicked', async () => {
     const { getByRole, findByRole } = render(
       <ThemeProvider theme={theme}>

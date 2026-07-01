@@ -4,6 +4,7 @@ import {
   Alert,
   Box,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -32,6 +33,7 @@ interface SubmitModalProps {
   additionalApproval?: boolean;
   splitAsr?: boolean;
   disableSubmit?: boolean;
+  submitting?: boolean;
 }
 
 export const SubmitModal: React.FC<SubmitModalProps> = ({
@@ -49,6 +51,7 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
   additionalApproval,
   splitAsr,
   disableSubmit,
+  submitting,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -79,7 +82,12 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
   const contentText = overrideSubContent ?? defaultContentText;
 
   return (
-    <Dialog open={true} onClose={handleClose} maxWidth="sm" fullWidth>
+    <Dialog
+      open={true}
+      onClose={submitting ? undefined : handleClose}
+      maxWidth="sm"
+      fullWidth
+    >
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         <Alert severity={isError || splitAsr ? 'error' : 'warning'}>
@@ -98,19 +106,27 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} sx={{ color: 'text.secondary' }}>
+        <Button
+          onClick={handleClose}
+          disabled={submitting}
+          sx={{ color: 'text.secondary' }}
+        >
           <b>{t('GO BACK')}</b>
         </Button>
         {!splitAsr && (
           <Button
             onClick={handleConfirm}
             color={isError ? 'error' : 'primary'}
-            disabled={disableSubmit}
+            disabled={disableSubmit || submitting}
+            aria-busy={submitting}
+            startIcon={
+              submitting ? <CircularProgress size={20} color="inherit" /> : null
+            }
           >
             <b>
               {additionalApproval ? t('Submit For Approval') : cancelButtonText}
             </b>
-            <ChevronRight sx={{ ml: 1 }} />
+            {!submitting && <ChevronRight sx={{ ml: 1 }} />}
           </Button>
         )}
       </DialogActions>
