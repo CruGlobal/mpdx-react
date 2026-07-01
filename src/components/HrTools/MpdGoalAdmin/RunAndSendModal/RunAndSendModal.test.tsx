@@ -75,7 +75,7 @@ describe('RunAndSendModal', () => {
   });
 
   it('omits the warning when every goal is sendable', () => {
-    const { queryByText } = setup({
+    const { getByText, queryByText } = setup({
       rows: [
         makeRow('r1', 'Alice Adams', GoalStatusEnum.Complete),
         makeRow('r2', 'Bob Brown', GoalStatusEnum.Complete),
@@ -83,7 +83,7 @@ describe('RunAndSendModal', () => {
     });
     expect(queryByText(/cannot be sent/)).not.toBeInTheDocument();
     expect(
-      queryByText(/Continue with 2 out of 2 MPD goals/),
+      getByText(/Continue with 2 out of 2 MPD goals/),
     ).toBeInTheDocument();
   });
 
