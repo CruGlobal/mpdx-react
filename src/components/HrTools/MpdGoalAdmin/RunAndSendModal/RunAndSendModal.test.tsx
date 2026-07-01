@@ -81,9 +81,7 @@ describe('RunAndSendModal', () => {
       ],
     });
     expect(queryByText(/cannot be sent/)).not.toBeInTheDocument();
-    expect(
-      getByText(/Continue with 2 out of 2 MPD goals/),
-    ).toBeInTheDocument();
+    expect(getByText(/Continue with 2 out of 2 MPD goals/)).toBeInTheDocument();
   });
 
   it('disables Continue when nothing can be sent', () => {
