@@ -32,6 +32,7 @@ interface DirectionButtonsProps {
   validateForm?: () => Promise<Record<string, string>>;
   submitCount?: number;
   isValid?: boolean;
+  isSubmitting?: boolean;
 }
 
 export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
@@ -52,6 +53,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
   validateForm,
   submitCount,
   isValid,
+  isSubmitting,
   deadlineDate,
   actionRequired,
   additionalApproval,
@@ -187,6 +189,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
           additionalApproval={additionalApproval}
           splitAsr={splitAsr}
           disableSubmit={disableSubmit}
+          submitting={isSubmitting}
         />
       )}
       {openDiscardModal && (

@@ -208,21 +208,22 @@ export const Calculation: React.FC<CalculationProps> = ({
       validateOnChange
       validateOnBlur
       onSubmit={async (values) => {
-        try {
-          await transformNullValues(values);
+        // Let a failed submit reject so DirectionButtons keeps the modal open
+        // for retry (the global Apollo error link surfaces the error toast)
+        await transformNullValues(values);
 
-          await submitMutation({
-            variables: { input: { requestId: requestData?.id ?? '' } },
-          });
-          enqueueSnackbar(t('MHA request submitted successfully.'), {
-            variant: 'success',
-          });
-          handleNextStep();
-        } catch (error) {}
+        await submitMutation({
+          variables: { input: { requestId: requestData?.id ?? '' } },
+        });
+        enqueueSnackbar(t('MHA request submitted successfully.'), {
+          variant: 'success',
+        });
+        handleNextStep();
       }}
     >
       {({
         isValid,
+        isSubmitting,
         submitCount,
         values,
         errors,
@@ -389,6 +390,7 @@ export const Calculation: React.FC<CalculationProps> = ({
                 validateForm={validateForm}
                 submitCount={submitCount}
                 isValid={isValid}
+                isSubmitting={isSubmitting}
                 deadlineDate={deadlineDate ?? ''}
                 actionRequired={actionRequired}
                 isEdit={isEdit}
