@@ -719,6 +719,52 @@ describe('useAdditionalSalaryRequestForm', () => {
         expect(mockHandleNextStep).toHaveBeenCalled();
       });
     });
+
+    it('should not submit or advance when the update mutation fails', async () => {
+      const { result } = renderHook(
+        () =>
+          useAdditionalSalaryRequestForm({
+            ...defaultFormValues,
+            phoneNumber: '555-123-4567',
+            emailAddress: 'test@example.com',
+          }),
+        {
+          wrapper: ({ children }) => (
+            <TestWrapper
+              mocks={{
+                ...defaultGqlMocks,
+                UpdateAdditionalSalaryRequest: (() => {
+                  throw new Error('Server Error');
+                }) as unknown as UpdateAdditionalSalaryRequestMutation,
+              }}
+            >
+              {children}
+            </TestWrapper>
+          ),
+        },
+      );
+
+      await waitFor(async () => {
+        const errors = await result.current.validateForm();
+        expect(errors).toEqual({});
+      });
+
+      let submitError: unknown;
+      await act(async () => {
+        submitError = await result.current
+          .submitForm()
+          .then(() => null)
+          .catch((error) => error);
+      });
+
+      expect(submitError).toEqual(
+        expect.objectContaining({ message: 'Server Error' }),
+      );
+      expect(mutationSpy).not.toHaveGraphqlOperation(
+        'SubmitAdditionalSalaryRequest',
+      );
+      expect(mockHandleNextStep).not.toHaveBeenCalled();
+    });
   });
 
   describe('formik integration', () => {
