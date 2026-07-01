@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import theme from 'src/theme';
 import { MpdGoalAdminProvider, useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import { mockCohorts } from '../mockData';
-import { GoalsTable } from './GoalsTable';
+import { DEFAULT_ROWS_PER_PAGE, GoalsTable } from './GoalsTable';
 
 const rows = mockCohorts[0].rows;
 
@@ -30,8 +30,10 @@ describe('GoalsTable', () => {
     const { getByText, getAllByRole } = renderTable();
     expect(getByText('John & Jane Doe')).toBeInTheDocument();
     expect(getByText('$6,430.25')).toBeInTheDocument();
-    // header row + the first page of data rows (default page size 10)
-    expect(getAllByRole('row')).toHaveLength(Math.min(rows.length, 10) + 1);
+    // header row + the first page of data rows
+    expect(getAllByRole('row')).toHaveLength(
+      Math.min(rows.length, DEFAULT_ROWS_PER_PAGE) + 1,
+    );
   });
 
   it('renders an empty placeholder for zero rows', () => {
@@ -46,7 +48,7 @@ describe('GoalsTable', () => {
 
   it('renders a View/Edit action and a menu button for each row on the page', () => {
     const { getAllByText, getAllByRole } = renderTable();
-    const onPage = Math.min(rows.length, 10);
+    const onPage = Math.min(rows.length, DEFAULT_ROWS_PER_PAGE);
     expect(getAllByText('View/Edit')).toHaveLength(onPage);
     expect(getAllByRole('button', { name: /Actions for/ })).toHaveLength(
       onPage,
@@ -64,12 +66,14 @@ describe('GoalsTable', () => {
     const { getAllByRole } = renderTable();
     // index 0 is the header "select all" checkbox
     await userEvent.click(getAllByRole('checkbox')[0]);
-    // The header checkbox selects only the rows on the current page (the first
-    // 10 with the default page size), not the entire filtered set.
-    rows.slice(0, 10).forEach((row) => {
+    // The header checkbox selects only the rows on the current page, not the
+    // entire filtered set.
+    rows.slice(0, DEFAULT_ROWS_PER_PAGE).forEach((row) => {
       expect(ctx.selectedRowIds.has(row.id)).toBe(true);
     });
-    expect(ctx.selectedRowIds.size).toBe(Math.min(rows.length, 10));
+    expect(ctx.selectedRowIds.size).toBe(
+      Math.min(rows.length, DEFAULT_ROWS_PER_PAGE),
+    );
   });
 
   it('shows the header checkbox as indeterminate when only some rows are selected', async () => {
@@ -93,7 +97,7 @@ describe('GoalsTable', () => {
   });
 
   it('paginates: only the first page of rows is shown at a time', () => {
-    // 12 rows with the default page size of 10 forces a second page.
+    // 12 rows forces a second page at the default page size.
     const manyRows = Array.from({ length: 12 }, (_index, i) => ({
       ...rows[0],
       id: `page-row-${i}`,
@@ -101,9 +105,13 @@ describe('GoalsTable', () => {
     }));
     const { getByText, queryByText } = renderTable(manyRows);
     expect(getByText('Person 0')).toBeInTheDocument();
-    expect(getByText('Person 9')).toBeInTheDocument();
-    // Person 10 and 11 are on page 2, not rendered yet.
-    expect(queryByText('Person 10')).not.toBeInTheDocument();
+    expect(
+      getByText(`Person ${DEFAULT_ROWS_PER_PAGE - 1}`),
+    ).toBeInTheDocument();
+    // Rows beyond the first page are not rendered yet.
+    expect(
+      queryByText(`Person ${DEFAULT_ROWS_PER_PAGE}`),
+    ).not.toBeInTheDocument();
     expect(queryByText('Person 11')).not.toBeInTheDocument();
   });
 
@@ -121,10 +129,12 @@ describe('GoalsTable', () => {
       </ThemeProvider>,
     );
     // Verify page 1 is rendered first.
-    expect(getByText('Person 9')).toBeInTheDocument();
+    expect(
+      getByText(`Person ${DEFAULT_ROWS_PER_PAGE - 1}`),
+    ).toBeInTheDocument();
     // Advance to the next page via the pagination "next page" button.
     await userEvent.click(getByRole('button', { name: /Go to next page/i }));
-    expect(getByText('Person 10')).toBeInTheDocument();
+    expect(getByText(`Person ${DEFAULT_ROWS_PER_PAGE}`)).toBeInTheDocument();
 
     // Changing the filter shrinks the result set. The table must reset to the
     // first page rather than stranding the user on a now-out-of-range page.
@@ -139,6 +149,8 @@ describe('GoalsTable', () => {
       </ThemeProvider>,
     );
     expect(getByText('Person 0')).toBeInTheDocument();
-    expect(queryByText('Person 10')).not.toBeInTheDocument();
+    expect(
+      queryByText(`Person ${DEFAULT_ROWS_PER_PAGE}`),
+    ).not.toBeInTheDocument();
   });
 });

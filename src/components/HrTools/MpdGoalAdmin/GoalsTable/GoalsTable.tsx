@@ -26,13 +26,15 @@ interface GoalsTableProps {
   rows: StaffGoalRow[];
 }
 
+export const DEFAULT_ROWS_PER_PAGE = 5;
+
 export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const { selectedRowIds, toggleRow, toggleRows, search, selectedCohortId } =
     useMpdGoalAdmin();
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_ROWS_PER_PAGE);
 
   // Reset to the first page whenever the filter inputs change, so the user
   // isn't stranded on a now-out-of-range page. Keyed on the filter identity
