@@ -15,6 +15,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
+import { visuallyHidden } from '@mui/utils';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
@@ -91,7 +92,11 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
             <TableCell>{t('Coach')}</TableCell>
             <TableCell>{t('Coordinator')}</TableCell>
             <TableCell>{t('Actions')}</TableCell>
-            <TableCell padding="checkbox" />
+            <TableCell padding="checkbox">
+              <Box component="span" sx={visuallyHidden}>
+                {t('Row actions')}
+              </Box>
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
