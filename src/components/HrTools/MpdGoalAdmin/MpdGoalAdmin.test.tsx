@@ -26,9 +26,9 @@ describe('MpdGoalAdmin', () => {
   });
 
   it('filters rows by the search term', async () => {
-    const { getByRole, queryByText } = renderMain();
+    const { getByRole, getByText, queryByText } = renderMain();
     await userEvent.type(getByRole('textbox', { name: 'Search' }), 'Liam');
-    expect(queryByText('Liam Patterson')).toBeInTheDocument();
+    expect(getByText('Liam Patterson')).toBeInTheDocument();
     expect(queryByText('John & Jane Doe')).not.toBeInTheDocument();
   });
 
