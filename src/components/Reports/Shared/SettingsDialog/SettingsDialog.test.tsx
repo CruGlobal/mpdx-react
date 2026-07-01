@@ -7,8 +7,8 @@ import { DateTime } from 'luxon';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
-import { ReportsStaffExpensesQuery } from '../GetStaffExpense.generated';
-import { DateRange } from '../Helpers/StaffReportEnum';
+import { ReportsStaffExpensesQuery } from '../../StaffExpenseReport/GetStaffExpense.generated';
+import { DateRange } from '../../StaffExpenseReport/Helpers/StaffReportEnum';
 import { Filters, SettingsDialog, SettingsDialogProps } from './SettingsDialog';
 
 const mutationSpy = jest.fn();
@@ -21,6 +21,7 @@ const TestComponent: React.FC<
   selectedFundType,
   time,
   onCallMock,
+  hideDateRange = false,
 }) => (
   <TestRouter>
     <GqlMockedProvider<{ ReportsStaffExpenses: ReportsStaffExpensesQuery }>
@@ -87,6 +88,7 @@ const TestComponent: React.FC<
           selectedFilters={selectedFilters}
           selectedFundType={selectedFundType}
           time={time}
+          hideDateRange={hideDateRange}
         />
       </LocalizationProvider>
     </GqlMockedProvider>
@@ -458,6 +460,55 @@ describe('SettingsDialog', () => {
         startMonth: '2020-01-01',
         endMonth: '2020-01-31',
         fundTypes: ['Primary'],
+      });
+    });
+  });
+
+  describe('MPGA report specific behavior', () => {
+    const defaultProps = {
+      isOpen: true,
+      onClose: mutationSpy,
+      selectedFundType: 'Primary',
+      hideDateRange: true,
+    };
+
+    it('displays the category checkboxes only', async () => {
+      const { queryByLabelText, getByLabelText, findByLabelText, getByText } =
+        render(<TestComponent {...defaultProps} />);
+
+      expect(
+        getByText(
+          'Income and expenses are combined by categories by default. Select which categories to keep consolidated.',
+        ),
+      ).toBeInTheDocument();
+
+      expect(await findByLabelText('Benefits')).toBeInTheDocument();
+      expect(getByLabelText('Salary')).toBeInTheDocument();
+      expect(getByLabelText('Donation')).toBeInTheDocument();
+
+      expect(queryByLabelText('Select Date Range')).not.toBeInTheDocument();
+      expect(queryByLabelText('Start Date')).not.toBeInTheDocument();
+      expect(queryByLabelText('End Date')).not.toBeInTheDocument();
+    });
+
+    it('applies category changes with the date fields left untouched', async () => {
+      const { findByLabelText, getByLabelText, getByRole } = render(
+        <TestComponent {...defaultProps} />,
+      );
+
+      expect(await findByLabelText('Benefits')).toBeChecked();
+
+      userEvent.click(getByLabelText('Benefits'));
+      userEvent.click(getByRole('button', { name: 'Apply Filters' }));
+
+      await waitFor(() => {
+        expect(mutationSpy).toHaveBeenCalledWith({
+          ...baseFilters,
+          categories: [
+            StaffExpenseCategoryEnum.Donation,
+            StaffExpenseCategoryEnum.Salary,
+          ],
+        });
       });
     });
   });
