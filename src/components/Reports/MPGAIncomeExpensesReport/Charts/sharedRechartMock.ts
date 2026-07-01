@@ -2,6 +2,11 @@ import * as React from 'react';
 
 const Original = jest.requireActual('recharts');
 
+Original.Pie.defaultProps = {
+  ...Original.Pie.defaultProps,
+  isAnimationActive: false,
+};
+
 const MockResponsiveContainer = ({ heightValue, aspect, children }) => {
   const width = 800;
   const height =
