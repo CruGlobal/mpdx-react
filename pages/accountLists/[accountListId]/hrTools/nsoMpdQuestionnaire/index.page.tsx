@@ -3,7 +3,11 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { NsoMpdQuestionnaire } from 'src/components/HrTools/NsoMpdQuestionnaire/NsoMpdQuestionnaire';
-import { NsoMpdQuestionnaireProvider } from 'src/components/HrTools/NsoMpdQuestionnaire/Shared/NsoMpdQuestionnaireContext';
+import {
+  NsoMpdQuestionnaireProvider,
+  useNsoMpdQuestionnaire,
+} from 'src/components/HrTools/NsoMpdQuestionnaire/Shared/NsoMpdQuestionnaireContext';
+import { SavingStatus } from 'src/components/HrTools/Shared/CalculationReports/SavingStatus/SavingStatus';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import {
@@ -27,6 +31,18 @@ interface NsoMpdQuestionnaireContentProps {
   isNavListOpen: boolean;
   onNavListToggle: () => void;
 }
+
+const NsoMpdQuestionnaireSavingStatus: React.FC = () => {
+  const { questionnaire, loading, isMutating } = useNsoMpdQuestionnaire();
+  return (
+    <SavingStatus
+      loading={loading}
+      hasData={!!questionnaire}
+      isMutating={isMutating}
+      lastSavedAt={questionnaire?.updatedAt ?? null}
+    />
+  );
+};
 
 const NsoMpdQuestionnaireContent: React.FC<NsoMpdQuestionnaireContentProps> = ({
   isNavListOpen,
@@ -54,6 +70,7 @@ const NsoMpdQuestionnaireContent: React.FC<NsoMpdQuestionnaireContentProps> = ({
             isNavListOpen={isNavListOpen}
             onNavListToggle={onNavListToggle}
             title={t('NSO MPD Questionnaire')}
+            rightExtra={<NsoMpdQuestionnaireSavingStatus />}
             headerType={HeaderTypeEnum.HrTools}
           />
           <NsoMpdQuestionnaire />
