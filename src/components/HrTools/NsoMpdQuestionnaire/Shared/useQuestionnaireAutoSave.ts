@@ -17,7 +17,7 @@ interface UseQuestionnaireAutoSaveOptions {
 
 /**
  * Bridges a single questionnaire field to the shared {@link useAutoSave} hook: seeds the value
- * from the loaded questionnaire and persists edits through the context's upsert mutation.
+ * from the loaded questionnaire and persists edits through the context's update mutation.
  */
 export const useQuestionnaireAutoSave = ({
   fieldName,
@@ -27,9 +27,7 @@ export const useQuestionnaireAutoSave = ({
 
   return useAutoSave({
     value: questionnaire?.[fieldName],
-    saveValue: async (value) => {
-      await saveField({ [fieldName]: value });
-    },
+    saveValue: (value) => saveField({ [fieldName]: value }),
     fieldName,
     ...options,
   });

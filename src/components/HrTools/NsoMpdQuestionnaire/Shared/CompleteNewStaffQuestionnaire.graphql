@@ -1,0 +1,10 @@
+mutation CompleteNewStaffQuestionnaire(
+  $input: NewStaffQuestionnaireCompleteMutationInput!
+) {
+  completeNewStaffQuestionnaire(input: $input) {
+    newStaffQuestionnaire {
+      ...NewStaffInformationFields
+      ...NewStaffQuestionnaireFields
+    }
+  }
+}
