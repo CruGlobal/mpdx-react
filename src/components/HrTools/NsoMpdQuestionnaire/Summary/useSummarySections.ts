@@ -110,7 +110,7 @@ export const useSummarySections = (): SummarySectionData[] => {
             ? [
                 {
                   label: t('Spouse name'),
-                  value: formatText(spouseFirstName),
+                  value: formatText(`${spouseFirstName} ${lastName}`),
                 },
                 {
                   label: t('Spouse age'),
