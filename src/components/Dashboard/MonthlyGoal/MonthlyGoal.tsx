@@ -7,6 +7,7 @@ import {
   Skeleton,
   Theme,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
@@ -15,6 +16,7 @@ import {
   StatusEnum,
 } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
+import theme from '../../../theme';
 import {
   currencyFormat,
   numberFormat,
@@ -66,6 +68,8 @@ const MonthlyGoal = ({
   const { classes } = useStyles();
   const { t } = useTranslation();
   const locale = useLocale();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down('md'));
   const receivedPercentage = received / goal;
   const pledgedPercentage = pledged / goal;
   const belowGoal = goal - pledged;
@@ -93,12 +97,11 @@ const MonthlyGoal = ({
                   ),
                 })}
               </Button>
-              <Box
-                data-testid="MonthlyGoalTypographyGoalMobile"
-                sx={{ display: { xs: 'block', sm: 'none' } }}
-              >
-                {!loading && currencyFormat(goal, currencyCode, locale)}
-              </Box>
+              {isMobile && (
+                <Box data-testid="MonthlyGoalTypographyGoalMobile">
+                  {!loading && currencyFormat(goal, currencyCode, locale)}
+                </Box>
+              )}
             </Box>
           </Typography>
         </AnimatedBox>
@@ -111,25 +114,31 @@ const MonthlyGoal = ({
             secondary={pledgedPercentage}
           />
           <Grid container spacing={2}>
-            <Grid
-              size={{
-                sm: 6,
-                md: 3,
-              }}
-              sx={{ display: { xs: 'none', md: 'block' } }}
-            >
-              <Typography component="div" color="textSecondary">
-                <div className={[classes.indicator, classes.goal].join(' ')} />
-                {t('Goal')}
-              </Typography>
-              <Typography variant="h5" data-testid="MonthlyGoalTypographyGoal">
-                {loading ? (
-                  <Skeleton variant="text" />
-                ) : (
-                  currencyFormat(goal, currencyCode, locale)
-                )}
-              </Typography>
-            </Grid>
+            {!isBelowMd && (
+              <Grid
+                size={{
+                  sm: 6,
+                  md: 3,
+                }}
+              >
+                <Typography component="div" color="textSecondary">
+                  <div
+                    className={[classes.indicator, classes.goal].join(' ')}
+                  />
+                  {t('Goal')}
+                </Typography>
+                <Typography
+                  variant="h5"
+                  data-testid="MonthlyGoalTypographyGoal"
+                >
+                  {loading ? (
+                    <Skeleton variant="text" />
+                  ) : (
+                    currencyFormat(goal, currencyCode, locale)
+                  )}
+                </Typography>
+              </Grid>
+            )}
             <Grid
               size={{
                 xs: 6,
@@ -200,8 +209,8 @@ const MonthlyGoal = ({
                 )}
               </Typography>
             </Grid>
-            <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-              {!isNaN(belowGoal) && belowGoal > 0 ? (
+            {!isBelowMd &&
+              (!isNaN(belowGoal) && belowGoal > 0 ? (
                 <Grid
                   size={{
                     sm: 6,
@@ -257,8 +266,7 @@ const MonthlyGoal = ({
                     )}
                   </Typography>
                 </Grid>
-              )}
-            </Box>
+              ))}
           </Grid>
         </CardContent>
       </AnimatedCard>

@@ -139,14 +139,11 @@ const TasksDueThisWeek = ({
             <>
               <List className={classes.list} data-testid="TasksDueThisWeekList">
                 {dueTasks.nodes.map((task) => (
-                  <ListItem
-                    key={task.id}
-                    disablePadding
-                    data-testid={`TasksDueThisWeekListItem-${task.id}`}
-                  >
+                  <ListItem key={task.id} disablePadding>
                     <ListItemButton
                       onClick={(): void => handleClick(task)}
                       onMouseEnter={() => preloadTaskModal(TaskModalEnum.Edit)}
+                      data-testid={`TasksDueThisWeekListItem-${task.id}`}
                     >
                       <ListItemText
                         disableTypography={true}

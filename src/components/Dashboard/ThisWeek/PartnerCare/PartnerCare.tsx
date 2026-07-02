@@ -315,12 +315,11 @@ const PartnerCare = ({
                     style={{ minHeight: '165px', alignItems: 'start' }}
                   >
                     {prayerRequestTasks.nodes.map((task) => (
-                      <ListItem
-                        key={task.id}
-                        disablePadding
-                        data-testid={`PartnerCarePrayerListItem-${task.id}`}
-                      >
-                        <ListItemButton onClick={(): void => handleClick(task)}>
+                      <ListItem key={task.id} disablePadding>
+                        <ListItemButton
+                          onClick={(): void => handleClick(task)}
+                          data-testid={`PartnerCarePrayerListItem-${task.id}`}
+                        >
                           <ListItemText
                             disableTypography={true}
                             primary={

@@ -81,7 +81,8 @@ describe('TagsAutocomplete', () => {
     const { findByRole, getByRole } = render(<TestComponent />);
 
     userEvent.click(getByRole('combobox', { name: 'Tags' }));
-    userEvent.hover(await findByRole('option', { name: 'ct-1' }));
+    await findByRole('option', { name: 'ct-1' });
+    userEvent.keyboard('{ArrowDown}');
     userEvent.tab();
 
     expect(onChange).toHaveBeenCalledWith(['ct-1']);
