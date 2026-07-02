@@ -1,9 +1,8 @@
 import { FC, ReactElement } from 'react';
-import { Box, Theme, useMediaQuery } from '@mui/material';
+import { Box, CSSObject, Theme, useMediaQuery } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { CSSProperties } from '@mui/styles';
 
-interface ToolbarMixin extends CSSProperties {
+interface ToolbarMixin extends CSSObject {
   minHeight: number;
   '@media (min-width:600px)': { minHeight: number };
   '@media (min-width:0px)': {
