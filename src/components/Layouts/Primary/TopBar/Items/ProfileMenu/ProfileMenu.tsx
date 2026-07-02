@@ -11,7 +11,6 @@ import {
   Box,
   Button,
   Divider,
-  Hidden,
   ListItemAvatar,
   ListItemText,
   Menu,
@@ -220,29 +219,27 @@ const ProfileMenu = (): ReactElement => {
         loading={loading}
       >
         {data && (
-          <Hidden lgDown>
-            <NameBox>
-              <AccountName>
-                {session.impersonating ? `Impersonating ` : ``}
-                {[data.user.firstName, data.user.lastName]
-                  .filter(Boolean)
-                  .join(' ')}
+          <NameBox sx={{ display: { xs: 'none', xl: 'block' } }}>
+            <AccountName>
+              {session.impersonating ? `Impersonating ` : ``}
+              {[data.user.firstName, data.user.lastName]
+                .filter(Boolean)
+                .join(' ')}
+            </AccountName>
+            {hasSelectedAccount && (
+              <AccountName
+                display="block"
+                variant="body2"
+                data-testid="accountListName"
+              >
+                {
+                  data.accountLists.nodes.find(
+                    (accountList) => accountList.id === accountListId,
+                  )?.name
+                }
               </AccountName>
-              {hasSelectedAccount && (
-                <AccountName
-                  display="block"
-                  variant="body2"
-                  data-testid="accountListName"
-                >
-                  {
-                    data.accountLists.nodes.find(
-                      (accountList) => accountList.id === accountListId,
-                    )?.name
-                  }
-                </AccountName>
-              )}
-            </NameBox>
-          </Hidden>
+            )}
+          </NameBox>
         )}
       </ProfileName>
       <MenuWrapper

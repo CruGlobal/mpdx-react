@@ -159,7 +159,7 @@ export const PersonEmailItem: React.FC<Props> = ({
             </EmailSelect>
           </FormControl>
         </Grid>
-        <VerticallyCenteredGrid item xs={12} sm={6} md={2}>
+        <VerticallyCenteredGrid size={{ xs: 12, sm: 6, md: 2 }}>
           <PrimaryControlLabel
             label={t('Primary')}
             control={
@@ -173,7 +173,7 @@ export const PersonEmailItem: React.FC<Props> = ({
             destroyed={emailAddress.destroy ?? false}
           />
         </VerticallyCenteredGrid>
-        <VerticallyCenteredGrid item xs={12} sm={6} md={2}>
+        <VerticallyCenteredGrid size={{ xs: 12, sm: 6, md: 2 }}>
           <PrimaryControlLabel
             label={t('Invalid')}
             control={

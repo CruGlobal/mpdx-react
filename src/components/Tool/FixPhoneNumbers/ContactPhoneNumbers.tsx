@@ -8,7 +8,6 @@ import {
   FormControl,
   FormHelperText,
   Grid,
-  Hidden,
   TextField,
   Tooltip,
   Typography,
@@ -97,11 +96,13 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
           className={classes.paddingX}
         >
           <Box>
-            <Hidden smUp>
-              <Typography display="inline" variant="body2" fontWeight="bold">
-                {t('Source')}:
-              </Typography>
-            </Hidden>
+            <Typography
+              variant="body2"
+              fontWeight="bold"
+              sx={{ display: { xs: 'inline', sm: 'none' } }}
+            >
+              {t('Source')}:
+            </Typography>
             <Typography display="inline" variant="body2">
               {`${sourceToStr(t, phoneNumber.source)} (${dateFormatShort(
                 DateTime.fromISO(phoneNumber.updatedAt),
@@ -126,15 +127,13 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
           <Typography display="flex" alignItems="center">
             {phoneNumber.primary ? (
               <>
-                <Hidden smUp>
-                  <Typography
-                    display="inline"
-                    variant="body2"
-                    fontWeight="bold"
-                  >
-                    {t('Source')}:
-                  </Typography>
-                </Hidden>
+                <Typography
+                  variant="body2"
+                  fontWeight="bold"
+                  sx={{ display: { xs: 'inline', sm: 'none' } }}
+                >
+                  {t('Source')}:
+                </Typography>
                 <StarIcon
                   data-testid={`starIcon-${personId}-${phoneNumber.id}`}
                   className={classes.hoverHighlight}
@@ -142,15 +141,13 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
               </>
             ) : (
               <>
-                <Hidden smUp>
-                  <Typography
-                    display="inline"
-                    variant="body2"
-                    fontWeight="bold"
-                  >
-                    {t('Source')}:
-                  </Typography>
-                </Hidden>
+                <Typography
+                  variant="body2"
+                  fontWeight="bold"
+                  sx={{ display: { xs: 'inline', sm: 'none' } }}
+                >
+                  {t('Source')}:
+                </Typography>
                 <Tooltip title={t('Set as Primary')} placement="left">
                   <StarOutlineIcon
                     data-testid={`starOutlineIcon-${personId}-${phoneNumber.id}`}

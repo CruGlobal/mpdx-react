@@ -17,7 +17,7 @@ import {
 import AnimatedCard from 'src/components/AnimatedCard';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
-import type { Theme } from '@mui/material/styles/createTheme';
+import type { Theme } from '@mui/material/styles';
 
 type EntryHistory = {
   [key: string]: number | string;

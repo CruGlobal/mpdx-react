@@ -13,7 +13,6 @@ import {
   CardContent,
   CardHeader,
   Grid,
-  Hidden,
   IconButton,
   Link,
   Typography,
@@ -185,7 +184,7 @@ const Contact: React.FC<Props> = ({
       <CardContent className={(classes.paddingX, classes.paddingY)}>
         <Grid size={12}>
           <Grid container>
-            <Hidden mdDown>
+            <Box sx={{ display: { xs: 'none', lg: 'contents' } }}>
               <Grid
                 className={classes.paddingB2}
                 size={{
@@ -231,7 +230,7 @@ const Contact: React.FC<Props> = ({
                   </Typography>
                 </Box>
               </Grid>
-            </Hidden>
+            </Box>
             {addressesData?.map((address) => (
               <Fragment key={address.id}>
                 <Grid
@@ -248,11 +247,11 @@ const Contact: React.FC<Props> = ({
                         md: 8,
                       }}
                     >
-                      <Hidden mdUp>
-                        <Typography display="inline">
-                          <strong>{t('Source')}: </strong>
-                        </Typography>
-                      </Hidden>
+                      <Typography
+                        sx={{ display: { xs: 'inline', md: 'none' } }}
+                      >
+                        <strong>{t('Source')}: </strong>
+                      </Typography>
                       <Typography display="inline">
                         {sourceToStr(t, address.source)}{' '}
                       </Typography>
@@ -345,11 +344,9 @@ const Contact: React.FC<Props> = ({
             >
               <Box display="flex" justifyContent="space-between">
                 <Box>
-                  <Hidden mdUp>
-                    <Typography display="inline">
-                      <strong>{t('Source')}: </strong>
-                    </Typography>
-                  </Hidden>
+                  <Typography sx={{ display: { xs: 'inline', md: 'none' } }}>
+                    <strong>{t('Source')}: </strong>
+                  </Typography>
                 </Box>
               </Box>
             </Grid>

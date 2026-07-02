@@ -14,7 +14,6 @@ import {
   FormControl,
   FormHelperText,
   Grid,
-  Hidden,
   Link,
   TextField,
   Theme,
@@ -286,7 +285,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
 
                 <CardContent className={classes.contactCardContent}>
                   <Grid container display="flex" alignItems="center">
-                    <Hidden smDown>
+                    <Box sx={{ display: { xs: 'none', md: 'contents' } }}>
                       <Grid
                         className={classes.paddingY}
                         size={{
@@ -338,7 +337,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                           </Typography>
                         </Box>
                       </Grid>
-                    </Hidden>
+                    </Box>
                     {emails.map((email, index) => (
                       <Formik
                         key={index}
@@ -371,15 +370,15 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                                 className={classes.paddingX}
                               >
                                 <Box>
-                                  <Hidden smUp>
-                                    <Typography
-                                      display="inline"
-                                      variant="body2"
-                                      fontWeight="bold"
-                                    >
-                                      {t('Source')}:
-                                    </Typography>
-                                  </Hidden>
+                                  <Typography
+                                    variant="body2"
+                                    fontWeight="bold"
+                                    sx={{
+                                      display: { xs: 'inline', sm: 'none' },
+                                    }}
+                                  >
+                                    {t('Source')}:
+                                  </Typography>
                                   <Typography display="inline" variant="body2">
                                     {`${sourceToStr(
                                       t,
@@ -407,15 +406,15 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                                 <Typography display="flex" alignItems="center">
                                   {email.isPrimary ? (
                                     <>
-                                      <Hidden smUp>
-                                        <Typography
-                                          display="inline"
-                                          variant="body2"
-                                          fontWeight="bold"
-                                        >
-                                          {t('Source')}:
-                                        </Typography>
-                                      </Hidden>
+                                      <Typography
+                                        variant="body2"
+                                        fontWeight="bold"
+                                        sx={{
+                                          display: { xs: 'inline', sm: 'none' },
+                                        }}
+                                      >
+                                        {t('Source')}:
+                                      </Typography>
                                       <StarIcon
                                         data-testid={`starIcon-${id}-${index}`}
                                         className={classes.hoverHighlight}
@@ -426,15 +425,15 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                                     </>
                                   ) : (
                                     <>
-                                      <Hidden smUp>
-                                        <Typography
-                                          display="inline"
-                                          variant="body2"
-                                          fontWeight="bold"
-                                        >
-                                          {t('Source')}:
-                                        </Typography>
-                                      </Hidden>
+                                      <Typography
+                                        variant="body2"
+                                        fontWeight="bold"
+                                        sx={{
+                                          display: { xs: 'inline', sm: 'none' },
+                                        }}
+                                      >
+                                        {t('Source')}:
+                                      </Typography>
                                       <Tooltip
                                         title={t('Set as Primary')}
                                         placement="left"
@@ -546,15 +545,13 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                         className={classes.paddingX}
                       >
                         <Box>
-                          <Hidden smUp>
-                            <Typography
-                              display="inline"
-                              variant="body2"
-                              fontWeight="bold"
-                            >
-                              {t('Source')}:
-                            </Typography>
-                          </Hidden>
+                          <Typography
+                            variant="body2"
+                            fontWeight="bold"
+                            sx={{ display: { xs: 'inline', sm: 'none' } }}
+                          >
+                            {t('Source')}:
+                          </Typography>
                           <Typography display="inline" variant="body2">
                             {appName}
                           </Typography>

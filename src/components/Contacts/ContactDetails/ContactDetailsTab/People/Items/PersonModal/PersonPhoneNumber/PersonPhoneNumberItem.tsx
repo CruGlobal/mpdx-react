@@ -160,7 +160,7 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
             </PhoneNumberSelect>
           </FormControl>
         </Grid>
-        <VerticallyCenteredGrid item xs={12} sm={6} md={2}>
+        <VerticallyCenteredGrid size={{ xs: 12, sm: 6, md: 2 }}>
           <PrimaryControlLabel
             label={t('Primary')}
             control={
@@ -174,7 +174,7 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
             destroyed={phoneNumber.destroy ?? false}
           />
         </VerticallyCenteredGrid>
-        <VerticallyCenteredGrid item xs={12} sm={6} md={2}>
+        <VerticallyCenteredGrid size={{ xs: 12, sm: 6, md: 2 }}>
           <PrimaryControlLabel
             label={t('Invalid')}
             control={

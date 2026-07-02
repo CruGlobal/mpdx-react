@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@emotion/react';
-import { SvgIconProps } from '@mui/material/SvgIcon/SvgIcon';
+import { SvgIconProps } from '@mui/material/SvgIcon';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render } from '@testing-library/react';

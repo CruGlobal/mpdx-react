@@ -380,7 +380,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
           </Grid>
         </Grid>
 
-        <BorderRightGrid item xs={4}>
+        <BorderRightGrid size={4}>
           {designationAccounts &&
             designationAccounts?.map((account, idx) => (
               <BorderBottomBox key={`designationAccounts-${idx}`}>
@@ -392,7 +392,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
             ))}
         </BorderRightGrid>
 
-        <BorderRightGrid item xs={4}>
+        <BorderRightGrid size={4}>
           {accountListUsers && (
             <AccountListCoachesOrUsers
               accountListItems={accountListUsers}

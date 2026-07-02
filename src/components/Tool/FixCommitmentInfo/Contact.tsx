@@ -362,7 +362,6 @@ const Contact: React.FC<Props> = ({
                             <ContactStatusSelect
                               className={classes.select}
                               size="small"
-                              placeholder="Status"
                               labelId="status-label"
                               inputProps={{
                                 'data-testid': 'pledgeStatus-input',
@@ -473,7 +472,6 @@ const Contact: React.FC<Props> = ({
                                 }}
                                 label={t('Frequency')}
                                 labelId="frequency-label"
-                                placeholder="Frequency"
                                 size="small"
                                 style={{ width: '100%' }}
                                 value={pledgeFrequency}

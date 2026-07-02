@@ -1,4 +1,4 @@
-import { FC, ReactElement } from 'react';
+import { ElementType, FC, ReactElement } from 'react';
 import { Box, CSSObject, Theme, useMediaQuery } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
@@ -13,6 +13,7 @@ interface ToolbarMixin extends CSSObject {
 interface FullHeightBoxProps {
   isScrollable?: boolean;
   headerHeight: number | string;
+  component?: ElementType;
 }
 
 const FullHeightBox = styled(Box, {
@@ -42,7 +43,10 @@ const CollapsibleWrapper = styled(Box)({
   overflowX: 'hidden',
 });
 
-const ExpandingContent = styled(Box)(({ open }: { open: boolean }) => ({
+const ExpandingContent = styled(Box)<{
+  open: boolean;
+  component?: ElementType;
+}>(({ open }) => ({
   flexGrow: 1,
   flexShrink: 0,
   flexBasis: open ? 0 : '100%',

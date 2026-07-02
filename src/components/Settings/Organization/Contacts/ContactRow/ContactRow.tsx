@@ -4,7 +4,6 @@ import {
   Box,
   Button,
   Grid,
-  Hidden,
   Link,
   ListItemText,
   Typography,
@@ -174,11 +173,13 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
                 )}
 
                 {primaryAddress && (
-                  <Hidden smDown>
-                    <Typography component="span" variant="body2">
-                      {primaryAddressString}
-                    </Typography>
-                  </Hidden>
+                  <Typography
+                    component="span"
+                    variant="body2"
+                    sx={{ display: { xs: 'none', md: 'block' } }}
+                  >
+                    {primaryAddressString}
+                  </Typography>
                 )}
               </>
             }

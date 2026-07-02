@@ -111,7 +111,7 @@ export const FourteenMonthReportHeader: FC<FourteenMonthReportHeaderProps> = ({
             <HeaderTitle variant="h5">{title}</HeaderTitle>
           </Box>
         </Grid>
-        <StyledGrid item>
+        <StyledGrid>
           <FourteenMonthReportActions
             csvData={csvData}
             currencyType={currencyType}

@@ -4,7 +4,6 @@ import {
   Box,
   Divider,
   Drawer,
-  Hidden,
   IconButton,
   Theme,
   Typography,
@@ -163,12 +162,14 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
 
   return (
     <CoachingDetailContainer>
-      <Hidden mdUp>
-        <Drawer open={drawerVisible} onClose={handleCloseDrawer}>
-          {sidebar}
-        </Drawer>
-      </Hidden>
-      <Hidden mdDown>{sidebar}</Hidden>
+      <Drawer
+        open={drawerVisible}
+        onClose={handleCloseDrawer}
+        sx={{ display: { xs: 'block', md: 'none' } }}
+      >
+        {sidebar}
+      </Drawer>
+      <Box sx={{ display: { xs: 'none', lg: 'block' } }}>{sidebar}</Box>
       <CoachingMainContainer>
         {loading ? (
           <MultilineSkeleton lines={4} />
@@ -177,15 +178,14 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
             <CoachingMainTitleContainer>
               <Box style={{ flexGrow: 1 }}>
                 <Typography variant="h5" mx={1}>
-                  <Hidden mdUp>
-                    <IconButton
-                      onClick={() => setDrawerVisible(!drawerVisible)}
-                      aria-label={t('Toggle account details')}
-                      name={t('Toggle account details')}
-                    >
-                      <MenuOpenIcon />
-                    </IconButton>
-                  </Hidden>
+                  <IconButton
+                    onClick={() => setDrawerVisible(!drawerVisible)}
+                    aria-label={t('Toggle account details')}
+                    name={t('Toggle account details')}
+                    sx={{ display: { xs: 'block', md: 'none' } }}
+                  >
+                    <MenuOpenIcon />
+                  </IconButton>
                   {accountListData?.name}
                 </Typography>
                 <Typography mx={1} variant="subtitle1">

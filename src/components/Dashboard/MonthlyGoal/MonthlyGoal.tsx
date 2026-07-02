@@ -4,7 +4,6 @@ import {
   Button,
   CardContent,
   Grid,
-  Hidden,
   Skeleton,
   Theme,
   Typography,
@@ -94,11 +93,12 @@ const MonthlyGoal = ({
                   ),
                 })}
               </Button>
-              <Hidden smUp>
-                <Box data-testid="MonthlyGoalTypographyGoalMobile">
-                  {!loading && currencyFormat(goal, currencyCode, locale)}
-                </Box>
-              </Hidden>
+              <Box
+                data-testid="MonthlyGoalTypographyGoalMobile"
+                sx={{ display: { xs: 'block', sm: 'none' } }}
+              >
+                {!loading && currencyFormat(goal, currencyCode, locale)}
+              </Box>
             </Box>
           </Typography>
         </AnimatedBox>
@@ -111,31 +111,25 @@ const MonthlyGoal = ({
             secondary={pledgedPercentage}
           />
           <Grid container spacing={2}>
-            <Hidden smDown>
-              <Grid
-                size={{
-                  sm: 6,
-                  md: 3,
-                }}
-              >
-                <Typography component="div" color="textSecondary">
-                  <div
-                    className={[classes.indicator, classes.goal].join(' ')}
-                  />
-                  {t('Goal')}
-                </Typography>
-                <Typography
-                  variant="h5"
-                  data-testid="MonthlyGoalTypographyGoal"
-                >
-                  {loading ? (
-                    <Skeleton variant="text" />
-                  ) : (
-                    currencyFormat(goal, currencyCode, locale)
-                  )}
-                </Typography>
-              </Grid>
-            </Hidden>
+            <Grid
+              size={{
+                sm: 6,
+                md: 3,
+              }}
+              sx={{ display: { xs: 'none', md: 'block' } }}
+            >
+              <Typography component="div" color="textSecondary">
+                <div className={[classes.indicator, classes.goal].join(' ')} />
+                {t('Goal')}
+              </Typography>
+              <Typography variant="h5" data-testid="MonthlyGoalTypographyGoal">
+                {loading ? (
+                  <Skeleton variant="text" />
+                ) : (
+                  currencyFormat(goal, currencyCode, locale)
+                )}
+              </Typography>
+            </Grid>
             <Grid
               size={{
                 xs: 6,
@@ -206,7 +200,7 @@ const MonthlyGoal = ({
                 )}
               </Typography>
             </Grid>
-            <Hidden smDown>
+            <Box sx={{ display: { xs: 'none', md: 'block' } }}>
               {!isNaN(belowGoal) && belowGoal > 0 ? (
                 <Grid
                   size={{
@@ -264,7 +258,7 @@ const MonthlyGoal = ({
                   </Typography>
                 </Grid>
               )}
-            </Hidden>
+            </Box>
           </Grid>
         </CardContent>
       </AnimatedCard>

@@ -308,13 +308,13 @@ const TaskModalCompleteForm = ({
                   {activityData ? activityData.translatedFullName : ''}
                 </Typography>
               </Grid>
-              <StyledGrid item>
+              <StyledGrid>
                 <Typography style={{ fontWeight: 600 }} display="inline">
                   {t('Subject: ')}
                 </Typography>
                 <Typography display="inline">{task?.subject}</Typography>
               </StyledGrid>
-              <StyledGrid item>
+              <StyledGrid>
                 <Typography style={{ fontWeight: 600 }} display="inline">
                   {numberOfContacts > 1
                     ? t('Contacts: ')

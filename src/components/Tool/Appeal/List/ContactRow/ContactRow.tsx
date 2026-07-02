@@ -6,7 +6,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import {
   Box,
   Grid,
-  Hidden,
   IconButton,
   ListItemIcon,
   ListItemText,
@@ -159,16 +158,14 @@ export const ContactRow: React.FC<Props> = ({
             display={'flex'}
             size={isExcludedContact ? 5 : 6}
           >
-            <Hidden xsDown>
-              <ListItemIcon>
-                <StyledCheckbox
-                  checked={isChecked(contact.id)}
-                  color="secondary"
-                  onClick={(event) => event.stopPropagation()}
-                  onChange={() => onContactCheckToggle(contact.id)}
-                />
-              </ListItemIcon>
-            </Hidden>
+            <ListItemIcon sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>
+              <StyledCheckbox
+                checked={isChecked(contact.id)}
+                color="secondary"
+                onClick={(event) => event.stopPropagation()}
+                onChange={() => onContactCheckToggle(contact.id)}
+              />
+            </ListItemIcon>
             <ListItemText
               primary={
                 <Typography component="span" variant="h6" noWrap>
@@ -314,9 +311,7 @@ export const ContactRow: React.FC<Props> = ({
             </ContactRowActions>
           </Grid>
         </Grid>
-        <Hidden xsDown>
-          <Box></Box>
-        </Hidden>
+        <Box sx={{ display: { xs: 'none', sm: 'block' } }}></Box>
       </ListButton>
       {removeContactModalOpen && (
         <DynamicDeleteAppealContactModal

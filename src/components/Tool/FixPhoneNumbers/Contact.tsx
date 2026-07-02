@@ -11,7 +11,6 @@ import {
   CardContent,
   CardHeader,
   Grid,
-  Hidden,
   Link,
   Typography,
 } from '@mui/material';
@@ -348,7 +347,7 @@ const Contact: React.FC<Props> = ({ person, submitAll, accountListId }) => {
                     </Grid>
                     <CardContent sx={{ padding: 2 }}>
                       <Grid container display="flex" alignItems="center">
-                        <Hidden smDown>
+                        <Box sx={{ display: { xs: 'none', md: 'contents' } }}>
                           <Grid
                             className={classes.paddingY}
                             size={{
@@ -400,7 +399,7 @@ const Contact: React.FC<Props> = ({ person, submitAll, accountListId }) => {
                               </Typography>
                             </Box>
                           </Grid>
-                        </Hidden>
+                        </Box>
                         {values.numbers.map((phoneNumber, index) => (
                           <ContactPhoneNumbers
                             key={phoneNumber.id}
@@ -426,15 +425,13 @@ const Contact: React.FC<Props> = ({ person, submitAll, accountListId }) => {
                             className={classes.paddingX}
                           >
                             <Box>
-                              <Hidden smUp>
-                                <Typography
-                                  display="inline"
-                                  variant="body2"
-                                  fontWeight="bold"
-                                >
-                                  {t('Source')}:
-                                </Typography>
-                              </Hidden>
+                              <Typography
+                                variant="body2"
+                                fontWeight="bold"
+                                sx={{ display: { xs: 'inline', sm: 'none' } }}
+                              >
+                                {t('Source')}:
+                              </Typography>
                               <Typography display="inline" variant="body2">
                                 {appName}
                               </Typography>
