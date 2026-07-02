@@ -18,19 +18,15 @@ export const ContactInformation: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
   const { questionnaire } = useNsoMpdQuestionnaire();
+  const { maritalStatus, firstName, spouseFirstName } = questionnaire ?? {};
 
-  const maritalStatus = questionnaire?.maritalStatus;
   const hasSpouse =
     !!maritalStatus &&
     maritalStatus !== NewStaffQuestionnaireMaritalStatusEnum.Single;
 
-  const lastName = questionnaire?.lastName;
-  const userName =
-    [questionnaire?.firstName, lastName].filter(Boolean).join(' ') || t('You');
-  const spouseColumnName =
-    [questionnaire?.spouseFirstName, lastName].filter(Boolean).join(' ') ||
-    t('Spouse');
-  const spouseName = questionnaire?.spouseFirstName || t('your spouse');
+  const userName = firstName ?? t('You');
+  const spouseColumnName = spouseFirstName ?? t('Spouse');
+  const spouseName = spouseFirstName ?? t('your spouse');
 
   return (
     <Stack spacing={2}>

@@ -17,7 +17,6 @@ describe('ContactInformation', () => {
   it('renders a required phone field for the user and the spouse', async () => {
     const { findByRole, getByRole } = render(<TestComponent />);
 
-    // The spouse field depends on the loaded questionnaire, so wait for it first.
     const spousePhone = await findByRole('textbox', {
       name: "Jane's Cell Phone Number",
     });
