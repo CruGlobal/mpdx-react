@@ -99,7 +99,13 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
         </ListItemIcon>
       </Hidden>
       <Grid container alignItems="center">
-        <Grid item xs={10} md={6} style={{ paddingRight: 16 }}>
+        <Grid
+          style={{ paddingRight: 16 }}
+          size={{
+            xs: 10,
+            md: 6,
+          }}
+        >
           <ListItemText
             primary={
               <Typography component="span" variant="h6" noWrap>
@@ -136,7 +142,12 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
             }
           />
         </Grid>
-        <Grid item xs={2} md={6}>
+        <Grid
+          size={{
+            xs: 2,
+            md: 6,
+          }}
+        >
           <ContactPartnershipStatus
             lateAt={lateAt}
             pledgeStartDate={pledgeStartDate}

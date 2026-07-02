@@ -294,7 +294,12 @@ const Contact: React.FC<Props> = ({
               <Grid container className={classes.formWrapper}>
                 <Card className={classes.formInner}>
                   <Grid container>
-                    <Grid item sm={12} md={4}>
+                    <Grid
+                      size={{
+                        sm: 12,
+                        md: 4,
+                      }}
+                    >
                       <Box
                         display="flex"
                         p={2}
@@ -331,17 +336,24 @@ const Contact: React.FC<Props> = ({
                         </Box>
                       </Box>
                     </Grid>
-                    <Grid item sm={12} md={8} className={classes.right}>
+                    <Grid
+                      className={classes.right}
+                      size={{
+                        sm: 12,
+                        md: 8,
+                      }}
+                    >
                       <Grid
                         container
                         style={{ paddingRight: theme.spacing(1) }}
                       >
                         <Grid
-                          item
-                          xs={12}
-                          md={6}
-                          lg={12}
                           className={classes.boxTop}
+                          size={{
+                            xs: 12,
+                            md: 6,
+                            lg: 12,
+                          }}
                         >
                           <FormControl fullWidth size="small">
                             <InputLabel id="status-label">
@@ -364,7 +376,13 @@ const Contact: React.FC<Props> = ({
                             />
                           </FormControl>
                         </Grid>
-                        <Grid item xs={12} md={6} lg={4}>
+                        <Grid
+                          size={{
+                            xs: 12,
+                            md: 6,
+                            lg: 4,
+                          }}
+                        >
                           <Box className={classes.boxBottom}>
                             <FormControl fullWidth size="small">
                               <CurrencyAutocomplete
@@ -391,7 +409,12 @@ const Contact: React.FC<Props> = ({
                             </FormHelperText>
                           </Box>
                         </Grid>
-                        <Grid item xs={12} lg={4}>
+                        <Grid
+                          size={{
+                            xs: 12,
+                            lg: 4,
+                          }}
+                        >
                           <Box className={classes.boxBottom}>
                             <FormControl fullWidth size="small">
                               <Field
@@ -429,7 +452,12 @@ const Contact: React.FC<Props> = ({
                             </FormControl>
                           </Box>
                         </Grid>
-                        <Grid item xs={12} sm={4}>
+                        <Grid
+                          size={{
+                            xs: 12,
+                            sm: 4,
+                          }}
+                        >
                           <Box
                             className={classes.boxBottom}
                             data-testid="BoxBottom"
@@ -499,7 +527,13 @@ const Contact: React.FC<Props> = ({
                     )}
                   </Grid>
                 </Card>
-                <Grid item xs={12} md={3} className={classes.buttonGroup}>
+                <Grid
+                  className={classes.buttonGroup}
+                  size={{
+                    xs: 12,
+                    md: 3,
+                  }}
+                >
                   <Box className={classes.buttonGroupBox}>
                     <Box className={classes.buttonTop}>
                       <Button

@@ -93,7 +93,7 @@ const ExportPhysical: React.FC<Props> = ({
       <DialogContent dividers>
         <Grid container alignItems="center" justifyContent="space-between">
           {isExportingPdf ? (
-            <Grid item xs={12}>
+            <Grid size={12}>
               <SelectInputLabel id="label-template-label">
                 {t('Label Template')}
               </SelectInputLabel>

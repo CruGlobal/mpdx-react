@@ -303,7 +303,7 @@ const TaskModalCompleteForm = ({
               </Alert>
             )}
             <FormFieldsGridContainer>
-              <Grid item>
+              <Grid>
                 <Typography style={{ fontWeight: 600 }} display="inline">
                   {activityData ? activityData.translatedFullName : ''}
                 </Typography>
@@ -333,17 +333,13 @@ const TaskModalCompleteForm = ({
                   </Typography>
                 ))}
               </StyledGrid>
-              <Grid item>
+              <Grid>
                 <FormControl fullWidth>
                   <DateTimeFieldPair
                     render={(dateField, timeField) => (
                       <Grid container spacing={2}>
-                        <Grid xs={6} item>
-                          {dateField}
-                        </Grid>
-                        <Grid xs={6} item>
-                          {timeField}
-                        </Grid>
+                        <Grid size={6}>{dateField}</Grid>
+                        <Grid size={6}>{timeField}</Grid>
                       </Grid>
                     )}
                     dateLabel={t('Completed Date')}
@@ -377,7 +373,7 @@ const TaskModalCompleteForm = ({
               />
 
               {nextActions.length > 0 && (
-                <Grid item>
+                <Grid>
                   <ActivityTypeAutocomplete
                     options={nextActions}
                     value={nextAction || null}
@@ -395,7 +391,7 @@ const TaskModalCompleteForm = ({
                   setSelectedTags={setSelectedSuggestedTags}
                 />
               )}
-              <Grid item>
+              <Grid>
                 <TagsAutocomplete
                   accountListId={accountListId}
                   allPhaseTags={allPhaseTags}
@@ -406,7 +402,7 @@ const TaskModalCompleteForm = ({
                 />
               </Grid>
 
-              <Grid item>
+              <Grid>
                 <TextField
                   label={t('Add New Comment')}
                   value={comment}

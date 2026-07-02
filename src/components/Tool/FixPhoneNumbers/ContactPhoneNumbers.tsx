@@ -85,10 +85,11 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
     <>
       <Grid
         data-testid="phoneNumbers"
-        item
-        xs={6}
-        sm={4}
         className={classes.paddingB2}
+        size={{
+          xs: 6,
+          sm: 4,
+        }}
       >
         <Box
           display="flex"
@@ -110,7 +111,13 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
           </Box>
         </Box>
       </Grid>
-      <Grid item xs={6} sm={2} className={classes.paddingB2}>
+      <Grid
+        className={classes.paddingB2}
+        size={{
+          xs: 6,
+          sm: 2,
+        }}
+      >
         <Box
           display="flex"
           justifyContent="center"
@@ -164,7 +171,13 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
           </Typography>
         </Box>
       </Grid>
-      <Grid item xs={12} sm={6} className={classes.paddingB2}>
+      <Grid
+        className={classes.paddingB2}
+        size={{
+          xs: 12,
+          sm: 6,
+        }}
+      >
         <Box
           display="flex"
           justifyContent="flex-start"

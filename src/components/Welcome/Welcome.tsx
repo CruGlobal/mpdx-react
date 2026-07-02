@@ -71,7 +71,11 @@ const Welcome = ({
       <Box className={classes.box}>
         <Container>
           <Grid container spacing={2} alignItems="center">
-            <Grid item sm={8}>
+            <Grid
+              size={{
+                sm: 8,
+              }}
+            >
               <motion.div variants={divVariants}>
                 {typeof title === 'string' ? (
                   <Typography
@@ -100,7 +104,11 @@ const Welcome = ({
                 <Box className={classes.container}>{children}</Box>
               </motion.div>
             </Grid>
-            <Grid item sm={4}>
+            <Grid
+              size={{
+                sm: 4,
+              }}
+            >
               <motion.img
                 data-testid="welcomeImg"
                 src={imgSrc || illustration2}

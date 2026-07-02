@@ -138,7 +138,12 @@ export const MassActionsEditFieldsModal: React.FC<
           >
             <DialogContent dividers>
               <Grid container spacing={2}>
-                <Grid item xs={12} lg={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    lg: 6,
+                  }}
+                >
                   <FormControl fullWidth>
                     <InputLabel id="activityType">{t('Status')}</InputLabel>
                     <ContactStatusSelect
@@ -152,7 +157,12 @@ export const MassActionsEditFieldsModal: React.FC<
                     </ContactStatusSelect>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} lg={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    lg: 6,
+                  }}
+                >
                   <FormControl fullWidth>
                     <InputLabel id="activityType">
                       {t('Likely To Give')}
@@ -171,7 +181,12 @@ export const MassActionsEditFieldsModal: React.FC<
                     </LikelyToGiveSelect>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} lg={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    lg: 6,
+                  }}
+                >
                   <FormControl fullWidth>
                     <InputLabel id="starred">{t('Starred')}</InputLabel>
                     <Select
@@ -188,7 +203,12 @@ export const MassActionsEditFieldsModal: React.FC<
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} lg={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    lg: 6,
+                  }}
+                >
                   <FormControl fullWidth>
                     <InputLabel id="noAppeals">{t('Send Appeals?')}</InputLabel>
                     <Select
@@ -208,7 +228,12 @@ export const MassActionsEditFieldsModal: React.FC<
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} lg={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    lg: 6,
+                  }}
+                >
                   <FormControl fullWidth>
                     <InputLabel id="sendNewsletter">
                       {t('Newsletter')}
@@ -227,7 +252,12 @@ export const MassActionsEditFieldsModal: React.FC<
                     </NewsletterSelect>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} lg={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    lg: 6,
+                  }}
+                >
                   <FormControl fullWidth>
                     <CustomDateField
                       label={t('Next Increase Ask')}
@@ -236,7 +266,12 @@ export const MassActionsEditFieldsModal: React.FC<
                     />
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} lg={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    lg: 6,
+                  }}
+                >
                   <FormControl fullWidth>
                     <InputLabel id="pledgeReceived">
                       {t('Commitment Received')}
@@ -257,7 +292,12 @@ export const MassActionsEditFieldsModal: React.FC<
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} lg={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    lg: 6,
+                  }}
+                >
                   <FormControl fullWidth>
                     <CurrencyAutocomplete
                       disabled={isSubmitting}
@@ -271,7 +311,12 @@ export const MassActionsEditFieldsModal: React.FC<
                     />
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} lg={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    lg: 6,
+                  }}
+                >
                   <FormControl fullWidth>
                     <InputLabel id="locale">{t('Language')}</InputLabel>
                     <Select
@@ -292,7 +337,12 @@ export const MassActionsEditFieldsModal: React.FC<
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} lg={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    lg: 6,
+                  }}
+                >
                   <FormControl fullWidth>
                     <TextField
                       label={t('Church')}
@@ -304,7 +354,12 @@ export const MassActionsEditFieldsModal: React.FC<
                     />
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} lg={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    lg: 6,
+                  }}
+                >
                   <FormControl fullWidth>
                     <AssigneeAutocomplete
                       accountListId={accountListId}

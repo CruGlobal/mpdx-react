@@ -87,7 +87,12 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
   return (
     <ModalSectionContainer key={index}>
       <Grid container spacing={3}>
-        <Grid item xs={12} sm={6}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+          }}
+        >
           <ContactInputField
             label={t('Phone Number')}
             destroyed={phoneNumber.destroy ?? false}
@@ -115,7 +120,13 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
             required
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={2}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+            md: 2,
+          }}
+        >
           <FormControl fullWidth>
             <InputLabel id={`phone-type-label-${index}`}>
               {t('Type')}

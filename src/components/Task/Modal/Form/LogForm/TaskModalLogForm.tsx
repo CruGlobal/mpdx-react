@@ -357,9 +357,14 @@ const TaskModalLogForm = ({
               </Alert>
             )}
             <FormFieldsGridContainer>
-              <Grid item>
+              <Grid>
                 <Grid container spacing={2}>
-                  <Grid xs={12} sm={6} item>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      sm: 6,
+                    }}
+                  >
                     <TaskPhaseAutocomplete
                       options={taskPhases}
                       value={taskPhase}
@@ -388,7 +393,12 @@ const TaskModalLogForm = ({
                       errors={errors}
                     />
                   </Grid>
-                  <Grid xs={12} sm={6} item>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      sm: 6,
+                    }}
+                  >
                     <ActivityTypeAutocomplete
                       options={
                         (taskPhase && activitiesByPhase.get(taskPhase)) || []
@@ -413,7 +423,7 @@ const TaskModalLogForm = ({
                   </Grid>
                 </Grid>
               </Grid>
-              <Grid item>
+              <Grid>
                 <TextField
                   name="subject"
                   label={t('Task Name')}
@@ -430,7 +440,7 @@ const TaskModalLogForm = ({
               </Grid>
 
               {activityType && inPersonActivityTypes.includes(activityType) && (
-                <Grid item>
+                <Grid>
                   <TextField
                     label={t('Location')}
                     value={location}
@@ -458,7 +468,7 @@ const TaskModalLogForm = ({
                 contactIds={contactIds}
               />
               {!!phaseTags?.length && (
-                <Grid item>
+                <Grid>
                   <PhaseTags
                     tags={phaseTags}
                     selectedTags={selectedSuggestedTags}
@@ -467,7 +477,7 @@ const TaskModalLogForm = ({
                 </Grid>
               )}
               {activityType && nextActions.length > 0 && (
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <ActivityTypeAutocomplete
                     options={nextActions}
                     label={t('Next Action')}
@@ -478,7 +488,7 @@ const TaskModalLogForm = ({
                   />
                 </Grid>
               )}
-              <Grid item>
+              <Grid>
                 <ContactsAutocomplete
                   accountListId={accountListId}
                   value={contactIds}
@@ -487,17 +497,13 @@ const TaskModalLogForm = ({
                   }}
                 />
               </Grid>
-              <Grid item>
+              <Grid>
                 <FormControl fullWidth>
                   <DateTimeFieldPair
                     render={(dateField, timeField) => (
                       <Grid container spacing={2}>
-                        <Grid xs={6} item>
-                          {dateField}
-                        </Grid>
-                        <Grid xs={6} item>
-                          {timeField}
-                        </Grid>
+                        <Grid size={6}>{dateField}</Grid>
+                        <Grid size={6}>{timeField}</Grid>
                       </Grid>
                     )}
                     dateLabel={t('Completed Date')}
@@ -509,7 +515,7 @@ const TaskModalLogForm = ({
                   />
                 </FormControl>
               </Grid>
-              <Grid item>
+              <Grid>
                 <FormControlLabel
                   control={
                     <Switch
@@ -526,13 +532,8 @@ const TaskModalLogForm = ({
                       animate={{ height: 216, opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                     >
-                      <Grid
-                        item
-                        container
-                        spacing={2}
-                        style={{ marginBottom: 16 }}
-                      >
-                        <Grid item xs={12}>
+                      <Grid container spacing={2} style={{ marginBottom: 16 }}>
+                        <Grid size={12}>
                           <TagsAutocomplete
                             accountListId={accountListId}
                             type={TagTypeEnum.Tag}
@@ -547,7 +548,7 @@ const TaskModalLogForm = ({
                           />
                         </Grid>
 
-                        <Grid item xs={12}>
+                        <Grid size={12}>
                           <TextField
                             label={t('Comment')}
                             value={comment}
@@ -557,7 +558,7 @@ const TaskModalLogForm = ({
                             inputProps={{ 'aria-label': t('Comment') }}
                           />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid size={12}>
                           <AssigneeAutocomplete
                             accountListId={accountListId}
                             value={userId}

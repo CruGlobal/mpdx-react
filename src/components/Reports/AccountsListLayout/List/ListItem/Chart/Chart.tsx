@@ -58,7 +58,7 @@ export const AccountListItemChart: FC<AccountListItemChartProps> = ({
             title={
               <Box display={{ xs: 'none', sm: 'block' }}>
                 <Grid container spacing={2} justifyContent="center">
-                  <Grid item>
+                  <Grid>
                     <LegendIdentifier color={theme.palette.secondary.dark} />
                     <Typography variant="body1" component="span">
                       <strong>{t('Monthly Average')}</strong>{' '}

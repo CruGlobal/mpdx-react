@@ -171,11 +171,11 @@ const NavMenu: React.FC = () => {
   );
 
   return accountListId ? (
-    <Grid container item alignItems="center" xs="auto">
+    <Grid container alignItems="center" size="auto">
       {navPages.map(
         (page) =>
           page.isDropdown === false && (
-            <Grid key={page.id} item className={classes.navListItem}>
+            <Grid key={page.id} className={classes.navListItem}>
               <MenuItem
                 component={NextLink}
                 href={page.href ?? ''}
@@ -230,7 +230,7 @@ const NavMenu: React.FC = () => {
       )}
 
       {isCoaching && (
-        <Grid item className={classes.navListItem}>
+        <Grid className={classes.navListItem}>
           <MenuItem
             component={NextLink}
             href={navPages[coachingIndex].href ?? ''}

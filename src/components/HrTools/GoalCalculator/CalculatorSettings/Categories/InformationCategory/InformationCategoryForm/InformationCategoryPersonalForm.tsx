@@ -99,7 +99,12 @@ export const InformationCategoryPersonalForm: React.FC<
           : t('Review your personal details and preferences here.')}
       </Typography>
       <Grid container spacing={3}>
-        <Grid item xs={12} sm={isSpouse ? 12 : 6}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: isSpouse ? 12 : 6,
+          }}
+        >
           <AutosaveTextField
             fieldName={isSpouse ? 'spouseFirstName' : 'firstName'}
             schema={schema}
@@ -107,7 +112,12 @@ export const InformationCategoryPersonalForm: React.FC<
           />
         </Grid>
         {!isSpouse && (
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <AutosaveTextField
               fieldName="lastName"
               schema={schema}
@@ -117,7 +127,7 @@ export const InformationCategoryPersonalForm: React.FC<
         )}
 
         {!isSpouse && (
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Autocomplete
               options={locations}
               value={geographicLocation ?? null}
@@ -140,7 +150,7 @@ export const InformationCategoryPersonalForm: React.FC<
         )}
 
         {!isSpouse && (
-          <Grid item xs={12}>
+          <Grid size={12}>
             <AutosaveTextField
               fieldName="role"
               schema={schema}
@@ -159,7 +169,7 @@ export const InformationCategoryPersonalForm: React.FC<
         )}
 
         {!isSpouse && (
-          <Grid item xs={12}>
+          <Grid size={12}>
             <AutosaveTextField
               fieldName="ministryLocation"
               schema={schema}
@@ -170,7 +180,7 @@ export const InformationCategoryPersonalForm: React.FC<
         )}
 
         {!isSpouse && (
-          <Grid item xs={12}>
+          <Grid size={12}>
             <AutosaveTextField
               fieldName="familySize"
               schema={schema}
@@ -188,7 +198,7 @@ export const InformationCategoryPersonalForm: React.FC<
         )}
 
         {!isSpouse && (
-          <Grid item xs={12}>
+          <Grid size={12}>
             <AutosaveTextField
               fieldName="benefitsPlan"
               schema={schema}
@@ -223,7 +233,7 @@ export const InformationCategoryPersonalForm: React.FC<
           </Grid>
         )}
 
-        <Grid item xs={12}>
+        <Grid size={12}>
           <AutosaveTextField
             fieldName={isSpouse ? 'spouseYearsOnStaff' : 'yearsOnStaff'}
             schema={schema}
@@ -239,7 +249,7 @@ export const InformationCategoryPersonalForm: React.FC<
           </AutosaveTextField>
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid size={12}>
           <AutosaveTextField
             fieldName={isSpouse ? 'spouseAge' : 'age'}
             schema={schema}
@@ -261,7 +271,7 @@ export const InformationCategoryPersonalForm: React.FC<
         </Grid>
 
         {!isSpouse && (
-          <Grid item xs={12}>
+          <Grid size={12}>
             <AutosaveTextField
               fieldName="childrenNamesAges"
               schema={schema}

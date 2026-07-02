@@ -112,7 +112,12 @@ const MonthlyGoal = ({
           />
           <Grid container spacing={2}>
             <Hidden smDown>
-              <Grid sm={6} md={3} item>
+              <Grid
+                size={{
+                  sm: 6,
+                  md: 3,
+                }}
+              >
                 <Typography component="div" color="textSecondary">
                   <div
                     className={[classes.indicator, classes.goal].join(' ')}
@@ -131,7 +136,12 @@ const MonthlyGoal = ({
                 </Typography>
               </Grid>
             </Hidden>
-            <Grid xs={6} md={3} item>
+            <Grid
+              size={{
+                xs: 6,
+                md: 3,
+              }}
+            >
               <Typography component="div" color="textSecondary">
                 <div
                   className={[classes.indicator, classes.received].join(' ')}
@@ -161,7 +171,12 @@ const MonthlyGoal = ({
                 )}
               </Typography>
             </Grid>
-            <Grid xs={6} md={3} item>
+            <Grid
+              size={{
+                xs: 6,
+                md: 3,
+              }}
+            >
               <Typography component="div" color="textSecondary">
                 <div
                   className={[classes.indicator, classes.pledged].join(' ')}
@@ -193,7 +208,12 @@ const MonthlyGoal = ({
             </Grid>
             <Hidden smDown>
               {!isNaN(belowGoal) && belowGoal > 0 ? (
-                <Grid sm={6} md={3} item>
+                <Grid
+                  size={{
+                    sm: 6,
+                    md: 3,
+                  }}
+                >
                   <Typography component="div" color="textSecondary">
                     {t('Below Goal')}
                   </Typography>
@@ -211,7 +231,12 @@ const MonthlyGoal = ({
                   </Typography>
                 </Grid>
               ) : (
-                <Grid sm={6} md={3} item>
+                <Grid
+                  size={{
+                    sm: 6,
+                    md: 3,
+                  }}
+                >
                   <Typography component="div" color="textSecondary">
                     {t('Above Goal')}
                   </Typography>

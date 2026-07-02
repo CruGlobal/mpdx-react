@@ -105,7 +105,12 @@ export const PersonName: React.FC<PersonNameProps> = ({
       )}
       <ModalSectionContainer>
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <TextField
               name="firstName"
               label={t('First Name')}
@@ -123,7 +128,12 @@ export const PersonName: React.FC<PersonNameProps> = ({
               required
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <TextField
               label={t('Last Name')}
               value={lastName}
@@ -133,7 +143,12 @@ export const PersonName: React.FC<PersonNameProps> = ({
               required
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <TextField
               label={t('Title')}
               value={title}
@@ -142,7 +157,12 @@ export const PersonName: React.FC<PersonNameProps> = ({
               fullWidth
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <TextField
               label={t('Suffix')}
               value={suffix}

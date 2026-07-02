@@ -99,7 +99,7 @@ export const FourteenMonthReportHeader: FC<FourteenMonthReportHeaderProps> = ({
         spacing={2}
         {...rest}
       >
-        <Grid item>
+        <Grid>
           <Box display="flex" alignItems="center">
             <NavListButton panelOpen={isNavListOpen} onClick={onNavListToggle}>
               {isReportsHeader ? (

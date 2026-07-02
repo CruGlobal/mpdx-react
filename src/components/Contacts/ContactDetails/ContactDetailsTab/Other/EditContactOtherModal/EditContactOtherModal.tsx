@@ -297,7 +297,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
             <DialogContent dividers>
               <ContactEditContainer>
                 <Grid container>
-                  <Grid item xs={12}>
+                  <Grid size={12}>
                     <ContactInputWrapper>
                       <TextField
                         label={t('Greeting')}
@@ -308,7 +308,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                       />
                     </ContactInputWrapper>
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid size={12}>
                     <ContactInputWrapper>
                       <TextField
                         label={t('Envelope Name Line')}
@@ -320,7 +320,12 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                       />
                     </ContactInputWrapper>
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      sm: 6,
+                    }}
+                  >
                     <ContactInputWrapper>
                       <Autocomplete
                         loading={loadingAssigneeOptions}
@@ -341,7 +346,12 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                       />
                     </ContactInputWrapper>
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      sm: 6,
+                    }}
+                  >
                     <ContactInputWrapper>
                       <FormControl fullWidth={true}>
                         <InputLabel
@@ -382,7 +392,12 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                     </ContactInputWrapper>
                   </Grid>
 
-                  <Grid item xs={12} sm={6}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      sm: 6,
+                    }}
+                  >
                     <ContactInputWrapper>
                       <FormControl fullWidth>
                         <InputLabel id="language-select-label">
@@ -426,7 +441,12 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                       </FormControl>
                     </ContactInputWrapper>
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      sm: 6,
+                    }}
+                  >
                     <ContactInputWrapper>
                       <FormControl fullWidth>
                         <InputLabel id="timezone-select-label">
@@ -467,7 +487,12 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                     </ContactInputWrapper>
                   </Grid>
 
-                  <Grid item xs={12} sm={6}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      sm: 6,
+                    }}
+                  >
                     <ContactInputWrapper>
                       <Autocomplete
                         loading={loadingChurchOptions}
@@ -502,7 +527,12 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                       />
                     </ContactInputWrapper>
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      sm: 6,
+                    }}
+                  >
                     <ContactInputWrapper>
                       <TextField
                         label={t('Website')}
@@ -513,7 +543,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                       />
                     </ContactInputWrapper>
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid size={12}>
                     <ContactInputWrapper>
                       <Autocomplete
                         loading={loadingFilteredById || loadingFilteredByName}

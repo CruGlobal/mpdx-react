@@ -155,10 +155,9 @@ export const ContactRow: React.FC<Props> = ({
       >
         <Grid container alignItems="center">
           <Grid
-            item
-            xs={isExcludedContact ? 5 : 6}
             style={{ paddingRight: 16 }}
             display={'flex'}
+            size={isExcludedContact ? 5 : 6}
           >
             <Hidden xsDown>
               <ListItemIcon>
@@ -181,7 +180,7 @@ export const ContactRow: React.FC<Props> = ({
             />
           </Grid>
           {isExcludedContact && (
-            <Grid item xs={3} display={'flex'}>
+            <Grid display={'flex'} size={3}>
               <Box>
                 <Box
                   display="flex"
@@ -201,10 +200,9 @@ export const ContactRow: React.FC<Props> = ({
             </Grid>
           )}
           <Grid
-            item
-            xs={isExcludedContact ? 4 : 6}
             display={'flex'}
             style={{ justifyContent: 'space-between' }}
+            size={isExcludedContact ? 4 : 6}
           >
             <Box
               display="flex"
@@ -326,14 +324,12 @@ export const ContactRow: React.FC<Props> = ({
           handleClose={() => setRemoveContactModalOpen(false)}
         />
       )}
-
       {addExcludedContactModalOpen && (
         <DynamicAddExcludedContactModal
           contactIds={[contactId]}
           handleClose={() => setAddExcludedContactModalOpen(false)}
         />
       )}
-
       {createPledgeModalOpen && (
         <DynamicPledgeModal
           contact={contact}
@@ -341,7 +337,6 @@ export const ContactRow: React.FC<Props> = ({
           pledge={pledgeValues}
         />
       )}
-
       {deletePledgeModalOpen && pledgeValues && (
         <DynamicDeletePledgeModal
           pledge={pledgeValues}

@@ -242,7 +242,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
           <Card className={classes.contactCard}>
             <Box display="flex" alignItems="center">
               <Grid container>
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <CardHeader
                     className={classes.contactHeader}
                     avatar={
@@ -287,7 +287,13 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                 <CardContent className={classes.contactCardContent}>
                   <Grid container display="flex" alignItems="center">
                     <Hidden smDown>
-                      <Grid item xs={6} sm={4} className={classes.paddingY}>
+                      <Grid
+                        className={classes.paddingY}
+                        size={{
+                          xs: 6,
+                          sm: 4,
+                        }}
+                      >
                         <Box
                           display="flex"
                           justifyContent="space-between"
@@ -298,7 +304,13 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                           </Typography>
                         </Box>
                       </Grid>
-                      <Grid item xs={6} sm={2} className={classes.paddingY}>
+                      <Grid
+                        className={classes.paddingY}
+                        size={{
+                          xs: 6,
+                          sm: 2,
+                        }}
+                      >
                         <Box
                           display="flex"
                           justifyContent="center"
@@ -309,7 +321,13 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                           </Typography>
                         </Box>
                       </Grid>
-                      <Grid item xs={12} sm={6} className={classes.paddingY}>
+                      <Grid
+                        className={classes.paddingY}
+                        size={{
+                          xs: 12,
+                          sm: 6,
+                        }}
+                      >
                         <Box
                           display="flex"
                           justifyContent="flex-start"
@@ -341,10 +359,11 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                         }): ReactElement => (
                           <Fragment>
                             <Grid
-                              item
-                              xs={6}
-                              sm={4}
                               className={classes.paddingB2}
+                              size={{
+                                xs: 6,
+                                sm: 4,
+                              }}
                             >
                               <Box
                                 display="flex"
@@ -374,10 +393,11 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                               </Box>
                             </Grid>
                             <Grid
-                              item
-                              xs={6}
-                              sm={2}
                               className={classes.paddingB2}
+                              size={{
+                                xs: 6,
+                                sm: 2,
+                              }}
                             >
                               <Box
                                 display="flex"
@@ -433,10 +453,11 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                               </Box>
                             </Grid>
                             <Grid
-                              item
-                              xs={12}
-                              sm={6}
                               className={classes.paddingB2}
+                              size={{
+                                xs: 12,
+                                sm: 6,
+                              }}
                             >
                               <Box
                                 display="flex"
@@ -512,7 +533,13 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                         )}
                       </Formik>
                     ))}
-                    <Grid item xs={12} sm={6} className={classes.paddingB2}>
+                    <Grid
+                      className={classes.paddingB2}
+                      size={{
+                        xs: 12,
+                        sm: 6,
+                      }}
+                    >
                       <Box
                         display="flex"
                         justifyContent="space-between"

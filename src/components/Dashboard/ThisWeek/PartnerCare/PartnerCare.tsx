@@ -14,6 +14,7 @@ import {
   IconButton,
   List,
   ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
@@ -316,37 +317,38 @@ const PartnerCare = ({
                     {prayerRequestTasks.nodes.map((task) => (
                       <ListItem
                         key={task.id}
-                        button
+                        disablePadding
                         data-testid={`PartnerCarePrayerListItem-${task.id}`}
-                        onClick={(): void => handleClick(task)}
                       >
-                        <ListItemText
-                          disableTypography={true}
-                          primary={
-                            <Typography variant="body1">
-                              {task.contacts.nodes
-                                .map(({ name }) => name)
-                                .join(', ')}
-                            </Typography>
-                          }
-                          secondary={
-                            <Box style={{ whiteSpace: 'nowrap' }}>
-                              <Box
-                                component="div"
-                                textOverflow="ellipsis"
-                                overflow="hidden"
-                              >
-                                <Typography
-                                  component="span"
-                                  variant="body2"
-                                  color="textSecondary"
+                        <ListItemButton onClick={(): void => handleClick(task)}>
+                          <ListItemText
+                            disableTypography={true}
+                            primary={
+                              <Typography variant="body1">
+                                {task.contacts.nodes
+                                  .map(({ name }) => name)
+                                  .join(', ')}
+                              </Typography>
+                            }
+                            secondary={
+                              <Box style={{ whiteSpace: 'nowrap' }}>
+                                <Box
+                                  component="div"
+                                  textOverflow="ellipsis"
+                                  overflow="hidden"
                                 >
-                                  {task.subject}
-                                </Typography>
+                                  <Typography
+                                    component="span"
+                                    variant="body2"
+                                    color="textSecondary"
+                                  >
+                                    {task.subject}
+                                  </Typography>
+                                </Box>
                               </Box>
-                            </Box>
-                          }
-                        />
+                            }
+                          />
+                        </ListItemButton>
                         <ListItemSecondaryAction>
                           <CompleteButton
                             role="button"
@@ -418,7 +420,6 @@ const PartnerCare = ({
                     (person.birthdayMonth || person.anniversaryMonth) && (
                       <ListItem
                         key={person.id}
-                        button
                         data-testid={`CelebrationItem-${index}`}
                       >
                         <ListItemIcon>

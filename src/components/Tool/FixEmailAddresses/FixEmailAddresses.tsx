@@ -308,7 +308,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
     <Container>
       {data && dataState ? (
         <ToolsGridContainer container spacing={3}>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Box mb={2}>
               {!!data.people.nodes.length && (
                 <>
@@ -354,12 +354,12 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
             </Box>
           </Grid>
           {!!data.people.nodes.length ? (
-            <Grid item xs={12}>
+            <Grid size={12}>
               <InfiniteList
                 loading={loading}
                 data={data.people.nodes}
                 itemContent={(index, person) => (
-                  <Grid item xs={12}>
+                  <Grid size={12}>
                     <Box>
                       <FixEmailAddressPerson
                         person={person}
@@ -390,7 +390,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                 ItemOverride={ItemOverride}
                 increaseViewportBy={{ top: 2000, bottom: 2000 }}
               ></InfiniteList>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <Box width="100%" display="flex" justifyContent="center">
                   <Typography>
                     <Trans
