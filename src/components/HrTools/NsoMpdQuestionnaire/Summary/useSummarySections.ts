@@ -110,7 +110,9 @@ export const useSummarySections = (): SummarySectionData[] => {
             ? [
                 {
                   label: t('Spouse name'),
-                  value: formatText(`${spouseFirstName} ${lastName}`),
+                  value:
+                    [spouseFirstName, lastName].filter(Boolean).join(' ') ||
+                    null,
                 },
                 {
                   label: t('Spouse age'),
