@@ -53,7 +53,7 @@ const variantRequiredFields: Partial<
 };
 
 // 0 and false are valid answers, only null, undefined, and empty strings count as missing.
-const isFieldFilled = (value: unknown): boolean =>
+export const isFieldFilled = (value: unknown): boolean =>
   value !== null && value !== undefined && value !== '';
 
 const getRequiredFields = (
@@ -75,10 +75,11 @@ const getRequiredFields = (
   return [...baseFields, ...variantFields];
 };
 
-const isStepComplete = (
+export const isStepComplete = (
   step: NsoMpdQuestionnaireStepEnum,
-  questionnaire: NonNullable<NewStaffQuestionnaire>,
+  questionnaire: NewStaffQuestionnaire,
 ): boolean =>
+  !!questionnaire &&
   getRequiredFields(step, questionnaire).every((field) =>
     isFieldFilled(questionnaire[field]),
   );

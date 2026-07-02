@@ -5,13 +5,21 @@ import theme from 'src/theme';
 import { SubStep, SubStepList } from './SubStepList';
 
 const subSteps: SubStep[] = [
-  { id: 'one', title: 'Section One' },
-  { id: 'two', title: 'Section Two' },
+  { id: 'one', title: 'Section One', complete: false },
+  { id: 'two', title: 'Section Two', complete: false },
 ];
 
-const TestComponent: React.FC = () => (
+interface TestComponentProps {
+  subSteps?: SubStep[];
+  currentSubStepId?: string;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({
+  subSteps: subStepsProp = subSteps,
+  currentSubStepId = subSteps[0].id,
+}) => (
   <ThemeProvider theme={theme}>
-    <SubStepList subSteps={subSteps} currentSubStepId={subSteps[0].id} />
+    <SubStepList subSteps={subStepsProp} currentSubStepId={currentSubStepId} />
   </ThemeProvider>
 );
 
@@ -33,5 +41,26 @@ describe('SubStepList', () => {
     expect(getByText('2. Section Two').closest('li')).not.toHaveAttribute(
       'aria-current',
     );
+  });
+
+  it('leaves incomplete sub-step dots outlined even when current', () => {
+    const { getAllByTestId, queryByTestId } = render(<TestComponent />);
+
+    expect(getAllByTestId('RadioButtonUncheckedIcon')).toHaveLength(2);
+    expect(queryByTestId('CircleIcon')).not.toBeInTheDocument();
+  });
+
+  it('fills a sub-step dot blue once its data is complete', () => {
+    const { getByTestId } = render(
+      <TestComponent
+        subSteps={[
+          { id: 'one', title: 'Section One', complete: true },
+          { id: 'two', title: 'Section Two', complete: false },
+        ]}
+      />,
+    );
+
+    expect(getByTestId('CircleIcon')).toBeInTheDocument();
+    expect(getByTestId('RadioButtonUncheckedIcon')).toBeInTheDocument();
   });
 });
