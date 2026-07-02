@@ -1,50 +1,84 @@
-import React, { useMemo } from 'react';
-import Phone from '@mui/icons-material/Phone';
-import { InputAdornment, Stack, TextField, Typography } from '@mui/material';
+import React from 'react';
+import {
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Typography,
+} from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import * as yup from 'yup';
-import { phoneNumber } from 'src/lib/yupHelpers';
-import { useQuestionnaireAutoSave } from '../Shared/useQuestionnaireAutoSave';
-
-const placeholder = '000-000-0000';
+import { useNsoMpdQuestionnaire } from '../Shared/NsoMpdQuestionnaireContext';
+import { PhoneNumberField } from './PhoneNumberField';
 
 export const ContactInformation: React.FC = () => {
   const { t } = useTranslation();
+  const theme = useTheme();
+  const { questionnaire, hasSpouse } = useNsoMpdQuestionnaire();
+  const { firstName, spouseFirstName } = questionnaire ?? {};
 
-  const schema = useMemo(
-    () =>
-      yup.object({
-        phoneNumber: phoneNumber(t).required(
-          t('Cell phone number is required'),
-        ),
-      }),
-    [t],
-  );
+  const userName = firstName ?? t('You');
+  const spouseColumnName = spouseFirstName ?? t('Spouse');
+  const spouseName = spouseFirstName ?? t('your spouse');
 
-  const fieldProps = useQuestionnaireAutoSave({
-    fieldName: 'phoneNumber',
-    schema,
-  });
+  const userLabel = firstName
+    ? t("{{name}}'s cell phone number", { name: firstName })
+    : t('Your cell phone number');
 
   return (
     <Stack spacing={2}>
       <Typography variant="h6">{t('Contact Information')}</Typography>
-      <Typography>{t('Please provide your cell phone number.')}</Typography>
-      <TextField
-        required
-        label={t('Cell Phone Number')}
-        placeholder={placeholder}
+      <Typography>
+        {hasSpouse
+          ? t('Please provide a cell phone number for each person below.')
+          : t('Please provide your cell phone number.')}
+      </Typography>
+      <Table
         size="small"
-        sx={{ maxWidth: (theme) => theme.spacing(40) }}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <Phone />
-            </InputAdornment>
-          ),
+        sx={{
+          maxWidth: theme.spacing(90),
+          '.MuiTableCell-root': { paddingBlock: theme.spacing(1) },
         }}
-        {...fieldProps}
-      />
+      >
+        <TableHead>
+          <TableRow>
+            <TableCell sx={{ width: theme.spacing(25) }} />
+            <TableCell scope="col" sx={{ color: theme.palette.mpdxBlue.main }}>
+              {userName}
+            </TableCell>
+            {hasSpouse && (
+              <TableCell
+                scope="col"
+                sx={{ color: theme.palette.mpdxBlue.main }}
+              >
+                {spouseColumnName}
+              </TableCell>
+            )}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            <TableCell component="th" scope="row" sx={{ fontWeight: 'medium' }}>
+              {t('Cell Phone Number')}
+            </TableCell>
+            <TableCell>
+              <PhoneNumberField fieldName="phoneNumber" label={userLabel} />
+            </TableCell>
+            {hasSpouse && (
+              <TableCell>
+                <PhoneNumberField
+                  fieldName="spousePhoneNumber"
+                  label={t("{{spouseName}}'s cell phone number", {
+                    spouseName,
+                  })}
+                />
+              </TableCell>
+            )}
+          </TableRow>
+        </TableBody>
+      </Table>
     </Stack>
   );
 };

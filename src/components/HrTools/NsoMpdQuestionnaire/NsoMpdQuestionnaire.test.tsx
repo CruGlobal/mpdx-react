@@ -28,7 +28,11 @@ describe('NsoMpdQuestionnaire', () => {
     const { findByRole, getByRole } = render(<TestComponent />);
 
     userEvent.type(
-      await findByRole('textbox', { name: 'Cell Phone Number' }),
+      await findByRole('textbox', { name: "John's cell phone number" }),
+      '1234567',
+    );
+    userEvent.type(
+      getByRole('textbox', { name: "Jane's cell phone number" }),
       '1234567',
     );
     userEvent.click(getByRole('button', { name: 'Continue' }));
@@ -44,7 +48,14 @@ describe('NsoMpdQuestionnaire', () => {
     expect(await findByRole('button', { name: 'Continue' })).toBeDisabled();
 
     userEvent.type(
-      getByRole('textbox', { name: 'Cell Phone Number' }),
+      await findByRole('textbox', { name: "John's cell phone number" }),
+      '1234567',
+    );
+
+    expect(getByRole('button', { name: 'Continue' })).toBeDisabled();
+
+    userEvent.type(
+      getByRole('textbox', { name: "Jane's cell phone number" }),
       '1234567',
     );
 

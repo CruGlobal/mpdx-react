@@ -14,25 +14,58 @@ const TestComponent: React.FC<{ onCall?: MockLinkCallHandler }> = ({
 );
 
 describe('ContactInformation', () => {
-  it('renders the cell phone number field', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('renders a required phone field for the user and the spouse', async () => {
+    const { findByRole, getByRole } = render(<TestComponent />);
+
+    const spousePhone = await findByRole('textbox', {
+      name: "Jane's cell phone number",
+    });
+    const userPhone = getByRole('textbox', {
+      name: "John's cell phone number",
+    });
+
+    expect(userPhone).toBeRequired();
+    expect(spousePhone).toBeRequired();
+  });
+
+  it('has a column for the user and the spouse', async () => {
+    const { findByRole, getByRole } = render(<TestComponent />);
 
     expect(
-      getByRole('textbox', { name: 'Cell Phone Number' }),
+      await findByRole('columnheader', { name: 'Jane' }),
+    ).toBeInTheDocument();
+    expect(getByRole('columnheader', { name: 'John' })).toBeInTheDocument();
+    expect(
+      getByRole('rowheader', { name: 'Cell Phone Number' }),
     ).toBeInTheDocument();
   });
 
-  it('marks the cell phone number field as required', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('only shows the user column without a spouse', async () => {
+    const { findByRole, queryByRole } = render(
+      <NsoMpdQuestionnaireTestWrapper hasSpouse={false}>
+        <ContactInformation />
+      </NsoMpdQuestionnaireTestWrapper>,
+    );
 
-    expect(getByRole('textbox', { name: 'Cell Phone Number' })).toBeRequired();
+    expect(
+      await findByRole('textbox', { name: "John's cell phone number" }),
+    ).toBeInTheDocument();
+    expect(
+      queryByRole('columnheader', { name: 'Jane' }),
+    ).not.toBeInTheDocument();
+    expect(
+      queryByRole('textbox', { name: "Jane's cell phone number" }),
+    ).not.toBeInTheDocument();
   });
 
-  it('saves the cell phone number through the upsert on blur', async () => {
+  it("saves the user's phone number on blur", async () => {
     const mutationSpy = jest.fn();
-    const { getByRole } = render(<TestComponent onCall={mutationSpy} />);
+    const { findByRole } = render(<TestComponent onCall={mutationSpy} />);
 
-    const input = getByRole('textbox', { name: 'Cell Phone Number' });
+    const input = await findByRole('textbox', {
+      name: "John's cell phone number",
+    });
+    userEvent.clear(input);
     userEvent.type(input, '(123) 456-7890');
     userEvent.tab();
 
@@ -41,7 +74,6 @@ describe('ContactInformation', () => {
         'UpdateNewStaffQuestionnaire',
         {
           input: {
-            accountListId: 'account-list-1',
             attributes: { phoneNumber: '(123) 456-7890' },
           },
         },
@@ -49,44 +81,55 @@ describe('ContactInformation', () => {
     );
   });
 
-  it('seeds the cell phone number from the loaded questionnaire', async () => {
+  it("saves the spouse's phone number on blur", async () => {
+    const mutationSpy = jest.fn();
+    const { findByRole } = render(<TestComponent onCall={mutationSpy} />);
+
+    const input = await findByRole('textbox', {
+      name: "Jane's cell phone number",
+    });
+    userEvent.clear(input);
+    userEvent.type(input, '(123) 456-7890');
+    userEvent.tab();
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'UpdateNewStaffQuestionnaire',
+        {
+          input: {
+            attributes: { spousePhoneNumber: '(123) 456-7890' },
+          },
+        },
+      ),
+    );
+  });
+
+  it('seeds each phone number from the loaded questionnaire', async () => {
     const { findByDisplayValue } = render(
       <NsoMpdQuestionnaireTestWrapper
-        newStaffQuestionnaire={{ phoneNumber: '(305) 111-2222' }}
+        newStaffQuestionnaire={{
+          phoneNumber: '(305) 111-2222',
+          spousePhoneNumber: '(305) 333-4444',
+        }}
       >
         <ContactInformation />
       </NsoMpdQuestionnaireTestWrapper>,
     );
 
     expect(await findByDisplayValue('(305) 111-2222')).toBeInTheDocument();
+    expect(await findByDisplayValue('(305) 333-4444')).toBeInTheDocument();
   });
 
-  it('strips disallowed characters as the user types', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('shows a validation error for too few digits on blur', async () => {
+    const { findByRole, getByText } = render(<TestComponent />);
 
-    const input = getByRole('textbox', { name: 'Cell Phone Number' });
-    userEvent.type(input, 'abc(123) 456-7890xyz');
-
-    expect(input).toHaveValue('(123) 456-7890');
-  });
-
-  it('shows a validation error for too few digits on blur', () => {
-    const { getByRole, getByText } = render(<TestComponent />);
-
-    const input = getByRole('textbox', { name: 'Cell Phone Number' });
+    const input = await findByRole('textbox', {
+      name: "John's cell phone number",
+    });
+    userEvent.clear(input);
     userEvent.type(input, '123');
     userEvent.tab();
 
     expect(getByText('Invalid phone number')).toBeInTheDocument();
-  });
-
-  it('accepts a valid number without error', () => {
-    const { getByRole, queryByText } = render(<TestComponent />);
-
-    const input = getByRole('textbox', { name: 'Cell Phone Number' });
-    userEvent.type(input, '(123) 456-7890');
-    userEvent.tab();
-
-    expect(queryByText('Invalid phone number')).not.toBeInTheDocument();
   });
 });
