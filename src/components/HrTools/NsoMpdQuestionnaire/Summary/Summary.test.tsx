@@ -70,6 +70,33 @@ describe('Summary', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('shows the spouse cell phone for a married staff member', async () => {
+    const { findByRole, getByRole } = render(
+      <TestComponent
+        newStaffQuestionnaire={{ spousePhoneNumber: '(305) 222-3333' }}
+      />,
+    );
+    expect(
+      await findByRole('rowheader', { name: 'Spouse cell phone' }),
+    ).toBeInTheDocument();
+    expect(getByRole('cell', { name: '(305) 222-3333' })).toBeInTheDocument();
+  });
+
+  it('omits the spouse cell phone for a single staff member', async () => {
+    const { findByRole, queryByRole } = render(
+      <TestComponent
+        hasSpouse={false}
+        newStaffQuestionnaire={{
+          maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
+        }}
+      />,
+    );
+    await findByRole('heading', { level: 6, name: 'Personal Information' });
+    expect(
+      queryByRole('rowheader', { name: 'Spouse cell phone' }),
+    ).not.toBeInTheDocument();
+  });
+
   it('lists unanswered fields with a placeholder', async () => {
     const { findByRole, getAllByRole } = render(
       <TestComponent newStaffQuestionnaire={{ carLoanMonthlyPayment: null }} />,

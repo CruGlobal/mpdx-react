@@ -2,6 +2,7 @@ import { NewStaffQuestionnaireVariantEnum } from 'src/graphql/types.generated';
 import { safeProgressRatio } from '../../Shared/helpers/safeProgressRatio';
 import { NsoMpdQuestionnaireStepEnum } from '../NsoMpdQuestionnaireHelper';
 import { NewStaffQuestionnaireQuery } from './NewStaffQuestionnaire.generated';
+import { getHasSpouse } from './helpers/getHasSpouse';
 
 type NewStaffQuestionnaire =
   NewStaffQuestionnaireQuery['newStaffQuestionnaire'];
@@ -60,6 +61,13 @@ const getRequiredFields = (
   questionnaire: NonNullable<NewStaffQuestionnaire>,
 ): QuestionnaireField[] => {
   const baseFields = stepRequiredFields[step] ?? [];
+
+  if (step === NsoMpdQuestionnaireStepEnum.PersonalInformation) {
+    return getHasSpouse(questionnaire.maritalStatus)
+      ? [...baseFields, 'spousePhoneNumber']
+      : baseFields;
+  }
+
   if (step !== NsoMpdQuestionnaireStepEnum.FinancialInformation) {
     return baseFields;
   }
