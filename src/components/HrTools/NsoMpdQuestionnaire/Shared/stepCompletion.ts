@@ -53,7 +53,7 @@ const variantRequiredFields: Partial<
 };
 
 // 0 and false are valid answers, only null, undefined, and empty strings count as missing.
-export const isFieldFilled = (value: unknown): boolean =>
+const isFieldFilled = (value: unknown): boolean =>
   value !== null && value !== undefined && value !== '';
 
 const getRequiredFields = (
