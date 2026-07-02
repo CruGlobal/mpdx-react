@@ -34,6 +34,7 @@ fragment NewStaffQuestionnaireFields on NewStaffQuestionnaire {
   solidSupportRaised
   spouseContribution403bPercentage
   spouseMhaAmount
+  spousePhoneNumber
   spouseRequestedAnnualSalary
   staffConferenceTransfer
   studentLoanMonthlyPayment

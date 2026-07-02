@@ -2,22 +2,16 @@ import React, { useState } from 'react';
 import { Stack, TextField, Typography } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
-import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
 import { getLocalizedAge } from 'src/lib/functions/getLocalizedAge';
 import { StaffInfoCard } from '../../Shared/StaffInfoCard/StaffInfoCard';
 import { useNsoMpdQuestionnaire } from '../Shared/NsoMpdQuestionnaireContext';
 
 export const StaffInformation: React.FC = () => {
   const { t } = useTranslation();
-  const { questionnaire } = useNsoMpdQuestionnaire();
+  const { questionnaire, hasSpouse } = useNsoMpdQuestionnaire();
   const { data: userData } = useGetUserQuery();
 
   const [viewingSpouse, setViewingSpouse] = useState(false);
-
-  const maritalStatus = questionnaire?.maritalStatus;
-  const hasSpouse =
-    !!maritalStatus &&
-    maritalStatus !== NewStaffQuestionnaireMaritalStatusEnum.Single;
 
   // Primary user is always new/joining staff
   const isJoining = viewingSpouse ? questionnaire?.spouseJoining : true;

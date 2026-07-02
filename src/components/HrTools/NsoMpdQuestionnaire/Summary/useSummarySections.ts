@@ -33,7 +33,7 @@ const formatNumber = (value?: number | null): string | null =>
 export const useSummarySections = (): SummarySectionData[] => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { questionnaire } = useNsoMpdQuestionnaire();
+  const { questionnaire, hasSpouse } = useNsoMpdQuestionnaire();
 
   return useMemo<SummarySectionData[]>(() => {
     const {
@@ -45,6 +45,7 @@ export const useSummarySections = (): SummarySectionData[] => {
       tenure,
       address,
       phoneNumber,
+      spousePhoneNumber,
       spouseFirstName,
       spouseAge,
       spouseTenure,
@@ -87,9 +88,6 @@ export const useSummarySections = (): SummarySectionData[] => {
       : null;
 
     // Gate variant/spouse-dependent rows
-    const hasSpouse =
-      !!maritalStatus &&
-      maritalStatus !== NewStaffQuestionnaireMaritalStatusEnum.Single;
     const isSosa = variant === NewStaffQuestionnaireVariantEnum.Sosa;
     const isSpouseSeniorStaff =
       variant === NewStaffQuestionnaireVariantEnum.SpouseSeniorStaff;
@@ -112,7 +110,9 @@ export const useSummarySections = (): SummarySectionData[] => {
             ? [
                 {
                   label: t('Spouse name'),
-                  value: formatText(spouseFirstName),
+                  value:
+                    [spouseFirstName, lastName].filter(Boolean).join(' ') ||
+                    null,
                 },
                 {
                   label: t('Spouse age'),
@@ -121,6 +121,10 @@ export const useSummarySections = (): SummarySectionData[] => {
                 {
                   label: t('Spouse tenure'),
                   value: formatNumber(spouseTenure),
+                },
+                {
+                  label: t('Spouse cell phone'),
+                  value: formatText(spousePhoneNumber),
                 },
               ]
             : []),
@@ -217,5 +221,5 @@ export const useSummarySections = (): SummarySectionData[] => {
         ],
       },
     ];
-  }, [questionnaire, t, locale]);
+  }, [questionnaire, hasSpouse, t, locale]);
 };
