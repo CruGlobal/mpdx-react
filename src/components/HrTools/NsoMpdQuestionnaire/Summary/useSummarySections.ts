@@ -33,7 +33,7 @@ const formatNumber = (value?: number | null): string | null =>
 export const useSummarySections = (): SummarySectionData[] => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { questionnaire } = useNsoMpdQuestionnaire();
+  const { questionnaire, hasSpouse } = useNsoMpdQuestionnaire();
 
   return useMemo<SummarySectionData[]>(() => {
     const {
@@ -88,9 +88,6 @@ export const useSummarySections = (): SummarySectionData[] => {
       : null;
 
     // Gate variant/spouse-dependent rows
-    const hasSpouse =
-      !!maritalStatus &&
-      maritalStatus !== NewStaffQuestionnaireMaritalStatusEnum.Single;
     const isSosa = variant === NewStaffQuestionnaireVariantEnum.Sosa;
     const isSpouseSeniorStaff =
       variant === NewStaffQuestionnaireVariantEnum.SpouseSeniorStaff;
@@ -222,5 +219,5 @@ export const useSummarySections = (): SummarySectionData[] => {
         ],
       },
     ];
-  }, [questionnaire, t, locale]);
+  }, [questionnaire, hasSpouse, t, locale]);
 };

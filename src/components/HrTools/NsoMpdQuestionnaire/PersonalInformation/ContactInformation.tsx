@@ -10,19 +10,14 @@ import {
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
 import { useNsoMpdQuestionnaire } from '../Shared/NsoMpdQuestionnaireContext';
 import { PhoneNumberField } from './PhoneNumberField';
 
 export const ContactInformation: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { questionnaire } = useNsoMpdQuestionnaire();
-  const { maritalStatus, firstName, spouseFirstName } = questionnaire ?? {};
-
-  const hasSpouse =
-    !!maritalStatus &&
-    maritalStatus !== NewStaffQuestionnaireMaritalStatusEnum.Single;
+  const { questionnaire, hasSpouse } = useNsoMpdQuestionnaire();
+  const { firstName, spouseFirstName } = questionnaire ?? {};
 
   const userName = firstName ?? t('You');
   const spouseColumnName = spouseFirstName ?? t('Spouse');

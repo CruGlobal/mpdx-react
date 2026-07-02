@@ -9,6 +9,7 @@ import {
   useNewStaffQuestionnaireQuery,
 } from './NewStaffQuestionnaire.generated';
 import { useUpdateNewStaffQuestionnaireMutation } from './UpdateNewStaffQuestionnaire.generated';
+import { getHasSpouse } from './helpers/getHasSpouse';
 import { getCompletionPercentage } from './stepCompletion';
 import { NsoMpdQuestionnaireStep, useSteps } from './useSteps';
 
@@ -28,6 +29,8 @@ export type NsoMpdQuestionnaireType = {
   toggleDrawer: () => void;
   setDrawerOpen: (open: boolean) => void;
   questionnaire: NewStaffQuestionnaire | null;
+  /** Whether the questionnaire belongs to a married staff member (has a spouse to collect info for). */
+  hasSpouse: boolean;
   loading: boolean;
   isMutating: boolean;
   saveField: (
@@ -68,6 +71,8 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
     skip: !accountListId,
   });
   const questionnaire = questionnaireData?.newStaffQuestionnaire ?? null;
+
+  const hasSpouse = getHasSpouse(questionnaire?.maritalStatus);
 
   const percentComplete = useMemo(
     () => getCompletionPercentage(questionnaire),
@@ -152,6 +157,7 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
       toggleDrawer,
       setDrawerOpen,
       questionnaire,
+      hasSpouse,
       loading,
       isMutating,
       saveField,
@@ -170,6 +176,7 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
       toggleDrawer,
       setDrawerOpen,
       questionnaire,
+      hasSpouse,
       loading,
       isMutating,
       saveField,

@@ -32,9 +32,9 @@ describe('ContactInformation', () => {
     const { findByRole, getByRole } = render(<TestComponent />);
 
     expect(
-      await findByRole('columnheader', { name: 'Jane Doe' }),
+      await findByRole('columnheader', { name: 'Jane' }),
     ).toBeInTheDocument();
-    expect(getByRole('columnheader', { name: 'John Doe' })).toBeInTheDocument();
+    expect(getByRole('columnheader', { name: 'John' })).toBeInTheDocument();
     expect(
       getByRole('rowheader', { name: 'Cell Phone Number' }),
     ).toBeInTheDocument();
@@ -48,10 +48,10 @@ describe('ContactInformation', () => {
     );
 
     expect(
-      await findByRole('columnheader', { name: 'John Doe' }),
+      await findByRole('columnheader', { name: 'John' }),
     ).toBeInTheDocument();
     expect(
-      queryByRole('columnheader', { name: 'Jane Doe' }),
+      queryByRole('columnheader', { name: 'Jane' }),
     ).not.toBeInTheDocument();
     expect(
       queryByRole('textbox', { name: "Jane's Cell Phone Number" }),
