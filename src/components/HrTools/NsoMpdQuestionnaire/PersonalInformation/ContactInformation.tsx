@@ -1,50 +1,86 @@
-import React, { useMemo } from 'react';
-import Phone from '@mui/icons-material/Phone';
-import { InputAdornment, Stack, TextField, Typography } from '@mui/material';
+import React from 'react';
+import {
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Typography,
+} from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import * as yup from 'yup';
-import { phoneNumber } from 'src/lib/yupHelpers';
-import { useQuestionnaireAutoSave } from '../Shared/useQuestionnaireAutoSave';
-
-const placeholder = '000-000-0000';
+import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
+import { useNsoMpdQuestionnaire } from '../Shared/NsoMpdQuestionnaireContext';
+import { PhoneNumberField } from './PhoneNumberField';
 
 export const ContactInformation: React.FC = () => {
   const { t } = useTranslation();
+  const theme = useTheme();
+  const { questionnaire } = useNsoMpdQuestionnaire();
 
-  const schema = useMemo(
-    () =>
-      yup.object({
-        phoneNumber: phoneNumber(t).required(
-          t('Cell phone number is required'),
-        ),
-      }),
-    [t],
-  );
+  const maritalStatus = questionnaire?.maritalStatus;
+  const hasSpouse =
+    !!maritalStatus &&
+    maritalStatus !== NewStaffQuestionnaireMaritalStatusEnum.Single;
 
-  const fieldProps = useQuestionnaireAutoSave({
-    fieldName: 'phoneNumber',
-    schema,
-  });
+  const lastName = questionnaire?.lastName;
+  const userName =
+    [questionnaire?.firstName, lastName].filter(Boolean).join(' ') || t('You');
+  const spouseColumnName =
+    [questionnaire?.spouseFirstName, lastName].filter(Boolean).join(' ') ||
+    t('Spouse');
+  const spouseName = questionnaire?.spouseFirstName || t('your spouse');
 
   return (
     <Stack spacing={2}>
       <Typography variant="h6">{t('Contact Information')}</Typography>
-      <Typography>{t('Please provide your cell phone number.')}</Typography>
-      <TextField
-        required
-        label={t('Cell Phone Number')}
-        placeholder={placeholder}
-        size="small"
-        sx={{ maxWidth: (theme) => theme.spacing(40) }}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <Phone />
-            </InputAdornment>
-          ),
-        }}
-        {...fieldProps}
-      />
+      <Typography>
+        {hasSpouse
+          ? t('Please provide a cell phone number for each person below.')
+          : t('Please provide your cell phone number.')}
+      </Typography>
+      <Table size="small" sx={{ maxWidth: theme.spacing(90) }}>
+        <TableHead>
+          <TableRow>
+            <TableCell sx={{ width: theme.spacing(25) }} />
+            <TableCell scope="col" sx={{ color: theme.palette.mpdxBlue.main }}>
+              {userName}
+            </TableCell>
+            {hasSpouse && (
+              <TableCell
+                scope="col"
+                sx={{ color: theme.palette.mpdxBlue.main }}
+              >
+                {spouseColumnName}
+              </TableCell>
+            )}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            <TableCell component="th" scope="row" sx={{ fontWeight: 'medium' }}>
+              {t('Cell Phone Number')}
+            </TableCell>
+            <TableCell>
+              <PhoneNumberField
+                fieldName="phoneNumber"
+                ariaLabel={t('Your Cell Phone Number')}
+              />
+            </TableCell>
+            {hasSpouse && (
+              <TableCell>
+                <PhoneNumberField
+                  fieldName="spousePhoneNumber"
+                  ariaLabel={t("{{spouseName}}'s Cell Phone Number", {
+                    spouseName,
+                  })}
+                />
+              </TableCell>
+            )}
+          </TableRow>
+        </TableBody>
+      </Table>
     </Stack>
   );
 };

@@ -45,6 +45,7 @@ export const useSummarySections = (): SummarySectionData[] => {
       tenure,
       address,
       phoneNumber,
+      spousePhoneNumber,
       spouseFirstName,
       spouseAge,
       spouseTenure,
@@ -121,6 +122,10 @@ export const useSummarySections = (): SummarySectionData[] => {
                 {
                   label: t('Spouse tenure'),
                   value: formatNumber(spouseTenure),
+                },
+                {
+                  label: t('Spouse cell phone'),
+                  value: formatText(spousePhoneNumber),
                 },
               ]
             : []),
