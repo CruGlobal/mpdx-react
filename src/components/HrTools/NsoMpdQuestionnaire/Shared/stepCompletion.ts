@@ -75,10 +75,11 @@ const getRequiredFields = (
   return [...baseFields, ...variantFields];
 };
 
-const isStepComplete = (
+export const isStepComplete = (
   step: NsoMpdQuestionnaireStepEnum,
-  questionnaire: NonNullable<NewStaffQuestionnaire>,
+  questionnaire: NewStaffQuestionnaire,
 ): boolean =>
+  !!questionnaire &&
   getRequiredFields(step, questionnaire).every((field) =>
     isFieldFilled(questionnaire[field]),
   );

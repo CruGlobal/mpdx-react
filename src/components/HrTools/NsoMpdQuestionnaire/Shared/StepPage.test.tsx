@@ -5,8 +5,8 @@ import { StepPage } from './StepPage';
 import { SubStep } from './SubStepList';
 
 const subSteps: SubStep[] = [
-  { id: 'one', title: 'Section One' },
-  { id: 'two', title: 'Section Two' },
+  { id: 'one', title: 'Section One', complete: false },
+  { id: 'two', title: 'Section Two', complete: false },
 ];
 
 const renderStepPage = (steps: SubStep[] = subSteps) =>
