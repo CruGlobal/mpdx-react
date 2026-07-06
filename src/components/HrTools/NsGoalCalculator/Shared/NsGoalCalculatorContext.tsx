@@ -1,10 +1,5 @@
 import React, { createContext, useCallback, useMemo, useState } from 'react';
-import { ApolloError } from '@apollo/client';
-import { useAccountListId } from 'src/hooks/useAccountListId';
-import {
-  NewStaffGoalCalculationQuery,
-  useNewStaffGoalCalculationQuery,
-} from '../GoalSettings/NewStaffGoalCalculation.generated';
+import { NewStaffGoalCalculationQuery } from '../GoalSettings/NewStaffGoalCalculation.generated';
 import { NsGoalCalculatorStepEnum } from '../NsGoalCalculatorHelper';
 import { NsGoalCalculatorStep, useSteps } from './useSteps';
 
@@ -17,10 +12,6 @@ export type NsGoalCalculatorType = {
   currentStep: NsGoalCalculatorStep;
   currentIndex: number;
   isDrawerOpen: boolean;
-  /** The current goal calculation, or null if none exists for this account. */
-  goalCalculation: NsGoalCalculation | null;
-  goalCalculationLoading: boolean;
-  goalCalculationError: ApolloError | undefined;
   handleStepChange: (step: NsGoalCalculatorStepEnum) => void;
   handleContinue: () => void;
   toggleDrawer: () => void;
@@ -48,17 +39,6 @@ export const NsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const steps = useSteps();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
-  const accountListId = useAccountListId();
-
-  const {
-    data: goalCalculationData,
-    loading: goalCalculationLoading,
-    error: goalCalculationError,
-  } = useNewStaffGoalCalculationQuery({
-    variables: { accountListId: accountListId ?? '' },
-    skip: !accountListId,
-  });
-  const goalCalculation = goalCalculationData?.newStaffGoalCalculation ?? null;
 
   const currentStep = steps[currentIndex];
 
@@ -88,9 +68,6 @@ export const NsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       currentStep,
       currentIndex,
       isDrawerOpen,
-      goalCalculation,
-      goalCalculationLoading,
-      goalCalculationError,
       handleStepChange,
       handleContinue,
       toggleDrawer,
@@ -100,9 +77,6 @@ export const NsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       currentStep,
       currentIndex,
       isDrawerOpen,
-      goalCalculation,
-      goalCalculationLoading,
-      goalCalculationError,
       handleStepChange,
       handleContinue,
       toggleDrawer,
