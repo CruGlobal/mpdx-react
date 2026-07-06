@@ -1,3 +1,4 @@
+import { gqlMock } from '__tests__/util/graphqlMocking';
 import {
   GoalCalculationAge,
   GoalCalculationRole,
@@ -7,7 +8,12 @@ import {
   NewStaffQuestionnaireNsoHousingEnum,
   NewStaffQuestionnaireNsoSessionsEnum,
 } from 'src/graphql/types.generated';
-import { NewStaffGoalCalculationFieldsFragment } from './NewStaffGoalCalculation.generated';
+import {
+  NewStaffGoalCalculationDocument,
+  NewStaffGoalCalculationFieldsFragment,
+  NewStaffGoalCalculationQuery,
+  NewStaffGoalCalculationQueryVariables,
+} from './NewStaffGoalCalculation.generated';
 import {
   calculationToFormValues,
   formValuesToAttributes,
@@ -21,27 +27,17 @@ const emptyGoalSettingsValues = {
   calculationsYear: '',
 } as const;
 
+const { calculations } = gqlMock<
+  NewStaffGoalCalculationQuery,
+  NewStaffGoalCalculationQueryVariables
+>(NewStaffGoalCalculationDocument, {
+  variables: { accountListId: 'account-list-1' },
+}).newStaffGoalCalculation!;
+
 const baseCalculation: NewStaffGoalCalculationFieldsFragment = {
   __typename: 'NewStaffGoalCalculation',
   id: 'goal-1',
-  calculations: {
-    __typename: 'NewStaffGoalCalculationCalculations',
-    salary: 8774,
-    seca: 1492,
-    contributing403bAmount: 600,
-    spouseContributing403bAmount: 390,
-    totalContributing403bAmount: 990,
-    totalMinistryExpenses: 898,
-    medicalExpenses: 300,
-    staffConferenceTransfer: 100,
-    accountTransfers: 50,
-    advocacyTransfers: 25,
-    otherExpenses: 0,
-    benefitsCharge: 1911,
-    adminCharge: 1795,
-    attrition: 940,
-    monthlyGoal: 17275,
-  },
+  calculations,
   firstName: 'John',
   lastName: 'Doe',
   emailAddress: 'john@cru.org',

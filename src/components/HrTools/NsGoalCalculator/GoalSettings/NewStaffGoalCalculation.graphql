@@ -4,6 +4,7 @@ fragment NewStaffGoalCalculationFields on NewStaffGoalCalculation {
   calculations {
     salary
     seca
+    salarySubtotal
     contributing403bAmount
     spouseContributing403bAmount
     totalContributing403bAmount
@@ -13,10 +14,28 @@ fragment NewStaffGoalCalculationFields on NewStaffGoalCalculation {
     accountTransfers
     advocacyTransfers
     otherExpenses
+    totalSalary
+    ministryMiles
+    travel
+    conferences
+    meals
+    mpd
+    supplies
+    summerExpenses
     benefitsCharge
+    medicalExpenses
+    accountTransfers
+    advocacyTransfers
+    otherExpenses
+    goalSubtotal
+    subtotalWithAdminCharge
     adminCharge
     attrition
     monthlyGoal
+    minimumAccountBalance
+    secaRate
+    adminRate
+    attritionRate
   }
 
   # Identity (read-only display in the header; prepopulated from HCM).
