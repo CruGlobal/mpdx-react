@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, within } from '@testing-library/react';
 import theme from 'src/theme';
 import { SubStep, SubStepList } from './SubStepList';
 
@@ -50,8 +50,8 @@ describe('SubStepList', () => {
     expect(queryByTestId('CircleIcon')).not.toBeInTheDocument();
   });
 
-  it('fills a sub-step dot blue once its data is complete', () => {
-    const { getByTestId } = render(
+  it('fills the complete row blue and leaves the incomplete row outlined', () => {
+    const { getByText } = render(
       <TestComponent
         subSteps={[
           { id: 'one', title: 'Section One', complete: true },
@@ -60,7 +60,34 @@ describe('SubStepList', () => {
       />,
     );
 
-    expect(getByTestId('CircleIcon')).toBeInTheDocument();
-    expect(getByTestId('RadioButtonUncheckedIcon')).toBeInTheDocument();
+    const completeRow = within(
+      getByText('1. Section One').closest('li') as HTMLElement,
+    );
+    const incompleteRow = within(
+      getByText('2. Section Two').closest('li') as HTMLElement,
+    );
+
+    expect(completeRow.getByTestId('CircleIcon')).toBeInTheDocument();
+    expect(
+      completeRow.queryByTestId('RadioButtonUncheckedIcon'),
+    ).not.toBeInTheDocument();
+    expect(
+      incompleteRow.getByTestId('RadioButtonUncheckedIcon'),
+    ).toBeInTheDocument();
+    expect(incompleteRow.queryByTestId('CircleIcon')).not.toBeInTheDocument();
+  });
+
+  it('fills every dot blue when all sub-steps are complete', () => {
+    const { getAllByTestId, queryByTestId } = render(
+      <TestComponent
+        subSteps={[
+          { id: 'one', title: 'Section One', complete: true },
+          { id: 'two', title: 'Section Two', complete: true },
+        ]}
+      />,
+    );
+
+    expect(getAllByTestId('CircleIcon')).toHaveLength(2);
+    expect(queryByTestId('RadioButtonUncheckedIcon')).not.toBeInTheDocument();
   });
 });
