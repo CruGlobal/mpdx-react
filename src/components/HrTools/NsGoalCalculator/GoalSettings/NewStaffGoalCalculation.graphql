@@ -10,6 +10,7 @@ fragment NewStaffGoalCalculationFields on NewStaffGoalCalculation {
     totalMinistryExpenses
     benefitsCharge
     adminCharge
+    attrition
     monthlyGoal
   }
 

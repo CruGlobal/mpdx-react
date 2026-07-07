@@ -74,7 +74,7 @@ describe('PresentingYourGoalStep', () => {
     expect(getByText('Salary (Combined)')).toBeInTheDocument();
     expect(getByText('$8,774')).toBeInTheDocument();
     expect(getByText('Ministry Expenses')).toBeInTheDocument();
-    expect(getByText('$898')).toBeInTheDocument();
+    expect(getByText('$1,838')).toBeInTheDocument();
     expect(getByText('Benefits')).toBeInTheDocument();
     expect(getByText('$1,911')).toBeInTheDocument();
     expect(getByText('Social Security and Taxes')).toBeInTheDocument();
@@ -84,7 +84,7 @@ describe('PresentingYourGoalStep', () => {
     expect(getByText('Administrative Charge')).toBeInTheDocument();
     expect(getByText('$1,795')).toBeInTheDocument();
     expect(getByText('Total Support Goal')).toBeInTheDocument();
-    expect(getByText('$15,860')).toBeInTheDocument();
+    expect(getByText('$16,800')).toBeInTheDocument();
     expect(await findByText('Total Solid Support')).toBeInTheDocument();
     expect(await findByText('$1,200')).toBeInTheDocument();
   });

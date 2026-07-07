@@ -63,7 +63,8 @@ export const PresentingYourGoalStep: React.FC<PresentingYourGoalStepProps> = ({
     () => ({
       married,
       salary: calculations.salary,
-      ministryExpenses: calculations.totalMinistryExpenses,
+      ministryExpenses:
+        calculations.totalMinistryExpenses + calculations.attrition,
       benefits: calculations.benefitsCharge,
       socialSecurityAndTaxes: calculations.seca,
       voluntaryRetirement: calculations.totalContributing403bAmount,
