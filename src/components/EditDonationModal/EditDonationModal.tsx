@@ -177,12 +177,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
           <form onSubmit={handleSubmit} noValidate>
             <DialogContent dividers>
               <FormFieldsGridContainer>
-                <Grid
-                  size={{
-                    xs: 12,
-                    md: 6,
-                  }}
-                >
+                <Grid size={12}>
                   <TextField
                     name="convertedAmount"
                     value={convertedAmount}
@@ -201,12 +196,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     required
                   />
                 </Grid>
-                <Grid
-                  size={{
-                    xs: 12,
-                    md: 6,
-                  }}
-                >
+                <Grid size={12}>
                   <FormControl fullWidth required>
                     <CurrencyAutocomplete
                       disableClearable
@@ -224,12 +214,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     />
                   </FormControl>
                 </Grid>
-                <Grid
-                  size={{
-                    xs: 12,
-                    md: 6,
-                  }}
-                >
+                <Grid size={12}>
                   <FormControl fullWidth>
                     <CustomDateField
                       label={t('Date')}
@@ -244,12 +229,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     />
                   </FormControl>
                 </Grid>
-                <Grid
-                  size={{
-                    xs: 12,
-                    md: 6,
-                  }}
-                >
+                <Grid size={12}>
                   <TextField
                     value={donation.motivation}
                     label={t('Motivation')}
@@ -259,12 +239,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                   />
                 </Grid>
                 {donation.remoteId && (
-                  <Grid
-                    size={{
-                      xs: 12,
-                      md: 6,
-                    }}
-                  >
+                  <Grid size={12}>
                     <TextField
                       value={donation.remoteId}
                       label={t('Gift ID')}
@@ -274,12 +249,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     />
                   </Grid>
                 )}
-                <Grid
-                  size={{
-                    xs: 12,
-                    md: 6,
-                  }}
-                >
+                <Grid size={12}>
                   <DonorAccountAutocomplete
                     accountListId={accountListId}
                     value={donorAccountId}
@@ -302,12 +272,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     }}
                   />
                 </Grid>
-                <Grid
-                  size={{
-                    xs: 12,
-                    md: 6,
-                  }}
-                >
+                <Grid size={12}>
                   <DesignationAccountAutocomplete
                     id="designationAccountId"
                     accountListId={accountListId}
@@ -333,12 +298,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     }}
                   />
                 </Grid>
-                <Grid
-                  size={{
-                    xs: 12,
-                    md: 6,
-                  }}
-                >
+                <Grid size={12}>
                   <FormControl fullWidth>
                     <InputLabel id="appealId">{t('Appeal')}</InputLabel>
                     <Select
@@ -366,12 +326,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                   </FormControl>
                 </Grid>
                 {appealId && (
-                  <Grid
-                    size={{
-                      xs: 12,
-                      md: 6,
-                    }}
-                  >
+                  <Grid size={12}>
                     <TextField
                       value={appealAmount}
                       label={t('Appeal Amount')}
@@ -380,12 +335,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     />
                   </Grid>
                 )}
-                <Grid
-                  size={{
-                    xs: 12,
-                    md: 6,
-                  }}
-                >
+                <Grid size={12}>
                   <TextField
                     value={memo}
                     label={t('Memo')}
