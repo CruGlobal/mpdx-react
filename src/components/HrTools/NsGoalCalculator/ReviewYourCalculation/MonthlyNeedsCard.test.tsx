@@ -41,7 +41,7 @@ describe('MonthlyNeedsCard', () => {
       meals: 100,
       mpd: 200,
       supplies: 100,
-      summerExpenses: 0,
+      staffConferenceTransfer: 0,
       benefitsCharge: 1911,
       medicalExpenses: 138,
       accountTransfers: 0,

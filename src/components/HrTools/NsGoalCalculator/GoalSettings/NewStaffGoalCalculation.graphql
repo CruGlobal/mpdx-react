@@ -21,7 +21,7 @@ fragment NewStaffGoalCalculationFields on NewStaffGoalCalculation {
     meals
     mpd
     supplies
-    summerExpenses
+    staffConferenceTransfer
     benefitsCharge
     medicalExpenses
     accountTransfers
