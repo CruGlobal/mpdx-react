@@ -182,7 +182,9 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
               primary={pledgesAmountProcessedPercentage}
               secondary={pledgesAmountCommittedPercentage}
             />
-            <Grid container spacing={2}>
+            {/* MUI v7 Grid containers have no default width; stretch like the
+                siblings above since cardContent centers its column items */}
+            <Grid container spacing={2} sx={{ width: '100%' }}>
               <Grid size={6}>
                 <Typography component="div" color="textSecondary">
                   <div
