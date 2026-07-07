@@ -6,7 +6,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import {
   Box,
   Grid,
-  Hidden,
   IconButton,
   ListItemIcon,
   ListItemText,
@@ -153,23 +152,20 @@ export const ContactRow: React.FC<Props> = ({
         })}
         data-testid="rowButton"
       >
-        <Grid container alignItems="center">
+        <Grid container alignItems="center" sx={{ width: '100%' }}>
           <Grid
-            item
-            xs={isExcludedContact ? 5 : 6}
             style={{ paddingRight: 16 }}
             display={'flex'}
+            size={isExcludedContact ? 5 : 6}
           >
-            <Hidden xsDown>
-              <ListItemIcon>
-                <StyledCheckbox
-                  checked={isChecked(contact.id)}
-                  color="secondary"
-                  onClick={(event) => event.stopPropagation()}
-                  onChange={() => onContactCheckToggle(contact.id)}
-                />
-              </ListItemIcon>
-            </Hidden>
+            <ListItemIcon sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>
+              <StyledCheckbox
+                checked={isChecked(contact.id)}
+                color="secondary"
+                onClick={(event) => event.stopPropagation()}
+                onChange={() => onContactCheckToggle(contact.id)}
+              />
+            </ListItemIcon>
             <ListItemText
               primary={
                 <Typography component="span" variant="h6" noWrap>
@@ -181,7 +177,7 @@ export const ContactRow: React.FC<Props> = ({
             />
           </Grid>
           {isExcludedContact && (
-            <Grid item xs={3} display={'flex'}>
+            <Grid display={'flex'} size={3}>
               <Box>
                 <Box
                   display="flex"
@@ -201,10 +197,9 @@ export const ContactRow: React.FC<Props> = ({
             </Grid>
           )}
           <Grid
-            item
-            xs={isExcludedContact ? 4 : 6}
             display={'flex'}
             style={{ justifyContent: 'space-between' }}
+            size={isExcludedContact ? 4 : 6}
           >
             <Box
               display="flex"
@@ -316,9 +311,7 @@ export const ContactRow: React.FC<Props> = ({
             </ContactRowActions>
           </Grid>
         </Grid>
-        <Hidden xsDown>
-          <Box></Box>
-        </Hidden>
+        <Box sx={{ display: { xs: 'none', sm: 'block' } }}></Box>
       </ListButton>
       {removeContactModalOpen && (
         <DynamicDeleteAppealContactModal
@@ -326,14 +319,12 @@ export const ContactRow: React.FC<Props> = ({
           handleClose={() => setRemoveContactModalOpen(false)}
         />
       )}
-
       {addExcludedContactModalOpen && (
         <DynamicAddExcludedContactModal
           contactIds={[contactId]}
           handleClose={() => setAddExcludedContactModalOpen(false)}
         />
       )}
-
       {createPledgeModalOpen && (
         <DynamicPledgeModal
           contact={contact}
@@ -341,7 +332,6 @@ export const ContactRow: React.FC<Props> = ({
           pledge={pledgeValues}
         />
       )}
-
       {deletePledgeModalOpen && pledgeValues && (
         <DynamicDeletePledgeModal
           pledge={pledgeValues}

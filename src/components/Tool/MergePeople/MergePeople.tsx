@@ -101,10 +101,10 @@ const MergePeople: React.FC<Props> = ({ accountListId }: Props) => {
     >
       {!loading && data && (
         <ToolsGridContainer container spacing={3}>
-          <Grid item xs={12}></Grid>
+          <Grid size={12}></Grid>
           {duplicatesDisplayedCount ? (
             <>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <Box
                   className={classes.descriptionBox}
                   data-testid="PeopleMergeDescription"
@@ -133,7 +133,7 @@ const MergePeople: React.FC<Props> = ({ accountListId }: Props) => {
                 confirmAction={handleSubmit}
                 setActions={setActions}
               />
-              <Grid item xs={12} sx={{ margin: '0px 2px 20px 2px' }}>
+              <Grid sx={{ margin: '0px 2px 20px 2px' }} size={12}>
                 {data?.personDuplicates.nodes.map((duplicate) => (
                   <ContactPair
                     key={duplicate.id}

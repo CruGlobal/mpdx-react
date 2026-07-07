@@ -1,6 +1,6 @@
 import React, { ReactElement, useState } from 'react';
 import MoreHoriz from '@mui/icons-material/MoreHoriz';
-import { Hidden, ListItemText, Menu, MenuItem } from '@mui/material';
+import { Box, ListItemText, Menu, MenuItem } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
@@ -130,7 +130,7 @@ export const ContactsMassActionsDropdown: React.FC<
   return (
     <>
       {contactsView !== TableViewModeEnum.Map && (
-        <Hidden xsDown>
+        <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
           {selectedIds?.length > 0 && (
             <>
               <MassActionsDropdown handleClick={handleClick} open={open}>
@@ -298,7 +298,7 @@ export const ContactsMassActionsDropdown: React.FC<
               </Menu>
             </>
           )}
-        </Hidden>
+        </Box>
       )}
 
       {buttonGroup}

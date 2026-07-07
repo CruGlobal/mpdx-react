@@ -74,7 +74,14 @@ const ToolsHome: React.FC<ToolHomeProps> = ({ onSetupTour }): ReactElement => {
                 toolDataTotalCount[tool.id] > 0) ||
               (onSetupTour && tool.id.includes('import'));
             return (
-              <Grid item xs={12} sm={6} md={4} key={tool.tool}>
+              <Grid
+                key={tool.tool}
+                size={{
+                  xs: 12,
+                  sm: 6,
+                  md: 4,
+                }}
+              >
                 <Tool
                   tool={tool.tool}
                   desc={tool.desc}

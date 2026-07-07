@@ -197,7 +197,13 @@ const Contact = ({
         sx={{ backgroundColor: theme.palette.mpdxGrayLight.main }}
       >
         <Grid container alignItems="center">
-          <Grid item xs={6} sm={5} md={4}>
+          <Grid
+            size={{
+              xs: 6,
+              sm: 5,
+              md: 4,
+            }}
+          >
             <Box display="flex" alignItems="center" style={{ height: '100%' }}>
               {contact.primaryPerson?.firstName && matches && (
                 <Avatar
@@ -233,7 +239,13 @@ const Contact = ({
               </Box>
             </Box>
           </Grid>
-          <Grid item xs={6} sm={4} md={4}>
+          <Grid
+            size={{
+              xs: 6,
+              sm: 4,
+              md: 4,
+            }}
+          >
             <Box display="flex" alignItems="start" flexDirection="column" p={2}>
               <Typography variant="body2">
                 {contact?.primaryAddress?.street || ''}
@@ -269,7 +281,14 @@ const Contact = ({
               )}
             </Box>
           </Grid>
-          <Grid item xs={12} sm={3} md={4} sx={{ textAlign: 'right' }}>
+          <Grid
+            sx={{ textAlign: 'right' }}
+            size={{
+              xs: 12,
+              sm: 3,
+              md: 4,
+            }}
+          >
             <Typography variant="body2">
               <Trans
                 defaults="<bold>Send newsletter?</bold>"

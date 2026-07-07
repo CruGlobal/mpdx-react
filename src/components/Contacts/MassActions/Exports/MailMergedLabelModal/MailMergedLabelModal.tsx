@@ -87,7 +87,7 @@ export const MailMergedLabelModal: React.FC<MailMergedLabelModalProps> = ({
           >
             <DialogContent>
               <Grid container>
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <FormControl fullWidth>
                     <InputLabel id="template">{t('Template')}</InputLabel>
                     <Select
@@ -111,7 +111,7 @@ export const MailMergedLabelModal: React.FC<MailMergedLabelModalProps> = ({
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <FormControl fullWidth>
                     <InputLabel id="sort">{t('Sort By')}</InputLabel>
                     <Select

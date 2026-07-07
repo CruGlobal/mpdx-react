@@ -241,7 +241,7 @@ describe('TaskModalLogForm', () => {
 
     userEvent.type(getByRole('textbox', { name: 'Subject' }), 'Do something');
 
-    userEvent.click(getByRole('checkbox', { name: 'Show More' }));
+    userEvent.click(getByRole('switch', { name: 'Show More' }));
 
     userEvent.click(getByRole('combobox', { name: 'Contacts' }));
     userEvent.click(await findByRole('option', { name: 'Contact 2' }));
@@ -304,7 +304,7 @@ describe('TaskModalLogForm', () => {
       </LocalizationProvider>,
     );
 
-    userEvent.click(await findByRole('checkbox', { name: 'Show More' }));
+    userEvent.click(await findByRole('switch', { name: 'Show More' }));
     await waitFor(() =>
       expect(getByRole('combobox', { name: 'Assignee' })).toHaveValue('User 1'),
     );

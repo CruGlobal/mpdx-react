@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { ReactElement, useEffect } from 'react';
 import type { FC } from 'react';
-import { Box, Drawer, Hidden, List, Theme, useMediaQuery } from '@mui/material';
+import { Box, Drawer, List, Theme, useMediaQuery } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import { useLoadCoachingListQuery } from 'src/components/Coaching/LoadCoachingList.generated';
 import { useSetupContext } from 'src/components/Setup/SetupProvider';
@@ -115,31 +115,30 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
   }, [pathname, drawerHidden]);
 
   return (
-    <Hidden lgUp>
-      <Drawer
-        data-testid="NavBarDrawer"
-        anchor="left"
-        classes={{ paper: classes.mobileDrawer }}
-        onClose={onMobileClose}
-        open={openMobile}
-        variant="temporary"
-      >
-        <Box p={2} display="flex" justifyContent="center">
-          <LogoLink />
-        </Box>
-        {!onSetupTour && (
-          <Box p={2}>
-            {renderNavItems({
-              accountListId,
-              items: sections,
-              pathname,
-            })}
-          </Box>
-        )}
+    <Drawer
+      data-testid="NavBarDrawer"
+      anchor="left"
+      classes={{ paper: classes.mobileDrawer }}
+      onClose={onMobileClose}
+      open={openMobile}
+      variant="temporary"
+      sx={{ display: { xs: 'block', lg: 'none' } }}
+    >
+      <Box p={2} display="flex" justifyContent="center">
+        <LogoLink />
+      </Box>
+      {!onSetupTour && (
         <Box p={2}>
-          <NavTools />
+          {renderNavItems({
+            accountListId,
+            items: sections,
+            pathname,
+          })}
         </Box>
-      </Drawer>
-    </Hidden>
+      )}
+      <Box p={2}>
+        <NavTools />
+      </Box>
+    </Drawer>
   );
 };
