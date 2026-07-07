@@ -21,7 +21,7 @@ export interface SpecialNeedsCardProps {
 
 /**
  * The "Special Needs During MPD" card on the Review Your Calculation step,
- * listing one-time special-needs expenses incurred during MPD.
+ * listing one-time special-needs expenses.
  *
  * TODO(MPDX-9801): Special needs data is not available yet, so every amount is
  * mocked to 0. Wire these lines up to the server-computed values once the
@@ -72,6 +72,9 @@ export const SpecialNeedsCard: React.FC<SpecialNeedsCardProps> = ({
     {
       line: '7',
       category: t('Special Needs Developed to Date'),
+      description: t(
+        'This amount comes from what you inputted on the MPD Questionnaire.',
+      ),
       amount: 0,
       bold: true,
     },
@@ -105,17 +108,12 @@ export const SpecialNeedsCard: React.FC<SpecialNeedsCardProps> = ({
           </TableHead>
           <TableBody>
             {rows.map(({ line, category, description, amount, bold }) => (
-              <TableRow key={line}>
-                <TableCell className={clsx('line', { bold })}>
-                  <Typography variant="body1">{line}</Typography>
+              <TableRow key={line} className={clsx({ bold })}>
+                <TableCell className="line">
+                  <Typography>{line}</Typography>
                 </TableCell>
                 <TableCell component="th" scope="row">
-                  <Typography
-                    variant="body1"
-                    fontWeight={bold ? 'bold' : undefined}
-                  >
-                    {category}
-                  </Typography>
+                  <Typography variant="body1">{category}</Typography>
                   {description && (
                     <Typography variant="body2" color="text.secondary">
                       {description}

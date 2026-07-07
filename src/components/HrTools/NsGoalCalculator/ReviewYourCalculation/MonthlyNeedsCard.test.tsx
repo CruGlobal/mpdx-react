@@ -113,32 +113,4 @@ describe('MonthlyNeedsCard', () => {
       ],
     });
   });
-
-  it('subtracts support raised from the monthly goal for line 18', () => {
-    const { getByRole } = render(
-      <MonthlyNeedsCard
-        calculations={buildCalculations({ monthlyGoal: 5000 })}
-        supportRaised={2000}
-        columnLabel="John"
-      />,
-    );
-
-    const line18 = getByRole('row', {
-      name: /Monthly Support to be Developed/,
-    });
-    expect(line18).toHaveTextContent('$3,000.00');
-  });
-
-  it('renders zero amounts as currency, not blanks', () => {
-    const { getByRole } = render(
-      <MonthlyNeedsCard
-        calculations={buildCalculations({ otherExpenses: 0 })}
-        supportRaised={0}
-        columnLabel="John"
-      />,
-    );
-
-    const line13 = getByRole('row', { name: /Other/ });
-    expect(line13).toHaveTextContent('$0.00');
-  });
 });

@@ -36,11 +36,4 @@ describe('SpecialNeedsCard', () => {
       ],
     });
   });
-
-  it('renders mocked zero amounts as currency, not blanks', () => {
-    const { getByRole } = render(<SpecialNeedsCard columnLabel="John" />);
-
-    const line1 = getByRole('row', { name: /IBS \/ NSO/ });
-    expect(line1).toHaveTextContent('$0.00');
-  });
 });

@@ -10,6 +10,9 @@ export interface NeedsRow {
 }
 
 export const NeedsTable = styled(Table)(({ theme }) => ({
+  '.MuiTableRow-root.bold .MuiTypography-body1': {
+    fontWeight: 'bold',
+  },
   '.MuiTableCell-root': {
     paddingBlock: theme.spacing(1),
     verticalAlign: 'top',
@@ -17,13 +20,9 @@ export const NeedsTable = styled(Table)(({ theme }) => ({
   },
   '.MuiTableCell-root.line': {
     width: theme.spacing(6),
-    color: theme.palette.text.secondary,
   },
   '.MuiTableCell-root.amount': {
     textAlign: 'right',
     whiteSpace: 'nowrap',
-  },
-  '.MuiTableCell-root.bold': {
-    fontWeight: 'bold',
   },
 }));

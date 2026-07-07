@@ -49,14 +49,14 @@ export const AccountBalanceCard: React.FC<AccountBalanceCardProps> = ({
           </TableRow>
         </TableHead>
         <TableBody>
-          <TableRow>
+          <TableRow className="bold">
             <TableCell component="th" scope="row">
-              <Typography variant="body1" fontWeight="bold">
+              <Typography variant="body1">
                 {t('Min Account Balance Needed to Report')}
               </Typography>
             </TableCell>
             <TableCell className="amount">
-              <Typography variant="body1" fontWeight="bold">
+              <Typography variant="body1">
                 {currencyFormat(minAccountBalance, 'USD', locale, {
                   showTrailingZeros: true,
                 })}

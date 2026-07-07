@@ -37,7 +37,7 @@ export const ReviewYourCalculationStep: React.FC<
   const columnLabel =
     married && goalCalculation.spouseFirstName
       ? t('{{firstName}} & {{spouseFirstName}}', {
-          firstName: goalCalculation.firstName ?? '',
+          firstName: goalCalculation.firstName,
           spouseFirstName: goalCalculation.spouseFirstName,
         })
       : (goalCalculation.firstName ?? '');

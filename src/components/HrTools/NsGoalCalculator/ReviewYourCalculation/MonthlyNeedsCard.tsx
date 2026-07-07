@@ -208,17 +208,12 @@ export const MonthlyNeedsCard: React.FC<MonthlyNeedsCardProps> = ({
           </TableHead>
           <TableBody>
             {rows.map(({ line, category, description, amount, bold }) => (
-              <TableRow key={line}>
-                <TableCell className={clsx('line', { bold })}>
-                  <Typography variant="body1">{line}</Typography>
+              <TableRow key={line} className={clsx({ bold })}>
+                <TableCell className="line">
+                  <Typography>{line}</Typography>
                 </TableCell>
                 <TableCell component="th" scope="row">
-                  <Typography
-                    variant="body1"
-                    fontWeight={bold ? 'bold' : undefined}
-                  >
-                    {category}
-                  </Typography>
+                  <Typography variant="body1">{category}</Typography>
                   {description && (
                     <Typography variant="body2" color="text.secondary">
                       {description}
