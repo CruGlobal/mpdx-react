@@ -118,11 +118,12 @@ describe('GoalSettingsForm', () => {
   });
 
   it('shows the calculated 403(b) contribution amount for each person', async () => {
-    const { findByText, getByText } = render(<TestComponent />);
+    const { findByLabelText, getByLabelText } = render(<TestComponent />);
 
-    // The 403(b) Amount row shows the primary and spouse calculated values.
-    expect(await findByText('$600.00')).toBeInTheDocument();
-    expect(getByText('$390.00')).toBeInTheDocument();
+    expect(await findByLabelText('403(b) Amount — John')).toHaveTextContent(
+      '$600.00',
+    );
+    expect(getByLabelText('403(b) Amount — Jane')).toHaveTextContent('$390.00');
   });
 
   it('shows the spouse column when marital status is set to married, before saving', async () => {

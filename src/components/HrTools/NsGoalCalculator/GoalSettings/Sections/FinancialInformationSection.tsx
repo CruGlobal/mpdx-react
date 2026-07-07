@@ -75,13 +75,19 @@ export const FinancialInformationSection: React.FC<
         label={t('403(b) Amount')}
         helperText={t('Calculated monthly amount')}
       >
-        <Typography variant="body1">
+        <Typography
+          variant="body1"
+          aria-label={t('403(b) Amount — {{name}}', { name: primaryName })}
+        >
           {currencyFormat(calculations.contributing403bAmount, 'USD', locale, {
             showTrailingZeros: true,
           })}
         </Typography>
         {hasSpouse && (
-          <Typography variant="body1">
+          <Typography
+            variant="body1"
+            aria-label={t('403(b) Amount — {{name}}', { name: spouseName })}
+          >
             {currencyFormat(
               calculations.spouseContributing403bAmount,
               'USD',
