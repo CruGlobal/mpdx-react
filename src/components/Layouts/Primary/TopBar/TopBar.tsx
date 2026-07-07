@@ -3,7 +3,6 @@ import MenuIcon from '@mui/icons-material/Menu';
 import {
   AppBar,
   Box,
-  Hidden,
   IconButton,
   SvgIcon,
   Toolbar,
@@ -53,20 +52,25 @@ const TopBar = ({
           }}
         >
           {accountListId && (
-            <Hidden mdUp>
-              <IconButton
-                color="inherit"
-                onClick={onMobileNavOpen}
-                sx={{ marginRight: '10px' }}
-              >
-                <SvgIcon fontSize="medium">
-                  <MenuIcon />
-                </SvgIcon>
-              </IconButton>
-            </Hidden>
+            <IconButton
+              color="inherit"
+              onClick={onMobileNavOpen}
+              sx={{ marginRight: '10px', display: { xs: 'block', md: 'none' } }}
+            >
+              <SvgIcon fontSize="medium">
+                <MenuIcon />
+              </SvgIcon>
+            </IconButton>
           )}
           <LogoLink />
-          <Hidden mdDown>
+          <Box
+            sx={{
+              display: { xs: 'none', lg: 'flex' },
+              flexGrow: 1,
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+            }}
+          >
             {onSetupTour && <Box flexGrow={1} />}
             {!onSetupTour && accountListId && (
               <>
@@ -81,7 +85,7 @@ const TopBar = ({
             <Box ml={{ lg: 1, xl: 2 }}>
               <ProfileMenu />
             </Box>
-          </Hidden>
+          </Box>
         </Toolbar>
       </StyledAppBar>
       <Offset />

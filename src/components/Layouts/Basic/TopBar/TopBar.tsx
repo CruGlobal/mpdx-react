@@ -36,7 +36,12 @@ const TopBar = ({ children }: Props): ReactElement => {
     <>
       <AppBar className={classes.appBar} elevation={trigger ? 3 : 0}>
         <Toolbar className={classes.toolbar}>
-          <Grid container className={classes.container} alignItems="center">
+          <Grid
+            container
+            className={classes.container}
+            alignItems="center"
+            sx={{ flexGrow: 1, minWidth: 0 }}
+          >
             {children}
           </Grid>
         </Toolbar>

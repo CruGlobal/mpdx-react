@@ -139,7 +139,7 @@ const LogNewsletter = ({
           </LogNewsletterTitle>
           <DialogContent dividers>
             <Grid container>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <LogFormControl>
                   <LogFormLabel required>{t('Subject')}</LogFormLabel>
                   <LogTextField
@@ -159,7 +159,7 @@ const LogNewsletter = ({
                   />
                 </LogFormControl>
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <FormControl>
                   <LogFormLabel required>{t('Action')}</LogFormLabel>
                   <RadioGroup
@@ -187,7 +187,7 @@ const LogNewsletter = ({
               </Grid>
               <LogFormControl>
                 <LogFormLabel>{t('Completed On')}</LogFormLabel>
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <DateTimeFieldPair
                     dateLabel={t('Completed Date')}
                     timeLabel={t('Completed Time')}
@@ -195,10 +195,20 @@ const LogNewsletter = ({
                     onChange={(date) => setFieldValue('completedAt', date)}
                     render={(dateField, timeField) => (
                       <Grid container spacing={2}>
-                        <Grid item xs={12} md={6}>
+                        <Grid
+                          size={{
+                            xs: 12,
+                            md: 6,
+                          }}
+                        >
                           {dateField}
                         </Grid>
-                        <Grid item xs={12} md={6}>
+                        <Grid
+                          size={{
+                            xs: 12,
+                            md: 6,
+                          }}
+                        >
                           {timeField}
                         </Grid>
                       </Grid>
@@ -206,7 +216,7 @@ const LogNewsletter = ({
                   />
                 </Grid>
               </LogFormControl>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <LogFormControl>
                   <LogFormLabel>{t('Comment')}</LogFormLabel>
                   <LogTextField

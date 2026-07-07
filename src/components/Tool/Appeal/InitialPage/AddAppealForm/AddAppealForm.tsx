@@ -399,7 +399,12 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
           </Box>
           <Box mt={1} mb={1}>
             <Grid container spacing={0}>
-              <Grid item xs={12} sm={2}>
+              <Grid
+                size={{
+                  xs: 12,
+                  sm: 2,
+                }}
+              >
                 <Box
                   display="flex"
                   flexDirection="column"
@@ -430,7 +435,12 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
                   />
                 </Box>
               </Grid>
-              <Grid item xs={12} sm={1}>
+              <Grid
+                size={{
+                  xs: 12,
+                  sm: 1,
+                }}
+              >
                 <Box
                   display="flex"
                   alignItems="center"
@@ -442,7 +452,12 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
                   <Icon path={mdiPlus} size={1} />
                 </Box>
               </Grid>
-              <Grid item xs={12} sm={2}>
+              <Grid
+                size={{
+                  xs: 12,
+                  sm: 2,
+                }}
+              >
                 <Box
                   display="flex"
                   flexDirection="column"
@@ -472,7 +487,12 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
                   />
                 </Box>
               </Grid>
-              <Grid item xs={12} sm={1}>
+              <Grid
+                size={{
+                  xs: 12,
+                  sm: 1,
+                }}
+              >
                 <Box
                   display="flex"
                   alignItems="center"
@@ -484,7 +504,12 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
                   <Icon path={mdiClose} size={1} />
                 </Box>
               </Grid>
-              <Grid item xs={12} sm={2}>
+              <Grid
+                size={{
+                  xs: 12,
+                  sm: 2,
+                }}
+              >
                 <Box
                   display="flex"
                   flexDirection="column"
@@ -514,7 +539,12 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
                   />
                 </Box>
               </Grid>
-              <Grid item xs={12} sm={1}>
+              <Grid
+                size={{
+                  xs: 12,
+                  sm: 1,
+                }}
+              >
                 <Box
                   display="flex"
                   alignItems="center"
@@ -526,7 +556,12 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
                   <Icon path={mdiEqual} size={1} />
                 </Box>
               </Grid>
-              <Grid item xs={12} sm={3}>
+              <Grid
+                size={{
+                  xs: 12,
+                  sm: 3,
+                }}
+              >
                 <Box
                   display="flex"
                   flexDirection="column"

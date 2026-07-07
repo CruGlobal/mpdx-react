@@ -14,6 +14,7 @@ import {
   IconButton,
   List,
   ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
@@ -314,39 +315,39 @@ const PartnerCare = ({
                     style={{ minHeight: '165px', alignItems: 'start' }}
                   >
                     {prayerRequestTasks.nodes.map((task) => (
-                      <ListItem
-                        key={task.id}
-                        button
-                        data-testid={`PartnerCarePrayerListItem-${task.id}`}
-                        onClick={(): void => handleClick(task)}
-                      >
-                        <ListItemText
-                          disableTypography={true}
-                          primary={
-                            <Typography variant="body1">
-                              {task.contacts.nodes
-                                .map(({ name }) => name)
-                                .join(', ')}
-                            </Typography>
-                          }
-                          secondary={
-                            <Box style={{ whiteSpace: 'nowrap' }}>
-                              <Box
-                                component="div"
-                                textOverflow="ellipsis"
-                                overflow="hidden"
-                              >
-                                <Typography
-                                  component="span"
-                                  variant="body2"
-                                  color="textSecondary"
+                      <ListItem key={task.id} disablePadding>
+                        <ListItemButton
+                          onClick={(): void => handleClick(task)}
+                          data-testid={`PartnerCarePrayerListItem-${task.id}`}
+                        >
+                          <ListItemText
+                            disableTypography={true}
+                            primary={
+                              <Typography variant="body1">
+                                {task.contacts.nodes
+                                  .map(({ name }) => name)
+                                  .join(', ')}
+                              </Typography>
+                            }
+                            secondary={
+                              <Box style={{ whiteSpace: 'nowrap' }}>
+                                <Box
+                                  component="div"
+                                  textOverflow="ellipsis"
+                                  overflow="hidden"
                                 >
-                                  {task.subject}
-                                </Typography>
+                                  <Typography
+                                    component="span"
+                                    variant="body2"
+                                    color="textSecondary"
+                                  >
+                                    {task.subject}
+                                  </Typography>
+                                </Box>
                               </Box>
-                            </Box>
-                          }
-                        />
+                            }
+                          />
+                        </ListItemButton>
                         <ListItemSecondaryAction>
                           <CompleteButton
                             role="button"
@@ -418,7 +419,6 @@ const PartnerCare = ({
                     (person.birthdayMonth || person.anniversaryMonth) && (
                       <ListItem
                         key={person.id}
-                        button
                         data-testid={`CelebrationItem-${index}`}
                       >
                         <ListItemIcon>

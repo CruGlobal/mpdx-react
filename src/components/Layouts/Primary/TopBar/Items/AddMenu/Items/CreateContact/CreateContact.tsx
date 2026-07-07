@@ -136,7 +136,7 @@ const CreateContact = ({
         <form onSubmit={handleSubmit} noValidate>
           <DialogContent dividers>
             <Grid container>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <LogFormControl>
                   <LogFormLabel required>{t('Name')}</LogFormLabel>
                   <LogTextField

@@ -41,14 +41,13 @@
     "@emotion/styled": "^11.11.0",
     "@mdi/js": "^7.0.96",
     "@mdi/react": "^1.6.1",
-    "@mui/icons-material": "^5.15.14",
-    "@mui/lab": "^5.0.0-alpha.100",
-    "@mui/material": "^5.15.14",
-    "@mui/styles": "^5.15.14",
-    "@mui/system": "^5.15.14",
+    "@mui/icons-material": "^7.3.11",
+    "@mui/lab": "^7.0.0",
+    "@mui/material": "^7.3.11",
+    "@mui/system": "^7.3.11",
     "@mui/utils": "^7.2.0",
     "@mui/x-data-grid": "^8.9.2",
-    "@mui/x-date-pickers": "^7.0.0-beta.7",
+    "@mui/x-date-pickers": "^7.29.4",
     "@react-google-maps/api": "^2.20.3",
     "@rollbar/react": "^0.11.1",
     "apollo3-cache-persist": "^0.14.1",
@@ -147,9 +146,7 @@
   "resolutions": {
     "chokidar/glob-parent": "^5.1.2",
     "glob-stream/glob-parent": "^5.1.2",
-    "fast-glob/glob-parent": "^5.1.2",
-    "@mui/base@^5.0.0-beta.36": "patch:@mui/base@npm%3A5.0.0-beta.40#./.yarn/patches/@mui-base-npm-5.0.0-beta.40-248417914d.patch",
-    "@mui/base@5.0.0-beta.40": "patch:@mui/base@npm%3A5.0.0-beta.40#./.yarn/patches/@mui-base-npm-5.0.0-beta.40-248417914d.patch"
+    "fast-glob/glob-parent": "^5.1.2"
   },
   "lint-staged": {
     "*.{js,ts,tsx}": "eslint --cache --fix",

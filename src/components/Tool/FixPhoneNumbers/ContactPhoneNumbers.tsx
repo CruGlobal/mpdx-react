@@ -8,7 +8,6 @@ import {
   FormControl,
   FormHelperText,
   Grid,
-  Hidden,
   TextField,
   Tooltip,
   Typography,
@@ -85,10 +84,11 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
     <>
       <Grid
         data-testid="phoneNumbers"
-        item
-        xs={6}
-        sm={4}
         className={classes.paddingB2}
+        size={{
+          xs: 6,
+          sm: 4,
+        }}
       >
         <Box
           display="flex"
@@ -96,11 +96,13 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
           className={classes.paddingX}
         >
           <Box>
-            <Hidden smUp>
-              <Typography display="inline" variant="body2" fontWeight="bold">
-                {t('Source')}:
-              </Typography>
-            </Hidden>
+            <Typography
+              variant="body2"
+              fontWeight="bold"
+              sx={{ display: { xs: 'inline', sm: 'none' } }}
+            >
+              {t('Source')}:
+            </Typography>
             <Typography display="inline" variant="body2">
               {`${sourceToStr(t, phoneNumber.source)} (${dateFormatShort(
                 DateTime.fromISO(phoneNumber.updatedAt),
@@ -110,7 +112,13 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
           </Box>
         </Box>
       </Grid>
-      <Grid item xs={6} sm={2} className={classes.paddingB2}>
+      <Grid
+        className={classes.paddingB2}
+        size={{
+          xs: 6,
+          sm: 2,
+        }}
+      >
         <Box
           display="flex"
           justifyContent="center"
@@ -119,15 +127,13 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
           <Typography display="flex" alignItems="center">
             {phoneNumber.primary ? (
               <>
-                <Hidden smUp>
-                  <Typography
-                    display="inline"
-                    variant="body2"
-                    fontWeight="bold"
-                  >
-                    {t('Source')}:
-                  </Typography>
-                </Hidden>
+                <Typography
+                  variant="body2"
+                  fontWeight="bold"
+                  sx={{ display: { xs: 'inline', sm: 'none' } }}
+                >
+                  {t('Source')}:
+                </Typography>
                 <StarIcon
                   data-testid={`starIcon-${personId}-${phoneNumber.id}`}
                   className={classes.hoverHighlight}
@@ -135,15 +141,13 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
               </>
             ) : (
               <>
-                <Hidden smUp>
-                  <Typography
-                    display="inline"
-                    variant="body2"
-                    fontWeight="bold"
-                  >
-                    {t('Source')}:
-                  </Typography>
-                </Hidden>
+                <Typography
+                  variant="body2"
+                  fontWeight="bold"
+                  sx={{ display: { xs: 'inline', sm: 'none' } }}
+                >
+                  {t('Source')}:
+                </Typography>
                 <Tooltip title={t('Set as Primary')} placement="left">
                   <StarOutlineIcon
                     data-testid={`starOutlineIcon-${personId}-${phoneNumber.id}`}
@@ -164,7 +168,13 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
           </Typography>
         </Box>
       </Grid>
-      <Grid item xs={12} sm={6} className={classes.paddingB2}>
+      <Grid
+        className={classes.paddingB2}
+        size={{
+          xs: 12,
+          sm: 6,
+        }}
+      >
         <Box
           display="flex"
           justifyContent="flex-start"

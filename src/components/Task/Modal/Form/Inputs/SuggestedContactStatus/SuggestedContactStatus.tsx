@@ -68,7 +68,7 @@ export const SuggestedContactStatus: React.FC<SuggestedContactStatusProps> = ({
   }, [currentContactStatus, suggestedContactStatus, getContactStatusesByPhase]);
 
   return suggestedContactStatus && shouldRenderContactSuggestion ? (
-    <Grid item>
+    <Grid>
       <FormControl fullWidth>
         <FormControlLabel
           control={

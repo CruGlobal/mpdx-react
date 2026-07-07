@@ -6,9 +6,10 @@ export const ToolsGridContainer = styled(Grid)(({ theme }) => ({
   paddingTop: 0,
   maxWidth: '1000px',
   display: 'flex',
-  [theme.breakpoints.down('lg')]: {
-    width: '100%',
-  },
+  // MUI v7 Grid containers no longer default to width: 100%, so declare it at
+  // every breakpoint or the container collapses to content width inside the
+  // tools' centering flex Container
+  width: '100%',
 }));
 
 export const LoadingBox = styled(Box)(() => ({

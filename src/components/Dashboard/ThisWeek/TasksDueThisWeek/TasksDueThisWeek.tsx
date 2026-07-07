@@ -8,6 +8,7 @@ import {
   CardHeader,
   List,
   ListItem,
+  ListItemButton,
   ListItemSecondaryAction,
   ListItemText,
   Skeleton,
@@ -138,53 +139,53 @@ const TasksDueThisWeek = ({
             <>
               <List className={classes.list} data-testid="TasksDueThisWeekList">
                 {dueTasks.nodes.map((task) => (
-                  <ListItem
-                    key={task.id}
-                    button
-                    data-testid={`TasksDueThisWeekListItem-${task.id}`}
-                    onClick={(): void => handleClick(task)}
-                    onMouseEnter={() => preloadTaskModal(TaskModalEnum.Edit)}
-                  >
-                    <ListItemText
-                      disableTypography={true}
-                      primary={
-                        <Typography variant="body1">
-                          {task.contacts.nodes.length > 0 &&
-                            `${task.contacts.nodes[0].name}${
-                              task.contacts.totalCount > 1
-                                ? `, +${task.contacts.totalCount - 1} more`
-                                : ''
-                            }`}
-                        </Typography>
-                      }
-                      secondary={
-                        <Box style={{ whiteSpace: 'nowrap' }}>
-                          <Box
-                            component="div"
-                            textOverflow="ellipsis"
-                            overflow="hidden"
-                          >
-                            <Typography
-                              component="span"
-                              variant="body2"
-                              color="textPrimary"
-                              marginRight="5px"
+                  <ListItem key={task.id} disablePadding>
+                    <ListItemButton
+                      onClick={(): void => handleClick(task)}
+                      onMouseEnter={() => preloadTaskModal(TaskModalEnum.Edit)}
+                      data-testid={`TasksDueThisWeekListItem-${task.id}`}
+                    >
+                      <ListItemText
+                        disableTypography={true}
+                        primary={
+                          <Typography variant="body1">
+                            {task.contacts.nodes.length > 0 &&
+                              `${task.contacts.nodes[0].name}${
+                                task.contacts.totalCount > 1
+                                  ? `, +${task.contacts.totalCount - 1} more`
+                                  : ''
+                              }`}
+                          </Typography>
+                        }
+                        secondary={
+                          <Box style={{ whiteSpace: 'nowrap' }}>
+                            <Box
+                              component="div"
+                              textOverflow="ellipsis"
+                              overflow="hidden"
                             >
-                              {!!task.activityType &&
-                                activityTypes.get(task.activityType)
-                                  ?.translatedFullName}
-                            </Typography>
-                            <Typography
-                              component="span"
-                              variant="body2"
-                              color="textSecondary"
-                            >
-                              {task.subject}
-                            </Typography>
+                              <Typography
+                                component="span"
+                                variant="body2"
+                                color="textPrimary"
+                                marginRight="5px"
+                              >
+                                {!!task.activityType &&
+                                  activityTypes.get(task.activityType)
+                                    ?.translatedFullName}
+                              </Typography>
+                              <Typography
+                                component="span"
+                                variant="body2"
+                                color="textSecondary"
+                              >
+                                {task.subject}
+                              </Typography>
+                            </Box>
                           </Box>
-                        </Box>
-                      }
-                    />
+                        }
+                      />
+                    </ListItemButton>
                     <ListItemSecondaryAction>
                       <TaskStatus
                         taskId={task.id}

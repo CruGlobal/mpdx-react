@@ -1,6 +1,11 @@
 import React from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { IconButton, ListItem, ListItemText } from '@mui/material';
+import {
+  IconButton,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+} from '@mui/material';
 import { TFunction, useTranslation } from 'react-i18next';
 import { UserOptionFragment } from './FilterPanel.generated';
 import { isPredefinedFilter } from './helpers';
@@ -52,7 +57,7 @@ export const FilterList: React.FC<FilterListProps> = ({
         return (
           <ListItem
             key={filter.id}
-            button
+            disablePadding
             secondaryAction={
               !isPredefined ? (
                 <IconButton
@@ -66,13 +71,16 @@ export const FilterList: React.FC<FilterListProps> = ({
               ) : undefined
             }
           >
-            <ListItemText
-              onClick={() => onFilterSelect(filter)}
-              primary={filterName}
-              primaryTypographyProps={{
-                variant: 'subtitle1',
-              }}
-            />
+            <ListItemButton onClick={() => onFilterSelect(filter)}>
+              <ListItemText
+                primary={filterName}
+                slotProps={{
+                  primary: {
+                    variant: 'subtitle1',
+                  },
+                }}
+              />
+            </ListItemButton>
           </ListItem>
         );
       })}

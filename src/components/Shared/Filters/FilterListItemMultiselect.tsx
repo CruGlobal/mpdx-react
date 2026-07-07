@@ -4,6 +4,7 @@ import {
   Checkbox,
   IconButton,
   ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   Tooltip,
@@ -96,7 +97,7 @@ export const FilterListItemMultiselect: React.FC<
       </ListItem>
       {filter.filterKey === 'pledge_amount' ? (
         filter.options?.map(({ value, name }) => (
-          <ListItem key={value} button onClick={() => toggleCheckValue(value)}>
+          <ListItemButton key={value} onClick={() => toggleCheckValue(value)}>
             <ListItemIcon data-testid="MultiSelectOption">
               <Checkbox
                 data-testid="CheckboxIcon"
@@ -110,7 +111,7 @@ export const FilterListItemMultiselect: React.FC<
               primary={name}
               primaryTypographyProps={{ variant: 'subtitle1' }}
             />
-          </ListItem>
+          </ListItemButton>
         ))
       ) : (
         <ListItem>

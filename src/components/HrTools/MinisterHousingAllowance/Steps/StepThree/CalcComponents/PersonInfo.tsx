@@ -15,12 +15,22 @@ export const PersonInfo: React.FC = () => {
         {t('Personal Contact Information')}
       </Typography>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+          }}
+        >
           <Typography>
             {person?.preferredName} {person?.lastName}
           </Typography>
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+          }}
+        >
           <Typography>
             {t('Staff Account Number: {{personNumber}}', {
               personNumber: person?.personNumber,
@@ -29,7 +39,12 @@ export const PersonInfo: React.FC = () => {
         </Grid>
       </Grid>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+          }}
+        >
           {person?.addressLine2 === null ? (
             <Typography>{person?.addressLine1}</Typography>
           ) : (
@@ -38,7 +53,12 @@ export const PersonInfo: React.FC = () => {
             </Typography>
           )}
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+          }}
+        >
           <Typography>
             {t('Email: {{emailAddress}}', {
               emailAddress: person?.emailAddress,
@@ -47,12 +67,22 @@ export const PersonInfo: React.FC = () => {
         </Grid>
       </Grid>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+          }}
+        >
           <Typography>
             {person?.city}, {person?.state} {person?.zipCode}
           </Typography>
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+          }}
+        >
           <Typography>
             {t('Phone number: {{primaryPhoneNumber}}', {
               primaryPhoneNumber: person?.primaryPhoneNumber,
