@@ -339,6 +339,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
         </Grid>
         <Grid
           container
+          size={12}
           style={{
             borderBottom: '1px solid',
             borderColor: theme.palette.mpdxGrayLight.main,

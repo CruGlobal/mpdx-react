@@ -152,7 +152,7 @@ export const ContactRow: React.FC<Props> = ({
         })}
         data-testid="rowButton"
       >
-        <Grid container alignItems="center">
+        <Grid container alignItems="center" sx={{ width: '100%' }}>
           <Grid
             style={{ paddingRight: 16 }}
             display={'flex'}

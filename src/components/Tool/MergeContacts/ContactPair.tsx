@@ -345,7 +345,7 @@ const ContactPair: React.FC<Props> = ({
       <Grid container>
         <Grid size={12}>
           <Box display="flex" alignItems="center">
-            <Grid container>
+            <Grid container sx={{ flexGrow: 1, minWidth: 0 }}>
               <Box
                 display="flex"
                 style={{ width: '100%' }}

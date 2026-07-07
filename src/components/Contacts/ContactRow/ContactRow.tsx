@@ -95,7 +95,7 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
           onChange={() => onContactCheckToggle(contact.id)}
         />
       </ListItemIcon>
-      <Grid container alignItems="center">
+      <Grid container alignItems="center" sx={{ width: '100%' }}>
         <Grid
           style={{ paddingRight: 16 }}
           size={{
@@ -158,7 +158,7 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
           />
         </Grid>
       </Grid>
-      <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+      <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center' }}>
         <Box onClick={(event) => event.preventDefault()}>
           <ContactUncompletedTasksCount
             uncompletedTasksCount={uncompletedTasksCount}

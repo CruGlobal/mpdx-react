@@ -237,10 +237,10 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   return (
     <>
       <Grid container className={classes.contactContainer}>
-        <Grid container>
+        <Grid container size={12}>
           <Card className={classes.contactCard}>
             <Box display="flex" alignItems="center">
-              <Grid container>
+              <Grid container sx={{ flexGrow: 1, minWidth: 0 }}>
                 <Grid size={12}>
                   <CardHeader
                     className={classes.contactHeader}

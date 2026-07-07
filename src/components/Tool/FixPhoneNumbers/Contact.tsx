@@ -298,15 +298,19 @@ const Contact: React.FC<Props> = ({ person, submitAll, accountListId }) => {
       {({ values, handleSubmit, errors, setFieldValue }): ReactElement => (
         <form>
           <ImperativeSubmit submitAll={submitAll} />
-          <Grid container className={classes.container}>
-            <Grid container>
+          <Grid
+            container
+            className={classes.container}
+            sx={{ flexGrow: 1, minWidth: 0 }}
+          >
+            <Grid container size={12}>
               <Card className={classes.contactCard}>
                 <Box
                   display="flex"
                   alignItems="center"
                   className={classes.left}
                 >
-                  <Grid container>
+                  <Grid container sx={{ flexGrow: 1, minWidth: 0 }}>
                     <Grid size={12}>
                       <ContactHeader
                         avatar={

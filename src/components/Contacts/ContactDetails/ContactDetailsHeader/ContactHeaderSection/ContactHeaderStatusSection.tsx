@@ -50,7 +50,7 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
                 {status === StatusEnum.PartnerFinancial && (
                   <>
                     {!!contact?.pledgeAmount && !!contact?.pledgeFrequency && (
-                      <Typography variant="subtitle1">
+                      <Typography variant="subtitle1" component="span">
                         {`${
                           contact.pledgeAmount && contact?.pledgeCurrency
                             ? currencyFormat(
@@ -65,7 +65,7 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
                       </Typography>
                     )}
 
-                    <Typography variant="subtitle1">
+                    <Typography variant="subtitle1" component="span">
                       <ContactLateStatusLabel
                         lateAt={contact.lateAt}
                         pledgeStartDate={contact.pledgeStartDate}

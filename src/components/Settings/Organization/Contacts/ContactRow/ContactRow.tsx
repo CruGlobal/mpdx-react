@@ -150,7 +150,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
 
   return (
     <>
-      <Grid container alignItems="center">
+      <Grid container alignItems="center" sx={{ flexGrow: 1, minWidth: 0 }}>
         <Grid sx={{ paddingRight: 2 }} size={6}>
           <ListItemText
             primary={

@@ -63,7 +63,13 @@ const TopBar = ({
             </IconButton>
           )}
           <LogoLink />
-          <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
+          <Box
+            sx={{
+              display: { xs: 'none', lg: 'flex' },
+              flexGrow: 1,
+              alignItems: 'center',
+            }}
+          >
             {onSetupTour && <Box flexGrow={1} />}
             {!onSetupTour && accountListId && (
               <>

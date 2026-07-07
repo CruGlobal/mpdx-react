@@ -298,7 +298,11 @@ export const OrganizationAccordion: React.FC<AccordionProps> = ({
                 <Divider />
                 {lastDownloadedAt && (
                   <Box sx={{ p: 2, display: 'flex' }}>
-                    <Grid container spacing={2}>
+                    <Grid
+                      container
+                      spacing={2}
+                      sx={{ flexGrow: 1, minWidth: 0 }}
+                    >
                       <Grid size={6}>{t('Last Updated')}</Grid>
                       <Grid size={6}>
                         {DateTime.fromISO(lastDownloadedAt).toRelative()}
@@ -308,7 +312,11 @@ export const OrganizationAccordion: React.FC<AccordionProps> = ({
                 )}
                 {latestDonationDate && (
                   <Box sx={{ p: 2, display: 'flex' }}>
-                    <Grid container spacing={2}>
+                    <Grid
+                      container
+                      spacing={2}
+                      sx={{ flexGrow: 1, minWidth: 0 }}
+                    >
                       <Grid size={6}>{t('Last Gift Date')}</Grid>
                       <Grid size={6}>
                         {DateTime.fromISO(latestDonationDate).toRelative()}

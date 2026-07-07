@@ -114,7 +114,7 @@ export const PersonName: React.FC<PersonNameProps> = ({
             <TextField
               name="firstName"
               label={t('First Name')}
-              value={firstName}
+              value={firstName ?? ''}
               onChange={handleChange}
               onBlur={handleBlur}
               inputProps={{ 'aria-label': t('First Name') }}
@@ -136,7 +136,7 @@ export const PersonName: React.FC<PersonNameProps> = ({
           >
             <TextField
               label={t('Last Name')}
-              value={lastName}
+              value={lastName ?? ''}
               onChange={handleChange('lastName')}
               inputProps={{ 'aria-label': t('Last Name') }}
               fullWidth
@@ -151,7 +151,7 @@ export const PersonName: React.FC<PersonNameProps> = ({
           >
             <TextField
               label={t('Title')}
-              value={title}
+              value={title ?? ''}
               onChange={handleChange('title')}
               inputProps={{ 'aria-label': t('Title') }}
               fullWidth
@@ -165,7 +165,7 @@ export const PersonName: React.FC<PersonNameProps> = ({
           >
             <TextField
               label={t('Suffix')}
-              value={suffix}
+              value={suffix ?? ''}
               onChange={handleChange('suffix')}
               inputProps={{ 'aria-label': t('Suffix') }}
               fullWidth

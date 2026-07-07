@@ -131,7 +131,11 @@ const ExportPhysical: React.FC<Props> = ({
             </Grid>
           ) : (
             <>
-              <Grid container alignItems="flex-start">
+              <Grid
+                container
+                alignItems="flex-start"
+                sx={{ flexGrow: 1, minWidth: 0 }}
+              >
                 <ButtonContainer container size={{ xs: 12, md: 6 }}>
                   <LabelButton
                     variant="contained"
@@ -161,7 +165,11 @@ const ExportPhysical: React.FC<Props> = ({
                   </DialogContentText>
                 </ButtonContainer>
               </Grid>
-              <Grid container alignItems="flex-start">
+              <Grid
+                container
+                alignItems="flex-start"
+                sx={{ flexGrow: 1, minWidth: 0 }}
+              >
                 <ButtonContainer container size={{ xs: 12, md: 6 }}>
                   <LabelButton
                     variant="contained"

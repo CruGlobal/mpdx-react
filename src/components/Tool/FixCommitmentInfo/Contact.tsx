@@ -293,7 +293,7 @@ const Contact: React.FC<Props> = ({
             <Form onSubmit={handleSubmit}>
               <Grid container className={classes.formWrapper}>
                 <Card className={classes.formInner}>
-                  <Grid container>
+                  <Grid container sx={{ flexGrow: 1, minWidth: 0 }}>
                     <Grid
                       size={{
                         sm: 12,
@@ -488,7 +488,11 @@ const Contact: React.FC<Props> = ({
                       </Grid>
                     </Grid>
                     {!!donations.length && (
-                      <Grid container className={classes.donationsTable}>
+                      <Grid
+                        container
+                        className={classes.donationsTable}
+                        sx={{ flexGrow: 1, minWidth: 0 }}
+                      >
                         {donations
                           .map((donation) => (
                             <Grid

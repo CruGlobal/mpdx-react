@@ -37,7 +37,12 @@ const AppealsInitialPage: React.FC = () => {
 
   return (
     <Box className={classes.outer}>
-      <Grid container spacing={3} className={classes.container}>
+      <Grid
+        container
+        spacing={3}
+        className={classes.container}
+        sx={{ flexGrow: 1, minWidth: 0 }}
+      >
         <Grid size={12}>
           <Box m={1}>
             <Typography variant="body2">
