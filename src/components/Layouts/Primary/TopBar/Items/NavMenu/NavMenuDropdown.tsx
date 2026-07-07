@@ -50,7 +50,7 @@ export const NavMenuDropdown: React.FC<NavMenuDropdownProps> = ({
   const anchorRef = React.useRef<HTMLLIElement>(null);
 
   return (
-    <Grid key={page.id} item className={classes.navListItem}>
+    <Grid key={page.id} className={classes.navListItem}>
       <MenuItem
         tabIndex={0}
         ref={anchorRef}

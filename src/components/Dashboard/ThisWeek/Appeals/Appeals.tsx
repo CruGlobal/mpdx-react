@@ -183,7 +183,7 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
               secondary={pledgesAmountCommittedPercentage}
             />
             <Grid container spacing={2}>
-              <Grid xs={6} item>
+              <Grid size={6}>
                 <Typography component="div" color="textSecondary">
                   <div
                     className={[
@@ -218,7 +218,7 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
                   )}
                 </Typography>
               </Grid>
-              <Grid xs={6} item>
+              <Grid size={6}>
                 <Typography component="div" color="textSecondary">
                   <div
                     className={[

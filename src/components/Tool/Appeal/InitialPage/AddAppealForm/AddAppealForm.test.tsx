@@ -2,7 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
@@ -298,44 +298,48 @@ describe('AddAppealForm', () => {
 
   describe('Select values', () => {
     it('selects contact statuses options', async () => {
-      const { findByTestId, findByText, getByRole } = render(<Components />);
+      const { findByTestId, findByText, findByRole } = render(<Components />);
 
       const contactStatusSelect = await findByTestId('contactStatusSelect');
-      userEvent.type(contactStatusSelect, 'New Connection');
-      userEvent.selectOptions(getByRole('listbox'), 'New Connection');
+      userEvent.type(
+        within(contactStatusSelect).getByRole('combobox'),
+        'New Connection',
+      );
+      userEvent.selectOptions(await findByRole('listbox'), 'New Connection');
 
       expect(await findByText('New Connection')).toBeInTheDocument();
     });
 
     it('selects tags options', async () => {
-      const { findByTestId, queryByText, findByText, getByRole } = render(
+      const { findByTestId, queryByText, findByText, findByRole } = render(
         <Components />,
       );
 
       const contactTagsSelect = await findByTestId('contactTagsSelect');
-      userEvent.type(contactTagsSelect, 'tag-3');
-      userEvent.selectOptions(getByRole('listbox'), 'tag-3');
+      userEvent.type(within(contactTagsSelect).getByRole('combobox'), 'tag-3');
+      userEvent.selectOptions(await findByRole('listbox'), 'tag-3');
 
       expect(await findByText('tag-3')).toBeInTheDocument();
       expect(queryByText('tag-2')).not.toBeInTheDocument();
     });
 
     it('selects Exclude contacts options', async () => {
-      const { findByTestId, getByText, findByText, getByRole } = render(
+      const { findByTestId, getByText, findByText, findByRole } = render(
         <Components />,
       );
 
       const exclusionsSelect = await findByTestId('exclusionsSelect');
+      const exclusionsInput = within(exclusionsSelect).getByRole('combobox');
 
-      userEvent.type(exclusionsSelect, 'May have given');
+      userEvent.type(exclusionsInput, 'May have given');
       userEvent.selectOptions(
-        getByRole('listbox'),
+        await findByRole('listbox'),
         'May have given a special gift in the last 3 months',
       );
 
-      userEvent.type(exclusionsSelect, 'May have increased');
+      userEvent.type(exclusionsInput, 'May have increased');
       userEvent.selectOptions(
-        getByRole('listbox'),
+        await findByRole('listbox'),
         'May have increased their giving in the last 3 months',
       );
 
@@ -489,7 +493,7 @@ describe('AddAppealForm', () => {
 
   describe('On Submit', () => {
     it('should call the mutation', async () => {
-      const { getByRole, findByTestId } = render(<Components />);
+      const { getByRole, findByRole, findByTestId } = render(<Components />);
 
       const name = getByRole('textbox', { name: 'Name' });
       const initialGoal = getByRole('spinbutton', { name: 'Initial Goal' });
@@ -509,8 +513,14 @@ describe('AddAppealForm', () => {
 
       // Contact to include
       const contactStatusSelect = await findByTestId('contactStatusSelect');
-      userEvent.type(contactStatusSelect, 'Partner - Financial');
-      userEvent.selectOptions(getByRole('listbox'), 'Partner - Financial');
+      userEvent.type(
+        within(contactStatusSelect).getByRole('combobox'),
+        'Partner - Financial',
+      );
+      userEvent.selectOptions(
+        await findByRole('listbox'),
+        'Partner - Financial',
+      );
 
       // Contact with tags to include
       const selectAllTagsButton = await findByTestId(
@@ -520,9 +530,12 @@ describe('AddAppealForm', () => {
 
       // Contact to avoid
       const exclusionsSelect = await findByTestId('exclusionsSelect');
-      userEvent.type(exclusionsSelect, 'May have given');
+      userEvent.type(
+        within(exclusionsSelect).getByRole('combobox'),
+        'May have given',
+      );
       userEvent.selectOptions(
-        getByRole('listbox'),
+        await findByRole('listbox'),
         'May have given a special gift in the last 3 months',
       );
       const submitButton = getByRole('button', { name: 'Add Appeal' });

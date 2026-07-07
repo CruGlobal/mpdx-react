@@ -14,7 +14,6 @@ import {
   FormControl,
   FormHelperText,
   Grid,
-  Hidden,
   Link,
   TextField,
   Theme,
@@ -238,11 +237,11 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   return (
     <>
       <Grid container className={classes.contactContainer}>
-        <Grid container>
+        <Grid container size={12}>
           <Card className={classes.contactCard}>
             <Box display="flex" alignItems="center">
-              <Grid container>
-                <Grid item xs={12}>
+              <Grid container sx={{ flexGrow: 1, minWidth: 0 }}>
+                <Grid size={12}>
                   <CardHeader
                     className={classes.contactHeader}
                     avatar={
@@ -286,8 +285,14 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
 
                 <CardContent className={classes.contactCardContent}>
                   <Grid container display="flex" alignItems="center">
-                    <Hidden smDown>
-                      <Grid item xs={6} sm={4} className={classes.paddingY}>
+                    <Box sx={{ display: { xs: 'none', md: 'contents' } }}>
+                      <Grid
+                        className={classes.paddingY}
+                        size={{
+                          xs: 6,
+                          sm: 4,
+                        }}
+                      >
                         <Box
                           display="flex"
                           justifyContent="space-between"
@@ -298,7 +303,13 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                           </Typography>
                         </Box>
                       </Grid>
-                      <Grid item xs={6} sm={2} className={classes.paddingY}>
+                      <Grid
+                        className={classes.paddingY}
+                        size={{
+                          xs: 6,
+                          sm: 2,
+                        }}
+                      >
                         <Box
                           display="flex"
                           justifyContent="center"
@@ -309,7 +320,13 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                           </Typography>
                         </Box>
                       </Grid>
-                      <Grid item xs={12} sm={6} className={classes.paddingY}>
+                      <Grid
+                        className={classes.paddingY}
+                        size={{
+                          xs: 12,
+                          sm: 6,
+                        }}
+                      >
                         <Box
                           display="flex"
                           justifyContent="flex-start"
@@ -320,7 +337,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                           </Typography>
                         </Box>
                       </Grid>
-                    </Hidden>
+                    </Box>
                     {emails.map((email, index) => (
                       <Formik
                         key={index}
@@ -341,10 +358,11 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                         }): ReactElement => (
                           <Fragment>
                             <Grid
-                              item
-                              xs={6}
-                              sm={4}
                               className={classes.paddingB2}
+                              size={{
+                                xs: 6,
+                                sm: 4,
+                              }}
                             >
                               <Box
                                 display="flex"
@@ -352,15 +370,15 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                                 className={classes.paddingX}
                               >
                                 <Box>
-                                  <Hidden smUp>
-                                    <Typography
-                                      display="inline"
-                                      variant="body2"
-                                      fontWeight="bold"
-                                    >
-                                      {t('Source')}:
-                                    </Typography>
-                                  </Hidden>
+                                  <Typography
+                                    variant="body2"
+                                    fontWeight="bold"
+                                    sx={{
+                                      display: { xs: 'inline', sm: 'none' },
+                                    }}
+                                  >
+                                    {t('Source')}:
+                                  </Typography>
                                   <Typography display="inline" variant="body2">
                                     {`${sourceToStr(
                                       t,
@@ -374,10 +392,11 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                               </Box>
                             </Grid>
                             <Grid
-                              item
-                              xs={6}
-                              sm={2}
                               className={classes.paddingB2}
+                              size={{
+                                xs: 6,
+                                sm: 2,
+                              }}
                             >
                               <Box
                                 display="flex"
@@ -387,15 +406,15 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                                 <Typography display="flex" alignItems="center">
                                   {email.isPrimary ? (
                                     <>
-                                      <Hidden smUp>
-                                        <Typography
-                                          display="inline"
-                                          variant="body2"
-                                          fontWeight="bold"
-                                        >
-                                          {t('Source')}:
-                                        </Typography>
-                                      </Hidden>
+                                      <Typography
+                                        variant="body2"
+                                        fontWeight="bold"
+                                        sx={{
+                                          display: { xs: 'inline', sm: 'none' },
+                                        }}
+                                      >
+                                        {t('Source')}:
+                                      </Typography>
                                       <StarIcon
                                         data-testid={`starIcon-${id}-${index}`}
                                         className={classes.hoverHighlight}
@@ -406,15 +425,15 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                                     </>
                                   ) : (
                                     <>
-                                      <Hidden smUp>
-                                        <Typography
-                                          display="inline"
-                                          variant="body2"
-                                          fontWeight="bold"
-                                        >
-                                          {t('Source')}:
-                                        </Typography>
-                                      </Hidden>
+                                      <Typography
+                                        variant="body2"
+                                        fontWeight="bold"
+                                        sx={{
+                                          display: { xs: 'inline', sm: 'none' },
+                                        }}
+                                      >
+                                        {t('Source')}:
+                                      </Typography>
                                       <Tooltip
                                         title={t('Set as Primary')}
                                         placement="left"
@@ -433,10 +452,11 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                               </Box>
                             </Grid>
                             <Grid
-                              item
-                              xs={12}
-                              sm={6}
                               className={classes.paddingB2}
+                              size={{
+                                xs: 12,
+                                sm: 6,
+                              }}
                             >
                               <Box
                                 display="flex"
@@ -512,22 +532,26 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                         )}
                       </Formik>
                     ))}
-                    <Grid item xs={12} sm={6} className={classes.paddingB2}>
+                    <Grid
+                      className={classes.paddingB2}
+                      size={{
+                        xs: 12,
+                        sm: 6,
+                      }}
+                    >
                       <Box
                         display="flex"
                         justifyContent="space-between"
                         className={classes.paddingX}
                       >
                         <Box>
-                          <Hidden smUp>
-                            <Typography
-                              display="inline"
-                              variant="body2"
-                              fontWeight="bold"
-                            >
-                              {t('Source')}:
-                            </Typography>
-                          </Hidden>
+                          <Typography
+                            variant="body2"
+                            fontWeight="bold"
+                            sx={{ display: { xs: 'inline', sm: 'none' } }}
+                          >
+                            {t('Source')}:
+                          </Typography>
                           <Typography display="inline" variant="body2">
                             {appName}
                           </Typography>

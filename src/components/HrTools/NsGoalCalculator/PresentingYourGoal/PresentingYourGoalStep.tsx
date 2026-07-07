@@ -131,12 +131,22 @@ export const PresentingYourGoalStep: React.FC = () => {
           <SpecialNeedsCard specialNeeds={mockSpecialNeeds} />
 
           <Grid container spacing={theme.spacing(3)}>
-            <Grid item xs={12} lg={6}>
+            <Grid
+              size={{
+                xs: 12,
+                lg: 6,
+              }}
+            >
               <PresentationCard title={t('Monthly Support Needs Chart')}>
                 <SupportNeedsChart monthlyNeeds={mockMonthlyNeeds} />
               </PresentationCard>
             </Grid>
-            <Grid item xs={12} lg={6}>
+            <Grid
+              size={{
+                xs: 12,
+                lg: 6,
+              }}
+            >
               <ChartPlaceholderCard title={t('Special Needs Chart')} />
             </Grid>
           </Grid>

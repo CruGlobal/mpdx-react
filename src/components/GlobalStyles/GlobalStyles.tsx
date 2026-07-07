@@ -1,17 +1,17 @@
 import type { FC } from 'react';
-import { createStyles, makeStyles } from '@mui/styles';
+import { GlobalStyles as MuiGlobalStyles } from '@mui/material';
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    '@global': {
+export const GlobalStyles: FC = () => (
+  <MuiGlobalStyles
+    styles={{
       '*': {
         boxSizing: 'border-box',
         margin: 0,
         padding: 0,
       },
       html: {
-        '-webkit-font-smoothing': 'antialiased',
-        '-moz-osx-font-smoothing': 'grayscale',
+        WebkitFontSmoothing: 'antialiased',
+        MozOsxFontSmoothing: 'grayscale',
         height: '100%',
         width: '100%',
       },
@@ -24,12 +24,6 @@ const useStyles = makeStyles(() =>
         height: '100%',
         width: '100%',
       },
-    },
-  }),
+    }}
+  />
 );
-
-export const GlobalStyles: FC = () => {
-  useStyles();
-
-  return null;
-};

@@ -95,7 +95,13 @@ const AccountLists = (): ReactElement => {
                 const totalPercentage = totalPledges / (monthlyGoal ?? NaN);
 
                 return (
-                  <Grid key={id} item xs={12} sm={4}>
+                  <Grid
+                    key={id}
+                    size={{
+                      xs: 12,
+                      sm: 4,
+                    }}
+                  >
                     <AnimatedCard elevation={3}>
                       <Link
                         component={NextLink}
@@ -112,7 +118,7 @@ const AccountLists = (): ReactElement => {
                             </Box>
                             <Grid container>
                               {monthlyGoal && (
-                                <Grid xs={4} item>
+                                <Grid size={4}>
                                   <Typography
                                     component="div"
                                     color="textSecondary"
@@ -128,7 +134,7 @@ const AccountLists = (): ReactElement => {
                                   </Typography>
                                 </Grid>
                               )}
-                              <Grid xs={monthlyGoal ? 4 : 6} item>
+                              <Grid size={monthlyGoal ? 4 : 6}>
                                 <Typography
                                   component="div"
                                   color="textSecondary"
@@ -144,7 +150,7 @@ const AccountLists = (): ReactElement => {
                                     : '-'}
                                 </Typography>
                               </Grid>
-                              <Grid xs={monthlyGoal ? 4 : 6} item>
+                              <Grid size={monthlyGoal ? 4 : 6}>
                                 <Typography
                                   component="div"
                                   color="textSecondary"

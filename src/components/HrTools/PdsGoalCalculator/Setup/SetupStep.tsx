@@ -133,16 +133,13 @@ export const SetupStep: React.FC = () => {
         schema={schema}
         label={t('Goal Name')}
       />
-
       <Divider sx={{ mx: -4, my: 4 }} />
-
       <Box pb={4}>
         <Typography variant="h6">{t('Calculator Setup')}</Typography>
         <Typography>
           {t('Take a moment to verify your information.')}
         </Typography>
       </Box>
-
       <Card sx={{ padding: theme.spacing(3) }}>
         <Box display="flex" alignItems="center" gap={1} mb={3}>
           <Avatar
@@ -156,7 +153,7 @@ export const SetupStep: React.FC = () => {
           </Typography>
         </Box>
         <Grid container spacing={3}>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <AutosaveTextField
               fieldName="formType"
               schema={schema}
@@ -186,7 +183,7 @@ export const SetupStep: React.FC = () => {
             </AutosaveTextField>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={12}>
             <AutosaveTextField
               fieldName="status"
               schema={schema}
@@ -202,12 +199,12 @@ export const SetupStep: React.FC = () => {
             </AutosaveTextField>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={12}>
             <PayTypeField />
           </Grid>
 
           {payType && (
-            <Grid item xs={12}>
+            <Grid size={12}>
               <AutosaveTextField
                 fieldName="payRate"
                 schema={schema}
@@ -227,7 +224,7 @@ export const SetupStep: React.FC = () => {
           )}
 
           {!isSalaried && (
-            <Grid item xs={12}>
+            <Grid size={12}>
               <AutosaveTextField
                 fieldName="hoursWorkedPerWeek"
                 schema={schema}
@@ -253,7 +250,7 @@ export const SetupStep: React.FC = () => {
           )}
 
           {!isPartTime && (
-            <Grid item xs={12}>
+            <Grid size={12}>
               <AutosaveTextField
                 fieldName="benefits"
                 schema={schema}
@@ -268,7 +265,7 @@ export const SetupStep: React.FC = () => {
           )}
 
           {!isSimpleForm && (
-            <Grid item xs={12}>
+            <Grid size={12}>
               <TextField
                 fullWidth
                 size="small"
@@ -286,7 +283,7 @@ export const SetupStep: React.FC = () => {
             </Grid>
           )}
 
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Autocomplete
               options={locations}
               getOptionLabel={getLocationLabel}

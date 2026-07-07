@@ -105,10 +105,6 @@ const config: NextConfig = {
       topLevelAwait: true,
     };
 
-    // Needed to use MUI X v8 with MUI v5
-    // Reference: https://mui.com/x/migration/usage-with-material-ui-v5-v6/
-    config.resolve.conditionNames = ['require', '...'];
-
     config.module.rules.push(
       {
         test: /\.mjs$/,
@@ -159,8 +155,9 @@ const config: NextConfig = {
     return config;
   },
 
-  // Needed to use MUI X v8 with MUI v5
-  // Reference: https://mui.com/x/migration/usage-with-material-ui-v5-v6/
+  // @mui/x-data-grid v8's ESM build imports its own global CSS
+  // (@mui/x-data-grid/esm/index.css). Next.js only allows global CSS
+  // imports from node_modules for packages listed in transpilePackages.
   transpilePackages: ['@mui/x-data-grid'],
 
   redirects: async () => [
