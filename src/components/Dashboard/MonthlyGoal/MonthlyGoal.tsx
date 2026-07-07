@@ -16,12 +16,12 @@ import {
   StatusEnum,
 } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import theme from '../../../theme';
 import {
   currencyFormat,
   numberFormat,
   percentageFormat,
 } from '../../../lib/intlFormat';
+import theme from '../../../theme';
 import AnimatedBox from '../../AnimatedBox';
 import AnimatedCard from '../../AnimatedCard';
 import StyledProgress from '../../StyledProgress';

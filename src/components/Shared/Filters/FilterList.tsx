@@ -74,8 +74,10 @@ export const FilterList: React.FC<FilterListProps> = ({
             <ListItemButton onClick={() => onFilterSelect(filter)}>
               <ListItemText
                 primary={filterName}
-                primaryTypographyProps={{
-                  variant: 'subtitle1',
+                slotProps={{
+                  primary: {
+                    variant: 'subtitle1',
+                  },
                 }}
               />
             </ListItemButton>

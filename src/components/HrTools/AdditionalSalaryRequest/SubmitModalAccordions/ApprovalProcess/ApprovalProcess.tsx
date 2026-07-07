@@ -1,5 +1,5 @@
 import { InfoSharp } from '@mui/icons-material';
-import { Box, CardContent, Typography } from '@mui/material';
+import { Box, CardContent, Typography, alpha } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import theme from 'src/theme';
@@ -26,7 +26,7 @@ export const ApprovalProcess: React.FC<ApprovalProcessProps> = ({
 
   return (
     <ModalAccordion
-      backgroundColor={theme.alpha(theme.palette.info.light, 0.1)}
+      backgroundColor={alpha(theme.palette.info.light, 0.1)}
       icon={InfoSharp}
       title={exceedsCap ? t('Approval Process') : t('Optional Comments')}
       titleColor="info.dark"
