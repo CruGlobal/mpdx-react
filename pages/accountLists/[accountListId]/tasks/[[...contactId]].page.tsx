@@ -239,7 +239,12 @@ const PageContent: React.FC = () => {
                   showShowingCount
                   selectedIds={ids}
                   buttonGroup={
-                    <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+                    <Box
+                      sx={{
+                        display: { xs: 'none', sm: 'flex' },
+                        alignItems: 'center',
+                      }}
+                    >
                       <TaskHeaderButton
                         onClick={() =>
                           openTaskModal({ view: TaskModalEnum.Add })

@@ -246,7 +246,9 @@ export const TaskRow: React.FC<TaskRowProps> = ({
           </Box>
         </Box>
         <Box display="flex" justifyContent="flex-end" alignItems="center">
-          <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+          <Box
+            sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}
+          >
             {!!task?.tagList.length && (
               <Tooltip
                 title={condensed || areMoreTags ? tagListString : null}
@@ -324,7 +326,9 @@ export const TaskRow: React.FC<TaskRowProps> = ({
             </Tooltip>
           </Box>
 
-          <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+          <Box
+            sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}
+          >
             <Box onClick={(e) => e.stopPropagation()}>
               <DeleteTaskIconButton
                 accountListId={accountListId}

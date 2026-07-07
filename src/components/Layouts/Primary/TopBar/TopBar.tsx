@@ -68,6 +68,7 @@ const TopBar = ({
               display: { xs: 'none', lg: 'flex' },
               flexGrow: 1,
               alignItems: 'center',
+              justifyContent: 'flex-end',
             }}
           >
             {onSetupTour && <Box flexGrow={1} />}
