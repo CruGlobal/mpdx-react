@@ -5,8 +5,9 @@ import {
   NewStaffQuestionnaireNsoSessionsEnum,
   NewStaffQuestionnaireVariantEnum,
 } from 'src/graphql/types.generated';
+import { NsoMpdQuestionnaireStepEnum } from '../NsoMpdQuestionnaireHelper';
 import { NewStaffQuestionnaireQuery } from './NewStaffQuestionnaire.generated';
-import { getCompletionPercentage } from './stepCompletion';
+import { getCompletionPercentage, isStepComplete } from './stepCompletion';
 
 type Questionnaire = NonNullable<
   NewStaffQuestionnaireQuery['newStaffQuestionnaire']
@@ -54,5 +55,93 @@ describe('getCompletionPercentage', () => {
         spousePhoneNumber: '(305) 222-3333',
       }),
     ).toBe(100);
+  });
+});
+
+describe('isStepComplete', () => {
+  it('returns false for a missing questionnaire', () => {
+    expect(
+      isStepComplete(NsoMpdQuestionnaireStepEnum.PersonalInformation, null),
+    ).toBe(false);
+  });
+
+  it('is complete for every data-entry step when its fields are filled', () => {
+    expect(
+      isStepComplete(
+        NsoMpdQuestionnaireStepEnum.PersonalInformation,
+        completeSingle,
+      ),
+    ).toBe(true);
+    expect(
+      isStepComplete(
+        NsoMpdQuestionnaireStepEnum.MinistryInformation,
+        completeSingle,
+      ),
+    ).toBe(true);
+    expect(
+      isStepComplete(
+        NsoMpdQuestionnaireStepEnum.FinancialInformation,
+        completeSingle,
+      ),
+    ).toBe(true);
+    expect(
+      isStepComplete(
+        NsoMpdQuestionnaireStepEnum.NsoInformation,
+        completeSingle,
+      ),
+    ).toBe(true);
+  });
+
+  it('treats 0 as a filled value but null as missing', () => {
+    expect(
+      isStepComplete(NsoMpdQuestionnaireStepEnum.FinancialInformation, {
+        ...completeSingle,
+        carLoanMonthlyPayment: 0,
+      }),
+    ).toBe(true);
+    expect(
+      isStepComplete(NsoMpdQuestionnaireStepEnum.FinancialInformation, {
+        ...completeSingle,
+        carLoanMonthlyPayment: null,
+      }),
+    ).toBe(false);
+  });
+
+  it('is incomplete when a required field is missing', () => {
+    expect(
+      isStepComplete(NsoMpdQuestionnaireStepEnum.PersonalInformation, {
+        ...completeSingle,
+        phoneNumber: '',
+      }),
+    ).toBe(false);
+    expect(
+      isStepComplete(NsoMpdQuestionnaireStepEnum.MinistryInformation, {
+        ...completeSingle,
+        ministryLocation: null,
+      }),
+    ).toBe(false);
+    expect(
+      isStepComplete(NsoMpdQuestionnaireStepEnum.NsoInformation, {
+        ...completeSingle,
+        childcareChildrenCount: null,
+      }),
+    ).toBe(false);
+  });
+
+  it('requires the spouse phone number for the Personal step when married', () => {
+    const married: Questionnaire = {
+      ...completeSingle,
+      maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Married,
+    };
+
+    expect(
+      isStepComplete(NsoMpdQuestionnaireStepEnum.PersonalInformation, married),
+    ).toBe(false);
+    expect(
+      isStepComplete(NsoMpdQuestionnaireStepEnum.PersonalInformation, {
+        ...married,
+        spousePhoneNumber: '(305) 222-3333',
+      }),
+    ).toBe(true);
   });
 });

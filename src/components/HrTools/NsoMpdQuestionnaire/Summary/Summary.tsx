@@ -20,7 +20,9 @@ export const Summary: React.FC = () => {
     useNsoMpdQuestionnaire();
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const subSteps: SubStep[] = [{ id: 'summary', title: t('Summary') }];
+  const subSteps: SubStep[] = [
+    { id: 'summary', title: t('Summary'), complete: true },
+  ];
   const sections = useSummarySections();
 
   // Complete the questionnaire, then redirect to the dashboard on success.

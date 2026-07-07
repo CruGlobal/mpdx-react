@@ -1,15 +1,26 @@
 import React from 'react';
 import { Box, Stack, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { NsoMpdQuestionnaireStepEnum } from '../NsoMpdQuestionnaireHelper';
+import { useNsoMpdQuestionnaire } from '../Shared/NsoMpdQuestionnaireContext';
 import { StepPage } from '../Shared/StepPage';
 import { SubStep } from '../Shared/SubStepList';
+import { isStepComplete } from '../Shared/stepCompletion';
 import { MinistryDetails } from './MinistryDetails';
 
 export const MinistryInformation: React.FC = () => {
   const { t } = useTranslation();
+  const { questionnaire } = useNsoMpdQuestionnaire();
 
   const subSteps: SubStep[] = [
-    { id: 'ministry-information', title: t('Ministry Information') },
+    {
+      id: 'ministry-information',
+      title: t('Ministry Information'),
+      complete: isStepComplete(
+        NsoMpdQuestionnaireStepEnum.MinistryInformation,
+        questionnaire,
+      ),
+    },
   ];
 
   return (
