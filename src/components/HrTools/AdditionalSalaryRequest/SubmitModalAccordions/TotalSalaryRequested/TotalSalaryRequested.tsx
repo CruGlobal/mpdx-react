@@ -1,11 +1,5 @@
 import Warning from '@mui/icons-material/Warning';
-import {
-  Box,
-  CardContent,
-  LinearProgress,
-  Typography,
-  alpha,
-} from '@mui/material';
+import { Box, CardContent, LinearProgress, Typography } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
@@ -41,7 +35,7 @@ export const TotalSalaryRequested: React.FC<TotalAnnualSalaryProps> = ({
 
   return (
     <ModalAccordion
-      backgroundColor={alpha(theme.palette.warning.light, 0.1)}
+      backgroundColor={theme.alpha(theme.palette.warning.light, 0.1)}
       icon={Warning}
       title={t('Total Salary Requested')}
       titleColor="warning.dark"

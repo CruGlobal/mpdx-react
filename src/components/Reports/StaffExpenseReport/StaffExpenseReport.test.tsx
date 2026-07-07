@@ -273,13 +273,17 @@ describe('StaffExpenseReport', () => {
   });
 
   it('shows month title and navigation when only category filters are applied', async () => {
-    const { getByRole, findByLabelText, queryByRole } = render(
+    const { getByRole, getByText, findByLabelText, queryByRole } = render(
       <TestComponent />,
     );
 
     userEvent.click(getByRole('button', { name: 'Report Settings' }));
 
-    userEvent.click(await findByLabelText('Assessment'));
+    // Wait for the category checkbox to render, then toggle it by clicking its
+    // visible label (as a real user would). Clicking the visually-hidden MUI
+    // Checkbox input directly no longer reliably fires React's onChange here.
+    await findByLabelText('Assessment');
+    userEvent.click(getByText('Assessment'));
     await waitFor(() =>
       expect(getByRole('button', { name: 'Apply Filters' })).not.toBeDisabled(),
     );

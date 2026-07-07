@@ -86,7 +86,12 @@ export const PersonEmailItem: React.FC<Props> = ({
   return (
     <ModalSectionContainer key={index}>
       <Grid container spacing={3}>
-        <Grid item xs={12} sm={6}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+          }}
+        >
           <ContactInputField
             label={t('Email Address')}
             destroyed={emailAddress.destroy ?? false}
@@ -114,7 +119,13 @@ export const PersonEmailItem: React.FC<Props> = ({
             required
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={2}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+            md: 2,
+          }}
+        >
           <FormControl fullWidth>
             <InputLabel id={`email-type-label-${index}`}>
               {t('Type')}
@@ -148,7 +159,7 @@ export const PersonEmailItem: React.FC<Props> = ({
             </EmailSelect>
           </FormControl>
         </Grid>
-        <VerticallyCenteredGrid item xs={12} sm={6} md={2}>
+        <VerticallyCenteredGrid size={{ xs: 12, sm: 6, md: 2 }}>
           <PrimaryControlLabel
             label={t('Primary')}
             control={
@@ -162,7 +173,7 @@ export const PersonEmailItem: React.FC<Props> = ({
             destroyed={emailAddress.destroy ?? false}
           />
         </VerticallyCenteredGrid>
-        <VerticallyCenteredGrid item xs={12} sm={6} md={2}>
+        <VerticallyCenteredGrid size={{ xs: 12, sm: 6, md: 2 }}>
           <PrimaryControlLabel
             label={t('Invalid')}
             control={

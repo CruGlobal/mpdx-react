@@ -100,42 +100,44 @@ export const ProfileMenuPanel: React.FC = () => {
               <ChevronRight />
             </StyledButton>
           </LeafListItem>
-          <MobileDrawer
-            anchor="left"
-            open={accountsDrawerOpen}
-            onClose={toggleAccountsDrawer}
-          >
-            <LeafListItem
-              data-testid="closeAccountListDrawerButton"
-              disableGutters
-              onClick={toggleAccountsDrawer}
+          {accountsDrawerOpen && (
+            <MobileDrawer
+              anchor="left"
+              open={accountsDrawerOpen}
+              onClose={toggleAccountsDrawer}
             >
-              <AccountListButton>
-                <ArrowBackIcon
-                  style={{ color: 'white', marginRight: theme.spacing(2) }}
-                />
-                <Title>{t('Account List Selector')}</Title>
-              </AccountListButton>
-            </LeafListItem>
-            {data?.accountLists.nodes.map((accountList) => (
-              <LeafListItemHover
-                key={accountList.id}
-                data-testid={`accountListButton-${accountList.id}`}
+              <LeafListItem
+                data-testid="closeAccountListDrawerButton"
                 disableGutters
-                style={{
-                  backgroundColor:
-                    accountListId === accountList.id
-                      ? theme.palette.mpdxGrayMedium.main
-                      : theme.palette.mpdxGrayDark.main,
-                }}
-                onClick={() => changeAccountListId(accountList.id)}
+                onClick={toggleAccountsDrawer}
               >
                 <AccountListButton>
-                  <Title>{accountList.name}</Title>
+                  <ArrowBackIcon
+                    style={{ color: 'white', marginRight: theme.spacing(2) }}
+                  />
+                  <Title>{t('Account List Selector')}</Title>
                 </AccountListButton>
-              </LeafListItemHover>
-            ))}
-          </MobileDrawer>
+              </LeafListItem>
+              {data?.accountLists.nodes.map((accountList) => (
+                <LeafListItemHover
+                  key={accountList.id}
+                  data-testid={`accountListButton-${accountList.id}`}
+                  disableGutters
+                  style={{
+                    backgroundColor:
+                      accountListId === accountList.id
+                        ? theme.palette.mpdxGrayMedium.main
+                        : theme.palette.mpdxGrayDark.main,
+                  }}
+                  onClick={() => changeAccountListId(accountList.id)}
+                >
+                  <AccountListButton>
+                    <Title>{accountList.name}</Title>
+                  </AccountListButton>
+                </LeafListItemHover>
+              ))}
+            </MobileDrawer>
+          )}
         </>
       )}
       {!onSetupTour && (

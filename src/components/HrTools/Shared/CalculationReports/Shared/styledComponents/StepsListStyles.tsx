@@ -1,7 +1,9 @@
+import { ElementType } from 'react';
 import { Box, ListItemIcon, SxProps, Theme, styled } from '@mui/material';
 
 interface StyledOrderedListProps {
   start: number;
+  component?: ElementType;
 }
 
 export const CategoryListItemStyles: SxProps<Theme> = (theme) => ({

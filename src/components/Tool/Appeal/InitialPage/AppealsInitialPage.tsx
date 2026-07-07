@@ -38,7 +38,7 @@ const AppealsInitialPage: React.FC = () => {
   return (
     <Box className={classes.outer}>
       <Grid container spacing={3} className={classes.container}>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Box m={1}>
             <Typography variant="body2">
               {t(
@@ -52,10 +52,22 @@ const AppealsInitialPage: React.FC = () => {
           </Box>
         </Grid>
 
-        <Grid item xs={12} sm={12} md={6}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 12,
+            md: 6,
+          }}
+        >
           <Appeals accountListId={accountListId || ''} />
         </Grid>
-        <Grid item xs={12} sm={12} md={6}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 12,
+            md: 6,
+          }}
+        >
           <Box width="100%" display="flex" justifyContent="center">
             <Box m={1}>
               <Card>

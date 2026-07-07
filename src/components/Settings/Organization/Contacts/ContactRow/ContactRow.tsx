@@ -4,7 +4,6 @@ import {
   Box,
   Button,
   Grid,
-  Hidden,
   Link,
   ListItemText,
   Typography,
@@ -152,7 +151,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
   return (
     <>
       <Grid container alignItems="center">
-        <Grid item xs={6} sx={{ paddingRight: 2 }}>
+        <Grid sx={{ paddingRight: 2 }} size={6}>
           <ListItemText
             primary={
               <Typography component="span" variant="h6" noWrap>
@@ -174,18 +173,20 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
                 )}
 
                 {primaryAddress && (
-                  <Hidden smDown>
-                    <Typography component="span" variant="body2">
-                      {primaryAddressString}
-                    </Typography>
-                  </Hidden>
+                  <Typography
+                    component="span"
+                    variant="body2"
+                    sx={{ display: { xs: 'none', md: 'block' } }}
+                  >
+                    {primaryAddressString}
+                  </Typography>
                 )}
               </>
             }
           />
         </Grid>
 
-        <Grid item xs={3}>
+        <Grid size={3}>
           <ListItemText
             primary={
               <Typography component="span" variant="h6">
@@ -202,7 +203,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
             )}
           />
         </Grid>
-        <Grid item xs={3} sx={{ paddingRight: '16px', textAlign: 'right' }}>
+        <Grid sx={{ paddingRight: '16px', textAlign: 'right' }} size={3}>
           <Box>
             <Button
               variant="contained"

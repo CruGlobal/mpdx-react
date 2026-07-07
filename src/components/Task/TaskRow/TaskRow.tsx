@@ -4,7 +4,6 @@ import {
   Avatar,
   Box,
   Chip,
-  Hidden,
   Tooltip,
   Typography,
   useMediaQuery,
@@ -159,18 +158,16 @@ export const TaskRow: React.FC<TaskRowProps> = ({
             textOverflow: 'ellipsis',
           }}
         >
-          <Hidden xsDown>
-            <Box padding="checkbox">
-              <StyledCheckbox
-                checked={isChecked}
-                data-testid={`task-checkbox-${taskId}`}
-                color="secondary"
-                onClick={(event) => event.stopPropagation()}
-                onChange={() => onTaskCheckToggle(taskId)}
-                value={isChecked}
-              />
-            </Box>
-          </Hidden>
+          <Box padding="checkbox" sx={{ display: { xs: 'none', sm: 'block' } }}>
+            <StyledCheckbox
+              checked={isChecked}
+              data-testid={`task-checkbox-${taskId}`}
+              color="secondary"
+              onClick={(event) => event.stopPropagation()}
+              onChange={() => onTaskCheckToggle(taskId)}
+              value={isChecked}
+            />
+          </Box>
           <Box onClick={(e) => e.stopPropagation()}>
             <TaskCompleteButton
               isComplete={isComplete}
@@ -249,7 +246,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
           </Box>
         </Box>
         <Box display="flex" justifyContent="flex-end" alignItems="center">
-          <Hidden smDown>
+          <Box sx={{ display: { xs: 'none', md: 'block' } }}>
             {!!task?.tagList.length && (
               <Tooltip
                 title={condensed || areMoreTags ? tagListString : null}
@@ -296,7 +293,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                 </Avatar>
               </Tooltip>
             )}
-          </Hidden>
+          </Box>
           <Box
             sx={{ display: 'flex', flexDirection: isMedium ? 'column' : 'row' }}
           >
@@ -327,7 +324,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
             </Tooltip>
           </Box>
 
-          <Hidden smDown>
+          <Box sx={{ display: { xs: 'none', md: 'block' } }}>
             <Box onClick={(e) => e.stopPropagation()}>
               <DeleteTaskIconButton
                 accountListId={accountListId}
@@ -343,7 +340,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                 isStarred={starred}
               />
             </Box>
-          </Hidden>
+          </Box>
         </Box>
       </ContactRowButton>
     </TaskRowWrapper>

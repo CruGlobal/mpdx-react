@@ -106,7 +106,8 @@ describe('ContactsAutocomplete', () => {
     const { getByRole, findByRole } = render(<TestComponent />);
 
     userEvent.click(getByRole('combobox', { name: 'Contacts' }));
-    userEvent.hover(await findByRole('option', { name: 'Alice' }));
+    await findByRole('option', { name: 'Alice' });
+    userEvent.keyboard('{ArrowDown}');
     userEvent.tab();
 
     expect(onChange).toHaveBeenCalledWith(['contact-1']);

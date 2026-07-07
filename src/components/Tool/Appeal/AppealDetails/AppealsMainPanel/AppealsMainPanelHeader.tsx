@@ -3,13 +3,7 @@ import React from 'react';
 import BackIcon from '@mui/icons-material/ArrowBackIos';
 import FormatListBulleted from '@mui/icons-material/FormatListBulleted';
 import ViewColumn from '@mui/icons-material/ViewColumn';
-import {
-  Box,
-  Button,
-  Hidden,
-  ToggleButton,
-  ToggleButtonGroup,
-} from '@mui/material';
+import { Box, Button, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import {
@@ -77,42 +71,38 @@ export const AppealsMainPanelHeader: React.FC = () => {
       showShowingCount={viewMode === TableViewModeEnum.List}
       isExcludedAppealPage={isExcludedPage}
       leftButtonGroup={
-        <Hidden xsDown>
-          <Box display="flex" alignItems="center">
-            <ViewSettingsButton
-              LinkComponent={NextLink}
-              href={`/accountLists/${accountListId}/tools/appeals/`}
-              variant="outlined"
-            >
-              <BackIcon style={{ marginRight: 8 }} />
-              {t('Appeals')}
-            </ViewSettingsButton>
-          </Box>
-        </Hidden>
+        <Box alignItems="center" sx={{ display: { xs: 'none', sm: 'flex' } }}>
+          <ViewSettingsButton
+            LinkComponent={NextLink}
+            href={`/accountLists/${accountListId}/tools/appeals/`}
+            variant="outlined"
+          >
+            <BackIcon style={{ marginRight: 8 }} />
+            {t('Appeals')}
+          </ViewSettingsButton>
+        </Box>
       }
       buttonGroup={
-        <Hidden xsDown>
-          <StyledBox>
-            <StyledToggleButtonGroup
-              exclusive
-              value={viewMode}
-              onChange={(_event, value) => setViewMode(value)}
+        <StyledBox sx={{ display: { xs: 'none', sm: 'flex' } }}>
+          <StyledToggleButtonGroup
+            exclusive
+            value={viewMode}
+            onChange={(_event, value) => setViewMode(value)}
+          >
+            <ToggleButton
+              value={TableViewModeEnum.List}
+              disabled={viewMode === TableViewModeEnum.List}
             >
-              <ToggleButton
-                value={TableViewModeEnum.List}
-                disabled={viewMode === TableViewModeEnum.List}
-              >
-                <BulletedListIcon titleAccess={t('List View')} />
-              </ToggleButton>
-              <ToggleButton
-                value={TableViewModeEnum.Flows}
-                disabled={viewMode === TableViewModeEnum.Flows}
-              >
-                <ViewColumnIcon titleAccess={t('Flows View')} />
-              </ToggleButton>
-            </StyledToggleButtonGroup>
-          </StyledBox>
-        </Hidden>
+              <BulletedListIcon titleAccess={t('List View')} />
+            </ToggleButton>
+            <ToggleButton
+              value={TableViewModeEnum.Flows}
+              disabled={viewMode === TableViewModeEnum.Flows}
+            >
+              <ViewColumnIcon titleAccess={t('Flows View')} />
+            </ToggleButton>
+          </StyledToggleButtonGroup>
+        </StyledBox>
       }
     />
   );

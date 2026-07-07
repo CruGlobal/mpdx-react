@@ -346,20 +346,19 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
                                       container
                                       sx={{ alignItems: 'center' }}
                                     >
-                                      <Grid item xs={4}>
+                                      <Grid size={4}>
                                         <BoldTypography>
                                           {t('Contact Group')}
                                         </BoldTypography>
                                       </Grid>
-                                      <Grid item xs={4}>
+                                      <Grid size={4}>
                                         <BoldTypography>
                                           {t('Tags for Group')}
                                         </BoldTypography>
                                       </Grid>
                                       <Grid
-                                        item
-                                        xs={4}
                                         sx={{ textAlign: 'right' }}
+                                        size={4}
                                       >
                                         <ButtonGroup size="small">
                                           <Button
@@ -395,7 +394,7 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
                                           }}
                                           key={idx}
                                         >
-                                          <Grid item xs={4}>
+                                          <Grid size={4}>
                                             <FormControlLabel
                                               control={
                                                 <Checkbox
@@ -410,7 +409,7 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
                                               label={group?.title}
                                             />
                                           </Grid>
-                                          <Grid item xs={6}>
+                                          <Grid size={6}>
                                             <Autocomplete
                                               multiple
                                               freeSolo

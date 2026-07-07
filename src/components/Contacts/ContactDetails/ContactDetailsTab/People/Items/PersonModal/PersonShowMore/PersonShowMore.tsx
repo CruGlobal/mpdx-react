@@ -105,7 +105,12 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
       {/* Legal First Name and Gender Section */}
       <ModalSectionContainer>
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <TextField
               label={t('Legal First Name')}
               value={legalFirstName}
@@ -114,7 +119,12 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
               fullWidth
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <FormControl fullWidth>
               <InputLabel id="gender-label">{t('Gender')}</InputLabel>
               <Select
@@ -140,7 +150,12 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
       <ModalSectionContainer>
         <ModalSectionIcon icon={<RingIcon />} />
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <FormControl fullWidth>
               <InputLabel id="relationship-status-label">
                 {t('Relationship Status')}
@@ -176,7 +191,12 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <CustomDateField
               label={t('Anniversary')}
               invalidDate={anniversaryDateIsInvalid}
@@ -205,7 +225,12 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
       <ModalSectionContainer>
         <ModalSectionIcon icon={<BusinessIcon />} />
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <TextField
               label={t('Employer')}
               value={employer}
@@ -214,7 +239,12 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
               fullWidth
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <TextField
               label={t('Occupation')}
               value={occupation}
@@ -231,7 +261,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
       {showDeceased && (
         <ModalSectionContainer>
           <Grid container alignItems="center">
-            <Grid container item xs={6} alignItems="center">
+            <Grid container alignItems="center" size={6}>
               <DeceasedLabel
                 control={
                   <Checkbox

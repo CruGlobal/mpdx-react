@@ -119,7 +119,7 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
     <Box className={classes.container}>
       {data ? (
         <ToolsGridContainer container spacing={3}>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Box mb={2}>
               {!!data.people.nodes.length && (
                 <>
@@ -182,7 +182,7 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
           </Grid>
           {!!data.people.nodes.length ? (
             <>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 {data?.people.nodes.map(
                   (person: PersonInvalidNumberFragment) => (
                     <Contact
@@ -195,7 +195,7 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
                 )}
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <Box className={classes.footer}>
                   <Typography>
                     <Trans

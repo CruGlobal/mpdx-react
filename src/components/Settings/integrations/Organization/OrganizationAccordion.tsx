@@ -201,13 +201,11 @@ export const OrganizationAccordion: React.FC<AccordionProps> = ({
           { appName },
         )}
       </Typography>
-
       {!loading && !organizations?.length && (
         <Typography variant="h5" style={{ marginTop: '20px' }}>
           {t("Let's start by connecting to your first organization")}
         </Typography>
       )}
-
       {!loading && !!organizations?.length && (
         <Box style={{ marginTop: '20px' }}>
           {organizations.map((organizationAccount) => {
@@ -301,10 +299,8 @@ export const OrganizationAccordion: React.FC<AccordionProps> = ({
                 {lastDownloadedAt && (
                   <Box sx={{ p: 2, display: 'flex' }}>
                     <Grid container spacing={2}>
-                      <Grid item xs={6}>
-                        {t('Last Updated')}
-                      </Grid>
-                      <Grid item xs={6}>
+                      <Grid size={6}>{t('Last Updated')}</Grid>
+                      <Grid size={6}>
                         {DateTime.fromISO(lastDownloadedAt).toRelative()}
                       </Grid>
                     </Grid>
@@ -313,10 +309,8 @@ export const OrganizationAccordion: React.FC<AccordionProps> = ({
                 {latestDonationDate && (
                   <Box sx={{ p: 2, display: 'flex' }}>
                     <Grid container spacing={2}>
-                      <Grid item xs={6}>
-                        {t('Last Gift Date')}
-                      </Grid>
-                      <Grid item xs={6}>
+                      <Grid size={6}>{t('Last Gift Date')}</Grid>
+                      <Grid size={6}>
                         {DateTime.fromISO(latestDonationDate).toRelative()}
                       </Grid>
                     </Grid>
@@ -327,20 +321,17 @@ export const OrganizationAccordion: React.FC<AccordionProps> = ({
           })}
         </Box>
       )}
-
       <StyledServicesButton
         variant={!!organizations?.length ? 'outlined' : 'contained'}
         onClick={() => setShowAddAccountModal(true)}
       >
         {t('Add Account')}
       </StyledServicesButton>
-
       {showAddAccountModal && (
         <OrganizationAddAccountModal
           handleClose={() => setShowAddAccountModal(false)}
         />
       )}
-
       {importDataSyncModal && (
         <OrganizationImportDataSyncModal
           handleClose={() => setImportDataSyncModal(null)}
@@ -349,14 +340,12 @@ export const OrganizationAccordion: React.FC<AccordionProps> = ({
           accountListId={accountListId ?? ''}
         />
       )}
-
       {editOrganizationModal && (
         <OrganizationEditAccountModal
           handleClose={() => setEditOrganizationModal(null)}
           organizationId={editOrganizationModal.id}
         />
       )}
-
       {deleteOrganizationModal && (
         <Confirmation
           isOpen={true}

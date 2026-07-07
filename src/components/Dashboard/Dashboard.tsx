@@ -68,7 +68,12 @@ const Dashboard = ({ data, accountListId }: Props): ReactElement => {
             )}
 
             <Grid container spacing={3} alignItems="stretch">
-              <Grid xs={12} sm={8} item>
+              <Grid
+                size={{
+                  xs: 12,
+                  sm: 8,
+                }}
+              >
                 <MonthlyGoal
                   accountListId={accountListId}
                   goal={data.accountList.monthlyGoal ?? undefined}
@@ -78,13 +83,18 @@ const Dashboard = ({ data, accountListId }: Props): ReactElement => {
                   currencyCode={data.accountList.currency}
                 />
               </Grid>
-              <Grid xs={12} sm={4} item>
+              <Grid
+                size={{
+                  xs: 12,
+                  sm: 4,
+                }}
+              >
                 <Balance
                   balance={data.accountList.balance}
                   currencyCode={data.accountList.currency}
                 />
               </Grid>
-              <Grid xs={12} item>
+              <Grid size={12}>
                 <DonationHistories
                   goal={data.accountList.monthlyGoal ?? undefined}
                   pledged={data.accountList.totalPledges}
@@ -92,7 +102,7 @@ const Dashboard = ({ data, accountListId }: Props): ReactElement => {
                   currencyCode={data.accountList.currency}
                 />
               </Grid>
-              <Grid xs={12} item>
+              <Grid size={12}>
                 <ThisWeek accountListId={accountListId} />
               </Grid>
             </Grid>

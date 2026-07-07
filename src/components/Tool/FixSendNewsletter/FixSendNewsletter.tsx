@@ -126,7 +126,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
   return (
     <Box className={classes.outer} data-testid="Home">
       <ToolsGridContainer container spacing={3}>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Box className={classes.descriptionBox}>
             <Typography>
               <strong>

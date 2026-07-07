@@ -1,7 +1,7 @@
 import React from 'react';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import { ListItem, ListItemText } from '@mui/material';
+import { ListItemButton, ListItemText } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 
@@ -18,7 +18,7 @@ export const FilterListItemShowAll: React.FC<Props> = ({
   const theme = useTheme();
 
   return (
-    <ListItem button onClick={onToggle} data-testid="FilterListItemShowAll">
+    <ListItemButton onClick={onToggle} data-testid="FilterListItemShowAll">
       <ListItemText
         primary={showAll ? t('See Fewer Filters') : t('See More Filters')}
         primaryTypographyProps={{
@@ -31,6 +31,6 @@ export const FilterListItemShowAll: React.FC<Props> = ({
       ) : (
         <ExpandMore style={{ color: theme.palette.info.main }} />
       )}
-    </ListItem>
+    </ListItemButton>
   );
 };

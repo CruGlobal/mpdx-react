@@ -4,10 +4,10 @@ import {
   Button,
   CardContent,
   Grid,
-  Hidden,
   Skeleton,
   Theme,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
@@ -16,6 +16,7 @@ import {
   StatusEnum,
 } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
+import theme from '../../../theme';
 import {
   currencyFormat,
   numberFormat,
@@ -67,6 +68,8 @@ const MonthlyGoal = ({
   const { classes } = useStyles();
   const { t } = useTranslation();
   const locale = useLocale();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down('md'));
   const receivedPercentage = received / goal;
   const pledgedPercentage = pledged / goal;
   const belowGoal = goal - pledged;
@@ -94,11 +97,11 @@ const MonthlyGoal = ({
                   ),
                 })}
               </Button>
-              <Hidden smUp>
+              {isMobile && (
                 <Box data-testid="MonthlyGoalTypographyGoalMobile">
                   {!loading && currencyFormat(goal, currencyCode, locale)}
                 </Box>
-              </Hidden>
+              )}
             </Box>
           </Typography>
         </AnimatedBox>
@@ -111,8 +114,13 @@ const MonthlyGoal = ({
             secondary={pledgedPercentage}
           />
           <Grid container spacing={2}>
-            <Hidden smDown>
-              <Grid sm={6} md={3} item>
+            {!isBelowMd && (
+              <Grid
+                size={{
+                  sm: 6,
+                  md: 3,
+                }}
+              >
                 <Typography component="div" color="textSecondary">
                   <div
                     className={[classes.indicator, classes.goal].join(' ')}
@@ -130,8 +138,13 @@ const MonthlyGoal = ({
                   )}
                 </Typography>
               </Grid>
-            </Hidden>
-            <Grid xs={6} md={3} item>
+            )}
+            <Grid
+              size={{
+                xs: 6,
+                md: 3,
+              }}
+            >
               <Typography component="div" color="textSecondary">
                 <div
                   className={[classes.indicator, classes.received].join(' ')}
@@ -161,7 +174,12 @@ const MonthlyGoal = ({
                 )}
               </Typography>
             </Grid>
-            <Grid xs={6} md={3} item>
+            <Grid
+              size={{
+                xs: 6,
+                md: 3,
+              }}
+            >
               <Typography component="div" color="textSecondary">
                 <div
                   className={[classes.indicator, classes.pledged].join(' ')}
@@ -191,9 +209,14 @@ const MonthlyGoal = ({
                 )}
               </Typography>
             </Grid>
-            <Hidden smDown>
-              {!isNaN(belowGoal) && belowGoal > 0 ? (
-                <Grid sm={6} md={3} item>
+            {!isBelowMd &&
+              (!isNaN(belowGoal) && belowGoal > 0 ? (
+                <Grid
+                  size={{
+                    sm: 6,
+                    md: 3,
+                  }}
+                >
                   <Typography component="div" color="textSecondary">
                     {t('Below Goal')}
                   </Typography>
@@ -211,7 +234,12 @@ const MonthlyGoal = ({
                   </Typography>
                 </Grid>
               ) : (
-                <Grid sm={6} md={3} item>
+                <Grid
+                  size={{
+                    sm: 6,
+                    md: 3,
+                  }}
+                >
                   <Typography component="div" color="textSecondary">
                     {t('Above Goal')}
                   </Typography>
@@ -238,8 +266,7 @@ const MonthlyGoal = ({
                     )}
                   </Typography>
                 </Grid>
-              )}
-            </Hidden>
+              ))}
           </Grid>
         </CardContent>
       </AnimatedCard>
