@@ -27,7 +27,6 @@ import {
 import { ChartPlaceholderCard } from './ChartPlaceholderCard';
 
 const PrintableContent = styled('div')(({ theme }) => ({
-  marginInline: theme.spacing(4),
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(3),

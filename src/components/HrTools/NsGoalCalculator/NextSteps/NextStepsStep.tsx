@@ -6,7 +6,7 @@ export const NextStepsStep: React.FC = () => {
   const { t } = useTranslation();
 
   return (
-    <Box mx={4} display="flex" flexDirection="column" gap={3}>
+    <Box display="flex" flexDirection="column" gap={3}>
       <Typography variant="h6">{t('Next Steps')}</Typography>
 
       <Typography variant="body1">
