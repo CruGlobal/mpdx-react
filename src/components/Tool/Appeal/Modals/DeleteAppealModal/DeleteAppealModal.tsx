@@ -74,7 +74,7 @@ export const DeleteAppealModal: React.FC<DeleteAppealModalProps> = ({
   return (
     <Modal title={t('Delete Appeal')} isOpen={true} handleClose={handleClose}>
       <DialogContent data-testid="deleteAppealModal">
-        <Grid item>
+        <Grid>
           <Alert severity="warning">
             <Typography>
               {t(

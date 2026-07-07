@@ -108,7 +108,7 @@ const MergeContacts: React.FC<Props> = ({
         <ToolsGridContainer container spacing={3}>
           {duplicatesDisplayedCount ? (
             <>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <Box
                   className={classes.descriptionBox}
                   data-testid="ContactMergeDescription"
@@ -137,7 +137,7 @@ const MergeContacts: React.FC<Props> = ({
                 confirmAction={handleSubmit}
                 setActions={setActions}
               />
-              <Grid item xs={12} sx={{ margin: '15px 2px 20px 2px' }}>
+              <Grid sx={{ margin: '15px 2px 20px 2px' }} size={12}>
                 {data?.contactDuplicates.nodes.map((duplicate) => (
                   <ContactPair
                     key={duplicate.id}

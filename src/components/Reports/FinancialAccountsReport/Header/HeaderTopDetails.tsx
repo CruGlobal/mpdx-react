@@ -55,7 +55,7 @@ export const HeaderTopDetails: React.FC<HeaderTopDetailsProps> = ({
       spacing={2}
       pb={1}
     >
-      <Grid item>
+      <Grid>
         <Box display="flex" alignItems="center">
           <GoBackAction>
             <Link
@@ -112,7 +112,7 @@ export const HeaderTopDetails: React.FC<HeaderTopDetailsProps> = ({
           </Box>
         </Box>
       </Grid>
-      <Grid item>
+      <Grid>
         <HeaderTitle variant="h5">
           {currencyFormat(
             formatNumber(financialAccount.balance.convertedAmount),

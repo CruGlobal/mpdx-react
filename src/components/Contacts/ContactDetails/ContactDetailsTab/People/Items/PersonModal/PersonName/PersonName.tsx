@@ -105,11 +105,16 @@ export const PersonName: React.FC<PersonNameProps> = ({
       )}
       <ModalSectionContainer>
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <TextField
               name="firstName"
               label={t('First Name')}
-              value={firstName}
+              value={firstName ?? ''}
               onChange={handleChange}
               onBlur={handleBlur}
               inputProps={{ 'aria-label': t('First Name') }}
@@ -123,29 +128,44 @@ export const PersonName: React.FC<PersonNameProps> = ({
               required
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <TextField
               label={t('Last Name')}
-              value={lastName}
+              value={lastName ?? ''}
               onChange={handleChange('lastName')}
               inputProps={{ 'aria-label': t('Last Name') }}
               fullWidth
               required
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <TextField
               label={t('Title')}
-              value={title}
+              value={title ?? ''}
               onChange={handleChange('title')}
               inputProps={{ 'aria-label': t('Title') }}
               fullWidth
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <TextField
               label={t('Suffix')}
-              value={suffix}
+              value={suffix ?? ''}
               onChange={handleChange('suffix')}
               inputProps={{ 'aria-label': t('Suffix') }}
               fullWidth

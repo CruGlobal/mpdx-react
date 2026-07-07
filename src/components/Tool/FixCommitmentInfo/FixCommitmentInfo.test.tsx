@@ -93,7 +93,13 @@ describe('FixCommitmentInfo', () => {
     const description = await findByTestId('Description');
 
     expect(container.className).toEqual(expect.stringContaining('container'));
-    expect(container).toHaveStyle('width: calc(100% + 24px);');
+    // MUI v7's Grid uses CSS `gap` for spacing instead of the old negative
+    // margins, so the `width: calc(100% + 24px)` artifact no longer exists.
+    // Assert the ToolsGridContainer's own stable styling instead.
+    expect(container).toHaveStyle({
+      display: 'flex',
+      'max-width': '1000px',
+    });
 
     expect(description.className).toEqual(
       expect.stringContaining('descriptionBox'),

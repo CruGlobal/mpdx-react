@@ -111,7 +111,7 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({
             ))}
             <ModalSectionContainer>
               <Grid container alignItems="center">
-                <Grid container alignItems="center" item xs={6}>
+                <Grid container alignItems="center" size={6}>
                   <Button>
                     <ContactAddIcon />
                     <ContactAddText
@@ -129,7 +129,7 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({
                     </ContactAddText>
                   </Button>
                 </Grid>
-                <Grid container item xs={6} alignItems="center">
+                <Grid container alignItems="center" size={6}>
                   {showOptOutENewsletter && (
                     <OptOutENewsletterLabel
                       control={

@@ -22,15 +22,17 @@ import { useLocale } from 'src/hooks/useLocale';
 import { dateFromParts } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 
-const ProfileInfoWrapper = styled(Box)(({ theme }) => ({
-  textAlign: 'center',
-  minHeight: '75px',
-  [theme.breakpoints.up('sm')]: {
-    position: 'relative',
-    textAlign: 'left',
-    paddingLeft: theme.spacing(14),
-  },
-}));
+const ProfileInfoWrapper = styled(Box)<{ component?: React.ElementType }>(
+  ({ theme }) => ({
+    textAlign: 'center',
+    minHeight: '75px',
+    [theme.breakpoints.up('sm')]: {
+      position: 'relative',
+      textAlign: 'left',
+      paddingLeft: theme.spacing(14),
+    },
+  }),
+);
 
 const StyledAvatar = styled(Avatar)(({ theme }) => ({
   width: theme.spacing(12),

@@ -303,7 +303,12 @@ export const TransferModal: React.FC<TransferModalProps> = ({
 
                   {isNew ? (
                     <Grid container spacing={2} alignItems="center">
-                      <Grid item xs={12} sm={5.5}>
+                      <Grid
+                        size={{
+                          xs: 12,
+                          sm: 5.5,
+                        }}
+                      >
                         <FormControl fullWidth>
                           <InputLabel id="transferFrom">
                             {t('From Account')}
@@ -324,19 +329,25 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                       </Grid>
 
                       <Grid
-                        item
-                        xs={12}
-                        sm={1}
                         sx={{
                           display: 'flex',
                           justifyContent: 'center',
                           alignItems: 'center',
                         }}
+                        size={{
+                          xs: 12,
+                          sm: 1,
+                        }}
                       >
                         <ArrowRightAlt />
                       </Grid>
 
-                      <Grid item xs={12} sm={5.5}>
+                      <Grid
+                        size={{
+                          xs: 12,
+                          sm: 5.5,
+                        }}
+                      >
                         <FormControl fullWidth>
                           <InputLabel id="transferTo">
                             {t('To Account')}
@@ -366,21 +377,33 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                   ) : (
                     <Grid container spacing={2} alignItems="center">
                       <Grid
-                        item
-                        xs={12}
-                        sm={5.5}
                         sx={{
                           display: 'flex',
                           justifyContent: 'flex-end',
                           alignItems: 'center',
                         }}
+                        size={{
+                          xs: 12,
+                          sm: 5.5,
+                        }}
                       >
                         <FundInfoDisplay fund={fund} />
                       </Grid>
-                      <Grid item xs={12} sm={1} sx={{ textAlign: 'center' }}>
+                      <Grid
+                        sx={{ textAlign: 'center' }}
+                        size={{
+                          xs: 12,
+                          sm: 1,
+                        }}
+                      >
                         <ArrowRightAlt />
                       </Grid>
-                      <Grid item xs={12} sm={5.5}>
+                      <Grid
+                        size={{
+                          xs: 12,
+                          sm: 5.5,
+                        }}
+                      >
                         <FundInfoDisplay
                           fund={funds.find((f) => f.fundType === transferTo)}
                         />
@@ -431,7 +454,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                 <Box sx={{ mb: 3 }}>
                   <Grid container spacing={2}>
                     {schedule === ScheduleEnum.OneTime ? (
-                      <Grid item xs={12}>
+                      <Grid size={12}>
                         <TextField
                           fullWidth
                           label={t('Transfer Date')}
@@ -441,7 +464,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                       </Grid>
                     ) : (
                       <>
-                        <Grid item xs={6}>
+                        <Grid size={6}>
                           <CustomDateField
                             label={t('Transfer Date')}
                             value={transferDate}
@@ -461,7 +484,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                           />
                         </Grid>
 
-                        <Grid item xs={6}>
+                        <Grid size={6}>
                           <CustomDateField
                             label={t('End Date (Optional)')}
                             value={endDate}
@@ -544,7 +567,6 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                   </Alert>
                 )}
               </DialogContent>
-
               <DialogActions>
                 <CancelButton
                   size="large"

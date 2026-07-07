@@ -41,13 +41,13 @@ export const PrintOnlyReport: React.FC<PrintOnlyReportProps> = ({
         <Container>
           <Box mt={2} mb={2}>
             <Grid container spacing={2}>
-              <Grid item xs={6}>
+              <Grid size={6}>
                 <Typography variant="h6" sx={{ mb: 2 }}>
                   {t('Summary')}
                 </Typography>
                 <SummaryBarChart aspect={2} width={80} currency={currency} />
               </Grid>
-              <Grid item xs={6}>
+              <Grid size={6}>
                 <Typography variant="h6" sx={{ mb: 2 }}>
                   {t('Expenses Categories')}
                 </Typography>

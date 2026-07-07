@@ -119,7 +119,6 @@ export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
           size="small"
         />
       </Stack>
-
       <Stack
         direction="row"
         spacing={1.5}
@@ -156,21 +155,40 @@ export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
           })}
         </Typography>
       </Stack>
-
       <Grid container spacing={3}>
-        <Grid item xs={12} md={8}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 8,
+          }}
+        >
           <Grid container spacing={3}>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+              }}
+            >
               <PersonInfoCard person={primaryPerson} />
             </Grid>
             {spousePerson && (
-              <Grid item xs={12} sm={6}>
+              <Grid
+                size={{
+                  xs: 12,
+                  sm: 6,
+                }}
+              >
                 <PersonInfoCard person={spousePerson} />
               </Grid>
             )}
           </Grid>
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 4,
+          }}
+        >
           <Stack spacing={3}>
             {/* TODO(MPDX-9796): Attendee field */}
             <GoalSettingsPlaceholder

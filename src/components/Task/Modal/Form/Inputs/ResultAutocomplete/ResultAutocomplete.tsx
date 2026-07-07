@@ -46,7 +46,7 @@ export const ResultAutocomplete: React.FC<ResultAutocompleteProps> = ({
   }, [completedAction]);
 
   return !!availableResults.length ? (
-    <Grid item>
+    <Grid>
       <Autocomplete
         openOnFocus
         autoHighlight
