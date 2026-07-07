@@ -342,7 +342,7 @@ const ContactPair: React.FC<Props> = ({
       className={classes.container}
       data-testid="MergeContactPair"
     >
-      <Grid container>
+      <Grid container sx={{ flexGrow: 1, minWidth: 0 }}>
         <Grid size={12}>
           <Box display="flex" alignItems="center">
             <Grid container sx={{ flexGrow: 1, minWidth: 0 }}>
