@@ -71,16 +71,24 @@ describe('AnnouncementAction', () => {
     });
 
     describe('Styles', () => {
+      // MUI v7's Button applies variant colors through CSS custom properties
+      // (`--variant-containedBg`, `--variant-textColor`, etc.) which are then
+      // referenced via `background-color: var(...)`. jsdom's getComputedStyle
+      // does not resolve `var()` (so `toHaveStyle('background-color', ...)`
+      // reads the UA fallback), so we read the custom properties directly —
+      // they are the source of the brand colors — plus any `sx`-applied colors.
+      const cssVar = (el: Element, name: string) =>
+        window.getComputedStyle(el).getPropertyValue(name).trim();
+
       it('Primary Banner', () => {
         const { getByText } = render(
           <TestComponent isBanner actionStyle={ActionStyleEnum.Primary} />,
         );
 
         const button = getByText('Contacts');
-        expect(button).toHaveStyle({
-          'background-color': '#05699B',
-          color: defaultTextAndIconColor,
-        });
+        expect(cssVar(button, '--variant-containedBg')).toBe('#05699B');
+        // Banner overrides the text color via `sx`.
+        expect(button).toHaveStyle({ color: defaultTextAndIconColor });
       });
       it('Primary Modal', () => {
         const { getByText } = render(
@@ -88,29 +96,27 @@ describe('AnnouncementAction', () => {
         );
 
         const button = getByText('Contacts');
-        expect(button).toHaveStyle({
-          'background-color': '#05699B',
-          color: '#FFFFFF',
-        });
+        expect(cssVar(button, '--variant-containedBg')).toBe('#05699B');
+        expect(cssVar(button, '--variant-containedColor')).toBe('#fff');
       });
 
       it('Link Banner', () => {
         const { getByText } = render(<TestComponent isBanner />);
 
         const button = getByText('Contacts');
-        expect(button).toHaveStyle({
-          'background-color': 'transparent',
-          color: defaultTextAndIconColor,
-        });
+        // The text (link) variant has a transparent background — in MUI v7 this
+        // is `background-color: var(--variant-textBg)` (unset), which jsdom can't
+        // resolve, so we assert the variant class that produces it.
+        expect(button).toHaveClass('MuiButton-text');
+        // Banner overrides the text color via `sx`.
+        expect(button).toHaveStyle({ color: defaultTextAndIconColor });
       });
       it('Link Modal', () => {
         const { getByText } = render(<TestComponent />);
 
         const button = getByText('Contacts');
-        expect(button).toHaveStyle({
-          'background-color': 'transparent',
-          color: '#05699B',
-        });
+        expect(button).toHaveClass('MuiButton-text');
+        expect(cssVar(button, '--variant-textColor')).toBe('#05699B');
       });
 
       it('Warning Banner', () => {
@@ -119,10 +125,8 @@ describe('AnnouncementAction', () => {
         );
 
         const button = getByText('Contacts');
-        expect(button).toHaveStyle({
-          'background-color': '#ED6C02',
-          color: '#FFFFFF',
-        });
+        expect(cssVar(button, '--variant-containedBg')).toBe('#ed6c02');
+        expect(cssVar(button, '--variant-containedColor')).toBe('#fff');
       });
       it('Warning Modal', () => {
         const { getByText } = render(
@@ -130,10 +134,8 @@ describe('AnnouncementAction', () => {
         );
 
         const button = getByText('Contacts');
-        expect(button).toHaveStyle({
-          'background-color': '#ED6C02',
-          color: '#FFFFFF',
-        });
+        expect(cssVar(button, '--variant-containedBg')).toBe('#ed6c02');
+        expect(cssVar(button, '--variant-containedColor')).toBe('#fff');
       });
     });
   });

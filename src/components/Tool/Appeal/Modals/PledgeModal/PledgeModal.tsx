@@ -218,7 +218,7 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
         }): ReactElement => (
           <form onSubmit={handleSubmit}>
             <DialogContent>
-              <Grid item>
+              <Grid>
                 <Alert severity="info" sx={{ marginBottom: 1 }}>
                   <Typography>
                     {isNewPledge
@@ -230,9 +230,9 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
               </Grid>
 
               {/* Amount and Currency Row */}
-              <Grid container item xs={12} spacing={isMobile ? 1 : 0}>
-                <Grid container item xs={12} spacing={1}>
-                  <Grid item xs={isMobile ? 12 : 6}>
+              <Grid container spacing={isMobile ? 1 : 0} size={12}>
+                <Grid container spacing={1} size={12}>
+                  <Grid size={isMobile ? 12 : 6}>
                     <FormControl
                       size="small"
                       fullWidth
@@ -272,7 +272,7 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
                       </FastField>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={isMobile ? 12 : 6}>
+                  <Grid size={isMobile ? 12 : 6}>
                     <FormControl
                       size="small"
                       fullWidth
@@ -308,8 +308,8 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
                   </Grid>
                 </Grid>
 
-                <Grid container item xs={12} spacing={1}>
-                  <Grid item xs={isMobile ? 12 : 6}>
+                <Grid container spacing={1} size={12}>
+                  <Grid size={isMobile ? 12 : 6}>
                     <FormControl
                       size="small"
                       fullWidth
@@ -341,7 +341,7 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
                       </FastField>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={isMobile ? 12 : 6}>
+                  <Grid size={isMobile ? 12 : 6}>
                     <FormControl
                       size="small"
                       fullWidth

@@ -208,7 +208,7 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
         <ToolsGridContainer container spacing={3} data-testid="Container">
           {data.contacts?.nodes.length > 0 ? (
             <>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <Box
                   className={classes.descriptionBox}
                   data-testid="Description"
@@ -236,7 +236,7 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
                 loading={loading}
                 data={data.contacts.nodes}
                 itemContent={(_, contact) => (
-                  <Grid item xs={12}>
+                  <Grid size={12}>
                     <Box>
                       <Contact
                         id={contact.id}

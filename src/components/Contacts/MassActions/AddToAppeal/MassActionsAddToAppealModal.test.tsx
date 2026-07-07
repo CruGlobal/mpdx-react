@@ -2,7 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -49,7 +49,7 @@ describe('MassActionsAddToAppealModal', () => {
   });
   it('Type and submit new appeal, before clicking save action', async () => {
     const mutationSpy = jest.fn();
-    const { queryByTestId, queryByText } = render(
+    const { queryByTestId, queryByText, findByRole } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<{
           GetAppealsForMassAction: GetAppealsForMassActionQuery;
@@ -72,13 +72,12 @@ describe('MassActionsAddToAppealModal', () => {
     await waitFor(() =>
       expect(queryByTestId('AddToAppealModal')).toBeInTheDocument(),
     );
-    const appealInput = queryByTestId('appealTextInput') as HTMLInputElement;
+    const appealInput = within(
+      queryByTestId('appealTextInput') as HTMLElement,
+    ).getByRole('combobox');
     userEvent.click(appealInput);
     userEvent.type(appealInput, 'Appeal');
-    await waitFor(() =>
-      expect(queryByText(appealName) as HTMLInputElement).toBeInTheDocument(),
-    );
-    userEvent.click(queryByText(appealName) as HTMLInputElement);
+    userEvent.click(await findByRole('option', { name: appealName }));
     userEvent.click(queryByText('Save') as HTMLInputElement);
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith('Contacts updated!', {

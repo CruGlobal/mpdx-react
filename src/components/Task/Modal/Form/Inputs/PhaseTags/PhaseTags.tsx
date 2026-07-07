@@ -52,7 +52,7 @@ export const PhaseTags: React.FC<PhaseTagsProps> = ({
   );
 
   return (
-    <Grid item>
+    <Grid>
       <Typography sx={{ fontWeight: 500 }}>{t('Suggested Tags')}</Typography>
       <TagsSectionWrapper>
         {tags.map((tag, idx) => (

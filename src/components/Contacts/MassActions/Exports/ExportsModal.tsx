@@ -67,7 +67,12 @@ export const ExportsModal: React.FC<ExportsModalProps> = ({
   return (
     <Modal title={t('Export Contacts')} isOpen={true} handleClose={handleClose}>
       <Grid container>
-        <Grid item xs={12} md={6}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 6,
+          }}
+        >
           <Box display="flex" flexDirection="column" alignItems="center" p={2}>
             <ExportActionButton
               onClick={() => {
@@ -85,7 +90,12 @@ export const ExportsModal: React.FC<ExportsModalProps> = ({
             </Typography>
           </Box>
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 6,
+          }}
+        >
           <Box display="flex" flexDirection="column" alignItems="center" p={2}>
             <ExportActionButton
               onClick={() => restHandler('csv', true)}
@@ -101,7 +111,12 @@ export const ExportsModal: React.FC<ExportsModalProps> = ({
             </Typography>
           </Box>
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 6,
+          }}
+        >
           <Box display="flex" flexDirection="column" alignItems="center" p={2}>
             <ExportActionButton
               onClick={() => restHandler('csv')}
@@ -117,7 +132,12 @@ export const ExportsModal: React.FC<ExportsModalProps> = ({
             </Typography>
           </Box>
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 6,
+          }}
+        >
           <Box display="flex" flexDirection="column" alignItems="center" p={2}>
             <ExportActionButton
               onClick={() => restHandler('xlsx')}

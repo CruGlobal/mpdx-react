@@ -177,7 +177,13 @@ const EmailValidationForm = ({
         isValid,
       }) => (
         <>
-          <Grid item xs={12} sm={6} className={classes.paddingB2}>
+          <Grid
+            className={classes.paddingB2}
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <Box
               display="flex"
               justifyContent="flex-start"
@@ -212,8 +218,18 @@ const EmailValidationForm = ({
 
           {touched.email && Boolean(errors.email) && (
             <>
-              <Grid item xs={12} sm={6}></Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid
+                size={{
+                  xs: 12,
+                  sm: 6,
+                }}
+              ></Grid>
+              <Grid
+                size={{
+                  xs: 12,
+                  sm: 6,
+                }}
+              >
                 <FormHelperText error={true} className={classes.paddingX}>
                   {errors.email}
                 </FormHelperText>

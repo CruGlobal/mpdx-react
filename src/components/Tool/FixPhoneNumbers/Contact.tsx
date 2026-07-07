@@ -11,7 +11,6 @@ import {
   CardContent,
   CardHeader,
   Grid,
-  Hidden,
   Link,
   Typography,
 } from '@mui/material';
@@ -299,16 +298,20 @@ const Contact: React.FC<Props> = ({ person, submitAll, accountListId }) => {
       {({ values, handleSubmit, errors, setFieldValue }): ReactElement => (
         <form>
           <ImperativeSubmit submitAll={submitAll} />
-          <Grid container className={classes.container}>
-            <Grid container>
+          <Grid
+            container
+            className={classes.container}
+            sx={{ flexGrow: 1, minWidth: 0 }}
+          >
+            <Grid container size={12}>
               <Card className={classes.contactCard}>
                 <Box
                   display="flex"
                   alignItems="center"
                   className={classes.left}
                 >
-                  <Grid container>
-                    <Grid item xs={12}>
+                  <Grid container sx={{ flexGrow: 1, minWidth: 0 }}>
+                    <Grid size={12}>
                       <ContactHeader
                         avatar={
                           <Link component={NextLink} href={contactUrl} shallow>
@@ -348,8 +351,14 @@ const Contact: React.FC<Props> = ({ person, submitAll, accountListId }) => {
                     </Grid>
                     <CardContent sx={{ padding: 2 }}>
                       <Grid container display="flex" alignItems="center">
-                        <Hidden smDown>
-                          <Grid item xs={6} sm={4} className={classes.paddingY}>
+                        <Box sx={{ display: { xs: 'none', md: 'contents' } }}>
+                          <Grid
+                            className={classes.paddingY}
+                            size={{
+                              xs: 6,
+                              sm: 4,
+                            }}
+                          >
                             <Box
                               display="flex"
                               justifyContent="space-between"
@@ -360,7 +369,13 @@ const Contact: React.FC<Props> = ({ person, submitAll, accountListId }) => {
                               </Typography>
                             </Box>
                           </Grid>
-                          <Grid item xs={6} sm={2} className={classes.paddingY}>
+                          <Grid
+                            className={classes.paddingY}
+                            size={{
+                              xs: 6,
+                              sm: 2,
+                            }}
+                          >
                             <Box
                               display="flex"
                               justifyContent="center"
@@ -372,10 +387,11 @@ const Contact: React.FC<Props> = ({ person, submitAll, accountListId }) => {
                             </Box>
                           </Grid>
                           <Grid
-                            item
-                            xs={12}
-                            sm={6}
                             className={classes.paddingY}
+                            size={{
+                              xs: 12,
+                              sm: 6,
+                            }}
                           >
                             <Box
                               display="flex"
@@ -387,7 +403,7 @@ const Contact: React.FC<Props> = ({ person, submitAll, accountListId }) => {
                               </Typography>
                             </Box>
                           </Grid>
-                        </Hidden>
+                        </Box>
                         {values.numbers.map((phoneNumber, index) => (
                           <ContactPhoneNumbers
                             key={phoneNumber.id}
@@ -400,22 +416,26 @@ const Contact: React.FC<Props> = ({ person, submitAll, accountListId }) => {
                             handleDeleteNumberOpen={handleDeleteNumberOpen}
                           />
                         ))}
-                        <Grid item xs={12} sm={6} className={classes.paddingB2}>
+                        <Grid
+                          className={classes.paddingB2}
+                          size={{
+                            xs: 12,
+                            sm: 6,
+                          }}
+                        >
                           <Box
                             display="flex"
                             justifyContent="space-between"
                             className={classes.paddingX}
                           >
                             <Box>
-                              <Hidden smUp>
-                                <Typography
-                                  display="inline"
-                                  variant="body2"
-                                  fontWeight="bold"
-                                >
-                                  {t('Source')}:
-                                </Typography>
-                              </Hidden>
+                              <Typography
+                                variant="body2"
+                                fontWeight="bold"
+                                sx={{ display: { xs: 'inline', sm: 'none' } }}
+                              >
+                                {t('Source')}:
+                              </Typography>
                               <Typography display="inline" variant="body2">
                                 {appName}
                               </Typography>
