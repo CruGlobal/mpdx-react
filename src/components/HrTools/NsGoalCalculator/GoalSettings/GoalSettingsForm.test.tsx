@@ -10,6 +10,7 @@ import theme from 'src/theme';
 import {
   NsGoalCalculatorTestWrapper,
   NsGoalCalculatorTestWrapperProps,
+  defaultGoalCalculation,
 } from '../NsGoalCalculatorTestWrapper';
 import { GoalSettingsForm } from './GoalSettingsForm';
 import {
@@ -118,7 +119,20 @@ describe('GoalSettingsForm', () => {
   });
 
   it('shows the calculated 403(b) contribution amount for each person', async () => {
-    const { findByText, getByText } = render(<TestComponent />);
+    const { findByText, getByText } = render(
+      <TestComponent
+        goalCalculationMock={{
+          newStaffGoalCalculation: {
+            ...defaultGoalCalculation,
+            calculations: {
+              ...defaultGoalCalculation.calculations,
+              contributing403bAmount: 600,
+              spouseContributing403bAmount: 390,
+            },
+          },
+        }}
+      />,
+    );
 
     // The label lives in a visually-hidden span so screen readers announce the
     // owner; its parent <p> holds the label + the formatted amount.
