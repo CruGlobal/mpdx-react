@@ -37,18 +37,6 @@ export const defaultGoalCalculationMock = gqlMock<
       maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Married,
       spouseJoining: true,
       ministryLocation: 'Lake Hart',
-      calculations: {
-        salary: 8774,
-        seca: 1492,
-        contributing403bAmount: 600,
-        spouseContributing403bAmount: 390,
-        totalContributing403bAmount: 990,
-        totalMinistryExpenses: 898,
-        benefitsCharge: 1911,
-        adminCharge: 1795,
-        attrition: 940,
-        monthlyGoal: 16800,
-      },
     },
   },
 });

@@ -41,7 +41,7 @@ export const MonthlyNeedsCard: React.FC<MonthlyNeedsCardProps> = ({
 
   return (
     <PresentationCard title={t('Monthly Support Needs')}>
-      <SupportNeedsTable rows={rows} />
+      <SupportNeedsTable rows={rows} ariaLabel={t('Monthly Support Needs')} />
     </PresentationCard>
   );
 };

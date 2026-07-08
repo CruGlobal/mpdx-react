@@ -8,6 +8,11 @@ fragment NewStaffGoalCalculationFields on NewStaffGoalCalculation {
     spouseContributing403bAmount
     totalContributing403bAmount
     totalMinistryExpenses
+    medicalExpenses
+    staffConferenceTransfer
+    accountTransfers
+    advocacyTransfers
+    otherExpenses
     benefitsCharge
     adminCharge
     attrition
