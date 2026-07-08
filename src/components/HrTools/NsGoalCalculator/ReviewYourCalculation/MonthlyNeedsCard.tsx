@@ -68,7 +68,7 @@ export const MonthlyNeedsCard: React.FC<MonthlyNeedsCardProps> = ({
       {
         line: '1D',
         category: t('403(b) Voluntary Retirement Plan'),
-        amount: calculations.contributing403bAmount,
+        amount: calculations.totalContributing403bAmount,
       },
       {
         line: '1',

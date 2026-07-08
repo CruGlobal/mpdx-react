@@ -31,7 +31,7 @@ describe('MonthlyNeedsCard', () => {
       salary: 8774,
       seca: 1492,
       salarySubtotal: 10266,
-      contributing403bAmount: 990,
+      totalContributing403bAmount: 990,
       totalSalary: 11256,
       ministryMiles: 100,
       travel: 60,
