@@ -62,7 +62,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
       selectedIds={selectedIds}
       showShowingCount={viewMode === TableViewModeEnum.List}
       buttonGroup={
-        <Box alignItems="center" sx={{ display: { xs: 'none', sm: 'flex' } }}>
+        <Box alignItems="center" sx={{ display: 'flex' }}>
           {viewMode === TableViewModeEnum.Flows && (
             <ViewSettingsButton
               LinkComponent={NextLink}

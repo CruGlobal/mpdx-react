@@ -351,7 +351,7 @@ const Contact: React.FC<Props> = ({ person, submitAll, accountListId }) => {
                     </Grid>
                     <CardContent sx={{ padding: 2 }}>
                       <Grid container display="flex" alignItems="center">
-                        <Box sx={{ display: { xs: 'none', md: 'contents' } }}>
+                        <Box sx={{ display: { xs: 'none', sm: 'contents' } }}>
                           <Grid
                             className={classes.paddingY}
                             size={{

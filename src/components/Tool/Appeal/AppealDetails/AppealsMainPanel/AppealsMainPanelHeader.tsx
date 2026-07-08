@@ -71,7 +71,7 @@ export const AppealsMainPanelHeader: React.FC = () => {
       showShowingCount={viewMode === TableViewModeEnum.List}
       isExcludedAppealPage={isExcludedPage}
       leftButtonGroup={
-        <Box alignItems="center" sx={{ display: { xs: 'none', sm: 'flex' } }}>
+        <Box alignItems="center" sx={{ display: 'flex' }}>
           <ViewSettingsButton
             LinkComponent={NextLink}
             href={`/accountLists/${accountListId}/tools/appeals/`}
@@ -83,7 +83,7 @@ export const AppealsMainPanelHeader: React.FC = () => {
         </Box>
       }
       buttonGroup={
-        <StyledBox sx={{ display: { xs: 'none', sm: 'flex' } }}>
+        <StyledBox>
           <StyledToggleButtonGroup
             exclusive
             value={viewMode}

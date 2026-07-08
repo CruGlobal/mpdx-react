@@ -118,7 +118,7 @@ export const TasksMassActionsDropdown: React.FC<
   return (
     <>
       {buttonGroup}
-      <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+      <Box>
         {selectedIds?.length > 0 && (
           <>
             <MassActionsDropdown

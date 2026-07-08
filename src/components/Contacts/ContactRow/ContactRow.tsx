@@ -87,7 +87,7 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
       })}
       data-testid="rowButton"
     >
-      <ListItemIcon sx={{ display: { xs: 'none', sm: 'block' } }}>
+      <ListItemIcon>
         <StyledCheckbox
           checked={isChecked(contact.id)}
           color="secondary"
@@ -126,7 +126,7 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
                 <Typography
                   component="span"
                   variant="body2"
-                  sx={{ display: { xs: 'none', md: 'block' } }}
+                  sx={{ display: { xs: 'none', sm: 'block' } }}
                 >
                   {[
                     primaryAddress.street,
@@ -158,7 +158,7 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
           />
         </Grid>
       </Grid>
-      <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Box onClick={(event) => event.preventDefault()}>
           <ContactUncompletedTasksCount
             uncompletedTasksCount={uncompletedTasksCount}

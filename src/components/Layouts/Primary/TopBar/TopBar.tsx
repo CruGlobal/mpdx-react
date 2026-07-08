@@ -65,7 +65,7 @@ const TopBar = ({
           <LogoLink />
           <Box
             sx={{
-              display: { xs: 'none', lg: 'flex' },
+              display: { xs: 'none', md: 'flex' },
               flexGrow: 1,
               alignItems: 'center',
               justifyContent: 'flex-end',

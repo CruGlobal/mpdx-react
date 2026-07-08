@@ -41,7 +41,7 @@ export const ContactPartnershipStatus: React.FC<
       <Box
         flexDirection="column"
         justifyContent="center"
-        sx={{ display: { xs: 'none', md: 'flex' } }}
+        sx={{ display: { xs: 'none', sm: 'flex' } }}
       >
         {status && <ContactPartnershipStatusLabel status={status} />}
         <Typography component="span">

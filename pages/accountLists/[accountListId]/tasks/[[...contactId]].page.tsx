@@ -241,7 +241,7 @@ const PageContent: React.FC = () => {
                   buttonGroup={
                     <Box
                       sx={{
-                        display: { xs: 'none', sm: 'flex' },
+                        display: 'flex',
                         alignItems: 'center',
                       }}
                     >
@@ -256,7 +256,7 @@ const PageContent: React.FC = () => {
                         <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
                           {t('Add')}
                         </Box>
-                        <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+                        <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
                           {t('Add Task')}
                         </Box>
                       </TaskHeaderButton>
@@ -271,7 +271,7 @@ const PageContent: React.FC = () => {
                         <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
                           {t('Log')}
                         </Box>
-                        <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+                        <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
                           {t('Log Task')}
                         </Box>
                       </TaskHeaderButton>

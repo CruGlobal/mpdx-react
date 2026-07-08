@@ -130,7 +130,7 @@ export const ContactsMassActionsDropdown: React.FC<
   return (
     <>
       {contactsView !== TableViewModeEnum.Map && (
-        <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+        <Box>
           {selectedIds?.length > 0 && (
             <>
               <MassActionsDropdown handleClick={handleClick} open={open}>
