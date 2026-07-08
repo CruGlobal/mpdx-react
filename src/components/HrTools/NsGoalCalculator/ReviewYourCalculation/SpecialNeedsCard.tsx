@@ -1,9 +1,11 @@
 import React from 'react';
 import {
+  SxProps,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
+  Theme,
   Typography,
 } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
@@ -100,7 +102,9 @@ export const SpecialNeedsCard: React.FC<SpecialNeedsCardProps> = ({
         <TableHead>
           <TableRow>
             <TableCell className="line">
-              <Typography sx={visuallyHidden}>{t('Line')}</Typography>
+              <Typography sx={visuallyHidden as SxProps<Theme>}>
+                {t('Line')}
+              </Typography>
             </TableCell>
             <TableCell>
               <Typography variant="body1" fontWeight="bold" color="primary">
