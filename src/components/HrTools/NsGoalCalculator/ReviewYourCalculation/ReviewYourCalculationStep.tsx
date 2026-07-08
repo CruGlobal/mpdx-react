@@ -28,6 +28,7 @@ export const ReviewYourCalculationStep: React.FC<
   const accountListId = useAccountListId() ?? '';
   const { data } = useAccountListSupportRaisedQuery({
     variables: { accountListId },
+    skip: !accountListId,
   });
   const supportRaised = data?.accountList.receivedPledges ?? 0;
 
