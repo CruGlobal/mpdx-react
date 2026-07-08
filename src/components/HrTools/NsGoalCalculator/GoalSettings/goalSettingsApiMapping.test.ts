@@ -62,7 +62,6 @@ const baseCalculation: NewStaffGoalCalculationFieldsFragment = {
   spouseRequestedAnnualSalary: 47000,
   contribution403bPercentage: 7,
   spouseContribution403bPercentage: 6,
-  mhaAmount: 100,
   spouseMhaAmount: 200,
   staffConferenceTransfer: 10,
   accountTransfers: 20,
@@ -175,6 +174,7 @@ describe('formValuesToAttributes', () => {
     expect(attributes.spouseAge).toBeNull();
     expect(attributes.spouseRequestedAnnualSalary).toBeNull();
     expect(attributes.spouseHealthcareExempt).toBeNull();
+    expect(attributes.spouseMhaAmount).toBeNull();
   });
 
   it('passes the age enum through to the API', () => {

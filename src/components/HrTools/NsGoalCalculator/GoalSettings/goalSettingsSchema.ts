@@ -42,7 +42,6 @@ export const getGoalSettingsSchema = (t: TFunction) =>
       t('403(b) Contribution'),
       t,
     ),
-    mhaAmount: optionalAmount(t('MHA Amount'), t),
     spouseMhaAmount: optionalAmount(t('MHA Amount'), t),
     staffConferenceTransfer: optionalAmount(t('Staff Conference Transfer'), t),
     accountTransfers: optionalAmount(t('Account Transfers'), t),

@@ -99,21 +99,13 @@ export const FinancialInformationSection: React.FC<
         )}
       </FieldRow>
 
-      <FieldRow label={t('MHA')} helperText={seniorStaffOnly}>
+      <FieldRow label={t('MHA Amount')} helperText={seniorStaffOnly}>
         <GoalSettingsNumberField
-          name="mhaAmount"
-          label={t('MHA')}
-          personName={primaryName}
+          name="spouseMhaAmount"
+          label={t('MHA Amount')}
+          personName={spouseName}
           adornment="currency"
         />
-        {hasSpouse && (
-          <GoalSettingsNumberField
-            name="spouseMhaAmount"
-            label={t('MHA')}
-            personName={spouseName}
-            adornment="currency"
-          />
-        )}
       </FieldRow>
 
       <FieldRow

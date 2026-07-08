@@ -49,7 +49,6 @@ export interface GoalSettingsFormValues {
   spouseRequestedAnnualSalary: number | '';
   contribution403bPercentage: number | '';
   spouseContribution403bPercentage: number | '';
-  mhaAmount: number | '';
   spouseMhaAmount: number | '';
   staffConferenceTransfer: number | '';
   accountTransfers: number | '';

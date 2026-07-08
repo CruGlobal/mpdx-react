@@ -47,7 +47,6 @@ export const calculationToFormValues = (
   spouseContribution403bPercentage: toNumberInput(
     calc.spouseContribution403bPercentage,
   ),
-  mhaAmount: toNumberInput(calc.mhaAmount),
   spouseMhaAmount: toNumberInput(calc.spouseMhaAmount),
   staffConferenceTransfer: toNumberInput(calc.staffConferenceTransfer),
   accountTransfers: toNumberInput(calc.accountTransfers),
@@ -115,7 +114,6 @@ export const formValuesToAttributes = (
     spouseContribution403bPercentage: hasSpouse
       ? toNumberOrNull(values.spouseContribution403bPercentage)
       : null,
-    mhaAmount: toNumberOrNull(values.mhaAmount),
     spouseMhaAmount: hasSpouse ? toNumberOrNull(values.spouseMhaAmount) : null,
 
     staffConferenceTransfer: toNumberOrNull(values.staffConferenceTransfer),
