@@ -219,7 +219,7 @@ const ProfileMenu = (): ReactElement => {
         loading={loading}
       >
         {data && (
-          <NameBox sx={{ display: { xs: 'none', xl: 'block' } }}>
+          <NameBox sx={{ display: { xs: 'none', lg: 'block' } }}>
             <AccountName>
               {session.impersonating ? `Impersonating ` : ``}
               {[data.user.firstName, data.user.lastName]

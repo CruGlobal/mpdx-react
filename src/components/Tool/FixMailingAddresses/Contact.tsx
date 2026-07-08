@@ -184,7 +184,7 @@ const Contact: React.FC<Props> = ({
       <CardContent className={(classes.paddingX, classes.paddingY)}>
         <Grid size={12}>
           <Grid container>
-            <Box sx={{ display: { xs: 'none', lg: 'contents' } }}>
+            <Box sx={{ display: { xs: 'none', md: 'contents' } }}>
               <Grid
                 className={classes.paddingB2}
                 size={{

@@ -285,7 +285,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
 
                 <CardContent className={classes.contactCardContent}>
                   <Grid container display="flex" alignItems="center">
-                    <Box sx={{ display: { xs: 'none', md: 'contents' } }}>
+                    <Box sx={{ display: { xs: 'none', sm: 'contents' } }}>
                       <Grid
                         className={classes.paddingY}
                         size={{

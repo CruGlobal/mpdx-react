@@ -158,7 +158,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
             textOverflow: 'ellipsis',
           }}
         >
-          <Box padding="checkbox" sx={{ display: { xs: 'none', sm: 'block' } }}>
+          <Box padding="checkbox">
             <StyledCheckbox
               checked={isChecked}
               data-testid={`task-checkbox-${taskId}`}
@@ -247,7 +247,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
         </Box>
         <Box display="flex" justifyContent="flex-end" alignItems="center">
           <Box
-            sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}
+            sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center' }}
           >
             {!!task?.tagList.length && (
               <Tooltip
@@ -327,7 +327,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
           </Box>
 
           <Box
-            sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}
+            sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center' }}
           >
             <Box onClick={(e) => e.stopPropagation()}>
               <DeleteTaskIconButton

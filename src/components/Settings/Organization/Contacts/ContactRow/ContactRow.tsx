@@ -176,7 +176,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
                   <Typography
                     component="span"
                     variant="body2"
-                    sx={{ display: { xs: 'none', md: 'block' } }}
+                    sx={{ display: { xs: 'none', sm: 'block' } }}
                   >
                     {primaryAddressString}
                   </Typography>

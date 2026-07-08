@@ -232,7 +232,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
               page={PageEnum.Task}
             />
             {!!ids.length && (
-              <Typography ml={2} sx={{ display: { xs: 'none', md: 'block' } }}>
+              <Typography ml={2} sx={{ display: { xs: 'none', sm: 'block' } }}>
                 {t('{{count}} Selected', { count: ids.length })}
               </Typography>
             )}

@@ -95,13 +95,7 @@ const AccountLists = (): ReactElement => {
                 const totalPercentage = totalPledges / (monthlyGoal ?? NaN);
 
                 return (
-                  <Grid
-                    key={id}
-                    size={{
-                      xs: 12,
-                      sm: 4,
-                    }}
-                  >
+                  <Grid key={id} size={{ xs: 12, sm: 4 }}>
                     <AnimatedCard elevation={3}>
                       <Link
                         component={NextLink}

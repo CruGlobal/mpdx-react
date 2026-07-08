@@ -116,7 +116,6 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
             }
             onChange={onCheckAllItems}
             disabled={!totalItems}
-            sx={{ display: { xs: 'none', sm: 'block' } }}
           />
         )}
         {page === PageEnum.Appeal && leftButtonGroup && (
@@ -140,7 +139,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         />
         <ItemsShowingText
           data-testid="showing-text"
-          sx={{ display: { xs: 'none', md: 'block' } }}
+          sx={{ display: { xs: 'none', sm: 'block' } }}
         >
           {showShowingCount
             ? t('Showing {{count}}', { count: totalItems })
@@ -150,7 +149,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
       <HeaderWrapInner style={{ marginLeft: 8 }}>
         {!!selectedIds.length && (
           <ItemsShowingText
-            sx={{ marginRight: 2, display: { xs: 'none', md: 'block' } }}
+            sx={{ marginRight: 2, display: { xs: 'none', sm: 'block' } }}
           >
             {t('{{count}} Selected', { count: selectedIds.length })}
           </ItemsShowingText>
@@ -191,7 +190,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
 
         {page !== PageEnum.Report && (
           // This hidden doesn't remove from document
-          <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+          <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
             <StarFilterButton
               starredFilter={starred}
               toggleStarredFilter={setStarred}

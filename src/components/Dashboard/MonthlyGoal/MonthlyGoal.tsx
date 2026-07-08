@@ -69,7 +69,6 @@ const MonthlyGoal = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isBelowMd = useMediaQuery(theme.breakpoints.down('md'));
   const receivedPercentage = received / goal;
   const pledgedPercentage = pledged / goal;
   const belowGoal = goal - pledged;
@@ -114,11 +113,10 @@ const MonthlyGoal = ({
             secondary={pledgedPercentage}
           />
           <Grid container spacing={2}>
-            {!isBelowMd && (
+            {!isMobile && (
               <Grid
                 size={{
                   sm: 6,
-                  md: 3,
                 }}
               >
                 <Typography component="div" color="textSecondary">
@@ -209,7 +207,7 @@ const MonthlyGoal = ({
                 )}
               </Typography>
             </Grid>
-            {!isBelowMd &&
+            {!isMobile &&
               (!isNaN(belowGoal) && belowGoal > 0 ? (
                 <Grid
                   size={{

@@ -158,7 +158,7 @@ export const ContactRow: React.FC<Props> = ({
             display={'flex'}
             size={isExcludedContact ? 5 : 6}
           >
-            <ListItemIcon sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>
+            <ListItemIcon>
               <StyledCheckbox
                 checked={isChecked(contact.id)}
                 color="secondary"
@@ -311,7 +311,7 @@ export const ContactRow: React.FC<Props> = ({
             </ContactRowActions>
           </Grid>
         </Grid>
-        <Box sx={{ display: { xs: 'none', sm: 'block' } }}></Box>
+        <Box></Box>
       </ListButton>
       {removeContactModalOpen && (
         <DynamicDeleteAppealContactModal
