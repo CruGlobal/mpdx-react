@@ -69,6 +69,7 @@ export const PresentingYourGoalStep: React.FC<PresentingYourGoalStepProps> = ({
       socialSecurityAndTaxes: calculations.seca,
       voluntaryRetirement: calculations.totalContributing403bAmount,
       adminCharge: calculations.adminCharge,
+      monthlyGoal: calculations.monthlyGoal,
     }),
     [married, calculations],
   );

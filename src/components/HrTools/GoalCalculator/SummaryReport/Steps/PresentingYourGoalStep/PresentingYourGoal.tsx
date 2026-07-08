@@ -45,6 +45,7 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
         goalTotals.traditionalContribution + goalTotals.rothContribution,
       adminCharge:
         goalTotals.overallSubtotalWithAdmin - goalTotals.overallSubtotal,
+      monthlyGoal: goalTotals.overallTotal,
     }),
     [married, goalTotals],
   );

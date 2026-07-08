@@ -9,15 +9,14 @@ const monthlyNeeds: MonthlyNeeds = {
   socialSecurityAndTaxes: 600,
   voluntaryRetirement: 400,
   adminCharge: 200,
+  monthlyGoal: 9000,
 };
 
 describe('useMonthlyNeedsRows', () => {
-  it('returns the rows in order with their amounts and the total', () => {
+  it('returns the itemized rows in order with their amounts', () => {
     const { result } = renderHook(() => useMonthlyNeedsRows(monthlyNeeds));
 
-    expect(
-      result.current.rows.map(({ title, amount }) => [title, amount]),
-    ).toEqual([
+    expect(result.current.map(({ title, amount }) => [title, amount])).toEqual([
       ['Salary', 5000],
       ['Ministry Expenses', 1000],
       ['Benefits', 800],
@@ -25,8 +24,6 @@ describe('useMonthlyNeedsRows', () => {
       ['Voluntary 403b Retirement Plan', 400],
       ['Administrative Charge', 200],
     ]);
-
-    expect(result.current.total).toBe(8000);
   });
 
   it('uses the combined salary title when married', () => {
@@ -34,12 +31,12 @@ describe('useMonthlyNeedsRows', () => {
       useMonthlyNeedsRows({ ...monthlyNeeds, married: true }),
     );
 
-    expect(result.current.rows[0].title).toBe('Salary (Combined)');
+    expect(result.current[0].title).toBe('Salary (Combined)');
   });
 
   it('does not bold the administrative charge title', () => {
     const { result } = renderHook(() => useMonthlyNeedsRows(monthlyNeeds));
 
-    expect(result.current.rows[5].titleBold).toBe(false);
+    expect(result.current[5].titleBold).toBe(false);
   });
 });

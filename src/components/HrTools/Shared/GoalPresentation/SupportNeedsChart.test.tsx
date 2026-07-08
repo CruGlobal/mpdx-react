@@ -32,6 +32,7 @@ const monthlyNeeds: MonthlyNeeds = {
   socialSecurityAndTaxes: 600,
   voluntaryRetirement: 400,
   adminCharge: 200,
+  monthlyGoal: 8000,
 };
 
 describe('SupportNeedsChart', () => {
