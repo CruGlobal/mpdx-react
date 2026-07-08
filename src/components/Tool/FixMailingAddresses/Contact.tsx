@@ -13,7 +13,6 @@ import {
   CardContent,
   CardHeader,
   Grid,
-  Hidden,
   IconButton,
   Link,
   Typography,
@@ -183,24 +182,44 @@ const Contact: React.FC<Props> = ({
         subheader={<Typography>{getLocalizedContactStatus(status)}</Typography>}
       />
       <CardContent className={(classes.paddingX, classes.paddingY)}>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Grid container>
-            <Hidden mdDown>
-              <Grid item xs={12} md={5} className={classes.paddingB2}>
+            <Box sx={{ display: { xs: 'none', md: 'contents' } }}>
+              <Grid
+                className={classes.paddingB2}
+                size={{
+                  xs: 12,
+                  md: 5,
+                }}
+              >
                 <Box display="flex" justifyContent="space-between">
-                  <Grid item md={8}>
+                  <Grid
+                    size={{
+                      md: 8,
+                    }}
+                  >
                     <Typography>
                       <strong>{t('Source')}</strong>
                     </Typography>
                   </Grid>
-                  <Grid item md={4}>
+                  <Grid
+                    size={{
+                      md: 4,
+                    }}
+                  >
                     <Typography align="center">
                       <strong>{t('Primary')}</strong>
                     </Typography>
                   </Grid>
                 </Box>
               </Grid>
-              <Grid item xs={12} md={7} className={classes.paddingB2}>
+              <Grid
+                className={classes.paddingB2}
+                size={{
+                  xs: 12,
+                  md: 7,
+                }}
+              >
                 <Box
                   display="flex"
                   justifyContent="flex-start"
@@ -211,23 +230,28 @@ const Contact: React.FC<Props> = ({
                   </Typography>
                 </Box>
               </Grid>
-            </Hidden>
+            </Box>
             {addressesData?.map((address) => (
               <Fragment key={address.id}>
                 <Grid
-                  item
-                  xs={12}
-                  md={5}
                   className={classes.paddingB2}
                   data-testid="address"
+                  size={{
+                    xs: 12,
+                    md: 5,
+                  }}
                 >
                   <Box display="flex" justifyContent="space-between">
-                    <Grid item md={8}>
-                      <Hidden mdUp>
-                        <Typography display="inline">
-                          <strong>{t('Source')}: </strong>
-                        </Typography>
-                      </Hidden>
+                    <Grid
+                      size={{
+                        md: 8,
+                      }}
+                    >
+                      <Typography
+                        sx={{ display: { xs: 'inline', md: 'none' } }}
+                      >
+                        <strong>{t('Source')}: </strong>
+                      </Typography>
                       <Typography display="inline">
                         {sourceToStr(t, address.source)}{' '}
                       </Typography>
@@ -240,7 +264,12 @@ const Contact: React.FC<Props> = ({
                         )}
                       </Typography>
                     </Grid>
-                    <Grid item md={4} className={classes.alignCenter}>
+                    <Grid
+                      className={classes.alignCenter}
+                      size={{
+                        md: 4,
+                      }}
+                    >
                       <ContactIconContainer
                         aria-label={t('Edit Icon')}
                         disabled={!editableSources[address.id]}
@@ -261,7 +290,13 @@ const Contact: React.FC<Props> = ({
                     </Grid>
                   </Box>
                 </Grid>
-                <Grid item xs={12} md={7} className={classes.paddingB2}>
+                <Grid
+                  className={classes.paddingB2}
+                  size={{
+                    xs: 12,
+                    md: 7,
+                  }}
+                >
                   <Box
                     display="flex"
                     justifyContent="flex-start"
@@ -300,18 +335,28 @@ const Contact: React.FC<Props> = ({
                 </Grid>
               </Fragment>
             ))}
-            <Grid item xs={12} md={5} className={classes.paddingB2}>
+            <Grid
+              className={classes.paddingB2}
+              size={{
+                xs: 12,
+                md: 5,
+              }}
+            >
               <Box display="flex" justifyContent="space-between">
                 <Box>
-                  <Hidden mdUp>
-                    <Typography display="inline">
-                      <strong>{t('Source')}: </strong>
-                    </Typography>
-                  </Hidden>
+                  <Typography sx={{ display: { xs: 'inline', md: 'none' } }}>
+                    <strong>{t('Source')}: </strong>
+                  </Typography>
                 </Box>
               </Box>
             </Grid>
-            <Grid item xs={12} md={7} className={classes.paddingB2}>
+            <Grid
+              className={classes.paddingB2}
+              size={{
+                xs: 12,
+                md: 7,
+              }}
+            >
               <Box
                 display="flex"
                 justifyContent="flex-start"

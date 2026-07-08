@@ -128,7 +128,6 @@ export const MergeForm: React.FC<MergeFormProps> = ({ isSpouse }) => {
           )}
         </p>
       </Typography>
-
       <Alert severity="error" style={{ marginTop: '15px' }}>
         <p>
           {t(
@@ -139,7 +138,6 @@ export const MergeForm: React.FC<MergeFormProps> = ({ isSpouse }) => {
           {t(`DO NOT MERGE MINISTRY ACCOUNTS THROUGH {{appName}}`, { appName })}
         </p>
       </Alert>
-
       {accountLists && !accountLists.length && (
         <Alert severity="warning" style={{ marginTop: '15px' }}>
           <p>
@@ -148,7 +146,6 @@ export const MergeForm: React.FC<MergeFormProps> = ({ isSpouse }) => {
           </p>
         </Alert>
       )}
-
       <Formik
         initialValues={{
           selectedAccountId: '',
@@ -174,7 +171,12 @@ export const MergeForm: React.FC<MergeFormProps> = ({ isSpouse }) => {
                   spacing={2}
                   style={{ marginTop: isSpouse ? 4 : 0 }}
                 >
-                  <Grid item sm={isSpouse ? 5.5 : 12} xs={12}>
+                  <Grid
+                    size={{
+                      sm: isSpouse ? 5.5 : 12,
+                      xs: 12,
+                    }}
+                  >
                     <BorderBox isSpouse={isSpouse} marginTop={isSpouse ? 0 : 4}>
                       <Typography
                         style={{
@@ -219,13 +221,14 @@ export const MergeForm: React.FC<MergeFormProps> = ({ isSpouse }) => {
 
                   {isSpouse && (
                     <Grid
-                      item
-                      sm={1}
-                      xs={12}
                       style={{
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
+                      }}
+                      size={{
+                        sm: 1,
+                        xs: 12,
                       }}
                     >
                       <KeyboardArrowRightIcon
@@ -235,7 +238,12 @@ export const MergeForm: React.FC<MergeFormProps> = ({ isSpouse }) => {
                       />
                     </Grid>
                   )}
-                  <Grid item sm={isSpouse ? 5.5 : 12} xs={12}>
+                  <Grid
+                    size={{
+                      sm: isSpouse ? 5.5 : 12,
+                      xs: 12,
+                    }}
+                  >
                     {currentAccount && (
                       <BorderBox
                         isSpouse={isSpouse}

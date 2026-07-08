@@ -1,5 +1,5 @@
 import React, { ReactElement, useState } from 'react';
-import { Hidden, ListItemText, Menu, MenuItem } from '@mui/material';
+import { ListItemText, Menu, MenuItem } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -118,78 +118,76 @@ export const TasksMassActionsDropdown: React.FC<
   return (
     <>
       {buttonGroup}
-      <Hidden xsDown>
-        {selectedIds?.length > 0 && (
-          <>
-            <MassActionsDropdown
-              handleClick={handleClick}
-              open={open}
-              disabled={selectedIds.length === 0}
+      {selectedIds?.length > 0 && (
+        <>
+          <MassActionsDropdown
+            handleClick={handleClick}
+            open={open}
+            disabled={selectedIds.length === 0}
+          >
+            {t('Actions')}
+          </MassActionsDropdown>
+          <Menu
+            open={open}
+            onClose={handleClose}
+            disableRestoreFocus={true}
+            anchorEl={anchorEl}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+          >
+            <MenuItem
+              onClick={() => {
+                setCompleteTasksModalOpen(true);
+                handleClose();
+              }}
+              onMouseEnter={preloadMassActionsTasksConfirmationModal}
             >
-              {t('Actions')}
-            </MassActionsDropdown>
-            <Menu
-              open={open}
-              onClose={handleClose}
-              disableRestoreFocus={true}
-              anchorEl={anchorEl}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-              transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+              <ListItemText>{t('Complete Tasks')}</ListItemText>
+            </MenuItem>
+
+            <MenuItem
+              divider
+              onClick={() => {
+                setEditTasksModalOpen(true);
+                handleClose();
+              }}
+              onMouseEnter={preloadMassActionsEditTasksModal}
             >
-              <MenuItem
-                onClick={() => {
-                  setCompleteTasksModalOpen(true);
-                  handleClose();
-                }}
-                onMouseEnter={preloadMassActionsTasksConfirmationModal}
-              >
-                <ListItemText>{t('Complete Tasks')}</ListItemText>
-              </MenuItem>
+              <ListItemText>{t('Edit Tasks')}</ListItemText>
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setAddTagsModalOpen(true);
+                handleClose();
+              }}
+              onMouseEnter={preloadMassActionsTasksAddTagsModal}
+            >
+              <ListItemText>{t('Add Tag(s)')}</ListItemText>
+            </MenuItem>
 
-              <MenuItem
-                divider
-                onClick={() => {
-                  setEditTasksModalOpen(true);
-                  handleClose();
-                }}
-                onMouseEnter={preloadMassActionsEditTasksModal}
-              >
-                <ListItemText>{t('Edit Tasks')}</ListItemText>
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  setAddTagsModalOpen(true);
-                  handleClose();
-                }}
-                onMouseEnter={preloadMassActionsTasksAddTagsModal}
-              >
-                <ListItemText>{t('Add Tag(s)')}</ListItemText>
-              </MenuItem>
+            <MenuItem
+              divider
+              onClick={() => {
+                setRemoveTagsModalOpen(true);
+                handleClose();
+              }}
+              onMouseEnter={preloadMassActionsTasksRemoveTagsModal}
+            >
+              <ListItemText>{t('Remove Tag(s)')}</ListItemText>
+            </MenuItem>
 
-              <MenuItem
-                divider
-                onClick={() => {
-                  setRemoveTagsModalOpen(true);
-                  handleClose();
-                }}
-                onMouseEnter={preloadMassActionsTasksRemoveTagsModal}
-              >
-                <ListItemText>{t('Remove Tag(s)')}</ListItemText>
-              </MenuItem>
-
-              <MenuItem
-                onClick={() => {
-                  setDeleteTasksModalOpen(true);
-                  handleClose();
-                }}
-                onMouseEnter={preloadMassActionsTasksConfirmationModal}
-              >
-                <ListItemText>{t('Delete Tasks')}</ListItemText>
-              </MenuItem>
-            </Menu>
-          </>
-        )}
-      </Hidden>
+            <MenuItem
+              onClick={() => {
+                setDeleteTasksModalOpen(true);
+                handleClose();
+              }}
+              onMouseEnter={preloadMassActionsTasksConfirmationModal}
+            >
+              <ListItemText>{t('Delete Tasks')}</ListItemText>
+            </MenuItem>
+          </Menu>
+        </>
+      )}
 
       {completeTasksModalOpen && (
         <DynamicMassActionsTasksConfirmationModal

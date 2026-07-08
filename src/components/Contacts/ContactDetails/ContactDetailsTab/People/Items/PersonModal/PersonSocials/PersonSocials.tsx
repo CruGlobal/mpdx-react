@@ -76,7 +76,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
             <ModalSectionContainer key={index}>
               {index === 0 ? <ModalSectionIcon icon={<Facebook />} /> : null}
               <Grid container spacing={3}>
-                <Grid item xs={6}>
+                <Grid size={6}>
                   <SocialsTextField
                     destroyed={account.destroy ?? false}
                     label={t('Username/URL')}
@@ -97,7 +97,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                     fullWidth
                   />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid size={6}>
                   <FormControl fullWidth>
                     <InputLabel id="social-type-label">{t('Type')}</InputLabel>
                     <SocialSelect
@@ -133,7 +133,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
             <ModalSectionContainer key={index}>
               {index === 0 ? <ModalSectionIcon icon={<Twitter />} /> : null}
               <Grid container spacing={3}>
-                <Grid item xs={6}>
+                <Grid size={6}>
                   <SocialsTextField
                     destroyed={account.destroy ?? false}
                     label={t('Username/URL')}
@@ -154,7 +154,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                     fullWidth
                   />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid size={6}>
                   <FormControl fullWidth>
                     <InputLabel id="social-type-label">{t('Type')}</InputLabel>
                     <SocialSelect
@@ -190,7 +190,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
             <ModalSectionContainer key={index}>
               {index === 0 ? <ModalSectionIcon icon={<LinkedIn />} /> : null}
               <Grid container spacing={3}>
-                <Grid item xs={6}>
+                <Grid size={6}>
                   <SocialsTextField
                     destroyed={account.destroy ?? false}
                     label={t('Username/URL')}
@@ -211,7 +211,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                     fullWidth
                   />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid size={6}>
                   <FormControl fullWidth>
                     <InputLabel id="social-type-label">{t('Type')}</InputLabel>
                     <SocialSelect
@@ -251,7 +251,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                   <ModalSectionIcon icon={<SocialIcon />} />
                 ) : null}
                 <Grid container spacing={3}>
-                  <Grid item xs={6}>
+                  <Grid size={6}>
                     <SocialsTextField
                       destroyed={account.destroy ?? false}
                       label={t('Username/URL')}
@@ -272,7 +272,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                       fullWidth
                     />
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid size={6}>
                     <FormControl fullWidth>
                       <InputLabel id="social-type-label">
                         {t('Type')}
@@ -316,7 +316,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                     <ModalSectionIcon icon={<SocialIcon />} />
                   ) : null}
                   <Grid container spacing={3}>
-                    <Grid item xs={6}>
+                    <Grid size={6}>
                       <SocialsTextField
                         destroyed={social.destroy ?? false}
                         label={t('Username/URL')}
@@ -337,7 +337,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                         fullWidth
                       />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid size={6}>
                       <FormControl fullWidth>
                         <InputLabel id="social-type-label">
                           {t('Type')}

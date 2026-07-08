@@ -133,7 +133,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
               <TableCell sx={{ fontSize: 20 }}>{preferredName}</TableCell>
               <TableCell>
                 <Grid container direction="column">
-                  <Grid item>
+                  <Grid>
                     <Typography
                       sx={{ color: 'primary.main', fontWeight: 'bold' }}
                     >
@@ -147,7 +147,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
                       )}
                     </Typography>
                   </Grid>
-                  <Grid item>
+                  <Grid>
                     <Typography sx={{ color: 'text.secondary' }}>
                       {t('Approved on')}:{' '}
                       {hrApprovedAt ? (
@@ -166,7 +166,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
               </TableCell>
               <TableCell>
                 <Grid container direction="column">
-                  <Grid item>
+                  <Grid>
                     <Typography
                       sx={{ color: 'primary.main', fontWeight: 'bold' }}
                     >
@@ -180,7 +180,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
                       )}
                     </Typography>
                   </Grid>
-                  <Grid item>
+                  <Grid>
                     <Typography sx={{ color: 'text.secondary' }}>
                       {t('Last updated')}:{' '}
                       {lastUpdated ? (
@@ -205,7 +205,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
                 </TableCell>
                 <TableCell>
                   <Grid container direction="column">
-                    <Grid item>
+                    <Grid>
                       <Typography
                         sx={{ color: 'primary.main', fontWeight: 'bold' }}
                       >
@@ -219,7 +219,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
                         )}
                       </Typography>
                     </Grid>
-                    <Grid item>
+                    <Grid>
                       <Typography sx={{ color: 'text.secondary' }}>
                         {t('Approved on')}:{' '}
                         {hrApprovedAt ? (
@@ -241,7 +241,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
                 </TableCell>
                 <TableCell>
                   <Grid container direction="column">
-                    <Grid item>
+                    <Grid>
                       <Typography
                         sx={{ color: 'primary.main', fontWeight: 'bold' }}
                       >
@@ -255,7 +255,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
                         )}
                       </Typography>
                     </Grid>
-                    <Grid item>
+                    <Grid>
                       <Typography sx={{ color: 'text.secondary' }}>
                         {t('Last updated')}:{' '}
                         {lastUpdated ? (

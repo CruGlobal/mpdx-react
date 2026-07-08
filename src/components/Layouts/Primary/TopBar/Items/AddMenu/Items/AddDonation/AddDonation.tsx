@@ -190,8 +190,8 @@ export const AddDonation = ({
           <DialogContent dividers>
             <Grid container spacing={1}>
               {/* Amount and Currency Row */}
-              <Grid container item xs={12} spacing={1}>
-                <Grid item xs={isMobile ? 12 : 8}>
+              <Grid container spacing={1} size={12}>
+                <Grid size={isMobile ? 12 : 8}>
                   <FormControl
                     size="small"
                     fullWidth
@@ -227,7 +227,7 @@ export const AddDonation = ({
                     </FastField>
                   </FormControl>
                 </Grid>
-                <Grid item xs={isMobile ? 12 : 4}>
+                <Grid size={isMobile ? 12 : 4}>
                   <FormControl
                     size="small"
                     fullWidth
@@ -266,8 +266,8 @@ export const AddDonation = ({
                 </Grid>
               </Grid>
               {/* Donation Date and Motivation Row */}
-              <Grid container item xs={12} spacing={1}>
-                <Grid item xs={isMobile ? 12 : 6}>
+              <Grid container spacing={1} size={12}>
+                <Grid size={isMobile ? 12 : 6}>
                   <FormControl
                     size="small"
                     fullWidth
@@ -300,7 +300,7 @@ export const AddDonation = ({
                     </FastField>
                   </FormControl>
                 </Grid>
-                <Grid item xs={isMobile ? 12 : 6}>
+                <Grid size={isMobile ? 12 : 6}>
                   <FormControl
                     size="small"
                     fullWidth
@@ -335,8 +335,8 @@ export const AddDonation = ({
                 </Grid>
               </Grid>
               {/* Partner and Designation Account Row */}
-              <Grid container item xs={12} spacing={1}>
-                <Grid item xs={isMobile ? 12 : 6}>
+              <Grid container spacing={1} size={12}>
+                <Grid size={isMobile ? 12 : 6}>
                   <FormControl
                     size="small"
                     fullWidth
@@ -375,7 +375,7 @@ export const AddDonation = ({
                     </Field>
                   </FormControl>
                 </Grid>
-                <Grid item xs={isMobile ? 12 : 6}>
+                <Grid size={isMobile ? 12 : 6}>
                   <FormControl
                     size="small"
                     fullWidth
@@ -424,8 +424,8 @@ export const AddDonation = ({
                 </Grid>
               </Grid>
               {/* Appeal and Appeal Amount Row */}
-              <Grid container item xs={12} spacing={1}>
-                <Grid item xs={isMobile ? 12 : 6}>
+              <Grid container spacing={1} size={12}>
+                <Grid size={isMobile ? 12 : 6}>
                   <FormControl
                     size="small"
                     fullWidth
@@ -455,7 +455,7 @@ export const AddDonation = ({
                     </FastField>
                   </FormControl>
                 </Grid>
-                <Grid item xs={isMobile ? 12 : 6}>
+                <Grid size={isMobile ? 12 : 6}>
                   <FormControl
                     size="small"
                     fullWidth
@@ -498,8 +498,8 @@ export const AddDonation = ({
                 </Grid>
               </Grid>
               {/* Memo Row */}
-              <Grid container item xs={12} spacing={1}>
-                <Grid item xs={12}>
+              <Grid container spacing={1} size={12}>
+                <Grid size={12}>
                   <FormControl fullWidth size="small">
                     <LogFormLabel
                       data-testid="memo-label"

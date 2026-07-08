@@ -22,6 +22,9 @@ const contactMock = (status: StatusEnum) => {
         pledgeAmount: 500,
         pledgeFrequency: PledgeFrequencyEnum.Monthly,
         pledgeReceived: true,
+        // Test time is pinned to 2020-01-01, so this is 60+ days late
+        lateAt: '2019-10-01',
+        pledgeStartDate: '2019-10-01',
         lastDonation: {
           donationDate: '2021-09-07T16:38:20.242-04:00',
           amount: {
@@ -87,6 +90,21 @@ describe('ContactHeaderStatusSection', () => {
     );
     expect(await findByText('Partner - Financial')).toBeInTheDocument();
     expect(queryByText('$500 - Monthly')).toBeInTheDocument();
+  });
+
+  it('stacks the pledge and late status on their own lines', async () => {
+    const { findByText } = render(
+      <Components
+        loading={false}
+        contact={contactMock(StatusEnum.PartnerFinancial)}
+      />,
+    );
+
+    expect(await findByText('$500 - Monthly')).toHaveStyle('display: block');
+    // The late status label span is wrapped in a block-level Typography
+    expect((await findByText('60+ days late')).parentElement).toHaveStyle(
+      'display: block',
+    );
   });
 
   const statuses = Object.values(StatusEnum).map((status) => {

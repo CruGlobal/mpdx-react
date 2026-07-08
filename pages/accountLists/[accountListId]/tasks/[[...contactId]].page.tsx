@@ -3,7 +3,7 @@ import Head from 'next/head';
 import React, { useEffect, useMemo, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import { Box, Button, ButtonGroup, Hidden } from '@mui/material';
+import { Box, Button, ButtonGroup } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -239,7 +239,12 @@ const PageContent: React.FC = () => {
                   showShowingCount
                   selectedIds={ids}
                   buttonGroup={
-                    <Hidden xsDown>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
                       <TaskHeaderButton
                         onClick={() =>
                           openTaskModal({ view: TaskModalEnum.Add })
@@ -248,8 +253,12 @@ const PageContent: React.FC = () => {
                         variant="text"
                         startIcon={<TaskAddIcon />}
                       >
-                        <Hidden smUp>{t('Add')}</Hidden>
-                        <Hidden smDown>{t('Add Task')}</Hidden>
+                        <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+                          {t('Add')}
+                        </Box>
+                        <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+                          {t('Add Task')}
+                        </Box>
                       </TaskHeaderButton>
                       <TaskHeaderButton
                         onClick={() =>
@@ -259,10 +268,14 @@ const PageContent: React.FC = () => {
                         variant="text"
                         startIcon={<TaskCheckIcon />}
                       >
-                        <Hidden smUp>{t('Log')}</Hidden>
-                        <Hidden smDown>{t('Log Task')}</Hidden>
+                        <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+                          {t('Log')}
+                        </Box>
+                        <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+                          {t('Log Task')}
+                        </Box>
                       </TaskHeaderButton>
-                    </Hidden>
+                    </Box>
                   }
                 />
                 <Box>

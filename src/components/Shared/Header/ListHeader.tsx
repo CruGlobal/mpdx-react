@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import ViewList from '@mui/icons-material/ViewList';
-import { Box, Checkbox, Hidden } from '@mui/material';
+import { Box, Checkbox } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useContactPanel } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
@@ -107,18 +107,16 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
     <HeaderWrap contactPanelOpen={contactPanelOpen}>
       <HeaderWrapInner style={{ marginRight: 8 }}>
         {contactsView !== TableViewModeEnum.Map && (
-          <Hidden xsDown>
-            <StyledCheckbox
-              name="check all"
-              checked={headerCheckboxState === ListHeaderCheckBoxState.Checked}
-              color="secondary"
-              indeterminate={
-                headerCheckboxState === ListHeaderCheckBoxState.Partial
-              }
-              onChange={onCheckAllItems}
-              disabled={!totalItems}
-            />
-          </Hidden>
+          <StyledCheckbox
+            name="check all"
+            checked={headerCheckboxState === ListHeaderCheckBoxState.Checked}
+            color="secondary"
+            indeterminate={
+              headerCheckboxState === ListHeaderCheckBoxState.Partial
+            }
+            onChange={onCheckAllItems}
+            disabled={!totalItems}
+          />
         )}
         {page === PageEnum.Appeal && leftButtonGroup && (
           <Box>{leftButtonGroup}</Box>
@@ -139,21 +137,22 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
           }
           page={page}
         />
-        <Hidden smDown>
-          <ItemsShowingText data-testid="showing-text">
-            {showShowingCount
-              ? t('Showing {{count}}', { count: totalItems })
-              : ''}
-          </ItemsShowingText>
-        </Hidden>
+        <ItemsShowingText
+          data-testid="showing-text"
+          sx={{ display: { xs: 'none', sm: 'block' } }}
+        >
+          {showShowingCount
+            ? t('Showing {{count}}', { count: totalItems })
+            : ''}
+        </ItemsShowingText>
       </HeaderWrapInner>
       <HeaderWrapInner style={{ marginLeft: 8 }}>
         {!!selectedIds.length && (
-          <Hidden smDown>
-            <ItemsShowingText sx={{ marginRight: 2 }}>
-              {t('{{count}} Selected', { count: selectedIds.length })}
-            </ItemsShowingText>
-          </Hidden>
+          <ItemsShowingText
+            sx={{ marginRight: 2, display: { xs: 'none', sm: 'block' } }}
+          >
+            {t('{{count}} Selected', { count: selectedIds.length })}
+          </ItemsShowingText>
         )}
         {(page === PageEnum.Contact || page === PageEnum.Appeal) && (
           <ContactsMassActionsDropdown
@@ -191,12 +190,12 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
 
         {page !== PageEnum.Report && (
           // This hidden doesn't remove from document
-          <Hidden smDown>
+          <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
             <StarFilterButton
               starredFilter={starred}
               toggleStarredFilter={setStarred}
             />
-          </Hidden>
+          </Box>
         )}
       </HeaderWrapInner>
     </HeaderWrap>

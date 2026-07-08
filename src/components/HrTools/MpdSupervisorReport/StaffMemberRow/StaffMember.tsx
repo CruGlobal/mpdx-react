@@ -108,7 +108,7 @@ export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
         }}
       >
         <Grid container>
-          <GridItem item xs={6}>
+          <GridItem size={6}>
             <Avatar
               sx={{ bgcolor: 'mpdxGrayLight.main', color: 'text.primary' }}
             >
@@ -131,7 +131,7 @@ export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
               </Box>
             </Box>
           </GridItem>
-          <GridQuarter item xs={6}>
+          <GridQuarter size={6}>
             <FiscalYearQuarters quarters={quarters} />
           </GridQuarter>
         </Grid>

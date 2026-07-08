@@ -4,13 +4,7 @@ import FormatListBulleted from '@mui/icons-material/FormatListBulleted';
 import Map from '@mui/icons-material/Map';
 import Settings from '@mui/icons-material/Settings';
 import ViewColumn from '@mui/icons-material/ViewColumn';
-import {
-  Box,
-  Button,
-  Hidden,
-  ToggleButton,
-  ToggleButtonGroup,
-} from '@mui/material';
+import { Box, Button, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import {
@@ -68,44 +62,42 @@ export const ContactsMainPanelHeader: React.FC = () => {
       selectedIds={selectedIds}
       showShowingCount={viewMode === TableViewModeEnum.List}
       buttonGroup={
-        <Hidden xsDown>
-          <Box display="flex" alignItems="center">
-            {viewMode === TableViewModeEnum.Flows && (
-              <ViewSettingsButton
-                LinkComponent={NextLink}
-                href={`/accountLists/${accountListId}/contacts/flows/setup`}
-                variant="outlined"
-              >
-                <Settings style={{ marginRight: 8 }} />
-                {t('View Settings')}
-              </ViewSettingsButton>
-            )}
-            <StyledToggleButtonGroup
-              exclusive
-              value={viewMode}
-              onChange={(_event, value) => setViewMode(value)}
+        <Box alignItems="center" sx={{ display: 'flex' }}>
+          {viewMode === TableViewModeEnum.Flows && (
+            <ViewSettingsButton
+              LinkComponent={NextLink}
+              href={`/accountLists/${accountListId}/contacts/flows/setup`}
+              variant="outlined"
             >
-              <ToggleButton
-                value={TableViewModeEnum.List}
-                disabled={viewMode === TableViewModeEnum.List}
-              >
-                <BulletedListIcon titleAccess={t('List View')} />
-              </ToggleButton>
-              <ToggleButton
-                value={TableViewModeEnum.Flows}
-                disabled={viewMode === TableViewModeEnum.Flows}
-              >
-                <ViewColumnIcon titleAccess={t('Column Workflow View')} />
-              </ToggleButton>
-              <ToggleButton
-                value={TableViewModeEnum.Map}
-                disabled={viewMode === TableViewModeEnum.Map}
-              >
-                <MapIcon titleAccess={t('Map View')} />
-              </ToggleButton>
-            </StyledToggleButtonGroup>
-          </Box>
-        </Hidden>
+              <Settings style={{ marginRight: 8 }} />
+              {t('View Settings')}
+            </ViewSettingsButton>
+          )}
+          <StyledToggleButtonGroup
+            exclusive
+            value={viewMode}
+            onChange={(_event, value) => setViewMode(value)}
+          >
+            <ToggleButton
+              value={TableViewModeEnum.List}
+              disabled={viewMode === TableViewModeEnum.List}
+            >
+              <BulletedListIcon titleAccess={t('List View')} />
+            </ToggleButton>
+            <ToggleButton
+              value={TableViewModeEnum.Flows}
+              disabled={viewMode === TableViewModeEnum.Flows}
+            >
+              <ViewColumnIcon titleAccess={t('Column Workflow View')} />
+            </ToggleButton>
+            <ToggleButton
+              value={TableViewModeEnum.Map}
+              disabled={viewMode === TableViewModeEnum.Map}
+            >
+              <MapIcon titleAccess={t('Map View')} />
+            </ToggleButton>
+          </StyledToggleButtonGroup>
+        </Box>
       }
     />
   );
