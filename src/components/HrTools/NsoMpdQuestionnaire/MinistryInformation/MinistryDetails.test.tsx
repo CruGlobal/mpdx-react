@@ -49,19 +49,39 @@ describe('MinistryDetails', () => {
     ).toBeRequired();
   });
 
-  it('offers the dummy ministry options', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('offers the flattened OneApp ministry options', async () => {
+    const { getByRole, findByRole, queryByRole } = render(<TestComponent />);
 
-    userEvent.click(
-      getByRole('combobox', {
-        name: 'What ministry are you expecting to serve with?',
-      }),
+    const ministryCombobox = getByRole('combobox', {
+      name: 'What ministry are you expecting to serve with?',
+    });
+    await waitFor(() =>
+      expect(ministryCombobox).not.toHaveAttribute('aria-disabled', 'true'),
     );
+    userEvent.click(ministryCombobox);
 
-    expect(getByRole('option', { name: 'Cru' })).toBeInTheDocument();
+    // Sub-ministry surfaced by expanding the "Campus Ministry" root
+    expect(
+      await findByRole('option', { name: 'University' }),
+    ).toBeInTheDocument();
+    // Non-expanded root shown as-is
     expect(
       getByRole('option', { name: 'Athletes in Action' }),
     ).toBeInTheDocument();
+    // Expandable root itself is never an option
+    expect(
+      queryByRole('option', { name: 'Campus Ministry' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('disables the ministry select while the OneApp list loads', () => {
+    const { getByRole } = render(<TestComponent />);
+
+    expect(
+      getByRole('combobox', {
+        name: 'What ministry are you expecting to serve with?',
+      }),
+    ).toHaveAttribute('aria-disabled', 'true');
   });
 
   it('populates the nearest-city options from the geographic constants', async () => {
