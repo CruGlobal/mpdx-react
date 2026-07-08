@@ -311,7 +311,6 @@ export const ContactRow: React.FC<Props> = ({
             </ContactRowActions>
           </Grid>
         </Grid>
-        <Box></Box>
       </ListButton>
       {removeContactModalOpen && (
         <DynamicDeleteAppealContactModal
