@@ -10,7 +10,11 @@ import {
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
+import {
+  currencyFormat,
+  numberFormat,
+  percentageFormat,
+} from 'src/lib/intlFormat';
 import { PresentationCard } from '../../Shared/GoalPresentation/PresentationCard';
 import { NsGoalCalculation } from '../Shared/NsGoalCalculatorContext';
 import { NeedsRow, NeedsTable } from './NeedsTable';
@@ -40,9 +44,12 @@ export const MonthlyNeedsCard: React.FC<MonthlyNeedsCardProps> = ({
   const locale = useLocale();
 
   const rows = useMemo((): NeedsRow[] => {
-    const secaMultiplier = calculations.secaRate;
-    const adminDivisor = 1 - calculations.adminRate;
-    const attritionFactor = 1 + calculations.attritionRate;
+    const secaMultiplier = numberFormat(calculations.secaRate, locale);
+    const adminDivisor = numberFormat(1 - calculations.adminRate, locale);
+    const attritionFactor = numberFormat(
+      1 + calculations.attritionRate,
+      locale,
+    );
 
     return [
       {
