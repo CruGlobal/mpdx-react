@@ -130,6 +130,15 @@ describe('GoalSettingsForm', () => {
     );
   });
 
+  it('hides the spouse 403(b) amount when there is no spouse', async () => {
+    const { findByText, queryByText } = render(
+      <TestComponent goalCalculationMock={singleMock} />,
+    );
+
+    expect(await findByText('403(b) Amount — John')).toBeInTheDocument();
+    expect(queryByText('403(b) Amount — Spouse')).not.toBeInTheDocument();
+  });
+
   it('shows the spouse column when marital status is set to married, before saving', async () => {
     const { findByRole, getByRole, queryByRole } = render(
       <TestComponent goalCalculationMock={singleMock} />,
