@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import PrintIcon from '@mui/icons-material/Print';
 import {
@@ -11,6 +11,7 @@ import {
   styled,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { useAccountListSupportRaisedQuery } from '../../GoalCalculator/Shared/GoalLineItems.generated';
@@ -19,13 +20,13 @@ import { PersonalInfoCard } from '../../Shared/GoalPresentation/PersonalInfoCard
 import { PresentationCard } from '../../Shared/GoalPresentation/PresentationCard';
 import { SpecialNeedsCard } from '../../Shared/GoalPresentation/SpecialNeedsCard';
 import { SupportNeedsChart } from '../../Shared/GoalPresentation/SupportNeedsChart';
-import { MonthlyNeeds } from '../../Shared/GoalPresentation/useMonthlyNeedsRows';
-import { useNsGoalCalculator } from '../Shared/NsGoalCalculatorContext';
-import { NsGoalCalculatorLayout } from '../Shared/NsGoalCalculatorLayout';
+import {
+  NsGoalCalculation,
+  useNsGoalCalculator,
+} from '../Shared/NsGoalCalculatorContext';
 import { ChartPlaceholderCard } from './ChartPlaceholderCard';
 
 const PrintableContent = styled('div')(({ theme }) => ({
-  marginInline: theme.spacing(4),
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(3),
@@ -36,29 +37,16 @@ const PrintableContent = styled('div')(({ theme }) => ({
   },
 }));
 
-// Mock data for building out the layout. Will be replaced with real goal
-// calculation data once the new staff goal API is available.
-const mockPersonalInfo = {
-  firstName: 'John',
-  spouseFirstName: 'Jane',
-  lastName: 'Doe',
-  ministryLocation: 'Lake Hart',
-  married: true,
-};
+// TODO(MPDX-9801): Special needs are not available yet.
+const specialNeedsPlaceholder = 3624;
 
-const mockMonthlyNeeds: MonthlyNeeds = {
-  married: mockPersonalInfo.married,
-  salary: 8774,
-  ministryExpenses: 898,
-  benefits: 1911,
-  socialSecurityAndTaxes: 1492,
-  voluntaryRetirement: 990,
-  adminCharge: 1795,
-};
+interface PresentingYourGoalStepProps {
+  goalCalculation: NsGoalCalculation;
+}
 
-const mockSpecialNeeds = 3624;
-
-export const PresentingYourGoalStep: React.FC = () => {
+export const PresentingYourGoalStep: React.FC<PresentingYourGoalStepProps> = ({
+  goalCalculation,
+}) => {
   const { t } = useTranslation();
   const { handleContinue } = useNsGoalCalculator();
   const accountListId = useAccountListId() ?? '';
@@ -67,100 +55,109 @@ export const PresentingYourGoalStep: React.FC = () => {
   });
   const supportRaised = data?.accountList.receivedPledges ?? null;
 
+  const { calculations } = goalCalculation;
+  const married =
+    goalCalculation.maritalStatus ===
+    NewStaffQuestionnaireMaritalStatusEnum.Married;
+  const monthlyNeeds = useMemo(
+    () => ({
+      married,
+      salary: calculations.salary,
+      ministryExpenses:
+        calculations.totalMinistryExpenses +
+        calculations.medicalExpenses +
+        calculations.staffConferenceTransfer +
+        calculations.accountTransfers +
+        calculations.advocacyTransfers +
+        calculations.otherExpenses +
+        calculations.attrition,
+      benefits: calculations.benefitsCharge,
+      socialSecurityAndTaxes: calculations.seca,
+      voluntaryRetirement: calculations.totalContributing403bAmount,
+      adminCharge: calculations.adminCharge,
+      monthlyGoal: calculations.monthlyGoal,
+    }),
+    [married, calculations],
+  );
+
   const handlePrint = () => {
     window.print();
   };
 
   return (
-    <NsGoalCalculatorLayout
-      mainContent={
-        <PrintableContent>
-          <Typography variant="h6">{t('Presenting Your Goal')}</Typography>
+    <PrintableContent>
+      <Typography variant="h6">{t('Presenting Your Goal')}</Typography>
 
-          <Typography variant="body1" className="print-hidden">
+      <Typography variant="body1" className="print-hidden">
+        {t(
+          "Now that you've reviewed your goal, you can share your Support Needs Presentation by printing the presentation below.",
+        )}
+      </Typography>
+
+      <Alert
+        severity="info"
+        icon={<InfoOutlinedIcon />}
+        className="print-hidden"
+      >
+        <Typography variant="body1" fontWeight="bold">
+          {t('Some tips for printing:')}
+        </Typography>
+        <Box component="ol" sx={{ my: 1, pl: 3 }}>
+          <li>{t('Toggle off Headers and Footers in your print settings.')}</li>
+          <li>{t('Adjust the Scale to fit on one page.')}</li>
+          <li>
             {t(
-              "Now that you've reviewed your goal, you can share your Support Needs Presentation by printing the presentation below.",
+              'From your Print settings, you may also save the page as a PDF to share digitally.',
             )}
-          </Typography>
+          </li>
+        </Box>
+      </Alert>
 
-          <Alert
-            severity="info"
-            icon={<InfoOutlinedIcon />}
-            className="print-hidden"
-          >
-            <Typography variant="body1" fontWeight="bold">
-              {t('Some tips for printing:')}
-            </Typography>
-            <Box component="ol" sx={{ my: 1, pl: 3 }}>
-              <li>
-                {t('Toggle off Headers and Footers in your print settings.')}
-              </li>
-              <li>{t('Adjust the Scale to fit on one page.')}</li>
-              <li>
-                {t(
-                  'From your Print settings, you may also save the page as a PDF to share digitally.',
-                )}
-              </li>
-            </Box>
-          </Alert>
+      <Button
+        variant="outlined"
+        startIcon={<PrintIcon />}
+        onClick={handlePrint}
+        className="print-hidden"
+        sx={{ alignSelf: 'flex-start' }}
+      >
+        {t('Print Support Needs Presentation')}
+      </Button>
 
-          <Button
-            variant="outlined"
-            startIcon={<PrintIcon />}
-            onClick={handlePrint}
-            className="print-hidden"
-            sx={{ alignSelf: 'flex-start' }}
-          >
-            {t('Print Support Needs Presentation')}
-          </Button>
+      <Divider className="print-hidden" />
 
-          <Divider className="print-hidden" />
+      <PersonalInfoCard
+        firstName={goalCalculation.firstName ?? ''}
+        spouseFirstName={married ? goalCalculation.spouseFirstName : undefined}
+        lastName={goalCalculation.lastName ?? ''}
+        ministryLocation={goalCalculation.ministryLocation ?? undefined}
+      />
 
-          <PersonalInfoCard
-            firstName={mockPersonalInfo.firstName}
-            spouseFirstName={mockPersonalInfo.spouseFirstName}
-            lastName={mockPersonalInfo.lastName}
-            ministryLocation={mockPersonalInfo.ministryLocation}
-          />
+      <MonthlyNeedsCard
+        monthlyNeeds={monthlyNeeds}
+        supportRaised={supportRaised}
+      />
 
-          <MonthlyNeedsCard
-            monthlyNeeds={mockMonthlyNeeds}
-            supportRaised={supportRaised}
-          />
+      <SpecialNeedsCard specialNeeds={specialNeedsPlaceholder} />
 
-          <SpecialNeedsCard specialNeeds={mockSpecialNeeds} />
+      <Grid container spacing={theme.spacing(3)}>
+        <Grid size={{ xs: 12, lg: 6 }}>
+          <PresentationCard title={t('Monthly Support Needs Chart')}>
+            <SupportNeedsChart monthlyNeeds={monthlyNeeds} />
+          </PresentationCard>
+        </Grid>
+        <Grid size={{ xs: 12, lg: 6 }}>
+          <ChartPlaceholderCard title={t('Special Needs Chart')} />
+        </Grid>
+      </Grid>
 
-          <Grid container spacing={theme.spacing(3)}>
-            <Grid
-              size={{
-                xs: 12,
-                lg: 6,
-              }}
-            >
-              <PresentationCard title={t('Monthly Support Needs Chart')}>
-                <SupportNeedsChart monthlyNeeds={mockMonthlyNeeds} />
-              </PresentationCard>
-            </Grid>
-            <Grid
-              size={{
-                xs: 12,
-                lg: 6,
-              }}
-            >
-              <ChartPlaceholderCard title={t('Special Needs Chart')} />
-            </Grid>
-          </Grid>
-
-          <Button
-            variant="contained"
-            onClick={handleContinue}
-            className="print-hidden"
-            sx={{ alignSelf: 'flex-start' }}
-          >
-            {t('Continue')}
-          </Button>
-        </PrintableContent>
-      }
-    />
+      <Button
+        variant="contained"
+        onClick={handleContinue}
+        className="print-hidden"
+        sx={{ alignSelf: 'flex-start' }}
+      >
+        {t('Continue')}
+      </Button>
+    </PrintableContent>
   );
 };

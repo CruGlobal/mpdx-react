@@ -68,7 +68,8 @@ export const SupportNeedsChart: React.FC<SupportNeedsChartProps> = ({
   // In narrower containers, the pie shrinks and the legend moves below the chart
   const isCompact = typeof width === 'number' && width < 700;
 
-  const { rows, total } = useMonthlyNeedsRows(monthlyNeeds);
+  const rows = useMonthlyNeedsRows(monthlyNeeds);
+  const total = rows.reduce((sum, row) => sum + row.amount, 0);
 
   return (
     <ChartContainer ref={containerRef} height={500}>

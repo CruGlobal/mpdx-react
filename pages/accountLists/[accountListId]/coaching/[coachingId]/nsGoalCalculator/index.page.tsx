@@ -33,7 +33,7 @@ export const NsGoalCalculatorPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>{`${appName} | ${t('New Staff Goal Calculator')}`}</title>
+        <title>{`${appName} | ${t('Coaching Accounts | New Staff Goal Calculator')}`}</title>
       </Head>
       {accountListId && coachingId ? (
         <ScrollContainer>

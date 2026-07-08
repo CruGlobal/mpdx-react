@@ -10,11 +10,7 @@ export interface MonthlyNeeds {
   socialSecurityAndTaxes: number;
   voluntaryRetirement: number;
   adminCharge: number;
-}
-
-export interface MonthlyNeedsRows {
-  rows: SupportNeedsRow[];
-  total: number;
+  monthlyGoal: number;
 }
 
 /**
@@ -29,7 +25,7 @@ export const useMonthlyNeedsRows = ({
   socialSecurityAndTaxes,
   voluntaryRetirement,
   adminCharge,
-}: MonthlyNeeds): MonthlyNeedsRows => {
+}: MonthlyNeeds): SupportNeedsRow[] => {
   const { t } = useTranslation();
 
   return useMemo(() => {
@@ -77,9 +73,7 @@ export const useMonthlyNeedsRows = ({
       },
     ];
 
-    const total = rows.reduce((sum, row) => sum + row.amount, 0);
-
-    return { rows, total };
+    return rows;
   }, [
     married,
     salary,
