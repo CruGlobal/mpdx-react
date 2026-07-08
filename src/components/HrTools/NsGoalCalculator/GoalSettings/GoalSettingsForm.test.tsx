@@ -4,7 +4,7 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import TestRouter from '__tests__/util/TestRouter';
-import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import {
@@ -13,36 +13,44 @@ import {
   defaultGoalCalculation,
 } from '../NsGoalCalculatorTestWrapper';
 import { GoalSettingsForm } from './GoalSettingsForm';
-import {
-  NewStaffGoalCalculationDocument,
-  NewStaffGoalCalculationQuery,
-  NewStaffGoalCalculationQueryVariables,
-} from './NewStaffGoalCalculation.generated';
+import { NewStaffGoalCalculationQuery } from './NewStaffGoalCalculation.generated';
 
 const accountListId = 'account-list-1';
 
-const singleMock = gqlMock<
-  NewStaffGoalCalculationQuery,
-  NewStaffGoalCalculationQueryVariables
->(NewStaffGoalCalculationDocument, {
-  variables: { accountListId },
-  mocks: {
-    newStaffGoalCalculation: {
-      id: 'goal-calculation-1',
-      firstName: 'John',
-      lastName: 'Doe',
-      spouseFirstName: null,
-      maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
-    },
+const defaultMock = {
+  newStaffGoalCalculation: {
+    ...defaultGoalCalculation,
+    maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Married,
+    spouseJoining: true,
   },
-});
+};
+
+const seniorStaffMock = {
+  newStaffGoalCalculation: {
+    ...defaultGoalCalculation,
+    maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Married,
+    spouseJoining: false,
+  },
+};
+
+const singleMock = {
+  newStaffGoalCalculation: {
+    ...defaultMock.newStaffGoalCalculation,
+    spouseFirstName: null,
+    maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
+  },
+};
 
 const mutationSpy = jest.fn();
 
 const TestComponent: React.FC<
   Omit<NsGoalCalculatorTestWrapperProps, 'children'>
 > = (props) => (
-  <NsGoalCalculatorTestWrapper onCall={mutationSpy} {...props}>
+  <NsGoalCalculatorTestWrapper
+    onCall={mutationSpy}
+    goalCalculationMock={defaultMock}
+    {...props}
+  >
     <GoalSettingsForm accountListId={accountListId} />
   </NsGoalCalculatorTestWrapper>
 );
@@ -385,5 +393,90 @@ describe('GoalSettingsForm', () => {
     expect(
       await findByRole('button', { name: 'Save & Share' }),
     ).toBeInTheDocument();
+  });
+
+  describe('Senior Staff Only fields', () => {
+    it('shows the senior-staff-only fields when the spouse is senior staff', async () => {
+      const { findByRole, getByRole } = render(
+        <TestComponent goalCalculationMock={seniorStaffMock} />,
+      );
+
+      expect(
+        await findByRole('spinbutton', { name: 'MHA Amount' }),
+      ).toBeInTheDocument();
+      expect(
+        getByRole('spinbutton', { name: 'Staff Conference Transfer — John' }),
+      ).toBeInTheDocument();
+      expect(
+        getByRole('spinbutton', { name: 'Account Transfers — John' }),
+      ).toBeInTheDocument();
+      expect(
+        getByRole('spinbutton', { name: 'Advocacy — John' }),
+      ).toBeInTheDocument();
+    });
+
+    it('hides the senior-staff-only fields when there is no spouse', async () => {
+      const { findByRole, queryByRole } = render(
+        <TestComponent goalCalculationMock={singleMock} />,
+      );
+
+      await findByRole('spinbutton', {
+        name: 'Annual Requested Salary — John',
+      });
+      expect(
+        queryByRole('spinbutton', { name: 'MHA Amount' }),
+      ).not.toBeInTheDocument();
+      expect(
+        queryByRole('spinbutton', { name: 'Staff Conference Transfer — John' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('hides the senior-staff-only fields when the spouse is joining staff', async () => {
+      const { findByRole, getByRole, queryByRole } = render(<TestComponent />);
+
+      userEvent.click(
+        await findByRole('combobox', { name: 'Staff Status — Jane' }),
+      );
+      userEvent.click(getByRole('option', { name: 'Joining Staff' }));
+
+      await waitFor(() =>
+        expect(
+          queryByRole('spinbutton', { name: 'MHA Amount' }),
+        ).not.toBeInTheDocument(),
+      );
+      expect(
+        queryByRole('spinbutton', { name: 'Staff Conference Transfer — John' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('clears the senior-staff-only fields on save when the spouse is joining staff', async () => {
+      const { findByRole, getByRole } = render(<TestComponent />);
+
+      // Switch the senior spouse to joining staff, which hides — and clears on
+      // save — the senior-staff-only fields.
+      userEvent.click(
+        await findByRole('combobox', { name: 'Staff Status — Jane' }),
+      );
+      userEvent.click(getByRole('option', { name: 'Joining Staff' }));
+      userEvent.click(getByRole('button', { name: 'Save & Share' }));
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation(
+          'UpdateNewStaffGoalCalculation',
+          {
+            input: {
+              accountListId,
+              id: 'goal-calculation-1',
+              attributes: {
+                spouseMhaAmount: null,
+                staffConferenceTransfer: null,
+                accountTransfers: null,
+                advocacyTransfers: null,
+              },
+            },
+          },
+        ),
+      );
+    });
   });
 });

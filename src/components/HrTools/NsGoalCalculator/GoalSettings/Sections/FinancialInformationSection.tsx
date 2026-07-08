@@ -14,6 +14,7 @@ export const FinancialInformationSection: React.FC<
   GoalSettingsSectionProps
 > = ({
   hasSpouse,
+  seniorStaff,
   calculations,
   primaryName,
   spouseName,
@@ -99,44 +100,47 @@ export const FinancialInformationSection: React.FC<
         )}
       </FieldRow>
 
-      <FieldRow label={t('MHA Amount')} helperText={seniorStaffOnly}>
-        <GoalSettingsNumberField
-          name="spouseMhaAmount"
-          label={t('MHA Amount')}
-          personName={spouseName}
-          adornment="currency"
-        />
-      </FieldRow>
+      {seniorStaff && (
+        <>
+          <FieldRow label={t('MHA Amount')} helperText={seniorStaffOnly}>
+            <GoalSettingsNumberField
+              name="spouseMhaAmount"
+              label={t('MHA Amount')}
+              adornment="currency"
+            />
+          </FieldRow>
 
-      <FieldRow
-        label={t('Staff Conference Transfer')}
-        helperText={seniorStaffOnly}
-      >
-        <GoalSettingsNumberField
-          name="staffConferenceTransfer"
-          label={t('Staff Conference Transfer')}
-          personName={primaryName}
-          adornment="currency"
-        />
-      </FieldRow>
+          <FieldRow
+            label={t('Staff Conference Transfer')}
+            helperText={seniorStaffOnly}
+          >
+            <GoalSettingsNumberField
+              name="staffConferenceTransfer"
+              label={t('Staff Conference Transfer')}
+              personName={primaryName}
+              adornment="currency"
+            />
+          </FieldRow>
 
-      <FieldRow label={t('Account Transfers')} helperText={seniorStaffOnly}>
-        <GoalSettingsNumberField
-          name="accountTransfers"
-          label={t('Account Transfers')}
-          personName={primaryName}
-          adornment="currency"
-        />
-      </FieldRow>
+          <FieldRow label={t('Account Transfers')} helperText={seniorStaffOnly}>
+            <GoalSettingsNumberField
+              name="accountTransfers"
+              label={t('Account Transfers')}
+              personName={primaryName}
+              adornment="currency"
+            />
+          </FieldRow>
 
-      <FieldRow label={t('Advocacy')} helperText={seniorStaffOnly}>
-        <GoalSettingsNumberField
-          name="advocacyTransfers"
-          label={t('Advocacy')}
-          personName={primaryName}
-          adornment="currency"
-        />
-      </FieldRow>
+          <FieldRow label={t('Advocacy')} helperText={seniorStaffOnly}>
+            <GoalSettingsNumberField
+              name="advocacyTransfers"
+              label={t('Advocacy')}
+              personName={primaryName}
+              adornment="currency"
+            />
+          </FieldRow>
+        </>
+      )}
 
       <ColumnHeaderRow columns={[sharedHeader]} />
 

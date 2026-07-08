@@ -177,6 +177,39 @@ describe('formValuesToAttributes', () => {
     expect(attributes.spouseMhaAmount).toBeNull();
   });
 
+  it('sends the senior-staff-only fields when the spouse is senior staff', () => {
+    const attributes = formValuesToAttributes({
+      ...coupleValues,
+      spouseJoining: 'false',
+    });
+
+    expect(attributes.spouseMhaAmount).toBe(200);
+    expect(attributes.staffConferenceTransfer).toBe(10);
+    expect(attributes.accountTransfers).toBe(20);
+    expect(attributes.advocacyTransfers).toBe(30);
+  });
+
+  it('clears the senior-staff-only fields when the spouse is joining staff', () => {
+    const attributes = formValuesToAttributes({
+      ...coupleValues,
+      spouseJoining: 'true',
+    });
+
+    expect(attributes.spouseMhaAmount).toBeNull();
+    expect(attributes.staffConferenceTransfer).toBeNull();
+    expect(attributes.accountTransfers).toBeNull();
+    expect(attributes.advocacyTransfers).toBeNull();
+  });
+
+  it('clears the senior-staff-only fields when there is no spouse', () => {
+    const attributes = formValuesToAttributes(singleValues);
+
+    expect(attributes.spouseMhaAmount).toBeNull();
+    expect(attributes.staffConferenceTransfer).toBeNull();
+    expect(attributes.accountTransfers).toBeNull();
+    expect(attributes.advocacyTransfers).toBeNull();
+  });
+
   it('passes the age enum through to the API', () => {
     const attributes = formValuesToAttributes(coupleValues);
 
