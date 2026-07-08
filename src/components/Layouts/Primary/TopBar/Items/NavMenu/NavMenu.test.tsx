@@ -123,7 +123,7 @@ describe('NavMenu', () => {
   });
 
   it('renders HR Tools submenu items', async () => {
-    const { findByRole, getByRole, getByTestId } = render(
+    const { findByRole, getByRole, getByTestId, queryByRole } = render(
       <TestComponent
         mocks={{
           ...defaultMocks,
@@ -154,8 +154,8 @@ describe('NavMenu', () => {
       getByRole('menuitem', { name: 'Additional Salary Request' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('menuitem', { name: 'Ministry Partner Reminders' }),
-    ).toBeInTheDocument();
+      queryByRole('menuitem', { name: 'Ministry Partner Reminders' }),
+    ).not.toBeInTheDocument();
   });
 
   it('renders MPDX Tools submenu items', async () => {

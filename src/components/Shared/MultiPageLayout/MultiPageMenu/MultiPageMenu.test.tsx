@@ -502,7 +502,8 @@ describe('MultiPageMenu', () => {
         queryByText('Paid with Designation Support Goal Calculator'),
       ).not.toBeInTheDocument();
       expect(queryByText('New Staff Goal Calculator')).not.toBeInTheDocument();
-      expect(getByText('Ministry Partner Reminders')).toBeInTheDocument();
+
+      expect(queryByText('Ministry Partner Reminders')).not.toBeInTheDocument();
     });
 
     it('shows hr tools for new staff', async () => {
@@ -542,7 +543,8 @@ describe('MultiPageMenu', () => {
       expect(
         queryByText('Paid with Designation Support Goal Calculator'),
       ).not.toBeInTheDocument();
-      expect(getByText('Ministry Partner Reminders')).toBeInTheDocument();
+
+      expect(queryByText('Ministry Partner Reminders')).not.toBeInTheDocument();
     });
 
     it('shows hr tools for national expat staff', async () => {
@@ -582,7 +584,8 @@ describe('MultiPageMenu', () => {
         queryByText('Paid with Designation Support Goal Calculator'),
       ).not.toBeInTheDocument();
       expect(queryByText('New Staff Goal Calculator')).not.toBeInTheDocument();
-      expect(getByText('Ministry Partner Reminders')).toBeInTheDocument();
+
+      expect(queryByText('Ministry Partner Reminders')).not.toBeInTheDocument();
     });
 
     it('shows hr tools for paid with designation', async () => {
@@ -626,7 +629,7 @@ describe('MultiPageMenu', () => {
     });
 
     it('shows hr tools for part time field staff', async () => {
-      const { findByText, getByText, queryByText } = render(
+      const { findByText, queryByText } = render(
         <ThemeProvider theme={theme}>
           <TestRouter router={router}>
             <GqlMockedProvider<{ GetUser: GetUserQuery }>
@@ -654,7 +657,7 @@ describe('MultiPageMenu', () => {
       );
 
       expect(await findByText('Savings Fund Transfer')).toBeInTheDocument();
-      expect(getByText('Ministry Partner Reminders')).toBeInTheDocument();
+      expect(queryByText('Ministry Partner Reminders')).not.toBeInTheDocument();
       expect(
         queryByText('Paid with Designation Support Goal Calculator'),
       ).not.toBeInTheDocument();
@@ -666,7 +669,7 @@ describe('MultiPageMenu', () => {
     });
 
     it('shows hr tools for interns', async () => {
-      const { findByText, getByText, queryByText } = render(
+      const { findByText, queryByText } = render(
         <ThemeProvider theme={theme}>
           <TestRouter router={router}>
             <GqlMockedProvider<{ GetUser: GetUserQuery }>
@@ -694,7 +697,7 @@ describe('MultiPageMenu', () => {
       );
 
       expect(await findByText('Savings Fund Transfer')).toBeInTheDocument();
-      expect(getByText('Ministry Partner Reminders')).toBeInTheDocument();
+      expect(queryByText('Ministry Partner Reminders')).not.toBeInTheDocument();
       expect(
         queryByText('Paid with Designation Support Goal Calculator'),
       ).not.toBeInTheDocument();

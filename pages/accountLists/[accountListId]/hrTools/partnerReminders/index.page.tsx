@@ -10,7 +10,6 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
-import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { getAppName } from 'src/lib/getAppName';
 
 const PartnerRemindersReportPageWrapper = styled(Box)(({ theme }) => ({
@@ -32,30 +31,28 @@ const PartnerRemindersReportPage: React.FC = () => {
       <Head>
         <title>{`${appName} | ${t('HR Tools | Ministry Partner Reminders')}`}</title>
       </Head>
-      <UserTypeAccess requireStaffAccount>
-        <PartnerRemindersReportPageWrapper>
-          <SidePanelsLayout
-            isScrollBox={false}
-            leftPanel={
-              <MultiPageMenu
-                isOpen={isNavListOpen}
-                selectedId="partnerReminders"
-                onClose={handleNavListToggle}
-                navType={NavTypeEnum.HrTools}
-              />
-            }
-            leftOpen={isNavListOpen}
-            leftWidth="290px"
-            mainContent={
-              <PartnerRemindersReport
-                isNavListOpen={isNavListOpen}
-                onNavListToggle={handleNavListToggle}
-                title={t('Ministry Partner Reminders')}
-              />
-            }
-          />
-        </PartnerRemindersReportPageWrapper>
-      </UserTypeAccess>
+      <PartnerRemindersReportPageWrapper>
+        <SidePanelsLayout
+          isScrollBox={false}
+          leftPanel={
+            <MultiPageMenu
+              isOpen={isNavListOpen}
+              selectedId="partnerReminders"
+              onClose={handleNavListToggle}
+              navType={NavTypeEnum.HrTools}
+            />
+          }
+          leftOpen={isNavListOpen}
+          leftWidth="290px"
+          mainContent={
+            <PartnerRemindersReport
+              isNavListOpen={isNavListOpen}
+              onNavListToggle={handleNavListToggle}
+              title={t('Ministry Partner Reminders')}
+            />
+          }
+        />
+      </PartnerRemindersReportPageWrapper>
     </>
   );
 };
