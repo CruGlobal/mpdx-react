@@ -30,7 +30,7 @@ export const SpecialNeedsCard: React.FC<SpecialNeedsCardProps> = ({
 
   return (
     <PresentationCard title={t('Special Needs')}>
-      <SupportNeedsTable rows={rows} />
+      <SupportNeedsTable rows={rows} ariaLabel={t('Special Needs')} />
     </PresentationCard>
   );
 };

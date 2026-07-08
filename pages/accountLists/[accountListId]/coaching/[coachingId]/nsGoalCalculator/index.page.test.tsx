@@ -34,7 +34,6 @@ const TestComponent: React.FC = () => (
               spouseFirstName: 'Jane',
               maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Married,
               spouseJoining: false,
-              calculatedResults: null,
             },
           },
         }}

@@ -1,7 +1,23 @@
 fragment NewStaffGoalCalculationFields on NewStaffGoalCalculation {
   id
-  # Computed goal-calculation worksheet; null until the API calc engine lands.
-  calculatedResults
+  # Computed goal-calculation worksheet
+  calculations {
+    salary
+    seca
+    contributing403bAmount
+    spouseContributing403bAmount
+    totalContributing403bAmount
+    totalMinistryExpenses
+    medicalExpenses
+    staffConferenceTransfer
+    accountTransfers
+    advocacyTransfers
+    otherExpenses
+    benefitsCharge
+    adminCharge
+    attrition
+    monthlyGoal
+  }
 
   # Identity (read-only display in the header; prepopulated from HCM).
   firstName

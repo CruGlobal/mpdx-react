@@ -1,6 +1,11 @@
 import React, { createContext, useCallback, useMemo, useState } from 'react';
+import { NewStaffGoalCalculationQuery } from '../GoalSettings/NewStaffGoalCalculation.generated';
 import { NsGoalCalculatorStepEnum } from '../NsGoalCalculatorHelper';
 import { NsGoalCalculatorStep, useSteps } from './useSteps';
+
+export type NsGoalCalculation = NonNullable<
+  NewStaffGoalCalculationQuery['newStaffGoalCalculation']
+>;
 
 export type NsGoalCalculatorType = {
   steps: NsGoalCalculatorStep[];

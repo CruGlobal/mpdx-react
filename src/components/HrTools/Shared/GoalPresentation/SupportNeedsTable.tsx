@@ -24,6 +24,7 @@ export interface SupportNeedsRow {
 }
 
 export interface SupportNeedsTableProps {
+  ariaLabel?: string;
   rows: SupportNeedsRow[];
 }
 
@@ -32,13 +33,14 @@ export interface SupportNeedsTableProps {
  * amount for the goal presentation tables.
  */
 export const SupportNeedsTable: React.FC<SupportNeedsTableProps> = ({
+  ariaLabel,
   rows,
 }) => {
   const locale = useLocale();
 
   return (
     <Box sx={{ width: '100%', overflowX: 'auto' }}>
-      <Table size="small">
+      <Table size="small" aria-label={ariaLabel}>
         <TableBody>
           {rows.map(
             (

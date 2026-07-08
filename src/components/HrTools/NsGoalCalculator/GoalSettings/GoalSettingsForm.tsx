@@ -1,11 +1,9 @@
 import React, { useMemo } from 'react';
 import {
-  Alert,
   Box,
   Button,
   CircularProgress,
   Divider,
-  Skeleton,
   Stack,
   styled,
 } from '@mui/material';
@@ -13,10 +11,7 @@ import { Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
 import { GoalSettingsHeader } from './GoalSettingsHeader';
-import {
-  useNewStaffGoalCalculationQuery,
-  useUpdateNewStaffGoalCalculationMutation,
-} from './NewStaffGoalCalculation.generated';
+import { useUpdateNewStaffGoalCalculationMutation } from './NewStaffGoalCalculation.generated';
 import { ExemptionsSection } from './Sections/ExemptionsSection';
 import { FinancialInformationSection } from './Sections/FinancialInformationSection';
 import { HealthcareInformationSection } from './Sections/HealthcareInformationSection';
@@ -33,6 +28,7 @@ import {
 } from './goalSettingsFormValues';
 import { getGoalSettingsSchema } from './goalSettingsSchema';
 import { GoalSettingsSectionProps } from './goalSettingsSectionProps';
+import { useNewStaffGoalCalculation } from './useNewStaffGoalCalculation';
 
 /**
  * Sticky save/cancel bar pinned to the bottom of the scroll area.
@@ -68,26 +64,12 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = ({
   const { t } = useTranslation();
   const validationSchema = useMemo(() => getGoalSettingsSchema(t), [t]);
 
-  const { data, loading, error } = useNewStaffGoalCalculationQuery({
-    variables: { accountListId },
-  });
-  const calculation = data?.newStaffGoalCalculation;
+  const { goalCalculation: calculation, fallback } =
+    useNewStaffGoalCalculation(accountListId);
   const [updateCalculation] = useUpdateNewStaffGoalCalculationMutation();
 
-  if (loading) {
-    return <Skeleton variant="rectangular" height={400} />;
-  }
-
-  if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
-  }
-
   if (!calculation) {
-    return (
-      <Alert severity="info">
-        {t('No new staff goal calculation exists for this account.')}
-      </Alert>
-    );
+    return fallback;
   }
 
   // Whether the saved record has a spouse identity. The header's read-only
@@ -120,10 +102,7 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = ({
       }
     : null;
 
-  // TODO(MPDX-9797): Get goal from calculations
-  const mpdGoal =
-    (calculation.calculatedResults as { mpdGoal?: number } | null | undefined)
-      ?.mpdGoal ?? 0;
+  const mpdGoal = calculation.calculations.monthlyGoal;
 
   const primaryHeader = `${primaryName} (${t('Joining')})`;
   const spouseHeader = `${spouseName} (${calculation.spouseJoining ? t('Joining') : t('Senior')})`;
@@ -158,6 +137,7 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = ({
           NewStaffQuestionnaireMaritalStatusEnum.Married;
         const sectionProps: GoalSettingsSectionProps = {
           hasSpouse,
+          calculations: calculation.calculations,
           primaryName,
           spouseName,
           visibleHeaders: hasSpouse

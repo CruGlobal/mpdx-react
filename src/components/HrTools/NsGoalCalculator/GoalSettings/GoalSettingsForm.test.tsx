@@ -10,6 +10,7 @@ import theme from 'src/theme';
 import {
   NsGoalCalculatorTestWrapper,
   NsGoalCalculatorTestWrapperProps,
+  defaultGoalCalculation,
 } from '../NsGoalCalculatorTestWrapper';
 import { GoalSettingsForm } from './GoalSettingsForm';
 import {
@@ -115,6 +116,41 @@ describe('GoalSettingsForm', () => {
     expect(
       queryByRole('spinbutton', { name: 'Annual Requested Salary — Jane' }),
     ).not.toBeInTheDocument();
+  });
+
+  it('shows the calculated 403(b) contribution amount for each person', async () => {
+    const { findByText, getByText } = render(
+      <TestComponent
+        goalCalculationMock={{
+          newStaffGoalCalculation: {
+            ...defaultGoalCalculation,
+            calculations: {
+              ...defaultGoalCalculation.calculations,
+              contributing403bAmount: 600,
+              spouseContributing403bAmount: 390,
+            },
+          },
+        }}
+      />,
+    );
+
+    // The label lives in a visually-hidden span so screen readers announce the
+    // owner; its parent <p> holds the label + the formatted amount.
+    expect(
+      (await findByText('403(b) Amount — John')).parentElement,
+    ).toHaveTextContent('$600.00');
+    expect(getByText('403(b) Amount — Jane').parentElement).toHaveTextContent(
+      '$390.00',
+    );
+  });
+
+  it('hides the spouse 403(b) amount when there is no spouse', async () => {
+    const { findByText, queryByText } = render(
+      <TestComponent goalCalculationMock={singleMock} />,
+    );
+
+    expect(await findByText('403(b) Amount — John')).toBeInTheDocument();
+    expect(queryByText('403(b) Amount — Spouse')).not.toBeInTheDocument();
   });
 
   it('shows the spouse column when marital status is set to married, before saving', async () => {

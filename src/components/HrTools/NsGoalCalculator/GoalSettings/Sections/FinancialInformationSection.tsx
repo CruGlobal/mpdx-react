@@ -1,6 +1,10 @@
 import React, { useMemo } from 'react';
+import { Box, SxProps, Theme, Typography } from '@mui/material';
+import { visuallyHidden } from '@mui/utils';
 import { useTranslation } from 'react-i18next';
 import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
+import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
 import { GoalSettingsNumberField } from '../Fields/GoalSettingsNumberField';
 import { GoalSettingsSelect, SelectOption } from '../Fields/GoalSettingsSelect';
 import { ColumnHeaderRow, FieldRow, Section } from '../GoalSettingsLayout';
@@ -8,8 +12,16 @@ import { GoalSettingsSectionProps } from '../goalSettingsSectionProps';
 
 export const FinancialInformationSection: React.FC<
   GoalSettingsSectionProps
-> = ({ hasSpouse, primaryName, spouseName, visibleHeaders, sharedHeader }) => {
+> = ({
+  hasSpouse,
+  calculations,
+  primaryName,
+  spouseName,
+  visibleHeaders,
+  sharedHeader,
+}) => {
   const { t } = useTranslation();
+  const locale = useLocale();
   const seniorStaffOnly = t('Senior Staff Only');
   const { goalGeographicConstantMap } = useGoalCalculatorConstants();
 
@@ -57,6 +69,33 @@ export const FinancialInformationSection: React.FC<
             personName={spouseName}
             adornment="percentage"
           />
+        )}
+      </FieldRow>
+
+      <FieldRow
+        label={t('403(b) Amount')}
+        helperText={t('Calculated monthly amount')}
+      >
+        <Typography variant="body1">
+          <Box component="span" sx={visuallyHidden as SxProps<Theme>}>
+            {t('403(b) Amount — {{name}}', { name: primaryName })}
+          </Box>
+          {currencyFormat(calculations.contributing403bAmount, 'USD', locale, {
+            showTrailingZeros: true,
+          })}
+        </Typography>
+        {hasSpouse && (
+          <Typography variant="body1">
+            <Box component="span" sx={visuallyHidden as SxProps<Theme>}>
+              {t('403(b) Amount — {{name}}', { name: spouseName })}
+            </Box>
+            {currencyFormat(
+              calculations.spouseContributing403bAmount,
+              'USD',
+              locale,
+              { showTrailingZeros: true },
+            )}
+          </Typography>
         )}
       </FieldRow>
 

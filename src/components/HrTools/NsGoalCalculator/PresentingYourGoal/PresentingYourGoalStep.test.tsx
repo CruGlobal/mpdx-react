@@ -5,12 +5,35 @@ import {
   afterTestResizeObserver,
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
-import { NsGoalCalculatorTestWrapper } from '../NsGoalCalculatorTestWrapper';
+import {
+  NsGoalCalculatorTestWrapper,
+  defaultGoalCalculation,
+} from '../NsGoalCalculatorTestWrapper';
 import { PresentingYourGoalStep } from './PresentingYourGoalStep';
 
 const TestComponent: React.FC = () => (
   <NsGoalCalculatorTestWrapper>
-    <PresentingYourGoalStep />
+    <PresentingYourGoalStep
+      goalCalculation={{
+        ...defaultGoalCalculation,
+        calculations: {
+          ...defaultGoalCalculation.calculations,
+          salary: 10000,
+          seca: 1000,
+          totalContributing403bAmount: 500,
+          totalMinistryExpenses: 5000,
+          medicalExpenses: 100,
+          staffConferenceTransfer: 200,
+          accountTransfers: 300,
+          advocacyTransfers: 400,
+          otherExpenses: 500,
+          benefitsCharge: 600,
+          adminCharge: 1200,
+          attrition: 600,
+          monthlyGoal: 20000,
+        },
+      }}
+    />
   </NsGoalCalculatorTestWrapper>
 );
 
@@ -19,7 +42,7 @@ describe('PresentingYourGoalStep', () => {
     beforeTestResizeObserver();
   });
 
-  afterEach(() => {
+  afterAll(() => {
     afterTestResizeObserver();
   });
 
@@ -48,40 +71,45 @@ describe('PresentingYourGoalStep', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders the personal information section', () => {
-    const { getByRole, getByText, getByTestId } = render(<TestComponent />);
+  it('renders the personal information section', async () => {
+    const { findByText, getByRole, getByText, getByTestId } = render(
+      <TestComponent />,
+    );
 
+    expect(await findByText('John and Jane Doe')).toBeInTheDocument();
     expect(
       getByRole('heading', { name: 'Personal Information' }),
     ).toBeInTheDocument();
-    expect(getByText('John and Jane Doe')).toBeInTheDocument();
     expect(getByText('Campus Crusade for Christ, Inc.')).toBeInTheDocument();
     expect(getByText('Lake Hart')).toBeInTheDocument();
     expect(getByTestId('cru-logo')).toBeInTheDocument();
   });
 
   it('renders the monthly support needs section', async () => {
-    const { getByRole, getByText, findByText } = render(<TestComponent />);
+    const { findByRole } = render(<TestComponent />);
 
     expect(
-      getByRole('heading', { name: 'Monthly Support Needs' }),
-    ).toBeInTheDocument();
-    expect(getByText('Salary (Combined)')).toBeInTheDocument();
-    expect(getByText('$8,774')).toBeInTheDocument();
-    expect(getByText('Ministry Expenses')).toBeInTheDocument();
-    expect(getByText('$898')).toBeInTheDocument();
-    expect(getByText('Benefits')).toBeInTheDocument();
-    expect(getByText('$1,911')).toBeInTheDocument();
-    expect(getByText('Social Security and Taxes')).toBeInTheDocument();
-    expect(getByText('$1,492')).toBeInTheDocument();
-    expect(getByText('Voluntary 403b Retirement Plan')).toBeInTheDocument();
-    expect(getByText('$990')).toBeInTheDocument();
-    expect(getByText('Administrative Charge')).toBeInTheDocument();
-    expect(getByText('$1,795')).toBeInTheDocument();
-    expect(getByText('Total Support Goal')).toBeInTheDocument();
-    expect(getByText('$15,860')).toBeInTheDocument();
-    expect(await findByText('Total Solid Support')).toBeInTheDocument();
-    expect(await findByText('$1,200')).toBeInTheDocument();
+      await findByRole('table', { name: 'Monthly Support Needs' }),
+    ).toHaveTableStructure({
+      rowHeaders: [
+        expect.stringContaining('Salary (Combined)'),
+        expect.stringContaining('Ministry Expenses'),
+        expect.stringContaining('Benefits'),
+        expect.stringContaining('Social Security and Taxes'),
+        expect.stringContaining('Voluntary 403b Retirement Plan'),
+        'Administrative Charge',
+        'Total Support Goal',
+      ],
+      cells: [
+        '$10,000',
+        '$7,100',
+        '$600',
+        '$1,000',
+        '$500',
+        '$1,200',
+        '$20,000',
+      ],
+    });
   });
 
   it('hides the total solid support row until the support raised data loads', async () => {
@@ -91,19 +119,22 @@ describe('PresentingYourGoalStep', () => {
     expect(await findByText('Total Solid Support')).toBeInTheDocument();
   });
 
-  it('renders the special needs section', () => {
-    const { getByRole, getByText } = render(<TestComponent />);
-
-    expect(getByRole('heading', { name: 'Special Needs' })).toBeInTheDocument();
-    expect(getByText('Total Special Needs Goal')).toBeInTheDocument();
-    expect(getByText('$3,624')).toBeInTheDocument();
-  });
-
-  it('renders the monthly support needs chart and the special needs chart placeholder', () => {
-    const { getByRole, getByTestId } = render(<TestComponent />);
+  it('renders the special needs section', async () => {
+    const { findByRole } = render(<TestComponent />);
 
     expect(
-      getByRole('heading', { name: 'Monthly Support Needs Chart' }),
+      await findByRole('table', { name: 'Special Needs' }),
+    ).toHaveTableStructure({
+      rowHeaders: [expect.stringContaining('Total Special Needs Goal')],
+      cells: ['$3,624'],
+    });
+  });
+
+  it('renders the monthly support needs chart and the special needs chart placeholder', async () => {
+    const { findByRole, getByRole, getByTestId } = render(<TestComponent />);
+
+    expect(
+      await findByRole('heading', { name: 'Monthly Support Needs Chart' }),
     ).toBeInTheDocument();
     expect(
       getByRole('heading', { name: 'Special Needs Chart' }),
