@@ -3,9 +3,8 @@ import { render } from '@testing-library/react';
 import { DeepPartial } from 'ts-essentials';
 import { gqlMock } from '__tests__/util/graphqlMocking';
 import {
-  NewStaffGoalCalculationDocument,
-  NewStaffGoalCalculationQuery,
-  NewStaffGoalCalculationQueryVariables,
+  NewStaffGoalCalculationFieldsFragment,
+  NewStaffGoalCalculationFieldsFragmentDoc,
 } from '../GoalSettings/NewStaffGoalCalculation.generated';
 import { NsGoalCalculation } from '../Shared/NsGoalCalculatorContext';
 import { MonthlyNeedsCard } from './MonthlyNeedsCard';
@@ -19,13 +18,12 @@ type Calculations = NsGoalCalculation['calculations'];
 const buildCalculations = (
   overrides: DeepPartial<Calculations>,
 ): Calculations =>
-  gqlMock<NewStaffGoalCalculationQuery, NewStaffGoalCalculationQueryVariables>(
-    NewStaffGoalCalculationDocument,
+  gqlMock<NewStaffGoalCalculationFieldsFragment>(
+    NewStaffGoalCalculationFieldsFragmentDoc,
     {
-      variables: { accountListId: 'account-list-1' },
-      mocks: { newStaffGoalCalculation: { calculations: overrides } },
+      mocks: { calculations: overrides },
     },
-  ).newStaffGoalCalculation!.calculations;
+  ).calculations;
 
 describe('MonthlyNeedsCard', () => {
   it('renders every line of the worksheet in order', () => {

@@ -2,17 +2,12 @@ import { gqlMock } from '__tests__/util/graphqlMocking';
 import {
   GoalCalculationAge,
   GoalCalculationRole,
-  MpdGoalBenefitsConstantPlanEnum,
   NewStaffGoalCalculationSalaryOverCapEnum,
   NewStaffQuestionnaireMaritalStatusEnum,
-  NewStaffQuestionnaireNsoHousingEnum,
-  NewStaffQuestionnaireNsoSessionsEnum,
 } from 'src/graphql/types.generated';
 import {
-  NewStaffGoalCalculationDocument,
   NewStaffGoalCalculationFieldsFragment,
-  NewStaffGoalCalculationQuery,
-  NewStaffGoalCalculationQueryVariables,
+  NewStaffGoalCalculationFieldsFragmentDoc,
 } from './NewStaffGoalCalculation.generated';
 import {
   calculationToFormValues,
@@ -27,65 +22,30 @@ const emptyGoalSettingsValues = {
   calculationsYear: '',
 } as const;
 
-const { calculations } = gqlMock<
-  NewStaffGoalCalculationQuery,
-  NewStaffGoalCalculationQueryVariables
->(NewStaffGoalCalculationDocument, {
-  variables: { accountListId: 'account-list-1' },
-}).newStaffGoalCalculation!;
-
-const baseCalculation: NewStaffGoalCalculationFieldsFragment = {
-  __typename: 'NewStaffGoalCalculation',
-  id: 'goal-1',
-  calculations,
-  firstName: 'John',
-  lastName: 'Doe',
-  emailAddress: 'john@cru.org',
-  phoneNumber: '555',
-  address: '1 Lake Hart',
-  personNumber: '123',
-  spouseFirstName: 'Jane',
-  spouseEmailAddress: 'jane@cru.org',
-  spousePhoneNumber: '556',
-  spousePersonNumber: '456',
-  maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Married,
-  spouseJoining: true,
-  age: GoalCalculationAge.ThirtyToThirtyFour,
-  spouseAge: GoalCalculationAge.OverForty,
-  tenure: 3,
-  spouseTenure: 5,
-  annualRequestedSalary: 41000,
-  spouseRequestedAnnualSalary: 47000,
-  contribution403bPercentage: 7,
-  spouseContribution403bPercentage: 6,
-  spouseMhaAmount: 200,
-  staffConferenceTransfer: 10,
-  accountTransfers: 20,
-  advocacyTransfers: 30,
-  geographicLocation: 'Orlando, FL',
-  studentLoanMonthlyPayment: 60,
-  carLoanMonthlyPayment: 70,
-  creditCardDebtMonthlyPayment: 80,
-  solidSupportRaised: 90,
-  benefitsPlan: MpdGoalBenefitsConstantPlanEnum.Base,
-  reimbursableExpenses: 100,
-  healthcareDependentsCount: 2,
-  ministryName: 'Campus',
-  ministryLocation: 'Orlando, FL',
-  assignmentType: GoalCalculationRole.Field,
-  ministryExpenses: 250,
-  nsoHousing: NewStaffQuestionnaireNsoHousingEnum.SingleRoom,
-  nsoSessions: NewStaffQuestionnaireNsoSessionsEnum.IbsAndNso,
-  nsoSpecialNeedsSupportReceived: 15,
-  childcareChildrenCount: 1,
-  healthcareExempt: false,
-  spouseHealthcareExempt: true,
-  secaExempt: false,
-  spouseSecaExempt: true,
-  allowSalaryOverCap: NewStaffGoalCalculationSalaryOverCapEnum.YesAny,
-  allowDebtOverCap: false,
-  calculationsYear: 2026,
-};
+const baseCalculation = gqlMock<NewStaffGoalCalculationFieldsFragment>(
+  NewStaffGoalCalculationFieldsFragmentDoc,
+  {
+    mocks: {
+      maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Married,
+      spouseJoining: true,
+      age: GoalCalculationAge.ThirtyToThirtyFour,
+      spouseAge: GoalCalculationAge.OverForty,
+      annualRequestedSalary: 41000,
+      spouseMhaAmount: 200,
+      staffConferenceTransfer: 10,
+      accountTransfers: 20,
+      advocacyTransfers: 30,
+      assignmentType: GoalCalculationRole.Field,
+      nsoSpecialNeedsSupportReceived: 15,
+      healthcareExempt: false,
+      spouseHealthcareExempt: true,
+      secaExempt: false,
+      spouseSecaExempt: true,
+      allowSalaryOverCap: NewStaffGoalCalculationSalaryOverCapEnum.YesAny,
+      calculationsYear: 2026,
+    },
+  },
+);
 
 describe('calculationToFormValues', () => {
   it('maps and converts API values to form values', () => {
