@@ -117,6 +117,7 @@ const MonthlyGoal = ({
               <Grid
                 size={{
                   sm: 6,
+                  md: 3,
                 }}
               >
                 <Typography component="div" color="textSecondary">
