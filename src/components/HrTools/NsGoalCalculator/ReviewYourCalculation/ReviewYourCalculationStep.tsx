@@ -68,7 +68,10 @@ export const ReviewYourCalculationStep: React.FC<
         columnLabel={columnLabel}
       />
 
-      <SpecialNeedsCard columnLabel={columnLabel} />
+      <SpecialNeedsCard
+        columnLabel={columnLabel}
+        adminRate={goalCalculation.calculations.adminRate}
+      />
 
       <AccountBalanceCard
         minAccountBalance={goalCalculation.calculations.minimumAccountBalance}

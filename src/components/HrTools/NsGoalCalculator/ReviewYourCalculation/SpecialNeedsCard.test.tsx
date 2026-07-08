@@ -5,7 +5,7 @@ import { SpecialNeedsCard } from './SpecialNeedsCard';
 describe('SpecialNeedsCard', () => {
   it('renders every line of the worksheet in order', () => {
     const { getByRole } = render(
-      <SpecialNeedsCard columnLabel="John & Jane" />,
+      <SpecialNeedsCard columnLabel="John & Jane" adminRate={0.12} />,
     );
 
     expect(
@@ -20,7 +20,7 @@ describe('SpecialNeedsCard', () => {
         expect.stringContaining('Refresh Retreat'),
         expect.stringContaining('Cru National Conference'),
         expect.stringContaining('Subtotal'),
-        expect.stringContaining('Subtotal with Admin Assessment'),
+        'Subtotal with Admin AssessmentDivide line 5 by 0.88',
         expect.stringContaining('Special Needs Developed to Date'),
         expect.stringContaining('Special Needs to be Developed'),
       ],

@@ -10,13 +10,15 @@ import {
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat } from 'src/lib/intlFormat';
+import { currencyFormat, numberFormat } from 'src/lib/intlFormat';
 import { PresentationCard } from '../../Shared/GoalPresentation/PresentationCard';
 import { NeedsRow, NeedsTable } from './NeedsTable';
 
 export interface SpecialNeedsCardProps {
   /** Column header naming the staff member (and spouse when married). */
   columnLabel: string;
+  /** Admin charge rate; line 6 divides the subtotal by `1 - adminRate`. */
+  adminRate: number;
 }
 
 /**
@@ -29,9 +31,12 @@ export interface SpecialNeedsCardProps {
  */
 export const SpecialNeedsCard: React.FC<SpecialNeedsCardProps> = ({
   columnLabel,
+  adminRate,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+
+  const adminDivisor = numberFormat(1 - adminRate, locale);
 
   const rows: NeedsRow[] = [
     {
@@ -65,7 +70,9 @@ export const SpecialNeedsCard: React.FC<SpecialNeedsCardProps> = ({
     {
       line: '6',
       category: t('Subtotal with Admin Assessment'),
-      description: t('Divide line 5 by .88'),
+      description: t('Divide line 5 by {{divisor}}', {
+        divisor: adminDivisor,
+      }),
       amount: 0,
       bold: true,
     },
@@ -81,7 +88,7 @@ export const SpecialNeedsCard: React.FC<SpecialNeedsCardProps> = ({
     {
       line: '8',
       category: t('Special Needs to be Developed'),
-      description: t('Subtract line 6 from line 5'),
+      description: t('Subtract line 7 from line 6'),
       amount: 0,
       bold: true,
     },
