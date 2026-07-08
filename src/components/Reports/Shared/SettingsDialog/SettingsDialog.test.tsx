@@ -9,7 +9,12 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import { ReportsStaffExpensesQuery } from '../../StaffExpenseReport/GetStaffExpense.generated';
 import { DateRange } from '../../StaffExpenseReport/Helpers/StaffReportEnum';
-import { Filters, SettingsDialog, SettingsDialogProps } from './SettingsDialog';
+import {
+  Filters,
+  SettingsDialog,
+  SettingsDialogProps,
+  getValidationSchema,
+} from './SettingsDialog';
 
 const mutationSpy = jest.fn();
 const TestComponent: React.FC<
@@ -253,6 +258,32 @@ describe('SettingsDialog', () => {
     expect(
       queryByText('Start date must be earlier than end date'),
     ).not.toBeInTheDocument();
+  });
+
+  it('rejects a start date after the viewed month when no end date is set', async () => {
+    await expect(
+      getValidationSchema(DateTime.fromISO('2019-06-01')).validateAt(
+        'startDate',
+        {
+          startDate: DateTime.fromISO('2019-09-01'),
+          endDate: null,
+        },
+      ),
+    ).rejects.toThrow(
+      'Select an end date when the start date is later than the month being viewed',
+    );
+  });
+
+  it('accepts a start date within the viewed month when no end date is set', async () => {
+    await expect(
+      getValidationSchema(DateTime.fromISO('2019-06-01')).validateAt(
+        'startDate',
+        {
+          startDate: DateTime.fromISO('2019-06-30'),
+          endDate: null,
+        },
+      ),
+    ).resolves.toBeTruthy();
   });
 
   it('checks all available categories by default when no selection exists', async () => {
