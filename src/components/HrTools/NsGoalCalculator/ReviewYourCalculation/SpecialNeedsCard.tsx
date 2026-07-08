@@ -7,6 +7,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
+import { visuallyHidden } from '@mui/utils';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
@@ -100,7 +101,9 @@ export const SpecialNeedsCard: React.FC<SpecialNeedsCardProps> = ({
         <NeedsTable size="small">
           <TableHead>
             <TableRow>
-              <TableCell className="line" />
+              <TableCell className="line">
+                <Typography sx={visuallyHidden}>{t('Line')}</Typography>
+              </TableCell>
               <TableCell>
                 <Typography variant="body1" fontWeight="bold" color="primary">
                   {t('Category')}

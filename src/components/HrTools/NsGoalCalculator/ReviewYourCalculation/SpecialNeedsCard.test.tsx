@@ -13,7 +13,7 @@ describe('SpecialNeedsCard', () => {
     ).toBeInTheDocument();
 
     expect(getByRole('table')).toHaveTableStructure({
-      columnHeaders: ['', 'Category', 'John & Jane'],
+      columnHeaders: ['Line', 'Category', 'John & Jane'],
       rowHeaders: [
         expect.stringContaining('IBS / NSO'),
         expect.stringContaining('Faith & Finances Course'),

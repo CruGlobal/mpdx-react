@@ -59,7 +59,7 @@ describe('MonthlyNeedsCard', () => {
     );
 
     expect(getByRole('table')).toHaveTableStructure({
-      columnHeaders: ['', 'Category', 'John & Jane'],
+      columnHeaders: ['Line', 'Category', 'John & Jane'],
       rowHeaders: [
         expect.stringContaining('Salary'),
         expect.stringContaining('SECA, other taxes'),
