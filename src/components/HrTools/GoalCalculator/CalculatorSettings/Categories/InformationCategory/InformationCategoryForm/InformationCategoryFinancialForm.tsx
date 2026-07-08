@@ -47,9 +47,8 @@ export const InformationCategoryFinancialForm: React.FC<
           ? t('Review spouse financial details and settings here.')
           : t('Review your financial details and settings here.')}
       </Typography>
-
       <Grid container spacing={3}>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <AutosaveTextField
             fieldName={
               isSpouse ? 'spouseNetPaycheckAmount' : 'netPaycheckAmount'
@@ -68,7 +67,7 @@ export const InformationCategoryFinancialForm: React.FC<
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid size={12}>
           <AutosaveTextField
             fieldName={isSpouse ? 'spouseTaxesPercentage' : 'taxesPercentage'}
             schema={schema}
@@ -81,7 +80,7 @@ export const InformationCategoryFinancialForm: React.FC<
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid size={12}>
           <TextField
             value={data?.goalCalculation[secaField]?.toString() ?? ''}
             onChange={(event) => {
@@ -101,7 +100,7 @@ export const InformationCategoryFinancialForm: React.FC<
           </TextField>
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid size={12}>
           <AutosaveTextField
             fieldName={
               isSpouse
@@ -133,7 +132,7 @@ export const InformationCategoryFinancialForm: React.FC<
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid size={12}>
           <AutosaveTextField
             fieldName={
               isSpouse
@@ -165,7 +164,7 @@ export const InformationCategoryFinancialForm: React.FC<
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid size={12}>
           <AutosaveTextField
             fieldName={isSpouse ? 'spouseMhaAmount' : 'mhaAmount'}
             schema={schema}

@@ -125,7 +125,7 @@ export const AddContactToAppealModal: React.FC<
           return (
             <form onSubmit={handleSubmit} data-testid="addContactToAppealModal">
               <DialogContent>
-                <Grid item>
+                <Grid>
                   {!!excludedContactNames.length && (
                     <Alert
                       severity="info"

@@ -385,7 +385,7 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
               {!totalContacts && <NoData tool="fixMailingAddresses" />}
               {!!totalContacts && (
                 <>
-                  <Grid item xs={12}>
+                  <Grid size={12}>
                     <Box className={classes.descriptionBox}>
                       <Typography>
                         <strong>
@@ -435,7 +435,7 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
                       </Box>
                     </Box>
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid size={12}>
                     {data.contacts.nodes.map((contact) => (
                       <Contact
                         id={contact.id}
@@ -455,7 +455,7 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
                       />
                     ))}
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid size={12}>
                     <Box className={classes.footer}>
                       <Typography>
                         <Trans

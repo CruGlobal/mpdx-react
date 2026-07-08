@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
 import {
   Box,
-  ListItem,
+  ListItemButton,
   ListItemText,
   Skeleton,
   Typography,
@@ -77,8 +77,7 @@ export const AppealsListFilterPanelItem = ({
   };
 
   return (
-    <ListItem
-      button
+    <ListItemButton
       selected={isSelected}
       onClick={handleClick}
       className={classes.li}
@@ -102,6 +101,6 @@ export const AppealsListFilterPanelItem = ({
         <Typography variant="body2">{count}</Typography>
       </Box>
       <ArrowForwardIos fontSize="small" color="disabled" />
-    </ListItem>
+    </ListItemButton>
   );
 };

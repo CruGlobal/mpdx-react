@@ -4,7 +4,6 @@ import {
   Box,
   ButtonBase,
   Grid,
-  Hidden,
   ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
@@ -88,18 +87,22 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
       })}
       data-testid="rowButton"
     >
-      <Hidden xsDown>
-        <ListItemIcon>
-          <StyledCheckbox
-            checked={isChecked(contact.id)}
-            color="secondary"
-            onClick={(event) => event.stopPropagation()}
-            onChange={() => onContactCheckToggle(contact.id)}
-          />
-        </ListItemIcon>
-      </Hidden>
-      <Grid container alignItems="center">
-        <Grid item xs={10} md={6} style={{ paddingRight: 16 }}>
+      <ListItemIcon>
+        <StyledCheckbox
+          checked={isChecked(contact.id)}
+          color="secondary"
+          onClick={(event) => event.stopPropagation()}
+          onChange={() => onContactCheckToggle(contact.id)}
+        />
+      </ListItemIcon>
+      <Grid container alignItems="center" sx={{ width: '100%' }}>
+        <Grid
+          style={{ paddingRight: 16 }}
+          size={{
+            xs: 10,
+            md: 6,
+          }}
+        >
           <ListItemText
             primary={
               <Typography component="span" variant="h6" noWrap>
@@ -120,23 +123,30 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
             }
             secondary={
               primaryAddress && (
-                <Hidden smDown>
-                  <Typography component="span" variant="body2">
-                    {[
-                      primaryAddress.street,
-                      `${primaryAddress.city}${primaryAddress.city && ','}`,
-                      primaryAddress.state,
-                      primaryAddress.postalCode,
-                    ]
-                      .filter(Boolean)
-                      .join(' ')}
-                  </Typography>
-                </Hidden>
+                <Typography
+                  component="span"
+                  variant="body2"
+                  sx={{ display: { xs: 'none', sm: 'block' } }}
+                >
+                  {[
+                    primaryAddress.street,
+                    `${primaryAddress.city}${primaryAddress.city && ','}`,
+                    primaryAddress.state,
+                    primaryAddress.postalCode,
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                </Typography>
               )
             }
           />
         </Grid>
-        <Grid item xs={2} md={6}>
+        <Grid
+          size={{
+            xs: 2,
+            md: 6,
+          }}
+        >
           <ContactPartnershipStatus
             lateAt={lateAt}
             pledgeStartDate={pledgeStartDate}
@@ -148,7 +158,7 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
           />
         </Grid>
       </Grid>
-      <Hidden xsDown>
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Box onClick={(event) => event.preventDefault()}>
           <ContactUncompletedTasksCount
             uncompletedTasksCount={uncompletedTasksCount}
@@ -164,7 +174,7 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
             isStarred={starred || false}
           />
         </ListItemSecondaryAction>
-      </Hidden>
+      </Box>
     </ListItemButton>
   );
 };

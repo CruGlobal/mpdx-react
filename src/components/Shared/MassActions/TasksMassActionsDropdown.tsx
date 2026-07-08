@@ -1,5 +1,5 @@
 import React, { ReactElement, useState } from 'react';
-import { Hidden, ListItemText, Menu, MenuItem } from '@mui/material';
+import { Box, ListItemText, Menu, MenuItem } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -118,7 +118,7 @@ export const TasksMassActionsDropdown: React.FC<
   return (
     <>
       {buttonGroup}
-      <Hidden xsDown>
+      <Box>
         {selectedIds?.length > 0 && (
           <>
             <MassActionsDropdown
@@ -189,7 +189,7 @@ export const TasksMassActionsDropdown: React.FC<
             </Menu>
           </>
         )}
-      </Hidden>
+      </Box>
 
       {completeTasksModalOpen && (
         <DynamicMassActionsTasksConfirmationModal

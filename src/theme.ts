@@ -1,4 +1,8 @@
-import { createTheme } from '@mui/material/styles';
+import {
+  PaletteColor,
+  PaletteColorOptions,
+  createTheme,
+} from '@mui/material/styles';
 
 const defaultTheme = createTheme();
 
@@ -74,7 +78,7 @@ const progressBarColors = {
 };
 
 // https://material-ui.com/customization/palette/#adding-new-colors
-declare module '@mui/material/styles/createPalette' {
+declare module '@mui/material/styles' {
   interface Palette {
     lemon: PaletteColor;
     yellow: PaletteColor;

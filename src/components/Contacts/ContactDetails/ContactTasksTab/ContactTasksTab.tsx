@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Add from '@mui/icons-material/Add';
 import CheckCircleOutline from '@mui/icons-material/CheckCircleOutline';
-import { Box, Button, Divider, Hidden, Typography } from '@mui/material';
+import { Box, Button, Divider, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -232,11 +232,9 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
               page={PageEnum.Task}
             />
             {!!ids.length && (
-              <Hidden smDown>
-                <Typography ml={2}>
-                  {t('{{count}} Selected', { count: ids.length })}
-                </Typography>
-              </Hidden>
+              <Typography ml={2} sx={{ display: { xs: 'none', sm: 'block' } }}>
+                {t('{{count}} Selected', { count: ids.length })}
+              </Typography>
             )}
           </HeaderItemsWrap>
           <HeaderItemsWrap>

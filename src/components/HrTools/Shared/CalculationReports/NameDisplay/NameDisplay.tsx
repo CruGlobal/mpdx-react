@@ -63,19 +63,19 @@ export const NameDisplay: React.FC<NameDisplayProps> = ({
         {showContent && (
           <CardContent>
             <Grid container spacing={theme.spacing(2)}>
-              <Grid item xs={6}>
+              <Grid size={6}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
                   {titleOne?.toUpperCase()}
                 </Typography>
               </Grid>
-              <Grid item xs={6}>
+              <Grid size={6}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
                   {titleTwo?.toUpperCase()}
                 </Typography>
               </Grid>
             </Grid>
             <Grid container spacing={theme.spacing(2)}>
-              <Grid item xs={6}>
+              <Grid size={6}>
                 <Typography
                   variant="h3"
                   fontWeight="bold"
@@ -87,7 +87,7 @@ export const NameDisplay: React.FC<NameDisplayProps> = ({
                   })}
                 </Typography>
               </Grid>
-              <Grid item xs={6}>
+              <Grid size={6}>
                 <Typography
                   variant="h3"
                   fontWeight="bold"

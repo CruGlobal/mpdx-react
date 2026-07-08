@@ -68,7 +68,13 @@ describe('PersonalInformationSection', () => {
   });
 
   it('should display married personal information values correctly', async () => {
-    const { findByRole } = render(<TestComponent />);
+    // Explicitly clear the saved location so the combobox is empty. (MUI v7's
+    // Autocomplete renders a controlled `value` even when it isn't one of the
+    // `options`, so relying on the auto-generated mock string would populate
+    // the field.)
+    const { findByRole } = render(
+      <TestComponent requestMock={{ location: null }} />,
+    );
 
     const locationCombobox = await findByRole('combobox', {
       name: 'Nearest Geographic Multiplier Location',

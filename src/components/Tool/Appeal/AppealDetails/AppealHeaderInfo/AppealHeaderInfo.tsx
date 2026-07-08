@@ -71,9 +71,14 @@ export const AppealHeaderInfo: React.FC<AppealHeaderInfoProps> = ({
   return (
     <>
       <GridContainer container>
-        <Grid item xs={12} sm={7}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 7,
+          }}
+        >
           <HeaderBarContactWrap>
-            <Grid item xs={7}>
+            <Grid size={7}>
               <AppealInfoHeader variant="subtitle2">
                 {t('Name')}:
               </AppealInfoHeader>
@@ -103,7 +108,7 @@ export const AppealHeaderInfo: React.FC<AppealHeaderInfoProps> = ({
                 )}
               </AppealInfoContainer>
             </Grid>
-            <Grid item xs={5}>
+            <Grid size={5}>
               <AppealInfoHeader variant="subtitle2">
                 {t('Goal')}:
               </AppealInfoHeader>
@@ -137,7 +142,13 @@ export const AppealHeaderInfo: React.FC<AppealHeaderInfoProps> = ({
             </Grid>
           </HeaderBarContactWrap>
         </Grid>
-        <Grid xs={12} sm={5} item style={{ paddingTop: '10px' }}>
+        <Grid
+          style={{ paddingTop: '10px' }}
+          size={{
+            xs: 12,
+            sm: 5,
+          }}
+        >
           <AppealProgressBar
             given={given}
             received={received}
@@ -147,7 +158,6 @@ export const AppealHeaderInfo: React.FC<AppealHeaderInfoProps> = ({
           />
         </Grid>
       </GridContainer>
-
       {isEditAppealModalOpen && appealInfo && (
         <DynamicEditAppealHeaderInfoModal
           handleClose={() => setIsEditAppealModalOpen(false)}
