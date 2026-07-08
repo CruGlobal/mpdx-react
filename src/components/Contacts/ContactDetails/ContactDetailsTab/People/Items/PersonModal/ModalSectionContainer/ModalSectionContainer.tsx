@@ -15,7 +15,7 @@ const ModalSectionWrapper = styled(Box)(({ theme }) => ({
   // the way v5's Grid did — they shrink to content width, squeezing the
   // columns (e.g. the phone/email "Type" select truncating to "M…"). Let the
   // Grid rows grow to fill the remaining width beside any section icon.
-  '& > .MuiGrid-container': {
+  '> .MuiGrid-container': {
     flexGrow: 1,
     minWidth: 0,
   },

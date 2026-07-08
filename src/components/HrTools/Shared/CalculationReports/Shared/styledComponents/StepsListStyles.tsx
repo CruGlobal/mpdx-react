@@ -1,10 +1,4 @@
-import { ElementType } from 'react';
 import { Box, ListItemIcon, SxProps, Theme, styled } from '@mui/material';
-
-interface StyledOrderedListProps {
-  start: number;
-  component?: ElementType;
-}
 
 export const CategoryListItemStyles: SxProps<Theme> = (theme) => ({
   '.MuiSvgIcon-root': {
@@ -19,8 +13,8 @@ export const CategoryListItemIcon = styled(ListItemIcon)(({ theme }) => ({
   marginRight: theme.spacing(0.5),
 }));
 
-export const StyledOrderedList = styled(Box)<StyledOrderedListProps>({
+export const StyledOrderedList = styled(Box)({
   '& li::marker': {
     content: 'counters(list-item, ".") ".\\00a0\\00a0"',
   },
-});
+}) as typeof Box;

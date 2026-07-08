@@ -167,7 +167,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
           {drawerVisible && sidebar}
         </Drawer>
       ) : (
-        <Box>{sidebar}</Box>
+        sidebar
       )}
       <CoachingMainContainer>
         {loading ? (
