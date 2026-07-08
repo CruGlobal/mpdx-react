@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, SxProps, Theme, Typography } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { useTranslation } from 'react-i18next';
 import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
@@ -77,7 +77,7 @@ export const FinancialInformationSection: React.FC<
         helperText={t('Calculated monthly amount')}
       >
         <Typography variant="body1">
-          <Box component="span" sx={visuallyHidden}>
+          <Box component="span" sx={visuallyHidden as SxProps<Theme>}>
             {t('403(b) Amount — {{name}}', { name: primaryName })}
           </Box>
           {currencyFormat(calculations.contributing403bAmount, 'USD', locale, {
@@ -86,7 +86,7 @@ export const FinancialInformationSection: React.FC<
         </Typography>
         {hasSpouse && (
           <Typography variant="body1">
-            <Box component="span" sx={visuallyHidden}>
+            <Box component="span" sx={visuallyHidden as SxProps<Theme>}>
               {t('403(b) Amount — {{name}}', { name: spouseName })}
             </Box>
             {currencyFormat(
