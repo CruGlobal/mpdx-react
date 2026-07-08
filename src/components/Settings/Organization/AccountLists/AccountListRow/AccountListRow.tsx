@@ -295,7 +295,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
       }}
     >
       <Grid container>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <ListItemText
             primary={
               <Typography component="span" variant="h5" noWrap>
@@ -339,12 +339,13 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
         </Grid>
         <Grid
           container
+          size={12}
           style={{
             borderBottom: '1px solid',
             borderColor: theme.palette.mpdxGrayLight.main,
           }}
         >
-          <Grid item xs={4}>
+          <Grid size={4}>
             <ListItemText
               primary={
                 <Typography component="span" variant="h6" noWrap>
@@ -355,7 +356,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
               }
             />
           </Grid>
-          <Grid item xs={4}>
+          <Grid size={4}>
             <ListItemText
               primary={
                 <Typography component="span" variant="h6" noWrap>
@@ -367,7 +368,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
             />
           </Grid>
 
-          <Grid item xs={4}>
+          <Grid size={4}>
             <ListItemText
               primary={
                 <Typography component="span" variant="h6" noWrap>
@@ -380,7 +381,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
           </Grid>
         </Grid>
 
-        <BorderRightGrid item xs={4}>
+        <BorderRightGrid size={4}>
           {designationAccounts &&
             designationAccounts?.map((account, idx) => (
               <BorderBottomBox key={`designationAccounts-${idx}`}>
@@ -392,7 +393,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
             ))}
         </BorderRightGrid>
 
-        <BorderRightGrid item xs={4}>
+        <BorderRightGrid size={4}>
           {accountListUsers && (
             <AccountListCoachesOrUsers
               accountListItems={accountListUsers}
@@ -415,11 +416,10 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
           )}
         </BorderRightGrid>
         <Grid
-          item
-          xs={4}
           style={{
             alignContent: 'center',
           }}
+          size={4}
         >
           {accountListCoaches && (
             <AccountListCoachesOrUsers

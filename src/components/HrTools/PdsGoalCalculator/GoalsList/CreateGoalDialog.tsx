@@ -11,6 +11,8 @@ import {
   FormLabel,
   Radio,
   RadioGroup,
+  SxProps,
+  Theme,
   Typography,
 } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
@@ -101,7 +103,7 @@ export const CreateGoalDialog: React.FC<CreateGoalDialogProps> = ({
           <form onSubmit={handleSubmit}>
             <DialogContent>
               <FormControl component="fieldset">
-                <FormLabel sx={visuallyHidden}>
+                <FormLabel sx={visuallyHidden as SxProps<Theme>}>
                   {t('Select a form type')}
                 </FormLabel>
                 <RadioGroup

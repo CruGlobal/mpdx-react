@@ -30,7 +30,7 @@ const ProfileInfoWrapper = styled(Box)(({ theme }) => ({
     textAlign: 'left',
     paddingLeft: theme.spacing(14),
   },
-}));
+})) as typeof Box;
 
 const StyledAvatar = styled(Avatar)(({ theme }) => ({
   width: theme.spacing(12),

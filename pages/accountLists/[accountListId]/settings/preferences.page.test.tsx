@@ -258,10 +258,7 @@ describe('Preferences page', () => {
       );
 
       //Accordions should be disabled
-      expect(await findByRole('button', { name: 'Language' })).toHaveAttribute(
-        'aria-disabled',
-        'true',
-      );
+      expect(await findByRole('button', { name: 'Language' })).toBeDisabled();
       await waitFor(() => {
         expect(
           queryByText(

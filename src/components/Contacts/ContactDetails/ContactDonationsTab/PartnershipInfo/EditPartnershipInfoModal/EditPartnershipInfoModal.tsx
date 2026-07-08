@@ -258,7 +258,12 @@ export const EditPartnershipInfoModal: React.FC<
             {errors.pledgeFrequency}
             <DialogContent dividers sx={{ maxHeight: '60vh' }}>
               <Grid container>
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    sm: 6,
+                  }}
+                >
                   <ContactInputWrapper>
                     <TextField
                       name="name"
@@ -277,7 +282,12 @@ export const EditPartnershipInfoModal: React.FC<
                     />
                   </ContactInputWrapper>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    sm: 6,
+                  }}
+                >
                   <ContactInputWrapper>
                     <FormControl fullWidth={true}>
                       <InputLabel id="primary-person-select-label">
@@ -301,7 +311,12 @@ export const EditPartnershipInfoModal: React.FC<
                     </FormControl>
                   </ContactInputWrapper>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    sm: 6,
+                  }}
+                >
                   <ContactInputWrapper>
                     <FormControl fullWidth>
                       <InputLabel id="status-select-label">
@@ -351,7 +366,12 @@ export const EditPartnershipInfoModal: React.FC<
                     </FormControl>
                   </ContactInputWrapper>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    sm: 6,
+                  }}
+                >
                   <ContactInputWrapper>
                     <FormControl fullWidth>
                       <InputLabel id="newsletter-select-label">
@@ -406,7 +426,12 @@ export const EditPartnershipInfoModal: React.FC<
                     </Alert>
                   </ContactInputWrapper>
                 )}
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    sm: 6,
+                  }}
+                >
                   <ContactInputWrapper>
                     <TextFieldInteractive
                       label={t('Amount')}
@@ -446,7 +471,12 @@ export const EditPartnershipInfoModal: React.FC<
                     />
                   </ContactInputWrapper>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    sm: 6,
+                  }}
+                >
                   <ContactInputWrapper>
                     <FormControl fullWidth>
                       <InputLabel id="frequency-select-label">
@@ -486,7 +516,12 @@ export const EditPartnershipInfoModal: React.FC<
                     </FormControl>
                   </ContactInputWrapper>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    sm: 6,
+                  }}
+                >
                   <ContactInputWrapper>
                     <FormControl fullWidth>
                       <CurrencyAutocomplete
@@ -504,7 +539,12 @@ export const EditPartnershipInfoModal: React.FC<
                     </FormControl>
                   </ContactInputWrapper>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    sm: 6,
+                  }}
+                >
                   <ContactInputWrapper>
                     <CustomDateField
                       label={t('Start Date')}
@@ -515,7 +555,12 @@ export const EditPartnershipInfoModal: React.FC<
                     />
                   </ContactInputWrapper>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    sm: 6,
+                  }}
+                >
                   <ContactInputWrapper>
                     <FormControl fullWidth>
                       <InputLabel id="likely-to-give-select-label">
@@ -535,7 +580,12 @@ export const EditPartnershipInfoModal: React.FC<
                     </FormControl>
                   </ContactInputWrapper>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    sm: 6,
+                  }}
+                >
                   <ContactInputWrapper>
                     <CustomDateField
                       label={t('Next Increase Ask')}
@@ -545,7 +595,12 @@ export const EditPartnershipInfoModal: React.FC<
                   </ContactInputWrapper>
                 </Grid>
                 {showRelationshipCode && (
-                  <Grid item xs={12} sm={6}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      sm: 6,
+                    }}
+                  >
                     <ContactInputWrapper>
                       <TextField
                         name="relationshipCode"

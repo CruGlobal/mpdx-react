@@ -20,7 +20,7 @@ const router = {
 describe('Setup start page', () => {
   it('autocomplete renders and button saves and advances to the next page', async () => {
     Object.defineProperty(window, 'navigator', {
-      value: { ...window.navigator, language: 'fr-FR' },
+      value: { ...window.navigator, userAgent: 'jsdom', language: 'fr-FR' },
     });
 
     const mutationSpy = jest.fn();

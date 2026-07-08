@@ -112,12 +112,10 @@ export const ContactsList: React.FC<ContactsListProps> = ({
         appealInfo={appealInfo?.appeal}
         loading={appealInfoLoading}
       />
-
       <Grid container alignItems="center" className={classes.headerContainer}>
         <Grid
-          item
-          xs={isExcludedContact ? 5 : 6}
           className={classes.contactHeader}
+          size={isExcludedContact ? 5 : 6}
         >
           <Typography variant="subtitle1" fontWeight={800}>
             {t('Contact')}
@@ -125,23 +123,18 @@ export const ContactsList: React.FC<ContactsListProps> = ({
         </Grid>
         {isExcludedContact && (
           <Grid
-            item
-            xs={3}
             className={classes.excludedHeader}
             style={{
               paddingLeft: '0px',
             }}
+            size={3}
           >
             <Typography variant="subtitle1" fontWeight={800}>
               {t('Reason')}
             </Typography>
           </Grid>
         )}
-        <Grid
-          item
-          xs={isExcludedContact ? 4 : 6}
-          className={classes.givingHeader}
-        >
+        <Grid className={classes.givingHeader} size={isExcludedContact ? 4 : 6}>
           <Box justifyContent={contactPanelOpen ? 'flex-end' : undefined}>
             <Box>
               <Typography variant="subtitle1" fontWeight={800}>
@@ -151,7 +144,6 @@ export const ContactsList: React.FC<ContactsListProps> = ({
           </Box>
         </Grid>
       </Grid>
-
       <InfiniteList
         loading={loading}
         data={data?.contacts?.nodes ?? []}

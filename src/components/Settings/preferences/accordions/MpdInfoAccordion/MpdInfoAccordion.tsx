@@ -144,7 +144,12 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
             isSubmitting={isSubmitting}
           >
             <Grid container spacing={3} pt={1}>
-              <Grid item xs={12} sm={6}>
+              <Grid
+                size={{
+                  xs: 12,
+                  sm: 6,
+                }}
+              >
                 <CustomDateField
                   label={t('Start Date')}
                   value={activeMpdStartAt}
@@ -152,7 +157,12 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
                   autoFocus
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid
+                size={{
+                  xs: 12,
+                  sm: 6,
+                }}
+              >
                 <CustomDateField
                   label={t('End Date')}
                   value={activeMpdFinishAt}

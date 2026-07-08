@@ -442,9 +442,14 @@ const TaskModalForm = ({
               </Alert>
             )}
             <FormFieldsGridContainer>
-              <Grid item>
+              <Grid>
                 <Grid container spacing={2}>
-                  <Grid xs={12} sm={6} item>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      sm: 6,
+                    }}
+                  >
                     <TaskPhaseAutocomplete
                       options={taskPhases}
                       value={taskPhase}
@@ -474,7 +479,12 @@ const TaskModalForm = ({
                     />
                   </Grid>
 
-                  <Grid xs={12} sm={6} item>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      sm: 6,
+                    }}
+                  >
                     <FormControl fullWidth required>
                       <ActivityTypeAutocomplete
                         options={
@@ -502,7 +512,7 @@ const TaskModalForm = ({
                 </Grid>
               </Grid>
 
-              <Grid item>
+              <Grid>
                 <TextField
                   name="subject"
                   label={t('Task Name')}
@@ -518,7 +528,7 @@ const TaskModalForm = ({
                 />
               </Grid>
               {activityType && inPersonActivityTypes.includes(activityType) && (
-                <Grid item>
+                <Grid>
                   <TextField
                     label={t('Location')}
                     value={location}
@@ -531,17 +541,13 @@ const TaskModalForm = ({
               )}
 
               {!initialTask.completedAt && (
-                <Grid item>
+                <Grid>
                   <FormControl fullWidth>
                     <DateTimeFieldPair
                       render={(dateField, timeField) => (
                         <Grid container spacing={2}>
-                          <Grid xs={6} item>
-                            {dateField}
-                          </Grid>
-                          <Grid xs={6} item>
-                            {timeField}
-                          </Grid>
+                          <Grid size={6}>{dateField}</Grid>
+                          <Grid size={6}>{timeField}</Grid>
                         </Grid>
                       )}
                       dateLabel={t('Due Date')}
@@ -553,17 +559,13 @@ const TaskModalForm = ({
                 </Grid>
               )}
               {initialTask.completedAt && (
-                <Grid item>
+                <Grid>
                   <FormControl fullWidth>
                     <DateTimeFieldPair
                       render={(dateField, timeField) => (
                         <Grid container spacing={2}>
-                          <Grid xs={6} item>
-                            {dateField}
-                          </Grid>
-                          <Grid xs={6} item>
-                            {timeField}
-                          </Grid>
+                          <Grid size={6}>{dateField}</Grid>
+                          <Grid size={6}>{timeField}</Grid>
                         </Grid>
                       )}
                       dateLabel={t('Completed Date')}
@@ -576,7 +578,7 @@ const TaskModalForm = ({
                   </FormControl>
                 </Grid>
               )}
-              <Grid item>
+              <Grid>
                 <ContactsAutocomplete
                   accountListId={accountListId}
                   value={contactIds}
@@ -605,7 +607,7 @@ const TaskModalForm = ({
               />
 
               {initialTask.completedAt && !!nextActions.length && (
-                <Grid item>
+                <Grid>
                   <ActivityTypeAutocomplete
                     options={nextActions}
                     label={t('Next Action')}
@@ -623,7 +625,7 @@ const TaskModalForm = ({
                   setSelectedTags={setSelectedSuggestedTags}
                 />
               )}
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <TagsAutocomplete
                   accountListId={accountListId}
                   type={TagTypeEnum.Tag}
@@ -637,7 +639,7 @@ const TaskModalForm = ({
                   }
                 />
               </Grid>
-              <Grid item>
+              <Grid>
                 <AssigneeAutocomplete
                   accountListId={accountListId}
                   value={userId}
@@ -645,7 +647,7 @@ const TaskModalForm = ({
                 />
               </Grid>
               {!initialTask.completedAt && (
-                <Grid item>
+                <Grid>
                   <Typography
                     style={{
                       display: 'flex',
@@ -662,7 +664,7 @@ const TaskModalForm = ({
                   </Typography>
 
                   <Grid container spacing={2}>
-                    <Grid xs={4} item>
+                    <Grid size={4}>
                       <Tooltip
                         placement="top"
                         title={t('How the reminder will be sent')}
@@ -685,7 +687,7 @@ const TaskModalForm = ({
                         />
                       </Tooltip>
                     </Grid>
-                    <Grid xs={3} item>
+                    <Grid size={3}>
                       <Tooltip
                         placement="top"
                         title={t('Amount of time before reminder')}
@@ -709,7 +711,7 @@ const TaskModalForm = ({
                         />
                       </Tooltip>
                     </Grid>
-                    <Grid xs={5} item>
+                    <Grid size={5}>
                       <Tooltip
                         placement="top"
                         title={t('Days, hours, or minutes')}
@@ -736,7 +738,7 @@ const TaskModalForm = ({
                 </Grid>
               )}
               {!initialTask.completedAt && view !== 'edit' && (
-                <Grid item>
+                <Grid>
                   <TextField
                     label={t('Comment')}
                     value={comment}

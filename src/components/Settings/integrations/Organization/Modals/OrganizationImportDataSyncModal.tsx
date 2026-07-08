@@ -166,7 +166,7 @@ export const OrganizationImportDataSyncModal: React.FC<
               alignItems="center"
               justifyContent="space-between"
             >
-              <Grid item xs={4}>
+              <Grid size={4}>
                 <Button
                   variant="contained"
                   component="label"
@@ -183,7 +183,7 @@ export const OrganizationImportDataSyncModal: React.FC<
                   />
                 </Button>
               </Grid>
-              <Grid item xs={8}>
+              <Grid size={8}>
                 <Box>
                   <Typography>
                     {importFile?.name ?? 'No File Chosen'}

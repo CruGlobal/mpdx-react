@@ -37,7 +37,12 @@ export const MileageCategoryForm: React.FC = () => {
         {/* Dynamic Additional Mileage Fields */}
         {values.additionalMileage.map((mileage, index) => (
           <React.Fragment key={index}>
-            <Grid item xs={12} md={6}>
+            <Grid
+              size={{
+                xs: 12,
+                md: 6,
+              }}
+            >
               <TextField
                 fullWidth
                 size="small"
@@ -53,7 +58,12 @@ export const MileageCategoryForm: React.FC = () => {
                 placeholder={t('e.g., Home visits, Conference travel')}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid
+              size={{
+                xs: 12,
+                md: 6,
+              }}
+            >
               <TextField
                 fullWidth
                 size="small"
@@ -87,7 +97,7 @@ export const MileageCategoryForm: React.FC = () => {
         ))}
 
         {/* Add Mileage Button */}
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Button
             variant="outlined"
             onClick={addMileageField}

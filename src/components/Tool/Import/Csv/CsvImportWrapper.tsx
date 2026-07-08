@@ -88,9 +88,15 @@ export const CsvImportWrapper: React.FC<CsvImportWrapperProps> = ({
       }}
     >
       <ToolsGridContainer container spacing={3}>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+                md: 3,
+              }}
+            >
               <StepCard
                 className={
                   currentTab === CsvImportViewStepEnum.Upload
@@ -104,7 +110,13 @@ export const CsvImportWrapper: React.FC<CsvImportWrapperProps> = ({
                 </Typography>
               </StepCard>
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+                md: 3,
+              }}
+            >
               <StepCard
                 className={
                   currentTab === CsvImportViewStepEnum.Headers
@@ -116,7 +128,13 @@ export const CsvImportWrapper: React.FC<CsvImportWrapperProps> = ({
                 <Typography variant="body1">{t('Map your headers')}</Typography>
               </StepCard>
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+                md: 3,
+              }}
+            >
               <StepCard
                 className={
                   currentTab === CsvImportViewStepEnum.Values
@@ -128,7 +146,13 @@ export const CsvImportWrapper: React.FC<CsvImportWrapperProps> = ({
                 <Typography variant="body1">{t('Map your values')}</Typography>
               </StepCard>
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+                md: 3,
+              }}
+            >
               <StepCard
                 className={
                   currentTab === CsvImportViewStepEnum.Preview

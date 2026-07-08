@@ -31,12 +31,12 @@ export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
       <Container>
         <Box mt={2} mb={2}>
           <Grid container spacing={2}>
-            <Grid item xs={7}>
+            <Grid size={7}>
               <CardSkeleton title={t('Summary')} subtitle={t('Last 12 Months')}>
                 <SummaryBarChart aspect={2} width={100} currency={currency} />
               </CardSkeleton>
             </Grid>
-            <Grid item xs={5}>
+            <Grid size={5}>
               <CardSkeleton
                 title={t('Expenses Categories')}
                 subtitle={t('Last 12 Months')}
