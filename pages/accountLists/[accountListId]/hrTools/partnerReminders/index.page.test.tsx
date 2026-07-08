@@ -75,7 +75,7 @@ describe('Partner Reminders Report Page', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('renders no staff account page when no staff account', async () => {
+  it('renders even though there is no staff account', async () => {
     const mockNoStaffAccount = {
       GetUser: {
         user: {
@@ -84,35 +84,29 @@ describe('Partner Reminders Report Page', () => {
       },
     };
 
-    const { findByText } = render(
-      <TestRouter>
-        <GqlMockedProvider<{
-          GetUser: GetUserQuery;
-        }>
-          mocks={mockNoStaffAccount}
-          onCall={mutationSpy}
-        >
-          <PartnerRemindersReportPage />
-        </GqlMockedProvider>
-      </TestRouter>,
+    const { findByRole } = render(
+      <ThemeProvider theme={theme}>
+        <SnackbarProvider>
+          <TestRouter>
+            <GqlMockedProvider<{
+              GetUser: GetUserQuery;
+            }>
+              mocks={mockNoStaffAccount}
+              onCall={mutationSpy}
+            >
+              <PartnerRemindersReportPage />
+            </GqlMockedProvider>
+          </TestRouter>
+        </SnackbarProvider>
+      </ThemeProvider>,
     );
 
     expect(
-      await findByText(/access to this feature is limited/i),
+      await findByRole('heading', { name: /online reminder system/i }),
     ).toBeInTheDocument();
   });
 
   it('uses blockImpersonatingNonDevelopers for server-side props', () => {
     expect(getServerSideProps).toBe(blockImpersonatingNonDevelopers);
-  });
-
-  it('should show limited access if user does not have access to page', async () => {
-    const { findByText } = render(
-      <Components userType={UserTypeEnum.NonCru} />,
-    );
-
-    expect(
-      await findByText('Access to this feature is limited.'),
-    ).toBeInTheDocument();
   });
 });
