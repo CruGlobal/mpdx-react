@@ -108,6 +108,18 @@ describe('PartnerRemindersReport', () => {
     expect(await findByText('Test Account')).toBeInTheDocument();
   });
 
+  it('should render help link', () => {
+    const { getByRole } = render(<TestComponent />);
+
+    const helpLink = getByRole('link', {
+      name: 'Ministry Partner Reminder help',
+    });
+    expect(helpLink).toHaveAttribute(
+      'href',
+      'https://www.helpducks.org/en_US/hr-tools/ministry-partner-reminders',
+    );
+  });
+
   it('should print', async () => {
     const { getByRole } = render(<TestComponent />);
 
