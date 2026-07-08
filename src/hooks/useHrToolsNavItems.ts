@@ -81,7 +81,7 @@ export function useHrToolsNavItems(): {
       {
         id: 'partnerReminders',
         title: t('Ministry Partner Reminders'),
-        hideItem: hasNoStaffAccount,
+        hideItem: !developerBypass,
       },
       {
         id: 'mpdSupervisorReport',
