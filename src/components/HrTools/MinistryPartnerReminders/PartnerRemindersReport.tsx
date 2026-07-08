@@ -222,6 +222,7 @@ export const PartnerRemindersReport: React.FC<MPRemindersReportProps> = ({
                         underline="hover"
                         target="_blank"
                         rel="noopener noreferrer"
+                        href="https://www.helpducks.org/en_US/hr-tools/ministry-partner-reminders"
                       >
                         Ministry Partner Reminder help
                       </Link>
