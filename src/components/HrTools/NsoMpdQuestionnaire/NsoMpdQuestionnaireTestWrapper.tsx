@@ -12,6 +12,7 @@ import {
 } from 'src/graphql/types.generated';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
+import { MinistriesQuery } from './MinistryInformation/Ministries.generated';
 import { NewStaffQuestionnaireQuery } from './Shared/NewStaffQuestionnaire.generated';
 import { NsoMpdQuestionnaireProvider } from './Shared/NsoMpdQuestionnaireContext';
 
@@ -61,6 +62,7 @@ export const NsoMpdQuestionnaireTestWrapper: React.FC<
           GetUser: GetUserQuery;
           GoalCalculatorConstants: GoalCalculatorConstantsQuery;
           NewStaffQuestionnaire: NewStaffQuestionnaireQuery;
+          Ministries: MinistriesQuery;
         }>
           mocks={{
             GetUser: {
@@ -90,6 +92,19 @@ export const NsoMpdQuestionnaireTestWrapper: React.FC<
                   { location: 'None' },
                 ],
               },
+            },
+            Ministries: {
+              ministries: [
+                {
+                  name: 'Campus Ministry',
+                  children: [{ name: 'University' }, { name: 'High School' }],
+                },
+                {
+                  name: 'Other Ministries',
+                  children: [{ name: 'Jesus Film Project' }],
+                },
+                { name: 'Athletes in Action', children: [] },
+              ],
             },
           }}
           onCall={onCall}

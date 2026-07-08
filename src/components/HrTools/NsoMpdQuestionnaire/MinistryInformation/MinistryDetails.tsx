@@ -14,19 +14,13 @@ import * as yup from 'yup';
 import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { RadioQuestion } from '../Shared/RadioQuestion';
 import { useQuestionnaireAutoSave } from '../Shared/useQuestionnaireAutoSave';
-
-// TODO(MPDX-9758): Replace with the real ministry list from OneApp.
-const ministries = [
-  'Cru',
-  'Cru High School',
-  'Cru City',
-  'Athletes in Action',
-  'Bridges International',
-];
+import { useOneAppMinistries } from './useOneAppMinistries';
 
 export const MinistryDetails: React.FC = () => {
   const { t } = useTranslation();
   const { goalGeographicConstantMap, loading } = useGoalCalculatorConstants();
+  const { ministries, loading: ministriesLoading } = useOneAppMinistries();
+  const ministriesUnavailable = !ministriesLoading && ministries.length === 0;
 
   const cities = useMemo(
     () => Array.from(goalGeographicConstantMap.keys()),
@@ -88,15 +82,21 @@ export const MinistryDetails: React.FC = () => {
           ),
         }}
         {...ministryProps}
+        disabled={ministriesLoading || ministriesUnavailable}
+        {...(ministriesUnavailable
+          ? { error: true, helperText: t('Failed to load ministries') }
+          : {})}
       >
         <MenuItem value="" disabled>
           <Typography component="span" color="text.secondary">
-            {t('Select a ministry')}
+            {ministriesLoading
+              ? t('Loading ministries…')
+              : t('Select a ministry')}
           </Typography>
         </MenuItem>
         {ministries.map((ministry) => (
-          <MenuItem key={ministry} value={ministry}>
-            {ministry}
+          <MenuItem key={ministry.id} value={ministry.name}>
+            {ministry.name}
           </MenuItem>
         ))}
       </TextField>

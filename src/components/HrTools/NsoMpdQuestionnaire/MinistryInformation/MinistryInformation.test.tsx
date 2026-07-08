@@ -17,12 +17,14 @@ describe('MinistryInformation', () => {
     const continueButton = getByRole('button', { name: 'Continue' });
     expect(continueButton).toBeDisabled();
 
-    userEvent.click(
-      getByRole('combobox', {
-        name: 'What ministry are you expecting to serve with?',
-      }),
+    const ministryCombobox = getByRole('combobox', {
+      name: 'What ministry are you expecting to serve with?',
+    });
+    await waitFor(() =>
+      expect(ministryCombobox).not.toHaveAttribute('aria-disabled', 'true'),
     );
-    userEvent.click(getByRole('option', { name: 'Cru' }));
+    userEvent.click(ministryCombobox);
+    userEvent.click(await findByRole('option', { name: 'University' }));
 
     userEvent.type(
       getByRole('textbox', {

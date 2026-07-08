@@ -48,7 +48,7 @@ export const RadioQuestion: React.FC<RadioQuestionProps> = ({
 
   return (
     <FormControl error={error} required>
-      <FormLabel id={labelId} sx={{ color: 'text.primary' }}>
+      <FormLabel component="span" id={labelId} sx={{ color: 'text.primary' }}>
         {label}
       </FormLabel>
       <RadioGroup
