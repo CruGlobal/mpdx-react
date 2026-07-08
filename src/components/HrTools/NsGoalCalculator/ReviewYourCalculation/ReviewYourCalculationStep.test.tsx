@@ -1,19 +1,38 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
 import {
   NsGoalCalculatorTestWrapper,
   defaultGoalCalculation,
 } from '../NsGoalCalculatorTestWrapper';
+import {
+  NsGoalCalculation,
+  useNsGoalCalculator,
+} from '../Shared/NsGoalCalculatorContext';
 import { ReviewYourCalculationStep } from './ReviewYourCalculationStep';
+
+interface TestComponentProps {
+  goalCalculation?: NsGoalCalculation;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({
+  goalCalculation = defaultGoalCalculation,
+}) => (
+  <NsGoalCalculatorTestWrapper>
+    <CurrentStepProbe />
+    <ReviewYourCalculationStep goalCalculation={goalCalculation} />
+  </NsGoalCalculatorTestWrapper>
+);
+
+const CurrentStepProbe: React.FC = () => {
+  const { currentStep } = useNsGoalCalculator();
+  return <div data-testid="current-step">{currentStep.title}</div>;
+};
 
 describe('ReviewYourCalculationStep', () => {
   it('renders the heading, intro, and summary card', async () => {
-    const { findByRole, getByText } = render(
-      <NsGoalCalculatorTestWrapper>
-        <ReviewYourCalculationStep goalCalculation={defaultGoalCalculation} />
-      </NsGoalCalculatorTestWrapper>,
-    );
+    const { findByRole, getByText } = render(<TestComponent />);
 
     expect(
       await findByRole('heading', {
@@ -29,11 +48,7 @@ describe('ReviewYourCalculationStep', () => {
   });
 
   it('names both spouses in the card columns when married', async () => {
-    const { findAllByRole } = render(
-      <NsGoalCalculatorTestWrapper>
-        <ReviewYourCalculationStep goalCalculation={defaultGoalCalculation} />
-      </NsGoalCalculatorTestWrapper>,
-    );
+    const { findAllByRole } = render(<TestComponent />);
 
     // The cards with a person column all name both spouses.
     expect(
@@ -43,14 +58,12 @@ describe('ReviewYourCalculationStep', () => {
 
   it('names only the staff member in the card columns when single', async () => {
     const { findAllByRole, queryByRole } = render(
-      <NsGoalCalculatorTestWrapper>
-        <ReviewYourCalculationStep
-          goalCalculation={{
-            ...defaultGoalCalculation,
-            maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
-          }}
-        />
-      </NsGoalCalculatorTestWrapper>,
+      <TestComponent
+        goalCalculation={{
+          ...defaultGoalCalculation,
+          maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
+        }}
+      />,
     );
 
     expect(await findAllByRole('columnheader', { name: 'John' })).toHaveLength(
@@ -61,15 +74,19 @@ describe('ReviewYourCalculationStep', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('renders a continue button', async () => {
-    const { findByRole } = render(
-      <NsGoalCalculatorTestWrapper>
-        <ReviewYourCalculationStep goalCalculation={defaultGoalCalculation} />
-      </NsGoalCalculatorTestWrapper>,
+  it('advances to the next step when the continue button is clicked', async () => {
+    const { findByRole, getByTestId } = render(<TestComponent />);
+
+    expect(getByTestId('current-step')).toHaveTextContent(
+      'Review Your Calculation',
     );
 
-    expect(
-      await findByRole('button', { name: 'Continue' }),
-    ).toBeInTheDocument();
+    userEvent.click(await findByRole('button', { name: 'Continue' }));
+
+    await waitFor(() =>
+      expect(getByTestId('current-step')).toHaveTextContent(
+        'Presenting Your Goal',
+      ),
+    );
   });
 });
