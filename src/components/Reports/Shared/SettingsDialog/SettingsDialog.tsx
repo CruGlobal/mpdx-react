@@ -48,40 +48,55 @@ export interface Filters {
   categories: string[] | null;
 }
 
-const validationSchema = yup.object({
-  selectedDateRange: yup.mixed().nullable(),
-  startDate: yup
-    .mixed()
-    .nullable()
-    .test(
-      'start-date-validation',
-      i18n.t('Start date must be earlier than or equal to end date'),
-      function (value) {
-        const { endDate } = this.parent;
-        if (!value || !endDate) {
-          return true;
-        }
+export const getValidationSchema = (currentTime: DateTime) =>
+  yup.object({
+    selectedDateRange: yup.mixed().nullable(),
+    startDate: yup
+      .mixed()
+      .nullable()
+      .test(
+        'start-date-validation',
+        i18n.t('Start date must be earlier than or equal to end date'),
+        function (value) {
+          const { endDate } = this.parent;
+          if (!value || !endDate) {
+            return true;
+          }
 
-        return value <= endDate;
-      },
-    ),
-  endDate: yup
-    .mixed()
-    .nullable()
-    .test(
-      'end-date-validation',
-      i18n.t('End date must be later than or equal to start date'),
-      function (value) {
-        const { startDate } = this.parent;
-        if (!value || !startDate) {
-          return true;
-        }
+          return value <= endDate;
+        },
+      )
+      .test(
+        'start-date-not-future-without-end',
+        i18n.t(
+          'Select an end date when the start date is later than the month being viewed',
+        ),
+        function (value) {
+          const { endDate } = this.parent;
+          if (!value || endDate) {
+            return true;
+          }
 
-        return startDate <= value;
-      },
-    ),
-  categories: yup.array().of(yup.string()).nullable(),
-});
+          return value <= currentTime.endOf('month');
+        },
+      ),
+    endDate: yup
+      .mixed()
+      .nullable()
+      .test(
+        'end-date-validation',
+        i18n.t('End date must be later than or equal to start date'),
+        function (value) {
+          const { startDate } = this.parent;
+          if (!value || !startDate) {
+            return true;
+          }
+
+          return startDate <= value;
+        },
+      ),
+    categories: yup.array().of(yup.string()).nullable(),
+  });
 
 const calculateDateRange = (
   range: DateRange,
@@ -136,6 +151,11 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   const currentTime = useMemo(
     () => time ?? DateTime.now().startOf('month'),
     [time],
+  );
+
+  const validationSchema = useMemo(
+    () => getValidationSchema(currentTime),
+    [currentTime],
   );
 
   const handleClose = () => {

@@ -120,10 +120,7 @@ describe('Connect Services page', () => {
       ).toBeInTheDocument();
 
       //Accordions should be disabled
-      expect(getByRole('button', { name: 'Organization' })).toHaveAttribute(
-        'aria-disabled',
-        'true',
-      );
+      expect(getByRole('button', { name: 'Organization' })).toBeDisabled();
 
       const nextButton = getByRole('button', { name: 'Next Step' });
 

@@ -1,0 +1,10 @@
+query Ministries {
+  ministries {
+    id
+    name
+    children {
+      id
+      name
+    }
+  }
+}

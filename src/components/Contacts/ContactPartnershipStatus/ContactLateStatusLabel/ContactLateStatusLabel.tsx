@@ -6,7 +6,7 @@ import {
   ContactLateStatusEnum,
   getDonationLateStatus,
 } from './getDonationLateStatus';
-import type { Theme } from '@mui/material/styles/createTheme';
+import type { Theme } from '@mui/material/styles';
 
 interface ContactLateStatusProps {
   lateAt?: string | null;

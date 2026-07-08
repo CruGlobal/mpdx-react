@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Hidden, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useContactPanel } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { StatusEnum as ContactPartnershipStatusEnum } from 'src/graphql/types.generated';
@@ -38,30 +38,32 @@ export const ContactPartnershipStatus: React.FC<
 
   return (
     <Box justifyContent={contactPanelOpen ? 'flex-end' : undefined}>
-      <Hidden smDown>
-        <Box display="flex" flexDirection="column" justifyContent="center">
-          {status && <ContactPartnershipStatusLabel status={status} />}
-          <Typography component="span">
-            {pledgeAmount && pledgeCurrency
-              ? currencyFormat(pledgeAmount, pledgeCurrency, locale)
-              : pledgeAmount || ''}{' '}
-            {pledgeFrequency && getLocalizedPledgeFrequency(pledgeFrequency)}{' '}
-            {status === ContactPartnershipStatusEnum.PartnerFinancial && (
-              <ContactLateStatusLabel
-                lateAt={lateAt}
-                pledgeStartDate={pledgeStartDate}
-                pledgeFrequency={pledgeFrequency}
-              />
-            )}
-          </Typography>
-          {pledgeReceived === false &&
-            status === ContactPartnershipStatusEnum.PartnerFinancial && (
-              <Typography variant="body2" color="error">
-                {t('Commitment Not Received')}
-              </Typography>
-            )}
-        </Box>
-      </Hidden>
+      <Box
+        flexDirection="column"
+        justifyContent="center"
+        sx={{ display: { xs: 'none', sm: 'flex' } }}
+      >
+        {status && <ContactPartnershipStatusLabel status={status} />}
+        <Typography component="span">
+          {pledgeAmount && pledgeCurrency
+            ? currencyFormat(pledgeAmount, pledgeCurrency, locale)
+            : pledgeAmount || ''}{' '}
+          {pledgeFrequency && getLocalizedPledgeFrequency(pledgeFrequency)}{' '}
+          {status === ContactPartnershipStatusEnum.PartnerFinancial && (
+            <ContactLateStatusLabel
+              lateAt={lateAt}
+              pledgeStartDate={pledgeStartDate}
+              pledgeFrequency={pledgeFrequency}
+            />
+          )}
+        </Typography>
+        {pledgeReceived === false &&
+          status === ContactPartnershipStatusEnum.PartnerFinancial && (
+            <Typography variant="body2" color="error">
+              {t('Commitment Not Received')}
+            </Typography>
+          )}
+      </Box>
     </Box>
   );
 };

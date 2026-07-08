@@ -6,6 +6,7 @@ import {
   Chip,
   IconButton,
   Link,
+  SxProps,
   Table,
   TableBody,
   TableCell,
@@ -13,6 +14,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  Theme,
   Typography,
 } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
@@ -92,7 +94,7 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
             <TableCell>{t('Coordinator')}</TableCell>
             <TableCell>{t('Actions')}</TableCell>
             <TableCell padding="checkbox">
-              <Box component="span" sx={visuallyHidden}>
+              <Box component="span" sx={visuallyHidden as SxProps<Theme>}>
                 {t('Row actions')}
               </Box>
             </TableCell>

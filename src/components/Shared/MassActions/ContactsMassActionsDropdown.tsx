@@ -1,6 +1,6 @@
 import React, { ReactElement, useState } from 'react';
 import MoreHoriz from '@mui/icons-material/MoreHoriz';
-import { Hidden, ListItemText, Menu, MenuItem } from '@mui/material';
+import { ListItemText, Menu, MenuItem } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
@@ -129,176 +129,168 @@ export const ContactsMassActionsDropdown: React.FC<
 
   return (
     <>
-      {contactsView !== TableViewModeEnum.Map && (
-        <Hidden xsDown>
-          {selectedIds?.length > 0 && (
-            <>
-              <MassActionsDropdown handleClick={handleClick} open={open}>
-                {filterPanelOpen && contactPanelOpen ? (
-                  <MoreHoriz />
-                ) : (
-                  t('Actions')
-                )}
-              </MassActionsDropdown>
-              <Menu
-                open={open}
-                onClose={handleClose}
-                disableRestoreFocus={true}
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'center',
+      {contactsView !== TableViewModeEnum.Map && selectedIds?.length > 0 && (
+        <>
+          <MassActionsDropdown handleClick={handleClick} open={open}>
+            {filterPanelOpen && contactPanelOpen ? <MoreHoriz /> : t('Actions')}
+          </MassActionsDropdown>
+          <Menu
+            open={open}
+            onClose={handleClose}
+            disableRestoreFocus={true}
+            anchorEl={anchorEl}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'center',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'center',
+            }}
+          >
+            <MenuItem
+              onClick={() => {
+                setExportsModalOpen(true);
+                handleClose();
+              }}
+              onMouseEnter={preloadExportsModal}
+            >
+              <ListItemText>{t('Export')}</ListItemText>
+            </MenuItem>
+            <MenuItem
+              divider
+              onClick={() => {
+                if (selectedIds.length >= 2) {
+                  setMergeModalOpen(true);
+                } else {
+                  enqueueSnackbar(
+                    t('You must select at least 2 contacts to merge.'),
+                    {
+                      variant: 'error',
+                    },
+                  );
+                }
+                handleClose();
+              }}
+              onMouseEnter={preloadMassActionsMergeModal}
+            >
+              <ListItemText>{t('Merge')}</ListItemText>
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setOpenAddTagsModal(true);
+                handleClose();
+              }}
+              onMouseEnter={preloadMassActionsAddTagsModal}
+            >
+              <ListItemText>{t('Add Tags')}</ListItemText>
+            </MenuItem>
+            <MenuItem
+              divider
+              onClick={() => {
+                setOpenRemoveTagsModal(true);
+                handleClose();
+              }}
+              onMouseEnter={preloadMassActionsRemoveTagsModal}
+            >
+              <ListItemText>{t('Remove Tags')}</ListItemText>
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                openTaskModal({
+                  view: TaskModalEnum.Add,
+                  defaultValues: { contactIds: selectedIds },
+                });
+                handleClose();
+              }}
+              onMouseEnter={() => preloadTaskModal(TaskModalEnum.Add)}
+            >
+              <ListItemText>{t('Add Task')}</ListItemText>
+            </MenuItem>
+            <MenuItem
+              divider
+              onClick={() => {
+                openTaskModal({
+                  view: TaskModalEnum.Log,
+                  defaultValues: { contactIds: selectedIds },
+                });
+                handleClose();
+              }}
+              onMouseEnter={() => preloadTaskModal(TaskModalEnum.Log)}
+            >
+              <ListItemText>{t('Log Task')}</ListItemText>
+            </MenuItem>
+
+            <MenuItem
+              onClick={() => {
+                setEditFieldsModalOpen(true);
+                handleClose();
+              }}
+              onMouseEnter={preloadMassActionsEditFieldsModal}
+            >
+              <ListItemText>{t('Edit Fields')}</ListItemText>
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setHideContactsModalOpen(true);
+                handleClose();
+              }}
+              onMouseEnter={preloadHideContactsModal}
+            >
+              <ListItemText>{t('Hide Contacts')}</ListItemText>
+            </MenuItem>
+
+            {isExcludedAppealPage && (
+              <MenuItem
+                onClick={() => {
+                  setAddExcludedToAppealModalOpen(true);
+                  handleClose();
                 }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'center',
-                }}
+                onMouseEnter={preloadAddExcludedContactModal}
               >
-                <MenuItem
-                  onClick={() => {
-                    setExportsModalOpen(true);
-                    handleClose();
-                  }}
-                  onMouseEnter={preloadExportsModal}
-                >
-                  <ListItemText>{t('Export')}</ListItemText>
-                </MenuItem>
-                <MenuItem
-                  divider
-                  onClick={() => {
-                    if (selectedIds.length >= 2) {
-                      setMergeModalOpen(true);
-                    } else {
-                      enqueueSnackbar(
-                        t('You must select at least 2 contacts to merge.'),
-                        {
-                          variant: 'error',
-                        },
-                      );
-                    }
-                    handleClose();
-                  }}
-                  onMouseEnter={preloadMassActionsMergeModal}
-                >
-                  <ListItemText>{t('Merge')}</ListItemText>
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    setOpenAddTagsModal(true);
-                    handleClose();
-                  }}
-                  onMouseEnter={preloadMassActionsAddTagsModal}
-                >
-                  <ListItemText>{t('Add Tags')}</ListItemText>
-                </MenuItem>
-                <MenuItem
-                  divider
-                  onClick={() => {
-                    setOpenRemoveTagsModal(true);
-                    handleClose();
-                  }}
-                  onMouseEnter={preloadMassActionsRemoveTagsModal}
-                >
-                  <ListItemText>{t('Remove Tags')}</ListItemText>
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    openTaskModal({
-                      view: TaskModalEnum.Add,
-                      defaultValues: { contactIds: selectedIds },
-                    });
-                    handleClose();
-                  }}
-                  onMouseEnter={() => preloadTaskModal(TaskModalEnum.Add)}
-                >
-                  <ListItemText>{t('Add Task')}</ListItemText>
-                </MenuItem>
-                <MenuItem
-                  divider
-                  onClick={() => {
-                    openTaskModal({
-                      view: TaskModalEnum.Log,
-                      defaultValues: { contactIds: selectedIds },
-                    });
-                    handleClose();
-                  }}
-                  onMouseEnter={() => preloadTaskModal(TaskModalEnum.Log)}
-                >
-                  <ListItemText>{t('Log Task')}</ListItemText>
-                </MenuItem>
+                <ListItemText>
+                  {t('Add Excluded Contacts To Appeal')}
+                </ListItemText>
+              </MenuItem>
+            )}
 
-                <MenuItem
-                  onClick={() => {
-                    setEditFieldsModalOpen(true);
-                    handleClose();
-                  }}
-                  onMouseEnter={preloadMassActionsEditFieldsModal}
-                >
-                  <ListItemText>{t('Edit Fields')}</ListItemText>
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    setHideContactsModalOpen(true);
-                    handleClose();
-                  }}
-                  onMouseEnter={preloadHideContactsModal}
-                >
-                  <ListItemText>{t('Hide Contacts')}</ListItemText>
-                </MenuItem>
-
-                {isExcludedAppealPage && (
+            {page !== PageEnum.Appeal && (
+              <>
+                {!isExcludedAppealPage && (
                   <MenuItem
                     onClick={() => {
-                      setAddExcludedToAppealModalOpen(true);
+                      setAddToAppealModalOpen(true);
                       handleClose();
                     }}
-                    onMouseEnter={preloadAddExcludedContactModal}
+                    onMouseEnter={preloadMassActionsAddToAppealModal}
                   >
-                    <ListItemText>
-                      {t('Add Excluded Contacts To Appeal')}
-                    </ListItemText>
+                    <ListItemText>{t('Add to Appeal')}</ListItemText>
                   </MenuItem>
                 )}
-
-                {page !== PageEnum.Appeal && (
-                  <>
-                    {!isExcludedAppealPage && (
-                      <MenuItem
-                        onClick={() => {
-                          setAddToAppealModalOpen(true);
-                          handleClose();
-                        }}
-                        onMouseEnter={preloadMassActionsAddToAppealModal}
-                      >
-                        <ListItemText>{t('Add to Appeal')}</ListItemText>
-                      </MenuItem>
-                    )}
-                    <MenuItem
-                      divider
-                      onClick={() => {
-                        setCreateAppealModalOpen(true);
-                        handleClose();
-                      }}
-                      onMouseEnter={preloadMassActionsCreateAppealModal}
-                    >
-                      <ListItemText>{t('Add to New Appeal')}</ListItemText>
-                    </MenuItem>
-                  </>
-                )}
-
                 <MenuItem
+                  divider
                   onClick={() => {
-                    setExportEmailsModalOpen(true);
+                    setCreateAppealModalOpen(true);
                     handleClose();
                   }}
-                  onMouseEnter={preloadMassActionsExportEmailsModal}
+                  onMouseEnter={preloadMassActionsCreateAppealModal}
                 >
-                  <ListItemText>{t('Export Emails')}</ListItemText>
+                  <ListItemText>{t('Add to New Appeal')}</ListItemText>
                 </MenuItem>
-              </Menu>
-            </>
-          )}
-        </Hidden>
+              </>
+            )}
+
+            <MenuItem
+              onClick={() => {
+                setExportEmailsModalOpen(true);
+                handleClose();
+              }}
+              onMouseEnter={preloadMassActionsExportEmailsModal}
+            >
+              <ListItemText>{t('Export Emails')}</ListItemText>
+            </MenuItem>
+          </Menu>
+        </>
       )}
 
       {buttonGroup}

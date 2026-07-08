@@ -58,7 +58,13 @@ const ThisWeek = ({ accountListId }: Props): ReactElement => {
         </AnimatedBox>
       </Box>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+            md: 4,
+          }}
+        >
           <PartnerCare
             loading={loading}
             prayerRequestTasks={prayerRequestTasks}
@@ -67,30 +73,60 @@ const ThisWeek = ({ accountListId }: Props): ReactElement => {
             accountListId={accountListId}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+            md: 4,
+          }}
+        >
           <TasksDueThisWeek
             loading={loading}
             dueTasks={dueTasks}
             accountListId={accountListId}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+            md: 4,
+          }}
+        >
           <LateCommitments
             loading={loading}
             latePledgeContacts={latePledgeContacts}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+            md: 4,
+          }}
+        >
           <Referrals
             loading={loading}
             recentReferrals={recentReferrals}
             onHandReferrals={onHandReferrals}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+            md: 4,
+          }}
+        >
           <Appeals loading={loading} appeal={accountList?.primaryAppeal} />
         </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+            md: 4,
+          }}
+        >
           <WeeklyActivity accountListId={accountListId} />
         </Grid>
       </Grid>

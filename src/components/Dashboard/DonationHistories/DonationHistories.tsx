@@ -168,7 +168,7 @@ const DonationHistories = ({
                 <Grid container spacing={2} justifyContent="center">
                   {goal ? (
                     <>
-                      <Grid item>
+                      <Grid>
                         <Box
                           className={[
                             classes.lineKey,
@@ -184,10 +184,10 @@ const DonationHistories = ({
                           {currencyFormat(goal, currencyCode, locale)}
                         </Typography>
                       </Grid>
-                      <Grid item>|</Grid>
+                      <Grid>|</Grid>
                     </>
                   ) : null}
-                  <Grid item>
+                  <Grid>
                     <Box
                       className={[classes.lineKey, classes.lineKeyAverage].join(
                         ' ',
@@ -216,8 +216,8 @@ const DonationHistories = ({
                   </Grid>
                   {pledged ? (
                     <>
-                      <Grid item>|</Grid>
-                      <Grid item>
+                      <Grid>|</Grid>
+                      <Grid>
                         <Box
                           className={[
                             classes.lineKey,

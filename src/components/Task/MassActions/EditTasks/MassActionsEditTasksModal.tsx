@@ -166,7 +166,7 @@ export const MassActionsEditTasksModal: React.FC<
                 idCount={ids.length}
               />
               <Grid container spacing={2}>
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <TextField
                     label={t('Task Name')}
                     value={subject}
@@ -176,7 +176,12 @@ export const MassActionsEditTasksModal: React.FC<
                     inputProps={{ 'aria-label': t('Task Name') }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    sm: 6,
+                  }}
+                >
                   <TaskPhaseAutocomplete
                     options={taskPhases}
                     value={taskPhase}
@@ -188,7 +193,12 @@ export const MassActionsEditTasksModal: React.FC<
                     onBlur={handleBlur('taskPhase')}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    sm: 6,
+                  }}
+                >
                   <ActivityTypeAutocomplete
                     options={
                       (taskPhase && activitiesByPhase.get(taskPhase)) || []
@@ -206,14 +216,24 @@ export const MassActionsEditTasksModal: React.FC<
                     inputRef={activityRef}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    sm: 6,
+                  }}
+                >
                   <AssigneeAutocomplete
                     accountListId={accountListId}
                     value={userId}
                     onChange={(userId) => setFieldValue('userId', userId)}
                   />
                 </Grid>
-                <Grid item xs={12} sm={12}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    sm: 12,
+                  }}
+                >
                   <FormControlLabel
                     control={<Checkbox checked={noDueDate} color="secondary" />}
                     label={t('No Due Date')}
@@ -228,18 +248,33 @@ export const MassActionsEditTasksModal: React.FC<
                     value={startAt}
                     onChange={(date) => setFieldValue('startAt', date)}
                     render={(dateField, timeField) => (
-                      <Grid sx={{ ml: 0, mt: 0 }} container spacing={2} xs={12}>
-                        <Grid item xs={12} sm={6}>
+                      <Grid
+                        sx={{ ml: 0, mt: 0 }}
+                        container
+                        spacing={2}
+                        size={12}
+                      >
+                        <Grid
+                          size={{
+                            xs: 12,
+                            sm: 6,
+                          }}
+                        >
                           {dateField}
                         </Grid>
-                        <Grid item xs={12} sm={6}>
+                        <Grid
+                          size={{
+                            xs: 12,
+                            sm: 6,
+                          }}
+                        >
                           {timeField}
                         </Grid>
                       </Grid>
                     )}
                   />
                 )}
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <TextField
                     label={t('Add New Comment')}
                     value={body}

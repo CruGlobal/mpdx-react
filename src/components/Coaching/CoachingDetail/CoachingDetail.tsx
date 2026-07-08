@@ -4,7 +4,6 @@ import {
   Box,
   Divider,
   Drawer,
-  Hidden,
   IconButton,
   Theme,
   Typography,
@@ -163,12 +162,13 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
 
   return (
     <CoachingDetailContainer>
-      <Hidden mdUp>
+      {sidebarDrawer ? (
         <Drawer open={drawerVisible} onClose={handleCloseDrawer}>
-          {sidebar}
+          {drawerVisible && sidebar}
         </Drawer>
-      </Hidden>
-      <Hidden mdDown>{sidebar}</Hidden>
+      ) : (
+        sidebar
+      )}
       <CoachingMainContainer>
         {loading ? (
           <MultilineSkeleton lines={4} />
@@ -177,7 +177,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
             <CoachingMainTitleContainer>
               <Box style={{ flexGrow: 1 }}>
                 <Typography variant="h5" mx={1}>
-                  <Hidden mdUp>
+                  {sidebarDrawer && (
                     <IconButton
                       onClick={() => setDrawerVisible(!drawerVisible)}
                       aria-label={t('Toggle account details')}
@@ -185,7 +185,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                     >
                       <MenuOpenIcon />
                     </IconButton>
-                  </Hidden>
+                  )}
                   {accountListData?.name}
                 </Typography>
                 <Typography mx={1} variant="subtitle1">
