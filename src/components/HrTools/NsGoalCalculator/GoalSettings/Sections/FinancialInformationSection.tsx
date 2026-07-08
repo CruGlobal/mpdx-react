@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
+import { visuallyHidden } from '@mui/utils';
 import { useTranslation } from 'react-i18next';
 import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { useLocale } from 'src/hooks/useLocale';
@@ -75,19 +76,19 @@ export const FinancialInformationSection: React.FC<
         label={t('403(b) Amount')}
         helperText={t('Calculated monthly amount')}
       >
-        <Typography
-          variant="body1"
-          aria-label={t('403(b) Amount — {{name}}', { name: primaryName })}
-        >
+        <Typography variant="body1">
+          <Box component="span" sx={visuallyHidden}>
+            {t('403(b) Amount — {{name}}', { name: primaryName })}
+          </Box>
           {currencyFormat(calculations.contributing403bAmount, 'USD', locale, {
             showTrailingZeros: true,
           })}
         </Typography>
         {hasSpouse && (
-          <Typography
-            variant="body1"
-            aria-label={t('403(b) Amount — {{name}}', { name: spouseName })}
-          >
+          <Typography variant="body1">
+            <Box component="span" sx={visuallyHidden}>
+              {t('403(b) Amount — {{name}}', { name: spouseName })}
+            </Box>
             {currencyFormat(
               calculations.spouseContributing403bAmount,
               'USD',

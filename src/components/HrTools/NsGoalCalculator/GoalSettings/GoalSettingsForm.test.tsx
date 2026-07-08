@@ -118,12 +118,16 @@ describe('GoalSettingsForm', () => {
   });
 
   it('shows the calculated 403(b) contribution amount for each person', async () => {
-    const { findByLabelText, getByLabelText } = render(<TestComponent />);
+    const { findByText, getByText } = render(<TestComponent />);
 
-    expect(await findByLabelText('403(b) Amount — John')).toHaveTextContent(
-      '$600.00',
+    // The label lives in a visually-hidden span so screen readers announce the
+    // owner; its parent <p> holds the label + the formatted amount.
+    expect(
+      (await findByText('403(b) Amount — John')).parentElement,
+    ).toHaveTextContent('$600.00');
+    expect(getByText('403(b) Amount — Jane').parentElement).toHaveTextContent(
+      '$390.00',
     );
-    expect(getByLabelText('403(b) Amount — Jane')).toHaveTextContent('$390.00');
   });
 
   it('shows the spouse column when marital status is set to married, before saving', async () => {
