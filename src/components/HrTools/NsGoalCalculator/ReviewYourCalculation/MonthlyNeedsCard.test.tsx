@@ -111,4 +111,18 @@ describe('MonthlyNeedsCard', () => {
       ],
     });
   });
+
+  it('shows a negative line 18 when support raised exceeds the goal', () => {
+    const calculations = buildCalculations({ monthlyGoal: 18134 });
+    const { getByText } = render(
+      <MonthlyNeedsCard
+        calculations={calculations}
+        supportRaised={20000}
+        columnLabel="John & Jane"
+      />,
+    );
+
+    // Line 18 = line 16 ($18,134) minus line 17 ($20,000): over-raised.
+    expect(getByText('-$1,866.00')).toBeInTheDocument();
+  });
 });
