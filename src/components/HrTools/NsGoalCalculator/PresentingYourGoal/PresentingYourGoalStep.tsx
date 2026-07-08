@@ -142,7 +142,10 @@ export const PresentingYourGoalStep: React.FC<PresentingYourGoalStepProps> = ({
 
       <Grid container spacing={theme.spacing(3)}>
         <Grid size={{ xs: 12, lg: 6 }}>
-          <PresentationCard title={t('Monthly Support Needs Chart')}>
+          <PresentationCard
+            title={t('Monthly Support Needs Chart')}
+            horizontalScroll={false}
+          >
             <SupportNeedsChart monthlyNeeds={monthlyNeeds} />
           </PresentationCard>
         </Grid>

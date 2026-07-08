@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Box,
   Table,
   TableBody,
   TableCell,
@@ -56,37 +55,35 @@ export const PersonalInfoCard: React.FC<PersonalInfoCardProps> = ({
 
   return (
     <PresentationCard title={t('Personal Information')}>
-      <Box sx={{ width: '100%', overflowX: 'auto' }}>
-        <Table size="small">
-          <TableBody>
-            {rows.map((item, index) => (
-              <TableRow key={item.label}>
-                <StyledTableCell>
-                  <Typography variant="body1" fontWeight="bold">
-                    {item.label}
-                  </Typography>
+      <Table size="small">
+        <TableBody>
+          {rows.map((item, index) => (
+            <TableRow key={item.label}>
+              <StyledTableCell>
+                <Typography variant="body1" fontWeight="bold">
+                  {item.label}
+                </Typography>
+              </StyledTableCell>
+              <StyledTableCell data-testid="value-typography">
+                {item.value}
+              </StyledTableCell>
+              {index === 0 && (
+                <StyledTableCell
+                  sx={{ textAlign: 'center' }}
+                  rowSpan={rows.length}
+                >
+                  <img
+                    data-testid="cru-logo"
+                    src={cruLogo}
+                    alt={t('Campus Crusade for Christ, Inc. logo')}
+                    style={{ width: 150, height: 'auto' }}
+                  />
                 </StyledTableCell>
-                <StyledTableCell data-testid="value-typography">
-                  {item.value}
-                </StyledTableCell>
-                {index === 0 && (
-                  <StyledTableCell
-                    sx={{ textAlign: 'center' }}
-                    rowSpan={rows.length}
-                  >
-                    <img
-                      data-testid="cru-logo"
-                      src={cruLogo}
-                      alt={t('Campus Crusade for Christ, Inc. logo')}
-                      style={{ width: 150, height: 'auto' }}
-                    />
-                  </StyledTableCell>
-                )}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Box>
+              )}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </PresentationCard>
   );
 };

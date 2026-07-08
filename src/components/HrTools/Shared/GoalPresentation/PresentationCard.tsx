@@ -1,10 +1,17 @@
 import React from 'react';
-import { Divider, Paper, Typography, styled } from '@mui/material';
+import { Box, Divider, Paper, Typography, styled } from '@mui/material';
 import theme from 'src/theme';
 
 interface PresentationCardProps {
   title: string;
   children: React.ReactNode;
+  /**
+   * Wraps the card body in a horizontally scrollable container so wide content
+   * (e.g. tables) scrolls within the card instead of the whole page. Defaults
+   * to `true`; set `false` for cards whose content already fits the width, such
+   * as charts that size themselves to their container.
+   */
+  horizontalScroll?: boolean;
 }
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -22,6 +29,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 export const PresentationCard: React.FC<PresentationCardProps> = ({
   title,
   children,
+  horizontalScroll = true,
 }) => (
   <StyledPaper>
     <Typography sx={{ marginBottom: theme.spacing(2) }} variant="h5">
@@ -30,6 +38,10 @@ export const PresentationCard: React.FC<PresentationCardProps> = ({
 
     <Divider sx={{ margin: `${theme.spacing(2)} ${theme.spacing(-3)}` }} />
 
-    {children}
+    {horizontalScroll ? (
+      <Box sx={{ width: '100%', overflowX: 'auto' }}>{children}</Box>
+    ) : (
+      children
+    )}
   </StyledPaper>
 );

@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Box,
   TableBody,
   TableCell,
   TableHead,
@@ -97,51 +96,49 @@ export const SpecialNeedsCard: React.FC<SpecialNeedsCardProps> = ({
 
   return (
     <PresentationCard title={t('Special Needs During MPD')}>
-      <Box sx={{ width: '100%', overflowX: 'auto' }}>
-        <NeedsTable size="small">
-          <TableHead>
-            <TableRow>
+      <NeedsTable size="small">
+        <TableHead>
+          <TableRow>
+            <TableCell className="line">
+              <Typography sx={visuallyHidden}>{t('Line')}</Typography>
+            </TableCell>
+            <TableCell>
+              <Typography variant="body1" fontWeight="bold" color="primary">
+                {t('Category')}
+              </Typography>
+            </TableCell>
+            <TableCell className="amount">
+              <Typography variant="body1" fontWeight="bold" color="primary">
+                {columnLabel}
+              </Typography>
+            </TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rows.map(({ line, category, description, amount, bold }) => (
+            <TableRow key={line} className={clsx({ bold })}>
               <TableCell className="line">
-                <Typography sx={visuallyHidden}>{t('Line')}</Typography>
+                <Typography>{line}</Typography>
               </TableCell>
-              <TableCell>
-                <Typography variant="body1" fontWeight="bold" color="primary">
-                  {t('Category')}
-                </Typography>
+              <TableCell component="th" scope="row">
+                <Typography variant="body1">{category}</Typography>
+                {description && (
+                  <Typography variant="body2" color="text.secondary">
+                    {description}
+                  </Typography>
+                )}
               </TableCell>
-              <TableCell className="amount">
-                <Typography variant="body1" fontWeight="bold" color="primary">
-                  {columnLabel}
+              <TableCell className={clsx('amount', { bold })}>
+                <Typography variant="body1">
+                  {currencyFormat(amount, 'USD', locale, {
+                    showTrailingZeros: true,
+                  })}
                 </Typography>
               </TableCell>
             </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map(({ line, category, description, amount, bold }) => (
-              <TableRow key={line} className={clsx({ bold })}>
-                <TableCell className="line">
-                  <Typography>{line}</Typography>
-                </TableCell>
-                <TableCell component="th" scope="row">
-                  <Typography variant="body1">{category}</Typography>
-                  {description && (
-                    <Typography variant="body2" color="text.secondary">
-                      {description}
-                    </Typography>
-                  )}
-                </TableCell>
-                <TableCell className={clsx('amount', { bold })}>
-                  <Typography variant="body1">
-                    {currencyFormat(amount, 'USD', locale, {
-                      showTrailingZeros: true,
-                    })}
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </NeedsTable>
-      </Box>
+          ))}
+        </TableBody>
+      </NeedsTable>
     </PresentationCard>
   );
 };
