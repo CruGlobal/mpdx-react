@@ -1,8 +1,8 @@
 import dotenv from 'dotenv';
 import type { CodegenConfig } from '@graphql-codegen/cli';
 
+dotenv.config({ path: '.env.local' });
 dotenv.config();
-dotenv.config({ path: '.env.local', override: true });
 
 const apiUrl = process.env.API_URL ?? 'https://api.stage.mpdx.org/graphql';
 const schema = [apiUrl, './pages/api/Schema/**/*.graphql'];
