@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Box,
   Table,
   TableBody,
   TableCell,
@@ -39,65 +38,63 @@ export const SupportNeedsTable: React.FC<SupportNeedsTableProps> = ({
   const locale = useLocale();
 
   return (
-    <Box sx={{ width: '100%', overflowX: 'auto' }}>
-      <Table size="small" aria-label={ariaLabel}>
-        <TableBody>
-          {rows.map(
-            (
-              {
-                title,
-                description,
-                amount,
-                amountBold = false,
-                titleBold = true,
-                hideBorder = false,
-              },
-              index,
-              array,
-            ) => (
-              <TableRow
-                key={title}
-                sx={{
-                  'td, th': {
-                    borderBottom:
-                      hideBorder || index === array.length - 1
-                        ? 'none'
-                        : '1px solid',
-                    borderBottomColor: 'divider',
-                  },
-                }}
-              >
-                <TableCell component="th" scope="row">
+    <Table size="small" aria-label={ariaLabel}>
+      <TableBody>
+        {rows.map(
+          (
+            {
+              title,
+              description,
+              amount,
+              amountBold = false,
+              titleBold = true,
+              hideBorder = false,
+            },
+            index,
+            array,
+          ) => (
+            <TableRow
+              key={title}
+              sx={{
+                'td, th': {
+                  borderBottom:
+                    hideBorder || index === array.length - 1
+                      ? 'none'
+                      : '1px solid',
+                  borderBottomColor: 'divider',
+                },
+              }}
+            >
+              <TableCell component="th" scope="row">
+                <Typography
+                  variant="body1"
+                  fontWeight={titleBold ? 'bold' : 'normal'}
+                >
+                  {title}
+                </Typography>
+                {description && (
                   <Typography
-                    variant="body1"
-                    fontWeight={titleBold ? 'bold' : 'normal'}
+                    variant="body2"
+                    color={theme.palette.text.secondary}
+                    sx={{ mt: 1 }}
                   >
-                    {title}
+                    {description}
                   </Typography>
-                  {description && (
-                    <Typography
-                      variant="body2"
-                      color={theme.palette.text.secondary}
-                      sx={{ mt: 1 }}
-                    >
-                      {description}
-                    </Typography>
-                  )}
-                </TableCell>
-                <TableCell sx={{ verticalAlign: 'top' }}>
-                  <Typography
-                    data-testid="amount-typography"
-                    variant="body1"
-                    fontWeight={amountBold ? 'bold' : 'normal'}
-                  >
-                    {currencyFormat(amount, 'USD', locale)}
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            ),
-          )}
-        </TableBody>
-      </Table>
-    </Box>
+                )}
+              </TableCell>
+              <TableCell sx={{ verticalAlign: 'top' }}>
+                <Typography
+                  data-testid="amount-typography"
+                  variant="body1"
+                  fontWeight={amountBold ? 'bold' : 'normal'}
+                >
+                  {currencyFormat(amount, 'USD', locale)}
+                </Typography>
+              </TableCell>
+            </TableRow>
+          ),
+        )}
+      </TableBody>
+    </Table>
   );
 };
