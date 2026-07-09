@@ -115,6 +115,14 @@ describe('ContactsRow', () => {
     ).toBeInTheDocument();
   });
 
+  it('renders the address dimmed', () => {
+    const { getByText } = render(<Components />);
+
+    expect(getByText('1111 Test Street Any City, TT Test')).toHaveStyle(
+      `color: ${theme.palette.text.secondary}`,
+    );
+  });
+
   it('should render check event', async () => {
     const { getByRole } = render(<Components />);
 

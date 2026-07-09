@@ -126,6 +126,7 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
                 <Typography
                   component="span"
                   variant="body2"
+                  color="textSecondary"
                   sx={{ display: { xs: 'none', sm: 'block' } }}
                 >
                   {[
