@@ -100,14 +100,6 @@ export const EditTrainingCostsModal: React.FC<EditTrainingCostsModalProps> = ({
   const { t } = useTranslation();
   const formikRef = useRef<FormikProps<FormValues>>(null);
 
-  // Reset the form each time the modal reopens so a cancelled edit does not
-  // linger into the next open (matches the CreateGoalDialog pattern).
-  useEffect(() => {
-    if (open) {
-      formikRef.current?.resetForm();
-    }
-  }, [open]);
-
   const sections = useMemo<SectionConfig[]>(
     () => [
       {
@@ -214,6 +206,16 @@ export const EditTrainingCostsModal: React.FC<EditTrainingCostsModalProps> = ({
     () => toFormValues(initialCosts),
     [initialCosts],
   );
+
+  // Reset the form each time the modal reopens so a cancelled edit does not
+  // linger into the next open (matches the CreateGoalDialog pattern). Reset to
+  // the current cohort's `initialValues` rather than Formik's mount-time ref
+  // (which never updates without `enableReinitialize`) so saved costs prefill.
+  useEffect(() => {
+    if (open) {
+      formikRef.current?.resetForm({ values: initialValues });
+    }
+  }, [open, initialValues]);
 
   return (
     <Dialog
