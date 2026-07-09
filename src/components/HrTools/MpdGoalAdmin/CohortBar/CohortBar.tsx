@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Link,
@@ -8,7 +8,9 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { EditTrainingCostsModal } from '../EditTrainingCostsModal/EditTrainingCostsModal';
 import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
+import { TrainingCosts } from '../mpdGoalAdminHelpers';
 
 interface StatProps {
   label: string;
@@ -30,8 +32,21 @@ const Stat: React.FC<StatProps> = ({ label, children }) => (
 
 export const CohortBar: React.FC = () => {
   const { t } = useTranslation();
-  const { cohorts, selectedCohortId, setSelectedCohortId, selectedCohort } =
-    useMpdGoalAdmin();
+  const {
+    cohorts,
+    selectedCohortId,
+    setSelectedCohortId,
+    selectedCohort,
+    saveTrainingCosts,
+  } = useMpdGoalAdmin();
+  const [trainingCostsOpen, setTrainingCostsOpen] = useState(false);
+
+  const handleSaveTrainingCosts = (costs: TrainingCosts) => {
+    if (selectedCohort) {
+      saveTrainingCosts(selectedCohort.id, costs);
+    }
+    setTrainingCostsOpen(false);
+  };
 
   return (
     <Stack
@@ -60,12 +75,23 @@ export const CohortBar: React.FC = () => {
       </Stat>
       <Stat label={t('NSO Date')}>{selectedCohort?.nsoDate ?? '—'}</Stat>
       <Stat label={t('Training Cost')}>
-        {/* Disabled until wired up so assistive tech announces the inert
-            state instead of a dead control (MPDX-9696). */}
-        <Link component="button" type="button" underline="hover" disabled>
+        <Link
+          component="button"
+          type="button"
+          underline="hover"
+          disabled={!selectedCohort}
+          onClick={() => setTrainingCostsOpen(true)}
+        >
           {t('View/Edit')}
         </Link>
       </Stat>
+      <EditTrainingCostsModal
+        open={trainingCostsOpen}
+        cohortName={selectedCohort?.name}
+        initialCosts={selectedCohort?.trainingCosts}
+        onClose={() => setTrainingCostsOpen(false)}
+        onSave={handleSaveTrainingCosts}
+      />
     </Stack>
   );
 };
