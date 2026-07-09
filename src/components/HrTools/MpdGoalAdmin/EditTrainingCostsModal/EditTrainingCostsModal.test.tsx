@@ -89,6 +89,36 @@ describe('EditTrainingCostsModal', () => {
     await waitFor(() => expect(apply).toBeEnabled());
   });
 
+  it('surfaces a validation error and keeps Apply disabled for a negative amount', async () => {
+    const { getByRole, getAllByRole, findByText } = setup();
+    const inputs = getAllByRole('spinbutton');
+
+    // Enter a negative amount in the first field and valid amounts elsewhere.
+    await userEvent.type(inputs[0], '-5');
+    for (let i = 1; i < inputs.length; i++) {
+      await userEvent.type(inputs[i], String((i + 1) * 100));
+    }
+    // Blur the last field so every field is touched and validation has run.
+    await userEvent.tab();
+
+    expect(
+      await findByText('Amount must be 0 or more'),
+    ).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Apply' })).toBeDisabled();
+  });
+
+  it('keeps Apply disabled when a required field is left blank', async () => {
+    const { getByRole, getAllByRole } = setup();
+    const inputs = getAllByRole('spinbutton');
+
+    // Fill every field except the first, which stays blank.
+    for (let i = 1; i < inputs.length; i++) {
+      await userEvent.type(inputs[i], String((i + 1) * 100));
+    }
+
+    expect(getByRole('button', { name: 'Apply' })).toBeDisabled();
+  });
+
   it('saves parsed numeric costs when applied', async () => {
     const { getByRole, getAllByRole, onSave } = setup();
     const inputs = getAllByRole('spinbutton');
