@@ -170,9 +170,7 @@ describe('EditTrainingCostsModal', () => {
     // Blur the last field so every field is touched and validation has run.
     await userEvent.tab();
 
-    expect(
-      await findByText('Amount must be 0 or more'),
-    ).toBeInTheDocument();
+    expect(await findByText('Amount must be 0 or more')).toBeInTheDocument();
     expect(getByRole('button', { name: 'Apply' })).toBeDisabled();
   });
 
