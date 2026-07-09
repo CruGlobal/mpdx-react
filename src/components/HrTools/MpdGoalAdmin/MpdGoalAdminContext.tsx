@@ -10,6 +10,7 @@ import {
   Cohort,
   MpdGoalAdminTabEnum,
   StaffGoalRow,
+  TrainingCosts,
 } from './mpdGoalAdminHelpers';
 
 export interface MpdGoalAdminContextValue {
@@ -33,6 +34,8 @@ export interface MpdGoalAdminContextValue {
   toggleRow: (id: string) => void;
   toggleRows: (ids: string[]) => void;
   clearSelection: () => void;
+  /** Saves the training cost figures for a cohort and marks them as entered. */
+  saveTrainingCosts: (cohortId: string, costs: TrainingCosts) => void;
 }
 
 const MpdGoalAdminContext = createContext<MpdGoalAdminContextValue | undefined>(
@@ -42,7 +45,7 @@ const MpdGoalAdminContext = createContext<MpdGoalAdminContextValue | undefined>(
 export const MpdGoalAdminProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const cohorts = mockCohorts;
+  const [cohorts, setCohorts] = useState<Cohort[]>(mockCohorts);
   const [activeTab, setActiveTab] = useState<MpdGoalAdminTabEnum>(
     MpdGoalAdminTabEnum.ActiveGoals,
   );
@@ -75,6 +78,19 @@ export const MpdGoalAdminProvider: React.FC<{
   }, []);
 
   const clearSelection = useCallback(() => setSelectedRowIds(new Set()), []);
+
+  const saveTrainingCosts = useCallback(
+    (cohortId: string, costs: TrainingCosts) => {
+      setCohorts((prev) =>
+        prev.map((cohort) =>
+          cohort.id === cohortId
+            ? { ...cohort, trainingCosts: costs, trainingCostEntered: true }
+            : cohort,
+        ),
+      );
+    },
+    [],
+  );
 
   // Switching cohorts clears the selection: selecting staff across different
   // training cohorts is meaningless, and stale ids would otherwise linger in
@@ -131,6 +147,7 @@ export const MpdGoalAdminProvider: React.FC<{
       toggleRow,
       toggleRows,
       clearSelection,
+      saveTrainingCosts,
     }),
     [
       activeTab,
@@ -145,6 +162,7 @@ export const MpdGoalAdminProvider: React.FC<{
       toggleRow,
       toggleRows,
       clearSelection,
+      saveTrainingCosts,
     ],
   );
 
