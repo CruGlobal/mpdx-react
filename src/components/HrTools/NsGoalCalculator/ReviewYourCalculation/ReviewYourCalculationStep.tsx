@@ -2,8 +2,6 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { Alert, Box, Button, Stack, Typography } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useAccountListSupportRaisedQuery } from '../../GoalCalculator/Shared/GoalLineItems.generated';
 import {
   NsGoalCalculation,
   useNsGoalCalculator,
@@ -12,9 +10,6 @@ import { AccountBalanceCard } from './AccountBalanceCard';
 import { GoalSummaryCard } from './GoalSummaryCard';
 import { MonthlyNeedsCard } from './MonthlyNeedsCard';
 import { SpecialNeedsCard } from './SpecialNeedsCard';
-
-// TODO(MPDX-9801): Special needs are not available yet.
-const specialNeedsGoalPlaceholder = 2801;
 
 interface ReviewYourCalculationStepProps {
   goalCalculation: NsGoalCalculation;
@@ -25,12 +20,6 @@ export const ReviewYourCalculationStep: React.FC<
 > = ({ goalCalculation }) => {
   const { t } = useTranslation();
   const { handleContinue } = useNsGoalCalculator();
-  const accountListId = useAccountListId() ?? '';
-  const { data } = useAccountListSupportRaisedQuery({
-    variables: { accountListId },
-    skip: !accountListId,
-  });
-  const supportRaised = data?.accountList.receivedPledges ?? 0;
 
   const married =
     goalCalculation.maritalStatus ===
@@ -57,7 +46,9 @@ export const ReviewYourCalculationStep: React.FC<
 
       <GoalSummaryCard
         monthlyGoal={goalCalculation.calculations.monthlyGoal}
-        specialNeedsGoal={specialNeedsGoalPlaceholder}
+        // TODO(MPDX-9801): special needs are not available yet; pass null so
+        // the summary shows "Coming soon" rather than a fabricated figure.
+        specialNeedsGoal={null}
         minStaffAccountBalance={
           goalCalculation.calculations.minimumAccountBalance
         }
@@ -65,7 +56,6 @@ export const ReviewYourCalculationStep: React.FC<
 
       <MonthlyNeedsCard
         calculations={goalCalculation.calculations}
-        supportRaised={supportRaised}
         columnLabel={columnLabel}
       />
 

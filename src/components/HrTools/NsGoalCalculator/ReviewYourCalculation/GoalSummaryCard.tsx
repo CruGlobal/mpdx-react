@@ -8,7 +8,8 @@ import { StyledHeaderValue } from '../../Shared/SummaryHeaderCard';
 
 export interface GoalSummaryCardProps {
   monthlyGoal: number;
-  specialNeedsGoal: number;
+  /** Null renders "Coming soon" until special-needs figures are available. */
+  specialNeedsGoal: number | null;
   minStaffAccountBalance: number;
 }
 
@@ -40,19 +41,21 @@ export const GoalSummaryCard: React.FC<GoalSummaryCardProps> = ({
           <Stack key={label} sx={{ flex: 1 }}>
             <Typography
               variant="subtitle2"
+              component="p"
               fontWeight="bold"
-              noWrap
               sx={{ textTransform: 'uppercase' }}
             >
               {label}
             </Typography>
             <StyledHeaderValue
-              variant="h3"
+              component="p"
               sx={{ fontSize: (theme) => theme.typography.h4.fontSize }}
             >
-              {currencyFormat(amount, 'USD', locale, {
-                showTrailingZeros: true,
-              })}
+              {amount === null
+                ? t('Coming soon')
+                : currencyFormat(amount, 'USD', locale, {
+                    showTrailingZeros: true,
+                  })}
             </StyledHeaderValue>
           </Stack>
         ))}

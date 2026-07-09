@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
 import {
@@ -74,8 +74,23 @@ describe('ReviewYourCalculationStep', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('names only the staff member when married but the spouse name is missing', async () => {
+    const { findAllByRole } = render(
+      <TestComponent
+        goalCalculation={{
+          ...defaultGoalCalculation,
+          spouseFirstName: null,
+        }}
+      />,
+    );
+
+    expect(await findAllByRole('columnheader', { name: 'John' })).toHaveLength(
+      3,
+    );
+  });
+
   it('advances to the next step when the continue button is clicked', async () => {
-    const { findByRole, getByTestId } = render(<TestComponent />);
+    const { findByRole, findByText, getByTestId } = render(<TestComponent />);
 
     expect(getByTestId('current-step')).toHaveTextContent(
       'Review Your Calculation',
@@ -83,10 +98,6 @@ describe('ReviewYourCalculationStep', () => {
 
     userEvent.click(await findByRole('button', { name: 'Continue' }));
 
-    await waitFor(() =>
-      expect(getByTestId('current-step')).toHaveTextContent(
-        'Presenting Your Goal',
-      ),
-    );
+    expect(await findByText('Presenting Your Goal')).toBeInTheDocument();
   });
 });

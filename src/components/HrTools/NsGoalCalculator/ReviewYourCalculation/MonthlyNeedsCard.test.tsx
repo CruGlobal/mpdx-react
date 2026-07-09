@@ -41,19 +41,20 @@ describe('MonthlyNeedsCard', () => {
       supplies: 100,
       staffConferenceTransfer: 0,
       benefitsCharge: 1911,
-      medicalExpenses: 138,
+      medicalExpenses: 153,
       accountTransfers: 0,
       advocacyTransfers: 0,
       otherExpenses: 0,
-      goalSubtotal: 14203,
-      subtotalWithAdminCharge: 17108,
-      monthlyGoal: 18134,
+      goalSubtotal: 14080,
+      subtotalWithAdminCharge: 16000,
+      monthlyGoal: 16960,
+      supportRaised: 1200,
       adminRate: 0.12,
+      attritionRate: 0.06,
     });
     const { getByRole } = render(
       <MonthlyNeedsCard
         calculations={calculations}
-        supportRaised={1200}
         columnLabel="John & Jane"
       />,
     );
@@ -98,26 +99,28 @@ describe('MonthlyNeedsCard', () => {
         ['7', '$100.00'],
         ['8', '$0.00'],
         ['9', '$1,911.00'],
-        ['10', '$138.00'],
+        ['10', '$153.00'],
         ['11', '$0.00'],
         ['12', '$0.00'],
         ['13', '$0.00'],
-        ['14', '$14,203.00'],
-        ['15', '$17,108.00'],
-        ['16', '$18,134.00'],
+        ['14', '$14,080.00'],
+        ['15', '$16,000.00'],
+        ['16', '$16,960.00'],
         ['17', '$1,200.00'],
         // Line 18 = line 16 (monthly goal) minus line 17 (support raised).
-        ['18', '$16,934.00'],
+        ['18', '$15,760.00'],
       ],
     });
   });
 
   it('shows a negative line 18 when support raised exceeds the goal', () => {
-    const calculations = buildCalculations({ monthlyGoal: 18134 });
+    const calculations = buildCalculations({
+      monthlyGoal: 18134,
+      supportRaised: 20000,
+    });
     const { getByText } = render(
       <MonthlyNeedsCard
         calculations={calculations}
-        supportRaised={20000}
         columnLabel="John & Jane"
       />,
     );

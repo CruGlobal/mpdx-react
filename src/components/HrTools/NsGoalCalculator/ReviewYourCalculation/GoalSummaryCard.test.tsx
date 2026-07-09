@@ -3,11 +3,11 @@ import { render } from '@testing-library/react';
 import { GoalSummaryCard } from './GoalSummaryCard';
 
 describe('GoalSummaryCard', () => {
-  it('renders the three headline figures', () => {
+  it('renders the headline figures and "Coming soon" for special needs', () => {
     const { getByText } = render(
       <GoalSummaryCard
         monthlyGoal={6430.25}
-        specialNeedsGoal={2801}
+        specialNeedsGoal={null}
         minStaffAccountBalance={9580}
       />,
     );
@@ -18,12 +18,24 @@ describe('GoalSummaryCard', () => {
     expect(getByText('$6,430.25')).toBeInTheDocument();
 
     expect(getByText('Special Needs Goal')).toBeInTheDocument();
-    expect(getByText('$2,801.00')).toBeInTheDocument();
+    expect(getByText('Coming soon')).toBeInTheDocument();
 
     expect(
       getByText('Min Staff Account Balance to Report'),
     ).toBeInTheDocument();
     expect(getByText('$9,580.00')).toBeInTheDocument();
+  });
+
+  it('renders a real special-needs figure as currency once available', () => {
+    const { getByText } = render(
+      <GoalSummaryCard
+        monthlyGoal={6430.25}
+        specialNeedsGoal={2801}
+        minStaffAccountBalance={9580}
+      />,
+    );
+
+    expect(getByText('$2,801.00')).toBeInTheDocument();
   });
 
   it('renders zero figures as currency rather than blanks', () => {

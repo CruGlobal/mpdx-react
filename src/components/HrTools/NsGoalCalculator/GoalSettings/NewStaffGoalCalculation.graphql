@@ -21,17 +21,13 @@ fragment NewStaffGoalCalculationFields on NewStaffGoalCalculation {
     meals
     mpd
     supplies
-    staffConferenceTransfer
     benefitsCharge
-    medicalExpenses
-    accountTransfers
-    advocacyTransfers
-    otherExpenses
     goalSubtotal
     subtotalWithAdminCharge
     adminCharge
     attrition
     monthlyGoal
+    supportRaised
     minimumAccountBalance
     secaRate
     adminRate

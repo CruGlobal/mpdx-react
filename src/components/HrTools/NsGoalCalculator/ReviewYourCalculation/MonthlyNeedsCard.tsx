@@ -1,51 +1,32 @@
 import React, { useMemo } from 'react';
-import {
-  SxProps,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Theme,
-  Typography,
-} from '@mui/material';
-import { visuallyHidden } from '@mui/utils';
-import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
-import {
-  currencyFormat,
-  numberFormat,
-  percentageFormat,
-} from 'src/lib/intlFormat';
+import { numberFormat, percentageFormat } from 'src/lib/intlFormat';
 import { PresentationCard } from '../../Shared/GoalPresentation/PresentationCard';
 import { NsGoalCalculation } from '../Shared/NsGoalCalculatorContext';
-import { NeedsRow, NeedsTable } from './NeedsTable';
+import { NeedsRow, NeedsWorksheetTable } from './NeedsTable';
 
 type Calculations = NsGoalCalculation['calculations'];
 
 export interface MonthlyNeedsCardProps {
   calculations: Calculations;
-  /** Line 17. Solid monthly support already developed. */
-  supportRaised: number;
   /** Column header naming the staff member (and spouse when married). */
   columnLabel: string;
 }
 
 /**
  * The "Monthly Needs" card on the Review Your Calculation step, containing the
- * 18-line needs worksheet. Every line comes straight from the server-computed
- * `calculations` object except line 18, which subtracts the support already
- * raised from the total goal.
+ * 18-line needs worksheet.
  */
 export const MonthlyNeedsCard: React.FC<MonthlyNeedsCardProps> = ({
   calculations,
-  supportRaised,
   columnLabel,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
 
   const rows = useMemo((): NeedsRow[] => {
+    const supportRaised = calculations.supportRaised ?? 0;
     const secaMultiplier = numberFormat(calculations.secaRate, locale);
     const adminDivisor = numberFormat(1 - calculations.adminRate, locale);
     const attritionFactor = numberFormat(
@@ -194,55 +175,17 @@ export const MonthlyNeedsCard: React.FC<MonthlyNeedsCardProps> = ({
         bold: true,
       },
     ];
-  }, [t, locale, calculations, supportRaised]);
+  }, [t, locale, calculations]);
+
+  const title = t('Monthly Needs');
 
   return (
-    <PresentationCard title={t('Monthly Needs')}>
-      <NeedsTable size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell className="line">
-              <Typography sx={visuallyHidden as SxProps<Theme>}>
-                {t('Line')}
-              </Typography>
-            </TableCell>
-            <TableCell>
-              <Typography variant="body1" fontWeight="bold" color="primary">
-                {t('Category')}
-              </Typography>
-            </TableCell>
-            <TableCell className="amount">
-              <Typography variant="body1" fontWeight="bold" color="primary">
-                {columnLabel}
-              </Typography>
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map(({ line, category, description, amount, bold }) => (
-            <TableRow key={line} className={clsx({ bold })}>
-              <TableCell className="line">
-                <Typography>{line}</Typography>
-              </TableCell>
-              <TableCell component="th" scope="row">
-                <Typography variant="body1">{category}</Typography>
-                {description && (
-                  <Typography variant="body2" color="text.secondary">
-                    {description}
-                  </Typography>
-                )}
-              </TableCell>
-              <TableCell className={clsx('amount', { bold })}>
-                <Typography variant="body1">
-                  {currencyFormat(amount, 'USD', locale, {
-                    showTrailingZeros: true,
-                  })}
-                </Typography>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </NeedsTable>
+    <PresentationCard title={title}>
+      <NeedsWorksheetTable
+        rows={rows}
+        columnLabel={columnLabel}
+        ariaLabel={title}
+      />
     </PresentationCard>
   );
 };

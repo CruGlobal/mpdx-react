@@ -33,7 +33,10 @@ export const AccountBalanceCard: React.FC<AccountBalanceCardProps> = ({
 
   return (
     <PresentationCard title={t('Min Staff Account Balance Upon Reporting')}>
-      <NeedsTable size="small">
+      <NeedsTable
+        size="small"
+        aria-label={t('Min Staff Account Balance Upon Reporting')}
+      >
         <TableHead>
           <TableRow>
             <TableCell>
