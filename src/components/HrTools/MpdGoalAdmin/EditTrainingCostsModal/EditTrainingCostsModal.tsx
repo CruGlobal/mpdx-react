@@ -277,41 +277,55 @@ export const EditTrainingCostsModal: React.FC<EditTrainingCostsModalProps> = ({
           return (
             <form onSubmit={handleSubmit}>
               <DialogContent dividers>
-                {sections.map((section, index) => (
-                  <Box key={section.title} sx={{ mt: index > 0 ? 3 : 0 }}>
-                    {index > 0 && <Divider sx={{ mb: 3 }} />}
-                    <Typography variant="h6" gutterBottom>
-                      {section.title}
-                    </Typography>
-                    <Grid container spacing={3}>
-                      {section.fields.map((field) => (
-                        <Grid key={field.name} size={field.size}>
-                          <TextField
-                            name={field.name}
-                            label={field.label}
-                            value={values[field.name]}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            type="number"
-                            fullWidth
-                            size="small"
-                            required
-                            error={
-                              touched[field.name] && Boolean(errors[field.name])
-                            }
-                            helperText={
-                              touched[field.name] && errors[field.name]
-                            }
-                            inputProps={{ min: 0, step: 0.01 }}
-                            InputProps={{
-                              startAdornment: <CurrencyAdornment />,
-                            }}
-                          />
-                        </Grid>
-                      ))}
-                    </Grid>
-                  </Box>
-                ))}
+                {sections.map((section, index) => {
+                  const sectionId = `training-costs-section-${index}`;
+                  return (
+                    <Box key={section.title} sx={{ mt: index > 0 ? 3 : 0 }}>
+                      {index > 0 && <Divider sx={{ mb: 3 }} />}
+                      <Typography
+                        id={sectionId}
+                        component="h3"
+                        variant="h6"
+                        gutterBottom
+                      >
+                        {section.title}
+                      </Typography>
+                      <Grid
+                        container
+                        spacing={3}
+                        role="group"
+                        aria-labelledby={sectionId}
+                      >
+                        {section.fields.map((field) => (
+                          <Grid key={field.name} size={field.size}>
+                            <TextField
+                              name={field.name}
+                              label={field.label}
+                              value={values[field.name]}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              type="number"
+                              fullWidth
+                              size="small"
+                              required
+                              error={
+                                touched[field.name] &&
+                                Boolean(errors[field.name])
+                              }
+                              helperText={
+                                touched[field.name] && errors[field.name]
+                              }
+                              inputProps={{ min: 0, step: 0.01 }}
+                              InputProps={{
+                                startAdornment: <CurrencyAdornment />,
+                              }}
+                            />
+                          </Grid>
+                        ))}
+                      </Grid>
+                    </Box>
+                  );
+                })}
               </DialogContent>
               <DialogActions>
                 <Button onClick={onClose}>{t('Cancel')}</Button>
