@@ -164,7 +164,7 @@ export const NavMenuDropdown: React.FC<NavMenuDropdownProps> = ({
                 </ClickAwayListener>
               </Paper>
             ) : (
-              <Paper>
+              <Paper className={classes.subMenu}>
                 <ClickAwayListener onClickAway={handleMenuClose}>
                   <MenuList autoFocusItem={menuOpen} id="menu-list-grow">
                     {page.items?.map(({ id, title, href }) => (
@@ -174,13 +174,17 @@ export const NavMenuDropdown: React.FC<NavMenuDropdownProps> = ({
                         href={href ?? ''}
                         onClick={handleMenuClose}
                         tabIndex={0}
+                        className={classes.menuItem}
                         aria-current={
                           pathname.startsWith(href?.toString() ?? '')
                             ? 'page'
                             : undefined
                         }
                       >
-                        <ListItemText primary={title} />
+                        <ListItemText
+                          className={classes.whiteText}
+                          primary={title}
+                        />
                       </MenuItem>
                     ))}
                   </MenuList>
