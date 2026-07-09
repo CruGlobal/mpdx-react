@@ -135,6 +135,7 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = ({
         const hasSpouse =
           values.maritalStatus ===
           NewStaffQuestionnaireMaritalStatusEnum.Married;
+        const seniorStaffSpouse = hasSpouse && values.spouseJoining === 'false';
         const sectionProps: GoalSettingsSectionProps = {
           hasSpouse,
           calculations: calculation.calculations,
@@ -146,6 +147,7 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = ({
           sharedHeader: hasSpouse
             ? `${primaryHeader} & ${spouseHeader}`
             : primaryHeader,
+          seniorStaff: seniorStaffSpouse,
         };
 
         return (
