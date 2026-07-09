@@ -45,7 +45,6 @@ fragment NewStaffGoalCalculationFields on NewStaffGoalCalculation {
   spouseRequestedAnnualSalary
   contribution403bPercentage
   spouseContribution403bPercentage
-  mhaAmount
   spouseMhaAmount
   staffConferenceTransfer
   accountTransfers

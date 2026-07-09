@@ -47,7 +47,6 @@ export const calculationToFormValues = (
   spouseContribution403bPercentage: toNumberInput(
     calc.spouseContribution403bPercentage,
   ),
-  mhaAmount: toNumberInput(calc.mhaAmount),
   spouseMhaAmount: toNumberInput(calc.spouseMhaAmount),
   staffConferenceTransfer: toNumberInput(calc.staffConferenceTransfer),
   accountTransfers: toNumberInput(calc.accountTransfers),
@@ -89,12 +88,16 @@ export const calculationToFormValues = (
  *
  * `hasSpouse` gates the spouse fields so a single person's save clears spouse
  * data rather than persisting stale values.
+ * `seniorStaff` likewise gates the "Senior Staff Only" fields, which apply only
+ * when there is a senior spouse, so they are cleared when the spouse is missing
+ * or is joining staff.
  */
 export const formValuesToAttributes = (
   values: GoalSettingsFormValues,
 ): NewStaffGoalCalculationAttributesInput => {
   const hasSpouse =
     values.maritalStatus === NewStaffQuestionnaireMaritalStatusEnum.Married;
+  const seniorStaff = hasSpouse && !toBoolean(values.spouseJoining);
 
   return {
     maritalStatus: values.maritalStatus || null,
@@ -115,12 +118,19 @@ export const formValuesToAttributes = (
     spouseContribution403bPercentage: hasSpouse
       ? toNumberOrNull(values.spouseContribution403bPercentage)
       : null,
-    mhaAmount: toNumberOrNull(values.mhaAmount),
-    spouseMhaAmount: hasSpouse ? toNumberOrNull(values.spouseMhaAmount) : null,
+    spouseMhaAmount: seniorStaff
+      ? toNumberOrNull(values.spouseMhaAmount)
+      : null,
 
-    staffConferenceTransfer: toNumberOrNull(values.staffConferenceTransfer),
-    accountTransfers: toNumberOrNull(values.accountTransfers),
-    advocacyTransfers: toNumberOrNull(values.advocacyTransfers),
+    staffConferenceTransfer: seniorStaff
+      ? toNumberOrNull(values.staffConferenceTransfer)
+      : null,
+    accountTransfers: seniorStaff
+      ? toNumberOrNull(values.accountTransfers)
+      : null,
+    advocacyTransfers: seniorStaff
+      ? toNumberOrNull(values.advocacyTransfers)
+      : null,
 
     geographicLocation: values.geographicLocation || null,
 
