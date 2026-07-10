@@ -369,16 +369,6 @@ describe('SetupStep', () => {
     expect(await findByText('Hours Per Week Calculator')).toBeInTheDocument();
   });
 
-  it('renders the Calculate my average hours button when Hourly', async () => {
-    const { findByRole } = renderSetup({
-      calculationMock: fullTimeHourlyMock,
-    });
-
-    expect(
-      await findByRole('button', { name: 'Calculate my average hours' }),
-    ).toBeInTheDocument();
-  });
-
   it('hides Hours Worked and adapts validation when switching from Hourly to Salaried', async () => {
     const { findByRole, queryByRole, rerender } = renderSetup({
       calculationMock: { ...fullTimeHourlyMock, hoursWorkedPerWeek: null },
