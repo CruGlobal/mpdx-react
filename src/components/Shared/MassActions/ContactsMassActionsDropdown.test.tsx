@@ -10,7 +10,6 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import useTaskModal from '../../../hooks/useTaskModal';
 import { PageEnum, TableViewModeEnum } from '../Header/ListHeader';
@@ -22,7 +21,6 @@ const mockEnqueue = jest.fn();
 const openTaskModal = jest.fn();
 
 jest.mock('../../../hooks/useTaskModal');
-jest.mock('src/hooks/useAccountListId');
 
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -62,7 +60,6 @@ describe('ContactsMassActionsDropdown', () => {
       openTaskModal,
       preloadTaskModal: jest.fn(),
     });
-    (useAccountListId as jest.Mock).mockReturnValue('123456789');
 
     massDeselectAll.mockClear();
   });

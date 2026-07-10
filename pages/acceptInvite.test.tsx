@@ -4,7 +4,6 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import AcceptInvitePage from './acceptInvite.page';
 
-jest.mock('src/hooks/useAccountListId');
 const mockPush = jest.fn();
 const dashboardLink = '/accountLists/_/';
 

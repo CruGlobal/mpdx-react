@@ -11,10 +11,8 @@ import {
 } from 'src/components/Tool/Import/Csv/CsvImportContext';
 import { CsvImportWrapper } from 'src/components/Tool/Import/Csv/CsvImportWrapper';
 import { get } from 'src/components/Tool/Import/Csv/csvImportService';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 
-jest.mock('src/hooks/useAccountListId');
 jest.mock('src/components/Constants/UseApiConstants');
 jest.mock('src/components/Tool/Import/Csv/csvImportService');
 
@@ -45,7 +43,6 @@ const t = (message: string) => message;
 
 describe('CsvImportWrapper', () => {
   beforeEach(() => {
-    (useAccountListId as jest.Mock).mockReturnValue(accountListId);
     (useApiConstants as jest.Mock).mockReturnValue(constants);
     (get as jest.Mock).mockReturnValue(Promise.resolve({ id: 'from-get' }));
   });

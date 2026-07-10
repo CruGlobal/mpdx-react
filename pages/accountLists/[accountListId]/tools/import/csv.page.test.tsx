@@ -5,11 +5,9 @@ import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { CsvImportViewStepEnum } from 'src/components/Tool/Import/Csv/CsvImportContext';
 import { get } from 'src/components/Tool/Import/Csv/csvImportService';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import CsvHome from './csv.page';
 
-jest.mock('src/hooks/useAccountListId');
 jest.mock('src/components/Tool/Import/Csv/csvImportService');
 
 const accountListId = 'accountListId';
@@ -19,6 +17,7 @@ const buildRouter = (tab) => {
   return {
     isReady: true,
     query: {
+      accountListId,
       tab: tab,
       id: csvFileId,
     },
@@ -39,7 +38,6 @@ const renderCsvHome = (router) =>
 
 describe('CSV wrapper page', () => {
   beforeEach(() => {
-    (useAccountListId as jest.Mock).mockReturnValue(accountListId);
     (get as jest.Mock).mockReturnValue(Promise.resolve({ id: 'from-get' }));
   });
 
@@ -47,7 +45,7 @@ describe('CSV wrapper page', () => {
     it('should show the upload tab if none specified in the URL', async () => {
       const router = {
         isReady: true,
-        query: {},
+        query: { accountListId },
       };
 
       const { findByTestId } = renderCsvHome(router);
