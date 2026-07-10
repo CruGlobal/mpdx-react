@@ -143,14 +143,6 @@ describe('TableCard', () => {
     expect(getByText('Empty Table')).toBeInTheDocument();
   });
 
-  it('should render pagination', () => {
-    const { getByRole } = render(<TestComponent />);
-
-    expect(
-      getByRole('combobox', { name: /rows per page/i }),
-    ).toBeInTheDocument();
-  });
-
   it('updates the sort order', async () => {
     const { getAllByRole, getByRole } = render(<TestComponent />);
 

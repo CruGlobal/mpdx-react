@@ -136,6 +136,9 @@ describe('MPGAIncomeExpensesReport', () => {
     expect(getByRole('heading', { name: title })).toBeInTheDocument();
     expect(getByRole('button', { name: 'Print' })).toBeInTheDocument();
     expect(getByRole('button', { name: 'Export CSV' })).toBeInTheDocument();
+    expect(
+      getByRole('button', { name: 'Report Settings' }),
+    ).toBeInTheDocument();
 
     expect(await findByText('12345')).toBeInTheDocument();
     expect(await findByText('Test Account')).toBeInTheDocument();
