@@ -44,8 +44,7 @@ const ToolsHome: React.FC<ToolHomeProps> = ({ onSetupTour }): ReactElement => {
   const accountListId = useAccountListId();
 
   const { data, loading } = useGetToolNotificationsQuery({
-    variables: { accountListId: accountListId ?? '' },
-    skip: !accountListId,
+    variables: { accountListId },
   });
 
   const toolDataTotalCount: { [key: string]: number } = {

@@ -80,7 +80,7 @@ interface Props {
 export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const { enqueueSnackbar } = useSnackbar();
   const { t } = useTranslation();
-  const accountListId = useAccountListId() ?? '';
+  const accountListId = useAccountListId();
   const { query } = useRouter();
   const goalCalculationId = getQueryParam(query, 'goalCalculationId') ?? '';
 

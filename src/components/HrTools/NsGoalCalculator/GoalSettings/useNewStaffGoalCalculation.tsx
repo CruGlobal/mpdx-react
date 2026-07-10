@@ -23,7 +23,7 @@ interface UseNewStaffGoalCalculationResult {
  * loading skeleton, error alert, and empty-state.
  */
 export const useNewStaffGoalCalculation = (
-  accountListId: string | null | undefined,
+  accountListId: string,
 ): UseNewStaffGoalCalculationResult => {
   const { t } = useTranslation();
 

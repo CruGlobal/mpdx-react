@@ -98,7 +98,7 @@ export const NotificationsTable: React.FC<NotificationsTableProps> = ({
   const { data: notificationsPreferences, loading } =
     useNotificationsPreferencesQuery({
       variables: {
-        accountListId: accountListId ?? '',
+        accountListId,
       },
     });
   const { data: notificationTypes } = useNotificationTypesQuery({
@@ -162,7 +162,7 @@ export const NotificationsTable: React.FC<NotificationsTableProps> = ({
     await updateNotifications({
       variables: {
         input: {
-          accountListId: accountListId ?? '',
+          accountListId,
           attributes,
         },
       },

@@ -419,7 +419,7 @@ describe('EditGoogleAccountModal', () => {
       );
       expect(mutationSpy.mock.calls[1][0].operation.variables.input).toEqual({
         googleAccountId: googleAccount.id,
-        accountListId: accountListId,
+        accountListId,
         googleIntegration: {
           calendarIntegration: true,
         },

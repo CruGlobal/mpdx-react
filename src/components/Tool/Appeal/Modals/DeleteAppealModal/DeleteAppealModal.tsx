@@ -49,7 +49,7 @@ export const DeleteAppealModal: React.FC<DeleteAppealModalProps> = ({
     await deleteAppeal({
       variables: {
         input: {
-          accountListId: accountListId,
+          accountListId,
           id: appealId,
         },
       },

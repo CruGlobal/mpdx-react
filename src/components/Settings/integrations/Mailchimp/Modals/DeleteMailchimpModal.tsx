@@ -32,7 +32,7 @@ export const DeleteMailchimpAccountModal: React.FC<
     await deleteMailchimpAccount({
       variables: {
         input: {
-          accountListId: accountListId,
+          accountListId,
         },
       },
       update: () => refetchMailchimpAccount(),

@@ -68,13 +68,13 @@ export const UpdateDonationsModal: React.FC<UpdateDonationsModalProps> = ({
 
   const { data: accountListData, loading: loadingAccountListData } =
     useAccountListCurrencyQuery({
-      variables: { accountListId: accountListId ?? '' },
+      variables: { accountListId },
     });
   const accountCurrency = accountListData?.accountList.currency || 'USD';
 
   const { data } = useGetContactDonationsQuery({
     variables: {
-      accountListId: accountListId ?? '',
+      accountListId,
       contactId: contact.id,
     },
   });
@@ -100,7 +100,7 @@ export const UpdateDonationsModal: React.FC<UpdateDonationsModalProps> = ({
   // TODO: sort donations on the server after https://jira.cru.org/browse/MPDX-7634 is implemented
   const variables: DonationTableQueryVariables = useMemo(
     () => ({
-      accountListId: accountListId ?? '',
+      accountListId,
       pageSize: paginationModel.pageSize,
       donorAccountIds,
     }),
@@ -206,7 +206,7 @@ export const UpdateDonationsModal: React.FC<UpdateDonationsModalProps> = ({
       await updateDonations({
         variables: {
           input: {
-            accountListId: accountListId ?? '',
+            accountListId,
             attributes: donationsAttributes,
           },
         },
@@ -259,7 +259,7 @@ export const UpdateDonationsModal: React.FC<UpdateDonationsModalProps> = ({
       await createAccountListPledge({
         variables: {
           input: {
-            accountListId: accountListId ?? '',
+            accountListId,
             attributes: {
               appealId: appealId,
               contactId: contact.id,

@@ -114,21 +114,21 @@ export const renderDialog = (
       case AddMenuItemsEnum.NewContact:
         return (
           <DynamicCreateContact
-            accountListId={accountListId ?? ''}
+            accountListId={accountListId}
             handleClose={handleDialogClose}
           />
         );
       case AddMenuItemsEnum.MultipleContacts:
         return (
           <DynamicCreateMultipleContacts
-            accountListId={accountListId ?? ''}
+            accountListId={accountListId}
             handleClose={handleDialogClose}
           />
         );
       case AddMenuItemsEnum.AddDonation:
         return (
           <DynamicAddDonation
-            accountListId={accountListId ?? ''}
+            accountListId={accountListId}
             handleClose={handleDialogClose}
           />
         );

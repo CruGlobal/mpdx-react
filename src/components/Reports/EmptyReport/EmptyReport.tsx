@@ -62,7 +62,7 @@ export const EmptyReport: React.FC<Props> = ({
         size="sm"
       >
         <DynamicAddDonation
-          accountListId={accountListId ?? ''}
+          accountListId={accountListId}
           handleClose={handleCloseAddDonation}
         />
       </Modal>

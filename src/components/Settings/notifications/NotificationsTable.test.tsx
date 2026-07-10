@@ -171,7 +171,7 @@ describe('NotificationsTable', () => {
       );
 
       expect(mutationSpy.mock.calls[2][0].operation.variables.input).toEqual({
-        accountListId: accountListId,
+        accountListId,
         attributes: [
           {
             app: true,

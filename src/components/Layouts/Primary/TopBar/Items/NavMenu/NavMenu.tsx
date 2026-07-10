@@ -4,9 +4,9 @@ import React, { useMemo, useState } from 'react';
 import { Grid, ListItemText, MenuItem } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import { useLoadCoachingListQuery } from 'src/components/Coaching/LoadCoachingList.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useNavPages } from 'src/hooks/useNavPages';
-import { useAccountListId } from '../../../../../../hooks/useAccountListId';
-import theme from '../../../../../../theme';
+import theme from 'src/theme';
 import { useGetToolNotificationsQuery } from './GetToolNotifcations.generated';
 import { NavMenuDropdown } from './NavMenuDropdown';
 
@@ -90,8 +90,7 @@ const NavMenu: React.FC = () => {
 
   const { classes } = useStyles();
   const { data, loading } = useGetToolNotificationsQuery({
-    variables: { accountListId: accountListId ?? '' },
-    skip: !accountListId,
+    variables: { accountListId },
   });
   const { data: coachingData } = useLoadCoachingListQuery();
 

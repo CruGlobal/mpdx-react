@@ -124,7 +124,7 @@ export const MultiPageMenu: React.FC<Props & BoxProps> = ({
 
   const { data } = useGetDesignationAccountsQuery({
     variables: {
-      accountListId: accountListId ?? '',
+      accountListId,
     },
     skip: !designationAccounts && !setDesignationAccounts,
   });

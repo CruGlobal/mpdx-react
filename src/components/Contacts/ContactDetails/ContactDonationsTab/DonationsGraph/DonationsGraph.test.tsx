@@ -101,7 +101,7 @@ describe('Donations Graph', () => {
       () =>
         useGetDonationsGraphQuery({
           variables: {
-            accountListId: accountListId,
+            accountListId,
             donorAccountIds: donorAccountIds,
           },
         }),

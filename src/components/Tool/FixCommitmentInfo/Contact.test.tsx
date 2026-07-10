@@ -38,7 +38,7 @@ const accountListId = 'accountListId';
 const router = {
   pathname:
     '/accountLists/[accountListId]/tools/fix/commitmentInfo/[[...contactId]]',
-  query: { accountListId: accountListId },
+  query: { accountListId },
   push: jest.fn(),
 };
 

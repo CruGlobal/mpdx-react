@@ -14,7 +14,7 @@ import {
   ContactFilterStatusEnum,
   DisplayMethodEnum,
 } from 'src/graphql/types.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useOptionalAccountListId } from 'src/hooks/useAccountListId';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { dispatch } from 'src/lib/analytics';
 import i18n from 'src/lib/i18n';
@@ -43,7 +43,7 @@ export const Announcements: React.FC = () => {
 
 const Announcement: React.FC = () => {
   const { push } = useRouter();
-  const accountListId = useAccountListId();
+  const accountListId = useOptionalAccountListId();
   const [showAppealModal, setShowAppealModal] = useState(false);
   const [hideAnnouncement, setHideAnnouncement] = useState(false);
   const { contactStatuses } = useContactPartnershipStatuses();

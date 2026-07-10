@@ -26,7 +26,7 @@ import {
 import { Coordinates } from '../ContactsMap/coordinates';
 
 export type ContactsType = {
-  accountListId: string | undefined;
+  accountListId: string;
   contactsQueryResult: ReturnType<typeof useContactsQuery>;
   selectionType: ListHeaderCheckBoxState;
   isRowChecked: (id: string) => boolean;
@@ -94,7 +94,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
   userOptionsLoading,
 }) => {
   const locale = useLocale();
-  const accountListId = useAccountListId() ?? '';
+  const accountListId = useAccountListId();
 
   const { combinedFilters: contactsFilters } = useUrlFilters();
 
@@ -129,7 +129,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
 
   const contactsQueryResult = useContactsQuery({
     variables: {
-      accountListId: accountListId ?? '',
+      accountListId,
       contactsFilters:
         // In the map view, ignore all filters and only show the selected contacts
         // If no contacts were selected, show all contacts
@@ -138,7 +138,6 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
           : contactsFilters,
       first: viewMode === TableViewModeEnum.Map ? 20000 : 25,
     },
-    skip: !accountListId,
   });
   const { data, fetchMore } = contactsQueryResult;
 
@@ -157,8 +156,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
   }, [data, viewMode]);
 
   const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
-    variables: { accountListId: accountListId ?? '' },
-    skip: !accountListId,
+    variables: { accountListId },
     context: {
       doNotBatch: true,
     },
@@ -196,7 +194,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
 
   const contextValue = useMemo(
     () => ({
-      accountListId: accountListId ?? '',
+      accountListId,
       contactsQueryResult,
       selectionType,
       isRowChecked,

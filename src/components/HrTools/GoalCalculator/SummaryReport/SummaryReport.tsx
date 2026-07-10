@@ -14,7 +14,7 @@ import { PresentingYourGoalStepRightPanel } from './Steps/PresentingYourGoalStep
 
 export const SummaryReport: React.FC = () => {
   const { t } = useTranslation();
-  const accountListId = useAccountListId() ?? '';
+  const accountListId = useAccountListId();
   const { selectedReport, goalCalculationResult } = useGoalCalculator();
   const { data } = useAccountListSupportRaisedQuery({
     variables: { accountListId },

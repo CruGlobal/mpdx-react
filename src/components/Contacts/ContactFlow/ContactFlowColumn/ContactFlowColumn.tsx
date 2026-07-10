@@ -84,13 +84,13 @@ export const ContactFlowColumn: React.FC<ContactFlowColumnProps> = ({
 
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {
-      accountListId: accountListId ?? '',
+      accountListId,
       contactsFilters: {
         ...combinedFilters,
         status: statuses as string[] as ContactFilterStatusEnum[],
       },
     },
-    skip: !accountListId || statuses.length === 0,
+    skip: statuses.length === 0,
   });
 
   const cardContentRef = useRef<HTMLDivElement>();

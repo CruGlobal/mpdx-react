@@ -69,7 +69,7 @@ export const ContactDetailsPartnerAccounts: React.FC<
     useUpdateContactOtherMutation();
   const [showForm, setShowForm] = useState(false);
   const { data: accountListData } = useGetAccountListSalaryOrganizationQuery({
-    variables: { accountListId: accountListId },
+    variables: { accountListId },
   });
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();

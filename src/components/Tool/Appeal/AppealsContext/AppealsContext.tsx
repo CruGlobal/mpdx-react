@@ -110,7 +110,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
   tour,
   setTour,
 }) => {
-  const accountListId = useAccountListId() ?? '';
+  const accountListId = useAccountListId();
 
   const [listAppealStatus, setListAppealStatus] = useState<AppealStatusEnum>(
     AppealStatusEnum.Asked,
@@ -147,11 +147,10 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
 
   const contactsQueryResult = useAppealsContactsQuery({
     variables: {
-      accountListId: accountListId ?? '',
+      accountListId,
       contactsFilters,
       first: 25,
     },
-    skip: !accountListId,
   });
 
   //#region Mass Actions
@@ -211,8 +210,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
   //#endregion
 
   const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
-    variables: { accountListId: accountListId ?? '' },
-    skip: !accountListId,
+    variables: { accountListId },
     context: {
       doNotBatch: true,
     },
@@ -222,7 +220,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
 
   const askedCountQueryResult = useContactsCountQuery({
     variables: {
-      accountListId: accountListId || '',
+      accountListId,
       contactsFilter: {
         ...defaultFilters,
         appealStatus: AppealStatusEnum.Asked,
@@ -233,7 +231,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
 
   const excludedCountQueryResult = useContactsCountQuery({
     variables: {
-      accountListId: accountListId || '',
+      accountListId,
       contactsFilter: {
         ...defaultFilters,
         appealStatus: AppealStatusEnum.Excluded,
@@ -244,7 +242,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
 
   const committedCountQueryResult = useContactsCountQuery({
     variables: {
-      accountListId: accountListId || '',
+      accountListId,
       contactsFilter: {
         ...defaultFilters,
         appealStatus: AppealStatusEnum.NotReceived,
@@ -255,7 +253,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
 
   const givenCountQueryResult = useContactsCountQuery({
     variables: {
-      accountListId: accountListId || '',
+      accountListId,
       contactsFilter: {
         ...defaultFilters,
         appealStatus: AppealStatusEnum.Processed,
@@ -266,7 +264,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
 
   const receivedCountQueryResult = useContactsCountQuery({
     variables: {
-      accountListId: accountListId || '',
+      accountListId,
       contactsFilter: {
         ...defaultFilters,
         appealStatus: AppealStatusEnum.ReceivedNotProcessed,
@@ -319,7 +317,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
 
   const contextValue = useMemo(
     () => ({
-      accountListId: accountListId ?? '',
+      accountListId,
       contactsQueryResult,
       selectionType,
       isRowChecked,

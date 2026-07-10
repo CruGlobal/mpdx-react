@@ -44,7 +44,7 @@ const AmountTypography = styled(Typography)(({ theme }) => ({
 }));
 
 export const HouseholdExpensesHeader: React.FC = () => {
-  const accountListId = useAccountListId() ?? '';
+  const accountListId = useAccountListId();
   const {
     goalCalculationResult: { data, loading },
     goalTotals: { monthlyBudget },

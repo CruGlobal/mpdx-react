@@ -13,7 +13,7 @@ export interface MpdGoalCardProps {
 }
 
 export const MpdGoalCard: React.FC<MpdGoalCardProps> = ({ goal }) => {
-  const accountListId = useAccountListId() ?? '';
+  const accountListId = useAccountListId();
   const constants = useGoalCalculatorConstants();
   const [deleteGoalCalculation] = useDeleteGoalCalculationMutation();
 

@@ -75,7 +75,7 @@ export const CoachingRow: React.FC<Props> = ({
                 href={{
                   pathname:
                     '/accountLists/[accountListId]/coaching/[coachingId]',
-                  query: { accountListId: accountListId, coachingId: id },
+                  query: { accountListId, coachingId: id },
                 }}
               >
                 {name}

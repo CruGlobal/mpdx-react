@@ -40,6 +40,7 @@ import {
   SendNewsletterEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { getAppName } from 'src/lib/getAppName';
@@ -48,7 +49,6 @@ import {
   parseNumberFromCurrencyString,
 } from 'src/lib/intlFormat';
 import { nullableDateTime } from 'src/lib/yupHelpers';
-import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useApiConstants } from '../../../../../Constants/UseApiConstants';
 import Modal from '../../../../../Shared/Modal/Modal';
 import { ContactDonorAccountsFragment } from '../../ContactDonationsTab.generated';
@@ -151,7 +151,7 @@ export const EditPartnershipInfoModal: React.FC<
 
     await updateContactPartnership({
       variables: {
-        accountListId: accountListId ?? '',
+        accountListId,
         attributes: {
           ...attributes,
           pledgeStartDate: attributes.pledgeStartDate?.toISODate() ?? null,

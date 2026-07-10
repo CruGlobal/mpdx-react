@@ -43,7 +43,7 @@ export const TasksMassActionsDropdown: React.FC<
 > = ({ buttonGroup, selectedIdCount, massDeselectAll, selectedIds }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const accountListId = useAccountListId() ?? '';
+  const accountListId = useAccountListId();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -70,7 +70,7 @@ export const TasksMassActionsDropdown: React.FC<
     const completedAt = DateTime.local().toISO();
     await updateTasksMutation({
       variables: {
-        accountListId: accountListId ?? '',
+        accountListId,
         attributes: selectedIds.map((id) => ({
           id,
           completedAt,
@@ -96,7 +96,7 @@ export const TasksMassActionsDropdown: React.FC<
     setDeleteTasksModalOpen(false);
     await deleteTasksMutation({
       variables: {
-        accountListId: accountListId ?? '',
+        accountListId,
         ids: selectedIds,
       },
       update: (cache) => {

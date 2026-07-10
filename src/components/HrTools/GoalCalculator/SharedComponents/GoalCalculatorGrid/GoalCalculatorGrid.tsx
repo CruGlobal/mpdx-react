@@ -86,7 +86,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const { label: categoryName } = category;
-  const accountListId = useAccountListId() ?? '';
+  const accountListId = useAccountListId();
   const {
     setRightPanelContent,
     trackMutation,

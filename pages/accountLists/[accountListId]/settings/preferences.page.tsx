@@ -87,19 +87,19 @@ const Preferences: React.FC = () => {
   const { data: personalPreferencesData, loading: personalPreferencesLoading } =
     useGetPersonalPreferencesQuery({
       variables: {
-        accountListId: accountListId ?? '',
+        accountListId,
       },
     });
 
   const { data: accountPreferencesData, loading: accountPreferencesLoading } =
     useGetAccountPreferencesQuery({
       variables: {
-        accountListId: accountListId ?? '',
+        accountListId,
       },
     });
   const { data: canUserExportData } = useCanUserExportDataQuery({
     variables: {
-      accountListId: accountListId ?? '',
+      accountListId,
     },
   });
 

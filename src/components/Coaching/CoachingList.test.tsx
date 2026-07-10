@@ -23,7 +23,7 @@ const coachingAccountListsMock = [
   },
 ];
 const router = {
-  query: { accountListId: accountListId },
+  query: { accountListId },
   push: jest.fn(),
 };
 

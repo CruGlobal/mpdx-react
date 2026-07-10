@@ -70,7 +70,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
-  const accountListId = useAccountListId() ?? '';
+  const accountListId = useAccountListId();
 
   const {
     data: appeals,

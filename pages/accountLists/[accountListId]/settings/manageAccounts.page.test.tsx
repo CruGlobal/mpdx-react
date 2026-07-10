@@ -24,7 +24,9 @@ interface ComponentsProps {
 
 const Components: React.FC<ComponentsProps> = ({ selectedTab }) => (
   <ThemeProvider theme={theme}>
-    <TestRouter router={{ query: { selectedTab } }}>
+    <TestRouter
+      router={{ query: { selectedTab, accountListId: 'account-list-1' } }}
+    >
       <GqlMockedProvider>
         <SnackbarProvider>
           <ManageAccounts />

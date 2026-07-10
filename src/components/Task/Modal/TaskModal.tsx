@@ -68,7 +68,7 @@ const TaskModal = ({
   const { t } = useTranslation();
   const { data, loading } = useGetTaskForTaskModalQuery({
     variables: {
-      accountListId: accountListId ?? '',
+      accountListId,
       taskId: taskId ?? '',
       includeComments: view === TaskModalEnum.Comments,
     },

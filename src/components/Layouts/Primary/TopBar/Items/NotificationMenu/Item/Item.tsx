@@ -84,7 +84,7 @@ const NotificationMenuItem = ({
           const query = {
             query: GetNotificationsDocument,
             variables: {
-              accountListId: accountListId,
+              accountListId,
               after: null,
             },
           };

@@ -41,7 +41,7 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
   const locale = useLocale();
   const { data } = useGetDonationsGraphQuery({
     variables: {
-      accountListId: accountListId,
+      accountListId,
       donorAccountIds: donorAccountIds,
     },
     skip: !donorAccountIds,
