@@ -11,8 +11,9 @@ export const NsGoalCalculator: React.FC = () => {
   const { currentStep } = useNsGoalCalculator();
   const accountListId = useAccountListId();
 
-  const { goalCalculation, fallback } =
-    useNewStaffGoalCalculation(accountListId);
+  const { goalCalculation, fallback } = useNewStaffGoalCalculation({
+    accountListId,
+  });
 
   if (!goalCalculation) {
     return fallback;
