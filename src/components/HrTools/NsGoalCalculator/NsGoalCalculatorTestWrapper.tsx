@@ -45,7 +45,11 @@ export const defaultGoalCalculation =
 
 export interface NsGoalCalculatorTestWrapperProps {
   children?: React.ReactNode;
-  /** Overrides the NewStaffGoalCalculation query response */
+  /**
+   * Overrides the NewStaffGoalCalculation query response.
+   * Serves both real (account-list) and scenario (by-id) goals,
+   * which share the query.
+   */
   goalCalculationMock?:
     | DeepPartial<NewStaffGoalCalculationQuery>
     | ApolloErgonoMockMap;

@@ -29,12 +29,14 @@ interface TestComponentProps {
   spouse?: GoalSettingsPerson | null;
   mpdGoal?: number;
   joinedStaffYear?: number | null;
+  isScenario?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   spouse = spousePerson,
   mpdGoal = 50000,
   joinedStaffYear = 2018,
+  isScenario = false,
 }) => (
   <ThemeProvider theme={theme}>
     <Formik initialValues={{ calculationsYear: '2020' }} onSubmit={jest.fn()}>
@@ -44,6 +46,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
           spousePerson={spouse}
           mpdGoal={mpdGoal}
           joinedStaffYear={joinedStaffYear}
+          isScenario={isScenario}
         />
       </Form>
     </Formik>
@@ -155,5 +158,33 @@ describe('GoalSettingsHeader', () => {
     const options = within(getByRole('listbox')).getAllByRole('option');
 
     expect(options.map((option) => option.textContent)).toEqual(['2020']);
+  });
+
+  describe('scenario mode', () => {
+    it('shows the Scenario Only chip and hides the person, coach, and coordinator cards', () => {
+      const { getByText, queryByText, queryByRole } = render(
+        <TestComponent isScenario />,
+      );
+
+      expect(getByText('Scenario Only')).toBeInTheDocument();
+      expect(queryByText('Incomplete')).not.toBeInTheDocument();
+      // Person cards render the "Person Number:" line; it must be absent.
+      expect(queryByText(/Person Number:/)).not.toBeInTheDocument();
+      expect(queryByRole('textbox', { name: 'Coach' })).not.toBeInTheDocument();
+      expect(
+        queryByRole('textbox', { name: 'Coordinator' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('shows the person, coach, and coordinator cards and no Scenario Only chip by default', () => {
+      const { getAllByText, getByRole, queryByText } = render(
+        <TestComponent />,
+      );
+
+      expect(queryByText('Scenario Only')).not.toBeInTheDocument();
+      expect(getAllByText(/Person Number:/).length).toBeGreaterThan(0);
+      expect(getByRole('textbox', { name: 'Coach' })).toBeInTheDocument();
+      expect(getByRole('textbox', { name: 'Coordinator' })).toBeInTheDocument();
+    });
   });
 });
