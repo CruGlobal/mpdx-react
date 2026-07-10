@@ -55,7 +55,8 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
   const { reportsDisabled } = useReportsDisabled();
 
   const userType = data?.user.userType;
-  const showTab = userType === UserTypeEnum.UsStaff;
+  const showTab =
+    userType === UserTypeEnum.UsStaff || userType === UserTypeEnum.HybridStaff;
 
   const reportItems = useReportNavItems();
   const toolsItems = useToolsNavItems();

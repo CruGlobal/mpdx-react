@@ -132,6 +132,50 @@ describe('MultiPageMenu', () => {
     expect(queryByText('Income/Expense Analysis')).not.toBeInTheDocument();
   });
 
+  it('Cru Hybrid default', async () => {
+    const { findByText, getByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider<{
+            GetUser: GetUserQuery;
+            UserOption: UserOptionQuery;
+          }>
+            mocks={{
+              GetUser: {
+                user: { userType: UserTypeEnum.HybridStaff },
+              },
+              UserOption: {
+                userOption: {
+                  value: 'true',
+                },
+              },
+            }}
+          >
+            <MultiPageMenu
+              selectedId={selected}
+              isOpen={true}
+              onClose={() => {}}
+              designationAccounts={[]}
+              setDesignationAccounts={() => {}}
+              navType={NavTypeEnum.Reports}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    expect(getByText('Donations')).toBeInTheDocument();
+    expect(getByText('14 Month Partner Report')).toBeInTheDocument();
+    expect(getByText('14 Month Salary Report')).toBeInTheDocument();
+    expect(await findByText('Staff Expense Report')).toBeInTheDocument();
+    expect(getByText('Income/Expense Analysis')).toBeInTheDocument();
+    expect(getByText('Designation Accounts')).toBeInTheDocument();
+    expect(getByText('Expected Monthly Total')).toBeInTheDocument();
+    expect(getByText('Partner Giving Analysis')).toBeInTheDocument();
+    expect(getByText('Coaching')).toBeInTheDocument();
+    expect(getByText('Responsibility Centers')).toBeInTheDocument();
+  });
+
   it('non Cru default', async () => {
     const { getByText, queryByText } = render(
       <ThemeProvider theme={theme}>
