@@ -268,8 +268,9 @@ export const EditTrainingCostsModal: React.FC<EditTrainingCostsModalProps> = ({
         }) => {
           // Apply stays disabled until every required field holds a valid
           // value. Deriving this from the values/errors (rather than Formik's
-          // `isValid`, which is optimistically true before the first
-          // validation runs) keeps the button disabled from the first render.
+          // `isValid` + `validateOnMount`, which the reset-on-open effect below
+          // clears back to valid at mount) keeps the button disabled from the
+          // first render.
           const canApply =
             FIELD_NAMES.every((name) => values[name] !== '') &&
             Object.keys(errors).length === 0;

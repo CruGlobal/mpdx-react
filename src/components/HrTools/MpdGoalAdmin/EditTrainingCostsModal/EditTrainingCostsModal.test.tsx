@@ -1,9 +1,17 @@
+import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import theme from 'src/theme';
 import { TrainingCosts } from '../mpdGoalAdminHelpers';
 import { EditTrainingCostsModal } from './EditTrainingCostsModal';
+
+const onClose = jest.fn();
+const onSave = jest.fn();
+
+beforeEach(() => {
+  jest.clearAllMocks();
+});
 
 const filledCosts: TrainingCosts = {
   nsoIbsIndividual1InRoom: 100,
@@ -74,7 +82,7 @@ const fieldsBySection: {
  * lookup to the section's container so repeated labels stay unambiguous.
  */
 const inputForField = (
-  getByRole: ReturnType<typeof setup>['getByRole'],
+  getByRole: ReturnType<typeof render>['getByRole'],
   sectionTitle: string,
   label: string,
 ): HTMLElement => {
@@ -83,28 +91,23 @@ const inputForField = (
   return within(container).getByRole('spinbutton', { name: label });
 };
 
-const setup = (
-  overrides: Partial<React.ComponentProps<typeof EditTrainingCostsModal>> = {},
-) => {
-  const onClose = jest.fn();
-  const onSave = jest.fn();
-  const utils = render(
-    <ThemeProvider theme={theme}>
-      <EditTrainingCostsModal
-        open
-        cohortName="Fall NSO 2026"
-        onClose={onClose}
-        onSave={onSave}
-        {...overrides}
-      />
-    </ThemeProvider>,
-  );
-  return { onClose, onSave, ...utils };
-};
+const TestComponent: React.FC<
+  Partial<React.ComponentProps<typeof EditTrainingCostsModal>>
+> = (overrides) => (
+  <ThemeProvider theme={theme}>
+    <EditTrainingCostsModal
+      open
+      cohortName="Fall NSO 2026"
+      onClose={onClose}
+      onSave={onSave}
+      {...overrides}
+    />
+  </ThemeProvider>
+);
 
 describe('EditTrainingCostsModal', () => {
   it('renders the cohort-specific title, subtitle and every section', () => {
-    const { getByText, getByRole } = setup();
+    const { getByText, getByRole } = render(<TestComponent />);
     expect(
       getByRole('heading', { name: 'Training Costs for Fall NSO 2026' }),
     ).toBeInTheDocument();
@@ -120,21 +123,21 @@ describe('EditTrainingCostsModal', () => {
   });
 
   it('falls back to a generic title when no cohort name is given', () => {
-    const { getByRole } = setup({ cohortName: undefined });
+    const { getByRole } = render(<TestComponent cohortName={undefined} />);
     expect(
       getByRole('heading', { name: 'Training Costs' }),
     ).toBeInTheDocument();
   });
 
   it('renders all eleven cost inputs, initially blank', () => {
-    const { getAllByRole } = setup();
+    const { getAllByRole } = render(<TestComponent />);
     const inputs = getAllByRole('spinbutton');
     expect(inputs).toHaveLength(11);
     inputs.forEach((input) => expect(input).toHaveValue(null));
   });
 
   it('prefills the inputs from initialCosts', () => {
-    const { getByRole } = setup({ initialCosts: filledCosts });
+    const { getByRole } = render(<TestComponent initialCosts={filledCosts} />);
     // Assert each field by its (section, label) identity so a mismatched
     // prefill mapping surfaces on the specific field rather than passing by
     // positional coincidence.
@@ -146,7 +149,7 @@ describe('EditTrainingCostsModal', () => {
   });
 
   it('disables Apply until every field is valid', async () => {
-    const { getByRole, getAllByRole } = setup();
+    const { getByRole, getAllByRole } = render(<TestComponent />);
     const apply = getByRole('button', { name: 'Apply' });
     expect(apply).toBeDisabled();
 
@@ -159,7 +162,7 @@ describe('EditTrainingCostsModal', () => {
   });
 
   it('surfaces a validation error and keeps Apply disabled for a negative amount', async () => {
-    const { getByRole, getAllByRole, findByText } = setup();
+    const { getByRole, getAllByRole, findByText } = render(<TestComponent />);
     const inputs = getAllByRole('spinbutton');
 
     // Enter a negative amount in the first field and valid amounts elsewhere.
@@ -175,7 +178,7 @@ describe('EditTrainingCostsModal', () => {
   });
 
   it('keeps Apply disabled when a required field is left blank', async () => {
-    const { getByRole, getAllByRole } = setup();
+    const { getByRole, getAllByRole } = render(<TestComponent />);
     const inputs = getAllByRole('spinbutton');
 
     // Fill every field except the first, which stays blank.
@@ -187,7 +190,7 @@ describe('EditTrainingCostsModal', () => {
   });
 
   it('saves parsed numeric costs when applied', async () => {
-    const { getByRole, onSave } = setup();
+    const { getByRole } = render(<TestComponent />);
     // Fill each field by its (section, label) identity rather than a flat
     // positional index, so `onSave` receiving `filledCosts` genuinely proves
     // each labelled input maps to its intended cost key.
@@ -208,13 +211,13 @@ describe('EditTrainingCostsModal', () => {
   });
 
   it('closes via the Cancel button', async () => {
-    const { getByRole, onClose } = setup();
+    const { getByRole } = render(<TestComponent />);
     await userEvent.click(getByRole('button', { name: 'Cancel' }));
     expect(onClose).toHaveBeenCalled();
   });
 
   it('closes via the close icon', async () => {
-    const { getByRole, onClose } = setup();
+    const { getByRole } = render(<TestComponent />);
     await userEvent.click(getByRole('button', { name: 'Close' }));
     expect(onClose).toHaveBeenCalled();
   });

@@ -26,15 +26,18 @@ describe('CohortBar', () => {
   });
 
   it('opens the Edit Training Costs modal for the selected cohort', async () => {
-    const { getByText, getByRole, queryByRole } = renderBar();
+    const { getByText, findByRole, queryByRole } = renderBar();
     expect(
       queryByRole('heading', { name: 'Training Costs for Fall NSO 2026' }),
     ).not.toBeInTheDocument();
 
     await userEvent.click(getByText('View/Edit'));
 
+    // The modal is lazy-loaded via next/dynamic, so it resolves asynchronously.
     expect(
-      getByRole('heading', { name: 'Training Costs for Fall NSO 2026' }),
+      await findByRole('heading', {
+        name: 'Training Costs for Fall NSO 2026',
+      }),
     ).toBeInTheDocument();
   });
 });
