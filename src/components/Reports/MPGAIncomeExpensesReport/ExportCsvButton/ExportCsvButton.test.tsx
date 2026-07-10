@@ -35,10 +35,10 @@ describe('ExportCsvButton', () => {
     userEvent.click(getByRole('button', { name: 'Export CSV' }));
 
     expect(
-      await findByRole('menuitem', { name: 'Income' }),
+      await findByRole('menuitem', { name: 'Income Report' }),
     ).toBeInTheDocument();
     expect(
-      await findByRole('menuitem', { name: 'Expenses' }),
+      await findByRole('menuitem', { name: 'Expenses Report' }),
     ).toBeInTheDocument();
   });
 
@@ -46,7 +46,7 @@ describe('ExportCsvButton', () => {
     const { getByRole, findByRole } = render(<TestComponent />);
 
     userEvent.click(getByRole('button', { name: 'Export CSV' }));
-    userEvent.click(await findByRole('menuitem', { name: 'Income' }));
+    userEvent.click(await findByRole('menuitem', { name: 'Income Report' }));
 
     expect(exportToCsv).toHaveBeenCalledWith(
       mockData.income,
@@ -60,7 +60,7 @@ describe('ExportCsvButton', () => {
     const { getByRole, findByRole } = render(<TestComponent />);
 
     userEvent.click(getByRole('button', { name: 'Export CSV' }));
-    userEvent.click(await findByRole('menuitem', { name: 'Expenses' }));
+    userEvent.click(await findByRole('menuitem', { name: 'Expenses Report' }));
 
     expect(exportToCsv).toHaveBeenCalledWith(
       mockData.expenses,
@@ -78,10 +78,10 @@ describe('ExportCsvButton', () => {
     userEvent.click(getByRole('button', { name: 'Export CSV' }));
 
     expect(
-      await findByRole('menuitem', { name: 'Income' }),
+      await findByRole('menuitem', { name: 'Income Report' }),
     ).not.toHaveAttribute('aria-disabled');
 
-    const expenses = await findByRole('menuitem', { name: 'Expenses' });
+    const expenses = await findByRole('menuitem', { name: 'Expenses Report' });
     expect(expenses).toHaveAttribute('aria-disabled', 'true');
     expect(exportToCsv).not.toHaveBeenCalled();
   });
@@ -93,14 +93,12 @@ describe('ExportCsvButton', () => {
 
     userEvent.click(getByRole('button', { name: 'Export CSV' }));
 
-    expect(await findByRole('menuitem', { name: 'Income' })).toHaveAttribute(
-      'aria-disabled',
-      'true',
-    );
-    expect(await findByRole('menuitem', { name: 'Expenses' })).toHaveAttribute(
-      'aria-disabled',
-      'true',
-    );
+    expect(
+      await findByRole('menuitem', { name: 'Income Report' }),
+    ).toHaveAttribute('aria-disabled', 'true');
+    expect(
+      await findByRole('menuitem', { name: 'Expenses Report' }),
+    ).toHaveAttribute('aria-disabled', 'true');
     expect(exportToCsv).not.toHaveBeenCalled();
   });
 
@@ -108,11 +106,11 @@ describe('ExportCsvButton', () => {
     const { getByRole, findByRole, queryByRole } = render(<TestComponent />);
 
     userEvent.click(getByRole('button', { name: 'Export CSV' }));
-    userEvent.click(await findByRole('menuitem', { name: 'Income' }));
+    userEvent.click(await findByRole('menuitem', { name: 'Income Report' }));
 
     await waitFor(() =>
       expect(
-        queryByRole('menuitem', { name: 'Income' }),
+        queryByRole('menuitem', { name: 'Income Report' }),
       ).not.toBeInTheDocument(),
     );
   });

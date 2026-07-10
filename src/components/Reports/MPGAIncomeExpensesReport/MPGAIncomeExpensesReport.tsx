@@ -1,8 +1,10 @@
 import React, { useMemo, useState } from 'react';
+import { Settings } from '@mui/icons-material';
 import PrintIcon from '@mui/icons-material/Print';
 import {
   Box,
   Container,
+  Divider,
   GlobalStyles,
   SvgIcon,
   Typography,
@@ -24,6 +26,7 @@ import {
   SettingsDialog,
   getFiltersWithCalculatedDates,
 } from '../Shared/SettingsDialog/SettingsDialog';
+import { StyledFilterButton } from '../Shared/SettingsDialog/StyledFilterButton';
 import {
   SimplePrintOnly,
   SimpleScreenOnly,
@@ -172,6 +175,15 @@ export const MPGAIncomeExpensesReport: React.FC<
                 alignItems="center"
                 sx={{ gap: 2, '& > button': { ml: 0 } }}
               >
+                <StyledFilterButton
+                  variant="outlined"
+                  startIcon={<Settings />}
+                  size="small"
+                  onClick={handleSettingsClick}
+                >
+                  {t('Report Settings')}
+                </StyledFilterButton>
+                <Divider orientation="vertical" flexItem />
                 <ExportCsvButton data={allData} months={last12Months} />
                 <StyledPrintButton
                   startIcon={
@@ -201,7 +213,6 @@ export const MPGAIncomeExpensesReport: React.FC<
               data={allData}
               last12Months={last12Months}
               currency={currency}
-              handleSettingsClick={handleSettingsClick}
             />
           </TotalsProvider>
         </SimpleScreenOnly>

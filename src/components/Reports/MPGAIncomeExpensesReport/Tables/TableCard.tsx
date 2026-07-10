@@ -20,6 +20,8 @@ import { DataFields } from '../mockData';
 import { StyledGrid } from '../styledComponents';
 import { TotalRow } from './TotalRow';
 
+const DEFAULT_PAGE_SIZE = 25;
+
 export type RenderCell = GridColDef<DataFields>['renderCell'];
 
 export interface TableCardProps {
@@ -107,7 +109,7 @@ export const TableCard: React.FC<TableCardProps> = ({
 
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
-    pageSize: 5,
+    pageSize: DEFAULT_PAGE_SIZE,
   });
   const [sortModel, setSortModel] = useState<GridSortModel>([
     {
@@ -239,7 +241,7 @@ export const TableCard: React.FC<TableCardProps> = ({
           sortingOrder={['desc', 'asc']}
           sortModel={sortModel}
           onSortModelChange={(model) => setSortModel(model)}
-          pageSizeOptions={[5, 10, 25, 50]}
+          pageSizeOptions={[DEFAULT_PAGE_SIZE]}
           paginationModel={paginationModel}
           onPaginationModelChange={(model) => setPaginationModel(model)}
           disableVirtualization

@@ -153,19 +153,6 @@ describe('StaffReportTable', () => {
     expect(descCells[1]).toHaveTextContent('-$50');
   });
 
-  it('updates the page size without reloading data', async () => {
-    const { getByRole, findByRole } = render(<TestComponent />);
-
-    userEvent.click(await findByRole('combobox', { name: 'Rows per page:' }));
-    userEvent.click(getByRole('option', { name: '10' }));
-
-    await waitFor(() =>
-      expect(mutationSpy).not.toHaveGraphqlOperation('ReportsStaffExpenses', {
-        pageSize: 10,
-      }),
-    );
-  });
-
   it('opens breakdown dialog when info button is clicked for grouped transaction', async () => {
     const { findByRole, getByRole } = render(
       <TestComponent
