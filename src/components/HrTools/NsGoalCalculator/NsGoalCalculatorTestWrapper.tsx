@@ -11,7 +11,6 @@ import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.genera
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
 import { constantsMock } from '../GoalCalculator/GoalCalculatorTestWrapper';
-import { AccountListSupportRaisedQuery } from '../GoalCalculator/Shared/GoalLineItems.generated';
 import {
   NewStaffGoalCalculationDocument,
   NewStaffGoalCalculationQuery,
@@ -46,7 +45,6 @@ export const defaultGoalCalculation =
 
 export interface NsGoalCalculatorTestWrapperProps {
   children?: React.ReactNode;
-  supportRaisedMock?: number;
   /** Overrides the NewStaffGoalCalculation query response */
   goalCalculationMock?:
     | DeepPartial<NewStaffGoalCalculationQuery>
@@ -58,7 +56,6 @@ export const NsGoalCalculatorTestWrapper: React.FC<
   NsGoalCalculatorTestWrapperProps
 > = ({
   children,
-  supportRaisedMock = 1200,
   goalCalculationMock = defaultGoalCalculationMock,
   onCall,
 }) => (
@@ -72,16 +69,10 @@ export const NsGoalCalculatorTestWrapper: React.FC<
     >
       <SnackbarProvider>
         <GqlMockedProvider<{
-          AccountListSupportRaised: AccountListSupportRaisedQuery;
           GoalCalculatorConstants: GoalCalculatorConstantsQuery;
           NewStaffGoalCalculation: NewStaffGoalCalculationQuery;
         }>
           mocks={{
-            AccountListSupportRaised: {
-              accountList: {
-                receivedPledges: supportRaisedMock,
-              },
-            },
             GoalCalculatorConstants: { constant: constantsMock },
             NewStaffGoalCalculation: goalCalculationMock,
           }}
