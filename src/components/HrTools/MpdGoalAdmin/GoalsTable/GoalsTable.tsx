@@ -21,6 +21,10 @@ import { visuallyHidden } from '@mui/utils';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import {
+  AssignCoachModal,
+  AssignCoachOption,
+} from '../AssignCoachModal/AssignCoachModal';
 import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import { StaffGoalRow, isSendable } from '../mpdGoalAdminHelpers';
 
@@ -37,6 +41,17 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
     useMpdGoalAdmin();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_ROWS_PER_PAGE);
+  // The staff row whose coach is being assigned; null when the modal is closed.
+  const [coachRow, setCoachRow] = useState<StaffGoalRow | null>(null);
+
+  // TODO(MPDX-9699): populate from the assignable-coaches query once the
+  // backend field exists. Empty for now so the modal renders a UI-only dropdown.
+  const assignableCoaches: AssignCoachOption[] = [];
+
+  const handleAssignCoach = async (_coachId: string) => {
+    // TODO(MPDX-9699): call the assign-coach mutation with { staffId, coachId }
+    // and refresh the goal-admin rows. Backend contract pending.
+  };
 
   // Reset to the first page whenever the filter inputs change, so the user
   // isn't stranded on a now-out-of-range page. Keyed on the filter identity
@@ -129,13 +144,11 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
               <TableCell>{row.familyStatus}</TableCell>
               <TableCell>
                 {row.coach ?? (
-                  // Disabled until wired up so assistive tech announces the
-                  // inert state instead of a dead control (MPDX-9696).
                   <Link
                     component="button"
                     type="button"
                     underline="hover"
-                    disabled
+                    onClick={() => setCoachRow(row)}
                   >
                     {t('Assign Coach')}
                   </Link>
@@ -182,6 +195,14 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
         }}
         labelRowsPerPage={t('Rows per page')}
       />
+      {coachRow && (
+        <AssignCoachModal
+          subjectName={coachRow.name}
+          coaches={assignableCoaches}
+          handleAssignCoach={handleAssignCoach}
+          handleClose={() => setCoachRow(null)}
+        />
+      )}
     </TableContainer>
   );
 };
