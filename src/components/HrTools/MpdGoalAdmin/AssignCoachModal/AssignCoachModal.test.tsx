@@ -35,7 +35,7 @@ describe('AssignCoachModal', () => {
     jest.clearAllMocks();
   });
 
-  it('renders the account list name in the title', () => {
+  it('renders the subject name in the title', () => {
     const { getByText } = render(<TestComponent />);
 
     expect(

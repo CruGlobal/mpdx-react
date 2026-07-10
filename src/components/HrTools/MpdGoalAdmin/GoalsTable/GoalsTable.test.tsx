@@ -50,7 +50,7 @@ describe('GoalsTable', () => {
     const { getByRole, findByText } = renderTable();
     // 'Carlos & Michaela Everts' has no coach on the first page, so it renders
     // an "Assign Coach" prompt rather than a coach name.
-    await userEvent.click(getByRole('button', { name: 'Assign Coach' }));
+    userEvent.click(getByRole('button', { name: 'Assign Coach' }));
 
     expect(
       await findByText('Assign Coach for Carlos & Michaela Everts'),
