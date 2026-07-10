@@ -9,7 +9,6 @@ import {
   Card,
   Divider,
   Grid,
-  IconButton,
   InputAdornment,
   MenuItem,
   TextField,
@@ -232,20 +231,6 @@ export const SetupStep: React.FC = () => {
                 label={t('Hours Worked')}
                 type="number"
                 helperText={t('Estimate of hours worked per week')}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={handleOpenHoursCalculator}
-                        aria-label={t('Open hours per week calculator')}
-                        edge="end"
-                        size="small"
-                      >
-                        <CalculateIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
               />
               <Button
                 variant="outlined"
