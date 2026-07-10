@@ -8,7 +8,10 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { EditTrainingCostsModal } from '../EditTrainingCostsModal/EditTrainingCostsModal';
+import {
+  DynamicEditTrainingCostsModal,
+  preloadEditTrainingCostsModal,
+} from '../EditTrainingCostsModal/DynamicEditTrainingCostsModal';
 import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import { TrainingCosts } from '../mpdGoalAdminHelpers';
 
@@ -81,17 +84,20 @@ export const CohortBar: React.FC = () => {
           underline="hover"
           disabled={!selectedCohort}
           onClick={() => setTrainingCostsOpen(true)}
+          onMouseEnter={preloadEditTrainingCostsModal}
         >
           {t('View/Edit')}
         </Link>
       </Stat>
-      <EditTrainingCostsModal
-        open={trainingCostsOpen}
-        cohortName={selectedCohort?.name}
-        initialCosts={selectedCohort?.trainingCosts}
-        onClose={() => setTrainingCostsOpen(false)}
-        onSave={handleSaveTrainingCosts}
-      />
+      {trainingCostsOpen && (
+        <DynamicEditTrainingCostsModal
+          open
+          cohortName={selectedCohort?.name}
+          initialCosts={selectedCohort?.trainingCosts}
+          onClose={() => setTrainingCostsOpen(false)}
+          onSave={handleSaveTrainingCosts}
+        />
+      )}
     </Stack>
   );
 };
