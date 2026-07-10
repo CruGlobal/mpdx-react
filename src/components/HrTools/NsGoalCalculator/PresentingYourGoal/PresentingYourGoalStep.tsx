@@ -12,9 +12,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
-import { useAccountListSupportRaisedQuery } from '../../GoalCalculator/Shared/GoalLineItems.generated';
 import { MonthlyNeedsCard } from '../../Shared/GoalPresentation/MonthlyNeedsCard';
 import { PersonalInfoCard } from '../../Shared/GoalPresentation/PersonalInfoCard';
 import { PresentationCard } from '../../Shared/GoalPresentation/PresentationCard';
@@ -49,12 +47,6 @@ export const PresentingYourGoalStep: React.FC<PresentingYourGoalStepProps> = ({
 }) => {
   const { t } = useTranslation();
   const { handleContinue } = useNsGoalCalculator();
-  const accountListId = useAccountListId() ?? '';
-  const { data } = useAccountListSupportRaisedQuery({
-    variables: { accountListId },
-    skip: !accountListId,
-  });
-  const supportRaised = data?.accountList.receivedPledges ?? null;
 
   const { calculations } = goalCalculation;
   const married =
@@ -135,7 +127,7 @@ export const PresentingYourGoalStep: React.FC<PresentingYourGoalStepProps> = ({
 
       <MonthlyNeedsCard
         monthlyNeeds={monthlyNeeds}
-        supportRaised={supportRaised}
+        supportRaised={calculations.supportRaised ?? null}
       />
 
       <SpecialNeedsCard specialNeeds={specialNeedsPlaceholder} />
