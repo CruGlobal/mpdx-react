@@ -64,7 +64,10 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
         supportRaised={supportRaised}
       />
 
-      <PresentationCard title={t('Monthly Support Breakdown')}>
+      <PresentationCard
+        title={t('Monthly Support Breakdown')}
+        horizontalScroll={false}
+      >
         <SupportNeedsChart monthlyNeeds={supportNeeds} />
       </PresentationCard>
     </PrintableContent>

@@ -21,6 +21,7 @@ export const MainContent = styled('div')(({ theme }) => ({
   '@media screen': {
     height: `calc(100vh - ${navBarHeight} - ${multiPageHeaderHeight})`,
     overflow: 'scroll',
+    position: 'relative',
   },
 }));
 
