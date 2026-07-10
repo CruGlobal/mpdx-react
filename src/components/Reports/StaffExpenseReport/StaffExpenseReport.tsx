@@ -292,6 +292,33 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                   alignItems="center"
                   sx={{ gap: 2, '& > button': { ml: 0 } }}
                 >
+                  <Box
+                    display={'flex'}
+                    flexGrow={1}
+                    justifyContent="flex-end"
+                    gap={1}
+                  >
+                    {isFilterDateSelected ? (
+                      <StyledFilterButton
+                        variant="outlined"
+                        startIcon={<FilterListOff />}
+                        size="small"
+                        onClick={() => {
+                          setFilters(null);
+                        }}
+                      >
+                        {t('Clear Filters')}
+                      </StyledFilterButton>
+                    ) : null}
+                    <StyledFilterButton
+                      variant="outlined"
+                      startIcon={<Settings />}
+                      size="small"
+                      onClick={handleSettingsClick}
+                    >
+                      {t('Report Settings')}
+                    </StyledFilterButton>
+                  </Box>
                   <ExportCsvButton transactions={selectedFundTransactions} />
                   <StyledPrintButton
                     startIcon={
@@ -395,37 +422,6 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
           <Divider></Divider>
         </Container>
       </Box>
-      <SimpleScreenOnly>
-        <Container sx={{ gap: 1, display: 'flex', flexDirection: 'row' }}>
-          <Box display={'flex'} flexGrow={1} justifyContent="flex-end" gap={1}>
-            {isFilterDateSelected ? (
-              <StyledFilterButton
-                variant="outlined"
-                startIcon={<FilterListOff />}
-                size="small"
-                onClick={() => {
-                  setFilters(null);
-                }}
-              >
-                {t('Clear Filters')}
-              </StyledFilterButton>
-            ) : null}
-            <StyledFilterButton
-              variant="outlined"
-              startIcon={<Settings />}
-              size="small"
-              onClick={handleSettingsClick}
-            >
-              {t('Report Settings')}
-            </StyledFilterButton>
-          </Box>
-        </Container>
-      </SimpleScreenOnly>
-      <SimpleScreenOnly mt={2} mb={2}>
-        <Container>
-          <Divider />
-        </Container>
-      </SimpleScreenOnly>
       <Box>
         <SettingsDialog
           selectedFilters={filters || undefined}
