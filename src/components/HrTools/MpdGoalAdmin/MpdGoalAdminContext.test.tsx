@@ -1,7 +1,21 @@
 import { act, renderHook } from '@testing-library/react';
 import { MpdGoalAdminProvider, useMpdGoalAdmin } from './MpdGoalAdminContext';
 import { mockCohorts } from './mockData';
-import { MpdGoalAdminTabEnum } from './mpdGoalAdminHelpers';
+import { MpdGoalAdminTabEnum, TrainingCosts } from './mpdGoalAdminHelpers';
+
+const trainingCosts: TrainingCosts = {
+  nsoIbsIndividual1InRoom: 100,
+  nsoIbsIndividual2InRoom: 200,
+  nsoIbsCouple: 300,
+  nsoIbsFamily: 400,
+  refreshRetreatSingle: 500,
+  refreshRetreatCouple: 600,
+  faithAndFinanceSingle: 700,
+  faithAndFinanceCouple: 800,
+  cruConferenceSingle: 900,
+  cruConferenceCouple: 1000,
+  cruConferenceFamily: 1100,
+};
 
 const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <MpdGoalAdminProvider>{children}</MpdGoalAdminProvider>
@@ -47,6 +61,16 @@ describe('MpdGoalAdminContext', () => {
 
     act(() => result.current.setSelectedCohortId('a-different-cohort'));
     expect(result.current.selectedRowIds.size).toBe(0);
+  });
+
+  it('saves training costs and marks them as entered for the cohort', () => {
+    const { result } = renderHook(() => useMpdGoalAdmin(), { wrapper });
+    const cohortId = mockCohorts[0].id;
+
+    act(() => result.current.saveTrainingCosts(cohortId, trainingCosts));
+
+    expect(result.current.selectedCohort?.trainingCosts).toEqual(trainingCosts);
+    expect(result.current.selectedCohort?.trainingCostEntered).toBe(true);
   });
 
   it('throws when used outside its provider', () => {

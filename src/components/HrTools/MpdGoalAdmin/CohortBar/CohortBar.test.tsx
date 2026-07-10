@@ -1,12 +1,17 @@
+import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import theme from 'src/theme';
 import { MpdGoalAdminProvider } from '../MpdGoalAdminContext';
 import { CohortBar } from './CohortBar';
 
 const renderBar = () =>
   render(
-    <MpdGoalAdminProvider>
-      <CohortBar />
-    </MpdGoalAdminProvider>,
+    <ThemeProvider theme={theme}>
+      <MpdGoalAdminProvider>
+        <CohortBar />
+      </MpdGoalAdminProvider>
+    </ThemeProvider>,
   );
 
 describe('CohortBar', () => {
@@ -18,5 +23,21 @@ describe('CohortBar', () => {
     expect(getByText('13 New Staff')).toBeInTheDocument();
     expect(getByText('08/10/2026')).toBeInTheDocument();
     expect(getByText('View/Edit')).toBeInTheDocument();
+  });
+
+  it('opens the Edit Training Costs modal for the selected cohort', async () => {
+    const { getByText, findByRole, queryByRole } = renderBar();
+    expect(
+      queryByRole('heading', { name: 'Training Costs for Fall NSO 2026' }),
+    ).not.toBeInTheDocument();
+
+    await userEvent.click(getByText('View/Edit'));
+
+    // The modal is lazy-loaded via next/dynamic, so it resolves asynchronously.
+    expect(
+      await findByRole('heading', {
+        name: 'Training Costs for Fall NSO 2026',
+      }),
+    ).toBeInTheDocument();
   });
 });

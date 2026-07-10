@@ -23,6 +23,29 @@ export interface StaffGoalRow {
   coordinator: string;
 }
 
+/**
+ * Per-training cost figures captured in the "Edit Training Costs" modal. Every
+ * value is a USD amount; the keys mirror the modal's four cost sections. All
+ * fields are required in the UI, so a saved `TrainingCosts` is fully populated.
+ */
+export interface TrainingCosts {
+  /** NSO & IBS Cost */
+  nsoIbsIndividual1InRoom: number;
+  nsoIbsIndividual2InRoom: number;
+  nsoIbsCouple: number;
+  nsoIbsFamily: number;
+  /** Refresh Retreat */
+  refreshRetreatSingle: number;
+  refreshRetreatCouple: number;
+  /** Faith and Finance */
+  faithAndFinanceSingle: number;
+  faithAndFinanceCouple: number;
+  /** Cru Conference */
+  cruConferenceSingle: number;
+  cruConferenceCouple: number;
+  cruConferenceFamily: number;
+}
+
 export interface Cohort {
   id: string;
   name: string;
@@ -30,6 +53,8 @@ export interface Cohort {
   /** Display string, e.g. "08/10/2026". */
   nsoDate: string;
   trainingCostEntered: boolean;
+  /** Saved training cost figures; undefined until entered via the modal. */
+  trainingCosts?: TrainingCosts;
   rows: StaffGoalRow[];
 }
 

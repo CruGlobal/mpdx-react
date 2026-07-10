@@ -315,6 +315,11 @@ Project-specific UX/UI conventions layered on top of the UX agent's universal ch
   - **GraphQL errors show snackbar automatically.** The global Apollo error link (`src/lib/apollo/client.ts`) calls `snackNotifications.error(graphQLError.message)` for every GraphQL/network error. Do NOT add a manual `enqueueSnackbar`/`snackNotifications.error` in a mutation's `catch`/`onError` for a generic GraphQL failure — it double-toasts. Only add manual error handling for a domain-specific message the generic one can't convey.
   - **Prefer no success snackbar after a successful mutation**. A "Saved!" toast after every save is noise; let the updated UI state communicate success.
 - **Dialog UX** — dialogs have clear primary/secondary actions, disable the primary action while submitting, and close on success
+- **Lazy-load non-trivial modals** — modals and other heavy, initially-hidden UI should be code-split out of the initial bundle via `next/dynamic`, not statically imported. Follow the established pattern: a sibling `Dynamic<Name>.tsx` that exports both a `preload<Name>` thunk (`import(/* webpackChunkName */ './<Name>')`) and the `dynamic(preload<Name>, { loading: DynamicModalPlaceholder })` component (see `src/components/EditDonationModal/DynamicEditDonationModal.tsx`). Then:
+  - **Preload on hover.** Wire `onMouseEnter={preload<Name>}` on the control that opens the modal so the chunk is fetched before the click.
+  - **Mount only while open.** Render `{isOpen && <Dynamic<Name> open ... />}` rather than always-mounting with `open={isOpen}` — a statically-rendered `dynamic()` component loads its chunk on first paint, defeating the split.
+  - **Tests must await the async load.** Because the modal now resolves asynchronously, opening it in a test requires `findBy*` (not `getBy*`) for the first assertion after the open interaction.
+  - Flag static imports of large/rarely-opened modals, and flag `Dynamic*` modals that are always-mounted (chunk loads eagerly) or lack an `onMouseEnter` preload on their trigger.
 
 ## Excluded Paths
 
