@@ -11,7 +11,13 @@ import {
 } from '../NsGoalCalculatorTestWrapper';
 import { PresentingYourGoalStep } from './PresentingYourGoalStep';
 
-const TestComponent: React.FC = () => (
+interface TestComponentProps {
+  supportRaised?: number | null;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({
+  supportRaised = null,
+}) => (
   <NsGoalCalculatorTestWrapper>
     <PresentingYourGoalStep
       goalCalculation={{
@@ -31,6 +37,7 @@ const TestComponent: React.FC = () => (
           adminCharge: 1200,
           attrition: 600,
           monthlyGoal: 20000,
+          supportRaised,
         },
       }}
     />
@@ -112,11 +119,10 @@ describe('PresentingYourGoalStep', () => {
     });
   });
 
-  it('hides the total solid support row until the support raised data loads', async () => {
-    const { queryByText, findByText } = render(<TestComponent />);
+  it('hides the total solid support for scenario goals', () => {
+    const { queryByText } = render(<TestComponent supportRaised={null} />);
 
     expect(queryByText('Total Solid Support')).not.toBeInTheDocument();
-    expect(await findByText('Total Solid Support')).toBeInTheDocument();
   });
 
   it('renders the special needs section', async () => {
