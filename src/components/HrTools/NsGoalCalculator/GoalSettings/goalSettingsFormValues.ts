@@ -36,6 +36,13 @@ export interface GoalSettingsFormValues {
   // --- Header ---
   calculationsYear: string; // API Int, edited as a string for the Select
 
+  // --- Contact Info (editable in scenario mode only) ---
+  firstName: string;
+  lastName: string; // shared by primary and spouse (API has no spouseLastName)
+  emailAddress: string;
+  spouseFirstName: string;
+  spouseEmailAddress: string;
+
   // --- 1. Personal Information ---
   maritalStatus: NewStaffQuestionnaireMaritalStatusEnum | '';
   spouseJoining: YesNo; // API spouseJoining (Boolean); edited only when married
