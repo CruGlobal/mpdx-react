@@ -228,6 +228,14 @@ describe('StaffExpenseReport', () => {
     expect(await findByText('$4,000.00')).toBeInTheDocument();
   });
 
+  it('keeps the Report Settings button visible when there are no transactions', async () => {
+    const { findByRole } = render(<TestComponent isEmpty={true} />);
+
+    expect(
+      await findByRole('button', { name: 'Report Settings' }),
+    ).toBeInTheDocument();
+  });
+
   it('initializes with month from query', () => {
     const { getByText } = render(<TestComponent />);
 
@@ -275,6 +283,7 @@ describe('StaffExpenseReport', () => {
   it('shows month title and navigation when only category filters are applied', async () => {
     const { getByRole, findByRole, queryByRole } = render(<TestComponent />);
 
+    await findByRole('heading', { name: 'Primary' });
     userEvent.click(await findByRole('button', { name: 'Report Settings' }));
 
     // Wait for the category checkbox to render, then toggle the Assessment
@@ -306,6 +315,10 @@ describe('StaffExpenseReport', () => {
       <TestComponent />,
     );
 
+    // Wait for the report to finish loading so the Report Settings button is
+    // stable before interacting (otherwise the click can land on the
+    // loading-state button that gets swapped out when data arrives).
+    await findByRole('heading', { name: 'Primary' });
     userEvent.click(await findByRole('button', { name: 'Report Settings' }));
     await findByRole('heading', { name: 'Report Settings' });
 

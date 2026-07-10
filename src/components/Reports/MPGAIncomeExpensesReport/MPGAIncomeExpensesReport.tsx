@@ -4,6 +4,7 @@ import PrintIcon from '@mui/icons-material/Print';
 import {
   Box,
   Container,
+  Divider,
   GlobalStyles,
   SvgIcon,
   Typography,
@@ -182,6 +183,7 @@ export const MPGAIncomeExpensesReport: React.FC<
                 >
                   {t('Report Settings')}
                 </StyledFilterButton>
+                <Divider orientation="vertical" flexItem />
                 <ExportCsvButton data={allData} months={last12Months} />
                 <StyledPrintButton
                   startIcon={

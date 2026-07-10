@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { FilterListOff, Settings } from '@mui/icons-material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import LocalAtmIcon from '@mui/icons-material/LocalAtm';
@@ -26,11 +25,11 @@ import theme from 'src/theme';
 import { AccountInfoBox } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBox';
 import { AccountInfoBoxSkeleton } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBoxSkeleton';
 import { EmptyTable } from '../../HrTools/Shared/EmptyTable/EmptyTable';
+import { SettingsButtonGroup } from '../Shared/SettingsButtonGroup/SettingsButtonGroup';
 import {
   Filters,
   SettingsDialog,
 } from '../Shared/SettingsDialog/SettingsDialog';
-import { StyledFilterButton } from '../Shared/SettingsDialog/StyledFilterButton';
 import {
   SimplePrintOnly,
   SimpleScreenOnly,
@@ -298,27 +297,13 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                     justifyContent="flex-end"
                     gap={1}
                   >
-                    {isFilterDateSelected ? (
-                      <StyledFilterButton
-                        variant="outlined"
-                        startIcon={<FilterListOff />}
-                        size="small"
-                        onClick={() => {
-                          setFilters(null);
-                        }}
-                      >
-                        {t('Clear Filters')}
-                      </StyledFilterButton>
-                    ) : null}
-                    <StyledFilterButton
-                      variant="outlined"
-                      startIcon={<Settings />}
-                      size="small"
-                      onClick={handleSettingsClick}
-                    >
-                      {t('Report Settings')}
-                    </StyledFilterButton>
+                    <SettingsButtonGroup
+                      isFilterDateSelected={isFilterDateSelected}
+                      setFilters={setFilters}
+                      handleSettingsClick={handleSettingsClick}
+                    />
                   </Box>
+                  <Divider orientation="vertical" flexItem />
                   <ExportCsvButton transactions={selectedFundTransactions} />
                   <StyledPrintButton
                     startIcon={
@@ -331,7 +316,13 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                     {t('Print')}
                   </StyledPrintButton>
                 </SimpleScreenOnly>
-              ) : null}
+              ) : (
+                <SettingsButtonGroup
+                  isFilterDateSelected={isFilterDateSelected}
+                  setFilters={setFilters}
+                  handleSettingsClick={handleSettingsClick}
+                />
+              )}
             </StyledHeaderBox>
             {loading ? (
               <AccountInfoBoxSkeleton hasOverallBalance />
