@@ -344,27 +344,14 @@ describe('SetupStep', () => {
     );
   });
 
-  it('renders the calculator icon button next to Hours Worked', async () => {
-    const { findByLabelText } = renderSetup({
+  it('renders the Calculate my average hours button next to Hours Worked', async () => {
+    const { findByRole } = renderSetup({
       calculationMock: fullTimeHourlyMock,
     });
 
     expect(
-      await findByLabelText('Open hours per week calculator'),
+      await findByRole('button', { name: 'Calculate my average hours' }),
     ).toBeInTheDocument();
-  });
-
-  it('opens the hours per week calculator in the right panel when the icon is clicked', async () => {
-    const { findByLabelText, findByText, queryByText } = renderSetup(
-      { calculationMock: fullTimeHourlyMock },
-      <RightPanelProbe />,
-    );
-
-    expect(queryByText('Hours Per Week Calculator')).not.toBeInTheDocument();
-
-    userEvent.click(await findByLabelText('Open hours per week calculator'));
-
-    expect(await findByText('Hours Per Week Calculator')).toBeInTheDocument();
   });
 
   it('opens the hours per week calculator when the calculate button is clicked', async () => {
