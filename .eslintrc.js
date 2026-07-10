@@ -1,4 +1,5 @@
 module.exports = {
+  root: true, // Stop ESLint from also loading configs above this directory (breaks nested git worktrees)
   parser: '@typescript-eslint/parser', // Specifies the ESLint parser
   extends: [
     'plugin:jest/recommended',
