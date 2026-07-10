@@ -17,4 +17,4 @@ export const StyledHeaderValue = styled(Typography)(({ theme }) => ({
   [theme.breakpoints.down('sm')]: {
     fontSize: theme.typography.h4.fontSize,
   },
-}));
+})) as typeof Typography;

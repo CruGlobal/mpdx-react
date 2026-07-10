@@ -49,7 +49,7 @@ export const ChartPlaceholderCard: React.FC<ChartPlaceholderCardProps> = ({
   ];
 
   return (
-    <PresentationCard title={title}>
+    <PresentationCard title={title} horizontalScroll={false}>
       <ChartContainer height={500} data-testid="chart-placeholder">
         <ResponsiveContainer width="100%">
           <PieChart>
