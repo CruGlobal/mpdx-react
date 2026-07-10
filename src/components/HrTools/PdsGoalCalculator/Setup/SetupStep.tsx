@@ -5,6 +5,7 @@ import {
   AutocompleteRenderInputParams,
   Avatar,
   Box,
+  Button,
   Card,
   Divider,
   Grid,
@@ -246,6 +247,15 @@ export const SetupStep: React.FC = () => {
                   ),
                 }}
               />
+              <Button
+                variant="outlined"
+                size="small"
+                startIcon={<CalculateIcon />}
+                onClick={handleOpenHoursCalculator}
+                sx={{ mt: 1 }}
+              >
+                {t('Calculate my average hours')}
+              </Button>
             </Grid>
           )}
 
