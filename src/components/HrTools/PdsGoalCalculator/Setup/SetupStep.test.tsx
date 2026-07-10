@@ -367,6 +367,21 @@ describe('SetupStep', () => {
     expect(await findByText('Hours Per Week Calculator')).toBeInTheDocument();
   });
 
+  it('opens the hours per week calculator when the calculate button is clicked', async () => {
+    const { findByRole, findByText, queryByText } = renderSetup(
+      { calculationMock: fullTimeHourlyMock },
+      <RightPanelProbe />,
+    );
+
+    expect(queryByText('Hours Per Week Calculator')).not.toBeInTheDocument();
+
+    userEvent.click(
+      await findByRole('button', { name: 'Calculate my average hours' }),
+    );
+
+    expect(await findByText('Hours Per Week Calculator')).toBeInTheDocument();
+  });
+
   it('hides Hours Worked and adapts validation when switching from Hourly to Salaried', async () => {
     const { findByRole, queryByRole, rerender } = renderSetup({
       calculationMock: { ...fullTimeHourlyMock, hoursWorkedPerWeek: null },
@@ -386,6 +401,9 @@ describe('SetupStep', () => {
         queryByRole('spinbutton', { name: 'Hours Worked' }),
       ).not.toBeInTheDocument();
     });
+    expect(
+      queryByRole('button', { name: 'Calculate my average hours' }),
+    ).not.toBeInTheDocument();
 
     // Benefits should still be visible (Full-time)
     expect(
