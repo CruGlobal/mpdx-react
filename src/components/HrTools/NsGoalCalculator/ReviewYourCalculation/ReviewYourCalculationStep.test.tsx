@@ -42,9 +42,7 @@ describe('ReviewYourCalculationStep', () => {
     expect(getByText('Your MPD Goal Calculation')).toBeInTheDocument();
     expect(getByText('Monthly Needs')).toBeInTheDocument();
     expect(getByText('Special Needs During MPD')).toBeInTheDocument();
-    expect(
-      getByText('Min Staff Account Balance Upon Reporting'),
-    ).toBeInTheDocument();
+    expect(getByText('Minimum Staff Account Balance')).toBeInTheDocument();
   });
 
   it('names both spouses in the card columns when married', async () => {

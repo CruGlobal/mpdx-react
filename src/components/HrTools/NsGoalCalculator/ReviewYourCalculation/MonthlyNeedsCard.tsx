@@ -106,7 +106,7 @@ export const MonthlyNeedsCard: React.FC<MonthlyNeedsCardProps> = ({
       {
         line: '8',
         category: t('Summer Expenses'),
-        description: t('Summer assignments, U.S. Staff Conf'),
+        description: t('Summer assignments, U.S. Staff Conference'),
         amount: calculations.staffConferenceTransfer,
       },
       {
@@ -122,7 +122,7 @@ export const MonthlyNeedsCard: React.FC<MonthlyNeedsCardProps> = ({
       },
       {
         line: '11',
-        category: t('Transfers to other staff, EMAF, etc.'),
+        category: t('Transfers to other staff, EMF, etc.'),
         amount: calculations.accountTransfers,
       },
       {

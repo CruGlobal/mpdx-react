@@ -20,7 +20,7 @@ export interface AccountBalanceCardProps {
 }
 
 /**
- * The "Min Staff Account Balance Upon Reporting" card on the Review Your
+ * The "Minimum Staff Account Balance" card on the Review Your
  * Calculation step, showing the minimum account balance a new staff member
  * must reach before reporting to their assignment.
  */
@@ -32,11 +32,8 @@ export const AccountBalanceCard: React.FC<AccountBalanceCardProps> = ({
   const locale = useLocale();
 
   return (
-    <PresentationCard title={t('Min Staff Account Balance Upon Reporting')}>
-      <NeedsTable
-        size="small"
-        aria-label={t('Min Staff Account Balance Upon Reporting')}
-      >
+    <PresentationCard title={t('Minimum Staff Account Balance')}>
+      <NeedsTable size="small" aria-label={t('Minimum Staff Account Balance')}>
         <TableHead>
           <TableRow>
             <TableCell>
@@ -55,7 +52,7 @@ export const AccountBalanceCard: React.FC<AccountBalanceCardProps> = ({
           <TableRow className="bold">
             <TableCell component="th" scope="row">
               <Typography variant="body1">
-                {t('Min Account Balance Needed to Report')}
+                {t('Minimum Account Balance Needed to Report')}
               </Typography>
             </TableCell>
             <TableCell className="amount">

@@ -4,7 +4,7 @@ import { GoalSummaryCard } from './GoalSummaryCard';
 
 describe('GoalSummaryCard', () => {
   it('renders the headline figures and "Coming soon" for special needs', () => {
-    const { getByText } = render(
+    const { getByText, getByRole } = render(
       <GoalSummaryCard
         monthlyGoal={6430.25}
         specialNeedsGoal={null}
@@ -12,7 +12,9 @@ describe('GoalSummaryCard', () => {
       />,
     );
 
-    expect(getByText('Your MPD Goal Calculation')).toBeInTheDocument();
+    expect(
+      getByRole('heading', { name: 'Your MPD Goal Calculation' }),
+    ).toBeInTheDocument();
 
     expect(getByText('Monthly MPD Goal')).toBeInTheDocument();
     expect(getByText('$6,430.25')).toBeInTheDocument();

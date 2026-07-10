@@ -76,7 +76,7 @@ describe('MonthlyNeedsCard', () => {
         expect.stringContaining('Summer Expenses'),
         expect.stringContaining('Benefits'),
         expect.stringContaining('Reimbursable Medical Expenses'),
-        expect.stringContaining('Transfers to other staff, EMAF, etc.'),
+        expect.stringContaining('Transfers to other staff, EMF, etc.'),
         expect.stringContaining('Advocacy (optional)'),
         expect.stringContaining('Other'),
         expect.stringContaining('Subtotal'),

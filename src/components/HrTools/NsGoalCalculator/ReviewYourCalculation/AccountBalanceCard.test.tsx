@@ -10,7 +10,7 @@ describe('AccountBalanceCard', () => {
 
     expect(getByRole('table')).toHaveTableStructure({
       columnHeaders: ['Category', 'John & Jane'],
-      rowHeaders: ['Min Account Balance Needed to Report'],
+      rowHeaders: ['Minimum Account Balance Needed to Report'],
       cells: [['$9,580.00']],
     });
   });
