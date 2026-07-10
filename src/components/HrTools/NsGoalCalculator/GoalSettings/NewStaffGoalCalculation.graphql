@@ -99,8 +99,8 @@ fragment NewStaffGoalCalculationFields on NewStaffGoalCalculation {
   calculationsYear
 }
 
-query NewStaffGoalCalculation($accountListId: ID!) {
-  newStaffGoalCalculation(accountListId: $accountListId) {
+query NewStaffGoalCalculation($accountListId: ID, $id: ID) {
+  newStaffGoalCalculation(accountListId: $accountListId, id: $id) {
     ...NewStaffGoalCalculationFields
   }
 }

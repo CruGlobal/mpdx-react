@@ -34,6 +34,12 @@ export const calculationToFormValues = (
       ? String(calc.calculationsYear)
       : '',
 
+  firstName: calc.firstName ?? '',
+  lastName: calc.lastName ?? '',
+  emailAddress: calc.emailAddress ?? '',
+  spouseFirstName: calc.spouseFirstName ?? '',
+  spouseEmailAddress: calc.spouseEmailAddress ?? '',
+
   maritalStatus: toEnumInput(calc.maritalStatus),
   spouseJoining: toYesNo(calc.spouseJoining),
   age: toEnumInput(calc.age),
@@ -92,14 +98,27 @@ export const calculationToFormValues = (
  * when there is a senior spouse, so they are cleared when the spouse is missing
  * or is joining staff.
  */
+interface FormValuesToAttributesOptions {
+  /** Scenario goals may edit identity; real goals must not send it. */
+  includeIdentity?: boolean;
+}
+
 export const formValuesToAttributes = (
   values: GoalSettingsFormValues,
+  { includeIdentity = false }: FormValuesToAttributesOptions = {},
 ): NewStaffGoalCalculationAttributesInput => {
   const hasSpouse =
     values.maritalStatus === NewStaffQuestionnaireMaritalStatusEnum.Married;
   const seniorStaff = hasSpouse && !toBoolean(values.spouseJoining);
 
   return {
+    ...(includeIdentity && {
+      firstName: values.firstName || null,
+      lastName: values.lastName || null,
+      emailAddress: values.emailAddress || null,
+      spouseFirstName: hasSpouse ? values.spouseFirstName || null : null,
+      spouseEmailAddress: hasSpouse ? values.spouseEmailAddress || null : null,
+    }),
     maritalStatus: values.maritalStatus || null,
     spouseJoining: hasSpouse ? toBoolean(values.spouseJoining) : null,
     age: toEnumOrNull(values.age),
