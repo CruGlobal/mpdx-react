@@ -82,6 +82,10 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
     save,
   } = useNewStaffGoalCalculation(props);
 
+  // The header and preview need the account list explicitly; a scenario goal
+  // has none, so pass null — the preview then omits it from the request.
+  const accountListId = 'accountListId' in props ? props.accountListId : null;
+
   if (!calculation) {
     return <ScrollContainer>{fallback}</ScrollContainer>;
   }
@@ -160,6 +164,8 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
           return (
             <Form>
               <GoalSettingsHeader
+                accountListId={accountListId}
+                calculationId={calculation.id}
                 primaryPerson={primaryPerson}
                 spousePerson={spousePerson}
                 mpdGoal={mpdGoal}

@@ -14,10 +14,9 @@ import {
 } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat } from 'src/lib/intlFormat';
 import { GoalSettingsPlaceholder } from './Fields/GoalSettingsPlaceholder';
 import { GoalSettingsSelect, SelectOption } from './Fields/GoalSettingsSelect';
+import { MpdGoalPreview } from './MpdGoalPreview';
 import { GoalSettingsPerson } from './goalSettingsFormValues';
 
 interface ContactLineProps {
@@ -67,8 +66,13 @@ const PersonInfoCard: React.FC<PersonInfoCardProps> = ({ person }) => {
 };
 
 interface GoalSettingsHeaderProps {
+  /** Account list the goal belongs to, or `null` for a scenario goal. */
+  accountListId: string | null;
+  /** Id of the calculation to preview unsaved changes against. */
+  calculationId: string;
   primaryPerson: GoalSettingsPerson;
   spousePerson: GoalSettingsPerson | null;
+  /** The saved goal total, shown when there are no goal-affecting edits. */
   mpdGoal: number;
   /**
    * Year the staff member joined staff. The calculation year options span from
@@ -82,6 +86,8 @@ interface GoalSettingsHeaderProps {
 }
 
 export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
+  accountListId,
+  calculationId,
   primaryPerson,
   spousePerson,
   mpdGoal,
@@ -89,7 +95,6 @@ export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
   isScenario = false,
 }) => {
   const { t } = useTranslation();
-  const locale = useLocale();
   const yearLabelId = useId();
 
   // Years from joinedStaffYear to the current year, newest first. Falls back to
@@ -161,13 +166,11 @@ export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
             <InfoOutlined fontSize="small" />
           </IconButton>
         </Tooltip>
-        <Typography variant="h6" sx={{ ml: 3 }}>
-          {t('MPD Goal: {{amount}}', {
-            amount: currencyFormat(mpdGoal, 'USD', locale, {
-              showTrailingZeros: true,
-            }),
-          })}
-        </Typography>
+        <MpdGoalPreview
+          accountListId={accountListId}
+          calculationId={calculationId}
+          savedMonthlyGoal={mpdGoal}
+        />
       </Stack>
 
       {!isScenario && (
