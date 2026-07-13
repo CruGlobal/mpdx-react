@@ -18,9 +18,6 @@ export const StyledGrid = styled(DataGrid)(({ theme }) => ({
   '.MuiDataGrid-row.bold-row': {
     fontWeight: 'bold',
   },
-  '.MuiDataGrid-row[data-id="total"]': {
-    fontWeight: 'bold',
-  },
   '.MuiDataGrid-row.bottom-border .MuiDataGrid-cell': {
     borderBottom: `2px solid ${theme.palette.divider}`,
   },
@@ -28,10 +25,5 @@ export const StyledGrid = styled(DataGrid)(({ theme }) => ({
     lineHeight: 1.3,
     paddingTop: theme.spacing(1),
     paddingBottom: theme.spacing(1),
-  },
-  '.category-formula': {
-    display: 'block',
-    color: theme.palette.text.secondary,
-    fontSize: theme.typography.body2.fontSize,
   },
 })) as typeof DataGrid;
