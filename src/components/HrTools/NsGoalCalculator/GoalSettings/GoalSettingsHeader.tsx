@@ -75,6 +75,10 @@ interface GoalSettingsHeaderProps {
    * this year up to the current year (newest first).
    */
   joinedStaffYear?: number | null;
+  /**
+   * Scenario goals hide the read-only person cards
+   */
+  isScenario?: boolean;
 }
 
 export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
@@ -82,6 +86,7 @@ export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
   spousePerson,
   mpdGoal,
   joinedStaffYear,
+  isScenario = false,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -112,12 +117,21 @@ export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
         flexWrap="wrap"
       >
         <Typography variant="h5">{householdTitle}</Typography>
-        <Chip
-          color="warning"
-          variant="outlined"
-          label={t('Incomplete')}
-          size="small"
-        />
+        {isScenario ? (
+          <Chip
+            color="info"
+            variant="outlined"
+            label={t('Scenario Only')}
+            size="small"
+          />
+        ) : (
+          <Chip
+            color="warning"
+            variant="outlined"
+            label={t('Incomplete')}
+            size="small"
+          />
+        )}
       </Stack>
       <Stack
         direction="row"
@@ -155,56 +169,59 @@ export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
           })}
         </Typography>
       </Stack>
-      <Grid container spacing={3}>
-        <Grid
-          size={{
-            xs: 12,
-            md: 8,
-          }}
-        >
-          <Grid container spacing={3}>
-            <Grid
-              size={{
-                xs: 12,
-                sm: 6,
-              }}
-            >
-              <PersonInfoCard person={primaryPerson} />
-            </Grid>
-            {spousePerson && (
+
+      {!isScenario && (
+        <Grid container spacing={3}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 8,
+            }}
+          >
+            <Grid container spacing={3}>
               <Grid
                 size={{
                   xs: 12,
                   sm: 6,
                 }}
               >
-                <PersonInfoCard person={spousePerson} />
+                <PersonInfoCard person={primaryPerson} />
               </Grid>
-            )}
+              {spousePerson && (
+                <Grid
+                  size={{
+                    xs: 12,
+                    sm: 6,
+                  }}
+                >
+                  <PersonInfoCard person={spousePerson} />
+                </Grid>
+              )}
+            </Grid>
+          </Grid>
+          <Grid
+            size={{
+              xs: 12,
+              md: 4,
+            }}
+          >
+            <Stack spacing={3}>
+              {/* TODO(MPDX-9796): Attendee field */}
+              <GoalSettingsPlaceholder
+                label={t('Coach')}
+                value={t('Amy Wilson')}
+                showLabel
+              />
+              {/* TODO(MPDX-9796): Attendee field */}
+              <GoalSettingsPlaceholder
+                label={t('Coordinator')}
+                value={t('Nancy Coleman')}
+                showLabel
+              />
+            </Stack>
           </Grid>
         </Grid>
-        <Grid
-          size={{
-            xs: 12,
-            md: 4,
-          }}
-        >
-          <Stack spacing={3}>
-            {/* TODO(MPDX-9796): Attendee field */}
-            <GoalSettingsPlaceholder
-              label={t('Coach')}
-              value={t('Amy Wilson')}
-              showLabel
-            />
-            {/* TODO(MPDX-9796): Attendee field */}
-            <GoalSettingsPlaceholder
-              label={t('Coordinator')}
-              value={t('Nancy Coleman')}
-              showLabel
-            />
-          </Stack>
-        </Grid>
-      </Grid>
+      )}
     </Box>
   );
 };

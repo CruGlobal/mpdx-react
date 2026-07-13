@@ -19,6 +19,8 @@ import { CategoryBreakdownDialog } from '../CategoryBreakdownDialog/CategoryBrea
 import { ReportType } from '../Helpers/StaffReportEnum';
 import { GroupedTransaction, Transaction } from '../Helpers/filterTransactions';
 
+const DEFAULT_PAGE_SIZE = 25;
+
 type RenderCell = GridColDef<StaffReportRow>['renderCell'];
 
 export interface StaffReportTableProps {
@@ -114,7 +116,7 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
 
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
-    pageSize: 10,
+    pageSize: DEFAULT_PAGE_SIZE,
   });
 
   const [breakdownDialog, setBreakdownDialog] = useState<{
@@ -269,7 +271,7 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
         sortingOrder={['desc', 'asc']}
         sortModel={sortModel}
         onSortModelChange={(size) => setSortModel(size)}
-        pageSizeOptions={[5, 10, 25, 50]}
+        pageSizeOptions={[DEFAULT_PAGE_SIZE]}
         paginationModel={paginationModel}
         onPaginationModelChange={(model) => setPaginationModel(model)}
         disableRowSelectionOnClick

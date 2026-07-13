@@ -23,13 +23,13 @@ export const ExportCsvButton: React.FC<ExportCsvButtonProps> = ({
       label={t('Export CSV')}
       items={[
         {
-          label: t('Income'),
+          label: t('Income Report'),
           disabled: !data.income.length,
           onClick: () =>
             exportToCsv(data.income, ReportTypeEnum.Income, months, locale),
         },
         {
-          label: t('Expenses'),
+          label: t('Expenses Report'),
           disabled: !data.expenses.length,
           onClick: () =>
             exportToCsv(data.expenses, ReportTypeEnum.Expenses, months, locale),

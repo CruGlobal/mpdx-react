@@ -55,6 +55,14 @@ const TestComponent: React.FC<
   </NsGoalCalculatorTestWrapper>
 );
 
+const ScenarioTestComponent: React.FC<
+  Omit<NsGoalCalculatorTestWrapperProps, 'children'>
+> = (props) => (
+  <NsGoalCalculatorTestWrapper onCall={mutationSpy} {...props}>
+    <GoalSettingsForm scenarioGoalId="scenario-1" />
+  </NsGoalCalculatorTestWrapper>
+);
+
 describe('GoalSettingsForm', () => {
   it('renders all six section headings', async () => {
     const { findByRole, getByRole } = render(<TestComponent />);
@@ -473,6 +481,81 @@ describe('GoalSettingsForm', () => {
                 accountTransfers: null,
                 advocacyTransfers: null,
               },
+            },
+          },
+        ),
+      );
+    });
+  });
+
+  it('does not send identity fields in real (account-list) mode', async () => {
+    const { findByRole } = render(<TestComponent />);
+
+    const saveButton = await findByRole('button', { name: 'Save & Share' });
+    await waitFor(() => expect(saveButton).toBeEnabled());
+    userEvent.click(saveButton);
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'UpdateNewStaffGoalCalculation',
+      ),
+    );
+    const realOp = mutationSpy.mock.calls
+      .map(([{ operation }]) => operation)
+      .find((op) => op.operationName === 'UpdateNewStaffGoalCalculation');
+    expect(realOp?.variables.input.attributes).not.toHaveProperty('firstName');
+  });
+
+  describe('scenario mode', () => {
+    it('renders the editable Contact Info section and hides the person cards', async () => {
+      const { findByRole, queryByText } = render(<ScenarioTestComponent />);
+
+      expect(
+        await findByRole('heading', { name: 'Contact Info' }),
+      ).toBeInTheDocument();
+      expect(await findByRole('textbox', { name: 'First Name' })).toHaveValue(
+        'John',
+      );
+      expect(queryByText(/Person Number:/)).not.toBeInTheDocument();
+    });
+
+    it('updates other sections’ labels as the name is edited, before saving', async () => {
+      const { findByRole } = render(<ScenarioTestComponent />);
+
+      const firstName = await findByRole('textbox', { name: 'First Name' });
+      userEvent.clear(firstName);
+      userEvent.type(firstName, 'Johnny');
+
+      expect(
+        await findByRole('spinbutton', {
+          name: 'Annual Requested Salary — Johnny',
+        }),
+      ).toBeInTheDocument();
+    });
+
+    it('shows the Scenario Only tag', async () => {
+      const { findByText } = render(<ScenarioTestComponent />);
+      expect(await findByText('Scenario Only')).toBeInTheDocument();
+    });
+
+    it('saves identity edits through updateNewStaffGoalCalculation by id', async () => {
+      const { findByRole, getByRole } = render(<ScenarioTestComponent />);
+
+      const firstName = await findByRole('textbox', { name: 'First Name' });
+      userEvent.clear(firstName);
+      userEvent.type(firstName, 'Johnny');
+
+      const saveButton = getByRole('button', { name: 'Save & Share' });
+      await waitFor(() => expect(saveButton).toBeEnabled());
+      userEvent.click(saveButton);
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation(
+          'UpdateNewStaffGoalCalculation',
+          {
+            input: {
+              id: 'scenario-1',
+              attributes: { firstName: 'Johnny' },
             },
           },
         ),

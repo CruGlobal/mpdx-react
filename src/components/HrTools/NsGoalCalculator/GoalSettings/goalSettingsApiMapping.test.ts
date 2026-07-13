@@ -26,6 +26,11 @@ const baseCalculation = gqlMock<NewStaffGoalCalculationFieldsFragment>(
   NewStaffGoalCalculationFieldsFragmentDoc,
   {
     mocks: {
+      firstName: 'John',
+      lastName: 'Doe',
+      emailAddress: 'john@cru.org',
+      spouseFirstName: 'Jane',
+      spouseEmailAddress: 'jane@cru.org',
       maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Married,
       spouseJoining: true,
       age: GoalCalculationAge.ThirtyToThirtyFour,
@@ -214,5 +219,51 @@ describe('formValuesToAttributes', () => {
     expect(attributes.solidSupportRaised).toBe(0);
     expect(attributes.tenure).toBe(0);
     expect(attributes.childcareChildrenCount).toBe(0);
+  });
+});
+
+describe('identity fields', () => {
+  it('prefills identity values from the calculation', () => {
+    const values = calculationToFormValues(baseCalculation);
+    expect(values.firstName).toBe('John');
+    expect(values.lastName).toBe('Doe');
+    expect(values.emailAddress).toBe('john@cru.org');
+    expect(values.spouseFirstName).toBe('Jane');
+    expect(values.spouseEmailAddress).toBe('jane@cru.org');
+  });
+
+  it('omits identity fields by default (real-goal save)', () => {
+    const attributes = formValuesToAttributes(
+      calculationToFormValues(baseCalculation),
+    );
+    expect(attributes).not.toHaveProperty('firstName');
+    expect(attributes).not.toHaveProperty('lastName');
+    expect(attributes).not.toHaveProperty('emailAddress');
+    expect(attributes).not.toHaveProperty('spouseFirstName');
+    expect(attributes).not.toHaveProperty('spouseEmailAddress');
+  });
+
+  it('includes identity fields when includeIdentity is set (scenario save)', () => {
+    const attributes = formValuesToAttributes(
+      calculationToFormValues(baseCalculation),
+      { includeIdentity: true },
+    );
+    expect(attributes.firstName).toBe('John');
+    expect(attributes.lastName).toBe('Doe');
+    expect(attributes.emailAddress).toBe('john@cru.org');
+    expect(attributes.spouseFirstName).toBe('Jane');
+    expect(attributes.spouseEmailAddress).toBe('jane@cru.org');
+  });
+
+  it('nulls spouse identity fields when not married, even with includeIdentity', () => {
+    const attributes = formValuesToAttributes(
+      {
+        ...calculationToFormValues(baseCalculation),
+        maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
+      },
+      { includeIdentity: true },
+    );
+    expect(attributes.spouseFirstName).toBeNull();
+    expect(attributes.spouseEmailAddress).toBeNull();
   });
 });

@@ -1,8 +1,7 @@
-import { HourglassDisabled, Settings } from '@mui/icons-material';
+import { HourglassDisabled } from '@mui/icons-material';
 import { Box, Container, Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { EmptyTable } from '../../../HrTools/Shared/EmptyTable/EmptyTable';
-import { StyledFilterButton } from '../../Shared/SettingsDialog/StyledFilterButton';
 import { CardSkeleton } from '../Card/CardSkeleton';
 import { ExpensesPieChart } from '../Charts/ExpensesPieChart';
 import { MonthlySummaryChart } from '../Charts/MonthlySummaryChart';
@@ -15,14 +14,12 @@ interface ScreenOnlyReportProps {
   data: AllData;
   last12Months: string[];
   currency: string;
-  handleSettingsClick: () => void;
 }
 
 export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
   data,
   last12Months,
   currency,
-  handleSettingsClick,
 }) => {
   const { t } = useTranslation();
 
@@ -45,16 +42,6 @@ export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
               </CardSkeleton>
             </Grid>
           </Grid>
-        </Box>
-        <Box display="flex" justifyContent="flex-end" mb={2}>
-          <StyledFilterButton
-            variant="outlined"
-            startIcon={<Settings />}
-            size="small"
-            onClick={handleSettingsClick}
-          >
-            {t('Report Settings')}
-          </StyledFilterButton>
         </Box>
         <Box mt={2}>
           <TableCard

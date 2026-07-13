@@ -5,24 +5,22 @@ import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { GoalSettingsForm } from 'src/components/HrTools/NsGoalCalculator/GoalSettings/GoalSettingsForm';
 import Loading from 'src/components/Loading';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';
 import { getQueryParam } from 'src/lib/queryParam';
 
-export const NsGoalCalculatorPage: React.FC = () => {
+export const NsScenarioGoalPage: React.FC = () => {
   const { t } = useTranslation();
   const appName = getAppName();
-  const accountListId = useAccountListId();
   const { query } = useRouter();
-  const coachingId = getQueryParam(query, 'coachingId');
+  const scenarioGoalId = getQueryParam(query, 'scenarioGoalId');
 
   return (
     <>
       <Head>
-        <title>{`${appName} | ${t('Coaching Accounts | New Staff Goal Calculator')}`}</title>
+        <title>{`${appName} | ${t('New Staff Goal Calculator')}`}</title>
       </Head>
-      {accountListId && coachingId ? (
-        <GoalSettingsForm accountListId={coachingId} />
+      {scenarioGoalId ? (
+        <GoalSettingsForm scenarioGoalId={scenarioGoalId} />
       ) : (
         <Loading loading />
       )}
@@ -32,4 +30,4 @@ export const NsGoalCalculatorPage: React.FC = () => {
 
 export const getServerSideProps = ensureSessionAndAccountList;
 
-export default NsGoalCalculatorPage;
+export default NsScenarioGoalPage;
