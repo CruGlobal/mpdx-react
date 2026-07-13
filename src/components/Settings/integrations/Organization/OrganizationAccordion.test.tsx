@@ -331,7 +331,7 @@ describe('OrganizationAccordion', () => {
       });
 
       expect(window.location.assign).toHaveBeenCalledWith(
-        `https://auth.mpdx.org/auth/user/donorhub?account_list_id=account-list-1&redirect_to=${encodeURIComponent(
+        `https://auth.mpdx.org/auth/user/donorhub?redirect_to=${encodeURIComponent(
           `${window.location.origin}/accountLists/account-list-1/settings/integrations?selectedTab=organization`,
         )}&access_token=apiToken&organization_id=organizationId`,
       );
