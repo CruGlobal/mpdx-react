@@ -27,7 +27,7 @@ export const useOptionalAccountListId = (): string | null => {
 export const useAccountListId = (): string => {
   const accountListId = useOptionalAccountListId();
 
-  if (accountListId === null) {
+  if (!accountListId) {
     throw new Error(
       'useAccountListId was called on a route without an accountListId param. Use useOptionalAccountListId for pages that can render without one.',
     );
