@@ -186,7 +186,8 @@ export const buildSupportItemBreakdownColumns = (
             <InfoIcon
               color="action"
               fontSize="small"
-              aria-label={params.row.tooltip}
+              tabIndex={0}
+              titleAccess={params.row.tooltip}
             />
           </Tooltip>
         )}

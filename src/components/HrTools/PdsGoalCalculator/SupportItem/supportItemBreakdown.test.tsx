@@ -219,7 +219,7 @@ describe('buildSupportItemBreakdownColumns', () => {
   });
 
   it('renders a tooltip icon when tooltip is provided', () => {
-    const { getByLabelText } = renderBreakdown([
+    const { getByRole } = renderBreakdown([
       {
         id: 'reimbursable-expenses',
         category: 'Reimbursable Expenses',
@@ -230,9 +230,9 @@ describe('buildSupportItemBreakdownColumns', () => {
     ]);
 
     expect(
-      getByLabelText(
-        'To change this amount, update the Reimbursable Expenses step',
-      ),
+      getByRole('img', {
+        name: 'To change this amount, update the Reimbursable Expenses step',
+      }),
     ).toBeInTheDocument();
   });
 });
