@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import {
   DesignationSupportFormType,
   DesignationSupportSalaryType,
@@ -175,7 +175,7 @@ describe('SupportItemStep', () => {
   });
 
   it('renders no grid when constants are missing', async () => {
-    const { getByRole, queryByRole } = render(
+    const { findByRole, queryByRole } = render(
       <PdsGoalCalculatorTestWrapper
         calculationMock={fullTimeMock}
         constantsMock={{ mpdGoalMiscConstants: [] }}
@@ -184,7 +184,9 @@ describe('SupportItemStep', () => {
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    await waitFor(() => expect(queryByRole('grid')).not.toBeInTheDocument());
-    expect(getByRole('heading', { name: 'Support Items' })).toBeInTheDocument();
+    expect(
+      await findByRole('heading', { name: 'Support Items' }),
+    ).toBeInTheDocument();
+    expect(queryByRole('grid')).not.toBeInTheDocument();
   });
 });
