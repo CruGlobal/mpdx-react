@@ -17,7 +17,7 @@ const MergeContactsPage: React.FC = () => {
       selectedMenuId="mergeContacts"
     >
       <MergeContacts
-        accountListId={accountListId || ''}
+        accountListId={accountListId}
         contactId={
           typeof query.duplicateId === 'string' ? query.duplicateId : undefined
         }

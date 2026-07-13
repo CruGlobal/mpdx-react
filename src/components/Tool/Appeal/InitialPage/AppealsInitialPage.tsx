@@ -64,7 +64,7 @@ const AppealsInitialPage: React.FC = () => {
             md: 6,
           }}
         >
-          <Appeals accountListId={accountListId || ''} />
+          <Appeals accountListId={accountListId} />
         </Grid>
         <Grid
           size={{
@@ -83,7 +83,7 @@ const AppealsInitialPage: React.FC = () => {
                   })}
                 />
                 <CardContent>
-                  <AddAppealForm accountListId={accountListId || ''} />
+                  <AddAppealForm accountListId={accountListId} />
                 </CardContent>
               </Card>
             </Box>

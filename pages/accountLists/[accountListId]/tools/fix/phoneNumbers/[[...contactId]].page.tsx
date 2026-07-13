@@ -14,7 +14,7 @@ const FixPhoneNumbersPage: React.FC = () => {
       pageTitle={t('Fix Phone Numbers')}
       selectedMenuId="fixPhoneNumbers"
     >
-      <FixPhoneNumbers accountListId={accountListId || ''} />
+      <FixPhoneNumbers accountListId={accountListId} />
     </ToolsWrapper>
   );
 };

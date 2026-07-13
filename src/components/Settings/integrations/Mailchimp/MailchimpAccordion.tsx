@@ -400,7 +400,7 @@ export const MailchimpAccordion: React.FC<AccordionProps> = ({
       )}
       {showDeleteModal && (
         <DeleteMailchimpAccountModal
-          accountListId={accountListId || ''}
+          accountListId={accountListId}
           handleClose={handleDeleteModalClose}
           refetchMailchimpAccount={refetchMailchimpAccount}
           appName={appName || ''}
