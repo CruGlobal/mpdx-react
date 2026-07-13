@@ -169,7 +169,7 @@ const NavMenu: React.FC = () => {
     (page) => page.id === 'coaching-page',
   );
 
-  return accountListId ? (
+  return (
     <Grid container alignItems="center" size="auto">
       {navPages.map(
         (page) =>
@@ -244,7 +244,7 @@ const NavMenu: React.FC = () => {
         </Grid>
       )}
     </Grid>
-  ) : null;
+  );
 };
 
 export default NavMenu;

@@ -237,13 +237,6 @@ describe('NavMenu', () => {
     );
   });
 
-  it('hidden', () => {
-    const { queryByRole } = render(
-      <TestComponent router={{ query: { accountListId: '' } }} />,
-    );
-    expect(queryByRole('menuitem')).toBeNull();
-  });
-
   it('test current tool id hook', () => {
     const { getByTestId } = render(
       <TestComponent
