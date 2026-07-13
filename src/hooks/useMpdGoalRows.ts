@@ -15,6 +15,10 @@ import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { useGoalCalculatorConstants } from './useGoalCalculatorConstants';
 import { useLocale } from './useLocale';
 
+export const isBoldLine = (line: string) => ['1J', '6', '8'].includes(line);
+export const isTopBorderLine = (line: string) => ['1', '6'].includes(line);
+export const isIndentedLine = (line: string) => /[a-z]/i.test(line);
+
 export interface MpdGoalRow {
   line: string;
   category: string;
@@ -275,6 +279,7 @@ export const useMpdGoalRows = (supportRaised: number) => {
     });
   }, [
     t,
+    locale,
     goalCalculation,
     goalTotals,
     goalMiscConstants,

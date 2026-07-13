@@ -6,7 +6,12 @@ import {
   SimplePrintOnly,
   SimpleScreenOnly,
 } from 'src/components/Reports/styledComponents';
-import { useMpdGoalRows } from 'src/hooks/useMpdGoalRows';
+import {
+  isBoldLine,
+  isIndentedLine,
+  isTopBorderLine,
+  useMpdGoalRows,
+} from 'src/hooks/useMpdGoalRows';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import { safeProgressRatio } from '../../../Shared/helpers/safeProgressRatio';
 import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
@@ -97,16 +102,12 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({
             const classes: string[] = [];
 
             // Bold subtotal and total lines
-            if (
-              params.row.line === '1J' ||
-              params.row.line === '6' ||
-              params.row.line === '8'
-            ) {
+            if (isBoldLine(params.row.line)) {
               classes.push('bold');
             }
 
             // Add a top border to some lines
-            if (params.row.line === '1' || params.row.line === '6') {
+            if (isTopBorderLine(params.row.line)) {
               classes.push('top-border');
             }
 
@@ -119,7 +120,7 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({
             if (
               params.colDef.field === 'category' &&
               typeof params.row.line === 'string' &&
-              /[a-z]/i.test(params.row.line)
+              isIndentedLine(params.row.line)
             ) {
               classes.push('indent');
             }

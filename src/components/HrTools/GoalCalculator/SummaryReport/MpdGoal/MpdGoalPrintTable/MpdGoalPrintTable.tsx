@@ -7,13 +7,19 @@ import {
   TableRow,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { MpdGoalRow, useMpdGoalRows } from 'src/hooks/useMpdGoalRows';
+import {
+  MpdGoalRow,
+  isBoldLine,
+  isIndentedLine,
+  isTopBorderLine,
+  useMpdGoalRows,
+} from 'src/hooks/useMpdGoalRows';
 
-interface MpdGoalTableProps {
+interface MpdGoalPrintTableProps {
   supportRaised: number;
 }
 
-export const MpdGoalPrintTable: React.FC<MpdGoalTableProps> = ({
+export const MpdGoalPrintTable: React.FC<MpdGoalPrintTableProps> = ({
   supportRaised,
 }) => {
   const { t } = useTranslation();
@@ -41,9 +47,9 @@ export const MpdGoalPrintTable: React.FC<MpdGoalTableProps> = ({
         </TableHead>
         <TableBody>
           {rows.map((row: MpdGoalRow) => {
-            const isBold = ['1J', '6', '8'].includes(row.line);
-            const hasTopBorder = ['1', '6'].includes(row.line);
-            const isIndented = /[a-z]/i.test(row.line);
+            const isBold = isBoldLine(row.line);
+            const hasTopBorder = isTopBorderLine(row.line);
+            const isIndented = isIndentedLine(row.line);
 
             return (
               <TableRow
