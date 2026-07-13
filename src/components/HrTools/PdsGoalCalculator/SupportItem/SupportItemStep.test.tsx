@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import {
   DesignationSupportFormType,
   DesignationSupportSalaryType,
@@ -174,8 +174,32 @@ describe('SupportItemStep', () => {
     expect(queryByTestId('403b-contributions')).not.toBeInTheDocument();
   });
 
+  it('applies border and bold row classes to the appropriate rows', async () => {
+    const { findByTestId, container } = render(
+      <TestComponent calculationMock={fullTimeMock} />,
+    );
+
+    await findByTestId('subtotal');
+
+    expect(container.querySelector('[data-id="subtotal"]')).toHaveClass(
+      'top-border',
+      'bottom-border',
+      'bold-row',
+    );
+
+    const attritionRow = container.querySelector('[data-id="attrition"]');
+    expect(attritionRow).toHaveClass('bold-row');
+    expect(attritionRow).not.toHaveClass('top-border');
+    expect(attritionRow).not.toHaveClass('bottom-border');
+
+    const payRateRow = container.querySelector('[data-id="pay-rate"]');
+    expect(payRateRow).not.toHaveClass('bold-row');
+    expect(payRateRow).not.toHaveClass('top-border');
+    expect(payRateRow).not.toHaveClass('bottom-border');
+  });
+
   it('renders no grid when constants are missing', async () => {
-    const { getByRole, queryByRole } = render(
+    const { findByRole, queryByRole } = render(
       <PdsGoalCalculatorTestWrapper
         calculationMock={fullTimeMock}
         constantsMock={{ mpdGoalMiscConstants: [] }}
@@ -184,7 +208,9 @@ describe('SupportItemStep', () => {
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    await waitFor(() => expect(queryByRole('grid')).not.toBeInTheDocument());
-    expect(getByRole('heading', { name: 'Support Items' })).toBeInTheDocument();
+    expect(
+      await findByRole('heading', { name: 'Support Items' }),
+    ).toBeInTheDocument();
+    expect(queryByRole('grid')).not.toBeInTheDocument();
   });
 });

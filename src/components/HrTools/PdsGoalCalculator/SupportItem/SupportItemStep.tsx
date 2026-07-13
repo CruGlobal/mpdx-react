@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { Box, Divider, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import Loading from 'src/components/Loading';
 import { useLocale } from 'src/hooks/useLocale';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import { usePdsGoalCalculator } from '../Shared/PdsGoalCalculatorContext';
@@ -14,7 +15,8 @@ export const SupportItemStep: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
   const localeText = useDataGridLocaleText();
-  const { calculation, summaryData } = usePdsGoalCalculator();
+  const { calculation, summaryData, calculationLoading } =
+    usePdsGoalCalculator();
 
   const rows = useMemo(() => {
     if (!calculation || !summaryData) {
@@ -33,6 +35,10 @@ export const SupportItemStep: React.FC = () => {
     () => buildSupportItemBreakdownColumns(locale, t),
     [locale, t],
   );
+
+  if (calculationLoading) {
+    return <Loading loading />;
+  }
 
   return (
     <>
