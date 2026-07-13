@@ -8,7 +8,6 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useDeveloperBypass } from './useDeveloperBypass';
 import { useHrToolsNavItems } from './useHrToolsNavItems';
 import { useReportNavItems } from './useReportNavItems';
-import { useReportsDisabled } from './useReportsDisabled';
 import { useSettingsNavItems } from './useSettingsNavItems';
 import { useToolsNavItems } from './useToolsNavItems';
 
@@ -53,7 +52,6 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
   const accountListId = useAccountListId();
   const { t } = useTranslation();
   const { data } = useGetUserQuery();
-  const { reportsDisabled } = useReportsDisabled();
 
   const userType = data?.user.userType;
   const developerBypass = useDeveloperBypass();
@@ -110,27 +108,23 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
         })),
         showInNav: true,
       },
-      ...(reportsDisabled
-        ? []
-        : [
-            {
-              id: 'hr-tools-page',
-              title: t('HR Tools'),
-              pathname: '/accountLists/[accountListId]/hrTools',
-              items: hrToolsItems.map((item) => ({
-                ...item,
-                href: `/accountLists/${accountListId}/hrTools/${item.id}`,
-                searchIcon: <CompassIcon />,
-                searchName: t(`HR Tools - {{ title }}`, { title: item.title }),
-                showInSearchDialog: true,
-              })),
-              showInNav: true,
-              hideTab:
-                (!!data && !canSeeHrTools) ||
-                hrToolsLoading ||
-                hrToolsItems.length === 0,
-            },
-          ]),
+      {
+        id: 'hr-tools-page',
+        title: t('HR Tools'),
+        pathname: '/accountLists/[accountListId]/hrTools',
+        items: hrToolsItems.map((item) => ({
+          ...item,
+          href: `/accountLists/${accountListId}/hrTools/${item.id}`,
+          searchIcon: <CompassIcon />,
+          searchName: t(`HR Tools - {{ title }}`, { title: item.title }),
+          showInSearchDialog: true,
+        })),
+        showInNav: true,
+        hideTab:
+          (!!data && !canSeeHrTools) ||
+          hrToolsLoading ||
+          hrToolsItems.length === 0,
+      },
       {
         id: 'mpdx-tools-page',
         title: t('MPDX Tools'),
@@ -198,7 +192,6 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
     hrToolsItems,
     hrToolsLoading,
     canSeeHrTools,
-    reportsDisabled,
     data,
   ]);
 
