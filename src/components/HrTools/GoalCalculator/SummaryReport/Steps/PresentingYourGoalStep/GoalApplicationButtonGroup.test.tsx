@@ -16,7 +16,7 @@ describe('GoalApplicationButtonGroup', () => {
     const { getByRole } = render(<TestComponent />);
 
     expect(
-      getByRole('button', { name: /finish & apply goal/i }),
+      getByRole('button', { name: /apply goal to mpdx/i }),
     ).toBeInTheDocument();
     expect(
       getByRole('button', { name: /save goal without applying/i }),
@@ -31,22 +31,22 @@ describe('GoalApplicationButtonGroup', () => {
     });
     userEvent.click(saveWithoutApplyingButton);
     expect(
-      queryByRole('button', { name: /finish & apply goal/i }),
+      queryByRole('button', { name: /apply goal to mpdx/i }),
     ).not.toBeInTheDocument();
     expect(saveWithoutApplyingButton).not.toBeInTheDocument();
   });
 
-  it('shows loading state when "Finish & Apply Goal" is clicked', async () => {
+  it('shows loading state when "Apply Goal to MPDX" is clicked', async () => {
     const { getByRole, findByText, queryByRole } = render(<TestComponent />);
 
     const applyButton = getByRole('button', {
-      name: /finish & apply goal/i,
+      name: /apply goal to mpdx/i,
     });
     await waitFor(() => expect(applyButton).toBeEnabled());
     userEvent.click(applyButton);
 
     expect(
-      queryByRole('button', { name: /finish & apply goal/i }),
+      queryByRole('button', { name: /apply goal to mpdx/i }),
     ).not.toBeInTheDocument();
 
     await waitFor(() =>
