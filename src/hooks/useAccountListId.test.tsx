@@ -17,7 +17,7 @@ describe('useOptionalAccountListId', () => {
       wrapper: makeWrapper({ isReady: false, query: {} }),
     });
 
-    expect(result.current).toBeFalsy();
+    expect(result.current).toBeNull();
   });
 
   it('returns null when the route has no accountListId', () => {
@@ -25,7 +25,7 @@ describe('useOptionalAccountListId', () => {
       wrapper: makeWrapper({ isReady: true, query: {} }),
     });
 
-    expect(result.current).toBeFalsy();
+    expect(result.current).toBeNull();
   });
 
   it('returns the accountListId from the route', () => {

@@ -66,7 +66,7 @@ export const ProfileMenuPanel: React.FC = () => {
   const changeAccountListId = (id: string): void => {
     setAccountsDrawerOpen(false);
     push({
-      pathname: accountListId ? pathname : '/accountLists/[accountListId]/',
+      pathname,
       query: { accountListId: id },
     });
   };

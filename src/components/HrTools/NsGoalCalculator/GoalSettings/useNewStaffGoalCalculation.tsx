@@ -28,8 +28,7 @@ export const useNewStaffGoalCalculation = (
   const { t } = useTranslation();
 
   const { data, loading, error } = useNewStaffGoalCalculationQuery({
-    variables: { accountListId: accountListId ?? '' },
-    skip: !accountListId,
+    variables: { accountListId },
   });
   const goalCalculation = data?.newStaffGoalCalculation ?? null;
 
