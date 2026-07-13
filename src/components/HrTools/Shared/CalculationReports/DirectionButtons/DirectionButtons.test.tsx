@@ -190,7 +190,7 @@ describe('DirectionButtons', () => {
   it('shows the loadingNextTitle with an in-button spinner and disables the button while loadingNext is true', async () => {
     const { findByRole } = render(
       <TestComponent
-        buttonTitle="Finish & Apply Goal"
+        buttonTitle="Apply Goal to MPDX"
         loadingNext={true}
         loadingNextTitle="Saving..."
       />,

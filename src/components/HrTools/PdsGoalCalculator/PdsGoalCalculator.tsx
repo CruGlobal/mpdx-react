@@ -109,7 +109,7 @@ const MainContent: React.FC = () => {
         handleNextStep={handleContinue}
         handlePreviousStep={handlePreviousStep}
         showBackButton={!isFirstStep}
-        buttonTitle={isLastStep ? t('Finish & Apply Goal') : undefined}
+        buttonTitle={isLastStep ? t('Apply Goal to MPDX') : undefined}
         overrideNext={isLastStep ? handleSubmitGoal : undefined}
         disableNext={
           !allValid ||

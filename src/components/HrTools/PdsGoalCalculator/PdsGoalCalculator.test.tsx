@@ -191,7 +191,7 @@ describe('PdsGoalCalculator', () => {
     ).toBeInTheDocument();
   });
 
-  it('disables Finish & Apply Goal on the Summary Report step when summary data is unavailable', async () => {
+  it('disables Apply Goal to MPDX on the Summary Report step when summary data is unavailable', async () => {
     // Empty misc constants make `buildPdsGoalConstants` return null, so
     // `summaryData` stays null even though every form field is valid. Without
     // the guard on `disableNext`, the button would be enabled and clicking it
@@ -211,7 +211,7 @@ describe('PdsGoalCalculator', () => {
     userEvent.click(summaryButton);
 
     const finishButton = await findByRole('button', {
-      name: /Finish & Apply Goal/i,
+      name: /Apply Goal to MPDX/i,
     });
     await waitFor(() => expect(finishButton).toBeDisabled());
   });
@@ -276,7 +276,7 @@ describe('PdsGoalCalculator', () => {
       userEvent.click(next);
     };
 
-    it('renders "Finish & Apply Goal" instead of "Continue" on the last step', async () => {
+    it('renders "Apply Goal to MPDX" instead of "Continue" on the last step', async () => {
       const { findByRole, queryByRole } = render(
         <PdsGoalCalculatorTestWrapper calculationMock={simpleFormMock}>
           <PdsGoalCalculator />
@@ -286,7 +286,7 @@ describe('PdsGoalCalculator', () => {
       await advanceToLastStep(findByRole);
 
       expect(
-        await findByRole('button', { name: 'Finish & Apply Goal' }),
+        await findByRole('button', { name: 'Apply Goal to MPDX' }),
       ).toBeInTheDocument();
       expect(
         queryByRole('button', { name: /^continue$/i }),
@@ -307,7 +307,7 @@ describe('PdsGoalCalculator', () => {
       await advanceToLastStep(findByRole);
 
       const finishButton = await findByRole('button', {
-        name: 'Finish & Apply Goal',
+        name: 'Apply Goal to MPDX',
       });
       userEvent.click(finishButton);
 
@@ -334,7 +334,7 @@ describe('PdsGoalCalculator', () => {
       await advanceToLastStep(findByRole);
 
       userEvent.click(
-        await findByRole('button', { name: 'Finish & Apply Goal' }),
+        await findByRole('button', { name: 'Apply Goal to MPDX' }),
       );
 
       expect(
@@ -356,7 +356,7 @@ describe('PdsGoalCalculator', () => {
       await advanceToLastStep(findByRole);
 
       const finishButton = await findByRole('button', {
-        name: 'Finish & Apply Goal',
+        name: 'Apply Goal to MPDX',
       });
       userEvent.click(finishButton);
 
@@ -370,7 +370,7 @@ describe('PdsGoalCalculator', () => {
       ).toBeInTheDocument();
     });
 
-    it('keeps the Finish & Apply Goal button disabled after a successful submission', async () => {
+    it('keeps the Apply Goal to MPDX button disabled after a successful submission', async () => {
       const { findByRole, findByText } = render(
         <PdsGoalCalculatorTestWrapper calculationMock={simpleFormMock}>
           <PdsGoalCalculator />
@@ -380,7 +380,7 @@ describe('PdsGoalCalculator', () => {
       await advanceToLastStep(findByRole);
 
       const finishButton = await findByRole('button', {
-        name: 'Finish & Apply Goal',
+        name: 'Apply Goal to MPDX',
       });
       userEvent.click(finishButton);
 

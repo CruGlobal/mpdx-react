@@ -68,7 +68,7 @@ export const GoalApplicationButtonGroup: React.FC = () => {
         disabled={goalCalculationResult.loading || loading}
         startIcon={loading ? <CircularProgress size={20} /> : undefined}
       >
-        {loading ? t('Saving...') : t('Finish & Apply Goal')}
+        {loading ? t('Saving...') : t('Apply Goal to MPDX')}
       </Button>
       <Button
         variant="outlined"
