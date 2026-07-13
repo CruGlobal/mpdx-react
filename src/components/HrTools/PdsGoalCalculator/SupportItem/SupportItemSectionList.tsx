@@ -8,16 +8,13 @@ export const SupportItemSectionList: React.FC = () => {
   const { t } = useTranslation();
   const { calculation } = usePdsGoalCalculator();
 
-  // Salary and Other are read-only derived tables whose only required inputs
+  // Support Items is a read-only derived table whose only required inputs
   // come from the Setup step.
   const isComplete = isSetupComplete(calculation);
 
   return (
     <SectionList
-      sections={[
-        { title: t('Salary'), complete: isComplete },
-        { title: t('Other'), complete: isComplete },
-      ]}
+      sections={[{ title: t('Support Items'), complete: isComplete }]}
     />
   );
 };
