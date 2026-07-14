@@ -58,6 +58,14 @@ const getTomorrow = (): DateTime => {
   return getToday().plus({ days: 1 });
 };
 
+const minimumTransferDate = (schedule: ScheduleEnum): DateTime =>
+  schedule === ScheduleEnum.OneTime ? getToday() : getTomorrow();
+
+const pastDateMessage = (schedule: ScheduleEnum): string =>
+  schedule === ScheduleEnum.OneTime
+    ? i18n.t('Transfer date cannot be in the past')
+    : i18n.t('Recurring transfers must start at least one day in the future');
+
 const transferSchema = (locale: string) =>
   yup.object({
     transferFrom: yup.string().required(i18n.t('From account is required')),
@@ -79,9 +87,6 @@ const transferSchema = (locale: string) =>
           originalStart?: DateTime<boolean> | null;
           isEditing?: boolean;
         };
-        if (!value) {
-          return false;
-        }
         if (isEditing) {
           const baseline = originalStart
             ? originalStart.startOf('day')
@@ -97,20 +102,11 @@ const transferSchema = (locale: string) =>
           });
         }
 
-        const minimum =
-          schedule === ScheduleEnum.OneTime ? getToday() : getTomorrow();
-        if (selected >= minimum) {
+        if (selected >= minimumTransferDate(schedule)) {
           return true;
         }
 
-        return this.createError({
-          message:
-            schedule === ScheduleEnum.OneTime
-              ? i18n.t('Transfer date cannot be in the past')
-              : i18n.t(
-                  'Recurring transfers must start at least one day in the future',
-                ),
-        });
+        return this.createError({ message: pastDateMessage(schedule) });
       }),
     endDate: yup
       .mixed<DateTime>()
