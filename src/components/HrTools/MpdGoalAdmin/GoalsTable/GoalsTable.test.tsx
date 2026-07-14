@@ -1,6 +1,9 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { act, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
+import TestRouter from '__tests__/util/TestRouter';
+import { mockSession } from '__tests__/util/mockSession';
 import theme from 'src/theme';
 import { MpdGoalAdminProvider, useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import { mockCohorts } from '../mockData';
@@ -18,11 +21,15 @@ const Capture: React.FC<{ rows: (typeof mockCohorts)[0]['rows'] }> = ({
 
 const renderTable = (data = rows) =>
   render(
-    <ThemeProvider theme={theme}>
-      <MpdGoalAdminProvider>
-        <Capture rows={data} />
-      </MpdGoalAdminProvider>
-    </ThemeProvider>,
+    <SnackbarProvider>
+      <TestRouter>
+        <ThemeProvider theme={theme}>
+          <MpdGoalAdminProvider>
+            <Capture rows={data} />
+          </MpdGoalAdminProvider>
+        </ThemeProvider>
+      </TestRouter>
+    </SnackbarProvider>,
   );
 
 describe('GoalsTable', () => {
@@ -163,5 +170,50 @@ describe('GoalsTable', () => {
     expect(
       queryByText(`Person ${DEFAULT_ROWS_PER_PAGE}`),
     ).not.toBeInTheDocument();
+  });
+
+  describe('Impersonate action', () => {
+    it('shows an Impersonate action per row for an MPD supervisor admin', () => {
+      mockSession({ mpdSupervisorAdmin: true, admin: false });
+
+      const { getAllByRole } = renderTable();
+      expect(getAllByRole('button', { name: 'Impersonate' })).toHaveLength(
+        Math.min(rows.length, DEFAULT_ROWS_PER_PAGE),
+      );
+    });
+
+    it('shows an Impersonate action per row for an admin', () => {
+      mockSession({ mpdSupervisorAdmin: false, admin: true });
+
+      const { getAllByRole } = renderTable();
+      expect(getAllByRole('button', { name: 'Impersonate' })).toHaveLength(
+        Math.min(rows.length, DEFAULT_ROWS_PER_PAGE),
+      );
+    });
+
+    it('hides the Impersonate action for users without admin access', () => {
+      mockSession({ mpdSupervisorAdmin: false, admin: false });
+
+      const { queryByRole } = renderTable();
+      expect(
+        queryByRole('button', { name: 'Impersonate' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('opens the impersonate modal for the selected staff member', async () => {
+      mockSession({ mpdSupervisorAdmin: true, admin: false });
+
+      const { getAllByRole, findByText } = renderTable();
+      // The first Impersonate action belongs to the first row on the page.
+      userEvent.click(getAllByRole('button', { name: 'Impersonate' })[0]);
+
+      // The modal is loaded dynamically, so it appears asynchronously.
+      expect(await findByText('Impersonate John & Jane Doe')).toBeVisible();
+      expect(
+        await findByText(
+          'You are about to impersonate John & Jane Doe (john.doe@example.com). You will be logged in on their behalf and will see what they see. Provide a reason for this impersonation.',
+        ),
+      ).toBeVisible();
+    });
   });
 });
