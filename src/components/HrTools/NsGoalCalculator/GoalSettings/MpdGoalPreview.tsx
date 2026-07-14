@@ -42,11 +42,7 @@ export const MpdGoalPreview: React.FC<MpdGoalPreviewProps> = ({
 
   return (
     <Stack direction="row" spacing={1} alignItems="center" sx={{ ml: 3 }}>
-      <Typography
-        variant="h6"
-        component="span"
-        sx={{ minWidth: (theme) => theme.spacing(20) }}
-      >
+      <Typography variant="h6" component="span">
         {t('MPD Goal:')}{' '}
         {!calculating &&
           currencyFormat(displayGoal, 'USD', locale, {
