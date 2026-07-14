@@ -24,6 +24,7 @@ const invalidatingSchema = yup.object({
 
 const accountListId = 'account-list-1';
 const calculationId = 'goal-calculation-1';
+const onCall = jest.fn();
 
 const previewGoalMock = (
   monthlyGoal: number,
@@ -44,7 +45,6 @@ interface TestComponentProps {
   accountListId?: string | null;
   savedMonthlyGoal?: number;
   mocks?: ApolloErgonoMockMap;
-  onCall?: jest.Mock;
   validationSchema?: yup.AnyObjectSchema;
 }
 
@@ -52,7 +52,6 @@ const TestComponent: React.FC<TestComponentProps> = ({
   accountListId: accountListIdProp = accountListId,
   savedMonthlyGoal = 5000,
   mocks,
-  onCall,
   validationSchema,
 }) => (
   <ThemeProvider theme={theme}>
@@ -104,10 +103,7 @@ describe('MpdGoalPreview', () => {
   });
 
   it('shows the saved goal total when there are no unsaved changes', async () => {
-    const onCall = jest.fn();
-    const { findByText, queryByText } = render(
-      <TestComponent onCall={onCall} />,
-    );
+    const { findByText, queryByText } = render(<TestComponent />);
 
     expect(await findByText('MPD Goal: $5,000.00')).toBeInTheDocument();
     // No signed difference is shown while the form is untouched.
@@ -116,9 +112,8 @@ describe('MpdGoalPreview', () => {
   });
 
   it('coalesces rapid edits across fields into a single preview request', async () => {
-    const onCall = jest.fn();
     const { getByRole } = render(
-      <TestComponent mocks={previewGoalMock(5200)} onCall={onCall} />,
+      <TestComponent mocks={previewGoalMock(5200)} />,
     );
 
     // Edit two fields within the debounce window.
@@ -222,9 +217,8 @@ describe('MpdGoalPreview', () => {
   });
 
   it('shows no difference when the change does not affect the goal', async () => {
-    const onCall = jest.fn();
     const { findByText, queryByText, getByRole } = render(
-      <TestComponent mocks={previewGoalMock(5000)} onCall={onCall} />,
+      <TestComponent mocks={previewGoalMock(5000)} />,
     );
 
     editField(getByRole('spinbutton', { name: 'Salary' }), '80000');
@@ -239,9 +233,8 @@ describe('MpdGoalPreview', () => {
   });
 
   it('requests a preview with the edited attributes', async () => {
-    const onCall = jest.fn();
     const { getByRole } = render(
-      <TestComponent mocks={previewGoalMock(5200)} onCall={onCall} />,
+      <TestComponent mocks={previewGoalMock(5200)} />,
     );
 
     editField(getByRole('spinbutton', { name: 'Salary' }), '99999');
@@ -258,13 +251,8 @@ describe('MpdGoalPreview', () => {
   });
 
   it('previews a scenario goal, omitting the account list', async () => {
-    const onCall = jest.fn();
     const { findByText, getByRole } = render(
-      <TestComponent
-        accountListId={null}
-        mocks={previewGoalMock(5200)}
-        onCall={onCall}
-      />,
+      <TestComponent accountListId={null} mocks={previewGoalMock(5200)} />,
     );
 
     editField(getByRole('spinbutton', { name: 'Salary' }), '80000');
@@ -302,10 +290,8 @@ describe('MpdGoalPreview', () => {
   });
 
   it('falls back to the saved goal when the preview request fails', async () => {
-    const onCall = jest.fn();
     const { findByText, queryByText, getByRole } = render(
       <TestComponent
-        onCall={onCall}
         mocks={
           {
             PreviewNewStaffGoalCalculation: {
@@ -331,12 +317,10 @@ describe('MpdGoalPreview', () => {
   });
 
   it('does not preview while the form is dirty but invalid', async () => {
-    const onCall = jest.fn();
     const { getByRole } = render(
       <TestComponent
         validationSchema={invalidatingSchema}
         mocks={previewGoalMock(5200)}
-        onCall={onCall}
       />,
     );
 
