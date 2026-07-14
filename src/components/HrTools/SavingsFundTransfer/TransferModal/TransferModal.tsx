@@ -454,66 +454,44 @@ export const TransferModal: React.FC<TransferModalProps> = ({
 
                 <Box sx={{ mb: 3 }}>
                   <Grid container spacing={2}>
-                    {schedule === ScheduleEnum.OneTime ? (
-                      <Grid size={12}>
+                    <Grid size={schedule === ScheduleEnum.OneTime ? 12 : 6}>
+                      <CustomDateField
+                        label={t('Transfer Date')}
+                        value={transferDate}
+                        onChange={(date) => {
+                          setFieldValue('transferDate', date);
+                          setFieldTouched('transferDate', true, false);
+                        }}
+                        error={
+                          touched.transferDate && Boolean(errors.transferDate)
+                        }
+                        helperText={
+                          touched.transferDate &&
+                          (errors.transferDate as string)
+                        }
+                        required
+                      />
+                    </Grid>
+
+                    {schedule !== ScheduleEnum.OneTime && (
+                      <Grid size={6}>
                         <CustomDateField
-                          label={t('Transfer Date')}
-                          value={transferDate}
+                          label={t('End Date (Optional)')}
+                          value={endDate}
                           onChange={(date) => {
-                            setFieldValue('transferDate', date);
-                            setFieldTouched('transferDate', true, false);
+                            setFieldValue('endDate', date);
+                            setFieldTouched('endDate', true, false);
                           }}
-                          error={
-                            touched.transferDate && Boolean(errors.transferDate)
-                          }
+                          error={touched.endDate && Boolean(errors.endDate)}
                           helperText={
-                            touched.transferDate &&
-                            (errors.transferDate as string)
+                            touched.endDate && errors.endDate
+                              ? errors.endDate
+                              : t(
+                                  'The transfer will no longer recur after this date. If left blank, the transfer will recur indefinitely until manually stopped.',
+                                )
                           }
-                          required
                         />
                       </Grid>
-                    ) : (
-                      <>
-                        <Grid size={6}>
-                          <CustomDateField
-                            label={t('Transfer Date')}
-                            value={transferDate}
-                            onChange={(date) => {
-                              setFieldValue('transferDate', date);
-                              setFieldTouched('transferDate', true, false);
-                            }}
-                            error={
-                              touched.transferDate &&
-                              Boolean(errors.transferDate)
-                            }
-                            helperText={
-                              touched.transferDate &&
-                              (errors.transferDate as string)
-                            }
-                            required
-                          />
-                        </Grid>
-
-                        <Grid size={6}>
-                          <CustomDateField
-                            label={t('End Date (Optional)')}
-                            value={endDate}
-                            onChange={(date) => {
-                              setFieldValue('endDate', date);
-                              setFieldTouched('endDate', true, false);
-                            }}
-                            error={touched.endDate && Boolean(errors.endDate)}
-                            helperText={
-                              touched.endDate && errors.endDate
-                                ? errors.endDate
-                                : t(
-                                    'The transfer will no longer recur after this date. If left blank, the transfer will recur indefinitely until manually stopped.',
-                                  )
-                            }
-                          />
-                        </Grid>
-                      </>
                     )}
                   </Grid>
                 </Box>
