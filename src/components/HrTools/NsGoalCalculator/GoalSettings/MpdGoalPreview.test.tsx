@@ -5,12 +5,22 @@ import userEvent from '@testing-library/user-event';
 import { Field, Form, Formik } from 'formik';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
+import * as yup from 'yup';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { defaultGoalCalculation } from '../NsGoalCalculatorTestWrapper';
 import { MpdGoalPreview } from './MpdGoalPreview';
 import { PreviewNewStaffGoalCalculationMutation } from './NewStaffGoalCalculation.generated';
 import { calculationToFormValues } from './goalSettingsApiMapping';
+import { PREVIEW_DEBOUNCE_MS } from './useMpdGoalPreview';
+
+/**
+ * A schema that rejects a negative salary, so a field can be edited into an
+ * invalid state to exercise the `dirty && isValid` preview gate.
+ */
+const invalidatingSchema = yup.object({
+  annualRequestedSalary: yup.number().min(0),
+});
 
 const accountListId = 'account-list-1';
 const calculationId = 'goal-calculation-1';
@@ -35,6 +45,7 @@ interface TestComponentProps {
   savedMonthlyGoal?: number;
   mocks?: ApolloErgonoMockMap;
   onCall?: jest.Mock;
+  validationSchema?: yup.AnyObjectSchema;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -42,6 +53,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   savedMonthlyGoal = 5000,
   mocks,
   onCall,
+  validationSchema,
 }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
@@ -53,6 +65,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
       >
         <Formik
           initialValues={calculationToFormValues(defaultGoalCalculation)}
+          validationSchema={validationSchema}
           onSubmit={jest.fn()}
         >
           <Form>
@@ -82,6 +95,14 @@ const editField = (field: HTMLElement, value: string) => {
 };
 
 describe('MpdGoalPreview', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it('shows the saved goal total when there are no unsaved changes', async () => {
     const onCall = jest.fn();
     const { findByText, queryByText } = render(
@@ -305,6 +326,44 @@ describe('MpdGoalPreview', () => {
     // The failure is surfaced (rather than looking like a zero-impact edit) and
     // the header falls back to the saved goal with no stale difference.
     expect(await findByText('Preview unavailable')).toBeInTheDocument();
+    expect(await findByText('MPD Goal: $5,000.00')).toBeInTheDocument();
+    expect(queryByText(/[+-]\$/)).not.toBeInTheDocument();
+  });
+
+  it('does not preview while the form is dirty but invalid', async () => {
+    const onCall = jest.fn();
+    const { getByRole } = render(
+      <TestComponent
+        validationSchema={invalidatingSchema}
+        mocks={previewGoalMock(5200)}
+        onCall={onCall}
+      />,
+    );
+
+    // A negative salary is a real edit but fails validation, so no preview
+    // request should be sent with the invalid attributes.
+    editField(getByRole('spinbutton', { name: 'Salary' }), '-100');
+    jest.advanceTimersByTime(PREVIEW_DEBOUNCE_MS);
+
+    expect(onCall).not.toHaveGraphqlOperation('PreviewNewStaffGoalCalculation');
+  });
+
+  it('drops the preview when a previewed edit is then made invalid', async () => {
+    const { findByText, queryByText, getByRole } = render(
+      <TestComponent
+        validationSchema={invalidatingSchema}
+        mocks={previewGoalMock(5200)}
+        savedMonthlyGoal={5000}
+      />,
+    );
+
+    editField(getByRole('spinbutton', { name: 'Salary' }), '80000');
+    expect(await findByText('+$200.00')).toBeInTheDocument();
+
+    // Making the edit invalid clears the preview: the header reverts to the
+    // saved goal with no stale difference.
+    editField(getByRole('spinbutton', { name: 'Salary' }), '-100');
+
     expect(await findByText('MPD Goal: $5,000.00')).toBeInTheDocument();
     expect(queryByText(/[+-]\$/)).not.toBeInTheDocument();
   });

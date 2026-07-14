@@ -17,10 +17,10 @@ interface MpdGoalPreviewProps {
 }
 
 /**
- * MPD Goal figure in the header. When a field is blurred with unsaved, valid
- * edits it shows the recomputed goal total plus the signed difference from the
- * saved goal (e.g. `+$200.00` / `-$75.00`) so coaches and admins can see the
- * impact of a change before saving. All the preview orchestration lives in
+ * MPD Goal figure in the header. While the form has unsaved, valid edits it
+ * shows the recomputed goal total plus the signed difference from the saved
+ * goal (e.g. `+$200.00` / `-$75.00`) so coaches and admins can see the impact
+ * of a change before saving. All the preview orchestration lives in
  * {@link useMpdGoalPreview}; this component only renders its result.
  */
 export const MpdGoalPreview: React.FC<MpdGoalPreviewProps> = ({
