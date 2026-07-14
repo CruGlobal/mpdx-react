@@ -3069,6 +3069,7 @@
     "Transfer created successfully": "Transfer created successfully",
     "Transfer Date": "Transfer Date",
     "Transfer date cannot be earlier than {{date}}": "Transfer date cannot be earlier than {{date}}",
+    "Transfer date cannot be in the past": "Transfer date cannot be in the past",
     "Transfer date is required": "Transfer date is required",
     "TRANSFER FROM": "TRANSFER FROM",
     "Transfer History": "Transfer History",
