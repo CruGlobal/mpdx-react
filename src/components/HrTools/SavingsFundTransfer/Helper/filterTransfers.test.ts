@@ -257,5 +257,18 @@ describe('useFilteredTransfers', () => {
       ).toEqual(['2023-10-15', '2023-12-15']);
       expect(endedTransfer?.failedCount).toBe(2);
     });
+
+    it('should scan through the end date when a stopped transfer ends today', () => {
+      const { filtered } = filteredTransfers(
+        makeStoppedTransactions(DateTime.fromISO('2024-01-15')),
+      );
+      const endedTransfer = filtered.find(
+        (tx) => tx.recurringTransfer?.id === '3',
+      );
+      expect(
+        endedTransfer?.missingMonths?.map((month) => month.toISODate()),
+      ).toEqual(['2023-10-15', '2023-12-15', '2024-01-15']);
+      expect(endedTransfer?.failedCount).toBe(3);
+    });
   });
 });

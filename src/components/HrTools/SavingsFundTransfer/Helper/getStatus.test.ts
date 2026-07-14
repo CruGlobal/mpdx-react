@@ -148,4 +148,16 @@ describe('createTable', () => {
     };
     expect(getStatusLabel(transfer)).toBe('ended');
   });
+
+  it('should return ended status if inactive with an end date of today', () => {
+    const transfer: Transactions = {
+      ...mockData[1],
+      recurringTransfer: {
+        ...mockData[1].recurringTransfer!,
+        recurringEnd: DateTime.fromISO('2023-12-15'),
+        active: false,
+      },
+    };
+    expect(getStatusLabel(transfer)).toBe('ended');
+  });
 });
