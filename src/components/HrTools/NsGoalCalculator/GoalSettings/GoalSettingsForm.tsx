@@ -160,6 +160,11 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
           return (
             <Form>
               <GoalSettingsHeader
+                accountListId={
+                  // Scenario goals have no account list
+                  'accountListId' in props ? props.accountListId : null
+                }
+                calculationId={calculation.id}
                 primaryPerson={primaryPerson}
                 spousePerson={spousePerson}
                 mpdGoal={mpdGoal}
