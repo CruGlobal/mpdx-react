@@ -31,6 +31,22 @@ const Wrapper = ({ children }: { children: ReactElement }) => (
   </TestRouter>
 );
 
+// Reports are disabled when the user_type_verified option is not 'true'
+const ReportsDisabledWrapper = ({ children }: { children: ReactElement }) => (
+  <TestRouter>
+    <GqlMockedProvider<{ GetUser: GetUserQuery; UserOption: UserOptionQuery }>
+      mocks={{
+        GetUser: { user: nonUsStaffUser },
+        UserOption: {
+          userOption: { key: 'user_type_verified', value: 'false' },
+        },
+      }}
+    >
+      {children}
+    </GqlMockedProvider>
+  </TestRouter>
+);
+
 describe('useNavPages', () => {
   afterEach(() => {
     process.env.DEVELOPMENT_ENV = 'false';
@@ -73,6 +89,20 @@ describe('useNavPages', () => {
     await waitForNextUpdate();
 
     expect(result.current.navPages.map((page) => page.id)).toContain(
+      'hr-tools-page',
+    );
+  });
+
+  it('keeps the HR Tools tab hidden for a developer when reports are disabled', async () => {
+    process.env.DEVELOPMENT_ENV = 'true';
+    mockSession({ developer: true });
+
+    const { result, waitForNextUpdate } = renderHook(() => useNavPages(false), {
+      wrapper: ReportsDisabledWrapper,
+    });
+    await waitForNextUpdate();
+
+    expect(result.current.navPages.map((page) => page.id)).not.toContain(
       'hr-tools-page',
     );
   });
