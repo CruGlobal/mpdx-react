@@ -44,7 +44,7 @@ interface TransferFormValues {
   transferFrom: string;
   transferTo: string;
   schedule: ScheduleEnum;
-  transferDate: DateTime<boolean>;
+  transferDate: DateTime<boolean> | null;
   endDate: DateTime<boolean> | null;
   amount: number;
   note: string;
@@ -190,7 +190,8 @@ export const TransferModal: React.FC<TransferModalProps> = ({
       note,
     } = values;
 
-    const convertedTransferDate = transferDate.toISO() ?? '';
+    const convertedTransferDate =
+      transferDate && transferDate.isValid ? (transferDate.toISO() ?? '') : '';
     const convertedEndDate = endDate?.toISO() ?? null;
 
     const successMessage =
