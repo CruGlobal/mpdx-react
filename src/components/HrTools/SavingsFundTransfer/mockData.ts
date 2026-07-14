@@ -11,6 +11,7 @@ export enum StatusEnum {
   Ongoing = 'ongoing',
   Complete = 'complete',
   Ended = 'ended',
+  Stopped = 'stopped',
   Failed = 'failed',
 }
 
