@@ -133,6 +133,23 @@ const mockTransactions: Transactions[] = [
     baseAmount: 10,
     failedCount: 0,
   },
+  {
+    transaction: null,
+    subCategory: null,
+    transfer: {
+      sourceFundTypeName: 'Primary',
+      destinationFundTypeName: 'Savings',
+    },
+    recurringTransfer: null,
+    scheduledTransfer: {
+      id: 'sched-1',
+      amount: 400,
+      transactedAt: DateTime.fromISO('2024-02-01'),
+      description: 'Conference fee',
+    },
+    baseAmount: 400,
+    failedCount: 0,
+  },
 ];
 
 describe('useFilteredTransfers', () => {
@@ -143,7 +160,17 @@ describe('useFilteredTransfers', () => {
   it('should return the correct number of transfers', () => {
     const { filtered, upcoming } = filteredTransfers(mockTransactions);
     expect(filtered).toHaveLength(2);
-    expect(upcoming).toHaveLength(1);
+    expect(upcoming).toHaveLength(2);
+  });
+
+  it('should route a pending scheduled transfer to upcoming without summarizing it', () => {
+    const { filtered, upcoming } = filteredTransfers(mockTransactions);
+
+    const scheduled = upcoming.filter((tx) => tx.scheduledTransfer);
+    expect(scheduled).toHaveLength(1);
+    expect(scheduled[0].scheduledTransfer?.id).toBe('sched-1');
+    expect(scheduled[0].summarizedTransfers).toBeUndefined();
+    expect(filtered.some((tx) => tx.scheduledTransfer)).toBe(false);
   });
 
   it('should correctly add amounts for recurring transfers', () => {
