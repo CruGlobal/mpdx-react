@@ -8,6 +8,8 @@ export type TotalsType = {
   ministryTotal: number;
   healthcareTotal: number;
   assessmentTotal: number;
+  benefitsTotal: number;
+  salaryTotal: number;
   otherTotal: number;
 };
 
@@ -40,6 +42,8 @@ export const TotalsProvider: React.FC<TotalsContextProps> = ({
     ministryTotal,
     healthcareTotal,
     assessmentTotal,
+    benefitsTotal,
+    salaryTotal,
     otherTotal,
     expensesTotal,
   } = useExpenseCategories(data.expenses);
@@ -53,6 +57,8 @@ export const TotalsProvider: React.FC<TotalsContextProps> = ({
       ministryTotal,
       healthcareTotal,
       assessmentTotal,
+      benefitsTotal,
+      salaryTotal,
       otherTotal,
     }),
     [
@@ -61,6 +67,8 @@ export const TotalsProvider: React.FC<TotalsContextProps> = ({
       ministryTotal,
       healthcareTotal,
       assessmentTotal,
+      benefitsTotal,
+      salaryTotal,
       otherTotal,
     ],
   );

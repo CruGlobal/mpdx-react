@@ -11,8 +11,10 @@ interface ExpensesPieChartProps {
 const chartColors = [
   theme.palette.primary.main,
   theme.palette.chartBlue.main,
+  theme.palette.chartPink.main,
   theme.palette.chartOrange.main,
   theme.palette.secondary.main,
+  theme.palette.mpdxGrayMedium.main,
 ];
 
 export const ExpensesPieChart: React.FC<ExpensesPieChartProps> = ({
@@ -20,14 +22,22 @@ export const ExpensesPieChart: React.FC<ExpensesPieChartProps> = ({
   width,
 }) => {
   const { t } = useTranslation();
-  const { ministryTotal, healthcareTotal, assessmentTotal, otherTotal } =
-    useTotals();
+  const {
+    ministryTotal,
+    healthcareTotal,
+    assessmentTotal,
+    benefitsTotal,
+    salaryTotal,
+    otherTotal,
+  } = useTotals();
 
   const data = [
     { name: t('Ministry'), value: ministryTotal ?? 0 },
     { name: t('Healthcare'), value: healthcareTotal ?? 0 },
+    { name: t('Assessment'), value: assessmentTotal ?? 0 },
+    { name: t('Benefits'), value: benefitsTotal ?? 0 },
+    { name: t('Salary'), value: salaryTotal ?? 0 },
     { name: t('Other'), value: otherTotal ?? 0 },
-    { name: t('Assessment, Benefits, Salary'), value: assessmentTotal ?? 0 },
   ];
 
   return (
@@ -36,7 +46,7 @@ export const ExpensesPieChart: React.FC<ExpensesPieChartProps> = ({
         <Pie
           data={data}
           cx="50%"
-          cy="45%"
+          cy="50%"
           labelLine={false}
           label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
             const RADIAN = Math.PI / 180;
@@ -65,6 +75,8 @@ export const ExpensesPieChart: React.FC<ExpensesPieChartProps> = ({
           <Cell key="cell-1" fill={chartColors[1]} />
           <Cell key="cell-2" fill={chartColors[2]} />
           <Cell key="cell-3" fill={chartColors[3]} />
+          <Cell key="cell-4" fill={chartColors[4]} />
+          <Cell key="cell-5" fill={chartColors[5]} />
         </Pie>
         <Legend
           wrapperStyle={{ marginTop: 5 }}

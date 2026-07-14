@@ -14,7 +14,7 @@ const mutationSpy = jest.fn();
 const currency = 'USD';
 
 const incomeTotal = 108_856;
-const expensesTotal = 18_569;
+const expensesTotal = 20_969;
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>

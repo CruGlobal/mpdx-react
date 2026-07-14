@@ -87,8 +87,13 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
                   borderRadius: 1,
                 }}
               >
-                <Typography variant="body1">
-                  {t('Month')}: {label}
+                <Typography
+                  variant="body1"
+                  sx={{
+                    fontWeight: 'bold',
+                  }}
+                >
+                  {label}
                 </Typography>
                 <Typography variant="body1">
                   {t('Income')}: {currencyFormat(income, currency, locale)}

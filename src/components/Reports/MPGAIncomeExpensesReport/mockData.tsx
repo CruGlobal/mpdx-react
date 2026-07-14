@@ -77,6 +77,13 @@ export const mockData: AllData = {
     },
     {
       id: crypto.randomUUID(),
+      description: 'Benefits',
+      monthly: [200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200],
+      average: 200,
+      total: 2400,
+    },
+    {
+      id: crypto.randomUUID(),
       description: 'Salary',
       monthly: [26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       average: 2,

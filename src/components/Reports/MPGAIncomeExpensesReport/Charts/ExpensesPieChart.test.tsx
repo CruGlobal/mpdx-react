@@ -35,13 +35,13 @@ describe('ExpensesPieChart', () => {
     );
   });
 
-  it('renders four slices', async () => {
+  it('renders five slices', async () => {
     const { findByRole } = render(<TestComponent />);
     const region = await findByRole('region');
 
     await waitFor(() => {
       const sectors = region.querySelectorAll('.recharts-pie-sector path');
-      expect(sectors.length).toBe(4);
+      expect(sectors.length).toBe(5);
     });
   });
 
@@ -50,7 +50,7 @@ describe('ExpensesPieChart', () => {
 
     const list = await findByRole('list');
     const items = within(list).getAllByRole('listitem');
-    expect(items).toHaveLength(4);
+    expect(items).toHaveLength(6);
   });
 
   it('shows the legend labels', async () => {
@@ -58,16 +58,19 @@ describe('ExpensesPieChart', () => {
 
     expect(await findByText('Ministry')).toBeInTheDocument();
     expect(getByText('Healthcare')).toBeInTheDocument();
+    expect(getByText('Assessment')).toBeInTheDocument();
+    expect(getByText('Benefits')).toBeInTheDocument();
+    expect(getByText('Salary')).toBeInTheDocument();
     expect(getByText('Other')).toBeInTheDocument();
-    expect(getByText('Assessment, Benefits, Salary')).toBeInTheDocument();
   });
 
   it('shows a percentage label for each non-empty slice', async () => {
     const { findByText, getByText, queryByText } = render(<TestComponent />);
 
-    expect(await findByText('78%')).toBeInTheDocument();
+    expect(await findByText('69%')).toBeInTheDocument();
     expect(getByText('11%')).toBeInTheDocument();
     expect(getByText('10%')).toBeInTheDocument();
+    expect(getByText('9%')).toBeInTheDocument();
 
     expect(queryByText('0%')).not.toBeInTheDocument();
   });

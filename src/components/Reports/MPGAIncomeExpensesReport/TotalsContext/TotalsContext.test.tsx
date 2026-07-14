@@ -34,6 +34,8 @@ function TestConsumer() {
     ministryTotal,
     healthcareTotal,
     assessmentTotal,
+    benefitsTotal,
+    salaryTotal,
     otherTotal,
   } = useTotals();
 
@@ -44,6 +46,8 @@ function TestConsumer() {
       <div data-testid="ministry">{ministryTotal}</div>
       <div data-testid="healthcare">{healthcareTotal}</div>
       <div data-testid="assessment">{assessmentTotal}</div>
+      <div data-testid="benefits">{benefitsTotal}</div>
+      <div data-testid="salary">{salaryTotal}</div>
       <div data-testid="other">{otherTotal}</div>
     </div>
   );
@@ -72,10 +76,11 @@ describe('TotalsContext', () => {
     );
 
     expect(getByText('108856')).toBeInTheDocument();
-    expect(getByText('18569')).toBeInTheDocument();
+    expect(getByText('20969')).toBeInTheDocument();
 
     expect(getByText('2124')).toBeInTheDocument();
     expect(getByText('1933')).toBeInTheDocument();
+    expect(getByText('2400')).toBeInTheDocument();
     expect(getByText('26')).toBeInTheDocument();
     expect(getByText('14486')).toBeInTheDocument();
   });
