@@ -3,7 +3,6 @@ import { Box, Divider, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import Loading from 'src/components/Loading';
 import { useLocale } from 'src/hooks/useLocale';
-import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import { usePdsGoalCalculator } from '../Shared/PdsGoalCalculatorContext';
 import { GridContainer, StyledGrid } from './styledGrid';
 import {
@@ -14,7 +13,6 @@ import {
 export const SupportItemStep: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const localeText = useDataGridLocaleText();
   const { calculation, summaryData, calculationLoading } =
     usePdsGoalCalculator();
 
@@ -75,7 +73,6 @@ export const SupportItemStep: React.FC = () => {
               disableColumnSorting
               disableRowSelectionOnClick
               hideFooter
-              localeText={localeText}
             />
           </GridContainer>
           <Divider sx={{ mx: -4, my: 4 }} />
