@@ -65,10 +65,9 @@ export const EditGoogleAccountModal: React.FC<EditGoogleAccountModalProps> = ({
     variables: {
       input: {
         googleAccountId: account.id,
-        accountListId: accountListId ?? '',
+        accountListId,
       },
     },
-    skip: !accountListId,
   });
 
   const googleAccountDetails = data?.googleAccountIntegrations[0];
@@ -91,7 +90,7 @@ export const EditGoogleAccountModal: React.FC<EditGoogleAccountModalProps> = ({
         variables: {
           input: {
             googleAccountId: account.id,
-            accountListId: accountListId ?? '',
+            accountListId,
             googleIntegration: {
               [`${tabSelected}Integration`]: enableIntegration,
             },

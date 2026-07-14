@@ -17,7 +17,7 @@ export interface PdsGoalCardProps {
 
 export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal }) => {
   const { t } = useTranslation();
-  const accountListId = useAccountListId() ?? '';
+  const accountListId = useAccountListId();
   const [deletePdsGoalCalculation] = useDeletePdsGoalCalculationMutation();
 
   const { data: hcmData, loading: hcmLoading } = useHcmUserQuery();

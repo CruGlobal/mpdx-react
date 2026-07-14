@@ -97,7 +97,7 @@ const PhoneValidationForm = ({
     UpdatePhoneNumber({
       variables: {
         input: {
-          accountListId: accountListId ?? '',
+          accountListId,
           attributes: {
             id: personId,
             phoneNumbers: [
@@ -113,7 +113,7 @@ const PhoneValidationForm = ({
         const query = {
           query: GetInvalidPhoneNumbersDocument,
           variables: {
-            accountListId: accountListId,
+            accountListId,
           },
         };
         const dataFromCache =

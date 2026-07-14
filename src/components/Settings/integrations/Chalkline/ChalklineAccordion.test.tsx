@@ -108,7 +108,7 @@ describe('PrayerlettersAccount', () => {
         'SendToChalkline',
       );
       expect(mutationSpy.mock.calls[0][0].operation.variables.input).toEqual({
-        accountListId: accountListId,
+        accountListId,
       });
     });
 

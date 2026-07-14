@@ -189,7 +189,7 @@ describe('PrayerlettersAccount', () => {
           'DeletePrayerlettersAccount',
         );
         expect(mutationSpy.mock.calls[1][0].operation.variables.input).toEqual({
-          accountListId: accountListId,
+          accountListId,
         });
       });
     });
@@ -252,7 +252,7 @@ describe('PrayerlettersAccount', () => {
           'DeletePrayerlettersAccount',
         );
         expect(mutationSpy.mock.calls[1][0].operation.variables.input).toEqual({
-          accountListId: accountListId,
+          accountListId,
         });
       });
     });
@@ -302,7 +302,7 @@ describe('PrayerlettersAccount', () => {
           'SyncPrayerlettersAccount',
         );
         expect(mutationSpy.mock.calls[1][0].operation.variables.input).toEqual({
-          accountListId: accountListId,
+          accountListId,
         });
       });
     });

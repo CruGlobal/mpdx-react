@@ -75,7 +75,7 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
 
   const { data, error, fetchMore } = useContactReferralTabQuery({
     variables: {
-      accountListId: accountListId,
+      accountListId,
       contactId: contactId,
     },
   });
@@ -220,7 +220,7 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
             size={'xl'} // TODO: Expand logic as more menu modals are added
           >
             <DynamicCreateMultipleContacts
-              accountListId={accountListId ?? ''}
+              accountListId={accountListId}
               handleClose={handleModalClose}
               referredById={contactId}
             />

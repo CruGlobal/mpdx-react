@@ -18,7 +18,7 @@ export type NewStaffGoalCalculation = NonNullable<
  * the current user's scenario goals fetched by id (no account list).
  */
 export type GoalSettingsSource =
-  | { accountListId: string | null | undefined }
+  | { accountListId: string }
   | { scenarioGoalId: string };
 
 interface UseNewStaffGoalCalculationResult {
@@ -51,18 +51,13 @@ export const useNewStaffGoalCalculation = (
   const { t } = useTranslation();
 
   const isScenario = 'scenarioGoalId' in source;
-  const scenarioGoalId =
-    'scenarioGoalId' in source ? source.scenarioGoalId : '';
-  const accountListId =
-    'accountListId' in source ? source.accountListId : undefined;
 
   // A real goal is fetched by its account list; a scenario goal by id, with the
   // account list omitted.
   const { data, loading, error } = useNewStaffGoalCalculationQuery({
     variables: isScenario
-      ? { accountListId: null, id: scenarioGoalId }
-      : { accountListId, id: null },
-    skip: !isScenario && !accountListId,
+      ? { accountListId: null, id: source.scenarioGoalId }
+      : { accountListId: source.accountListId, id: null },
   });
   const goalCalculation = data?.newStaffGoalCalculation ?? null;
 
@@ -94,8 +89,12 @@ export const useNewStaffGoalCalculation = (
       return updateGoalCalculation({
         variables: {
           input: isScenario
-            ? { id: scenarioGoalId, attributes }
-            : { accountListId, id: goalCalculation.id, attributes },
+            ? { id: source.scenarioGoalId, attributes }
+            : {
+                accountListId: source.accountListId,
+                id: goalCalculation.id,
+                attributes,
+              },
         },
       });
     },

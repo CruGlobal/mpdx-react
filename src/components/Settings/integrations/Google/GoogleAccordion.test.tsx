@@ -123,7 +123,7 @@ describe('GoogleAccordion', () => {
 
       expect(getByText(/continue/i)).toHaveAttribute(
         'href',
-        `https://auth.mpdx.org/auth/user/google?account_list_id=account-list-1&redirect_to=${encodeURIComponent(
+        `https://auth.mpdx.org/auth/user/google?redirect_to=${encodeURIComponent(
           `${window.location.origin}/accountLists/account-list-1/settings/integrations?selectedTab=google`,
         )}&access_token=apiToken`,
       );
@@ -224,7 +224,7 @@ describe('GoogleAccordion', () => {
 
         expect(getByText(/continue/i)).toHaveAttribute(
           'href',
-          `https://auth.mpdx.org/auth/user/google?account_list_id=account-list-1&redirect_to=${encodeURIComponent(
+          `https://auth.mpdx.org/auth/user/google?redirect_to=${encodeURIComponent(
             `${window.location.origin}/accountLists/account-list-1/settings/integrations?selectedTab=google`,
           )}&access_token=apiToken`,
         );

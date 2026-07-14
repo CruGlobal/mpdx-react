@@ -8,7 +8,6 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { TypeEnum } from 'src/graphql/types.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { GetPersonDuplicatesQuery } from './GetPersonDuplicates.generated';
 import MergePeople from './MergePeople';
@@ -22,7 +21,6 @@ const router = {
 
 const mockEnqueue = jest.fn();
 
-jest.mock('src/hooks/useAccountListId');
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -221,8 +219,6 @@ describe('Tools - MergePeople', () => {
   });
 
   it('should render link with correct href', async () => {
-    (useAccountListId as jest.Mock).mockReturnValue(accountListId);
-
     const { findByRole } = render(<MergePeopleWrapper />);
 
     const contactName = await findByRole('link', {

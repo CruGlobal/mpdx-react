@@ -228,14 +228,14 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
       {exportsModalOpen && (
         <DynamicExportsModal
           ids={selectedIds}
-          accountListId={accountListId ?? ''}
+          accountListId={accountListId}
           handleClose={handleExportModalClose}
           openMailMergedLabelModal={() => setLabelModalOpen(true)}
         />
       )}
       {labelModalOpen && (
         <DynamicMailMergedLabelModal
-          accountListId={accountListId ?? ''}
+          accountListId={accountListId}
           ids={selectedIds}
           handleClose={() => setLabelModalOpen(false)}
         />
@@ -243,7 +243,7 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
       {exportEmailsModalOpen && (
         <DynamicMassActionsExportEmailsModal
           ids={selectedIds}
-          accountListId={accountListId ?? ''}
+          accountListId={accountListId}
           handleClose={() => setExportEmailsModalOpen(false)}
         />
       )}

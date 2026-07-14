@@ -26,7 +26,7 @@ const PlaceholderImage = styled('img')(({ theme }) => ({
 export const GoalsList: React.FC = () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const accountListId = useAccountListId() ?? '';
+  const accountListId = useAccountListId();
   const { data, error, fetchMore } = useGoalCalculationsQuery({
     variables: { accountListId },
   });

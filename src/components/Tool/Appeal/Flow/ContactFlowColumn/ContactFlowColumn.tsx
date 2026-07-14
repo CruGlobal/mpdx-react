@@ -90,10 +90,10 @@ export const ContactFlowColumn: React.FC<Props> = ({
 
   const { data, loading, fetchMore } = useAppealsContactsQuery({
     variables: {
-      accountListId: accountListId ?? '',
+      accountListId,
       contactsFilters,
     },
-    skip: !accountListId || !appealStatus,
+    skip: !appealStatus,
   });
 
   const { data: allContacts, previousData: allContactsPrevious } =
@@ -116,7 +116,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
   const { data: excludedContacts } = useExcludedAppealContactsQuery({
     variables: {
       appealId: appealId ?? '',
-      accountListId: accountListId ?? '',
+      accountListId,
     },
     skip: appealStatus !== AppealStatusEnum.Excluded,
   });

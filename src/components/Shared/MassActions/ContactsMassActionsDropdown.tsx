@@ -75,7 +75,7 @@ export const ContactsMassActionsDropdown: React.FC<
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const accountListId = useAccountListId() ?? '';
+  const accountListId = useAccountListId();
   const { isOpen: contactPanelOpen } = useContactPanel();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -108,7 +108,7 @@ export const ContactsMassActionsDropdown: React.FC<
   const hideContacts = async () => {
     await updateContacts({
       variables: {
-        accountListId: accountListId ?? '',
+        accountListId,
         attributes: selectedIds.map((id) => ({
           id,
           status: StatusEnum.NeverAsk,
@@ -297,14 +297,14 @@ export const ContactsMassActionsDropdown: React.FC<
 
       {openRemoveTagsModal && (
         <DynamicMassActionsRemoveTagsModal
-          accountListId={accountListId ?? ''}
+          accountListId={accountListId}
           ids={selectedIds}
           handleClose={() => setOpenRemoveTagsModal(false)}
         />
       )}
       {openAddTagsModal && (
         <DynamicMassActionsAddTagsModal
-          accountListId={accountListId ?? ''}
+          accountListId={accountListId}
           ids={selectedIds}
           handleClose={() => setOpenAddTagsModal(false)}
         />
@@ -312,21 +312,21 @@ export const ContactsMassActionsDropdown: React.FC<
       {addToAppealModalOpen && (
         <DynamicMassActionsAddToAppealModal
           ids={selectedIds}
-          accountListId={accountListId ?? ''}
+          accountListId={accountListId}
           handleClose={() => setAddToAppealModalOpen(false)}
         />
       )}
       {createAppealModalOpen && (
         <DynamicMassActionsCreateAppealModal
           ids={selectedIds}
-          accountListId={accountListId ?? ''}
+          accountListId={accountListId}
           handleClose={() => setCreateAppealModalOpen(false)}
         />
       )}
       {editFieldsModalOpen && (
         <DynamicMassActionsEditFieldsModal
           ids={selectedIds}
-          accountListId={accountListId ?? ''}
+          accountListId={accountListId}
           handleClose={() => setEditFieldsModalOpen(false)}
         />
       )}
@@ -341,14 +341,14 @@ export const ContactsMassActionsDropdown: React.FC<
       {exportsModalOpen && (
         <DynamicExportsModal
           ids={selectedIds}
-          accountListId={accountListId ?? ''}
+          accountListId={accountListId}
           handleClose={() => setExportsModalOpen(false)}
           openMailMergedLabelModal={() => setLabelModalOpen(true)}
         />
       )}
       {labelModalOpen && (
         <DynamicMailMergedLabelModal
-          accountListId={accountListId ?? ''}
+          accountListId={accountListId}
           ids={selectedIds}
           handleClose={() => setLabelModalOpen(false)}
         />
@@ -356,14 +356,14 @@ export const ContactsMassActionsDropdown: React.FC<
       {exportEmailsModalOpen && (
         <DynamicMassActionsExportEmailsModal
           ids={selectedIds}
-          accountListId={accountListId ?? ''}
+          accountListId={accountListId}
           handleClose={() => setExportEmailsModalOpen(false)}
         />
       )}
       {mergeModalOpen && (
         <DynamicMassActionsMergeModal
           ids={selectedIds}
-          accountListId={accountListId ?? ''}
+          accountListId={accountListId}
           handleClose={() => setMergeModalOpen(false)}
         />
       )}

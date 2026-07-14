@@ -32,7 +32,6 @@ const push = jest.fn();
 const replace = jest.fn();
 const mockEnqueue = jest.fn();
 
-jest.mock('src/hooks/useAccountListId');
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore

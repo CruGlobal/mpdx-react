@@ -67,8 +67,7 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
   const accountListId = useAccountListId();
 
   const { data: questionnaireData, loading } = useNewStaffQuestionnaireQuery({
-    variables: { accountListId: accountListId ?? '' },
-    skip: !accountListId,
+    variables: { accountListId },
   });
   const questionnaire = questionnaireData?.newStaffQuestionnaire ?? null;
 

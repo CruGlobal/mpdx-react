@@ -35,6 +35,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
     router={{
       ...defaultRouter,
       query: {
+        accountListId: 'account-list-1',
         filters,
       },
     }}

@@ -30,7 +30,7 @@ export const PdsGoalsList: React.FC = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
-  const accountListId = useAccountListId() ?? '';
+  const accountListId = useAccountListId();
 
   const { data: userData } = useGetUserQuery();
   const defaultName = t('User');

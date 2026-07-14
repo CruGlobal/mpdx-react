@@ -33,7 +33,7 @@ export const ChalklineAccordion: React.FC<AccordionProps> = ({
     await sendToChalkline({
       variables: {
         input: {
-          accountListId: accountListId ?? '',
+          accountListId,
         },
       },
       onCompleted: () => {

@@ -98,7 +98,7 @@ export const AccountSummary: React.FC<AccountSummaryProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const accountListId = useAccountListId() ?? '';
+  const accountListId = useAccountListId();
   const router = useRouter();
   const { query } = router;
 

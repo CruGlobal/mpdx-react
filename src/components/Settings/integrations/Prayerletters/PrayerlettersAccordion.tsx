@@ -37,7 +37,7 @@ export const PrayerlettersAccordion: React.FC<AccordionProps> = ({
   } = usePrayerlettersAccountQuery({
     variables: {
       input: {
-        accountListId: accountListId ?? '',
+        accountListId,
       },
     },
     skip: expandedAccordion !== IntegrationAccordion.Prayerletters,
@@ -53,7 +53,7 @@ export const PrayerlettersAccordion: React.FC<AccordionProps> = ({
     await syncPrayerlettersAccount({
       variables: {
         input: {
-          accountListId: accountListId ?? '',
+          accountListId,
         },
       },
       onError: () => {
@@ -199,7 +199,7 @@ export const PrayerlettersAccordion: React.FC<AccordionProps> = ({
       )}
       {showDeleteModal && (
         <DeletePrayerlettersAccountModal
-          accountListId={accountListId ?? ''}
+          accountListId={accountListId}
           handleClose={handleDeleteModal}
           refetchPrayerlettersAccount={refetchPrayerlettersAccount}
         />

@@ -106,7 +106,7 @@ export const tasksSavedFilters = (
 
 const PageContent: React.FC = () => {
   const { t } = useTranslation();
-  const accountListId = useAccountListId() ?? '';
+  const accountListId = useAccountListId();
   const { isOpen, openContact: setContactFocus } = useContactPanel();
   const { openTaskModal, preloadTaskModal } = useTaskModal();
   const appName = getAppName();
@@ -141,10 +141,9 @@ const PageContent: React.FC = () => {
 
   const { data, loading, fetchMore } = useTasksQuery({
     variables: {
-      accountListId: accountListId ?? '',
+      accountListId,
       tasksFilter,
     },
-    skip: !accountListId,
     context: {
       doNotBatch: true,
     },
@@ -167,8 +166,7 @@ const PageContent: React.FC = () => {
   }, [activeFilters]);
 
   const { data: filterData, loading: filtersLoading } = useTaskFiltersQuery({
-    variables: { accountListId: accountListId ?? '' },
-    skip: !accountListId,
+    variables: { accountListId },
   });
 
   const toggleFilterPanel = () => {

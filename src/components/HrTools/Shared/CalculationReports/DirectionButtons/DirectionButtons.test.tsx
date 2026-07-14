@@ -13,7 +13,6 @@ import { DirectionButtons } from './DirectionButtons';
 const title = 'Submit this form';
 
 const submit = jest.fn();
-const pushMock = jest.fn();
 const handleNextStep = jest.fn();
 const handlePreviousStep = jest.fn();
 const handleDiscard = jest.fn();
@@ -76,14 +75,6 @@ const TestComponent: React.FC<TestComponentProps> = ({
     </TestRouter>
   </ThemeProvider>
 );
-
-jest.mock('src/hooks/useAccountListId', () => ({
-  useAccountListId: () => 'account-list-1',
-}));
-
-jest.mock('next/router', () => ({
-  useRouter: () => ({ push: pushMock }),
-}));
 
 describe('DirectionButtons', () => {
   it('renders Back and Submit buttons', async () => {

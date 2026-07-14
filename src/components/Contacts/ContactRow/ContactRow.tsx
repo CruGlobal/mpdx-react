@@ -170,7 +170,7 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
           style={{ position: 'static', top: 0, transform: 'none' }}
         >
           <StarContactIconButton
-            accountListId={accountListId ?? ''}
+            accountListId={accountListId}
             contactId={contactId}
             isStarred={starred || false}
           />

@@ -6,12 +6,12 @@ import { signOut } from 'next-auth/react';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { TestSetupProvider } from 'src/components/Setup/SetupProvider';
-import theme from '../../../../../../theme';
+import theme from 'src/theme';
 import { getTopBarMock } from '../../../TopBar/TopBar.mock';
 import { ProfileMenuPanel } from './ProfileMenuPanel';
 
 const router = {
-  isReady: false,
+  isReady: true,
   pathname: '/accountLists/[accountListId]/test',
   query: { accountListId: '1' },
   push: jest.fn(),
@@ -50,7 +50,7 @@ describe('ProfileMenuPanelForNavBar', () => {
     userEvent.click(await findByTestId('accountListSelectorButton'));
     expect(getByTestId('accountListButton-1')).toBeInTheDocument();
     expect(getByTestId('accountListButton-1')).toHaveStyle(
-      'backgroundColor: #383F43;',
+      'backgroundColor: #9C9FA1;',
     );
     expect(getByText('Preferences')).toBeInTheDocument();
   });
@@ -75,7 +75,7 @@ describe('ProfileMenuPanelForNavBar', () => {
     userEvent.click(getByTestId('accountListButton-1'));
     await waitFor(() =>
       expect(router.push).toHaveBeenCalledWith({
-        pathname: '/accountLists/[accountListId]/',
+        pathname: '/accountLists/[accountListId]/test',
         query: { accountListId: '1' },
       }),
     );

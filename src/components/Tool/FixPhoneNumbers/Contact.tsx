@@ -190,7 +190,7 @@ const Contact: React.FC<Props> = ({ person, submitAll, accountListId }) => {
     await updatePhoneNumber({
       variables: {
         input: {
-          accountListId: accountListId ?? '',
+          accountListId,
           attributes: {
             id: personId,
             phoneNumbers: [

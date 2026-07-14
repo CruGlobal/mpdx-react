@@ -36,7 +36,7 @@ export const AddExcludedContactModal: React.FC<
 
   const { data, loading } = useAppealContactsQuery({
     variables: {
-      accountListId: accountListId ?? '',
+      accountListId,
       appealId: appealId ?? '',
     },
   });
@@ -54,7 +54,7 @@ export const AddExcludedContactModal: React.FC<
     await assignContactsToAppeal({
       variables: {
         input: {
-          accountListId: accountListId ?? '',
+          accountListId,
           attributes: {
             id: appealId,
             contactIds: [...existingContactIds, ...contactIds],

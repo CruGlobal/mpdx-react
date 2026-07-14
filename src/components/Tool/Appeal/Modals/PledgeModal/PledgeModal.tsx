@@ -104,7 +104,7 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
       await createAccountListPledge({
         variables: {
           input: {
-            accountListId: accountListId ?? '',
+            accountListId,
             attributes: {
               appealId: appealId,
               contactId: contact.id,

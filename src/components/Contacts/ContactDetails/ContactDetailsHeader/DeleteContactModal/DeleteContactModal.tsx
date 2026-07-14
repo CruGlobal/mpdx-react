@@ -63,7 +63,7 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
   contactId,
 }) => {
   const { t } = useTranslation();
-  const accountListId = useAccountListId() ?? '';
+  const accountListId = useAccountListId();
 
   const { data } = useContactSourceQuery({
     variables: { accountListId, contactId },

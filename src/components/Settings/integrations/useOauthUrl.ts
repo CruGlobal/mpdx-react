@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
-import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useOptionalAccountListId } from 'src/hooks/useAccountListId';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
 
 export const useOauthUrl = () => {
   const { apiToken } = useRequiredSession();
-  const accountListId = useAccountListId();
+  // Optional because the setup Connect flow reuses ConnectOrganization on
+  // /setup/connect, which has no accountListId in the route.
+  const accountListId = useOptionalAccountListId();
 
   const [origin, setOrigin] = useState('');
   useEffect(() => {
@@ -14,13 +16,15 @@ export const useOauthUrl = () => {
 
   const getRedirectUrl = (accordion: IntegrationAccordion) =>
     encodeURIComponent(
-      `${origin}/accountLists/${accountListId}/settings/integrations?selectedTab=${accordion}`,
+      accountListId
+        ? `${origin}/accountLists/${accountListId}/settings/integrations?selectedTab=${accordion}`
+        : `${origin}/setup/connect`,
     );
 
   return {
     getGoogleOauthUrl: () =>
-      `${process.env.OAUTH_URL}/auth/user/google?account_list_id=${accountListId}` +
-      `&redirect_to=${getRedirectUrl(IntegrationAccordion.Google)}` +
+      `${process.env.OAUTH_URL}/auth/user/google` +
+      `?redirect_to=${getRedirectUrl(IntegrationAccordion.Google)}` +
       `&access_token=${apiToken}`,
 
     getMailChimpOauthUrl: () =>
@@ -29,8 +33,8 @@ export const useOauthUrl = () => {
       `&access_token=${apiToken}`,
 
     getOrganizationOauthUrl: (organizationId: string) =>
-      `${process.env.OAUTH_URL}/auth/user/donorhub?account_list_id=${accountListId}` +
-      `&redirect_to=${getRedirectUrl(IntegrationAccordion.Organization)}` +
+      `${process.env.OAUTH_URL}/auth/user/donorhub` +
+      `?redirect_to=${getRedirectUrl(IntegrationAccordion.Organization)}` +
       `&access_token=${apiToken}` +
       `&organization_id=${organizationId}`,
 

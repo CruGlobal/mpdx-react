@@ -56,7 +56,7 @@ export const ExportAllDataAccordion: React.FC<ExportAllDataAccordionProps> = ({
     await exportData({
       variables: {
         input: {
-          accountListId: accountListId,
+          accountListId,
         },
       },
       onCompleted: () => {

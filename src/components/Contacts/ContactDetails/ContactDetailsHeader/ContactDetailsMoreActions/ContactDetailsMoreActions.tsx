@@ -98,7 +98,7 @@ export const ContactDetailsMoreActions: React.FC<
     };
     await updateContactOther({
       variables: {
-        accountListId: accountListId ?? '',
+        accountListId,
         attributes,
       },
       refetchQueries: [
@@ -117,7 +117,7 @@ export const ContactDetailsMoreActions: React.FC<
   const handleDeleteContact = () => {
     deleteContact({
       variables: {
-        accountListId: accountListId ?? '',
+        accountListId,
         contactId,
       },
       update: (cache) => {
@@ -234,7 +234,7 @@ export const ContactDetailsMoreActions: React.FC<
         size={'xl'} // TODO: Expand logic as more menu modals are added
       >
         <DynamicCreateMultipleContacts
-          accountListId={accountListId ?? ''}
+          accountListId={accountListId}
           handleClose={handleModalClose}
           referredById={contactId}
         />

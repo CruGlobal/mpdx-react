@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
 import {
@@ -24,8 +25,7 @@ jest.mock('notistack', () => ({
   },
 }));
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const useRouter = jest.spyOn(require('next/router'), 'useRouter');
+const accountListId = 'account-list-1';
 
 const handleClose = jest.fn();
 
@@ -79,23 +79,23 @@ const savedFiltersMock = gqlMock<UserOptionFragment>(UserOptionFragmentDoc, {
 describe('SaveFilterModal', () => {
   //#region SaveFilterModal | Contacts
   describe('Contacts', () => {
-    beforeEach(() => {
-      useRouter.mockReturnValue({
-        route: '/contacts',
-      });
-    });
     it('renders modal', () => {
       const { getByText } = render(
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider>
-            <SaveFilterModal
-              isOpen={true}
-              handleClose={handleClose}
-              currentFilters={currentFilters}
-              currentSavedFilters={[savedGraphQLContactMock, savedFiltersMock]}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>,
+        <TestRouter router={{ route: '/contacts' }}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider>
+              <SaveFilterModal
+                isOpen={true}
+                handleClose={handleClose}
+                currentFilters={currentFilters}
+                currentSavedFilters={[
+                  savedGraphQLContactMock,
+                  savedFiltersMock,
+                ]}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </TestRouter>,
       );
 
       expect(getByText('Save Filter')).toBeVisible();
@@ -103,16 +103,21 @@ describe('SaveFilterModal', () => {
 
     it('closes modal', () => {
       const { getByText, getByLabelText } = render(
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider>
-            <SaveFilterModal
-              isOpen={true}
-              handleClose={handleClose}
-              currentFilters={currentFilters}
-              currentSavedFilters={[savedGraphQLContactMock, savedFiltersMock]}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>,
+        <TestRouter router={{ route: '/contacts' }}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider>
+              <SaveFilterModal
+                isOpen={true}
+                handleClose={handleClose}
+                currentFilters={currentFilters}
+                currentSavedFilters={[
+                  savedGraphQLContactMock,
+                  savedFiltersMock,
+                ]}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </TestRouter>,
       );
 
       expect(getByText('Save Filter')).toBeVisible();
@@ -123,16 +128,21 @@ describe('SaveFilterModal', () => {
     it('saves filter', async () => {
       const mutationSpy = jest.fn();
       const { getByText, getByRole } = render(
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider onCall={mutationSpy}>
-            <SaveFilterModal
-              isOpen={true}
-              handleClose={handleClose}
-              currentFilters={currentFilters}
-              currentSavedFilters={[savedGraphQLContactMock, savedFiltersMock]}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>,
+        <TestRouter router={{ route: '/contacts' }}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider onCall={mutationSpy}>
+              <SaveFilterModal
+                isOpen={true}
+                handleClose={handleClose}
+                currentFilters={currentFilters}
+                currentSavedFilters={[
+                  savedGraphQLContactMock,
+                  savedFiltersMock,
+                ]}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </TestRouter>,
       );
 
       expect(getByText('Save Filter')).toBeVisible();
@@ -152,7 +162,7 @@ describe('SaveFilterModal', () => {
         'graphql_saved_contacts_filter_My_Cool_Filter_2',
       );
       expect(operation.variables.input.value).toEqual(
-        JSON.stringify(currentFilters),
+        JSON.stringify({ ...currentFilters, accountListId }),
       );
       expect(handleClose).toHaveBeenCalled();
     });
@@ -160,16 +170,21 @@ describe('SaveFilterModal', () => {
     it('asks if you want save filter when filter with same name already exists', async () => {
       const mutationSpy = jest.fn();
       const { getByText, getByRole } = render(
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider onCall={mutationSpy}>
-            <SaveFilterModal
-              isOpen={true}
-              handleClose={handleClose}
-              currentFilters={currentFilters}
-              currentSavedFilters={[savedGraphQLContactMock, savedFiltersMock]}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>,
+        <TestRouter router={{ route: '/contacts' }}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider onCall={mutationSpy}>
+              <SaveFilterModal
+                isOpen={true}
+                handleClose={handleClose}
+                currentFilters={currentFilters}
+                currentSavedFilters={[
+                  savedGraphQLContactMock,
+                  savedFiltersMock,
+                ]}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </TestRouter>,
       );
 
       expect(getByText('Save Filter')).toBeVisible();
@@ -197,7 +212,7 @@ describe('SaveFilterModal', () => {
         'graphql_saved_contacts_filter_My_Cool_Filter',
       );
       expect(operation.variables.input.value).toEqual(
-        JSON.stringify(currentFilters),
+        JSON.stringify({ ...currentFilters, accountListId }),
       );
       expect(handleClose).toHaveBeenCalled();
     });
@@ -206,24 +221,21 @@ describe('SaveFilterModal', () => {
 
   //#region SaveFilterModal | Tasks
   describe('Tasks', () => {
-    beforeEach(() => {
-      useRouter.mockReturnValue({
-        route: '/tasks',
-      });
-    });
     it('saves filter', async () => {
       const mutationSpy = jest.fn();
       const { getByText, getByRole } = render(
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider onCall={mutationSpy}>
-            <SaveFilterModal
-              isOpen={true}
-              handleClose={handleClose}
-              currentFilters={currentFilters}
-              currentSavedFilters={[savedGraphQLTaskMock, savedFiltersMock]}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>,
+        <TestRouter router={{ route: '/tasks' }}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider onCall={mutationSpy}>
+              <SaveFilterModal
+                isOpen={true}
+                handleClose={handleClose}
+                currentFilters={currentFilters}
+                currentSavedFilters={[savedGraphQLTaskMock, savedFiltersMock]}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </TestRouter>,
       );
 
       expect(getByText('Save Filter')).toBeVisible();
@@ -243,7 +255,7 @@ describe('SaveFilterModal', () => {
         'graphql_saved_tasks_filter_My_Cool_Filter_2',
       );
       expect(operation.variables.input.value).toEqual(
-        JSON.stringify(currentFilters),
+        JSON.stringify({ ...currentFilters, accountListId }),
       );
       expect(handleClose).toHaveBeenCalled();
     });
@@ -251,16 +263,18 @@ describe('SaveFilterModal', () => {
     it('asks if you want save filter when filter with same name already exists', async () => {
       const mutationSpy = jest.fn();
       const { getByText, getByRole } = render(
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider onCall={mutationSpy}>
-            <SaveFilterModal
-              isOpen={true}
-              handleClose={handleClose}
-              currentFilters={currentFilters}
-              currentSavedFilters={[savedGraphQLTaskMock, savedFiltersMock]}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>,
+        <TestRouter router={{ route: '/tasks' }}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider onCall={mutationSpy}>
+              <SaveFilterModal
+                isOpen={true}
+                handleClose={handleClose}
+                currentFilters={currentFilters}
+                currentSavedFilters={[savedGraphQLTaskMock, savedFiltersMock]}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </TestRouter>,
       );
 
       expect(getByText('Save Filter')).toBeVisible();
@@ -288,7 +302,7 @@ describe('SaveFilterModal', () => {
         'graphql_saved_tasks_filter_My_Cool_Filter',
       );
       expect(operation.variables.input.value).toEqual(
-        JSON.stringify(currentFilters),
+        JSON.stringify({ ...currentFilters, accountListId }),
       );
       expect(handleClose).toHaveBeenCalled();
     });

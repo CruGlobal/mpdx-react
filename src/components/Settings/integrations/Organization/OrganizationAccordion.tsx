@@ -345,7 +345,7 @@ export const OrganizationAccordion: React.FC<AccordionProps> = ({
           handleClose={() => setImportDataSyncModal(null)}
           organizationId={importDataSyncModal.id}
           organizationName={importDataSyncModal.organization.name}
-          accountListId={accountListId ?? ''}
+          accountListId={accountListId}
         />
       )}
       {editOrganizationModal && (

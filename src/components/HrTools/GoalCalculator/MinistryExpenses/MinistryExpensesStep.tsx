@@ -14,7 +14,7 @@ const InstructionsWrapper = styled('div')(({ theme }) => ({
 
 const Instructions: React.FC = () => {
   const { t } = useTranslation();
-  const accountListId = useAccountListId() ?? '';
+  const accountListId = useAccountListId();
 
   return (
     <InstructionsWrapper>

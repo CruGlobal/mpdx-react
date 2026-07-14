@@ -14,7 +14,7 @@ const FixSendNewsletterPage: React.FC = () => {
       pageTitle={t('Fix Send Newsletter')}
       selectedMenuId="fixSendNewsletter'"
     >
-      <FixSendNewsletter accountListId={accountListId || ''} />
+      <FixSendNewsletter accountListId={accountListId} />
     </ToolsWrapper>
   );
 };

@@ -48,8 +48,7 @@ const PageContent: React.FC = () => {
   };
 
   const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
-    variables: { accountListId: accountListId ?? '' },
-    skip: !accountListId,
+    variables: { accountListId },
     context: {
       doNotBatch: true,
     },

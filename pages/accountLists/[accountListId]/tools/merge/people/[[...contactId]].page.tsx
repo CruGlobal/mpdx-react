@@ -11,7 +11,7 @@ const MergePeoplePage: React.FC = () => {
 
   return (
     <ToolsWrapper pageTitle={t('Merge People')} selectedMenuId="mergePeople">
-      <MergePeople accountListId={accountListId || ''} />
+      <MergePeople accountListId={accountListId} />
     </ToolsWrapper>
   );
 };

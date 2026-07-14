@@ -99,7 +99,7 @@ const EmailValidationForm = ({
     emailAddressesMutation({
       variables: {
         input: {
-          accountListId: accountListId ?? '',
+          accountListId,
           attributes: {
             id: personId,
             emailAddresses: [
@@ -115,7 +115,7 @@ const EmailValidationForm = ({
         const query = {
           query: GetInvalidEmailAddressesDocument,
           variables: {
-            accountListId: accountListId,
+            accountListId,
           },
         };
         const dataFromCache =
