@@ -75,8 +75,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
   </ThemeProvider>
 );
 
-/** Edit the salary field and blur it (tab away) to commit a preview. */
-const editSalaryAndBlur = (field: HTMLElement, value: string) => {
+/** Edit a field and blur it (tab away) to commit a preview. */
+const editAndBlur = (field: HTMLElement, value: string) => {
   userEvent.clear(field);
   userEvent.type(field, value);
   userEvent.tab();
@@ -96,25 +96,38 @@ describe('MpdGoalPreview', () => {
   });
 
   it('does not preview while typing, before the field is blurred', () => {
-    jest.useFakeTimers();
-    try {
-      const onCall = jest.fn();
-      const { getByRole } = render(
-        <TestComponent mocks={previewGoalMock(5200)} onCall={onCall} />,
-      );
+    const onCall = jest.fn();
+    const { getByRole } = render(
+      <TestComponent mocks={previewGoalMock(5200)} onCall={onCall} />,
+    );
 
-      const salary = getByRole('spinbutton', { name: 'Salary' });
-      userEvent.clear(salary);
-      userEvent.type(salary, '80000');
-      // No blur yet: even past the debounce window, typing triggers no preview.
-      jest.advanceTimersByTime(1000);
+    const salary = getByRole('spinbutton', { name: 'Salary' });
+    userEvent.clear(salary);
+    userEvent.type(salary, '80000');
 
-      expect(onCall).not.toHaveGraphqlOperation(
-        'PreviewNewStaffGoalCalculation',
-      );
-    } finally {
-      jest.useRealTimers();
-    }
+    // Nothing is committed until a field blurs, so no preview is scheduled — the
+    // preview is gated on blur, not on keystrokes.
+    expect(onCall).not.toHaveGraphqlOperation('PreviewNewStaffGoalCalculation');
+  });
+
+  it('coalesces rapid blurs across fields into a single preview request', async () => {
+    const onCall = jest.fn();
+    const { getByRole } = render(
+      <TestComponent mocks={previewGoalMock(5200)} onCall={onCall} />,
+    );
+
+    // Tab quickly through two fields within the debounce window.
+    editAndBlur(getByRole('spinbutton', { name: 'Salary' }), '80000');
+    editAndBlur(getByRole('spinbutton', { name: 'Tenure' }), '5');
+
+    await waitFor(() =>
+      expect(onCall).toHaveGraphqlOperation('PreviewNewStaffGoalCalculation'),
+    );
+    const previewCalls = onCall.mock.calls.filter(
+      ([{ operation }]) =>
+        operation.operationName === 'PreviewNewStaffGoalCalculation',
+    );
+    expect(previewCalls).toHaveLength(1);
   });
 
   it('previews the new goal total and a positive difference when an edit raises the goal', async () => {
@@ -122,7 +135,7 @@ describe('MpdGoalPreview', () => {
       <TestComponent mocks={previewGoalMock(5200)} />,
     );
 
-    editSalaryAndBlur(getByRole('spinbutton', { name: 'Salary' }), '80000');
+    editAndBlur(getByRole('spinbutton', { name: 'Salary' }), '80000');
 
     expect(await findByText('MPD Goal: $5,200.00')).toBeInTheDocument();
     expect(await findByText('+$200.00')).toBeInTheDocument();
@@ -133,7 +146,7 @@ describe('MpdGoalPreview', () => {
       <TestComponent mocks={previewGoalMock(4925)} />,
     );
 
-    editSalaryAndBlur(getByRole('spinbutton', { name: 'Salary' }), '40000');
+    editAndBlur(getByRole('spinbutton', { name: 'Salary' }), '40000');
 
     expect(await findByText('MPD Goal: $4,925.00')).toBeInTheDocument();
     expect(await findByText('-$75.00')).toBeInTheDocument();
@@ -143,18 +156,64 @@ describe('MpdGoalPreview', () => {
     const { findByText, getByRole, getByText, getByLabelText, queryByText } =
       render(<TestComponent mocks={previewGoalMock(5200)} />);
 
-    editSalaryAndBlur(getByRole('spinbutton', { name: 'Salary' }), '80000');
+    editAndBlur(getByRole('spinbutton', { name: 'Salary' }), '80000');
     expect(await findByText('MPD Goal: $5,200.00')).toBeInTheDocument();
 
     // A further edit starts a new preview. Until it returns, the "MPD Goal:"
     // label stays but the amount is replaced by a spinner and the difference is
     // hidden — no stale number on screen.
-    editSalaryAndBlur(getByRole('spinbutton', { name: 'Salary' }), '70000');
+    editAndBlur(getByRole('spinbutton', { name: 'Salary' }), '70000');
 
     expect(getByLabelText('Calculating new goal total')).toBeInTheDocument();
     expect(getByText('MPD Goal:')).toBeInTheDocument();
     expect(queryByText(/MPD Goal: \$/)).not.toBeInTheDocument();
     expect(queryByText(/[+-]\$/)).not.toBeInTheDocument();
+  });
+
+  it('settles again after a further edit while recalculating', async () => {
+    const { findByText, getByRole, getByLabelText } = render(
+      <TestComponent mocks={previewGoalMock(5200)} />,
+    );
+
+    editAndBlur(getByRole('spinbutton', { name: 'Salary' }), '80000');
+    expect(await findByText('MPD Goal: $5,200.00')).toBeInTheDocument();
+
+    // A second edit supersedes the first; only its result (matched by key)
+    // should replace the spinner once it settles.
+    editAndBlur(getByRole('spinbutton', { name: 'Salary' }), '70000');
+    expect(getByLabelText('Calculating new goal total')).toBeInTheDocument();
+
+    expect(await findByText('MPD Goal: $5,200.00')).toBeInTheDocument();
+  });
+
+  it('drops the preview and reverts to the saved goal when edits are undone', async () => {
+    const { findByText, queryByText, getByRole } = render(
+      <TestComponent mocks={previewGoalMock(5200)} savedMonthlyGoal={5000} />,
+    );
+
+    const salary = getByRole('spinbutton', {
+      name: 'Salary',
+    }) as HTMLInputElement;
+    const original = salary.value;
+
+    editAndBlur(salary, '80000');
+    expect(await findByText('+$200.00')).toBeInTheDocument();
+
+    // Undo the edit → the form is pristine again → the preview is dropped and
+    // the header returns to the saved goal with no stale difference.
+    editAndBlur(salary, original);
+
+    expect(await findByText('MPD Goal: $5,000.00')).toBeInTheDocument();
+    expect(queryByText(/[+-]\$/)).not.toBeInTheDocument();
+  });
+
+  it('previews a raise from a zero saved goal', async () => {
+    const { findByText } = render(
+      <TestComponent mocks={previewGoalMock(200)} savedMonthlyGoal={0} />,
+    );
+
+    // Zero renders as a real total, not a blank.
+    expect(await findByText('MPD Goal: $0.00')).toBeInTheDocument();
   });
 
   it('shows no difference when the change does not affect the goal', async () => {
@@ -163,7 +222,7 @@ describe('MpdGoalPreview', () => {
       <TestComponent mocks={previewGoalMock(5000)} onCall={onCall} />,
     );
 
-    editSalaryAndBlur(getByRole('spinbutton', { name: 'Salary' }), '80000');
+    editAndBlur(getByRole('spinbutton', { name: 'Salary' }), '80000');
 
     // Wait for the preview to run, then confirm the goal is unchanged and no
     // signed difference is rendered.
@@ -180,7 +239,7 @@ describe('MpdGoalPreview', () => {
       <TestComponent mocks={previewGoalMock(5200)} onCall={onCall} />,
     );
 
-    editSalaryAndBlur(getByRole('spinbutton', { name: 'Salary' }), '99999');
+    editAndBlur(getByRole('spinbutton', { name: 'Salary' }), '99999');
 
     await waitFor(() =>
       expect(onCall).toHaveGraphqlOperation('PreviewNewStaffGoalCalculation', {
@@ -203,7 +262,7 @@ describe('MpdGoalPreview', () => {
       />,
     );
 
-    editSalaryAndBlur(getByRole('spinbutton', { name: 'Salary' }), '80000');
+    editAndBlur(getByRole('spinbutton', { name: 'Salary' }), '80000');
 
     // A scenario goal has no account list; the API previews it all the same,
     // with the account list left out of the request.
@@ -230,7 +289,7 @@ describe('MpdGoalPreview', () => {
       <TestComponent mocks={previewGoalMock(5200)} />,
     );
 
-    editSalaryAndBlur(getByRole('spinbutton', { name: 'Salary' }), '80000');
+    editAndBlur(getByRole('spinbutton', { name: 'Salary' }), '80000');
 
     expect(
       await findByLabelText('Calculating new goal total'),
@@ -254,11 +313,14 @@ describe('MpdGoalPreview', () => {
       />,
     );
 
-    editSalaryAndBlur(getByRole('spinbutton', { name: 'Salary' }), '80000');
+    editAndBlur(getByRole('spinbutton', { name: 'Salary' }), '80000');
 
     await waitFor(() =>
       expect(onCall).toHaveGraphqlOperation('PreviewNewStaffGoalCalculation'),
     );
+    // The failure is surfaced (rather than looking like a zero-impact edit) and
+    // the header falls back to the saved goal with no stale difference.
+    expect(await findByText('Preview unavailable')).toBeInTheDocument();
     expect(await findByText('MPD Goal: $5,000.00')).toBeInTheDocument();
     expect(queryByText(/[+-]\$/)).not.toBeInTheDocument();
   });
