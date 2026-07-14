@@ -21,9 +21,12 @@ export function useReportNavItems(): NavItems[] {
   const userType = data?.user.userType;
   const usStaff = userType === UserTypeEnum.UsStaff;
   const globalStaff = userType === UserTypeEnum.GlobalStaff;
+  const hybridStaff = userType === UserTypeEnum.HybridStaff;
 
   const hasNoStaffAccount =
     data && typeof data.user.staffAccountId !== 'string';
+
+  const hideReport = (!usStaff && !hybridStaff) || hasNoStaffAccount;
 
   const reportNavItems: NavItems[] = [
     {
@@ -46,12 +49,12 @@ export function useReportNavItems(): NavItems[] {
           {
             id: 'staffExpense',
             title: t('Staff Expense Report'),
-            hideItem: !usStaff || hasNoStaffAccount,
+            hideItem: hideReport,
           },
           {
             id: 'mpgaIncomeExpenses',
             title: t('Income/Expense Analysis'),
-            hideItem: !usStaff || hasNoStaffAccount,
+            hideItem: hideReport,
           },
         ]),
     {
@@ -61,7 +64,7 @@ export function useReportNavItems(): NavItems[] {
     {
       id: 'financialAccounts',
       title: t('Responsibility Centers'),
-      hideItem: reportsDisabled ? undefined : !globalStaff,
+      hideItem: reportsDisabled ? undefined : !globalStaff && !hybridStaff,
     },
     {
       id: 'expectedMonthlyTotal',
@@ -83,6 +86,7 @@ export function useReportNavItems(): NavItems[] {
       t,
       usStaff,
       globalStaff,
+      hybridStaff,
       reportsDisabled,
       hasNoStaffAccount,
       developerBypass,

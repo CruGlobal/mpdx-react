@@ -8,7 +8,28 @@ import { UserTypeEnum } from 'src/graphql/types.generated';
 import { UserOptionQuery } from './UserPreference.generated';
 import { useNavPages } from './useNavPages';
 
-// A user without the US Staff user type, ineligible for every HR Tool
+const accountListId = 'account-list-1';
+
+// Wrapper for asserting HR Tools visibility by user type (verified, reports enabled)
+const makeWrapper = (userType: UserTypeEnum) => {
+  const wrapper = ({ children }: { children: ReactElement }) => (
+    <TestRouter router={{ query: { accountListId }, isReady: true }}>
+      <GqlMockedProvider<{ GetUser: GetUserQuery; UserOption: UserOptionQuery }>
+        mocks={{
+          GetUser: { user: { userType } },
+          UserOption: {
+            userOption: { key: 'user_type_verified', value: 'true' },
+          },
+        }}
+      >
+        {children}
+      </GqlMockedProvider>
+    </TestRouter>
+  );
+  wrapper.displayName = 'NavPagesWrapper';
+  return wrapper;
+};
+
 const nonUsStaffUser = {
   userType: UserTypeEnum.GlobalStaff,
   usStaffGroup: null,
@@ -31,7 +52,6 @@ const Wrapper = ({ children }: { children: ReactElement }) => (
   </TestRouter>
 );
 
-// Reports are disabled when the user_type_verified option is not 'true'
 const ReportsDisabledWrapper = ({ children }: { children: ReactElement }) => (
   <TestRouter>
     <GqlMockedProvider<{ GetUser: GetUserQuery; UserOption: UserOptionQuery }>
@@ -50,6 +70,30 @@ const ReportsDisabledWrapper = ({ children }: { children: ReactElement }) => (
 describe('useNavPages', () => {
   afterEach(() => {
     process.env.DEVELOPMENT_ENV = 'false';
+  });
+
+  it('shows the HR Tools tab for a us staff user', async () => {
+    const { result, waitFor } = renderHook(() => useNavPages(false), {
+      wrapper: makeWrapper(UserTypeEnum.UsStaff),
+    });
+
+    await waitFor(() =>
+      expect(result.current.navPages.map((page) => page.id)).toContain(
+        'hr-tools-page',
+      ),
+    );
+  });
+
+  it('shows the HR Tools tab for a hybrid staff user', async () => {
+    const { result, waitFor } = renderHook(() => useNavPages(false), {
+      wrapper: makeWrapper(UserTypeEnum.HybridStaff),
+    });
+
+    await waitFor(() =>
+      expect(result.current.navPages.map((page) => page.id)).toContain(
+        'hr-tools-page',
+      ),
+    );
   });
 
   it('hides the HR Tools tab for a non-US Staff user when not in a development env', async () => {

@@ -13,6 +13,11 @@ export enum RequiredUserGroupEnum {
   PdsGoalCalc = 'pdsGoalCalc',
 }
 
+export const isUsStaffLike = (user?: UserTypeEnum) =>
+  user === UserTypeEnum.UsStaff || user === UserTypeEnum.HybridStaff;
+export const isGlobalStaffLike = (user?: UserTypeEnum) =>
+  user === UserTypeEnum.GlobalStaff || user === UserTypeEnum.HybridStaff;
+
 interface UserTypeAccessProps {
   requiredUserType?: UserTypeEnum;
   requireStaffAccount?: boolean;
@@ -51,8 +56,13 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     [RequiredUserGroupEnum.PdsGoalCalc]: inPdsGoalCalcIneligibleGroup,
   };
 
+  const meetsRequiredUserType =
+    requiredUserType === UserTypeEnum.UsStaff
+      ? isUsStaffLike(userType)
+      : isGlobalStaffLike(userType);
+
   const limitedAccess =
-    (userType && userType !== requiredUserType) ||
+    (userType && !meetsRequiredUserType) ||
     (requireUserGroups && ineligibleByGroup[requireUserGroups]);
 
   // Once HCM is ready to go live and DISABLE_NEW_REPORTS is removed, we can remove the alwaysAllow prop
