@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useDeveloperBypass } from './useDeveloperBypass';
 import { useHrToolsNavItems } from './useHrToolsNavItems';
 import { useReportNavItems } from './useReportNavItems';
 import { useReportsDisabled } from './useReportsDisabled';
@@ -55,7 +56,8 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
   const { reportsDisabled } = useReportsDisabled();
 
   const userType = data?.user.userType;
-  const showTab = userType === UserTypeEnum.UsStaff;
+  const developerBypass = useDeveloperBypass();
+  const canSeeHrTools = userType === UserTypeEnum.UsStaff || developerBypass;
 
   const reportItems = useReportNavItems();
   const toolsItems = useToolsNavItems();
@@ -121,7 +123,7 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
               })),
               showInNav: true,
               hideTab:
-                (!!data && !showTab) ||
+                (!!data && !canSeeHrTools) ||
                 hrToolsLoading ||
                 hrToolsItems.length === 0,
             },
@@ -192,7 +194,7 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
     settingsItems,
     hrToolsItems,
     hrToolsLoading,
-    showTab,
+    canSeeHrTools,
     reportsDisabled,
     data,
   ]);
