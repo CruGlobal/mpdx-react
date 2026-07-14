@@ -24,18 +24,54 @@ describe('useOauthUrl', () => {
     const { result } = renderUseOauthUrl();
 
     expect(result.current.getGoogleOauthUrl()).toBe(
-      `https://auth.mpdx.org/auth/user/google?account_list_id=${accountListId}&redirect_to=${encodeURIComponent(
+      `https://auth.mpdx.org/auth/user/google?redirect_to=${encodeURIComponent(
         `http://localhost/accountLists/${accountListId}/settings/integrations?selectedTab=${IntegrationAccordion.Google}`,
       )}&access_token=${apiToken}`,
     );
   });
 
-  it('includes the organization id in the DonorHub OAuth url', () => {
+  it('builds the Mailchimp OAuth url with the account list id and redirect', () => {
+    const { result } = renderUseOauthUrl();
+
+    expect(result.current.getMailChimpOauthUrl()).toBe(
+      `https://auth.mpdx.org/auth/user/mailchimp?account_list_id=${accountListId}&redirect_to=${encodeURIComponent(
+        `http://localhost/accountLists/${accountListId}/settings/integrations?selectedTab=${IntegrationAccordion.Mailchimp}`,
+      )}&access_token=${apiToken}`,
+    );
+  });
+
+  it('builds the organization OAuth url with the the organization, account list id, and redirect', () => {
     const { result } = renderUseOauthUrl();
 
     expect(result.current.getOrganizationOauthUrl('org-1')).toBe(
-      `https://auth.mpdx.org/auth/user/donorhub?account_list_id=${accountListId}&redirect_to=${encodeURIComponent(
+      `https://auth.mpdx.org/auth/user/donorhub?redirect_to=${encodeURIComponent(
         `http://localhost/accountLists/${accountListId}/settings/integrations?selectedTab=${IntegrationAccordion.Organization}`,
+      )}&access_token=${apiToken}&organization_id=org-1`,
+    );
+  });
+
+  it('builds the Prayer Letters OAuth url with the account list id and redirect', () => {
+    const { result } = renderUseOauthUrl();
+
+    expect(result.current.getPrayerlettersOauthUrl()).toBe(
+      `https://auth.mpdx.org/auth/user/prayer_letters?account_list_id=${accountListId}&redirect_to=${encodeURIComponent(
+        `http://localhost/accountLists/${accountListId}/settings/integrations?selectedTab=${IntegrationAccordion.Prayerletters}`,
+      )}&access_token=${apiToken}`,
+    );
+  });
+
+  it('redirects to the setup Connect page without an accountListId', () => {
+    const NoAccountListWrapper = ({ children }: PropsWithChildren) => (
+      <TestRouter router={{ query: {}, isReady: true }}>{children}</TestRouter>
+    );
+
+    const { result } = renderHook(() => useOauthUrl(), {
+      wrapper: NoAccountListWrapper,
+    });
+
+    expect(result.current.getOrganizationOauthUrl('org-1')).toBe(
+      `https://auth.mpdx.org/auth/user/donorhub?redirect_to=${encodeURIComponent(
+        'http://localhost/setup/connect',
       )}&access_token=${apiToken}&organization_id=org-1`,
     );
   });

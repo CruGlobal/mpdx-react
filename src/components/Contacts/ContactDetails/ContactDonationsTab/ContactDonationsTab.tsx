@@ -69,7 +69,7 @@ export const ContactDonationsTab: React.FC<ContactDonationsProp> = ({
 }) => {
   const { data } = useGetContactDonationsQuery({
     variables: {
-      accountListId: accountListId,
+      accountListId,
       contactId: contactId,
     },
   });

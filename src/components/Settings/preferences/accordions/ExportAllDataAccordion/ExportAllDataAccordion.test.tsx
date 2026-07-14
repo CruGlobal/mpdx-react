@@ -135,7 +135,7 @@ describe('Export All Data Accordion', () => {
             operationName: 'ExportData',
             variables: {
               input: {
-                accountListId: accountListId,
+                accountListId,
               },
             },
           },

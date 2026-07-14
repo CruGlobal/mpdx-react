@@ -13,8 +13,8 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
-import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import illustration13 from '../../../../../../images/drawkit/grape/drawkit-grape-pack-illustration-13.svg';
 import { useAcknowledgeAllUserNotificationsMutation } from './AcknowledgeAllUserNotifications.generated';
 import {
@@ -158,10 +158,9 @@ const NotificationMenu = ({
 
   const { data, loading, fetchMore } = useGetNotificationsQuery({
     variables: {
-      accountListId: accountListId ?? '',
+      accountListId,
       after: null,
     },
-    skip: !accountListId,
     notifyOnNetworkStatusChange: true,
   });
 
@@ -170,7 +169,7 @@ const NotificationMenu = ({
 
   const handleAcknowledgeAllClick = () => {
     acknoweldgeAllUserNotifications({
-      variables: { accountListId: accountListId ?? '' },
+      variables: { accountListId },
       optimisticResponse: {
         acknowledgeAllUserNotifications: {
           notificationIds: [],
@@ -180,7 +179,7 @@ const NotificationMenu = ({
         const query = {
           query: GetNotificationsDocument,
           variables: {
-            accountListId: accountListId,
+            accountListId,
             after: null,
           },
         };

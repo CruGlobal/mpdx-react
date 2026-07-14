@@ -56,7 +56,7 @@ export const EditAppealHeaderInfoModal: React.FC<
     await UpdateAppeal({
       variables: {
         input: {
-          accountListId: accountListId ?? '',
+          accountListId,
           attributes: {
             id: appealInfo.id,
             name: attributes.name,

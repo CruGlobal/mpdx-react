@@ -9,7 +9,7 @@ import { PdsSummaryTable } from './PdsSummaryTable';
 
 export const SummaryReportStep: React.FC = () => {
   const { t } = useTranslation();
-  const accountListId = useAccountListId() ?? '';
+  const accountListId = useAccountListId();
   const { calculationLoading } = usePdsGoalCalculator();
   const { data } = useAccountListSupportRaisedQuery({
     variables: { accountListId },

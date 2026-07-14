@@ -6,11 +6,9 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { fireEvent, render } from '__tests__/util/testingLibraryReactMock';
 import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from '../../../theme';
 import Contact from './Contact';
 
-jest.mock('src/hooks/useAccountListId');
 let testData = {
   id: 'tester-1',
   name: 'Tester 1',
@@ -38,7 +36,7 @@ const accountListId = 'accountListId';
 const router = {
   pathname:
     '/accountLists/[accountListId]/tools/fix/commitmentInfo/[[...contactId]]',
-  query: { accountListId: accountListId },
+  query: { accountListId },
   push: jest.fn(),
 };
 
@@ -74,7 +72,6 @@ const TestComponent = ({
 describe('FixCommitmentContact', () => {
   beforeEach(() => {
     handleShowModal.mockClear();
-    (useAccountListId as jest.Mock).mockReturnValue(accountListId);
   });
 
   it('default', async () => {

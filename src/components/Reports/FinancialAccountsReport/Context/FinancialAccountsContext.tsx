@@ -33,7 +33,7 @@ interface FinancialAccountProviderProps {
 export const FinancialAccountProvider: React.FC<
   FinancialAccountProviderProps
 > = ({ children, financialAccountId }) => {
-  const accountListId = useAccountListId() ?? '';
+  const accountListId = useAccountListId();
 
   const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
   const [panelOpen, setPanelOpen] = useState<Panel | null>(null);
@@ -58,7 +58,7 @@ export const FinancialAccountProvider: React.FC<
 
   const contextValue = useMemo(
     () => ({
-      accountListId: accountListId ?? '',
+      accountListId,
       financialAccountId,
       financialAccountQuery,
       isNavListOpen,

@@ -203,7 +203,7 @@ describe('FixEmailAddresses-Home', () => {
     );
     expect(mutationSpy).toHaveGraphqlOperation('EmailAddresses', {
       input: {
-        accountListId: accountListId,
+        accountListId,
         attributes: {
           id: 'testid',
           emailAddresses: [{ email: newEmail.email }],

@@ -66,7 +66,7 @@ const TaskModalCommentsListItem: React.FC<Props> = ({
   taskId,
 }: Props) => {
   const { t } = useTranslation();
-  const accountListId = useAccountListId() ?? '';
+  const accountListId = useAccountListId();
   const [deleteComment] = useDeleteCommentMutation();
   const [updateComment] = useUpdateCommentMutation();
   const [editing, setEditing] = useState<boolean>(false);

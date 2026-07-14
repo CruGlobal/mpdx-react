@@ -54,7 +54,7 @@ export const AccountListItem: FC<AccountListItemProps> = ({
   onCheckToggle,
 }) => {
   const { t } = useTranslation();
-  const accountListId = useAccountListId() ?? '';
+  const accountListId = useAccountListId();
   const locale = useLocale();
 
   const average = useMemo(() => {

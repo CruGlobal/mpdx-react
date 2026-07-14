@@ -16,10 +16,10 @@ export const AppealsMainPanel: React.FC = () => {
 
   const { data: appealInfo, loading: appealInfoLoading } = useAppealQuery({
     variables: {
-      accountListId: accountListId ?? '',
+      accountListId,
       appealId: appealId ?? '',
     },
-    skip: !accountListId || !appealId,
+    skip: !appealId,
   });
 
   return (
@@ -32,7 +32,7 @@ export const AppealsMainPanel: React.FC = () => {
         />
       ) : viewMode === TableViewModeEnum.Flows ? (
         <DynamicContactFlow
-          accountListId={accountListId ?? ''}
+          accountListId={accountListId}
           appealInfo={appealInfo}
           appealInfoLoading={appealInfoLoading}
         />

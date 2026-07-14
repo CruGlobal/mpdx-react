@@ -28,10 +28,10 @@ import {
   TermsOfUseLink,
 } from 'src/components/Shared/Links/Links';
 import { AccountList } from 'src/graphql/types.generated';
+import { useOptionalAccountListId } from 'src/hooks/useAccountListId';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { clearDataDogUser } from 'src/lib/dataDog';
-import { useAccountListId } from '../../../../../../hooks/useAccountListId';
-import theme from '../../../../../../theme';
+import theme from 'src/theme';
 import { useGetTopBarQuery } from '../../GetTopBar.generated';
 import ProfileName from './ProfileName';
 
@@ -133,7 +133,7 @@ const ProfileMenu = (): ReactElement => {
   const client = useApolloClient();
   const { enqueueSnackbar } = useSnackbar();
   const { contactId: _, ...queryWithoutContactId } = router.query;
-  const accountListId = useAccountListId();
+  const accountListId = useOptionalAccountListId();
   const { data, loading } = useGetTopBarQuery();
   const { onSetupTour } = useSetupContext();
   const [profileMenuAnchorEl, setProfileMenuAnchorEl] =

@@ -67,7 +67,7 @@ export const ContactsList: React.FC<ContactsListProps> = ({
   const { data: excludedContacts } = useExcludedAppealContactsQuery({
     variables: {
       appealId: appealId ?? '',
-      accountListId: accountListId ?? '',
+      accountListId,
     },
     skip: appealStatus !== AppealStatusEnum.Excluded,
   });

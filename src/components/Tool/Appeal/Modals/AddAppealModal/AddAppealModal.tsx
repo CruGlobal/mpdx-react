@@ -75,7 +75,7 @@ export const AddAppealModal: React.FC<AddAppealModalProps> = ({
     <Modal isOpen={true} title={t('Add Appeal')} handleClose={handleClose}>
       <DialogContent dividers>
         <AddAppealForm
-          accountListId={accountListId ?? ''}
+          accountListId={accountListId}
           appealName={appealName}
           appealGoal={appealGoal}
           appealStatuses={appealStatuses}

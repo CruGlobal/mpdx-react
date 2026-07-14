@@ -110,7 +110,7 @@ describe('SuggestedContactStatus', () => {
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('ContactStatus', {
-        accountListId: accountListId,
+        accountListId,
         contactId: 'contact-1',
       }),
     );

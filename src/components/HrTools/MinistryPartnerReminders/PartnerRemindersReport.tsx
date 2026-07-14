@@ -77,7 +77,7 @@ export const PartnerRemindersReport: React.FC<MPRemindersReportProps> = ({
 
   const { data, loading, error } = useMinistryPartnerRemindersQuery({
     variables: {
-      accountListId: accountListId ?? '',
+      accountListId,
       designationNumber,
     },
     skip: !designationNumber,
@@ -140,7 +140,7 @@ export const PartnerRemindersReport: React.FC<MPRemindersReportProps> = ({
     await updateMutation({
       variables: {
         input: {
-          accountListId: accountListId ?? '',
+          accountListId,
           designationNumber,
           updates: getUpdates(values),
         },

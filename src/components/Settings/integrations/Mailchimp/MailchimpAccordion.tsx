@@ -80,10 +80,9 @@ export const MailchimpAccordion: React.FC<AccordionProps> = ({
   } = useMailchimpAccountQuery({
     variables: {
       input: {
-        accountListId: accountListId ?? '',
+        accountListId,
       },
     },
-    skip: !accountListId,
   });
 
   const mailchimpAccount = data?.mailchimpAccount
@@ -96,7 +95,7 @@ export const MailchimpAccordion: React.FC<AccordionProps> = ({
     await updateMailchimpAccount({
       variables: {
         input: {
-          accountListId: accountListId ?? '',
+          accountListId,
           mailchimpAccount: attributes,
           mailchimpAccountId: mailchimpAccount?.id ?? '',
         },
@@ -136,7 +135,7 @@ export const MailchimpAccordion: React.FC<AccordionProps> = ({
     await syncMailchimpAccount({
       variables: {
         input: {
-          accountListId: accountListId ?? '',
+          accountListId,
         },
       },
     });
@@ -401,7 +400,7 @@ export const MailchimpAccordion: React.FC<AccordionProps> = ({
       )}
       {showDeleteModal && (
         <DeleteMailchimpAccountModal
-          accountListId={accountListId || ''}
+          accountListId={accountListId}
           handleClose={handleDeleteModalClose}
           refetchMailchimpAccount={refetchMailchimpAccount}
           appName={appName || ''}

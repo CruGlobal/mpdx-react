@@ -24,9 +24,9 @@ import {
   ContactFilterStatusEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { NavPage, useNavPages } from 'src/hooks/useNavPages';
-import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useCreateContactMutation } from '../AddMenu/Items/CreateContact/CreateContact.generated';
 import { useGetSearchMenuContactsLazyQuery } from './SearchMenu.generated';
 
@@ -80,7 +80,7 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
       (wildcardSearch: string) =>
         searchForContacts({
           variables: {
-            accountListId: accountListId ?? '',
+            accountListId,
             contactsFilter: {
               status: [
                 ContactFilterStatusEnum.Active,
@@ -112,7 +112,7 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
   const handleCreateContact = async () => {
     const { data } = await createContact({
       variables: {
-        accountListId: accountListId ?? '',
+        accountListId,
         attributes: {
           name: wildcardSearch,
         },

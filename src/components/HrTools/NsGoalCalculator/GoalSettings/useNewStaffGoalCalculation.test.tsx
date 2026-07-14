@@ -65,17 +65,6 @@ describe('useNewStaffGoalCalculation', () => {
     });
   });
 
-  it('skips the query and returns null when no account list is given', async () => {
-    const { result } = renderHook(
-      () => useNewStaffGoalCalculation({ accountListId: undefined }),
-      { wrapper: makeWrapper({ id: 'goal-1' }) },
-    );
-
-    await waitFor(() => expect(result.current.loading).toBe(false));
-    expect(result.current.goalCalculation).toBeNull();
-    expect(mutationSpy).not.toHaveGraphqlOperation('NewStaffGoalCalculation');
-  });
-
   it('returns null when the scenario goal is not found', async () => {
     const { result } = renderHook(
       () => useNewStaffGoalCalculation({ scenarioGoalId: 'missing' }),

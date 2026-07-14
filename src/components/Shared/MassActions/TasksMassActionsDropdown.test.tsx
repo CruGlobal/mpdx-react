@@ -36,7 +36,6 @@ const mocks = {
   },
 };
 
-jest.mock('src/hooks/useAccountListId');
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -205,24 +204,26 @@ describe('TasksMassActionsDropdown', () => {
   it('opens the more actions menu and clicks the add tags (tasks) action', async () => {
     const mutationSpy = jest.fn();
     const { queryByTestId, getByText, queryByText, getByRole } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{
-          GetTasksForAddingTags: GetTasksForAddingTagsQuery;
-        }>
-          mocks={mocks}
-          onCall={mutationSpy}
-        >
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <SnackbarProvider>
-              <TasksMassActionsDropdown
-                selectedIdCount={selectedIds?.length ?? 0}
-                selectedIds={selectedIds}
-                massDeselectAll={massDeselectAll}
-              />
-            </SnackbarProvider>
-          </LocalizationProvider>
-        </GqlMockedProvider>
-      </ThemeProvider>,
+      <TestRouter>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<{
+            GetTasksForAddingTags: GetTasksForAddingTagsQuery;
+          }>
+            mocks={mocks}
+            onCall={mutationSpy}
+          >
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <SnackbarProvider>
+                <TasksMassActionsDropdown
+                  selectedIdCount={selectedIds?.length ?? 0}
+                  selectedIds={selectedIds}
+                  massDeselectAll={massDeselectAll}
+                />
+              </SnackbarProvider>
+            </LocalizationProvider>
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </TestRouter>,
     );
 
     expect(queryByText('Add Tag(s)')).not.toBeInTheDocument();
@@ -254,24 +255,26 @@ describe('TasksMassActionsDropdown', () => {
   it('opens the more actions menu and clicks the remove tags (tasks) action', async () => {
     const mutationSpy = jest.fn();
     const { queryByTestId, getByText, queryByText } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{
-          GetTasksForAddingTags: GetTasksForAddingTagsQuery;
-        }>
-          mocks={mocks}
-          onCall={mutationSpy}
-        >
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <SnackbarProvider>
-              <TasksMassActionsDropdown
-                selectedIdCount={selectedIds?.length ?? 0}
-                selectedIds={selectedIds}
-                massDeselectAll={massDeselectAll}
-              />
-            </SnackbarProvider>
-          </LocalizationProvider>
-        </GqlMockedProvider>
-      </ThemeProvider>,
+      <TestRouter>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<{
+            GetTasksForAddingTags: GetTasksForAddingTagsQuery;
+          }>
+            mocks={mocks}
+            onCall={mutationSpy}
+          >
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <SnackbarProvider>
+                <TasksMassActionsDropdown
+                  selectedIdCount={selectedIds?.length ?? 0}
+                  selectedIds={selectedIds}
+                  massDeselectAll={massDeselectAll}
+                />
+              </SnackbarProvider>
+            </LocalizationProvider>
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </TestRouter>,
     );
 
     expect(queryByText('Remove Tag(s)')).not.toBeInTheDocument();

@@ -18,7 +18,7 @@ import ProfileMenu from './Items/ProfileMenu/ProfileMenu';
 import SearchMenu from './Items/SearchMenu/SearchMenu';
 
 interface TopBarProps {
-  accountListId: string | undefined;
+  accountListId: string | null;
   onMobileNavOpen?: () => void;
 }
 

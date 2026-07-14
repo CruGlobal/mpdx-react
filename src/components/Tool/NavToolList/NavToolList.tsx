@@ -54,8 +54,7 @@ const NavToolList = ({ selectedId, isOpen, toggle }: Props): ReactElement => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { data, loading } = useGetToolNotificationsQuery({
-    variables: { accountListId: accountListId ?? '' },
-    skip: !accountListId,
+    variables: { accountListId },
   });
 
   const toolsItems = useToolsNavItems();

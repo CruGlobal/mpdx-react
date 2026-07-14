@@ -99,7 +99,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
     }
     await updateContacts({
       variables: {
-        accountListId: accountListId ?? '',
+        accountListId,
         attributes: contactUpdates.map((contact) => ({
           id: contact.id,
           sendNewsletter: contact.sendNewsletter,

@@ -42,7 +42,7 @@ export const AddContactToAppealModal: React.FC<
 
   const { data } = useAppealContactsQuery({
     variables: {
-      accountListId: accountListId ?? '',
+      accountListId,
       appealId: appealId ?? '',
     },
   });
@@ -61,7 +61,7 @@ export const AddContactToAppealModal: React.FC<
     await assignContactsToAppeal({
       variables: {
         input: {
-          accountListId: accountListId ?? '',
+          accountListId,
           attributes: {
             id: appealId,
             contactIds: [...existingContactIds, ...contactIds],
@@ -143,7 +143,7 @@ export const AddContactToAppealModal: React.FC<
                     </Alert>
                   )}
                   <ContactsAutocomplete
-                    accountListId={accountListId ?? ''}
+                    accountListId={accountListId}
                     value={contactIds}
                     onChange={(contactIds) => {
                       setFieldValue('contactIds', contactIds);

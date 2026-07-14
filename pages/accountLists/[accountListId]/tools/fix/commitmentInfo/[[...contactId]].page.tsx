@@ -14,7 +14,7 @@ const FixCommitmentInfoPage: React.FC = () => {
       pageTitle={t('Fix Commitment Info')}
       selectedMenuId="fixCommitmentInfo"
     >
-      <FixCommitmentInfo accountListId={accountListId || ''} />
+      <FixCommitmentInfo accountListId={accountListId} />
     </ToolsWrapper>
   );
 };

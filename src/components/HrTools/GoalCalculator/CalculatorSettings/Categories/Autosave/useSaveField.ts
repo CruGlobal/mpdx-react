@@ -5,7 +5,7 @@ import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
 import { useUpdateGoalCalculationMutation } from '../SettingsCategory/GoalCalculation.generated';
 
 export const useSaveField = () => {
-  const accountListId = useAccountListId() ?? '';
+  const accountListId = useAccountListId();
   const {
     goalCalculationResult: { data },
     trackMutation,

@@ -3,10 +3,10 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import { VirtuosoMockContext } from 'react-virtuoso';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { PhaseEnum } from 'src/graphql/types.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import useTaskModal from '../../../../hooks/useTaskModal';
 import theme from '../../../../theme';
 import { TasksMassActionsDropdown } from '../../../Shared/MassActions/TasksMassActionsDropdown';
@@ -17,7 +17,6 @@ import {
 } from './ContactTasksTab.generated';
 
 jest.mock('../../../../hooks/useTaskModal');
-jest.mock('../../../../hooks/useAccountListId');
 
 jest.mock('../../../Shared/MassActions/TasksMassActionsDropdown', () => ({
   TasksMassActionsDropdown: jest.fn(
@@ -38,7 +37,6 @@ beforeEach(() => {
     openTaskModal,
     preloadTaskModal: jest.fn(),
   });
-  (useAccountListId as jest.Mock).mockReturnValue(router);
 });
 
 const mockEnqueue = jest.fn();
@@ -65,19 +63,21 @@ describe('ContactTasksTab', () => {
   it('default', async () => {
     const querySpy = jest.fn();
     const { getByText, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider onCall={querySpy}>
-          <VirtuosoMockContext.Provider
-            value={{ viewportHeight: 300, itemHeight: 100 }}
-          >
-            <ContactTasksTab
-              accountListId={accountListId}
-              contactId={contactId}
-              contactDetailsLoaded={false}
-            />
-          </VirtuosoMockContext.Provider>
-        </GqlMockedProvider>
-      </ThemeProvider>,
+      <TestRouter router={router}>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider onCall={querySpy}>
+            <VirtuosoMockContext.Provider
+              value={{ viewportHeight: 300, itemHeight: 100 }}
+            >
+              <ContactTasksTab
+                accountListId={accountListId}
+                contactId={contactId}
+                contactDetailsLoaded={false}
+              />
+            </VirtuosoMockContext.Provider>
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </TestRouter>,
     );
     await waitFor(() =>
       expect(
@@ -96,19 +96,21 @@ describe('ContactTasksTab', () => {
 
   it('loading', async () => {
     const { getAllByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider>
-          <VirtuosoMockContext.Provider
-            value={{ viewportHeight: 300, itemHeight: 100 }}
-          >
-            <ContactTasksTab
-              accountListId={accountListId}
-              contactId={contactId}
-              contactDetailsLoaded={false}
-            />
-          </VirtuosoMockContext.Provider>
-        </GqlMockedProvider>
-      </ThemeProvider>,
+      <TestRouter router={router}>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider>
+            <VirtuosoMockContext.Provider
+              value={{ viewportHeight: 300, itemHeight: 100 }}
+            >
+              <ContactTasksTab
+                accountListId={accountListId}
+                contactId={contactId}
+                contactDetailsLoaded={false}
+              />
+            </VirtuosoMockContext.Provider>
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </TestRouter>,
     );
     expect(
       getAllByTestId('infinite-list-skeleton-loading')[0],
@@ -118,24 +120,26 @@ describe('ContactTasksTab', () => {
   it('handles add task click', async () => {
     const querySpy = jest.fn();
     const { getByText, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{
-          ContactPhase: ContactPhaseQuery;
-        }>
-          mocks={contactPhaseMock}
-          onCall={querySpy}
-        >
-          <VirtuosoMockContext.Provider
-            value={{ viewportHeight: 300, itemHeight: 100 }}
+      <TestRouter router={router}>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<{
+            ContactPhase: ContactPhaseQuery;
+          }>
+            mocks={contactPhaseMock}
+            onCall={querySpy}
           >
-            <ContactTasksTab
-              accountListId={accountListId}
-              contactId={contactId}
-              contactDetailsLoaded={false}
-            />
-          </VirtuosoMockContext.Provider>
-        </GqlMockedProvider>
-      </ThemeProvider>,
+            <VirtuosoMockContext.Provider
+              value={{ viewportHeight: 300, itemHeight: 100 }}
+            >
+              <ContactTasksTab
+                accountListId={accountListId}
+                contactId={contactId}
+                contactDetailsLoaded={false}
+              />
+            </VirtuosoMockContext.Provider>
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </TestRouter>,
     );
     await waitFor(() =>
       expect(
@@ -164,24 +168,26 @@ describe('ContactTasksTab', () => {
   it('handles log task click', async () => {
     const querySpy = jest.fn();
     const { getByText, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{
-          ContactPhase: ContactPhaseQuery;
-        }>
-          mocks={contactPhaseMock}
-          onCall={querySpy}
-        >
-          <VirtuosoMockContext.Provider
-            value={{ viewportHeight: 300, itemHeight: 100 }}
+      <TestRouter router={router}>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<{
+            ContactPhase: ContactPhaseQuery;
+          }>
+            mocks={contactPhaseMock}
+            onCall={querySpy}
           >
-            <ContactTasksTab
-              accountListId={accountListId}
-              contactId={contactId}
-              contactDetailsLoaded={false}
-            />
-          </VirtuosoMockContext.Provider>
-        </GqlMockedProvider>
-      </ThemeProvider>,
+            <VirtuosoMockContext.Provider
+              value={{ viewportHeight: 300, itemHeight: 100 }}
+            >
+              <ContactTasksTab
+                accountListId={accountListId}
+                contactId={contactId}
+                contactDetailsLoaded={false}
+              />
+            </VirtuosoMockContext.Provider>
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </TestRouter>,
     );
     await waitFor(() =>
       expect(
@@ -209,28 +215,30 @@ describe('ContactTasksTab', () => {
 
   it('load null state', async () => {
     const { getByText, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{ ContactTasksTab: ContactTasksTabQuery }>
-          mocks={{
-            ContactTasksTab: {
-              tasks: {
-                nodes: [],
-                pageInfo: {
-                  endCursor: 'MjU',
-                  hasNextPage: false,
+      <TestRouter router={router}>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<{ ContactTasksTab: ContactTasksTabQuery }>
+            mocks={{
+              ContactTasksTab: {
+                tasks: {
+                  nodes: [],
+                  pageInfo: {
+                    endCursor: 'MjU',
+                    hasNextPage: false,
+                  },
+                  totalCount: 0,
                 },
-                totalCount: 0,
               },
-            },
-          }}
-        >
-          <ContactTasksTab
-            accountListId={accountListId}
-            contactId={contactId}
-            contactDetailsLoaded={false}
-          />
-        </GqlMockedProvider>
-      </ThemeProvider>,
+            }}
+          >
+            <ContactTasksTab
+              accountListId={accountListId}
+              contactId={contactId}
+              contactDetailsLoaded={false}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </TestRouter>,
     );
     await waitFor(() =>
       expect(
@@ -246,24 +254,26 @@ describe('ContactTasksTab', () => {
 
   it('counts total tasks when all are selected', async () => {
     const { getAllByRole, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{ ContactTasksTab: ContactTasksTabQuery }>
-          mocks={{
-            ContactTasksTab: {
-              tasks: {
-                nodes: [],
-                totalCount: 100,
+      <TestRouter router={router}>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<{ ContactTasksTab: ContactTasksTabQuery }>
+            mocks={{
+              ContactTasksTab: {
+                tasks: {
+                  nodes: [],
+                  totalCount: 100,
+                },
               },
-            },
-          }}
-        >
-          <ContactTasksTab
-            accountListId={accountListId}
-            contactId={contactId}
-            contactDetailsLoaded={false}
-          />
-        </GqlMockedProvider>
-      </ThemeProvider>,
+            }}
+          >
+            <ContactTasksTab
+              accountListId={accountListId}
+              contactId={contactId}
+              contactDetailsLoaded={false}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </TestRouter>,
     );
     await waitFor(() =>
       expect(
@@ -285,35 +295,37 @@ describe('ContactTasksTab', () => {
   it('reached end of list and fetched more', async () => {
     const querySpy = jest.fn();
     const { queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{
-          ContactTasksTabQuery: ContactTasksTabQuery;
-        }>
-          mocks={{
-            ContactTasksTab: {
-              tasks: {
-                nodes: [{}, {}, {}],
-                pageInfo: {
-                  endCursor: 'MjU',
-                  hasNextPage: true,
+      <TestRouter router={router}>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<{
+            ContactTasksTabQuery: ContactTasksTabQuery;
+          }>
+            mocks={{
+              ContactTasksTab: {
+                tasks: {
+                  nodes: [{}, {}, {}],
+                  pageInfo: {
+                    endCursor: 'MjU',
+                    hasNextPage: true,
+                  },
+                  totalCount: 10,
                 },
-                totalCount: 10,
               },
-            },
-          }}
-          onCall={querySpy}
-        >
-          <VirtuosoMockContext.Provider
-            value={{ viewportHeight: 400, itemHeight: 100 }}
+            }}
+            onCall={querySpy}
           >
-            <ContactTasksTab
-              accountListId={accountListId}
-              contactId={contactId}
-              contactDetailsLoaded={false}
-            />
-          </VirtuosoMockContext.Provider>
-        </GqlMockedProvider>
-      </ThemeProvider>,
+            <VirtuosoMockContext.Provider
+              value={{ viewportHeight: 400, itemHeight: 100 }}
+            >
+              <ContactTasksTab
+                accountListId={accountListId}
+                contactId={contactId}
+                contactDetailsLoaded={false}
+              />
+            </VirtuosoMockContext.Provider>
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </TestRouter>,
     );
     await waitFor(() =>
       expect(

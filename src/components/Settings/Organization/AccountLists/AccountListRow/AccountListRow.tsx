@@ -177,7 +177,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
     await deleteAccountList({
       variables: {
         input: {
-          accountListId: accountListId,
+          accountListId,
           reason: reason,
         },
       },
@@ -219,7 +219,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
     await adminDeleteOrganizationCoach({
       variables: {
         input: {
-          accountListId: accountListId,
+          accountListId,
           coachId: item.id,
         },
       },
@@ -262,7 +262,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
     await removeAccountListUser({
       variables: {
         input: {
-          accountListId: accountListId,
+          accountListId,
           userId: item.userId,
         },
       },

@@ -14,7 +14,7 @@ const FixMailingAddressesPage: React.FC = () => {
       pageTitle={t('Fix Mailing Addresses')}
       selectedMenuId="fixMailingAddresses"
     >
-      <FixMailingAddresses accountListId={accountListId || ''} />
+      <FixMailingAddresses accountListId={accountListId} />
     </ToolsWrapper>
   );
 };

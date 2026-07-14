@@ -14,10 +14,10 @@ import {
   PrivacyPolicyLink,
   TermsOfUseLink,
 } from 'src/components/Shared/Links/Links';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useNavPages } from 'src/hooks/useNavPages';
 import { clearDataDogUser } from 'src/lib/dataDog';
-import { useAccountListId } from '../../../../../../hooks/useAccountListId';
-import theme from '../../../../../../theme';
+import theme from 'src/theme';
 import { useGetTopBarQuery } from '../../../TopBar/GetTopBar.generated';
 import { LeafListItem, Title } from '../../StyledComponents';
 
@@ -66,7 +66,7 @@ export const ProfileMenuPanel: React.FC = () => {
   const changeAccountListId = (id: string): void => {
     setAccountsDrawerOpen(false);
     push({
-      pathname: accountListId ? pathname : '/accountLists/[accountListId]/',
+      pathname,
       query: { accountListId: id },
     });
   };

@@ -2,7 +2,7 @@ import React, { ReactElement, ReactNode, useState } from 'react';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { NavBar } from 'src/components/Layouts/Primary/NavBar/NavBar';
-import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useOptionalAccountListId } from 'src/hooks/useAccountListId';
 import TopBar from './TopBar/TopBar';
 
 export const navBarHeight = '64px';
@@ -29,7 +29,7 @@ interface Props {
 }
 
 const Primary = ({ children }: Props): ReactElement => {
-  const accountListId = useAccountListId();
+  const accountListId = useOptionalAccountListId();
   const [isMobileNavOpen, setMobileNavOpen] = useState<boolean>(false);
 
   return (
