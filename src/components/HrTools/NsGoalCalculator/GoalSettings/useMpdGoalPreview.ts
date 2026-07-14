@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useFormikContext } from 'formik';
+import { NewStaffGoalCalculationAttributesInput } from 'src/graphql/types.generated';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
 import { usePreviewNewStaffGoalCalculationMutation } from './NewStaffGoalCalculation.generated';
 import { formValuesToAttributes } from './goalSettingsApiMapping';
@@ -11,9 +12,9 @@ export const PREVIEW_DEBOUNCE_MS = 500;
 /** Diffs smaller than half a cent are treated as no change. */
 const CENT_EPSILON = 0.005;
 
-/** The previewed goal keyed by the attributes it was computed for. */
+/** The previewed goal, tagged with the attributes it was computed for. */
 interface PreviewState {
-  key: string;
+  attributes: NewStaffGoalCalculationAttributesInput;
   /** Computed goal, or `null` if the preview request failed. */
   monthlyGoal: number | null;
 }
@@ -62,16 +63,14 @@ export const useMpdGoalPreview = ({
     fetchPolicy: 'no-cache',
   });
 
+  // Formik keeps `values` referentially stable until a real edit (tabbing/blur
+  // only touches `touched`), so this memoized object is stable too — its
+  // identity doubles as the debounce key and the settled-preview match, no
+  // serialization needed.
   const attributes = useMemo(() => formValuesToAttributes(values), [values]);
-  const attributesKey = useMemo(() => JSON.stringify(attributes), [attributes]);
-
   // The attributes to preview, or `null` while the form is clean or invalid
-  // (which also clears any prior preview). Memoized so its identity is stable
-  // across unrelated re-renders and the debounce only restarts on a real edit.
-  const previewable = useMemo(
-    () => (dirty && isValid ? { key: attributesKey, attributes } : null),
-    [dirty, isValid, attributesKey, attributes],
-  );
+  // (which also clears any prior preview).
+  const previewable = dirty && isValid ? attributes : null;
 
   // Debounced so we preview the settled values, not every keystroke.
   const debounced = useDebouncedValue(previewable, PREVIEW_DEBOUNCE_MS);
@@ -88,7 +87,7 @@ export const useMpdGoalPreview = ({
           // Omitted for a scenario goal that has no account list.
           accountListId: accountListId ?? undefined,
           id: calculationId,
-          attributes: debounced.attributes,
+          attributes: debounced,
         },
       },
       context: { suppressErrors: true },
@@ -96,7 +95,7 @@ export const useMpdGoalPreview = ({
       .then(({ data }) => {
         if (active) {
           setPreview({
-            key: debounced.key,
+            attributes: debounced,
             monthlyGoal:
               data?.previewNewStaffGoalCalculation?.newStaffGoalCalculation
                 ?.calculations?.monthlyGoal ?? null,
@@ -104,10 +103,10 @@ export const useMpdGoalPreview = ({
         }
       })
       .catch(() => {
-        // Record the failed key so the spinner stops and we fall back to the
-        // saved goal.
+        // Record the failed attributes so the spinner stops and we fall back to
+        // the saved goal.
         if (active) {
-          setPreview({ key: debounced.key, monthlyGoal: null });
+          setPreview({ attributes: debounced, monthlyGoal: null });
         }
       });
 
@@ -118,7 +117,9 @@ export const useMpdGoalPreview = ({
 
   // The preview matches the current edits once their request has settled.
   const settledPreview =
-    previewable !== null && preview?.key === previewable.key ? preview : null;
+    previewable !== null && preview?.attributes === previewable
+      ? preview
+      : null;
   // Edits are pending but their preview hasn't arrived yet.
   const calculating = previewable !== null && settledPreview === null;
   const failed = settledPreview !== null && settledPreview.monthlyGoal === null;
