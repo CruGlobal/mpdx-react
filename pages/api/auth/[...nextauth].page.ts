@@ -27,11 +27,13 @@ declare module 'next-auth' {
       email: string;
       admin: boolean;
       developer: boolean;
+      mpdSupervisorAdmin: boolean;
       apiToken: string;
       userID: string;
       impersonating?: boolean;
       impersonatorApiToken?: string;
       isImpersonatorDeveloper?: boolean;
+      impersonationScope?: string;
     };
   }
 
@@ -41,6 +43,7 @@ declare module 'next-auth' {
     impersonating?: boolean;
     impersonatorApiToken?: string;
     isImpersonatorDeveloper?: boolean;
+    impersonationScope?: string;
   }
 }
 
@@ -48,11 +51,13 @@ declare module 'next-auth/jwt' {
   interface JWT {
     admin: boolean;
     developer: boolean;
+    mpdSupervisorAdmin: boolean;
     apiToken: string;
     userID?: string;
     impersonating?: boolean;
     impersonatorApiToken?: string;
     isImpersonatorDeveloper?: boolean;
+    impersonationScope?: string;
   }
 }
 
@@ -178,6 +183,7 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
           user.impersonating = userInfo.impersonating;
           user.impersonatorApiToken = userInfo.impersonatorApiToken;
           user.isImpersonatorDeveloper = userInfo.isImpersonatorDeveloper;
+          user.impersonationScope = userInfo.impersonationScope;
 
           if (cookies) {
             res.setHeader('Set-Cookie', cookies);
@@ -241,11 +247,13 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
             ...token,
             admin: data.user.admin,
             developer: data.user.developer,
+            mpdSupervisorAdmin: data.user.mpdSupervisorAdmin,
             apiToken: user.apiToken,
             userID: user.userID,
             impersonating: user.impersonating,
             impersonatorApiToken: user.impersonatorApiToken,
             isImpersonatorDeveloper: user.isImpersonatorDeveloper,
+            impersonationScope: user.impersonationScope,
           };
         } else {
           return token;
@@ -255,10 +263,12 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
         const {
           admin,
           developer,
+          mpdSupervisorAdmin,
           apiToken,
           userID,
           impersonating,
           isImpersonatorDeveloper,
+          impersonationScope,
         } = token;
 
         // Check the expiration of the API token JWT without verifying its signature
@@ -273,10 +283,12 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
             ...session.user,
             admin,
             developer,
+            mpdSupervisorAdmin,
             apiToken,
             userID,
             impersonating,
             isImpersonatorDeveloper,
+            impersonationScope,
           },
         };
       },
