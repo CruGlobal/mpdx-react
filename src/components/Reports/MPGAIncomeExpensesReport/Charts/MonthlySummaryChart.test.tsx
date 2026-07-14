@@ -40,7 +40,7 @@ describe('MonthlySummaryChart', () => {
     );
   });
 
-  it('renders the correct number of bars', async () => {
+  it('renders income and expense bars for each month', async () => {
     const { findByRole } = render(<TestComponent />);
 
     const region = await findByRole('region');
@@ -49,7 +49,7 @@ describe('MonthlySummaryChart', () => {
       const barShapes = region.querySelectorAll(
         '.recharts-bar-rectangle rect, .recharts-bar-rectangle path',
       );
-      expect(barShapes.length).toBe(months.length);
+      expect(barShapes.length).toBe(months.length * 2);
     });
   });
 

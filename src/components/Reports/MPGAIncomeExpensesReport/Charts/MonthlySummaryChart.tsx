@@ -1,10 +1,9 @@
 import { useMemo } from 'react';
-import { Box, GlobalStyles } from '@mui/material';
+import { Box, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import {
   Bar,
   BarChart,
-  Cell,
-  LabelList,
   Legend,
   ResponsiveContainer,
   Tooltip,
@@ -26,8 +25,8 @@ interface MonthlySummaryChartProps {
 }
 
 const chartColors = [
-  theme.palette.chartGreen.main,
-  theme.palette.chartPink.main,
+  theme.palette.statusSuccess.main,
+  theme.palette.chipRedDark.main,
 ];
 
 export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
@@ -38,137 +37,128 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
   width,
   currency,
 }) => {
+  const { t } = useTranslation();
   const locale = useLocale();
 
-  const combinedData = useMemo(() => {
-    const transformedExpenseData = expenseData.map((item) => ({
-      ...item,
-      monthly: item.monthly.map((value) => -Math.abs(value)),
-    }));
-
-    return [...incomeData, ...transformedExpenseData];
-  }, [incomeData, expenseData]);
-
   const monthlyTotals = useMemo(() => {
-    const totals: {
-      [key: string]: { income: number; expense: number; total: number };
-    } = {};
-
-    combinedData.forEach((item) => {
-      item.monthly.forEach((value, index) => {
-        const month = months[index];
-        if (!totals[month]) {
-          totals[month] = { income: 0, expense: 0, total: 0 };
-        }
-
-        if (item.monthly[0] >= 0) {
-          totals[month].income += value;
-        } else {
-          totals[month].expense += value;
-        }
-      });
+    return months.map((name, index) => {
+      const income = incomeData.reduce(
+        (sum, item) => sum + (item.monthly[index] ?? 0),
+        0,
+      );
+      const expenses = expenseData.reduce(
+        (sum, item) => sum + Math.abs(item.monthly[index] ?? 0),
+        0,
+      );
+      return { name, income, expenses, difference: income - expenses };
     });
-
-    return months.map((name) => {
-      const { income = 0, expense = 0 } = totals[name] || {};
-      return {
-        name,
-        income,
-        expense,
-        net: income + expense,
-      };
-    });
-  }, [combinedData, months]);
+  }, [incomeData, expenseData, months]);
 
   return (
-    <>
-      <GlobalStyles
-        styles={{
-          '.labels-print-only .recharts-label-list': { display: 'none' },
-          '@media print': {
-            '.labels-print-only .recharts-label-list': { display: 'block' },
-          },
-        }}
-      />
-      <Box className="labels-print-only">
-        <ResponsiveContainer width={`${width}%`} aspect={aspect}>
-          <BarChart
-            data={monthlyTotals}
-            margin={{ top: 15, right: 30, left: 20, bottom: 5 }}
-          >
-            <XAxis
-              dataKey="name"
-              tickFormatter={(value) => value.split(' ')[0]}
-            />
-            <YAxis
-              tickFormatter={(value) => currencyFormat(value, currency, locale)}
-            />
-            <Tooltip
-              formatter={(value: number | string): [string, string] => [
-                currencyFormat(Number(value), currency, locale),
-                'Total',
-              ]}
-              labelFormatter={(label: string) => `Month: ${label}`}
-            />
-            <Bar dataKey="net">
-              {monthlyTotals.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={entry.net >= 0 ? chartColors[0] : chartColors[1]}
-                />
-              ))}
-              <LabelList
-                dataKey="net"
-                position="top"
-                style={{ fill: theme.palette.chartBlack.main }}
-                formatter={(value) => currencyFormat(value, currency, locale)}
-              />
-            </Bar>
-            <Legend
-              verticalAlign="top"
-              align="center"
-              wrapperStyle={{ marginBottom: 5 }}
-              content={({ payload }) => (
-                <ul
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    listStyle: 'none',
-                    gap: '1rem',
-                    padding: 0,
+    <ResponsiveContainer width={`${width}%`} aspect={aspect}>
+      <BarChart
+        data={monthlyTotals}
+        margin={{ top: 15, right: 30, left: 20, bottom: 5 }}
+      >
+        <XAxis dataKey="name" tickFormatter={(value) => value.split(' ')[0]} />
+        <YAxis
+          tickFormatter={(value) => currencyFormat(value, currency, locale)}
+        />
+        <Tooltip
+          content={({ active, payload, label }) => {
+            if (!active || !payload?.length) {
+              return null;
+            }
+            const income = Number(
+              payload.find((entry) => entry.dataKey === 'income')?.value ?? 0,
+            );
+            const expenses = Number(
+              payload.find((entry) => entry.dataKey === 'expenses')?.value ?? 0,
+            );
+            const net = income - expenses;
+
+            return (
+              <Box
+                sx={{
+                  bgcolor: 'background.paper',
+                  p: 1,
+                  border: 1,
+                  borderColor: 'divider',
+                  borderRadius: 1,
+                }}
+              >
+                <Typography variant="body1">
+                  {t('Month')}: {label}
+                </Typography>
+                <Typography variant="body1">
+                  {t('Income')}: {currencyFormat(income, currency, locale)}
+                </Typography>
+                <Typography variant="body1">
+                  {t('Expenses')}: {currencyFormat(expenses, currency, locale)}
+                </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    fontWeight: 'bold',
+                    color:
+                      net === 0
+                        ? 'inherit'
+                        : net > 0
+                          ? chartColors[0]
+                          : chartColors[1],
                   }}
                 >
-                  {payload?.map((entry, index) => (
-                    <li
-                      key={`item-${index}`}
-                      style={{ display: 'flex', alignItems: 'center' }}
-                    >
-                      <span
-                        className="legend-swatch"
-                        style={{
-                          width: 14,
-                          height: 14,
-                          backgroundColor: entry.color,
-                          marginRight: 5,
-                          WebkitPrintColorAdjust: 'exact',
-                          printColorAdjust: 'exact',
-                        }}
-                      />
-                      <span style={{ color: theme.palette.chartBlack.main }}>
-                        {entry.value}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              payload={[
-                { value: 'Income', type: 'square', color: chartColors[0] },
-                { value: 'Expenses', type: 'square', color: chartColors[1] },
-              ]}
-            />
-          </BarChart>
-        </ResponsiveContainer>
-      </Box>
-    </>
+                  {t('Net')}: {currencyFormat(net, currency, locale)}
+                </Typography>
+              </Box>
+            );
+          }}
+        />
+        <Bar dataKey="income" name={t('Income')} fill={chartColors[0]} />
+        <Bar dataKey="expenses" name={t('Expenses')} fill={chartColors[1]} />
+        <Legend
+          verticalAlign="top"
+          align="center"
+          wrapperStyle={{ marginBottom: 5 }}
+          content={({ payload }) => (
+            <ul
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                listStyle: 'none',
+                gap: '1rem',
+                padding: 0,
+              }}
+            >
+              {payload?.map((entry, index) => (
+                <li
+                  key={`item-${index}`}
+                  style={{ display: 'flex', alignItems: 'center' }}
+                >
+                  <span
+                    className="legend-swatch"
+                    style={{
+                      width: 14,
+                      height: 14,
+                      backgroundColor: entry.color,
+                      marginRight: 5,
+                      WebkitPrintColorAdjust: 'exact',
+                      printColorAdjust: 'exact',
+                    }}
+                  />
+                  <span style={{ color: theme.palette.chartBlack.main }}>
+                    {entry.value}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+          payload={[
+            { value: t('Income'), type: 'square', color: chartColors[0] },
+            { value: t('Expenses'), type: 'square', color: chartColors[1] },
+          ]}
+        />
+      </BarChart>
+    </ResponsiveContainer>
   );
 };
