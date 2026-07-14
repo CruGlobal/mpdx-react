@@ -208,7 +208,9 @@ describe('EditTrainingCostsModal', () => {
     await userEvent.click(apply);
 
     await waitFor(() => expect(onSave).toHaveBeenCalledWith(filledCosts));
-  });
+    // Typing into all eleven fields exceeds the default 5s timeout when the
+    // full suite runs in parallel, so give this test extra headroom.
+  }, 15000);
 
   it('closes via the Cancel button', async () => {
     const { getByRole } = render(<TestComponent />);

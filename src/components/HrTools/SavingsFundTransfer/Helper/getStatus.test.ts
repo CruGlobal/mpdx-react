@@ -112,4 +112,52 @@ describe('createTable', () => {
     const status = mockData[3];
     expect(getStatusLabel(status)).toBe('ongoing');
   });
+
+  it('should return stopped status if inactive with no end date', () => {
+    const transfer: Transactions = {
+      ...mockData[2],
+      recurringTransfer: {
+        ...mockData[2].recurringTransfer!,
+        recurringEnd: null,
+        active: false,
+      },
+    };
+    expect(getStatusLabel(transfer)).toBe('stopped');
+  });
+
+  it('should return stopped status if inactive with a future end date', () => {
+    const transfer: Transactions = {
+      ...mockData[3],
+      recurringTransfer: {
+        ...mockData[3].recurringTransfer!,
+        recurringEnd: DateTime.fromISO('2024-12-31'),
+        active: false,
+      },
+    };
+    expect(getStatusLabel(transfer)).toBe('stopped');
+  });
+
+  it('should return ended status when the end date is in the past, even if inactive', () => {
+    const transfer: Transactions = {
+      ...mockData[1],
+      recurringTransfer: {
+        ...mockData[1].recurringTransfer!,
+        recurringEnd: DateTime.fromISO('2023-01-01'),
+        active: false,
+      },
+    };
+    expect(getStatusLabel(transfer)).toBe('ended');
+  });
+
+  it('should return ended status if inactive with an end date of today', () => {
+    const transfer: Transactions = {
+      ...mockData[1],
+      recurringTransfer: {
+        ...mockData[1].recurringTransfer!,
+        recurringEnd: DateTime.fromISO('2023-12-15'),
+        active: false,
+      },
+    };
+    expect(getStatusLabel(transfer)).toBe('ended');
+  });
 });
