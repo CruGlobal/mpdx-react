@@ -469,6 +469,56 @@ describe('TransferModal', () => {
       ).toBeInTheDocument();
     });
 
+    it('should require a transfer date for one-time transfers when cleared', async () => {
+      const { getByRole, getByLabelText, findByText } = render(<Components />);
+
+      expect(getByRole('radio', { name: /one time/i })).toBeChecked();
+
+      const transferDate = getByLabelText(/transfer date/i);
+
+      userEvent.clear(transferDate);
+      expect(transferDate).toHaveValue('');
+      userEvent.tab();
+
+      expect(await findByText('Transfer date is required')).toBeInTheDocument();
+
+      await waitFor(() =>
+        expect(getByRole('button', { name: /submit/i })).toBeDisabled(),
+      );
+    });
+
+    it('should not submit a one-time transfer with an unparseable transfer date', async () => {
+      const { getByRole, getByLabelText, findByText } = render(<Components />);
+
+      const amountField = getByRole('spinbutton', { name: /amount/i });
+      const noteField = getByRole('textbox', { name: /note/i });
+
+      userEvent.click(getByRole('combobox', { name: /to account/i }));
+      userEvent.click(getByRole('option', { name: /staff savings/i }));
+
+      userEvent.clear(amountField);
+      userEvent.type(amountField, '100');
+
+      userEvent.type(noteField, 'Test note');
+
+      const transferDate = getByLabelText(/transfer date/i);
+
+      userEvent.clear(transferDate);
+      userEvent.type(transferDate, '99/99/9999');
+      expect(transferDate).toHaveValue('99/99/9999');
+      userEvent.tab();
+
+      expect(
+        await findByText('Transfer date cannot be in the past'),
+      ).toBeInTheDocument();
+
+      await waitFor(() =>
+        expect(getByRole('button', { name: /submit/i })).toBeDisabled(),
+      );
+
+      expect(mutationSpy).not.toHaveGraphqlOperation('CreateTransfer');
+    });
+
     it('should show error message when monthly schedule is selected', async () => {
       const { getByRole, getByLabelText, findByText } = render(<Components />);
 
