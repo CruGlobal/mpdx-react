@@ -7,10 +7,8 @@ export const GridContainer = styled(Box)({
 });
 
 export const StyledGrid = styled(DataGrid)(({ theme }) => ({
-  fontSize: theme.typography.body1.fontSize,
   '.MuiDataGrid-columnHeaderTitle': {
-    fontWeight: 'bold',
-    color: theme.palette.mpdxBlue.main,
+    fontWeight: theme.typography.fontWeightBold,
   },
   '.MuiDataGrid-row.top-border .MuiDataGrid-cell': {
     borderTop: `2px solid ${theme.palette.divider}`,
