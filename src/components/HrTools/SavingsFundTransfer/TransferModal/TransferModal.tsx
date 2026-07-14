@@ -104,9 +104,12 @@ const transferSchema = (locale: string) =>
         }
 
         return this.createError({
-          message: i18n.t(
-            'Recurring transfers must start at least one day in the future',
-          ),
+          message:
+            schedule === ScheduleEnum.OneTime
+              ? i18n.t('Transfer date cannot be in the past')
+              : i18n.t(
+                  'Recurring transfers must start at least one day in the future',
+                ),
         });
       }),
     endDate: yup
@@ -219,6 +222,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
             sourceFundTypeName: transferFrom,
             destinationFundTypeName: transferTo,
             description: note.trim(),
+            transactedAt: convertedTransferDate,
           },
         });
       } else {
@@ -455,11 +459,21 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                   <Grid container spacing={2}>
                     {schedule === ScheduleEnum.OneTime ? (
                       <Grid size={12}>
-                        <TextField
-                          fullWidth
+                        <CustomDateField
                           label={t('Transfer Date')}
-                          value={transferDate.toFormat('MM/dd/yyyy')}
-                          disabled={true}
+                          value={transferDate}
+                          onChange={(date) => {
+                            setFieldValue('transferDate', date);
+                            setFieldTouched('transferDate', true, false);
+                          }}
+                          error={
+                            touched.transferDate && Boolean(errors.transferDate)
+                          }
+                          helperText={
+                            touched.transferDate &&
+                            (errors.transferDate as string)
+                          }
+                          required
                         />
                       </Grid>
                     ) : (
