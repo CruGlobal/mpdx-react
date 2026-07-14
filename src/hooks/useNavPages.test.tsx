@@ -106,4 +106,86 @@ describe('useNavPages', () => {
       'hr-tools-page',
     );
   });
+
+  describe('restricted impersonation', () => {
+    it('hides the Contacts, Tasks, and MPDX Tools tabs when the impersonation scope is set', async () => {
+      mockSession({ developer: false, impersonationScope: 'mpd_supervisor' });
+
+      const { result, waitForNextUpdate } = renderHook(
+        () => useNavPages(false),
+        { wrapper: Wrapper },
+      );
+      await waitForNextUpdate();
+
+      const navPageIds = result.current.navPages.map((page) => page.id);
+      expect(navPageIds).not.toContain('contacts-page');
+      expect(navPageIds).not.toContain('tasks-page');
+      expect(navPageIds).not.toContain('mpdx-tools-page');
+      expect(navPageIds).toContain('dashboard-page');
+      expect(navPageIds).toContain('reports-page');
+    });
+
+    it('keeps the HR Tools tab visible when the impersonation scope is set', async () => {
+      process.env.DEVELOPMENT_ENV = 'true';
+      mockSession({ developer: true, impersonationScope: 'mpd_supervisor' });
+
+      const { result, waitForNextUpdate } = renderHook(
+        () => useNavPages(false),
+        { wrapper: Wrapper },
+      );
+      await waitForNextUpdate();
+
+      const navPageIds = result.current.navPages.map((page) => page.id);
+      expect(navPageIds).toContain('hr-tools-page');
+      expect(navPageIds).not.toContain('contacts-page');
+      expect(navPageIds).not.toContain('tasks-page');
+      expect(navPageIds).not.toContain('mpdx-tools-page');
+    });
+
+    it('excludes the hidden pages and their items from the search dialog when the impersonation scope is set', async () => {
+      mockSession({ developer: false, impersonationScope: 'mpd_supervisor' });
+
+      const { result, waitForNextUpdate } = renderHook(
+        () => useNavPages(false, true),
+        { wrapper: Wrapper },
+      );
+      await waitForNextUpdate();
+
+      const searchTitles = result.current.searchDialogPages.map(
+        (page) => page.title,
+      );
+      expect(searchTitles).not.toContain('Contacts');
+      expect(searchTitles).not.toContain('Tasks');
+      expect(searchTitles).not.toContain('MPDX Tools');
+      expect(
+        searchTitles.filter((title) => title.startsWith('MPDX Tools - ')),
+      ).toEqual([]);
+    });
+
+    it('keeps the Contacts, Tasks, and MPDX Tools tabs for a normal session', async () => {
+      mockSession({ developer: false });
+
+      const { result, waitForNextUpdate } = renderHook(
+        () => useNavPages(false, true),
+        { wrapper: Wrapper },
+      );
+      await waitForNextUpdate();
+
+      const navPageIds = result.current.navPages.map((page) => page.id);
+      expect(navPageIds).toContain('contacts-page');
+      expect(navPageIds).toContain('tasks-page');
+      expect(navPageIds).toContain('mpdx-tools-page');
+
+      const searchTitles = result.current.searchDialogPages.map(
+        (page) => page.title,
+      );
+      expect(searchTitles).toContain('Contacts');
+      expect(searchTitles).toContain('Tasks');
+      expect(searchTitles).toContain('MPDX Tools');
+      expect(
+        searchTitles.filter((title) => title.startsWith('MPDX Tools - '))
+          .length,
+      ).toBeGreaterThan(0);
+    });
+  });
 });

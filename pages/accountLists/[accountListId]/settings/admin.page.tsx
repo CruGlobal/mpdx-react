@@ -6,6 +6,7 @@ import { ImpersonateUserAccordion } from 'src/components/Settings/Admin/Imperson
 import { ResetAccountAccordion } from 'src/components/Settings/Admin/ResetAccount/ResetAccountAccordion';
 import { AdminAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
+import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { SettingsWrapper } from './Wrapper';
 
 export const suggestedArticles = 'HS_SETTINGS_SERVICES_SUGGESTIONS';
@@ -13,6 +14,7 @@ export const suggestedArticles = 'HS_SETTINGS_SERVICES_SUGGESTIONS';
 const Admin = (): ReactElement => {
   const { t } = useTranslation();
   const { query } = useRouter();
+  const user = useRequiredSession();
   const [expandedAccordion, setExpandedAccordion] =
     useState<AdminAccordion | null>(
       typeof query.selectedTab === 'string'
@@ -32,10 +34,12 @@ const Admin = (): ReactElement => {
           expandedAccordion={expandedAccordion}
         />
 
-        <ResetAccountAccordion
-          handleAccordionChange={setExpandedAccordion}
-          expandedAccordion={expandedAccordion}
-        />
+        {user.admin && (
+          <ResetAccountAccordion
+            handleAccordionChange={setExpandedAccordion}
+            expandedAccordion={expandedAccordion}
+          />
+        )}
       </AccordionGroup>
     </SettingsWrapper>
   );

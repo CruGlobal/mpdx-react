@@ -464,6 +464,41 @@ describe('MultiPageMenu', () => {
     });
   });
 
+  it('shows the admin console but not admin-only or developer-only tools for MPD supervisor admins', async () => {
+    mockSession({ admin: false, developer: false, mpdSupervisorAdmin: true });
+
+    const mutationSpy = jest.fn();
+    const { findByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider<{
+            ManageOrganizationsAccess: ManageOrganizationsAccessQuery;
+          }>
+            mocks={{
+              ManageOrganizationsAccess: noOrganizationsAccessMock,
+            }}
+            onCall={mutationSpy}
+          >
+            <MultiPageMenu
+              selectedId={selected}
+              isOpen={true}
+              onClose={() => {}}
+              designationAccounts={[]}
+              setDesignationAccounts={jest.fn()}
+              navType={NavTypeEnum.Settings}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    expect(await findByText('Admin Console')).toBeInTheDocument();
+
+    expect(queryByText('Manage Organizations')).not.toBeInTheDocument();
+    expect(queryByText('Backend Admin')).not.toBeInTheDocument();
+    expect(queryByText('Sidekiq')).not.toBeInTheDocument();
+  });
+
   describe('HR Tools Menu', () => {
     it('shows hr tools for senior staff', async () => {
       const { findByText, getByText, queryByText } = render(

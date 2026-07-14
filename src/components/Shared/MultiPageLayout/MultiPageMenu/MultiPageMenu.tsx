@@ -80,6 +80,12 @@ const showMenuItem = ({
     if (item.grantedAccess.indexOf('developer') !== -1 && user.developer) {
       return true;
     }
+    if (
+      item.grantedAccess.indexOf('mpdSupervisorAdmin') !== -1 &&
+      user.mpdSupervisorAdmin
+    ) {
+      return true;
+    }
   } else {
     return true;
   }
