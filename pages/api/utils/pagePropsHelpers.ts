@@ -44,6 +44,9 @@ export const dashboardRedirect = (
 /* Block non-developers who are impersonating, allow everyone else
  * Use case: Pages that regular users can access on their own account,
  * but should be restricted when admins impersonate (e.g., staff expense data)
+ * Exception: restricted-scope impersonation sessions (e.g. MPD leaders, where
+ * impersonationScope is set) are allowed through because their access is
+ * limited to the sections their scope permits
  */
 export const blockImpersonatingNonDevelopers: GetServerSideProps<
   PagePropsWithSession
@@ -54,8 +57,12 @@ export const blockImpersonatingNonDevelopers: GetServerSideProps<
     return loginRedirect(context);
   }
 
-  // Check if the impersonator is a developer
-  if (session.user.impersonating && !session.user.isImpersonatorDeveloper) {
+  // Check if the impersonator is a developer or has a restricted scope
+  if (
+    session.user.impersonating &&
+    !session.user.isImpersonatorDeveloper &&
+    !session.user.impersonationScope
+  ) {
     return dashboardRedirect(context, RedirectReason.ImpersonationBlocked);
   }
 
@@ -86,6 +93,69 @@ export const enforceAdmin: GetServerSideProps<PagePropsWithSession> = async (
 
   if (!session.user.admin) {
     return dashboardRedirect(context, RedirectReason.Unauthorized);
+  }
+
+  const underscoreRedirect = await handleUnderscoreAccountListRedirect(
+    session,
+    context.resolvedUrl,
+  );
+  if (underscoreRedirect) {
+    return underscoreRedirect;
+  }
+
+  return {
+    props: {
+      session,
+    },
+  };
+};
+
+// Redirect back to the dashboard unless the user is an admin or an MPD
+// supervisor admin (MPD leader)
+export const enforceAdminOrMpdLeader: GetServerSideProps<
+  PagePropsWithSession
+> = async (context) => {
+  const session = await getSession(context);
+
+  if (!session?.user.apiToken) {
+    return loginRedirect(context);
+  }
+
+  if (!session.user.admin && !session.user.mpdSupervisorAdmin) {
+    return dashboardRedirect(context, RedirectReason.Unauthorized);
+  }
+
+  const underscoreRedirect = await handleUnderscoreAccountListRedirect(
+    session,
+    context.resolvedUrl,
+  );
+  if (underscoreRedirect) {
+    return underscoreRedirect;
+  }
+
+  return {
+    props: {
+      session,
+    },
+  };
+};
+
+/* Block restricted-scope impersonation sessions (e.g. MPD leaders, where
+ * impersonationScope is set), allow everyone else
+ * Use case: Sections like Contacts, Tasks, and Tools that must be unreachable
+ * during a restricted impersonation session
+ */
+export const blockRestrictedImpersonation: GetServerSideProps<
+  PagePropsWithSession
+> = async (context) => {
+  const session = await getSession(context);
+
+  if (!session?.user.apiToken) {
+    return loginRedirect(context);
+  }
+
+  if (session.user.impersonationScope) {
+    return dashboardRedirect(context, RedirectReason.ImpersonationBlocked);
   }
 
   const underscoreRedirect = await handleUnderscoreAccountListRedirect(

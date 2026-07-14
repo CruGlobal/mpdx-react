@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { enforceAdmin } from 'pages/api/utils/pagePropsHelpers';
+import { enforceAdminOrMpdLeader } from 'pages/api/utils/pagePropsHelpers';
 import { ImpersonateUserAccordion } from 'src/components/Settings/Admin/ImpersonateUser/ImpersonateUserAccordion';
 import { ResetAccountAccordion } from 'src/components/Settings/Admin/ResetAccount/ResetAccountAccordion';
 import { AdminAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
@@ -41,6 +41,6 @@ const Admin = (): ReactElement => {
   );
 };
 
-export const getServerSideProps = enforceAdmin;
+export const getServerSideProps = enforceAdminOrMpdLeader;
 
 export default Admin;
