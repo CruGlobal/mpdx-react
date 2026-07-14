@@ -57,7 +57,7 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
 
   const userType = data?.user.userType;
   const developerBypass = useDeveloperBypass();
-  const showTab = userType === UserTypeEnum.UsStaff || developerBypass;
+  const canSeeHrTools = userType === UserTypeEnum.UsStaff || developerBypass;
 
   const reportItems = useReportNavItems();
   const toolsItems = useToolsNavItems();
@@ -123,7 +123,7 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
               })),
               showInNav: true,
               hideTab:
-                (!!data && !showTab) ||
+                (!!data && !canSeeHrTools) ||
                 hrToolsLoading ||
                 hrToolsItems.length === 0,
             },
@@ -194,7 +194,7 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
     settingsItems,
     hrToolsItems,
     hrToolsLoading,
-    showTab,
+    canSeeHrTools,
     reportsDisabled,
     data,
   ]);
