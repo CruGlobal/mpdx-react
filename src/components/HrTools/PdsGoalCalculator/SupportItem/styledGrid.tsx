@@ -7,18 +7,13 @@ export const GridContainer = styled(Box)({
 });
 
 export const StyledGrid = styled(DataGrid)(({ theme }) => ({
-  fontSize: theme.typography.body1.fontSize,
   '.MuiDataGrid-columnHeaderTitle': {
-    fontWeight: 'bold',
-    color: theme.palette.mpdxBlue.main,
+    fontWeight: theme.typography.fontWeightBold,
   },
   '.MuiDataGrid-row.top-border .MuiDataGrid-cell': {
     borderTop: `2px solid ${theme.palette.divider}`,
   },
   '.MuiDataGrid-row.bold-row': {
-    fontWeight: 'bold',
-  },
-  '.MuiDataGrid-row[data-id="total"]': {
     fontWeight: 'bold',
   },
   '.MuiDataGrid-row.bottom-border .MuiDataGrid-cell': {
@@ -28,10 +23,5 @@ export const StyledGrid = styled(DataGrid)(({ theme }) => ({
     lineHeight: 1.3,
     paddingTop: theme.spacing(1),
     paddingBottom: theme.spacing(1),
-  },
-  '.category-formula': {
-    display: 'block',
-    color: theme.palette.text.secondary,
-    fontSize: theme.typography.body2.fontSize,
   },
 })) as typeof DataGrid;
