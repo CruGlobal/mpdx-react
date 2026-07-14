@@ -60,7 +60,7 @@ describe('useAccountListId', () => {
     ).toThrow(/accountListId/);
   });
 
-  it('throws when the route has no blank accountListId', () => {
+  it('throws when the route has a blank accountListId', () => {
     expect(() =>
       renderHook(() => useAccountListId(), {
         wrapper: makeWrapper({ isReady: true, query: { accountListId: '' } }),
