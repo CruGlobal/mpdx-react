@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
-import { GoalSettingsForm } from 'src/components/HrTools/NsGoalCalculator/GoalSettings/GoalSettingsForm';
+import { GoalSettingsView } from 'src/components/HrTools/NsGoalCalculator/GoalSettings/GoalSettingsView';
 import Loading from 'src/components/Loading';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';
@@ -22,7 +22,7 @@ export const NsGoalCalculatorPage: React.FC = () => {
         <title>{`${appName} | ${t('Coaching Accounts | New Staff Goal Calculator')}`}</title>
       </Head>
       {accountListId && coachingId ? (
-        <GoalSettingsForm accountListId={coachingId} />
+        <GoalSettingsView accountListId={coachingId} />
       ) : (
         <Loading loading />
       )}

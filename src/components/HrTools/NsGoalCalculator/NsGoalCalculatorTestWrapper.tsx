@@ -1,3 +1,4 @@
+import { NextRouter } from 'next/router';
 import { ThemeProvider } from '@mui/material/styles';
 import {
   ApolloErgonoMockMap,
@@ -54,6 +55,7 @@ export interface NsGoalCalculatorTestWrapperProps {
     | DeepPartial<NewStaffGoalCalculationQuery>
     | ApolloErgonoMockMap;
   onCall?: ErgonoMockedProviderProps['onCall'];
+  router?: Partial<NextRouter>;
 }
 
 export const NsGoalCalculatorTestWrapper: React.FC<
@@ -62,15 +64,10 @@ export const NsGoalCalculatorTestWrapper: React.FC<
   children,
   goalCalculationMock = defaultGoalCalculationMock,
   onCall,
+  router = { query: { accountListId } },
 }) => (
   <ThemeProvider theme={theme}>
-    <TestRouter
-      router={{
-        query: {
-          accountListId,
-        },
-      }}
-    >
+    <TestRouter router={router}>
       <SnackbarProvider>
         <GqlMockedProvider<{
           GoalCalculatorConstants: GoalCalculatorConstantsQuery;
