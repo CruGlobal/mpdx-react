@@ -32,6 +32,10 @@ export const chipStyle: Record<
     avatarColor: theme.palette.chipGrayDark.main,
     chipColor: theme.palette.chipGrayLight.main,
   },
+  [StatusEnum.Stopped]: {
+    avatarColor: theme.palette.chipGrayDark.main,
+    chipColor: theme.palette.chipGrayLight.main,
+  },
   [StatusEnum.Failed]: {
     avatarColor: theme.palette.chipRedDark.main,
     chipColor: theme.palette.chipRedLight.main,

@@ -85,6 +85,29 @@ const mock = {
           active: true,
         },
       },
+      {
+        transaction: {
+          id: 'stopped-transaction-1',
+          amount: 300,
+          description: null,
+          transactedAt: '2023-10-05T00:00:00+00:00',
+        },
+        subCategory: {
+          id: '1',
+          name: 'deposit',
+        },
+        transfer: {
+          sourceFundTypeName: 'Savings',
+          destinationFundTypeName: 'Primary',
+        },
+        recurringTransfer: {
+          id: '3',
+          amount: 300,
+          recurringStart: '2023-10-05T00:00:00+00:00',
+          recurringEnd: null,
+          active: false,
+        },
+      },
     ],
   },
   FundBalances: {
@@ -252,6 +275,31 @@ describe('TransfersPage', () => {
     expect(tables.length).toBe(2);
 
     expect(within(tables[0]).getAllByRole('columnheader')).toHaveLength(8);
+  });
+
+  it('should display stopped recurring transfers in history with a stopped status and no actions', async () => {
+    const { findAllByRole } = render(<Components />);
+
+    const tables = await findAllByRole('grid');
+    const historyGrid = tables[1];
+
+    const stoppedRow = within(historyGrid)
+      .getAllByRole('row')
+      .find((row) => within(row).queryByText('stopped'));
+    expect(stoppedRow).toBeDefined();
+
+    expect(within(stoppedRow!).getByText('$300.00')).toBeInTheDocument();
+    expect(within(stoppedRow!).getByText('Oct 5, 2023')).toBeInTheDocument();
+
+    expect(
+      within(stoppedRow!).queryByTitle('Stop Transfer'),
+    ).not.toBeInTheDocument();
+    expect(
+      within(stoppedRow!).queryByTitle('Add End Date'),
+    ).not.toBeInTheDocument();
+    expect(
+      within(stoppedRow!).queryByTitle('Edit End Date'),
+    ).not.toBeInTheDocument();
   });
 
   it('should show empty state when no transfer history', async () => {
