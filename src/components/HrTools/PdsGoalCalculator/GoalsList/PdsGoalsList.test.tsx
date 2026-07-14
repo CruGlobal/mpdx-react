@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { mockSession } from '__tests__/util/mockSession';
 import {
   MpdGoalMiscConstantCategoryEnum,
   MpdGoalMiscConstantLabelEnum,
@@ -226,5 +227,20 @@ describe('PdsGoalsList', () => {
     await waitFor(() =>
       expect(findByRole('button', { name: 'Create' })).resolves.toBeEnabled(),
     );
+  });
+
+  it('disables the create button during restricted impersonation', async () => {
+    mockSession({ impersonationScope: 'mpd_supervisor' });
+
+    const { getByRole, findAllByTestId } = render(
+      <PdsGoalCalculatorTestWrapper withProvider={false}>
+        <PdsGoalsList />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    // Wait for the goals to load so the button is past its loading state
+    await findAllByTestId('goal-name');
+
+    expect(getByRole('button', { name: 'Create a New Goal' })).toBeDisabled();
   });
 });
