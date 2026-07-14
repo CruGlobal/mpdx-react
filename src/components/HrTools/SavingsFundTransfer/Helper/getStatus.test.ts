@@ -137,7 +137,7 @@ describe('createTable', () => {
     expect(getStatusLabel(transfer)).toBe('stopped');
   });
 
-  it('should return ended status if inactive with an end date in the past', () => {
+  it('should return ended status when the end date is in the past, even if inactive', () => {
     const transfer: Transactions = {
       ...mockData[1],
       recurringTransfer: {
