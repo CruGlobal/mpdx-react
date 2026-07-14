@@ -281,6 +281,7 @@ Project-specific testing conventions added to the Testing agent's universal chec
 
 - **`GqlMockedProvider` is the only GraphQL mock pattern.** All component tests that hit GraphQL must wrap in `<GqlMockedProvider<{ OperationName: OperationNameQuery }> mocks={...}>` with typed generics so mock shapes are type-checked at compile time
 - **`mutationSpy` + `toHaveGraphqlOperation(...)` pattern** is preferred over brittle snapshot-based assertions for verifying mutations
+- **Define the `onCall` / `mutationSpy` spy once at the top of the test file** and reference it directly — don't thread it through a test wrapper as a prop or redeclare `const onCall = jest.fn()` in each test.
 - **`toHaveTableStructure(...)` for full table contents** — when asserting more than a couple table cells, use `expect(getByRole('table')).toHaveTableStructure({ columnHeaders, rowHeaders, cells })` instead of ad-hoc `getByRole('cell')`
 - **`findBy*` for async assertions** — prefer `await findByText(...)` over `await waitFor(() => getByText(...))`
 - **`userEvent`, never `fireEvent`** — drive every user interaction (click, type, select, tab/blur, keyboard) through `@testing-library/user-event`, which dispatches the full event sequence a real user produces
