@@ -62,13 +62,22 @@ export function filteredTransfers(transfers: Transactions[]) {
     const transferRow = filtered[index];
 
     const currentDate = DateTime.local().startOf('day');
-    const start = transferRow.recurringTransfer?.recurringStart.startOf('day');
-    const end = DateTime.min(
-      (transferRow.recurringTransfer?.recurringEnd ?? currentDate).startOf(
-        'day',
-      ),
-      currentDate,
-    );
+    const recurring = transferRow.recurringTransfer;
+    const start = recurring?.recurringStart.startOf('day');
+    const recurringEnd = recurring?.recurringEnd?.startOf('day') ?? null;
+    let end: DateTime = DateTime.min(recurringEnd ?? currentDate, currentDate);
+
+    // A transfer stopped before its end date creates no transactions after the
+    // stop, so only look for missed months through its last actual transaction.
+    const stoppedEarly =
+      recurring?.active === false &&
+      (!recurringEnd || recurringEnd > currentDate);
+    if (stoppedEarly) {
+      const lastTransactedAt = DateTime.max(
+        ...[...transactions.values()].map((tx) => tx.transaction!.transactedAt),
+      ).startOf('day');
+      end = DateTime.min(end, lastTransactedAt);
+    }
 
     if (!start) {
       continue;
