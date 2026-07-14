@@ -56,7 +56,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
           onSubmit={jest.fn()}
         >
           <Form>
-            {/* Two fields so tabbing off the first blurs it (focusout). */}
+            {/* Two fields so the coalescing test can edit across both. */}
             <Field
               name="annualRequestedSalary"
               type="number"
@@ -75,11 +75,10 @@ const TestComponent: React.FC<TestComponentProps> = ({
   </ThemeProvider>
 );
 
-/** Edit a field and blur it (tab away) to commit a preview. */
-const editAndBlur = (field: HTMLElement, value: string) => {
+/** Edit a field; the preview keys off the value change, no blur needed. */
+const editField = (field: HTMLElement, value: string) => {
   userEvent.clear(field);
   userEvent.type(field, value);
-  userEvent.tab();
 };
 
 describe('MpdGoalPreview', () => {
@@ -95,30 +94,15 @@ describe('MpdGoalPreview', () => {
     expect(onCall).not.toHaveGraphqlOperation('PreviewNewStaffGoalCalculation');
   });
 
-  it('does not preview while typing, before the field is blurred', () => {
+  it('coalesces rapid edits across fields into a single preview request', async () => {
     const onCall = jest.fn();
     const { getByRole } = render(
       <TestComponent mocks={previewGoalMock(5200)} onCall={onCall} />,
     );
 
-    const salary = getByRole('spinbutton', { name: 'Salary' });
-    userEvent.clear(salary);
-    userEvent.type(salary, '80000');
-
-    // Nothing is committed until a field blurs, so no preview is scheduled — the
-    // preview is gated on blur, not on keystrokes.
-    expect(onCall).not.toHaveGraphqlOperation('PreviewNewStaffGoalCalculation');
-  });
-
-  it('coalesces rapid blurs across fields into a single preview request', async () => {
-    const onCall = jest.fn();
-    const { getByRole } = render(
-      <TestComponent mocks={previewGoalMock(5200)} onCall={onCall} />,
-    );
-
-    // Tab quickly through two fields within the debounce window.
-    editAndBlur(getByRole('spinbutton', { name: 'Salary' }), '80000');
-    editAndBlur(getByRole('spinbutton', { name: 'Tenure' }), '5');
+    // Edit two fields within the debounce window.
+    editField(getByRole('spinbutton', { name: 'Salary' }), '80000');
+    editField(getByRole('spinbutton', { name: 'Tenure' }), '5');
 
     await waitFor(() =>
       expect(onCall).toHaveGraphqlOperation('PreviewNewStaffGoalCalculation'),
@@ -135,7 +119,7 @@ describe('MpdGoalPreview', () => {
       <TestComponent mocks={previewGoalMock(5200)} />,
     );
 
-    editAndBlur(getByRole('spinbutton', { name: 'Salary' }), '80000');
+    editField(getByRole('spinbutton', { name: 'Salary' }), '80000');
 
     expect(await findByText('MPD Goal: $5,200.00')).toBeInTheDocument();
     expect(await findByText('+$200.00')).toBeInTheDocument();
@@ -146,7 +130,7 @@ describe('MpdGoalPreview', () => {
       <TestComponent mocks={previewGoalMock(4925)} />,
     );
 
-    editAndBlur(getByRole('spinbutton', { name: 'Salary' }), '40000');
+    editField(getByRole('spinbutton', { name: 'Salary' }), '40000');
 
     expect(await findByText('MPD Goal: $4,925.00')).toBeInTheDocument();
     expect(await findByText('-$75.00')).toBeInTheDocument();
@@ -156,13 +140,13 @@ describe('MpdGoalPreview', () => {
     const { findByText, getByRole, getByText, getByLabelText, queryByText } =
       render(<TestComponent mocks={previewGoalMock(5200)} />);
 
-    editAndBlur(getByRole('spinbutton', { name: 'Salary' }), '80000');
+    editField(getByRole('spinbutton', { name: 'Salary' }), '80000');
     expect(await findByText('MPD Goal: $5,200.00')).toBeInTheDocument();
 
     // A further edit starts a new preview. Until it returns, the "MPD Goal:"
     // label stays but the amount is replaced by a spinner and the difference is
     // hidden — no stale number on screen.
-    editAndBlur(getByRole('spinbutton', { name: 'Salary' }), '70000');
+    editField(getByRole('spinbutton', { name: 'Salary' }), '70000');
 
     expect(getByLabelText('Calculating new goal total')).toBeInTheDocument();
     expect(getByText('MPD Goal:')).toBeInTheDocument();
@@ -175,12 +159,12 @@ describe('MpdGoalPreview', () => {
       <TestComponent mocks={previewGoalMock(5200)} />,
     );
 
-    editAndBlur(getByRole('spinbutton', { name: 'Salary' }), '80000');
+    editField(getByRole('spinbutton', { name: 'Salary' }), '80000');
     expect(await findByText('MPD Goal: $5,200.00')).toBeInTheDocument();
 
     // A second edit supersedes the first; only its result (matched by key)
     // should replace the spinner once it settles.
-    editAndBlur(getByRole('spinbutton', { name: 'Salary' }), '70000');
+    editField(getByRole('spinbutton', { name: 'Salary' }), '70000');
     expect(getByLabelText('Calculating new goal total')).toBeInTheDocument();
 
     expect(await findByText('MPD Goal: $5,200.00')).toBeInTheDocument();
@@ -196,12 +180,12 @@ describe('MpdGoalPreview', () => {
     }) as HTMLInputElement;
     const original = salary.value;
 
-    editAndBlur(salary, '80000');
+    editField(salary, '80000');
     expect(await findByText('+$200.00')).toBeInTheDocument();
 
     // Undo the edit → the form is pristine again → the preview is dropped and
     // the header returns to the saved goal with no stale difference.
-    editAndBlur(salary, original);
+    editField(salary, original);
 
     expect(await findByText('MPD Goal: $5,000.00')).toBeInTheDocument();
     expect(queryByText(/[+-]\$/)).not.toBeInTheDocument();
@@ -222,7 +206,7 @@ describe('MpdGoalPreview', () => {
       <TestComponent mocks={previewGoalMock(5000)} onCall={onCall} />,
     );
 
-    editAndBlur(getByRole('spinbutton', { name: 'Salary' }), '80000');
+    editField(getByRole('spinbutton', { name: 'Salary' }), '80000');
 
     // Wait for the preview to run, then confirm the goal is unchanged and no
     // signed difference is rendered.
@@ -239,7 +223,7 @@ describe('MpdGoalPreview', () => {
       <TestComponent mocks={previewGoalMock(5200)} onCall={onCall} />,
     );
 
-    editAndBlur(getByRole('spinbutton', { name: 'Salary' }), '99999');
+    editField(getByRole('spinbutton', { name: 'Salary' }), '99999');
 
     await waitFor(() =>
       expect(onCall).toHaveGraphqlOperation('PreviewNewStaffGoalCalculation', {
@@ -262,7 +246,7 @@ describe('MpdGoalPreview', () => {
       />,
     );
 
-    editAndBlur(getByRole('spinbutton', { name: 'Salary' }), '80000');
+    editField(getByRole('spinbutton', { name: 'Salary' }), '80000');
 
     // A scenario goal has no account list; the API previews it all the same,
     // with the account list left out of the request.
@@ -289,7 +273,7 @@ describe('MpdGoalPreview', () => {
       <TestComponent mocks={previewGoalMock(5200)} />,
     );
 
-    editAndBlur(getByRole('spinbutton', { name: 'Salary' }), '80000');
+    editField(getByRole('spinbutton', { name: 'Salary' }), '80000');
 
     expect(
       await findByLabelText('Calculating new goal total'),
@@ -313,7 +297,7 @@ describe('MpdGoalPreview', () => {
       />,
     );
 
-    editAndBlur(getByRole('spinbutton', { name: 'Salary' }), '80000');
+    editField(getByRole('spinbutton', { name: 'Salary' }), '80000');
 
     await waitFor(() =>
       expect(onCall).toHaveGraphqlOperation('PreviewNewStaffGoalCalculation'),

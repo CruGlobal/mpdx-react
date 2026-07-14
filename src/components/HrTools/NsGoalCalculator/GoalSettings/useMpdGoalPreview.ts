@@ -1,22 +1,15 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useFormikContext } from 'formik';
-import { NewStaffGoalCalculationAttributesInput } from 'src/graphql/types.generated';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
 import { usePreviewNewStaffGoalCalculationMutation } from './NewStaffGoalCalculation.generated';
 import { formValuesToAttributes } from './goalSettingsApiMapping';
 import { GoalSettingsFormValues } from './goalSettingsFormValues';
 
-/** Coalesce blurs from tabbing quickly through several fields into one request. */
+/** Coalesce a burst of edits (e.g. picking through selects) into one request. */
 export const PREVIEW_DEBOUNCE_MS = 500;
 
 /** Diffs smaller than half a cent are treated as no change. */
 const CENT_EPSILON = 0.005;
-
-/** Attributes committed for preview, plus a stable key for deduping/debouncing. */
-interface CommittedAttributes {
-  key: string;
-  attributes: NewStaffGoalCalculationAttributesInput;
-}
 
 /** The previewed goal keyed by the attributes it was computed for. */
 interface PreviewState {
@@ -33,12 +26,7 @@ interface UseMpdGoalPreviewArgs {
 }
 
 interface UseMpdGoalPreviewResult {
-  /**
-   * Attach to the element wrapping the preview. Used to find the enclosing form
-   * so blur detection is scoped to it rather than the whole document.
-   */
-  containerRef: React.RefObject<HTMLDivElement>;
-  /** True while a committed edit's preview request is in flight. */
+  /** True while a debounced edit's preview request is in flight. */
   calculating: boolean;
   /** Goal to display: the previewed total when settled, else the saved goal. */
   displayGoal: number;
@@ -51,11 +39,13 @@ interface UseMpdGoalPreviewResult {
 }
 
 /**
- * Orchestrates the on-blur goal preview for {@link MpdGoalPreview}: watches the
- * Goal Settings form, and when a field is blurred with unsaved, valid edits it
- * asks the API to recompute the goal (`previewNewStaffGoalCalculation`) and
- * exposes the new total plus the signed difference from the saved goal. Preview
- * runs on blur (debounced), not on every keystroke.
+ * Orchestrates the goal preview for {@link MpdGoalPreview}: watches the Goal
+ * Settings form and, whenever the unsaved, valid form values change, debounces
+ * a call to the API to recompute the goal (`previewNewStaffGoalCalculation`),
+ * exposing the new total plus the signed difference from the saved goal.
+ *
+ * Previewing keys off the Formik values directly rather than field blur, since
+ * some inputs (selects) don't produce a usable blur.
  */
 export const useMpdGoalPreview = ({
   accountListId,
@@ -75,38 +65,16 @@ export const useMpdGoalPreview = ({
   const attributes = useMemo(() => formValuesToAttributes(values), [values]);
   const attributesKey = useMemo(() => JSON.stringify(attributes), [attributes]);
 
-  // The attributes to commit when a field blurs, or `null` when the form isn't
-  // previewable. Held in a ref (mirrored in an effect) so the blur listener
-  // reads the latest without re-subscribing.
-  const committableRef = useRef<CommittedAttributes | null>(null);
-  useEffect(() => {
-    committableRef.current =
-      dirty && isValid ? { key: attributesKey, attributes } : null;
-  }, [dirty, isValid, attributesKey, attributes]);
+  // The attributes to preview, or `null` while the form is clean or invalid
+  // (which also clears any prior preview). Memoized so its identity is stable
+  // across unrelated re-renders and the debounce only restarts on a real edit.
+  const previewable = useMemo(
+    () => (dirty && isValid ? { key: attributesKey, attributes } : null),
+    [dirty, isValid, attributesKey, attributes],
+  );
 
-  // Attributes committed for preview — updated only when a field blurs, so the
-  // preview reflects the last-blurred state rather than every keystroke.
-  const [committed, setCommitted] = useState<CommittedAttributes | null>(null);
-
-  const containerRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    // The editable fields are siblings of this component, not descendants, so
-    // React's `onBlur` can't see them. `focusout` bubbles, so listen on the
-    // enclosing form (falling back to the document) — scoped, not global.
-    const target = containerRef.current?.closest('form') ?? document;
-    const handleFocusOut = () => setCommitted(committableRef.current);
-    target.addEventListener('focusout', handleFocusOut);
-    return () => target.removeEventListener('focusout', handleFocusOut);
-  }, []);
-
-  // Drop the preview once the form is clean again (saved or cancelled).
-  useEffect(() => {
-    if (!dirty) {
-      setCommitted(null);
-    }
-  }, [dirty]);
-
-  const debounced = useDebouncedValue(committed, PREVIEW_DEBOUNCE_MS);
+  // Debounced so we preview the settled values, not every keystroke.
+  const debounced = useDebouncedValue(previewable, PREVIEW_DEBOUNCE_MS);
 
   useEffect(() => {
     if (debounced === null) {
@@ -148,11 +116,11 @@ export const useMpdGoalPreview = ({
     };
   }, [debounced, accountListId, calculationId, previewMutation]);
 
-  // The preview matches the committed edits once their request has settled.
+  // The preview matches the current edits once their request has settled.
   const settledPreview =
-    committed !== null && preview?.key === committed.key ? preview : null;
-  // A blur committed new edits but their preview hasn't arrived yet.
-  const calculating = committed !== null && settledPreview === null;
+    previewable !== null && preview?.key === previewable.key ? preview : null;
+  // Edits are pending but their preview hasn't arrived yet.
+  const calculating = previewable !== null && settledPreview === null;
   const failed = settledPreview !== null && settledPreview.monthlyGoal === null;
 
   const previewGoal = settledPreview?.monthlyGoal ?? null;
@@ -163,5 +131,5 @@ export const useMpdGoalPreview = ({
       : Math.round((previewGoal - savedMonthlyGoal) * 100) / 100;
   const changed = Math.abs(diff) >= CENT_EPSILON;
 
-  return { containerRef, calculating, displayGoal, diff, changed, failed };
+  return { calculating, displayGoal, diff, changed, failed };
 };

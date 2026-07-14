@@ -30,8 +30,9 @@ export const MpdGoalPreview: React.FC<MpdGoalPreviewProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { containerRef, calculating, displayGoal, diff, changed, failed } =
-    useMpdGoalPreview({ accountListId, calculationId, savedMonthlyGoal });
+  const { calculating, displayGoal, diff, changed, failed } = useMpdGoalPreview(
+    { accountListId, calculationId, savedMonthlyGoal },
+  );
 
   const diffLabel =
     (diff > 0 ? '+' : '-') +
@@ -40,13 +41,7 @@ export const MpdGoalPreview: React.FC<MpdGoalPreviewProps> = ({
     });
 
   return (
-    <Stack
-      ref={containerRef}
-      direction="row"
-      spacing={1}
-      alignItems="center"
-      sx={{ ml: 3 }}
-    >
+    <Stack direction="row" spacing={1} alignItems="center" sx={{ ml: 3 }}>
       <Typography
         variant="h6"
         component="span"
