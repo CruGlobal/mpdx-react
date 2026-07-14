@@ -188,4 +188,74 @@ describe('useFilteredTransfers', () => {
       recurringTransfer?.missingMonths?.map((month) => month.toISODate()),
     ).toEqual(['2023-11-15']);
   });
+
+  describe('stopped recurring transfers', () => {
+    const makeStoppedTransactions = (
+      recurringEnd: DateTime | null,
+    ): Transactions[] => {
+      const recurringTransfer = {
+        id: '3',
+        amount: 20,
+        recurringStart: DateTime.fromISO('2023-09-15'),
+        recurringEnd,
+        active: false,
+      };
+      return ['2023-09-15', '2023-11-15'].map((date, index) => ({
+        transaction: {
+          id: `stopped-${index}`,
+          amount: 20,
+          description: null,
+          transactedAt: DateTime.fromISO(date),
+        },
+        subCategory: {
+          id: '1',
+          name: 'deposit',
+        },
+        transfer: {
+          sourceFundTypeName: 'Primary',
+          destinationFundTypeName: 'Savings',
+        },
+        recurringTransfer,
+        baseAmount: 20,
+        failedCount: 0,
+      }));
+    };
+
+    it('should not count months after the last transaction as missing when stopped with no end date', () => {
+      const { filtered } = filteredTransfers(makeStoppedTransactions(null));
+      const stoppedTransfer = filtered.find(
+        (tx) => tx.recurringTransfer?.id === '3',
+      );
+      expect(
+        stoppedTransfer?.missingMonths?.map((month) => month.toISODate()),
+      ).toEqual(['2023-10-15']);
+      expect(stoppedTransfer?.failedCount).toBe(1);
+    });
+
+    it('should not count months after the last transaction as missing when stopped before a future end date', () => {
+      const { filtered } = filteredTransfers(
+        makeStoppedTransactions(DateTime.fromISO('2024-06-15')),
+      );
+      const stoppedTransfer = filtered.find(
+        (tx) => tx.recurringTransfer?.id === '3',
+      );
+      expect(
+        stoppedTransfer?.missingMonths?.map((month) => month.toISODate()),
+      ).toEqual(['2023-10-15']);
+      expect(stoppedTransfer?.failedCount).toBe(1);
+    });
+
+    it('should scan through the end date for inactive transfers that ended naturally', () => {
+      const { filtered } = filteredTransfers(
+        makeStoppedTransactions(DateTime.fromISO('2023-12-15')),
+      );
+      const endedTransfer = filtered.find(
+        (tx) => tx.recurringTransfer?.id === '3',
+      );
+      expect(
+        endedTransfer?.missingMonths?.map((month) => month.toISODate()),
+      ).toEqual(['2023-10-15', '2023-12-15']);
+      expect(endedTransfer?.failedCount).toBe(2);
+    });
+  });
 });

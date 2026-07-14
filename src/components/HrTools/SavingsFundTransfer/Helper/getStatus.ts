@@ -6,12 +6,14 @@ export function getStatusLabel(history: Transactions): StatusEnum {
     return StatusEnum.Complete;
   }
 
-  const endDate = history.recurringTransfer.recurringEnd;
+  const { recurringEnd, active } = history.recurringTransfer;
   const today = DateTime.now().endOf('day');
 
-  if (!endDate) {
-    return StatusEnum.Ongoing;
+  if (recurringEnd && recurringEnd <= today) {
+    return StatusEnum.Ended;
   }
 
-  return endDate > today ? StatusEnum.Ongoing : StatusEnum.Ended;
+  // An inactive recurring transfer that hasn't reached its end date was
+  // stopped manually rather than running its course.
+  return active ? StatusEnum.Ongoing : StatusEnum.Stopped;
 }
