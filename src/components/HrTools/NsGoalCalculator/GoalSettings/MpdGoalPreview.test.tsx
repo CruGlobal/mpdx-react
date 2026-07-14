@@ -208,12 +208,18 @@ describe('MpdGoalPreview', () => {
   });
 
   it('previews a raise from a zero saved goal', async () => {
-    const { findByText } = render(
+    const { findByText, getByRole } = render(
       <TestComponent mocks={previewGoalMock(200)} savedMonthlyGoal={0} />,
     );
 
     // Zero renders as a real total, not a blank.
     expect(await findByText('MPD Goal: $0.00')).toBeInTheDocument();
+
+    // An edit raises the goal off zero; the diff is measured against $0.00.
+    editField(getByRole('spinbutton', { name: 'Salary' }), '80000');
+
+    expect(await findByText('MPD Goal: $200.00')).toBeInTheDocument();
+    expect(await findByText('+$200.00')).toBeInTheDocument();
   });
 
   it('shows no difference when the change does not affect the goal', async () => {
