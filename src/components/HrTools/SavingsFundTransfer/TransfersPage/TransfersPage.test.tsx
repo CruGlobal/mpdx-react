@@ -288,6 +288,9 @@ describe('TransfersPage', () => {
       .find((row) => within(row).queryByText('stopped'));
     expect(stoppedRow).toBeDefined();
 
+    expect(within(stoppedRow!).getByText('$300.00')).toBeInTheDocument();
+    expect(within(stoppedRow!).getByText('Oct 5, 2023')).toBeInTheDocument();
+
     expect(
       within(stoppedRow!).queryByTitle('Stop Transfer'),
     ).not.toBeInTheDocument();
