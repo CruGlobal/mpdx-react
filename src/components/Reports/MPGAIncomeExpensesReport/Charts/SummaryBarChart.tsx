@@ -19,7 +19,10 @@ interface SummaryBarChartProps {
   currency: string;
 }
 
-const chartColors = [theme.palette.primary.main, theme.palette.chartBlue.main];
+const chartColors = [
+  theme.palette.statusSuccess.main,
+  theme.palette.chipRedDark.main,
+];
 
 export const SummaryBarChart: React.FC<SummaryBarChartProps> = ({
   aspect,
@@ -49,7 +52,7 @@ export const SummaryBarChart: React.FC<SummaryBarChartProps> = ({
         <YAxis
           tickFormatter={(value) => currencyFormat(value, currency, locale)}
         />
-        <Bar dataKey="total">
+        <Bar dataKey="total" barSize={125}>
           {data.map((_, index) => (
             <Cell
               key={`cell-${index}`}
