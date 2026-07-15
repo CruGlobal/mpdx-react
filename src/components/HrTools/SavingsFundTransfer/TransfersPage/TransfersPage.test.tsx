@@ -125,6 +125,7 @@ const mock = {
           recurringEnd: null,
           active: false,
         },
+        scheduledTransfer: null,
       },
     ],
   },
