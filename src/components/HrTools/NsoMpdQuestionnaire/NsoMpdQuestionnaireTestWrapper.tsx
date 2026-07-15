@@ -36,6 +36,20 @@ export const newStaffQuestionnaireMock: DeepPartial<
   creditCardDebtMonthlyPayment: null,
 };
 
+type MinistryMock = { name: string; children: { name: string }[] };
+
+export const defaultMinistries: MinistryMock[] = [
+  {
+    name: 'Campus Ministry',
+    children: [{ name: 'University' }, { name: 'High School' }],
+  },
+  {
+    name: 'Other Ministries',
+    children: [{ name: 'Jesus Film Project' }],
+  },
+  { name: 'Athletes in Action', children: [] },
+];
+
 export interface NsoMpdQuestionnaireTestWrapperProps {
   hasSpouse?: boolean;
   newStaffQuestionnaire?: DeepPartial<
@@ -43,6 +57,8 @@ export interface NsoMpdQuestionnaireTestWrapperProps {
   > | null;
   onCall?: MockLinkCallHandler;
   mockPush?: jest.Mock;
+  /** Override the OneApp ministries list, e.g. `[]` to exercise the load-failure state. */
+  ministries?: MinistryMock[];
   children?: React.ReactNode;
 }
 
@@ -53,6 +69,7 @@ export const NsoMpdQuestionnaireTestWrapper: React.FC<
   newStaffQuestionnaire,
   onCall,
   mockPush,
+  ministries = defaultMinistries,
   children,
 }) => {
   return (
@@ -94,17 +111,7 @@ export const NsoMpdQuestionnaireTestWrapper: React.FC<
               },
             },
             Ministries: {
-              ministries: [
-                {
-                  name: 'Campus Ministry',
-                  children: [{ name: 'University' }, { name: 'High School' }],
-                },
-                {
-                  name: 'Other Ministries',
-                  children: [{ name: 'Jesus Film Project' }],
-                },
-                { name: 'Athletes in Action', children: [] },
-              ],
+              ministries,
             },
           }}
           onCall={onCall}

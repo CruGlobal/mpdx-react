@@ -1,6 +1,7 @@
 import React from 'react';
 import { TextField } from '@mui/material';
 import * as yup from 'yup';
+import { LabeledField } from './LabeledField';
 import {
   QuestionnaireField,
   useQuestionnaireAutoSave,
@@ -33,17 +34,25 @@ export const NumberQuestion: React.FC<NumberQuestionProps> = ({
   } = useQuestionnaireAutoSave({ fieldName, schema });
 
   return (
-    <TextField
+    <LabeledField
       label={question}
-      helperText={error ? errorText : helperText}
-      error={error}
       required
-      size="small"
-      type="number"
-      inputProps={{ min: 0, inputMode: 'numeric' }}
-      InputProps={{ startAdornment }}
-      InputLabelProps={{ sx: { color: 'text.primary' } }}
-      {...fieldProps}
-    />
+      error={error}
+      helperText={error ? errorText : helperText}
+    >
+      {(aria) => (
+        <TextField
+          required
+          error={error}
+          size="small"
+          type="number"
+          slotProps={{
+            htmlInput: { min: 0, inputMode: 'numeric', ...aria },
+            input: { startAdornment },
+          }}
+          {...fieldProps}
+        />
+      )}
+    </LabeledField>
   );
 };
