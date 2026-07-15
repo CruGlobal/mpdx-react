@@ -58,6 +58,20 @@ describe('GoalSummaryCard', () => {
     expect(getByText('Current Balance: $5,000.00')).toBeInTheDocument();
   });
 
+  it('clamps "To be Developed" to $0.00 when support raised exceeds the goal', () => {
+    const { getByText } = render(
+      <GoalSummaryCard
+        monthlyGoal={2000}
+        specialNeedsGoal={null}
+        minStaffAccountBalance={9580}
+        supportRaised={5000}
+        accountBalance={5000}
+      />,
+    );
+
+    expect(getByText('To be Developed: $0.00')).toBeInTheDocument();
+  });
+
   it('omits the sub-figures on a scenario goal (no account list)', () => {
     const { queryByText } = render(
       <GoalSummaryCard

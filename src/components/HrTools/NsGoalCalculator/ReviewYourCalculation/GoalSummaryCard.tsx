@@ -42,7 +42,7 @@ export const GoalSummaryCard: React.FC<GoalSummaryCardProps> = ({
   const { formatCurrency } = useFormatters();
 
   const supportRemaining =
-    supportRaised === null ? null : monthlyGoal - supportRaised;
+    supportRaised === null ? null : Math.max(0, monthlyGoal - supportRaised);
 
   const figures: SummaryFigure[] = [
     {
