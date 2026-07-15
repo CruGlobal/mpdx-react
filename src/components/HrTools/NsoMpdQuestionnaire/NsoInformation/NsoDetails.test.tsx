@@ -146,4 +146,10 @@ describe('NsoDetails', () => {
       queryByText('Please enter a number, or 0 if you have none.'),
     ).not.toBeInTheDocument();
   });
+
+  it('shows a currency adornment on the special needs support amount', () => {
+    const { getByText } = render(<TestComponent />);
+
+    expect(getByText('$')).toBeInTheDocument();
+  });
 });

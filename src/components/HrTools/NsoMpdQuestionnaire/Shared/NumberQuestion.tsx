@@ -14,6 +14,8 @@ interface NumberQuestionProps {
   helperText: string;
   /** Optional leading adornment rendered inside the input. */
   startAdornment?: React.ReactNode;
+  /** Optional trailing adornment rendered inside the input. */
+  endAdornment?: React.ReactNode;
 }
 
 /**
@@ -26,6 +28,7 @@ export const NumberQuestion: React.FC<NumberQuestionProps> = ({
   question,
   helperText,
   startAdornment,
+  endAdornment,
 }) => {
   const {
     error,
@@ -48,7 +51,7 @@ export const NumberQuestion: React.FC<NumberQuestionProps> = ({
           type="number"
           slotProps={{
             htmlInput: { min: 0, inputMode: 'numeric', ...aria },
-            input: { startAdornment },
+            input: { startAdornment, endAdornment },
           }}
           {...fieldProps}
         />
