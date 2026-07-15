@@ -200,7 +200,15 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
         const scheduled = tx.scheduledTransfer;
 
         return {
-          id: scheduled?.id ?? tx.recurringTransfer?.id ?? crypto.randomUUID(),
+          // Scheduled and recurring ids are per-table primary keys from two different
+          // SAA tables, so they can collide (both '2'). Namespace them to keep the
+          // DataGrid and print table row keys unique. `recurringId` below stays raw:
+          // it is what the edit/cancel mutations send.
+          id: scheduled
+            ? `scheduled-${scheduled.id}`
+            : tx.recurringTransfer
+              ? `recurring-${tx.recurringTransfer.id}`
+              : crypto.randomUUID(),
           transferFrom: tx.transfer.sourceFundTypeName,
           transferTo: tx.transfer.destinationFundTypeName,
           amount: scheduled?.amount ?? tx.recurringTransfer?.amount ?? 0,

@@ -346,6 +346,34 @@ describe('TransfersPage', () => {
     expect(within(row).queryByTitle('Cancel Transfer')).not.toBeInTheDocument();
   });
 
+  it('still shows a pending recurring transfer as an editable monthly row', async () => {
+    const { findAllByRole } = render(<Components />);
+
+    const [upcomingTable] = await findAllByRole('grid');
+    const row = within(upcomingTable).getByRole('row', {
+      name: /May 30, 2024/,
+    });
+
+    expect(within(row).getByText('Monthly')).toBeInTheDocument();
+    expect(within(row).getByText('$100.00')).toBeInTheDocument();
+    expect(within(row).getByText('May 30, 2025')).toBeInTheDocument();
+    expect(within(row).getByTitle('Edit')).toBeInTheDocument();
+    expect(within(row).getByTitle('Cancel Transfer')).toBeInTheDocument();
+  });
+
+  it('keys upcoming rows off the scheduled/recurring id, not a fresh uuid', async () => {
+    const { findAllByRole } = render(<Components />);
+
+    const [upcomingTable] = await findAllByRole('grid');
+    const ids = within(upcomingTable)
+      .getAllByRole('row')
+      .map((row) => row.dataset.id)
+      .filter(Boolean);
+
+    // Namespaced so a scheduled and a recurring transfer sharing a primary key cannot collide.
+    expect(ids).toEqual(['recurring-2', 'scheduled-sched-1']);
+  });
+
   it('should show empty state when no transfer history', async () => {
     const { findByText } = render(
       <SnackbarProvider>
