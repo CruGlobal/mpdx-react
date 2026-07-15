@@ -32,6 +32,7 @@ fragment NewStaffGoalCalculationFields on NewStaffGoalCalculation {
     secaRate
     adminRate
     attritionRate
+    default403bFraction
   }
 
   # Identity (read-only display in the header; prepopulated from HCM).

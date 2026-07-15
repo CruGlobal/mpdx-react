@@ -160,6 +160,48 @@ describe('GoalSettingsForm', () => {
     );
   });
 
+  it('prefills the 403(b) contribution with the default percentage when unset', async () => {
+    const { findByRole, getByRole } = render(
+      <TestComponent
+        goalCalculationMock={{
+          newStaffGoalCalculation: {
+            ...defaultMock.newStaffGoalCalculation,
+            contribution403bPercentage: null,
+            spouseContribution403bPercentage: null,
+            calculations: {
+              ...defaultGoalCalculation.calculations,
+              default403bFraction: 0.07,
+            },
+          },
+        }}
+      />,
+    );
+
+    expect(
+      await findByRole('spinbutton', { name: '403(b) Contribution — John' }),
+    ).toHaveValue(7);
+    expect(
+      getByRole('spinbutton', { name: '403(b) Contribution — Jane' }),
+    ).toHaveValue(7);
+  });
+
+  it('keeps a saved 403(b) contribution instead of the default', async () => {
+    const { findByRole } = render(
+      <TestComponent
+        goalCalculationMock={{
+          newStaffGoalCalculation: {
+            ...defaultMock.newStaffGoalCalculation,
+            contribution403bPercentage: 12,
+          },
+        }}
+      />,
+    );
+
+    expect(
+      await findByRole('spinbutton', { name: '403(b) Contribution — John' }),
+    ).toHaveValue(12);
+  });
+
   it('hides the spouse 403(b) amount when there is no spouse', async () => {
     const { findByText, queryByText } = render(
       <TestComponent goalCalculationMock={singleMock} />,

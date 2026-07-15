@@ -25,9 +25,19 @@ const toNumberOrNull = (value: number | ''): number | null =>
 const toEnumInput = <T>(value?: T | null): T | '' => value ?? '';
 const toEnumOrNull = <T>(value: T | ''): T | null => value || null;
 
+interface CalculationToFormValuesOptions {
+  /**
+   * Default 403(b) contribution as a whole percentage (e.g. `7`), prefilled for
+   * both people when the calculation has no saved value. Mirrors the server's
+   * calculation default.
+   */
+  default403bPercentage?: number | null;
+}
+
 /** Maps a loaded calculation onto the form's initial values. */
 export const calculationToFormValues = (
   calc: NewStaffGoalCalculationFieldsFragment,
+  { default403bPercentage }: CalculationToFormValuesOptions = {},
 ): GoalSettingsFormValues => ({
   calculationsYear:
     typeof calc.calculationsYear === 'number'
@@ -49,9 +59,11 @@ export const calculationToFormValues = (
 
   annualRequestedSalary: toNumberInput(calc.annualRequestedSalary),
   spouseRequestedAnnualSalary: toNumberInput(calc.spouseRequestedAnnualSalary),
-  contribution403bPercentage: toNumberInput(calc.contribution403bPercentage),
+  contribution403bPercentage: toNumberInput(
+    calc.contribution403bPercentage ?? default403bPercentage,
+  ),
   spouseContribution403bPercentage: toNumberInput(
-    calc.spouseContribution403bPercentage,
+    calc.spouseContribution403bPercentage ?? default403bPercentage,
   ),
   spouseMhaAmount: toNumberInput(calc.spouseMhaAmount),
   staffConferenceTransfer: toNumberInput(calc.staffConferenceTransfer),
