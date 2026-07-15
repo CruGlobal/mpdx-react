@@ -6,9 +6,10 @@ import { SnackbarProvider } from 'notistack';
 import { placePromise, setupMocks } from '__tests__/util/googlePlacesMock';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from '../../../../../../theme';
+import { SetContactPrimaryAddressMutation } from '../SetPrimaryAddress.generated';
 import { AddAddressModal } from './AddAddressModal';
+import { CreateContactAddressMutation } from './CreateContactAddress.generated';
 
-const handleClose = jest.fn();
 const accountListId = 'abc';
 const contactId = '123';
 
@@ -27,43 +28,41 @@ jest.mock('notistack', () => ({
 
 jest.mock('@react-google-maps/api');
 
+const mutationSpy = jest.fn();
+const handleClose = jest.fn();
+
+const TestComponent: React.FC = () => (
+  <SnackbarProvider>
+    <ThemeProvider theme={theme}>
+      <GqlMockedProvider<{
+        CreateContactAddress: CreateContactAddressMutation;
+        SetContactPrimaryAddress: SetContactPrimaryAddressMutation;
+      }>
+        onCall={mutationSpy}
+      >
+        <AddAddressModal
+          accountListId={accountListId}
+          contactId={contactId}
+          handleClose={handleClose}
+        />
+      </GqlMockedProvider>
+    </ThemeProvider>
+  </SnackbarProvider>
+);
+
 describe('AddAddressModal', () => {
   beforeEach(() => {
     setupMocks();
   });
 
   it('should render edit contact address modal', async () => {
-    const { getByText } = render(
-      <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider>
-            <AddAddressModal
-              accountListId={accountListId}
-              contactId={contactId}
-              handleClose={handleClose}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>
-      </SnackbarProvider>,
-    );
+    const { getByText } = render(<TestComponent />);
 
     expect(getByText('Add Address')).toBeInTheDocument();
   });
 
   it('should close edit contact other modal', () => {
-    const { getByText, getByLabelText } = render(
-      <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider>
-            <AddAddressModal
-              accountListId={accountListId}
-              contactId={contactId}
-              handleClose={handleClose}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>
-      </SnackbarProvider>,
-    );
+    const { getByText, getByLabelText } = render(<TestComponent />);
 
     expect(getByText('Add Address')).toBeInTheDocument();
     userEvent.click(getByLabelText('Close'));
@@ -71,19 +70,7 @@ describe('AddAddressModal', () => {
   });
 
   it('should handle cancel click', () => {
-    const { getByText } = render(
-      <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider>
-            <AddAddressModal
-              accountListId={accountListId}
-              contactId={contactId}
-              handleClose={handleClose}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>
-      </SnackbarProvider>,
-    );
+    const { getByText } = render(<TestComponent />);
 
     expect(getByText('Add Address')).toBeInTheDocument();
     userEvent.click(getByText('Cancel'));
@@ -91,19 +78,7 @@ describe('AddAddressModal', () => {
   });
 
   it('requires at least one field to be filled', async () => {
-    const { getByRole } = render(
-      <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider>
-            <AddAddressModal
-              accountListId={accountListId}
-              contactId={contactId}
-              handleClose={handleClose}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>
-      </SnackbarProvider>,
-    );
+    const { getByRole } = render(<TestComponent />);
 
     const saveButton = getByRole('button', { name: 'Save' });
     await waitFor(() => expect(saveButton).toBeDisabled());
@@ -113,7 +88,6 @@ describe('AddAddressModal', () => {
   });
 
   it('should create contact address', async () => {
-    const mutationSpy = jest.fn();
     const newStreet = '4321 Neat Street';
     const newCity = 'Orlando';
     const newState = 'FL';
@@ -121,19 +95,7 @@ describe('AddAddressModal', () => {
     const newCountry = 'United States';
     const newRegion = 'New Region';
     const newMetroArea = 'New Metro';
-    const { getByRole, getByText, getByLabelText } = render(
-      <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider onCall={mutationSpy}>
-            <AddAddressModal
-              accountListId={accountListId}
-              contactId={contactId}
-              handleClose={handleClose}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>
-      </SnackbarProvider>,
-    );
+    const { getByRole, getByText, getByLabelText } = render(<TestComponent />);
 
     userEvent.clear(getByRole('combobox', { name: 'Street' }));
     userEvent.clear(getByLabelText('City'));
@@ -176,19 +138,7 @@ describe('AddAddressModal', () => {
   it('handles chosen address predictions', async () => {
     jest.useFakeTimers();
 
-    const { getByRole } = render(
-      <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider>
-            <AddAddressModal
-              accountListId={accountListId}
-              contactId={contactId}
-              handleClose={handleClose}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>
-      </SnackbarProvider>,
-    );
+    const { getByRole } = render(<TestComponent />);
 
     // Let Google Maps initialize
     jest.runOnlyPendingTimers();
@@ -218,21 +168,8 @@ describe('AddAddressModal', () => {
   }, 20000);
 
   it('should set new address as primary', async () => {
-    const mutationSpy = jest.fn();
     const newStreet = '4321 Neat Street';
-    const { getByText, getByRole } = render(
-      <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider onCall={mutationSpy}>
-            <AddAddressModal
-              accountListId={accountListId}
-              contactId={contactId}
-              handleClose={handleClose}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>
-      </SnackbarProvider>,
-    );
+    const { getByText, getByRole } = render(<TestComponent />);
 
     const street = getByRole('combobox', { name: 'Street' });
     userEvent.clear(street);
@@ -249,25 +186,13 @@ describe('AddAddressModal', () => {
     expect(operation.variables.attributes.street).toEqual(newStreet);
 
     const { operation: operation2 } = mutationSpy.mock.calls[1][0];
+    expect(operation2.variables.accountListId).toEqual(accountListId);
     expect(operation2.variables.primaryAddressId).not.toBeNull();
   }, 30000);
 
   it('should not set new address as primary if it is unchecked', async () => {
-    const mutationSpy = jest.fn();
     const newStreet = '4321 Neat Street';
-    const { getByText, getByLabelText, getByRole } = render(
-      <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider onCall={mutationSpy}>
-            <AddAddressModal
-              accountListId={accountListId}
-              contactId={contactId}
-              handleClose={handleClose}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>
-      </SnackbarProvider>,
-    );
+    const { getByText, getByLabelText, getByRole } = render(<TestComponent />);
 
     userEvent.type(getByRole('combobox', { name: 'Street' }), newStreet);
     userEvent.click(getByLabelText('Primary'));

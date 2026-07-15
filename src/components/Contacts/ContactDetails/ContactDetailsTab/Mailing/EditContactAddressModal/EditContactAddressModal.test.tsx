@@ -10,6 +10,12 @@ import {
   ContactMailingFragment,
   ContactMailingFragmentDoc,
 } from '../ContactMailing.generated';
+import { SetContactPrimaryAddressMutation } from '../SetPrimaryAddress.generated';
+import {
+  DeleteContactAddressMutation,
+  DonationServicesEmailQuery,
+  UpdateContactAddressMutation,
+} from './EditContactAddress.generated';
 import { EditContactAddressModal } from './EditContactAddressModal';
 
 const handleClose = jest.fn();
@@ -49,45 +55,49 @@ const mockContact: ContactMailingFragment = {
   },
 };
 
+const mutationSpy = jest.fn();
+
+interface TestComponentProps {
+  address?: ContactMailingFragment['addresses']['nodes'][0];
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({
+  address = mockContact.addresses.nodes[0],
+}) => (
+  <SnackbarProvider>
+    <ThemeProvider theme={theme}>
+      <GqlMockedProvider<{
+        UpdateContactAddress: UpdateContactAddressMutation;
+        DeleteContactAddress: DeleteContactAddressMutation;
+        SetContactPrimaryAddress: SetContactPrimaryAddressMutation;
+        DonationServicesEmail: DonationServicesEmailQuery;
+      }>
+        onCall={mutationSpy}
+      >
+        <EditContactAddressModal
+          contactId={contactId}
+          accountListId={accountListId}
+          handleClose={handleClose}
+          address={address}
+        />
+      </GqlMockedProvider>
+    </ThemeProvider>
+  </SnackbarProvider>
+);
+
 describe('EditContactAddressModal', () => {
   beforeEach(() => {
     setupMocks();
   });
 
   it('should render edit contact address modal', async () => {
-    const { getByText } = render(
-      <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider>
-            <EditContactAddressModal
-              contactId={contactId}
-              accountListId={accountListId}
-              handleClose={handleClose}
-              address={mockContact.addresses.nodes[0]}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>
-      </SnackbarProvider>,
-    );
+    const { getByText } = render(<TestComponent />);
 
     expect(getByText('Edit Address')).toBeInTheDocument();
   });
 
   it('should close edit contact other modal', () => {
-    const { getByText, getByLabelText } = render(
-      <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider>
-            <EditContactAddressModal
-              contactId={contactId}
-              accountListId={accountListId}
-              handleClose={handleClose}
-              address={mockContact.addresses.nodes[0]}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>
-      </SnackbarProvider>,
-    );
+    const { getByText, getByLabelText } = render(<TestComponent />);
 
     expect(getByText('Edit Address')).toBeInTheDocument();
     userEvent.click(getByLabelText('Close'));
@@ -95,20 +105,7 @@ describe('EditContactAddressModal', () => {
   });
 
   it('should handle cancel click', () => {
-    const { getByText } = render(
-      <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider>
-            <EditContactAddressModal
-              contactId={contactId}
-              accountListId={accountListId}
-              handleClose={handleClose}
-              address={mockContact.addresses.nodes[0]}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>
-      </SnackbarProvider>,
-    );
+    const { getByText } = render(<TestComponent />);
 
     expect(getByText('Edit Address')).toBeInTheDocument();
     userEvent.click(getByText('Cancel'));
@@ -117,33 +114,24 @@ describe('EditContactAddressModal', () => {
 
   it('requires at least one field to be filled', async () => {
     const { getByRole } = render(
-      <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider>
-            <EditContactAddressModal
-              contactId={contactId}
-              accountListId={accountListId}
-              handleClose={handleClose}
-              address={{
-                city: '',
-                country: '',
-                historic: false,
-                id: 'address-1',
-                location: '',
-                metroArea: '',
-                postalCode: '',
-                primaryMailingAddress: false,
-                region: '',
-                source: 'MPDX',
-                state: '',
-                street: '123 Cool Street',
-                createdAt: '',
-                startDate: '',
-              }}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>
-      </SnackbarProvider>,
+      <TestComponent
+        address={{
+          city: '',
+          country: '',
+          historic: false,
+          id: 'address-1',
+          location: '',
+          metroArea: '',
+          postalCode: '',
+          primaryMailingAddress: false,
+          region: '',
+          source: 'MPDX',
+          state: '',
+          street: '123 Cool Street',
+          createdAt: '',
+          startDate: '',
+        }}
+      />,
     );
 
     const saveButton = getByRole('button', { name: 'Save' });
@@ -157,7 +145,6 @@ describe('EditContactAddressModal', () => {
   });
 
   it('should edit contact address', async () => {
-    const mutationSpy = jest.fn();
     const newStreet = '4321 Neat Street';
     const newCity = 'Orlando';
     const newState = 'FL';
@@ -165,20 +152,7 @@ describe('EditContactAddressModal', () => {
     const newCountry = 'United States';
     const newRegion = 'New Region';
     const newMetroArea = 'New Metro';
-    const { getByRole, getByText, getByLabelText } = render(
-      <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider onCall={mutationSpy}>
-            <EditContactAddressModal
-              contactId={contactId}
-              accountListId={accountListId}
-              handleClose={handleClose}
-              address={mockContact.addresses.nodes[0]}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>
-      </SnackbarProvider>,
-    );
+    const { getByRole, getByText, getByLabelText } = render(<TestComponent />);
 
     userEvent.clear(getByRole('combobox', { name: 'Street' }));
     userEvent.clear(getByLabelText('City'));
@@ -219,28 +193,42 @@ describe('EditContactAddressModal', () => {
     expect(operation.variables.attributes.historic).toEqual(false);
 
     const { operation: operation2 } = mutationSpy.mock.calls[1][0];
+    expect(operation2.variables.accountListId).toEqual(accountListId);
     expect(operation2.variables.primaryAddressId).toEqual(
       mockContact.addresses.nodes[0].id,
     );
   }, 80000);
 
+  it('should clear primary address when unchecked', async () => {
+    const { getByLabelText, getByText } = render(
+      <TestComponent
+        address={{
+          ...mockContact.addresses.nodes[0],
+          primaryMailingAddress: true,
+        }}
+      />,
+    );
+
+    userEvent.click(getByLabelText('Primary'));
+    userEvent.click(getByText('Save'));
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Address updated successfully', {
+        variant: 'success',
+      }),
+    );
+
+    const { operation: operation2 } = mutationSpy.mock.calls[1][0];
+
+    expect(operation2.variables.accountListId).toEqual(accountListId);
+
+    // API ensures all addresses on a contact are no longer primary when receiving null primaryAddressId
+    expect(operation2.variables.primaryAddressId).toBeNull();
+  }, 30000);
+
   it('handles chosen address predictions', async () => {
     jest.useFakeTimers();
 
-    const { getByRole } = render(
-      <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider>
-            <EditContactAddressModal
-              contactId={contactId}
-              accountListId={accountListId}
-              handleClose={handleClose}
-              address={mockContact.addresses.nodes[0]}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>
-      </SnackbarProvider>,
-    );
+    const { getByRole } = render(<TestComponent />);
 
     // Let Google Maps initialize
     jest.runOnlyPendingTimers();
@@ -271,22 +259,8 @@ describe('EditContactAddressModal', () => {
   }, 20000);
 
   it('should edit not set primary address when it has not changed', async () => {
-    const mutationSpy = jest.fn();
     const newStreet = '4321 Neat Street';
-    const { getByRole, getByText } = render(
-      <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider onCall={mutationSpy}>
-            <EditContactAddressModal
-              contactId={contactId}
-              accountListId={accountListId}
-              handleClose={handleClose}
-              address={mockContact.addresses.nodes[0]}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>
-      </SnackbarProvider>,
-    );
+    const { getByRole, getByText } = render(<TestComponent />);
 
     const street = getByRole('combobox', { name: 'Street' });
     userEvent.clear(street);
@@ -302,20 +276,7 @@ describe('EditContactAddressModal', () => {
   }, 30000);
 
   it('should handle delete click', async () => {
-    const { getByText, getByTestId } = render(
-      <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider>
-            <EditContactAddressModal
-              contactId={contactId}
-              accountListId={accountListId}
-              handleClose={handleClose}
-              address={mockContact.addresses.nodes[0]}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>
-      </SnackbarProvider>,
-    );
+    const { getByText, getByTestId } = render(<TestComponent />);
 
     expect(getByText('Edit Address')).toBeInTheDocument();
     expect(getByTestId('modal-delete-button')).toBeInTheDocument();
@@ -330,18 +291,9 @@ describe('EditContactAddressModal', () => {
 
   it('should restrict editing of Siebel addresses', async () => {
     const { getByRole, getByText, findByRole } = render(
-      <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider>
-            <EditContactAddressModal
-              contactId={contactId}
-              accountListId={accountListId}
-              handleClose={handleClose}
-              address={{ ...mockContact.addresses.nodes[0], source: 'Siebel' }}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>
-      </SnackbarProvider>,
+      <TestComponent
+        address={{ ...mockContact.addresses.nodes[0], source: 'Siebel' }}
+      />,
     );
 
     expect(

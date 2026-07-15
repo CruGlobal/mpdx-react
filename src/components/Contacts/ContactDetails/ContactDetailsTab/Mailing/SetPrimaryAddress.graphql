@@ -1,20 +1,19 @@
-fragment PrimaryMailingAddress on Address {
-  primaryMailingAddress
-}
-
-fragment ContactPrimaryAddressRelation on Contact {
-  primaryAddress {
-    id
-  }
-}
-
-mutation SetContactPrimaryAddress($contactId: ID!, $primaryAddressId: ID) {
-  setContactPrimaryAddress(
-    input: { contactId: $contactId, primaryAddressId: $primaryAddressId }
+mutation SetContactPrimaryAddress(
+  $accountListId: ID!
+  $contactId: ID!
+  $primaryAddressId: String
+) {
+  updateContact(
+    input: {
+      accountListId: $accountListId
+      attributes: { id: $contactId, primaryAddressId: $primaryAddressId }
+    }
   ) {
-    addresses {
+    contact {
       id
-      primaryMailingAddress
+      primaryAddress {
+        id
+      }
     }
   }
 }
