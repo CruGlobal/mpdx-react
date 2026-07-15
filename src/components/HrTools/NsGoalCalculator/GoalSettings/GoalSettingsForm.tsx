@@ -9,9 +9,9 @@ import {
 } from '@mui/material';
 import { Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
 import { GoalSettingsHeader } from './GoalSettingsHeader';
+import { GoalSettingsScrollContainer } from './GoalSettingsScrollContainer';
 import { ContactInformationSection } from './Sections/ContactInformationSection';
 import { ExemptionsSection } from './Sections/ExemptionsSection';
 import { FinancialInformationSection } from './Sections/FinancialInformationSection';
@@ -31,25 +31,12 @@ import { getGoalSettingsSchema } from './goalSettingsSchema';
 import { GoalSettingsSectionProps } from './goalSettingsSectionProps';
 import { useNewStaffGoalCalculation } from './useNewStaffGoalCalculation';
 
-// Padded, full-height scroll container for the form. The sticky action bar below
-// breaks out of this exact spacing(4) padding, so the two are defined together
-// here to keep the padding and its negative-margin breakout in sync.
-const ScrollContainer = styled('div')(({ theme }) => ({
-  padding: theme.spacing(4),
-  width: '100%',
-  '@media screen': {
-    height: `calc(100vh - ${navBarHeight})`,
-    overflow: 'auto',
-  },
-}));
-
 /**
  * Sticky save/cancel bar pinned to the bottom of the scroll area.
  *
- * ScrollContainer (the scrolling ancestor above) wraps this form in
- * spacing(4) = 32px padding on every side. This bar breaks out of that padding
- * so it spans the full width and sits flush against the scroll-area edges. Each
- * side cancels the 32px:
+ * GoalSettingsScrollContainer wraps this form in spacing(4) = 32px padding on
+ * every side. This bar breaks out of that padding so it spans the full width
+ * and sits flush against the scroll-area edges. Each side cancels the 32px:
  *   marginX -4 + paddingX 4 -> full-bleed width, content stays inset
  *   marginBottom -4         -> flush at the bottom once fully scrolled
  *   bottom spacing(-4)      -> flush while the bar is still stuck
@@ -83,7 +70,9 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
   } = useNewStaffGoalCalculation(props);
 
   if (!calculation) {
-    return <ScrollContainer>{fallback}</ScrollContainer>;
+    return (
+      <GoalSettingsScrollContainer>{fallback}</GoalSettingsScrollContainer>
+    );
   }
 
   // Whether the saved record has a spouse identity. The header's read-only
@@ -123,7 +112,7 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
   };
 
   return (
-    <ScrollContainer>
+    <GoalSettingsScrollContainer>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -160,6 +149,11 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
           return (
             <Form>
               <GoalSettingsHeader
+                accountListId={
+                  // Scenario goals have no account list
+                  'accountListId' in props ? props.accountListId : null
+                }
+                calculationId={calculation.id}
                 primaryPerson={primaryPerson}
                 spousePerson={spousePerson}
                 mpdGoal={mpdGoal}
@@ -200,6 +194,6 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
           );
         }}
       </Formik>
-    </ScrollContainer>
+    </GoalSettingsScrollContainer>
   );
 };

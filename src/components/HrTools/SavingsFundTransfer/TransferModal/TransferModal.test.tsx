@@ -431,6 +431,94 @@ describe('TransferModal', () => {
       ).toBeInTheDocument();
     });
 
+    it('should allow editing the transfer date for one-time transfers', async () => {
+      const { getByRole, getByLabelText, queryByText } = render(<Components />);
+
+      expect(getByRole('radio', { name: /one time/i })).toBeChecked();
+
+      const transferDate = getByLabelText(/transfer date/i);
+      expect(transferDate).toBeEnabled();
+      expect(transferDate).toHaveValue('1/1/2020');
+
+      userEvent.clear(transferDate);
+      userEvent.type(transferDate, '02/15/2020');
+      expect(transferDate).toHaveValue('02/15/2020');
+      userEvent.tab();
+
+      await waitFor(() =>
+        expect(
+          queryByText('Transfer date cannot be in the past'),
+        ).not.toBeInTheDocument(),
+      );
+    });
+
+    it('should show error message when one-time transfer date is in the past', async () => {
+      const { getByRole, getByLabelText, findByText } = render(<Components />);
+
+      expect(getByRole('radio', { name: /one time/i })).toBeChecked();
+
+      const transferDate = getByLabelText(/transfer date/i);
+
+      userEvent.clear(transferDate);
+      userEvent.type(transferDate, '12/31/2019');
+      expect(transferDate).toHaveValue('12/31/2019');
+      userEvent.tab();
+
+      expect(
+        await findByText('Transfer date cannot be in the past'),
+      ).toBeInTheDocument();
+    });
+
+    it('should require a transfer date for one-time transfers when cleared', async () => {
+      const { getByRole, getByLabelText, findByText } = render(<Components />);
+
+      expect(getByRole('radio', { name: /one time/i })).toBeChecked();
+
+      const transferDate = getByLabelText(/transfer date/i);
+
+      userEvent.clear(transferDate);
+      expect(transferDate).toHaveValue('');
+      userEvent.tab();
+
+      expect(await findByText('Transfer date is required')).toBeInTheDocument();
+
+      await waitFor(() =>
+        expect(getByRole('button', { name: /submit/i })).toBeDisabled(),
+      );
+    });
+
+    it('should not submit a one-time transfer with an unparseable transfer date', async () => {
+      const { getByRole, getByLabelText, findByText } = render(<Components />);
+
+      const amountField = getByRole('spinbutton', { name: /amount/i });
+      const noteField = getByRole('textbox', { name: /note/i });
+
+      userEvent.click(getByRole('combobox', { name: /to account/i }));
+      userEvent.click(getByRole('option', { name: /staff savings/i }));
+
+      userEvent.clear(amountField);
+      userEvent.type(amountField, '100');
+
+      userEvent.type(noteField, 'Test note');
+
+      const transferDate = getByLabelText(/transfer date/i);
+
+      userEvent.clear(transferDate);
+      userEvent.type(transferDate, '99/99/9999');
+      expect(transferDate).toHaveValue('99/99/9999');
+      userEvent.tab();
+
+      expect(
+        await findByText('Transfer date cannot be in the past'),
+      ).toBeInTheDocument();
+
+      await waitFor(() =>
+        expect(getByRole('button', { name: /submit/i })).toBeDisabled(),
+      );
+
+      expect(mutationSpy).not.toHaveGraphqlOperation('CreateTransfer');
+    });
+
     it('should show error message when monthly schedule is selected', async () => {
       const { getByRole, getByLabelText, findByText } = render(<Components />);
 
@@ -542,6 +630,48 @@ describe('TransferModal', () => {
                 sourceFundTypeName: 'Staff Account',
                 destinationFundTypeName: 'Staff Savings',
                 description: 'Test note',
+                transactedAt: '2020-01-01T00:00:00.000+00:00',
+              }),
+            }),
+          }),
+        );
+      });
+    });
+
+    it('should create a future-dated one-time transfer', async () => {
+      const { getByRole, getByLabelText } = render(<Components />);
+
+      const amountField = getByRole('spinbutton', { name: /amount/i });
+      const noteField = getByRole('textbox', { name: /note/i });
+
+      userEvent.click(getByRole('combobox', { name: /to account/i }));
+      userEvent.click(getByRole('option', { name: /staff savings/i }));
+
+      userEvent.clear(amountField);
+      userEvent.type(amountField, '100');
+
+      const transferDate = getByLabelText(/transfer date/i);
+
+      userEvent.clear(transferDate);
+      userEvent.type(transferDate, '02/15/2020');
+      expect(transferDate).toHaveValue('02/15/2020');
+      userEvent.tab();
+
+      userEvent.type(noteField, 'Future transfer');
+
+      userEvent.click(getByRole('button', { name: /submit/i }));
+
+      await waitFor(() => {
+        expect(mutationSpy).toHaveBeenCalledWith(
+          expect.objectContaining({
+            operation: expect.objectContaining({
+              operationName: 'CreateTransfer',
+              variables: expect.objectContaining({
+                amount: 100,
+                sourceFundTypeName: 'Staff Account',
+                destinationFundTypeName: 'Staff Savings',
+                description: 'Future transfer',
+                transactedAt: '2020-02-15T00:00:00.000+00:00',
               }),
             }),
           }),

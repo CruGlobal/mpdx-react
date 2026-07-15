@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
-import { GoalSettingsForm } from 'src/components/HrTools/NsGoalCalculator/GoalSettings/GoalSettingsForm';
+import { GoalSettingsView } from 'src/components/HrTools/NsGoalCalculator/GoalSettings/GoalSettingsView';
 import Loading from 'src/components/Loading';
 import { getAppName } from 'src/lib/getAppName';
 import { getQueryParam } from 'src/lib/queryParam';
@@ -20,7 +20,7 @@ export const NsScenarioGoalPage: React.FC = () => {
         <title>{`${appName} | ${t('New Staff Goal Calculator')}`}</title>
       </Head>
       {scenarioGoalId ? (
-        <GoalSettingsForm scenarioGoalId={scenarioGoalId} />
+        <GoalSettingsView scenarioGoalId={scenarioGoalId} />
       ) : (
         <Loading loading />
       )}

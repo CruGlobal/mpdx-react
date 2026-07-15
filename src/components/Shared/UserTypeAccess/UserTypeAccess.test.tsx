@@ -12,6 +12,7 @@ import { RequiredUserGroupEnum, UserTypeAccess } from './UserTypeAccess';
 const id = 'staff-1';
 
 interface TestComponentProps {
+  requiredUserType?: UserTypeEnum;
   requireStaffAccount?: boolean;
   userType?: UserTypeEnum;
   usStaffGroup?: UsStaffGroupEnum;
@@ -20,6 +21,7 @@ interface TestComponentProps {
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
+  requiredUserType = UserTypeEnum.UsStaff,
   requireStaffAccount,
   userType = UserTypeEnum.UsStaff,
   usStaffGroup = UsStaffGroupEnum.PartTimeFieldStaff,
@@ -36,7 +38,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
         }}
       >
         <UserTypeAccess
-          requiredUserType={UserTypeEnum.UsStaff}
+          requiredUserType={requiredUserType}
           requireStaffAccount={requireStaffAccount}
           requireUserGroups={requireUserGroups}
         >
@@ -225,6 +227,55 @@ describe('UserTypeAccess', () => {
     expect(
       getByText(/something went wrong while loading your account information/i),
     ).toBeInTheDocument();
+  });
+
+  describe('Hybrid staff', () => {
+    it('grants a hybrid user access to a us-staff-gated feature', async () => {
+      const { findByText } = render(
+        <TestComponent userType={UserTypeEnum.HybridStaff} />,
+      );
+      expect(await findByText('Test Content')).toBeInTheDocument();
+    });
+
+    it('grants a hybrid user access to a global-staff-gated feature', async () => {
+      const { findByText } = render(
+        <TestComponent
+          userType={UserTypeEnum.HybridStaff}
+          requiredUserType={UserTypeEnum.GlobalStaff}
+        />,
+      );
+      expect(await findByText('Test Content')).toBeInTheDocument();
+    });
+
+    it('still gates a hybrid user who has no staff account when a staff account is required', async () => {
+      const { findByRole } = render(
+        <TestComponent
+          userType={UserTypeEnum.HybridStaff}
+          requireStaffAccount
+          staffAccountId={null}
+        />,
+      );
+      expect(
+        await findByRole('heading', {
+          name: 'Access to this feature is limited.',
+        }),
+      ).toBeInTheDocument();
+    });
+
+    it('still gates a hybrid user who is ineligible by user group', async () => {
+      const { findByRole } = render(
+        <TestComponent
+          userType={UserTypeEnum.HybridStaff}
+          requireUserGroups={RequiredUserGroupEnum.Asr}
+          usStaffGroup={UsStaffGroupEnum.PartTimeFieldStaff}
+        />,
+      );
+      expect(
+        await findByRole('heading', {
+          name: 'Access to this feature is limited.',
+        }),
+      ).toBeInTheDocument();
+    });
   });
 
   it('should render child component in a development env for a developer even when user is ineligible by group', async () => {

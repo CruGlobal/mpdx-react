@@ -87,4 +87,40 @@ describe('useReportNavItems', () => {
       'financialAccounts',
     );
   });
+
+  it('hides staff reports for a hybrid user with no staff account', async () => {
+    const HybridNoStaffAccountWrapper = ({
+      children,
+    }: {
+      children: ReactElement;
+    }) => (
+      <GqlMockedProvider<{ GetUser: GetUserQuery; UserOption: UserOptionQuery }>
+        mocks={{
+          GetUser: {
+            user: {
+              userType: UserTypeEnum.HybridStaff,
+              staffAccountId: null,
+            },
+          },
+          UserOption: {
+            userOption: { key: 'user_type_verified', value: 'true' },
+          },
+        }}
+      >
+        {children}
+      </GqlMockedProvider>
+    );
+
+    const { result, waitForNextUpdate } = renderHook(
+      () => useReportNavItems(),
+      { wrapper: HybridNoStaffAccountWrapper },
+    );
+    await waitForNextUpdate();
+
+    const ids = result.current.map((item) => item.id);
+    expect(ids).not.toContain('staffExpense');
+    expect(ids).not.toContain('mpgaIncomeExpenses');
+
+    expect(ids).toContain('financialAccounts');
+  });
 });

@@ -8,8 +8,10 @@ Overrides in [`code-health-rules.json`](./code-health-rules.json) reduce false-p
 
 | Rule / Threshold                                  | Default         | Override            | Applies to                  |
 | ------------------------------------------------- | --------------- | ------------------- | --------------------------- |
-| `function_cyclomatic_complexity_warning`          | 9               | **15**              | `.ts`, `.tsx`, hooks, tests |
-| `function_lines_of_code_warning`                  | 70              | **100**             | `.tsx`, hooks               |
+| `function_cyclomatic_complexity_warning`          | 9               | **20**              | `.tsx`, hooks               |
+| `function_cyclomatic_complexity_warning`          | 9               | **15**              | `.ts`, tests                |
+| `function_lines_of_code_warning`                  | 70              | **120**             | `.tsx`                      |
+| `function_lines_of_code_warning`                  | 70              | **100**             | hooks                       |
 | `function_lines_of_code_warning`                  | 70              | **200**             | tests                       |
 | `file_lines_of_code` (test files)                 | 1000/5000/10000 | **300 / 500 / 800** | tests                       |
 | `file_mean_cyclomatic_complexity_warning`         | 4               | **6**               | `.ts`, `.tsx`, hooks        |
@@ -19,7 +21,7 @@ Overrides in [`code-health-rules.json`](./code-health-rules.json) reduce false-p
 | Primitive Obsession                               | weight 1.0      | **disabled**        | tests                       |
 | Duplicated Assertion Blocks                       | weight 1.0      | **disabled**        | tests                       |
 | Large Assertion Blocks                            | weight 1.0      | **0.5**             | tests                       |
-| Code Duplication                                  | weight 1.0      | **0.5**             | tests                       |
+| Code Duplication                                  | weight 1.0      | **disabled**        | tests                       |
 
 Defaults are CodeScene's published JavaScript values, empirically verified to apply to TypeScript (see [Empirical findings](#empirical-findings)).
 
@@ -29,15 +31,15 @@ Five rule sets, first-match-wins: `**/*.test.{ts,tsx}` → `{src/hooks/**/*.ts,*
 
 ## Why each override exists
 
-### Cyclomatic complexity warning: 15
+### Cyclomatic complexity warning: 20 (`.tsx` / hooks), 15 (`.ts` / tests)
 
-CodeScene counts `?.` and ternaries as decision points 1:1 (`??` does not). An idiomatic Apollo component doing `data?.contact?.name` with a few chains and a loading/empty/content ternary scores CC ~12 with no real branching. Default of 9 fires too early on this pattern; 15 catches genuine branching.
+CodeScene counts `?.` and ternaries as decision points 1:1 (`??` does not), and folds inline callbacks (`.map`, event handlers, `useMemo` bodies) into their enclosing function. `.tsx` components and hooks share this composition idiom, so they share the **20** threshold; `.ts` logic and tests keep **15**.
 
-**Evidence:** [src/components/HrTools/SalaryCalculator/Landing/useLandingData.ts](../src/components/HrTools/SalaryCalculator/Landing/useLandingData.ts) was flagged at CC 57 on 2026-04-14. As of 2026-05-06: 38 `?.` + ~20 ternaries + 6 `||` + 2 `if` ≈ 67 decision points (file grew). Across 877 `.tsx` files, 7.7% land in the 15-19 warning band — productive friction at the right level.
+**Evidence (2026-07-14, AST-measured on the folded function, validated live):** [useMpdGoalPreview.ts](../src/components/HrTools/NsGoalCalculator/GoalSettings/useMpdGoalPreview.ts) scores CodeScene's exact 18. At threshold 15, 8.1% of `.tsx` functions flagged but **16.0% of hooks** — hooks are denser (mean CC 7.3 vs 4.8), so 15 fired ~2× as often on them. Raising both to 20 drops those to 5.1% / 9.0% and restores parity, leaving genuine outliers ([useLandingData.ts](../src/components/HrTools/SalaryCalculator/Landing/useLandingData.ts) at 58) flagged.
 
-### Function length warning: 100 (`.tsx` / hooks)
+### Function length warning: 120 (`.tsx`), 100 (hooks)
 
-JSX returns inflate function length. Components at 60-130 LOC are idiomatic; default of 70 fires too early. `.ts` files keep the default — pure logic at 70+ LOC usually IS too much.
+JSX returns inflate function length. `.tsx` components at 60-130 LOC are idiomatic; default of 70 fires too early, and even 100 clipped legitimate components, so `.tsx` sits at **120**. Hooks have no JSX return to inflate them, so they keep **100**. `.ts` files keep the default of 70 — pure logic at 70+ LOC usually IS too much.
 
 ### Primitive Obsession: 70% (`.tsx`) / 50% (`.ts`)
 
@@ -93,7 +95,7 @@ Test repetition is often intentional:
 
 - **Primitive Obsession** disabled — fixture data is primitive
 - **Duplicated Assertion Blocks** disabled — repetition aids readability
-- **Large Assertion Blocks** + **Code Duplication** weight 0.5 — empirically suppresses PR findings (addresses `.test.tsx` false positives)
+- **Large Assertion Blocks** weight 0.5, **Code Duplication** disabled — empirically suppresses PR findings (addresses `.test.tsx` false positives)
 
 ## Empirical findings
 
@@ -140,3 +142,4 @@ Date format: YYYY-MM-DD.
 - **2026-05-06** — Removed `function_max_arguments: 5` override. The README's own data (99.57% use ≤4 args) supports keeping the default of 4, not raising to 5. The override was loosening the bar against the empirical evidence.
 - **2026-05-06** — Considered overriding `function_nesting_depth_warning` for non-test tiers. AST-based per-function measurement (validated against probe at 0.0% error) showed only 2 `.tsx` functions and 0 `.ts` functions at depth ≥ 4 codebase-wide. Manual inspection of all 14 functions at depth ≥ 3 confirmed depth-3 cases are predominantly idiomatic loops + guarded conditionals; depth-4+ cases ARE worth flagging. Default of 4 is correctly calibrated. **Methodology lesson:** indent-based measurement overstates nesting depth (JSX + arrow-function nesting); use AST-based measurement.
 - **2026-05-06** — Re-confirmed CC operator counting via a 3-function probe: `probeChain` (16 `?.`) and `probeTernary` (16 `?:`) both fired "Complex Method" with CC = 17 = N + 1 base. `probeNullish` (16 `??`) produced no finding (CC stays at 1). The 2026-04-15 finding stands: `?.` and `?:` count 1:1, `??` does not.
+- **2026-07-14** — Raised CC warning to **20** for `.tsx` and hooks (was 15); raised `.tsx` function LOC to **120** (was 100); disabled **Code Duplication** for tests (was 0.5). Re-measured CC via AST, validated against live CodeScene (`useMpdGoalPreview.ts` = 18): at 15, hooks flagged 16.0% of functions vs `.tsx` 8.1%, so 20 restores parity. **Methodology lesson:** CodeScene folds inline callbacks into their enclosing function — measure CC on the folded function, not per-arrow, or you under-count ~9×.

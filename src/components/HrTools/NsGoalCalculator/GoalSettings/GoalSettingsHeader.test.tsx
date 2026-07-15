@@ -3,6 +3,8 @@ import { ThemeProvider } from '@mui/material';
 import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Form, Formik } from 'formik';
+import { SnackbarProvider } from 'notistack';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { GoalSettingsHeader } from './GoalSettingsHeader';
 import { GoalSettingsPerson } from './goalSettingsFormValues';
@@ -39,17 +41,26 @@ const TestComponent: React.FC<TestComponentProps> = ({
   isScenario = false,
 }) => (
   <ThemeProvider theme={theme}>
-    <Formik initialValues={{ calculationsYear: '2020' }} onSubmit={jest.fn()}>
-      <Form>
-        <GoalSettingsHeader
-          primaryPerson={primaryPerson}
-          spousePerson={spouse}
-          mpdGoal={mpdGoal}
-          joinedStaffYear={joinedStaffYear}
-          isScenario={isScenario}
-        />
-      </Form>
-    </Formik>
+    <SnackbarProvider>
+      <GqlMockedProvider>
+        <Formik
+          initialValues={{ calculationsYear: '2020' }}
+          onSubmit={jest.fn()}
+        >
+          <Form>
+            <GoalSettingsHeader
+              accountListId="account-list-1"
+              calculationId="goal-calculation-1"
+              primaryPerson={primaryPerson}
+              spousePerson={spouse}
+              mpdGoal={mpdGoal}
+              joinedStaffYear={joinedStaffYear}
+              isScenario={isScenario}
+            />
+          </Form>
+        </Formik>
+      </GqlMockedProvider>
+    </SnackbarProvider>
   </ThemeProvider>
 );
 

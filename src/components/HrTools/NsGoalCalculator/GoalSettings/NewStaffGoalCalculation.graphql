@@ -114,3 +114,17 @@ mutation UpdateNewStaffGoalCalculation(
     }
   }
 }
+
+# Recalculate the goal for a set of unsaved changes
+mutation PreviewNewStaffGoalCalculation(
+  $input: NewStaffGoalCalculationPreviewMutationInput!
+) {
+  previewNewStaffGoalCalculation(input: $input) {
+    newStaffGoalCalculation {
+      id
+      calculations {
+        monthlyGoal
+      }
+    }
+  }
+}

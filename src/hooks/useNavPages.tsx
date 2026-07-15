@@ -58,7 +58,10 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
 
   const userType = data?.user.userType;
   const developerBypass = useDeveloperBypass();
-  const canSeeHrTools = userType === UserTypeEnum.UsStaff || developerBypass;
+  const canSeeHrTools =
+    userType === UserTypeEnum.UsStaff ||
+    userType === UserTypeEnum.HybridStaff ||
+    developerBypass;
 
   // During a restricted impersonation session the impersonator may only
   // access MPD leader tools, so hide the contacts, tasks, and tools pages

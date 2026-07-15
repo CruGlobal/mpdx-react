@@ -168,6 +168,9 @@ describe('LoadCoachingDetail', () => {
         <TestComponent accountListType={AccountListTypeEnum.Coaching} />,
       );
 
+      expect(
+        await findByRole('heading', { name: 'John Doe Account' }),
+      ).toBeInTheDocument();
       const link = await findByRole('link', {
         name: 'View New Staff Goal',
       });
