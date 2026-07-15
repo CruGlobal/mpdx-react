@@ -612,40 +612,6 @@ describe('useAdditionalSalaryRequestForm', () => {
       );
     });
 
-    it('should not fire mutations when submitting during restricted impersonation', async () => {
-      mockSession({ impersonationScope: 'mpd_supervisor' });
-
-      const { result } = renderHook(
-        () =>
-          useAdditionalSalaryRequestForm({
-            ...defaultFormValues,
-            phoneNumber: '555-123-4567',
-            emailAddress: 'test@example.com',
-          }),
-        {
-          wrapper: TestWrapper,
-        },
-      );
-
-      // Ensure the form is valid so onSubmit actually runs
-      await waitFor(async () => {
-        const errors = await result.current.validateForm();
-        expect(errors).toEqual({});
-      });
-
-      await act(async () => {
-        await result.current.submitForm();
-      });
-
-      expect(mutationSpy).not.toHaveGraphqlOperation(
-        'UpdateAdditionalSalaryRequest',
-      );
-      expect(mutationSpy).not.toHaveGraphqlOperation(
-        'SubmitAdditionalSalaryRequest',
-      );
-      expect(mockHandleNextStep).not.toHaveBeenCalled();
-    });
-
     it('should call update and submit mutations on form submit', async () => {
       const { result } = renderHook(
         () =>
@@ -794,6 +760,40 @@ describe('useAdditionalSalaryRequestForm', () => {
 
       expect(submitError).toEqual(
         expect.objectContaining({ message: 'Server Error' }),
+      );
+      expect(mutationSpy).not.toHaveGraphqlOperation(
+        'SubmitAdditionalSalaryRequest',
+      );
+      expect(mockHandleNextStep).not.toHaveBeenCalled();
+    });
+
+    it('should not fire mutations when submitting during restricted impersonation', async () => {
+      mockSession({ impersonationScope: 'mpd_supervisor' });
+
+      const { result } = renderHook(
+        () =>
+          useAdditionalSalaryRequestForm({
+            ...defaultFormValues,
+            phoneNumber: '555-123-4567',
+            emailAddress: 'test@example.com',
+          }),
+        {
+          wrapper: TestWrapper,
+        },
+      );
+
+      // Ensure the form is valid so onSubmit actually runs
+      await waitFor(async () => {
+        const errors = await result.current.validateForm();
+        expect(errors).toEqual({});
+      });
+
+      await act(async () => {
+        await result.current.submitForm();
+      });
+
+      expect(mutationSpy).not.toHaveGraphqlOperation(
+        'UpdateAdditionalSalaryRequest',
       );
       expect(mutationSpy).not.toHaveGraphqlOperation(
         'SubmitAdditionalSalaryRequest',
