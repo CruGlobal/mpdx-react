@@ -2,7 +2,6 @@ import { NewStaffQuestionnaireVariantEnum } from 'src/graphql/types.generated';
 import { safeProgressRatio } from '../../Shared/helpers/safeProgressRatio';
 import { NsoMpdQuestionnaireStepEnum } from '../NsoMpdQuestionnaireHelper';
 import { NewStaffQuestionnaireQuery } from './NewStaffQuestionnaire.generated';
-import { getHasSpouse } from './helpers/getHasSpouse';
 
 type NewStaffQuestionnaire =
   NewStaffQuestionnaireQuery['newStaffQuestionnaire'];
@@ -17,7 +16,8 @@ const steps: NsoMpdQuestionnaireStepEnum[] = [
 ];
 
 const stepRequiredFields: Record<string, QuestionnaireField[]> = {
-  [NsoMpdQuestionnaireStepEnum.PersonalInformation]: ['phoneNumber'],
+  // Personal Information is a read-only review step, so it has no fields the user must fill in.
+  [NsoMpdQuestionnaireStepEnum.PersonalInformation]: [],
   [NsoMpdQuestionnaireStepEnum.MinistryInformation]: [
     'ministryName',
     'ministryLocation',
@@ -61,12 +61,6 @@ const getRequiredFields = (
   questionnaire: NonNullable<NewStaffQuestionnaire>,
 ): QuestionnaireField[] => {
   const baseFields = stepRequiredFields[step] ?? [];
-
-  if (step === NsoMpdQuestionnaireStepEnum.PersonalInformation) {
-    return getHasSpouse(questionnaire.maritalStatus)
-      ? [...baseFields, 'spousePhoneNumber']
-      : baseFields;
-  }
 
   if (step !== NsoMpdQuestionnaireStepEnum.FinancialInformation) {
     return baseFields;

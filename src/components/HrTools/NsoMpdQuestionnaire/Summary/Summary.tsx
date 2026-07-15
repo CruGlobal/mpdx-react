@@ -6,9 +6,8 @@ import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmat
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { BackButton } from '../Shared/BackButton';
 import { useNsoMpdQuestionnaire } from '../Shared/NsoMpdQuestionnaireContext';
+import { NsoMpdQuestionnaireLayout } from '../Shared/NsoMpdQuestionnaireLayout';
 import { QuestionnaireActionButton } from '../Shared/QuestionnaireActionButton';
-import { StepPage } from '../Shared/StepPage';
-import { SubStep } from '../Shared/SubStepList';
 import { SummarySection } from './SummarySection';
 import { useSummarySections } from './useSummarySections';
 
@@ -20,9 +19,6 @@ export const Summary: React.FC = () => {
     useNsoMpdQuestionnaire();
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const subSteps: SubStep[] = [
-    { id: 'summary', title: t('Summary'), complete: true },
-  ];
   const sections = useSummarySections();
 
   // Complete the questionnaire, then redirect to the dashboard on success.
@@ -32,19 +28,18 @@ export const Summary: React.FC = () => {
   };
 
   return (
-    <StepPage subSteps={subSteps}>
+    <NsoMpdQuestionnaireLayout>
       <Box mx={4} my={2}>
+        <Stack spacing={2}>
+          <Typography variant="h5">{t('Summary')}</Typography>
+          <Typography variant="body1">
+            {t(
+              'Please review your information below, then select Submit to finish. Once submitted, you will be redirected to the dashboard and will not be able to make any further changes.',
+            )}
+          </Typography>
+        </Stack>
+        <Divider sx={{ mx: -4, my: 4 }} />
         <Stack spacing={4}>
-          <Box>
-            <Typography variant="h5">{t('Summary')}</Typography>
-            <Typography>
-              {t(
-                'Please review your information below, then select Submit to finish. Once submitted, you will be redirected to the dashboard and will not be able to make any further changes.',
-              )}
-            </Typography>
-            <Divider sx={{ mt: 2, mx: -4 }} />
-          </Box>
-
           {sections.map((section) => (
             <SummarySection
               key={section.title}
@@ -56,7 +51,7 @@ export const Summary: React.FC = () => {
         </Stack>
       </Box>
 
-      <Stack direction="row" spacing={2} mx={4}>
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} mx={4}>
         <BackButton onClick={handleBack} />
         <QuestionnaireActionButton onClick={() => setConfirmOpen(true)}>
           {t('Submit')}
@@ -74,6 +69,6 @@ export const Summary: React.FC = () => {
         mutation={handleSubmit}
         handleClose={() => setConfirmOpen(false)}
       />
-    </StepPage>
+    </NsoMpdQuestionnaireLayout>
   );
 };

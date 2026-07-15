@@ -137,4 +137,27 @@ describe('MinistryDetails', () => {
       }),
     ).not.toBeInTheDocument();
   });
+
+  it('renders the assignment-location question as a label above the field', () => {
+    const { getByText } = render(<TestComponent />);
+
+    expect(
+      getByText('What is your expected ministry assignment location?').tagName,
+    ).toBe('SPAN');
+  });
+
+  it('surfaces a load failure when no ministries are available', async () => {
+    const { findByRole, findByText } = render(
+      <NsoMpdQuestionnaireTestWrapper ministries={[]}>
+        <MinistryDetails />
+      </NsoMpdQuestionnaireTestWrapper>,
+    );
+
+    expect(await findByText('Failed to load ministries')).toBeInTheDocument();
+    expect(
+      await findByRole('combobox', {
+        name: 'What ministry are you expecting to serve with?',
+      }),
+    ).toHaveAttribute('aria-disabled', 'true');
+  });
 });

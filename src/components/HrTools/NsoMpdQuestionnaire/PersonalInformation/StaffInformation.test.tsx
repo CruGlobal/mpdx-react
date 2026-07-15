@@ -47,6 +47,32 @@ describe('StaffInformation', () => {
     expect(getByText('Person Number: 000789123')).toBeInTheDocument();
   });
 
+  it('shows each person read-only cell phone number', async () => {
+    const { findByRole, getByRole } = render(
+      <NsoMpdQuestionnaireTestWrapper
+        newStaffQuestionnaire={{
+          phoneNumber: '(305) 000-1111',
+          spousePhoneNumber: '(305) 222-3333',
+        }}
+      >
+        <StaffInformation />
+      </NsoMpdQuestionnaireTestWrapper>,
+    );
+
+    // Wait for the questionnaire data to load (the name is data-dependent).
+    await findByRole('heading', { name: 'John Doe' });
+
+    const phone = getByRole('textbox', { name: 'Cell Phone Number' });
+    expect(phone).toHaveValue('(305) 000-1111');
+    expect(phone).toHaveAttribute('readonly');
+
+    userEvent.click(getByRole('button', { name: 'View Jane' }));
+
+    expect(getByRole('textbox', { name: 'Cell Phone Number' })).toHaveValue(
+      '(305) 222-3333',
+    );
+  });
+
   it('hides the spouse toggle and shows Single without a spouse', async () => {
     const { findByRole, getByRole, queryByRole } = render(
       <NsoMpdQuestionnaireTestWrapper hasSpouse={false}>
@@ -61,5 +87,19 @@ describe('StaffInformation', () => {
     expect(getByRole('textbox', { name: 'Family Status' })).toHaveValue(
       'Single',
     );
+  });
+
+  it('shows a "Not on record" placeholder for an empty field', async () => {
+    const { findByRole } = render(
+      <NsoMpdQuestionnaireTestWrapper
+        newStaffQuestionnaire={{ phoneNumber: '' }}
+      >
+        <StaffInformation />
+      </NsoMpdQuestionnaireTestWrapper>,
+    );
+
+    const phone = await findByRole('textbox', { name: 'Cell Phone Number' });
+    expect(phone).toHaveValue('');
+    expect(phone).toHaveAttribute('placeholder', 'Not on record');
   });
 });

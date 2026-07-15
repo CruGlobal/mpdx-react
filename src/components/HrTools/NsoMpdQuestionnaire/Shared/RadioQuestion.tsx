@@ -1,13 +1,7 @@
-import React, { useId } from 'react';
-import {
-  FormControl,
-  FormControlLabel,
-  FormHelperText,
-  FormLabel,
-  Radio,
-  RadioGroup,
-} from '@mui/material';
+import React from 'react';
+import { FormControlLabel, Radio, RadioGroup } from '@mui/material';
 import * as yup from 'yup';
+import { LabeledField } from './LabeledField';
 import {
   QuestionnaireField,
   useQuestionnaireAutoSave,
@@ -38,8 +32,6 @@ export const RadioQuestion: React.FC<RadioQuestionProps> = ({
   options,
   row = false,
 }) => {
-  const labelId = useId();
-  const helperTextId = useId();
   const { error, helperText, ...fieldProps } = useQuestionnaireAutoSave({
     fieldName,
     schema,
@@ -47,30 +39,25 @@ export const RadioQuestion: React.FC<RadioQuestionProps> = ({
   });
 
   return (
-    <FormControl error={error} required>
-      <FormLabel component="span" id={labelId} sx={{ color: 'text.primary' }}>
-        {label}
-      </FormLabel>
-      <RadioGroup
-        row={row}
-        sx={{ paddingInline: 2 }}
-        aria-labelledby={labelId}
-        aria-describedby={helperText ? helperTextId : undefined}
-        aria-required
-        {...fieldProps}
-      >
-        {options.map((option) => (
-          <FormControlLabel
-            key={option.value}
-            value={option.value}
-            control={<Radio />}
-            label={option.label}
-          />
-        ))}
-      </RadioGroup>
-      {helperText && (
-        <FormHelperText id={helperTextId}>{helperText}</FormHelperText>
+    <LabeledField label={label} required error={error} helperText={helperText}>
+      {(aria) => (
+        <RadioGroup
+          row={row}
+          sx={{ paddingInline: 2 }}
+          aria-required
+          {...aria}
+          {...fieldProps}
+        >
+          {options.map((option) => (
+            <FormControlLabel
+              key={option.value}
+              value={option.value}
+              control={<Radio />}
+              label={option.label}
+            />
+          ))}
+        </RadioGroup>
       )}
-    </FormControl>
+    </LabeledField>
   );
 };

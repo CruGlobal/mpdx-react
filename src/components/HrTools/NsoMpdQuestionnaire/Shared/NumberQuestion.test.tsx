@@ -12,9 +12,10 @@ const schema = yup.object({
     .required('Please enter a number.'),
 });
 
-const TestComponent: React.FC<{ startAdornment?: React.ReactNode }> = ({
-  startAdornment,
-}) => (
+const TestComponent: React.FC<{
+  startAdornment?: React.ReactNode;
+  endAdornment?: React.ReactNode;
+}> = ({ startAdornment, endAdornment }) => (
   <NsoMpdQuestionnaireTestWrapper>
     <NumberQuestion
       fieldName="childcareChildrenCount"
@@ -22,6 +23,7 @@ const TestComponent: React.FC<{ startAdornment?: React.ReactNode }> = ({
       question="How many?"
       helperText="Enter 0 if none."
       startAdornment={startAdornment}
+      endAdornment={endAdornment}
     />
   </NsoMpdQuestionnaireTestWrapper>
 );
@@ -98,5 +100,13 @@ describe('NumberQuestion', () => {
     );
 
     expect(getByTestId('adornment')).toBeInTheDocument();
+  });
+
+  it('renders a provided end adornment', () => {
+    const { getByTestId } = render(
+      <TestComponent endAdornment={<span data-testid="end-adornment" />} />,
+    );
+
+    expect(getByTestId('end-adornment')).toBeInTheDocument();
   });
 });

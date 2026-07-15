@@ -1,6 +1,10 @@
 import React, { useMemo } from 'react';
 import { TFunction, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import {
+  CurrencyAdornment,
+  PercentageAdornment,
+} from 'src/components/HrTools/Shared/Adornments';
 import { NewStaffQuestionnaireVariantEnum } from 'src/graphql/types.generated';
 import { percentage } from 'src/lib/yupHelpers';
 import { useNsoMpdQuestionnaire } from '../Shared/NsoMpdQuestionnaireContext';
@@ -61,6 +65,7 @@ export const VariantQuestions: React.FC = () => {
               },
             )}
             helperText={t('Round to the nearest dollar.')}
+            startAdornment={<CurrencyAdornment />}
           />
           <NumberQuestion
             fieldName="spouseContribution403bPercentage"
@@ -72,6 +77,7 @@ export const VariantQuestions: React.FC = () => {
               },
             )}
             helperText={t('Enter a percentage between 0 and 100.')}
+            endAdornment={<PercentageAdornment />}
           />
           <NumberQuestion
             fieldName="spouseMhaAmount"
@@ -80,6 +86,7 @@ export const VariantQuestions: React.FC = () => {
               spouseName,
             })}
             helperText={t('Please enter zero if you have not requested MHA.')}
+            startAdornment={<CurrencyAdornment />}
           />
           <NumberQuestion
             fieldName="staffConferenceTransfer"
@@ -90,6 +97,7 @@ export const VariantQuestions: React.FC = () => {
             helperText={t(
               'Please enter zero if you do not have a monthly amount taken out of your staff account for staff conference.',
             )}
+            startAdornment={<CurrencyAdornment />}
           />
           <NumberQuestion
             fieldName="accountTransfers"
@@ -100,12 +108,14 @@ export const VariantQuestions: React.FC = () => {
             helperText={t(
               'Please enter zero if you do not transfer money from your staff account each month as giving to other staff.',
             )}
+            startAdornment={<CurrencyAdornment />}
           />
           <NumberQuestion
             fieldName="solidSupportRaised"
             schema={schema}
             question={t('How much do you have raised in Solid Support?')}
             helperText={t('Please enter as a monthly amount.')}
+            startAdornment={<CurrencyAdornment />}
           />
         </>
       )}

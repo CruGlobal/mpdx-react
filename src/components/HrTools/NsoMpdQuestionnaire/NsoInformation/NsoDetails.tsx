@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { Stack } from '@mui/material';
 import { TFunction, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { CurrencyAdornment } from 'src/components/HrTools/Shared/Adornments';
 import { NumberQuestion } from '../Shared/NumberQuestion';
 import { RadioOption, RadioQuestion } from '../Shared/RadioQuestion';
 import { getAmountSchema } from '../Shared/helpers/getAmountSchema';
@@ -61,6 +62,7 @@ export const NsoDetails: React.FC = () => {
         helperText={t(
           'Round to the nearest dollar. Please enter 0 if you have none.',
         )}
+        startAdornment={<CurrencyAdornment />}
       />
 
       <NumberQuestion

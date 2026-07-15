@@ -3,10 +3,7 @@ import CreditCard from '@mui/icons-material/CreditCard';
 import DirectionsCar from '@mui/icons-material/DirectionsCar';
 import School from '@mui/icons-material/School';
 import {
-  FormControl,
   FormControlLabel,
-  FormHelperText,
-  FormLabel,
   InputAdornment,
   Radio,
   RadioGroup,
@@ -15,6 +12,7 @@ import { TFunction, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useOptionalAutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
 import { useSyncedState } from 'src/hooks/useSyncedState';
+import { LabeledField } from '../Shared/LabeledField';
 import { useNsoMpdQuestionnaire } from '../Shared/NsoMpdQuestionnaireContext';
 import { NumberQuestion } from '../Shared/NumberQuestion';
 import { getAmountSchema } from '../Shared/helpers/getAmountSchema';
@@ -108,25 +106,33 @@ export const DebtQuestions: React.FC = () => {
 
   return (
     <>
-      <FormControl error={showHasDebtError}>
-        <FormLabel id="has-debt-label" sx={{ color: 'text.primary' }}>
-          {t('Do you have any student loan, car, or credit card debt?')}
-        </FormLabel>
-        <RadioGroup
-          row
-          sx={{ paddingInline: 2 }}
-          aria-labelledby="has-debt-label"
-          value={hasDebt}
-          onChange={handleHasDebtChange}
-          onBlur={() => setHasDebtTouched(true)}
-        >
-          <FormControlLabel value="Yes" control={<Radio />} label={t('Yes')} />
-          <FormControlLabel value="No" control={<Radio />} label={t('No')} />
-        </RadioGroup>
-        {showHasDebtError && (
-          <FormHelperText>{t('Please select an answer.')}</FormHelperText>
+      <LabeledField
+        required
+        error={showHasDebtError}
+        helperText={
+          showHasDebtError ? t('Please select an answer.') : undefined
+        }
+        label={t('Do you have any student loan, car, or credit card debt?')}
+      >
+        {(aria) => (
+          <RadioGroup
+            row
+            sx={{ paddingInline: 2 }}
+            aria-required
+            value={hasDebt}
+            onChange={handleHasDebtChange}
+            onBlur={() => setHasDebtTouched(true)}
+            {...aria}
+          >
+            <FormControlLabel
+              value="Yes"
+              control={<Radio />}
+              label={t('Yes')}
+            />
+            <FormControlLabel value="No" control={<Radio />} label={t('No')} />
+          </RadioGroup>
         )}
-      </FormControl>
+      </LabeledField>
 
       {hasDebt === 'Yes' &&
         debtFields.map(({ fieldName, debtType, icon }) => (
