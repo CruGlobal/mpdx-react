@@ -8,6 +8,7 @@ import { Session } from 'next-auth';
 import { getSession } from 'next-auth/react';
 import { RedirectReason } from 'pages/api/auth/redirectReasonEnum';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
+import { isRestrictedImpersonation } from 'src/lib/restrictedImpersonation';
 import {
   GetDefaultAccountDocument,
   GetDefaultAccountQuery,
@@ -46,7 +47,8 @@ export const dashboardRedirect = (
  * but should be restricted when admins impersonate (e.g., staff expense data)
  * Exception: restricted-scope impersonation sessions (e.g. MPD leaders, where
  * impersonationScope is set) are allowed through because their access is
- * limited to the sections their scope permits
+ * limited to the sections their scope permits — see the access matrix
+ * documented on isRestrictedImpersonation
  */
 export const blockImpersonatingNonDevelopers: GetServerSideProps<
   PagePropsWithSession
@@ -61,7 +63,7 @@ export const blockImpersonatingNonDevelopers: GetServerSideProps<
   if (
     session.user.impersonating &&
     !session.user.isImpersonatorDeveloper &&
-    !session.user.impersonationScope
+    !isRestrictedImpersonation(session.user)
   ) {
     return dashboardRedirect(context, RedirectReason.ImpersonationBlocked);
   }
@@ -143,7 +145,8 @@ export const enforceAdminOrMpdLeader: GetServerSideProps<
 /* Block restricted-scope impersonation sessions (e.g. MPD leaders, where
  * impersonationScope is set), allow everyone else
  * Use case: Sections like Contacts, Tasks, and Tools that must be unreachable
- * during a restricted impersonation session
+ * during a restricted impersonation session — see the access matrix
+ * documented on isRestrictedImpersonation
  */
 export const blockRestrictedImpersonation: GetServerSideProps<
   PagePropsWithSession
@@ -154,7 +157,7 @@ export const blockRestrictedImpersonation: GetServerSideProps<
     return loginRedirect(context);
   }
 
-  if (session.user.impersonationScope) {
+  if (isRestrictedImpersonation(session.user)) {
     return dashboardRedirect(context, RedirectReason.ImpersonationBlocked);
   }
 
