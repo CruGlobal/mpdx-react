@@ -283,7 +283,8 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
             ...session.user,
             admin,
             developer,
-            mpdSupervisorAdmin,
+            // Default to false for JWTs minted before mpdSupervisorAdmin existed
+            mpdSupervisorAdmin: mpdSupervisorAdmin ?? false,
             apiToken,
             userID,
             impersonating,
