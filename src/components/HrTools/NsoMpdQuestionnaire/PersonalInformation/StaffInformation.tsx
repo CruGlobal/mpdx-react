@@ -60,6 +60,13 @@ export const StaffInformation: React.FC = () => {
         )?.toString() ?? '',
     },
     { label: t('Address'), value: questionnaire?.address ?? '' },
+    {
+      label: t('Cell Phone Number'),
+      value:
+        (viewingSpouse
+          ? questionnaire?.spousePhoneNumber
+          : questionnaire?.phoneNumber) ?? '',
+    },
   ];
 
   return (
@@ -96,9 +103,12 @@ export const StaffInformation: React.FC = () => {
               key={field.label}
               label={field.label}
               value={field.value}
-              // readOnly instead of disabled purely for accessibility
-              InputProps={{ readOnly: true }}
+              placeholder={t('Not on record')}
               size="small"
+              slotProps={{
+                input: { readOnly: true },
+                inputLabel: { shrink: true },
+              }}
             />
           ))}
         </Stack>

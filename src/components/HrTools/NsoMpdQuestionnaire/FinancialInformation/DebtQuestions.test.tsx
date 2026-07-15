@@ -41,6 +41,16 @@ describe('DebtQuestions', () => {
     expect(getByRole('radio', { name: 'No' })).toBeInTheDocument();
   });
 
+  it('marks the debt question as required', () => {
+    const { getByRole } = render(<TestComponent />);
+
+    expect(
+      getByRole('radiogroup', {
+        name: 'Do you have any student loan, car, or credit card debt?',
+      }),
+    ).toHaveAttribute('aria-required', 'true');
+  });
+
   it('seeds "Yes" and reveals the payment fields when debt is already saved', async () => {
     const { findByRole } = render(
       <TestComponent
@@ -155,6 +165,15 @@ describe('DebtQuestions', () => {
     userEvent.type(getByRole('spinbutton', { name: creditCardQuestion }), '0');
 
     expect(queryByText(requiredError)).not.toBeInTheDocument();
+  });
+
+  it('renders the debt question as a label above the options', () => {
+    const { getByText } = render(<TestComponent />);
+
+    expect(
+      getByText('Do you have any student loan, car, or credit card debt?')
+        .tagName,
+    ).toBe('SPAN');
   });
 
   it('saves zero for every debt field when the user has no debt', async () => {

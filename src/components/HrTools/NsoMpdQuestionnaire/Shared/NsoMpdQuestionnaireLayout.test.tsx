@@ -24,10 +24,9 @@ const Harness: React.FC<HarnessProps> = ({ initialStep }) => {
   }, [initialStep, handleStepChange]);
 
   return (
-    <NsoMpdQuestionnaireLayout
-      sectionListPanel={<div>Sidebar sub-steps</div>}
-      mainContent={<div>Main panel content</div>}
-    />
+    <NsoMpdQuestionnaireLayout>
+      <div>Main panel content</div>
+    </NsoMpdQuestionnaireLayout>
   );
 };
 
@@ -53,14 +52,6 @@ const filledDebtFields = {
 };
 
 describe('NsoMpdQuestionnaireLayout', () => {
-  it('shows the current view step as the sidebar title', () => {
-    const { getByRole } = render(<TestComponent />);
-
-    expect(
-      getByRole('heading', { name: 'Questionnaire Step 1' }),
-    ).toBeInTheDocument();
-  });
-
   it('renders an icon in the rail for every view step', () => {
     const { getByRole } = render(<TestComponent />);
 
@@ -95,12 +86,6 @@ describe('NsoMpdQuestionnaireLayout', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders the per-page sidebar slot', () => {
-    const { getByText } = render(<TestComponent />);
-
-    expect(getByText('Sidebar sub-steps')).toBeInTheDocument();
-  });
-
   it('renders the main content slot', () => {
     const { getByText } = render(<TestComponent />);
 
@@ -125,29 +110,6 @@ describe('NsoMpdQuestionnaireLayout', () => {
     const { getByRole } = render(<TestComponent />);
 
     expect(getByRole('button', { name: 'Questionnaire Step 1' })).toBeEnabled();
-  });
-
-  it('toggles the sidebar when clicking the current step icon', () => {
-    const { getByLabelText, getByRole } = render(<TestComponent />);
-
-    const sidebar = getByLabelText('Steps');
-    expect(sidebar).toHaveAttribute('aria-expanded', 'true');
-
-    userEvent.click(getByRole('button', { name: 'Questionnaire Step 1' }));
-    expect(sidebar).toHaveAttribute('aria-expanded', 'false');
-  });
-
-  it('collapses and expands the sidebar with the toggle button', () => {
-    const { getByLabelText } = render(<TestComponent />);
-
-    const sidebar = getByLabelText('Steps');
-    expect(sidebar).toHaveAttribute('aria-expanded', 'true');
-
-    userEvent.click(getByLabelText('Toggle Menu'));
-    expect(sidebar).toHaveAttribute('aria-expanded', 'false');
-
-    userEvent.click(getByLabelText('Toggle Menu'));
-    expect(sidebar).toHaveAttribute('aria-expanded', 'true');
   });
 
   it('shows the Continue button on non-final steps', () => {
@@ -177,14 +139,14 @@ describe('NsoMpdQuestionnaireLayout', () => {
       />,
     );
     expect(
-      getByRole('heading', { name: 'Questionnaire Step 3' }),
-    ).toBeInTheDocument();
+      getByRole('button', { name: 'Questionnaire Step 3' }),
+    ).toHaveAttribute('aria-current', 'step');
 
     userEvent.click(getByRole('button', { name: 'Back' }));
 
     expect(
-      getByRole('heading', { name: 'Questionnaire Step 2' }),
-    ).toBeInTheDocument();
+      getByRole('button', { name: 'Questionnaire Step 2' }),
+    ).toHaveAttribute('aria-current', 'step');
   });
 
   it('shows 75% in the progress ring when only the debt fields are missing', async () => {
@@ -205,9 +167,9 @@ describe('NsoMpdQuestionnaireLayout', () => {
     ).toHaveAttribute('aria-valuenow', '100');
   });
 
-  it('shows 50% when the personal and financial steps are both incomplete', async () => {
+  it('shows 50% when the ministry and financial steps are both incomplete', async () => {
     const { findByRole } = render(
-      <TestComponent newStaffQuestionnaire={{ phoneNumber: null }} />,
+      <TestComponent newStaffQuestionnaire={{ ministryName: null }} />,
     );
 
     expect(
@@ -252,12 +214,11 @@ describe('NsoMpdQuestionnaireLayout', () => {
     ).toHaveAttribute('aria-valuenow', '100');
   });
 
-  it('shows 0% when no step has been filled out', async () => {
+  it('shows 25% when only the review-only personal step is complete', async () => {
     const { findByRole } = render(
       <TestComponent
         newStaffQuestionnaire={{
           variant: NewStaffQuestionnaireVariantEnum.SingleMarried,
-          phoneNumber: null,
           ministryName: null,
           ministryLocation: null,
           geographicLocation: null,
@@ -272,7 +233,7 @@ describe('NsoMpdQuestionnaireLayout', () => {
 
     expect(
       await findByRole('progressbar', { name: 'Form Progress' }),
-    ).toHaveAttribute('aria-valuenow', '0');
+    ).toHaveAttribute('aria-valuenow', '25');
   });
 
   it('treats an empty-string answer as unfilled', async () => {

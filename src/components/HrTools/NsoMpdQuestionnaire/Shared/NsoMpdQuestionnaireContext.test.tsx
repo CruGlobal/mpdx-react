@@ -27,11 +27,9 @@ const InnerComponent: React.FC<InnerComponentProps> = ({ initialStep }) => {
   const {
     currentStep,
     isLastStep,
-    isDrawerOpen,
     handleStepChange,
     handleContinue,
     handleBack,
-    toggleDrawer,
   } = useNsoMpdQuestionnaire();
 
   useEffect(() => {
@@ -43,9 +41,6 @@ const InnerComponent: React.FC<InnerComponentProps> = ({ initialStep }) => {
   return (
     <div>
       <h2>{currentStep.title}</h2>
-      <div aria-label="drawer state" data-open={isDrawerOpen}>
-        Drawer: {isDrawerOpen ? 'open' : 'closed'}
-      </div>
       <div aria-label="last step state" data-last={isLastStep}>
         Last step: {isLastStep ? 'yes' : 'no'}
       </div>
@@ -58,7 +53,6 @@ const InnerComponent: React.FC<InnerComponentProps> = ({ initialStep }) => {
       </button>
       <button onClick={handleContinue}>Continue</button>
       <button onClick={handleBack}>Back</button>
-      <button onClick={toggleDrawer}>Toggle Drawer</button>
     </div>
   );
 };
@@ -127,16 +121,6 @@ describe('NsoMpdQuestionnaireContext', () => {
       'data-last',
       'false',
     );
-  });
-
-  it('toggles the drawer state', () => {
-    const { getByRole, getByLabelText } = render(<TestComponent />);
-
-    const drawerState = getByLabelText('drawer state');
-    expect(drawerState).toHaveAttribute('data-open', 'true');
-
-    userEvent.click(getByRole('button', { name: 'Toggle Drawer' }));
-    expect(drawerState).toHaveAttribute('data-open', 'false');
   });
 
   it('fires the upsert mutation with coerced attributes', async () => {

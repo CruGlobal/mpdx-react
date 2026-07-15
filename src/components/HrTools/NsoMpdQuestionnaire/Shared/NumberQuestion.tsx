@@ -1,6 +1,7 @@
 import React from 'react';
 import { TextField } from '@mui/material';
 import * as yup from 'yup';
+import { LabeledField } from './LabeledField';
 import {
   QuestionnaireField,
   useQuestionnaireAutoSave,
@@ -13,6 +14,8 @@ interface NumberQuestionProps {
   helperText: string;
   /** Optional leading adornment rendered inside the input. */
   startAdornment?: React.ReactNode;
+  /** Optional trailing adornment rendered inside the input. */
+  endAdornment?: React.ReactNode;
 }
 
 /**
@@ -25,6 +28,7 @@ export const NumberQuestion: React.FC<NumberQuestionProps> = ({
   question,
   helperText,
   startAdornment,
+  endAdornment,
 }) => {
   const {
     error,
@@ -33,17 +37,25 @@ export const NumberQuestion: React.FC<NumberQuestionProps> = ({
   } = useQuestionnaireAutoSave({ fieldName, schema });
 
   return (
-    <TextField
+    <LabeledField
       label={question}
-      helperText={error ? errorText : helperText}
-      error={error}
       required
-      size="small"
-      type="number"
-      inputProps={{ min: 0, inputMode: 'numeric' }}
-      InputProps={{ startAdornment }}
-      InputLabelProps={{ sx: { color: 'text.primary' } }}
-      {...fieldProps}
-    />
+      error={error}
+      helperText={error ? errorText : helperText}
+    >
+      {(aria) => (
+        <TextField
+          required
+          error={error}
+          size="small"
+          type="number"
+          slotProps={{
+            htmlInput: { min: 0, inputMode: 'numeric', ...aria },
+            input: { startAdornment, endAdornment },
+          }}
+          {...fieldProps}
+        />
+      )}
+    </LabeledField>
   );
 };
