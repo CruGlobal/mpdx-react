@@ -414,10 +414,10 @@ describe('MultiPageMenu', () => {
 
     await waitFor(() => {
       expect(queryByText('Manage Organizations')).not.toBeInTheDocument();
+      expect(queryByText('Admin Console')).not.toBeInTheDocument();
     });
 
     await waitFor(() => {
-      expect(getByText('Admin Console')).toBeInTheDocument();
       expect(getByText('Backend Admin')).toBeInTheDocument();
       expect(getByText('Sidekiq')).toBeInTheDocument();
     });
