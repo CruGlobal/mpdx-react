@@ -2,6 +2,7 @@ import Link from 'next/link';
 import React from 'react';
 import { Box } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
+import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import {
   ProgressiveApprovalTierEnum,
   ProgressiveApprovalTierReasonEnum,
@@ -10,7 +11,6 @@ import theme from 'src/theme';
 import { progressiveApprovalsLink } from '../../AdditionalSalaryRequest/Shared/pdfLinks';
 import { useCaps } from '../SalaryCalculation/useCaps';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
-import { useFormatters } from '../Shared/useFormatters';
 
 interface DialogContent {
   title: string;

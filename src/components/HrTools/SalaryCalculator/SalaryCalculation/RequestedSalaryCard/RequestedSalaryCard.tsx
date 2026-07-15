@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import { useAutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
 import { amount } from 'src/lib/yupHelpers';
 import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
@@ -23,7 +24,6 @@ import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalcula
 import { EffectiveDateNote } from '../../Shared/EffectiveDateNote';
 import { StepCard, StepTableHead } from '../../Shared/StepCard';
 import { orientSalaryRequest } from '../../Shared/orientSalaryRequest';
-import { useFormatters } from '../../Shared/useFormatters';
 import { useCaps } from '../useCaps';
 import { useSosaBlockOverCap } from '../useSosaBlockOverCap';
 

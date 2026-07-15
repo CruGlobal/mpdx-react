@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { amount } from 'src/lib/yupHelpers';
@@ -23,7 +24,6 @@ import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
 import { EffectiveDateNote } from '../../Shared/EffectiveDateNote';
 import { StepCard, StepTableHead } from '../../Shared/StepCard';
-import { useFormatters } from '../../Shared/useFormatters';
 
 export const MaxAllowableStep: React.FC = () => {
   const { t } = useTranslation();
