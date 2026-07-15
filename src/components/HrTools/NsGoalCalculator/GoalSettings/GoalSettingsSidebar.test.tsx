@@ -7,6 +7,7 @@ import theme from 'src/theme';
 import { GoalSettingsSidebar } from './GoalSettingsSidebar';
 
 const push = jest.fn();
+const onCollapse = jest.fn();
 
 const TestComponent: React.FC<{ view?: string; isScenario?: boolean }> = ({
   view,
@@ -25,14 +26,12 @@ const TestComponent: React.FC<{ view?: string; isScenario?: boolean }> = ({
         push,
       }}
     >
-      <GoalSettingsSidebar isScenario={isScenario} />
+      <GoalSettingsSidebar isScenario={isScenario} onCollapse={onCollapse} />
     </TestRouter>
   </ThemeProvider>
 );
 
 describe('GoalSettingsSidebar', () => {
-  beforeEach(() => push.mockClear());
-
   it('renders the top-level nav entries with staff sub-items expanded by default', () => {
     const { getByRole } = render(<TestComponent />);
 
@@ -68,6 +67,14 @@ describe('GoalSettingsSidebar', () => {
     expect(getByRole('button', { name: /Goal Settings/ })).not.toHaveAttribute(
       'aria-current',
     );
+  });
+
+  it('calls onCollapse when the collapse button is clicked', async () => {
+    const { getByRole } = render(<TestComponent />);
+
+    userEvent.click(getByRole('button', { name: 'Collapse navigation' }));
+
+    await waitFor(() => expect(onCollapse).toHaveBeenCalledTimes(1));
   });
 
   it('pushes the Review Your Goal view when its item is clicked', async () => {
