@@ -113,6 +113,10 @@ export const TransfersTable: React.FC<TransfersTableProps> = ({
   };
 
   const handleDeleteModalOpen = (transfer: Transfers) => {
+    // Read-only during restricted impersonation
+    if (restrictedImpersonation) {
+      return;
+    }
     setOpenDeleteModal(transfer);
   };
 
@@ -142,6 +146,10 @@ export const TransfersTable: React.FC<TransfersTableProps> = ({
     date: DateTime | null,
     actionType: ActionTypeEnum,
   ) => {
+    // Read-only during restricted impersonation
+    if (restrictedImpersonation) {
+      return;
+    }
     const successMessage =
       actionType === ActionTypeEnum.Edit
         ? t('End date updated successfully')
