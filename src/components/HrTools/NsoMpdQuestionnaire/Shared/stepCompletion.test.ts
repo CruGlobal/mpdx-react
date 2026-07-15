@@ -42,19 +42,15 @@ describe('getCompletionPercentage', () => {
     expect(getCompletionPercentage(completeSingle)).toBe(100);
   });
 
-  it('requires the spouse phone number when married', () => {
+  it('does not require phone numbers for the review-only personal step', () => {
     const married: Questionnaire = {
       ...completeSingle,
       maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Married,
+      phoneNumber: null,
+      spousePhoneNumber: null,
     };
 
-    expect(getCompletionPercentage(married)).toBe(75);
-    expect(
-      getCompletionPercentage({
-        ...married,
-        spousePhoneNumber: '(305) 222-3333',
-      }),
-    ).toBe(100);
+    expect(getCompletionPercentage(married)).toBe(100);
   });
 });
 
@@ -109,12 +105,6 @@ describe('isStepComplete', () => {
 
   it('is incomplete when a required field is missing', () => {
     expect(
-      isStepComplete(NsoMpdQuestionnaireStepEnum.PersonalInformation, {
-        ...completeSingle,
-        phoneNumber: '',
-      }),
-    ).toBe(false);
-    expect(
       isStepComplete(NsoMpdQuestionnaireStepEnum.MinistryInformation, {
         ...completeSingle,
         ministryLocation: null,
@@ -128,20 +118,19 @@ describe('isStepComplete', () => {
     ).toBe(false);
   });
 
-  it('requires the spouse phone number for the Personal step when married', () => {
-    const married: Questionnaire = {
+  it('treats the review-only Personal step as complete without any phone number', () => {
+    const marriedNoPhones: Questionnaire = {
       ...completeSingle,
       maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Married,
+      phoneNumber: null,
+      spousePhoneNumber: null,
     };
 
     expect(
-      isStepComplete(NsoMpdQuestionnaireStepEnum.PersonalInformation, married),
-    ).toBe(false);
-    expect(
-      isStepComplete(NsoMpdQuestionnaireStepEnum.PersonalInformation, {
-        ...married,
-        spousePhoneNumber: '(305) 222-3333',
-      }),
+      isStepComplete(
+        NsoMpdQuestionnaireStepEnum.PersonalInformation,
+        marriedNoPhones,
+      ),
     ).toBe(true);
   });
 });
