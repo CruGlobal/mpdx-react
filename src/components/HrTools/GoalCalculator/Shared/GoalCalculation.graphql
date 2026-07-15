@@ -25,6 +25,35 @@ fragment GoalCalculationSettings on GoalCalculation {
   spouseTraditionalContributionPercentage
   mhaAmount
   spouseMhaAmount
+  newStaffCalculations {
+    ...NewStaffReferenceGoal
+  }
+}
+
+fragment NewStaffReferenceGoal on NewStaffGoalCalculationCalculations {
+  salary
+  secaRate
+  seca
+  salarySubtotal
+  contribution403bPercentage
+  totalContributing403bAmount
+  totalSalary
+  ministryMiles
+  travel
+  conferences
+  meals
+  mpd
+  supplies
+  totalMinistryExpenses
+  benefitsCharge
+  medicalExpenses
+  goalSubtotal
+  adminRate
+  subtotalWithAdminCharge
+  attritionRate
+  attrition
+  monthlyGoal
+  supportRaised
 }
 
 fragment BudgetFamily on BudgetFamily {

@@ -31,7 +31,6 @@ import {
   SubBudgetCategoryEnum,
 } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import {
@@ -41,6 +40,7 @@ import {
 import { BudgetFamilyFragment } from '../../Shared/GoalCalculation.generated';
 import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
 import { GoalCalculatorSection } from '../../Shared/GoalCalculatorSection';
+import { getNewStaffBudgetCategory } from '../../Shared/calculateNewStaffTotals';
 import { BaseGrid } from './BaseGrid';
 import {
   UpdateSubBudgetCategoriesFragment,
@@ -50,7 +50,6 @@ import {
   useUpdatePrimaryBudgetCategoryMutation,
   useUpdateSubBudgetCategoryMutation,
 } from './GoalCalculatorGrid.generated';
-import { getDirectInputDefaults } from './getDefaultDirectInput';
 
 const categoriesWithDefaults = [
   PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
@@ -90,9 +89,10 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   const {
     setRightPanelContent,
     trackMutation,
-    defaultType,
     defaultTypeChanged,
     clearDefaultTypeChanged,
+    goalCalculationResult,
+    isMutating,
   } = useGoalCalculator();
 
   const categoryType = category.category;
@@ -125,9 +125,6 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   const [updateSubBudgetCategory] = useUpdateSubBudgetCategoryMutation();
   const [createSubBudgetCategory] = useCreateSubBudgetCategoryMutation();
   const [deleteSubBudgetCategory] = useDeleteSubBudgetCategoryMutation();
-
-  const constants = useGoalCalculatorConstants();
-  const { goalMiscConstants } = constants;
 
   // Yup validation schemas
   const directInputSchema = useMemo(() => {
@@ -230,14 +227,17 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
       return;
     }
 
-    if (!defaultTypeChanged || directInput) {
+    // Wait for the settings mutation to finish before repopulating. Changing role/family size
+    // recomputes newStaffCalculations on the server, but the optimistic response still carries the
+    // previous reference values; reading them mid-flight would seed the wrong defaults. Once the
+    // mutation resolves the cache holds the freshly recomputed reference.
+    if (!defaultTypeChanged || directInput || isMutating) {
       return;
     }
 
-    const newDefaultValues = getDirectInputDefaults(
+    const newDefaultValues = getNewStaffBudgetCategory(
+      goalCalculationResult.data?.goalCalculation,
       categoryType,
-      defaultType,
-      goalMiscConstants,
     );
 
     gridData.forEach(async (row) => {
@@ -262,9 +262,9 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
     hasDefaultsForType,
     defaultTypeChanged,
     directInput,
+    isMutating,
     categoryType,
-    defaultType,
-    goalMiscConstants,
+    goalCalculationResult,
     gridData,
     accountListId,
     updateSubBudgetCategory,

@@ -52,4 +52,34 @@ describe('MpdGoalTable', () => {
       await findByRole('gridcell', { name: '$5,211' }, { timeout: 5000 }),
     ).toHaveClass('reference');
   }, 30000);
+
+  it('sources reference rates from the backend calculation', async () => {
+    const { getByRole, findByRole } = render(<TestComponent />);
+
+    // Wait for the calculation-backed reference column to render
+    await findByRole('gridcell', { name: '$5,211' }, { timeout: 5000 });
+
+    const referenceCell = (category: string) =>
+      getByRole('gridcell', { name: category }).parentElement?.querySelector(
+        '.MuiDataGrid-cell.reference',
+      );
+
+    // Line 1B % ← secaRate (0.22), Line 1E % ← contribution403bPercentage (0.07)
+    expect(referenceCell('Taxes, SECA, VTL, etc. %')).toHaveTextContent(
+      '22.00%',
+    );
+    expect(referenceCell('Roth 403(b) Contribution %')).toHaveTextContent(
+      '7.00%',
+    );
+
+    // Line 5/6 labels ← adminRate (0.12) / attritionRate (0.06)
+    expect(
+      getByRole('gridcell', { name: /Subtotal with 12% admin charge/ }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('gridcell', {
+        name: /Total Goal \(line 5 with 6% attrition\)/,
+      }),
+    ).toBeInTheDocument();
+  }, 30000);
 });

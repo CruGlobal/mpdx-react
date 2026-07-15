@@ -1,13 +1,11 @@
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useGoalCalculator } from 'src/components/HrTools/GoalCalculator/Shared/GoalCalculatorContext';
-import {
-  calculateNewStaffGoalTotals,
-  getNewStaffBudgetCategory,
-} from 'src/components/HrTools/GoalCalculator/Shared/calculateNewStaffTotals';
+import { getNewStaffBudgetCategory } from 'src/components/HrTools/GoalCalculator/Shared/calculateNewStaffTotals';
 import {
   GoalTotals,
   calculateCategoryEnumTotal,
+  calculateGoalSubtotals,
 } from 'src/components/HrTools/GoalCalculator/Shared/calculateTotals';
 import { safeProgressRatio } from 'src/components/HrTools/Shared/helpers/safeProgressRatio';
 import { PrimaryBudgetCategoryEnum } from 'src/graphql/types.generated';
@@ -27,12 +25,30 @@ export interface MpdGoalRow {
   percentage?: boolean;
 }
 
+// The ministry-expense lines (worksheet 3A–3J). The New Staff reference subtotal is summed from
+// these categories so it matches the per-line reference amounts shown in the table.
+const newStaffMinistryCategories: PrimaryBudgetCategoryEnum[] = [
+  PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
+  PrimaryBudgetCategoryEnum.MinistryTravel,
+  PrimaryBudgetCategoryEnum.MeetingsRetreatsConferences,
+  PrimaryBudgetCategoryEnum.UsStaffConference,
+  PrimaryBudgetCategoryEnum.MealsAndPerDiem,
+  PrimaryBudgetCategoryEnum.MinistryPartnerDevelopment,
+  PrimaryBudgetCategoryEnum.SuppliesAndMaterials,
+  PrimaryBudgetCategoryEnum.SummerAssignmentExpenses,
+  PrimaryBudgetCategoryEnum.ReimbursableMedicalExpenses,
+  PrimaryBudgetCategoryEnum.AccountTransfers,
+  PrimaryBudgetCategoryEnum.InternetServiceProviderFee,
+  PrimaryBudgetCategoryEnum.CellPhoneWorkLine,
+  PrimaryBudgetCategoryEnum.CreditCardProcessingCharges,
+  PrimaryBudgetCategoryEnum.MinistryOther,
+];
+
 export const useMpdGoalRows = (supportRaised: number) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const { goalCalculationResult, goalTotals } = useGoalCalculator();
-  const constants = useGoalCalculatorConstants();
-  const { goalMiscConstants } = constants;
+  const { goalMiscConstants } = useGoalCalculatorConstants();
 
   const valueFormatter = useCallback(
     (value: number, row: MpdGoalRow) =>
@@ -42,14 +58,42 @@ export const useMpdGoalRows = (supportRaised: number) => {
     [locale],
   );
 
-  const newStaffReference = useMemo(
-    () =>
-      calculateNewStaffGoalTotals(
-        goalCalculationResult.data?.goalCalculation ?? null,
-        constants,
-      ),
-    [goalCalculationResult, constants],
-  );
+  const newStaffReference = useMemo<GoalTotals>(() => {
+    const goalCalculation = goalCalculationResult.data?.goalCalculation;
+    const calculations = goalCalculation?.newStaffCalculations;
+
+    const grossMonthlySalary = calculations?.totalSalary ?? 0;
+    const benefitsCharge = calculations?.benefitsCharge ?? 0;
+
+    // Sum the ministry-expense lines from the per-category references (reimbursable medical
+    // included) so the reference subtotals foot against the amounts shown on lines 3A–3J.
+    const ministryExpensesTotal = newStaffMinistryCategories.reduce(
+      (sum, category) =>
+        sum + getNewStaffBudgetCategory(goalCalculation, category),
+      0,
+    );
+
+    return {
+      monthlyBudget: calculations?.salary ?? 0,
+      netMonthlySalary: calculations?.salary ?? 0,
+      taxesPercentage: calculations?.secaRate ?? 0,
+      taxes: calculations?.seca ?? 0,
+      salaryPreIra: calculations?.salarySubtotal ?? 0,
+      rothContributionPercentage: calculations?.contribution403bPercentage ?? 0,
+      traditionalContributionPercentage: 0,
+      rothContribution: calculations?.totalContributing403bAmount ?? 0,
+      traditionalContribution: 0,
+      // The client-entered categories above are folded into ministryExpensesTotal, so the server's
+      // goal subtotal (which excludes them) is no longer accurate. Re-calculate the totals client-side.
+      ...calculateGoalSubtotals({
+        grossMonthlySalary,
+        ministryExpensesTotal,
+        benefitsCharge,
+        adminRate: calculations?.adminRate ?? 0,
+        attritionRate: calculations?.attritionRate ?? 0,
+      }),
+    };
+  }, [goalCalculationResult]);
 
   const goalCalculation = goalCalculationResult.data?.goalCalculation;
   const rows = useMemo((): MpdGoalRow[] => {
@@ -129,12 +173,7 @@ export const useMpdGoalRows = (supportRaised: number) => {
         ),
         reference: categories.reduce(
           (sum, category) =>
-            sum +
-            getNewStaffBudgetCategory(
-              goalCalculation,
-              category,
-              goalMiscConstants,
-            ),
+            sum + getNewStaffBudgetCategory(goalCalculation, category),
           0,
         ),
       }),
