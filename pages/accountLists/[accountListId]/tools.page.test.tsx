@@ -4,8 +4,9 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { blockRestrictedImpersonation } from 'pages/api/utils/pagePropsHelpers';
 import theme from 'src/theme';
-import ToolsPage from './tools.page';
+import ToolsPage, { getServerSideProps } from './tools.page';
 
 const accountListId = 'account-list-1';
 
@@ -34,6 +35,10 @@ const MocksProviders: React.FC<MocksProvidersProps> = ({ children, setup }) => (
 );
 
 describe('Tools Page', () => {
+  it('blocks restricted impersonation in getServerSideProps', () => {
+    expect(getServerSideProps).toBe(blockRestrictedImpersonation);
+  });
+
   it('should render page', async () => {
     const { findByText } = render(
       <MocksProviders>
