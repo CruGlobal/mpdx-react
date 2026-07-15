@@ -36,6 +36,8 @@ export interface PanelLayoutProps {
   sidebarTitle?: string;
   isSidebarOpen?: boolean;
   sidebarAriaLabel?: string;
+  /** Render the layout without the sidebar (and its divider), e.g. when there are no sub-steps. */
+  hideSidebar?: boolean;
   mainContent?: React.ReactNode;
   currentIndex?: number;
   steps?: Steps[];
@@ -54,6 +56,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
   sidebarTitle,
   isSidebarOpen = false,
   sidebarAriaLabel,
+  hideSidebar = false,
   mainContent,
   currentIndex,
   steps,
@@ -165,17 +168,21 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
             )}
           </Stack>
           <Divider orientation="vertical" flexItem />
-          <StyledSidebar
-            open={isSidebarOpen}
-            aria-label={sidebarAriaLabel}
-            aria-expanded={isSidebarOpen}
-          >
-            {sidebarTitle && (
-              <SidebarTitle variant="h6">{sidebarTitle}</SidebarTitle>
-            )}
-            {sidebarContent}
-          </StyledSidebar>
-          <Divider orientation="vertical" flexItem />
+          {!hideSidebar && (
+            <>
+              <StyledSidebar
+                open={isSidebarOpen}
+                aria-label={sidebarAriaLabel}
+                aria-expanded={isSidebarOpen}
+              >
+                {sidebarTitle && (
+                  <SidebarTitle variant="h6">{sidebarTitle}</SidebarTitle>
+                )}
+                {sidebarContent}
+              </StyledSidebar>
+              <Divider orientation="vertical" flexItem />
+            </>
+          )}
           <MainContent className="main-content" ref={mainContentRef}>
             {mainContent}
           </MainContent>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NsoMpdQuestionnaire } from './NsoMpdQuestionnaire';
 import {
@@ -20,46 +20,46 @@ describe('NsoMpdQuestionnaire', () => {
     const { findByRole } = render(<TestComponent />);
 
     expect(
-      await findByRole('heading', { name: 'Questionnaire Step 1' }),
+      await findByRole('heading', { name: 'Staff Information' }),
     ).toBeInTheDocument();
   });
 
   it('renders the matching step page after continuing to the next step', async () => {
-    const { findByRole, getByRole } = render(<TestComponent />);
+    const { findByRole } = render(<TestComponent />);
 
-    userEvent.type(
-      await findByRole('textbox', { name: "John's cell phone number" }),
-      '1234567',
-    );
-    userEvent.type(
-      getByRole('textbox', { name: "Jane's cell phone number" }),
-      '1234567',
-    );
-    userEvent.click(getByRole('button', { name: 'Continue' }));
+    // Personal Information is a review-only step, so Continue enables once it registers.
+    const continueButton = await findByRole('button', { name: 'Continue' });
+    await waitFor(() => expect(continueButton).toBeEnabled());
+    userEvent.click(continueButton);
 
     expect(
-      await findByRole('heading', { name: 'Questionnaire Step 2' }),
+      await findByRole('heading', { name: 'Ministry Information' }),
     ).toBeInTheDocument();
   });
 
-  it('keeps Continue disabled until the step is valid', async () => {
-    const { findByRole, getByRole } = render(<TestComponent />);
-
-    expect(await findByRole('button', { name: 'Continue' })).toBeDisabled();
-
-    userEvent.type(
-      await findByRole('textbox', { name: "John's cell phone number" }),
-      '1234567',
+  it('enables Continue on the review-only first step and gates it on the next', async () => {
+    const { findByRole, getByRole } = render(
+      <TestComponent
+        newStaffQuestionnaire={{
+          ministryName: null,
+          ministryLocation: null,
+          geographicLocation: null,
+          assignmentType: null,
+        }}
+      />,
     );
 
-    expect(getByRole('button', { name: 'Continue' })).toBeDisabled();
+    // Personal Information has nothing to fill in, so Continue enables.
+    const continueButton = await findByRole('button', { name: 'Continue' });
+    await waitFor(() => expect(continueButton).toBeEnabled());
+    userEvent.click(continueButton);
 
-    userEvent.type(
-      getByRole('textbox', { name: "Jane's cell phone number" }),
-      '1234567',
+    expect(
+      await findByRole('heading', { name: 'Ministry Information' }),
+    ).toBeInTheDocument();
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Continue' })).toBeDisabled(),
     );
-
-    expect(getByRole('button', { name: 'Continue' })).toBeEnabled();
   });
 
   it('shows the informational view when there is no open questionnaire', async () => {
@@ -69,7 +69,7 @@ describe('NsoMpdQuestionnaire', () => {
 
     expect(await findByText('No open questionnaire')).toBeInTheDocument();
     expect(
-      queryByRole('heading', { name: 'Questionnaire Step 1' }),
+      queryByRole('heading', { name: 'Staff Information' }),
     ).not.toBeInTheDocument();
   });
 });

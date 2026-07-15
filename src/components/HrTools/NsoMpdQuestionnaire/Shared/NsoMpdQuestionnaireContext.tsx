@@ -22,12 +22,9 @@ export type NsoMpdQuestionnaireType = {
   currentIndex: number;
   isLastStep: boolean;
   percentComplete: number;
-  isDrawerOpen: boolean;
   handleStepChange: (step: NsoMpdQuestionnaireStepEnum) => void;
   handleContinue: () => void;
   handleBack: () => void;
-  toggleDrawer: () => void;
-  setDrawerOpen: (open: boolean) => void;
   questionnaire: NewStaffQuestionnaire | null;
   /** Whether the questionnaire belongs to a married staff member (has a spouse to collect info for). */
   hasSpouse: boolean;
@@ -59,7 +56,6 @@ interface Props {
 export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
   const steps = useSteps();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(true);
 
   const currentStep = steps[currentIndex];
   const isLastStep = currentIndex === steps.length - 1;
@@ -112,14 +108,6 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
     [accountListId, updateNewStaffQuestionnaire, trackMutation],
   );
 
-  const toggleDrawer = useCallback(() => {
-    setIsDrawerOpen((prev) => !prev);
-  }, []);
-
-  const setDrawerOpen = useCallback((open: boolean) => {
-    setIsDrawerOpen(open);
-  }, []);
-
   const handleStepChange = useCallback(
     (newStep: NsoMpdQuestionnaireStepEnum) => {
       const newIndex = steps.findIndex((step) => step.step === newStep);
@@ -149,12 +137,9 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
       currentIndex,
       isLastStep,
       percentComplete,
-      isDrawerOpen,
       handleStepChange,
       handleContinue,
       handleBack,
-      toggleDrawer,
-      setDrawerOpen,
       questionnaire,
       hasSpouse,
       loading,
@@ -168,12 +153,9 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
       currentIndex,
       isLastStep,
       percentComplete,
-      isDrawerOpen,
       handleStepChange,
       handleContinue,
       handleBack,
-      toggleDrawer,
-      setDrawerOpen,
       questionnaire,
       hasSpouse,
       loading,
