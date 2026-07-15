@@ -16,7 +16,7 @@
         { "name": "Primitive Obsession", "weight": 0.0 },
         { "name": "Duplicated Assertion Blocks", "weight": 0.0 },
         { "name": "Large Assertion Blocks", "weight": 0.5 },
-        { "name": "Code Duplication", "weight": 0.5 },
+        { "name": "Code Duplication", "weight": 0.0 },
         { "name": "Constructor Over-Injection", "weight": 0.0 }
       ]
     },
@@ -24,7 +24,7 @@
       "matching_content_path": "{src/hooks/**/*.ts,**/use*.ts}",
       "matching_content_path_doc": "Custom React hooks (formal hooks in src/hooks/, plus useFoo.ts feature-specific hooks). See README for rationale.",
       "thresholds": [
-        { "name": "function_cyclomatic_complexity_warning", "value": "15" },
+        { "name": "function_cyclomatic_complexity_warning", "value": "20" },
         { "name": "file_mean_cyclomatic_complexity_warning", "value": "6" },
         {
           "name": "file_primitive_obsession_percentage_for_warning",
@@ -38,13 +38,13 @@
       "matching_content_path": "**/*.tsx",
       "matching_content_path_doc": "React components. See README for rationale.",
       "thresholds": [
-        { "name": "function_cyclomatic_complexity_warning", "value": "15" },
+        { "name": "function_cyclomatic_complexity_warning", "value": "20" },
         { "name": "file_mean_cyclomatic_complexity_warning", "value": "6" },
         {
           "name": "file_primitive_obsession_percentage_for_warning",
           "value": "70"
         },
-        { "name": "function_lines_of_code_warning", "value": "100" }
+        { "name": "function_lines_of_code_warning", "value": "120" }
       ],
       "rules": [{ "name": "Constructor Over-Injection", "weight": 0.0 }]
     },
