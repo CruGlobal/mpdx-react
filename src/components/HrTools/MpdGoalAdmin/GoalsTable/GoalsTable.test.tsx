@@ -200,6 +200,19 @@ describe('GoalsTable', () => {
       ).not.toBeInTheDocument();
     });
 
+    it('hides the Impersonate action while already impersonating', () => {
+      mockSession({
+        mpdSupervisorAdmin: true,
+        admin: true,
+        impersonating: true,
+      });
+
+      const { queryByRole } = renderTable();
+      expect(
+        queryByRole('button', { name: 'Impersonate' }),
+      ).not.toBeInTheDocument();
+    });
+
     it('opens the impersonate modal for the selected staff member', async () => {
       mockSession({ mpdSupervisorAdmin: true, admin: false });
 
