@@ -9,7 +9,7 @@ import { useDeveloperBypass } from './useDeveloperBypass';
 import { useHrToolsNavItems } from './useHrToolsNavItems';
 import { useReportNavItems } from './useReportNavItems';
 import { useReportsDisabled } from './useReportsDisabled';
-import { useRequiredSession } from './useRequiredSession';
+import { useRestrictedImpersonation } from './useRestrictedImpersonation';
 import { useSettingsNavItems } from './useSettingsNavItems';
 import { useToolsNavItems } from './useToolsNavItems';
 
@@ -62,8 +62,7 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
 
   // During a restricted impersonation session the impersonator may only
   // access MPD leader tools, so hide the contacts, tasks, and tools pages
-  const { impersonationScope } = useRequiredSession();
-  const isRestrictedImpersonation = !!impersonationScope;
+  const isRestrictedImpersonation = useRestrictedImpersonation();
 
   const reportItems = useReportNavItems();
   const toolsItems = useToolsNavItems();
