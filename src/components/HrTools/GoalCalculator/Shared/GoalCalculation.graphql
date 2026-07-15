@@ -44,16 +44,10 @@ fragment NewStaffReferenceGoal on NewStaffGoalCalculationCalculations {
   meals
   mpd
   supplies
-  totalMinistryExpenses
   benefitsCharge
   medicalExpenses
-  goalSubtotal
   adminRate
-  subtotalWithAdminCharge
   attritionRate
-  attrition
-  monthlyGoal
-  supportRaised
 }
 
 fragment BudgetFamily on BudgetFamily {
