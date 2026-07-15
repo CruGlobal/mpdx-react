@@ -85,13 +85,12 @@ describe('PrintTables', () => {
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <GqlMockedProvider>
-            <TotalsProvider data={mockData}>
+            <TotalsProvider data={mockData} loading>
               <PrintTables
                 type={ReportTypeEnum.Income}
                 data={mockData.income}
                 title={title}
                 months={months}
-                loading={true}
               />
             </TotalsProvider>
           </GqlMockedProvider>

@@ -63,7 +63,7 @@ describe('TotalsContext', () => {
   });
 
   it('provides the correct context values', () => {
-    const { getByText } = render(
+    const { getByTestId } = render(
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <GqlMockedProvider onCall={mutationSpy}>
@@ -75,14 +75,15 @@ describe('TotalsContext', () => {
       </ThemeProvider>,
     );
 
-    expect(getByText('108856')).toBeInTheDocument();
-    expect(getByText('20969')).toBeInTheDocument();
+    expect(getByTestId('income')).toHaveTextContent('108856');
+    expect(getByTestId('expenses')).toHaveTextContent('20969');
 
-    expect(getByText('2124')).toBeInTheDocument();
-    expect(getByText('1933')).toBeInTheDocument();
-    expect(getByText('2400')).toBeInTheDocument();
-    expect(getByText('26')).toBeInTheDocument();
-    expect(getByText('14486')).toBeInTheDocument();
+    expect(getByTestId('ministry')).toHaveTextContent('2124');
+    expect(getByTestId('healthcare')).toHaveTextContent('1933');
+    expect(getByTestId('assessment')).toHaveTextContent('13779');
+    expect(getByTestId('benefits')).toHaveTextContent('2400');
+    expect(getByTestId('salary')).toHaveTextContent('26');
+    expect(getByTestId('other')).toHaveTextContent('707');
   });
 
   it('renders children correctly', () => {

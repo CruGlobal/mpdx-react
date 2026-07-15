@@ -1,4 +1,4 @@
-import './sharedRechartMock';
+import '../sharedRechartMock';
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
@@ -6,8 +6,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor, within } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import { TotalsProvider } from '../TotalsContext/TotalsContext';
-import { mockData } from '../mockData';
+import { TotalsProvider } from '../../TotalsContext/TotalsContext';
+import { mockData } from '../../mockData';
 import { ExpensesPieChart } from './ExpensesPieChart';
 
 const mutationSpy = jest.fn();
@@ -35,13 +35,13 @@ describe('ExpensesPieChart', () => {
     );
   });
 
-  it('renders five slices', async () => {
+  it('renders six slices', async () => {
     const { findByRole } = render(<TestComponent />);
     const region = await findByRole('region');
 
     await waitFor(() => {
       const sectors = region.querySelectorAll('.recharts-pie-sector path');
-      expect(sectors.length).toBe(5);
+      expect(sectors.length).toBe(6);
     });
   });
 
@@ -67,11 +67,57 @@ describe('ExpensesPieChart', () => {
   it('shows a percentage label for each non-empty slice', async () => {
     const { findByText, getByText, queryByText } = render(<TestComponent />);
 
-    expect(await findByText('69%')).toBeInTheDocument();
+    expect(await findByText('66%')).toBeInTheDocument();
     expect(getByText('11%')).toBeInTheDocument();
     expect(getByText('10%')).toBeInTheDocument();
     expect(getByText('9%')).toBeInTheDocument();
+    expect(getByText('3%')).toBeInTheDocument();
 
+    // Salary is only 0.12% of expenses, so its label rounds away.
     expect(queryByText('0%')).not.toBeInTheDocument();
+  });
+
+  it('shows a message when there is no data', async () => {
+    const { findByText } = render(
+      <ThemeProvider theme={theme}>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <GqlMockedProvider onCall={mutationSpy}>
+            <TotalsProvider
+              data={{
+                income: [],
+                expenses: [],
+              }}
+            >
+              <ExpensesPieChart aspect={1.35} width={100} />
+            </TotalsProvider>
+          </GqlMockedProvider>
+        </LocalizationProvider>
+      </ThemeProvider>,
+    );
+
+    expect(
+      await findByText('You have no data at this time.'),
+    ).toBeInTheDocument();
+  });
+
+  it('renders a spinner instead of the chart while loading', () => {
+    const { getByTestId, queryByRole, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <GqlMockedProvider onCall={mutationSpy}>
+            <TotalsProvider data={mockData} loading>
+              <ExpensesPieChart aspect={1.35} width={100} />
+            </TotalsProvider>
+          </GqlMockedProvider>
+        </LocalizationProvider>
+      </ThemeProvider>,
+    );
+
+    expect(getByTestId('loading-spinner')).toBeInTheDocument();
+    expect(queryByRole('region')).not.toBeInTheDocument();
+
+    expect(
+      queryByText('You have no data at this time.'),
+    ).not.toBeInTheDocument();
   });
 });

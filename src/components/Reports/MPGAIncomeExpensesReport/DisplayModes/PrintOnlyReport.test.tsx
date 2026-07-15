@@ -56,7 +56,7 @@ describe('PrintOnlyReport', () => {
 
     expect(getAllByRole('table')).toHaveLength(2);
     expect(getByRole('cell', { name: 'Contributions' })).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'Staff Assessment' })).toBeInTheDocument();
+    expect(getByRole('cell', { name: 'Assessment' })).toBeInTheDocument();
   });
 
   it('displays the tables that should be showing', () => {

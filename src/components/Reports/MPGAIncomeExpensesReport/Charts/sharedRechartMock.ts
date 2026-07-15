@@ -7,14 +7,9 @@ Original.Pie.defaultProps = {
   isAnimationActive: false,
 };
 
-const MockResponsiveContainer = ({ heightValue, aspect, children }) => {
+const MockResponsiveContainer = ({ aspect, children }) => {
   const width = 800;
-  const height =
-    typeof heightValue === 'number'
-      ? heightValue
-      : aspect
-        ? Math.round(width / aspect)
-        : 400;
+  const height = aspect ? Math.round(width / aspect) : 400;
   return React.createElement(
     'div',
     {
