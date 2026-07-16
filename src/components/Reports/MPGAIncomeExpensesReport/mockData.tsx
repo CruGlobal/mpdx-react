@@ -1,4 +1,15 @@
-import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
+import {
+  StaffExpenseCategoryEnum,
+  StaffExpensesSubCategoryEnum,
+} from 'src/graphql/types.generated';
+
+export interface CategoryBreakdown {
+  date: string;
+  description: string;
+  category: StaffExpenseCategoryEnum;
+  subCategory: StaffExpensesSubCategoryEnum;
+  amount: number;
+}
 
 export interface DataFields {
   id: string;
@@ -12,6 +23,12 @@ export interface DataFields {
 export interface AllData {
   income: DataFields[];
   expenses: DataFields[];
+  incomeBreakdown?: Partial<
+    Record<StaffExpenseCategoryEnum, CategoryBreakdown[]>
+  >;
+  expenseBreakdown?: Partial<
+    Record<StaffExpenseCategoryEnum, CategoryBreakdown[]>
+  >;
 }
 
 export const months = [
@@ -30,10 +47,29 @@ export const months = [
 ];
 
 export const mockData: AllData = {
+  incomeBreakdown: {
+    [StaffExpenseCategoryEnum.Donation]: [
+      {
+        date: '2024-04-15T00:00:00Z',
+        description: 'Monthly gift from the Smith family',
+        category: StaffExpenseCategoryEnum.Donation,
+        subCategory: StaffExpensesSubCategoryEnum.Donation,
+        amount: 5000,
+      },
+      {
+        date: '2024-04-22T00:00:00Z',
+        description: 'One-time gift',
+        category: StaffExpenseCategoryEnum.Donation,
+        subCategory: StaffExpensesSubCategoryEnum.Gift,
+        amount: 1770,
+      },
+    ],
+  },
   income: [
     {
       id: crypto.randomUUID(),
       description: 'Contributions',
+      category: StaffExpenseCategoryEnum.Donation,
       monthly: [
         6770, 6090, 5770, 7355, 8035, 6575, 7556, 8239, 9799, 9729, 13020,
         19215,

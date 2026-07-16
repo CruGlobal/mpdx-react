@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { TFunction } from 'react-i18next';
 import { Funds } from 'src/components/Reports/MPGAIncomeExpensesReport/Helper/MPGAReportEnum';
+import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import {
   addCategoryRow,
   addCombinedSubcategoryRow,
@@ -10,7 +11,10 @@ import {
   expenseCategoryRank,
   incomeCategoryRank,
 } from '../components/Reports/MPGAIncomeExpensesReport/Helper/sortFunds';
-import { DataFields } from '../components/Reports/MPGAIncomeExpensesReport/mockData';
+import {
+  CategoryBreakdown,
+  DataFields,
+} from '../components/Reports/MPGAIncomeExpensesReport/mockData';
 
 export function useFilteredFunds(
   funds: Funds[],
@@ -20,6 +24,13 @@ export function useFilteredFunds(
   return useMemo(() => {
     const incomeData: DataFields[] = [];
     const expenseData: DataFields[] = [];
+
+    const incomeBreakdown: Partial<
+      Record<StaffExpenseCategoryEnum, CategoryBreakdown[]>
+    > = {};
+    const expenseBreakdown: Partial<
+      Record<StaffExpenseCategoryEnum, CategoryBreakdown[]>
+    > = {};
 
     funds.forEach((fund) => {
       const base = fund.fundType;
@@ -44,6 +55,8 @@ export function useFilteredFunds(
             t,
             incomeData,
             expenseData,
+            incomeBreakdown,
+            expenseBreakdown,
           });
         } else {
           addCategoryRow({ baseId, category, t, incomeData, expenseData });
@@ -62,6 +75,8 @@ export function useFilteredFunds(
     return {
       incomeData,
       expenseData,
+      incomeBreakdown,
+      expenseBreakdown,
     };
   }, [funds, selectedCategories, t]);
 }

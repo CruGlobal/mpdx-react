@@ -1,10 +1,11 @@
 import { TFunction } from 'react-i18next';
+import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import {
   getLocalizedCategory,
   getLocalizedSubCategory,
   getPluralizedDescription,
 } from '../../Shared/Helpers/transformStaffExpenseEnums';
-import { DataFields } from '../mockData';
+import { CategoryBreakdown, DataFields } from '../mockData';
 import { Categories } from './MPGAReportEnum';
 
 const average = (data: number[]) => {
@@ -113,18 +114,45 @@ export function addCombinedSubcategoryRow({
   t,
   incomeData,
   expenseData,
-}: AddRowProps) {
+  incomeBreakdown,
+  expenseBreakdown,
+}: AddRowProps & {
+  incomeBreakdown: Partial<
+    Record<StaffExpenseCategoryEnum, CategoryBreakdown[]>
+  >;
+  expenseBreakdown: Partial<
+    Record<StaffExpenseCategoryEnum, CategoryBreakdown[]>
+  >;
+}) {
   const monthCount = category.breakdownByMonth.length;
   const incomeMonthly = new Array(monthCount).fill(0);
   const expenseMonthly = new Array(monthCount).fill(0);
 
+  const incomeTransactions: CategoryBreakdown[] = [];
+  const expenseTransactions: CategoryBreakdown[] = [];
+
   category.subcategories.forEach((subcategory) => {
     subcategory.breakdownByMonth.forEach((month, index) => {
       const value = roundTwoDecimals(month.total);
-      const bucket = value >= 0 ? incomeMonthly : expenseMonthly;
+      const isIncome = value >= 0;
+      const bucket = isIncome ? incomeMonthly : expenseMonthly;
       bucket[index] += value;
+
+      const breakdown = isIncome ? incomeTransactions : expenseTransactions;
+      month.transactions?.forEach((transaction) => {
+        breakdown.push({
+          date: transaction.transactedAt,
+          description: transaction.description ?? 'N/A',
+          category: category.category,
+          subCategory: subcategory.subCategory,
+          amount: transaction.amount,
+        });
+      });
     });
   });
+
+  incomeBreakdown[category.category] = incomeTransactions;
+  expenseBreakdown[category.category] = expenseTransactions;
 
   const description =
     getPluralizedDescription(category.category, t) ||

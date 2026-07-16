@@ -111,6 +111,11 @@ export const MPGAIncomeExpensesReport: React.FC<
             subCategory: subcategory.subCategory,
             breakdownByMonth: subcategory.breakdownByMonth.map((month) => ({
               ...month,
+              transactions: (month.transactions ?? []).map((transaction) => ({
+                transactedAt: transaction.transactedAt,
+                description: transaction.description ?? '',
+                amount: transaction.amount,
+              })),
             })),
           })),
         })),
@@ -118,18 +123,17 @@ export const MPGAIncomeExpensesReport: React.FC<
     [reportData],
   );
 
-  const { incomeData, expenseData } = useFilteredFunds(
-    transformedData,
-    filters?.categories ?? null,
-    t,
-  );
+  const { incomeData, expenseData, incomeBreakdown, expenseBreakdown } =
+    useFilteredFunds(transformedData, filters?.categories ?? null, t);
 
   const allData: AllData = useMemo(() => {
     return {
       income: incomeData,
       expenses: expenseData,
+      incomeBreakdown: incomeBreakdown,
+      expenseBreakdown: expenseBreakdown,
     };
-  }, [incomeData, expenseData]);
+  }, [incomeData, expenseData, incomeBreakdown, expenseBreakdown]);
 
   return (
     <>

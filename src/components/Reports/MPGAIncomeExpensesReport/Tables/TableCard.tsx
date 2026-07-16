@@ -6,6 +6,7 @@ import {
   GridSortModel,
 } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
+import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useMonthHeaders } from 'src/hooks/useMonthHeaders';
 import { amountFormat, zeroAmountFormat } from 'src/lib/intlFormat';
@@ -16,7 +17,7 @@ import { CustomToolbar } from '../CustomToolbar/CustomToolbar';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { populateCardTableRows } from '../Helper/createRows';
 import { useTotals } from '../TotalsContext/TotalsContext';
-import { DataFields } from '../mockData';
+import { CategoryBreakdown, DataFields } from '../mockData';
 import { StyledGrid } from '../styledComponents';
 import { TotalRow } from './TotalRow';
 
@@ -27,6 +28,9 @@ export type RenderCell = GridColDef<DataFields>['renderCell'];
 export interface TableCardProps {
   type: ReportTypeEnum;
   data: DataFields[];
+  breakdownData?: Partial<
+    Record<StaffExpenseCategoryEnum, CategoryBreakdown[]>
+  >;
   emptyPlaceholder: React.ReactElement;
   title: string;
   months: string[];
@@ -73,6 +77,7 @@ const GroupHeader: React.FC<{ label: string; color: string }> = ({
 export const CreateCardTableRows = (data: DataFields): DataFields => ({
   id: data.id,
   description: data.description,
+  category: data.category,
   monthly: data.monthly,
   average: data.average,
   total: data.total,
@@ -85,6 +90,7 @@ export const summaryWidth = 98.5;
 export const TableCard: React.FC<TableCardProps> = ({
   type,
   data,
+  breakdownData = {},
   title,
   months,
   emptyPlaceholder,
@@ -115,7 +121,10 @@ export const TableCard: React.FC<TableCardProps> = ({
     return data.map((data) => CreateCardTableRows(data));
   }, [data]);
 
-  const { description, average, total } = populateCardTableRows(locale);
+  const { description, average, total } = useMemo(
+    () => populateCardTableRows(locale, t, breakdownData),
+    [locale, t, breakdownData],
+  );
 
   const columns = useMemo<GridColDef<DataFields>[]>(() => {
     const monthColumns: GridColDef<DataFields>[] = months.map(
@@ -166,7 +175,7 @@ export const TableCard: React.FC<TableCardProps> = ({
         headerAlign: 'right',
       },
     ];
-  }, [months]);
+  }, [months, locale, t, description, average, total]);
 
   const columnGroupingModel = useMemo<GridColumnGroupingModel>(() => {
     const yearGroups = monthCount.map(({ year, count }, index) => {
