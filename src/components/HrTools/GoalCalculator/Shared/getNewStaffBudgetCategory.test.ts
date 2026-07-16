@@ -5,7 +5,7 @@ import {
   GoalCalculationQuery,
   GoalCalculationQueryVariables,
 } from './GoalCalculation.generated';
-import { getNewStaffBudgetCategory } from './calculateNewStaffTotals';
+import { getNewStaffBudgetCategory } from './getNewStaffBudgetCategory';
 
 // Categories that have no New Staff reference but mirror the user's own entered amount, each seeded
 // with a distinct non-zero amount so the test fails if the function returns 0 instead of mirroring.
@@ -75,8 +75,12 @@ describe('getNewStaffBudgetCategory', () => {
       variables: { accountListId: 'account-list-1', id: 'goal-calculation-1' },
       mocks: {
         goalCalculation: {
+          // Distinct values per field so a swap between any two branches makes the assertion fail
           newStaffCalculations: {
             ministryMiles: 140,
+            travel: 55,
+            conferences: 210,
+            meals: 65,
             mpd: 200,
             supplies: 75,
             medicalExpenses: 365,
@@ -89,6 +93,18 @@ describe('getNewStaffBudgetCategory', () => {
       {
         category: PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
         expected: 140,
+      },
+      {
+        category: PrimaryBudgetCategoryEnum.MinistryTravel,
+        expected: 55,
+      },
+      {
+        category: PrimaryBudgetCategoryEnum.MeetingsRetreatsConferences,
+        expected: 210,
+      },
+      {
+        category: PrimaryBudgetCategoryEnum.MealsAndPerDiem,
+        expected: 65,
       },
       {
         category: PrimaryBudgetCategoryEnum.MinistryPartnerDevelopment,

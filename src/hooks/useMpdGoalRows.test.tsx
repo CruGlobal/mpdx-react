@@ -1,12 +1,44 @@
+import React from 'react';
 import { waitFor } from '@testing-library/dom';
 import { renderHook } from '@testing-library/react-hooks';
-import { GoalCalculatorTestWrapper } from 'src/components/HrTools/GoalCalculator/GoalCalculatorTestWrapper';
+import {
+  GoalCalculatorTestWrapper,
+  goalCalculationMock,
+} from 'src/components/HrTools/GoalCalculator/GoalCalculatorTestWrapper';
+import { PrimaryBudgetCategoryEnum } from 'src/graphql/types.generated';
 import { MpdGoalRow, useMpdGoalRows } from './useMpdGoalRows';
 
 const renderUseMpdGoalRows = (supportRaised = 1000) =>
   renderHook(() => useMpdGoalRows(supportRaised), {
     wrapper: GoalCalculatorTestWrapper,
   });
+
+// A mock where the mirrored AccountTransfers category (line 3I) carries a non-zero entered amount.
+// The default mock leaves every mirrored category at 0, which would let a dropped mirrored category
+// slip past the footing check below; a non-zero value gives that check teeth.
+const goalCalculationWithMirroredExpense = {
+  ...goalCalculationMock,
+  ministryFamily: {
+    ...goalCalculationMock.ministryFamily,
+    primaryBudgetCategories:
+      goalCalculationMock.ministryFamily.primaryBudgetCategories.map(
+        (category) =>
+          category.category === PrimaryBudgetCategoryEnum.AccountTransfers
+            ? { ...category, directInput: 250 }
+            : category,
+      ),
+  },
+};
+
+const MirroredExpenseWrapper: React.FC<{ children?: React.ReactNode }> = ({
+  children,
+}) => (
+  <GoalCalculatorTestWrapper
+    goalCalculation={goalCalculationWithMirroredExpense}
+  >
+    {children}
+  </GoalCalculatorTestWrapper>
+);
 
 describe('useMpdGoalRows', () => {
   it('returns a row for every goal line', () => {
@@ -71,7 +103,13 @@ describe('useMpdGoalRows', () => {
     });
 
     it('foots the subtotal against the per-line 3A-3J references', async () => {
-      const { result, waitForNextUpdate } = renderUseMpdGoalRows();
+      // Render with a non-zero mirrored category (AccountTransfers → line 3I) so the footing check
+      // has teeth: dropping a mirrored category from the subtotal would change line 4 without
+      // changing the summed 3A–3J references, breaking the assertion instead of silently mis-summing.
+      const { result, waitForNextUpdate } = renderHook(
+        () => useMpdGoalRows(1000),
+        { wrapper: MirroredExpenseWrapper },
+      );
       await waitForNextUpdate();
 
       const { rows } = result.current;
@@ -83,10 +121,11 @@ describe('useMpdGoalRows', () => {
       const reference = (line: string) =>
         rows.find((row) => row.line === line)?.reference ?? 0;
 
-      expect(ministryTotal).toBeCloseTo(822.5, 2);
-      // Subtotal (line 4) must equal gross monthly salary + benefits + the visible
-      // ministry lines. If newStaffMinistryCategories drifts from the 3A–3J row
-      // categories, this assertion breaks instead of silently mis-summing.
+      // AccountTransfers is mirrored from the entered amount (line 3I).
+      expect(reference('3I')).toBe(250);
+      // 822.5 base ministry references + the 250 mirrored AccountTransfers amount.
+      expect(ministryTotal).toBeCloseTo(1072.5, 2);
+      // Subtotal (line 4) must equal gross monthly salary + benefits + the visible ministry lines.
       expect(reference('4')).toBeCloseTo(
         reference('1') + reference('2') + ministryTotal,
         2,

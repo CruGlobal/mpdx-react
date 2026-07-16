@@ -273,12 +273,19 @@ export const constantsMock = gqlMock<
 interface GoalCalculatorTestWrapperProps {
   onCall?: MockLinkCallHandler;
   noMocks?: boolean;
+  /** Override the mocked goal calculation (defaults to `goalCalculationMock`). */
+  goalCalculation?: GoalCalculationQuery['goalCalculation'];
   children?: React.ReactNode;
 }
 
 export const GoalCalculatorTestWrapper: React.FC<
   GoalCalculatorTestWrapperProps
-> = ({ onCall, noMocks = false, children }) => {
+> = ({
+  onCall,
+  noMocks = false,
+  goalCalculation = goalCalculationMock,
+  children,
+}) => {
   const content = <GoalCalculatorProvider>{children}</GoalCalculatorProvider>;
   return (
     <ThemeProvider theme={theme}>
@@ -300,7 +307,7 @@ export const GoalCalculatorTestWrapper: React.FC<
             }>
               mocks={{
                 GoalCalculation: {
-                  goalCalculation: goalCalculationMock,
+                  goalCalculation,
                 },
                 GoalCalculatorConstants: {
                   constant: constantsMock,

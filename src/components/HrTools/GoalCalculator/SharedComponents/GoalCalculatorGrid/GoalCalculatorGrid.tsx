@@ -40,7 +40,7 @@ import {
 import { BudgetFamilyFragment } from '../../Shared/GoalCalculation.generated';
 import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
 import { GoalCalculatorSection } from '../../Shared/GoalCalculatorSection';
-import { getNewStaffBudgetCategory } from '../../Shared/calculateNewStaffTotals';
+import { getNewStaffBudgetCategory } from '../../Shared/getNewStaffBudgetCategory';
 import { BaseGrid } from './BaseGrid';
 import {
   UpdateSubBudgetCategoriesFragment,
@@ -264,7 +264,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
     directInput,
     isMutating,
     categoryType,
-    goalCalculationResult,
+    goalCalculationResult.data,
     gridData,
     accountListId,
     updateSubBudgetCategory,

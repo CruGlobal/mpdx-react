@@ -1,12 +1,12 @@
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useGoalCalculator } from 'src/components/HrTools/GoalCalculator/Shared/GoalCalculatorContext';
-import { getNewStaffBudgetCategory } from 'src/components/HrTools/GoalCalculator/Shared/calculateNewStaffTotals';
 import {
   GoalTotals,
   calculateCategoryEnumTotal,
   calculateGoalSubtotals,
 } from 'src/components/HrTools/GoalCalculator/Shared/calculateTotals';
+import { getNewStaffBudgetCategory } from 'src/components/HrTools/GoalCalculator/Shared/getNewStaffBudgetCategory';
 import { safeProgressRatio } from 'src/components/HrTools/Shared/helpers/safeProgressRatio';
 import { PrimaryBudgetCategoryEnum } from 'src/graphql/types.generated';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
@@ -25,24 +25,59 @@ export interface MpdGoalRow {
   percentage?: boolean;
 }
 
-// The ministry-expense lines (worksheet 3A–3J). The New Staff reference subtotal is summed from
-// these categories so it matches the per-line reference amounts shown in the table.
-const newStaffMinistryCategories: PrimaryBudgetCategoryEnum[] = [
-  PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
-  PrimaryBudgetCategoryEnum.MinistryTravel,
-  PrimaryBudgetCategoryEnum.MeetingsRetreatsConferences,
-  PrimaryBudgetCategoryEnum.UsStaffConference,
-  PrimaryBudgetCategoryEnum.MealsAndPerDiem,
-  PrimaryBudgetCategoryEnum.MinistryPartnerDevelopment,
-  PrimaryBudgetCategoryEnum.SuppliesAndMaterials,
-  PrimaryBudgetCategoryEnum.SummerAssignmentExpenses,
-  PrimaryBudgetCategoryEnum.ReimbursableMedicalExpenses,
-  PrimaryBudgetCategoryEnum.AccountTransfers,
-  PrimaryBudgetCategoryEnum.InternetServiceProviderFee,
-  PrimaryBudgetCategoryEnum.CellPhoneWorkLine,
-  PrimaryBudgetCategoryEnum.CreditCardProcessingCharges,
-  PrimaryBudgetCategoryEnum.MinistryOther,
+interface MinistryExpenseLine {
+  /** Worksheet line number (3A–3J). */
+  line: string;
+  /** The budget categories this line aggregates. */
+  categories: PrimaryBudgetCategoryEnum[];
+}
+
+// The ministry-expense lines (worksheet 3A–3J) and the categories each one aggregates. This is the
+// single source of truth: both the per-line reference amounts (lines 3A–3J) and the reference
+// subtotal (line 4) are derived from it, so the subtotal cannot silently drift from the displayed
+// lines. Labels are attached in the hook (below) so they stay extractable by i18n tooling.
+const ministryExpenseLines: MinistryExpenseLine[] = [
+  {
+    line: '3A',
+    categories: [PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage],
+  },
+  { line: '3B', categories: [PrimaryBudgetCategoryEnum.MinistryTravel] },
+  {
+    line: '3C',
+    categories: [
+      PrimaryBudgetCategoryEnum.MeetingsRetreatsConferences,
+      PrimaryBudgetCategoryEnum.UsStaffConference,
+    ],
+  },
+  { line: '3D', categories: [PrimaryBudgetCategoryEnum.MealsAndPerDiem] },
+  {
+    line: '3E',
+    categories: [PrimaryBudgetCategoryEnum.MinistryPartnerDevelopment],
+  },
+  { line: '3F', categories: [PrimaryBudgetCategoryEnum.SuppliesAndMaterials] },
+  {
+    line: '3G',
+    categories: [PrimaryBudgetCategoryEnum.SummerAssignmentExpenses],
+  },
+  {
+    line: '3H',
+    categories: [PrimaryBudgetCategoryEnum.ReimbursableMedicalExpenses],
+  },
+  { line: '3I', categories: [PrimaryBudgetCategoryEnum.AccountTransfers] },
+  {
+    line: '3J',
+    categories: [
+      PrimaryBudgetCategoryEnum.InternetServiceProviderFee,
+      PrimaryBudgetCategoryEnum.CellPhoneWorkLine,
+      PrimaryBudgetCategoryEnum.CreditCardProcessingCharges,
+      PrimaryBudgetCategoryEnum.MinistryOther,
+    ],
+  },
 ];
+
+// Derived so it can never diverge from the lines rendered on the table.
+const newStaffMinistryCategories: PrimaryBudgetCategoryEnum[] =
+  ministryExpenseLines.flatMap((line) => line.categories);
 
 export const useMpdGoalRows = (supportRaised: number) => {
   const { t } = useTranslation();
@@ -93,75 +128,28 @@ export const useMpdGoalRows = (supportRaised: number) => {
         attritionRate: calculations?.attritionRate ?? 0,
       }),
     };
-  }, [goalCalculationResult]);
+  }, [goalCalculationResult.data]);
 
   const goalCalculation = goalCalculationResult.data?.goalCalculation;
   const rows = useMemo((): MpdGoalRow[] => {
-    const ministryExpenseCategories = [
-      {
-        line: '3A',
-        category: t('Ministry Miles'),
-        categories: [PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage],
-      },
-      {
-        line: '3B',
-        category: t('Ministry Travel'),
-        categories: [PrimaryBudgetCategoryEnum.MinistryTravel],
-      },
-      {
-        line: '3C',
-        category: t('Meetings, Retreats, Conferences'),
-        categories: [
-          PrimaryBudgetCategoryEnum.MeetingsRetreatsConferences,
-          PrimaryBudgetCategoryEnum.UsStaffConference,
-        ],
-      },
-      {
-        line: '3D',
-        category: t('Meals and Per Diem'),
-        categories: [PrimaryBudgetCategoryEnum.MealsAndPerDiem],
-      },
-      {
-        line: '3E',
-        category: t('MPD'),
-        categories: [PrimaryBudgetCategoryEnum.MinistryPartnerDevelopment],
-      },
-      {
-        line: '3F',
-        category: t('Supplies and Materials'),
-        categories: [PrimaryBudgetCategoryEnum.SuppliesAndMaterials],
-      },
-      {
-        line: '3G',
-        category: t('Summer Assignment Expenses'),
-        categories: [PrimaryBudgetCategoryEnum.SummerAssignmentExpenses],
-      },
-      {
-        line: '3H',
-        category: t('Reimbursable Medical Expenses'),
-        categories: [PrimaryBudgetCategoryEnum.ReimbursableMedicalExpenses],
-      },
-      {
-        line: '3I',
-        category: t(
-          'Account transfers to staff members, ministries, projects, etc.',
-        ),
-        categories: [PrimaryBudgetCategoryEnum.AccountTransfers],
-      },
-      {
-        line: '3J',
-        category: t('Other (includes credit card charges)'),
-        categories: [
-          PrimaryBudgetCategoryEnum.InternetServiceProviderFee,
-          PrimaryBudgetCategoryEnum.CellPhoneWorkLine,
-          PrimaryBudgetCategoryEnum.CreditCardProcessingCharges,
-          PrimaryBudgetCategoryEnum.MinistryOther,
-        ],
-      },
-    ];
-    const ministryExpenseRows = ministryExpenseCategories.map(
-      ({ categories, ...rowFields }): MpdGoalRow => ({
-        ...rowFields,
+    // Labels for lines 3A–3J. Kept as literal t() calls (not a dynamic key) so i18n extraction can
+    // find them; the categories each line aggregates live in the shared `ministryExpenseLines`.
+    const ministryExpenseLabels: Record<string, string> = {
+      '3A': t('Ministry Miles'),
+      '3B': t('Ministry Travel'),
+      '3C': t('Meetings, Retreats, Conferences'),
+      '3D': t('Meals and Per Diem'),
+      '3E': t('MPD'),
+      '3F': t('Supplies and Materials'),
+      '3G': t('Summer Assignment Expenses'),
+      '3H': t('Reimbursable Medical Expenses'),
+      '3I': t('Account transfers to staff members, ministries, projects, etc.'),
+      '3J': t('Other (includes credit card charges)'),
+    };
+    const ministryExpenseRows = ministryExpenseLines.map(
+      ({ line, categories }): MpdGoalRow => ({
+        line,
+        category: ministryExpenseLabels[line],
         amount: categories.reduce(
           (sum, category) =>
             sum +
