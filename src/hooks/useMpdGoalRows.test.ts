@@ -48,6 +48,52 @@ describe('useMpdGoalRows', () => {
     });
   });
 
+  describe('new staff reference column', () => {
+    // Guards the field-by-field mapping from newStaffCalculations into the reference column.
+    // A swap such as salarySubtotal ↔ totalSalary, or a dropped ministry category, would
+    // otherwise pass silently. Mock values come from GoalCalculatorTestWrapper.
+    it('maps each server newStaffCalculations field to the correct line', async () => {
+      const { result, waitForNextUpdate } = renderUseMpdGoalRows();
+      await waitForNextUpdate();
+
+      const reference = (line: string) =>
+        result.current.rows.find((row) => row.line === line)?.reference;
+
+      expect(reference('1C')).toBe(1146); // taxes ← seca
+      expect(reference('1D')).toBe(6357); // salaryPreIra ← salarySubtotal
+      expect(reference('1H')).toBe(479); // rothContribution ← totalContributing403bAmount
+      expect(reference('1J')).toBe(82032); // grossAnnualSalary ← totalSalary * 12
+      expect(reference('1')).toBe(6836); // grossMonthlySalary ← totalSalary
+      expect(reference('2')).toBe(1910.54); // benefits ← benefitsCharge
+      expect(reference('3A')).toBe(98); // ministry miles ← ministryMiles
+      expect(reference('3E')).toBe(124.5); // MPD ← mpd
+      expect(reference('3H')).toBe(330); // reimbursable medical ← medicalExpenses
+    });
+
+    it('foots the subtotal against the per-line 3A-3J references', async () => {
+      const { result, waitForNextUpdate } = renderUseMpdGoalRows();
+      await waitForNextUpdate();
+
+      const { rows } = result.current;
+
+      const ministryTotal = rows
+        .filter((row) => row.line.match(/^3[A-Z]$/))
+        .reduce((sum, line) => sum + line.reference, 0);
+
+      const reference = (line: string) =>
+        rows.find((row) => row.line === line)?.reference ?? 0;
+
+      expect(ministryTotal).toBeCloseTo(822.5, 2);
+      // Subtotal (line 4) must equal gross monthly salary + benefits + the visible
+      // ministry lines. If newStaffMinistryCategories drifts from the 3A–3J row
+      // categories, this assertion breaks instead of silently mis-summing.
+      expect(reference('4')).toBeCloseTo(
+        reference('1') + reference('2') + ministryTotal,
+        2,
+      );
+    });
+  });
+
   describe('supportRaised parameter', () => {
     it('renders supportRaised for solid support developed', () => {
       const { result } = renderUseMpdGoalRows(1000);
