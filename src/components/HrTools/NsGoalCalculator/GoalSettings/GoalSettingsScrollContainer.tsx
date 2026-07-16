@@ -14,5 +14,6 @@ export const GoalSettingsScrollContainer = styled('div')(({ theme }) => ({
   '@media screen': {
     height: `calc(100vh - ${navBarHeight})`,
     overflow: 'auto',
+    position: 'relative',
   },
 }));
