@@ -3,6 +3,7 @@ import { getSession } from 'next-auth/react';
 import { session } from '__tests__/fixtures/session';
 import { RedirectReason } from 'pages/api/auth/redirectReasonEnum';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
+import { MPD_LEADER_SCOPE } from 'src/lib/restrictedImpersonation';
 import {
   blockImpersonatingNonDevelopers,
   blockRestrictedImpersonation,
@@ -264,7 +265,7 @@ describe('pagePropsHelpers', () => {
         apiToken: 'token',
         impersonating: true,
         isImpersonatorDeveloper: false,
-        impersonationScope: 'mpd_leader',
+        impersonationScope: MPD_LEADER_SCOPE,
       };
       (getSession as jest.Mock).mockResolvedValue({ user });
 
@@ -295,7 +296,7 @@ describe('pagePropsHelpers', () => {
       const user = {
         apiToken: 'token',
         impersonating: true,
-        impersonationScope: 'mpd_leader',
+        impersonationScope: MPD_LEADER_SCOPE,
       };
       (getSession as jest.Mock).mockResolvedValue({ user });
 

@@ -1,9 +1,12 @@
-import { isRestrictedImpersonation } from './restrictedImpersonation';
+import {
+  MPD_LEADER_SCOPE,
+  isRestrictedImpersonation,
+} from './restrictedImpersonation';
 
 describe('isRestrictedImpersonation', () => {
   it('returns true when the session has an impersonation scope', () => {
     expect(
-      isRestrictedImpersonation({ impersonationScope: 'mpd_leader' }),
+      isRestrictedImpersonation({ impersonationScope: MPD_LEADER_SCOPE }),
     ).toBe(true);
   });
 

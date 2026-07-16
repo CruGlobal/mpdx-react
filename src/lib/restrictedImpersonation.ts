@@ -13,6 +13,14 @@ import { Session } from 'next-auth';
 export type ImpersonationScope = 'mpd_leader';
 
 /**
+ * The scope minted when an MPD leader impersonates one of the staff they
+ * supervise — currently the only `ImpersonationScope` value. Compare against
+ * this constant (rather than a string literal) so the wire value stays pinned
+ * to the union at compile time.
+ */
+export const MPD_LEADER_SCOPE: ImpersonationScope = 'mpd_leader';
+
+/**
  * Returns whether the session is a restricted-scope impersonation session
  * (e.g. an MPD leader impersonating one of the staff they supervise).
  *
