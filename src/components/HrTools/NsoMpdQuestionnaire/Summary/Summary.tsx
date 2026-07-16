@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { Box, Divider, Stack, Typography } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -14,6 +15,7 @@ import { useSummarySections } from './useSummarySections';
 export const Summary: React.FC = () => {
   const { t } = useTranslation();
   const router = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
   const accountListId = useAccountListId();
   const { handleStepChange, handleBack, completeQuestionnaire } =
     useNsoMpdQuestionnaire();
@@ -24,6 +26,9 @@ export const Summary: React.FC = () => {
   // Complete the questionnaire, then redirect to the dashboard on success.
   const handleSubmit = async () => {
     await completeQuestionnaire();
+    enqueueSnackbar(t('Questionnaire submitted successfully.'), {
+      variant: 'success',
+    });
     await router.push(`/accountLists/${accountListId}`);
   };
 
