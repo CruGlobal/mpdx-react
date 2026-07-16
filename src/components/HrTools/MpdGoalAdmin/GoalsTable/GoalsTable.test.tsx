@@ -207,10 +207,17 @@ describe('GoalsTable', () => {
         impersonating: true,
       });
 
-      const { queryByRole } = renderTable();
+      const { getAllByText, queryByRole } = renderTable();
       expect(
         queryByRole('button', { name: 'Impersonate' }),
       ).not.toBeInTheDocument();
+      // The Actions column isn't left empty: the disabled View/Edit link
+      // still renders on every row.
+      const viewEditLinks = getAllByText('View/Edit');
+      expect(viewEditLinks).toHaveLength(
+        Math.min(rows.length, DEFAULT_ROWS_PER_PAGE),
+      );
+      expect(viewEditLinks[0]).toBeDisabled();
     });
 
     it('opens the impersonate modal for the selected staff member', async () => {
