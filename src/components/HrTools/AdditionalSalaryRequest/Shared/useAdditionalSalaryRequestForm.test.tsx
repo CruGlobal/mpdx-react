@@ -193,6 +193,7 @@ const TestWrapper: React.FC<TestComponentProps> = ({ children, mocks }) => {
 describe('useAdditionalSalaryRequestForm', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockSession({});
     mockUseAdditionalSalaryRequest.mockReturnValue(defaultMockContextValue);
   });
 
