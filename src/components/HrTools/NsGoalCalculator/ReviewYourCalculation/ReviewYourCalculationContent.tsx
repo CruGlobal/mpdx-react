@@ -56,6 +56,8 @@ export const ReviewYourCalculationContent: React.FC<
         minStaffAccountBalance={
           goalCalculation.calculations.minimumAccountBalance
         }
+        supportRaised={goalCalculation.calculations.supportRaised ?? null}
+        accountBalance={goalCalculation.calculations.accountBalance ?? null}
       />
 
       <MonthlyNeedsCard

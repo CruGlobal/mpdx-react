@@ -13,8 +13,7 @@ import {
 import { visuallyHidden } from '@mui/utils';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat } from 'src/lib/intlFormat';
+import { useFormatters } from '../../Shared/useFormatters';
 
 export interface NeedsRow {
   line: string;
@@ -64,7 +63,7 @@ export const NeedsWorksheetTable: React.FC<NeedsWorksheetTableProps> = ({
   ariaLabel,
 }) => {
   const { t } = useTranslation();
-  const locale = useLocale();
+  const { formatCurrency } = useFormatters();
 
   return (
     <NeedsTable size="small" aria-label={ariaLabel}>
@@ -103,11 +102,7 @@ export const NeedsWorksheetTable: React.FC<NeedsWorksheetTableProps> = ({
             </TableCell>
             <TableCell className={clsx('amount', { bold })}>
               <Typography variant="body1">
-                {amount === null
-                  ? '—'
-                  : currencyFormat(amount, 'USD', locale, {
-                      showTrailingZeros: true,
-                    })}
+                {amount === null ? '—' : formatCurrency(amount)}
               </Typography>
             </TableCell>
           </TableRow>

@@ -10,13 +10,13 @@ import {
   Typography,
 } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
+import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import { ProgressiveApprovalTierReasonEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { progressiveApprovalsLink } from '../../AdditionalSalaryRequest/Shared/pdfLinks';
 import { useCaps } from '../SalaryCalculation/useCaps';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
-import { useFormatters } from '../Shared/useFormatters';
 import { MhaCard } from '../Summary/MhaCard';
 import { SalaryCalculationCard } from '../Summary/SalaryCalculationCard';
 import { SalaryCapCard } from '../Summary/SalaryCapCard';

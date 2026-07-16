@@ -1,8 +1,7 @@
 import React from 'react';
 import { CircularProgress, Stack, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat } from 'src/lib/intlFormat';
+import { useFormatters } from '../../Shared/useFormatters';
 import { useMpdGoalPreview } from './useMpdGoalPreview';
 
 interface MpdGoalPreviewProps {
@@ -29,25 +28,17 @@ export const MpdGoalPreview: React.FC<MpdGoalPreviewProps> = ({
   savedMonthlyGoal,
 }) => {
   const { t } = useTranslation();
-  const locale = useLocale();
+  const { formatCurrency } = useFormatters();
   const { calculating, displayGoal, diff, changed, failed } = useMpdGoalPreview(
     { accountListId, calculationId, savedMonthlyGoal },
   );
 
-  const diffLabel =
-    (diff > 0 ? '+' : '-') +
-    currencyFormat(Math.abs(diff), 'USD', locale, {
-      showTrailingZeros: true,
-    });
+  const diffLabel = (diff > 0 ? '+' : '-') + formatCurrency(Math.abs(diff));
 
   return (
     <Stack direction="row" spacing={1} alignItems="center" sx={{ ml: 3 }}>
       <Typography variant="h6" component="span">
-        {t('MPD Goal:')}{' '}
-        {!calculating &&
-          currencyFormat(displayGoal, 'USD', locale, {
-            showTrailingZeros: true,
-          })}
+        {t('MPD Goal:')} {!calculating && formatCurrency(displayGoal)}
       </Typography>
       {calculating && (
         <CircularProgress

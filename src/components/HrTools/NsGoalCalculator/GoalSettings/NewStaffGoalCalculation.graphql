@@ -28,6 +28,7 @@ fragment NewStaffGoalCalculationFields on NewStaffGoalCalculation {
     attrition
     monthlyGoal
     supportRaised
+    accountBalance
     minimumAccountBalance
     secaRate
     adminRate

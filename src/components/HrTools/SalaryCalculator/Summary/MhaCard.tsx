@@ -7,9 +7,9 @@ import {
   TableRow,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { StepCard } from '../Shared/StepCard';
-import { useFormatters } from '../Shared/useFormatters';
 import { SummaryTable } from './SummaryTable';
 
 export const MhaCard: React.FC = () => {

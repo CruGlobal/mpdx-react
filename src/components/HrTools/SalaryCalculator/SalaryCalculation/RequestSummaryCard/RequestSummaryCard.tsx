@@ -15,6 +15,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
+import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import {
   ProgressiveApprovalTierEnum,
   ProgressiveApprovalTierReasonEnum,
@@ -22,7 +23,6 @@ import {
 import { progressiveApprovalsLink } from '../../../AdditionalSalaryRequest/Shared/pdfLinks';
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
 import { StepCard } from '../../Shared/StepCard';
-import { useFormatters } from '../../Shared/useFormatters';
 import { StyledCardHeader } from '../StyledCardHeader';
 import { useCaps } from '../useCaps';
 import { CardTitle } from './CardTitle';

@@ -3,8 +3,7 @@ import { Box, SxProps, Theme, Typography } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { useTranslation } from 'react-i18next';
 import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
-import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat } from 'src/lib/intlFormat';
+import { useFormatters } from '../../../Shared/useFormatters';
 import { GoalSettingsNumberField } from '../Fields/GoalSettingsNumberField';
 import { GoalSettingsSelect, SelectOption } from '../Fields/GoalSettingsSelect';
 import { ColumnHeaderRow, FieldRow, Section } from '../GoalSettingsLayout';
@@ -22,7 +21,7 @@ export const FinancialInformationSection: React.FC<
   sharedHeader,
 }) => {
   const { t } = useTranslation();
-  const locale = useLocale();
+  const { formatCurrency } = useFormatters();
   const seniorStaffOnly = t('Senior Staff Only');
   const { goalGeographicConstantMap } = useGoalCalculatorConstants();
 
@@ -81,21 +80,14 @@ export const FinancialInformationSection: React.FC<
           <Box component="span" sx={visuallyHidden as SxProps<Theme>}>
             {t('403(b) Amount — {{name}}', { name: primaryName })}
           </Box>
-          {currencyFormat(calculations.contributing403bAmount, 'USD', locale, {
-            showTrailingZeros: true,
-          })}
+          {formatCurrency(calculations.contributing403bAmount)}
         </Typography>
         {hasSpouse && (
           <Typography variant="body1">
             <Box component="span" sx={visuallyHidden as SxProps<Theme>}>
               {t('403(b) Amount — {{name}}', { name: spouseName })}
             </Box>
-            {currencyFormat(
-              calculations.spouseContributing403bAmount,
-              'USD',
-              locale,
-              { showTrailingZeros: true },
-            )}
+            {formatCurrency(calculations.spouseContributing403bAmount)}
           </Typography>
         )}
       </FieldRow>
