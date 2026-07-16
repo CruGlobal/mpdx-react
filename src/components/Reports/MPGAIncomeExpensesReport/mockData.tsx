@@ -1,6 +1,9 @@
+import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
+
 export interface DataFields {
   id: string;
   description: string;
+  category?: StaffExpenseCategoryEnum;
   monthly: number[];
   average: number;
   total: number;

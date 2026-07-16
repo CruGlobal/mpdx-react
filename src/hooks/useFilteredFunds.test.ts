@@ -24,6 +24,26 @@ const mockData: Funds[] = [
     total: 17960,
     categories: [
       {
+        category: StaffExpenseCategoryEnum.HealthcareReimbursement,
+        total: 2760,
+        averagePerMonth: 230,
+        breakdownByMonth: months(
+          0,
+          0,
+          300,
+          400,
+          500,
+          0,
+          700,
+          -40,
+          900,
+          0,
+          0,
+          0,
+        ),
+        subcategories: [],
+      },
+      {
         category: StaffExpenseCategoryEnum.Salary,
         total: 15200,
         averagePerMonth: 1266.67,
@@ -82,32 +102,12 @@ const mockData: Funds[] = [
           },
         ],
       },
-      {
-        category: StaffExpenseCategoryEnum.HealthcareReimbursement,
-        total: 2760,
-        averagePerMonth: 230,
-        breakdownByMonth: months(
-          0,
-          0,
-          300,
-          400,
-          500,
-          0,
-          700,
-          -40,
-          900,
-          0,
-          0,
-          0,
-        ),
-        subcategories: [],
-      },
     ],
   },
 ];
 
 describe('useFilteredFunds', () => {
-  it('should filter funds correctly', () => {
+  it('should filter and sort funds correctly', () => {
     const { result } = renderHook(() =>
       useFilteredFunds(mockData, selectedCategories, t),
     );
@@ -115,26 +115,29 @@ describe('useFilteredFunds', () => {
     expect(result.current).toEqual({
       incomeData: [
         {
+          id: 'Primary-HEALTHCARE_REIMBURSEMENT',
+          description: 'Healthcare Reimbursement',
+          category: StaffExpenseCategoryEnum.HealthcareReimbursement,
+          monthly: [0, 0, 300, 400, 500, 0, 700, 0, 900, 0, 0, 0],
+          average: 2800 / 12,
+          total: 2800,
+        },
+        {
           id: 'Primary-SALARY-income',
           description: 'Salary',
+          category: StaffExpenseCategoryEnum.Salary,
           monthly: [
             200, 200, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400,
           ],
           average: 1283.33,
           total: 15400,
         },
-        {
-          id: 'Primary-HEALTHCARE_REIMBURSEMENT',
-          description: 'Healthcare Reimbursement',
-          monthly: [0, 0, 300, 400, 500, 0, 700, 0, 900, 0, 0, 0],
-          average: 2800 / 12,
-          total: 2800,
-        },
       ],
       expenseData: [
         {
           id: 'Primary-SALARY-expense',
           description: 'Salary',
+          category: StaffExpenseCategoryEnum.Salary,
           monthly: [0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           average: 16.67,
           total: 200,
@@ -142,6 +145,7 @@ describe('useFilteredFunds', () => {
         {
           id: 'Primary-HEALTHCARE_REIMBURSEMENT',
           description: 'Healthcare Reimbursement',
+          category: StaffExpenseCategoryEnum.HealthcareReimbursement,
           monthly: [0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 0],
           average: 40 / 12,
           total: 40,

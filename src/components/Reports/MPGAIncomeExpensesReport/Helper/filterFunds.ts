@@ -94,6 +94,7 @@ export function addRowPerSubcategory({
       {
         id,
         description,
+        category: category.category,
         monthly,
         average: subcategory.averagePerMonth,
         total: subcategory.total,
@@ -130,6 +131,7 @@ export function addCombinedSubcategoryRow({
       {
         id,
         description,
+        category: category.category,
         monthly,
         average: average(monthly),
         total: sum(monthly),
@@ -158,6 +160,7 @@ export function addCategoryRow({
     {
       id: baseId,
       description: getLocalizedCategory(category.category, t),
+      category: category.category,
       monthly,
       average: category.averagePerMonth,
       total: category.total,

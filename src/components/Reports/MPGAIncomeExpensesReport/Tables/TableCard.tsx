@@ -109,12 +109,7 @@ export const TableCard: React.FC<TableCardProps> = ({
     page: 0,
     pageSize: DEFAULT_PAGE_SIZE,
   });
-  const [sortModel, setSortModel] = useState<GridSortModel>([
-    {
-      field: 'description',
-      sort: 'desc',
-    },
-  ]);
+  const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
   const cardTableRows = useMemo(() => {
     return data.map((data) => CreateCardTableRows(data));
@@ -236,7 +231,7 @@ export const TableCard: React.FC<TableCardProps> = ({
           columns={columns}
           columnGroupingModel={columnGroupingModel}
           getRowId={(row) => row.id}
-          sortingOrder={['desc', 'asc']}
+          sortingOrder={['desc', 'asc', null]}
           sortModel={sortModel}
           onSortModelChange={(model) => setSortModel(model)}
           pageSizeOptions={[DEFAULT_PAGE_SIZE]}

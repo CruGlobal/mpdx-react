@@ -6,6 +6,10 @@ import {
   addCombinedSubcategoryRow,
   addRowPerSubcategory,
 } from '../components/Reports/MPGAIncomeExpensesReport/Helper/filterFunds';
+import {
+  expenseCategoryRank,
+  incomeCategoryRank,
+} from '../components/Reports/MPGAIncomeExpensesReport/Helper/sortFunds';
 import { DataFields } from '../components/Reports/MPGAIncomeExpensesReport/mockData';
 
 export function useFilteredFunds(
@@ -46,6 +50,14 @@ export function useFilteredFunds(
         }
       });
     });
+
+    incomeData.sort(
+      (a, b) => incomeCategoryRank(a.category) - incomeCategoryRank(b.category),
+    );
+    expenseData.sort(
+      (a, b) =>
+        expenseCategoryRank(a.category) - expenseCategoryRank(b.category),
+    );
 
     return {
       incomeData,
