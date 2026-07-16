@@ -167,14 +167,6 @@ export const FinancialInformationSection: React.FC<
           adornment="currency"
         />
       </FieldRow>
-
-      <FieldRow label={t('Solid Support Raised')}>
-        <GoalSettingsNumberField
-          name="solidSupportRaised"
-          label={t('Solid Support Raised')}
-          adornment="currency"
-        />
-      </FieldRow>
     </Section>
   );
 };

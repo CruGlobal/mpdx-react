@@ -63,7 +63,6 @@ export const calculationToFormValues = (
   creditCardDebtMonthlyPayment: toNumberInput(
     calc.creditCardDebtMonthlyPayment,
   ),
-  solidSupportRaised: toNumberInput(calc.solidSupportRaised),
 
   benefitsPlan: calc.benefitsPlan ?? '',
   reimbursableExpenses: toNumberInput(calc.reimbursableExpenses),
@@ -158,8 +157,6 @@ export const formValuesToAttributes = (
     creditCardDebtMonthlyPayment: toNumberOrNull(
       values.creditCardDebtMonthlyPayment,
     ),
-
-    solidSupportRaised: toNumberOrNull(values.solidSupportRaised),
 
     // Healthcare
     benefitsPlan: values.benefitsPlan || null,
