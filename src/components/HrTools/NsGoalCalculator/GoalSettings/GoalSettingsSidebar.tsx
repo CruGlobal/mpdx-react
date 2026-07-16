@@ -2,13 +2,16 @@ import React from 'react';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import MenuOpenSharp from '@mui/icons-material/MenuOpenSharp';
 import SettingsIcon from '@mui/icons-material/Settings';
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
   Divider,
+  IconButton,
   List,
+  ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
@@ -57,31 +60,51 @@ interface GoalSettingsSidebarProps {
    * "Presenting Your Goal" navigation item.
    */
   isScenario?: boolean;
+  /** Collapses the sidebar, hiding it until the user re-opens it. */
+  onCollapse: () => void;
+  /** Ref to the collapse button so focus can return to it when the nav re-opens. */
+  collapseButtonRef?: React.Ref<HTMLButtonElement>;
 }
 
 export const GoalSettingsSidebar: React.FC<GoalSettingsSidebarProps> = ({
   isScenario = false,
+  onCollapse,
+  collapseButtonRef,
 }) => {
   const { t } = useTranslation();
   const { view, setView } = useGoalSettingsView();
 
   return (
     <List disablePadding component="nav" aria-label={t('Goal navigation')}>
-      {/* TODO(MPDX-9821): Wire up the Back to Table destination. */}
-      <ListItemButton sx={{ color: 'primary.main' }}>
-        <ListItemIcon sx={{ minWidth: 'auto', mr: 1, color: 'inherit' }}>
-          <ChevronLeftIcon fontSize="small" />
-        </ListItemIcon>
-        <ListItemText
-          primary={t('Back to Table')}
-          slotProps={{
-            primary: {
-              variant: 'body2',
-              sx: { textTransform: 'uppercase' },
-            },
-          }}
-        />
-      </ListItemButton>
+      <ListItem
+        disablePadding
+        secondaryAction={
+          <IconButton
+            ref={collapseButtonRef}
+            edge="end"
+            aria-label={t('Collapse navigation')}
+            onClick={onCollapse}
+          >
+            <MenuOpenSharp />
+          </IconButton>
+        }
+      >
+        {/* TODO(MPDX-9821): Wire up the Back to Table destination. */}
+        <ListItemButton sx={{ color: 'primary.main' }}>
+          <ListItemIcon sx={{ minWidth: 'auto', mr: 1, color: 'inherit' }}>
+            <ChevronLeftIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText
+            primary={t('Back to Table')}
+            slotProps={{
+              primary: {
+                variant: 'body2',
+                sx: { textTransform: 'uppercase' },
+              },
+            }}
+          />
+        </ListItemButton>
+      </ListItem>
 
       <Divider />
 

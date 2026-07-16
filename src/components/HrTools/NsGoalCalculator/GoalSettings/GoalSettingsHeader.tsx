@@ -28,16 +28,13 @@ const ContactLine: React.FC<ContactLineProps> = ({ icon, children }) => (
   <Stack direction="row" spacing={1} alignItems="flex-start">
     <Box
       sx={{
-        color: 'text.secondary',
         display: 'flex',
         svg: { fontSize: 18 },
       }}
     >
       {icon}
     </Box>
-    <Typography variant="body2" color="text.secondary">
-      {children}
-    </Typography>
+    <Typography variant="body2">{children}</Typography>
   </Stack>
 );
 
