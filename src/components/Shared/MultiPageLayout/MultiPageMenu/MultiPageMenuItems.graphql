@@ -3,5 +3,6 @@ query GetUserAccess {
     id
     admin
     developer
+    mpdSupervisorAdmin
   }
 }

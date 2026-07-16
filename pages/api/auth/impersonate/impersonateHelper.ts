@@ -27,6 +27,7 @@ type FetchTokenForOrganizationType = {
     attributes: {
       created_at: string;
       json_web_token: string;
+      impersonation_scope?: string;
       updated_at: string;
       updated_in_db_at: string;
     };
@@ -122,6 +123,16 @@ export const impersonate = async (
       `mpdx-handoff.redirect-url=/; ${cookieDefaultInfo}`,
       `mpdx-handoff.token=${apiToken}; ${cookieDefaultInfo}`,
     ];
+
+    const impersonationScope = fetchRes?.data?.attributes?.impersonation_scope;
+    if (impersonationScope) {
+      cookies.push(
+        `mpdx-handoff.impersonationScope=${signValue(
+          impersonationScope,
+        )}; ${cookieDefaultInfo}`,
+      );
+    }
+
     return {
       status: fetchToken.status,
       errors,

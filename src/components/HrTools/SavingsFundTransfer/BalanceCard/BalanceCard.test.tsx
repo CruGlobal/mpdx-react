@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { mockSession } from '__tests__/util/mockSession';
 import theme from 'src/theme';
 import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
 import { FundTypeEnum } from '../mockData';
@@ -198,6 +199,18 @@ describe('BalanceCard', () => {
         }}
       />,
     );
+
+    const transferFromButton = await findByRole('button', {
+      name: /transfer from/i,
+    });
+
+    expect(transferFromButton).toBeDisabled();
+  });
+
+  it('should disable transfer from button during restricted impersonation', async () => {
+    mockSession({ impersonationScope: 'mpd_supervisor' });
+
+    const { findByRole } = render(<Components />);
 
     const transferFromButton = await findByRole('button', {
       name: /transfer from/i,

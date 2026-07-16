@@ -18,6 +18,7 @@ import {
   AdditionalSalaryRequestCalculations,
   AsrStatusEnum,
 } from 'src/graphql/types.generated';
+import { useRestrictedImpersonation } from 'src/hooks/useRestrictedImpersonation';
 import { useStepList } from 'src/hooks/useStepList';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
@@ -200,6 +201,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
 
   const [deleteAdditionalSalaryRequest] =
     useDeleteAdditionalSalaryRequestMutation();
+  const restrictedImpersonation = useRestrictedImpersonation();
 
   const currentStep = sections[currentIndex];
 
@@ -213,6 +215,12 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
 
   const handleDeleteRequest = useCallback(
     async (id: string, isCancel: boolean) => {
+      // The tool is read-only during restricted impersonation, so deleting
+      // must not fire mutations that the API would reject
+      if (restrictedImpersonation) {
+        return;
+      }
+
       await deleteAdditionalSalaryRequest({
         variables: { id },
         refetchQueries: ['AdditionalSalaryRequest'],
@@ -235,7 +243,13 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
         },
       });
     },
-    [deleteAdditionalSalaryRequest, enqueueSnackbar, resetSteps, t],
+    [
+      deleteAdditionalSalaryRequest,
+      restrictedImpersonation,
+      enqueueSnackbar,
+      resetSteps,
+      t,
+    ],
   );
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);

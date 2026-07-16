@@ -98,6 +98,18 @@ describe('GoalCard', () => {
     expect(mutationSpy).not.toHaveBeenCalled();
   });
 
+  it('disables the Delete button when deleteDisabled is true', () => {
+    const { getByRole } = renderCard({ deleteDisabled: true });
+
+    expect(getByRole('button', { name: 'Delete' })).toBeDisabled();
+  });
+
+  it('enables the Delete button by default', () => {
+    const { getByRole } = renderCard();
+
+    expect(getByRole('button', { name: 'Delete' })).toBeEnabled();
+  });
+
   it('renders the badge when provided', () => {
     const { getByText } = renderCard({
       badge: <span>Default</span>,

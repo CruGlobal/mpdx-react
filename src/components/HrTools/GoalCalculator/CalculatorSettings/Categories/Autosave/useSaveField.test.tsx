@@ -1,4 +1,5 @@
 import { renderHook, waitFor } from '@testing-library/react';
+import { mockSession } from '__tests__/util/mockSession';
 import { GoalCalculatorTestWrapper } from '../../../GoalCalculatorTestWrapper';
 import { useSaveField } from './useSaveField';
 
@@ -43,6 +44,24 @@ describe('useSaveField', () => {
     );
 
     result.current({ name: 'Initial Goal Name', firstName: 'John' });
+
+    await Promise.resolve();
+    await waitFor(() =>
+      expect(mutationSpy).not.toHaveGraphqlOperation('UpdateGoalCalculation'),
+    );
+  });
+
+  it('should not update goal calculation during restricted impersonation', async () => {
+    mockSession({ impersonationScope: 'mpd_supervisor' });
+
+    const { result } = renderHook(useSaveField, { wrapper: Wrapper });
+
+    // Wait for the goal calculation to load
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('GoalCalculation'),
+    );
+
+    result.current({ name: 'New Name' });
 
     await Promise.resolve();
     await waitFor(() =>
