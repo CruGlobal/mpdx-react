@@ -1,17 +1,10 @@
 import { useTranslation } from 'react-i18next';
-import {
-  Bar,
-  BarChart,
-  Cell,
-  LabelList,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-} from 'recharts';
+import { Bar, BarChart, Cell, LabelList, XAxis, YAxis } from 'recharts';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { useTotals } from '../TotalsContext/TotalsContext';
+import { useTotals } from '../../TotalsContext/TotalsContext';
+import { ChartFrame } from '../ChartFrame';
 
 interface SummaryBarChartProps {
   aspect: number;
@@ -19,7 +12,10 @@ interface SummaryBarChartProps {
   currency: string;
 }
 
-const chartColors = [theme.palette.primary.main, theme.palette.chartBlue.main];
+const chartColors = [
+  theme.palette.statusSuccess.main,
+  theme.palette.chipRedDark.main,
+];
 
 export const SummaryBarChart: React.FC<SummaryBarChartProps> = ({
   aspect,
@@ -29,7 +25,7 @@ export const SummaryBarChart: React.FC<SummaryBarChartProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { incomeTotal, expensesTotal } = useTotals();
+  const { incomeTotal, expensesTotal, dataLoading } = useTotals();
 
   const data = [
     { name: t('Income'), total: incomeTotal },
@@ -40,7 +36,7 @@ export const SummaryBarChart: React.FC<SummaryBarChartProps> = ({
   ];
 
   return (
-    <ResponsiveContainer width={`${width}%`} aspect={aspect}>
+    <ChartFrame width={width} aspect={aspect} loading={dataLoading}>
       <BarChart
         data={data}
         margin={{ top: 15, right: 30, left: 20, bottom: 5 }}
@@ -49,7 +45,7 @@ export const SummaryBarChart: React.FC<SummaryBarChartProps> = ({
         <YAxis
           tickFormatter={(value) => currencyFormat(value, currency, locale)}
         />
-        <Bar dataKey="total">
+        <Bar dataKey="total" maxBarSize={125}>
           {data.map((_, index) => (
             <Cell
               key={`cell-${index}`}
@@ -66,6 +62,6 @@ export const SummaryBarChart: React.FC<SummaryBarChartProps> = ({
           />
         </Bar>
       </BarChart>
-    </ResponsiveContainer>
+    </ChartFrame>
   );
 };

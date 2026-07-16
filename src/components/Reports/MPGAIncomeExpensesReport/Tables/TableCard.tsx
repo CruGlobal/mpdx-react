@@ -30,7 +30,6 @@ export interface TableCardProps {
   emptyPlaceholder: React.ReactElement;
   title: string;
   months: string[];
-  loading?: boolean;
 }
 
 // Visual styling for the grouped-column headers, matching the report's table
@@ -89,11 +88,10 @@ export const TableCard: React.FC<TableCardProps> = ({
   title,
   months,
   emptyPlaceholder,
-  loading,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { incomeTotal, expensesTotal } = useTotals();
+  const { incomeTotal, expensesTotal, dataLoading } = useTotals();
 
   const monthColors = useMemo(
     () => ({
@@ -218,7 +216,7 @@ export const TableCard: React.FC<TableCardProps> = ({
     ];
   }, [monthCount, getBorderColor, t]);
 
-  return loading ? (
+  return dataLoading ? (
     <LoadingBox>
       <LoadingIndicator
         data-testid="loading-spinner"

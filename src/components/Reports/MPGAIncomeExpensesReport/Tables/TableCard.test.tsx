@@ -82,14 +82,13 @@ describe('TableCard', () => {
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <GqlMockedProvider>
-            <TotalsProvider data={data}>
+            <TotalsProvider data={data} loading>
               <TableCard
                 type={ReportTypeEnum.Income}
                 data={data.income}
                 emptyPlaceholder={<span>Empty Table</span>}
                 title={title}
                 months={months}
-                loading={true}
               />
             </TotalsProvider>
           </GqlMockedProvider>
