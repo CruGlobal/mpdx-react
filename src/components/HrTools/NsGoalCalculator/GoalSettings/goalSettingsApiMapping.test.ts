@@ -210,13 +210,11 @@ describe('formValuesToAttributes', () => {
     const attributes = formValuesToAttributes({
       ...coupleValues,
       annualRequestedSalary: 0,
-      solidSupportRaised: 0,
       tenure: 0,
       childcareChildrenCount: 0,
     });
 
     expect(attributes.annualRequestedSalary).toBe(0);
-    expect(attributes.solidSupportRaised).toBe(0);
     expect(attributes.tenure).toBe(0);
     expect(attributes.childcareChildrenCount).toBe(0);
   });
