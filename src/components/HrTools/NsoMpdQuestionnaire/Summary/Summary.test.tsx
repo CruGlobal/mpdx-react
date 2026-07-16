@@ -174,4 +174,16 @@ describe('Summary', () => {
       expect(mutationSpy).toHaveBeenCalledWith('/accountLists/account-list-1'),
     );
   });
+
+  it('shows a success toast when submitting', async () => {
+    const { findByRole, getByRole, findByText } = render(<TestComponent />);
+    userEvent.click(await findByRole('button', { name: 'Submit' }));
+    userEvent.click(
+      within(getByRole('dialog')).getByRole('button', { name: 'Submit' }),
+    );
+
+    expect(
+      await findByText('Questionnaire submitted successfully.'),
+    ).toBeInTheDocument();
+  });
 });
