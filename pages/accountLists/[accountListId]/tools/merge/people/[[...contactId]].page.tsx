@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
+import { blockRestrictedImpersonation } from 'pages/api/utils/pagePropsHelpers';
 import MergePeople from 'src/components/Tool/MergePeople/MergePeople';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { ToolsWrapper } from '../../ToolsWrapper';
@@ -16,6 +16,6 @@ const MergePeoplePage: React.FC = () => {
   );
 };
 
-export const getServerSideProps = ensureSessionAndAccountList;
+export const getServerSideProps = blockRestrictedImpersonation;
 
 export default MergePeoplePage;

@@ -31,6 +31,7 @@ type Options = {
   handleFailedTransferOpen: (transfer: Transfers) => void;
   t: TFunction;
   locale: string;
+  restrictedImpersonation?: boolean;
 };
 
 export function populateTransferRows(options: Options) {
@@ -42,6 +43,7 @@ export function populateTransferRows(options: Options) {
     handleFailedTransferOpen,
     t,
     locale,
+    restrictedImpersonation = false,
   } = options;
 
   useEffect(() => {
@@ -209,82 +211,95 @@ export function populateTransferRows(options: Options) {
 
   const actions: RenderCell = ({ row }) => {
     if (row.actions === 'edit-delete') {
-      return type === TableTypeEnum.Upcoming ? (
-        <>
-          <IconButton>
-            <Edit
-              titleAccess={t('Edit')}
-              onClick={() => handleEditModalOpen(row)}
-            />
-          </IconButton>
-          <IconButton>
-            <Cancel
-              titleAccess={t('Cancel Transfer')}
-              onClick={() => {
-                handleDeleteModalOpen(row);
-              }}
-              sx={{ color: 'error.main' }}
-            />
-          </IconButton>
-        </>
-      ) : row.endDate ? (
-        <>
-          <IconButton
-            title={t('Edit End Date')}
-            onClick={(event) => {
-              event.stopPropagation();
-              handleCalendarOpen(row);
-            }}
-          >
-            <Icon
-              className="material-symbols-outlined"
-              sx={{
-                fontSize: 24,
-                color: 'mpdxGrayMedium',
+      const actionButtons =
+        type === TableTypeEnum.Upcoming ? (
+          <>
+            <IconButton disabled={restrictedImpersonation}>
+              <Edit
+                titleAccess={t('Edit')}
+                onClick={() => handleEditModalOpen(row)}
+              />
+            </IconButton>
+            <IconButton disabled={restrictedImpersonation}>
+              <Cancel
+                titleAccess={t('Cancel Transfer')}
+                onClick={() => {
+                  handleDeleteModalOpen(row);
+                }}
+                sx={{ color: 'error.main' }}
+              />
+            </IconButton>
+          </>
+        ) : row.endDate ? (
+          <>
+            <IconButton
+              title={t('Edit End Date')}
+              disabled={restrictedImpersonation}
+              onClick={(event) => {
+                event.stopPropagation();
+                handleCalendarOpen(row);
               }}
             >
-              edit_calendar
-            </Icon>
-          </IconButton>
-          <IconButton>
-            <StopCircle
-              titleAccess={t('Stop Transfer')}
-              sx={{ color: 'error.main' }}
-              onClick={() => {
-                handleDeleteModalOpen(row);
-              }}
-            />
-          </IconButton>
-        </>
-      ) : (
-        <>
-          <IconButton
-            title={t('Add End Date')}
-            onClick={(event) => {
-              event.stopPropagation();
-              handleCalendarOpen(row);
-            }}
-          >
-            <Icon
-              className="material-symbols-outlined"
-              sx={{
-                fontSize: 24,
-                color: 'mpdxGrayMedium',
+              <Icon
+                className="material-symbols-outlined"
+                sx={{
+                  fontSize: 24,
+                  color: 'mpdxGrayMedium',
+                }}
+              >
+                edit_calendar
+              </Icon>
+            </IconButton>
+            <IconButton disabled={restrictedImpersonation}>
+              <StopCircle
+                titleAccess={t('Stop Transfer')}
+                sx={{ color: 'error.main' }}
+                onClick={() => {
+                  handleDeleteModalOpen(row);
+                }}
+              />
+            </IconButton>
+          </>
+        ) : (
+          <>
+            <IconButton
+              title={t('Add End Date')}
+              disabled={restrictedImpersonation}
+              onClick={(event) => {
+                event.stopPropagation();
+                handleCalendarOpen(row);
               }}
             >
-              calendar_add_on
-            </Icon>
-          </IconButton>
-          <IconButton>
-            <StopCircle
-              titleAccess={t('Stop Transfer')}
-              sx={{ color: 'error.main' }}
-              onClick={() => {
-                handleDeleteModalOpen(row);
-              }}
-            />
-          </IconButton>
-        </>
+              <Icon
+                className="material-symbols-outlined"
+                sx={{
+                  fontSize: 24,
+                  color: 'mpdxGrayMedium',
+                }}
+              >
+                calendar_add_on
+              </Icon>
+            </IconButton>
+            <IconButton disabled={restrictedImpersonation}>
+              <StopCircle
+                titleAccess={t('Stop Transfer')}
+                sx={{ color: 'error.main' }}
+                onClick={() => {
+                  handleDeleteModalOpen(row);
+                }}
+              />
+            </IconButton>
+          </>
+        );
+
+      return (
+        <Tooltip
+          title={
+            restrictedImpersonation ? t('Read-only while impersonating') : ''
+          }
+        >
+          <Box component="span">{actionButtons}</Box>
+        </Tooltip>
       );
     }
 

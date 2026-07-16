@@ -7,7 +7,7 @@ import { useSnackbar } from 'notistack';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useTranslation } from 'react-i18next';
-import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
+import { blockRestrictedImpersonation } from 'pages/api/utils/pagePropsHelpers';
 import { colorMap } from 'src/components/Contacts/ContactFlow/ContactFlow';
 import { ContactFlowSetupColumn } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/Column/ContactFlowSetupColumn';
 import { UnusedStatusesColumn } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/Column/UnusedStatusesColumn';
@@ -227,6 +227,6 @@ const ContactFlowSetupPage: React.FC = () => {
   );
 };
 
-export const getServerSideProps = ensureSessionAndAccountList;
+export const getServerSideProps = blockRestrictedImpersonation;
 
 export default ContactFlowSetupPage;

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { GoalCard } from 'src/components/Reports/Shared/GoalCard/GoalCard';
 import { DesignationSupportFormType } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useRestrictedImpersonation } from 'src/hooks/useRestrictedImpersonation';
 import {
   PdsGoalCalculationFieldsFragment,
   useDeletePdsGoalCalculationMutation,
@@ -18,6 +19,7 @@ export interface PdsGoalCardProps {
 export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal }) => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const restrictedImpersonation = useRestrictedImpersonation();
   const [deletePdsGoalCalculation] = useDeletePdsGoalCalculationMutation();
 
   const { data: hcmData, loading: hcmLoading } = useHcmUserQuery();
@@ -57,6 +59,7 @@ export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal }) => {
       viewHref={`/accountLists/${accountListId}/hrTools/pdsGoalCalculator/${goal.id}`}
       onDelete={handleDelete}
       badge={formTypeBadge}
+      deleteDisabled={restrictedImpersonation}
     />
   );
 };

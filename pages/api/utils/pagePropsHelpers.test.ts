@@ -3,10 +3,13 @@ import { getSession } from 'next-auth/react';
 import { session } from '__tests__/fixtures/session';
 import { RedirectReason } from 'pages/api/auth/redirectReasonEnum';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
+import { MPD_LEADER_SCOPE } from 'src/lib/restrictedImpersonation';
 import {
   blockImpersonatingNonDevelopers,
+  blockRestrictedImpersonation,
   dashboardRedirect,
   enforceAdmin,
+  enforceAdminOrMpdLeader,
   ensureSessionAndAccountList,
   loginRedirect,
   makeGetServerSideProps,
@@ -68,6 +71,63 @@ describe('pagePropsHelpers', () => {
       });
 
       await expect(enforceAdmin(context)).resolves.toMatchObject({
+        redirect: {
+          destination: '/accountLists/account-list-1?redirect=unauthorized',
+        },
+      });
+    });
+  });
+
+  describe('enforceAdminOrMpdLeader', () => {
+    it('redirects to the login page if the user is not logged in', async () => {
+      (getSession as jest.Mock).mockResolvedValue(null);
+
+      await expect(enforceAdminOrMpdLeader(context)).resolves.toMatchObject({
+        redirect: {
+          destination: '/login?redirect=%2Fpage%3Fparam%3Dvalue',
+        },
+      });
+    });
+
+    it('does not return a redirect if the user is an admin', async () => {
+      const user = {
+        apiToken: 'token',
+        admin: true,
+        mpdSupervisorAdmin: false,
+      };
+      (getSession as jest.Mock).mockResolvedValue({ user });
+
+      await expect(enforceAdminOrMpdLeader(context)).resolves.toMatchObject({
+        props: {
+          session: { user },
+        },
+      });
+    });
+
+    it('does not return a redirect if the user is an MPD supervisor admin', async () => {
+      const user = {
+        apiToken: 'token',
+        admin: false,
+        mpdSupervisorAdmin: true,
+      };
+      (getSession as jest.Mock).mockResolvedValue({ user });
+
+      await expect(enforceAdminOrMpdLeader(context)).resolves.toMatchObject({
+        props: {
+          session: { user },
+        },
+      });
+    });
+
+    it('returns a redirect if the user is neither an admin nor an MPD supervisor admin', async () => {
+      const user = {
+        apiToken: 'token',
+        admin: false,
+        mpdSupervisorAdmin: false,
+      };
+      (getSession as jest.Mock).mockResolvedValue({ user });
+
+      await expect(enforceAdminOrMpdLeader(context)).resolves.toMatchObject({
         redirect: {
           destination: '/accountLists/account-list-1?redirect=unauthorized',
         },
@@ -193,6 +253,70 @@ describe('pagePropsHelpers', () => {
 
       await expect(
         blockImpersonatingNonDevelopers(context),
+      ).resolves.toMatchObject({
+        props: {
+          session: { user },
+        },
+      });
+    });
+
+    it('allows access if the impersonation session has a restricted scope', async () => {
+      const user = {
+        apiToken: 'token',
+        impersonating: true,
+        isImpersonatorDeveloper: false,
+        impersonationScope: MPD_LEADER_SCOPE,
+      };
+      (getSession as jest.Mock).mockResolvedValue({ user });
+
+      await expect(
+        blockImpersonatingNonDevelopers(context),
+      ).resolves.toMatchObject({
+        props: {
+          session: { user },
+        },
+      });
+    });
+  });
+
+  describe('blockRestrictedImpersonation', () => {
+    it('redirects to the login page if the user is not logged in', async () => {
+      (getSession as jest.Mock).mockResolvedValue(null);
+
+      await expect(
+        blockRestrictedImpersonation(context),
+      ).resolves.toMatchObject({
+        redirect: {
+          destination: '/login?redirect=%2Fpage%3Fparam%3Dvalue',
+        },
+      });
+    });
+
+    it('redirects to the dashboard if the impersonation session has a restricted scope', async () => {
+      const user = {
+        apiToken: 'token',
+        impersonating: true,
+        impersonationScope: MPD_LEADER_SCOPE,
+      };
+      (getSession as jest.Mock).mockResolvedValue({ user });
+
+      await expect(
+        blockRestrictedImpersonation(context),
+      ).resolves.toMatchObject({
+        redirect: {
+          destination:
+            '/accountLists/account-list-1?redirect=impersonation-blocked',
+          permanent: false,
+        },
+      });
+    });
+
+    it('allows access if the session has no impersonation scope', async () => {
+      const user = { apiToken: 'token', impersonating: true };
+      (getSession as jest.Mock).mockResolvedValue({ user });
+
+      await expect(
+        blockRestrictedImpersonation(context),
       ).resolves.toMatchObject({
         props: {
           session: { user },

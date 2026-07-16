@@ -178,6 +178,25 @@ describe('DirectionButtons', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('disables the Submit button and shows the disabledNextTooltip when disableNext is true during submission', async () => {
+    const { findByRole, findByText } = render(
+      <TestComponent
+        isSubmission={true}
+        disableNext={true}
+        disabledNextTooltip="Complete all fields to submit"
+      />,
+    );
+
+    const submitButton = await findByRole('button', { name: /submit/i });
+    expect(submitButton).toBeDisabled();
+
+    userEvent.hover(submitButton.parentElement!);
+
+    expect(
+      await findByText('Complete all fields to submit'),
+    ).toBeInTheDocument();
+  });
+
   it('shows the loadingNextTitle with an in-button spinner and disables the button while loadingNext is true', async () => {
     const { findByRole } = render(
       <TestComponent

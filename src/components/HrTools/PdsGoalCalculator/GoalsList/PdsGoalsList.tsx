@@ -1,6 +1,13 @@
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
-import { Box, Button, CircularProgress, Stack, styled } from '@mui/material';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Stack,
+  Tooltip,
+  styled,
+} from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
@@ -8,6 +15,7 @@ import { DesignationSupportFormType } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
+import { useRestrictedImpersonation } from 'src/hooks/useRestrictedImpersonation';
 import illustration6graybg from 'src/images/drawkit/grape/drawkit-grape-pack-illustration-6-gray-bg.svg';
 import { PdsGoalCard } from '../GoalCard/PdsGoalCard';
 import { CreateGoalDialog } from './CreateGoalDialog';
@@ -31,6 +39,7 @@ export const PdsGoalsList: React.FC = () => {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const accountListId = useAccountListId();
+  const restrictedImpersonation = useRestrictedImpersonation();
 
   const { data: userData } = useGetUserQuery();
   const defaultName = t('User');
@@ -98,13 +107,21 @@ export const PdsGoalsList: React.FC = () => {
     <Container>
       <PdsGoalsListWelcome firstName={firstName} />
       <Stack direction="row" gap={2} pb={3}>
-        <Button
-          variant="contained"
-          onClick={() => setDialogOpen(true)}
-          disabled={constantsLoading}
+        <Tooltip
+          title={
+            restrictedImpersonation ? t('Read-only while impersonating') : ''
+          }
         >
-          {t('Create a New Goal')}
-        </Button>
+          <span>
+            <Button
+              variant="contained"
+              onClick={() => setDialogOpen(true)}
+              disabled={constantsLoading || restrictedImpersonation}
+            >
+              {t('Create a New Goal')}
+            </Button>
+          </span>
+        </Tooltip>
       </Stack>
 
       <CreateGoalDialog

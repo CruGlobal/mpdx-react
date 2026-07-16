@@ -1,10 +1,18 @@
 import { useRouter } from 'next/router';
 import React from 'react';
-import { Box, Button, CircularProgress, Stack, styled } from '@mui/material';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Stack,
+  Tooltip,
+  styled,
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
+import { useRestrictedImpersonation } from 'src/hooks/useRestrictedImpersonation';
 import illustration6graybg from 'src/images/drawkit/grape/drawkit-grape-pack-illustration-6-gray-bg.svg';
 import { MpdGoalCard } from '../GoalCard/MpdGoalCard';
 import {
@@ -27,6 +35,7 @@ export const GoalsList: React.FC = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const accountListId = useAccountListId();
+  const restrictedImpersonation = useRestrictedImpersonation();
   const { data, error, fetchMore } = useGoalCalculationsQuery({
     variables: { accountListId },
   });
@@ -61,14 +70,24 @@ export const GoalsList: React.FC = () => {
     <Container>
       <GoalsListWelcome firstName={firstName} />
       <Stack direction="row" gap={2} pb={3}>
-        <Button
-          variant="contained"
-          onClick={handleCreateGoal}
-          disabled={creating}
-          startIcon={creating && <CircularProgress size={16} color="inherit" />}
+        <Tooltip
+          title={
+            restrictedImpersonation ? t('Read-only while impersonating') : ''
+          }
         >
-          {t('Create a New Goal')}
-        </Button>
+          <span>
+            <Button
+              variant="contained"
+              onClick={handleCreateGoal}
+              disabled={creating || restrictedImpersonation}
+              startIcon={
+                creating && <CircularProgress size={16} color="inherit" />
+              }
+            >
+              {t('Create a New Goal')}
+            </Button>
+          </span>
+        </Tooltip>
         <Button
           variant="outlined"
           href="https://docs.google.com/document/d/1w830y-UUOnhESka9bwA43ozb_2PgFIXp4YZITPbqUx4/edit?tab=t.0"

@@ -8,6 +8,7 @@ import {
   ProgressiveApprovalTierReasonEnum,
 } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
+import { useRestrictedImpersonation } from 'src/hooks/useRestrictedImpersonation';
 import i18n from 'src/lib/i18n';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { amount, phoneNumber } from 'src/lib/yupHelpers';
@@ -37,6 +38,7 @@ export const useAdditionalSalaryRequestForm = (
   } = useAdditionalSalaryRequest();
 
   const { primaryAccountBalance } = useFormUserInfo();
+  const restrictedImpersonation = useRestrictedImpersonation();
 
   const { data: requestData } = useAdditionalSalaryRequestQuery({
     variables: { isSpouse },
@@ -202,7 +204,9 @@ export const useAdditionalSalaryRequestForm = (
 
   const onSubmit = useCallback(
     async (values: CompleteFormValues) => {
-      if (!requestId) {
+      // The tool is read-only during restricted impersonation, so submitting
+      // must not fire mutations that the API would reject
+      if (restrictedImpersonation || !requestId) {
         return;
       }
 
@@ -238,6 +242,7 @@ export const useAdditionalSalaryRequestForm = (
     },
     [
       requestId,
+      restrictedImpersonation,
       updateAdditionalSalaryRequest,
       submitAdditionalSalaryRequest,
       handleNextStep,

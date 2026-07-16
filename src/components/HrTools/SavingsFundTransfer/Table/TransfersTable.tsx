@@ -13,6 +13,7 @@ import {
   LoadingIndicator,
 } from 'src/components/Shared/styledComponents/LoadingStyling';
 import { useLocale } from 'src/hooks/useLocale';
+import { useRestrictedImpersonation } from 'src/hooks/useRestrictedImpersonation';
 import { CustomEditCalendar } from '../CustomEditCalendar/CustomEditCalendar';
 import { DynamicDeleteTransferModal } from '../DeleteTransferModal/DynamicDeleteTransferModal';
 import { DynamicFailedTransferModal } from '../FailedTransferModal/DynamicFailedTransferModal';
@@ -76,6 +77,7 @@ export const TransfersTable: React.FC<TransfersTableProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const { enqueueSnackbar } = useSnackbar();
+  const restrictedImpersonation = useRestrictedImpersonation();
 
   const [updateRecurringTransfer] = useUpdateRecurringTransferMutation({
     refetchQueries: ['ReportsSavingsFundTransfer', 'FundBalances'],
@@ -111,6 +113,10 @@ export const TransfersTable: React.FC<TransfersTableProps> = ({
   };
 
   const handleDeleteModalOpen = (transfer: Transfers) => {
+    // Read-only during restricted impersonation
+    if (restrictedImpersonation) {
+      return;
+    }
     setOpenDeleteModal(transfer);
   };
 
@@ -140,6 +146,10 @@ export const TransfersTable: React.FC<TransfersTableProps> = ({
     date: DateTime | null,
     actionType: ActionTypeEnum,
   ) => {
+    // Read-only during restricted impersonation
+    if (restrictedImpersonation) {
+      return;
+    }
     const successMessage =
       actionType === ActionTypeEnum.Edit
         ? t('End date updated successfully')
@@ -186,6 +196,7 @@ export const TransfersTable: React.FC<TransfersTableProps> = ({
     handleFailedTransferOpen,
     t,
     locale,
+    restrictedImpersonation,
   });
 
   const transferRows = history.map(CreateTransferRows);

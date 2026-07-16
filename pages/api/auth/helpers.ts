@@ -9,6 +9,7 @@ interface User {
   impersonating?: boolean;
   impersonatorApiToken?: string;
   isImpersonatorDeveloper?: boolean;
+  impersonationScope?: string;
 }
 interface SetUserInfoReturn {
   user: User;
@@ -46,6 +47,18 @@ export const setUserInfo = (
     user.isImpersonatorDeveloper = unsignedDeveloperValue === 'true';
   }
 
+  const impersonationScopeSigned = extractCookie(
+    reqCookies,
+    'mpdx-handoff.impersonationScope',
+  );
+
+  if (impersonateJWT && impersonationScopeSigned) {
+    const unsignedScopeValue = verifySignedValue(impersonationScopeSigned);
+    if (unsignedScopeValue) {
+      user.impersonationScope = unsignedScopeValue;
+    }
+  }
+
   const cookies: string[] = [];
   if (impersonateJWT) {
     cookies.push(`mpdx-handoff.impersonate=; ${expireCookieDefaultInfo}`);
@@ -60,6 +73,11 @@ export const setUserInfo = (
       `mpdx-handoff.isImpersonatorDeveloper=; ${expireCookieDefaultInfo}`,
     );
   }
+  if (impersonationScopeSigned) {
+    cookies.push(
+      `mpdx-handoff.impersonationScope=; ${expireCookieDefaultInfo}`,
+    );
+  }
   if (token) {
     cookies.push(`mpdx-handoff.token=; ${expireCookieDefaultInfo}`);
   }
@@ -69,8 +87,11 @@ export const setUserInfo = (
   };
 };
 
-/* Sign a boolean with an expiration time */
-export function signValue(input: boolean, expiresInSeconds = 300): string {
+/* Sign a boolean or string value with an expiration time */
+export function signValue(
+  input: boolean | string,
+  expiresInSeconds = 300,
+): string {
   const value = input.toString();
   const signatureExpiresAt = Math.floor(Date.now() / 1000) + expiresInSeconds;
   const payload = `${value}.${signatureExpiresAt}`;

@@ -63,6 +63,7 @@ export interface GoalCardProps {
   viewHref: string;
   onDelete: () => Promise<void>;
   badge?: React.ReactNode;
+  deleteDisabled?: boolean;
 }
 
 export const GoalCard: React.FC<GoalCardProps> = ({
@@ -74,6 +75,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
   viewHref,
   onDelete,
   badge,
+  deleteDisabled = false,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -158,11 +160,24 @@ export const GoalCard: React.FC<GoalCardProps> = ({
         <Divider sx={{ mt: 2, mb: 1 }} />
 
         <StyledActionBox>
-          <Button onClick={() => setDeleting(true)}>
-            <Typography variant="body2" fontWeight="bold" color="error">
-              {t('Delete')}
-            </Typography>
-          </Button>
+          <Tooltip
+            title={deleteDisabled ? t('Read-only while impersonating') : ''}
+          >
+            <span>
+              <Button
+                onClick={() => setDeleting(true)}
+                disabled={deleteDisabled}
+              >
+                <Typography
+                  variant="body2"
+                  fontWeight="bold"
+                  color={deleteDisabled ? 'text.disabled' : 'error'}
+                >
+                  {t('Delete')}
+                </Typography>
+              </Button>
+            </span>
+          </Tooltip>
           <Button
             LinkComponent={NextLink}
             href={viewHref}

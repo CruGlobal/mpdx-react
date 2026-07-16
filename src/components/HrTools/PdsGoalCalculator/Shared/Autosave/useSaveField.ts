@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { DesignationSupportCalculationUpdateInput } from 'src/graphql/types.generated';
+import { useRestrictedImpersonation } from 'src/hooks/useRestrictedImpersonation';
 import { useUpdatePdsGoalCalculationMutation } from '../../GoalsList/PdsGoalCalculations.generated';
 import { usePdsGoalCalculator } from '../PdsGoalCalculatorContext';
 
@@ -10,10 +11,13 @@ export const useSaveField = () => {
   const [updatePdsGoalCalculation] = useUpdatePdsGoalCalculationMutation();
   const { enqueueSnackbar } = useSnackbar();
   const { t } = useTranslation();
+  const restrictedImpersonation = useRestrictedImpersonation();
 
   const saveField = useCallback(
     async (attributes: Partial<DesignationSupportCalculationUpdateInput>) => {
-      if (!calculation) {
+      // The tool is read-only during restricted impersonation, so autosave
+      // must not fire mutations that the API would reject
+      if (restrictedImpersonation || !calculation) {
         return;
       }
 
@@ -57,6 +61,7 @@ export const useSaveField = () => {
     },
     [
       calculation,
+      restrictedImpersonation,
       trackFieldMutation,
       updatePdsGoalCalculation,
       enqueueSnackbar,
