@@ -203,7 +203,6 @@ describe('NsoMpdQuestionnaireLayout', () => {
           spouseMhaAmount: 0,
           staffConferenceTransfer: 0,
           accountTransfers: 0,
-          solidSupportRaised: 1000,
           ...filledDebtFields,
         }}
       />,

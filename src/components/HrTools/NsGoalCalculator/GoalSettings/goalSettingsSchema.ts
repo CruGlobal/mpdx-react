@@ -52,7 +52,6 @@ export const getGoalSettingsSchema = (t: TFunction) =>
       t('Credit Card Debt Payment'),
       t,
     ),
-    solidSupportRaised: optionalAmount(t('Solid Support Raised'), t),
 
     // Healthcare
     reimbursableExpenses: optionalAmount(t('Reimbursable Expenses'), t),

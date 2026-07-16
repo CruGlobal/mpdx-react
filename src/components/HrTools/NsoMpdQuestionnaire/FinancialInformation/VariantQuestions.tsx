@@ -26,7 +26,6 @@ export const getVariantQuestionsSchema = (t: TFunction) =>
     spouseMhaAmount: getAmountSchema(t),
     staffConferenceTransfer: getAmountSchema(t),
     accountTransfers: getAmountSchema(t),
-    solidSupportRaised: getAmountSchema(t),
   });
 
 export const VariantQuestions: React.FC = () => {
@@ -108,13 +107,6 @@ export const VariantQuestions: React.FC = () => {
             helperText={t(
               'Please enter zero if you do not transfer money from your staff account each month as giving to other staff.',
             )}
-            startAdornment={<CurrencyAdornment />}
-          />
-          <NumberQuestion
-            fieldName="solidSupportRaised"
-            schema={schema}
-            question={t('How much do you have raised in Solid Support?')}
-            helperText={t('Please enter as a monthly amount.')}
             startAdornment={<CurrencyAdornment />}
           />
         </>

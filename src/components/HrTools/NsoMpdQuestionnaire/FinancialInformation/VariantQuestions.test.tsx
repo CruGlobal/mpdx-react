@@ -108,11 +108,6 @@ describe('VariantQuestions', () => {
         }),
       ).toBeInTheDocument();
       expect(
-        getByRole('spinbutton', {
-          name: 'How much do you have raised in Solid Support?',
-        }),
-      ).toBeInTheDocument();
-      expect(
         queryByRole('spinbutton', {
           name: 'How many total dependents would you like to cover by your Cru healthcare?',
         }),

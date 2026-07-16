@@ -69,7 +69,6 @@ fragment NewStaffGoalCalculationFields on NewStaffGoalCalculation {
   studentLoanMonthlyPayment
   carLoanMonthlyPayment
   creditCardDebtMonthlyPayment
-  solidSupportRaised
 
   # Healthcare
   benefitsPlan
