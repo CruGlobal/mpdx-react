@@ -1,5 +1,6 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { beforeTestResizeObserver } from '__tests__/util/windowResizeObserver';
 import { NsGoalCalculatorTestWrapper } from '../NsGoalCalculatorTestWrapper';
 import { GoalSettingsView } from './GoalSettingsView';
@@ -57,6 +58,50 @@ describe('GoalSettingsView', () => {
     expect(
       getByRole('button', { name: /Staff Documents/ }),
     ).toBeInTheDocument();
+  });
+
+  it('collapses and re-expands the navigation, moving focus with it', async () => {
+    const { findByRole, getByRole, queryByRole } = render(<TestComponent />);
+
+    await findByRole('heading', { name: 'Personal Information' });
+
+    expect(
+      queryByRole('button', { name: 'Show navigation' }),
+    ).not.toBeInTheDocument();
+
+    userEvent.click(getByRole('button', { name: 'Collapse navigation' }));
+
+    // Collapsing moves focus to the expand button so it isn't dropped.
+    const showButton = await findByRole('button', { name: 'Show navigation' });
+    expect(showButton).toHaveFocus();
+
+    userEvent.click(showButton);
+
+    // Re-expanding removes the expand button and returns focus to the collapse
+    // button.
+    await waitFor(() =>
+      expect(
+        getByRole('button', { name: 'Collapse navigation' }),
+      ).toHaveFocus(),
+    );
+    expect(
+      queryByRole('button', { name: 'Show navigation' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('does not move focus into the nav on initial render', async () => {
+    const { findByRole, getByRole } = render(
+      <React.StrictMode>
+        <TestComponent />
+      </React.StrictMode>,
+    );
+
+    await findByRole('heading', { name: 'Personal Information' });
+
+    expect(
+      getByRole('button', { name: 'Collapse navigation' }),
+    ).not.toHaveFocus();
+    expect(document.body).toHaveFocus();
   });
 
   describe('scenario goals', () => {
