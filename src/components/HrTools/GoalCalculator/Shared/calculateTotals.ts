@@ -45,10 +45,9 @@ export interface GoalSubtotalsInputs {
 
 /**
  * Calculate the shared goal totals that depend on the gross salary, ministry expenses, and benefits:
- * gross annual salary and the subtotal lines (worksheet lines 4-6). The gross salary, benefits, and
- * ministry expenses are passed back through so callers can spread the whole result into `GoalTotals`.
- * Shared by the goal calculation (rates from constants) and the New Staff reference (rates from the
- * server), which supply the admin and attrition rates from different sources.
+ * gross annual salary and the subtotal lines (worksheet lines 4-6). Shared by the goal calculation
+ * (rates from constants) and the New Staff reference (rates from the server), which supply the
+ * admin and attrition rates.
  */
 export const calculateGoalSubtotals = ({
   grossMonthlySalary,
