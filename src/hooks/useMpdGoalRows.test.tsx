@@ -40,6 +40,27 @@ const MirroredExpenseWrapper: React.FC<{ children?: React.ReactNode }> = ({
   </GoalCalculatorTestWrapper>
 );
 
+// The default mock's admin/attrition rates (0.12/0.06) happen to equal the client constants, so a
+// reference column that wrongly grossed up with the constants would produce identical numbers and
+// hide the bug. Diverge the server rates here so only the server-sourced wiring
+// (useMpdGoalRows -> calculateGoalSubtotals) can produce the values asserted below.
+const goalCalculationWithDistinctRates = {
+  ...goalCalculationMock,
+  newStaffCalculations: {
+    ...goalCalculationMock.newStaffCalculations,
+    adminRate: 0.2,
+    attritionRate: 0.15,
+  },
+};
+
+const DistinctRatesWrapper: React.FC<{ children?: React.ReactNode }> = ({
+  children,
+}) => (
+  <GoalCalculatorTestWrapper goalCalculation={goalCalculationWithDistinctRates}>
+    {children}
+  </GoalCalculatorTestWrapper>
+);
+
 describe('useMpdGoalRows', () => {
   it('returns a row for every goal line', () => {
     const { result } = renderUseMpdGoalRows();
@@ -130,6 +151,26 @@ describe('useMpdGoalRows', () => {
         reference('1') + reference('2') + ministryTotal,
         2,
       );
+    });
+
+    it('grosses up the subtotal lines with the server admin/attrition rates', async () => {
+      // Proves the wiring in useMpdGoalRows (server adminRate/attritionRate -> calculateGoalSubtotals),
+      // not just the pure calculation. With the divergent server rates (0.20/0.15) these relations
+      // only hold if the reference column reads the server calculation; grossing up with the client
+      // constants (0.12/0.06) would fail both assertions.
+      const { result, waitForNextUpdate } = renderHook(
+        () => useMpdGoalRows(1000),
+        { wrapper: DistinctRatesWrapper },
+      );
+      await waitForNextUpdate();
+
+      const reference = (line: string) =>
+        result.current.rows.find((row) => row.line === line)?.reference ?? 0;
+
+      // Line 5 = line 4 grossed up by the server admin rate (0.20).
+      expect(reference('5')).toBeCloseTo(reference('4') / (1 - 0.2), 2);
+      // Line 6 = line 5 plus the server attrition rate (0.15).
+      expect(reference('6')).toBeCloseTo(reference('5') * 1.15, 2);
     });
   });
 

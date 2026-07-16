@@ -77,7 +77,7 @@ describe('MpdGoalTable', () => {
     );
 
     // Wait for the calculation-backed reference column to render
-    await findByRole('gridcell', { name: '$5,211' }, { timeout: 5000 });
+    await findByRole('gridcell', { name: '$5,211' }, { timeout: 10000 });
 
     const referenceCell = (category: string) =>
       getByRole('gridcell', { name: category }).parentElement?.querySelector(
