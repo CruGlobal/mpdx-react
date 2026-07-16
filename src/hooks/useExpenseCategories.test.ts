@@ -10,9 +10,11 @@ describe('useExpenseCategories', () => {
 
     expect(result.current.ministryTotal).toBe(2124);
     expect(result.current.healthcareTotal).toBe(1933);
-    expect(result.current.assessmentTotal).toBe(26);
-    expect(result.current.otherTotal).toBe(14486);
-    expect(result.current.expensesTotal).toBe(18569);
+    expect(result.current.assessmentTotal).toBe(13779);
+    expect(result.current.benefitsTotal).toBe(2400);
+    expect(result.current.salaryTotal).toBe(26);
+    expect(result.current.otherTotal).toBe(707);
+    expect(result.current.expensesTotal).toBe(20969);
   });
 
   it('should update categories when data changes', () => {
@@ -36,8 +38,10 @@ describe('useExpenseCategories', () => {
 
     expect(result.current.ministryTotal).toBe(2136);
     expect(result.current.healthcareTotal).toBe(1933);
-    expect(result.current.assessmentTotal).toBe(26);
-    expect(result.current.otherTotal).toBe(14486);
-    expect(result.current.expensesTotal).toBe(18581);
+    expect(result.current.assessmentTotal).toBe(13779);
+    expect(result.current.benefitsTotal).toBe(2400);
+    expect(result.current.salaryTotal).toBe(26);
+    expect(result.current.otherTotal).toBe(707);
+    expect(result.current.expensesTotal).toBe(20981);
   });
 });

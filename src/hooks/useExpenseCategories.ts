@@ -10,6 +10,8 @@ export function useExpenseCategories(data: DataFields[]) {
     const ministry: DataFields[] = [];
     const healthcare: DataFields[] = [];
     const assessment: DataFields[] = [];
+    const benefits: DataFields[] = [];
+    const salary: DataFields[] = [];
     const other: DataFields[] = [];
 
     data.forEach((item) => {
@@ -22,13 +24,12 @@ export function useExpenseCategories(data: DataFields[]) {
         ministry.push(item);
       } else if (category === 'Healthcare Reimbursement') {
         healthcare.push(item);
-      } else if (
-        category === 'Assessment' ||
-        category === 'Additional Salary' ||
-        category === 'Benefits' ||
-        category === 'Salary'
-      ) {
+      } else if (category === 'Assessment') {
         assessment.push(item);
+      } else if (category === 'Benefits') {
+        benefits.push(item);
+      } else if (category === 'Salary') {
+        salary.push(item);
       } else {
         other.push(item);
       }
@@ -40,15 +41,26 @@ export function useExpenseCategories(data: DataFields[]) {
 
     const assessmentTotal = sum(assessment);
 
+    const benefitsTotal = sum(benefits);
+
+    const salaryTotal = sum(salary);
+
     const otherTotal = sum(other);
 
     const expensesTotal =
-      ministryTotal + healthcareTotal + assessmentTotal + otherTotal;
+      ministryTotal +
+      healthcareTotal +
+      assessmentTotal +
+      benefitsTotal +
+      salaryTotal +
+      otherTotal;
 
     return {
       ministryTotal,
       healthcareTotal,
       assessmentTotal,
+      benefitsTotal,
+      salaryTotal,
       otherTotal,
       expensesTotal,
     };

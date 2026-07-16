@@ -8,7 +8,10 @@ export type TotalsType = {
   ministryTotal: number;
   healthcareTotal: number;
   assessmentTotal: number;
+  benefitsTotal: number;
+  salaryTotal: number;
   otherTotal: number;
+  dataLoading: boolean;
 };
 
 export const TotalsContext = React.createContext<TotalsType | null>(null);
@@ -25,6 +28,7 @@ export const useTotals = (): TotalsType => {
 
 interface TotalsContextProps {
   data: AllData;
+  loading?: boolean;
   children?: React.ReactNode;
 }
 
@@ -35,11 +39,14 @@ const sum = (rows?: DataFields[]): number => {
 export const TotalsProvider: React.FC<TotalsContextProps> = ({
   children,
   data,
+  loading = false,
 }) => {
   const {
     ministryTotal,
     healthcareTotal,
     assessmentTotal,
+    benefitsTotal,
+    salaryTotal,
     otherTotal,
     expensesTotal,
   } = useExpenseCategories(data.expenses);
@@ -53,7 +60,10 @@ export const TotalsProvider: React.FC<TotalsContextProps> = ({
       ministryTotal,
       healthcareTotal,
       assessmentTotal,
+      benefitsTotal,
+      salaryTotal,
       otherTotal,
+      dataLoading: loading,
     }),
     [
       incomeTotal,
@@ -61,7 +71,10 @@ export const TotalsProvider: React.FC<TotalsContextProps> = ({
       ministryTotal,
       healthcareTotal,
       assessmentTotal,
+      benefitsTotal,
+      salaryTotal,
       otherTotal,
+      loading,
     ],
   );
 

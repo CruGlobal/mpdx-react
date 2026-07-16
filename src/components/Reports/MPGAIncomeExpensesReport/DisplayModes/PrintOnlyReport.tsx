@@ -1,8 +1,8 @@
 import { Box, Container, GlobalStyles, Grid, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { ExpensesPieChart } from '../Charts/ExpensesPieChart';
-import { MonthlySummaryChart } from '../Charts/MonthlySummaryChart';
-import { SummaryBarChart } from '../Charts/SummaryBarChart';
+import { ExpensesPieChart } from '../Charts/ExpensesPieChart/ExpensesPieChart';
+import { MonthlySummaryChart } from '../Charts/MonthlySummaryChart/MonthlySummaryChart';
+import { SummaryBarChart } from '../Charts/SummaryBarChart/SummaryBarChart';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { PrintTables } from '../Tables/PrintTables';
 import { AllData } from '../mockData';

@@ -88,7 +88,7 @@ export const MPGAIncomeExpensesReport: React.FC<
 
   const { data: staffAccountData, error } = useStaffAccountQuery();
 
-  const { data: reportData } = useMpgaTransactionsQuery({
+  const { data: reportData, loading } = useMpgaTransactionsQuery({
     variables: {
       fundTypes: [FundTypes.Primary],
       startMonth: startDate.toISODate(),
@@ -208,7 +208,7 @@ export const MPGAIncomeExpensesReport: React.FC<
           </Container>
         </Box>
         <SimpleScreenOnly>
-          <TotalsProvider data={allData}>
+          <TotalsProvider data={allData} loading={loading}>
             <ScreenOnlyReport
               data={allData}
               last12Months={last12Months}
@@ -217,7 +217,7 @@ export const MPGAIncomeExpensesReport: React.FC<
           </TotalsProvider>
         </SimpleScreenOnly>
         <PrintOnly>
-          <TotalsProvider data={allData}>
+          <TotalsProvider data={allData} loading={loading}>
             <PrintOnlyReport
               data={allData}
               last12Months={last12Months}

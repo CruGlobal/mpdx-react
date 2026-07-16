@@ -24,19 +24,17 @@ export interface PrintTablesProps {
   data?: DataFields[];
   title: string;
   months: string[];
-  loading?: boolean;
 }
 
 export const PrintTables: React.FC<PrintTablesProps> = ({
   title,
   months,
-  loading,
   data,
   type,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { incomeTotal, expensesTotal } = useTotals();
+  const { incomeTotal, expensesTotal, dataLoading } = useTotals();
 
   const overallTotal =
     type === ReportTypeEnum.Income ? incomeTotal : expensesTotal;
@@ -49,7 +47,7 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
     },
   );
 
-  return loading ? (
+  return dataLoading ? (
     <LoadingBox>
       <LoadingIndicator
         data-testid="loading-spinner"
