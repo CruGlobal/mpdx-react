@@ -48,7 +48,6 @@ const variantRequiredFields: Partial<
     'spouseMhaAmount',
     'staffConferenceTransfer',
     'accountTransfers',
-    'solidSupportRaised',
   ],
 };
 

@@ -119,15 +119,12 @@ describe('Summary', () => {
     );
     await findByRole('heading', { level: 6, name: 'Financial Information' });
     expect(
-      queryByRole('rowheader', { name: 'Solid support raised' }),
-    ).not.toBeInTheDocument();
-    expect(
       queryByRole('rowheader', { name: 'Healthcare dependents' }),
     ).not.toBeInTheDocument();
   });
 
   it('shows the healthcare dependents row only for the sosa variant', async () => {
-    const { findByRole, queryByRole } = render(
+    const { findByRole } = render(
       <TestComponent
         newStaffQuestionnaire={{
           variant: NewStaffQuestionnaireVariantEnum.Sosa,
@@ -137,9 +134,6 @@ describe('Summary', () => {
     expect(
       await findByRole('rowheader', { name: 'Healthcare dependents' }),
     ).toBeInTheDocument();
-    expect(
-      queryByRole('rowheader', { name: 'Solid support raised' }),
-    ).not.toBeInTheDocument();
   });
 
   it('renders a Back button', async () => {

@@ -62,7 +62,6 @@ export const useSummarySections = (): SummarySectionData[] => {
       spouseMhaAmount,
       staffConferenceTransfer,
       accountTransfers,
-      solidSupportRaised,
       nsoHousing,
       nsoSessions,
       nsoSpecialNeedsSupportReceived,
@@ -177,10 +176,6 @@ export const useSummarySections = (): SummarySectionData[] => {
                 {
                   label: t('Monthly account transfers'),
                   value: formatMoney(accountTransfers),
-                },
-                {
-                  label: t('Solid support raised'),
-                  value: formatMoney(solidSupportRaised),
                 },
               ]
             : []),

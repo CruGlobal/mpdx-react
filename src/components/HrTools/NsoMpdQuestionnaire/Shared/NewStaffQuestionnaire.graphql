@@ -31,7 +31,6 @@ fragment NewStaffQuestionnaireFields on NewStaffQuestionnaire {
   nsoSessions
   nsoSpecialNeedsSupportReceived
   phoneNumber
-  solidSupportRaised
   spouseContribution403bPercentage
   spouseMhaAmount
   spousePhoneNumber
