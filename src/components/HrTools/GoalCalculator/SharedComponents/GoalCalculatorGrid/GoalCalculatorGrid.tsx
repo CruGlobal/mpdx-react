@@ -235,7 +235,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
       return;
     }
 
-    const newDefaultValues = getNewStaffBudgetCategory(
+    const newDefaultValue = getNewStaffBudgetCategory(
       goalCalculationResult.data?.goalCalculation,
       categoryType,
     );
@@ -249,7 +249,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
               attributes: {
                 id: row.id,
                 label: row.label,
-                amount: newDefaultValues,
+                amount: newDefaultValue,
               },
             },
           },
