@@ -1,6 +1,6 @@
+import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import { ProgressiveApprovalTierReasonEnum } from 'src/graphql/types.generated';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
-import { useFormatters } from '../Shared/useFormatters';
 
 export interface OverCapPerson {
   /** The name of the person whose salary is over their effective cap */

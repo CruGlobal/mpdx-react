@@ -11,10 +11,10 @@ import {
 } from '@mui/material';
 import { Stack } from '@mui/system';
 import { Trans, useTranslation } from 'react-i18next';
+import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { EffectiveDateNote } from '../Shared/EffectiveDateNote';
 import { StepCard, StepTableHead } from '../Shared/StepCard';
-import { useFormatters } from '../Shared/useFormatters';
 
 export const FourOhThreeBSection: React.FC = () => {
   const { t } = useTranslation();

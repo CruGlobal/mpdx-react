@@ -7,9 +7,8 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat } from 'src/lib/intlFormat';
 import { PresentationCard } from '../../Shared/GoalPresentation/PresentationCard';
+import { useFormatters } from '../../Shared/useFormatters';
 import { NeedsTable } from './NeedsTable';
 
 export interface AccountBalanceCardProps {
@@ -29,7 +28,7 @@ export const AccountBalanceCard: React.FC<AccountBalanceCardProps> = ({
   columnLabel,
 }) => {
   const { t } = useTranslation();
-  const locale = useLocale();
+  const { formatCurrency } = useFormatters();
 
   return (
     <PresentationCard title={t('Minimum Staff Account Balance')}>
@@ -57,9 +56,7 @@ export const AccountBalanceCard: React.FC<AccountBalanceCardProps> = ({
             </TableCell>
             <TableCell className="amount">
               <Typography variant="body1">
-                {currencyFormat(minAccountBalance, 'USD', locale, {
-                  showTrailingZeros: true,
-                })}
+                {formatCurrency(minAccountBalance)}
               </Typography>
             </TableCell>
           </TableRow>

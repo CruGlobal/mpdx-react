@@ -8,11 +8,11 @@ import {
   TableRow,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import { useEffectiveSalaryCalculationQuery } from '../SalaryCalculatorContext/SalaryCalculation.generated';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { StepCard } from '../Shared/StepCard';
 import { orientSalaryRequest } from '../Shared/orientSalaryRequest';
-import { useFormatters } from '../Shared/useFormatters';
 
 export const SalarySummaryCard: React.FC = () => {
   const { t } = useTranslation();
