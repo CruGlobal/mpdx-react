@@ -5,6 +5,26 @@ import {
   StaffExpensesSubCategoryEnum,
 } from 'src/graphql/types.generated';
 
+export const getPluralizedDescription = (
+  value: StaffExpenseCategoryEnum,
+  t: TFunction,
+) => {
+  const descriptions: Partial<Record<StaffExpenseCategoryEnum, string>> = {
+    [StaffExpenseCategoryEnum.Donation]: t('Donations'),
+    [StaffExpenseCategoryEnum.Transfer]: t('Transfers'),
+    [StaffExpenseCategoryEnum.AccountTransfer]: t('Account Transfers'),
+    [StaffExpenseCategoryEnum.Assessment]: t('Assessments'),
+    [StaffExpenseCategoryEnum.HealthcareReimbursement]: t(
+      'Healthcare Reimbursements',
+    ),
+    [StaffExpenseCategoryEnum.MinistryReimbursement]: t(
+      'Ministry Reimbursements',
+    ),
+    [StaffExpenseCategoryEnum.StaffExpense]: t('Staff Expenses'),
+  };
+  return descriptions[value];
+};
+
 export const getLocalizedCategory = (
   value: StaffExpenseCategoryEnum,
   t: TFunction,

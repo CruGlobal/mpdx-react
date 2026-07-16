@@ -2,6 +2,7 @@ import { TFunction } from 'react-i18next';
 import {
   getLocalizedCategory,
   getLocalizedSubCategory,
+  getPluralizedDescription,
 } from '../../Shared/Helpers/transformStaffExpenseEnums';
 import { DataFields } from '../mockData';
 import { Categories } from './MPGAReportEnum';
@@ -125,7 +126,9 @@ export function addCombinedSubcategoryRow({
     });
   });
 
-  const description = getLocalizedCategory(category.category, t);
+  const description =
+    getPluralizedDescription(category.category, t) ||
+    getLocalizedCategory(category.category, t);
   const pushAggregateRow = (id: string, monthly: number[]) => {
     pushData(
       {
