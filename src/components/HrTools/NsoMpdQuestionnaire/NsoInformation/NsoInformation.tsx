@@ -20,6 +20,7 @@ export const NsoInformation: React.FC = () => {
         </Stack>
         <Divider sx={{ mx: -4, my: 4 }} />
         <NsoDetails />
+        <Divider sx={{ mx: -4, mt: 4 }} />
       </Box>
     </NsoMpdQuestionnaireLayout>
   );
