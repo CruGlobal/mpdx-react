@@ -27,6 +27,7 @@ export const PersonalInformation: React.FC = () => {
         <Settings />
         <Divider sx={{ mx: -4, my: 4 }} />
         <StaffInformation />
+        <Divider sx={{ mx: -4, mt: 4 }} />
       </Box>
     </NsoMpdQuestionnaireLayout>
   );

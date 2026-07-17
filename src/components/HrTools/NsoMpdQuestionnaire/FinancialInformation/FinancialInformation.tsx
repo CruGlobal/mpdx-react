@@ -22,6 +22,7 @@ export const FinancialInformation: React.FC = () => {
           <VariantQuestions />
           <DebtQuestions />
         </Stack>
+        <Divider sx={{ mx: -4, mt: 4 }} />
       </Box>
     </NsoMpdQuestionnaireLayout>
   );
