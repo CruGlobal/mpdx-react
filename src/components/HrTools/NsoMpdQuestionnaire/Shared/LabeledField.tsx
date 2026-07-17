@@ -31,7 +31,11 @@ export const LabeledField: React.FC<LabeledFieldProps> = ({
   const helperTextId = useId();
 
   return (
-    <FormControl error={error} required={required}>
+    <FormControl
+      error={error}
+      required={required}
+      sx={{ '.MuiTextField-root': { maxWidth: { xs: '100%', sm: '40%' } } }}
+    >
       <FormLabel component="span" id={labelId} sx={{ color: 'text.primary' }}>
         {label}
       </FormLabel>
