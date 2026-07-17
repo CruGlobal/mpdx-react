@@ -10,7 +10,7 @@ export const getPluralizedDescription = (
   t: TFunction,
 ) => {
   const descriptions: Partial<Record<StaffExpenseCategoryEnum, string>> = {
-    [StaffExpenseCategoryEnum.Donation]: t('Donations'),
+    [StaffExpenseCategoryEnum.Donation]: t('Total Donations'),
     [StaffExpenseCategoryEnum.Transfer]: t('Transfers'),
     [StaffExpenseCategoryEnum.AccountTransfer]: t('Account Transfers'),
     [StaffExpenseCategoryEnum.Assessment]: t('Assessments'),

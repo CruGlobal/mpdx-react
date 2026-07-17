@@ -5,15 +5,19 @@ import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import { amountFormat, zeroAmountFormat } from 'src/lib/intlFormat';
 import { RenderCell } from '../Tables/TableCard';
 import { RenderTotalCell } from '../Tables/TotalRow';
-import { CategoryBreakdown } from '../mockData';
+import { TransactionBreakdown } from '../mockData';
 
 export const populateCardTableRows = (
   locale: string,
   t: TFunction,
-  breakdownData: Partial<Record<StaffExpenseCategoryEnum, CategoryBreakdown[]>>,
+  breakdownData: Partial<
+    Record<StaffExpenseCategoryEnum, TransactionBreakdown[]>
+  >,
+  openBreakdownModal: (category: StaffExpenseCategoryEnum) => void,
 ) => {
   const description: RenderCell = ({ row }) => {
-    const breakdown = row.category && breakdownData[row.category];
+    const { category } = row;
+    const breakdown = category && breakdownData[category];
     return (
       <Box display="flex" alignItems="center" width="100%">
         <Tooltip title={row.description}>
@@ -21,14 +25,17 @@ export const populateCardTableRows = (
             {row.description}
           </Typography>
         </Tooltip>
-        {!!breakdown?.length && (
-          <IconButton
-            size="small"
-            sx={{ ml: 'auto', flexShrink: 0 }}
-            aria-label={t('View breakdown')}
-          >
-            <InfoOutlined fontSize="small" />
-          </IconButton>
+        {category && !!breakdown?.length && (
+          <Tooltip title={t('View breakdown')}>
+            <IconButton
+              size="small"
+              sx={{ ml: 'auto', flexShrink: 0 }}
+              aria-label={t('View breakdown')}
+              onClick={() => openBreakdownModal(category)}
+            >
+              <InfoOutlined fontSize="small" />
+            </IconButton>
+          </Tooltip>
         )}
       </Box>
     );

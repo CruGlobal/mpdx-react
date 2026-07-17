@@ -12,8 +12,8 @@ import {
   incomeCategoryRank,
 } from '../components/Reports/MPGAIncomeExpensesReport/Helper/sortFunds';
 import {
-  CategoryBreakdown,
   DataFields,
+  TransactionBreakdown,
 } from '../components/Reports/MPGAIncomeExpensesReport/mockData';
 
 export function useFilteredFunds(
@@ -26,10 +26,10 @@ export function useFilteredFunds(
     const expenseData: DataFields[] = [];
 
     const incomeBreakdown: Partial<
-      Record<StaffExpenseCategoryEnum, CategoryBreakdown[]>
+      Record<StaffExpenseCategoryEnum, TransactionBreakdown[]>
     > = {};
     const expenseBreakdown: Partial<
-      Record<StaffExpenseCategoryEnum, CategoryBreakdown[]>
+      Record<StaffExpenseCategoryEnum, TransactionBreakdown[]>
     > = {};
 
     funds.forEach((fund) => {

@@ -3,12 +3,18 @@ import {
   StaffExpensesSubCategoryEnum,
 } from 'src/graphql/types.generated';
 
-export interface CategoryBreakdown {
+export interface TransactionBreakdown {
   date: string;
   description: string;
   category: StaffExpenseCategoryEnum;
   subCategory: StaffExpensesSubCategoryEnum;
   amount: number;
+}
+export interface SubcategoryBreakdown {
+  category: StaffExpenseCategoryEnum;
+  subCategory: StaffExpensesSubCategoryEnum;
+  transactions: TransactionBreakdown[];
+  total: number;
 }
 
 export interface DataFields {
@@ -24,10 +30,10 @@ export interface AllData {
   income: DataFields[];
   expenses: DataFields[];
   incomeBreakdown?: Partial<
-    Record<StaffExpenseCategoryEnum, CategoryBreakdown[]>
+    Record<StaffExpenseCategoryEnum, TransactionBreakdown[]>
   >;
   expenseBreakdown?: Partial<
-    Record<StaffExpenseCategoryEnum, CategoryBreakdown[]>
+    Record<StaffExpenseCategoryEnum, TransactionBreakdown[]>
   >;
 }
 
@@ -46,24 +52,32 @@ export const months = [
   'Mar 2025',
 ];
 
+export const mockTransactions: TransactionBreakdown[] = [
+  {
+    date: '2024-04-15T00:00:00Z',
+    description: 'Monthly gift from the Smith family',
+    category: StaffExpenseCategoryEnum.Donation,
+    subCategory: StaffExpensesSubCategoryEnum.Donation,
+    amount: 5000,
+  },
+  {
+    date: '2024-04-22T00:00:00Z',
+    description: 'One-time gift',
+    category: StaffExpenseCategoryEnum.Donation,
+    subCategory: StaffExpensesSubCategoryEnum.Gift,
+    amount: 1770,
+  },
+];
+
+export const mockBreakdownData: Partial<
+  Record<string, TransactionBreakdown[]>
+> = {
+  [StaffExpenseCategoryEnum.Donation]: [...mockTransactions],
+};
+
 export const mockData: AllData = {
   incomeBreakdown: {
-    [StaffExpenseCategoryEnum.Donation]: [
-      {
-        date: '2024-04-15T00:00:00Z',
-        description: 'Monthly gift from the Smith family',
-        category: StaffExpenseCategoryEnum.Donation,
-        subCategory: StaffExpensesSubCategoryEnum.Donation,
-        amount: 5000,
-      },
-      {
-        date: '2024-04-22T00:00:00Z',
-        description: 'One-time gift',
-        category: StaffExpenseCategoryEnum.Donation,
-        subCategory: StaffExpensesSubCategoryEnum.Gift,
-        amount: 1770,
-      },
-    ],
+    ...mockBreakdownData,
   },
   income: [
     {

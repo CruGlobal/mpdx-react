@@ -5,7 +5,7 @@ import {
   getLocalizedSubCategory,
   getPluralizedDescription,
 } from '../../Shared/Helpers/transformStaffExpenseEnums';
-import { CategoryBreakdown, DataFields } from '../mockData';
+import { DataFields, TransactionBreakdown } from '../mockData';
 import { Categories } from './MPGAReportEnum';
 
 const average = (data: number[]) => {
@@ -118,18 +118,18 @@ export function addCombinedSubcategoryRow({
   expenseBreakdown,
 }: AddRowProps & {
   incomeBreakdown: Partial<
-    Record<StaffExpenseCategoryEnum, CategoryBreakdown[]>
+    Record<StaffExpenseCategoryEnum, TransactionBreakdown[]>
   >;
   expenseBreakdown: Partial<
-    Record<StaffExpenseCategoryEnum, CategoryBreakdown[]>
+    Record<StaffExpenseCategoryEnum, TransactionBreakdown[]>
   >;
 }) {
   const monthCount = category.breakdownByMonth.length;
   const incomeMonthly = new Array(monthCount).fill(0);
   const expenseMonthly = new Array(monthCount).fill(0);
 
-  const incomeTransactions: CategoryBreakdown[] = [];
-  const expenseTransactions: CategoryBreakdown[] = [];
+  const incomeTransactions: TransactionBreakdown[] = [];
+  const expenseTransactions: TransactionBreakdown[] = [];
 
   category.subcategories.forEach((subcategory) => {
     subcategory.breakdownByMonth.forEach((month, index) => {

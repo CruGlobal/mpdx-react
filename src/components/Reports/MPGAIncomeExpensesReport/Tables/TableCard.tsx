@@ -12,12 +12,13 @@ import { useMonthHeaders } from 'src/hooks/useMonthHeaders';
 import { amountFormat, zeroAmountFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { LoadingBox, LoadingIndicator } from '../../styledComponents';
+import { BreakdownModal } from '../BreakdownModal/BreakdownModal';
 import { CardSkeleton } from '../Card/CardSkeleton';
 import { CustomToolbar } from '../CustomToolbar/CustomToolbar';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { populateCardTableRows } from '../Helper/createRows';
 import { useTotals } from '../TotalsContext/TotalsContext';
-import { CategoryBreakdown, DataFields } from '../mockData';
+import { DataFields, TransactionBreakdown } from '../mockData';
 import { StyledGrid } from '../styledComponents';
 import { TotalRow } from './TotalRow';
 
@@ -29,7 +30,7 @@ export interface TableCardProps {
   type: ReportTypeEnum;
   data: DataFields[];
   breakdownData?: Partial<
-    Record<StaffExpenseCategoryEnum, CategoryBreakdown[]>
+    Record<StaffExpenseCategoryEnum, TransactionBreakdown[]>
   >;
   emptyPlaceholder: React.ReactElement;
   title: string;
@@ -99,6 +100,9 @@ export const TableCard: React.FC<TableCardProps> = ({
   const locale = useLocale();
   const { incomeTotal, expensesTotal, dataLoading } = useTotals();
 
+  const [openBreakdownModal, setOpenBreakdownModal] =
+    useState<StaffExpenseCategoryEnum | null>(null);
+
   const monthColors = useMemo(
     () => ({
       first: theme.palette.primary.main,
@@ -122,8 +126,9 @@ export const TableCard: React.FC<TableCardProps> = ({
   }, [data]);
 
   const { description, average, total } = useMemo(
-    () => populateCardTableRows(locale, t, breakdownData),
-    [locale, t, breakdownData],
+    () =>
+      populateCardTableRows(locale, t, breakdownData, setOpenBreakdownModal),
+    [locale, t, breakdownData, setOpenBreakdownModal],
   );
 
   const columns = useMemo<GridColDef<DataFields>[]>(() => {
@@ -229,33 +234,43 @@ export const TableCard: React.FC<TableCardProps> = ({
       />
     </LoadingBox>
   ) : data.length ? (
-    <CardSkeleton
-      title={title}
-      subtitle={t('Last 12 Months')}
-      styling={{ padding: 0, '&:last-child': { paddingBottom: 0 } }}
-    >
-      <Box>
-        <StyledGrid
-          rows={cardTableRows}
-          columns={columns}
-          columnGroupingModel={columnGroupingModel}
-          getRowId={(row) => row.id}
-          sortingOrder={['desc', 'asc', null]}
-          sortModel={sortModel}
-          onSortModelChange={(model) => setSortModel(model)}
-          pageSizeOptions={[DEFAULT_PAGE_SIZE]}
-          paginationModel={paginationModel}
-          onPaginationModelChange={(model) => setPaginationModel(model)}
-          disableVirtualization
-          disableRowSelectionOnClick
-          pagination
-          disableColumnMenu
-        />
+    <>
+      <CardSkeleton
+        title={title}
+        subtitle={t('Last 12 Months')}
+        styling={{ padding: 0, '&:last-child': { paddingBottom: 0 } }}
+      >
         <Box>
-          <TotalRow data={data} overallTotal={overallTotal} />
+          <StyledGrid
+            rows={cardTableRows}
+            columns={columns}
+            columnGroupingModel={columnGroupingModel}
+            getRowId={(row) => row.id}
+            sortingOrder={['desc', 'asc', null]}
+            sortModel={sortModel}
+            onSortModelChange={(model) => setSortModel(model)}
+            pageSizeOptions={[DEFAULT_PAGE_SIZE]}
+            paginationModel={paginationModel}
+            onPaginationModelChange={(model) => setPaginationModel(model)}
+            disableVirtualization
+            disableRowSelectionOnClick
+            pagination
+            disableColumnMenu
+          />
+          <Box>
+            <TotalRow data={data} overallTotal={overallTotal} />
+          </Box>
         </Box>
-      </Box>
-    </CardSkeleton>
+      </CardSkeleton>
+      {openBreakdownModal && (
+        <BreakdownModal
+          open
+          onClose={() => setOpenBreakdownModal(null)}
+          category={openBreakdownModal}
+          breakdownData={breakdownData}
+        />
+      )}
+    </>
   ) : (
     <CardSkeleton title={title} subtitle={t('Last 12 Months')}>
       <Box

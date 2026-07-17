@@ -25,6 +25,8 @@ const emptyData = {
   expenses: [],
 };
 
+const cellText = (element: HTMLElement) => element.textContent;
+
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -33,6 +35,7 @@ const TestComponent: React.FC = () => (
           <TableCard
             type={ReportTypeEnum.Income}
             data={data.income}
+            breakdownData={mockData.incomeBreakdown}
             emptyPlaceholder={<span>Empty Table</span>}
             title={title}
             months={months}
@@ -45,35 +48,34 @@ const TestComponent: React.FC = () => (
 
 describe('TableCard', () => {
   it('should render with the correct data', () => {
-    const { getByRole, getByText } = render(<TestComponent />);
+    const { getAllByRole, getByText } = render(<TestComponent />);
 
     expect(getByText(title)).toBeInTheDocument();
     expect(getByText(/last 12 months/i)).toBeInTheDocument();
 
-    expect(
-      getByRole('columnheader', { name: 'Description' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('gridcell', { name: 'Contributions' }),
-    ).toBeInTheDocument();
-    expect(getByRole('columnheader', { name: 'Average' })).toBeInTheDocument();
-    expect(getByRole('gridcell', { name: '9,013' })).toBeInTheDocument();
-    expect(getByRole('columnheader', { name: 'Total' })).toBeInTheDocument();
-    expect(getByRole('gridcell', { name: '108,156' })).toBeInTheDocument();
+    expect(getAllByRole('columnheader').map(cellText)).toEqual(
+      expect.arrayContaining(['Description', 'Average', 'Total']),
+    );
+    expect(getAllByRole('gridcell').map(cellText)).toEqual(
+      expect.arrayContaining(['Contributions', '9,013', '108,156']),
+    );
   });
 
   it('should calculate and display totals correctly', () => {
-    const { getByRole } = render(<TestComponent />);
+    const { getAllByRole } = render(<TestComponent />);
 
-    expect(getByRole('gridcell', { name: '108,856' })).toBeInTheDocument();
-    expect(getByRole('gridcell', { name: '9,071' })).toBeInTheDocument();
+    expect(getAllByRole('gridcell').map(cellText)).toEqual(
+      expect.arrayContaining(['108,856', '9,071']),
+    );
   });
 
   it('renders months in column headers for all months', () => {
-    const { getByRole } = render(<TestComponent />);
-    months.forEach((m) => {
-      const month = m.split(' ')[0];
-      expect(getByRole('columnheader', { name: month })).toBeInTheDocument();
+    const { getAllByRole } = render(<TestComponent />);
+
+    const headerNames = getAllByRole('columnheader').map(cellText);
+
+    months.forEach((month) => {
+      expect(headerNames).toContain(month.split(' ')[0]);
     });
   });
 
@@ -100,10 +102,11 @@ describe('TableCard', () => {
   });
 
   it('should display the correct years in the table', () => {
-    const { getByRole } = render(<TestComponent />);
+    const { getAllByRole } = render(<TestComponent />);
 
-    expect(getByRole('columnheader', { name: '2024' })).toBeInTheDocument();
-    expect(getByRole('columnheader', { name: '2025' })).toBeInTheDocument();
+    expect(getAllByRole('columnheader').map(cellText)).toEqual(
+      expect.arrayContaining(['2024', '2025']),
+    );
   });
 
   it('should apply the correct color to each group header', () => {
@@ -142,10 +145,59 @@ describe('TableCard', () => {
     expect(getByText('Empty Table')).toBeInTheDocument();
   });
 
-  it('updates the sort order', async () => {
-    const { getAllByRole, getByRole } = render(<TestComponent />);
+  describe('breakdown modal', () => {
+    it('shows the icon only on rows that have breakdown data', () => {
+      const { getAllByRole } = render(<TestComponent />);
 
-    const aprilHeader = getByRole('columnheader', { name: 'Apr' });
+      const icons = getAllByRole('button', { name: 'View breakdown' });
+      expect(icons).toHaveLength(1);
+    });
+
+    it('opens the modal for the clicked category', async () => {
+      const { getByRole, findByRole } = render(<TestComponent />);
+
+      userEvent.click(getByRole('button', { name: 'View breakdown' }));
+
+      const dialog = await findByRole('dialog');
+      expect(
+        within(dialog).getByText('Donation Breakdown'),
+      ).toBeInTheDocument();
+    });
+
+    it('renders an accordion per subcategory with the overall total', async () => {
+      const { getByRole, findByRole } = render(<TestComponent />);
+
+      userEvent.click(getByRole('button', { name: 'View breakdown' }));
+
+      const dialog = await findByRole('dialog');
+      expect(within(dialog).getByText('Donation')).toBeInTheDocument();
+      expect(within(dialog).getByText('Donation - Gift')).toBeInTheDocument();
+      expect(
+        within(dialog).getByText('Total Donation Income'),
+      ).toBeInTheDocument();
+      expect(within(dialog).getByText('$6,770.00')).toBeInTheDocument();
+    });
+
+    it('closes the modal', async () => {
+      const { getByRole, findByRole, queryByRole } = render(<TestComponent />);
+
+      userEvent.click(getByRole('button', { name: 'View breakdown' }));
+
+      const dialog = await findByRole('dialog');
+      userEvent.click(within(dialog).getByRole('button', { name: 'Close' }));
+
+      await waitFor(() =>
+        expect(queryByRole('dialog')).not.toBeInTheDocument(),
+      );
+    });
+  });
+
+  it('updates the sort order', async () => {
+    const { getAllByRole } = render(<TestComponent />);
+
+    const aprilHeader = getAllByRole('columnheader').find(
+      (header) => header.getAttribute('data-field') === 'month0',
+    ) as HTMLElement;
     expect(
       within(aprilHeader).getByTestId('ArrowDownwardIcon'),
     ).toBeInTheDocument();
