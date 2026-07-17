@@ -59,7 +59,7 @@ export function useSettingsNavItems(): NavItems[] {
     {
       id: 'admin',
       title: t('Admin Console'),
-      grantedAccess: ['admin', 'mpdSupervisorAdmin'],
+      grantedAccess: ['admin', 'developer', 'mpdSupervisorAdmin'],
     },
     {
       id: '/auth/user/admin',
