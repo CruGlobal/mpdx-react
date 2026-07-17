@@ -9,7 +9,7 @@ import {
   blockRestrictedImpersonation,
   dashboardRedirect,
   enforceAdmin,
-  enforceAdminOrMpdLeader,
+  enforceAdminOrCoach,
   ensureSessionAndAccountList,
   loginRedirect,
   makeGetServerSideProps,
@@ -78,11 +78,11 @@ describe('pagePropsHelpers', () => {
     });
   });
 
-  describe('enforceAdminOrMpdLeader', () => {
+  describe('enforceAdminOrCoach', () => {
     it('redirects to the login page if the user is not logged in', async () => {
       (getSession as jest.Mock).mockResolvedValue(null);
 
-      await expect(enforceAdminOrMpdLeader(context)).resolves.toMatchObject({
+      await expect(enforceAdminOrCoach(context)).resolves.toMatchObject({
         redirect: {
           destination: '/login?redirect=%2Fpage%3Fparam%3Dvalue',
         },
@@ -93,26 +93,26 @@ describe('pagePropsHelpers', () => {
       const user = {
         apiToken: 'token',
         admin: true,
-        mpdSupervisorAdmin: false,
+        coach: false,
       };
       (getSession as jest.Mock).mockResolvedValue({ user });
 
-      await expect(enforceAdminOrMpdLeader(context)).resolves.toMatchObject({
+      await expect(enforceAdminOrCoach(context)).resolves.toMatchObject({
         props: {
           session: { user },
         },
       });
     });
 
-    it('does not return a redirect if the user is an MPD supervisor admin', async () => {
+    it('does not return a redirect if the user is a coach', async () => {
       const user = {
         apiToken: 'token',
         admin: false,
-        mpdSupervisorAdmin: true,
+        coach: true,
       };
       (getSession as jest.Mock).mockResolvedValue({ user });
 
-      await expect(enforceAdminOrMpdLeader(context)).resolves.toMatchObject({
+      await expect(enforceAdminOrCoach(context)).resolves.toMatchObject({
         props: {
           session: { user },
         },
@@ -124,27 +124,27 @@ describe('pagePropsHelpers', () => {
         apiToken: 'token',
         admin: false,
         developer: true,
-        mpdSupervisorAdmin: false,
+        coach: false,
       };
       (getSession as jest.Mock).mockResolvedValue({ user });
 
-      await expect(enforceAdminOrMpdLeader(context)).resolves.toMatchObject({
+      await expect(enforceAdminOrCoach(context)).resolves.toMatchObject({
         props: {
           session: { user },
         },
       });
     });
 
-    it('returns a redirect if the user is not an admin, developer, or MPD supervisor admin', async () => {
+    it('returns a redirect if the user is not an admin, developer, or coach', async () => {
       const user = {
         apiToken: 'token',
         admin: false,
         developer: false,
-        mpdSupervisorAdmin: false,
+        coach: false,
       };
       (getSession as jest.Mock).mockResolvedValue({ user });
 
-      await expect(enforceAdminOrMpdLeader(context)).resolves.toMatchObject({
+      await expect(enforceAdminOrCoach(context)).resolves.toMatchObject({
         redirect: {
           destination: '/accountLists/account-list-1?redirect=unauthorized',
         },

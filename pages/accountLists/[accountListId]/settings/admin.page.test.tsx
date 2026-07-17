@@ -59,7 +59,7 @@ describe('Admin', () => {
   });
 
   it('should hide the reset account accordion from MPD supervisor admins who are not admins', async () => {
-    mockSession({ admin: false, mpdSupervisorAdmin: true });
+    mockSession({ admin: false, coach: true });
 
     const { findAllByText, queryByText } = render(<Components />);
 

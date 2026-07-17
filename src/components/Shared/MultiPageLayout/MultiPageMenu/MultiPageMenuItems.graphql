@@ -3,6 +3,8 @@ query GetUserAccess {
     id
     admin
     developer
-    mpdSupervisorAdmin
+  }
+  coachingAccountLists(first: 1) {
+    totalCount
   }
 }

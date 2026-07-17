@@ -173,8 +173,8 @@ describe('GoalsTable', () => {
   });
 
   describe('Impersonate action', () => {
-    it('shows an Impersonate action per row for an MPD supervisor admin', () => {
-      mockSession({ mpdSupervisorAdmin: true, admin: false });
+    it('shows an Impersonate action per row for a coach', () => {
+      mockSession({ coach: true, admin: false });
 
       const { getAllByRole } = renderTable();
       expect(getAllByRole('button', { name: 'Impersonate' })).toHaveLength(
@@ -183,7 +183,7 @@ describe('GoalsTable', () => {
     });
 
     it('shows an Impersonate action per row for an admin', () => {
-      mockSession({ mpdSupervisorAdmin: false, admin: true });
+      mockSession({ coach: false, admin: true });
 
       const { getAllByRole } = renderTable();
       expect(getAllByRole('button', { name: 'Impersonate' })).toHaveLength(
@@ -192,7 +192,7 @@ describe('GoalsTable', () => {
     });
 
     it('hides the Impersonate action for users without admin access', () => {
-      mockSession({ mpdSupervisorAdmin: false, admin: false });
+      mockSession({ coach: false, admin: false });
 
       const { queryByRole } = renderTable();
       expect(
@@ -202,7 +202,7 @@ describe('GoalsTable', () => {
 
     it('hides the Impersonate action while already impersonating', () => {
       mockSession({
-        mpdSupervisorAdmin: true,
+        coach: true,
         admin: true,
         impersonating: true,
       });
@@ -221,7 +221,7 @@ describe('GoalsTable', () => {
     });
 
     it('opens the impersonate modal for the selected staff member', async () => {
-      mockSession({ mpdSupervisorAdmin: true, admin: false });
+      mockSession({ coach: true, admin: false });
 
       const { getAllByRole, findByText } = renderTable();
       // The first Impersonate action belongs to the first row on the page.

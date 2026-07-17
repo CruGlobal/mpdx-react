@@ -113,8 +113,8 @@ export const enforceAdmin: GetServerSideProps<PagePropsWithSession> = async (
 };
 
 // Redirect back to the dashboard unless the user is an admin, a developer, or
-// an MPD supervisor admin (MPD leader)
-export const enforceAdminOrMpdLeader: GetServerSideProps<
+// a coach (MPD leader)
+export const enforceAdminOrCoach: GetServerSideProps<
   PagePropsWithSession
 > = async (context) => {
   const session = await getSession(context);
@@ -123,11 +123,7 @@ export const enforceAdminOrMpdLeader: GetServerSideProps<
     return loginRedirect(context);
   }
 
-  if (
-    !session.user.admin &&
-    !session.user.developer &&
-    !session.user.mpdSupervisorAdmin
-  ) {
+  if (!session.user.admin && !session.user.developer && !session.user.coach) {
     return dashboardRedirect(context, RedirectReason.Unauthorized);
   }
 

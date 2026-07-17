@@ -42,7 +42,7 @@ export const DEFAULT_ROWS_PER_PAGE = 5;
 export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { admin, mpdSupervisorAdmin, impersonating } = useRequiredSession();
+  const { admin, coach, impersonating } = useRequiredSession();
   const { selectedRowIds, toggleRow, toggleRows, search, selectedCohortId } =
     useMpdGoalAdmin();
   const [page, setPage] = useState(0);
@@ -56,7 +56,7 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
 
   // Hide the action mid-impersonation to avoid offering nested impersonation;
   // the server independently enforces the authorization.
-  const canImpersonate = (admin || mpdSupervisorAdmin) && !impersonating;
+  const canImpersonate = (admin || coach) && !impersonating;
 
   // TODO(MPDX-9699): populate from the assignable-coaches query once the
   // backend field exists. Empty for now so the modal renders a UI-only dropdown.

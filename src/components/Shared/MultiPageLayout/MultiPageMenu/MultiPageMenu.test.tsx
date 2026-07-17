@@ -508,8 +508,8 @@ describe('MultiPageMenu', () => {
     });
   });
 
-  it('shows the admin console but not admin-only or developer-only tools for MPD supervisor admins', async () => {
-    mockSession({ admin: false, developer: false, mpdSupervisorAdmin: true });
+  it('shows the admin console but not admin-only or developer-only tools for coaches', async () => {
+    mockSession({ admin: false, developer: false, coach: true });
 
     const mutationSpy = jest.fn();
     const { findByText, queryByText } = render(

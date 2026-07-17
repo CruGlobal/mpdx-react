@@ -27,7 +27,7 @@ declare module 'next-auth' {
       email: string;
       admin: boolean;
       developer: boolean;
-      mpdSupervisorAdmin: boolean;
+      coach: boolean;
       apiToken: string;
       userID: string;
       impersonating?: boolean;
@@ -51,7 +51,7 @@ declare module 'next-auth/jwt' {
   interface JWT {
     admin: boolean;
     developer: boolean;
-    mpdSupervisorAdmin: boolean;
+    coach: boolean;
     apiToken: string;
     userID?: string;
     impersonating?: boolean;
@@ -247,7 +247,7 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
             ...token,
             admin: data.user.admin,
             developer: data.user.developer,
-            mpdSupervisorAdmin: data.user.mpdSupervisorAdmin,
+            coach: data.coachingAccountLists.totalCount > 0,
             apiToken: user.apiToken,
             userID: user.userID,
             impersonating: user.impersonating,
@@ -263,7 +263,7 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
         const {
           admin,
           developer,
-          mpdSupervisorAdmin,
+          coach,
           apiToken,
           userID,
           impersonating,
@@ -283,8 +283,8 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
             ...session.user,
             admin,
             developer,
-            // Default to false for JWTs minted before mpdSupervisorAdmin existed
-            mpdSupervisorAdmin: mpdSupervisorAdmin ?? false,
+            // Default to false for JWTs minted before coach existed
+            coach: coach ?? false,
             apiToken,
             userID,
             impersonating,
