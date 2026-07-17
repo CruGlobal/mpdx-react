@@ -82,7 +82,14 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
   // value (see `isMarried` below).
   const hasSavedSpouse = Boolean(calculation.spouseFirstName);
 
-  const initialValues = calculationToFormValues(calculation);
+  // Convert the fraction (0-1) to a percentage (0-100)
+  const default403bPercentage = Math.round(
+    calculation.calculations.default403bFraction * 100,
+  );
+
+  const initialValues = calculationToFormValues(calculation, {
+    default403bPercentage,
+  });
 
   const primaryPerson: GoalSettingsPerson = {
     firstName: calculation.firstName ?? '',

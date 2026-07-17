@@ -104,6 +104,58 @@ describe('calculationToFormValues', () => {
     expect(values.geographicLocation).toBe('');
     expect(values.calculationsYear).toBe('');
   });
+
+  describe('403(b) contribution default', () => {
+    const noContribution = {
+      ...baseCalculation,
+      contribution403bPercentage: null,
+      spouseContribution403bPercentage: null,
+    };
+
+    it('prefills both people with the default when no value is saved', () => {
+      const values = calculationToFormValues(noContribution, {
+        default403bPercentage: 7,
+      });
+
+      expect(values.contribution403bPercentage).toBe(7);
+      expect(values.spouseContribution403bPercentage).toBe(7);
+    });
+
+    it('keeps a saved contribution instead of the default', () => {
+      const values = calculationToFormValues(
+        {
+          ...baseCalculation,
+          contribution403bPercentage: 10,
+          spouseContribution403bPercentage: 12,
+        },
+        { default403bPercentage: 7 },
+      );
+
+      expect(values.contribution403bPercentage).toBe(10);
+      expect(values.spouseContribution403bPercentage).toBe(12);
+    });
+
+    it('preserves an explicit 0% instead of applying the default', () => {
+      const values = calculationToFormValues(
+        {
+          ...baseCalculation,
+          contribution403bPercentage: 0,
+          spouseContribution403bPercentage: 0,
+        },
+        { default403bPercentage: 7 },
+      );
+
+      expect(values.contribution403bPercentage).toBe(0);
+      expect(values.spouseContribution403bPercentage).toBe(0);
+    });
+
+    it('leaves the fields blank when no default is provided', () => {
+      const values = calculationToFormValues(noContribution);
+
+      expect(values.contribution403bPercentage).toBe('');
+      expect(values.spouseContribution403bPercentage).toBe('');
+    });
+  });
 });
 
 describe('formValuesToAttributes', () => {
