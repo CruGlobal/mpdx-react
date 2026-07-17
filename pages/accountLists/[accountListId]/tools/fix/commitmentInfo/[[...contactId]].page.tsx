@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
+import { blockRestrictedImpersonation } from 'pages/api/utils/pagePropsHelpers';
 import FixCommitmentInfo from 'src/components/Tool/FixCommitmentInfo/FixCommitmentInfo';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { ToolsWrapper } from '../../ToolsWrapper';
@@ -19,6 +19,6 @@ const FixCommitmentInfoPage: React.FC = () => {
   );
 };
 
-export const getServerSideProps = ensureSessionAndAccountList;
+export const getServerSideProps = blockRestrictedImpersonation;
 
 export default FixCommitmentInfoPage;

@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
+import { blockRestrictedImpersonation } from 'pages/api/utils/pagePropsHelpers';
 import {
   ContactsContext,
   ContactsType,
@@ -66,4 +66,4 @@ const ContactsPage: React.FC = () => (
 
 export default ContactsPage;
 
-export const getServerSideProps = ensureSessionAndAccountList;
+export const getServerSideProps = blockRestrictedImpersonation;

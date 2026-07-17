@@ -9,6 +9,7 @@ import { useDeveloperBypass } from './useDeveloperBypass';
 import { useHrToolsNavItems } from './useHrToolsNavItems';
 import { useReportNavItems } from './useReportNavItems';
 import { useReportsDisabled } from './useReportsDisabled';
+import { useRestrictedImpersonation } from './useRestrictedImpersonation';
 import { useSettingsNavItems } from './useSettingsNavItems';
 import { useToolsNavItems } from './useToolsNavItems';
 
@@ -62,6 +63,10 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
     userType === UserTypeEnum.HybridStaff ||
     developerBypass;
 
+  // During a restricted impersonation session the impersonator may only
+  // access MPD leader tools, so hide the contacts, tasks, and tools pages
+  const isRestrictedImpersonation = useRestrictedImpersonation();
+
   const reportItems = useReportNavItems();
   const toolsItems = useToolsNavItems();
   const settingsItems = useSettingsNavItems();
@@ -86,6 +91,7 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
         showInNav: true,
         isDropdown: false,
         showInSearchDialog: true,
+        hideTab: isRestrictedImpersonation,
       },
       {
         id: 'tasks-page',
@@ -96,6 +102,7 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
         showInNav: true,
         isDropdown: false,
         showInSearchDialog: true,
+        hideTab: isRestrictedImpersonation,
       },
       {
         id: 'reports-page',
@@ -149,6 +156,7 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
         ),
         showInNav: true,
         showInSearchDialog: true,
+        hideTab: isRestrictedImpersonation,
       },
       {
         id: 'settings-page',
@@ -200,6 +208,7 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
     canSeeHrTools,
     reportsDisabled,
     data,
+    isRestrictedImpersonation,
   ]);
 
   const navPages = useMemo(
