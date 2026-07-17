@@ -103,7 +103,7 @@ describe('BreakdownAccordion', () => {
 
       userEvent.click(getByRole('button'));
 
-      const amount = await findByRole('cell', { name: '-$50.00' });
+      const amount = await findByRole('cell', { name: '($50.00)' });
       expect(amount).toHaveStyle({ color: theme.palette.chipRedDark.main });
     });
 
@@ -125,7 +125,7 @@ describe('BreakdownAccordion', () => {
 
       userEvent.click(getByRole('button'));
 
-      const amount = await findByRole('cell', { name: '+$50.00' });
+      const amount = await findByRole('cell', { name: '($50.00)' });
       expect(amount).toHaveStyle({ color: theme.palette.statusSuccess.main });
     });
   });

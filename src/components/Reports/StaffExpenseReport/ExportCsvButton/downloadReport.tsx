@@ -10,6 +10,7 @@ const createTable = (
   csvHeader: string[],
   transactions: Transaction[],
   locale: string,
+  isExpense: boolean,
 ) => {
   const dateSortedTransactions = dateSortTransactions(transactions);
   const csvData = [
@@ -18,7 +19,11 @@ const createTable = (
     ...dateSortedTransactions.map((transaction) => [
       dateFormat(DateTime.fromISO(transaction.transactedAt), locale),
       transaction.displayCategory,
-      currencyFormat(transaction.amount, 'USD', locale),
+      currencyFormat(
+        isExpense ? Math.abs(transaction.amount) : transaction.amount,
+        'USD',
+        locale,
+      ),
     ]),
   ];
 
@@ -39,8 +44,20 @@ function createCombinedReport(
 ) {
   const income = transactions.filter((transaction) => transaction.amount > 0);
   const expenses = transactions.filter((transaction) => transaction.amount < 0);
-  const incomeData = createTable(titles.income, csvHeader, income, locale);
-  const expenseData = createTable(titles.expense, csvHeader, expenses, locale);
+  const incomeData = createTable(
+    titles.income,
+    csvHeader,
+    income,
+    locale,
+    false,
+  );
+  const expenseData = createTable(
+    titles.expense,
+    csvHeader,
+    expenses,
+    locale,
+    true,
+  );
   return [...incomeData, [''], ...expenseData];
 }
 
@@ -86,7 +103,13 @@ export const createCsvReport = (
       locale,
     );
   } else {
-    csvData = createTable(reportTitle, csvHeader, transactions, locale);
+    csvData = createTable(
+      reportTitle,
+      csvHeader,
+      transactions,
+      locale,
+      type === ReportType.Expense,
+    );
   }
 
   downloadCsvReport(csvData, reportTitle);

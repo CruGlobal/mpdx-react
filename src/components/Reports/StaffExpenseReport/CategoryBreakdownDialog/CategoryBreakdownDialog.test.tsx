@@ -108,4 +108,25 @@ describe('CategoryBreakdownDialog', () => {
     ).toBeInTheDocument();
     expect(getByRole('cell', { name: '$800' })).toBeInTheDocument();
   });
+
+  it('displays expense amounts as positive magnitudes', () => {
+    const expenseTransactions: Transaction[] = mockTransactions.map(
+      (transaction) => ({ ...transaction, amount: -transaction.amount }),
+    );
+    const { getByRole, queryByRole } = render(
+      <TestComponent
+        {...defaultProps}
+        transactions={expenseTransactions}
+        totalAmount={-800}
+      />,
+    );
+
+    expect(getByRole('cell', { name: '$500' })).toBeInTheDocument();
+    expect(getByRole('cell', { name: '$300' })).toBeInTheDocument();
+    expect(
+      getByRole('cell', { name: 'Total Salary Expense' }),
+    ).toBeInTheDocument();
+    expect(getByRole('cell', { name: '$800' })).toBeInTheDocument();
+    expect(queryByRole('cell', { name: '-$800' })).not.toBeInTheDocument();
+  });
 });

@@ -71,7 +71,7 @@ export const CategoryBreakdownDialog: React.FC<
                 <TableCell>{transaction.description}</TableCell>
                 <TableCell>{transaction.displayCategory}</TableCell>
                 <TableCell align="right">
-                  {currencyFormat(transaction.amount, 'USD', locale)}
+                  {currencyFormat(Math.abs(transaction.amount), 'USD', locale)}
                 </TableCell>
               </TableRow>
             ))}
@@ -108,7 +108,7 @@ export const CategoryBreakdownDialog: React.FC<
                         : theme.palette.error.main,
                   }}
                 >
-                  {currencyFormat(totalAmount, 'USD', locale)}
+                  {currencyFormat(Math.abs(totalAmount), 'USD', locale)}
                 </Typography>
               </TableCell>
             </TableRow>

@@ -30,7 +30,7 @@ import { TransactionBreakdown } from '../mockData';
 
 const StyledAccordion = styled(Accordion)(({ theme }) => ({
   border: `1px solid ${theme.palette.divider}`,
-  marginTop: '-1px',
+  borderTop: 0,
   ...accordionShared,
 }));
 
@@ -106,6 +106,17 @@ export const BreakdownAccordion: React.FC<BreakdownAccordionProps> = ({
                   !isIncomeTotal && isIncomeTransaction;
                 const isStrayExpenseTransaction =
                   isIncomeTotal && !isIncomeTransaction;
+                const isStrayTransaction =
+                  isStrayExpenseTransaction || isStrayIncomeTransaction;
+
+                const formattedAmount = currencyFormat(
+                  Math.abs(transaction.amount),
+                  currency,
+                  locale,
+                  {
+                    showTrailingZeros: true,
+                  },
+                );
 
                 return (
                   <TableRow key={index}>
@@ -125,19 +136,9 @@ export const BreakdownAccordion: React.FC<BreakdownAccordionProps> = ({
                             : null,
                       }}
                     >
-                      {isStrayExpenseTransaction
-                        ? '-'
-                        : isStrayIncomeTransaction
-                          ? '+'
-                          : null}
-                      {currencyFormat(
-                        Math.abs(transaction.amount),
-                        currency,
-                        locale,
-                        {
-                          showTrailingZeros: true,
-                        },
-                      )}
+                      {isStrayTransaction
+                        ? `(${formattedAmount})`
+                        : formattedAmount}
                     </TableCell>
                   </TableRow>
                 );

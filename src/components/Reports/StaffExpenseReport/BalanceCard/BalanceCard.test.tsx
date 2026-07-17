@@ -101,11 +101,11 @@ describe('BalanceCard', () => {
     expect(getByText('($1,234.56)')).toBeInTheDocument();
   });
 
-  it('should display transfers out with its sign preserved', () => {
+  it('should display transfers out as a positive magnitude', () => {
     const { getByText } = render(
       <BalanceCard {...defaultProps} transfersOut={-250.5} isSelected={true} />,
     );
     const expenses = getByText('Expenses:');
-    expect(within(expenses).getByText('-$250.50')).toBeInTheDocument();
+    expect(within(expenses).getByText('$250.50')).toBeInTheDocument();
   });
 });

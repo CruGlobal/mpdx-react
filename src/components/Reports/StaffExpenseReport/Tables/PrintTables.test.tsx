@@ -88,7 +88,7 @@ describe('PrintTables', () => {
     expect(
       await findByRole('columnheader', { name: 'Amount' }),
     ).toBeInTheDocument();
-    expect(getByRole('cell', { name: '-$100' })).toBeInTheDocument();
+    expect(getByRole('cell', { name: '$100' })).toBeInTheDocument();
     expect(getByRole('cell', { name: 'Total' })).toBeInTheDocument();
     expect(getByRole('cell', { name: '$0' })).toBeInTheDocument();
   });
