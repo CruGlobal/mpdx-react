@@ -20,6 +20,7 @@ export const MinistryInformation: React.FC = () => {
         </Stack>
         <Divider sx={{ mx: -4, my: 4 }} />
         <MinistryDetails />
+        <Divider sx={{ mx: -4, mt: 4 }} />
       </Box>
     </NsoMpdQuestionnaireLayout>
   );
