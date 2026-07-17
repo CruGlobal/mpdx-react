@@ -136,7 +136,10 @@ export const FinancialInformationSection: React.FC<
 
       <ColumnHeaderRow columns={[sharedHeader]} />
 
-      <FieldRow label={t('Geographic Location')}>
+      <FieldRow
+        label={t('Geographic Location')}
+        helperText={t("Determines staff's cost-of-living multiplier")}
+      >
         <GoalSettingsSelect
           name="geographicLocation"
           label={t('Geographic Location')}
