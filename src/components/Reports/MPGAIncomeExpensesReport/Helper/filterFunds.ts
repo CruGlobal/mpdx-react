@@ -142,7 +142,7 @@ export function addCombinedSubcategoryRow({
       month.transactions?.forEach((transaction) => {
         breakdown.push({
           date: transaction.transactedAt,
-          description: transaction.description ?? 'N/A',
+          description: transaction.description ?? '',
           category: category.category,
           subCategory: subcategory.subCategory,
           amount: transaction.amount,

@@ -124,7 +124,7 @@ export const BreakdownAccordion: React.FC<BreakdownAccordionProps> = ({
                       {dateFormat(DateTime.fromISO(transaction.date), locale)}
                     </TableCell>
                     <TableCell align="left">
-                      {transaction.description}
+                      {transaction.description || t('N/A')}
                     </TableCell>
                     <TableCell
                       align="right"

@@ -1,8 +1,10 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
+import { DateTime } from 'luxon';
 import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
+import { TotalsProvider } from '../TotalsContext/TotalsContext';
 import { mockBreakdownData } from '../mockData';
 import { BreakdownModal, BreakdownModalProps } from './BreakdownModal';
 
@@ -15,7 +17,13 @@ const defaultProps: BreakdownModalProps = {
 
 const TestComponent: React.FC<BreakdownModalProps> = (props) => (
   <ThemeProvider theme={theme}>
-    <BreakdownModal {...props} />
+    <TotalsProvider
+      data={{ income: [], expenses: [] }}
+      startDate={DateTime.local(2019, 2, 1)}
+      endDate={DateTime.local(2020, 1, 1)}
+    >
+      <BreakdownModal {...props} />
+    </TotalsProvider>
   </ThemeProvider>
 );
 
@@ -42,7 +50,7 @@ describe('BreakdownModal', () => {
     expect(summaries).toHaveLength(2);
     expect(summaries[0]).toHaveTextContent('Donation');
     expect(summaries[0]).toHaveTextContent('$5,000.00');
-    expect(summaries[1]).toHaveTextContent('Donation - Gift');
+    expect(summaries[1]).toHaveTextContent('Donation - Non Cash');
     expect(summaries[1]).toHaveTextContent('$1,770.00');
   });
 
@@ -62,6 +70,6 @@ describe('BreakdownModal', () => {
     );
 
     expect(getByRole('dialog')).toBeInTheDocument();
-    expect(queryByText('Donation - Gift')).not.toBeInTheDocument();
+    expect(queryByText('Donation - Non Cash')).not.toBeInTheDocument();
   });
 });

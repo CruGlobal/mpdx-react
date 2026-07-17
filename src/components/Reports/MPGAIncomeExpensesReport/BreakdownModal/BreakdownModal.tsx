@@ -9,18 +9,18 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import {
   StaffExpenseCategoryEnum,
   StaffExpensesSubCategoryEnum,
 } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat } from 'src/lib/intlFormat';
+import { currencyFormat, monthYearFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { DialogSkeleton } from '../../Shared/DialogSkeleton/DialogSkeleton';
 import { getLocalizedCategory } from '../../Shared/Helpers/transformStaffExpenseEnums';
 import { BreakdownAccordion } from '../BreakdownAccordion/BreakdownAccordion';
+import { useTotals } from '../TotalsContext/TotalsContext';
 import { TransactionBreakdown } from '../mockData';
 
 export interface BreakdownModalProps {
@@ -39,14 +39,7 @@ export const BreakdownModal: React.FC<BreakdownModalProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const currency = 'USD';
-
-  const { startDate, endDate } = useMemo(() => {
-    const now = DateTime.now();
-    return {
-      startDate: now.minus({ months: 11 }).startOf('month'),
-      endDate: now,
-    };
-  }, []);
+  const { startDate, endDate } = useTotals();
 
   const subcategoryBreakdown = useMemo(() => {
     const categoryBreakdown = breakdownData[category] ?? [];
@@ -91,9 +84,19 @@ export const BreakdownModal: React.FC<BreakdownModalProps> = ({
             >
               <TableCell>{t('Category')}</TableCell>
               <TableCell sx={{ textAlign: 'right' }}>
-                {t(
-                  `${startDate.toFormat('LLLL yyyy')} - ${endDate.toFormat('LLLL yyyy')}`,
-                )}
+                {`${monthYearFormat(
+                  startDate.month,
+                  startDate.year,
+                  locale,
+                  true,
+                  true,
+                )} - ${monthYearFormat(
+                  endDate.month,
+                  endDate.year,
+                  locale,
+                  true,
+                  true,
+                )}`}
               </TableCell>
             </TableRow>
           </TableHead>
@@ -117,7 +120,7 @@ export const BreakdownModal: React.FC<BreakdownModalProps> = ({
             sx={{
               '& .MuiTableCell-footer': {
                 position: 'sticky',
-                bottom: 0,
+                bottom: -1,
                 backgroundColor: 'background.paper',
                 borderBottom: 0,
                 boxShadow: `inset 0 -1px 0 ${theme.palette.divider}`,
@@ -130,9 +133,13 @@ export const BreakdownModal: React.FC<BreakdownModalProps> = ({
                   color={theme.palette.text.primary}
                   fontWeight="bold"
                 >
-                  {t(
-                    `Total ${getLocalizedCategory(category, t)} ${overallTotal >= 0 ? 'Income' : 'Expense'}`,
-                  )}
+                  {overallTotal >= 0
+                    ? t('Total {{category}} Income', {
+                        category: getLocalizedCategory(category, t),
+                      })
+                    : t('Total {{category}} Expense', {
+                        category: getLocalizedCategory(category, t),
+                      })}
                 </Typography>
               </TableCell>
               <TableCell align="right">

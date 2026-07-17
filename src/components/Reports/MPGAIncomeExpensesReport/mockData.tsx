@@ -64,7 +64,7 @@ export const mockTransactions: TransactionBreakdown[] = [
     date: '2024-04-22T00:00:00Z',
     description: 'One-time gift',
     category: StaffExpenseCategoryEnum.Donation,
-    subCategory: StaffExpensesSubCategoryEnum.Gift,
+    subCategory: StaffExpensesSubCategoryEnum.NonCash,
     amount: 1770,
   },
 ];
@@ -109,21 +109,24 @@ export const mockData: AllData = {
   expenses: [
     {
       id: crypto.randomUUID(),
-      description: 'Transfer',
+      description: 'Transfers',
+      category: StaffExpenseCategoryEnum.Transfer,
       monthly: [0, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       average: 17,
       total: 200,
     },
     {
       id: crypto.randomUUID(),
-      description: 'Ministry Reimbursement',
+      description: 'Ministry Reimbursements',
+      category: StaffExpenseCategoryEnum.MinistryReimbursement,
       monthly: [0, 0, 0, 0, 0, 0, 565, 0, 488, 253, 818, 0],
       average: 177,
       total: 2124,
     },
     {
       id: crypto.randomUUID(),
-      description: 'Healthcare Reimbursement',
+      description: 'Healthcare Reimbursements',
+      category: StaffExpenseCategoryEnum.HealthcareReimbursement,
       monthly: [0, 0, 0, 976, 55, 0, 0, 0, 194, 708, 0, 0],
       average: 161,
       total: 1933,
@@ -131,6 +134,7 @@ export const mockData: AllData = {
     {
       id: crypto.randomUUID(),
       description: 'Benefits',
+      category: StaffExpenseCategoryEnum.Benefits,
       monthly: [200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200],
       average: 200,
       total: 2400,
@@ -138,6 +142,7 @@ export const mockData: AllData = {
     {
       id: crypto.randomUUID(),
       description: 'Salary',
+      category: StaffExpenseCategoryEnum.Salary,
       monthly: [26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       average: 2,
       total: 26,
@@ -145,13 +150,15 @@ export const mockData: AllData = {
     {
       id: crypto.randomUUID(),
       description: 'Charge(s) for Credit Card gift(s)',
+      category: StaffExpenseCategoryEnum.Other,
       monthly: [23, 23, 23, 45, 22, 22, 28, 24, 28, 29, 186, 55],
       average: 42,
       total: 507,
     },
     {
       id: crypto.randomUUID(),
-      description: 'Assessment',
+      description: 'Assessments',
+      category: StaffExpenseCategoryEnum.Assessment,
       monthly: [812, 731, 692, 883, 964, 789, 907, 989, 1176, 1227, 2237, 2372],
       average: 1148,
       total: 13779,

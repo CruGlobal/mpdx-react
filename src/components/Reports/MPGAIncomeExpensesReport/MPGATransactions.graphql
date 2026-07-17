@@ -22,6 +22,7 @@ query MPGATransactions(
             month
             total
             transactions {
+              id
               amount
               transactedAt
               description

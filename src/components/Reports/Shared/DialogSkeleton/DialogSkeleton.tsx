@@ -29,19 +29,15 @@ export const DialogSkeleton: React.FC<DialogSkeletonProps> = ({
       onClose={onClose}
       maxWidth="md"
       fullWidth
-      sx={{
-        '& .MuiDialog-container': {
-          alignItems: 'flex-start',
-        },
-      }}
       PaperProps={{
         sx: {
           maxHeight: '700px',
-          marginTop: theme.spacing(8),
         },
       }}
     >
-      <DialogTitle>{t(`${categoryName} Breakdown`)}</DialogTitle>
+      <DialogTitle>
+        {t('{{category}} Breakdown', { category: categoryName })}
+      </DialogTitle>
       <DialogContent
         sx={{
           padding: theme.spacing(4),

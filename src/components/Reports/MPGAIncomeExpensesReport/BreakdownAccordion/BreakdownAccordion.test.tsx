@@ -15,7 +15,7 @@ import {
 
 const defaultProps: BreakdownAccordionProps = {
   category: StaffExpenseCategoryEnum.Donation,
-  subCategory: StaffExpensesSubCategoryEnum.Gift,
+  subCategory: StaffExpensesSubCategoryEnum.NonCash,
   transactions: mockTransactions,
   total: 6770,
 };
@@ -30,7 +30,7 @@ describe('BreakdownAccordion', () => {
   it('titles the summary with the category and subcategory', () => {
     const { getByText } = render(<TestComponent {...defaultProps} />);
 
-    expect(getByText('Donation - Gift')).toBeInTheDocument();
+    expect(getByText('Donation - Non Cash')).toBeInTheDocument();
     expect(getByText('$6,770.00')).toBeInTheDocument();
   });
 
@@ -87,6 +87,19 @@ describe('BreakdownAccordion', () => {
       expect(getByRole('cell', { name: '$5,000.00' })).toBeInTheDocument();
       expect(getByRole('cell', { name: 'One-time gift' })).toBeInTheDocument();
       expect(getByRole('cell', { name: '$1,770.00' })).toBeInTheDocument();
+    });
+
+    it('falls back to N/A when a transaction has no description', async () => {
+      const { getByRole, findByRole } = render(
+        <TestComponent
+          {...defaultProps}
+          transactions={[{ ...mockTransactions[0], description: '' }]}
+        />,
+      );
+
+      userEvent.click(getByRole('button'));
+
+      expect(await findByRole('cell', { name: 'N/A' })).toBeInTheDocument();
     });
 
     it('marks a negative transaction inside an income accordion', async () => {

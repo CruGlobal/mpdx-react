@@ -212,7 +212,12 @@ export const MPGAIncomeExpensesReport: React.FC<
           </Container>
         </Box>
         <SimpleScreenOnly>
-          <TotalsProvider data={allData} loading={loading}>
+          <TotalsProvider
+            data={allData}
+            loading={loading}
+            startDate={startDate}
+            endDate={endDate}
+          >
             <ScreenOnlyReport
               data={allData}
               last12Months={last12Months}
@@ -221,7 +226,12 @@ export const MPGAIncomeExpensesReport: React.FC<
           </TotalsProvider>
         </SimpleScreenOnly>
         <PrintOnly>
-          <TotalsProvider data={allData} loading={loading}>
+          <TotalsProvider
+            data={allData}
+            loading={loading}
+            startDate={startDate}
+            endDate={endDate}
+          >
             <PrintOnlyReport
               data={allData}
               last12Months={last12Months}

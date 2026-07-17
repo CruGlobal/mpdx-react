@@ -1,5 +1,6 @@
 import { renderHook } from '@testing-library/react';
 import { mockData } from 'src/components/Reports/MPGAIncomeExpensesReport/mockData';
+import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import { useExpenseCategories } from './useExpenseCategories';
 
 describe('useExpenseCategories', () => {
@@ -27,7 +28,8 @@ describe('useExpenseCategories', () => {
       ...mockData.expenses,
       {
         id: '7',
-        description: 'Ministry Reimbursement',
+        description: 'Ministry Reimbursements',
+        category: StaffExpenseCategoryEnum.MinistryReimbursement,
         monthly: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12],
         average: 1,
         total: 12,

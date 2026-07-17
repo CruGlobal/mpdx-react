@@ -171,7 +171,9 @@ describe('TableCard', () => {
 
       const dialog = await findByRole('dialog');
       expect(within(dialog).getByText('Donation')).toBeInTheDocument();
-      expect(within(dialog).getByText('Donation - Gift')).toBeInTheDocument();
+      expect(
+        within(dialog).getByText('Donation - Non Cash'),
+      ).toBeInTheDocument();
       expect(
         within(dialog).getByText('Total Donation Income'),
       ).toBeInTheDocument();

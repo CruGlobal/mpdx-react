@@ -332,7 +332,7 @@ describe('useFilteredFunds', () => {
           },
           {
             date: '2024-01-20T00:00:00Z',
-            description: 'N/A',
+            description: '',
             category: StaffExpenseCategoryEnum.Benefits,
             subCategory: StaffExpensesSubCategoryEnum.ProgramBased,
             amount: 30,
