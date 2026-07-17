@@ -139,19 +139,15 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
         {handleDiscard && backButton}
         {!hideNextButton &&
           (isSubmission ? (
-            <Tooltip title={disableNext ? (disabledNextTooltip ?? '') : ''}>
-              <Box component="span">
-                <Button
-                  variant="contained"
-                  color="primary"
-                  endIcon={<ChevronRight />}
-                  onClick={handleSubmit}
-                  disabled={disableNext || (submitCount ? !isValid : false)}
-                >
-                  {t('Submit')}
-                </Button>
-              </Box>
-            </Tooltip>
+            <Button
+              variant="contained"
+              color="primary"
+              endIcon={<ChevronRight />}
+              onClick={handleSubmit}
+              disabled={submitCount ? !isValid : false}
+            >
+              {t('Submit')}
+            </Button>
           ) : (
             <Tooltip
               title={

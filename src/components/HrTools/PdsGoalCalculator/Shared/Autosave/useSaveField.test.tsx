@@ -1,6 +1,5 @@
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
-import { mockSession } from '__tests__/util/mockSession';
 import { UpdatePdsGoalCalculationMutation } from '../../GoalsList/PdsGoalCalculations.generated';
 import {
   PdsGoalCalculatorTestWrapper,
@@ -91,24 +90,6 @@ describe('useSaveField', () => {
       expect(mockEnqueue).toHaveBeenCalledWith(
         'Failed to save changes. Please try again.',
         { variant: 'error' },
-      ),
-    );
-  });
-
-  it('does not update the calculation during restricted impersonation', async () => {
-    mockSession({ impersonationScope: 'mpd_supervisor' });
-
-    const { result } = renderHook(useSaveField, { wrapper: Wrapper });
-
-    await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('PdsGoalCalculation'),
-    );
-
-    await result.current({ name: 'New Name' });
-
-    await waitFor(() =>
-      expect(mutationSpy).not.toHaveGraphqlOperation(
-        'UpdatePdsGoalCalculation',
       ),
     );
   });

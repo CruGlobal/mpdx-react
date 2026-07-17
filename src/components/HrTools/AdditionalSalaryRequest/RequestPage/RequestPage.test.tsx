@@ -7,7 +7,6 @@ import { SnackbarProvider } from 'notistack';
 import * as yup from 'yup';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { mockSession } from '__tests__/util/mockSession';
 import {
   AsrStatusEnum,
   ElectionType403bEnum,
@@ -812,36 +811,6 @@ describe('RequestPage', () => {
       expect(queryByText(/requires Board approval/)).not.toBeInTheDocument();
       expect(
         queryByText(/You have a Board approved Maximum Allowable Salary/),
-      ).not.toBeInTheDocument();
-    });
-  });
-
-  describe('restricted impersonation', () => {
-    it('disables the Continue button on the first page when continuing would create a request', () => {
-      mockSession({ impersonationScope: 'mpd_supervisor' });
-      mockUseAdditionalSalaryRequest.mockReturnValue({
-        ...defaultMockContextValue,
-        requestData: { latestAdditionalSalaryRequest: null },
-      } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
-
-      const { getByRole } = render(<TestWrapper />);
-
-      expect(getByRole('button', { name: /continue/i })).toBeDisabled();
-    });
-
-    it('disables the Submit button and hides Discard on the last form page', () => {
-      mockSession({ impersonationScope: 'mpd_supervisor' });
-      mockUseAdditionalSalaryRequest.mockReturnValue({
-        ...defaultMockContextValue,
-        currentIndex: 1,
-        currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
-      } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
-
-      const { getByRole, queryByRole } = render(<TestWrapper />);
-
-      expect(getByRole('button', { name: /submit/i })).toBeDisabled();
-      expect(
-        queryByRole('button', { name: /discard/i }),
       ).not.toBeInTheDocument();
     });
   });

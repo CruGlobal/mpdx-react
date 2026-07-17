@@ -3,7 +3,6 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { mockSession } from '__tests__/util/mockSession';
 import { GoalCalculationsQuery } from './GoalCalculations.generated';
 import { GoalsList } from './GoalsList';
 
@@ -114,13 +113,5 @@ describe('GoalsList', () => {
         after: 'cursor-1',
       }),
     );
-  });
-
-  it('disables the create button during restricted impersonation', async () => {
-    mockSession({ impersonationScope: 'mpd_supervisor' });
-
-    const { getByRole } = render(<TestComponent />);
-
-    expect(getByRole('button', { name: 'Create a New Goal' })).toBeDisabled();
   });
 });

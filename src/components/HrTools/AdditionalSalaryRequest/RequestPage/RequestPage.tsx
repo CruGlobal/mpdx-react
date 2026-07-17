@@ -10,7 +10,6 @@ import {
 import Loading from 'src/components/Loading/Loading';
 import { LimitedAccess } from 'src/components/Shared/LimitedAccess/LimitedAccess';
 import { AsrStatusEnum } from 'src/graphql/types.generated';
-import { useRestrictedImpersonation } from 'src/hooks/useRestrictedImpersonation';
 import theme from 'src/theme';
 import { PanelLayout } from '../../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { useIconPanelItems } from '../../Shared/CalculationReports/PanelLayout/useIconPanelItems';
@@ -56,8 +55,6 @@ const MainContent: React.FC = () => {
   const latestRequest = requestData?.latestAdditionalSalaryRequest;
   const reason = latestRequest?.progressiveApprovalTierReason ?? null;
 
-  const restrictedImpersonation = useRestrictedImpersonation();
-
   const [createRequest, { loading: creatingRequest }] =
     useCreateAdditionalSalaryRequestMutation();
 
@@ -71,18 +68,11 @@ const MainContent: React.FC = () => {
     errors,
   } = useFormikContext<CompleteFormValues>();
 
-  const wouldCreateRequest =
-    latestRequest === null ||
-    latestRequest?.status === AsrStatusEnum.ApprovedAndPaid;
-
   const handleContinue = async () => {
-    if (wouldCreateRequest) {
-      // The tool is read-only during restricted impersonation, so continuing
-      // must not create a new request
-      if (restrictedImpersonation) {
-        return;
-      }
-
+    if (
+      latestRequest === null ||
+      latestRequest?.status === AsrStatusEnum.ApprovedAndPaid
+    ) {
       await trackMutation(
         createRequest({
           variables: {
@@ -168,9 +158,7 @@ const MainContent: React.FC = () => {
                 handlePreviousStep={handlePreviousStep}
                 showBackButton={!isFirstFormPage}
                 handleDiscard={
-                  requestId && isFormPage && !restrictedImpersonation
-                    ? handleDiscard
-                    : undefined
+                  requestId && isFormPage ? handleDiscard : undefined
                 }
                 isSubmission={isLastFormPage}
                 submitForm={submitForm}
@@ -185,15 +173,6 @@ const MainContent: React.FC = () => {
                 disableSubmit={
                   (splitAsr && !!errors.additionalInfo) ||
                   (exceedsCap && !!errors.additionalInfo)
-                }
-                disableNext={
-                  restrictedImpersonation &&
-                  ((isFirstFormPage && wouldCreateRequest) || isLastFormPage)
-                }
-                disabledNextTooltip={
-                  restrictedImpersonation
-                    ? t('Read-only while impersonating')
-                    : undefined
                 }
                 overrideNext={isFirstFormPage ? handleContinue : undefined}
               />

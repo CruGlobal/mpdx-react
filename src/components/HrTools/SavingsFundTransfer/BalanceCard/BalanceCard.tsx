@@ -1,10 +1,9 @@
 import React from 'react';
 import { Diversity1, Outbox, Savings, Wallet } from '@mui/icons-material';
-import { Box, Button, Card, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Card, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { SimpleScreenOnly } from 'src/components/Reports/styledComponents';
 import { useLocale } from 'src/hooks/useLocale';
-import { useRestrictedImpersonation } from 'src/hooks/useRestrictedImpersonation';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
@@ -23,7 +22,6 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const restrictedImpersonation = useRestrictedImpersonation();
 
   const title = t('{{ name }} Account Balance', { name: fund.fundType });
   const Icon =
@@ -131,24 +129,14 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
           mt: 'auto',
         }}
       >
-        <Tooltip
-          title={
-            restrictedImpersonation ? t('Read-only while impersonating') : ''
-          }
+        <Button
+          onClick={handleTransferFrom}
+          disabled={fund.endBalance <= fund.deficitLimit}
+          fullWidth
         >
-          <Box component="span" sx={{ display: 'block', width: '100%' }}>
-            <Button
-              onClick={handleTransferFrom}
-              disabled={
-                fund.endBalance <= fund.deficitLimit || restrictedImpersonation
-              }
-              fullWidth
-            >
-              <Outbox fontSize="small" sx={{ mr: 0.5 }} />
-              {t('TRANSFER FROM')}
-            </Button>
-          </Box>
-        </Tooltip>
+          <Outbox fontSize="small" sx={{ mr: 0.5 }} />
+          {t('TRANSFER FROM')}
+        </Button>
       </SimpleScreenOnly>
     </Card>
   );
