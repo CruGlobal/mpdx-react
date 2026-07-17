@@ -38,6 +38,11 @@ const TestComponent: React.FC<TestComponentProps> = ({
           attrition: 600,
           monthlyGoal: 20000,
           supportRaised,
+          ibsNsoCost: 2000,
+          faithAndFinanceCost: 500,
+          refreshRetreatCost: 424,
+          cruConferenceCost: 700,
+          specialNeedsTotal: 3624,
         },
       }}
     />
@@ -136,8 +141,8 @@ describe('PresentingYourGoalStep', () => {
     });
   });
 
-  it('renders the monthly support needs chart and the special needs chart placeholder', async () => {
-    const { findByRole, getByRole, getByTestId } = render(<TestComponent />);
+  it('renders the monthly support needs chart and the special needs chart', async () => {
+    const { findByRole, getByRole } = render(<TestComponent />);
 
     expect(
       await findByRole('heading', { name: 'Monthly Support Needs Chart' }),
@@ -145,7 +150,6 @@ describe('PresentingYourGoalStep', () => {
     expect(
       getByRole('heading', { name: 'Special Needs Chart' }),
     ).toBeInTheDocument();
-    expect(getByTestId('chart-placeholder')).toBeInTheDocument();
   });
 
   it('prints when the print button is clicked', () => {

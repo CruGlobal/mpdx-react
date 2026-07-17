@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, styled } from '@mui/material';
+import { Box, Typography, styled } from '@mui/material';
 import {
   Cell,
   Legend,
@@ -12,7 +12,6 @@ import { useContainerWidth } from 'src/hooks/useContainerWidth';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { MonthlyNeeds, useMonthlyNeedsRows } from './useMonthlyNeedsRows';
 
 const ChartContainer = styled(Box)({
   '@media print': {
@@ -55,12 +54,27 @@ const chartColors = [
   theme.palette.info.main,
 ];
 
-export interface SupportNeedsChartProps {
-  monthlyNeeds: MonthlyNeeds;
+/** One pie slice: a named support-needs category and its dollar amount. */
+export interface NeedsCategory {
+  title: string;
+  amount: number;
 }
 
+export interface SupportNeedsChartProps {
+  /** The categories to plot, one slice each (e.g. monthly needs or special needs). */
+  needsCategories: NeedsCategory[];
+  /** Message shown when every category is zero (e.g. no special needs). */
+  emptyMessage?: string;
+}
+
+/**
+ * Pie chart of support-needs categories. Presentational only — callers build
+ * the category rows (e.g. `useMonthlyNeedsRows` for the monthly goal, or the
+ * special-needs cost lines) and pass them in.
+ */
 export const SupportNeedsChart: React.FC<SupportNeedsChartProps> = ({
-  monthlyNeeds,
+  needsCategories,
+  emptyMessage,
 }) => {
   const locale = useLocale();
   const { containerRef, width } = useContainerWidth();
@@ -68,15 +82,30 @@ export const SupportNeedsChart: React.FC<SupportNeedsChartProps> = ({
   // In narrower containers, the pie shrinks and the legend moves below the chart
   const isCompact = typeof width === 'number' && width < 700;
 
-  const rows = useMonthlyNeedsRows(monthlyNeeds);
-  const total = rows.reduce((sum, row) => sum + row.amount, 0);
+  const total = needsCategories.reduce((sum, row) => sum + row.amount, 0);
+
+  if (total === 0) {
+    return emptyMessage ? (
+      <ChartContainer
+        ref={containerRef}
+        height={500}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Typography color="text.secondary">{emptyMessage}</Typography>
+      </ChartContainer>
+    ) : null;
+  }
 
   return (
     <ChartContainer ref={containerRef} height={500}>
       <ResponsiveContainer width="100%">
         <PieChart>
           <Pie
-            data={rows}
+            data={needsCategories}
             dataKey="amount"
             nameKey="title"
             cx="50%"
@@ -84,7 +113,7 @@ export const SupportNeedsChart: React.FC<SupportNeedsChartProps> = ({
             outerRadius={isCompact ? 130 : 180}
             cornerRadius={theme.shape.borderRadius}
           >
-            {rows.map((row, index) => (
+            {needsCategories.map((row, index) => (
               <Cell
                 key={row.title}
                 fill={chartColors[index % chartColors.length]}
@@ -92,13 +121,12 @@ export const SupportNeedsChart: React.FC<SupportNeedsChartProps> = ({
             ))}
           </Pie>
           <Tooltip
-            formatter={(value) => {
-              return `${currencyFormat(
-                Number(value),
-                'USD',
+            formatter={(value) =>
+              `${currencyFormat(Number(value), 'USD', locale)} (${percentageFormat(
+                Number(value) / total,
                 locale,
-              )} (${percentageFormat(Number(value) / total, locale)})`;
-            }}
+              )})`
+            }
           />
           <Legend
             layout="vertical"

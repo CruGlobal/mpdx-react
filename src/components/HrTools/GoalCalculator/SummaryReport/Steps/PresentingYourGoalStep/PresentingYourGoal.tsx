@@ -5,6 +5,7 @@ import { MonthlyNeedsCard } from 'src/components/HrTools/Shared/GoalPresentation
 import { PersonalInfoCard } from 'src/components/HrTools/Shared/GoalPresentation/PersonalInfoCard';
 import { PresentationCard } from 'src/components/HrTools/Shared/GoalPresentation/PresentationCard';
 import { SupportNeedsChart } from 'src/components/HrTools/Shared/GoalPresentation/SupportNeedsChart';
+import { useMonthlyNeedsRows } from 'src/components/HrTools/Shared/GoalPresentation/useMonthlyNeedsRows';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
 import { hasStaffSpouse } from '../../../Shared/calculateTotals';
 
@@ -49,6 +50,7 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
     }),
     [married, goalTotals],
   );
+  const supportNeedsRows = useMonthlyNeedsRows(supportNeeds);
 
   return (
     <PrintableContent>
@@ -68,7 +70,7 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
         title={t('Monthly Support Breakdown')}
         horizontalScroll={false}
       >
-        <SupportNeedsChart monthlyNeeds={supportNeeds} />
+        <SupportNeedsChart needsCategories={supportNeedsRows} />
       </PresentationCard>
     </PrintableContent>
   );
