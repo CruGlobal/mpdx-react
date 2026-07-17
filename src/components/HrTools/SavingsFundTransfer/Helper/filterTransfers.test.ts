@@ -160,6 +160,7 @@ describe('useFilteredTransfers', () => {
   it('should return the correct number of transfers', () => {
     const { filtered, upcoming } = filteredTransfers(mockTransactions);
     expect(filtered).toHaveLength(2);
+    // upcoming holds the future-dated recurring transfer and the scheduled transfer
     expect(upcoming).toHaveLength(2);
   });
 
@@ -170,7 +171,7 @@ describe('useFilteredTransfers', () => {
     expect(scheduled).toHaveLength(1);
     expect(scheduled[0].scheduledTransfer?.id).toBe('sched-1');
     expect(scheduled[0].summarizedTransfers).toBeUndefined();
-    expect(filtered.some((tx) => tx.scheduledTransfer)).toBe(false);
+    expect(filtered.every((tx) => !tx.scheduledTransfer)).toBe(true);
   });
 
   it('should correctly add amounts for recurring transfers', () => {
