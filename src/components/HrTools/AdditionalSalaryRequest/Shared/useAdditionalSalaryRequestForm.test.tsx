@@ -2,7 +2,6 @@ import { ThemeProvider } from '@mui/material/styles';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { DeepPartial } from 'ts-essentials';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
-import { mockSession } from '__tests__/util/mockSession';
 import { PageEnum } from 'src/components/HrTools/Shared/CalculationReports/Shared/sharedTypes';
 import {
   HcmDocument,
@@ -193,7 +192,6 @@ const TestWrapper: React.FC<TestComponentProps> = ({ children, mocks }) => {
 describe('useAdditionalSalaryRequestForm', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockSession({});
     mockUseAdditionalSalaryRequest.mockReturnValue(defaultMockContextValue);
   });
 
@@ -761,40 +759,6 @@ describe('useAdditionalSalaryRequestForm', () => {
 
       expect(submitError).toEqual(
         expect.objectContaining({ message: 'Server Error' }),
-      );
-      expect(mutationSpy).not.toHaveGraphqlOperation(
-        'SubmitAdditionalSalaryRequest',
-      );
-      expect(mockHandleNextStep).not.toHaveBeenCalled();
-    });
-
-    it('should not fire mutations when submitting during restricted impersonation', async () => {
-      mockSession({ impersonationScope: 'mpd_supervisor' });
-
-      const { result } = renderHook(
-        () =>
-          useAdditionalSalaryRequestForm({
-            ...defaultFormValues,
-            phoneNumber: '555-123-4567',
-            emailAddress: 'test@example.com',
-          }),
-        {
-          wrapper: TestWrapper,
-        },
-      );
-
-      // Ensure the form is valid so onSubmit actually runs
-      await waitFor(async () => {
-        const errors = await result.current.validateForm();
-        expect(errors).toEqual({});
-      });
-
-      await act(async () => {
-        await result.current.submitForm();
-      });
-
-      expect(mutationSpy).not.toHaveGraphqlOperation(
-        'UpdateAdditionalSalaryRequest',
       );
       expect(mutationSpy).not.toHaveGraphqlOperation(
         'SubmitAdditionalSalaryRequest',

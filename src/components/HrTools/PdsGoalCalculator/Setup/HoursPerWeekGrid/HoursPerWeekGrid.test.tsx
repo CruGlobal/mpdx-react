@@ -1,7 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { mockSession } from '__tests__/util/mockSession';
 import {
   PdsGoalCalculationMock,
   PdsGoalCalculatorTestWrapper,
@@ -421,92 +420,5 @@ describe('HoursPerWeekGrid', () => {
     });
     // Default Regular Week 40*48/48 = 40.00 remains
     expect(getByText('40.00')).toBeInTheDocument();
-  });
-
-  describe('restricted impersonation', () => {
-    // Includes a custom (deletable) entry so the delete action renders
-    const restrictedCalculationMock: PdsGoalCalculationMock = {
-      ...defaultCalculationMock,
-      designationSupportHoursItems: [
-        ...(defaultCalculationMock.designationSupportHoursItems ?? []),
-        {
-          id: 'item-custom',
-          label: 'Custom Entry',
-          hoursPerWeek: 5,
-          numberOfWeeks: 2,
-          name: 'custom',
-          position: 3,
-          predefined: false,
-        },
-      ],
-    };
-
-    it('disables the Add Entry button', async () => {
-      mockSession({ impersonationScope: 'mpd_supervisor' });
-
-      const { findByText, getByRole } = render(
-        <PdsGoalCalculatorTestWrapper
-          calculationMock={restrictedCalculationMock}
-          onCall={mutationSpy}
-        >
-          <HoursPerWeekGrid />
-        </PdsGoalCalculatorTestWrapper>,
-      );
-
-      await waitForDataToLoad();
-      await findByText('Regular Week');
-
-      expect(getByRole('button', { name: 'Add Entry' })).toBeDisabled();
-    });
-
-    it('disables the delete button on custom entries', async () => {
-      mockSession({ impersonationScope: 'mpd_supervisor' });
-
-      const { findByText, getByLabelText } = render(
-        <PdsGoalCalculatorTestWrapper
-          calculationMock={restrictedCalculationMock}
-          onCall={mutationSpy}
-        >
-          <HoursPerWeekGrid />
-        </PdsGoalCalculatorTestWrapper>,
-      );
-
-      await waitForDataToLoad();
-      await findByText('Custom Entry');
-
-      expect(getByLabelText('Delete')).toBeDisabled();
-    });
-
-    it('does not open the cell editor or fire mutations when editing a cell', async () => {
-      mockSession({ impersonationScope: 'mpd_supervisor' });
-
-      const { findByText, queryByDisplayValue } = render(
-        <PdsGoalCalculatorTestWrapper
-          calculationMock={restrictedCalculationMock}
-          onCall={mutationSpy}
-        >
-          <HoursPerWeekGrid />
-        </PdsGoalCalculatorTestWrapper>,
-      );
-
-      await waitForDataToLoad();
-
-      // Attempt to edit Regular Week hours; isCellEditable blocks the editor
-      const regularRow = (await findByText('Regular Week')).closest(
-        '[role="row"]',
-      );
-      const hoursCell = regularRow?.querySelector(
-        '[data-field="hoursPerWeek"]',
-      );
-      userEvent.dblClick(hoursCell!);
-
-      expect(queryByDisplayValue('40')).not.toBeInTheDocument();
-      expect(mutationSpy).not.toHaveGraphqlOperation(
-        'UpdateDesignationSupportHoursItem',
-      );
-      expect(mutationSpy).not.toHaveGraphqlOperation(
-        'UpdatePdsGoalCalculation',
-      );
-    });
   });
 });

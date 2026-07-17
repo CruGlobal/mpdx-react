@@ -1,7 +1,6 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { mockSession } from '__tests__/util/mockSession';
 import { PageEnum } from 'src/components/HrTools/Shared/CalculationReports/Shared/sharedTypes';
 import { ElectionType403bEnum } from 'src/graphql/types.generated';
 import { createCache } from 'src/lib/apollo/cache';
@@ -238,20 +237,5 @@ describe('useSaveField', () => {
     result.current({ adoption: 500 });
 
     await waitFor(() => expect(mockTrackMutation).toHaveBeenCalled());
-  });
-
-  it('should not call mutation during restricted impersonation', async () => {
-    mockSession({ impersonationScope: 'mpd_supervisor' });
-
-    const { result } = renderHook(
-      () => useSaveField({ formValues: defaultFormValues }),
-      {
-        wrapper: TestComponent,
-      },
-    );
-
-    await result.current({ currentYearSalaryNotReceived: 200 });
-
-    expect(mutationSpy).not.toHaveBeenCalled();
   });
 });

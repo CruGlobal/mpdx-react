@@ -6,7 +6,6 @@ import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { mockSession } from '__tests__/util/mockSession';
 import { PageEnum } from 'src/components/HrTools/Shared/CalculationReports/Shared/sharedTypes';
 import theme from 'src/theme';
 import { HcmQuery } from '../../Shared/HcmData/Hcm.generated';
@@ -443,32 +442,6 @@ describe('AdditionalSalaryRequestContext', () => {
         );
       });
       expect(await findByTestId('roth-403b')).toHaveTextContent('0.03');
-    });
-  });
-
-  describe('restricted impersonation', () => {
-    it('does not fire the delete mutation when handleDeleteRequest is called', async () => {
-      mockSession({ impersonationScope: 'mpd_supervisor' });
-
-      const mutationSpy = jest.fn();
-      const { getByRole, findByTestId } = render(
-        <TestWrapper onCall={mutationSpy} />,
-      );
-
-      // Wait for the initial queries to settle before invoking the handler
-      expect(await findByTestId('request-id')).toHaveTextContent(
-        'test-request-id',
-      );
-
-      userEvent.click(getByRole('button', { name: 'Cancel Request' }));
-      userEvent.click(getByRole('button', { name: 'Discard Request' }));
-
-      await waitFor(() => {
-        expect(mutationSpy).not.toHaveGraphqlOperation(
-          'DeleteAdditionalSalaryRequest',
-        );
-      });
-      expect(mockEnqueue).not.toHaveBeenCalled();
     });
   });
 });

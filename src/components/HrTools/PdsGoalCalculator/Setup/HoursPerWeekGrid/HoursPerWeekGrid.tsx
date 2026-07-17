@@ -13,7 +13,6 @@ import {
   Button,
   Card,
   Divider,
-  Tooltip,
   Typography,
   styled,
 } from '@mui/material';
@@ -26,7 +25,6 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { BaseGrid } from 'src/components/HrTools/GoalCalculator/SharedComponents/GoalCalculatorGrid/BaseGrid';
 import { useLocale } from 'src/hooks/useLocale';
-import { useRestrictedImpersonation } from 'src/hooks/useRestrictedImpersonation';
 import { numberFormat } from 'src/lib/intlFormat';
 import {
   useCreateDesignationSupportHoursItemMutation,
@@ -71,7 +69,6 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
   const locale = useLocale();
   const { enqueueSnackbar } = useSnackbar();
   const { calculation, trackMutation } = usePdsGoalCalculator();
-  const restrictedImpersonation = useRestrictedImpersonation();
   const [createHoursItem] = useCreateDesignationSupportHoursItemMutation();
   const [updateHoursItem] = useUpdateDesignationSupportHoursItemMutation();
   const [deleteHoursItem] = useDeleteDesignationSupportHoursItemMutation();
@@ -131,8 +128,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
 
   const saveHoursItem = useCallback(
     async (entry: HoursPerWeekEntry, currentEntries: HoursPerWeekEntry[]) => {
-      // Read-only during restricted impersonation
-      if (restrictedImpersonation || !calculation) {
+      if (!calculation) {
         return;
       }
 
@@ -187,7 +183,6 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
     },
     [
       calculation,
-      restrictedImpersonation,
       createHoursItem,
       updateHoursItem,
       trackMutation,
@@ -208,8 +203,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
   );
 
   const addEntry = useCallback(async () => {
-    // Read-only during restricted impersonation
-    if (restrictedImpersonation || !calculation) {
+    if (!calculation) {
       return;
     }
 
@@ -259,7 +253,6 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
   }, [
     t,
     calculation,
-    restrictedImpersonation,
     createHoursItem,
     trackMutation,
     entries.length,
@@ -268,11 +261,6 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
 
   const deleteEntry = useCallback(
     async (id: string | number) => {
-      // Read-only during restricted impersonation
-      if (restrictedImpersonation) {
-        return;
-      }
-
       const entryId = id.toString();
       const previousEntries = entries;
       const remainingEntries = entries.filter((entry) => entry.id !== entryId);
@@ -311,15 +299,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
         });
       }
     },
-    [
-      entries,
-      restrictedImpersonation,
-      deleteHoursItem,
-      trackMutation,
-      saveField,
-      enqueueSnackbar,
-      t,
-    ],
+    [entries, deleteHoursItem, trackMutation, saveField, enqueueSnackbar, t],
   );
 
   const processRowUpdate = useCallback(
@@ -459,13 +439,12 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
               label={t('Delete')}
               onClick={() => deleteEntry(params.id)}
               showInMenu={false}
-              disabled={restrictedImpersonation}
             />,
           ];
         },
       },
     ],
-    [t, totalHours, deleteEntry, restrictedImpersonation],
+    [t, totalHours, deleteEntry],
   );
 
   return (
@@ -478,23 +457,14 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
       </Typography>
 
       <StyledCard>
-        <Tooltip
-          title={
-            restrictedImpersonation ? t('Read-only while impersonating') : ''
-          }
+        <Button
+          variant="text"
+          onClick={addEntry}
+          size="small"
+          startIcon={<AddIcon />}
         >
-          <span>
-            <Button
-              variant="text"
-              onClick={addEntry}
-              size="small"
-              startIcon={<AddIcon />}
-              disabled={restrictedImpersonation}
-            >
-              {t('Add Entry')}
-            </Button>
-          </span>
-        </Tooltip>
+          {t('Add Entry')}
+        </Button>
 
         <BaseGrid
           rows={dataWithTotal}
@@ -518,10 +488,6 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
             });
           }}
           isCellEditable={(params) => {
-            // Read-only during restricted impersonation
-            if (restrictedImpersonation) {
-              return false;
-            }
             if (params.id === 'total') {
               return false;
             }

@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import { GoalCard } from 'src/components/Reports/Shared/GoalCard/GoalCard';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
-import { useRestrictedImpersonation } from 'src/hooks/useRestrictedImpersonation';
 import {
   ListGoalCalculationFragment,
   useDeleteGoalCalculationMutation,
@@ -16,7 +15,6 @@ export interface MpdGoalCardProps {
 export const MpdGoalCard: React.FC<MpdGoalCardProps> = ({ goal }) => {
   const accountListId = useAccountListId();
   const constants = useGoalCalculatorConstants();
-  const restrictedImpersonation = useRestrictedImpersonation();
   const [deleteGoalCalculation] = useDeleteGoalCalculationMutation();
 
   const overallTotal = useMemo(
@@ -46,7 +44,6 @@ export const MpdGoalCard: React.FC<MpdGoalCardProps> = ({ goal }) => {
       updatedAt={goal.updatedAt}
       viewHref={`/accountLists/${accountListId}/hrTools/goalCalculator/${goal.id}`}
       onDelete={handleDelete}
-      deleteDisabled={restrictedImpersonation}
     />
   );
 };

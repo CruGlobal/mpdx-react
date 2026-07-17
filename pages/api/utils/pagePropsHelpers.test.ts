@@ -119,10 +119,27 @@ describe('pagePropsHelpers', () => {
       });
     });
 
-    it('returns a redirect if the user is neither an admin nor an MPD supervisor admin', async () => {
+    it('does not return a redirect if the user is a developer', async () => {
       const user = {
         apiToken: 'token',
         admin: false,
+        developer: true,
+        mpdSupervisorAdmin: false,
+      };
+      (getSession as jest.Mock).mockResolvedValue({ user });
+
+      await expect(enforceAdminOrMpdLeader(context)).resolves.toMatchObject({
+        props: {
+          session: { user },
+        },
+      });
+    });
+
+    it('returns a redirect if the user is not an admin, developer, or MPD supervisor admin', async () => {
+      const user = {
+        apiToken: 'token',
+        admin: false,
+        developer: false,
         mpdSupervisorAdmin: false,
       };
       (getSession as jest.Mock).mockResolvedValue({ user });

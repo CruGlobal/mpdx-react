@@ -6,7 +6,6 @@ import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { mockSession } from '__tests__/util/mockSession';
 import theme from 'src/theme';
 import { TableTypeEnum, Transfers, mockData } from '../mockData';
 import { TransfersTable } from './TransfersTable';
@@ -290,23 +289,5 @@ describe('TransferHistoryTable', () => {
     expect(mockEnqueue).toHaveBeenCalledWith('End date updated successfully', {
       variant: 'success',
     });
-  });
-
-  it('disables the row action buttons during restricted impersonation', async () => {
-    mockSession({ impersonationScope: 'mpd_supervisor' });
-
-    const { findByRole } = render(<TestComponent />);
-
-    const grid = await findByRole('grid');
-
-    expect(
-      within(grid).getByRole('button', { name: 'Add End Date' }),
-    ).toBeDisabled();
-    expect(
-      within(grid).getByRole('button', { name: 'Edit End Date' }),
-    ).toBeDisabled();
-    within(grid)
-      .getAllByRole('button', { name: 'Stop Transfer' })
-      .forEach((stopButton) => expect(stopButton).toBeDisabled());
   });
 });
