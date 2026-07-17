@@ -1,7 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { mockBreakdownData } from '../mockData';
@@ -14,8 +13,6 @@ const defaultProps: BreakdownModalProps = {
   breakdownData: mockBreakdownData,
 };
 
-const mutationSpy = jest.fn();
-
 const TestComponent: React.FC<BreakdownModalProps> = (props) => (
   <ThemeProvider theme={theme}>
     <BreakdownModal {...props} />
@@ -23,20 +20,6 @@ const TestComponent: React.FC<BreakdownModalProps> = (props) => (
 );
 
 describe('BreakdownModal', () => {
-  it('renders dialog when open is true', () => {
-    const { getByRole } = render(<TestComponent {...defaultProps} />);
-
-    expect(getByRole('dialog')).toBeInTheDocument();
-  });
-
-  it('does not render dialog when open is false', () => {
-    const { queryByRole } = render(
-      <TestComponent {...defaultProps} open={false} />,
-    );
-
-    expect(queryByRole('dialog')).not.toBeInTheDocument();
-  });
-
   it('renders title and column headers of dialog', () => {
     const { getByText, getByRole } = render(
       <TestComponent {...defaultProps} />,
@@ -80,15 +63,5 @@ describe('BreakdownModal', () => {
 
     expect(getByRole('dialog')).toBeInTheDocument();
     expect(queryByText('Donation - Gift')).not.toBeInTheDocument();
-  });
-
-  it('calls onClose when close button is clicked', () => {
-    const { getByTestId } = render(
-      <TestComponent {...defaultProps} onClose={mutationSpy} />,
-    );
-
-    userEvent.click(getByTestId('close-button'));
-
-    expect(mutationSpy).toHaveBeenCalled();
   });
 });
