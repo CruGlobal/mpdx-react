@@ -503,9 +503,15 @@ describe('SettingsDialog', () => {
       hideDateRange: true,
     };
 
-    it('displays the category checkboxes only', async () => {
-      const { queryByLabelText, getByLabelText, findByLabelText, getByText } =
-        render(<TestComponent {...defaultProps} />);
+    it('displays the simplified date range dropdown and category checkboxes without custom date fields', async () => {
+      const {
+        queryByLabelText,
+        getByLabelText,
+        findByLabelText,
+        getByText,
+        getByRole,
+        queryByRole,
+      } = render(<TestComponent {...defaultProps} />);
 
       expect(
         getByText(
@@ -517,7 +523,20 @@ describe('SettingsDialog', () => {
       expect(getByLabelText('Salary')).toBeInTheDocument();
       expect(getByLabelText('Donation')).toBeInTheDocument();
 
-      expect(queryByLabelText('Select Date Range')).not.toBeInTheDocument();
+      const dropdown = getByLabelText('Select Date Range');
+      expect(dropdown).toBeInTheDocument();
+      userEvent.click(dropdown);
+      expect(
+        getByRole('option', { name: 'Last 12 Months' }),
+      ).toBeInTheDocument();
+      expect(getByRole('option', { name: 'Year to Date' })).toBeInTheDocument();
+      expect(
+        queryByRole('option', { name: 'Week to Date' }),
+      ).not.toBeInTheDocument();
+      expect(
+        queryByRole('option', { name: 'Month to Date' }),
+      ).not.toBeInTheDocument();
+
       expect(queryByLabelText('Start Date')).not.toBeInTheDocument();
       expect(queryByLabelText('End Date')).not.toBeInTheDocument();
     });

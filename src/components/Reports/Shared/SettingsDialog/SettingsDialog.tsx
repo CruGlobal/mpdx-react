@@ -252,49 +252,56 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
           return (
             <Form>
               <DialogContent>
+                <TextField
+                  select
+                  label={t('Select Date Range')}
+                  fullWidth
+                  value={values.selectedDateRange ?? ''}
+                  onChange={(e) => {
+                    const value = e.target.value === '' ? null : e.target.value;
+                    setFieldValue('selectedDateRange', value);
+                    if (value !== null) {
+                      setFieldValue('startDate', null);
+                      setFieldValue('endDate', null);
+
+                      setTouched({
+                        ...touched,
+                        startDate: false,
+                        endDate: false,
+                      });
+                    }
+                    validateAndRefetch(validateForm, {
+                      ...values,
+                      selectedDateRange: value as DateRange | null,
+                      ...(value !== null && {
+                        startDate: null,
+                        endDate: null,
+                      }),
+                    });
+                  }}
+                >
+                  <MenuItem value="">{t('None')}</MenuItem>
+                  {!hideDateRange ? (
+                    [
+                      <MenuItem key="weekToDate" value={DateRange.WeekToDate}>
+                        {t('Week to Date')}
+                      </MenuItem>,
+                      <MenuItem key="monthToDate" value={DateRange.MonthToDate}>
+                        {t('Month to Date')}
+                      </MenuItem>,
+                    ]
+                  ) : (
+                    <MenuItem value={DateRange.MonthToDate}>
+                      {t('Last 12 Months')}
+                    </MenuItem>
+                  )}
+                  <MenuItem value={DateRange.YearToDate}>
+                    {t('Year to Date')}
+                  </MenuItem>
+                </TextField>
+
                 {!hideDateRange && (
                   <>
-                    <TextField
-                      select
-                      label={t('Select Date Range')}
-                      fullWidth
-                      value={values.selectedDateRange ?? ''}
-                      onChange={(e) => {
-                        const value =
-                          e.target.value === '' ? null : e.target.value;
-                        setFieldValue('selectedDateRange', value);
-                        if (value !== null) {
-                          setFieldValue('startDate', null);
-                          setFieldValue('endDate', null);
-
-                          setTouched({
-                            ...touched,
-                            startDate: false,
-                            endDate: false,
-                          });
-                        }
-                        validateAndRefetch(validateForm, {
-                          ...values,
-                          selectedDateRange: value as DateRange | null,
-                          ...(value !== null && {
-                            startDate: null,
-                            endDate: null,
-                          }),
-                        });
-                      }}
-                    >
-                      <MenuItem value="">{t('None')}</MenuItem>
-                      <MenuItem value={DateRange.WeekToDate}>
-                        {t('Week to Date')}
-                      </MenuItem>
-                      <MenuItem value={DateRange.MonthToDate}>
-                        {t('Month to Date')}
-                      </MenuItem>
-                      <MenuItem value={DateRange.YearToDate}>
-                        {t('Year to Date')}
-                      </MenuItem>
-                    </TextField>
-
                     <Typography variant="body2" sx={{ mt: 2, mb: 2 }}>
                       {t('Or enter a custom date range:')}
                     </Typography>
@@ -354,9 +361,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                   </>
                 )}
 
-                <Typography
-                  sx={{ mt: hideDateRange ? 0 : 2, whiteSpace: 'pre-line' }}
-                >
+                <Typography sx={{ mt: 2, whiteSpace: 'pre-line' }}>
                   {hideDateRange
                     ? t(
                         `Income and expenses are combined by categories by default. Select which categories to keep consolidated.`,
