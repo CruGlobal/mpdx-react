@@ -55,6 +55,13 @@ export interface RecurringTransfer {
   active: boolean;
 }
 
+export interface ScheduledTransfer {
+  id: string;
+  amount: number;
+  transactedAt: DateTime;
+  description?: string | null;
+}
+
 export interface Transfer {
   sourceFundTypeName: string;
   destinationFundTypeName: string;
@@ -72,6 +79,7 @@ export interface Transactions {
   subCategory: SubCategory | null;
   transfer: Transfer;
   recurringTransfer?: RecurringTransfer | null;
+  scheduledTransfer?: ScheduledTransfer | null;
   baseAmount: number;
   failedCount?: number;
   summarizedTransfers?: Map<string, Transactions> | null;
