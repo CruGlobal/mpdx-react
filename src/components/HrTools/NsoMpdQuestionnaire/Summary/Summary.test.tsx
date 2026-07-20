@@ -13,6 +13,12 @@ import { Summary } from './Summary';
 
 const mutationSpy = jest.fn();
 
+const filledDebtFields = {
+  studentLoanMonthlyPayment: 0,
+  carLoanMonthlyPayment: 0,
+  creditCardDebtMonthlyPayment: 0,
+};
+
 const TestComponent: React.FC<
   Omit<NsoMpdQuestionnaireTestWrapperProps, 'children'>
 > = (props) => (
@@ -144,9 +150,14 @@ describe('Summary', () => {
 
   it('submits via the confirmation modal', async () => {
     const { findByRole, getByRole } = render(
-      <TestComponent onCall={mutationSpy} />,
+      <TestComponent
+        onCall={mutationSpy}
+        newStaffQuestionnaire={filledDebtFields}
+      />,
     );
-    userEvent.click(await findByRole('button', { name: 'Submit' }));
+    const submitButton = await findByRole('button', { name: 'Submit' });
+    await waitFor(() => expect(submitButton).toBeEnabled());
+    userEvent.click(submitButton);
     const dialog = getByRole('dialog');
     userEvent.click(within(dialog).getByRole('button', { name: 'Submit' }));
     await waitFor(() =>
@@ -159,9 +170,14 @@ describe('Summary', () => {
 
   it('redirects to the dashboard after submitting', async () => {
     const { findByRole, getByRole } = render(
-      <TestComponent mockPush={mutationSpy} />,
+      <TestComponent
+        mockPush={mutationSpy}
+        newStaffQuestionnaire={filledDebtFields}
+      />,
     );
-    userEvent.click(await findByRole('button', { name: 'Submit' }));
+    const submitButton = await findByRole('button', { name: 'Submit' });
+    await waitFor(() => expect(submitButton).toBeEnabled());
+    userEvent.click(submitButton);
     const dialog = getByRole('dialog');
     userEvent.click(within(dialog).getByRole('button', { name: 'Submit' }));
     await waitFor(() =>
@@ -170,8 +186,12 @@ describe('Summary', () => {
   });
 
   it('shows a success toast when submitting', async () => {
-    const { findByRole, getByRole, findByText } = render(<TestComponent />);
-    userEvent.click(await findByRole('button', { name: 'Submit' }));
+    const { findByRole, getByRole, findByText } = render(
+      <TestComponent newStaffQuestionnaire={filledDebtFields} />,
+    );
+    const submitButton = await findByRole('button', { name: 'Submit' });
+    await waitFor(() => expect(submitButton).toBeEnabled());
+    userEvent.click(submitButton);
     userEvent.click(
       within(getByRole('dialog')).getByRole('button', { name: 'Submit' }),
     );
@@ -179,5 +199,45 @@ describe('Summary', () => {
     expect(
       await findByText('Questionnaire submitted successfully.'),
     ).toBeInTheDocument();
+  });
+
+  it('disables Submit and warns when required fields are missing', async () => {
+    const { findByRole, getByRole } = render(<TestComponent />);
+
+    expect(await findByRole('alert')).toHaveTextContent(
+      'Your form is missing information.',
+    );
+    expect(getByRole('button', { name: 'Submit' })).toBeDisabled();
+  });
+
+  it('links only the incomplete sections in the warning', async () => {
+    const { findByRole, queryByRole } = render(<TestComponent />);
+
+    expect(
+      await findByRole('button', { name: 'Financial Information' }),
+    ).toBeInTheDocument();
+
+    // Completed sections are filtered out of the warning once the data loads.
+    await waitFor(() =>
+      expect(
+        queryByRole('button', { name: 'Ministry Information' }),
+      ).not.toBeInTheDocument(),
+    );
+    expect(
+      queryByRole('button', { name: 'NSO Information' }),
+    ).not.toBeInTheDocument();
+    expect(
+      queryByRole('button', { name: 'Personal Information' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('enables Submit and hides the warning when the form is complete', async () => {
+    const { findByRole, queryByRole } = render(
+      <TestComponent newStaffQuestionnaire={filledDebtFields} />,
+    );
+
+    const submitButton = await findByRole('button', { name: 'Submit' });
+    await waitFor(() => expect(submitButton).toBeEnabled());
+    expect(queryByRole('alert')).not.toBeInTheDocument();
   });
 });

@@ -34,7 +34,7 @@ export const LabeledField: React.FC<LabeledFieldProps> = ({
     <FormControl
       error={error}
       required={required}
-      sx={{ '.MuiTextField-root': { maxWidth: { xs: '100%', sm: '40%' } } }}
+      sx={{ '.MuiTextField-root': { maxWidth: { xs: '100%', md: '50%' } } }}
     >
       <FormLabel component="span" id={labelId} sx={{ color: 'text.primary' }}>
         {label}

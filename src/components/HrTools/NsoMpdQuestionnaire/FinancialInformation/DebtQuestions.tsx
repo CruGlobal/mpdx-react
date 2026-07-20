@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import CreditCard from '@mui/icons-material/CreditCard';
 import DirectionsCar from '@mui/icons-material/DirectionsCar';
 import School from '@mui/icons-material/School';
@@ -10,7 +10,6 @@ import {
 } from '@mui/material';
 import { TFunction, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { useOptionalAutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
 import { useSyncedState } from 'src/hooks/useSyncedState';
 import { LabeledField } from '../Shared/LabeledField';
 import { useNsoMpdQuestionnaire } from '../Shared/NsoMpdQuestionnaireContext';
@@ -71,16 +70,6 @@ export const DebtQuestions: React.FC = () => {
       });
     }
   };
-
-  const { markValid, markInvalid } = useOptionalAutosaveForm() ?? {};
-  useEffect(() => {
-    if (hasDebtError) {
-      markInvalid?.('hasDebt');
-    } else {
-      markValid?.('hasDebt');
-    }
-    return () => markValid?.('hasDebt');
-  }, [hasDebtError, markValid, markInvalid]);
 
   const debtFields: {
     fieldName: QuestionnaireField;

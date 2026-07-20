@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NsoMpdQuestionnaire } from './NsoMpdQuestionnaire';
 import {
@@ -27,17 +27,14 @@ describe('NsoMpdQuestionnaire', () => {
   it('renders the matching step page after continuing to the next step', async () => {
     const { findByRole } = render(<TestComponent />);
 
-    // Personal Information is a review-only step, so Continue enables once it registers.
-    const continueButton = await findByRole('button', { name: 'Continue' });
-    await waitFor(() => expect(continueButton).toBeEnabled());
-    userEvent.click(continueButton);
+    userEvent.click(await findByRole('button', { name: 'Continue' }));
 
     expect(
       await findByRole('heading', { name: 'Ministry Information' }),
     ).toBeInTheDocument();
   });
 
-  it('enables Continue on the review-only first step and gates it on the next', async () => {
+  it('keeps Continue enabled even when the current step has missing fields', async () => {
     const { findByRole, getByRole } = render(
       <TestComponent
         newStaffQuestionnaire={{
@@ -49,17 +46,13 @@ describe('NsoMpdQuestionnaire', () => {
       />,
     );
 
-    // Personal Information has nothing to fill in, so Continue enables.
     const continueButton = await findByRole('button', { name: 'Continue' });
-    await waitFor(() => expect(continueButton).toBeEnabled());
     userEvent.click(continueButton);
 
     expect(
       await findByRole('heading', { name: 'Ministry Information' }),
     ).toBeInTheDocument();
-    await waitFor(() =>
-      expect(getByRole('button', { name: 'Continue' })).toBeDisabled(),
-    );
+    expect(getByRole('button', { name: 'Continue' })).toBeEnabled();
   });
 
   it('shows the informational view when there is no open questionnaire', async () => {
@@ -71,5 +64,21 @@ describe('NsoMpdQuestionnaire', () => {
     expect(
       queryByRole('heading', { name: 'Staff Information' }),
     ).not.toBeInTheDocument();
+  });
+
+  it('jumps to an incomplete section from the Summary warning', async () => {
+    const { findByRole, getByText, getByRole } = render(<TestComponent />);
+
+    // Jump straight to the Summary step via the rail.
+    userEvent.click(await findByRole('button', { name: 'Summary' }));
+
+    // The default mock leaves the debt fields empty, so Financial is flagged.
+    userEvent.click(getByRole('button', { name: 'Financial Information' }));
+
+    // Assert on copy unique to the Financial step (absent from the Summary page),
+    // so a broken warning link that never navigates would fail this test.
+    expect(
+      getByText('Tell us about your financial situation.'),
+    ).toBeInTheDocument();
   });
 });
