@@ -1,6 +1,5 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useOptionalAutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
 import { QuestionnaireActionButton } from './QuestionnaireActionButton';
 
 interface ContinueButtonProps {
@@ -10,10 +9,8 @@ interface ContinueButtonProps {
 export const ContinueButton: React.FC<ContinueButtonProps> = ({ onClick }) => {
   const { t } = useTranslation();
 
-  const allValid = useOptionalAutosaveForm()?.allValid ?? true;
-
   return (
-    <QuestionnaireActionButton onClick={onClick} disabled={!allValid}>
+    <QuestionnaireActionButton onClick={onClick}>
       {t('Continue')}
     </QuestionnaireActionButton>
   );

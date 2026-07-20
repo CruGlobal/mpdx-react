@@ -28,33 +28,29 @@ describe('FinancialInformation', () => {
     ).toBeInTheDocument();
   });
 
-  it('keeps Continue disabled until the debt question is answered', () => {
+  it('keeps Continue enabled even before the debt question is answered', () => {
     const { getByRole } = render(<TestComponent />);
 
-    const continueButton = getByRole('button', { name: 'Continue' });
-    expect(continueButton).toBeDisabled();
-
-    userEvent.click(getByRole('radio', { name: 'No' }));
-
-    expect(continueButton).toBeEnabled();
+    // Gating moved to the Summary step, so Continue is never disabled here.
+    expect(getByRole('button', { name: 'Continue' })).toBeEnabled();
   });
 
-  it('requires all three payment amounts when Yes is selected', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('reveals the three payment questions when Yes is selected', async () => {
+    const { getByRole, findByRole, queryByRole } = render(<TestComponent />);
 
-    const continueButton = getByRole('button', { name: 'Continue' });
+    // The payment questions are hidden until the debt question is answered Yes.
+    expect(
+      queryByRole('spinbutton', { name: studentLoanQuestion }),
+    ).not.toBeInTheDocument();
 
     userEvent.click(getByRole('radio', { name: 'Yes' }));
-    expect(continueButton).toBeDisabled();
 
-    userEvent.type(
-      getByRole('spinbutton', { name: studentLoanQuestion }),
-      '500',
-    );
-    userEvent.type(getByRole('spinbutton', { name: carQuestion }), '0');
-    expect(continueButton).toBeDisabled();
-
-    userEvent.type(getByRole('spinbutton', { name: creditCardQuestion }), '0');
-    expect(continueButton).toBeEnabled();
+    expect(
+      await findByRole('spinbutton', { name: studentLoanQuestion }),
+    ).toBeInTheDocument();
+    expect(getByRole('spinbutton', { name: carQuestion })).toBeInTheDocument();
+    expect(
+      getByRole('spinbutton', { name: creditCardQuestion }),
+    ).toBeInTheDocument();
   });
 });
