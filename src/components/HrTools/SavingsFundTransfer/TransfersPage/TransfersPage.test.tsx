@@ -46,6 +46,7 @@ const mock = {
           destinationFundTypeName: 'Savings',
         },
         recurringTransfer: null,
+        scheduledTransfer: null,
       },
       {
         transaction: {
@@ -69,6 +70,7 @@ const mock = {
           recurringEnd: '2025-09-30T00:00:00+00:00',
           active: true,
         },
+        scheduledTransfer: null,
       },
       {
         transaction: null,
@@ -83,6 +85,22 @@ const mock = {
           recurringStart: '2024-05-30T00:00:00+00:00',
           recurringEnd: '2025-05-30T00:00:00+00:00',
           active: true,
+        },
+        scheduledTransfer: null,
+      },
+      {
+        transaction: null,
+        subCategory: null,
+        transfer: {
+          sourceFundTypeName: 'Primary',
+          destinationFundTypeName: 'Savings',
+        },
+        recurringTransfer: null,
+        scheduledTransfer: {
+          id: 'sched-1',
+          amount: 400,
+          transactedAt: '2024-02-01T00:00:00+00:00',
+          description: 'Conference fee',
         },
       },
       {
@@ -107,6 +125,7 @@ const mock = {
           recurringEnd: null,
           active: false,
         },
+        scheduledTransfer: null,
       },
     ],
   },
@@ -300,6 +319,60 @@ describe('TransfersPage', () => {
     expect(
       within(stoppedRow!).queryByTitle('Edit End Date'),
     ).not.toBeInTheDocument();
+  });
+
+  it('shows a future-dated one-time transfer in the upcoming table', async () => {
+    const { findAllByRole } = render(<Components />);
+
+    // Upcoming is the first of the two grids; Transfer History is the second.
+    const [upcomingTable] = await findAllByRole('grid');
+    const row = within(upcomingTable).getByRole('row', {
+      name: /Conference fee/,
+    });
+
+    expect(within(row).getByText('One Time')).toBeInTheDocument();
+    expect(within(row).getByText('Feb 1, 2024')).toBeInTheDocument();
+    expect(within(row).getByText('$400.00')).toBeInTheDocument();
+  });
+
+  it('renders no edit or cancel actions on a scheduled transfer row', async () => {
+    const { findAllByRole } = render(<Components />);
+
+    const [upcomingTable] = await findAllByRole('grid');
+    const row = within(upcomingTable).getByRole('row', {
+      name: /Conference fee/,
+    });
+
+    expect(within(row).queryByTitle('Edit')).not.toBeInTheDocument();
+    expect(within(row).queryByTitle('Cancel Transfer')).not.toBeInTheDocument();
+  });
+
+  it('still shows a pending recurring transfer as an editable monthly row', async () => {
+    const { findAllByRole } = render(<Components />);
+
+    const [upcomingTable] = await findAllByRole('grid');
+    const row = within(upcomingTable).getByRole('row', {
+      name: /May 30, 2024/,
+    });
+
+    expect(within(row).getByText('Monthly')).toBeInTheDocument();
+    expect(within(row).getByText('$100.00')).toBeInTheDocument();
+    expect(within(row).getByText('May 30, 2025')).toBeInTheDocument();
+    expect(within(row).getByTitle('Edit')).toBeInTheDocument();
+    expect(within(row).getByTitle('Cancel Transfer')).toBeInTheDocument();
+  });
+
+  it('keys upcoming rows off the scheduled/recurring id, not a fresh uuid', async () => {
+    const { findAllByRole } = render(<Components />);
+
+    const [upcomingTable] = await findAllByRole('grid');
+    const ids = within(upcomingTable)
+      .getAllByRole('row')
+      .map((row) => row.dataset.id)
+      .filter(Boolean);
+
+    // Namespaced so a scheduled and a recurring transfer sharing a primary key cannot collide.
+    expect(ids).toEqual(['recurring-2', 'scheduled-sched-1']);
   });
 
   it('should show empty state when no transfer history', async () => {
