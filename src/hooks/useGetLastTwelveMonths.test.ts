@@ -8,7 +8,7 @@ jest.spyOn(DateTime, 'now').mockReturnValue(fixed);
 
 describe('useGetLastTwelveMonths', () => {
   it('should return the last twelve months', () => {
-    const { result } = renderHook(() => useGetLastTwelveMonths(currency, true));
+    const { result } = renderHook(() => useGetLastTwelveMonths(currency));
 
     expect(result.current).toEqual([
       'May 2024',
@@ -23,6 +23,25 @@ describe('useGetLastTwelveMonths', () => {
       'Feb 2025',
       'Mar 2025',
       'Apr 2025',
+    ]);
+  });
+
+  it('should return January–December of a specific year when one is given', () => {
+    const { result } = renderHook(() => useGetLastTwelveMonths(currency, 2023));
+
+    expect(result.current).toEqual([
+      'Jan 2023',
+      'Feb 2023',
+      'Mar 2023',
+      'Apr 2023',
+      'May 2023',
+      'Jun 2023',
+      'Jul 2023',
+      'Aug 2023',
+      'Sep 2023',
+      'Oct 2023',
+      'Nov 2023',
+      'Dec 2023',
     ]);
   });
 });

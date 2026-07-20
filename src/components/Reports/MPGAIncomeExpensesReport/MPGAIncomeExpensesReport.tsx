@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from 'react';
-import { Settings } from '@mui/icons-material';
 import PrintIcon from '@mui/icons-material/Print';
 import {
   Box,
@@ -21,12 +20,12 @@ import { useGetLastTwelveMonths } from 'src/hooks/useGetLastTwelveMonths';
 import { useLocale } from 'src/hooks/useLocale';
 import { AccountInfoBox } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBox';
 import { AccountInfoBoxSkeleton } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBoxSkeleton';
+import { SettingsButtonGroup } from '../Shared/SettingsButtonGroup/SettingsButtonGroup';
 import {
   Filters,
   SettingsDialog,
-  getFiltersWithCalculatedDates,
 } from '../Shared/SettingsDialog/SettingsDialog';
-import { StyledFilterButton } from '../Shared/SettingsDialog/StyledFilterButton';
+import { DateRange } from '../StaffExpenseReport/Helpers/StaffReportEnum';
 import {
   SimplePrintOnly,
   SimpleScreenOnly,
@@ -38,7 +37,7 @@ import { ExportCsvButton } from './ExportCsvButton/ExportCsvButton';
 import { FundTypes, Funds } from './Helper/MPGAReportEnum';
 import { useMpgaTransactionsQuery } from './MPGATransactions.generated';
 import { TotalsProvider } from './TotalsContext/TotalsContext';
-import { AllData } from './mockData';
+import { AllData, DataFields } from './mockData';
 import { PrintOnly, StyledHeaderBox } from './styledComponents';
 
 interface MPGAIncomeExpensesReportProps {
@@ -55,28 +54,55 @@ export const MPGAIncomeExpensesReport: React.FC<
   const currency = 'USD';
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-  const last12Months = useGetLastTwelveMonths(locale, true);
+  const [filters, setFilters] = useState<Filters | null>(null);
+
+  const specificYear = filters?.selectedYear ?? null;
+  const isYearToDate =
+    specificYear === null &&
+    filters?.selectedDateRange === DateRange.YearToDate;
+
+  const monthLabels = useGetLastTwelveMonths(locale, specificYear);
 
   const { startDate, endDate } = useMemo(() => {
     const now = DateTime.now();
+    // If a specific year is selected, return start and end of that year
+    if (specificYear !== null) {
+      const yearStart = DateTime.fromObject({ year: specificYear }).startOf(
+        'year',
+      );
+      return { startDate: yearStart, endDate: yearStart.endOf('year') };
+    }
+    // If Year to Date is selected, return start of the year to today
+    if (isYearToDate) {
+      return { startDate: now.startOf('year'), endDate: now };
+    }
     return {
       startDate: now.minus({ months: 11 }).startOf('month'),
       endDate: now,
     };
-  }, []);
+  }, [specificYear, isYearToDate]);
 
-  const [filters, setFilters] = useState<Filters>(() =>
-    getFiltersWithCalculatedDates({
+  const defaultFilters: Filters = useMemo(
+    () => ({
       selectedDateRange: null,
-      startDate: startDate,
-      endDate: endDate.endOf('month'),
+      startDate,
+      endDate,
       categories: null,
     }),
+    [startDate, endDate],
   );
 
-  const onFiltersChange = (newFilters: Filters) => {
-    setFilters(newFilters);
-  };
+  const isFilterActive = useMemo(
+    () =>
+      Boolean(
+        filters &&
+          (filters.categories ||
+            filters.selectedDateRange === DateRange.YearToDate ||
+            (filters.selectedYear !== null &&
+              filters.selectedYear !== undefined)),
+      ),
+    [filters],
+  );
 
   const handleSettingsClick = () => {
     setIsSettingsOpen(true);
@@ -127,13 +153,31 @@ export const MPGAIncomeExpensesReport: React.FC<
     useFilteredFunds(transformedData, filters?.categories ?? null, t);
 
   const allData: AllData = useMemo(() => {
+    if (!isYearToDate) {
+      return { income: incomeData, expenses: expenseData };
+    }
+    // Year to Date queries only the current year, so each row has fewer months than the 12 columns
+    const padToColumns = (rows: DataFields[]): DataFields[] =>
+      rows.map((row) => {
+        const missing = monthLabels.length - row.monthly.length;
+        return missing > 0
+          ? { ...row, monthly: [...new Array(missing).fill(0), ...row.monthly] }
+          : row;
+      });
     return {
-      income: incomeData,
-      expenses: expenseData,
-      incomeBreakdown: incomeBreakdown,
-      expenseBreakdown: expenseBreakdown,
+      income: padToColumns(incomeData),
+      expenses: padToColumns(expenseData),
+      incomeBreakdown,
+      expenseBreakdown,
     };
-  }, [incomeData, expenseData, incomeBreakdown, expenseBreakdown]);
+  }, [
+    incomeData,
+    expenseData,
+    incomeBreakdown,
+    expenseBreakdown,
+    isYearToDate,
+    monthLabels.length,
+  ]);
 
   return (
     <>
@@ -179,16 +223,13 @@ export const MPGAIncomeExpensesReport: React.FC<
                 alignItems="center"
                 sx={{ gap: 2, '& > button': { ml: 0 } }}
               >
-                <StyledFilterButton
-                  variant="outlined"
-                  startIcon={<Settings />}
-                  size="small"
-                  onClick={handleSettingsClick}
-                >
-                  {t('Report Settings')}
-                </StyledFilterButton>
+                <SettingsButtonGroup
+                  isFilterDateSelected={isFilterActive}
+                  setFilters={setFilters}
+                  handleSettingsClick={handleSettingsClick}
+                />
                 <Divider orientation="vertical" flexItem />
-                <ExportCsvButton data={allData} months={last12Months} />
+                <ExportCsvButton data={allData} months={monthLabels} />
                 <StyledPrintButton
                   startIcon={
                     <SvgIcon fontSize="small">
@@ -220,7 +261,7 @@ export const MPGAIncomeExpensesReport: React.FC<
           >
             <ScreenOnlyReport
               data={allData}
-              last12Months={last12Months}
+              last12Months={monthLabels}
               currency={currency}
             />
           </TotalsProvider>
@@ -234,7 +275,7 @@ export const MPGAIncomeExpensesReport: React.FC<
           >
             <PrintOnlyReport
               data={allData}
-              last12Months={last12Months}
+              last12Months={monthLabels}
               currency={currency}
             />
           </TotalsProvider>
@@ -242,13 +283,18 @@ export const MPGAIncomeExpensesReport: React.FC<
       </Box>
       {isSettingsOpen && (
         <SettingsDialog
-          selectedFilters={filters}
+          selectedFilters={filters ?? defaultFilters}
           selectedFundType={FundTypes.Primary}
           isOpen={isSettingsOpen}
           onClose={(newFilters) => {
-            if (newFilters) {
-              onFiltersChange(newFilters);
-            }
+            const hasActiveFilter = Boolean(
+              newFilters &&
+                (newFilters.categories ||
+                  newFilters.selectedDateRange === DateRange.YearToDate ||
+                  (newFilters.selectedYear !== null &&
+                    newFilters.selectedYear !== undefined)),
+            );
+            setFilters(hasActiveFilter && newFilters ? newFilters : null);
             setIsSettingsOpen(false);
           }}
           hideDateRange
