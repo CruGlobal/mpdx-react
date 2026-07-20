@@ -23,6 +23,8 @@ export const getNewStaffBudgetCategory = (
     case PrimaryBudgetCategoryEnum.MeetingsRetreatsConferences:
       return newStaffCalculations.conferences;
     case PrimaryBudgetCategoryEnum.UsStaffConference:
+      // New staff don't raise extra monthly for staff conference. All conference expenses are
+      // included in `newStaffCalculations.conferences`.
       return 0;
     case PrimaryBudgetCategoryEnum.MealsAndPerDiem:
       return newStaffCalculations.meals;
