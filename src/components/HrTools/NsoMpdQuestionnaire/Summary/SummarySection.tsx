@@ -2,6 +2,7 @@ import React from 'react';
 import {
   Box,
   Button,
+  Divider,
   Stack,
   Table,
   TableBody,
@@ -95,6 +96,7 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
           ))}
         </TableBody>
       </Table>
+      <Divider sx={{ mx: -4, mt: 4 }} />
     </Box>
   );
 };
