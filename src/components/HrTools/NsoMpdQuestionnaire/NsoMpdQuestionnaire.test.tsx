@@ -65,4 +65,20 @@ describe('NsoMpdQuestionnaire', () => {
       queryByRole('heading', { name: 'Staff Information' }),
     ).not.toBeInTheDocument();
   });
+
+  it('jumps to an incomplete section from the Summary warning', async () => {
+    const { findByRole, getByText, getByRole } = render(<TestComponent />);
+
+    // Jump straight to the Summary step via the rail.
+    userEvent.click(await findByRole('button', { name: 'Summary' }));
+
+    // The default mock leaves the debt fields empty, so Financial is flagged.
+    userEvent.click(getByRole('button', { name: 'Financial Information' }));
+
+    // Assert on copy unique to the Financial step (absent from the Summary page),
+    // so a broken warning link that never navigates would fail this test.
+    expect(
+      getByText('Tell us about your financial situation.'),
+    ).toBeInTheDocument();
+  });
 });
