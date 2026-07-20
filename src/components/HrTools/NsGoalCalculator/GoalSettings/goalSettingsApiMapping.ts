@@ -69,6 +69,7 @@ export const calculationToFormValues = (
   staffConferenceTransfer: toNumberInput(calc.staffConferenceTransfer),
   accountTransfers: toNumberInput(calc.accountTransfers),
   advocacyTransfers: toNumberInput(calc.advocacyTransfers),
+  otherExpenses: toNumberInput(calc.otherExpenses),
   geographicLocation: calc.geographicLocation ?? '',
   studentLoanMonthlyPayment: toNumberInput(calc.studentLoanMonthlyPayment),
   carLoanMonthlyPayment: toNumberInput(calc.carLoanMonthlyPayment),
@@ -161,6 +162,7 @@ export const formValuesToAttributes = (
     advocacyTransfers: seniorStaff
       ? toNumberOrNull(values.advocacyTransfers)
       : null,
+    otherExpenses: toNumberOrNull(values.otherExpenses),
 
     geographicLocation: values.geographicLocation || null,
 
