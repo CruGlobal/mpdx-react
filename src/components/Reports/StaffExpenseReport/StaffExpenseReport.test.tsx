@@ -79,7 +79,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                                 subcategories: [
                                   {
                                     subCategory:
-                                      StaffExpensesSubCategoryEnum.BenefitsOther,
+                                      StaffExpensesSubCategoryEnum.CreditCardFee,
                                     total: -200,
                                     averagePerMonth: -50,
                                     breakdownByMonth: [
@@ -164,7 +164,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                                 subcategories: [
                                   {
                                     subCategory:
-                                      StaffExpensesSubCategoryEnum.BenefitsOther,
+                                      StaffExpensesSubCategoryEnum.CreditCardFee,
                                     total: -100,
                                     averagePerMonth: -50,
                                     breakdownByMonth: [

@@ -8,8 +8,8 @@ import {
 export const getLocalizedCategory = (
   value: StaffExpenseCategoryEnum,
   t: TFunction,
-) => {
-  const categoryLabels: Record<StaffExpenseCategoryEnum, string> = {
+): string => {
+  const categoryLabels: Partial<Record<StaffExpenseCategoryEnum, string>> = {
     [StaffExpenseCategoryEnum.Donation]: t('Donation'),
     [StaffExpenseCategoryEnum.Transfer]: t('Transfer'),
     [StaffExpenseCategoryEnum.AccountTransfer]: t('Account Transfer'),
@@ -23,8 +23,6 @@ export const getLocalizedCategory = (
     [StaffExpenseCategoryEnum.AdditionalSalary]: t('Additional Salary'),
     [StaffExpenseCategoryEnum.Salary]: t('Salary'),
     [StaffExpenseCategoryEnum.Benefits]: t('Benefits'),
-    [StaffExpenseCategoryEnum.Deductions]: t('Deductions'),
-    [StaffExpenseCategoryEnum.TaxDeductions]: t('Tax Deductions'),
     [StaffExpenseCategoryEnum.Assessment]: t('Assessment'),
     [StaffExpenseCategoryEnum.Other]: t('Other'),
   };
@@ -34,14 +32,14 @@ export const getLocalizedCategory = (
 export const getLocalizedSubCategory = (
   value: StaffExpensesSubCategoryEnum,
   t: TFunction,
-) => {
-  const subcategoryLabels: Record<StaffExpensesSubCategoryEnum, string> = {
+): string => {
+  const subcategoryLabels: Partial<
+    Record<StaffExpensesSubCategoryEnum, string>
+  > = {
     [StaffExpensesSubCategoryEnum.Donation]: t('Donation'),
-    [StaffExpensesSubCategoryEnum.Gift]: t('Gift'),
     [StaffExpensesSubCategoryEnum.NonCash]: t('Non Cash'),
     [StaffExpensesSubCategoryEnum.Withdrawal]: t('Withdrawal'),
     [StaffExpensesSubCategoryEnum.Deposit]: t('Deposit'),
-    [StaffExpensesSubCategoryEnum.Transfer]: t('Transfer'),
     [StaffExpensesSubCategoryEnum.MinistryReimbursement]: t(
       'Ministry Reimbursement',
     ),
@@ -59,8 +57,6 @@ export const getLocalizedSubCategory = (
     [StaffExpensesSubCategoryEnum.RetroactivePay]: t('Retroactive Pay'),
     [StaffExpensesSubCategoryEnum.SpecialPay]: t('Special Pay'),
     [StaffExpensesSubCategoryEnum.SalaryAdvance]: t('Salary Advance'),
-    [StaffExpensesSubCategoryEnum.EarningsMha]: t('Earnings MHA'),
-    [StaffExpensesSubCategoryEnum.EarningsReg]: t('Earnings REG'),
     [StaffExpensesSubCategoryEnum.EarningsNumeric]: t('Earnings Numeric'),
     [StaffExpensesSubCategoryEnum.DisabilityEarnings]: t('Disability Earnings'),
     [StaffExpensesSubCategoryEnum.OtherStandardEarnings]: t(
@@ -68,19 +64,15 @@ export const getLocalizedSubCategory = (
     ),
     [StaffExpensesSubCategoryEnum.TaxFederal]: t('Tax Federal'),
     [StaffExpensesSubCategoryEnum.TaxState]: t('Tax State'),
-    [StaffExpensesSubCategoryEnum.TaxDeductions]: t('Tax Deductions'),
     [StaffExpensesSubCategoryEnum.PayrollTaxes]: t('Payroll Taxes'),
     [StaffExpensesSubCategoryEnum.Deduction_403BPretax]: t(
       'Deduction 403b Pretax',
     ),
     [StaffExpensesSubCategoryEnum.Deduction_403BRoth]: t('Deduction 403b Roth'),
     [StaffExpensesSubCategoryEnum.DeductionMedical]: t('Deduction Medical'),
-    [StaffExpensesSubCategoryEnum.Deductions]: t('Deductions'),
-    [StaffExpensesSubCategoryEnum.SalaryOther]: t('Salary Other'),
     [StaffExpensesSubCategoryEnum.MedicalDeduction]: t('Medical Deduction'),
     [StaffExpensesSubCategoryEnum.NumericDeduction]: t('Numeric Deduction'),
     [StaffExpensesSubCategoryEnum.ProgramBased]: t('Program Based'),
-    [StaffExpensesSubCategoryEnum.BenefitsOther]: t('Benefits Other'),
     [StaffExpensesSubCategoryEnum.MinistryBenefits]: t('Ministry Benefits'),
     [StaffExpensesSubCategoryEnum.RetirementContributions]: t(
       'Retirement Contributions',
