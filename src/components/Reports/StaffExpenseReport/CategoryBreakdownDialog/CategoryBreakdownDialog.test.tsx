@@ -21,8 +21,8 @@ const mockTransactions: Transaction[] = [
     description: 'Salary Payment 1',
     fundType: 'Primary',
     category: StaffExpenseCategoryEnum.Salary,
-    subcategory: StaffExpensesSubCategoryEnum.SalaryOther,
-    displayCategory: 'Salary - Salary Other',
+    subcategory: StaffExpensesSubCategoryEnum.Bereavement,
+    displayCategory: 'Salary - Bereavement',
   },
   {
     id: 'transaction-2',
@@ -31,8 +31,8 @@ const mockTransactions: Transaction[] = [
     description: 'Salary Payment 2',
     fundType: 'Primary',
     category: StaffExpenseCategoryEnum.Salary,
-    subcategory: StaffExpensesSubCategoryEnum.SalaryOther,
-    displayCategory: 'Salary - Salary Other',
+    subcategory: StaffExpensesSubCategoryEnum.Bonuses,
+    displayCategory: 'Salary - Bonuses',
   },
 ];
 
@@ -78,9 +78,9 @@ describe('CategoryBreakdownDialog', () => {
 
     expect(
       getAllByRole('cell', {
-        name: 'Salary - Salary Other',
+        name: 'Salary - Bereavement',
       }),
-    ).toHaveLength(2);
+    ).toHaveLength(1);
 
     expect(getByRole('cell', { name: '$500' })).toBeInTheDocument();
     expect(getByRole('cell', { name: '$300' })).toBeInTheDocument();
@@ -114,7 +114,7 @@ describe('CategoryBreakdownDialog', () => {
     const firstRowCells = within(getAllByRole('row')[1]).getAllByRole('cell');
     // Columns: Date | Description | Category | Amount
     expect(firstRowCells[1]).toHaveTextContent('Salary Payment 1');
-    expect(firstRowCells[2]).toHaveTextContent('Salary - Salary Other');
+    expect(firstRowCells[2]).toHaveTextContent('Salary - Bereavement');
   });
 
   it('displays total amount', () => {

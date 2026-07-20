@@ -68,7 +68,7 @@ const mockFund: Fund = {
       averagePerMonth: -50,
       subcategories: [
         {
-          subCategory: StaffExpensesSubCategoryEnum.BenefitsOther,
+          subCategory: StaffExpensesSubCategoryEnum.HealthWelfare,
           total: -100,
           averagePerMonth: -50,
           breakdownByMonth: [
@@ -80,7 +80,7 @@ const mockFund: Fund = {
                   id: 'transaction-4',
                   amount: -50,
                   transactedAt: '2025-01-10',
-                  description: 'Benefits Payment',
+                  description: 'Health Welfare Payment',
                 },
               ],
             },
@@ -362,7 +362,7 @@ describe('filterTransactions', () => {
       const different = result.find(
         (r) => r.category === StaffExpenseCategoryEnum.Benefits,
       );
-      expect(different?.displayCategory).toBe('Benefits - Benefits Other');
+      expect(different?.displayCategory).toBe('Benefits - Health & Welfare');
       expect(different?.displayCategory).toContain(' - ');
     });
   });
