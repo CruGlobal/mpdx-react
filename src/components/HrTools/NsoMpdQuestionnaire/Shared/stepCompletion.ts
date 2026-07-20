@@ -77,6 +77,11 @@ export const isStepComplete = (
     isFieldFilled(questionnaire[field]),
   );
 
+export const getIncompleteSteps = (
+  questionnaire: NewStaffQuestionnaire,
+): NsoMpdQuestionnaireStepEnum[] =>
+  steps.filter((step) => !isStepComplete(step, questionnaire));
+
 export const getCompletionPercentage = (
   questionnaire: NewStaffQuestionnaire,
 ): number => {

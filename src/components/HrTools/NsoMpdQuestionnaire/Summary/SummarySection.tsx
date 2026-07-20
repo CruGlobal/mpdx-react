@@ -2,6 +2,7 @@ import React from 'react';
 import {
   Box,
   Button,
+  Divider,
   Stack,
   Table,
   TableBody,
@@ -23,6 +24,7 @@ const StyledStack = styled(Stack)(({ theme }) => ({
 export interface SummaryRow {
   label: string;
   value: React.ReactNode;
+  required?: boolean;
 }
 
 interface SummarySectionProps {
@@ -80,7 +82,11 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
                     component="span"
                     variant="body2"
                     fontStyle="italic"
-                    color="text.secondary"
+                    sx={{
+                      color: row.required
+                        ? theme.palette.error.main
+                        : theme.palette.text.secondary,
+                    }}
                   >
                     {t('No value provided')}
                   </Typography>
@@ -90,6 +96,7 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
           ))}
         </TableBody>
       </Table>
+      <Divider sx={{ mx: -4, mt: 4 }} />
     </Box>
   );
 };

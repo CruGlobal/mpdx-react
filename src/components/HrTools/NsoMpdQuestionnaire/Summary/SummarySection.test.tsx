@@ -43,4 +43,26 @@ describe('SummarySection', () => {
       getByRole('cell', { name: 'No value provided' }),
     ).toBeInTheDocument();
   });
+
+  it('renders a required empty value in the error color', () => {
+    const { getByText } = render(
+      <TestComponent
+        rows={[{ label: 'Ministry', value: null, required: true }]}
+      />,
+    );
+
+    expect(getByText('No value provided')).toHaveStyle({
+      color: theme.palette.error.main,
+    });
+  });
+
+  it('renders a non-required empty value in the secondary color', () => {
+    const { getByText } = render(
+      <TestComponent rows={[{ label: 'Tenure', value: null }]} />,
+    );
+
+    expect(getByText('No value provided')).toHaveStyle({
+      color: theme.palette.text.secondary,
+    });
+  });
 });

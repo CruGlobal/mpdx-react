@@ -7,7 +7,11 @@ import {
 } from 'src/graphql/types.generated';
 import { NsoMpdQuestionnaireStepEnum } from '../NsoMpdQuestionnaireHelper';
 import { NewStaffQuestionnaireQuery } from './NewStaffQuestionnaire.generated';
-import { getCompletionPercentage, isStepComplete } from './stepCompletion';
+import {
+  getCompletionPercentage,
+  getIncompleteSteps,
+  isStepComplete,
+} from './stepCompletion';
 
 type Questionnaire = NonNullable<
   NewStaffQuestionnaireQuery['newStaffQuestionnaire']
@@ -132,5 +136,51 @@ describe('isStepComplete', () => {
         marriedNoPhones,
       ),
     ).toBe(true);
+  });
+});
+
+describe('getIncompleteSteps', () => {
+  it('returns every data-entry step for a missing questionnaire', () => {
+    expect(getIncompleteSteps(null)).toEqual([
+      NsoMpdQuestionnaireStepEnum.PersonalInformation,
+      NsoMpdQuestionnaireStepEnum.MinistryInformation,
+      NsoMpdQuestionnaireStepEnum.FinancialInformation,
+      NsoMpdQuestionnaireStepEnum.NsoInformation,
+    ]);
+  });
+
+  it('returns an empty array when every data-entry step is complete', () => {
+    expect(getIncompleteSteps(completeSingle)).toEqual([]);
+  });
+
+  it('returns only the steps missing a required field', () => {
+    expect(
+      getIncompleteSteps({ ...completeSingle, ministryLocation: null }),
+    ).toEqual([NsoMpdQuestionnaireStepEnum.MinistryInformation]);
+  });
+
+  it('flags the financial step for the Sosa variant healthcare dependents field', () => {
+    const sosa: Questionnaire = {
+      ...completeSingle,
+      variant: NewStaffQuestionnaireVariantEnum.Sosa,
+      healthcareDependentsCount: null,
+    };
+
+    expect(getIncompleteSteps(sosa)).toEqual([
+      NsoMpdQuestionnaireStepEnum.FinancialInformation,
+    ]);
+    expect(
+      getIncompleteSteps({ ...sosa, healthcareDependentsCount: 2 }),
+    ).toEqual([]);
+  });
+
+  it('ignores the Sosa-only healthcare dependents field for non-Sosa variants', () => {
+    expect(
+      getIncompleteSteps({
+        ...completeSingle,
+        variant: NewStaffQuestionnaireVariantEnum.SingleMarried,
+        healthcareDependentsCount: null,
+      }),
+    ).toEqual([]);
   });
 });
