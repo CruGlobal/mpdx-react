@@ -1,9 +1,6 @@
 import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
 import { GoalSettingsFormValues } from './goalSettingsFormValues';
 
-const isFilled = (value: string | number | null | undefined): boolean =>
-  value !== '' && value !== null && value !== undefined;
-
 /**
  * Whether the Goal Settings form has the fields required to produce a valid
  * goal. Age, full-time years on staff, and role (field/office) are required for
@@ -17,7 +14,7 @@ export const isGoalSettingsComplete = (
   const isMarried =
     values.maritalStatus === NewStaffQuestionnaireMaritalStatusEnum.Married;
 
-  const requiredFields: Array<string | number | null | undefined> = [
+  const requiredFields: Array<string | number> = [
     values.calculationsYear,
     values.age,
     values.tenure,
@@ -26,5 +23,5 @@ export const isGoalSettingsComplete = (
     ...(isMarried ? [values.spouseAge, values.spouseTenure] : []),
   ];
 
-  return requiredFields.every(isFilled);
+  return requiredFields.every((value) => value !== '');
 };
