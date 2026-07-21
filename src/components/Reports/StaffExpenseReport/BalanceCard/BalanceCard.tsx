@@ -131,7 +131,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
                 color: transfersOut < 0 ? theme.palette.error.main : 'inherit',
               }}
             >
-              {formatBalance(transfersOut)}
+              {formatBalance(Math.abs(transfersOut))}
             </Typography>
           </Typography>
           <Typography>

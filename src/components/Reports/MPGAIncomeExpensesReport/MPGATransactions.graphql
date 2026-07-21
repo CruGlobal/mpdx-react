@@ -21,6 +21,12 @@ query MPGATransactions(
           breakdownByMonth {
             month
             total
+            transactions {
+              id
+              amount
+              transactedAt
+              description
+            }
           }
           subCategory
           total

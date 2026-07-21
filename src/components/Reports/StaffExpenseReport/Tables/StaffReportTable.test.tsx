@@ -82,7 +82,7 @@ describe('StaffReportTable', () => {
       }),
     ).toBeInTheDocument();
     expect(getByRole('columnheader', { name: 'Amount' })).toBeInTheDocument();
-    expect(getByRole('gridcell', { name: '-$100' })).toBeInTheDocument();
+    expect(getByRole('gridcell', { name: '$100' })).toBeInTheDocument();
   });
 
   it('relabels a Donation category as "Total Donations" regardless of locale', async () => {
@@ -143,14 +143,14 @@ describe('StaffReportTable', () => {
     ).toBeInTheDocument();
 
     userEvent.click(await findByRole('columnheader', { name: 'Amount' }));
-    const ascCells = getAllByRole('gridcell', { name: /-\$\d/ });
-    expect(ascCells[0]).toHaveTextContent('-$50');
-    expect(ascCells[1]).toHaveTextContent('-$100');
+    const descCells = getAllByRole('gridcell', { name: /\$\d/ });
+    expect(descCells[0]).toHaveTextContent('$100');
+    expect(descCells[1]).toHaveTextContent('$50');
 
     userEvent.click(await findByRole('columnheader', { name: 'Amount' }));
-    const descCells = getAllByRole('gridcell', { name: /-\$\d/ });
-    expect(descCells[0]).toHaveTextContent('-$100');
-    expect(descCells[1]).toHaveTextContent('-$50');
+    const ascCells = getAllByRole('gridcell', { name: /\$\d/ });
+    expect(ascCells[0]).toHaveTextContent('$50');
+    expect(ascCells[1]).toHaveTextContent('$100');
   });
 
   it('opens breakdown dialog when info button is clicked for grouped transaction', async () => {
@@ -218,14 +218,14 @@ describe('StaffReportTable', () => {
 
     await findByRole('columnheader', { name: 'Date' });
 
-    const amountCells = getAllByRole('gridcell', { name: /-\$\d+/ });
+    const amountCells = getAllByRole('gridcell', { name: /\$\d+/ });
 
     // Grouped transaction
-    expect(amountCells[0]).toHaveTextContent('-$300');
+    expect(amountCells[0]).toHaveTextContent('$300');
 
     // Ungrouped transactions
-    expect(amountCells[1]).toHaveTextContent('-$50');
-    expect(amountCells[2]).toHaveTextContent('-$100');
+    expect(amountCells[1]).toHaveTextContent('$50');
+    expect(amountCells[2]).toHaveTextContent('$100');
   });
 
   it('sorts transactions by date descending within each group', async () => {
@@ -233,10 +233,10 @@ describe('StaffReportTable', () => {
 
     await findByRole('columnheader', { name: 'Date' });
 
-    const amountCells = getAllByRole('gridcell', { name: /-\$\d+/ });
+    const amountCells = getAllByRole('gridcell', { name: /\$\d+/ });
 
     // Both non-grouped should be sorted by descending date
-    expect(amountCells[0]).toHaveTextContent('-$50');
-    expect(amountCells[1]).toHaveTextContent('-$100');
+    expect(amountCells[0]).toHaveTextContent('$50');
+    expect(amountCells[1]).toHaveTextContent('$100');
   });
 });

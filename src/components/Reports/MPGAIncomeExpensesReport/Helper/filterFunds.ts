@@ -1,9 +1,11 @@
 import { TFunction } from 'react-i18next';
+import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import {
   getLocalizedCategory,
   getLocalizedSubCategory,
+  getPluralizedDescription,
 } from '../../Shared/Helpers/transformStaffExpenseEnums';
-import { DataFields } from '../mockData';
+import { DataFields, TransactionBreakdown } from '../mockData';
 import { Categories } from './MPGAReportEnum';
 
 const average = (data: number[]) => {
@@ -94,6 +96,7 @@ export function addRowPerSubcategory({
       {
         id,
         description,
+        category: category.category,
         monthly,
         average: subcategory.averagePerMonth,
         total: subcategory.total,
@@ -111,25 +114,55 @@ export function addCombinedSubcategoryRow({
   t,
   incomeData,
   expenseData,
-}: AddRowProps) {
+  incomeBreakdown,
+  expenseBreakdown,
+}: AddRowProps & {
+  incomeBreakdown: Partial<
+    Record<StaffExpenseCategoryEnum, TransactionBreakdown[]>
+  >;
+  expenseBreakdown: Partial<
+    Record<StaffExpenseCategoryEnum, TransactionBreakdown[]>
+  >;
+}) {
   const monthCount = category.breakdownByMonth.length;
   const incomeMonthly = new Array(monthCount).fill(0);
   const expenseMonthly = new Array(monthCount).fill(0);
 
+  const incomeTransactions: TransactionBreakdown[] = [];
+  const expenseTransactions: TransactionBreakdown[] = [];
+
   category.subcategories.forEach((subcategory) => {
     subcategory.breakdownByMonth.forEach((month, index) => {
       const value = roundTwoDecimals(month.total);
-      const bucket = value >= 0 ? incomeMonthly : expenseMonthly;
+      const isIncome = value >= 0;
+      const bucket = isIncome ? incomeMonthly : expenseMonthly;
       bucket[index] += value;
+
+      const breakdown = isIncome ? incomeTransactions : expenseTransactions;
+      month.transactions?.forEach((transaction) => {
+        breakdown.push({
+          date: transaction.transactedAt,
+          description: transaction.description ?? '',
+          category: category.category,
+          subCategory: subcategory.subCategory,
+          amount: transaction.amount,
+        });
+      });
     });
   });
 
-  const description = getLocalizedCategory(category.category, t);
+  incomeBreakdown[category.category] = incomeTransactions;
+  expenseBreakdown[category.category] = expenseTransactions;
+
+  const description =
+    getPluralizedDescription(category.category, t) ||
+    getLocalizedCategory(category.category, t);
   const pushAggregateRow = (id: string, monthly: number[]) => {
     pushData(
       {
         id,
         description,
+        category: category.category,
         monthly,
         average: average(monthly),
         total: sum(monthly),
@@ -158,6 +191,7 @@ export function addCategoryRow({
     {
       id: baseId,
       description: getLocalizedCategory(category.category, t),
+      category: category.category,
       monthly,
       average: category.averagePerMonth,
       total: category.total,

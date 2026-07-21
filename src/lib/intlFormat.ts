@@ -149,9 +149,10 @@ export const monthYearFormat = (
   year: number,
   locale: string,
   fullYear = true,
+  fullMonth = false,
 ): string =>
   new Intl.DateTimeFormat(locale, {
-    month: 'short',
+    month: fullMonth ? 'long' : 'short',
     year: fullYear ? 'numeric' : '2-digit',
   }).format(DateTime.local(year, month, 1).toJSDate());
 

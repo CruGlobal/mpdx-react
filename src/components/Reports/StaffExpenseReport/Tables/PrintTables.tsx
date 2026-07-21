@@ -11,6 +11,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
+import { ReportType } from '../Helpers/StaffReportEnum';
 import { Transaction } from '../Helpers/filterTransactions';
 
 export interface PrintTablesProps {
@@ -26,6 +27,10 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+
+  const isExpense = type === ReportType.Expense;
+  const formatAmount = (value: number) =>
+    currencyFormat(isExpense ? Math.abs(value) : value, 'USD', locale);
 
   return (
     <TableContainer>
@@ -52,9 +57,7 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                     {dateFormat(DateTime.fromISO(row.transactedAt), locale)}
                   </TableCell>
                   <TableCell>{row.displayCategory}</TableCell>
-                  <TableCell>
-                    {currencyFormat(row.amount, 'USD', locale)}
-                  </TableCell>
+                  <TableCell>{formatAmount(row.amount)}</TableCell>
                 </TableRow>
               ))}
               <TableRow>
@@ -67,7 +70,7 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                     <span
                       style={{ color: transactionTotal < 0 ? 'red' : 'green' }}
                     >
-                      {currencyFormat(transactionTotal, 'USD', locale)}
+                      {formatAmount(transactionTotal)}
                     </span>
                   </strong>
                 </TableCell>
@@ -92,9 +95,7 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                 </TableCell>
                 <TableCell />
                 <TableCell>
-                  <strong>
-                    {currencyFormat(transactionTotal, 'USD', locale)}
-                  </strong>
+                  <strong>{formatAmount(transactionTotal)}</strong>
                 </TableCell>
               </TableRow>
             </>
