@@ -158,10 +158,7 @@ export const PresentingYourGoalContent: React.FC<
             title={t('Special Needs Chart')}
             horizontalScroll={false}
           >
-            <SupportNeedsChart
-              needsCategories={specialNeedsCategories}
-              emptyMessage={t('No special needs')}
-            />
+            <SupportNeedsChart needsCategories={specialNeedsCategories} />
           </PresentationCard>
         </Grid>
       </Grid>

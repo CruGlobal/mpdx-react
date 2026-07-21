@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, styled } from '@mui/material';
+import { Box, styled } from '@mui/material';
 import {
   Cell,
   Legend,
@@ -63,8 +63,6 @@ export interface NeedsCategory {
 export interface SupportNeedsChartProps {
   /** The categories to plot, one slice each (e.g. monthly needs or special needs). */
   needsCategories: NeedsCategory[];
-  /** Message shown when every category is zero (e.g. no special needs). */
-  emptyMessage?: string;
 }
 
 /**
@@ -74,7 +72,6 @@ export interface SupportNeedsChartProps {
  */
 export const SupportNeedsChart: React.FC<SupportNeedsChartProps> = ({
   needsCategories,
-  emptyMessage,
 }) => {
   const locale = useLocale();
   const { containerRef, width } = useContainerWidth();
@@ -83,22 +80,6 @@ export const SupportNeedsChart: React.FC<SupportNeedsChartProps> = ({
   const isCompact = typeof width === 'number' && width < 700;
 
   const total = needsCategories.reduce((sum, row) => sum + row.amount, 0);
-
-  if (total === 0) {
-    return emptyMessage ? (
-      <ChartContainer
-        ref={containerRef}
-        height={500}
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Typography color="text.secondary">{emptyMessage}</Typography>
-      </ChartContainer>
-    ) : null;
-  }
 
   return (
     <ChartContainer ref={containerRef} height={500}>

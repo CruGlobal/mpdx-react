@@ -67,19 +67,4 @@ describe('SupportNeedsChart', () => {
       expect(legend?.textContent).toMatch(title),
     );
   });
-
-  it('renders the empty message instead of a pie when every category is zero', () => {
-    const { getByText, container } = render(
-      <SupportNeedsChart
-        needsCategories={[
-          { title: 'IBS / NSO', amount: 0 },
-          { title: 'Refresh Retreat', amount: 0 },
-        ]}
-        emptyMessage="No special needs"
-      />,
-    );
-
-    expect(getByText('No special needs')).toBeInTheDocument();
-    expect(container.querySelector('.recharts-pie')).not.toBeInTheDocument();
-  });
 });
