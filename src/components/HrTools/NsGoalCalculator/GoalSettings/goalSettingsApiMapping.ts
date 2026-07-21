@@ -69,13 +69,13 @@ export const calculationToFormValues = (
   staffConferenceTransfer: toNumberInput(calc.staffConferenceTransfer),
   accountTransfers: toNumberInput(calc.accountTransfers),
   advocacyTransfers: toNumberInput(calc.advocacyTransfers),
-  otherExpenses: toNumberInput(calc.otherExpenses),
   geographicLocation: calc.geographicLocation ?? '',
   studentLoanMonthlyPayment: toNumberInput(calc.studentLoanMonthlyPayment),
   carLoanMonthlyPayment: toNumberInput(calc.carLoanMonthlyPayment),
   creditCardDebtMonthlyPayment: toNumberInput(
     calc.creditCardDebtMonthlyPayment,
   ),
+  otherExpenses: toNumberInput(calc.otherExpenses),
 
   benefitsPlan: calc.benefitsPlan ?? '',
   reimbursableExpenses: toNumberInput(calc.reimbursableExpenses),
@@ -162,7 +162,6 @@ export const formValuesToAttributes = (
     advocacyTransfers: seniorStaff
       ? toNumberOrNull(values.advocacyTransfers)
       : null,
-    otherExpenses: toNumberOrNull(values.otherExpenses),
 
     geographicLocation: values.geographicLocation || null,
 
@@ -171,6 +170,7 @@ export const formValuesToAttributes = (
     creditCardDebtMonthlyPayment: toNumberOrNull(
       values.creditCardDebtMonthlyPayment,
     ),
+    otherExpenses: toNumberOrNull(values.otherExpenses),
 
     // Healthcare
     benefitsPlan: values.benefitsPlan || null,

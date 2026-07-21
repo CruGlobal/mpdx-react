@@ -60,12 +60,12 @@ export interface GoalSettingsFormValues {
   staffConferenceTransfer: number | '';
   accountTransfers: number | '';
   advocacyTransfers: number | '';
-  otherExpenses: number | '';
   // shared
   geographicLocation: string;
   studentLoanMonthlyPayment: number | '';
   carLoanMonthlyPayment: number | '';
   creditCardDebtMonthlyPayment: number | '';
+  otherExpenses: number | '';
 
   // --- 3. Healthcare Information (shared) ---
   benefitsPlan: MpdGoalBenefitsConstantPlanEnum | '';
