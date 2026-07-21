@@ -76,7 +76,7 @@ export const PresentingYourGoalContent: React.FC<
   const specialNeeds = useSpecialNeedsCategories(calculations);
   const specialNeedsCategories = useMemo(
     () => [
-      ...specialNeeds.map(({ title, amount }) => ({ title, amount })),
+      ...specialNeeds,
       {
         title: t('Administrative Charge'),
         amount:
