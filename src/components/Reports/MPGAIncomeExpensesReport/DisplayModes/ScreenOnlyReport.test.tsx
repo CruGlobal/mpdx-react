@@ -10,6 +10,7 @@ import { mockData, months } from '../mockData';
 import { ScreenOnlyReport } from './ScreenOnlyReport';
 
 const mutationSpy = jest.fn();
+const subtitle = 'Last 12 Months';
 const currency = 'USD';
 
 const emptyData = {
@@ -24,6 +25,7 @@ const TestComponent: React.FC = () => (
         <TotalsProvider data={mockData}>
           <ScreenOnlyReport
             data={mockData}
+            subtitle={subtitle}
             last12Months={months}
             currency={currency}
           />
@@ -61,6 +63,7 @@ describe('ScreenOnlyReport', () => {
             <TotalsProvider data={emptyData}>
               <ScreenOnlyReport
                 data={emptyData}
+                subtitle={subtitle}
                 last12Months={months}
                 currency={currency}
               />

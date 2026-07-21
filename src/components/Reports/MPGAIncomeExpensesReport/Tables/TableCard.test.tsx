@@ -14,6 +14,7 @@ import { TableCard } from './TableCard';
 const mutationSpy = jest.fn();
 
 const title = 'Income';
+const subtitle = 'Last 12 Months';
 
 const data = {
   income: mockData.income,
@@ -38,6 +39,7 @@ const TestComponent: React.FC = () => (
             breakdownData={mockData.incomeBreakdown}
             emptyPlaceholder={<span>Empty Table</span>}
             title={title}
+            subtitle={subtitle}
             months={months}
           />
         </TotalsProvider>
@@ -90,6 +92,7 @@ describe('TableCard', () => {
                 data={data.income}
                 emptyPlaceholder={<span>Empty Table</span>}
                 title={title}
+                subtitle={subtitle}
                 months={months}
               />
             </TotalsProvider>
@@ -134,6 +137,7 @@ describe('TableCard', () => {
                 data={[]}
                 emptyPlaceholder={<span>Empty Table</span>}
                 title={title}
+                subtitle={subtitle}
                 months={months}
               />
             </TotalsProvider>

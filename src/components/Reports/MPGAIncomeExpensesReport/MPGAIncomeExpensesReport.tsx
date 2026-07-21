@@ -18,6 +18,7 @@ import { useStaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAc
 import { useFilteredFunds } from 'src/hooks/useFilteredFunds';
 import { useGetLastTwelveMonths } from 'src/hooks/useGetLastTwelveMonths';
 import { useLocale } from 'src/hooks/useLocale';
+import { monthYearFormat } from 'src/lib/intlFormat';
 import { AccountInfoBox } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBox';
 import { AccountInfoBoxSkeleton } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBoxSkeleton';
 import { SettingsButtonGroup } from '../Shared/SettingsButtonGroup/SettingsButtonGroup';
@@ -81,6 +82,28 @@ export const MPGAIncomeExpensesReport: React.FC<
       endDate: now,
     };
   }, [specificYear, isYearToDate]);
+
+  const subtitle = useMemo(() => {
+    if (specificYear === null && !isYearToDate) {
+      return t('Last 12 Months');
+    }
+    return t('{{startMonth}} – {{endMonth}}', {
+      startMonth: monthYearFormat(
+        startDate.month,
+        startDate.year,
+        locale,
+        true,
+        true,
+      ),
+      endMonth: monthYearFormat(
+        endDate.month,
+        endDate.year,
+        locale,
+        true,
+        true,
+      ),
+    });
+  }, [specificYear, isYearToDate, startDate, endDate, locale, t]);
 
   const defaultFilters: Filters = useMemo(
     () => ({
@@ -220,7 +243,7 @@ export const MPGAIncomeExpensesReport: React.FC<
               </SimpleScreenOnly>
               <SimplePrintOnly>
                 <Typography variant="h4">
-                  {t('Income & Expenses Analysis: Last 12 Months')}
+                  {t('Income & Expenses Analysis: {{subtitle}}', { subtitle })}
                 </Typography>
               </SimplePrintOnly>
               <SimpleScreenOnly
@@ -266,6 +289,7 @@ export const MPGAIncomeExpensesReport: React.FC<
           >
             <ScreenOnlyReport
               data={allData}
+              subtitle={subtitle}
               last12Months={monthLabels}
               currency={currency}
             />

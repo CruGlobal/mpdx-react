@@ -336,4 +336,38 @@ describe('MPGAIncomeExpensesReport', () => {
       expect(await findByRole('button', { name: 'Clear' })).toBeInTheDocument();
     }, 15000);
   });
+
+  describe('Date Range subtitle', () => {
+    it('shows default subtitle', async () => {
+      const { findAllByText } = render(<TestComponent />);
+
+      expect((await findAllByText('Last 12 Months')).length).toBeGreaterThan(0);
+    });
+
+    it('shows the month range when a specific year is applied', async () => {
+      const { getByRole, findByRole, findAllByText } = render(
+        <TestComponent />,
+      );
+
+      await findByRole('gridcell', { name: 'Benefits' });
+
+      userEvent.click(getByRole('button', { name: 'Report Settings' }));
+
+      const lastCompletedYear = DateTime.now().year - 1;
+      userEvent.click(
+        await findByRole('combobox', { name: 'Select Date Range' }),
+      );
+      userEvent.click(getByRole('option', { name: String(lastCompletedYear) }));
+
+      const applyButton = await findByRole('button', { name: 'Apply Filters' });
+      await waitFor(() => expect(applyButton).not.toBeDisabled());
+      userEvent.click(applyButton);
+
+      expect(
+        await findAllByText(
+          `January ${lastCompletedYear} – December ${lastCompletedYear}`,
+        ),
+      ).not.toHaveLength(0);
+    }, 15000);
+  });
 });
