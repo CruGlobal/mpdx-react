@@ -22,7 +22,9 @@ export const getVariantQuestionsSchema = (t: TFunction) =>
     spouseContribution403bPercentage: percentage(
       t('403(b) contribution percentage'),
       t,
-    ).required(t('Please enter a percentage, or 0 if you contribute none.')),
+    )
+      .lessThan(100, t('403(b) contribution percentage must be less than 100%'))
+      .required(t('Please enter a percentage, or 0 if you contribute none.')),
     spouseMhaAmount: getAmountSchema(t),
     staffConferenceTransfer: getAmountSchema(t),
     accountTransfers: getAmountSchema(t),
@@ -75,7 +77,9 @@ export const VariantQuestions: React.FC = () => {
                 spouseName,
               },
             )}
-            helperText={t('Enter a percentage between 0 and 100.')}
+            helperText={t(
+              'Enter a percentage greater than or equal to 0 and less than 100.',
+            )}
             endAdornment={<PercentageAdornment />}
           />
           <NumberQuestion
