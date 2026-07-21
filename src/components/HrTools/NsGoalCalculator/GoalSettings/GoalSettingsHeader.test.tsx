@@ -39,8 +39,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
   spouse = spousePerson,
   mpdGoal = 50000,
   joinedStaffYear = 2018,
-  isScenario = false,
-  isComplete = false,
+  isScenario,
+  isComplete,
 }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
