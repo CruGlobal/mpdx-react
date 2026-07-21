@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
 import { NewStaffQuestionnaireVariantEnum } from 'src/graphql/types.generated';
 import { NsoMpdQuestionnaireTestWrapper } from '../NsoMpdQuestionnaireTestWrapper';
@@ -112,6 +113,49 @@ describe('VariantQuestions', () => {
           name: 'How many total dependents would you like to cover by your Cru healthcare?',
         }),
       ).not.toBeInTheDocument();
+    });
+
+    it('rejects a 403(b) percentage of 100', async () => {
+      const { findByRole, findByText } = render(
+        <TestComponent
+          onCall={mutationSpy}
+          newStaffQuestionnaire={{
+            variant: NewStaffQuestionnaireVariantEnum.SpouseSeniorStaff,
+          }}
+        />,
+      );
+
+      const field = await findByRole('spinbutton', {
+        name: "What is Jane's 403(b) contribution percentage?",
+      });
+      userEvent.clear(field);
+      userEvent.type(field, '100');
+      userEvent.tab();
+
+      expect(
+        await findByText(
+          '403(b) contribution percentage must be less than 100%',
+        ),
+      ).toBeInTheDocument();
+      expect(mutationSpy).not.toHaveGraphqlOperation(
+        'UpdateNewStaffQuestionnaire',
+      );
+
+      userEvent.clear(field);
+      userEvent.type(field, '99.99');
+      userEvent.tab();
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation(
+          'UpdateNewStaffQuestionnaire',
+          {
+            input: {
+              accountListId: 'account-list-1',
+              attributes: { spouseContribution403bPercentage: 99.99 },
+            },
+          },
+        ),
+      );
     });
 
     it("interpolates the spouse's first name into the questions", async () => {
