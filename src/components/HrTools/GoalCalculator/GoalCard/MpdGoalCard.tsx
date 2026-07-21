@@ -1,4 +1,6 @@
 import React, { useMemo } from 'react';
+import { Chip } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { GoalCard } from 'src/components/Reports/Shared/GoalCard/GoalCard';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
@@ -13,6 +15,7 @@ export interface MpdGoalCardProps {
 }
 
 export const MpdGoalCard: React.FC<MpdGoalCardProps> = ({ goal }) => {
+  const { t } = useTranslation();
   const accountListId = useAccountListId();
   const constants = useGoalCalculatorConstants();
   const [deleteGoalCalculation] = useDeleteGoalCalculationMutation();
@@ -43,7 +46,13 @@ export const MpdGoalCard: React.FC<MpdGoalCardProps> = ({ goal }) => {
       loading={constants.loading}
       updatedAt={goal.updatedAt}
       viewHref={`/accountLists/${accountListId}/hrTools/goalCalculator/${goal.id}`}
-      onDelete={handleDelete}
+      // Read-only goals reject deletion, so don't offer it
+      onDelete={goal.readOnly ? undefined : handleDelete}
+      badge={
+        goal.readOnly ? (
+          <Chip label={t('Read-Only')} size="small" variant="outlined" />
+        ) : undefined
+      }
     />
   );
 };

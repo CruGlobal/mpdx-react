@@ -61,7 +61,8 @@ export interface GoalCardProps {
   loading?: boolean;
   updatedAt: string;
   viewHref: string;
-  onDelete: () => Promise<void>;
+  /** Omit to hide the delete button, e.g. for read-only goals */
+  onDelete?: () => Promise<void>;
   badge?: React.ReactNode;
 }
 
@@ -81,7 +82,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
 
   const displayName = name ?? t('Unnamed Goal');
 
-  const handleConfirmDelete = async () => onDelete();
+  const handleConfirmDelete = async () => onDelete?.();
 
   return (
     <>
@@ -158,11 +159,16 @@ export const GoalCard: React.FC<GoalCardProps> = ({
         <Divider sx={{ mt: 2, mb: 1 }} />
 
         <StyledActionBox>
-          <Button onClick={() => setDeleting(true)}>
-            <Typography variant="body2" fontWeight="bold" color="error">
-              {t('Delete')}
-            </Typography>
-          </Button>
+          {onDelete ? (
+            <Button onClick={() => setDeleting(true)}>
+              <Typography variant="body2" fontWeight="bold" color="error">
+                {t('Delete')}
+              </Typography>
+            </Button>
+          ) : (
+            // Keep the View button on the right when there is no delete button
+            <Box />
+          )}
           <Button
             LinkComponent={NextLink}
             href={viewHref}

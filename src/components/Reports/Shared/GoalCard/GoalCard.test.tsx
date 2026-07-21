@@ -111,4 +111,11 @@ describe('GoalCard', () => {
 
     expect(queryByText('Default')).not.toBeInTheDocument();
   });
+
+  it('hides the Delete button when onDelete is not provided', () => {
+    const { getByRole, queryByRole } = renderCard({ onDelete: undefined });
+
+    expect(queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument();
+    expect(getByRole('link', { name: 'View' })).toBeInTheDocument();
+  });
 });

@@ -48,6 +48,9 @@ export type GoalCalculatorType = {
   goalCalculationResult: ReturnType<typeof useGoalCalculationQuery>;
   goalTotals: GoalTotals;
 
+  /** Whether the goal is read-only and all inputs should be disabled */
+  isReadOnly: boolean;
+
   /** Whether any mutations are currently in progress */
   isMutating: boolean;
   /** Call with the mutation promise to track the start and end of mutations */
@@ -90,6 +93,9 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       id: goalCalculationId,
     },
   });
+
+  const isReadOnly =
+    goalCalculationResult.data?.goalCalculation?.readOnly ?? false;
 
   const role = goalCalculationResult.data?.goalCalculation?.role ?? null;
   const familySize =
@@ -192,6 +198,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       selectedReport,
       setSelectedReport,
       goalCalculationResult,
+      isReadOnly,
       isMutating,
       trackMutation,
       percentComplete,
@@ -215,6 +222,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       selectedReport,
       setSelectedReport,
       goalCalculationResult,
+      isReadOnly,
       isMutating,
       trackMutation,
       percentComplete,
