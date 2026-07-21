@@ -78,7 +78,7 @@ export const PresentingYourGoalContent: React.FC<
     () => [
       ...specialNeeds.map(({ title, amount }) => ({ title, amount })),
       {
-        title: t('Administrative Assessment'),
+        title: t('Administrative Charge'),
         amount:
           calculations.specialNeedsTotal - calculations.specialNeedsSubtotal,
       },
