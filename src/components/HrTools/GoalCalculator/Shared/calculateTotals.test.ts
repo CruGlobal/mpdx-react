@@ -16,6 +16,7 @@ import {
   calculateCategoryEnumTotal,
   calculateCategoryTotal,
   calculateFamilyTotal,
+  calculateGoalSubtotals,
   calculateGoalTotals,
 } from './calculateTotals';
 
@@ -161,6 +162,29 @@ describe('calculateGoalTotals', () => {
       overallSubtotalWithAdmin: 0,
       attrition: 0,
       overallTotal: 0,
+    });
+  });
+});
+
+describe('calculateGoalSubtotals', () => {
+  it('derives the gross annual salary and worksheet subtotal lines', () => {
+    expect(
+      calculateGoalSubtotals({
+        grossMonthlySalary: 1000,
+        ministryExpensesTotal: 500,
+        benefitsCharge: 300,
+        adminRate: 0.1,
+        attritionRate: 0.05,
+      }),
+    ).toEqual({
+      grossMonthlySalary: 1000,
+      grossAnnualSalary: 12000, // 1000 * 12
+      ministryExpensesTotal: 500,
+      benefitsCharge: 300,
+      overallSubtotal: 1800, // 1000 + 500 + 300
+      overallSubtotalWithAdmin: 2000, // 1800 / (1 - 0.1)
+      attrition: 100, // 2000 * 0.05
+      overallTotal: 2100, // 2000 + 100
     });
   });
 });
