@@ -17,13 +17,14 @@ export const useGoalAutoSave = ({
   const saveField = useSaveField();
   const {
     goalCalculationResult: { data },
+    isReadOnly,
   } = useGoalCalculator();
 
   return useAutoSave({
     value: data?.goalCalculation[fieldName],
     saveValue: (value) => saveField({ [fieldName]: value }),
     fieldName,
-    disabled: !data,
+    disabled: !data || isReadOnly,
     ...options,
   });
 };

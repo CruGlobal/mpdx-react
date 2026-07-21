@@ -145,6 +145,22 @@ describe('AutosaveTextField', () => {
     expect(input).toHaveAccessibleDescription('');
   });
 
+  it('disables the input when the goal is read-only but still shows its value', async () => {
+    const { getByRole } = render(
+      <GoalCalculatorTestWrapper onCall={mutationSpy} readOnly>
+        <AutosaveTextField
+          label="MHA Amount"
+          fieldName="mhaAmount"
+          schema={defaultSchema}
+        />
+      </GoalCalculatorTestWrapper>,
+    );
+
+    const input = getByRole('textbox', { name: 'MHA Amount' });
+    await waitFor(() => expect(input).toHaveValue('1000'));
+    expect(input).toBeDisabled();
+  });
+
   it('shows validation error for invalid type', async () => {
     const { getByRole } = render(<TestComponent />);
 

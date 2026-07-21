@@ -34,6 +34,7 @@ export const goalCalculationMock = gqlMock<
     goalCalculation: {
       id: 'goal-calculation-1',
       name: 'Initial Goal Name',
+      readOnly: false,
       firstName: 'John',
       spouseFirstName: 'Jane',
       lastName: 'Doe',
@@ -254,12 +255,13 @@ export const constantsMock = gqlMock<
 interface GoalCalculatorTestWrapperProps {
   onCall?: MockLinkCallHandler;
   noMocks?: boolean;
+  readOnly?: boolean;
   children?: React.ReactNode;
 }
 
 export const GoalCalculatorTestWrapper: React.FC<
   GoalCalculatorTestWrapperProps
-> = ({ onCall, noMocks = false, children }) => {
+> = ({ onCall, noMocks = false, readOnly = false, children }) => {
   const content = <GoalCalculatorProvider>{children}</GoalCalculatorProvider>;
   return (
     <ThemeProvider theme={theme}>
@@ -281,7 +283,7 @@ export const GoalCalculatorTestWrapper: React.FC<
             }>
               mocks={{
                 GoalCalculation: {
-                  goalCalculation: goalCalculationMock,
+                  goalCalculation: { ...goalCalculationMock, readOnly },
                 },
                 GoalCalculatorConstants: {
                   constant: constantsMock,

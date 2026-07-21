@@ -14,7 +14,11 @@ import { MpdGoalCard } from './MpdGoalCard';
 
 const mutationSpy = jest.fn();
 
-const TestComponent: React.FC = () => (
+interface TestComponentProps {
+  readOnly?: boolean;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({ readOnly = false }) => (
   <TestRouter>
     <ThemeProvider theme={theme}>
       <GqlMockedProvider<{
@@ -27,7 +31,9 @@ const TestComponent: React.FC = () => (
           },
         }}
       >
-        <MpdGoalCard goal={{ ...goalCalculationMock, id: 'goal-1' }} />
+        <MpdGoalCard
+          goal={{ ...goalCalculationMock, id: 'goal-1', readOnly }}
+        />
       </GqlMockedProvider>
     </ThemeProvider>
   </TestRouter>
@@ -69,5 +75,17 @@ describe('MpdGoalCard', () => {
     expect(
       getByTestId('goal-amount-value').querySelector('.MuiSkeleton-root'),
     ).toBeInTheDocument();
+  });
+
+  describe('read-only goal', () => {
+    it('hides the Delete button and shows the Read-Only badge', () => {
+      const { getByText, getByRole, queryByRole } = render(
+        <TestComponent readOnly />,
+      );
+
+      expect(queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument();
+      expect(getByText('Read-Only')).toBeInTheDocument();
+      expect(getByRole('link', { name: 'View' })).toBeInTheDocument();
+    });
   });
 });

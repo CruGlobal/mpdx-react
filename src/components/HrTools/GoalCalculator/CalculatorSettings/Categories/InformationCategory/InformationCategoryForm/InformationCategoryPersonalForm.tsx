@@ -42,6 +42,7 @@ export const InformationCategoryPersonalForm: React.FC<
   const { t } = useTranslation();
   const {
     goalCalculationResult: { data },
+    isReadOnly,
     setRightPanelContent,
   } = useGoalCalculator();
   const { goalGeographicConstantMap, goalBenefitsPlans } =
@@ -77,6 +78,11 @@ export const InformationCategoryPersonalForm: React.FC<
   }, [goalBenefitsPlans, familySize]);
 
   useEffect(() => {
+    // Read-only goals reject mutations, so don't try to fix an incompatible plan
+    if (isReadOnly) {
+      return;
+    }
+
     // Clear benefits plan if it's not compatible with selected family size
     if (familySize && benefitsPlan) {
       const isPlanValid = planOptions.some(([plan]) => plan === benefitsPlan);
@@ -134,7 +140,7 @@ export const InformationCategoryPersonalForm: React.FC<
               onChange={(_, newValue) =>
                 saveField({ geographicLocation: newValue })
               }
-              disabled={!data}
+              disabled={!data || isReadOnly}
               size="small"
               renderInput={(params) => (
                 <TextField

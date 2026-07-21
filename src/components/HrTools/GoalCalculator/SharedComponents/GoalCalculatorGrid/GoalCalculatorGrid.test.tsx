@@ -356,4 +356,59 @@ describe('GoalCalculatorGrid', () => {
       await findByText('Only the portion not reimbursed as ministry expense.'),
     ).toBeInTheDocument();
   });
+
+  describe('read-only goal', () => {
+    it('disables the mode toggle and add buttons and hides delete actions', async () => {
+      const { findByText, getByRole, queryByLabelText } = render(
+        <GoalCalculatorTestWrapper readOnly>
+          <TestComponent />
+        </GoalCalculatorTestWrapper>,
+      );
+
+      const otherMinistryRow = (await findByText('Other Ministry')).closest(
+        '[role="row"]',
+      );
+
+      expect(getByRole('button', { name: 'Lump Sum' })).toBeDisabled();
+      expect(getByRole('button', { name: 'Line Item' })).toBeDisabled();
+      expect(getByRole('button', { name: 'Add Line Item' })).toBeDisabled();
+
+      userEvent.hover(otherMinistryRow!);
+      expect(queryByLabelText('Delete')).not.toBeInTheDocument();
+    });
+
+    it('does not open the cell editor', async () => {
+      const { findByText, queryByDisplayValue } = render(
+        <GoalCalculatorTestWrapper readOnly>
+          <TestComponent />
+        </GoalCalculatorTestWrapper>,
+      );
+
+      const nameCell = await findByText('Other Ministry');
+      userEvent.dblClick(nameCell);
+
+      expect(queryByDisplayValue('Other Ministry')).not.toBeInTheDocument();
+    });
+
+    it('still displays the calculated total', async () => {
+      const { findByText } = render(
+        <GoalCalculatorTestWrapper readOnly>
+          <TestComponent />
+        </GoalCalculatorTestWrapper>,
+      );
+
+      expect(await findByText('Total')).toBeInTheDocument();
+      expect(await findByText('$1,450')).toBeInTheDocument();
+    });
+
+    it('disables the lump sum total field', async () => {
+      const { findByLabelText } = render(
+        <GoalCalculatorTestWrapper readOnly>
+          <TestComponent primaryBudgetCategoryIndex={1} />
+        </GoalCalculatorTestWrapper>,
+      );
+
+      expect(await findByLabelText('Total')).toBeDisabled();
+    });
+  });
 });

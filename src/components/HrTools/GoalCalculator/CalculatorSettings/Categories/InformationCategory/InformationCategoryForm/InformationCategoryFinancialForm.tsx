@@ -30,6 +30,7 @@ export const InformationCategoryFinancialForm: React.FC<
   const {
     setRightPanelContent,
     goalCalculationResult: { data },
+    isReadOnly,
   } = useGoalCalculator();
 
   const saveField = useSaveField();
@@ -89,6 +90,7 @@ export const InformationCategoryFinancialForm: React.FC<
             fullWidth
             size="small"
             select
+            disabled={!data || isReadOnly}
             label={
               isSpouse
                 ? t('Spouse SECA (Social Security) Status')
