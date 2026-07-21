@@ -1,6 +1,5 @@
 import React from 'react';
 import { Stack } from '@mui/material';
-import { AutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import {
   IconPanelItem,
@@ -17,9 +16,9 @@ interface NsoMpdQuestionnaireLayoutProps {
 
 /**
  * Layout shared by all NSO MPD Questionnaire pages. The icon rail holds a completion progress ring
- * and one icon per view step; the content has Back and Continue buttons below it on every step
- * except the last, which supplies its own Back and Submit buttons. Each step has a single section,
- * so there is no sub-step sidebar.
+ * and one navigable icon per view step, so users can jump directly to any step; the content has Back
+ * and Continue buttons below it on every step except the last, which supplies its own Back and Submit
+ * buttons. Each step has a single section, so there is no sub-step sidebar.
  */
 export const NsoMpdQuestionnaireLayout: React.FC<
   NsoMpdQuestionnaireLayoutProps
@@ -31,6 +30,7 @@ export const NsoMpdQuestionnaireLayout: React.FC<
     currentIndex,
     isLastStep,
     percentComplete,
+    handleStepChange,
     handleContinue,
     handleBack,
     loading,
@@ -38,18 +38,13 @@ export const NsoMpdQuestionnaireLayout: React.FC<
 
   const isFirstStep = currentIndex === 0;
 
-  const stepIcons: IconPanelItem[] = steps.map((step) => {
-    const isActive = currentStep.step === step.step;
-    return {
-      key: step.step,
-      icon: step.icon,
-      label: step.title,
-      isActive,
-      // Only the current step's icon is highlighted; the other steps are disabled so users move
-      // through the questionnaire with the Continue and Back buttons.
-      disabled: !isActive,
-    };
-  });
+  const stepIcons: IconPanelItem[] = steps.map((step) => ({
+    key: step.step,
+    icon: step.icon,
+    label: step.title,
+    isActive: currentStep.step === step.step,
+    onClick: () => handleStepChange(step.step),
+  }));
 
   return (
     <PanelLayout
@@ -61,17 +56,15 @@ export const NsoMpdQuestionnaireLayout: React.FC<
       backHref={`/accountLists/${accountListId}`}
       hideSidebar
       mainContent={
-        <AutosaveForm>
-          <Stack spacing={4}>
-            {children}
-            {!isLastStep && (
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} mx={4}>
-                {!isFirstStep && <BackButton onClick={handleBack} />}
-                <ContinueButton onClick={handleContinue} />
-              </Stack>
-            )}
-          </Stack>
-        </AutosaveForm>
+        <Stack spacing={4}>
+          {children}
+          {!isLastStep && (
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} mx={4}>
+              {!isFirstStep && <BackButton onClick={handleBack} />}
+              <ContinueButton onClick={handleContinue} />
+            </Stack>
+          )}
+        </Stack>
       }
     />
   );

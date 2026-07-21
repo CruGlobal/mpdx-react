@@ -31,6 +31,12 @@ query ReportsSavingsFundTransfer(
       recurringEnd
       active
     }
+    scheduledTransfer {
+      id
+      amount
+      transactedAt
+      description
+    }
   }
 }
 

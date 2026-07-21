@@ -92,18 +92,23 @@ describe('NsoMpdQuestionnaireLayout', () => {
     expect(getByText('Main panel content')).toBeInTheDocument();
   });
 
-  it('disables the non-current step icons so users cannot jump between steps', () => {
+  it('enables every step icon in the rail', () => {
     const { getByRole } = render(<TestComponent />);
 
-    expect(
-      getByRole('button', { name: 'Questionnaire Step 2' }),
-    ).toBeDisabled();
+    expect(getByRole('button', { name: 'Questionnaire Step 2' })).toBeEnabled();
+    expect(getByRole('button', { name: 'Questionnaire Step 3' })).toBeEnabled();
+    expect(getByRole('button', { name: 'Questionnaire Step 4' })).toBeEnabled();
+    expect(getByRole('button', { name: 'Summary' })).toBeEnabled();
+  });
+
+  it('jumps to another step when its rail icon is clicked', () => {
+    const { getByRole } = render(<TestComponent />);
+
+    userEvent.click(getByRole('button', { name: 'Questionnaire Step 3' }));
+
     expect(
       getByRole('button', { name: 'Questionnaire Step 3' }),
-    ).toBeDisabled();
-    expect(
-      getByRole('button', { name: 'Questionnaire Step 4' }),
-    ).toBeDisabled();
+    ).toHaveAttribute('aria-current', 'step');
   });
 
   it('keeps the current step icon interactive', () => {

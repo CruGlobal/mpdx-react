@@ -135,11 +135,22 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                   : null,
               }
             : null,
-          baseAmount: tx.transaction
-            ? tx.transaction.amount
-            : tx.recurringTransfer
-              ? tx.recurringTransfer.amount
-              : 0,
+          scheduledTransfer: tx.scheduledTransfer
+            ? {
+                ...tx.scheduledTransfer,
+                transactedAt: DateTime.fromISO(
+                  tx.scheduledTransfer.transactedAt,
+                  {
+                    setZone: true,
+                  },
+                ),
+              }
+            : null,
+          baseAmount:
+            tx.transaction?.amount ??
+            tx.recurringTransfer?.amount ??
+            tx.scheduledTransfer?.amount ??
+            0,
           failedCount: 0,
           summarizedTransfers: null,
           missingMonths: null,
@@ -184,17 +195,33 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
   const upcomingTransfers: Transfers[] = useMemo(
     () =>
       upcoming.map((tx) => {
+        // A pending one-time transfer carries its own amount/date; a recurring one has not fired yet,
+        // so its details come from the recurring schedule instead.
+        const scheduled = tx.scheduledTransfer;
+
         return {
-          id: tx.transaction?.id ?? crypto.randomUUID(),
+          // Scheduled and recurring ids are per-table primary keys from two different
+          // SAA tables, so they can collide (both '2'). Namespace them to keep the
+          // DataGrid and print table row keys unique. `recurringId` below stays raw:
+          // it is what the edit/cancel mutations send.
+          id: scheduled
+            ? `scheduled-${scheduled.id}`
+            : tx.recurringTransfer
+              ? `recurring-${tx.recurringTransfer.id}`
+              : crypto.randomUUID(),
           transferFrom: tx.transfer.sourceFundTypeName,
           transferTo: tx.transfer.destinationFundTypeName,
-          amount: tx.recurringTransfer?.amount ?? 0,
-          schedule: ScheduleEnum.Monthly,
+          amount: scheduled?.amount ?? tx.recurringTransfer?.amount ?? 0,
+          schedule: scheduled ? ScheduleEnum.OneTime : ScheduleEnum.Monthly,
           status: StatusEnum.Pending,
-          transferDate: tx.recurringTransfer?.recurringStart,
-          endDate: tx.recurringTransfer?.recurringEnd ?? null,
-          note: tx.subCategory?.name ?? '',
-          actions: 'edit-delete',
+          transferDate:
+            scheduled?.transactedAt ?? tx.recurringTransfer?.recurringStart,
+          endDate: scheduled
+            ? null
+            : (tx.recurringTransfer?.recurringEnd ?? null),
+          note: scheduled?.description ?? tx.subCategory?.name ?? '',
+          // Scheduled transfers cannot be edited or cancelled: SAA has no endpoint for it yet.
+          actions: scheduled ? '' : 'edit-delete',
           recurringId: tx.recurringTransfer?.id ?? null,
         };
       }),

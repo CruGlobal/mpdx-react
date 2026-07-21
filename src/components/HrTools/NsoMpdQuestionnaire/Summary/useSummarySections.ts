@@ -91,7 +91,7 @@ export const useSummarySections = (): SummarySectionData[] => {
     const isSpouseSeniorStaff =
       variant === NewStaffQuestionnaireVariantEnum.SpouseSeniorStaff;
 
-    return [
+    const sections: SummarySectionData[] = [
       {
         title: t('Personal Information'),
         step: NsoMpdQuestionnaireStepEnum.PersonalInformation,
@@ -216,5 +216,16 @@ export const useSummarySections = (): SummarySectionData[] => {
         ],
       },
     ];
+
+    // Personal Information is a read-only review step; every other section's rows are
+    // user-enterable and required, so an empty one should be flagged in the Summary.
+    return sections.map((section) =>
+      section.step === NsoMpdQuestionnaireStepEnum.PersonalInformation
+        ? section
+        : {
+            ...section,
+            rows: section.rows.map((row) => ({ ...row, required: true })),
+          },
+    );
   }, [questionnaire, hasSpouse, t, locale]);
 };
