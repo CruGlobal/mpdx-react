@@ -5,7 +5,12 @@ import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
+import {
+  GoalCalculationAge,
+  GoalCalculationRole,
+  MpdGoalBenefitsConstantPlanEnum,
+  NewStaffQuestionnaireMaritalStatusEnum,
+} from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import {
   NsGoalCalculatorTestWrapper,
@@ -443,6 +448,85 @@ describe('GoalSettingsForm', () => {
     expect(
       await findByRole('button', { name: 'Save & Share' }),
     ).toBeInTheDocument();
+  });
+
+  describe('status chip', () => {
+    // A married calculation with every required field filled in.
+    const completeMock = {
+      newStaffGoalCalculation: {
+        ...defaultGoalCalculation,
+        maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Married,
+        spouseJoining: true,
+        age: GoalCalculationAge.ThirtyToThirtyFour,
+        spouseAge: GoalCalculationAge.OverForty,
+        tenure: 5,
+        spouseTenure: 3,
+        assignmentType: GoalCalculationRole.Field,
+        benefitsPlan: MpdGoalBenefitsConstantPlanEnum.Base,
+      },
+    };
+
+    it('shows a Complete chip when the required fields are filled', async () => {
+      const { findByText, queryByText } = render(
+        <TestComponent goalCalculationMock={completeMock} />,
+      );
+
+      expect(await findByText('Complete')).toBeInTheDocument();
+      expect(queryByText('Incomplete')).not.toBeInTheDocument();
+    });
+
+    it('shows an Incomplete chip when a required field is missing', async () => {
+      const { findByText, queryByText } = render(
+        <TestComponent
+          goalCalculationMock={{
+            newStaffGoalCalculation: {
+              ...completeMock.newStaffGoalCalculation,
+              benefitsPlan: null,
+            },
+          }}
+        />,
+      );
+
+      expect(await findByText('Incomplete')).toBeInTheDocument();
+      expect(queryByText('Complete')).not.toBeInTheDocument();
+    });
+
+    it('shows an Incomplete chip when the spouse required fields are missing', async () => {
+      const { findByText } = render(
+        <TestComponent
+          goalCalculationMock={{
+            newStaffGoalCalculation: {
+              ...completeMock.newStaffGoalCalculation,
+              spouseAge: null,
+            },
+          }}
+        />,
+      );
+
+      expect(await findByText('Incomplete')).toBeInTheDocument();
+    });
+
+    it('flips to Complete when the last required field is filled', async () => {
+      const { findByText, findByRole } = render(
+        <TestComponent
+          goalCalculationMock={{
+            newStaffGoalCalculation: {
+              ...completeMock.newStaffGoalCalculation,
+              tenure: null,
+            },
+          }}
+        />,
+      );
+
+      expect(await findByText('Incomplete')).toBeInTheDocument();
+
+      const tenure = await findByRole('spinbutton', {
+        name: 'Full Time Years on Staff — John',
+      });
+      userEvent.type(tenure, '4');
+
+      expect(await findByText('Complete')).toBeInTheDocument();
+    });
   });
 
   describe('Senior Staff Only fields', () => {
