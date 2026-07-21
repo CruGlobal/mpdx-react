@@ -66,9 +66,7 @@ export const SpecialNeedsCard: React.FC<SpecialNeedsCardProps> = ({
       line: '8',
       category: t('Special Needs to be Developed'),
       description: t('Subtract line 7 from line 6'),
-      amount:
-        calculations.specialNeedsTotal -
-        calculations.specialNeedsDevelopedToDate,
+      amount: calculations.specialNeedsLeft,
       bold: true,
     },
   ];
