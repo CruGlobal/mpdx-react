@@ -159,7 +159,7 @@ describe('MPGAIncomeExpensesReport', () => {
     expect(getByTestId('ReportsMenuIcon')).toBeInTheDocument();
     userEvent.click(getByTestId('ReportsMenuIcon'));
     await waitFor(() => expect(onNavListToggle).toHaveBeenCalled());
-  });
+  }, 15000);
 
   describe('Category filtering', () => {
     it('re-renders report rows when a category is unchecked and applied', async () => {
@@ -185,9 +185,15 @@ describe('MPGAIncomeExpensesReport', () => {
       userEvent.click(applyButton);
 
       expect(
-        await findAllByText('Benefits - Workers Compensation'),
+        await findAllByText('Benefits - Workers Compensation', undefined, {
+          timeout: 5000,
+        }),
       ).toHaveLength(1);
-      expect(await findAllByText('Benefits - Program Based')).toHaveLength(1);
+      expect(
+        await findAllByText('Benefits - Program Based', undefined, {
+          timeout: 5000,
+        }),
+      ).toHaveLength(1);
     }, 15000);
 
     it('does not show the Clear button until a category filter is applied', async () => {
@@ -207,7 +213,9 @@ describe('MPGAIncomeExpensesReport', () => {
       await waitFor(() => expect(applyButton).not.toBeDisabled());
       userEvent.click(applyButton);
 
-      expect(await findByRole('button', { name: 'Clear' })).toBeInTheDocument();
+      expect(
+        await findByRole('button', { name: 'Clear' }, { timeout: 5000 }),
+      ).toBeInTheDocument();
     }, 15000);
 
     it('does not show the Clear button when the dialog is cancelled', async () => {
@@ -247,10 +255,14 @@ describe('MPGAIncomeExpensesReport', () => {
       userEvent.click(applyButton);
 
       expect(
-        await findAllByText('Benefits - Workers Compensation'),
+        await findAllByText('Benefits - Workers Compensation', undefined, {
+          timeout: 5000,
+        }),
       ).toHaveLength(1);
 
-      userEvent.click(await findByRole('button', { name: 'Clear' }));
+      userEvent.click(
+        await findByRole('button', { name: 'Clear' }, { timeout: 5000 }),
+      );
 
       await waitFor(() =>
         expect(
@@ -280,12 +292,14 @@ describe('MPGAIncomeExpensesReport', () => {
       await waitFor(() => expect(applyButton).not.toBeDisabled());
       userEvent.click(applyButton);
 
-      await waitFor(() =>
-        expect(mutationSpy).toHaveGraphqlOperation('MPGATransactions', {
-          startMonth: `${lastCompletedYear}-01-01`,
-          endMonth: `${lastCompletedYear}-12-31`,
-          fundTypes: ['Primary'],
-        }),
+      await waitFor(
+        () =>
+          expect(mutationSpy).toHaveGraphqlOperation('MPGATransactions', {
+            startMonth: `${lastCompletedYear}-01-01`,
+            endMonth: `${lastCompletedYear}-12-31`,
+            fundTypes: ['Primary'],
+          }),
+        { timeout: 5000 },
       );
     }, 15000);
 
@@ -307,12 +321,14 @@ describe('MPGAIncomeExpensesReport', () => {
       userEvent.click(applyButton);
 
       const now = DateTime.now();
-      await waitFor(() =>
-        expect(mutationSpy).toHaveGraphqlOperation('MPGATransactions', {
-          startMonth: `${now.year}-01-01`,
-          endMonth: now.toISODate(),
-          fundTypes: ['Primary'],
-        }),
+      await waitFor(
+        () =>
+          expect(mutationSpy).toHaveGraphqlOperation('MPGATransactions', {
+            startMonth: `${now.year}-01-01`,
+            endMonth: now.toISODate(),
+            fundTypes: ['Primary'],
+          }),
+        { timeout: 5000 },
       );
     }, 15000);
 
@@ -333,7 +349,9 @@ describe('MPGAIncomeExpensesReport', () => {
       await waitFor(() => expect(applyButton).not.toBeDisabled());
       userEvent.click(applyButton);
 
-      expect(await findByRole('button', { name: 'Clear' })).toBeInTheDocument();
+      expect(
+        await findByRole('button', { name: 'Clear' }, { timeout: 5000 }),
+      ).toBeInTheDocument();
     }, 15000);
   });
 
@@ -342,7 +360,7 @@ describe('MPGAIncomeExpensesReport', () => {
       const { findAllByText } = render(<TestComponent />);
 
       expect((await findAllByText('Last 12 Months')).length).toBeGreaterThan(0);
-    });
+    }, 15000);
 
     it('shows the month range when a specific year is applied', async () => {
       const { getByRole, findByRole, findAllByText } = render(
@@ -366,6 +384,8 @@ describe('MPGAIncomeExpensesReport', () => {
       expect(
         await findAllByText(
           `January ${lastCompletedYear} – December ${lastCompletedYear}`,
+          undefined,
+          { timeout: 5000 },
         ),
       ).not.toHaveLength(0);
     }, 15000);

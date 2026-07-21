@@ -76,11 +76,21 @@ export const BreakdownModal: React.FC<BreakdownModalProps> = ({
       open={open}
       onClose={onClose}
     >
-      <TableContainer>
+      <TableContainer
+        sx={{
+          '--breakdown-header-height': theme.spacing(6),
+          borderBottom: `1px solid ${theme.palette.divider}`,
+        }}
+      >
         <Table>
           <TableHead>
             <TableRow
-              sx={{ backgroundColor: theme.palette.mpdxGrayLight.main }}
+              sx={{
+                backgroundColor: theme.palette.mpdxGrayLight.main,
+                position: 'sticky',
+                top: 0,
+                zIndex: 1,
+              }}
             >
               <TableCell>{t('Category')}</TableCell>
               <TableCell sx={{ textAlign: 'right' }}>
@@ -120,10 +130,9 @@ export const BreakdownModal: React.FC<BreakdownModalProps> = ({
             sx={{
               '& .MuiTableCell-footer': {
                 position: 'sticky',
-                bottom: -1,
+                bottom: 0,
                 backgroundColor: 'background.paper',
                 borderBottom: 0,
-                boxShadow: `inset 0 -1px 0 ${theme.palette.divider}`,
               },
             }}
           >
