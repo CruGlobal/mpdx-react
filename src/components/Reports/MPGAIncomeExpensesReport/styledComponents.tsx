@@ -49,7 +49,7 @@ export const StyledGrid = styled((props: DataGridProps<DataFields>) => (
     {
       borderTop: `1px solid ${theme.palette.divider}`,
     },
-  '.MuiDataGrid-cell *': {
+  '.MuiDataGrid-cell *:not(.MuiSvgIcon-root)': {
     fontSize: '11px',
   },
   border: 'none',

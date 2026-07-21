@@ -82,6 +82,13 @@ describe('downloadReport', () => {
       expect.stringContaining('data:text/csv'),
     );
 
+    const hrefValue = setAttributeMock.mock.calls.find(
+      ([attribute]) => attribute === 'href',
+    )?.[1];
+    const csvContent = decodeURIComponent(hrefValue);
+    expect(csvContent).toContain('$2,724');
+    expect(csvContent).not.toContain('-$2,724');
+
     expect(setAttributeMock).toHaveBeenCalledWith(
       'download',
       expect.stringContaining(`Expense Report.csv`),

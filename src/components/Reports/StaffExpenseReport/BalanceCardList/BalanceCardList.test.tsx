@@ -95,7 +95,7 @@ describe('BalanceCardList', () => {
     const income = await findByText('Income:');
     expect(within(income).getByText('$500.00')).toBeInTheDocument();
     const expenses = getByText('Expenses:');
-    expect(within(expenses).getByText('-$100.00')).toBeInTheDocument();
+    expect(within(expenses).getByText('$100.00')).toBeInTheDocument();
     expect(getByText('Starting Balance: $1,000.00')).toBeInTheDocument();
     expect(getByText('= Ending Balance: $1,400.00')).toBeInTheDocument();
   });

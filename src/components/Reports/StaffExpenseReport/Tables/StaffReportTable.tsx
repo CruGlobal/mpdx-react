@@ -12,9 +12,9 @@ import { DataGrid, GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { TFunction } from 'i18next';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
+import { getPluralizedDescription } from '../../Shared/Helpers/transformStaffExpenseEnums';
 import { CategoryBreakdownDialog } from '../CategoryBreakdownDialog/CategoryBreakdownDialog';
 import { ReportType } from '../Helpers/StaffReportEnum';
 import { GroupedTransaction, Transaction } from '../Helpers/filterTransactions';
@@ -81,10 +81,9 @@ const descriptionName = (
 ): string => {
   // Compare against the locale-invariant enum, not the localized
   // displayCategory, so the relabel works in every locale.
-  if (transaction.category === StaffExpenseCategoryEnum.Donation) {
-    return t('Total Donations');
-  }
-  return transaction.displayCategory;
+  const description = getPluralizedDescription(transaction.category, t);
+
+  return description ? description : transaction.displayCategory;
 };
 
 export const createStaffReportRow = (
@@ -168,9 +167,11 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
   );
 
   const amount: RenderCell = ({ row }) => {
+    const displayAmount =
+      tableType === ReportType.Expense ? Math.abs(row.amount) : row.amount;
     return (
       <Typography variant="body2" noWrap>
-        {currencyFormat(row.amount, 'USD', locale)}
+        {currencyFormat(displayAmount, 'USD', locale)}
       </Typography>
     );
   };
@@ -225,6 +226,10 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
       headerName: t('Amount'),
       width: 150,
       renderCell: amount,
+      sortComparator: (v1: number, v2: number) =>
+        tableType === ReportType.Expense
+          ? Math.abs(v1) - Math.abs(v2)
+          : v1 - v2,
     },
     {
       field: 'tooltip',
@@ -296,7 +301,7 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
               component="span"
               sx={{ color: theme.palette.error.main }}
             >
-              {currencyFormat(transferTotal, 'USD', locale)}
+              {currencyFormat(Math.abs(transferTotal), 'USD', locale)}
             </Typography>
           </Typography>
         )}
