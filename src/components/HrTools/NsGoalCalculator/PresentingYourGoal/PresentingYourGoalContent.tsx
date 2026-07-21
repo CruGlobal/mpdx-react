@@ -110,7 +110,6 @@ export const PresentingYourGoalContent: React.FC<
         </Typography>
         <Box component="ol" sx={{ my: 1, pl: 3 }}>
           <li>{t('Toggle off Headers and Footers in your print settings.')}</li>
-          <li>{t('Adjust the Scale to fit on one page.')}</li>
           <li>
             {t(
               'From your Print settings, you may also save the page as a PDF to share digitally.',
