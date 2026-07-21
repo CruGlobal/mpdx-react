@@ -5,11 +5,31 @@ import {
   StaffExpensesSubCategoryEnum,
 } from 'src/graphql/types.generated';
 
+export const getPluralizedDescription = (
+  value: StaffExpenseCategoryEnum,
+  t: TFunction,
+) => {
+  const descriptions: Partial<Record<StaffExpenseCategoryEnum, string>> = {
+    [StaffExpenseCategoryEnum.Donation]: t('Total Donations'),
+    [StaffExpenseCategoryEnum.Transfer]: t('Transfers'),
+    [StaffExpenseCategoryEnum.AccountTransfer]: t('Account Transfers'),
+    [StaffExpenseCategoryEnum.Assessment]: t('Assessments'),
+    [StaffExpenseCategoryEnum.HealthcareReimbursement]: t(
+      'Healthcare Reimbursements',
+    ),
+    [StaffExpenseCategoryEnum.MinistryReimbursement]: t(
+      'Ministry Reimbursements',
+    ),
+    [StaffExpenseCategoryEnum.StaffExpense]: t('Staff Expenses'),
+  };
+  return descriptions[value];
+};
+
 export const getLocalizedCategory = (
   value: StaffExpenseCategoryEnum,
   t: TFunction,
 ): string => {
-  const categoryLabels: Partial<Record<StaffExpenseCategoryEnum, string>> = {
+  const categoryLabels: Record<StaffExpenseCategoryEnum, string> = {
     [StaffExpenseCategoryEnum.Donation]: t('Donation'),
     [StaffExpenseCategoryEnum.Transfer]: t('Transfer'),
     [StaffExpenseCategoryEnum.AccountTransfer]: t('Account Transfer'),
@@ -33,9 +53,7 @@ export const getLocalizedSubCategory = (
   value: StaffExpensesSubCategoryEnum,
   t: TFunction,
 ): string => {
-  const subcategoryLabels: Partial<
-    Record<StaffExpensesSubCategoryEnum, string>
-  > = {
+  const subcategoryLabels: Record<StaffExpensesSubCategoryEnum, string> = {
     [StaffExpensesSubCategoryEnum.Donation]: t('Donation'),
     [StaffExpensesSubCategoryEnum.NonCash]: t('Non Cash'),
     [StaffExpensesSubCategoryEnum.Withdrawal]: t('Withdrawal'),

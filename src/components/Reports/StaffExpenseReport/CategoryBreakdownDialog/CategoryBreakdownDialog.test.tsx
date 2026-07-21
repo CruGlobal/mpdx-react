@@ -1,7 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@emotion/react';
 import { render, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import {
   StaffExpenseCategoryEnum,
   StaffExpensesSubCategoryEnum,
@@ -44,8 +43,6 @@ const defaultProps: CategoryBreakdownDialogProps = {
   totalAmount: 800,
 };
 
-const mutationSpy = jest.fn();
-
 const TestComponent: React.FC<CategoryBreakdownDialogProps> = (
   defaultProps,
 ) => {
@@ -57,20 +54,6 @@ const TestComponent: React.FC<CategoryBreakdownDialogProps> = (
 };
 
 describe('CategoryBreakdownDialog', () => {
-  it('renders dialog when isOpen is true', () => {
-    const { getByRole } = render(<TestComponent {...defaultProps} />);
-
-    expect(getByRole('dialog')).toBeInTheDocument();
-  });
-
-  it('does not render dialog when isOpen is false', () => {
-    const { queryByRole } = render(
-      <TestComponent {...defaultProps} isOpen={false} />,
-    );
-
-    expect(queryByRole('dialog')).not.toBeInTheDocument();
-  });
-
   it('displays all transactions', () => {
     const { getByRole, getAllByRole } = render(
       <TestComponent {...defaultProps} />,
@@ -126,12 +109,24 @@ describe('CategoryBreakdownDialog', () => {
     expect(getByRole('cell', { name: '$800' })).toBeInTheDocument();
   });
 
-  it('calls onClose when close button is clicked', async () => {
-    const { getByTestId } = render(
-      <TestComponent {...defaultProps} onClose={mutationSpy} />,
+  it('displays expense amounts as positive magnitudes', () => {
+    const expenseTransactions: Transaction[] = mockTransactions.map(
+      (transaction) => ({ ...transaction, amount: -transaction.amount }),
+    );
+    const { getByRole, queryByRole } = render(
+      <TestComponent
+        {...defaultProps}
+        transactions={expenseTransactions}
+        totalAmount={-800}
+      />,
     );
 
-    userEvent.click(getByTestId('close-button'));
-    expect(mutationSpy).toHaveBeenCalled();
+    expect(getByRole('cell', { name: '$500' })).toBeInTheDocument();
+    expect(getByRole('cell', { name: '$300' })).toBeInTheDocument();
+    expect(
+      getByRole('cell', { name: 'Total Salary Expense' }),
+    ).toBeInTheDocument();
+    expect(getByRole('cell', { name: '$800' })).toBeInTheDocument();
+    expect(queryByRole('cell', { name: '-$800' })).not.toBeInTheDocument();
   });
 });

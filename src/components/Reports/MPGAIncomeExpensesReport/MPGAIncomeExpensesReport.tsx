@@ -137,6 +137,11 @@ export const MPGAIncomeExpensesReport: React.FC<
             subCategory: subcategory.subCategory,
             breakdownByMonth: subcategory.breakdownByMonth.map((month) => ({
               ...month,
+              transactions: (month.transactions ?? []).map((transaction) => ({
+                transactedAt: transaction.transactedAt,
+                description: transaction.description ?? '',
+                amount: transaction.amount,
+              })),
             })),
           })),
         })),
@@ -144,15 +149,17 @@ export const MPGAIncomeExpensesReport: React.FC<
     [reportData],
   );
 
-  const { incomeData, expenseData } = useFilteredFunds(
-    transformedData,
-    filters?.categories ?? null,
-    t,
-  );
+  const { incomeData, expenseData, incomeBreakdown, expenseBreakdown } =
+    useFilteredFunds(transformedData, filters?.categories ?? null, t);
 
   const allData: AllData = useMemo(() => {
     if (!isYearToDate) {
-      return { income: incomeData, expenses: expenseData };
+      return {
+        income: incomeData,
+        expenses: expenseData,
+        incomeBreakdown,
+        expenseBreakdown,
+      };
     }
     // Year to Date queries only the current year, so each row has fewer months than the 12 columns
     const padToColumns = (rows: DataFields[]): DataFields[] =>
@@ -165,8 +172,17 @@ export const MPGAIncomeExpensesReport: React.FC<
     return {
       income: padToColumns(incomeData),
       expenses: padToColumns(expenseData),
+      incomeBreakdown,
+      expenseBreakdown,
     };
-  }, [incomeData, expenseData, isYearToDate, monthLabels.length]);
+  }, [
+    incomeData,
+    expenseData,
+    incomeBreakdown,
+    expenseBreakdown,
+    isYearToDate,
+    monthLabels.length,
+  ]);
 
   return (
     <>
@@ -242,7 +258,12 @@ export const MPGAIncomeExpensesReport: React.FC<
           </Container>
         </Box>
         <SimpleScreenOnly>
-          <TotalsProvider data={allData} loading={loading}>
+          <TotalsProvider
+            data={allData}
+            loading={loading}
+            startDate={startDate}
+            endDate={endDate}
+          >
             <ScreenOnlyReport
               data={allData}
               last12Months={monthLabels}
@@ -251,7 +272,12 @@ export const MPGAIncomeExpensesReport: React.FC<
           </TotalsProvider>
         </SimpleScreenOnly>
         <PrintOnly>
-          <TotalsProvider data={allData} loading={loading}>
+          <TotalsProvider
+            data={allData}
+            loading={loading}
+            startDate={startDate}
+            endDate={endDate}
+          >
             <PrintOnlyReport
               data={allData}
               last12Months={monthLabels}

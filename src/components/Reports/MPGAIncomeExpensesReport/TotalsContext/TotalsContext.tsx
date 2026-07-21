@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { DateTime } from 'luxon';
 import { useExpenseCategories } from 'src/hooks/useExpenseCategories';
 import { AllData, DataFields } from '../mockData';
 
@@ -12,6 +13,8 @@ export type TotalsType = {
   salaryTotal: number;
   otherTotal: number;
   dataLoading: boolean;
+  startDate: DateTime;
+  endDate: DateTime;
 };
 
 export const TotalsContext = React.createContext<TotalsType | null>(null);
@@ -29,6 +32,8 @@ export const useTotals = (): TotalsType => {
 interface TotalsContextProps {
   data: AllData;
   loading?: boolean;
+  startDate?: DateTime;
+  endDate?: DateTime;
   children?: React.ReactNode;
 }
 
@@ -40,6 +45,8 @@ export const TotalsProvider: React.FC<TotalsContextProps> = ({
   children,
   data,
   loading = false,
+  startDate,
+  endDate,
 }) => {
   const {
     ministryTotal,
@@ -53,6 +60,14 @@ export const TotalsProvider: React.FC<TotalsContextProps> = ({
 
   const incomeTotal = useMemo(() => sum(data.income), [data.income]);
 
+  const { reportStartDate, reportEndDate } = useMemo(() => {
+    const now = DateTime.now();
+    return {
+      reportStartDate: startDate ?? now.minus({ months: 11 }).startOf('month'),
+      reportEndDate: endDate ?? now,
+    };
+  }, [startDate, endDate]);
+
   const contextValue: TotalsType = useMemo(
     () => ({
       incomeTotal,
@@ -64,6 +79,8 @@ export const TotalsProvider: React.FC<TotalsContextProps> = ({
       salaryTotal,
       otherTotal,
       dataLoading: loading,
+      startDate: reportStartDate,
+      endDate: reportEndDate,
     }),
     [
       incomeTotal,
@@ -75,6 +92,8 @@ export const TotalsProvider: React.FC<TotalsContextProps> = ({
       salaryTotal,
       otherTotal,
       loading,
+      reportStartDate,
+      reportEndDate,
     ],
   );
 

@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { DataFields } from 'src/components/Reports/MPGAIncomeExpensesReport/mockData';
+import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 
 const sum = (rows: DataFields[]): number => {
   return rows?.reduce((acc, item) => acc + item.total, 0) || 0;
@@ -15,23 +16,24 @@ export function useExpenseCategories(data: DataFields[]) {
     const other: DataFields[] = [];
 
     data.forEach((item) => {
-      const category =
-        item.description.split(' - ').length > 1
-          ? item.description.split(' - ')[0]
-          : item.description;
-
-      if (category === 'Ministry Reimbursement') {
-        ministry.push(item);
-      } else if (category === 'Healthcare Reimbursement') {
-        healthcare.push(item);
-      } else if (category === 'Assessment') {
-        assessment.push(item);
-      } else if (category === 'Benefits') {
-        benefits.push(item);
-      } else if (category === 'Salary') {
-        salary.push(item);
-      } else {
-        other.push(item);
+      switch (item.category) {
+        case StaffExpenseCategoryEnum.MinistryReimbursement:
+          ministry.push(item);
+          break;
+        case StaffExpenseCategoryEnum.HealthcareReimbursement:
+          healthcare.push(item);
+          break;
+        case StaffExpenseCategoryEnum.Assessment:
+          assessment.push(item);
+          break;
+        case StaffExpenseCategoryEnum.Benefits:
+          benefits.push(item);
+          break;
+        case StaffExpenseCategoryEnum.Salary:
+          salary.push(item);
+          break;
+        default:
+          other.push(item);
       }
     });
 

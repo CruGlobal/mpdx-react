@@ -50,7 +50,7 @@ describe('ScreenOnlyReport', () => {
     expect(
       getByRole('gridcell', { name: 'Contributions' }),
     ).toBeInTheDocument();
-    expect(getByRole('gridcell', { name: 'Assessment' })).toBeInTheDocument();
+    expect(getByRole('gridcell', { name: 'Assessments' })).toBeInTheDocument();
   });
 
   it('displays the tables that should be showing', () => {

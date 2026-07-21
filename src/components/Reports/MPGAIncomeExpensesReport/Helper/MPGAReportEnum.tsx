@@ -12,16 +12,26 @@ export enum FundTypes {
   Primary = 'Primary',
 }
 
+interface Transaction {
+  transactedAt: string;
+  description?: string | null;
+  amount: number;
+}
+
 interface BreakdownByMonth {
   month: string;
   total: number;
+}
+
+interface BreakdownByMonthWithTransactions extends BreakdownByMonth {
+  transactions?: Transaction[] | null;
 }
 
 interface SubCategories {
   averagePerMonth: number;
   total: number;
   subCategory: StaffExpensesSubCategoryEnum;
-  breakdownByMonth: BreakdownByMonth[];
+  breakdownByMonth: BreakdownByMonthWithTransactions[];
 }
 export interface Categories {
   averagePerMonth: number;
