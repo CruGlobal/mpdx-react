@@ -4,6 +4,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { DateTime } from 'luxon';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import {
@@ -187,6 +188,152 @@ describe('MPGAIncomeExpensesReport', () => {
         await findAllByText('Benefits - Workers Compensation'),
       ).toHaveLength(1);
       expect(await findAllByText('Benefits - Program Based')).toHaveLength(1);
+    }, 15000);
+
+    it('does not show the Clear button until a category filter is applied', async () => {
+      const { getByRole, findByRole, queryByRole } = render(<TestComponent />);
+
+      expect(await findByRole('gridcell', { name: 'Benefits' })).toBeVisible();
+      expect(queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
+
+      userEvent.click(getByRole('button', { name: 'Report Settings' }));
+
+      const benefitsCheckbox = await findByRole('checkbox', {
+        name: 'Benefits',
+      });
+      userEvent.click(benefitsCheckbox);
+
+      const applyButton = await findByRole('button', { name: 'Apply Filters' });
+      await waitFor(() => expect(applyButton).not.toBeDisabled());
+      userEvent.click(applyButton);
+
+      expect(await findByRole('button', { name: 'Clear' })).toBeInTheDocument();
+    }, 15000);
+
+    it('does not show the Clear button when the dialog is cancelled', async () => {
+      const { getByRole, findByRole, queryByRole } = render(<TestComponent />);
+
+      expect(await findByRole('gridcell', { name: 'Benefits' })).toBeVisible();
+
+      userEvent.click(getByRole('button', { name: 'Report Settings' }));
+
+      const cancelButton = await findByRole('button', { name: 'Cancel' });
+      userEvent.click(cancelButton);
+
+      await waitFor(() =>
+        expect(
+          queryByRole('button', { name: 'Cancel' }),
+        ).not.toBeInTheDocument(),
+      );
+      expect(queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
+    }, 15000);
+
+    it('resets category filtering when Clear is clicked', async () => {
+      const { getByRole, findByRole, findAllByText, queryByText } = render(
+        <TestComponent />,
+      );
+
+      expect(await findByRole('gridcell', { name: 'Benefits' })).toBeVisible();
+
+      userEvent.click(getByRole('button', { name: 'Report Settings' }));
+
+      const benefitsCheckbox = await findByRole('checkbox', {
+        name: 'Benefits',
+      });
+      userEvent.click(benefitsCheckbox);
+
+      const applyButton = await findByRole('button', { name: 'Apply Filters' });
+      await waitFor(() => expect(applyButton).not.toBeDisabled());
+      userEvent.click(applyButton);
+
+      expect(
+        await findAllByText('Benefits - Workers Compensation'),
+      ).toHaveLength(1);
+
+      userEvent.click(await findByRole('button', { name: 'Clear' }));
+
+      await waitFor(() =>
+        expect(
+          queryByText('Benefits - Workers Compensation'),
+        ).not.toBeInTheDocument(),
+      );
+      expect(await findByRole('gridcell', { name: 'Benefits' })).toBeVisible();
+    }, 15000);
+  });
+
+  describe('Date range filtering', () => {
+    it('queries the full selected year when a year is applied', async () => {
+      const { getByRole, findByRole } = render(<TestComponent />);
+
+      await findByRole('gridcell', { name: 'Benefits' });
+      mutationSpy.mockClear();
+
+      userEvent.click(getByRole('button', { name: 'Report Settings' }));
+
+      const lastCompletedYear = DateTime.now().year - 1;
+      userEvent.click(
+        await findByRole('combobox', { name: 'Select Date Range' }),
+      );
+      userEvent.click(getByRole('option', { name: String(lastCompletedYear) }));
+
+      const applyButton = await findByRole('button', { name: 'Apply Filters' });
+      await waitFor(() => expect(applyButton).not.toBeDisabled());
+      userEvent.click(applyButton);
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('MPGATransactions', {
+          startMonth: `${lastCompletedYear}-01-01`,
+          endMonth: `${lastCompletedYear}-12-31`,
+          fundTypes: ['Primary'],
+        }),
+      );
+    }, 15000);
+
+    it('queries the current year up to today for Year to Date', async () => {
+      const { getByRole, findByRole } = render(<TestComponent />);
+
+      await findByRole('gridcell', { name: 'Benefits' });
+      mutationSpy.mockClear();
+
+      userEvent.click(getByRole('button', { name: 'Report Settings' }));
+
+      userEvent.click(
+        await findByRole('combobox', { name: 'Select Date Range' }),
+      );
+      userEvent.click(getByRole('option', { name: 'Year to Date' }));
+
+      const applyButton = await findByRole('button', { name: 'Apply Filters' });
+      await waitFor(() => expect(applyButton).not.toBeDisabled());
+      userEvent.click(applyButton);
+
+      const now = DateTime.now();
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('MPGATransactions', {
+          startMonth: `${now.year}-01-01`,
+          endMonth: now.toISODate(),
+          fundTypes: ['Primary'],
+        }),
+      );
+    }, 15000);
+
+    it('shows the Clear button after a year is applied', async () => {
+      const { getByRole, findByRole, queryByRole } = render(<TestComponent />);
+
+      await findByRole('gridcell', { name: 'Benefits' });
+      expect(queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
+
+      userEvent.click(getByRole('button', { name: 'Report Settings' }));
+
+      userEvent.click(
+        await findByRole('combobox', { name: 'Select Date Range' }),
+      );
+      userEvent.click(getByRole('option', { name: 'Year to Date' }));
+
+      const applyButton = await findByRole('button', { name: 'Apply Filters' });
+      await waitFor(() => expect(applyButton).not.toBeDisabled());
+      userEvent.click(applyButton);
+
+      expect(await findByRole('button', { name: 'Clear' })).toBeInTheDocument();
     }, 15000);
   });
 });
