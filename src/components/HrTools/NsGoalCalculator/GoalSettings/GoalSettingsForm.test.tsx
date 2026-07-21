@@ -492,7 +492,7 @@ describe('GoalSettingsForm', () => {
     });
 
     it('shows an Incomplete chip when the spouse required fields are missing', async () => {
-      const { findByText } = render(
+      const { findByText, queryByText } = render(
         <TestComponent
           goalCalculationMock={{
             newStaffGoalCalculation: {
@@ -504,6 +504,7 @@ describe('GoalSettingsForm', () => {
       );
 
       expect(await findByText('Incomplete')).toBeInTheDocument();
+      expect(queryByText('Complete')).not.toBeInTheDocument();
     });
 
     it('flips to Complete when the last required field is filled', async () => {
