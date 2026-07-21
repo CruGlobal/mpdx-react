@@ -40,6 +40,7 @@ const baseCalculation = gqlMock<NewStaffGoalCalculationFieldsFragment>(
       staffConferenceTransfer: 10,
       accountTransfers: 20,
       advocacyTransfers: 30,
+      otherExpenses: 40,
       assignmentType: GoalCalculationRole.Field,
       nsoSpecialNeedsSupportReceived: 15,
       healthcareExempt: false,
@@ -63,6 +64,7 @@ describe('calculationToFormValues', () => {
     expect(values.calculationsYear).toBe('2026');
     expect(values.nsoSpecialNeedsSupportReceived).toBe(15);
     expect(values.assignmentType).toBe(GoalCalculationRole.Field);
+    expect(values.otherExpenses).toBe(40);
   });
 
   it('converts booleans to Yes/No strings', () => {
@@ -221,6 +223,14 @@ describe('formValuesToAttributes', () => {
     expect(attributes.staffConferenceTransfer).toBeNull();
     expect(attributes.accountTransfers).toBeNull();
     expect(attributes.advocacyTransfers).toBeNull();
+  });
+
+  it('sends other expenses for everyone, not just senior staff', () => {
+    // Unlike the senior-staff-only transfers, the "Other" line (worksheet
+    // line 13) is a general monthly need, so it is sent even for a single
+    // person whose senior-staff fields are cleared.
+    expect(formValuesToAttributes(singleValues).otherExpenses).toBe(40);
+    expect(formValuesToAttributes(coupleValues).otherExpenses).toBe(40);
   });
 
   it('passes the age enum through to the API', () => {

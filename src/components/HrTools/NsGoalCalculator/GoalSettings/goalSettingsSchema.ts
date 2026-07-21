@@ -46,6 +46,7 @@ export const getGoalSettingsSchema = (t: TFunction) =>
     staffConferenceTransfer: optionalAmount(t('Staff Conference Transfer'), t),
     accountTransfers: optionalAmount(t('Account Transfers'), t),
     advocacyTransfers: optionalAmount(t('Advocacy Transfers'), t),
+    otherExpenses: optionalAmount(t('Other Expenses'), t),
     studentLoanMonthlyPayment: optionalAmount(t('Student Loan Payment'), t),
     carLoanMonthlyPayment: optionalAmount(t('Car Loan Payment'), t),
     creditCardDebtMonthlyPayment: optionalAmount(

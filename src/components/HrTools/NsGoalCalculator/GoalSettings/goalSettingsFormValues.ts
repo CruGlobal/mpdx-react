@@ -65,6 +65,7 @@ export interface GoalSettingsFormValues {
   studentLoanMonthlyPayment: number | '';
   carLoanMonthlyPayment: number | '';
   creditCardDebtMonthlyPayment: number | '';
+  otherExpenses: number | '';
 
   // --- 3. Healthcare Information (shared) ---
   benefitsPlan: MpdGoalBenefitsConstantPlanEnum | '';
