@@ -34,6 +34,7 @@ export interface TableCardProps {
   >;
   emptyPlaceholder: React.ReactElement;
   title: string;
+  subtitle: string;
   months: string[];
 }
 
@@ -93,6 +94,7 @@ export const TableCard: React.FC<TableCardProps> = ({
   data,
   breakdownData = {},
   title,
+  subtitle,
   months,
   emptyPlaceholder,
 }) => {
@@ -237,7 +239,7 @@ export const TableCard: React.FC<TableCardProps> = ({
     <>
       <CardSkeleton
         title={title}
-        subtitle={t('Last 12 Months')}
+        subtitle={subtitle}
         styling={{ padding: 0, '&:last-child': { paddingBottom: 0 } }}
       >
         <Box>
@@ -272,7 +274,7 @@ export const TableCard: React.FC<TableCardProps> = ({
       )}
     </>
   ) : (
-    <CardSkeleton title={title} subtitle={t('Last 12 Months')}>
+    <CardSkeleton title={title} subtitle={subtitle}>
       <Box
         display="flex"
         justifyContent="center"

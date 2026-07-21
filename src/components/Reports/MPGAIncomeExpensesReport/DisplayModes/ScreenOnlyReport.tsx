@@ -12,12 +12,14 @@ import { AllData } from '../mockData';
 
 interface ScreenOnlyReportProps {
   data: AllData;
+  subtitle: string;
   last12Months: string[];
   currency: string;
 }
 
 export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
   data,
+  subtitle,
   last12Months,
   currency,
 }) => {
@@ -29,14 +31,14 @@ export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
         <Box mt={2} mb={2}>
           <Grid container spacing={2}>
             <Grid size={7}>
-              <CardSkeleton title={t('Summary')} subtitle={t('Last 12 Months')}>
+              <CardSkeleton title={t('Summary')} subtitle={subtitle}>
                 <SummaryBarChart aspect={2} width={100} currency={currency} />
               </CardSkeleton>
             </Grid>
             <Grid size={5}>
               <CardSkeleton
                 title={t('Expenses Categories')}
-                subtitle={t('Last 12 Months')}
+                subtitle={subtitle}
               >
                 <ExpensesPieChart aspect={1.35} width={100} />
               </CardSkeleton>
@@ -56,6 +58,7 @@ export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
               />
             }
             title={t('Income')}
+            subtitle={subtitle}
             months={last12Months}
           />
         </Box>
@@ -72,14 +75,12 @@ export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
               />
             }
             title={t('Expenses')}
+            subtitle={subtitle}
             months={last12Months}
           />
         </Box>
         <Box mt={2} mb={2}>
-          <CardSkeleton
-            title={t('Monthly Summary')}
-            subtitle={t('Last 12 Months')}
-          >
+          <CardSkeleton title={t('Monthly Summary')} subtitle={subtitle}>
             <MonthlySummaryChart
               incomeData={data.income ?? []}
               expenseData={data.expenses ?? []}
