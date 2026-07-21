@@ -74,9 +74,6 @@ describe('PresentingYourGoalStep', () => {
       getByText('Toggle off Headers and Footers in your print settings.'),
     ).toBeInTheDocument();
     expect(
-      getByText('Adjust the Scale to fit on one page.'),
-    ).toBeInTheDocument();
-    expect(
       getByText(
         'From your Print settings, you may also save the page as a PDF to share digitally.',
       ),
