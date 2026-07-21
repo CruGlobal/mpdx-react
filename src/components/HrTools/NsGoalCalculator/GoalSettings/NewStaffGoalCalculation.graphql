@@ -66,6 +66,7 @@ fragment NewStaffGoalCalculationFields on NewStaffGoalCalculation {
   staffConferenceTransfer
   accountTransfers
   advocacyTransfers
+  otherExpenses
   geographicLocation
   studentLoanMonthlyPayment
   carLoanMonthlyPayment

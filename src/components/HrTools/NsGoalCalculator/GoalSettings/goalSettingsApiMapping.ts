@@ -75,6 +75,7 @@ export const calculationToFormValues = (
   creditCardDebtMonthlyPayment: toNumberInput(
     calc.creditCardDebtMonthlyPayment,
   ),
+  otherExpenses: toNumberInput(calc.otherExpenses),
 
   benefitsPlan: calc.benefitsPlan ?? '',
   reimbursableExpenses: toNumberInput(calc.reimbursableExpenses),
@@ -169,6 +170,7 @@ export const formValuesToAttributes = (
     creditCardDebtMonthlyPayment: toNumberOrNull(
       values.creditCardDebtMonthlyPayment,
     ),
+    otherExpenses: toNumberOrNull(values.otherExpenses),
 
     // Healthcare
     benefitsPlan: values.benefitsPlan || null,
