@@ -1,38 +1,14 @@
 import React from 'react';
-import { ThemeProvider } from '@mui/material/styles';
-import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render } from '@testing-library/react';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import theme from 'src/theme';
-import { TotalsProvider } from '../TotalsContext/TotalsContext';
-import { mockData, months } from '../mockData';
+import { MPGAIncomeExpensesReportTestWrapper } from '../MPGAIncomeExpensesReportTestWrapper';
 import { ScreenOnlyReport } from './ScreenOnlyReport';
 
 const mutationSpy = jest.fn();
-const subtitle = 'Last 12 Months';
-const currency = 'USD';
-
-const emptyData = {
-  income: [{ ...mockData.income[0] }, { ...mockData.income[1] }],
-  expenses: [],
-};
 
 const TestComponent: React.FC = () => (
-  <ThemeProvider theme={theme}>
-    <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <GqlMockedProvider onCall={mutationSpy}>
-        <TotalsProvider data={mockData}>
-          <ScreenOnlyReport
-            data={mockData}
-            subtitle={subtitle}
-            last12Months={months}
-            currency={currency}
-          />
-        </TotalsProvider>
-      </GqlMockedProvider>
-    </LocalizationProvider>
-  </ThemeProvider>
+  <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
+    <ScreenOnlyReport />
+  </MPGAIncomeExpensesReportTestWrapper>
 );
 
 const resizeObserverMock = () => ({
@@ -45,34 +21,23 @@ beforeAll(() => {
 });
 
 describe('ScreenOnlyReport', () => {
-  it('renders data correctly', () => {
-    const { getByRole, queryAllByRole } = render(<TestComponent />);
+  it('renders data correctly', async () => {
+    const { getByRole, findAllByRole } = render(<TestComponent />);
 
-    expect(queryAllByRole('grid')).toHaveLength(4);
-    expect(
-      getByRole('gridcell', { name: 'Contributions' }),
-    ).toBeInTheDocument();
-    expect(getByRole('gridcell', { name: 'Assessments' })).toBeInTheDocument();
+    expect(await findAllByRole('grid')).toHaveLength(4);
+    expect(getByRole('gridcell', { name: 'Donation' })).toBeInTheDocument();
+    expect(getByRole('gridcell', { name: 'Assessment' })).toBeInTheDocument();
   });
 
-  it('displays the tables that should be showing', () => {
-    const { queryAllByRole } = render(
-      <ThemeProvider theme={theme}>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <GqlMockedProvider onCall={mutationSpy}>
-            <TotalsProvider data={emptyData}>
-              <ScreenOnlyReport
-                data={emptyData}
-                subtitle={subtitle}
-                last12Months={months}
-                currency={currency}
-              />
-            </TotalsProvider>
-          </GqlMockedProvider>
-        </LocalizationProvider>
-      </ThemeProvider>,
+  it('shows empty placeholders when there is no data', async () => {
+    const { findByText, getByText, queryAllByRole } = render(
+      <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy} isEmpty>
+        <ScreenOnlyReport />
+      </MPGAIncomeExpensesReportTestWrapper>,
     );
 
-    expect(queryAllByRole('grid')).toHaveLength(2);
+    expect(await findByText('No Income data available')).toBeInTheDocument();
+    expect(getByText('No Expenses data available')).toBeInTheDocument();
+    expect(queryAllByRole('grid')).toHaveLength(0);
   });
 });

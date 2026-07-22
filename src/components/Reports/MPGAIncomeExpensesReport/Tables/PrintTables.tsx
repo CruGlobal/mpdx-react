@@ -15,7 +15,7 @@ import { zeroAmountFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { LoadingBox, LoadingIndicator } from '../../styledComponents';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
-import { useTotals } from '../TotalsContext/TotalsContext';
+import { useReport } from '../ReportContext/ReportContext';
 import { DataFields } from '../mockData';
 import { StyledRow, StyledTypography } from '../styledComponents';
 
@@ -23,32 +23,33 @@ export interface PrintTablesProps {
   type: ReportTypeEnum;
   data?: DataFields[];
   title: string;
-  months: string[];
-  firstFutureMonthIndex?: number;
 }
 
 export const PrintTables: React.FC<PrintTablesProps> = ({
   title,
-  months,
   data,
   type,
-  firstFutureMonthIndex,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { incomeTotal, expensesTotal, dataLoading } = useTotals();
+  const {
+    incomeTotal,
+    expensesTotal,
+    isFutureMonth,
+    dataLoading,
+    monthLabels: months,
+    firstFutureMonthIndex,
+  } = useReport();
 
   const overallTotal =
     type === ReportTypeEnum.Income ? incomeTotal : expensesTotal;
 
   const grayColor = theme.palette.text.disabled;
-  const isFutureMonth = (index: number) =>
-    firstFutureMonthIndex !== undefined && index >= firstFutureMonthIndex;
   const futureCellSx = {
     backgroundColor: theme.palette.action.hover,
     WebkitPrintColorAdjust: 'exact',
     printColorAdjust: 'exact',
-  } as const;
+  };
 
   const { monthCount, firstMonthFlags, getBorderColor } = useMonthHeaders(
     months,
@@ -84,9 +85,6 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                   .slice(0, index)
                   .reduce((sum, group) => sum + group.count, 0);
 
-                // Split the year underline into a past segment (year color) and
-                // a future segment (gray) at the exact column boundary, so it
-                // lines up with the columns regardless of their widths.
                 const futureStart =
                   firstFutureMonthIndex !== undefined
                     ? Math.max(
@@ -94,8 +92,7 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                         Math.min(count, firstFutureMonthIndex - monthOffset),
                       )
                     : count;
-                const pastCount = futureStart;
-                const futureCount = count - pastCount;
+                const futureCount = count - futureStart;
 
                 const yearLabel = firstMonthInYear ? (
                   <Typography
@@ -106,10 +103,10 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                 ) : null;
 
                 return [
-                  pastCount > 0 ? (
+                  futureStart > 0 ? (
                     <TableCell
                       key={`${year}-past`}
-                      colSpan={pastCount}
+                      colSpan={futureStart}
                       sx={{
                         borderBottom: `2px solid ${borderColor}`,
                         borderRight: '20px solid transparent',
@@ -127,7 +124,7 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                         borderRight: '20px solid transparent',
                       }}
                     >
-                      {pastCount === 0 ? yearLabel : null}
+                      {futureStart === 0 ? yearLabel : null}
                     </TableCell>
                   ) : null,
                 ];

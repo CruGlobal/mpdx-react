@@ -13,18 +13,13 @@ import {
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { useTotals } from '../../TotalsContext/TotalsContext';
-import { DataFields } from '../../mockData';
+import { useReport } from '../../ReportContext/ReportContext';
 import { ChartFrame } from '../ChartFrame';
 import { ChartLegendContent } from '../ChartLegendContent/ChartLegendContent';
 
 interface MonthlySummaryChartProps {
-  incomeData: DataFields[];
-  expenseData: DataFields[];
-  months: string[];
   aspect: number;
   width: number;
-  currency: string;
 }
 
 interface MonthlyTotal {
@@ -35,23 +30,23 @@ interface MonthlyTotal {
   tallest: number;
 }
 
-const chartColors = [
-  theme.palette.statusSuccess.main,
-  theme.palette.chipRedDark.main,
-];
+const chartColors = [theme.palette.success.main, theme.palette.error.main];
 
 export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
-  incomeData,
-  expenseData,
-  months,
   aspect,
   width,
-  currency,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { dataLoading } = useTotals();
+  const {
+    allData: data,
+    dataLoading,
+    monthLabels: months,
+    currency,
+  } = useReport();
+  const incomeData = data.income ?? [];
+  const expenseData = data.expenses ?? [];
 
   const monthlyTotals = useMemo(() => {
     return months.map((name, index) => {

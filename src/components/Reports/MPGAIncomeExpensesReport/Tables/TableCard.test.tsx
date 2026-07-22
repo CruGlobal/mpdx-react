@@ -1,58 +1,40 @@
 import React from 'react';
-import { ThemeProvider } from '@mui/material/styles';
-import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
-import { TotalsProvider } from '../TotalsContext/TotalsContext';
+import { MPGAIncomeExpensesReportTestWrapper } from '../MPGAIncomeExpensesReportTestWrapper';
 import { mockData, months } from '../mockData';
 import { TableCard } from './TableCard';
 
 const mutationSpy = jest.fn();
 
 const title = 'Income';
-const subtitle = 'Last 12 Months';
 
 const data = {
   income: mockData.income,
   expenses: [],
 };
 
-const emptyData = {
-  income: [],
-  expenses: [],
-};
-
 const cellText = (element: HTMLElement) => element.textContent;
 
 const TestComponent: React.FC = () => (
-  <ThemeProvider theme={theme}>
-    <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <GqlMockedProvider onCall={mutationSpy}>
-        <TotalsProvider data={data}>
-          <TableCard
-            type={ReportTypeEnum.Income}
-            data={data.income}
-            breakdownData={mockData.incomeBreakdown}
-            emptyPlaceholder={<span>Empty Table</span>}
-            title={title}
-            subtitle={subtitle}
-            months={months}
-          />
-        </TotalsProvider>
-      </GqlMockedProvider>
-    </LocalizationProvider>
-  </ThemeProvider>
+  <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
+    <TableCard
+      type={ReportTypeEnum.Income}
+      data={data.income}
+      breakdownData={mockData.incomeBreakdown}
+      emptyPlaceholder={<span>Empty Table</span>}
+      title={title}
+    />
+  </MPGAIncomeExpensesReportTestWrapper>
 );
 
 describe('TableCard', () => {
-  it('should render with the correct data', () => {
-    const { getAllByRole, getByText } = render(<TestComponent />);
+  it('should render with the correct data', async () => {
+    const { getAllByRole, findByText, getByText } = render(<TestComponent />);
 
-    expect(getByText(title)).toBeInTheDocument();
+    expect(await findByText(title)).toBeInTheDocument();
     expect(getByText(/last 12 months/i)).toBeInTheDocument();
 
     expect(getAllByRole('columnheader').map(cellText)).toEqual(
@@ -63,17 +45,19 @@ describe('TableCard', () => {
     );
   });
 
-  it('should calculate and display totals correctly', () => {
-    const { getAllByRole } = render(<TestComponent />);
+  it('should calculate and display totals correctly', async () => {
+    const { getAllByRole, findByText } = render(<TestComponent />);
 
+    await findByText(title);
     expect(getAllByRole('gridcell').map(cellText)).toEqual(
       expect.arrayContaining(['108,856', '9,071']),
     );
   });
 
-  it('renders months in column headers for all months', () => {
-    const { getAllByRole } = render(<TestComponent />);
+  it('renders months in column headers for all months', async () => {
+    const { getAllByRole, findByText } = render(<TestComponent />);
 
+    await findByText(title);
     const headerNames = getAllByRole('columnheader').map(cellText);
 
     months.forEach((month) => {
@@ -83,42 +67,35 @@ describe('TableCard', () => {
 
   it('should show a loading spinner while data is being fetched', () => {
     const { getByRole } = render(
-      <ThemeProvider theme={theme}>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <GqlMockedProvider>
-            <TotalsProvider data={data} loading>
-              <TableCard
-                type={ReportTypeEnum.Income}
-                data={data.income}
-                emptyPlaceholder={<span>Empty Table</span>}
-                title={title}
-                subtitle={subtitle}
-                months={months}
-              />
-            </TotalsProvider>
-          </GqlMockedProvider>
-        </LocalizationProvider>
-      </ThemeProvider>,
+      <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
+        <TableCard
+          type={ReportTypeEnum.Income}
+          data={data.income}
+          emptyPlaceholder={<span>Empty Table</span>}
+          title={title}
+        />
+      </MPGAIncomeExpensesReportTestWrapper>,
     );
 
     expect(getByRole('progressbar')).toBeInTheDocument();
   });
 
-  it('should display the correct years in the table', () => {
-    const { getAllByRole } = render(<TestComponent />);
+  it('should display the correct years in the table', async () => {
+    const { getAllByRole, findByText } = render(<TestComponent />);
 
+    await findByText(title);
     expect(getAllByRole('columnheader').map(cellText)).toEqual(
-      expect.arrayContaining(['2024', '2025']),
+      expect.arrayContaining(['2019', '2020']),
     );
   });
 
-  it('should apply the correct color to each group header', () => {
-    const { getByText } = render(<TestComponent />);
+  it('should apply the correct color to each group header', async () => {
+    const { getByText, findByText } = render(<TestComponent />);
 
-    expect(getByText('2024')).toHaveStyle({
+    expect(await findByText('2019')).toHaveStyle({
       color: theme.palette.primary.main,
     });
-    expect(getByText('2025')).toHaveStyle({
+    expect(getByText('2020')).toHaveStyle({
       color: theme.palette.chartOrange.main,
     });
     expect(getByText('Summary')).toHaveStyle({
@@ -126,41 +103,33 @@ describe('TableCard', () => {
     });
   });
 
-  it('should display empty placeholder when no data is available', () => {
-    const { getByText } = render(
-      <ThemeProvider theme={theme}>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <GqlMockedProvider>
-            <TotalsProvider data={emptyData}>
-              <TableCard
-                type={ReportTypeEnum.Income}
-                data={[]}
-                emptyPlaceholder={<span>Empty Table</span>}
-                title={title}
-                subtitle={subtitle}
-                months={months}
-              />
-            </TotalsProvider>
-          </GqlMockedProvider>
-        </LocalizationProvider>
-      </ThemeProvider>,
+  it('should display empty placeholder when no data is available', async () => {
+    const { findByText } = render(
+      <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
+        <TableCard
+          type={ReportTypeEnum.Income}
+          data={[]}
+          emptyPlaceholder={<span>Empty Table</span>}
+          title={title}
+        />
+      </MPGAIncomeExpensesReportTestWrapper>,
     );
 
-    expect(getByText('Empty Table')).toBeInTheDocument();
+    expect(await findByText('Empty Table')).toBeInTheDocument();
   });
 
   describe('breakdown modal', () => {
-    it('shows the icon only on rows that have breakdown data', () => {
-      const { getAllByRole } = render(<TestComponent />);
+    it('shows the icon only on rows that have breakdown data', async () => {
+      const { findAllByRole } = render(<TestComponent />);
 
-      const icons = getAllByRole('button', { name: 'View breakdown' });
+      const icons = await findAllByRole('button', { name: 'View breakdown' });
       expect(icons).toHaveLength(1);
     });
 
     it('opens the modal for the clicked category', async () => {
-      const { getByRole, findByRole } = render(<TestComponent />);
+      const { findByRole } = render(<TestComponent />);
 
-      userEvent.click(getByRole('button', { name: 'View breakdown' }));
+      userEvent.click(await findByRole('button', { name: 'View breakdown' }));
 
       const dialog = await findByRole('dialog');
       expect(
@@ -169,9 +138,9 @@ describe('TableCard', () => {
     });
 
     it('renders an accordion per subcategory with the overall total', async () => {
-      const { getByRole, findByRole } = render(<TestComponent />);
+      const { findByRole } = render(<TestComponent />);
 
-      userEvent.click(getByRole('button', { name: 'View breakdown' }));
+      userEvent.click(await findByRole('button', { name: 'View breakdown' }));
 
       const dialog = await findByRole('dialog');
       expect(within(dialog).getByText('Donation')).toBeInTheDocument();
@@ -185,9 +154,9 @@ describe('TableCard', () => {
     });
 
     it('closes the modal', async () => {
-      const { getByRole, findByRole, queryByRole } = render(<TestComponent />);
+      const { findByRole, queryByRole } = render(<TestComponent />);
 
-      userEvent.click(getByRole('button', { name: 'View breakdown' }));
+      userEvent.click(await findByRole('button', { name: 'View breakdown' }));
 
       const dialog = await findByRole('dialog');
       userEvent.click(within(dialog).getByRole('button', { name: 'Close' }));
@@ -199,8 +168,9 @@ describe('TableCard', () => {
   });
 
   it('updates the sort order', async () => {
-    const { getAllByRole } = render(<TestComponent />);
+    const { getAllByRole, findByText } = render(<TestComponent />);
 
+    await findByText(title);
     const aprilHeader = getAllByRole('columnheader').find(
       (header) => header.getAttribute('data-field') === 'month0',
     ) as HTMLElement;
@@ -208,7 +178,7 @@ describe('TableCard', () => {
       within(aprilHeader).getByTestId('ArrowDownwardIcon'),
     ).toBeInTheDocument();
 
-    await userEvent.click(aprilHeader);
+    userEvent.click(aprilHeader);
 
     await waitFor(() => {
       const aprCells = getAllByRole('gridcell').filter(
@@ -218,7 +188,7 @@ describe('TableCard', () => {
       expect(values).toEqual(['6,770', '100', '-']);
     });
 
-    await userEvent.click(aprilHeader);
+    userEvent.click(aprilHeader);
     await waitFor(() => {
       const aprCells = getAllByRole('gridcell').filter(
         (cell) => cell.getAttribute('data-field') === 'month0',

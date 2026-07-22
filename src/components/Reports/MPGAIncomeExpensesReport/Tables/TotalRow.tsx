@@ -6,6 +6,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { amountFormat, zeroAmountFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { populateTotalRows } from '../Helper/createRows';
+import { useReport } from '../ReportContext/ReportContext';
 import { DataFields } from '../mockData';
 import { StyledTotalRow } from '../styledComponents';
 import { descriptionWidth, monthWidth, summaryWidth } from './TableCard';
@@ -23,27 +24,30 @@ interface Row {
 interface TotalRowProps {
   data: DataFields[];
   overallTotal: number | undefined;
-  firstFutureMonthIndex?: number;
 }
 
-export const TotalRow: React.FC<TotalRowProps> = ({
-  data,
-  overallTotal,
-  firstFutureMonthIndex,
-}) => {
+export const TotalRow: React.FC<TotalRowProps> = ({ data, overallTotal }) => {
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const monthlyTotals = data[0]?.monthly
-    ? data[0].monthly.map((_, monthIndex) => {
-        const total = data.reduce(
-          (acc, curr) => acc + (curr.monthly?.[monthIndex] ?? 0),
-          0,
-        );
-        return total;
-      })
-    : [];
-  const avgSum = (data ?? []).reduce((sum, row) => sum + row.average, 0);
+  const { isFutureMonth } = useReport();
+
+  const monthlyTotals = useMemo(
+    () =>
+      data[0]?.monthly
+        ? data[0].monthly.map((_, monthIndex) =>
+            data.reduce(
+              (acc, curr) => acc + (curr.monthly?.[monthIndex] ?? 0),
+              0,
+            ),
+          )
+        : [],
+    [data],
+  );
+  const avgSum = useMemo(
+    () => (data ?? []).reduce((sum, row) => sum + row.average, 0),
+    [data],
+  );
 
   const totalRow = (): Row => ({
     id: 'totals-row',
@@ -53,7 +57,10 @@ export const TotalRow: React.FC<TotalRowProps> = ({
     overall: overallTotal,
   });
 
-  const { description, average, overall } = populateTotalRows(locale);
+  const { description, average, overall } = useMemo(
+    () => populateTotalRows(locale),
+    [locale],
+  );
 
   const columns: GridColDef[] = useMemo(() => {
     const monthColumns: GridColDef[] = monthlyTotals.map((_, index) => ({
@@ -64,10 +71,7 @@ export const TotalRow: React.FC<TotalRowProps> = ({
       filterable: false,
       disableColumnMenu: true,
       align: 'right',
-      cellClassName:
-        firstFutureMonthIndex !== undefined && index >= firstFutureMonthIndex
-          ? 'future-month'
-          : undefined,
+      cellClassName: isFutureMonth(index) ? 'future-month' : undefined,
       renderCell: ({ row }) => {
         const formattedValue = zeroAmountFormat(
           row.monthlyValue[index],
@@ -115,7 +119,7 @@ export const TotalRow: React.FC<TotalRowProps> = ({
         renderCell: overall,
       },
     ];
-  }, [monthlyTotals, avgSum, overallTotal, firstFutureMonthIndex]);
+  }, [monthlyTotals, isFutureMonth, locale, description, average, overall]);
 
   return (
     <StyledTotalRow

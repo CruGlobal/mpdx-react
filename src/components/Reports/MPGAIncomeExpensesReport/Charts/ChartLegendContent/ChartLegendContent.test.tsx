@@ -4,8 +4,8 @@ import theme from 'src/theme';
 import { ChartLegendContent } from './ChartLegendContent';
 
 const payload = [
-  { value: 'Income', color: theme.palette.statusSuccess.main },
-  { value: 'Expenses', color: theme.palette.chipRedDark.main },
+  { value: 'Income', color: theme.palette.success.main },
+  { value: 'Expenses', color: theme.palette.error.main },
 ];
 
 describe('ChartLegendContent', () => {
@@ -25,10 +25,10 @@ describe('ChartLegendContent', () => {
     const boxes = getAllByRole('listitem').map((item) => item.firstChild);
 
     expect(boxes[0]).toHaveStyle({
-      backgroundColor: theme.palette.statusSuccess.main,
+      backgroundColor: theme.palette.success.main,
     });
     expect(boxes[1]).toHaveStyle({
-      backgroundColor: theme.palette.chipRedDark.main,
+      backgroundColor: theme.palette.error.main,
     });
   });
 
