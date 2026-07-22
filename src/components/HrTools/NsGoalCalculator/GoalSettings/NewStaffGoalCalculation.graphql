@@ -81,7 +81,6 @@ fragment NewStaffGoalCalculationFields on NewStaffGoalCalculation {
   ministryName
   ministryLocation
   assignmentType
-  ministryExpenses
 
   # NSO
   nsoHousing

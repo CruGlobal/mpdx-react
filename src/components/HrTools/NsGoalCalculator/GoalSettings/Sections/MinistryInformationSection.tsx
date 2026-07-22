@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GoalCalculationRole } from 'src/graphql/types.generated';
 import { getLocalizedRole } from 'src/lib/functions/getLocalizedRole';
-import { GoalSettingsNumberField } from '../Fields/GoalSettingsNumberField';
 import { GoalSettingsPlaceholder } from '../Fields/GoalSettingsPlaceholder';
 import { GoalSettingsSelect, SelectOption } from '../Fields/GoalSettingsSelect';
 import { GoalSettingsTextField } from '../Fields/GoalSettingsTextField';
@@ -44,14 +43,6 @@ export const MinistryInformationSection: React.FC<GoalSettingsSectionProps> = ({
           name="assignmentType"
           label={t('Field or Office')}
           options={roleOptions}
-        />
-      </FieldRow>
-
-      <FieldRow label={t('Ministry Expenses')}>
-        <GoalSettingsNumberField
-          name="ministryExpenses"
-          label={t('Ministry Expenses')}
-          adornment="currency"
         />
       </FieldRow>
     </Section>
