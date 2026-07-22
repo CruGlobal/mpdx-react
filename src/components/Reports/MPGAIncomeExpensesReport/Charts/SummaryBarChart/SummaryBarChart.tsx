@@ -11,10 +11,7 @@ interface SummaryBarChartProps {
   width: number;
 }
 
-const chartColors = [
-  theme.palette.statusSuccess.main,
-  theme.palette.chipRedDark.main,
-];
+const chartColors = [theme.palette.success.main, theme.palette.error.main];
 
 export const SummaryBarChart: React.FC<SummaryBarChartProps> = ({
   aspect,

@@ -30,10 +30,7 @@ interface MonthlyTotal {
   tallest: number;
 }
 
-const chartColors = [
-  theme.palette.statusSuccess.main,
-  theme.palette.chipRedDark.main,
-];
+const chartColors = [theme.palette.success.main, theme.palette.error.main];
 
 export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
   aspect,

@@ -70,8 +70,8 @@ export const BreakdownAccordion: React.FC<BreakdownAccordionProps> = ({
           sx={{
             marginLeft: 'auto',
             color: isIncomeTotal
-              ? theme.palette.statusSuccess.main
-              : theme.palette.chipRedDark.main,
+              ? theme.palette.success.main
+              : theme.palette.error.main,
           }}
         >
           {currencyFormat(Math.abs(total), currency, locale, {
@@ -130,9 +130,9 @@ export const BreakdownAccordion: React.FC<BreakdownAccordionProps> = ({
                       align="right"
                       sx={{
                         color: isStrayExpenseTransaction
-                          ? theme.palette.chipRedDark.main
+                          ? theme.palette.error.main
                           : isStrayIncomeTransaction
-                            ? theme.palette.statusSuccess.main
+                            ? theme.palette.success.main
                             : null,
                       }}
                     >

@@ -156,8 +156,8 @@ export const BreakdownModal: React.FC<BreakdownModalProps> = ({
                   sx={{
                     color:
                       overallTotal >= 0
-                        ? theme.palette.statusSuccess.main
-                        : theme.palette.chipRedDark.main,
+                        ? theme.palette.success.main
+                        : theme.palette.error.main,
                   }}
                 >
                   {currencyFormat(Math.abs(overallTotal), currency, locale, {
