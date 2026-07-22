@@ -43,7 +43,8 @@ Each contributes +2 to risk score.
 - `pages/api/**/*.page.ts` (excluding `auth/` and `graphql-rest` — already Critical) — other API/lambda routes
 - `src/components/**/*.graphql` — GraphQL operations (cache normalization and pagination correctness)
 - `src/lib/apollo/**/*.ts` — any Apollo helper beyond the Critical files above
-- `src/components/User/**`, anything handling impersonation or account-list switching
+- `src/components/User/**` — account-list switching
+- `src/components/Settings/*/ImpersonateUser/**` — impersonation UI (Admin and Organization variants)
 - `pages/api/Schema/uploads/**`, `pages/api/uploads/**` — file upload handlers
 - `src/components/Shared/**` — shared components (blast radius)
 
@@ -131,10 +132,7 @@ MPDX displays and calculates donation/partner-giving aggregations across dozens 
 
 - Any file under `src/components/Reports/**`
 - Any file under `src/components/HrTools/**`
-- Any file under `src/components/Reports/GoalCalculator/**`, `src/components/HrTools/GoalCalculator/**`, or `src/components/HrTools/PdsGoalCalculator/**`
-- Any file under `src/components/Reports/SalaryCalculator/**` or `src/components/HrTools/SalaryCalculator/**`
 - Any file under `src/components/EditDonationModal/**`
-- Any file under `src/components/Reports/AdditionalSalaryRequest/**`, `src/components/HrTools/AdditionalSalaryRequest/**`, or `src/components/HrTools/MinisterHousingAllowance/**`
 - Any file under `src/components/Dashboard/MonthlyGoal/**`, `src/components/Dashboard/DonationHistories/**`
 - Diff content contains any of: `amount`, `currency`, `convertedAmount`, `pledgeAmount`, `goal`, `balance`, `total`, `sum(`, `reduce((`, `.toFixed(`, `Math.round(`, `Number(`, `parseFloat(`, `parseInt(` inside `src/components/Reports/**`, `src/components/HrTools/**`, or other goal/donation components
 
@@ -232,7 +230,7 @@ Project-specific concerns added to the Security agent's universal checks.
 - **Apollo link auth headers** (`src/lib/apollo/link.ts`) — tokens attached consistently, never logged, correct handling when a token is missing
 - **Environment variable exposure** — server-only variables must NOT be prefixed with `NEXT_PUBLIC_` (that ships them to the client bundle); audit every new `process.env.*` reference
 - **Client-side validation parity** — every Yup rule, every `disabled` button, every `required` field must have a server-side equivalent. If a mutation silently trusts the client, flag it
-- **Impersonation flow** — changes touching impersonation (`pages/api/auth/impersonate/**`, `src/components/User/impersonate*`) must verify the authorizer's role and log the action
+- **Impersonation flow** — changes touching impersonation (`pages/api/auth/impersonate/**`, `pages/api/stop-impersonating.page.ts`, `src/components/Settings/*/ImpersonateUser/**`) must verify the authorizer's role and log the action
 - **File uploads** — `pages/api/uploads/**`, `pages/api/Schema/uploads/**` — verify content-type validation, size limits, filename sanitization (no path traversal), and that upload tokens are scoped
 - **CSP and security headers** in `next.config.{js,ts}` — any weakening (new `unsafe-inline`, `unsafe-eval`, added origins) is a red flag
 - **XSS surfaces** — `dangerouslySetInnerHTML`, `innerHTML`, direct DOM writes; flag any use in new code and verify input is sanitized
@@ -280,11 +278,14 @@ This is where domain-specific data invariants belong.
 Project-specific testing conventions added to the Testing agent's universal checks.
 
 - **`GqlMockedProvider` is the only GraphQL mock pattern.** All component tests that hit GraphQL must wrap in `<GqlMockedProvider<{ OperationName: OperationNameQuery }> mocks={...}>` with typed generics so mock shapes are type-checked at compile time
+- **Prefer React context over mocking** — use `<TestRouter>` (`__tests__/util/TestRouter`) instead of mocking `useRouter`, and `<GqlMockedProvider>` instead of mocking Apollo hooks. Reserve `jest.mock` for dependencies that can't be driven through context (e.g. `notistack`)
 - **`mutationSpy` + `toHaveGraphqlOperation(...)` pattern** is preferred over brittle snapshot-based assertions for verifying mutations
 - **Define the `onCall` / `mutationSpy` spy once at the top of the test file** and reference it directly — don't thread it through a test wrapper as a prop or redeclare `const onCall = jest.fn()` in each test.
 - **`toHaveTableStructure(...)` for full table contents** — when asserting more than a couple table cells, use `expect(getByRole('table')).toHaveTableStructure({ columnHeaders, rowHeaders, cells })` instead of ad-hoc `getByRole('cell')`
 - **`findBy*` for async assertions** — prefer `await findByText(...)` over `await waitFor(() => getByText(...))`
 - **`userEvent`, never `fireEvent`** — drive every user interaction (click, type, select, tab/blur, keyboard) through `@testing-library/user-event`, which dispatches the full event sequence a real user produces
+- **Use the methods returned from `render()`** — prefer `const { getByRole } = render(...)` over the global `screen.getByRole` (this repo diverges from RTL's own docs here)
+- **Minimal mocks** — mock only the fields the test asserts on. `GqlMockedProvider` generates random values for everything omitted, so spelling out irrelevant fields is noise
 - **No `fetch` mocking** — never mock `global.fetch` or `window.fetch`; use Apollo operation-level mocks
 - **No `any` in test types** — mock shapes use generated operation types (`ContactDetailsQuery`, etc.) from `.generated.ts` files
 - **`i18next` in tests** — `t()` returns the translation key by default in test env; don't assert on translated strings unless the test specifically exercises i18n
