@@ -58,9 +58,6 @@ export const getGoalSettingsSchema = (t: TFunction) =>
     reimbursableExpenses: optionalAmount(t('Reimbursable Expenses'), t),
     healthcareDependentsCount: optionalInteger(t('Healthcare Dependents'), t),
 
-    // Ministry
-    ministryExpenses: optionalAmount(t('Ministry Expenses'), t),
-
     // NSO
     childcareChildrenCount: optionalInteger(t('Childcare Children'), t),
     nsoSpecialNeedsSupportReceived: optionalAmount(
