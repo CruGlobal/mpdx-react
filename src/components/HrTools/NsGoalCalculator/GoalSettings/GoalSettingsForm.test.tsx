@@ -339,6 +339,71 @@ describe('GoalSettingsForm', () => {
     );
   });
 
+  // Before the shared provider, each consumer ran its own preview request.
+  it('previews an edit exactly once with every consumer mounted', async () => {
+    const { findByRole } = render(<TestComponent />);
+
+    const salary = await findByRole('spinbutton', {
+      name: 'Annual Requested Salary — John',
+    });
+    userEvent.clear(salary);
+    userEvent.type(salary, '250000');
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'PreviewNewStaffGoalCalculation',
+      ),
+    );
+
+    const previewCalls = mutationSpy.mock.calls.filter(
+      ([{ operation }]) =>
+        operation.operationName === 'PreviewNewStaffGoalCalculation',
+    );
+    expect(previewCalls).toHaveLength(1);
+  });
+
+  it('shows the salary over-cap warning', async () => {
+    const { findByText, findByRole } = render(
+      <TestComponent
+        goalCalculationMock={{
+          newStaffGoalCalculation: {
+            ...defaultMock.newStaffGoalCalculation,
+            calculations: {
+              ...defaultGoalCalculation.calculations,
+              salaryOverCap: true,
+            },
+          },
+        }}
+      />,
+    );
+
+    await findByRole('button', { name: 'Save & Share' });
+    expect(
+      await findByText('Total salary is over the standard cap'),
+    ).toBeInTheDocument();
+  });
+
+  it('shows the debt over-cap warning', async () => {
+    const { findByText, findByRole } = render(
+      <TestComponent
+        goalCalculationMock={{
+          newStaffGoalCalculation: {
+            ...defaultMock.newStaffGoalCalculation,
+            calculations: {
+              ...defaultGoalCalculation.calculations,
+              debtOverCap: true,
+            },
+          },
+        }}
+      />,
+    );
+
+    await findByRole('button', { name: 'Save & Share' });
+    expect(
+      await findByText('Annual debt is over the standard cap'),
+    ).toBeInTheDocument();
+  });
+
   it('clears spouse attributes when marital status changes from married to single', async () => {
     const { findByRole, getByRole } = render(<TestComponent />);
 

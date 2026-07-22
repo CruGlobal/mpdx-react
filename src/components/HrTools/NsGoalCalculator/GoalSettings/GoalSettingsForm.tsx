@@ -11,7 +11,9 @@ import { Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
 import { GoalSettingsHeader } from './GoalSettingsHeader';
+import { GoalSettingsPreviewProvider } from './GoalSettingsPreviewContext';
 import { GoalSettingsScrollContainer } from './GoalSettingsScrollContainer';
+import { GoalSettingsWarning } from './GoalSettingsWarning';
 import { ContactInformationSection } from './Sections/ContactInformationSection';
 import { ExemptionsSection } from './Sections/ExemptionsSection';
 import { FinancialInformationSection } from './Sections/FinancialInformationSection';
@@ -67,6 +69,8 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
     goalCalculation: calculation,
     fallback,
     isScenario,
+    // `null` for scenario goals, which have no account list.
+    accountListId,
     save,
   } = useNewStaffGoalCalculation(props);
 
@@ -155,51 +159,62 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
           };
 
           return (
-            <Form>
-              <GoalSettingsHeader
-                accountListId={
-                  // Scenario goals have no account list
-                  'accountListId' in props ? props.accountListId : null
-                }
-                calculationId={calculation.id}
-                primaryPerson={primaryPerson}
-                spousePerson={spousePerson}
-                mpdGoal={mpdGoal}
-                joinedStaffYear={calculation.joinedStaffYear}
-                isScenario={isScenario}
-                isComplete={isGoalSettingsComplete(values)}
-              />
+            <GoalSettingsPreviewProvider
+              accountListId={accountListId}
+              calculationId={calculation.id}
+              savedSalaryOverCap={calculation.calculations.salaryOverCap}
+              savedDebtOverCap={calculation.calculations.debtOverCap}
+            >
+              <Form>
+                <GoalSettingsHeader
+                  primaryPerson={primaryPerson}
+                  spousePerson={spousePerson}
+                  mpdGoal={mpdGoal}
+                  joinedStaffYear={calculation.joinedStaffYear}
+                  isScenario={isScenario}
+                  isComplete={isGoalSettingsComplete(values)}
+                />
 
-              <Divider sx={{ mb: 3 }} />
+                <Divider sx={{ mb: 3 }} />
 
-              {isScenario && <ContactInformationSection {...sectionProps} />}
-              <PersonalInformationSection {...sectionProps} />
-              <FinancialInformationSection {...sectionProps} />
-              <HealthcareInformationSection {...sectionProps} />
-              <MinistryInformationSection {...sectionProps} />
-              <NsoInformationSection {...sectionProps} />
-              <ExemptionsSection {...sectionProps} />
+                {isScenario && <ContactInformationSection {...sectionProps} />}
+                <PersonalInformationSection {...sectionProps} />
+                <FinancialInformationSection {...sectionProps} />
+                <HealthcareInformationSection {...sectionProps} />
+                <MinistryInformationSection {...sectionProps} />
+                <NsoInformationSection {...sectionProps} />
+                <ExemptionsSection {...sectionProps} />
 
-              <StickyActionBar>
-                <Stack direction="row" spacing={2} justifyContent="flex-end">
-                  <Button color="inherit" onClick={() => resetForm()}>
-                    {t('Cancel')}
-                  </Button>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    disabled={!isValid || isSubmitting}
-                    startIcon={
-                      isSubmitting ? (
-                        <CircularProgress color="inherit" size={20} />
-                      ) : undefined
-                    }
+                <StickyActionBar>
+                  <Stack
+                    direction="row"
+                    spacing={2}
+                    alignItems="center"
+                    flexWrap="wrap"
+                    useFlexGap
                   >
-                    {t('Save & Share')}
-                  </Button>
-                </Stack>
-              </StickyActionBar>
-            </Form>
+                    <GoalSettingsWarning />
+                    <Stack direction="row" spacing={2} sx={{ ml: 'auto' }}>
+                      <Button color="inherit" onClick={() => resetForm()}>
+                        {t('Cancel')}
+                      </Button>
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        disabled={!isValid || isSubmitting}
+                        startIcon={
+                          isSubmitting ? (
+                            <CircularProgress color="inherit" size={20} />
+                          ) : undefined
+                        }
+                      >
+                        {t('Save & Share')}
+                      </Button>
+                    </Stack>
+                  </Stack>
+                </StickyActionBar>
+              </Form>
+            </GoalSettingsPreviewProvider>
           );
         }}
       </Formik>

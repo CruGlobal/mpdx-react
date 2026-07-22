@@ -9,49 +9,50 @@ import { GoalSettingsFormValues } from './goalSettingsFormValues';
 /** Coalesce a burst of edits (e.g. picking through selects) into one request. */
 export const PREVIEW_DEBOUNCE_MS = 500;
 
-/** Diffs smaller than half a cent are treated as no change. */
-const CENT_EPSILON = 0.005;
-
-/** The previewed goal, tagged with the attributes it was computed for. */
+/**
+ * A preview tagged with the attributes it was computed for. Every value is
+ * `null` when the request failed.
+ */
 interface PreviewState {
   attributes: NewStaffGoalCalculationAttributesInput;
-  /** Computed goal, or `null` if the preview request failed. */
   monthlyGoal: number | null;
+  salaryOverCap: boolean | null;
+  debtOverCap: boolean | null;
 }
 
 interface UseMpdGoalPreviewArgs {
-  /** Account list the goal belongs to, or `null` for a scenario goal. */
+  /** `null` for a scenario goal, which has no account list. */
   accountListId: string | null;
   calculationId: string;
-  savedMonthlyGoal: number;
 }
 
 interface UseMpdGoalPreviewResult {
   /** True while a debounced edit's preview request is in flight. */
   calculating: boolean;
-  /** Goal to display: the previewed total when settled, else the saved goal. */
-  displayGoal: number;
-  /** Signed difference from the saved goal, rounded to cents (0 when unchanged). */
-  diff: number;
-  /** Whether the preview differs from the saved goal by at least a cent. */
-  changed: boolean;
-  /** True when the settled preview request failed (and fell back to the saved goal). */
+  /** True when the settled preview request failed. */
   failed: boolean;
+  /** `null` when the form is clean or invalid, or the request is pending or failed. */
+  previewGoal: number | null;
+  /**
+   * Unlike the goal, these are held across an in-flight or invalid edit, so a
+   * warning doesn't blink off and re-announce itself on every keystroke.
+   */
+  previewSalaryOverCap: boolean | null;
+  previewDebtOverCap: boolean | null;
 }
 
 /**
- * Orchestrates the goal preview for {@link MpdGoalPreview}: watches the Goal
- * Settings form and, whenever the unsaved, valid form values change, debounces
- * a call to the API to recompute the goal (`previewNewStaffGoalCalculation`),
- * exposing the new total plus the signed difference from the saved goal.
+ * Recomputes the goal whenever the form has unsaved, valid edits, debounced so
+ * it previews settled values rather than every keystroke. Consumers read the
+ * result through the provider and fall back to their own saved value when no
+ * preview applies.
  *
- * Previewing keys off the Formik values directly rather than field blur, since
- * some inputs (selects) don't produce a usable blur.
+ * Keys off the Formik values rather than field blur, since some inputs
+ * (selects) don't produce a usable blur.
  */
 export const useMpdGoalPreview = ({
   accountListId,
   calculationId,
-  savedMonthlyGoal,
 }: UseMpdGoalPreviewArgs): UseMpdGoalPreviewResult => {
   const { values, dirty, isValid } = useFormikContext<GoalSettingsFormValues>();
 
@@ -76,6 +77,12 @@ export const useMpdGoalPreview = ({
   const debounced = useDebouncedValue(previewable, PREVIEW_DEBOUNCE_MS);
 
   useEffect(() => {
+    if (!dirty) {
+      setPreview(null);
+    }
+  }, [dirty]);
+
+  useEffect(() => {
     if (debounced === null) {
       return;
     }
@@ -94,19 +101,30 @@ export const useMpdGoalPreview = ({
     })
       .then(({ data }) => {
         if (active) {
+          const {
+            monthlyGoal = null,
+            salaryOverCap = null,
+            debtOverCap = null,
+          } = data?.previewNewStaffGoalCalculation?.newStaffGoalCalculation
+            ?.calculations ?? {};
           setPreview({
             attributes: debounced,
-            monthlyGoal:
-              data?.previewNewStaffGoalCalculation?.newStaffGoalCalculation
-                ?.calculations?.monthlyGoal ?? null,
+            monthlyGoal,
+            salaryOverCap,
+            debtOverCap,
           });
         }
       })
       .catch(() => {
         // Record the failed attributes so the spinner stops and we fall back to
-        // the saved goal.
+        // the saved goal and warnings.
         if (active) {
-          setPreview({ attributes: debounced, monthlyGoal: null });
+          setPreview({
+            attributes: debounced,
+            monthlyGoal: null,
+            salaryOverCap: null,
+            debtOverCap: null,
+          });
         }
       });
 
@@ -125,12 +143,14 @@ export const useMpdGoalPreview = ({
   const failed = settledPreview !== null && settledPreview.monthlyGoal === null;
 
   const previewGoal = settledPreview?.monthlyGoal ?? null;
-  const displayGoal = previewGoal ?? savedMonthlyGoal;
-  const diff =
-    previewGoal === null
-      ? 0
-      : Math.round((previewGoal - savedMonthlyGoal) * 100) / 100;
-  const changed = Math.abs(diff) >= CENT_EPSILON;
+  const previewSalaryOverCap = dirty ? (preview?.salaryOverCap ?? null) : null;
+  const previewDebtOverCap = dirty ? (preview?.debtOverCap ?? null) : null;
 
-  return { calculating, displayGoal, diff, changed, failed };
+  return {
+    calculating,
+    failed,
+    previewGoal,
+    previewSalaryOverCap,
+    previewDebtOverCap,
+  };
 };
