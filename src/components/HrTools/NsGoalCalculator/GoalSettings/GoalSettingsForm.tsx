@@ -23,6 +23,7 @@ import {
   calculationToFormValues,
   formValuesToAttributes,
 } from './goalSettingsApiMapping';
+import { isGoalSettingsComplete } from './goalSettingsCompletion';
 import {
   GoalSettingsFormValues,
   GoalSettingsPerson,
@@ -166,6 +167,7 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
                 mpdGoal={mpdGoal}
                 joinedStaffYear={calculation.joinedStaffYear}
                 isScenario={isScenario}
+                isComplete={isGoalSettingsComplete(values)}
               />
 
               <Divider sx={{ mb: 3 }} />

@@ -32,13 +32,15 @@ interface TestComponentProps {
   mpdGoal?: number;
   joinedStaffYear?: number | null;
   isScenario?: boolean;
+  isComplete?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   spouse = spousePerson,
   mpdGoal = 50000,
   joinedStaffYear = 2018,
-  isScenario = false,
+  isScenario,
+  isComplete,
 }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
@@ -56,6 +58,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
               mpdGoal={mpdGoal}
               joinedStaffYear={joinedStaffYear}
               isScenario={isScenario}
+              isComplete={isComplete}
             />
           </Form>
         </Formik>
@@ -82,10 +85,18 @@ describe('GoalSettingsHeader', () => {
     ).toBeInTheDocument();
   });
 
-  it('marks the calculation as incomplete', () => {
-    const { getByText } = render(<TestComponent />);
+  it('marks the calculation as incomplete when required fields are unfilled', () => {
+    const { getByText, queryByText } = render(<TestComponent />);
 
     expect(getByText('Incomplete')).toBeInTheDocument();
+    expect(queryByText('Complete')).not.toBeInTheDocument();
+  });
+
+  it('marks the calculation as complete when required fields are filled', () => {
+    const { getByText, queryByText } = render(<TestComponent isComplete />);
+
+    expect(getByText('Complete')).toBeInTheDocument();
+    expect(queryByText('Incomplete')).not.toBeInTheDocument();
   });
 
   it('formats the MPD goal as currency', () => {
