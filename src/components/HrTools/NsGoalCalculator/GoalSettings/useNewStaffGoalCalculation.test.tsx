@@ -42,6 +42,7 @@ describe('useNewStaffGoalCalculation', () => {
 
     await waitFor(() => expect(result.current.loading).toBe(false));
     expect(result.current.isScenario).toBe(false);
+    expect(result.current.accountListId).toBe('account-list-1');
     expect(result.current.goalCalculation?.id).toBe('goal-1');
     expect(mutationSpy).toHaveGraphqlOperation('NewStaffGoalCalculation', {
       accountListId: 'account-list-1',
@@ -57,6 +58,7 @@ describe('useNewStaffGoalCalculation', () => {
 
     await waitFor(() => expect(result.current.loading).toBe(false));
     expect(result.current.isScenario).toBe(true);
+    expect(result.current.accountListId).toBeNull();
     expect(result.current.goalCalculation?.id).toBe('scenario-2');
     expect(result.current.goalCalculation?.firstName).toBe('Grace');
     expect(mutationSpy).toHaveGraphqlOperation('NewStaffGoalCalculation', {
