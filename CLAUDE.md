@@ -70,8 +70,7 @@ pages/               # Next.js pages (file-based routing)
 src/
 ├── components/     # React components organized by feature
 ├── hooks/         # Custom React hooks
-├── lib/           # Apollo client, utilities, helpers
-├── utils/         # Utility functions
+├── lib/           # Apollo client, utility functions, helpers
 └── graphql/       # Generated GraphQL types and schema
 
 public/locales/    # Translation files
