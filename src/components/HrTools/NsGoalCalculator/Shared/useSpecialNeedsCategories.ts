@@ -1,15 +1,14 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { NeedsCategory } from '../../Shared/GoalPresentation/SupportNeedsChart';
 import { NsGoalCalculation } from './NsGoalCalculatorContext';
 
 type Calculations = NsGoalCalculation['calculations'];
 
 /** One special-needs cohort cost line. */
-export interface SpecialNeedsCategory {
-  title: string;
+export interface SpecialNeedsCategory extends NeedsCategory {
   /** Optional worksheet description. */
   description?: string;
-  amount: number;
 }
 
 /**
