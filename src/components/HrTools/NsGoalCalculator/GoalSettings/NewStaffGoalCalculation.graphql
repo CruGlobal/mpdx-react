@@ -44,6 +44,9 @@ fragment NewStaffGoalCalculationFields on NewStaffGoalCalculation {
     specialNeedsTotal
     specialNeedsDevelopedToDate
     specialNeedsLeft
+
+    salaryOverCap
+    debtOverCap
   }
 
   # Identity (read-only display in the header; prepopulated from HCM).
@@ -135,6 +138,8 @@ mutation PreviewNewStaffGoalCalculation(
       id
       calculations {
         monthlyGoal
+        salaryOverCap
+        debtOverCap
       }
     }
   }
