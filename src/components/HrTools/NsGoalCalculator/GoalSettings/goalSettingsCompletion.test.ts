@@ -39,7 +39,6 @@ const emptyValues: GoalSettingsFormValues = {
   ministryLocation: '',
   ministryName: '',
   assignmentType: '',
-  ministryExpenses: '',
   nsoHousing: '',
   nsoSessions: '',
   childcareChildrenCount: '',

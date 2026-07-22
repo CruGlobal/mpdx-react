@@ -76,7 +76,6 @@ export interface GoalSettingsFormValues {
   ministryLocation: string;
   ministryName: string;
   assignmentType: GoalCalculationRole | '';
-  ministryExpenses: number | '';
 
   // --- 5. NSO Information (shared) ---
   nsoHousing: NewStaffQuestionnaireNsoHousingEnum | '';

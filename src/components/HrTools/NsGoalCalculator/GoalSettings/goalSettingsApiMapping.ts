@@ -84,7 +84,6 @@ export const calculationToFormValues = (
   ministryLocation: calc.ministryLocation ?? '',
   ministryName: calc.ministryName ?? '',
   assignmentType: calc.assignmentType ?? '',
-  ministryExpenses: toNumberInput(calc.ministryExpenses),
 
   nsoHousing: calc.nsoHousing ?? '',
   nsoSessions: calc.nsoSessions ?? '',
@@ -181,7 +180,6 @@ export const formValuesToAttributes = (
     ministryName: values.ministryName || null,
     ministryLocation: values.ministryLocation || null,
     assignmentType: values.assignmentType || null,
-    ministryExpenses: toNumberOrNull(values.ministryExpenses),
 
     // NSO
     nsoHousing: values.nsoHousing || null,
