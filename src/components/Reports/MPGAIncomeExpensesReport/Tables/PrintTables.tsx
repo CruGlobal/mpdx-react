@@ -49,7 +49,7 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
     backgroundColor: theme.palette.action.hover,
     WebkitPrintColorAdjust: 'exact',
     printColorAdjust: 'exact',
-  } as const;
+  };
 
   const { monthCount, firstMonthFlags, getBorderColor } = useMonthHeaders(
     months,
@@ -85,9 +85,6 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                   .slice(0, index)
                   .reduce((sum, group) => sum + group.count, 0);
 
-                // Split the year underline into a past segment (year color) and
-                // a future segment (gray) at the exact column boundary, so it
-                // lines up with the columns regardless of their widths.
                 const futureStart =
                   firstFutureMonthIndex !== undefined
                     ? Math.max(
@@ -95,8 +92,7 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                         Math.min(count, firstFutureMonthIndex - monthOffset),
                       )
                     : count;
-                const pastCount = futureStart;
-                const futureCount = count - pastCount;
+                const futureCount = count - futureStart;
 
                 const yearLabel = firstMonthInYear ? (
                   <Typography
@@ -107,10 +103,10 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                 ) : null;
 
                 return [
-                  pastCount > 0 ? (
+                  futureStart > 0 ? (
                     <TableCell
                       key={`${year}-past`}
-                      colSpan={pastCount}
+                      colSpan={futureStart}
                       sx={{
                         borderBottom: `2px solid ${borderColor}`,
                         borderRight: '20px solid transparent',
@@ -128,7 +124,7 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                         borderRight: '20px solid transparent',
                       }}
                     >
-                      {pastCount === 0 ? yearLabel : null}
+                      {futureStart === 0 ? yearLabel : null}
                     </TableCell>
                   ) : null,
                 ];

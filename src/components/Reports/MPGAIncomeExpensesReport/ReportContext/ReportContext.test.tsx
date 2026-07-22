@@ -174,8 +174,6 @@ describe('ReportContext', () => {
 
       userEvent.click(getByRole('button', { name: 'Year to Date' }));
 
-      // Year to Date queries Jan 1 of the current year through the pinned
-      // "now" (Jan 1, 2020), so only January has data.
       await waitFor(() =>
         expect(mutationSpy).toHaveGraphqlOperation('MPGATransactions', {
           startMonth: '2020-01-01',
@@ -184,8 +182,6 @@ describe('ReportContext', () => {
         }),
       );
 
-      // January is the current month, so February onward (index >= 1) are
-      // future months that get zero-filled.
       await waitFor(() =>
         expect(getByTestId('firstFutureMonthIndex')).toHaveTextContent('1'),
       );
