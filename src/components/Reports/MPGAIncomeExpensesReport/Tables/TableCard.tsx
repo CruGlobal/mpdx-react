@@ -192,7 +192,7 @@ export const TableCard: React.FC<TableCardProps> = ({
         headerAlign: 'right',
       },
     ];
-  }, [months, firstFutureMonthIndex, locale, t, description, average, total]);
+  }, [months, isFutureMonth, locale, t, description, average, total]);
 
   const columnGroupingModel = useMemo<GridColumnGroupingModel>(() => {
     const yearGroups = monthCount.map(({ year, count }, index) => {

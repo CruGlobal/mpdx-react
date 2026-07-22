@@ -103,7 +103,7 @@ export const ReportProvider: React.FC<ReportContextProps> = ({ children }) => {
     };
   }, [effectiveYear, now]);
 
-  const monthLabels = useGetLastTwelveMonths(locale, effectiveYear);
+  const monthLabels = useGetLastTwelveMonths(locale, now, effectiveYear);
 
   const subtitle = useMemo(() => {
     if (selectedYear === null && !isYearToDate) {

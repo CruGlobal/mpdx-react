@@ -168,7 +168,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
     [time],
   );
 
-  // TODO: Get list of all possible years
+  // TODO: MPDX-9872 Get list of all possible years
   const completedYears = useMemo(() => {
     const lastCompletedYear = currentTime.year - 1;
     return Array.from({ length: 5 }, (_, index) => lastCompletedYear - index);

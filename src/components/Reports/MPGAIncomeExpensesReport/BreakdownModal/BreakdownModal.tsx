@@ -78,7 +78,6 @@ export const BreakdownModal: React.FC<BreakdownModalProps> = ({
     >
       <TableContainer
         sx={{
-          '--breakdown-header-height': theme.spacing(6),
           borderBottom: `1px solid ${theme.palette.divider}`,
         }}
       >

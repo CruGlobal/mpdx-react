@@ -11,6 +11,7 @@ import { monthYearFormat } from 'src/lib/intlFormat';
  */
 export const useGetLastTwelveMonths = (
   locale: string,
+  endDate: DateTime,
   year?: number | null,
 ): string[] => {
   return useMemo(() => {
@@ -23,11 +24,10 @@ export const useGetLastTwelveMonths = (
       return result;
     }
 
-    const startDate = DateTime.now();
     for (let i = 0; i < 12; i++) {
-      const date = startDate.minus({ months: i });
+      const date = endDate.minus({ months: i });
       result.push(monthYearFormat(date.month, date.year, locale, true));
     }
     return result.reverse();
-  }, [locale, year]);
+  }, [locale, year, endDate]);
 };

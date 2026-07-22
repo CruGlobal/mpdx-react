@@ -3,12 +3,13 @@ import { DateTime } from 'luxon';
 import { useGetLastTwelveMonths } from './useGetLastTwelveMonths';
 
 const currency = 'en-US';
-const fixed: DateTime = DateTime.local(2025, 4, 1);
-jest.spyOn(DateTime, 'now').mockReturnValue(fixed);
+const endDate: DateTime = DateTime.local(2025, 4, 1);
 
 describe('useGetLastTwelveMonths', () => {
   it('should return the last twelve months', () => {
-    const { result } = renderHook(() => useGetLastTwelveMonths(currency));
+    const { result } = renderHook(() =>
+      useGetLastTwelveMonths(currency, endDate),
+    );
 
     expect(result.current).toEqual([
       'May 2024',
@@ -27,7 +28,9 @@ describe('useGetLastTwelveMonths', () => {
   });
 
   it('should return January–December of a specific year when one is given', () => {
-    const { result } = renderHook(() => useGetLastTwelveMonths(currency, 2023));
+    const { result } = renderHook(() =>
+      useGetLastTwelveMonths(currency, endDate, 2023),
+    );
 
     expect(result.current).toEqual([
       'Jan 2023',
