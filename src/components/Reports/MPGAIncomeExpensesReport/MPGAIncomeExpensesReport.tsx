@@ -57,34 +57,38 @@ export const MPGAIncomeExpensesReport: React.FC<
 
   const [filters, setFilters] = useState<Filters | null>(null);
 
-  const specificYear = filters?.selectedYear ?? null;
+  const selectedYear = filters?.selectedYear ?? null;
   const isYearToDate =
-    specificYear === null &&
+    selectedYear === null &&
     filters?.selectedDateRange === DateRange.YearToDate;
 
-  const monthLabels = useGetLastTwelveMonths(locale, specificYear);
+  const effectiveYear =
+    selectedYear ?? (isYearToDate ? DateTime.now().year : null);
+
+  const monthLabels = useGetLastTwelveMonths(locale, effectiveYear);
 
   const { startDate, endDate } = useMemo(() => {
     const now = DateTime.now();
-    // If a specific year is selected, return start and end of that year
-    if (specificYear !== null) {
-      const yearStart = DateTime.fromObject({ year: specificYear }).startOf(
+    // If a year is selected, show the full year
+    if (effectiveYear !== null) {
+      const yearStart = DateTime.fromObject({ year: effectiveYear }).startOf(
         'year',
       );
-      return { startDate: yearStart, endDate: yearStart.endOf('year') };
+      const yearEnd = yearStart.endOf('year');
+      return { startDate: yearStart, endDate: yearEnd < now ? yearEnd : now };
     }
-    // If Year to Date is selected, return start of the year to today
-    if (isYearToDate) {
-      return { startDate: now.startOf('year'), endDate: now };
-    }
+    // If no year is selected, default to the last 12 months
     return {
       startDate: now.minus({ months: 11 }).startOf('month'),
       endDate: now,
     };
-  }, [specificYear, isYearToDate]);
+  }, [effectiveYear]);
+
+  // If year to date filter is selected, get first month index in the future to gray out future months in the table
+  const firstFutureMonthIndex = isYearToDate ? DateTime.now().month : undefined;
 
   const subtitle = useMemo(() => {
-    if (specificYear === null && !isYearToDate) {
+    if (selectedYear === null && !isYearToDate) {
       return t('Last 12 Months');
     }
     return t('{{startMonth}} – {{endMonth}}', {
@@ -103,7 +107,7 @@ export const MPGAIncomeExpensesReport: React.FC<
         true,
       ),
     });
-  }, [specificYear, isYearToDate, startDate, endDate, locale, t]);
+  }, [selectedYear, isYearToDate, startDate, endDate, locale, t]);
 
   const defaultFilters: Filters = useMemo(
     () => ({
@@ -184,17 +188,21 @@ export const MPGAIncomeExpensesReport: React.FC<
         expenseBreakdown,
       };
     }
-    // Year to Date queries only the current year, so each row has fewer months than the 12 columns
-    const padToColumns = (rows: DataFields[]): DataFields[] =>
-      rows.map((row) => {
-        const missing = monthLabels.length - row.monthly.length;
-        return missing > 0
-          ? { ...row, monthly: [...new Array(missing).fill(0), ...row.monthly] }
-          : row;
-      });
+
+    // Year to Date only has data through the current month so fill the remaining months
+    const addFutureData = (rows: DataFields[]): DataFields[] =>
+      rows.map((row) => ({
+        ...row,
+        monthly: monthLabels.map((_month, index) =>
+          firstFutureMonthIndex !== undefined && index >= firstFutureMonthIndex
+            ? 0
+            : (row.monthly?.[index] ?? 0),
+        ),
+      }));
+
     return {
-      income: padToColumns(incomeData),
-      expenses: padToColumns(expenseData),
+      income: addFutureData(incomeData),
+      expenses: addFutureData(expenseData),
       incomeBreakdown,
       expenseBreakdown,
     };
@@ -204,7 +212,8 @@ export const MPGAIncomeExpensesReport: React.FC<
     incomeBreakdown,
     expenseBreakdown,
     isYearToDate,
-    monthLabels.length,
+    monthLabels,
+    firstFutureMonthIndex,
   ]);
 
   return (
@@ -291,6 +300,7 @@ export const MPGAIncomeExpensesReport: React.FC<
               data={allData}
               subtitle={subtitle}
               last12Months={monthLabels}
+              firstFutureMonthIndex={firstFutureMonthIndex}
               currency={currency}
             />
           </TotalsProvider>
@@ -305,6 +315,7 @@ export const MPGAIncomeExpensesReport: React.FC<
             <PrintOnlyReport
               data={allData}
               last12Months={monthLabels}
+              firstFutureMonthIndex={firstFutureMonthIndex}
               currency={currency}
             />
           </TotalsProvider>

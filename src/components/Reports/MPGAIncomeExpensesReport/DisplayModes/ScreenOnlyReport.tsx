@@ -14,6 +14,7 @@ interface ScreenOnlyReportProps {
   data: AllData;
   subtitle: string;
   last12Months: string[];
+  firstFutureMonthIndex?: number;
   currency: string;
 }
 
@@ -21,6 +22,7 @@ export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
   data,
   subtitle,
   last12Months,
+  firstFutureMonthIndex,
   currency,
 }) => {
   const { t } = useTranslation();
@@ -60,6 +62,7 @@ export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
             title={t('Income')}
             subtitle={subtitle}
             months={last12Months}
+            firstFutureMonthIndex={firstFutureMonthIndex}
           />
         </Box>
         <Box mt={2}>
@@ -77,6 +80,7 @@ export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
             title={t('Expenses')}
             subtitle={subtitle}
             months={last12Months}
+            firstFutureMonthIndex={firstFutureMonthIndex}
           />
         </Box>
         <Box mt={2} mb={2}>
