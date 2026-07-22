@@ -10,12 +10,14 @@ import { AllData } from '../mockData';
 interface PrintOnlyReportProps {
   data: AllData;
   last12Months: string[];
+  firstFutureMonthIndex?: number;
   currency: string;
 }
 
 export const PrintOnlyReport: React.FC<PrintOnlyReportProps> = ({
   data,
   last12Months,
+  firstFutureMonthIndex,
   currency,
 }) => {
   const { t } = useTranslation();
@@ -61,6 +63,7 @@ export const PrintOnlyReport: React.FC<PrintOnlyReportProps> = ({
               data={data.income ?? []}
               title={t('Income')}
               months={last12Months}
+              firstFutureMonthIndex={firstFutureMonthIndex}
             />
           </Box>
           <Box mt={3}>
@@ -69,6 +72,7 @@ export const PrintOnlyReport: React.FC<PrintOnlyReportProps> = ({
               data={data.expenses ?? []}
               title={t('Expenses')}
               months={last12Months}
+              firstFutureMonthIndex={firstFutureMonthIndex}
             />
           </Box>
           <Box mt={2}>

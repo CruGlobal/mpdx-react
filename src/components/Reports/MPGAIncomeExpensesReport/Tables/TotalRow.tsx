@@ -4,6 +4,7 @@ import { GridColDef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { amountFormat, zeroAmountFormat } from 'src/lib/intlFormat';
+import theme from 'src/theme';
 import { populateTotalRows } from '../Helper/createRows';
 import { DataFields } from '../mockData';
 import { StyledTotalRow } from '../styledComponents';
@@ -22,9 +23,14 @@ interface Row {
 interface TotalRowProps {
   data: DataFields[];
   overallTotal: number | undefined;
+  firstFutureMonthIndex?: number;
 }
 
-export const TotalRow: React.FC<TotalRowProps> = ({ data, overallTotal }) => {
+export const TotalRow: React.FC<TotalRowProps> = ({
+  data,
+  overallTotal,
+  firstFutureMonthIndex,
+}) => {
   const { t } = useTranslation();
   const locale = useLocale();
 
@@ -58,6 +64,10 @@ export const TotalRow: React.FC<TotalRowProps> = ({ data, overallTotal }) => {
       filterable: false,
       disableColumnMenu: true,
       align: 'right',
+      cellClassName:
+        firstFutureMonthIndex !== undefined && index >= firstFutureMonthIndex
+          ? 'future-month'
+          : undefined,
       renderCell: ({ row }) => {
         const formattedValue = zeroAmountFormat(
           row.monthlyValue[index],
@@ -105,7 +115,7 @@ export const TotalRow: React.FC<TotalRowProps> = ({ data, overallTotal }) => {
         renderCell: overall,
       },
     ];
-  }, [monthlyTotals, avgSum, overallTotal]);
+  }, [monthlyTotals, avgSum, overallTotal, firstFutureMonthIndex]);
 
   return (
     <StyledTotalRow
@@ -119,6 +129,7 @@ export const TotalRow: React.FC<TotalRowProps> = ({ data, overallTotal }) => {
         '& .MuiDataGrid-virtualScroller': { marginTop: '0 !important' },
         '& .MuiDataGrid-cell': { borderBottom: 'none' },
         '& .MuiDataGrid-main': { border: 'none' },
+        '& .future-month': { backgroundColor: theme.palette.action.hover },
       }}
     />
   );
