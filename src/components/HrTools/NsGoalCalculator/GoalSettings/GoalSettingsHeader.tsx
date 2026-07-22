@@ -80,6 +80,10 @@ interface GoalSettingsHeaderProps {
    * Scenario goals hide the read-only person cards
    */
   isScenario?: boolean;
+  /**
+   * Whether the required fields are filled in.
+   */
+  isComplete?: boolean;
 }
 
 export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
@@ -90,6 +94,7 @@ export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
   mpdGoal,
   joinedStaffYear,
   isScenario = false,
+  isComplete = false,
 }) => {
   const { t } = useTranslation();
   const yearLabelId = useId();
@@ -124,6 +129,13 @@ export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
             color="info"
             variant="outlined"
             label={t('Scenario Only')}
+            size="small"
+          />
+        ) : isComplete ? (
+          <Chip
+            color="success"
+            variant="outlined"
+            label={t('Complete')}
             size="small"
           />
         ) : (
