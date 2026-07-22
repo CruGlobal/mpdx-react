@@ -20,7 +20,7 @@ import theme from 'src/theme';
 import { DialogSkeleton } from '../../Shared/DialogSkeleton/DialogSkeleton';
 import { getLocalizedCategory } from '../../Shared/Helpers/transformStaffExpenseEnums';
 import { BreakdownAccordion } from '../BreakdownAccordion/BreakdownAccordion';
-import { useTotals } from '../TotalsContext/TotalsContext';
+import { useReport } from '../ReportContext/ReportContext';
 import { TransactionBreakdown } from '../mockData';
 
 export interface BreakdownModalProps {
@@ -39,7 +39,7 @@ export const BreakdownModal: React.FC<BreakdownModalProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const currency = 'USD';
-  const { startDate, endDate } = useTotals();
+  const { startDate, endDate } = useReport();
 
   const subcategoryBreakdown = useMemo(() => {
     const categoryBreakdown = breakdownData[category] ?? [];

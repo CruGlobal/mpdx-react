@@ -17,7 +17,7 @@ import { CardSkeleton } from '../Card/CardSkeleton';
 import { CustomToolbar } from '../CustomToolbar/CustomToolbar';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { populateCardTableRows } from '../Helper/createRows';
-import { useTotals } from '../TotalsContext/TotalsContext';
+import { useReport } from '../ReportContext/ReportContext';
 import { DataFields, TransactionBreakdown } from '../mockData';
 import { StyledGrid } from '../styledComponents';
 import { TotalRow } from './TotalRow';
@@ -34,10 +34,6 @@ export interface TableCardProps {
   >;
   emptyPlaceholder: React.ReactElement;
   title: string;
-  subtitle: string;
-  months: string[];
-  /** Month column index from which columns are grayed as future. Year to date filter only */
-  firstFutureMonthIndex?: number;
 }
 
 // Visual styling for the grouped-column headers, matching the report's table
@@ -97,14 +93,18 @@ export const TableCard: React.FC<TableCardProps> = ({
   data,
   breakdownData = {},
   title,
-  subtitle,
-  months,
-  firstFutureMonthIndex,
   emptyPlaceholder,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { incomeTotal, expensesTotal, dataLoading } = useTotals();
+  const {
+    monthLabels: months,
+    incomeTotal,
+    expensesTotal,
+    dataLoading,
+    firstFutureMonthIndex,
+    isFutureMonth,
+  } = useReport();
 
   const [openBreakdownModal, setOpenBreakdownModal] =
     useState<StaffExpenseCategoryEnum | null>(null);
@@ -140,15 +140,15 @@ export const TableCard: React.FC<TableCardProps> = ({
   const columns = useMemo<GridColDef<DataFields>[]>(() => {
     const monthColumns: GridColDef<DataFields>[] = months.map(
       (month, index) => {
-        const isFutureMonth =
-          firstFutureMonthIndex !== undefined && index >= firstFutureMonthIndex;
         return {
           field: `month${index}`,
           headerName: month.split(' ')[0],
           width: monthWidth,
           type: 'number',
-          headerClassName: isFutureMonth ? 'future-month-header' : undefined,
-          cellClassName: isFutureMonth ? 'future-month' : undefined,
+          headerClassName: isFutureMonth(index)
+            ? 'future-month-header'
+            : undefined,
+          cellClassName: isFutureMonth(index) ? 'future-month' : undefined,
           valueGetter: (_value, row) => {
             const v = row.monthly?.[index];
             return typeof v === 'number' ? v : null;
@@ -268,7 +268,6 @@ export const TableCard: React.FC<TableCardProps> = ({
     <>
       <CardSkeleton
         title={title}
-        subtitle={subtitle}
         styling={{ padding: 0, '&:last-child': { paddingBottom: 0 } }}
       >
         <Box>
@@ -297,11 +296,7 @@ export const TableCard: React.FC<TableCardProps> = ({
             disableColumnMenu
           />
           <Box>
-            <TotalRow
-              data={data}
-              overallTotal={overallTotal}
-              firstFutureMonthIndex={firstFutureMonthIndex}
-            />
+            <TotalRow data={data} overallTotal={overallTotal} />
           </Box>
         </Box>
       </CardSkeleton>
@@ -315,7 +310,7 @@ export const TableCard: React.FC<TableCardProps> = ({
       )}
     </>
   ) : (
-    <CardSkeleton title={title} subtitle={subtitle}>
+    <CardSkeleton title={title}>
       <Box
         display="flex"
         justifyContent="center"

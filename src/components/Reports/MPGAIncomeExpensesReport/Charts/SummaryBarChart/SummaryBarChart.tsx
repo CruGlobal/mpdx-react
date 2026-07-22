@@ -3,13 +3,12 @@ import { Bar, BarChart, Cell, LabelList, XAxis, YAxis } from 'recharts';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { useTotals } from '../../TotalsContext/TotalsContext';
+import { useReport } from '../../ReportContext/ReportContext';
 import { ChartFrame } from '../ChartFrame';
 
 interface SummaryBarChartProps {
   aspect: number;
   width: number;
-  currency: string;
 }
 
 const chartColors = [
@@ -20,12 +19,11 @@ const chartColors = [
 export const SummaryBarChart: React.FC<SummaryBarChartProps> = ({
   aspect,
   width,
-  currency,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { incomeTotal, expensesTotal, dataLoading } = useTotals();
+  const { incomeTotal, expensesTotal, dataLoading, currency } = useReport();
 
   const data = [
     { name: t('Income'), total: incomeTotal },

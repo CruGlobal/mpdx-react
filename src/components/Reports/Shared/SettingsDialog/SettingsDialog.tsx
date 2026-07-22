@@ -34,7 +34,7 @@ export interface SettingsDialogProps {
   selectedFundType: string | null;
   onClose: (filters?: Filters) => void;
   time?: DateTime;
-  hideDateRange?: boolean;
+  isMpgaReport?: boolean;
 }
 
 export interface Filters {
@@ -158,7 +158,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   selectedFilters,
   selectedFundType,
   time,
-  hideDateRange,
+  isMpgaReport,
 }) => {
   const { t } = useTranslation();
   const [previewFilters, setPreviewFilters] = useState<Filters | null>(null);
@@ -311,7 +311,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                   }}
                 >
                   <MenuItem value="">{t('None')}</MenuItem>
-                  {!hideDateRange && [
+                  {!isMpgaReport && [
                     <MenuItem key="weekToDate" value={DateRange.WeekToDate}>
                       {t('Week to Date')}
                     </MenuItem>,
@@ -322,7 +322,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                   <MenuItem value={DateRange.YearToDate}>
                     {t('Year to Date')}
                   </MenuItem>
-                  {hideDateRange &&
+                  {isMpgaReport &&
                     completedYears.map((year) => (
                       <MenuItem key={year} value={String(year)}>
                         {year}
@@ -330,7 +330,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                     ))}
                 </TextField>
 
-                {!hideDateRange && (
+                {!isMpgaReport && (
                   <>
                     <Typography variant="body2" sx={{ mt: 2, mb: 2 }}>
                       {t('Or enter a custom date range:')}

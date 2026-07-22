@@ -26,7 +26,7 @@ const TestComponent: React.FC<
   selectedFundType,
   time,
   onCallMock,
-  hideDateRange = false,
+  isMpgaReport = false,
 }) => (
   <TestRouter>
     <GqlMockedProvider<{ ReportsStaffExpenses: ReportsStaffExpensesQuery }>
@@ -93,7 +93,7 @@ const TestComponent: React.FC<
           selectedFilters={selectedFilters}
           selectedFundType={selectedFundType}
           time={time}
-          hideDateRange={hideDateRange}
+          isMpgaReport={isMpgaReport}
         />
       </LocalizationProvider>
     </GqlMockedProvider>
@@ -515,7 +515,7 @@ describe('SettingsDialog', () => {
       isOpen: true,
       onClose: mutationSpy,
       selectedFundType: 'Primary',
-      hideDateRange: true,
+      isMpgaReport: true,
     };
 
     it('displays the simplified date range dropdown and category checkboxes without custom date fields', async () => {

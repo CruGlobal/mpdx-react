@@ -15,7 +15,7 @@ import { zeroAmountFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { LoadingBox, LoadingIndicator } from '../../styledComponents';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
-import { useTotals } from '../TotalsContext/TotalsContext';
+import { useReport } from '../ReportContext/ReportContext';
 import { DataFields } from '../mockData';
 import { StyledRow, StyledTypography } from '../styledComponents';
 
@@ -23,27 +23,28 @@ export interface PrintTablesProps {
   type: ReportTypeEnum;
   data?: DataFields[];
   title: string;
-  months: string[];
-  firstFutureMonthIndex?: number;
 }
 
 export const PrintTables: React.FC<PrintTablesProps> = ({
   title,
-  months,
   data,
   type,
-  firstFutureMonthIndex,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { incomeTotal, expensesTotal, dataLoading } = useTotals();
+  const {
+    incomeTotal,
+    expensesTotal,
+    isFutureMonth,
+    dataLoading,
+    monthLabels: months,
+    firstFutureMonthIndex,
+  } = useReport();
 
   const overallTotal =
     type === ReportTypeEnum.Income ? incomeTotal : expensesTotal;
 
   const grayColor = theme.palette.text.disabled;
-  const isFutureMonth = (index: number) =>
-    firstFutureMonthIndex !== undefined && index >= firstFutureMonthIndex;
   const futureCellSx = {
     backgroundColor: theme.palette.action.hover,
     WebkitPrintColorAdjust: 'exact',

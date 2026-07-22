@@ -6,6 +6,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { amountFormat, zeroAmountFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { populateTotalRows } from '../Helper/createRows';
+import { useReport } from '../ReportContext/ReportContext';
 import { DataFields } from '../mockData';
 import { StyledTotalRow } from '../styledComponents';
 import { descriptionWidth, monthWidth, summaryWidth } from './TableCard';
@@ -23,16 +24,13 @@ interface Row {
 interface TotalRowProps {
   data: DataFields[];
   overallTotal: number | undefined;
-  firstFutureMonthIndex?: number;
 }
 
-export const TotalRow: React.FC<TotalRowProps> = ({
-  data,
-  overallTotal,
-  firstFutureMonthIndex,
-}) => {
+export const TotalRow: React.FC<TotalRowProps> = ({ data, overallTotal }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+
+  const { firstFutureMonthIndex, isFutureMonth } = useReport();
 
   const monthlyTotals = data[0]?.monthly
     ? data[0].monthly.map((_, monthIndex) => {
@@ -64,10 +62,7 @@ export const TotalRow: React.FC<TotalRowProps> = ({
       filterable: false,
       disableColumnMenu: true,
       align: 'right',
-      cellClassName:
-        firstFutureMonthIndex !== undefined && index >= firstFutureMonthIndex
-          ? 'future-month'
-          : undefined,
+      cellClassName: isFutureMonth(index) ? 'future-month' : undefined,
       renderCell: ({ row }) => {
         const formattedValue = zeroAmountFormat(
           row.monthlyValue[index],
