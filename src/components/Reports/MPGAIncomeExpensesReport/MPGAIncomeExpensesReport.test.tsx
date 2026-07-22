@@ -198,8 +198,10 @@ describe('MPGAIncomeExpensesReport', () => {
       ).toHaveLength(1);
     }, 15000);
 
-    it('does not show the Clear button until a category filter is applied', async () => {
-      const { getByRole, findByRole, queryByRole } = render(<TestComponent />);
+    it('does not show the Clear button when only a category filter is applied', async () => {
+      const { getByRole, findByRole, findAllByText, queryByRole } = render(
+        <TestComponent />,
+      );
 
       expect(await findByRole('gridcell', { name: 'Benefits' })).toBeVisible();
       expect(queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
@@ -216,8 +218,11 @@ describe('MPGAIncomeExpensesReport', () => {
       userEvent.click(applyButton);
 
       expect(
-        await findByRole('button', { name: 'Clear' }, { timeout: 5000 }),
-      ).toBeInTheDocument();
+        await findAllByText('Benefits - Workers Compensation', undefined, {
+          timeout: 5000,
+        }),
+      ).toHaveLength(1);
+      expect(queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
     }, 15000);
 
     it('does not show the Clear button when the dialog is cancelled', async () => {
@@ -236,42 +241,6 @@ describe('MPGAIncomeExpensesReport', () => {
         ).not.toBeInTheDocument(),
       );
       expect(queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
-    }, 15000);
-
-    it('resets category filtering when Clear is clicked', async () => {
-      const { getByRole, findByRole, findAllByText, queryByText } = render(
-        <TestComponent />,
-      );
-
-      expect(await findByRole('gridcell', { name: 'Benefits' })).toBeVisible();
-
-      userEvent.click(getByRole('button', { name: 'Report Settings' }));
-
-      const benefitsCheckbox = await findByRole('checkbox', {
-        name: 'Benefits',
-      });
-      userEvent.click(benefitsCheckbox);
-
-      const applyButton = await findByRole('button', { name: 'Apply Filters' });
-      await waitFor(() => expect(applyButton).not.toBeDisabled());
-      userEvent.click(applyButton);
-
-      expect(
-        await findAllByText('Benefits - Workers Compensation', undefined, {
-          timeout: 5000,
-        }),
-      ).toHaveLength(1);
-
-      userEvent.click(
-        await findByRole('button', { name: 'Clear' }, { timeout: 5000 }),
-      );
-
-      await waitFor(() =>
-        expect(
-          queryByText('Benefits - Workers Compensation'),
-        ).not.toBeInTheDocument(),
-      );
-      expect(await findByRole('gridcell', { name: 'Benefits' })).toBeVisible();
     }, 15000);
   });
 

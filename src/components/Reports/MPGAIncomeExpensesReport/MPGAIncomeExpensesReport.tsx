@@ -62,8 +62,7 @@ export const MPGAIncomeExpensesReport: React.FC<
     () =>
       Boolean(
         filters &&
-          (filters.categories ||
-            filters.selectedDateRange === DateRange.YearToDate ||
+          (filters.selectedDateRange === DateRange.YearToDate ||
             (filters.selectedYear !== null &&
               filters.selectedYear !== undefined)),
       ),
