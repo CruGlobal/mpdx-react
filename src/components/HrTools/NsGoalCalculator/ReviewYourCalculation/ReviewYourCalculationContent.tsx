@@ -50,9 +50,7 @@ export const ReviewYourCalculationContent: React.FC<
 
       <GoalSummaryCard
         monthlyGoal={goalCalculation.calculations.monthlyGoal}
-        // TODO(MPDX-9801): special needs are not available yet; pass null so
-        // the summary shows "Coming soon" rather than a fabricated figure.
-        specialNeedsGoal={null}
+        specialNeedsGoal={goalCalculation.calculations.specialNeedsTotal}
         minStaffAccountBalance={
           goalCalculation.calculations.minimumAccountBalance
         }
@@ -67,7 +65,7 @@ export const ReviewYourCalculationContent: React.FC<
 
       <SpecialNeedsCard
         columnLabel={columnLabel}
-        adminRate={goalCalculation.calculations.adminRate}
+        calculations={goalCalculation.calculations}
       />
 
       <AccountBalanceCard

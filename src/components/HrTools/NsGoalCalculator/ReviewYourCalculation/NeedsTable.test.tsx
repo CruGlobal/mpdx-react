@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import { NeedsRow, NeedsWorksheetTable } from './NeedsTable';
 
 describe('NeedsWorksheetTable', () => {
-  it('renders line numbers, categories, currency amounts, and an em dash for null', () => {
+  it('renders line numbers, categories, and currency amounts', () => {
     const rows: NeedsRow[] = [
       {
         line: '1',
@@ -11,8 +11,7 @@ describe('NeedsWorksheetTable', () => {
         description: 'Taxes will be deducted from this amount',
         amount: 8774,
       },
-      { line: '2', category: 'Not yet available', amount: null },
-      { line: '3', category: 'Total', amount: 0, bold: true },
+      { line: '2', category: 'Total', amount: 0, bold: true },
     ];
 
     const { getByRole } = render(
@@ -25,15 +24,10 @@ describe('NeedsWorksheetTable', () => {
 
     expect(getByRole('table')).toHaveTableStructure({
       columnHeaders: ['Line', 'Category', 'John & Jane'],
-      rowHeaders: [
-        expect.stringContaining('Salary'),
-        'Not yet available',
-        'Total',
-      ],
+      rowHeaders: [expect.stringContaining('Salary'), 'Total'],
       cells: [
         ['1', '$8,774.00'],
-        ['2', '—'],
-        ['3', '$0.00'],
+        ['2', '$0.00'],
       ],
     });
   });

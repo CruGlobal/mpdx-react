@@ -1,13 +1,28 @@
 import React from 'react';
 import { render } from '@testing-library/react';
+import { defaultGoalCalculation } from '../NsGoalCalculatorTestWrapper';
 import { SpecialNeedsCard } from './SpecialNeedsCard';
 
+const calculations = {
+  ...defaultGoalCalculation.calculations,
+  adminRate: 0.12,
+  ibsNsoCost: 6165,
+  faithAndFinanceCost: 520,
+  refreshRetreatCost: 750,
+  cruConferenceCost: 1200,
+  specialNeedsSubtotal: 8635,
+  specialNeedsTotal: 9812.5,
+  specialNeedsDevelopedToDate: 500,
+  specialNeedsLeft: 9312.5,
+};
+
 describe('SpecialNeedsCard', () => {
-  // TODO(MPDX-9801): once special-needs figures are computed server-side, these
-  // amounts should render as real currency instead of the "—" placeholder.
-  it('renders every line as not-yet-available until special needs data lands', () => {
+  it('renders every line with its server-computed amount', () => {
     const { getByRole } = render(
-      <SpecialNeedsCard columnLabel="John & Jane" adminRate={0.12} />,
+      <SpecialNeedsCard
+        columnLabel="John & Jane"
+        calculations={calculations}
+      />,
     );
 
     expect(
@@ -27,14 +42,14 @@ describe('SpecialNeedsCard', () => {
         expect.stringContaining('Special Needs to be Developed'),
       ],
       cells: [
-        ['1', '—'],
-        ['2', '—'],
-        ['3', '—'],
-        ['4', '—'],
-        ['5', '—'],
-        ['6', '—'],
-        ['7', '—'],
-        ['8', '—'],
+        ['1', '$6,165.00'],
+        ['2', '$520.00'],
+        ['3', '$750.00'],
+        ['4', '$1,200.00'],
+        ['5', '$8,635.00'],
+        ['6', '$9,812.50'],
+        ['7', '$500.00'],
+        ['8', '$9,312.50'],
       ],
     });
   });

@@ -4,8 +4,7 @@ import {
   afterTestResizeObserver,
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
-import { SupportNeedsChart } from './SupportNeedsChart';
-import { MonthlyNeeds } from './useMonthlyNeedsRows';
+import { NeedsCategory, SupportNeedsChart } from './SupportNeedsChart';
 
 /*
  * Mocking recharts ResponsiveContainer to avoid ResponsiveContainer
@@ -24,16 +23,14 @@ jest.mock('recharts', () => {
   };
 });
 
-const monthlyNeeds: MonthlyNeeds = {
-  married: true,
-  salary: 5000,
-  ministryExpenses: 1000,
-  benefits: 800,
-  socialSecurityAndTaxes: 600,
-  voluntaryRetirement: 400,
-  adminCharge: 200,
-  monthlyGoal: 8000,
-};
+const needsCategories: NeedsCategory[] = [
+  { title: 'Salary (Combined)', amount: 5000 },
+  { title: 'Ministry Expenses', amount: 1000 },
+  { title: 'Benefits', amount: 800 },
+  { title: 'Social Security and Taxes', amount: 600 },
+  { title: 'Voluntary 403b Retirement Plan', amount: 400 },
+  { title: 'Administrative Charge', amount: 200 },
+];
 
 describe('SupportNeedsChart', () => {
   beforeEach(() => {
@@ -44,9 +41,9 @@ describe('SupportNeedsChart', () => {
     afterTestResizeObserver();
   });
 
-  it('renders a pie chart of the monthly needs', async () => {
+  it('renders a pie chart of the needs categories', async () => {
     const { container } = render(
-      <SupportNeedsChart monthlyNeeds={monthlyNeeds} />,
+      <SupportNeedsChart needsCategories={needsCategories} />,
     );
 
     await waitFor(() =>
@@ -54,9 +51,9 @@ describe('SupportNeedsChart', () => {
     );
   });
 
-  it('renders a legend entry for each monthly needs row', async () => {
+  it('renders a legend entry for each needs category', async () => {
     const { container } = render(
-      <SupportNeedsChart monthlyNeeds={monthlyNeeds} />,
+      <SupportNeedsChart needsCategories={needsCategories} />,
     );
 
     await waitFor(() =>
@@ -66,11 +63,8 @@ describe('SupportNeedsChart', () => {
     );
 
     const legend = container.querySelector('.recharts-legend-wrapper');
-    expect(legend?.textContent).toMatch('Salary (Combined)');
-    expect(legend?.textContent).toMatch('Ministry Expenses');
-    expect(legend?.textContent).toMatch('Benefits');
-    expect(legend?.textContent).toMatch('Social Security and Taxes');
-    expect(legend?.textContent).toMatch('Voluntary 403b Retirement Plan');
-    expect(legend?.textContent).toMatch('Administrative Charge');
+    needsCategories.forEach(({ title }) =>
+      expect(legend?.textContent).toMatch(title),
+    );
   });
 });
