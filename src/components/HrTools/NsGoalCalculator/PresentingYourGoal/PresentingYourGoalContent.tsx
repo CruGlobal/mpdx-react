@@ -17,8 +17,9 @@ import { PersonalInfoCard } from '../../Shared/GoalPresentation/PersonalInfoCard
 import { PresentationCard } from '../../Shared/GoalPresentation/PresentationCard';
 import { SpecialNeedsCard } from '../../Shared/GoalPresentation/SpecialNeedsCard';
 import { SupportNeedsChart } from '../../Shared/GoalPresentation/SupportNeedsChart';
+import { useMonthlyNeedsRows } from '../../Shared/GoalPresentation/useMonthlyNeedsRows';
 import { NsGoalCalculation } from '../Shared/NsGoalCalculatorContext';
-import { ChartPlaceholderCard } from './ChartPlaceholderCard';
+import { useSpecialNeedsCategories } from '../Shared/useSpecialNeedsCategories';
 
 const PrintableContent = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -30,9 +31,6 @@ const PrintableContent = styled('div')(({ theme }) => ({
     zoom: 0.4,
   },
 }));
-
-// TODO(MPDX-9801): Special needs are not available yet.
-const specialNeedsPlaceholder = 3624;
 
 interface PresentingYourGoalContentProps {
   goalCalculation: NsGoalCalculation;
@@ -74,6 +72,19 @@ export const PresentingYourGoalContent: React.FC<
     }),
     [married, calculations],
   );
+  const monthlyNeedsRows = useMonthlyNeedsRows(monthlyNeeds);
+  const specialNeeds = useSpecialNeedsCategories(calculations);
+  const specialNeedsCategories = useMemo(
+    () => [
+      ...specialNeeds,
+      {
+        title: t('Administrative Charge'),
+        amount:
+          calculations.specialNeedsTotal - calculations.specialNeedsSubtotal,
+      },
+    ],
+    [specialNeeds, calculations, t],
+  );
 
   const handlePrint = () => {
     window.print();
@@ -99,7 +110,6 @@ export const PresentingYourGoalContent: React.FC<
         </Typography>
         <Box component="ol" sx={{ my: 1, pl: 3 }}>
           <li>{t('Toggle off Headers and Footers in your print settings.')}</li>
-          <li>{t('Adjust the Scale to fit on one page.')}</li>
           <li>
             {t(
               'From your Print settings, you may also save the page as a PDF to share digitally.',
@@ -132,7 +142,7 @@ export const PresentingYourGoalContent: React.FC<
         supportRaised={calculations.supportRaised ?? null}
       />
 
-      <SpecialNeedsCard specialNeeds={specialNeedsPlaceholder} />
+      <SpecialNeedsCard specialNeeds={calculations.specialNeedsTotal} />
 
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, lg: 6 }}>
@@ -140,11 +150,16 @@ export const PresentingYourGoalContent: React.FC<
             title={t('Monthly Support Needs Chart')}
             horizontalScroll={false}
           >
-            <SupportNeedsChart monthlyNeeds={monthlyNeeds} />
+            <SupportNeedsChart needsCategories={monthlyNeedsRows} />
           </PresentationCard>
         </Grid>
         <Grid size={{ xs: 12, lg: 6 }}>
-          <ChartPlaceholderCard title={t('Special Needs Chart')} />
+          <PresentationCard
+            title={t('Special Needs Chart')}
+            horizontalScroll={false}
+          >
+            <SupportNeedsChart needsCategories={specialNeedsCategories} />
+          </PresentationCard>
         </Grid>
       </Grid>
 

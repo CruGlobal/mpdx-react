@@ -19,8 +19,8 @@ export interface NeedsRow {
   line: string;
   category: string;
   description?: string;
-  /** The line's dollar amount, or `null` when the figure is not yet available. */
-  amount: number | null;
+  /** The line's dollar amount. */
+  amount: number;
   /** Bolds the entire row (totals and the final lines). */
   bold?: boolean;
 }
@@ -53,9 +53,8 @@ export interface NeedsWorksheetTableProps {
 
 /**
  * Renders a needs worksheet: a visually-hidden "Line" column, a category
- * column with an optional description sub-line, and a right-aligned amount
- * column. Amounts that are `null` render as an em dash to signal a
- * not-yet-available figure rather than a real `$0.00`.
+ * column with an optional description sub-line, and a right-aligned,
+ * currency-formatted amount column.
  */
 export const NeedsWorksheetTable: React.FC<NeedsWorksheetTableProps> = ({
   rows,
@@ -101,9 +100,7 @@ export const NeedsWorksheetTable: React.FC<NeedsWorksheetTableProps> = ({
               )}
             </TableCell>
             <TableCell className={clsx('amount', { bold })}>
-              <Typography variant="body1">
-                {amount === null ? '—' : formatCurrency(amount)}
-              </Typography>
+              <Typography variant="body1">{formatCurrency(amount)}</Typography>
             </TableCell>
           </TableRow>
         ))}
