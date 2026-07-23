@@ -4,4 +4,7 @@ query GetUserAccess {
     admin
     developer
   }
+  coachingAccountLists(first: 1) {
+    totalCount
+  }
 }

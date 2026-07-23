@@ -9,6 +9,7 @@ export const session: Session = {
     userID: 'user-1',
     admin: false,
     developer: false,
+    coach: false,
     impersonating: false,
   },
 };

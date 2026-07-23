@@ -458,10 +458,10 @@ describe('MultiPageMenu', () => {
 
     await waitFor(() => {
       expect(queryByText('Manage Organizations')).not.toBeInTheDocument();
+      expect(getByText('Admin Console')).toBeInTheDocument();
     });
 
     await waitFor(() => {
-      expect(getByText('Admin Console')).toBeInTheDocument();
       expect(getByText('Backend Admin')).toBeInTheDocument();
       expect(getByText('Sidekiq')).toBeInTheDocument();
     });
@@ -506,6 +506,41 @@ describe('MultiPageMenu', () => {
       expect(getByText('Manage Organizations')).toBeInTheDocument();
       expect(getByText('Admin Console')).toBeInTheDocument();
     });
+  });
+
+  it('shows the admin console but not admin-only or developer-only tools for coaches', async () => {
+    mockSession({ admin: false, developer: false, coach: true });
+
+    const mutationSpy = jest.fn();
+    const { findByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider<{
+            ManageOrganizationsAccess: ManageOrganizationsAccessQuery;
+          }>
+            mocks={{
+              ManageOrganizationsAccess: noOrganizationsAccessMock,
+            }}
+            onCall={mutationSpy}
+          >
+            <MultiPageMenu
+              selectedId={selected}
+              isOpen={true}
+              onClose={() => {}}
+              designationAccounts={[]}
+              setDesignationAccounts={jest.fn()}
+              navType={NavTypeEnum.Settings}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    expect(await findByText('Admin Console')).toBeInTheDocument();
+
+    expect(queryByText('Manage Organizations')).not.toBeInTheDocument();
+    expect(queryByText('Backend Admin')).not.toBeInTheDocument();
+    expect(queryByText('Sidekiq')).not.toBeInTheDocument();
   });
 
   describe('HR Tools Menu', () => {

@@ -20,11 +20,16 @@ import {
 import { visuallyHidden } from '@mui/utils';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
+import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { currencyFormat } from 'src/lib/intlFormat';
 import {
   AssignCoachModal,
   AssignCoachOption,
 } from '../AssignCoachModal/AssignCoachModal';
+import {
+  DynamicImpersonateStaffModal,
+  preloadImpersonateStaffModal,
+} from '../ImpersonateStaffModal/DynamicImpersonateStaffModal';
 import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import { StaffGoalRow, isSendable } from '../mpdGoalAdminHelpers';
 
@@ -37,12 +42,21 @@ export const DEFAULT_ROWS_PER_PAGE = 5;
 export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const { admin, coach, impersonating } = useRequiredSession();
   const { selectedRowIds, toggleRow, toggleRows, search, selectedCohortId } =
     useMpdGoalAdmin();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_ROWS_PER_PAGE);
   // The staff row whose coach is being assigned; null when the modal is closed.
   const [coachRow, setCoachRow] = useState<StaffGoalRow | null>(null);
+  // The staff row being impersonated; null when the modal is closed.
+  const [impersonateRow, setImpersonateRow] = useState<StaffGoalRow | null>(
+    null,
+  );
+
+  // Hide the action mid-impersonation to avoid offering nested impersonation;
+  // the server independently enforces the authorization.
+  const canImpersonate = (admin || coach) && !impersonating;
 
   // TODO(MPDX-9699): populate from the assignable-coaches query once the
   // backend field exists. Empty for now so the modal renders a UI-only dropdown.
@@ -166,6 +180,18 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
                 >
                   {t('View/Edit')}
                 </Link>
+                {canImpersonate && (
+                  <Link
+                    component="button"
+                    type="button"
+                    underline="hover"
+                    onMouseEnter={preloadImpersonateStaffModal}
+                    onClick={() => setImpersonateRow(row)}
+                    sx={{ ml: 1 }}
+                  >
+                    {t('Impersonate')}
+                  </Link>
+                )}
               </TableCell>
               <TableCell padding="checkbox" align="right">
                 {/* Disabled until wired up so assistive tech announces the
@@ -201,6 +227,13 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
           coaches={assignableCoaches}
           handleAssignCoach={handleAssignCoach}
           handleClose={() => setCoachRow(null)}
+        />
+      )}
+      {impersonateRow && (
+        <DynamicImpersonateStaffModal
+          staffName={impersonateRow.name}
+          staffEmail={impersonateRow.email}
+          handleClose={() => setImpersonateRow(null)}
         />
       )}
     </TableContainer>

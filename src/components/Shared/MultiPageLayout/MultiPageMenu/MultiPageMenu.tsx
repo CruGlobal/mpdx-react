@@ -80,6 +80,9 @@ const showMenuItem = ({
     if (item.grantedAccess.indexOf('developer') !== -1 && user.developer) {
       return true;
     }
+    if (item.grantedAccess.indexOf('coach') !== -1 && user.coach) {
+      return true;
+    }
   } else {
     return true;
   }
