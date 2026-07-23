@@ -35,6 +35,10 @@ export const RouterGuard: React.FC<Props> = ({ children = null }) => {
     if (session.status !== 'authenticated') {
       return;
     }
+    // Ignore short-lived impersonation tokens
+    if (session.data.user.impersonating) {
+      return;
+    }
     const reauthCutoff = DateTime.fromISO('2026-08-10T00:00:00Z').toSeconds();
     let apiTokenExp: number | null = null;
     try {
