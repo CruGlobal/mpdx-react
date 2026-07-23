@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
-import { Box, SxProps, Theme, Typography } from '@mui/material';
-import { visuallyHidden } from '@mui/utils';
+import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import {
   NewStaffQuestionnaireNsoHousingEnum,
@@ -88,9 +87,6 @@ export const NsoInformationSection: React.FC<GoalSettingsSectionProps> = ({
 
       <FieldRow label={t('Left to Raise')}>
         <Typography variant="body1">
-          <Box component="span" sx={visuallyHidden as SxProps<Theme>}>
-            {t('Left to Raise')}
-          </Box>
           {formatCurrency(calculations.specialNeedsLeft)}
         </Typography>
       </FieldRow>
