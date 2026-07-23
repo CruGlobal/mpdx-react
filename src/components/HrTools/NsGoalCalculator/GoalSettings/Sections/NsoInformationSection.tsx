@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import {
   NewStaffQuestionnaireNsoHousingEnum,
@@ -6,6 +7,7 @@ import {
 } from 'src/graphql/types.generated';
 import { getLocalizedNsoHousing } from 'src/lib/functions/getLocalizedNsoHousing';
 import { getLocalizedNsoSessions } from 'src/lib/functions/getLocalizedNsoSessions';
+import { useFormatters } from '../../../Shared/useFormatters';
 import { GoalSettingsNumberField } from '../Fields/GoalSettingsNumberField';
 import { GoalSettingsPlaceholder } from '../Fields/GoalSettingsPlaceholder';
 import { GoalSettingsSelect, SelectOption } from '../Fields/GoalSettingsSelect';
@@ -13,9 +15,11 @@ import { ColumnHeaderRow, FieldRow, Section } from '../GoalSettingsLayout';
 import { GoalSettingsSectionProps } from '../goalSettingsSectionProps';
 
 export const NsoInformationSection: React.FC<GoalSettingsSectionProps> = ({
+  calculations,
   sharedHeader,
 }) => {
   const { t } = useTranslation();
+  const { formatCurrency } = useFormatters();
 
   const nsoHousingOptions = useMemo<SelectOption[]>(
     () =>
@@ -81,9 +85,10 @@ export const NsoInformationSection: React.FC<GoalSettingsSectionProps> = ({
         />
       </FieldRow>
 
-      {/* TODO(MPDX-9797): Computed value — wire up once the calc engine lands. */}
       <FieldRow label={t('Left to Raise')}>
-        <GoalSettingsPlaceholder label={t('Left to Raise')} value="—" />
+        <Typography variant="body1">
+          {formatCurrency(calculations.specialNeedsLeft)}
+        </Typography>
       </FieldRow>
     </Section>
   );

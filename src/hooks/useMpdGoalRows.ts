@@ -2,13 +2,11 @@ import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useGoalCalculator } from 'src/components/HrTools/GoalCalculator/Shared/GoalCalculatorContext';
 import {
-  calculateNewStaffGoalTotals,
-  getNewStaffBudgetCategory,
-} from 'src/components/HrTools/GoalCalculator/Shared/calculateNewStaffTotals';
-import {
   GoalTotals,
   calculateCategoryEnumTotal,
+  calculateGoalSubtotals,
 } from 'src/components/HrTools/GoalCalculator/Shared/calculateTotals';
+import { getNewStaffBudgetCategory } from 'src/components/HrTools/GoalCalculator/Shared/getNewStaffBudgetCategory';
 import { safeProgressRatio } from 'src/components/HrTools/Shared/helpers/safeProgressRatio';
 import { PrimaryBudgetCategoryEnum } from 'src/graphql/types.generated';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
@@ -27,12 +25,86 @@ export interface MpdGoalRow {
   percentage?: boolean;
 }
 
+interface MinistryExpenseLine {
+  /** Worksheet line number (3A–3J). */
+  line: string;
+  /** Display label for the line. */
+  label: string;
+  /** The budget categories this line aggregates. */
+  categories: PrimaryBudgetCategoryEnum[];
+}
+
 export const useMpdGoalRows = (supportRaised: number) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const { goalCalculationResult, goalTotals } = useGoalCalculator();
-  const constants = useGoalCalculatorConstants();
-  const { goalMiscConstants } = constants;
+  const { goalMiscConstants } = useGoalCalculatorConstants();
+
+  const ministryExpenseLines = useMemo<MinistryExpenseLine[]>(
+    () => [
+      {
+        line: '3A',
+        label: t('Ministry Miles'),
+        categories: [PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage],
+      },
+      {
+        line: '3B',
+        label: t('Ministry Travel'),
+        categories: [PrimaryBudgetCategoryEnum.MinistryTravel],
+      },
+      {
+        line: '3C',
+        label: t('Meetings, Retreats, Conferences'),
+        categories: [
+          PrimaryBudgetCategoryEnum.MeetingsRetreatsConferences,
+          PrimaryBudgetCategoryEnum.UsStaffConference,
+        ],
+      },
+      {
+        line: '3D',
+        label: t('Meals and Per Diem'),
+        categories: [PrimaryBudgetCategoryEnum.MealsAndPerDiem],
+      },
+      {
+        line: '3E',
+        label: t('MPD'),
+        categories: [PrimaryBudgetCategoryEnum.MinistryPartnerDevelopment],
+      },
+      {
+        line: '3F',
+        label: t('Supplies and Materials'),
+        categories: [PrimaryBudgetCategoryEnum.SuppliesAndMaterials],
+      },
+      {
+        line: '3G',
+        label: t('Summer Assignment Expenses'),
+        categories: [PrimaryBudgetCategoryEnum.SummerAssignmentExpenses],
+      },
+      {
+        line: '3H',
+        label: t('Reimbursable Medical Expenses'),
+        categories: [PrimaryBudgetCategoryEnum.ReimbursableMedicalExpenses],
+      },
+      {
+        line: '3I',
+        label: t(
+          'Account transfers to staff members, ministries, projects, etc.',
+        ),
+        categories: [PrimaryBudgetCategoryEnum.AccountTransfers],
+      },
+      {
+        line: '3J',
+        label: t('Other (includes credit card charges)'),
+        categories: [
+          PrimaryBudgetCategoryEnum.InternetServiceProviderFee,
+          PrimaryBudgetCategoryEnum.CellPhoneWorkLine,
+          PrimaryBudgetCategoryEnum.CreditCardProcessingCharges,
+          PrimaryBudgetCategoryEnum.MinistryOther,
+        ],
+      },
+    ],
+    [t],
+  );
 
   const valueFormatter = useCallback(
     (value: number, row: MpdGoalRow) =>
@@ -42,82 +114,51 @@ export const useMpdGoalRows = (supportRaised: number) => {
     [locale],
   );
 
-  const newStaffReference = useMemo(
-    () =>
-      calculateNewStaffGoalTotals(
-        goalCalculationResult.data?.goalCalculation ?? null,
-        constants,
-      ),
-    [goalCalculationResult, constants],
-  );
+  const newStaffReference = useMemo<GoalTotals>(() => {
+    const goalCalculation = goalCalculationResult.data?.goalCalculation;
+    const calculations = goalCalculation?.newStaffCalculations;
+
+    const grossMonthlySalary = calculations?.totalSalary ?? 0;
+    const benefitsCharge = calculations?.benefitsCharge ?? 0;
+
+    // Sum the ministry-expense lines from the per-category references (reimbursable medical
+    // included) so the reference subtotals foot against the amounts shown on lines 3A–3J.
+    const ministryExpensesTotal = ministryExpenseLines
+      .flatMap((line) => line.categories)
+      .reduce(
+        (sum, category) =>
+          sum + getNewStaffBudgetCategory(goalCalculation, category),
+        0,
+      );
+
+    return {
+      monthlyBudget: calculations?.salary ?? 0,
+      netMonthlySalary: calculations?.salary ?? 0,
+      taxesPercentage: calculations?.secaRate ?? 0,
+      taxes: calculations?.seca ?? 0,
+      salaryPreIra: calculations?.salarySubtotal ?? 0,
+      rothContributionPercentage: calculations?.contribution403bPercentage ?? 0,
+      traditionalContributionPercentage: 0,
+      rothContribution: calculations?.totalContributing403bAmount ?? 0,
+      traditionalContribution: 0,
+      // The client-entered categories above are folded into ministryExpensesTotal, so the server's
+      // goal subtotal (which excludes them) is no longer accurate. Re-calculate the totals client-side.
+      ...calculateGoalSubtotals({
+        grossMonthlySalary,
+        ministryExpensesTotal,
+        benefitsCharge,
+        adminRate: calculations?.adminRate ?? 0,
+        attritionRate: calculations?.attritionRate ?? 0,
+      }),
+    };
+  }, [goalCalculationResult.data, ministryExpenseLines]);
 
   const goalCalculation = goalCalculationResult.data?.goalCalculation;
   const rows = useMemo((): MpdGoalRow[] => {
-    const ministryExpenseCategories = [
-      {
-        line: '3A',
-        category: t('Ministry Miles'),
-        categories: [PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage],
-      },
-      {
-        line: '3B',
-        category: t('Ministry Travel'),
-        categories: [PrimaryBudgetCategoryEnum.MinistryTravel],
-      },
-      {
-        line: '3C',
-        category: t('Meetings, Retreats, Conferences'),
-        categories: [
-          PrimaryBudgetCategoryEnum.MeetingsRetreatsConferences,
-          PrimaryBudgetCategoryEnum.UsStaffConference,
-        ],
-      },
-      {
-        line: '3D',
-        category: t('Meals and Per Diem'),
-        categories: [PrimaryBudgetCategoryEnum.MealsAndPerDiem],
-      },
-      {
-        line: '3E',
-        category: t('MPD'),
-        categories: [PrimaryBudgetCategoryEnum.MinistryPartnerDevelopment],
-      },
-      {
-        line: '3F',
-        category: t('Supplies and Materials'),
-        categories: [PrimaryBudgetCategoryEnum.SuppliesAndMaterials],
-      },
-      {
-        line: '3G',
-        category: t('Summer Assignment Expenses'),
-        categories: [PrimaryBudgetCategoryEnum.SummerAssignmentExpenses],
-      },
-      {
-        line: '3H',
-        category: t('Reimbursable Medical Expenses'),
-        categories: [PrimaryBudgetCategoryEnum.ReimbursableMedicalExpenses],
-      },
-      {
-        line: '3I',
-        category: t(
-          'Account transfers to staff members, ministries, projects, etc.',
-        ),
-        categories: [PrimaryBudgetCategoryEnum.AccountTransfers],
-      },
-      {
-        line: '3J',
-        category: t('Other (includes credit card charges)'),
-        categories: [
-          PrimaryBudgetCategoryEnum.InternetServiceProviderFee,
-          PrimaryBudgetCategoryEnum.CellPhoneWorkLine,
-          PrimaryBudgetCategoryEnum.CreditCardProcessingCharges,
-          PrimaryBudgetCategoryEnum.MinistryOther,
-        ],
-      },
-    ];
-    const ministryExpenseRows = ministryExpenseCategories.map(
-      ({ categories, ...rowFields }): MpdGoalRow => ({
-        ...rowFields,
+    const ministryExpenseRows = ministryExpenseLines.map(
+      ({ line, label, categories }): MpdGoalRow => ({
+        line,
+        category: label,
         amount: categories.reduce(
           (sum, category) =>
             sum +
@@ -129,12 +170,7 @@ export const useMpdGoalRows = (supportRaised: number) => {
         ),
         reference: categories.reduce(
           (sum, category) =>
-            sum +
-            getNewStaffBudgetCategory(
-              goalCalculation,
-              category,
-              goalMiscConstants,
-            ),
+            sum + getNewStaffBudgetCategory(goalCalculation, category),
           0,
         ),
       }),
@@ -283,6 +319,7 @@ export const useMpdGoalRows = (supportRaised: number) => {
     goalCalculation,
     goalTotals,
     goalMiscConstants,
+    ministryExpenseLines,
     newStaffReference,
     supportRaised,
   ]);

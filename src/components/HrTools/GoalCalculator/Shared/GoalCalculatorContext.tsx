@@ -54,7 +54,6 @@ export type GoalCalculatorType = {
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
   percentComplete: number;
 
-  defaultType: DefaultTypeEnum;
   isMarried: boolean;
 
   defaultTypeChanged: boolean;
@@ -196,7 +195,6 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       trackMutation,
       percentComplete,
       goalTotals,
-      defaultType,
       isMarried,
       defaultTypeChanged,
       clearDefaultTypeChanged,
@@ -219,7 +217,6 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       trackMutation,
       percentComplete,
       goalTotals,
-      defaultType,
       isMarried,
       defaultTypeChanged,
       clearDefaultTypeChanged,

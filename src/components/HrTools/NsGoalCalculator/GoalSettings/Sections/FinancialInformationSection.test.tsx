@@ -37,6 +37,7 @@ const TestComponent: React.FC<Partial<GoalSettingsSectionProps>> = (
         studentLoanMonthlyPayment: 0,
         carLoanMonthlyPayment: 0,
         creditCardDebtMonthlyPayment: 0,
+        otherExpenses: 0,
       }}
       onSubmit={jest.fn()}
     >
@@ -63,6 +64,9 @@ describe('FinancialInformationSection', () => {
     ).toBeInTheDocument();
     expect(
       getByRole('spinbutton', { name: 'Credit Card Payment' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('spinbutton', { name: 'Other Expenses' }),
     ).toBeInTheDocument();
     expect(
       getByRole('combobox', { name: 'Geographic Location' }),

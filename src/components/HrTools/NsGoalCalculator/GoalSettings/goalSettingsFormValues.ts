@@ -65,6 +65,7 @@ export interface GoalSettingsFormValues {
   studentLoanMonthlyPayment: number | '';
   carLoanMonthlyPayment: number | '';
   creditCardDebtMonthlyPayment: number | '';
+  otherExpenses: number | '';
 
   // --- 3. Healthcare Information (shared) ---
   benefitsPlan: MpdGoalBenefitsConstantPlanEnum | '';
@@ -75,7 +76,6 @@ export interface GoalSettingsFormValues {
   ministryLocation: string;
   ministryName: string;
   assignmentType: GoalCalculationRole | '';
-  ministryExpenses: number | '';
 
   // --- 5. NSO Information (shared) ---
   nsoHousing: NewStaffQuestionnaireNsoHousingEnum | '';

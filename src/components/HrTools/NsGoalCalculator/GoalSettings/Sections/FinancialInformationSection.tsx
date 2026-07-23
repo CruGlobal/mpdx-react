@@ -170,6 +170,17 @@ export const FinancialInformationSection: React.FC<
           adornment="currency"
         />
       </FieldRow>
+
+      <FieldRow
+        label={t('Other Expenses')}
+        helperText={t('Additional monthly needs not covered above')}
+      >
+        <GoalSettingsNumberField
+          name="otherExpenses"
+          label={t('Other Expenses')}
+          adornment="currency"
+        />
+      </FieldRow>
     </Section>
   );
 };

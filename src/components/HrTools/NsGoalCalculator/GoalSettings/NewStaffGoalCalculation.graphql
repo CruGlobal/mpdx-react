@@ -34,6 +34,16 @@ fragment NewStaffGoalCalculationFields on NewStaffGoalCalculation {
     adminRate
     attritionRate
     default403bFraction
+
+    # Special Needs During MPD (one-time cohort training costs)
+    ibsNsoCost
+    faithAndFinanceCost
+    refreshRetreatCost
+    cruConferenceCost
+    specialNeedsSubtotal
+    specialNeedsTotal
+    specialNeedsDevelopedToDate
+    specialNeedsLeft
   }
 
   # Identity (read-only display in the header; prepopulated from HCM).
@@ -66,6 +76,7 @@ fragment NewStaffGoalCalculationFields on NewStaffGoalCalculation {
   staffConferenceTransfer
   accountTransfers
   advocacyTransfers
+  otherExpenses
   geographicLocation
   studentLoanMonthlyPayment
   carLoanMonthlyPayment
@@ -80,7 +91,6 @@ fragment NewStaffGoalCalculationFields on NewStaffGoalCalculation {
   ministryName
   ministryLocation
   assignmentType
-  ministryExpenses
 
   # NSO
   nsoHousing
