@@ -27,6 +27,7 @@ const TestComponent: React.FC<
   time,
   onCallMock,
   isMpgaReport = false,
+  transactionYears,
 }) => (
   <TestRouter>
     <GqlMockedProvider<{ ReportsStaffExpenses: ReportsStaffExpensesQuery }>
@@ -94,6 +95,7 @@ const TestComponent: React.FC<
           selectedFundType={selectedFundType}
           time={time}
           isMpgaReport={isMpgaReport}
+          transactionYears={transactionYears}
         />
       </LocalizationProvider>
     </GqlMockedProvider>
@@ -516,6 +518,7 @@ describe('SettingsDialog', () => {
       onClose: mutationSpy,
       selectedFundType: 'Primary',
       isMpgaReport: true,
+      transactionYears: [2018, 2019, 2020],
     };
 
     it('displays the simplified date range dropdown and category checkboxes without custom date fields', async () => {
@@ -578,20 +581,16 @@ describe('SettingsDialog', () => {
       });
     });
 
-    it('lists the last 5 completed years in the date range dropdown', () => {
+    it('lists the transaction years in the date range dropdown', () => {
       const { getByLabelText, getByRole } = render(
         <TestComponent {...defaultProps} />,
       );
 
       userEvent.click(getByLabelText('Select Date Range'));
 
-      const lastCompletedYear = DateTime.now().year - 1;
-      expect(
-        getByRole('option', { name: String(lastCompletedYear) }),
-      ).toBeInTheDocument();
-      expect(
-        getByRole('option', { name: String(lastCompletedYear - 4) }),
-      ).toBeInTheDocument();
+      expect(getByRole('option', { name: '2018' })).toBeInTheDocument();
+      expect(getByRole('option', { name: '2019' })).toBeInTheDocument();
+      expect(getByRole('option', { name: '2020' })).toBeInTheDocument();
     });
 
     it('correctly gets Jan 1 – Dec 31 and the selected year when a year is picked', async () => {

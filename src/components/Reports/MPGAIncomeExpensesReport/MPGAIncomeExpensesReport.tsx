@@ -46,7 +46,14 @@ export const MPGAIncomeExpensesReport: React.FC<
   const { t } = useTranslation();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-  const { filters, setFilters, startDate, endDate, subtitle } = useReport();
+  const {
+    filters,
+    setFilters,
+    startDate,
+    endDate,
+    subtitle,
+    transactionYears,
+  } = useReport();
 
   const defaultFilters: Filters = useMemo(
     () => ({
@@ -176,6 +183,7 @@ export const MPGAIncomeExpensesReport: React.FC<
             setIsSettingsOpen(false);
           }}
           isMpgaReport
+          transactionYears={transactionYears ?? []}
         />
       )}
     </>

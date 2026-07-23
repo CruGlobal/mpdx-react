@@ -35,6 +35,7 @@ export interface SettingsDialogProps {
   onClose: (filters?: Filters) => void;
   time?: DateTime;
   isMpgaReport?: boolean;
+  transactionYears?: number[];
 }
 
 export interface Filters {
@@ -159,6 +160,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   selectedFundType,
   time,
   isMpgaReport,
+  transactionYears,
 }) => {
   const { t } = useTranslation();
   const [previewFilters, setPreviewFilters] = useState<Filters | null>(null);
@@ -167,12 +169,6 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
     () => time ?? DateTime.now().startOf('month'),
     [time],
   );
-
-  // TODO: MPDX-9872 Get list of all possible years
-  const completedYears = useMemo(() => {
-    const lastCompletedYear = currentTime.year - 1;
-    return Array.from({ length: 5 }, (_, index) => lastCompletedYear - index);
-  }, [currentTime]);
 
   const validationSchema = useMemo(
     () => getValidationSchema(currentTime),
@@ -323,7 +319,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                     {t('Year to Date')}
                   </MenuItem>
                   {isMpgaReport &&
-                    completedYears.map((year) => (
+                    (transactionYears ?? []).map((year) => (
                       <MenuItem key={year} value={String(year)}>
                         {year}
                       </MenuItem>

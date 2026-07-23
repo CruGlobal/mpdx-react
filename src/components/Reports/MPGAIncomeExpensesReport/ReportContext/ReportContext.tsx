@@ -26,6 +26,7 @@ export type ReportContextType = {
   dataLoading: boolean;
   startDate: DateTime;
   endDate: DateTime;
+  transactionYears: number[];
 
   subtitle: string;
 
@@ -135,6 +136,15 @@ export const ReportProvider: React.FC<ReportContextProps> = ({ children }) => {
     },
   });
 
+  // Filter out the current year since we only want to show previous years in filter dropdown
+  const transactionYears = useMemo(
+    () =>
+      (reportData?.reportsStaffExpenses?.transactionYears ?? []).filter(
+        (year) => year < now.year,
+      ),
+    [reportData, now.year],
+  );
+
   const transformedData: Funds[] = useMemo(
     () =>
       (reportData?.reportsStaffExpenses?.funds ?? []).map((fund) => ({
@@ -225,6 +235,7 @@ export const ReportProvider: React.FC<ReportContextProps> = ({ children }) => {
       dataLoading: loading,
       startDate,
       endDate,
+      transactionYears,
       subtitle,
       incomeTotal,
       expensesTotal,
@@ -246,6 +257,7 @@ export const ReportProvider: React.FC<ReportContextProps> = ({ children }) => {
       loading,
       startDate,
       endDate,
+      transactionYears,
       subtitle,
       incomeTotal,
       expensesTotal,

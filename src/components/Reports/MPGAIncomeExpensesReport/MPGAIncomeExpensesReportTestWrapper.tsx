@@ -18,6 +18,7 @@ const toBreakdown = (values: number[]): { month: string; total: number }[] =>
 
 export const mpgaTransactionsMock: MpgaTransactionsQuery = {
   reportsStaffExpenses: {
+    transactionYears: [2017, 2018, 2019],
     funds: [
       {
         fundType: FundTypes.Primary,
@@ -116,7 +117,9 @@ export const MPGAIncomeExpensesReportTestWrapper: React.FC<
 > = ({ onCall, isEmpty, mocks, children }) => {
   const mpgaTransactions =
     mocks ??
-    (isEmpty ? { reportsStaffExpenses: { funds: [] } } : mpgaTransactionsMock);
+    (isEmpty
+      ? { reportsStaffExpenses: { transactionYears: [], funds: [] } }
+      : mpgaTransactionsMock);
 
   return (
     <ThemeProvider theme={theme}>

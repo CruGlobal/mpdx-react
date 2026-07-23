@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { render } from '__tests__/util/testingLibraryReactMock';
 import { DateRange } from '../../StaffExpenseReport/Helpers/StaffReportEnum';
 import { MPGAIncomeExpensesReportTestWrapper } from '../MPGAIncomeExpensesReportTestWrapper';
+import { MpgaTransactionsQuery } from '../MPGATransactions.generated';
 import { useReport } from './ReportContext';
 
 const mutationSpy = jest.fn();
@@ -45,8 +46,14 @@ function TestConsumer() {
 }
 
 function FilterConsumer() {
-  const { setFilters, subtitle, firstFutureMonthIndex, incomeTotal, allData } =
-    useReport();
+  const {
+    setFilters,
+    subtitle,
+    firstFutureMonthIndex,
+    incomeTotal,
+    allData,
+    transactionYears,
+  } = useReport();
 
   return (
     <div>
@@ -58,6 +65,7 @@ function FilterConsumer() {
       <div data-testid="incomeMonthly">
         {(allData.income[0]?.monthly ?? []).join(',')}
       </div>
+      <div data-testid="transactionYears">{transactionYears.join(',')}</div>
       <button
         onClick={() =>
           setFilters({
@@ -188,6 +196,32 @@ describe('ReportContext', () => {
       await waitFor(() =>
         expect(getByTestId('incomeMonthly')).toHaveTextContent(
           '6770,0,0,0,0,0,0,0,0,0,0,0',
+        ),
+      );
+    });
+  });
+
+  describe('transaction years', () => {
+    it('excludes the current year from the list', async () => {
+      const yearsMock: MpgaTransactionsQuery = {
+        reportsStaffExpenses: {
+          transactionYears: [2018, 2019, 2020],
+          funds: [],
+        },
+      };
+
+      const { getByTestId } = render(
+        <MPGAIncomeExpensesReportTestWrapper
+          mocks={yearsMock}
+          onCall={mutationSpy}
+        >
+          <FilterConsumer />
+        </MPGAIncomeExpensesReportTestWrapper>,
+      );
+
+      await waitFor(() =>
+        expect(getByTestId('transactionYears')).toHaveTextContent(
+          /^2018,2019$/,
         ),
       );
     });
