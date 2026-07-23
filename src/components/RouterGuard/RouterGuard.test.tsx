@@ -76,5 +76,54 @@ describe('RouterGuard', () => {
 
       await waitFor(() => expect(signIn).toHaveBeenCalledWith('okta'));
     });
+
+    // Remove alongside the reauth-cutoff effect in RouterGuard after 2026-08-10.
+    it('should reauthenticate when the API token predates the reauth cutoff', async () => {
+      (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
+        // Future session expiry so the token-expiry effect does not fire; the
+        // API token exp is 1000000000 / 2001-09-09, before the 2026-08-10 cutoff.
+        data: {
+          ...session,
+          expires: '2099-01-01T00:00:00Z',
+          user: {
+            ...session.user,
+            apiToken:
+              'eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjEwMDAwMDAwMDB9.h2Qk01iTa6nH_U-OpImeSecS7owIx6YMqeh6yfWO7Xg',
+          },
+        },
+        status: 'authenticated',
+        update: () => Promise.resolve(null),
+      });
+
+      render(<TestComponent pathname="/authRoute">Authed route</TestComponent>);
+
+      await waitFor(() => expect(signIn).toHaveBeenCalledWith('okta'));
+    });
+
+    it('should not reauthenticate when the API token is after the cutoff', async () => {
+      (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
+        // API token exp is 2000000000 / 2033-05-18, after the 2026-08-10 cutoff.
+        data: {
+          ...session,
+          expires: '2099-01-01T00:00:00Z',
+          user: {
+            ...session.user,
+            apiToken:
+              'eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjIwMDAwMDAwMDB9.XIy4tZ8x7c86GgrOHqwZwR_i28BWxknyjPpHpklBw4U',
+          },
+        },
+        status: 'authenticated',
+        update: () => Promise.resolve(null),
+      });
+
+      const { getByText } = render(
+        <TestComponent pathname="/authRoute">Authed route</TestComponent>,
+      );
+
+      await waitFor(() =>
+        expect(getByText('Authed route')).toBeInTheDocument(),
+      );
+      expect(signIn).not.toHaveBeenCalled();
+    });
   });
 });
