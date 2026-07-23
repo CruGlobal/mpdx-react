@@ -4,12 +4,12 @@ import { ExpensesPieChart } from '../Charts/ExpensesPieChart/ExpensesPieChart';
 import { MonthlySummaryChart } from '../Charts/MonthlySummaryChart/MonthlySummaryChart';
 import { SummaryBarChart } from '../Charts/SummaryBarChart/SummaryBarChart';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
-import { useReport } from '../ReportContext/ReportContext';
+import { useMPGAIncomeExpenses } from '../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { PrintTables } from '../Tables/PrintTables';
 
 export const PrintOnlyReport: React.FC = () => {
   const { t } = useTranslation();
-  const { allData: data } = useReport();
+  const { allData: data } = useMPGAIncomeExpenses();
 
   return (
     <>

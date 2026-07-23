@@ -8,6 +8,7 @@ query MPGATransactions(
     startMonth: $startMonth
     endMonth: $endMonth
   ) {
+    transactionYears
     funds {
       categories {
         averagePerMonth

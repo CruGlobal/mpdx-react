@@ -15,7 +15,7 @@ import { zeroAmountFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { LoadingBox, LoadingIndicator } from '../../styledComponents';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
-import { useReport } from '../ReportContext/ReportContext';
+import { useMPGAIncomeExpenses } from '../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { DataFields } from '../mockData';
 import { StyledRow, StyledTypography } from '../styledComponents';
 
@@ -33,16 +33,14 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const {
-    incomeTotal,
-    expensesTotal,
+    totals: { income, expenses },
     isFutureMonth,
     dataLoading,
     monthLabels: months,
     firstFutureMonthIndex,
-  } = useReport();
+  } = useMPGAIncomeExpenses();
 
-  const overallTotal =
-    type === ReportTypeEnum.Income ? incomeTotal : expensesTotal;
+  const overallTotal = type === ReportTypeEnum.Income ? income : expenses;
 
   const grayColor = theme.palette.text.disabled;
   const futureCellSx = {
@@ -85,14 +83,11 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                   .slice(0, index)
                   .reduce((sum, group) => sum + group.count, 0);
 
-                const futureStart =
+                const pastCount =
                   firstFutureMonthIndex !== undefined
-                    ? Math.max(
-                        0,
-                        Math.min(count, firstFutureMonthIndex - monthOffset),
-                      )
+                    ? Math.min(count, firstFutureMonthIndex - monthOffset)
                     : count;
-                const futureCount = count - futureStart;
+                const futureCount = count - pastCount;
 
                 const yearLabel = firstMonthInYear ? (
                   <Typography
@@ -103,10 +98,10 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                 ) : null;
 
                 return [
-                  futureStart > 0 ? (
+                  pastCount > 0 ? (
                     <TableCell
                       key={`${year}-past`}
-                      colSpan={futureStart}
+                      colSpan={pastCount}
                       sx={{
                         borderBottom: `2px solid ${borderColor}`,
                         borderRight: '20px solid transparent',
@@ -124,7 +119,7 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                         borderRight: '20px solid transparent',
                       }}
                     >
-                      {futureStart === 0 ? yearLabel : null}
+                      {pastCount === 0 ? yearLabel : null}
                     </TableCell>
                   ) : null,
                 ];

@@ -31,8 +31,15 @@ import { PrintOnlyReport } from './DisplayModes/PrintOnlyReport';
 import { ScreenOnlyReport } from './DisplayModes/ScreenOnlyReport';
 import { ExportCsvButton } from './ExportCsvButton/ExportCsvButton';
 import { FundTypes } from './Helper/MPGAReportEnum';
-import { useReport } from './ReportContext/ReportContext';
+import { useMPGAIncomeExpenses } from './MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { PrintOnly, StyledHeaderBox } from './styledComponents';
+
+const isDateFilterActive = (filters: Filters | null | undefined): boolean =>
+  Boolean(
+    filters &&
+      (filters.selectedDateRange === DateRange.YearToDate ||
+        (filters.selectedYear !== null && filters.selectedYear !== undefined)),
+  );
 
 interface MPGAIncomeExpensesReportProps {
   isNavListOpen: boolean;
@@ -46,7 +53,14 @@ export const MPGAIncomeExpensesReport: React.FC<
   const { t } = useTranslation();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-  const { filters, setFilters, startDate, endDate, subtitle } = useReport();
+  const {
+    filters,
+    setFilters,
+    startDate,
+    endDate,
+    subtitle,
+    transactionYears,
+  } = useMPGAIncomeExpenses();
 
   const defaultFilters: Filters = useMemo(
     () => ({
@@ -58,16 +72,7 @@ export const MPGAIncomeExpensesReport: React.FC<
     [startDate, endDate],
   );
 
-  const isFilterActive = useMemo(
-    () =>
-      Boolean(
-        filters &&
-          (filters.selectedDateRange === DateRange.YearToDate ||
-            (filters.selectedYear !== null &&
-              filters.selectedYear !== undefined)),
-      ),
-    [filters],
-  );
+  const isFilterActive = isDateFilterActive(filters);
 
   const handleSettingsClick = () => {
     setIsSettingsOpen(true);
@@ -165,17 +170,13 @@ export const MPGAIncomeExpensesReport: React.FC<
           selectedFundType={FundTypes.Primary}
           isOpen={isSettingsOpen}
           onClose={(newFilters) => {
-            const hasActiveFilter = Boolean(
-              newFilters &&
-                (newFilters.categories ||
-                  newFilters.selectedDateRange === DateRange.YearToDate ||
-                  (newFilters.selectedYear !== null &&
-                    newFilters.selectedYear !== undefined)),
-            );
+            const hasActiveFilter =
+              Boolean(newFilters?.categories) || isDateFilterActive(newFilters);
             setFilters(hasActiveFilter && newFilters ? newFilters : null);
             setIsSettingsOpen(false);
           }}
           isMpgaReport
+          transactionYears={transactionYears ?? []}
         />
       )}
     </>

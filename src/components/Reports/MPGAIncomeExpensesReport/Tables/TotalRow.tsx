@@ -6,7 +6,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { amountFormat, zeroAmountFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { populateTotalRows } from '../Helper/createRows';
-import { useReport } from '../ReportContext/ReportContext';
+import { useMPGAIncomeExpenses } from '../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { DataFields } from '../mockData';
 import { StyledTotalRow } from '../styledComponents';
 import { descriptionWidth, monthWidth, summaryWidth } from './TableCard';
@@ -30,7 +30,7 @@ export const TotalRow: React.FC<TotalRowProps> = ({ data, overallTotal }) => {
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { isFutureMonth } = useReport();
+  const { isFutureMonth } = useMPGAIncomeExpenses();
 
   const monthlyTotals = useMemo(
     () =>

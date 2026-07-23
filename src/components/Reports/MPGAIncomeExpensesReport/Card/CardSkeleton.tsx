@@ -6,7 +6,7 @@ import {
   SxProps,
   Theme,
 } from '@mui/material';
-import { useReport } from '../ReportContext/ReportContext';
+import { useMPGAIncomeExpenses } from '../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 
 export interface CardSkeletonProps {
   title: string;
@@ -19,7 +19,7 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
   children,
   styling,
 }) => {
-  const { subtitle } = useReport();
+  const { subtitle } = useMPGAIncomeExpenses();
 
   return (
     <Card>

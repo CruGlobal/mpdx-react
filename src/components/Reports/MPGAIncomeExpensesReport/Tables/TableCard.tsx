@@ -17,7 +17,7 @@ import { CardSkeleton } from '../Card/CardSkeleton';
 import { CustomToolbar } from '../CustomToolbar/CustomToolbar';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { populateCardTableRows } from '../Helper/createRows';
-import { useReport } from '../ReportContext/ReportContext';
+import { useMPGAIncomeExpenses } from '../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { DataFields, TransactionBreakdown } from '../mockData';
 import { StyledGrid } from '../styledComponents';
 import { TotalRow } from './TotalRow';
@@ -99,12 +99,11 @@ export const TableCard: React.FC<TableCardProps> = ({
   const locale = useLocale();
   const {
     monthLabels: months,
-    incomeTotal,
-    expensesTotal,
+    totals: { income, expenses },
     dataLoading,
     firstFutureMonthIndex,
     isFutureMonth,
-  } = useReport();
+  } = useMPGAIncomeExpenses();
 
   const [openBreakdownModal, setOpenBreakdownModal] =
     useState<StaffExpenseCategoryEnum | null>(null);
@@ -118,8 +117,7 @@ export const TableCard: React.FC<TableCardProps> = ({
   );
   const { monthCount, getBorderColor } = useMonthHeaders(months, monthColors);
 
-  const overallTotal =
-    type === ReportTypeEnum.Income ? incomeTotal : expensesTotal;
+  const overallTotal = type === ReportTypeEnum.Income ? income : expenses;
 
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
@@ -276,10 +274,10 @@ export const TableCard: React.FC<TableCardProps> = ({
             columns={columns}
             columnGroupingModel={columnGroupingModel}
             sx={{
-              '& .future-month-header .MuiDataGrid-columnHeaderTitle': {
+              '.future-month-header .MuiDataGrid-columnHeaderTitle': {
                 color: theme.palette.text.disabled,
               },
-              '& .future-month': {
+              '.future-month': {
                 backgroundColor: theme.palette.action.hover,
               },
             }}

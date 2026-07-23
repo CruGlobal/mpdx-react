@@ -3,7 +3,7 @@ import { Bar, BarChart, Cell, LabelList, XAxis, YAxis } from 'recharts';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { useReport } from '../../ReportContext/ReportContext';
+import { useMPGAIncomeExpenses } from '../../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { ChartFrame } from '../ChartFrame';
 
 interface SummaryBarChartProps {
@@ -20,13 +20,17 @@ export const SummaryBarChart: React.FC<SummaryBarChartProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { incomeTotal, expensesTotal, dataLoading, currency } = useReport();
+  const {
+    totals: { income, expenses },
+    dataLoading,
+    currency,
+  } = useMPGAIncomeExpenses();
 
   const data = [
-    { name: t('Income'), total: incomeTotal },
+    { name: t('Income'), total: income },
     {
       name: t('Expenses'),
-      total: expensesTotal,
+      total: expenses,
     },
   ];
 

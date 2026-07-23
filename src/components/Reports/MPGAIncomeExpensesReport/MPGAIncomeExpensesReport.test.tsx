@@ -12,9 +12,9 @@ import {
 } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { ReportsStaffExpensesQuery } from '../StaffExpenseReport/GetStaffExpense.generated';
+import { MPGAIncomeExpensesReportProvider } from './MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { MPGAIncomeExpensesReport } from './MPGAIncomeExpensesReport';
 import { MpgaTransactionsQuery } from './MPGATransactions.generated';
-import { ReportProvider } from './ReportContext/ReportContext';
 
 const mutationSpy = jest.fn();
 const onNavListToggle = jest.fn();
@@ -104,13 +104,13 @@ const TestComponent: React.FC = () => (
         mocks={mockData}
         onCall={mutationSpy}
       >
-        <ReportProvider>
+        <MPGAIncomeExpensesReportProvider>
           <MPGAIncomeExpensesReport
             onNavListToggle={onNavListToggle}
             isNavListOpen={true}
             title={title}
           />
-        </ReportProvider>
+        </MPGAIncomeExpensesReportProvider>
       </GqlMockedProvider>
     </LocalizationProvider>
   </ThemeProvider>

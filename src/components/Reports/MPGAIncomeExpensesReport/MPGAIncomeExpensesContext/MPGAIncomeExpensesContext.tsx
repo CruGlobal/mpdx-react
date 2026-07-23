@@ -12,7 +12,7 @@ import { FundTypes, Funds } from '../Helper/MPGAReportEnum';
 import { useMpgaTransactionsQuery } from '../MPGATransactions.generated';
 import { AllData, DataFields } from '../mockData';
 
-export type ReportContextType = {
+export type ContextType = {
   currency: string;
 
   filters: Filters | null;
@@ -26,35 +26,37 @@ export type ReportContextType = {
   dataLoading: boolean;
   startDate: DateTime;
   endDate: DateTime;
+  transactionYears: number[];
 
   subtitle: string;
 
   /** Income and expenses totals */
-  incomeTotal: number;
-  expensesTotal: number;
-  ministryTotal: number;
-  healthcareTotal: number;
-  assessmentTotal: number;
-  benefitsTotal: number;
-  salaryTotal: number;
-  otherTotal: number;
+  totals: {
+    income: number;
+    expenses: number;
+    ministry: number;
+    healthcare: number;
+    assessment: number;
+    benefits: number;
+    salary: number;
+    other: number;
+  };
 };
 
-export const ReportContext = React.createContext<ReportContextType | null>(
-  null,
-);
+export const MPGAIncomeExpensesContext =
+  React.createContext<ContextType | null>(null);
 
-export const useReport = (): ReportContextType => {
-  const context = React.useContext(ReportContext);
+export const useMPGAIncomeExpenses = (): ContextType => {
+  const context = React.useContext(MPGAIncomeExpensesContext);
   if (context === null) {
     throw new Error(
-      'Could not find ReportContext. Make sure that your component is inside <ReportProvider>.',
+      'Could not find MPGAIncomeExpensesContext. Make sure that your component is inside <MPGAIncomeExpensesContext.Provider>.',
     );
   }
   return context;
 };
 
-interface ReportContextProps {
+interface Props {
   children?: React.ReactNode;
 }
 
@@ -62,7 +64,9 @@ const sum = (rows?: DataFields[]): number => {
   return rows?.reduce((acc, item) => acc + item.total, 0) || 0;
 };
 
-export const ReportProvider: React.FC<ReportContextProps> = ({ children }) => {
+export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
+  children,
+}) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const currency = 'USD';
@@ -135,19 +139,24 @@ export const ReportProvider: React.FC<ReportContextProps> = ({ children }) => {
     },
   });
 
+  // Filter out the current year since we only want to show previous years in filter dropdown
+  const transactionYears = useMemo(
+    () =>
+      (reportData?.reportsStaffExpenses?.transactionYears ?? []).filter(
+        (year) => year < now.year,
+      ),
+    [reportData, now.year],
+  );
+
+  // Transform the data to ensure that all optional fields are defined, so we don't have to check for them later
   const transformedData: Funds[] = useMemo(
     () =>
       (reportData?.reportsStaffExpenses?.funds ?? []).map((fund) => ({
         ...fund,
         categories: (fund.categories ?? []).map((category) => ({
           ...category,
-          category: category.category,
-          breakdownByMonth: category.breakdownByMonth.map((month) => ({
-            ...month,
-          })),
           subcategories: (category.subcategories ?? []).map((subcategory) => ({
             ...subcategory,
-            subCategory: subcategory.subCategory,
             breakdownByMonth: subcategory.breakdownByMonth.map((month) => ({
               ...month,
               transactions: (month.transactions ?? []).map((transaction) => ({
@@ -213,7 +222,30 @@ export const ReportProvider: React.FC<ReportContextProps> = ({ children }) => {
 
   const incomeTotal = useMemo(() => sum(allData.income), [allData.income]);
 
-  const contextValue: ReportContextType = useMemo(
+  const totals = useMemo(
+    () => ({
+      income: incomeTotal,
+      expenses: expensesTotal,
+      ministry: ministryTotal,
+      healthcare: healthcareTotal,
+      assessment: assessmentTotal,
+      benefits: benefitsTotal,
+      salary: salaryTotal,
+      other: otherTotal,
+    }),
+    [
+      incomeTotal,
+      expensesTotal,
+      ministryTotal,
+      healthcareTotal,
+      assessmentTotal,
+      benefitsTotal,
+      salaryTotal,
+      otherTotal,
+    ],
+  );
+
+  const contextValue: ContextType = useMemo(
     () => ({
       currency,
       filters,
@@ -225,15 +257,9 @@ export const ReportProvider: React.FC<ReportContextProps> = ({ children }) => {
       dataLoading: loading,
       startDate,
       endDate,
+      transactionYears,
       subtitle,
-      incomeTotal,
-      expensesTotal,
-      ministryTotal,
-      healthcareTotal,
-      assessmentTotal,
-      benefitsTotal,
-      salaryTotal,
-      otherTotal,
+      totals,
     }),
     [
       currency,
@@ -246,21 +272,15 @@ export const ReportProvider: React.FC<ReportContextProps> = ({ children }) => {
       loading,
       startDate,
       endDate,
+      transactionYears,
       subtitle,
-      incomeTotal,
-      expensesTotal,
-      ministryTotal,
-      healthcareTotal,
-      assessmentTotal,
-      benefitsTotal,
-      salaryTotal,
-      otherTotal,
+      totals,
     ],
   );
 
   return (
-    <ReportContext.Provider value={contextValue}>
+    <MPGAIncomeExpensesContext.Provider value={contextValue}>
       {children}
-    </ReportContext.Provider>
+    </MPGAIncomeExpensesContext.Provider>
   );
 };

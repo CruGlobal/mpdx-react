@@ -7,8 +7,8 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { FundTypes } from './Helper/MPGAReportEnum';
+import { MPGAIncomeExpensesReportProvider } from './MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { MpgaTransactionsQuery } from './MPGATransactions.generated';
-import { ReportProvider } from './ReportContext/ReportContext';
 
 const toBreakdown = (values: number[]): { month: string; total: number }[] =>
   values.map((total, index) => ({
@@ -18,6 +18,7 @@ const toBreakdown = (values: number[]): { month: string; total: number }[] =>
 
 export const mpgaTransactionsMock: MpgaTransactionsQuery = {
   reportsStaffExpenses: {
+    transactionYears: [2017, 2018, 2019],
     funds: [
       {
         fundType: FundTypes.Primary,
@@ -116,7 +117,9 @@ export const MPGAIncomeExpensesReportTestWrapper: React.FC<
 > = ({ onCall, isEmpty, mocks, children }) => {
   const mpgaTransactions =
     mocks ??
-    (isEmpty ? { reportsStaffExpenses: { funds: [] } } : mpgaTransactionsMock);
+    (isEmpty
+      ? { reportsStaffExpenses: { transactionYears: [], funds: [] } }
+      : mpgaTransactionsMock);
 
   return (
     <ThemeProvider theme={theme}>
@@ -125,7 +128,9 @@ export const MPGAIncomeExpensesReportTestWrapper: React.FC<
           mocks={{ MPGATransactions: mpgaTransactions }}
           onCall={onCall}
         >
-          <ReportProvider>{children}</ReportProvider>
+          <MPGAIncomeExpensesReportProvider>
+            {children}
+          </MPGAIncomeExpensesReportProvider>
         </GqlMockedProvider>
       </LocalizationProvider>
     </ThemeProvider>

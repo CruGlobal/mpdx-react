@@ -48,5 +48,8 @@ describe('PrintOnlyReport', () => {
     expect(
       getByText(/no income data available in the last 12 months/i),
     ).toBeInTheDocument();
+    expect(
+      getByText(/no expenses data available in the last 12 months/i),
+    ).toBeInTheDocument();
   });
 });

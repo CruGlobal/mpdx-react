@@ -13,7 +13,7 @@ import {
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { useReport } from '../../ReportContext/ReportContext';
+import { useMPGAIncomeExpenses } from '../../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { ChartFrame } from '../ChartFrame';
 import { ChartLegendContent } from '../ChartLegendContent/ChartLegendContent';
 
@@ -44,9 +44,8 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
     dataLoading,
     monthLabels: months,
     currency,
-  } = useReport();
-  const incomeData = data.income ?? [];
-  const expenseData = data.expenses ?? [];
+  } = useMPGAIncomeExpenses();
+  const { income: incomeData, expenses: expenseData } = data;
 
   const monthlyTotals = useMemo(() => {
     return months.map((name, index) => {

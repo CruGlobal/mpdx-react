@@ -7,12 +7,12 @@ import { ExpensesPieChart } from '../Charts/ExpensesPieChart/ExpensesPieChart';
 import { MonthlySummaryChart } from '../Charts/MonthlySummaryChart/MonthlySummaryChart';
 import { SummaryBarChart } from '../Charts/SummaryBarChart/SummaryBarChart';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
-import { useReport } from '../ReportContext/ReportContext';
+import { useMPGAIncomeExpenses } from '../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { TableCard } from '../Tables/TableCard';
 
 export const ScreenOnlyReport: React.FC = () => {
   const { t } = useTranslation();
-  const { allData: data } = useReport();
+  const { allData: data } = useMPGAIncomeExpenses();
 
   return (
     <Box mt={2}>

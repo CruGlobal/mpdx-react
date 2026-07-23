@@ -4,13 +4,13 @@ import { useLocale } from 'src/hooks/useLocale';
 import { CsvExportMenu } from '../../Shared/CsvExportMenu/CsvExportMenu';
 import { exportToCsv } from '../CustomExport/CustomExport';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
-import { useReport } from '../ReportContext/ReportContext';
+import { useMPGAIncomeExpenses } from '../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 
 export const ExportCsvButton: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { allData: data, monthLabels } = useReport();
+  const { allData: data, monthLabels } = useMPGAIncomeExpenses();
 
   return (
     <CsvExportMenu

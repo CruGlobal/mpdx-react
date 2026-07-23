@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Cell, Legend, Pie, PieChart } from 'recharts';
 import theme from 'src/theme';
-import { useReport } from '../../ReportContext/ReportContext';
+import { useMPGAIncomeExpenses } from '../../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { ChartFrame } from '../ChartFrame';
 import { ChartLegendContent } from '../ChartLegendContent/ChartLegendContent';
 
@@ -25,22 +25,17 @@ export const ExpensesPieChart: React.FC<ExpensesPieChartProps> = ({
 }) => {
   const { t } = useTranslation();
   const {
-    ministryTotal,
-    healthcareTotal,
-    assessmentTotal,
-    benefitsTotal,
-    salaryTotal,
-    otherTotal,
+    totals: { ministry, healthcare, assessment, benefits, salary, other },
     dataLoading,
-  } = useReport();
+  } = useMPGAIncomeExpenses();
 
   const data = [
-    { name: t('Ministry'), value: ministryTotal ?? 0 },
-    { name: t('Healthcare'), value: healthcareTotal ?? 0 },
-    { name: t('Assessment'), value: assessmentTotal ?? 0 },
-    { name: t('Benefits'), value: benefitsTotal ?? 0 },
-    { name: t('Salary'), value: salaryTotal ?? 0 },
-    { name: t('Other'), value: otherTotal ?? 0 },
+    { name: t('Ministry'), value: ministry ?? 0 },
+    { name: t('Healthcare'), value: healthcare ?? 0 },
+    { name: t('Assessment'), value: assessment ?? 0 },
+    { name: t('Benefits'), value: benefits ?? 0 },
+    { name: t('Salary'), value: salary ?? 0 },
+    { name: t('Other'), value: other ?? 0 },
   ];
 
   const noData = data.every((item) => item.value === 0);
