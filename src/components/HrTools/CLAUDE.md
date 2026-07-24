@@ -14,9 +14,10 @@ load-bearing.
 
 There is **no** shared HrTools layout, index, or barrel component. Each tool is
 exposed only through its own `pages/accountLists/[accountListId]/hrTools/<slug>`
-entry, and the nav group `'hr-tools-page'` in `src/hooks/useNavPages.tsx` (gated
-on `canSeeHrTools`). Cross-tool cohesion comes only from that nav group plus the
-shared wizard framework below.
+entry, and the nav group `'hr-tools-page'` in `src/hooks/useNavPages.tsx`
+(visibility-gated on `canSeeHrTools`, among other `hideTab` conditions).
+Cross-tool cohesion comes only from that nav group plus the shared wizard
+framework below.
 
 **URL slugs and native GraphQL names differ from component names** — resolve the
 real name before grepping:
@@ -43,9 +44,11 @@ checking `rootFields.generated.ts`.
 
 `Shared/CalculationReports/` is a full multi-step "submit a request" framework:
 `PanelLayout` (stepper shell) + `StepsList` + `DirectionButtons` + `FormCard` +
-`SubmitModal`/`Receipt`/`StatusCard` + `useCustomAutosave`. **AdditionalSalaryRequest,
-MinisterHousingAllowance, and SalaryCalculator** all build on it. Any new
-step-based request form should too — reach here before writing a new stepper.
+`SubmitModal`/`Receipt`/`StatusCard` + `useCustomAutosave`. The request forms
+(**AdditionalSalaryRequest, MinisterHousingAllowance, SalaryCalculator**) build on
+it, and its `PanelLayout` stepper shell is also what the three goal calculators
+and NsoMpdQuestionnaire wrap for their own step navigation. Any new step-based
+form should reach here before writing a new stepper.
 
 Other shared pieces worth knowing before you build a local copy:
 
@@ -67,9 +70,10 @@ strategies:
   `GoalCalculator/Shared/calculateTotals.ts`.
 - **PdsGoalCalculator (Designation Support)** — client-side math in
   `PdsGoalCalculator/calculations/`.
-- **NsGoalCalculator (New Staff)** — **no client arithmetic at all.** It reads a
-  server-computed worksheet and recalculates unsaved edits via a server
-  round-trip (`previewNewStaffGoalCalculation`). Don't add math to this tree.
+- **NsGoalCalculator (New Staff)** — **no goal-formula math on the client.** It
+  reads a server-computed worksheet and recalculates unsaved edits via a server
+  round-trip (`previewNewStaffGoalCalculation`); only display-level arithmetic
+  (rounding, remaining-need) lives here. Don't add goal math to this tree.
 
 ⚠️ **Drift risk:** the same goal-total concepts (admin/assessment gross-up,
 attrition) are computed independently in generic (`calculateTotals.ts`), PDS
@@ -95,13 +99,14 @@ Non-obvious per-calculator rules:
 
 Three patterns — know which one a form uses before adding a field:
 
-- **Field-level autosave** (most forms) — each field saves on change/blur. Two
-  base hooks exist; a form wraps one into its own `Autosave*` field components.
-  **Don't add a third primitive — wrap one of these:**
-  - repo-wide `src/components/Shared/Autosave/useAutosave` → GoalCalculator,
-    PdsGoalCalculator, SalaryCalculator, NsoMpdQuestionnaire
-  - HrTools-local `Shared/CalculationReports/CustomAutosave/useCustomAutosave` →
-    AdditionalSalaryRequest, MinisterHousingAllowance
+- **Field-level autosave** (most forms) — each field saves on change/blur.
+  **Wrap an existing autosave primitive rather than writing your own** `Autosave*`
+  fields. Two base hooks cover this:
+  - repo-wide `src/components/Shared/Autosave/useAutosave` (currently
+    GoalCalculator, PdsGoalCalculator, SalaryCalculator, NsoMpdQuestionnaire; a
+    `useAutosaveCheckbox` sibling variant exists for checkbox fields)
+  - HrTools-local `Shared/CalculationReports/CustomAutosave/useCustomAutosave`
+    (currently AdditionalSalaryRequest, MinisterHousingAllowance)
 - **Single submit through a mapping** — NsGoalCalculator collects a Formik form
   and writes once via `goalSettingsApiMapping.ts`, the one place UI-only fields
   are dropped. Adding a field here means updating that mapping, not just the form.
@@ -115,12 +120,13 @@ the request forms autosave a draft but `Submit` through the wizard's `SubmitModa
 ## Per-form domain gotchas
 
 - **MinisterHousingAllowance** — the online flow gates on **MHA eligibility only**
-  (`hcmData.mhaEit.mhaEligibility`). MHI/Italian staff (`country === 'IT'`) are
-  structurally excluded and use a **paper form**; there is no online MHI path.
-  A new request is blocked while the current one is unresolved, and separately
-  hidden when a board-approved request is still processing. `requests[0]` is
-  assumed newest-first; married state is derived from a second HCM record
-  (`hcm[1]` = spouse).
+  (`hcmData.mhaEit.mhaEligibility`). Italian/MHI staff fall out because their
+  `mhaEligibility` is false — not via a country check; `staffInfo.country` only
+  drives an informational note pointing them to the **paper MHI form**. There is
+  no online MHI path. A new request is blocked while the current one is
+  unresolved, and separately hidden when a board-approved request is still
+  processing. The request list is assumed newest-first; married state is derived
+  from the HCM query returning a second record (the spouse).
 - **NsoMpdQuestionnaire** — **no create/upsert exists.** The record is created by
   the OneApp import; the frontend only Updates/Completes, keyed by
   `accountListId` (not a questionnaire id). A null query → render
@@ -132,8 +138,9 @@ the request forms autosave a draft but `Submit` through the wizard's `SubmitModa
 
 ## Mock / prototype tools — not wired to a backend
 
-These render from `mockData.ts`, have **no `.graphql`**, and hit neither API.
-Don't mistake them for read paths or wire tests against a real operation:
+These are prototypes — they currently render from `mockData.ts`, have **no
+`.graphql`**, and hit neither API (that will change once they're wired). Don't
+mistake them for read paths or wire tests against a real operation:
 
 - **MpdGoalAdmin** — `MpdGoalAdmin/mockData.ts` (modals exist, no mutations).
 - **MpdSupervisorReport** — `MpdSupervisorReport/mockData.ts` + `useMockInfiniteStaff.ts`.
