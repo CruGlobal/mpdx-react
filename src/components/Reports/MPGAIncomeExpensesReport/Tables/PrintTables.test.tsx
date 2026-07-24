@@ -1,12 +1,7 @@
 import React from 'react';
-import { ThemeProvider } from '@mui/material/styles';
-import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render } from '@testing-library/react';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import theme from 'src/theme';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
-import { TotalsProvider } from '../TotalsContext/TotalsContext';
+import { MPGAIncomeExpensesReportTestWrapper } from '../MPGAIncomeExpensesReportTestWrapper';
 import { mockData, months } from '../mockData';
 import { PrintTables } from './PrintTables';
 
@@ -14,35 +9,21 @@ const mutationSpy = jest.fn();
 
 const title = 'Income';
 
-const emptyData = {
-  accountListId: '12345',
-  accountName: 'Test Account',
-  income: [],
-  expenses: [],
-};
-
 const TestComponent: React.FC = () => (
-  <ThemeProvider theme={theme}>
-    <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <GqlMockedProvider onCall={mutationSpy}>
-        <TotalsProvider data={mockData}>
-          <PrintTables
-            type={ReportTypeEnum.Income}
-            data={mockData.income}
-            title={title}
-            months={months}
-          />
-        </TotalsProvider>
-      </GqlMockedProvider>
-    </LocalizationProvider>
-  </ThemeProvider>
+  <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
+    <PrintTables
+      type={ReportTypeEnum.Income}
+      data={mockData.income}
+      title={title}
+    />
+  </MPGAIncomeExpensesReportTestWrapper>
 );
 
 describe('PrintTables', () => {
-  it('should renders with the correct data', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('should render with the correct data', async () => {
+    const { findByRole, getByRole } = render(<TestComponent />);
 
-    expect(getByRole('heading', { name: title })).toBeInTheDocument();
+    expect(await findByRole('heading', { name: title })).toBeInTheDocument();
 
     expect(getByRole('table')).toBeInTheDocument();
     expect(
@@ -55,94 +36,81 @@ describe('PrintTables', () => {
     expect(getByRole('cell', { name: '108,156' })).toBeInTheDocument();
   });
 
-  it('should calculate and display totals correctly', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('should calculate and display totals correctly', async () => {
+    const { findByRole, getByRole } = render(<TestComponent />);
 
-    expect(getByRole('cell', { name: '108,856' })).toBeInTheDocument();
+    expect(await findByRole('cell', { name: '108,856' })).toBeInTheDocument();
     expect(getByRole('cell', { name: '9,071' })).toBeInTheDocument();
   });
 
-  it('renders months in column headers for all months', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('renders months in column headers for all months', async () => {
+    const { findByRole, getByRole } = render(<TestComponent />);
+
+    await findByRole('table');
     months.forEach((m) => {
       const month = m.split(' ')[0];
       expect(getByRole('columnheader', { name: month })).toBeInTheDocument();
     });
   });
 
-  it('should show "-" when there is no data for a month', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('should show "-" when there is no data for a month', async () => {
+    const { findByRole } = render(<TestComponent />);
 
-    const row = getByRole('row', { name: /Fr Andre/i });
+    const row = await findByRole('row', { name: /Fr Andre/i });
     const dashes = Array.from(row.querySelectorAll('td')).filter(
       (td) => td.textContent?.trim() === '-',
     );
     expect(dashes.length).toBe(5);
   });
 
-  it('should show a loading spinner while data is being fetched', () => {
-    const { getByRole } = render(
-      <ThemeProvider theme={theme}>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <GqlMockedProvider>
-            <TotalsProvider data={mockData} loading>
-              <PrintTables
-                type={ReportTypeEnum.Income}
-                data={mockData.income}
-                title={title}
-                months={months}
-              />
-            </TotalsProvider>
-          </GqlMockedProvider>
-        </LocalizationProvider>
-      </ThemeProvider>,
+  it('should show a loading spinner while data is being fetched', async () => {
+    const { findByRole } = render(
+      <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
+        <PrintTables
+          type={ReportTypeEnum.Income}
+          data={mockData.income}
+          title={title}
+        />
+      </MPGAIncomeExpensesReportTestWrapper>,
     );
 
-    expect(getByRole('progressbar')).toBeInTheDocument();
+    expect(await findByRole('progressbar')).toBeInTheDocument();
   });
 
-  it('should display the correct years in the table', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('should display the correct years in the table', async () => {
+    const { findByRole, getByRole } = render(<TestComponent />);
 
-    expect(getByRole('columnheader', { name: '2024' })).toBeInTheDocument();
-    expect(getByRole('columnheader', { name: '2025' })).toBeInTheDocument();
+    expect(
+      await findByRole('columnheader', { name: '2019' }),
+    ).toBeInTheDocument();
+    expect(getByRole('columnheader', { name: '2020' })).toBeInTheDocument();
   });
 
-  it('should display empty message when no data is available', () => {
-    const { getByText } = render(
-      <ThemeProvider theme={theme}>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <GqlMockedProvider>
-            <TotalsProvider data={emptyData}>
-              <PrintTables
-                type={ReportTypeEnum.Income}
-                data={[]}
-                title={title}
-                months={months}
-              />
-            </TotalsProvider>
-          </GqlMockedProvider>
-        </LocalizationProvider>
-      </ThemeProvider>,
+  it('should display empty message when no data is available', async () => {
+    const { findByText } = render(
+      <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy} isEmpty>
+        <PrintTables type={ReportTypeEnum.Income} data={[]} title={title} />
+      </MPGAIncomeExpensesReportTestWrapper>,
     );
 
-    expect(getByText(/no income data available/i)).toBeInTheDocument();
+    expect(await findByText(/no income data available/i)).toBeInTheDocument();
   });
 
-  it('should span the correct number of months per year', () => {
-    const { getAllByRole } = render(<TestComponent />);
+  it('should span the correct number of months per year', async () => {
+    const { getAllByRole, findByRole } = render(<TestComponent />);
 
+    await findByRole('table');
     const headerRow = getAllByRole('row')[0];
     const yearCells = headerRow.querySelectorAll('th[scope="col"] , td');
 
-    const year2024 = Array.from(yearCells).find((cell) =>
-      cell.textContent?.includes('2024'),
+    const year2019 = Array.from(yearCells).find((cell) =>
+      cell.textContent?.includes('2019'),
     ) as HTMLTableCellElement;
-    const year2025 = Array.from(yearCells).find((cell) =>
-      cell.textContent?.includes('2025'),
+    const year2020 = Array.from(yearCells).find((cell) =>
+      cell.textContent?.includes('2020'),
     ) as HTMLTableCellElement;
 
-    expect(year2024?.colSpan).toBe(9);
-    expect(year2025?.colSpan).toBe(3);
+    expect(year2019?.colSpan).toBe(11);
+    expect(year2020?.colSpan).toBe(1);
   });
 });

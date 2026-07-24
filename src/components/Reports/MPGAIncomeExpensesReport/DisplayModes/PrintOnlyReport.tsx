@@ -4,21 +4,12 @@ import { ExpensesPieChart } from '../Charts/ExpensesPieChart/ExpensesPieChart';
 import { MonthlySummaryChart } from '../Charts/MonthlySummaryChart/MonthlySummaryChart';
 import { SummaryBarChart } from '../Charts/SummaryBarChart/SummaryBarChart';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
+import { useReport } from '../ReportContext/ReportContext';
 import { PrintTables } from '../Tables/PrintTables';
-import { AllData } from '../mockData';
 
-interface PrintOnlyReportProps {
-  data: AllData;
-  last12Months: string[];
-  currency: string;
-}
-
-export const PrintOnlyReport: React.FC<PrintOnlyReportProps> = ({
-  data,
-  last12Months,
-  currency,
-}) => {
+export const PrintOnlyReport: React.FC = () => {
   const { t } = useTranslation();
+  const { allData: data } = useReport();
 
   return (
     <>
@@ -45,7 +36,7 @@ export const PrintOnlyReport: React.FC<PrintOnlyReportProps> = ({
                 <Typography variant="h6" sx={{ mb: 2 }}>
                   {t('Summary')}
                 </Typography>
-                <SummaryBarChart aspect={2} width={80} currency={currency} />
+                <SummaryBarChart aspect={2} width={80} />
               </Grid>
               <Grid size={6}>
                 <Typography variant="h6" sx={{ mb: 2 }}>
@@ -60,7 +51,6 @@ export const PrintOnlyReport: React.FC<PrintOnlyReportProps> = ({
               type={ReportTypeEnum.Income}
               data={data.income ?? []}
               title={t('Income')}
-              months={last12Months}
             />
           </Box>
           <Box mt={3}>
@@ -68,21 +58,13 @@ export const PrintOnlyReport: React.FC<PrintOnlyReportProps> = ({
               type={ReportTypeEnum.Expenses}
               data={data.expenses ?? []}
               title={t('Expenses')}
-              months={last12Months}
             />
           </Box>
           <Box mt={2}>
             <Typography variant="h6" sx={{ mt: 3 }}>
               {t('Monthly Summary')}
             </Typography>
-            <MonthlySummaryChart
-              incomeData={data.income ?? []}
-              expenseData={data.expenses ?? []}
-              months={last12Months}
-              aspect={2.7}
-              width={80}
-              currency={currency}
-            />
+            <MonthlySummaryChart aspect={2.7} width={80} />
           </Box>
         </Container>
       </Box>

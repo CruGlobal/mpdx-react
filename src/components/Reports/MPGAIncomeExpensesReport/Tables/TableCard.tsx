@@ -17,7 +17,7 @@ import { CardSkeleton } from '../Card/CardSkeleton';
 import { CustomToolbar } from '../CustomToolbar/CustomToolbar';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { populateCardTableRows } from '../Helper/createRows';
-import { useTotals } from '../TotalsContext/TotalsContext';
+import { useReport } from '../ReportContext/ReportContext';
 import { DataFields, TransactionBreakdown } from '../mockData';
 import { StyledGrid } from '../styledComponents';
 import { TotalRow } from './TotalRow';
@@ -34,7 +34,6 @@ export interface TableCardProps {
   >;
   emptyPlaceholder: React.ReactElement;
   title: string;
-  months: string[];
 }
 
 // Visual styling for the grouped-column headers, matching the report's table
@@ -44,10 +43,11 @@ const groupHeaderFontSize = '14px';
 const groupHeaderUnderlineGap = '7px';
 const groupHeaderUnderlineHeight = '2px';
 
-const GroupHeader: React.FC<{ label: string; color: string }> = ({
-  label,
-  color,
-}) => (
+const GroupHeader: React.FC<{
+  label: string;
+  color: string;
+  underlineBackground?: string;
+}> = ({ label, color, underlineBackground }) => (
   <Box
     sx={{
       display: 'flex',
@@ -68,7 +68,7 @@ const GroupHeader: React.FC<{ label: string; color: string }> = ({
         sx={{
           width: '100%',
           height: groupHeaderUnderlineHeight,
-          backgroundColor: color,
+          background: underlineBackground ?? color,
         }}
       />
     </Box>
@@ -93,12 +93,18 @@ export const TableCard: React.FC<TableCardProps> = ({
   data,
   breakdownData = {},
   title,
-  months,
   emptyPlaceholder,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { incomeTotal, expensesTotal, dataLoading } = useTotals();
+  const {
+    monthLabels: months,
+    incomeTotal,
+    expensesTotal,
+    dataLoading,
+    firstFutureMonthIndex,
+    isFutureMonth,
+  } = useReport();
 
   const [openBreakdownModal, setOpenBreakdownModal] =
     useState<StaffExpenseCategoryEnum | null>(null);
@@ -133,26 +139,32 @@ export const TableCard: React.FC<TableCardProps> = ({
 
   const columns = useMemo<GridColDef<DataFields>[]>(() => {
     const monthColumns: GridColDef<DataFields>[] = months.map(
-      (month, index) => ({
-        field: `month${index}`,
-        headerName: month.split(' ')[0],
-        width: monthWidth,
-        type: 'number',
-        valueGetter: (_value, row) => {
-          const v = row.monthly?.[index];
-          return typeof v === 'number' ? v : null;
-        },
-        renderCell: (params) => {
-          const formattedValue = zeroAmountFormat(params.value, locale);
-          return (
-            <Tooltip title={amountFormat(params.value, locale)}>
-              <Typography variant="body2" noWrap>
-                {formattedValue}
-              </Typography>
-            </Tooltip>
-          );
-        },
-      }),
+      (month, index) => {
+        return {
+          field: `month${index}`,
+          headerName: month.split(' ')[0],
+          width: monthWidth,
+          type: 'number',
+          headerClassName: isFutureMonth(index)
+            ? 'future-month-header'
+            : undefined,
+          cellClassName: isFutureMonth(index) ? 'future-month' : undefined,
+          valueGetter: (_value, row) => {
+            const v = row.monthly?.[index];
+            return typeof v === 'number' ? v : null;
+          },
+          renderCell: (params) => {
+            const formattedValue = zeroAmountFormat(params.value, locale);
+            return (
+              <Tooltip title={amountFormat(params.value, locale)}>
+                <Typography variant="body2" noWrap>
+                  {formattedValue}
+                </Typography>
+              </Tooltip>
+            );
+          },
+        };
+      },
     );
 
     return [
@@ -180,7 +192,7 @@ export const TableCard: React.FC<TableCardProps> = ({
         headerAlign: 'right',
       },
     ];
-  }, [months, locale, t, description, average, total]);
+  }, [months, isFutureMonth, locale, t, description, average, total]);
 
   const columnGroupingModel = useMemo<GridColumnGroupingModel>(() => {
     const yearGroups = monthCount.map(({ year, count }, index) => {
@@ -192,12 +204,31 @@ export const TableCard: React.FC<TableCardProps> = ({
         field: `month${monthOffset + monthIndex}`,
       }));
 
+      // Gray the portion of the underline that sits over future months.
+      const grayColor = theme.palette.text.disabled;
+      let underlineBackground: string | undefined;
+      if (firstFutureMonthIndex !== undefined) {
+        const futureStart = firstFutureMonthIndex - monthOffset;
+        if (futureStart <= 0) {
+          underlineBackground = grayColor;
+        } else if (futureStart < count) {
+          const ratio = (futureStart / count) * 100;
+          underlineBackground = `linear-gradient(to right, ${color} ${ratio}%, ${grayColor} ${ratio}%)`;
+        }
+      }
+
       return {
         groupId: year,
         headerName: year,
         headerAlign: 'left' as const,
         children,
-        renderHeaderGroup: () => <GroupHeader label={year} color={color} />,
+        renderHeaderGroup: () => (
+          <GroupHeader
+            label={year}
+            color={color}
+            underlineBackground={underlineBackground}
+          />
+        ),
       };
     });
 
@@ -223,7 +254,7 @@ export const TableCard: React.FC<TableCardProps> = ({
         ),
       },
     ];
-  }, [monthCount, getBorderColor, t]);
+  }, [monthCount, getBorderColor, firstFutureMonthIndex, t]);
 
   return dataLoading ? (
     <LoadingBox>
@@ -237,7 +268,6 @@ export const TableCard: React.FC<TableCardProps> = ({
     <>
       <CardSkeleton
         title={title}
-        subtitle={t('Last 12 Months')}
         styling={{ padding: 0, '&:last-child': { paddingBottom: 0 } }}
       >
         <Box>
@@ -245,6 +275,14 @@ export const TableCard: React.FC<TableCardProps> = ({
             rows={cardTableRows}
             columns={columns}
             columnGroupingModel={columnGroupingModel}
+            sx={{
+              '& .future-month-header .MuiDataGrid-columnHeaderTitle': {
+                color: theme.palette.text.disabled,
+              },
+              '& .future-month': {
+                backgroundColor: theme.palette.action.hover,
+              },
+            }}
             getRowId={(row) => row.id}
             sortingOrder={['desc', 'asc', null]}
             sortModel={sortModel}
@@ -272,7 +310,7 @@ export const TableCard: React.FC<TableCardProps> = ({
       )}
     </>
   ) : (
-    <CardSkeleton title={title} subtitle={t('Last 12 Months')}>
+    <CardSkeleton title={title}>
       <Box
         display="flex"
         justifyContent="center"

@@ -1,12 +1,11 @@
 import React from 'react';
-import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
-import { DateTime } from 'luxon';
 import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
-import theme from 'src/theme';
-import { TotalsProvider } from '../TotalsContext/TotalsContext';
+import { MPGAIncomeExpensesReportTestWrapper } from '../MPGAIncomeExpensesReportTestWrapper';
 import { mockBreakdownData } from '../mockData';
 import { BreakdownModal, BreakdownModalProps } from './BreakdownModal';
+
+const mutationSpy = jest.fn();
 
 const defaultProps: BreakdownModalProps = {
   open: true,
@@ -16,15 +15,9 @@ const defaultProps: BreakdownModalProps = {
 };
 
 const TestComponent: React.FC<BreakdownModalProps> = (props) => (
-  <ThemeProvider theme={theme}>
-    <TotalsProvider
-      data={{ income: [], expenses: [] }}
-      startDate={DateTime.local(2019, 2, 1)}
-      endDate={DateTime.local(2020, 1, 1)}
-    >
-      <BreakdownModal {...props} />
-    </TotalsProvider>
-  </ThemeProvider>
+  <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
+    <BreakdownModal {...props} />
+  </MPGAIncomeExpensesReportTestWrapper>
 );
 
 describe('BreakdownModal', () => {

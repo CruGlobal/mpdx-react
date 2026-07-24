@@ -26,7 +26,8 @@ const TestComponent: React.FC<
   selectedFundType,
   time,
   onCallMock,
-  hideDateRange = false,
+  isMpgaReport = false,
+  transactionYears,
 }) => (
   <TestRouter>
     <GqlMockedProvider<{ ReportsStaffExpenses: ReportsStaffExpensesQuery }>
@@ -93,7 +94,8 @@ const TestComponent: React.FC<
           selectedFilters={selectedFilters}
           selectedFundType={selectedFundType}
           time={time}
-          hideDateRange={hideDateRange}
+          isMpgaReport={isMpgaReport}
+          transactionYears={transactionYears}
         />
       </LocalizationProvider>
     </GqlMockedProvider>
@@ -104,6 +106,7 @@ const baseFilters: Filters = {
   selectedDateRange: null,
   startDate: null,
   endDate: null,
+  selectedYear: null,
   categories: [],
 };
 
@@ -148,6 +151,20 @@ describe('SettingsDialog', () => {
     expect(getByRole('option', { name: 'None' })).toBeInTheDocument();
     expect(getByRole('option', { name: 'Week to Date' })).toBeInTheDocument();
     expect(getByRole('option', { name: 'Month to Date' })).toBeInTheDocument();
+    expect(getByRole('option', { name: 'Year to Date' })).toBeInTheDocument();
+  });
+
+  it('does not list year options when not in MPGA mode', () => {
+    const { getByLabelText, getByRole, queryByRole } = render(
+      <TestComponent {...defaultProps} />,
+    );
+
+    userEvent.click(getByLabelText('Select Date Range'));
+
+    const lastCompletedYear = DateTime.now().year - 1;
+    expect(
+      queryByRole('option', { name: String(lastCompletedYear) }),
+    ).not.toBeInTheDocument();
     expect(getByRole('option', { name: 'Year to Date' })).toBeInTheDocument();
   });
 
@@ -500,16 +517,23 @@ describe('SettingsDialog', () => {
       isOpen: true,
       onClose: mutationSpy,
       selectedFundType: 'Primary',
-      hideDateRange: true,
+      isMpgaReport: true,
+      transactionYears: [2018, 2019, 2020],
     };
 
-    it('displays the category checkboxes only', async () => {
-      const { queryByLabelText, getByLabelText, findByLabelText, getByText } =
-        render(<TestComponent {...defaultProps} />);
+    it('displays the simplified date range dropdown and category checkboxes without custom date fields', async () => {
+      const {
+        queryByLabelText,
+        getByLabelText,
+        findByLabelText,
+        getByText,
+        getByRole,
+        queryByRole,
+      } = render(<TestComponent {...defaultProps} />);
 
       expect(
         getByText(
-          'Income and expenses are combined by categories by default. Select which categories to keep consolidated.',
+          'Income and expenses are combined by categories by default. This may be useful for long date ranges (e.g., "Year to Date"). Select which categories to keep consolidated.',
         ),
       ).toBeInTheDocument();
 
@@ -517,7 +541,21 @@ describe('SettingsDialog', () => {
       expect(getByLabelText('Salary')).toBeInTheDocument();
       expect(getByLabelText('Donation')).toBeInTheDocument();
 
-      expect(queryByLabelText('Select Date Range')).not.toBeInTheDocument();
+      const dropdown = getByLabelText('Select Date Range');
+      expect(dropdown).toBeInTheDocument();
+      userEvent.click(dropdown);
+      expect(getByRole('option', { name: 'Year to Date' })).toBeInTheDocument();
+      const lastCompletedYear = DateTime.now().year - 1;
+      expect(
+        getByRole('option', { name: String(lastCompletedYear) }),
+      ).toBeInTheDocument();
+      expect(
+        queryByRole('option', { name: 'Week to Date' }),
+      ).not.toBeInTheDocument();
+      expect(
+        queryByRole('option', { name: 'Month to Date' }),
+      ).not.toBeInTheDocument();
+
       expect(queryByLabelText('Start Date')).not.toBeInTheDocument();
       expect(queryByLabelText('End Date')).not.toBeInTheDocument();
     });
@@ -540,6 +578,62 @@ describe('SettingsDialog', () => {
             StaffExpenseCategoryEnum.Salary,
           ],
         });
+      });
+    });
+
+    it('lists the transaction years in the date range dropdown', () => {
+      const { getByLabelText, getByRole } = render(
+        <TestComponent {...defaultProps} />,
+      );
+
+      userEvent.click(getByLabelText('Select Date Range'));
+
+      expect(getByRole('option', { name: '2018' })).toBeInTheDocument();
+      expect(getByRole('option', { name: '2019' })).toBeInTheDocument();
+      expect(getByRole('option', { name: '2020' })).toBeInTheDocument();
+    });
+
+    it('correctly gets Jan 1 – Dec 31 and the selected year when a year is picked', async () => {
+      const { getByLabelText, getByRole, findByRole } = render(
+        <TestComponent {...defaultProps} />,
+      );
+
+      const lastCompletedYear = DateTime.now().year - 1;
+      userEvent.click(getByLabelText('Select Date Range'));
+      userEvent.click(getByRole('option', { name: String(lastCompletedYear) }));
+
+      const applyButton = await findByRole('button', { name: 'Apply Filters' });
+      await waitFor(() => expect(applyButton).toBeEnabled());
+      userEvent.click(applyButton);
+
+      await waitFor(() => {
+        const submitted = mutationSpy.mock.calls.at(-1)?.[0] as Filters;
+        expect(submitted.selectedYear).toBe(lastCompletedYear);
+        expect((submitted.startDate as DateTime).toISODate()).toBe(
+          `${lastCompletedYear}-01-01`,
+        );
+        expect((submitted.endDate as DateTime).toISODate()).toBe(
+          `${lastCompletedYear}-12-31`,
+        );
+      });
+    });
+
+    it('submits Year to Date with no specific year', async () => {
+      const { getByLabelText, getByRole, findByRole } = render(
+        <TestComponent {...defaultProps} />,
+      );
+
+      userEvent.click(getByLabelText('Select Date Range'));
+      userEvent.click(getByRole('option', { name: 'Year to Date' }));
+
+      const applyButton = await findByRole('button', { name: 'Apply Filters' });
+      await waitFor(() => expect(applyButton).toBeEnabled());
+      userEvent.click(applyButton);
+
+      await waitFor(() => {
+        const submitted = mutationSpy.mock.calls.at(-1)?.[0] as Filters;
+        expect(submitted.selectedDateRange).toBe(DateRange.YearToDate);
+        expect(submitted.selectedYear).toBeNull();
       });
     });
   });

@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Cell, Legend, Pie, PieChart } from 'recharts';
 import theme from 'src/theme';
-import { useTotals } from '../../TotalsContext/TotalsContext';
+import { useReport } from '../../ReportContext/ReportContext';
 import { ChartFrame } from '../ChartFrame';
 import { ChartLegendContent } from '../ChartLegendContent/ChartLegendContent';
 
@@ -32,7 +32,7 @@ export const ExpensesPieChart: React.FC<ExpensesPieChartProps> = ({
     salaryTotal,
     otherTotal,
     dataLoading,
-  } = useTotals();
+  } = useReport();
 
   const data = [
     { name: t('Ministry'), value: ministryTotal ?? 0 },

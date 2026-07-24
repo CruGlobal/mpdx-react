@@ -20,7 +20,7 @@ import theme from 'src/theme';
 import { DialogSkeleton } from '../../Shared/DialogSkeleton/DialogSkeleton';
 import { getLocalizedCategory } from '../../Shared/Helpers/transformStaffExpenseEnums';
 import { BreakdownAccordion } from '../BreakdownAccordion/BreakdownAccordion';
-import { useTotals } from '../TotalsContext/TotalsContext';
+import { useReport } from '../ReportContext/ReportContext';
 import { TransactionBreakdown } from '../mockData';
 
 export interface BreakdownModalProps {
@@ -39,7 +39,7 @@ export const BreakdownModal: React.FC<BreakdownModalProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const currency = 'USD';
-  const { startDate, endDate } = useTotals();
+  const { startDate, endDate } = useReport();
 
   const subcategoryBreakdown = useMemo(() => {
     const categoryBreakdown = breakdownData[category] ?? [];
@@ -76,11 +76,20 @@ export const BreakdownModal: React.FC<BreakdownModalProps> = ({
       open={open}
       onClose={onClose}
     >
-      <TableContainer>
+      <TableContainer
+        sx={{
+          borderBottom: `1px solid ${theme.palette.divider}`,
+        }}
+      >
         <Table>
           <TableHead>
             <TableRow
-              sx={{ backgroundColor: theme.palette.mpdxGrayLight.main }}
+              sx={{
+                backgroundColor: theme.palette.mpdxGrayLight.main,
+                position: 'sticky',
+                top: 0,
+                zIndex: 1,
+              }}
             >
               <TableCell>{t('Category')}</TableCell>
               <TableCell sx={{ textAlign: 'right' }}>
@@ -120,10 +129,9 @@ export const BreakdownModal: React.FC<BreakdownModalProps> = ({
             sx={{
               '& .MuiTableCell-footer': {
                 position: 'sticky',
-                bottom: -1,
+                bottom: 0,
                 backgroundColor: 'background.paper',
                 borderBottom: 0,
-                boxShadow: `inset 0 -1px 0 ${theme.palette.divider}`,
               },
             }}
           >
@@ -148,8 +156,8 @@ export const BreakdownModal: React.FC<BreakdownModalProps> = ({
                   sx={{
                     color:
                       overallTotal >= 0
-                        ? theme.palette.statusSuccess.main
-                        : theme.palette.chipRedDark.main,
+                        ? theme.palette.success.main
+                        : theme.palette.error.main,
                   }}
                 >
                   {currencyFormat(Math.abs(overallTotal), currency, locale, {

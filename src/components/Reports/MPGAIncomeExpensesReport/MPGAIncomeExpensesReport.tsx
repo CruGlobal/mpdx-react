@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from 'react';
-import { Settings } from '@mui/icons-material';
 import PrintIcon from '@mui/icons-material/Print';
 import {
   Box,
@@ -9,24 +8,20 @@ import {
   SvgIcon,
   Typography,
 } from '@mui/material';
-import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { useStaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
-import { useFilteredFunds } from 'src/hooks/useFilteredFunds';
-import { useGetLastTwelveMonths } from 'src/hooks/useGetLastTwelveMonths';
-import { useLocale } from 'src/hooks/useLocale';
 import { AccountInfoBox } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBox';
 import { AccountInfoBoxSkeleton } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBoxSkeleton';
+import { SettingsButtonGroup } from '../Shared/SettingsButtonGroup/SettingsButtonGroup';
 import {
   Filters,
   SettingsDialog,
-  getFiltersWithCalculatedDates,
 } from '../Shared/SettingsDialog/SettingsDialog';
-import { StyledFilterButton } from '../Shared/SettingsDialog/StyledFilterButton';
+import { DateRange } from '../StaffExpenseReport/Helpers/StaffReportEnum';
 import {
   SimplePrintOnly,
   SimpleScreenOnly,
@@ -35,10 +30,8 @@ import {
 import { PrintOnlyReport } from './DisplayModes/PrintOnlyReport';
 import { ScreenOnlyReport } from './DisplayModes/ScreenOnlyReport';
 import { ExportCsvButton } from './ExportCsvButton/ExportCsvButton';
-import { FundTypes, Funds } from './Helper/MPGAReportEnum';
-import { useMpgaTransactionsQuery } from './MPGATransactions.generated';
-import { TotalsProvider } from './TotalsContext/TotalsContext';
-import { AllData } from './mockData';
+import { FundTypes } from './Helper/MPGAReportEnum';
+import { useReport } from './ReportContext/ReportContext';
 import { PrintOnly, StyledHeaderBox } from './styledComponents';
 
 interface MPGAIncomeExpensesReportProps {
@@ -51,32 +44,37 @@ export const MPGAIncomeExpensesReport: React.FC<
   MPGAIncomeExpensesReportProps
 > = ({ title, isNavListOpen, onNavListToggle }) => {
   const { t } = useTranslation();
-  const locale = useLocale();
-  const currency = 'USD';
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-  const last12Months = useGetLastTwelveMonths(locale, true);
+  const {
+    filters,
+    setFilters,
+    startDate,
+    endDate,
+    subtitle,
+    transactionYears,
+  } = useReport();
 
-  const { startDate, endDate } = useMemo(() => {
-    const now = DateTime.now();
-    return {
-      startDate: now.minus({ months: 11 }).startOf('month'),
-      endDate: now,
-    };
-  }, []);
-
-  const [filters, setFilters] = useState<Filters>(() =>
-    getFiltersWithCalculatedDates({
+  const defaultFilters: Filters = useMemo(
+    () => ({
       selectedDateRange: null,
-      startDate: startDate,
-      endDate: endDate.endOf('month'),
+      startDate,
+      endDate,
       categories: null,
     }),
+    [startDate, endDate],
   );
 
-  const onFiltersChange = (newFilters: Filters) => {
-    setFilters(newFilters);
-  };
+  const isFilterActive = useMemo(
+    () =>
+      Boolean(
+        filters &&
+          (filters.selectedDateRange === DateRange.YearToDate ||
+            (filters.selectedYear !== null &&
+              filters.selectedYear !== undefined)),
+      ),
+    [filters],
+  );
 
   const handleSettingsClick = () => {
     setIsSettingsOpen(true);
@@ -87,53 +85,6 @@ export const MPGAIncomeExpensesReport: React.FC<
   };
 
   const { data: staffAccountData, error } = useStaffAccountQuery();
-
-  const { data: reportData, loading } = useMpgaTransactionsQuery({
-    variables: {
-      fundTypes: [FundTypes.Primary],
-      startMonth: startDate.toISODate(),
-      endMonth: endDate.toISODate(),
-    },
-  });
-
-  const transformedData: Funds[] = useMemo(
-    () =>
-      (reportData?.reportsStaffExpenses?.funds ?? []).map((fund) => ({
-        ...fund,
-        categories: (fund.categories ?? []).map((category) => ({
-          ...category,
-          category: category.category,
-          breakdownByMonth: category.breakdownByMonth.map((month) => ({
-            ...month,
-          })),
-          subcategories: (category.subcategories ?? []).map((subcategory) => ({
-            ...subcategory,
-            subCategory: subcategory.subCategory,
-            breakdownByMonth: subcategory.breakdownByMonth.map((month) => ({
-              ...month,
-              transactions: (month.transactions ?? []).map((transaction) => ({
-                transactedAt: transaction.transactedAt,
-                description: transaction.description ?? '',
-                amount: transaction.amount,
-              })),
-            })),
-          })),
-        })),
-      })),
-    [reportData],
-  );
-
-  const { incomeData, expenseData, incomeBreakdown, expenseBreakdown } =
-    useFilteredFunds(transformedData, filters?.categories ?? null, t);
-
-  const allData: AllData = useMemo(() => {
-    return {
-      income: incomeData,
-      expenses: expenseData,
-      incomeBreakdown: incomeBreakdown,
-      expenseBreakdown: expenseBreakdown,
-    };
-  }, [incomeData, expenseData, incomeBreakdown, expenseBreakdown]);
 
   return (
     <>
@@ -171,7 +122,7 @@ export const MPGAIncomeExpensesReport: React.FC<
               </SimpleScreenOnly>
               <SimplePrintOnly>
                 <Typography variant="h4">
-                  {t('Income & Expenses Analysis: Last 12 Months')}
+                  {t('Income & Expenses Analysis: {{subtitle}}', { subtitle })}
                 </Typography>
               </SimplePrintOnly>
               <SimpleScreenOnly
@@ -179,16 +130,13 @@ export const MPGAIncomeExpensesReport: React.FC<
                 alignItems="center"
                 sx={{ gap: 2, '& > button': { ml: 0 } }}
               >
-                <StyledFilterButton
-                  variant="outlined"
-                  startIcon={<Settings />}
-                  size="small"
-                  onClick={handleSettingsClick}
-                >
-                  {t('Report Settings')}
-                </StyledFilterButton>
+                <SettingsButtonGroup
+                  isFilterDateSelected={isFilterActive}
+                  setFilters={setFilters}
+                  handleSettingsClick={handleSettingsClick}
+                />
                 <Divider orientation="vertical" flexItem />
-                <ExportCsvButton data={allData} months={last12Months} />
+                <ExportCsvButton />
                 <StyledPrintButton
                   startIcon={
                     <SvgIcon fontSize="small">
@@ -212,46 +160,30 @@ export const MPGAIncomeExpensesReport: React.FC<
           </Container>
         </Box>
         <SimpleScreenOnly>
-          <TotalsProvider
-            data={allData}
-            loading={loading}
-            startDate={startDate}
-            endDate={endDate}
-          >
-            <ScreenOnlyReport
-              data={allData}
-              last12Months={last12Months}
-              currency={currency}
-            />
-          </TotalsProvider>
+          <ScreenOnlyReport />
         </SimpleScreenOnly>
         <PrintOnly>
-          <TotalsProvider
-            data={allData}
-            loading={loading}
-            startDate={startDate}
-            endDate={endDate}
-          >
-            <PrintOnlyReport
-              data={allData}
-              last12Months={last12Months}
-              currency={currency}
-            />
-          </TotalsProvider>
+          <PrintOnlyReport />
         </PrintOnly>
       </Box>
       {isSettingsOpen && (
         <SettingsDialog
-          selectedFilters={filters}
+          selectedFilters={filters ?? defaultFilters}
           selectedFundType={FundTypes.Primary}
           isOpen={isSettingsOpen}
           onClose={(newFilters) => {
-            if (newFilters) {
-              onFiltersChange(newFilters);
-            }
+            const hasActiveFilter = Boolean(
+              newFilters &&
+                (newFilters.categories ||
+                  newFilters.selectedDateRange === DateRange.YearToDate ||
+                  (newFilters.selectedYear !== null &&
+                    newFilters.selectedYear !== undefined)),
+            );
+            setFilters(hasActiveFilter && newFilters ? newFilters : null);
             setIsSettingsOpen(false);
           }}
-          hideDateRange
+          isMpgaReport
+          transactionYears={transactionYears ?? []}
         />
       )}
     </>

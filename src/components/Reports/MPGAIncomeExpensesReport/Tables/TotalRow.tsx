@@ -4,7 +4,9 @@ import { GridColDef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { amountFormat, zeroAmountFormat } from 'src/lib/intlFormat';
+import theme from 'src/theme';
 import { populateTotalRows } from '../Helper/createRows';
+import { useReport } from '../ReportContext/ReportContext';
 import { DataFields } from '../mockData';
 import { StyledTotalRow } from '../styledComponents';
 import { descriptionWidth, monthWidth, summaryWidth } from './TableCard';
@@ -28,16 +30,24 @@ export const TotalRow: React.FC<TotalRowProps> = ({ data, overallTotal }) => {
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const monthlyTotals = data[0]?.monthly
-    ? data[0].monthly.map((_, monthIndex) => {
-        const total = data.reduce(
-          (acc, curr) => acc + (curr.monthly?.[monthIndex] ?? 0),
-          0,
-        );
-        return total;
-      })
-    : [];
-  const avgSum = (data ?? []).reduce((sum, row) => sum + row.average, 0);
+  const { isFutureMonth } = useReport();
+
+  const monthlyTotals = useMemo(
+    () =>
+      data[0]?.monthly
+        ? data[0].monthly.map((_, monthIndex) =>
+            data.reduce(
+              (acc, curr) => acc + (curr.monthly?.[monthIndex] ?? 0),
+              0,
+            ),
+          )
+        : [],
+    [data],
+  );
+  const avgSum = useMemo(
+    () => (data ?? []).reduce((sum, row) => sum + row.average, 0),
+    [data],
+  );
 
   const totalRow = (): Row => ({
     id: 'totals-row',
@@ -47,7 +57,10 @@ export const TotalRow: React.FC<TotalRowProps> = ({ data, overallTotal }) => {
     overall: overallTotal,
   });
 
-  const { description, average, overall } = populateTotalRows(locale);
+  const { description, average, overall } = useMemo(
+    () => populateTotalRows(locale),
+    [locale],
+  );
 
   const columns: GridColDef[] = useMemo(() => {
     const monthColumns: GridColDef[] = monthlyTotals.map((_, index) => ({
@@ -58,6 +71,7 @@ export const TotalRow: React.FC<TotalRowProps> = ({ data, overallTotal }) => {
       filterable: false,
       disableColumnMenu: true,
       align: 'right',
+      cellClassName: isFutureMonth(index) ? 'future-month' : undefined,
       renderCell: ({ row }) => {
         const formattedValue = zeroAmountFormat(
           row.monthlyValue[index],
@@ -105,7 +119,7 @@ export const TotalRow: React.FC<TotalRowProps> = ({ data, overallTotal }) => {
         renderCell: overall,
       },
     ];
-  }, [monthlyTotals, avgSum, overallTotal]);
+  }, [monthlyTotals, isFutureMonth, locale, description, average, overall]);
 
   return (
     <StyledTotalRow
@@ -119,6 +133,7 @@ export const TotalRow: React.FC<TotalRowProps> = ({ data, overallTotal }) => {
         '& .MuiDataGrid-virtualScroller': { marginTop: '0 !important' },
         '& .MuiDataGrid-cell': { borderBottom: 'none' },
         '& .MuiDataGrid-main': { border: 'none' },
+        '& .future-month': { backgroundColor: theme.palette.action.hover },
       }}
     />
   );

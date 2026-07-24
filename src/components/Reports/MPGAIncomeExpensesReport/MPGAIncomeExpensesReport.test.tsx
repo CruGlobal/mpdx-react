@@ -14,6 +14,7 @@ import theme from 'src/theme';
 import { ReportsStaffExpensesQuery } from '../StaffExpenseReport/GetStaffExpense.generated';
 import { MPGAIncomeExpensesReport } from './MPGAIncomeExpensesReport';
 import { MpgaTransactionsQuery } from './MPGATransactions.generated';
+import { ReportProvider } from './ReportContext/ReportContext';
 
 const mutationSpy = jest.fn();
 const onNavListToggle = jest.fn();
@@ -103,11 +104,13 @@ const TestComponent: React.FC = () => (
         mocks={mockData}
         onCall={mutationSpy}
       >
-        <MPGAIncomeExpensesReport
-          onNavListToggle={onNavListToggle}
-          isNavListOpen={true}
-          title={title}
-        />
+        <ReportProvider>
+          <MPGAIncomeExpensesReport
+            onNavListToggle={onNavListToggle}
+            isNavListOpen={true}
+            title={title}
+          />
+        </ReportProvider>
       </GqlMockedProvider>
     </LocalizationProvider>
   </ThemeProvider>
@@ -158,7 +161,7 @@ describe('MPGAIncomeExpensesReport', () => {
     expect(getByTestId('ReportsMenuIcon')).toBeInTheDocument();
     userEvent.click(getByTestId('ReportsMenuIcon'));
     await waitFor(() => expect(onNavListToggle).toHaveBeenCalled());
-  });
+  }, 15000);
 
   describe('Category filtering', () => {
     it('re-renders report rows when a category is unchecked and applied', async () => {
@@ -184,9 +187,84 @@ describe('MPGAIncomeExpensesReport', () => {
       userEvent.click(applyButton);
 
       expect(
-        await findAllByText('Benefits - Workers Compensation'),
+        await findAllByText('Benefits - Workers Compensation', undefined, {
+          timeout: 5000,
+        }),
       ).toHaveLength(1);
-      expect(await findAllByText('Benefits - Program Based')).toHaveLength(1);
+      expect(
+        await findAllByText('Benefits - Program Based', undefined, {
+          timeout: 5000,
+        }),
+      ).toHaveLength(1);
+    }, 15000);
+
+    it('does not show the Clear button when only a category filter is applied', async () => {
+      const { getByRole, findByRole, findAllByText, queryByRole } = render(
+        <TestComponent />,
+      );
+
+      expect(await findByRole('gridcell', { name: 'Benefits' })).toBeVisible();
+      expect(queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
+
+      userEvent.click(getByRole('button', { name: 'Report Settings' }));
+
+      const benefitsCheckbox = await findByRole('checkbox', {
+        name: 'Benefits',
+      });
+      userEvent.click(benefitsCheckbox);
+
+      const applyButton = await findByRole('button', { name: 'Apply Filters' });
+      await waitFor(() => expect(applyButton).not.toBeDisabled());
+      userEvent.click(applyButton);
+
+      expect(
+        await findAllByText('Benefits - Workers Compensation', undefined, {
+          timeout: 5000,
+        }),
+      ).toHaveLength(1);
+      expect(queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
+    }, 15000);
+
+    it('does not show the Clear button when the dialog is cancelled', async () => {
+      const { getByRole, findByRole, queryByRole } = render(<TestComponent />);
+
+      expect(await findByRole('gridcell', { name: 'Benefits' })).toBeVisible();
+
+      userEvent.click(getByRole('button', { name: 'Report Settings' }));
+
+      const cancelButton = await findByRole('button', { name: 'Cancel' });
+      userEvent.click(cancelButton);
+
+      await waitFor(() =>
+        expect(
+          queryByRole('button', { name: 'Cancel' }),
+        ).not.toBeInTheDocument(),
+      );
+      expect(queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
+    }, 15000);
+  });
+
+  describe('Date range filtering', () => {
+    it('shows the Clear button after a year is applied', async () => {
+      const { getByRole, findByRole, queryByRole } = render(<TestComponent />);
+
+      await findByRole('gridcell', { name: 'Benefits' });
+      expect(queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
+
+      userEvent.click(getByRole('button', { name: 'Report Settings' }));
+
+      userEvent.click(
+        await findByRole('combobox', { name: 'Select Date Range' }),
+      );
+      userEvent.click(getByRole('option', { name: 'Year to Date' }));
+
+      const applyButton = await findByRole('button', { name: 'Apply Filters' });
+      await waitFor(() => expect(applyButton).not.toBeDisabled());
+      userEvent.click(applyButton);
+
+      expect(
+        await findByRole('button', { name: 'Clear' }, { timeout: 5000 }),
+      ).toBeInTheDocument();
     }, 15000);
   });
 });
