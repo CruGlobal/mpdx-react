@@ -296,7 +296,7 @@ export const OrganizationAccordion: React.FC<AccordionProps> = ({
                   </Box>
                 </Box>
                 <Divider />
-                {lastDownloadedAt && (
+                {type !== OrganizationTypesEnum.OFFLINE && lastDownloadedAt && (
                   <Box sx={{ p: 2, display: 'flex' }}>
                     <Grid
                       container
