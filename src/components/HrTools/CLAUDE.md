@@ -91,6 +91,27 @@ Non-obvious per-calculator rules:
   `accountListId` vs `scenarioGoalId`); only scenario goals may edit identity
   fields.
 
+## How forms persist
+
+Three patterns — know which one a form uses before adding a field:
+
+- **Field-level autosave** (most forms) — each field saves on change/blur. Two
+  base hooks exist; a form wraps one into its own `Autosave*` field components.
+  **Don't add a third primitive — wrap one of these:**
+  - repo-wide `src/components/Shared/Autosave/useAutosave` → GoalCalculator,
+    PdsGoalCalculator, SalaryCalculator, NsoMpdQuestionnaire
+  - HrTools-local `Shared/CalculationReports/CustomAutosave/useCustomAutosave` →
+    AdditionalSalaryRequest, MinisterHousingAllowance
+- **Single submit through a mapping** — NsGoalCalculator collects a Formik form
+  and writes once via `goalSettingsApiMapping.ts`, the one place UI-only fields
+  are dropped. Adding a field here means updating that mapping, not just the form.
+- **Explicit modal CRUD** — SavingsFundTransfer persists through its transfer
+  modals + mutations, not autosave.
+
+The mock tools below persist nothing. Note the finalize step is separate from
+persistence: NSO autosaves each field but has a distinct `Complete` mutation, and
+the request forms autosave a draft but `Submit` through the wizard's `SubmitModal`.
+
 ## Per-form domain gotchas
 
 - **MinisterHousingAllowance** — the online flow gates on **MHA eligibility only**
