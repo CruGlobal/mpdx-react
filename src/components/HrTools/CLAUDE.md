@@ -5,7 +5,7 @@ requests, savings-fund transfers, questionnaires, and admin/supervisor reports.
 This file captures the cross-tool "why" — rules and seams you can't see from any
 single form's code. It loads whenever you touch anything under `HrTools/`.
 
-Follow the root `CLAUDE.md` and `.CLAUDE/rules/code-review.md` for the usual
+Follow the root `CLAUDE.md` and `.claude/rules/code-review.md` for the usual
 conventions (named exports, i18n, Formik/Yup, `GqlMockedProvider`, Luxon dates).
 The financial-reporting review agent triggers on this tree — money math here is
 load-bearing.
@@ -80,7 +80,8 @@ attrition) are computed independently in generic (`calculateTotals.ts`), PDS
 (`calculations/`), and again on the server for NS — with different step ordering.
 Changing the math in one place does **not** update the others. Treat these three
 as a set: when you touch goal arithmetic, check whether the other copies need the
-same change. Constants are year-versioned (`calculationsYear`).
+same change. NS captures a user-selected `calculationsYear`; the client
+constants themselves are not year-versioned.
 
 Non-obvious per-calculator rules:
 
