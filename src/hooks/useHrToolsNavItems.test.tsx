@@ -4,6 +4,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { mockSession } from '__tests__/util/mockSession';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
+import { UserOptionQuery } from './UserPreference.generated';
 import { useHrToolsNavItems } from './useHrToolsNavItems';
 
 // A user in a group that is ineligible for every HR Tool and with no staff account
@@ -31,8 +32,11 @@ const Wrapper = ({ children }: { children: ReactElement }) => (
 );
 
 const MpdGoalEligibleWrapper = ({ children }: { children: ReactElement }) => (
-  <GqlMockedProvider<{ GetUser: GetUserQuery }>
-    mocks={{ GetUser: { user: mpdGoalEligibleUser } }}
+  <GqlMockedProvider<{ GetUser: GetUserQuery; UserOption: UserOptionQuery }>
+    mocks={{
+      GetUser: { user: mpdGoalEligibleUser },
+      UserOption: { userOption: { key: 'user_type_verified', value: 'true' } },
+    }}
   >
     {children}
   </GqlMockedProvider>
@@ -42,16 +46,33 @@ describe('useHrToolsNavItems', () => {
   afterEach(() => {
     process.env.DEVELOPMENT_ENV = 'false';
     process.env.DISABLE_MPD_GOAL_ADMIN = 'false';
+    process.env.DISABLE_NEW_REPORTS = 'false';
   });
 
-  it('hides all items for an ineligible user when not in a development env', async () => {
+  it('hides all items, except partner reminders, for an ineligible user when not in a development env', async () => {
     const { result, waitForNextUpdate } = renderHook(
       () => useHrToolsNavItems(),
       { wrapper: Wrapper },
     );
     await waitForNextUpdate();
 
-    expect(result.current.items).toHaveLength(0);
+    expect(result.current.items).toHaveLength(1);
+    expect(result.current.items[0].id).toBe('partnerReminders');
+  });
+
+  it('hides every eligible item except partner reminders when DISABLE_NEW_REPORTS is on', async () => {
+    process.env.DISABLE_NEW_REPORTS = 'true';
+    mockSession({ developer: false });
+
+    const { result, waitForNextUpdate } = renderHook(
+      () => useHrToolsNavItems(),
+      { wrapper: MpdGoalEligibleWrapper },
+    );
+    await waitForNextUpdate();
+
+    expect(result.current.items.map((item) => item.id)).toEqual([
+      'partnerReminders',
+    ]);
   });
 
   it('shows all items for an ineligible developer in a development env', async () => {
@@ -111,7 +132,7 @@ describe('useHrToolsNavItems', () => {
     );
   });
 
-  it('hides all items for an ineligible non-developer in a development env', async () => {
+  it('hides all items, except partner reminders, for an ineligible non-developer in a development env', async () => {
     process.env.DEVELOPMENT_ENV = 'true';
     mockSession({ developer: false });
 
@@ -121,10 +142,11 @@ describe('useHrToolsNavItems', () => {
     );
     await waitForNextUpdate();
 
-    expect(result.current.items).toHaveLength(0);
+    expect(result.current.items).toHaveLength(1);
+    expect(result.current.items[0].id).toBe('partnerReminders');
   });
 
-  it('hides all items for an ineligible developer outside a development env', async () => {
+  it('hides all items, except partner reminders, for an ineligible developer outside a development env', async () => {
     process.env.DEVELOPMENT_ENV = 'false';
     mockSession({ developer: true });
 
@@ -134,6 +156,7 @@ describe('useHrToolsNavItems', () => {
     );
     await waitForNextUpdate();
 
-    expect(result.current.items).toHaveLength(0);
+    expect(result.current.items).toHaveLength(1);
+    expect(result.current.items[0].id).toBe('partnerReminders');
   });
 });

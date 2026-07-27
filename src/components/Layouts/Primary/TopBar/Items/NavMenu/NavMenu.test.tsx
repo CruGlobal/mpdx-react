@@ -123,7 +123,7 @@ describe('NavMenu', () => {
   });
 
   it('renders HR Tools submenu items', async () => {
-    const { findByRole, getByRole, getByTestId, queryByRole } = render(
+    const { findByRole, getByRole, getByTestId } = render(
       <TestComponent
         mocks={{
           ...defaultMocks,
@@ -154,8 +154,8 @@ describe('NavMenu', () => {
       getByRole('menuitem', { name: 'Additional Salary Request' }),
     ).toBeInTheDocument();
     expect(
-      queryByRole('menuitem', { name: 'Ministry Partner Reminders' }),
-    ).not.toBeInTheDocument();
+      getByRole('menuitem', { name: 'Ministry Partner Reminders' }),
+    ).toBeInTheDocument();
   });
 
   it('renders MPDX Tools submenu items', async () => {
@@ -196,11 +196,17 @@ describe('NavMenu', () => {
     expect(getByTestId('appeals-false')).toBeInTheDocument();
   });
 
-  it('does not render new reports when user type not verified', async () => {
-    const { queryByRole } = render(
+  it('shows only Partner Reminders in HR Tools when user type not verified', async () => {
+    const { findByRole, getByRole, getByTestId, queryByRole } = render(
       <TestComponent
         mocks={{
           ...defaultMocks,
+          GetUser: {
+            user: {
+              userType: UserTypeEnum.UsStaff,
+              usStaffGroup: UsStaffGroupEnum.SeniorStaff,
+            },
+          },
           UserOption: {
             userOption: {
               value: '',
@@ -210,11 +216,20 @@ describe('NavMenu', () => {
       />,
     );
 
-    await waitFor(() => {
-      expect(
-        queryByRole('menuitem', { name: 'HR Tools' }),
-      ).not.toBeInTheDocument();
-    });
+    await findByRole('menuitem', { name: 'HR Tools' });
+    userEvent.click(getByTestId('HrToolsMenuToggle'));
+
+    // Partner Reminders is live regardless of verification, so the tab still shows
+    expect(
+      getByRole('menuitem', { name: 'Ministry Partner Reminders' }),
+    ).toBeInTheDocument();
+
+    expect(
+      queryByRole('menuitem', { name: 'Salary Calculation Form' }),
+    ).not.toBeInTheDocument();
+    expect(
+      queryByRole('menuitem', { name: 'MPD Goal Calculator' }),
+    ).not.toBeInTheDocument();
   });
 
   it('does not show coaching link if there are no coaching accounts', async () => {

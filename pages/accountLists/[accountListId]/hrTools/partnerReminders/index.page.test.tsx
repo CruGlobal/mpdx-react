@@ -18,7 +18,7 @@ const mutationSpy = jest.fn();
 
 interface ComponentProps {
   userType?: UserTypeEnum;
-  staffAccountId?: string;
+  staffAccountId?: string | null;
 }
 
 const Components: React.FC<ComponentProps> = ({
@@ -76,33 +76,25 @@ describe('Partner Reminders Report Page', () => {
   });
 
   it('renders even though there is no staff account', async () => {
-    const mockNoStaffAccount = {
-      GetUser: {
-        user: {
-          staffAccountId: null,
-        },
-      },
-    };
-
     const { findByRole } = render(
-      <ThemeProvider theme={theme}>
-        <SnackbarProvider>
-          <TestRouter>
-            <GqlMockedProvider<{
-              GetUser: GetUserQuery;
-            }>
-              mocks={mockNoStaffAccount}
-              onCall={mutationSpy}
-            >
-              <PartnerRemindersReportPage />
-            </GqlMockedProvider>
-          </TestRouter>
-        </SnackbarProvider>
-      </ThemeProvider>,
+      <Components userType={UserTypeEnum.UsStaff} staffAccountId={null} />,
     );
 
     expect(
       await findByRole('heading', { name: /online reminder system/i }),
+    ).toBeInTheDocument();
+  });
+
+  it('renders limited access page when user group is not US or hybrid staff', async () => {
+    const { findByText, getByText } = render(
+      <Components userType={UserTypeEnum.GlobalStaff} staffAccountId={null} />,
+    );
+
+    expect(
+      await findByText(/access to this feature is limited/i),
+    ).toBeInTheDocument();
+    expect(
+      getByText(/our records show that you are not part of the user group/i),
     ).toBeInTheDocument();
   });
 

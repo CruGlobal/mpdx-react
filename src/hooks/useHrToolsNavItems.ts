@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useDeveloperBypass } from './useDeveloperBypass';
 import { useIneligibleByGroup } from './useIneligibleByGroup';
 import { NavItems } from './useReportNavItems';
+import { useReportsDisabled } from './useReportsDisabled';
 
 export function useHrToolsNavItems(): {
   items: NavItems[];
@@ -20,6 +21,8 @@ export function useHrToolsNavItems(): {
     userLoading,
   } = useIneligibleByGroup();
   const developerBypass = useDeveloperBypass();
+  // Partner Reminders is live in production; every other HR Tool is still disabled
+  const { reportsDisabled } = useReportsDisabled();
 
   const items = useMemo(() => {
     if (userLoading) {
@@ -30,17 +33,18 @@ export function useHrToolsNavItems(): {
       {
         id: 'salaryCalculator',
         title: t('Salary Calculation Form'),
-        hideItem: inSalaryCalcIneligibleGroup,
+        hideItem: reportsDisabled || inSalaryCalcIneligibleGroup,
       },
       {
         id: 'staffSavingFund',
         title: t('Savings Fund Transfer'),
-        hideItem: hasNoStaffAccount,
+        hideItem: reportsDisabled || hasNoStaffAccount,
       },
       {
         id: 'nsGoalCalculator',
         title: t('New Staff Goal Calculator'),
         hideItem:
+          reportsDisabled ||
           process.env.DISABLE_NS_GOAL_CALCULATOR === 'true' ||
           inNsGoalCalcIneligibleGroup,
       },
@@ -48,45 +52,48 @@ export function useHrToolsNavItems(): {
         id: 'nsoMpdQuestionnaire',
         title: t('NSO MPD Questionnaire'),
         hideItem:
+          reportsDisabled ||
           process.env.DISABLE_NS_GOAL_CALCULATOR === 'true' ||
           inNsGoalCalcIneligibleGroup,
       },
       {
         id: 'goalCalculator',
         title: t('MPD Goal Calculator'),
-        hideItem: inMpdGoalCalcIneligibleGroup,
+        hideItem: reportsDisabled || inMpdGoalCalcIneligibleGroup,
       },
       {
         id: 'mpdGoalAdmin',
         title: t('MPD Goal Calculator Admin Table'),
         hideItem:
+          reportsDisabled ||
           process.env.DISABLE_MPD_GOAL_ADMIN === 'true' ||
           inMpdGoalCalcIneligibleGroup,
       },
       {
         id: 'mhaCalculator',
         title: t('MHA Calculation Tool'),
-        hideItem: inMhaIneligibleGroup,
+        hideItem: reportsDisabled || inMhaIneligibleGroup,
       },
       {
         id: 'additionalSalaryRequest',
         title: t('Additional Salary Request'),
-        hideItem: inAsrIneligibleGroup,
+        hideItem: reportsDisabled || inAsrIneligibleGroup,
       },
       {
         id: 'pdsGoalCalculator',
         title: t('Paid with Designation Support Goal Calculator'),
-        hideItem: inPdsGoalCalcIneligibleGroup,
+        hideItem: reportsDisabled || inPdsGoalCalcIneligibleGroup,
       },
       {
         id: 'partnerReminders',
         title: t('Ministry Partner Reminders'),
-        hideItem: !developerBypass,
+        // TODO (MPDX-9822): Once HCM goes live, add has no staff account gate back
+        hideItem: false,
       },
       {
         id: 'mpdSupervisorReport',
         title: t('MPD Supervisor Report'),
-        hideItem: hasNoStaffAccount,
+        hideItem: reportsDisabled || hasNoStaffAccount,
       },
     ].filter((item) => developerBypass || !item.hideItem);
   }, [
@@ -100,6 +107,7 @@ export function useHrToolsNavItems(): {
     userLoading,
     hasNoStaffAccount,
     developerBypass,
+    reportsDisabled,
   ]);
 
   return { items, loading: userLoading };

@@ -11,14 +11,14 @@ import { useNavPages } from './useNavPages';
 const accountListId = 'account-list-1';
 
 // Wrapper for asserting HR Tools visibility by user type (verified, reports enabled)
-const makeWrapper = (userType: UserTypeEnum) => {
+const makeWrapper = (userType: UserTypeEnum, userTypeVerified = 'true') => {
   const wrapper = ({ children }: { children: ReactElement }) => (
     <TestRouter router={{ query: { accountListId }, isReady: true }}>
       <GqlMockedProvider<{ GetUser: GetUserQuery; UserOption: UserOptionQuery }>
         mocks={{
           GetUser: { user: { userType } },
           UserOption: {
-            userOption: { key: 'user_type_verified', value: 'true' },
+            userOption: { key: 'user_type_verified', value: userTypeVerified },
           },
         }}
       >
@@ -137,17 +137,39 @@ describe('useNavPages', () => {
     );
   });
 
-  it('keeps the HR Tools tab hidden for a developer when reports are disabled', async () => {
+  it('shows the HR Tools tab for a developer when reports are disabled', async () => {
     process.env.DEVELOPMENT_ENV = 'true';
     mockSession({ developer: true });
 
-    const { result, waitForNextUpdate } = renderHook(() => useNavPages(false), {
+    const { result, waitFor } = renderHook(() => useNavPages(false), {
       wrapper: ReportsDisabledWrapper,
     });
-    await waitForNextUpdate();
 
-    expect(result.current.navPages.map((page) => page.id)).not.toContain(
-      'hr-tools-page',
+    await waitFor(() =>
+      expect(result.current.navPages.map((page) => page.id)).toContain(
+        'hr-tools-page',
+      ),
     );
+  });
+
+  it('shows only Partner Reminders in the HR Tools tab when reports are disabled', async () => {
+    mockSession({ developer: false });
+
+    const { result, waitFor } = renderHook(() => useNavPages(false), {
+      wrapper: makeWrapper(UserTypeEnum.UsStaff, 'false'),
+    });
+
+    await waitFor(() =>
+      expect(result.current.navPages.map((page) => page.id)).toContain(
+        'hr-tools-page',
+      ),
+    );
+
+    const hrToolsPage = result.current.navPages.find(
+      (page) => page.id === 'hr-tools-page',
+    );
+    expect(hrToolsPage?.items?.map((item) => item.id)).toEqual([
+      'partnerReminders',
+    ]);
   });
 });
