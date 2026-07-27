@@ -148,7 +148,7 @@ export const DonationTable: React.FC<DonationTableProps> = ({
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
-    pageSize: 25,
+    pageSize: 100,
   });
 
   // pageSize is intentionally omitted from the dependencies array so that the query isn't rerun when the page size changes
