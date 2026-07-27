@@ -1,3 +1,11 @@
+---
+# Loaded on demand by /quality:agent-review (which reads this file directly).
+# The self-referencing glob keeps it out of normal session context — it only
+# auto-loads when this file itself is being edited.
+paths:
+  - '.claude/rules/code-review.md'
+---
+
 # MPDX React — Code Review Rules
 
 Project-specific rules layered on top of `CLAUDE.md` for `/quality:agent-review`.

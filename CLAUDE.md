@@ -2,52 +2,9 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Development Commands
-
-Essential commands for development:
-
-```bash
-# Package management - ALWAYS use yarn
-yarn                    # Install dependencies
-yarn start             # Start dev server with GraphQL codegen watching
-yarn build             # Production build
-yarn serve             # Serve production build locally
-
-# Code Quality
-yarn lint              # ESLint with auto-fix
-yarn lint:ci          # ESLint without fix (CI)
-yarn lint:ts          # TypeScript type checking
-yarn prettier:write   # Format code with Prettier
-
-# Testing
-yarn test             # Run all tests silently
-yarn test:log         # Run tests with output
-yarn test:watch       # Run tests in watch mode
-yarn localtest        # Run tests in band with verbose output
-yarn test:coverage    # Run tests with coverage report
-
-# GraphQL
-yarn gql              # Generate TypeScript from GraphQL files
-yarn gql:w            # Generate with watch mode (auto-runs with yarn start)
-
-# Translations
-yarn extract          # Extract i18n strings
-yarn crowdin:download # Download translations from CrowdIn
-yarn crowdin:upload   # Upload translations to CrowdIn
-```
-
 ## Architecture Overview
 
 MPDX is a Next.js 15 React application using the Pages Router with TypeScript and Material UI v5.
-
-### Key Technologies
-
-- **Frontend**: Next.js v15, React v18, Material UI v5, TypeScript
-- **Data**: Apollo Client GraphQL with dual GraphQL servers
-- **Forms**: Formik with Yup validation
-- **Testing**: Jest with React Testing Library
-- **i18n**: react-i18next
-- **Authentication**: NextAuth.js with Okta/API OAuth providers
 
 ### Dual GraphQL Architecture
 
@@ -57,24 +14,6 @@ The application uses two GraphQL servers:
 2. **REST Proxy Server** (`/api/graphql-rest`) - Next.js lambda that converts REST to GraphQL
 
 Apollo Link automatically routes queries based on which fields are requested. Check `src/graphql/rootFields.generated.ts` to see which fields are available from the GraphQL API server.
-
-### Directory Structure
-
-```
-pages/               # Next.js pages (file-based routing)
-├── api/            # API routes and REST proxy GraphQL schemas
-├── accountLists/   # Account list pages
-├── auth/           # Authentication endpoints
-└── [other routes]  # Other application pages
-
-src/
-├── components/     # React components organized by feature
-├── hooks/         # Custom React hooks
-├── lib/           # Apollo client, utility functions, helpers
-└── graphql/       # Generated GraphQL types and schema
-
-public/locales/    # Translation files
-```
 
 ### Component Organization
 
