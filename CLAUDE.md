@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Architecture Overview
 
-MPDX is a Next.js 15 React application using the Pages Router with TypeScript and Material UI v5.
+MPDX is a Next.js 15 React application using the Pages Router with TypeScript and Material UI v7.
 
 ### Dual GraphQL Architecture
 
