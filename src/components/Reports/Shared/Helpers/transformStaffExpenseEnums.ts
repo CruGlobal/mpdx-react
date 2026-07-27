@@ -55,7 +55,7 @@ export const getLocalizedSubCategory = (
 ): string => {
   const subcategoryLabels: Record<StaffExpensesSubCategoryEnum, string> = {
     [StaffExpensesSubCategoryEnum.Donation]: t('Donation'),
-    [StaffExpensesSubCategoryEnum.InternalGift]: t('Internal Gift'),
+    [StaffExpensesSubCategoryEnum.DonationInternalGift]: t('Internal Gift'),
     [StaffExpensesSubCategoryEnum.NonCash]: t('Non Cash'),
     [StaffExpensesSubCategoryEnum.Withdrawal]: t('Withdrawal'),
     [StaffExpensesSubCategoryEnum.Deposit]: t('Deposit'),
@@ -146,6 +146,8 @@ export const getLocalizedSubCategory = (
     [StaffExpensesSubCategoryEnum.OtherAssessment]: t('Other Assessment'),
     [StaffExpensesSubCategoryEnum.CreditCardFee]: t('Credit Card Fee'),
     [StaffExpensesSubCategoryEnum.AccountTransfer]: t('Account Transfer'),
+    [StaffExpensesSubCategoryEnum.AccountTransferInternalGift]:
+      t('Internal Gift'),
     [StaffExpensesSubCategoryEnum.Registration]: t('Registration'),
     [StaffExpensesSubCategoryEnum.Purchase]: t('Purchase'),
     [StaffExpensesSubCategoryEnum.SummerMission]: t('Summer Mission'),
