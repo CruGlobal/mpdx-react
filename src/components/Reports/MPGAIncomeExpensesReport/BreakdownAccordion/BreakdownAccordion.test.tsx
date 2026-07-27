@@ -52,7 +52,7 @@ describe('BreakdownAccordion', () => {
     );
 
     expect(getByText('$6,770.00')).toHaveStyle({
-      color: theme.palette.chipRedDark.main,
+      color: theme.palette.error.main,
     });
   });
 
@@ -117,7 +117,7 @@ describe('BreakdownAccordion', () => {
       userEvent.click(getByRole('button'));
 
       const amount = await findByRole('cell', { name: '($50.00)' });
-      expect(amount).toHaveStyle({ color: theme.palette.chipRedDark.main });
+      expect(amount).toHaveStyle({ color: theme.palette.error.main });
     });
 
     it('marks a positive transaction inside an expense accordion', async () => {
@@ -139,7 +139,7 @@ describe('BreakdownAccordion', () => {
       userEvent.click(getByRole('button'));
 
       const amount = await findByRole('cell', { name: '($50.00)' });
-      expect(amount).toHaveStyle({ color: theme.palette.statusSuccess.main });
+      expect(amount).toHaveStyle({ color: theme.palette.success.main });
     });
   });
 });

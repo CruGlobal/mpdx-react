@@ -15,7 +15,7 @@ import { zeroAmountFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { LoadingBox, LoadingIndicator } from '../../styledComponents';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
-import { useTotals } from '../TotalsContext/TotalsContext';
+import { useMPGAIncomeExpenses } from '../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { DataFields } from '../mockData';
 import { StyledRow, StyledTypography } from '../styledComponents';
 
@@ -23,21 +23,31 @@ export interface PrintTablesProps {
   type: ReportTypeEnum;
   data?: DataFields[];
   title: string;
-  months: string[];
 }
 
 export const PrintTables: React.FC<PrintTablesProps> = ({
   title,
-  months,
   data,
   type,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { incomeTotal, expensesTotal, dataLoading } = useTotals();
+  const {
+    totals: { income, expenses },
+    isFutureMonth,
+    dataLoading,
+    monthLabels: months,
+    firstFutureMonthIndex,
+  } = useMPGAIncomeExpenses();
 
-  const overallTotal =
-    type === ReportTypeEnum.Income ? incomeTotal : expensesTotal;
+  const overallTotal = type === ReportTypeEnum.Income ? income : expenses;
+
+  const grayColor = theme.palette.text.disabled;
+  const futureCellSx = {
+    backgroundColor: theme.palette.action.hover,
+    WebkitPrintColorAdjust: 'exact',
+    printColorAdjust: 'exact',
+  };
 
   const { monthCount, firstMonthFlags, getBorderColor } = useMonthHeaders(
     months,
@@ -63,34 +73,56 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
           <TableHead>
             <TableRow>
               <TableCell sx={{ borderBottom: 'none', width: 43 }} />
-              {monthCount?.map(({ year, count }, index) => {
+              {monthCount?.flatMap(({ year, count }, index) => {
                 const borderColor = getBorderColor(index);
                 const firstMonthInYear = firstMonthFlags.find(
                   (month) => month.year === year && month.isFirstOfYear,
                 );
 
-                return (
-                  <TableCell
-                    key={`${year}-${count}`}
-                    colSpan={count}
-                    sx={{
-                      borderBottom: `2px solid ${borderColor}`,
-                      borderRight: `20px solid transparent`,
-                    }}
+                const monthOffset = monthCount
+                  .slice(0, index)
+                  .reduce((sum, group) => sum + group.count, 0);
+
+                const pastCount =
+                  firstFutureMonthIndex !== undefined
+                    ? Math.min(count, firstFutureMonthIndex - monthOffset)
+                    : count;
+                const futureCount = count - pastCount;
+
+                const yearLabel = firstMonthInYear ? (
+                  <Typography
+                    sx={{ color: borderColor, ml: -2, fontSize: '14px' }}
                   >
-                    {firstMonthInYear && (
-                      <Typography
-                        sx={{
-                          color: borderColor,
-                          ml: -2,
-                          fontSize: '14px',
-                        }}
-                      >
-                        <strong>{year}</strong>
-                      </Typography>
-                    )}
-                  </TableCell>
-                );
+                    <strong>{year}</strong>
+                  </Typography>
+                ) : null;
+
+                return [
+                  pastCount > 0 ? (
+                    <TableCell
+                      key={`${year}-past`}
+                      colSpan={pastCount}
+                      sx={{
+                        borderBottom: `2px solid ${borderColor}`,
+                        borderRight: '20px solid transparent',
+                      }}
+                    >
+                      {yearLabel}
+                    </TableCell>
+                  ) : null,
+                  futureCount > 0 ? (
+                    <TableCell
+                      key={`${year}-future`}
+                      colSpan={futureCount}
+                      sx={{
+                        borderBottom: `2px solid ${grayColor}`,
+                        borderRight: '20px solid transparent',
+                      }}
+                    >
+                      {pastCount === 0 ? yearLabel : null}
+                    </TableCell>
+                  ) : null,
+                ];
               })}
               <TableCell
                 colSpan={2}
@@ -115,9 +147,11 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                   <strong>{t('Description')}</strong>
                 </StyledTypography>
               </TableCell>
-              {months.map((month) => (
+              {months.map((month, index) => (
                 <TableCell key={month}>
-                  <StyledTypography>
+                  <StyledTypography
+                    sx={isFutureMonth(index) ? { color: grayColor } : undefined}
+                  >
                     <strong>{month.split(' ')[0]}</strong>
                   </StyledTypography>
                 </TableCell>
@@ -142,7 +176,10 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                     <StyledTypography>{value.description}</StyledTypography>
                   </TableCell>
                   {value.monthly.map((amount, index) => (
-                    <TableCell key={index}>
+                    <TableCell
+                      key={index}
+                      sx={isFutureMonth(index) ? futureCellSx : undefined}
+                    >
                       <StyledTypography>
                         {zeroAmountFormat(amount, locale)}
                       </StyledTypography>
@@ -175,7 +212,10 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                   </StyledTypography>
                 </TableCell>
                 {data[0].monthly.map((_, index) => (
-                  <TableCell key={index}>
+                  <TableCell
+                    key={index}
+                    sx={isFutureMonth(index) ? futureCellSx : undefined}
+                  >
                     <StyledTypography>
                       <strong>
                         {zeroAmountFormat(

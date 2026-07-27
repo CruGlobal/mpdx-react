@@ -5,6 +5,7 @@ import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
+import { MPGAIncomeExpensesReportProvider } from 'src/components/Reports/MPGAIncomeExpensesReport/MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { MPGAIncomeExpensesReport } from 'src/components/Reports/MPGAIncomeExpensesReport/MPGAIncomeExpensesReport';
 import {
   MultiPageMenu,
@@ -49,11 +50,13 @@ const MPGAReportPage: React.FC = () => {
             leftOpen={isNavListOpen}
             leftWidth="290px"
             mainContent={
-              <MPGAIncomeExpensesReport
-                isNavListOpen={isNavListOpen}
-                onNavListToggle={handleNavListToggle}
-                title={t('Ministry Partner Giving Analysis')}
-              />
+              <MPGAIncomeExpensesReportProvider>
+                <MPGAIncomeExpensesReport
+                  isNavListOpen={isNavListOpen}
+                  onNavListToggle={handleNavListToggle}
+                  title={t('Ministry Partner Giving Analysis')}
+                />
+              </MPGAIncomeExpensesReportProvider>
             }
           />
         </MPGAReportPageWrapper>

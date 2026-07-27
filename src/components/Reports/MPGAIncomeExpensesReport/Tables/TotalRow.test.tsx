@@ -1,10 +1,5 @@
-import React from 'react';
-import { ThemeProvider } from '@mui/material/styles';
-import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, within } from '@testing-library/react';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import theme from 'src/theme';
+import { MPGAIncomeExpensesReportTestWrapper } from '../MPGAIncomeExpensesReportTestWrapper';
 import { mockData } from '../mockData';
 import { TotalRow } from './TotalRow';
 
@@ -17,15 +12,11 @@ const data = {
 const overallTotal = 108_856;
 
 describe('TotalRow', () => {
-  it('renders correctly', async () => {
+  it('renders correctly', () => {
     const { getByRole, getByText } = render(
-      <ThemeProvider theme={theme}>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <GqlMockedProvider onCall={mutationSpy}>
-            <TotalRow data={data.income} overallTotal={overallTotal} />
-          </GqlMockedProvider>
-        </LocalizationProvider>
-      </ThemeProvider>,
+      <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
+        <TotalRow data={data.income} overallTotal={overallTotal} />
+      </MPGAIncomeExpensesReportTestWrapper>,
     );
 
     expect(getByRole('grid')).toBeInTheDocument();
@@ -33,15 +24,11 @@ describe('TotalRow', () => {
     expect(getByRole('gridcell', { name: '108,856' })).toBeInTheDocument();
   });
 
-  it('should display - when no data available', async () => {
+  it('should display - when no data available', () => {
     const { getByRole } = render(
-      <ThemeProvider theme={theme}>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <GqlMockedProvider onCall={mutationSpy}>
-            <TotalRow data={data.expenses} overallTotal={0} />
-          </GqlMockedProvider>
-        </LocalizationProvider>
-      </ThemeProvider>,
+      <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
+        <TotalRow data={data.expenses} overallTotal={0} />
+      </MPGAIncomeExpensesReportTestWrapper>,
     );
 
     const grid = getByRole('grid');

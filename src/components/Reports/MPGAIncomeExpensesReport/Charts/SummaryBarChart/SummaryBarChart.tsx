@@ -3,35 +3,34 @@ import { Bar, BarChart, Cell, LabelList, XAxis, YAxis } from 'recharts';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { useTotals } from '../../TotalsContext/TotalsContext';
+import { useMPGAIncomeExpenses } from '../../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { ChartFrame } from '../ChartFrame';
 
 interface SummaryBarChartProps {
   aspect: number;
   width: number;
-  currency: string;
 }
 
-const chartColors = [
-  theme.palette.statusSuccess.main,
-  theme.palette.chipRedDark.main,
-];
+const chartColors = [theme.palette.success.main, theme.palette.error.main];
 
 export const SummaryBarChart: React.FC<SummaryBarChartProps> = ({
   aspect,
   width,
-  currency,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { incomeTotal, expensesTotal, dataLoading } = useTotals();
+  const {
+    totals: { income, expenses },
+    dataLoading,
+    currency,
+  } = useMPGAIncomeExpenses();
 
   const data = [
-    { name: t('Income'), total: incomeTotal },
+    { name: t('Income'), total: income },
     {
       name: t('Expenses'),
-      total: expensesTotal,
+      total: expenses,
     },
   ];
 

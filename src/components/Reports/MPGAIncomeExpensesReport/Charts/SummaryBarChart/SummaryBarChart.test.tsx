@@ -1,31 +1,18 @@
 import '../sharedRechartMock';
 import React from 'react';
-import { ThemeProvider } from '@mui/material/styles';
-import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor, within } from '@testing-library/react';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import theme from 'src/theme';
-import { TotalsProvider } from '../../TotalsContext/TotalsContext';
-import { mockData } from '../../mockData';
+import { MPGAIncomeExpensesReportTestWrapper } from '../../MPGAIncomeExpensesReportTestWrapper';
 import { SummaryBarChart } from './SummaryBarChart';
 
 const mutationSpy = jest.fn();
-const currency = 'USD';
 
 const incomeTotal = 108_856;
 const expensesTotal = 20_969;
 
 const TestComponent: React.FC = () => (
-  <ThemeProvider theme={theme}>
-    <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <GqlMockedProvider onCall={mutationSpy}>
-        <TotalsProvider data={mockData}>
-          <SummaryBarChart aspect={1.35} width={100} currency={currency} />
-        </TotalsProvider>
-      </GqlMockedProvider>
-    </LocalizationProvider>
-  </ThemeProvider>
+  <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
+    <SummaryBarChart aspect={1.35} width={100} />
+  </MPGAIncomeExpensesReportTestWrapper>
 );
 
 describe('SummaryBarChart', () => {
@@ -74,17 +61,7 @@ describe('SummaryBarChart', () => {
   });
 
   it('renders a spinner instead of the chart while loading', () => {
-    const { getByTestId, queryByRole } = render(
-      <ThemeProvider theme={theme}>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <GqlMockedProvider onCall={mutationSpy}>
-            <TotalsProvider data={mockData} loading>
-              <SummaryBarChart aspect={1.35} width={100} currency={currency} />
-            </TotalsProvider>
-          </GqlMockedProvider>
-        </LocalizationProvider>
-      </ThemeProvider>,
-    );
+    const { getByTestId, queryByRole } = render(<TestComponent />);
 
     expect(getByTestId('loading-spinner')).toBeInTheDocument();
     expect(queryByRole('region')).not.toBeInTheDocument();

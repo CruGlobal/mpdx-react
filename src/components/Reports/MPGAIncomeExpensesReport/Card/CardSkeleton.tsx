@@ -6,20 +6,21 @@ import {
   SxProps,
   Theme,
 } from '@mui/material';
+import { useMPGAIncomeExpenses } from '../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 
 export interface CardSkeletonProps {
   title: string;
-  subtitle?: string;
   children?: React.ReactNode;
   styling?: SxProps<Theme>;
 }
 
 export const CardSkeleton: React.FC<CardSkeletonProps> = ({
   title,
-  subtitle,
   children,
   styling,
 }) => {
+  const { subtitle } = useMPGAIncomeExpenses();
+
   return (
     <Card>
       <CardHeader title={title} subheader={subtitle} />

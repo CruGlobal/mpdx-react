@@ -34,13 +34,19 @@ export interface SettingsDialogProps {
   selectedFundType: string | null;
   onClose: (filters?: Filters) => void;
   time?: DateTime;
-  hideDateRange?: boolean;
+  isMpgaReport?: boolean;
+  transactionYears?: number[];
 }
 
 export interface Filters {
   selectedDateRange: DateRange | null;
   startDate?: DateTime | null;
   endDate?: DateTime | null;
+  /**
+   * A specific calendar year chosen from the MPGA date-range dropdown. When set,
+   * the range resolves to Jan 1 – Dec 31 of the selected year.
+   */
+  selectedYear?: number | null;
   /**
    * `null` means no explicit selection: every available category is shown as
    * checked and the report aggregates all of them.
@@ -127,8 +133,18 @@ const calculateDateRange = (
   }
 };
 
-export const getFiltersWithCalculatedDates = (values: Filters): Filters => {
+const getFiltersWithCalculatedDates = (values: Filters): Filters => {
   const finalValues = { ...values };
+  const selectedYear = values.selectedYear;
+
+  if (selectedYear !== null && selectedYear !== undefined) {
+    const yearStart = DateTime.fromObject({
+      year: selectedYear,
+    }).startOf('year');
+    finalValues.startDate = yearStart;
+    finalValues.endDate = yearStart.endOf('year');
+    return finalValues;
+  }
   if (values.selectedDateRange !== null) {
     const { startDate, endDate } = calculateDateRange(values.selectedDateRange);
     finalValues.startDate = startDate;
@@ -143,7 +159,8 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   selectedFilters,
   selectedFundType,
   time,
-  hideDateRange,
+  isMpgaReport,
+  transactionYears,
 }) => {
   const { t } = useTranslation();
   const [previewFilters, setPreviewFilters] = useState<Filters | null>(null);
@@ -210,6 +227,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
       selectedFilters?.selectedDateRange === null
         ? selectedFilters?.endDate
         : null,
+    selectedYear: selectedFilters?.selectedYear ?? null,
     categories: selectedFilters?.categories ?? null,
   };
 
@@ -249,52 +267,67 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
             setFieldValue('categories', newCategories);
           };
 
+          const dropdownValue =
+            values.selectedYear !== null && values.selectedYear !== undefined
+              ? String(values.selectedYear)
+              : (values.selectedDateRange ?? '');
+
           return (
             <Form>
               <DialogContent>
-                {!hideDateRange && (
+                <TextField
+                  select
+                  label={t('Select Date Range')}
+                  fullWidth
+                  value={dropdownValue}
+                  onChange={(e) => {
+                    const raw = e.target.value;
+                    const isYear = /^\d{4}$/.test(raw);
+                    const yearValue = isYear ? Number(raw) : null;
+                    const rangeValue =
+                      isYear || raw === '' ? null : (raw as DateRange);
+
+                    setFieldValue('selectedYear', yearValue);
+                    setFieldValue('selectedDateRange', rangeValue);
+                    setFieldValue('startDate', null);
+                    setFieldValue('endDate', null);
+                    setTouched({
+                      ...touched,
+                      startDate: false,
+                      endDate: false,
+                    });
+
+                    validateAndRefetch(validateForm, {
+                      ...values,
+                      selectedYear: yearValue,
+                      selectedDateRange: rangeValue,
+                      startDate: null,
+                      endDate: null,
+                    });
+                  }}
+                >
+                  <MenuItem value="">{t('None')}</MenuItem>
+                  {!isMpgaReport && [
+                    <MenuItem key="weekToDate" value={DateRange.WeekToDate}>
+                      {t('Week to Date')}
+                    </MenuItem>,
+                    <MenuItem key="monthToDate" value={DateRange.MonthToDate}>
+                      {t('Month to Date')}
+                    </MenuItem>,
+                  ]}
+                  <MenuItem value={DateRange.YearToDate}>
+                    {t('Year to Date')}
+                  </MenuItem>
+                  {isMpgaReport &&
+                    (transactionYears ?? []).map((year) => (
+                      <MenuItem key={year} value={String(year)}>
+                        {year}
+                      </MenuItem>
+                    ))}
+                </TextField>
+
+                {!isMpgaReport && (
                   <>
-                    <TextField
-                      select
-                      label={t('Select Date Range')}
-                      fullWidth
-                      value={values.selectedDateRange ?? ''}
-                      onChange={(e) => {
-                        const value =
-                          e.target.value === '' ? null : e.target.value;
-                        setFieldValue('selectedDateRange', value);
-                        if (value !== null) {
-                          setFieldValue('startDate', null);
-                          setFieldValue('endDate', null);
-
-                          setTouched({
-                            ...touched,
-                            startDate: false,
-                            endDate: false,
-                          });
-                        }
-                        validateAndRefetch(validateForm, {
-                          ...values,
-                          selectedDateRange: value as DateRange | null,
-                          ...(value !== null && {
-                            startDate: null,
-                            endDate: null,
-                          }),
-                        });
-                      }}
-                    >
-                      <MenuItem value="">{t('None')}</MenuItem>
-                      <MenuItem value={DateRange.WeekToDate}>
-                        {t('Week to Date')}
-                      </MenuItem>
-                      <MenuItem value={DateRange.MonthToDate}>
-                        {t('Month to Date')}
-                      </MenuItem>
-                      <MenuItem value={DateRange.YearToDate}>
-                        {t('Year to Date')}
-                      </MenuItem>
-                    </TextField>
-
                     <Typography variant="body2" sx={{ mt: 2, mb: 2 }}>
                       {t('Or enter a custom date range:')}
                     </Typography>
@@ -354,16 +387,10 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                   </>
                 )}
 
-                <Typography
-                  sx={{ mt: hideDateRange ? 0 : 2, whiteSpace: 'pre-line' }}
-                >
-                  {hideDateRange
-                    ? t(
-                        `Income and expenses are combined by categories by default. Select which categories to keep consolidated.`,
-                      )
-                    : t(
-                        `Income and expenses are combined by categories by default. This may be useful for long date ranges (e.g., "Year to Date").\nSelect which categories to keep consolidated.`,
-                      )}
+                <Typography sx={{ mt: 2, whiteSpace: 'pre-line' }}>
+                  {t(
+                    `Income and expenses are combined by categories by default. This may be useful for long date ranges (e.g., "Year to Date").\nSelect which categories to keep consolidated.`,
+                  )}
                 </Typography>
 
                 <Typography sx={{ mt: 2, mb: 1 }}>
