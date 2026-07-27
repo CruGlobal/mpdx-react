@@ -1,8 +1,16 @@
+---
+# Loaded on demand by /quality:agent-review (which reads this file directly).
+# The self-referencing glob keeps it out of normal session context — it only
+# auto-loads when this file itself is being edited.
+paths:
+  - '.claude/rules/code-review.md'
+---
+
 # MPDX React — Code Review Rules
 
 Project-specific rules layered on top of `CLAUDE.md` for `/quality:agent-review`.
 
-**Stack:** Next.js 15 (Pages Router) · React 18 · TypeScript · Material UI v5 · Apollo Client (dual GraphQL) · Formik + Yup · Jest + React Testing Library · react-i18next · NextAuth (Okta / API OAuth).
+**Stack:** Next.js 15 (Pages Router) · React 18 · TypeScript · Material UI v7 · Apollo Client (dual GraphQL) · Formik + Yup · Jest + React Testing Library · react-i18next · NextAuth (Okta / API OAuth).
 
 **Key architectural facts the agents should know:**
 
@@ -298,7 +306,7 @@ Project-specific testing conventions added to the Testing agent's universal chec
 
 Project-specific UX/UI conventions layered on top of the UX agent's universal checks.
 
-- **Material UI v5 conventions** — use the `sx` prop for styling; avoid `makeStyles` (legacy v4) and avoid inline `style={...}` (breaks theme-aware styling and responsive breakpoints). Styled components (`styled(...)`) are acceptable for reused patterns
+- **Material UI v7 conventions** — use the `sx` prop for styling; avoid `makeStyles` (legacy v4) and avoid inline `style={...}` (breaks theme-aware styling and responsive breakpoints). Styled components (`styled(...)`) are acceptable for reused patterns
 - **Theme tokens, not hardcoded values** — use `theme.palette.*`, `theme.spacing(n)`, `theme.breakpoints.*`. Flag raw hex colors, pixel values, and magic numbers
 - **Responsive design** — MUI breakpoints (`xs`, `sm`, `md`, `lg`, `xl`) via `sx={{ [theme.breakpoints.down('md')]: {...} }}` or the shorthand `sx={{ display: { xs: 'block', md: 'flex' } }}`. New components must render correctly at mobile breakpoints
 - **Loading states** — every Apollo query must render a loading state (MUI `Skeleton` or `CircularProgress`), not render nothing or flash stale content
