@@ -14,17 +14,19 @@ beforeEach(() => {
 });
 
 const filledCosts: TrainingCosts = {
-  nsoIbsIndividual1InRoom: 100,
-  nsoIbsIndividual2InRoom: 200,
-  nsoIbsCouple: 300,
-  nsoIbsFamily: 400,
-  refreshRetreatSingle: 500,
-  refreshRetreatCouple: 600,
-  faithAndFinanceSingle: 700,
-  faithAndFinanceCouple: 800,
-  cruConferenceSingle: 900,
-  cruConferenceCouple: 1000,
-  cruConferenceFamily: 1100,
+  nsoIndividual1InRoom: 100,
+  nsoIndividual2InRoom: 200,
+  nsoCouple: 300,
+  nsoFamily: 400,
+  ibsSingle: 500,
+  ibsCouple: 600,
+  refreshRetreatSingle: 700,
+  refreshRetreatCouple: 800,
+  faithAndFinanceSingle: 900,
+  faithAndFinanceCouple: 1000,
+  cruConferenceSingle: 1100,
+  cruConferenceCouple: 1200,
+  cruConferenceFamily: 1300,
 };
 
 /**
@@ -39,18 +41,25 @@ const fieldsBySection: {
   fields: { label: string; value: number }[];
 }[] = [
   {
-    title: 'NSO & IBS Cost',
+    title: 'NSO Cost',
     fields: [
       {
         label: 'Individual (1 in room)',
-        value: filledCosts.nsoIbsIndividual1InRoom,
+        value: filledCosts.nsoIndividual1InRoom,
       },
       {
         label: 'Individual (2 in room)',
-        value: filledCosts.nsoIbsIndividual2InRoom,
+        value: filledCosts.nsoIndividual2InRoom,
       },
-      { label: 'Couple', value: filledCosts.nsoIbsCouple },
-      { label: 'Family', value: filledCosts.nsoIbsFamily },
+      { label: 'Couple', value: filledCosts.nsoCouple },
+      { label: 'Family', value: filledCosts.nsoFamily },
+    ],
+  },
+  {
+    title: 'IBS Cost',
+    fields: [
+      { label: 'Single', value: filledCosts.ibsSingle },
+      { label: 'Couple', value: filledCosts.ibsCouple },
     ],
   },
   {
@@ -116,7 +125,8 @@ describe('EditTrainingCostsModal', () => {
         'Please enter the cost details that apply to this training. All fields are required.',
       ),
     ).toBeInTheDocument();
-    expect(getByText('NSO & IBS Cost')).toBeInTheDocument();
+    expect(getByText('NSO Cost')).toBeInTheDocument();
+    expect(getByText('IBS Cost')).toBeInTheDocument();
     expect(getByText('Refresh Retreat')).toBeInTheDocument();
     expect(getByText('Faith and Finance')).toBeInTheDocument();
     expect(getByText('Cru Conference')).toBeInTheDocument();
@@ -129,10 +139,10 @@ describe('EditTrainingCostsModal', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders all eleven cost inputs, initially blank', () => {
+  it('renders all thirteen cost inputs, initially blank', () => {
     const { getAllByRole } = render(<TestComponent />);
     const inputs = getAllByRole('spinbutton');
-    expect(inputs).toHaveLength(11);
+    expect(inputs).toHaveLength(13);
     inputs.forEach((input) => expect(input).toHaveValue(null));
   });
 
@@ -208,9 +218,9 @@ describe('EditTrainingCostsModal', () => {
     await userEvent.click(apply);
 
     await waitFor(() => expect(onSave).toHaveBeenCalledWith(filledCosts));
-    // Typing into all eleven fields exceeds the default 5s timeout when the
+    // Typing into all thirteen fields exceeds the default 5s timeout when the
     // full suite runs in parallel, so give this test extra headroom.
-  }, 15000);
+  }, 20000);
 
   it('closes via the Cancel button', async () => {
     const { getByRole } = render(<TestComponent />);

@@ -53,10 +53,12 @@ export interface EditTrainingCostsModalProps {
 }
 
 const FIELD_NAMES: FieldName[] = [
-  'nsoIbsIndividual1InRoom',
-  'nsoIbsIndividual2InRoom',
-  'nsoIbsCouple',
-  'nsoIbsFamily',
+  'nsoIndividual1InRoom',
+  'nsoIndividual2InRoom',
+  'nsoCouple',
+  'nsoFamily',
+  'ibsSingle',
+  'ibsCouple',
   'refreshRetreatSingle',
   'refreshRetreatCouple',
   'faithAndFinanceSingle',
@@ -103,27 +105,44 @@ export const EditTrainingCostsModal: React.FC<EditTrainingCostsModalProps> = ({
   const sections = useMemo<SectionConfig[]>(
     () => [
       {
-        title: t('NSO & IBS Cost'),
+        title: t('NSO Cost'),
         fields: [
           {
-            name: 'nsoIbsIndividual1InRoom',
+            name: 'nsoIndividual1InRoom',
             label: t('Individual (1 in room)'),
             size: { xs: 12, sm: 6, md: 3 },
           },
           {
-            name: 'nsoIbsIndividual2InRoom',
+            name: 'nsoIndividual2InRoom',
             label: t('Individual (2 in room)'),
             size: { xs: 12, sm: 6, md: 3 },
           },
           {
-            name: 'nsoIbsCouple',
+            name: 'nsoCouple',
             label: t('Couple'),
             size: { xs: 12, sm: 6, md: 3 },
           },
           {
-            name: 'nsoIbsFamily',
+            name: 'nsoFamily',
             label: t('Family'),
             size: { xs: 12, sm: 6, md: 3 },
+          },
+        ],
+      },
+      // IBS is costed separately from NSO so an attendee who goes to NSO but not
+      // IBS can be priced without the IBS portion.
+      {
+        title: t('IBS Cost'),
+        fields: [
+          {
+            name: 'ibsSingle',
+            label: t('Single'),
+            size: { xs: 12, sm: 6 },
+          },
+          {
+            name: 'ibsCouple',
+            label: t('Couple'),
+            size: { xs: 12, sm: 6 },
           },
         ],
       },
