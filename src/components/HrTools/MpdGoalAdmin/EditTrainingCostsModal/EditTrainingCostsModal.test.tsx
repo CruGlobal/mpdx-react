@@ -115,8 +115,8 @@ const TestComponent: React.FC<
 );
 
 describe('EditTrainingCostsModal', () => {
-  it('renders the cohort-specific title, subtitle and every section', () => {
-    const { getByText, getByRole } = render(<TestComponent />);
+  it('renders the cohort-specific title, subtitle and every section in order', () => {
+    const { getByText, getByRole, getAllByRole } = render(<TestComponent />);
     expect(
       getByRole('heading', { name: 'Training Costs for Fall NSO 2026' }),
     ).toBeInTheDocument();
@@ -125,11 +125,14 @@ describe('EditTrainingCostsModal', () => {
         'Please enter the cost details that apply to this training. All fields are required.',
       ),
     ).toBeInTheDocument();
-    expect(getByText('NSO Cost')).toBeInTheDocument();
-    expect(getByText('IBS Cost')).toBeInTheDocument();
-    expect(getByText('Refresh Retreat')).toBeInTheDocument();
-    expect(getByText('Faith and Finance')).toBeInTheDocument();
-    expect(getByText('Cru Conference')).toBeInTheDocument();
+    // Assert the section headings as an ordered list: NSO and IBS being distinct
+    // sections in this order is the point of the layout, so order is asserted
+    // rather than mere presence.
+    expect(
+      getAllByRole('heading', { level: 3 }).map(
+        (heading) => heading.textContent,
+      ),
+    ).toEqual(fieldsBySection.map((section) => section.title));
   });
 
   it('falls back to a generic title when no cohort name is given', () => {

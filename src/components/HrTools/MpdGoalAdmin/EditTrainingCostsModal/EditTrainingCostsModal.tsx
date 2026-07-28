@@ -23,7 +23,7 @@ import { TrainingCosts } from '../mpdGoalAdminHelpers';
 type FieldName = keyof TrainingCosts;
 
 /**
- * The 11 cost fields as held by Formik. Empty inputs are `''`; because these
+ * The cost fields as held by Formik. Empty inputs are `''`; because these
  * are `type="number"` inputs, Formik's `handleChange` coerces entered text to
  * a `number`, so a populated field is a `number`.
  */
