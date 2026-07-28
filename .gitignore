@@ -55,6 +55,10 @@ node_modules
 .lighthouseci
 lighthouse-results.md
 
+# Local scratch/process notes (todo lists, plans, specs) written while working.
+# Root-level only, so the tasks/ source directories under pages/ and src/ still track.
+/tasks/
+
 # AI Code Review - Temporary Files
 # These are working files that get regenerated each review
 .ai-review.json
