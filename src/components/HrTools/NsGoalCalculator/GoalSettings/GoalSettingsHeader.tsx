@@ -50,10 +50,6 @@ const PersonInfoCard: React.FC<PersonInfoCardProps> = ({ person }) => {
 };
 
 interface GoalSettingsHeaderProps {
-  /** Account list the goal belongs to, or `null` for a scenario goal. */
-  accountListId: string | null;
-  /** Id of the calculation to preview unsaved changes against. */
-  calculationId: string;
   primaryPerson: GoalSettingsPerson;
   spousePerson: GoalSettingsPerson | null;
   /** The saved goal total, shown when there are no goal-affecting edits. */
@@ -74,8 +70,6 @@ interface GoalSettingsHeaderProps {
 }
 
 export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
-  accountListId,
-  calculationId,
   primaryPerson,
   spousePerson,
   mpdGoal,
@@ -154,11 +148,7 @@ export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
           />
         </Box>
         <CalculationYearTooltip />
-        <MpdGoalPreview
-          accountListId={accountListId}
-          calculationId={calculationId}
-          savedMonthlyGoal={mpdGoal}
-        />
+        <MpdGoalPreview savedMonthlyGoal={mpdGoal} />
       </Stack>
 
       {!isScenario && (
