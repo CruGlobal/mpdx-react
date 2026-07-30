@@ -10,6 +10,7 @@ import {
   getLocalizedCategory,
   getLocalizedSubCategory,
 } from '../../Shared/Helpers/transformStaffExpenseEnums';
+import { transformTransactionDate } from '../../Shared/Helpers/transformTransactionDate';
 import { ReportType } from './StaffReportEnum';
 
 export interface Transaction {
@@ -121,7 +122,9 @@ export const filterTransactions = ({
             breakdown.transactions
               ?.filter((transaction) => {
                 const isInRange = isInDateRange(
-                  DateTime.fromISO(transaction.transactedAt),
+                  DateTime.fromISO(
+                    transformTransactionDate(transaction.transactedAt),
+                  ),
                 );
                 const matchesType =
                   tableType === ReportType.Income
@@ -145,6 +148,9 @@ export const filterTransactions = ({
 
                 return {
                   ...transaction,
+                  transactedAt: transformTransactionDate(
+                    transaction.transactedAt,
+                  ),
                   fundType: fund.fundType,
                   category: category.category,
                   subcategory: subcategory.subCategory,
@@ -220,7 +226,11 @@ export const getAvailableCategories = (
         subcategory.breakdownByMonth?.forEach((breakdown) => {
           const hasTransactionsInRange = breakdown.transactions?.some(
             (transaction) =>
-              isInDateRange(DateTime.fromISO(transaction.transactedAt)),
+              isInDateRange(
+                DateTime.fromISO(
+                  transformTransactionDate(transaction.transactedAt),
+                ),
+              ),
           );
           if (hasTransactionsInRange) {
             categoriesWithTransactions.add(category.category);
