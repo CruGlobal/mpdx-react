@@ -2,36 +2,39 @@ import React from 'react';
 import { CircularProgress, Stack, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useFormatters } from '../../Shared/useFormatters';
-import { useMpdGoalPreview } from './useMpdGoalPreview';
+import { useGoalSettingsPreview } from './GoalSettingsPreviewContext';
 
 interface MpdGoalPreviewProps {
-  /**
-   * Account list the goal belongs to, or `null` for a scenario goal that has no
-   * account list.
-   */
-  accountListId: string | null;
-  calculationId: string;
   /** The saved goal total; shown when there are no goal-affecting edits. */
   savedMonthlyGoal: number;
 }
 
+/** Diffs smaller than half a cent are treated as no change. */
+const CENT_EPSILON = 0.005;
+
 /**
  * MPD Goal figure in the header. While the form has unsaved, valid edits it
- * shows the recomputed goal total plus the signed difference from the saved
- * goal (e.g. `+$200.00` / `-$75.00`) so coaches and admins can see the impact
- * of a change before saving. All the preview orchestration lives in
- * {@link useMpdGoalPreview}; this component only renders its result.
+ * shows the recomputed total plus the signed difference from the saved goal
+ * (e.g. `+$200.00`), so admins see the impact before saving. The provider does
+ * the orchestration; this only renders the result.
  */
 export const MpdGoalPreview: React.FC<MpdGoalPreviewProps> = ({
-  accountListId,
-  calculationId,
   savedMonthlyGoal,
 }) => {
   const { t } = useTranslation();
   const { formatCurrency } = useFormatters();
-  const { calculating, displayGoal, diff, changed, failed } = useMpdGoalPreview(
-    { accountListId, calculationId, savedMonthlyGoal },
-  );
+  const {
+    calculating,
+    failed,
+    previewGoal = null,
+  } = useGoalSettingsPreview() ?? {};
+
+  const displayGoal = previewGoal ?? savedMonthlyGoal;
+  const diff =
+    previewGoal === null
+      ? 0
+      : Math.round((previewGoal - savedMonthlyGoal) * 100) / 100;
+  const changed = Math.abs(diff) >= CENT_EPSILON;
 
   const diffLabel = (diff > 0 ? '+' : '-') + formatCurrency(Math.abs(diff));
 
