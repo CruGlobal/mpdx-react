@@ -30,6 +30,8 @@ interface UseNewStaffGoalCalculationResult {
   fallback: ReactElement | null;
   /** True when the source is a scenario goal (fetched/saved by id). */
   isScenario: boolean;
+  /** The account list the goal belongs to, or `null` for a scenario goal. */
+  accountListId: string | null;
   /**
    * Save edits to the goal. Real goals save by account list + id; scenario goals
    * by id alone. Both go through the updateNewStaffGoalCalculation mutation.
@@ -82,6 +84,7 @@ export const useNewStaffGoalCalculation = (
     error,
     fallback,
     isScenario,
+    accountListId: isScenario ? null : source.accountListId,
     save: async (attributes) => {
       if (!goalCalculation) {
         return;
