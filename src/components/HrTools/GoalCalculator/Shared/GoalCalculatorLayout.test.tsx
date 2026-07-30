@@ -1,11 +1,16 @@
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import theme from 'src/theme';
 import { GoalCalculatorTestWrapper } from '../GoalCalculatorTestWrapper';
 import { GoalCalculatorLayout } from './GoalCalculatorLayout';
 
-const TestComponent: React.FC = () => (
-  <GoalCalculatorTestWrapper>
+interface TestComponentProps {
+  readOnly?: boolean;
+  onCall?: jest.Mock;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({ readOnly, onCall }) => (
+  <GoalCalculatorTestWrapper readOnly={readOnly} onCall={onCall}>
     <GoalCalculatorLayout
       sectionListPanel={<h1>Section List</h1>}
       mainContent={<h1>Main Content</h1>}
@@ -19,6 +24,29 @@ describe('GoalCalculatorLayout', () => {
 
     expect(getByRole('heading', { name: 'Section List' })).toBeInTheDocument();
     expect(getByRole('heading', { name: 'Main Content' })).toBeInTheDocument();
+  });
+
+  describe('read-only alert', () => {
+    it('shows an explanation when the goal is read-only', async () => {
+      const { findByText } = render(<TestComponent readOnly />);
+
+      expect(
+        await findByText('This goal is finalized and read-only.'),
+      ).toBeInTheDocument();
+    });
+
+    it('does not show an explanation when the goal is editable', async () => {
+      const mutationSpy = jest.fn();
+      const { queryByText } = render(<TestComponent onCall={mutationSpy} />);
+
+      // Wait for the goal calculation query to load
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('GoalCalculation'),
+      );
+      expect(
+        queryByText('This goal is finalized and read-only.'),
+      ).not.toBeInTheDocument();
+    });
   });
 
   describe('step icons', () => {

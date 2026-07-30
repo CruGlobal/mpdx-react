@@ -34,6 +34,7 @@ export const goalCalculationMock = gqlMock<
     goalCalculation: {
       id: 'goal-calculation-1',
       name: 'Initial Goal Name',
+      readOnly: false,
       firstName: 'John',
       spouseFirstName: 'Jane',
       lastName: 'Doe',
@@ -270,19 +271,38 @@ export const constantsMock = gqlMock<
   },
 }).constant;
 
-interface GoalCalculatorTestWrapperProps {
+interface MockedGoalCalculatorTestWrapperProps {
+  noMocks?: false;
   onCall?: MockLinkCallHandler;
-  noMocks?: boolean;
+  readOnly?: boolean;
   /** Override the mocked goal calculation (defaults to `goalCalculationMock`). */
   goalCalculation?: GoalCalculationQuery['goalCalculation'];
   children?: React.ReactNode;
 }
+
+interface NoMocksGoalCalculatorTestWrapperProps {
+  /**
+   * Skip the `GqlMockedProvider` entirely (the test supplies its own Apollo
+   * provider). `onCall`, `readOnly`, and `goalCalculation` only configure the
+   * mocked provider, so they are disallowed here — they would silently no-op.
+   */
+  noMocks: true;
+  onCall?: never;
+  readOnly?: never;
+  goalCalculation?: never;
+  children?: React.ReactNode;
+}
+
+type GoalCalculatorTestWrapperProps =
+  | MockedGoalCalculatorTestWrapperProps
+  | NoMocksGoalCalculatorTestWrapperProps;
 
 export const GoalCalculatorTestWrapper: React.FC<
   GoalCalculatorTestWrapperProps
 > = ({
   onCall,
   noMocks = false,
+  readOnly = false,
   goalCalculation = goalCalculationMock,
   children,
 }) => {
@@ -307,7 +327,9 @@ export const GoalCalculatorTestWrapper: React.FC<
             }>
               mocks={{
                 GoalCalculation: {
-                  goalCalculation,
+                  goalCalculation: readOnly
+                    ? { ...goalCalculation, readOnly: true }
+                    : goalCalculation,
                 },
                 GoalCalculatorConstants: {
                   constant: constantsMock,

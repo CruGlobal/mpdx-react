@@ -61,7 +61,8 @@ export interface GoalCardProps {
   loading?: boolean;
   updatedAt: string;
   viewHref: string;
-  onDelete: () => Promise<void>;
+  /** Omit to hide the delete button, e.g. for read-only goals */
+  onDelete?: () => Promise<void>;
   badge?: React.ReactNode;
 }
 
@@ -81,30 +82,30 @@ export const GoalCard: React.FC<GoalCardProps> = ({
 
   const displayName = name ?? t('Unnamed Goal');
 
-  const handleConfirmDelete = async () => onDelete();
-
   return (
     <>
-      <Confirmation
-        title={t('Delete Goal')}
-        isOpen={deleting}
-        mutation={handleConfirmDelete}
-        handleClose={() => setDeleting(false)}
-        confirmLabel={t('Delete Goal')}
-        cancelLabel={t('Cancel')}
-        message={
-          <Trans
-            t={t}
-            defaults="Are you sure you want to delete <strong>{{goalName}}</strong>? Deleting this goal will remove it permanently."
-            values={{ goalName: displayName }}
-          />
-        }
-        confirmButtonProps={{
-          variant: 'contained',
-          color: 'error',
-          children: t('Delete Goal'),
-        }}
-      />
+      {onDelete && (
+        <Confirmation
+          title={t('Delete Goal')}
+          isOpen={deleting}
+          mutation={onDelete}
+          handleClose={() => setDeleting(false)}
+          confirmLabel={t('Delete Goal')}
+          cancelLabel={t('Cancel')}
+          message={
+            <Trans
+              t={t}
+              defaults="Are you sure you want to delete <strong>{{goalName}}</strong>? Deleting this goal will remove it permanently."
+              values={{ goalName: displayName }}
+            />
+          }
+          confirmButtonProps={{
+            variant: 'contained',
+            color: 'error',
+            children: t('Delete Goal'),
+          }}
+        />
+      )}
 
       <StyledCard>
         <StyledHeaderBox
@@ -158,16 +159,19 @@ export const GoalCard: React.FC<GoalCardProps> = ({
         <Divider sx={{ mt: 2, mb: 1 }} />
 
         <StyledActionBox>
-          <Button onClick={() => setDeleting(true)}>
-            <Typography variant="body2" fontWeight="bold" color="error">
-              {t('Delete')}
-            </Typography>
-          </Button>
+          {onDelete && (
+            <Button onClick={() => setDeleting(true)}>
+              <Typography variant="body2" fontWeight="bold" color="error">
+                {t('Delete')}
+              </Typography>
+            </Button>
+          )}
           <Button
             LinkComponent={NextLink}
             href={viewHref}
             variant="contained"
             color="primary"
+            sx={{ marginLeft: 'auto' }}
           >
             <Typography
               variant="body2"

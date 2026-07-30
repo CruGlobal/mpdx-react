@@ -16,12 +16,14 @@ const mutationSpy = jest.fn();
 
 interface TestComponentProps {
   schema?: yup.Schema;
+  readOnly?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   schema = defaultSchema,
+  readOnly,
 }) => (
-  <GoalCalculatorTestWrapper onCall={mutationSpy}>
+  <GoalCalculatorTestWrapper onCall={mutationSpy} readOnly={readOnly}>
     <AutosaveTextField
       label="MHA Amount"
       fieldName="mhaAmount"
@@ -145,6 +147,14 @@ describe('AutosaveTextField', () => {
     expect(input).toHaveAccessibleDescription('');
   });
 
+  it('disables the input when the goal is read-only but still shows its value', async () => {
+    const { getByRole } = render(<TestComponent readOnly />);
+
+    const input = getByRole('textbox', { name: 'MHA Amount' });
+    await waitFor(() => expect(input).toHaveValue('1000'));
+    expect(input).toBeDisabled();
+  });
+
   it('shows validation error for invalid type', async () => {
     const { getByRole } = render(<TestComponent />);
 
@@ -195,6 +205,26 @@ describe('AutosaveTextField', () => {
       await waitFor(() =>
         expect(mutationSpy).not.toHaveGraphqlOperation('UpdateGoalCalculation'),
       );
+    });
+
+    it('disables the select when the goal is read-only but still shows its value', async () => {
+      const { getByRole } = render(
+        <GoalCalculatorTestWrapper onCall={mutationSpy} readOnly>
+          <AutosaveTextField
+            label="MHA Amount"
+            fieldName="mhaAmount"
+            schema={defaultSchema}
+            select
+          >
+            <MenuItem value={1000}>1000</MenuItem>
+            <MenuItem value={2000}>2000</MenuItem>
+          </AutosaveTextField>
+        </GoalCalculatorTestWrapper>,
+      );
+
+      const input = getByRole('combobox', { name: 'MHA Amount' });
+      await waitFor(() => expect(input).toHaveTextContent('1000'));
+      expect(input).toHaveAttribute('aria-disabled', 'true');
     });
   });
 });

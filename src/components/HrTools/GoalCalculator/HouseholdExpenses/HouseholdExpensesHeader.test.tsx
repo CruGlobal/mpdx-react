@@ -14,23 +14,28 @@ const mutationSpy = jest.fn();
 
 type TestComponentProps = {
   directInputNull?: boolean;
+  readOnly?: boolean;
 };
 
 const TestComponent: React.FC<TestComponentProps> = ({
   directInputNull = false,
+  readOnly = false,
 }) => (
   <GqlMockedProvider<{ GoalCalculation: GoalCalculationQuery }>
     mocks={{
       GoalCalculation: {
-        goalCalculation: directInputNull
-          ? {
-              ...goalCalculationMock,
-              householdFamily: {
-                ...goalCalculationMock.householdFamily,
-                directInput: null,
-              },
-            }
-          : goalCalculationMock,
+        goalCalculation: {
+          ...goalCalculationMock,
+          readOnly,
+          ...(directInputNull
+            ? {
+                householdFamily: {
+                  ...goalCalculationMock.householdFamily,
+                  directInput: null,
+                },
+              }
+            : {}),
+        },
       },
     }}
     onCall={mutationSpy}
@@ -186,6 +191,45 @@ describe('HouseholdExpensesHeader', () => {
           },
         ),
       );
+    });
+  });
+
+  describe('read-only goal', () => {
+    it('should hide the edit button and action buttons when direct input is set', async () => {
+      const { findByText, queryByRole } = render(<TestComponent readOnly />);
+
+      expect(await findByText('$5,500')).toBeInTheDocument();
+      expect(
+        queryByRole('button', { name: 'Edit monthly budget' }),
+      ).not.toBeInTheDocument();
+      expect(
+        queryByRole('button', { name: 'Use paycheck amount' }),
+      ).not.toBeInTheDocument();
+      expect(
+        queryByRole('button', { name: 'Use categories total' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('should hide the action buttons when direct input is null', async () => {
+      const { findByText, queryByRole } = render(
+        <TestComponent readOnly directInputNull />,
+      );
+
+      expect(await findByText('$10,000')).toBeInTheDocument();
+      expect(
+        queryByRole('button', { name: 'Override paycheck amount' }),
+      ).not.toBeInTheDocument();
+      expect(
+        queryByRole('button', { name: 'Use categories total' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('should still show the left to allocate toggle', async () => {
+      const { findByText, getByRole } = render(<TestComponent readOnly />);
+
+      expect(await findByText('9%')).toBeInTheDocument();
+      userEvent.click(getByRole('button', { name: 'Switch to amount' }));
+      expect(await findByText('$500')).toBeInTheDocument();
     });
   });
 

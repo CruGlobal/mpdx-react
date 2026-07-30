@@ -8,6 +8,8 @@ import { useGoalCalculator } from './GoalCalculatorContext';
 const sleep = (duration: number) =>
   new Promise((resolve) => setTimeout(resolve, duration));
 
+const mutationThunk = jest.fn(() => sleep(100));
+
 const TestComponent: React.FC = () => {
   const {
     currentStep,
@@ -17,6 +19,7 @@ const TestComponent: React.FC = () => {
     toggleDrawer,
     trackMutation,
     isMutating,
+    isReadOnly,
   } = useGoalCalculator();
 
   return (
@@ -35,19 +38,33 @@ const TestComponent: React.FC = () => {
       <button onClick={handleContinue}>Continue</button>
       <button onClick={toggleDrawer}>Toggle Drawer</button>
 
-      <button onClick={() => trackMutation(sleep(100))}>Start mutation</button>
-      <button onClick={() => trackMutation(sleep(5000))}>
+      <button onClick={() => trackMutation(() => sleep(100))}>
+        Start mutation
+      </button>
+      <button onClick={() => trackMutation(() => sleep(5000))}>
         Start slow mutation
+      </button>
+      <button onClick={() => trackMutation(mutationThunk)}>
+        Track mutation thunk
       </button>
       <p data-testid="mutating-status">
         {isMutating ? 'Mutating' : 'Not mutating'}
+      </p>
+      <p data-testid="read-only-status">
+        {isReadOnly ? 'Read-only' : 'Editable'}
       </p>
     </div>
   );
 };
 
-const WrappedTestComponent: React.FC = () => (
-  <GoalCalculatorTestWrapper>
+interface WrappedTestComponentProps {
+  readOnly?: boolean;
+}
+
+const WrappedTestComponent: React.FC<WrappedTestComponentProps> = ({
+  readOnly,
+}) => (
+  <GoalCalculatorTestWrapper readOnly={readOnly}>
     <TestComponent />
   </GoalCalculatorTestWrapper>
 );
@@ -55,6 +72,7 @@ const WrappedTestComponent: React.FC = () => (
 describe('GoalCalculatorContext', () => {
   beforeEach(() => {
     jest.useFakeTimers();
+    mutationThunk.mockClear();
   });
 
   it('should provide initial state', () => {
@@ -101,5 +119,59 @@ describe('GoalCalculatorContext', () => {
     await waitFor(() =>
       expect(getByTestId('mutating-status')).toHaveTextContent('Not mutating'),
     );
+  });
+
+  it('isReadOnly defaults to false while the goal is loading', () => {
+    const { getByTestId } = render(<WrappedTestComponent />);
+
+    // Before the query resolves, goal data is absent and isReadOnly falls back to false
+    expect(getByTestId('read-only-status')).toHaveTextContent('Editable');
+  });
+
+  it('isReadOnly is true when the goal is read-only', async () => {
+    const { getByTestId } = render(
+      <GoalCalculatorTestWrapper readOnly>
+        <TestComponent />
+      </GoalCalculatorTestWrapper>,
+    );
+
+    await waitFor(() =>
+      expect(getByTestId('read-only-status')).toHaveTextContent('Read-only'),
+    );
+  });
+
+  describe('trackMutation read-only guard', () => {
+    it('invokes the mutation thunk when the goal is not read-only', async () => {
+      const { getByRole, getByTestId } = render(<WrappedTestComponent />);
+
+      await waitFor(() =>
+        expect(getByTestId('read-only-status')).toHaveTextContent('Editable'),
+      );
+
+      userEvent.click(getByRole('button', { name: 'Track mutation thunk' }));
+      expect(mutationThunk).toHaveBeenCalledTimes(1);
+      expect(getByTestId('mutating-status')).toHaveTextContent('Mutating');
+
+      jest.advanceTimersByTime(500);
+      await waitFor(() =>
+        expect(getByTestId('mutating-status')).toHaveTextContent(
+          'Not mutating',
+        ),
+      );
+    });
+
+    it('does not invoke the mutation thunk when the goal is read-only', async () => {
+      const { getByRole, getByTestId } = render(
+        <WrappedTestComponent readOnly />,
+      );
+
+      await waitFor(() =>
+        expect(getByTestId('read-only-status')).toHaveTextContent('Read-only'),
+      );
+
+      userEvent.click(getByRole('button', { name: 'Track mutation thunk' }));
+      expect(mutationThunk).not.toHaveBeenCalled();
+      expect(getByTestId('mutating-status')).toHaveTextContent('Not mutating');
+    });
   });
 });
