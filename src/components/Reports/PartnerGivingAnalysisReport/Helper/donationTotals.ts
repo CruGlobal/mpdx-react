@@ -8,7 +8,10 @@ export interface DonationMoney {
 export const sumDonationsAcrossPartners = (
   donations: DonationMoney[],
 ): number => {
-  return donations.reduce((total, donation) => total + donation.amount, 0);
+  return donations.reduce(
+    (total, donation) => total + donation.convertedAmount,
+    0,
+  );
 };
 
 export interface AccountCurrencyGift {
