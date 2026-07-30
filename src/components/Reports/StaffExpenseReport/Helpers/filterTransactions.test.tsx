@@ -1,4 +1,4 @@
-import { DateTime } from 'luxon';
+import { DateTime, Settings } from 'luxon';
 import {
   Fund,
   StaffExpenseCategoryEnum,
@@ -39,19 +39,19 @@ const mockFund: Fund = {
                 {
                   id: 'transaction-1',
                   amount: 100,
-                  transactedAt: '2025-01-15',
+                  transactedAt: '2025-01-15T00:00:00Z',
                   description: 'January Additional Salary',
                 },
                 {
                   id: 'transaction-2',
                   amount: -100,
-                  transactedAt: '2025-01-20',
+                  transactedAt: '2025-01-20T00:00:00Z',
                   description: 'Star Wars Costume',
                 },
                 {
                   id: 'transaction-3',
                   amount: -1000,
-                  transactedAt: '2025-01-24',
+                  transactedAt: '2025-01-24T00:00:00Z',
                   description: 'January Additional Salary',
                 },
               ],
@@ -79,7 +79,7 @@ const mockFund: Fund = {
                 {
                   id: 'transaction-4',
                   amount: -50,
-                  transactedAt: '2025-01-10',
+                  transactedAt: '2025-01-10T00:00:00Z',
                   description: 'Health Welfare Payment',
                 },
               ],
@@ -301,7 +301,7 @@ describe('filterTransactions', () => {
     expect(grouped.groupedTransactions).toHaveLength(2);
   });
 
-  it('uses earliest transaction date for grouped transaction', () => {
+  it('uses the earliest transaction date, transformed from UTC, for grouped transaction', () => {
     const result = filterTransactions({
       ...baseParams,
       filters: {
@@ -311,7 +311,7 @@ describe('filterTransactions', () => {
     });
 
     const grouped = result[0] as GroupedTransaction;
-    // Earliest transaction is transaction-3 at 2025-01-20
+    // Earliest transaction is transaction-2 at 2025-01-20
     expect(grouped.transactedAt).toBe('2025-01-20');
   });
 
@@ -382,5 +382,86 @@ describe('getAvailableCategories', () => {
     const result = getAvailableCategories([], null, targetTime);
 
     expect(result).toEqual([]);
+  });
+});
+
+describe('UTC timestamps in a behind-UTC timezone', () => {
+  const originalZone = Settings.defaultZone;
+
+  beforeEach(() => {
+    Settings.defaultZone = 'America/Denver';
+  });
+
+  afterEach(() => {
+    Settings.defaultZone = originalZone;
+  });
+
+  const firstOfMonthFund: Fund = {
+    ...mockFund,
+    categories: [
+      {
+        category: StaffExpenseCategoryEnum.Benefits,
+        total: -50,
+        averagePerMonth: -50,
+        subcategories: [
+          {
+            subCategory: StaffExpensesSubCategoryEnum.HealthWelfare,
+            total: -50,
+            averagePerMonth: -50,
+            breakdownByMonth: [
+              {
+                month: '2025-02-01',
+                total: -50,
+                transactions: [
+                  {
+                    id: 'transaction-first',
+                    amount: -50,
+                    transactedAt: '2025-02-01T00:00:00Z',
+                    description: 'First of the month',
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        breakdownByMonth: [{ month: '2025-02-01', total: -50 }],
+      },
+    ],
+  };
+
+  it('keeps a first-of-month transaction inside the default month filter', () => {
+    const result = filterTransactions({
+      ...baseParams,
+      fund: firstOfMonthFund,
+      targetTime: DateTime.fromISO('2025-02-15'),
+      filters: null,
+    });
+
+    expect(result).toHaveLength(1);
+    expect(result[0].transactedAt).toBe('2025-02-01');
+  });
+
+  it('keeps a first-of-month transaction inside a custom date range', () => {
+    const result = filterTransactions({
+      ...baseParams,
+      fund: firstOfMonthFund,
+      filters: {
+        ...baseFilters,
+        startDate: DateTime.fromISO('2025-02-01'),
+        endDate: DateTime.fromISO('2025-02-28'),
+      },
+    });
+
+    expect(result).toHaveLength(1);
+  });
+
+  it('getAvailableCategories includes a category whose only transaction is on the 1st', () => {
+    expect(
+      getAvailableCategories(
+        [firstOfMonthFund],
+        null,
+        DateTime.fromISO('2025-02-15'),
+      ),
+    ).toEqual([StaffExpenseCategoryEnum.Benefits]);
   });
 });

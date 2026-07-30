@@ -6,6 +6,7 @@ import { useFilteredFunds } from 'src/hooks/useFilteredFunds';
 import { useGetLastTwelveMonths } from 'src/hooks/useGetLastTwelveMonths';
 import { useLocale } from 'src/hooks/useLocale';
 import { monthYearFormat } from 'src/lib/intlFormat';
+import { transformTransactionDate } from '../../Shared/Helpers/transformTransactionDate';
 import { Filters } from '../../Shared/SettingsDialog/SettingsDialog';
 import { DateRange } from '../../StaffExpenseReport/Helpers/StaffReportEnum';
 import { FundTypes, Funds } from '../Helper/MPGAReportEnum';
@@ -160,7 +161,9 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
             breakdownByMonth: subcategory.breakdownByMonth.map((month) => ({
               ...month,
               transactions: (month.transactions ?? []).map((transaction) => ({
-                transactedAt: transaction.transactedAt,
+                transactedAt: transformTransactionDate(
+                  transaction.transactedAt,
+                ),
                 description: transaction.description ?? '',
                 amount: transaction.amount,
               })),
