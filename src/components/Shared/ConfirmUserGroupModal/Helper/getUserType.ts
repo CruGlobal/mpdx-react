@@ -12,6 +12,8 @@ export const getUserType = (
       return t('Cru Global Staff');
     case UserTypeEnum.NonCru:
       return t('Non Cru User');
+    case UserTypeEnum.HybridStaff:
+      return t('Cru Hybrid Staff');
     default:
       return t('Unknown');
   }
