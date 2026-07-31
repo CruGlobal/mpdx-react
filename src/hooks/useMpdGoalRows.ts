@@ -10,7 +10,6 @@ import { getNewStaffBudgetCategory } from 'src/components/HrTools/GoalCalculator
 import { safeProgressRatio } from 'src/components/HrTools/Shared/helpers/safeProgressRatio';
 import { PrimaryBudgetCategoryEnum } from 'src/graphql/types.generated';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
-import { useGoalCalculatorConstants } from './useGoalCalculatorConstants';
 import { useLocale } from './useLocale';
 
 export const isBoldLine = (line: string) => ['1J', '6', '8'].includes(line);
@@ -37,8 +36,11 @@ interface MinistryExpenseLine {
 export const useMpdGoalRows = (supportRaised: number) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { goalCalculationResult, goalTotals } = useGoalCalculator();
-  const { goalMiscConstants } = useGoalCalculatorConstants();
+  const {
+    goalCalculationResult,
+    goalTotals,
+    constants: { goalMiscConstants },
+  } = useGoalCalculator();
 
   const ministryExpenseLines = useMemo<MinistryExpenseLine[]>(
     () => [

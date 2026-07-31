@@ -1,6 +1,6 @@
-query GoalCalculatorConstants {
+query GoalCalculatorConstants($year: Int) {
   constant {
-    mpdGoalBenefitsConstants {
+    mpdGoalBenefitsConstants(year: $year) {
       id
       size
       sizeDisplayName
@@ -8,12 +8,12 @@ query GoalCalculatorConstants {
       planDisplayName
       cost
     }
-    mpdGoalGeographicConstants {
+    mpdGoalGeographicConstants(year: $year) {
       id
       location
       percentageMultiplier
     }
-    mpdGoalMiscConstants {
+    mpdGoalMiscConstants(year: $year) {
       id
       category
       categoryDisplayName

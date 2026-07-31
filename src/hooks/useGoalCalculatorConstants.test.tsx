@@ -81,6 +81,36 @@ const mockData = {
 };
 
 describe('useGoalCalculatorConstants', () => {
+  it('queries constants for the default year when no year is provided', async () => {
+    const mutationSpy = jest.fn();
+    renderHook(() => useGoalCalculatorConstants(), {
+      wrapper: ({ children }: { children: ReactElement }) => (
+        <GqlMockedProvider onCall={mutationSpy}>{children}</GqlMockedProvider>
+      ),
+    });
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('GoalCalculatorConstants', {
+        year: null,
+      }),
+    );
+  });
+
+  it('queries constants for the provided year', async () => {
+    const mutationSpy = jest.fn();
+    renderHook(() => useGoalCalculatorConstants(2027), {
+      wrapper: ({ children }: { children: ReactElement }) => (
+        <GqlMockedProvider onCall={mutationSpy}>{children}</GqlMockedProvider>
+      ),
+    });
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('GoalCalculatorConstants', {
+        year: 2027,
+      }),
+    );
+  });
+
   it('should show loading state when no data', () => {
     const { result } = renderHook(() => useGoalCalculatorConstants(), {
       wrapper: ({ children }: { children: ReactElement }) => (

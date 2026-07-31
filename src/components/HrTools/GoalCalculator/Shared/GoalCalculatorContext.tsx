@@ -15,7 +15,10 @@ import { MpdGoalBenefitsConstantSizeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { getQueryParam } from 'src/lib/queryParam';
-import { useGoalCalculatorConstants } from '../../../../hooks/useGoalCalculatorConstants';
+import {
+  UseGoalCalculatorConstantsResult,
+  useGoalCalculatorConstants,
+} from '../../../../hooks/useGoalCalculatorConstants';
 import {
   GoalCalculatorReportEnum,
   GoalCalculatorStepEnum,
@@ -47,6 +50,14 @@ export type GoalCalculatorType = {
 
   goalCalculationResult: ReturnType<typeof useGoalCalculationQuery>;
   goalTotals: GoalTotals;
+
+  /**
+   * The goal calculator constants for the goal's calculations year. Consumers
+   * inside the calculator should use these instead of calling
+   * useGoalCalculatorConstants themselves so that all math uses the same
+   * year's constants.
+   */
+  constants: UseGoalCalculatorConstantsResult;
 
   /** Whether the goal is read-only and all inputs should be disabled */
   isReadOnly: boolean;
@@ -130,7 +141,11 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     setDefaultTypeChanged(false);
   }, []);
 
-  const constants = useGoalCalculatorConstants();
+  // Use the constants for the goal's calculations year so that changing the
+  // year recalculates the goal with that year's values
+  const constants = useGoalCalculatorConstants(
+    goalCalculationResult.data?.goalCalculation?.calculationsYear,
+  );
 
   const steps = useSteps();
   const percentComplete = useMemo(
@@ -221,6 +236,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       trackMutation,
       percentComplete,
       goalTotals,
+      constants,
       isMarried,
       defaultTypeChanged,
       clearDefaultTypeChanged,
@@ -244,6 +260,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       trackMutation,
       percentComplete,
       goalTotals,
+      constants,
       isMarried,
       defaultTypeChanged,
       clearDefaultTypeChanged,

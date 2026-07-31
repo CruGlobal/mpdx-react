@@ -168,7 +168,7 @@ export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
         </Box>
         <Tooltip
           title={t(
-            'The year the goal is calculated for. This determines the salary and benefit constants used.',
+            'Benefits charges, geographic multipliers, base salary, and other constants change from year to year, which slightly increases most goals. Choose which year to calculate this goal with.',
           )}
         >
           <IconButton size="small" aria-label={t('About the calculation year')}>

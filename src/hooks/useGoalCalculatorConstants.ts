@@ -60,22 +60,33 @@ export const formatConstants = (
   };
 };
 
-interface UseGoalCalculatorConstantsResult extends FormattedConstants {
+export interface UseGoalCalculatorConstantsResult extends FormattedConstants {
   loading: boolean;
   error: ApolloError | undefined;
 }
 
-export const useGoalCalculatorConstants =
-  (): UseGoalCalculatorConstantsResult => {
-    const { data, error } = useGoalCalculatorConstantsQuery({
-      fetchPolicy: 'cache-first',
-    });
+/**
+ * Load the MPD goal calculator constants.
+ *
+ * @param year The year whose constants to load. The constants vary from year
+ *   to year, so goals pass their calculations year to keep their math on that
+ *   year's values. When omitted or null, the server uses the current year.
+ */
+export const useGoalCalculatorConstants = (
+  year?: number | null,
+): UseGoalCalculatorConstantsResult => {
+  const { data, error } = useGoalCalculatorConstantsQuery({
+    // Normalize undefined to null so that all callers without a year share one
+    // cache entry
+    variables: { year: year ?? null },
+    fetchPolicy: 'cache-first',
+  });
 
-    const constants = useMemo(() => formatConstants(data?.constant), [data]);
+  const constants = useMemo(() => formatConstants(data?.constant), [data]);
 
-    return {
-      ...constants,
-      error,
-      loading: !data,
-    };
+  return {
+    ...constants,
+    error,
+    loading: !data,
   };
+};

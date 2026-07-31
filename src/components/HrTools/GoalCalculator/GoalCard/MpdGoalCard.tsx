@@ -17,7 +17,9 @@ export interface MpdGoalCardProps {
 export const MpdGoalCard: React.FC<MpdGoalCardProps> = ({ goal }) => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const constants = useGoalCalculatorConstants();
+  // Use the constants for the goal's calculations year so that the displayed
+  // total matches the goal calculator
+  const constants = useGoalCalculatorConstants(goal.calculationsYear);
   const [deleteGoalCalculation] = useDeleteGoalCalculationMutation();
 
   const overallTotal = useMemo(

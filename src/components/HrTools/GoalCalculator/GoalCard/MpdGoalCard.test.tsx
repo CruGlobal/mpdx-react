@@ -70,6 +70,16 @@ describe('MpdGoalCard', () => {
     expect(await findByText('$16,138.94')).toBeInTheDocument();
   });
 
+  it("loads the constants for the goal's calculations year", async () => {
+    render(<TestComponent />);
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('GoalCalculatorConstants', {
+        year: 2019,
+      }),
+    );
+  });
+
   it('shows the skeleton while goal calculator constants are loading', () => {
     const { getByTestId } = render(<TestComponent />);
 

@@ -35,6 +35,10 @@ export const goalCalculationMock = gqlMock<
       id: 'goal-calculation-1',
       name: 'Initial Goal Name',
       readOnly: false,
+      // Jest pins the current date to 2020-01-01, so the calculation year
+      // options are 2020, 2019, and 2018
+      createdAt: '2018-06-15T12:00:00-05:00',
+      calculationsYear: 2019,
       firstName: 'John',
       spouseFirstName: 'Jane',
       lastName: 'Doe',
