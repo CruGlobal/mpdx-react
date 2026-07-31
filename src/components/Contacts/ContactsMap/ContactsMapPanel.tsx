@@ -138,8 +138,10 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
       ),
     },
     {
+      // Not "no primary address" -- a contact lands here whenever its primary address has no
+      // coordinates, which includes addresses that are set and valid but failed to geocode.
       key: 'NoAddress',
-      title: t('No Primary Address Set'),
+      title: t('Could Not Be Located'),
       imgUrl: '/images/pin_inactive.png',
       data: data?.filter((contact) => !contact?.lat),
     },
