@@ -113,7 +113,7 @@ export const useFourteenMonthReport = (
                 months: contactDonationInfo.months.map((month, index) => {
                   const salaryCurrencyTotal = month.donations.reduce(
                     (convertedTotal, donation) =>
-                      convertedTotal + Number(donation.converted_amount),
+                      convertedTotal + Number(donation.amount),
                     0,
                   );
                   return {
