@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 import theme from 'src/theme';
 import { GoalCard, GoalCardProps } from './GoalCard';
 
-const mutationSpy = jest.fn();
+const mutationSpy = jest.fn().mockResolvedValue(undefined);
 
 const baseProps: GoalCardProps = {
   name: 'Test Goal',
@@ -110,5 +110,34 @@ describe('GoalCard', () => {
     const { queryByText } = renderCard();
 
     expect(queryByText('Default')).not.toBeInTheDocument();
+  });
+
+  it('hides the Delete button when onDelete is not provided', () => {
+    const { getByRole, queryByRole } = renderCard({ onDelete: undefined });
+
+    expect(queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument();
+    expect(getByRole('link', { name: 'View' })).toBeInTheDocument();
+  });
+
+  it('does not mount the confirmation dialog when onDelete is not provided', () => {
+    const { queryByRole, queryByText } = renderCard({ onDelete: undefined });
+
+    expect(queryByRole('dialog')).not.toBeInTheDocument();
+    expect(queryByText('Delete Goal')).not.toBeInTheDocument();
+  });
+
+  it('unmounts an open confirmation dialog if onDelete becomes undefined', () => {
+    const { getByRole, queryByRole, rerender } = renderCard();
+
+    userEvent.click(getByRole('button', { name: 'Delete' }));
+    expect(getByRole('dialog')).toBeInTheDocument();
+
+    rerender(
+      <ThemeProvider theme={theme}>
+        <GoalCard {...baseProps} onDelete={undefined} />
+      </ThemeProvider>,
+    );
+
+    expect(queryByRole('dialog')).not.toBeInTheDocument();
   });
 });

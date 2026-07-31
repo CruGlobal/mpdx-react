@@ -91,6 +91,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
     trackMutation,
     defaultTypeChanged,
     clearDefaultTypeChanged,
+    isReadOnly,
     goalCalculationResult,
     isMutating,
   } = useGoalCalculator();
@@ -171,7 +172,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   const directInput = category.directInput !== null;
 
   const updateDirectInput = (directInput: number | null) => {
-    return trackMutation(
+    return trackMutation(() =>
       updatePrimaryBudgetCategory({
         variables: {
           input: {
@@ -223,7 +224,8 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
 
   // Update line item defaults when defaultType changes (user changed role/family size)
   useEffect(() => {
-    if (!hasDefaultsForType) {
+    // Read-only goals reject mutations, and their role/family size can't change anyways
+    if (isReadOnly || !hasDefaultsForType) {
       return;
     }
 
@@ -242,23 +244,26 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
 
     gridData.forEach(async (row) => {
       if (row.category) {
-        await updateSubBudgetCategory({
-          variables: {
-            input: {
-              accountListId,
-              attributes: {
-                id: row.id,
-                label: row.label,
-                amount: newDefaultValue,
+        await trackMutation(() =>
+          updateSubBudgetCategory({
+            variables: {
+              input: {
+                accountListId,
+                attributes: {
+                  id: row.id,
+                  label: row.label,
+                  amount: newDefaultValue,
+                },
               },
             },
-          },
-        });
+          }),
+        );
       }
     });
 
     clearDefaultTypeChanged();
   }, [
+    isReadOnly,
     hasDefaultsForType,
     defaultTypeChanged,
     directInput,
@@ -267,6 +272,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
     goalCalculationResult.data,
     gridData,
     accountListId,
+    trackMutation,
     updateSubBudgetCategory,
     clearDefaultTypeChanged,
   ]);
@@ -276,12 +282,13 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
     saveValue: updateDirectInput,
     fieldName: 'amount',
     schema: directInputSchema,
+    disabled: isReadOnly,
     saveOnChange: false,
   });
   const addExpense = () => {
     const tempId = `temp-${Date.now()}`;
 
-    trackMutation(
+    trackMutation(() =>
       createSubBudgetCategory({
         variables: {
           input: {
@@ -333,7 +340,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   const handleDelete = (id: string | number) => {
     const rowId = id.toString();
 
-    trackMutation(
+    trackMutation(() =>
       deleteSubBudgetCategory({
         variables: {
           input: {
@@ -395,7 +402,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
         return updated;
       });
 
-      trackMutation(
+      trackMutation(() =>
         updateSubBudgetCategory({
           variables: {
             input: {
@@ -491,40 +498,45 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
       headerAlign: 'center',
       renderCell: renderAmountCell,
     },
-    {
-      field: 'actions',
-      type: 'actions',
-      headerName: '',
-      width: 60,
-      getActions: (params) => {
-        // Don't show delete action for total row
-        if (params.id === 'total') {
-          return [];
-        }
+    // Read-only goals have no row actions, so omit the actions column entirely
+    ...(isReadOnly
+      ? []
+      : ([
+          {
+            field: 'actions',
+            type: 'actions',
+            headerName: '',
+            width: 60,
+            getActions: (params) => {
+              // Don't show delete action for total row
+              if (params.id === 'total') {
+                return [];
+              }
 
-        if (!params.row.canDelete) {
-          return [
-            <GridActionsCellItem
-              key="forbidden"
-              icon={<DoNotDisturbAltIcon />}
-              label="forbidden"
-              disabled
-              showInMenu={false}
-            />,
-          ];
-        }
+              if (!params.row.canDelete) {
+                return [
+                  <GridActionsCellItem
+                    key="forbidden"
+                    icon={<DoNotDisturbAltIcon />}
+                    label="forbidden"
+                    disabled
+                    showInMenu={false}
+                  />,
+                ];
+              }
 
-        return [
-          <GridActionsCellItem
-            key="delete"
-            icon={<DeleteIcon />}
-            label="Delete"
-            onClick={() => handleDelete(params.id)}
-            showInMenu={false}
-          />,
-        ];
-      },
-    },
+              return [
+                <GridActionsCellItem
+                  key="delete"
+                  icon={<DeleteIcon />}
+                  label="Delete"
+                  onClick={() => handleDelete(params.id)}
+                  showInMenu={false}
+                />,
+              ];
+            },
+          },
+        ] satisfies GridColDef[])),
   ];
 
   return (
@@ -538,6 +550,8 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
               size="small"
               onClick={() => handleDirectInputToggle(true)}
               startIcon={<FunctionsIcon />}
+              disabled={isReadOnly}
+              aria-pressed={directInput}
             >
               {t('Lump Sum')}
             </Button>
@@ -547,6 +561,8 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
             variant={!directInput ? 'contained' : 'outlined'}
             onClick={() => handleDirectInputToggle(false)}
             startIcon={<ViewHeadlineIcon />}
+            disabled={isReadOnly}
+            aria-pressed={!directInput}
           >
             {t('Line Item')}
           </Button>
@@ -577,6 +593,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
               onClick={addExpense}
               size="small"
               startIcon={<AddIcon />}
+              disabled={isReadOnly}
             >
               {t('Add Line Item')}
             </Button>
@@ -586,6 +603,10 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
               columns={columns}
               processRowUpdate={processRowUpdate}
               isCellEditable={(params) => {
+                // Read-only goals reject all edits
+                if (isReadOnly) {
+                  return false;
+                }
                 // Don't allow editing the total row or label field when canDelete is false
                 if (params.id === 'total') {
                   return false;

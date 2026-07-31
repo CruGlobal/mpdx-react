@@ -26,7 +26,7 @@ export const useSaveField = () => {
         return;
       }
 
-      return trackMutation(
+      return trackMutation(() =>
         updateGoalCalculation({
           variables: {
             input: {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { MenuItem, TextField } from '@mui/material';
-import { render } from '@testing-library/react';
+import { act, render, renderHook } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as yup from 'yup';
 import i18n from 'src/lib/i18n';
@@ -160,6 +160,33 @@ describe('AutosaveTextField', () => {
     const input = getByRole('textbox', { name: 'Field' });
     expect(input).toBeDisabled();
     expect(input).toHaveAccessibleDescription('');
+  });
+
+  it('short-circuits onChange and onBlur when disabled', () => {
+    const schema = yup.object({
+      field: amount('Field', i18n.t),
+    });
+
+    const { result } = renderHook(() =>
+      useAutoSave({
+        value: 100,
+        saveValue,
+        fieldName: 'field',
+        schema,
+        disabled: true,
+        saveOnChange: true,
+      }),
+    );
+
+    act(() => {
+      result.current.onChange({
+        target: { value: '200' },
+      } as React.ChangeEvent<HTMLInputElement>);
+      result.current.onBlur();
+    });
+
+    expect(saveValue).not.toHaveBeenCalled();
+    expect(result.current.value).toBe('100');
   });
 
   it('shows validation error for invalid type after blur', () => {

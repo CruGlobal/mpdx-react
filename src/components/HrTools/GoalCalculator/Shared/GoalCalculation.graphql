@@ -1,5 +1,6 @@
 fragment GoalCalculationSettings on GoalCalculation {
   name
+  readOnly
   firstName
   spouseFirstName
   lastName

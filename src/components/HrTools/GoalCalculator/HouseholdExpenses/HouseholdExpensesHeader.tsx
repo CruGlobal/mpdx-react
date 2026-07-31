@@ -48,6 +48,7 @@ export const HouseholdExpensesHeader: React.FC = () => {
   const {
     goalCalculationResult: { data, loading },
     goalTotals: { monthlyBudget },
+    isReadOnly,
     trackMutation,
   } = useGoalCalculator();
 
@@ -78,7 +79,7 @@ export const HouseholdExpensesHeader: React.FC = () => {
   const setDirectInput = async (directInput: number | null) => {
     const householdFamilyId = data?.goalCalculation.householdFamily.id;
     if (householdFamilyId) {
-      return trackMutation(
+      return trackMutation(() =>
         updateDirectInput({
           variables: {
             accountListId,
@@ -161,7 +162,7 @@ export const HouseholdExpensesHeader: React.FC = () => {
               <AmountTypography>
                 {currencyFormat(monthlyBudget, 'USD', locale)}
               </AmountTypography>
-              {typeof directInput === 'number' && (
+              {typeof directInput === 'number' && !isReadOnly && (
                 <IconButton
                   onClick={handleEditDirectInput}
                   aria-label={t('Edit monthly budget')}
@@ -172,7 +173,7 @@ export const HouseholdExpensesHeader: React.FC = () => {
             </Stack>
           )}
         </CardContent>
-        {!loading && (
+        {!loading && !isReadOnly && (
           <CardActions>
             {editing ? (
               <>

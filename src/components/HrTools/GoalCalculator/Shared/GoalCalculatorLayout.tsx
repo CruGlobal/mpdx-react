@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import React from 'react';
+import { Alert } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { PanelLayout } from '../../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { PanelTypeEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
@@ -31,6 +32,7 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
     setDrawerOpen,
     toggleDrawer,
     percentComplete,
+    isReadOnly,
   } = useGoalCalculator();
 
   const handleStepIconClick = (step: GoalCalculatorStepEnum) => {
@@ -59,7 +61,16 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
       sidebarTitle={currentStep.title}
       isSidebarOpen={isDrawerOpen}
       sidebarAriaLabel={t('{{step}} Sections', { step: currentStep.title })}
-      mainContent={mainContent}
+      mainContent={
+        <>
+          {isReadOnly && (
+            <Alert severity="info" sx={{ mb: 2 }}>
+              {t('This goal is finalized and read-only.')}
+            </Alert>
+          )}
+          {mainContent}
+        </>
+      }
       backHref={`/accountLists/${accountListId}/hrTools/goalCalculator`}
       backTitle={t('Go Back')}
     />

@@ -356,4 +356,94 @@ describe('GoalCalculatorGrid', () => {
       await findByText('Only the portion not reimbursed as ministry expense.'),
     ).toBeInTheDocument();
   });
+
+  describe('read-only goal', () => {
+    it('disables the mode toggle and add buttons and hides the actions column', async () => {
+      const mutationSpy = jest.fn();
+      const { findByText, getAllByRole, getByRole, queryByLabelText } = render(
+        <GoalCalculatorTestWrapper readOnly onCall={mutationSpy}>
+          <TestComponent />
+        </GoalCalculatorTestWrapper>,
+      );
+
+      const otherMinistryRow = (await findByText('Other Ministry')).closest(
+        '[role="row"]',
+      );
+
+      expect(getByRole('button', { name: 'Lump Sum' })).toBeDisabled();
+      expect(getByRole('button', { name: 'Line Item' })).toBeDisabled();
+      expect(getByRole('button', { name: 'Add Line Item' })).toBeDisabled();
+
+      userEvent.hover(otherMinistryRow!);
+      expect(queryByLabelText('Delete')).not.toBeInTheDocument();
+
+      // The actions column is omitted entirely for read-only goals
+      expect(getAllByRole('columnheader')).toHaveLength(2);
+
+      expect(mutationSpy).not.toHaveGraphqlOperation(
+        'UpdatePrimaryBudgetCategory',
+      );
+      expect(mutationSpy).not.toHaveGraphqlOperation('CreateSubBudgetCategory');
+      expect(mutationSpy).not.toHaveGraphqlOperation('DeleteSubBudgetCategory');
+    });
+
+    it('does not open the cell editor', async () => {
+      const mutationSpy = jest.fn();
+      const { findByText, queryByDisplayValue } = render(
+        <GoalCalculatorTestWrapper readOnly onCall={mutationSpy}>
+          <TestComponent />
+        </GoalCalculatorTestWrapper>,
+      );
+
+      const nameCell = await findByText('Other Ministry');
+      userEvent.dblClick(nameCell);
+
+      expect(queryByDisplayValue('Other Ministry')).not.toBeInTheDocument();
+      expect(mutationSpy).not.toHaveGraphqlOperation('UpdateSubBudgetCategory');
+    });
+
+    it('still displays the calculated total without firing mutations', async () => {
+      const mutationSpy = jest.fn();
+      const { findByText } = render(
+        <GoalCalculatorTestWrapper readOnly onCall={mutationSpy}>
+          <TestComponent />
+        </GoalCalculatorTestWrapper>,
+      );
+
+      expect(await findByText('Total')).toBeInTheDocument();
+      expect(await findByText('$1,450')).toBeInTheDocument();
+
+      // Mounting a read-only grid must not fire any mutations, even from the
+      // line item defaults effect
+      await waitFor(() =>
+        expect(mutationSpy).not.toHaveGraphqlOperation(
+          'UpdateSubBudgetCategory',
+        ),
+      );
+      expect(mutationSpy).not.toHaveGraphqlOperation(
+        'UpdatePrimaryBudgetCategory',
+      );
+      expect(mutationSpy).not.toHaveGraphqlOperation('CreateSubBudgetCategory');
+      expect(mutationSpy).not.toHaveGraphqlOperation('DeleteSubBudgetCategory');
+    });
+
+    it('disables the lump sum total field', async () => {
+      const mutationSpy = jest.fn();
+      const { findByLabelText } = render(
+        <GoalCalculatorTestWrapper readOnly onCall={mutationSpy}>
+          <TestComponent primaryBudgetCategoryIndex={1} />
+        </GoalCalculatorTestWrapper>,
+      );
+
+      const totalField = await findByLabelText('Total');
+      expect(totalField).toBeDisabled();
+
+      userEvent.type(totalField, '123');
+      totalField.blur();
+
+      expect(mutationSpy).not.toHaveGraphqlOperation(
+        'UpdatePrimaryBudgetCategory',
+      );
+    });
+  });
 });

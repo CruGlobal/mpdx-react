@@ -48,10 +48,18 @@ export type GoalCalculatorType = {
   goalCalculationResult: ReturnType<typeof useGoalCalculationQuery>;
   goalTotals: GoalTotals;
 
+  /** Whether the goal is read-only and all inputs should be disabled */
+  isReadOnly: boolean;
+
   /** Whether any mutations are currently in progress */
   isMutating: boolean;
-  /** Call with the mutation promise to track the start and end of mutations */
-  trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
+  /**
+   * Call with a thunk that starts the mutation to track the start and end of
+   * mutations. As a defense-in-depth guard, the thunk is not invoked and the
+   * mutation does not fire when the goal is read-only; in that case the
+   * returned promise resolves to `undefined`.
+   */
+  trackMutation: <T>(mutate: () => Promise<T>) => Promise<T | undefined>;
   percentComplete: number;
 
   isMarried: boolean;
@@ -89,6 +97,9 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       id: goalCalculationId,
     },
   });
+
+  const isReadOnly =
+    goalCalculationResult.data?.goalCalculation?.readOnly ?? false;
 
   const role = goalCalculationResult.data?.goalCalculation?.role ?? null;
   const familySize =
@@ -140,7 +151,21 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const [rightPanelContent, setRightPanelContent] =
     useState<JSX.Element | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(true);
-  const { trackMutation, isMutating } = useTrackMutation();
+  const { trackMutation: trackMutationPromise, isMutating } =
+    useTrackMutation();
+
+  // Guard the mutation funnel: read-only goals reject mutations server-side, so
+  // don't even start them client-side. Every mutation in the goal calculator
+  // should flow through this wrapper.
+  const trackMutation = useCallback(
+    async <T,>(mutate: () => Promise<T>): Promise<T | undefined> => {
+      if (isReadOnly) {
+        return undefined;
+      }
+      return trackMutationPromise(mutate());
+    },
+    [isReadOnly, trackMutationPromise],
+  );
 
   const currentStep = steps[stepIndex];
 
@@ -191,6 +216,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       selectedReport,
       setSelectedReport,
       goalCalculationResult,
+      isReadOnly,
       isMutating,
       trackMutation,
       percentComplete,
@@ -213,6 +239,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       selectedReport,
       setSelectedReport,
       goalCalculationResult,
+      isReadOnly,
       isMutating,
       trackMutation,
       percentComplete,

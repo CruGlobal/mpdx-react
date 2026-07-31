@@ -86,6 +86,10 @@ export const useAutoSave = <Value extends string | number>({
   return {
     value: internalValue,
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (disabled) {
+        return;
+      }
+
       const newValue = transformValue(event.target.value);
       setInternalValue(newValue);
 
@@ -98,6 +102,10 @@ export const useAutoSave = <Value extends string | number>({
       }
     },
     onBlur: () => {
+      if (disabled) {
+        return;
+      }
+
       setTouched(true);
       if (!saveOnChange && errorMessage === null && parsedValue !== value) {
         saveValue(parsedValue);

@@ -5,6 +5,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   GoalCalculationAge,
+  MpdGoalBenefitsConstantPlanEnum,
   MpdGoalBenefitsConstantSizeEnum,
 } from 'src/graphql/types.generated';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
@@ -20,9 +21,15 @@ const mutationSpy = jest.fn();
 
 interface TestComponentProps {
   single?: boolean;
+  readOnly?: boolean;
+  benefitsPlan?: MpdGoalBenefitsConstantPlanEnum;
 }
 
-const TestComponent: React.FC<TestComponentProps> = ({ single = false }) => (
+const TestComponent: React.FC<TestComponentProps> = ({
+  single = false,
+  readOnly = false,
+  benefitsPlan = MpdGoalBenefitsConstantPlanEnum.Base,
+}) => (
   <GqlMockedProvider<{
     GoalCalculation: GoalCalculationQuery;
     GoalCalculatorConstants: GoalCalculatorConstantsQuery;
@@ -32,9 +39,11 @@ const TestComponent: React.FC<TestComponentProps> = ({ single = false }) => (
       GoalCalculation: {
         goalCalculation: {
           ...goalCalculationMock,
+          readOnly,
           familySize: single
             ? MpdGoalBenefitsConstantSizeEnum.Single
             : MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren,
+          benefitsPlan,
         },
       },
       GoalCalculatorConstants: {
@@ -101,6 +110,23 @@ describe('InformationCategory', () => {
     });
   });
 
+  it('disables the SECA status select and geographic location autocomplete when the goal is read-only', async () => {
+    const { getByRole } = render(<TestComponent readOnly />);
+
+    // Wait for the goal calculation data to load so the fields aren't just
+    // disabled because data is missing
+    await waitFor(() =>
+      expect(getByRole('textbox', { name: 'First Name' })).toHaveValue('John'),
+    );
+
+    expect(
+      getByRole('combobox', { name: 'SECA (Social Security) Status' }),
+    ).toHaveAttribute('aria-disabled', 'true');
+    expect(
+      getByRole('combobox', { name: 'Geographic Location' }),
+    ).toBeDisabled();
+  });
+
   it("renders the user's avatar", async () => {
     const { findByRole } = render(<TestComponent />);
     expect(await findByRole('img')).toBeInTheDocument();
@@ -153,6 +179,26 @@ describe('InformationCategory', () => {
             },
           },
         }),
+      );
+    });
+
+    it('does not clear invalid benefits plan when the goal is read-only', async () => {
+      const { getByRole } = render(
+        // Married with no children only offers the Base plan, so Select is
+        // incompatible with the family size from the moment the goal loads
+        <TestComponent
+          readOnly
+          benefitsPlan={MpdGoalBenefitsConstantPlanEnum.Select}
+        />,
+      );
+
+      const input = getByRole('combobox', { name: 'Family Size' });
+      await waitFor(() =>
+        expect(input).toHaveTextContent('Married with no children'),
+      );
+
+      await waitFor(() =>
+        expect(mutationSpy).not.toHaveGraphqlOperation('UpdateGoalCalculation'),
       );
     });
 
