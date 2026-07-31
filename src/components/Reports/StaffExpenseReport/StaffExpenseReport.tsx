@@ -47,6 +47,7 @@ import {
   getFormattedDateString,
 } from './Helpers/formatDate';
 import {
+  compareFundTypes,
   getIconColorForFundType,
   getIconForFundType,
 } from './Helpers/fundTypeHelpers';
@@ -132,7 +133,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   const allFunds: Fund[] = useMemo(
     () =>
       (data?.reportsStaffExpenses?.funds ?? []).toSorted((a, b) =>
-        a.id.localeCompare(b.id),
+        compareFundTypes(a.fundType, b.fundType),
       ),
     [data],
   );
