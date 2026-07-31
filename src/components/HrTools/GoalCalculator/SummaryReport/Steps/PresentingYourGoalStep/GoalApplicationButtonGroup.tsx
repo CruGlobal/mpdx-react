@@ -15,6 +15,7 @@ export const GoalApplicationButtonGroup: React.FC = () => {
   const {
     goalCalculationResult,
     goalTotals: { overallTotal },
+    constants,
   } = useGoalCalculator();
   const monthlyGoal = Math.round(overallTotal);
   const [updateAccountPreferences, { loading }] =
@@ -65,7 +66,14 @@ export const GoalApplicationButtonGroup: React.FC = () => {
           onSave();
           setButtonsHidden(true);
         }}
-        disabled={goalCalculationResult.loading || loading}
+        disabled={
+          goalCalculationResult.loading ||
+          // Without the year's constants the total would be understated, so
+          // don't let the user apply it
+          constants.loading ||
+          constants.unavailable ||
+          loading
+        }
         startIcon={loading ? <CircularProgress size={20} /> : undefined}
       >
         {loading ? t('Saving...') : t('Apply Goal to MPDX')}

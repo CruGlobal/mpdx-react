@@ -80,9 +80,10 @@ const mockData = {
   },
 };
 
+const mutationSpy = jest.fn();
+
 describe('useGoalCalculatorConstants', () => {
   it('queries constants for the default year when no year is provided', async () => {
-    const mutationSpy = jest.fn();
     renderHook(() => useGoalCalculatorConstants(), {
       wrapper: ({ children }: { children: ReactElement }) => (
         <GqlMockedProvider onCall={mutationSpy}>{children}</GqlMockedProvider>
@@ -97,7 +98,6 @@ describe('useGoalCalculatorConstants', () => {
   });
 
   it('queries constants for the provided year', async () => {
-    const mutationSpy = jest.fn();
     renderHook(() => useGoalCalculatorConstants(2027), {
       wrapper: ({ children }: { children: ReactElement }) => (
         <GqlMockedProvider onCall={mutationSpy}>{children}</GqlMockedProvider>
@@ -124,7 +124,49 @@ describe('useGoalCalculatorConstants', () => {
       goalGeographicConstantMap: new Map(),
       loading: true,
       error: undefined,
+      unavailable: false,
     });
+  });
+
+  it('does not query and stays loading while skipped', async () => {
+    const { result } = renderHook(
+      () => useGoalCalculatorConstants(2027, { skip: true }),
+      {
+        wrapper: ({ children }: { children: ReactElement }) => (
+          <GqlMockedProvider onCall={mutationSpy}>{children}</GqlMockedProvider>
+        ),
+      },
+    );
+
+    // Give Apollo a chance to fire any operations before asserting that none
+    // happened
+    await waitFor(() => expect(result.current.loading).toBe(true));
+    expect(mutationSpy).not.toHaveGraphqlOperation('GoalCalculatorConstants');
+  });
+
+  it('reports unavailable when the year has no constants', async () => {
+    const { result } = renderHook(() => useGoalCalculatorConstants(2030), {
+      wrapper: ({ children }: { children: ReactElement }) => (
+        <GqlMockedProvider<{
+          GoalCalculatorConstants: GoalCalculatorConstantsQuery;
+        }>
+          mocks={{
+            GoalCalculatorConstants: {
+              constant: {
+                mpdGoalBenefitsConstants: [],
+                mpdGoalGeographicConstants: [],
+                mpdGoalMiscConstants: [],
+              },
+            },
+          }}
+        >
+          {children}
+        </GqlMockedProvider>
+      ),
+    });
+
+    await waitFor(() => expect(result.current.unavailable).toBe(true));
+    expect(result.current.loading).toBe(false);
   });
 
   it('should format data correctly', async () => {
@@ -203,6 +245,7 @@ describe('useGoalCalculatorConstants', () => {
         ]),
         loading: false,
         error: undefined,
+        unavailable: false,
       });
     });
   });

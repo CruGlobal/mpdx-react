@@ -47,6 +47,7 @@ export const InformationCategoryPersonalForm: React.FC<
       goalGeographicConstantMap,
       goalBenefitsPlans,
       loading: constantsLoading,
+      unavailable: constantsUnavailable,
     },
   } = useGoalCalculator();
   const { geographicLocation, familySize, benefitsPlan } =
@@ -82,8 +83,10 @@ export const InformationCategoryPersonalForm: React.FC<
   useEffect(() => {
     // Read-only goals reject mutations, so don't try to fix an incompatible
     // plan. While the constants are loading (e.g. switching to a new
-    // calculation year's constants), the plan options are empty, not invalid.
-    if (isReadOnly || constantsLoading) {
+    // calculation year's constants) or unavailable (no constants are seeded
+    // for the year), the plan options are empty, not invalid, so clearing the
+    // saved plan would be silent data loss.
+    if (isReadOnly || constantsLoading || constantsUnavailable) {
       return;
     }
 
@@ -94,7 +97,14 @@ export const InformationCategoryPersonalForm: React.FC<
         saveField({ benefitsPlan: null });
       }
     }
-  }, [isReadOnly, constantsLoading, familySize, benefitsPlan, planOptions]);
+  }, [
+    isReadOnly,
+    constantsLoading,
+    constantsUnavailable,
+    familySize,
+    benefitsPlan,
+    planOptions,
+  ]);
 
   return (
     <>
