@@ -52,7 +52,11 @@ export const ConfirmUserGroupModal: React.FC<ConfirmUserGroupModalProps> = ({
         ? t(
             'Users in this group receive (mostly) non-US donations and are paid through our Global NetSuite system.',
           )
-        : undefined;
+        : userType === UserTypeEnum.HybridStaff
+          ? t(
+              'Users in this group receive donations through our Global NetSuite system but also need access to US HR forms (Salary Calc, MHA Calc, etc).',
+            )
+          : undefined;
 
   const handleRequestChange = async () => {
     try {
