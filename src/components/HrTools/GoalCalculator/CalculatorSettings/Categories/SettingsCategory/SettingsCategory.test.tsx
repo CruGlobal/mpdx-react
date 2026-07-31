@@ -1,13 +1,26 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { GoalCalculatorTestWrapper } from '../../../GoalCalculatorTestWrapper';
+import {
+  GoalCalculatorTestWrapper,
+  goalCalculationMock,
+} from '../../../GoalCalculatorTestWrapper';
 import { SettingsCategory } from './SettingsCategory';
 
 const mutationSpy = jest.fn();
 
-const TestComponent: React.FC<{ readOnly?: boolean }> = ({ readOnly }) => (
-  <GoalCalculatorTestWrapper onCall={mutationSpy} readOnly={readOnly}>
+const TestComponent: React.FC<{
+  readOnly?: boolean;
+  calculationsYear?: number | null;
+}> = ({
+  readOnly,
+  calculationsYear = goalCalculationMock.calculationsYear,
+}) => (
+  <GoalCalculatorTestWrapper
+    onCall={mutationSpy}
+    readOnly={readOnly}
+    goalCalculation={{ ...goalCalculationMock, calculationsYear }}
+  >
     <SettingsCategory />
   </GoalCalculatorTestWrapper>
 );
@@ -134,14 +147,46 @@ describe('SettingsCategory', () => {
       );
     });
 
-    it('is locked when the goal is read-only', async () => {
-      const { findByRole } = render(<TestComponent readOnly />);
-
-      await waitFor(async () =>
-        expect(
-          await findByRole('combobox', { name: 'Calculation Year' }),
-        ).toHaveAttribute('aria-disabled', 'true'),
+    it('includes a saved year outside the creation-to-current range in the options', async () => {
+      const { getByRole, getAllByRole } = render(
+        <TestComponent calculationsYear={2017} />,
       );
+
+      const yearSelect = getByRole('combobox', { name: 'Calculation Year' });
+      await waitFor(() => expect(yearSelect).toHaveTextContent('2017'));
+
+      userEvent.click(yearSelect);
+      expect(
+        getAllByRole('option').map((option) => option.textContent),
+      ).toEqual(['2020', '2019', '2018', '2017']);
+    });
+
+    it('explains that the current year is used when no year is saved', async () => {
+      const { findByText } = render(<TestComponent calculationsYear={null} />);
+
+      expect(
+        await findByText(
+          "Until a year is chosen, this goal is calculated with the current year's values.",
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it('is locked when the goal is read-only', async () => {
+      const { getByRole } = render(<TestComponent readOnly />);
+
+      const yearSelect = getByRole('combobox', { name: 'Calculation Year' });
+      await waitFor(() => expect(yearSelect).toHaveTextContent('2019'));
+
+      expect(yearSelect).toHaveAttribute('aria-disabled', 'true');
+    });
+
+    it('is editable when the goal is not read-only', async () => {
+      const { getByRole } = render(<TestComponent />);
+
+      const yearSelect = getByRole('combobox', { name: 'Calculation Year' });
+      await waitFor(() => expect(yearSelect).toHaveTextContent('2019'));
+
+      expect(yearSelect).not.toHaveAttribute('aria-disabled', 'true');
     });
   });
 });

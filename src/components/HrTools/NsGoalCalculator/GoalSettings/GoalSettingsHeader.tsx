@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { getCalculationYearTooltip } from '../../Shared/calculationYearTooltip';
 import { GoalSettingsPlaceholder } from './Fields/GoalSettingsPlaceholder';
 import { GoalSettingsSelect, SelectOption } from './Fields/GoalSettingsSelect';
 import { MpdGoalPreview } from './MpdGoalPreview';
@@ -166,11 +167,7 @@ export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
             }}
           />
         </Box>
-        <Tooltip
-          title={t(
-            'Benefits charges, geographic multipliers, base salary, and other constants change from year to year, which slightly increases most goals. Choose which year to calculate this goal with.',
-          )}
-        >
+        <Tooltip title={getCalculationYearTooltip(t)}>
           <IconButton size="small" aria-label={t('About the calculation year')}>
             <InfoOutlined fontSize="small" />
           </IconButton>

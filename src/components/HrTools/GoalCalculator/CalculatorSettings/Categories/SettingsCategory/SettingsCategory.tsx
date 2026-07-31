@@ -4,13 +4,16 @@ import { Grid, IconButton, MenuItem, Tooltip } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { getCalculationYearTooltip } from '../../../../Shared/calculationYearTooltip';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
 import { AutosaveTextField } from '../Autosave/AutosaveTextField';
 
 export const SettingsCategory: React.FC = () => {
   const { t } = useTranslation();
   const { goalCalculationResult } = useGoalCalculator();
-  const createdAt = goalCalculationResult.data?.goalCalculation.createdAt;
+  const goalCalculation = goalCalculationResult.data?.goalCalculation;
+  const createdAt = goalCalculation?.createdAt;
+  const calculationsYear = goalCalculation?.calculationsYear;
 
   const validationSchema = useMemo(
     () =>
@@ -24,26 +27,33 @@ export const SettingsCategory: React.FC = () => {
     [t],
   );
 
-  // Years from the goal's creation year to the current year, newest first.
+  // Years from the goal's creation year to the current year, newest first,
+  // widened to always include the saved calculation year — converted goals can
+  // carry a year outside that range, and the saved year must stay selectable.
   // Falls back to just the current year until the goal loads.
   const yearOptions = useMemo(() => {
     const currentYear = DateTime.local().year;
     const createdYear = createdAt
       ? DateTime.fromISO(createdAt).year
       : currentYear;
-    const startYear = Math.min(createdYear || currentYear, currentYear);
-    return Array.from(
-      { length: currentYear - startYear + 1 },
-      (_, index) => currentYear - index,
+    const startYear = Math.min(
+      createdYear || currentYear,
+      calculationsYear ?? currentYear,
+      currentYear,
     );
-  }, [createdAt]);
+    const endYear = Math.max(currentYear, calculationsYear ?? currentYear);
+    return Array.from(
+      { length: endYear - startYear + 1 },
+      (_, index) => endYear - index,
+    );
+  }, [createdAt, calculationsYear]);
 
   return (
     <Grid container spacing={3}>
       <Grid
         size={{
           xs: 12,
-          sm: 8,
+          sm: 6,
         }}
       >
         <AutosaveTextField
@@ -55,7 +65,7 @@ export const SettingsCategory: React.FC = () => {
       <Grid
         size={{
           xs: 12,
-          sm: 4,
+          sm: 6,
         }}
       >
         <AutosaveTextField
@@ -63,13 +73,16 @@ export const SettingsCategory: React.FC = () => {
           schema={validationSchema}
           select
           label={t('Calculation Year')}
+          {...(goalCalculation && calculationsYear == null
+            ? {
+                helperText: t(
+                  "Until a year is chosen, this goal is calculated with the current year's values.",
+                ),
+              }
+            : {})}
           InputProps={{
             endAdornment: (
-              <Tooltip
-                title={t(
-                  'Benefits charges, geographic multipliers, base salary, and other constants change from year to year, which slightly increases most goals. Choose which year to calculate this goal with.',
-                )}
-              >
+              <Tooltip title={getCalculationYearTooltip(t)}>
                 <IconButton
                   size="small"
                   aria-label={t('About the calculation year')}
