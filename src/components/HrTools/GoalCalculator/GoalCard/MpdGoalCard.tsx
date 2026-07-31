@@ -51,9 +51,9 @@ export const MpdGoalCard: React.FC<MpdGoalCardProps> = ({ goal }) => {
       // Read-only goals reject deletion, so don't offer it
       onDelete={goal.readOnly ? undefined : handleDelete}
       badge={
-        goal.readOnly || goal.calculationsYear != null ? (
+        goal.readOnly || goal.calculationsYear !== null ? (
           <Stack direction="row" spacing={1}>
-            {goal.calculationsYear != null && (
+            {goal.calculationsYear !== null && (
               // The total is calculated from this year's constants, so show
               // the year to explain differing totals between goals
               <Tooltip title={t('Calculation Year')}>

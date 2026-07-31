@@ -9,8 +9,8 @@ import {
 import { getNewStaffBudgetCategory } from 'src/components/HrTools/GoalCalculator/Shared/getNewStaffBudgetCategory';
 import { safeProgressRatio } from 'src/components/HrTools/Shared/helpers/safeProgressRatio';
 import { PrimaryBudgetCategoryEnum } from 'src/graphql/types.generated';
+import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
-import { useLocale } from './useLocale';
 
 export const isBoldLine = (line: string) => ['1J', '6', '8'].includes(line);
 export const isTopBorderLine = (line: string) => ['1', '6'].includes(line);

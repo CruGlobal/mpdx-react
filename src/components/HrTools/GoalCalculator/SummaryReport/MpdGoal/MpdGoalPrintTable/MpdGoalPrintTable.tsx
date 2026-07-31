@@ -13,7 +13,7 @@ import {
   isIndentedLine,
   isTopBorderLine,
   useMpdGoalRows,
-} from 'src/hooks/useMpdGoalRows';
+} from '../useMpdGoalRows';
 
 interface MpdGoalPrintTableProps {
   supportRaised: number;
