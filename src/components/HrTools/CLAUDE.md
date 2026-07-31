@@ -47,6 +47,11 @@ server-side, and resolvers scope data to the user's own account lists.
   `UserTypeAccess` guard. The group is resolved server-side from HCM; the client
   only sees the resolved `UsStaffGroupEnum` — don't reintroduce raw HCM codes.
 
+**`SeniorStaff` and `NewStaff` below include their international and stint
+variants.** `useIneligibleByGroup.ts` treats `SeniorInternationalStaff` and
+`SeniorStaffStint` as `SeniorStaff`, and `NewInternationalStaff` and
+`NewStaffStint` as `NewStaff`, before any eligibility check runs.
+
 The table below is an orientation aid — verify against each tool's
 `UserTypeAccess` guard, which is authoritative and can lag this list.
 

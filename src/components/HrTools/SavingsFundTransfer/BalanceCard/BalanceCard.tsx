@@ -1,13 +1,17 @@
 import React from 'react';
-import { Diversity1, Outbox, Savings, Wallet } from '@mui/icons-material';
+import { Outbox } from '@mui/icons-material';
 import { Box, Button, Card, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { SimpleScreenOnly } from 'src/components/Reports/styledComponents';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
+import {
+  getIconColorForFundType,
+  getIconForFundType,
+} from '../../../Reports/StaffExpenseReport/Helpers/fundTypeHelpers';
 import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
-import { FundTypeEnum, TransferModalData } from '../mockData';
+import { TransferModalData } from '../mockData';
 
 export interface BalanceCardProps {
   fund: FundFieldsFragment;
@@ -24,18 +28,8 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   const locale = useLocale();
 
   const title = t('{{ name }} Account Balance', { name: fund.fundType });
-  const Icon =
-    fund.fundType === FundTypeEnum.Primary
-      ? Wallet
-      : fund.fundType === FundTypeEnum.Savings
-        ? Savings
-        : Diversity1;
-  const iconBgColor =
-    fund.fundType === FundTypeEnum.Primary
-      ? theme.palette.chartOrange.main
-      : fund.fundType === FundTypeEnum.Savings
-        ? theme.palette.chartBlueDark.main
-        : theme.palette.chartBlue.main;
+  const Icon = getIconForFundType(fund.fundType);
+  const iconBgColor = getIconColorForFundType(fund.fundType, theme);
 
   const handleTransferFrom = () => {
     handleOpenTransferModal({
@@ -60,7 +54,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
         flexDirection: 'column',
       }}
     >
-      <Box display={'flex'} flexDirection="row" alignItems="center" gap={1}>
+      <Box display={'flex'} flexDirection="row" alignItems="flex-start" gap={1}>
         <Box
           sx={{
             backgroundColor: iconBgColor || 'primary.main',
@@ -88,8 +82,6 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
               fontWeight: 500,
               fontSize: '13pt',
               minHeight: '3em',
-              display: 'flex',
-              alignItems: 'center',
             }}
           >
             {title}

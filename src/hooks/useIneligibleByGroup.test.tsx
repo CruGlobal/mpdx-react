@@ -260,6 +260,40 @@ describe('useIneligibleByGroup', () => {
           inPdsGoalCalcIneligibleGroup: true,
         });
       });
+
+      it('user is null and spouse is senior international staff', async () => {
+        const { result } = renderUseIneligibleByGroup({
+          usStaffGroup: null,
+          spouseUsStaffGroup: UsStaffGroupEnum.SeniorInternationalStaff,
+        });
+
+        await waitFor(() => expect(result.current.userLoading).toBe(false));
+        expect(result.current).toMatchObject({
+          inAsrIneligibleGroup: false,
+          inSalaryCalcIneligibleGroup: true,
+          inMhaIneligibleGroup: false,
+          inMpdGoalCalcIneligibleGroup: true,
+          inNsGoalCalcIneligibleGroup: true,
+          inPdsGoalCalcIneligibleGroup: true,
+        });
+      });
+
+      it('user is null and spouse is new staff stint', async () => {
+        const { result } = renderUseIneligibleByGroup({
+          usStaffGroup: null,
+          spouseUsStaffGroup: UsStaffGroupEnum.NewStaffStint,
+        });
+
+        await waitFor(() => expect(result.current.userLoading).toBe(false));
+        expect(result.current).toMatchObject({
+          inAsrIneligibleGroup: false,
+          inSalaryCalcIneligibleGroup: true,
+          inMhaIneligibleGroup: true,
+          inMpdGoalCalcIneligibleGroup: true,
+          inNsGoalCalcIneligibleGroup: true,
+          inPdsGoalCalcIneligibleGroup: true,
+        });
+      });
     });
 
     it('no us staff group eligibility', async () => {

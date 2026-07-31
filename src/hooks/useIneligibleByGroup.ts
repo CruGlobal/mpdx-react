@@ -2,6 +2,8 @@ import { useMemo } from 'react';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { UsStaffGroupEnum } from 'src/graphql/types.generated';
 
+// International staff and staff stints are senior or new staff for eligibility
+// purposes, so resolve them to that group before any check below runs
 const BASE_GROUPS: Partial<Record<UsStaffGroupEnum, UsStaffGroupEnum>> = {
   [UsStaffGroupEnum.SeniorInternationalStaff]: UsStaffGroupEnum.SeniorStaff,
   [UsStaffGroupEnum.NewInternationalStaff]: UsStaffGroupEnum.NewStaff,

@@ -19,6 +19,8 @@ export enum FundTypeEnum {
   Primary = 'Primary',
   Savings = 'Savings',
   ConferenceSavings = 'Staff Conference Savings',
+  ReEntry = 'Re-Entry',
+  ReturnTravel = 'Return Travel',
 }
 
 export enum TransferTypeEnum {

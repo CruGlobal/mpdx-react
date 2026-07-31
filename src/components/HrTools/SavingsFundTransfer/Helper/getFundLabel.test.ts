@@ -17,6 +17,16 @@ describe('getFundLabel', () => {
     );
   });
 
+  it('returns the Return Travel Account label', () => {
+    expect(getFundLabel(FundTypeEnum.ReturnTravel, i18n.t)).toBe(
+      'Return Travel Account',
+    );
+  });
+
+  it('returns the Re-Entry Account label', () => {
+    expect(getFundLabel(FundTypeEnum.ReEntry, i18n.t)).toBe('Re-Entry Account');
+  });
+
   it('returns an empty string for an unknown fund', () => {
     expect(getFundLabel('staffAccount', i18n.t)).toBe('N/A');
   });

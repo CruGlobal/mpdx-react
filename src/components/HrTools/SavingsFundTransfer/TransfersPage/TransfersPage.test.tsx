@@ -9,6 +9,8 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
+import { UsStaffGroupEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { StaffSavingFundContext } from '../../StaffSavingFund/StaffSavingFundContext';
 import {
@@ -207,8 +209,10 @@ jest.mock('notistack', () => ({
 
 const Components = ({
   title = 'Staff Savings Fund Transfers',
+  usStaffGroup = UsStaffGroupEnum.SeniorStaff,
 }: {
   title?: string;
+  usStaffGroup?: UsStaffGroupEnum;
 }) => (
   <SnackbarProvider>
     <ThemeProvider theme={theme}>
@@ -218,8 +222,9 @@ const Components = ({
             StaffAccount: StaffAccountQuery;
             ReportsSavingsFundTransfer: ReportsSavingsFundTransferQuery;
             FundBalances: FundBalancesQuery;
+            GetUser: GetUserQuery;
           }>
-            mocks={mock}
+            mocks={{ ...mock, GetUser: { user: { usStaffGroup } } }}
             onCall={mutationSpy}
           >
             <MockStaffSavingFundProvider>
@@ -268,7 +273,7 @@ describe('TransfersPage', () => {
     expect(getByText('$25,000.00')).toBeInTheDocument();
   });
 
-  it('should sort fund cards in ascending order by id', async () => {
+  it('should sort fund cards into fund type display order', async () => {
     const { findAllByText } = render(<Components />);
 
     const fundCards = await findAllByText(/Account Balance/i);
@@ -294,6 +299,44 @@ describe('TransfersPage', () => {
     expect(tables.length).toBe(2);
 
     expect(within(tables[0]).getAllByRole('columnheader')).toHaveLength(8);
+  });
+
+  it.each([
+    UsStaffGroupEnum.SeniorInternationalStaff,
+    UsStaffGroupEnum.NewInternationalStaff,
+    UsStaffGroupEnum.SeniorStaffStint,
+    UsStaffGroupEnum.NewStaffStint,
+  ])('requests re-entry and return travel for %s', async (usStaffGroup) => {
+    render(<Components usStaffGroup={usStaffGroup} />);
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('FundBalances', {
+        fundTypes: [
+          'Primary',
+          'Savings',
+          'Staff Conference Savings',
+          'Return Travel',
+          'Re-Entry',
+        ],
+      }),
+    );
+  });
+
+  it('never requests re-entry and return travel for everyone else', async () => {
+    const { findByText } = render(<Components />);
+
+    await waitFor(() => expect(mutationSpy).toHaveGraphqlOperation('GetUser'));
+    expect(await findByText('Primary Account Balance')).toBeInTheDocument();
+
+    expect(mutationSpy).not.toHaveGraphqlOperation('FundBalances', {
+      fundTypes: [
+        'Primary',
+        'Savings',
+        'Staff Conference Savings',
+        'Return Travel',
+        'Re-Entry',
+      ],
+    });
   });
 
   it('should display stopped recurring transfers in history with a stopped status and no actions', async () => {

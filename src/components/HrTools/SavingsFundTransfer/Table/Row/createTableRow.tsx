@@ -13,15 +13,15 @@ import {
 } from '@mui/material';
 import { TFunction } from 'react-i18next';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { getFundIcon } from '../../Helper/TransferIcons';
 import {
-  FundTypeEnum,
   ScheduleEnum,
   StatusEnum,
   TableTypeEnum,
   Transfers,
 } from '../../mockData';
 import { RenderCell } from '../TransfersTable';
-import { chipStyle, iconMap } from './createTableRowHelper';
+import { chipStyle } from './createTableRowHelper';
 
 type Options = {
   type: TableTypeEnum;
@@ -57,23 +57,8 @@ export function populateTransferRows(options: Options) {
   }, []);
 
   const transfers: RenderCell = ({ row }) => {
-    const fromIconName =
-      row.transferFrom?.toLowerCase() ===
-      FundTypeEnum.ConferenceSavings.toLowerCase()
-        ? 'conference'
-        : row.transferFrom
-          ? row.transferFrom.toLowerCase()
-          : 'primary';
-    const toIconName =
-      row.transferTo?.toLowerCase() ===
-      FundTypeEnum.ConferenceSavings.toLowerCase()
-        ? 'conference'
-        : row.transferTo
-          ? row.transferTo.toLowerCase()
-          : 'savings';
-
-    const fromIcon = iconMap[fromIconName];
-    const toIcon = iconMap[toIconName];
+    const fromIcon = getFundIcon(row.transferFrom);
+    const toIcon = getFundIcon(row.transferTo);
 
     if (fromIcon && toIcon) {
       return (

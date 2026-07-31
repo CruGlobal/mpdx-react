@@ -86,7 +86,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   const [filters, setFilters] = useState<Filters | null>(null);
   const [time, setTime] = useState(DateTime.now().startOf('month'));
 
-  const { data: userData } = useGetUserQuery();
+  const { data: userData, loading: userLoading } = useGetUserQuery();
   const usStaffGroup = userData?.user.usStaffGroup;
   const hideFunds =
     usStaffGroup !== UsStaffGroupEnum.SeniorInternationalStaff &&
@@ -116,6 +116,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       fundTypes,
       ...getStaffExpenseMonthRange(filters, time),
     },
+    skip: userLoading,
   });
 
   const { data: accountData } = useStaffAccountQuery();

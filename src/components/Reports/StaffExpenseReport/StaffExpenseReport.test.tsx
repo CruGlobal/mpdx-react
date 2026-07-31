@@ -290,50 +290,45 @@ describe('StaffExpenseReport', () => {
     expect(queryByText('-$200')).not.toBeInTheDocument();
   });
 
-  it('requests re-entry and return travel funds when user is international staff', async () => {
-    render(
-      <TestComponent
-        usStaffGroup={UsStaffGroupEnum.SeniorInternationalStaff}
-      />,
-    );
+  it.each([
+    UsStaffGroupEnum.SeniorInternationalStaff,
+    UsStaffGroupEnum.NewInternationalStaff,
+    UsStaffGroupEnum.SeniorStaffStint,
+    UsStaffGroupEnum.NewStaffStint,
+  ])(
+    'requests re-entry and return travel funds when user is %s',
+    async (usStaffGroup) => {
+      render(<TestComponent usStaffGroup={usStaffGroup} />);
 
-    await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('ReportsStaffExpenses', {
-        fundTypes: [
-          'Primary',
-          'Savings',
-          'Staff Conference Savings',
-          'Return Travel',
-          'Re-Entry',
-        ],
-      }),
-    );
-  });
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('ReportsStaffExpenses', {
+          fundTypes: [
+            'Primary',
+            'Savings',
+            'Staff Conference Savings',
+            'Return Travel',
+            'Re-Entry',
+          ],
+        }),
+      );
+    },
+  );
 
-  it('requests re-entry and return travel funds when user is staff stint', async () => {
-    render(<TestComponent usStaffGroup={UsStaffGroupEnum.SeniorStaffStint} />);
+  it('never requests re-entry and return travel funds for everyone else', async () => {
+    const { findByRole } = render(<TestComponent />);
 
-    await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('ReportsStaffExpenses', {
-        fundTypes: [
-          'Primary',
-          'Savings',
-          'Staff Conference Savings',
-          'Return Travel',
-          'Re-Entry',
-        ],
-      }),
-    );
-  });
+    await waitFor(() => expect(mutationSpy).toHaveGraphqlOperation('GetUser'));
+    await findByRole('heading', { name: 'Primary' });
 
-  it('does not request re-entry and return travel funds for everyone else', async () => {
-    render(<TestComponent />);
-
-    await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('ReportsStaffExpenses', {
-        fundTypes: ['Primary', 'Savings', 'Staff Conference Savings'],
-      }),
-    );
+    expect(mutationSpy).not.toHaveGraphqlOperation('ReportsStaffExpenses', {
+      fundTypes: [
+        'Primary',
+        'Savings',
+        'Staff Conference Savings',
+        'Return Travel',
+        'Re-Entry',
+      ],
+    });
   });
 
   it('shows month title and navigation when only category filters are applied', async () => {

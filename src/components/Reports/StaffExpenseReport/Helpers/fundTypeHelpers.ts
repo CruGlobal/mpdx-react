@@ -46,7 +46,7 @@ const fundTypeOrder: Record<string, number> = {
 };
 
 export const compareFundTypes = (a: string, b: string): number => {
-  return fundTypeOrder[a] - fundTypeOrder[b] || a.localeCompare(b);
+  return fundTypeOrder[a] - fundTypeOrder[b];
 };
 
 const defaultFundTypeConfig: FundTypeConfig = {
