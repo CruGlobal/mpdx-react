@@ -31,7 +31,6 @@ const generateBreakdown = (base: number) =>
 const mockData = {
   StaffAccount: {
     staffAccount: {
-      id: '12345',
       name: 'Test Account',
     },
   },
@@ -143,7 +142,6 @@ describe('MPGAIncomeExpensesReport', () => {
       getByRole('button', { name: 'Report Settings' }),
     ).toBeInTheDocument();
 
-    expect(await findByText('12345')).toBeInTheDocument();
     expect(await findByText('Test Account')).toBeInTheDocument();
   });
 

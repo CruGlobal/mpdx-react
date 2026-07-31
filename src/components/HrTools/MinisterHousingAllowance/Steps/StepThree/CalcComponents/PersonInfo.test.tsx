@@ -41,9 +41,6 @@ describe('PersonInfo', () => {
     ).toBeInTheDocument();
 
     expect(await findByText('John Doe')).toBeInTheDocument();
-    expect(
-      await findByText('Staff Account Number: 000123456'),
-    ).toBeInTheDocument();
     expect(await findByText(/100 Lake Hart Dr/i)).toBeInTheDocument();
     expect(await findByText(/Orlando, FL 32832/i)).toBeInTheDocument();
     expect(await findByText('Email: john.doe@cru.org')).toBeInTheDocument();

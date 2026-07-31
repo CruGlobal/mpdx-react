@@ -6,7 +6,7 @@ import { StaffInformation } from './StaffInformation';
 
 describe('StaffInformation', () => {
   it("shows the staff member's information from the questionnaire", async () => {
-    const { findByRole, getByRole, getByText } = render(
+    const { findByRole, getByRole } = render(
       <NsoMpdQuestionnaireTestWrapper>
         <StaffInformation />
       </NsoMpdQuestionnaireTestWrapper>,
@@ -26,11 +26,10 @@ describe('StaffInformation', () => {
     expect(getByRole('textbox', { name: 'Address' })).toHaveValue(
       '123 Main St, Apt 4, Miami, FL 33101',
     );
-    expect(getByText('Person Number: 000123456')).toBeInTheDocument();
   });
 
   it("toggles to the spouse's information", async () => {
-    const { findByRole, getByRole, getByText } = render(
+    const { findByRole, getByRole } = render(
       <NsoMpdQuestionnaireTestWrapper>
         <StaffInformation />
       </NsoMpdQuestionnaireTestWrapper>,
@@ -44,7 +43,6 @@ describe('StaffInformation', () => {
     expect(getByRole('textbox', { name: 'Staff Status' })).toHaveValue(
       'Already on Staff',
     );
-    expect(getByText('Person Number: 000789123')).toBeInTheDocument();
   });
 
   it('shows each person read-only cell phone number', async () => {

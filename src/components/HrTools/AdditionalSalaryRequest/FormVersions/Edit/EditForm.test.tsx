@@ -28,7 +28,6 @@ describe('EditForm', () => {
 
     expect(getByText('Edit Your Request')).toBeInTheDocument();
     expect(getByText('Doe, John')).toBeInTheDocument();
-    expect(getByText('Person Number: 00123456')).toBeInTheDocument();
   });
 
   it('displays financial balances from context', () => {

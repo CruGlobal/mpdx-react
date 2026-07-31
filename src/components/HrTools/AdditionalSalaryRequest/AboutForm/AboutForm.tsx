@@ -15,7 +15,7 @@ export const AboutForm: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
 
-  const { name, accountNumber, primaryAccountBalance } = useFormUserInfo();
+  const { name, primaryAccountBalance } = useFormUserInfo();
   const latestRequest = requestData?.latestAdditionalSalaryRequest;
   const individualCap = latestRequest?.calculations.currentSalaryCap ?? 0;
 
@@ -86,7 +86,6 @@ export const AboutForm: React.FC = () => {
       </Trans>
       <NameDisplay
         names={name ?? ''}
-        personNumbers={accountNumber ?? ''}
         titleOne={t('Primary Account Balance')}
         amountOne={primaryAccountBalance}
         titleTwo={t('Your Maximum Allowable Salary (CAP)')}

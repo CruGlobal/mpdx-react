@@ -45,7 +45,7 @@ export const PendingSalaryCalculationLanding: React.FC = () => {
           </Typography>
         </Box>
 
-        <NameDisplay names={names} personNumbers={staffAccountId} />
+        <NameDisplay names={names} />
 
         <PendingRequestCard />
 

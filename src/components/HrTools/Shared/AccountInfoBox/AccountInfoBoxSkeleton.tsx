@@ -27,9 +27,6 @@ export const AccountInfoBoxSkeleton: React.FC<AccountInfoBoxSkeletonProps> = ({
     <Skeleton variant="text" data-testid="name-skeleton">
       <StyledSkeletonBox />
     </Skeleton>
-    <Skeleton variant="text" data-testid="account-id-skeleton">
-      <StyledSkeletonBox />
-    </Skeleton>
     {hasOverallBalance && (
       <Skeleton variant="text" data-testid="overall-balance-skeleton">
         <StyledSkeletonBox />
