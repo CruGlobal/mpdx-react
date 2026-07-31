@@ -87,6 +87,7 @@ const setupMock = (
   mockUseGoalCalculatorConstants.mockReturnValue({
     ...defaultConstants,
     loading: false,
+    unavailable: false,
     error: undefined,
     ...overrides,
   });

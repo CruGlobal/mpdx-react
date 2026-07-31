@@ -73,7 +73,7 @@ export const SettingsCategory: React.FC = () => {
           schema={validationSchema}
           select
           label={t('Calculation Year')}
-          {...(goalCalculation && calculationsYear == null
+          {...(goalCalculation && calculationsYear === null
             ? {
                 helperText: t(
                   "Until a year is chosen, this goal is calculated with the current year's values.",
