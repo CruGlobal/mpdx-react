@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Chip } from '@mui/material';
+import { Chip, Stack, Tooltip } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { GoalCard } from 'src/components/Reports/Shared/GoalCard/GoalCard';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -51,8 +51,23 @@ export const MpdGoalCard: React.FC<MpdGoalCardProps> = ({ goal }) => {
       // Read-only goals reject deletion, so don't offer it
       onDelete={goal.readOnly ? undefined : handleDelete}
       badge={
-        goal.readOnly ? (
-          <Chip label={t('Read-Only')} size="small" variant="outlined" />
+        goal.readOnly || goal.calculationsYear != null ? (
+          <Stack direction="row" spacing={1}>
+            {goal.calculationsYear != null && (
+              // The total is calculated from this year's constants, so show
+              // the year to explain differing totals between goals
+              <Tooltip title={t('Calculation Year')}>
+                <Chip
+                  label={String(goal.calculationsYear)}
+                  size="small"
+                  variant="outlined"
+                />
+              </Tooltip>
+            )}
+            {goal.readOnly && (
+              <Chip label={t('Read-Only')} size="small" variant="outlined" />
+            )}
+          </Stack>
         ) : undefined
       }
     />

@@ -16,9 +16,13 @@ const mutationSpy = jest.fn();
 
 interface TestComponentProps {
   readOnly?: boolean;
+  calculationsYear?: number | null;
 }
 
-const TestComponent: React.FC<TestComponentProps> = ({ readOnly = false }) => (
+const TestComponent: React.FC<TestComponentProps> = ({
+  readOnly = false,
+  calculationsYear = goalCalculationMock.calculationsYear,
+}) => (
   <TestRouter>
     <ThemeProvider theme={theme}>
       <GqlMockedProvider<{
@@ -32,7 +36,12 @@ const TestComponent: React.FC<TestComponentProps> = ({ readOnly = false }) => (
         }}
       >
         <MpdGoalCard
-          goal={{ ...goalCalculationMock, id: 'goal-1', readOnly }}
+          goal={{
+            ...goalCalculationMock,
+            id: 'goal-1',
+            readOnly,
+            calculationsYear,
+          }}
         />
       </GqlMockedProvider>
     </ThemeProvider>
@@ -68,6 +77,18 @@ describe('MpdGoalCard', () => {
     const { findByText } = render(<TestComponent />);
 
     expect(await findByText('$16,138.94')).toBeInTheDocument();
+  });
+
+  it('shows the calculation year chip when the goal has a calculations year', () => {
+    const { getByText } = render(<TestComponent />);
+
+    expect(getByText('2019')).toBeInTheDocument();
+  });
+
+  it('hides the calculation year chip when the goal has no calculations year', () => {
+    const { queryByText } = render(<TestComponent calculationsYear={null} />);
+
+    expect(queryByText('2019')).not.toBeInTheDocument();
   });
 
   it("loads the constants for the goal's calculations year", async () => {
