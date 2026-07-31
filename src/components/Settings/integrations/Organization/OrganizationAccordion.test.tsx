@@ -194,7 +194,10 @@ describe('OrganizationAccordion', () => {
           getByText(GetUsersOrganizationsAccountsMock[0].organization.name),
         ).toBeInTheDocument();
 
-        expect(getByText('Last Updated')).toBeInTheDocument();
+        // Offline orgs never download, so a "Last Updated" timestamp is
+        // meaningless for them and must not be shown; "Last Gift Date" is the
+        // honest signal and stays.
+        expect(queryByText('Last Updated')).not.toBeInTheDocument();
 
         expect(getByText('Last Gift Date')).toBeInTheDocument();
       });
@@ -237,6 +240,9 @@ describe('OrganizationAccordion', () => {
         expect(
           queryByText('Import TntConnect DataSync file'),
         ).not.toBeInTheDocument();
+
+        // Non-offline orgs really do download, so "Last Updated" stays.
+        expect(getByText('Last Updated')).toBeInTheDocument();
       });
 
       userEvent.click(getByText('Sync'));
