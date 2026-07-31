@@ -43,15 +43,10 @@ interface PersonInfoCardProps {
 }
 
 const PersonInfoCard: React.FC<PersonInfoCardProps> = ({ person }) => {
-  const { t } = useTranslation();
-
   return (
     <Stack spacing={0.5}>
       <Typography variant="subtitle1" fontWeight="medium">
         {person.firstName} {person.lastName}
-      </Typography>
-      <Typography variant="body2" color="text.secondary">
-        {t('Person Number: {{number}}', { number: person.personNumber })}
       </Typography>
       <Stack spacing={0.75} sx={{ mt: 0.5 }}>
         <ContactLine icon={<MailOutline />}>{person.emailAddress}</ContactLine>

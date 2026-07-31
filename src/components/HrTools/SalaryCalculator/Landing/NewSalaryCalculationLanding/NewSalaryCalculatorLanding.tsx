@@ -109,7 +109,6 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
         </Box>
         <NameDisplay
           names={names}
-          personNumbers={staffAccountId}
           showContent
           titleOne={t('Current Gross Salary')}
           titleTwo={t('Account Balance')}

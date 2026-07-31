@@ -105,7 +105,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   });
 
   const { data: accountData } = useStaffAccountQuery();
-  const { id, name } = accountData?.staffAccount ?? {};
+  const { name } = accountData?.staffAccount ?? {};
 
   const handlePrint = () => window.print();
 
@@ -327,11 +327,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
             {loading ? (
               <AccountInfoBoxSkeleton hasOverallBalance />
             ) : (
-              <AccountInfoBox
-                name={name}
-                accountId={id}
-                overallBalance={overallBalance}
-              />
+              <AccountInfoBox name={name} overallBalance={overallBalance} />
             )}
             <SimpleScreenOnly>
               <Box

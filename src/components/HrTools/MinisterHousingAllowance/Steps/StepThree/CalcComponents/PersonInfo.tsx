@@ -32,8 +32,8 @@ export const PersonInfo: React.FC = () => {
           }}
         >
           <Typography>
-            {t('Staff Account Number: {{personNumber}}', {
-              personNumber: person?.personNumber,
+            {t('Email: {{emailAddress}}', {
+              emailAddress: person?.emailAddress,
             })}
           </Typography>
         </Grid>
@@ -60,8 +60,8 @@ export const PersonInfo: React.FC = () => {
           }}
         >
           <Typography>
-            {t('Email: {{emailAddress}}', {
-              emailAddress: person?.emailAddress,
+            {t('Phone number: {{primaryPhoneNumber}}', {
+              primaryPhoneNumber: person?.primaryPhoneNumber,
             })}
           </Typography>
         </Grid>
@@ -75,18 +75,6 @@ export const PersonInfo: React.FC = () => {
         >
           <Typography>
             {person?.city}, {person?.state} {person?.zipCode}
-          </Typography>
-        </Grid>
-        <Grid
-          size={{
-            xs: 12,
-            sm: 6,
-          }}
-        >
-          <Typography>
-            {t('Phone number: {{primaryPhoneNumber}}', {
-              primaryPhoneNumber: person?.primaryPhoneNumber,
-            })}
           </Typography>
         </Grid>
       </Grid>

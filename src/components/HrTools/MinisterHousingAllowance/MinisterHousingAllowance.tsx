@@ -51,17 +51,12 @@ export const MinisterHousingAllowanceReport = () => {
     spouseHcmData,
   } = useMinisterHousingAllowance();
 
-  const personNumber = userHcmData?.staffInfo.personNumber ?? '';
-  const spousePersonNumber = spouseHcmData?.staffInfo.personNumber ?? '';
   const lastName = userHcmData?.staffInfo.lastName ?? '';
   const spouseLastName = spouseHcmData?.staffInfo.lastName ?? '';
 
   const names = isMarried
     ? `${preferredName} ${lastName} and ${spousePreferredName} ${spouseLastName}`
     : `${preferredName} ${lastName}`;
-  const personNumbers = isMarried
-    ? `${personNumber} and ${spousePersonNumber}`
-    : personNumber;
 
   const [createMHA] = useCreateHousingAllowanceRequestMutation();
   const [creatingRequest, setCreatingRequest] = useState(false);
@@ -159,11 +154,7 @@ export const MinisterHousingAllowanceReport = () => {
                   <Typography variant="h5">{t('Your MHA')}</Typography>
                 </Box>
 
-                <NameDisplay
-                  names={names}
-                  personNumbers={personNumbers}
-                  personNumberCount={isMarried ? 2 : 1}
-                />
+                <NameDisplay names={names} />
 
                 {hasNoRequests ? (
                   <>

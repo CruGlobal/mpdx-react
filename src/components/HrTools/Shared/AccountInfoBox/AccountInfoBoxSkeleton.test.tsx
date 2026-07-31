@@ -13,11 +13,6 @@ describe('AccountInfoBoxSkeleton', () => {
     expect(getByTestId('name-skeleton')).toBeInTheDocument();
   });
 
-  it('renders the account id skeleton', () => {
-    const { getByTestId } = render(<AccountInfoBoxSkeleton />);
-    expect(getByTestId('account-id-skeleton')).toBeInTheDocument();
-  });
-
   it('renders the overall balance skeleton when provided', () => {
     const { getByTestId } = render(
       <AccountInfoBoxSkeleton hasOverallBalance />,

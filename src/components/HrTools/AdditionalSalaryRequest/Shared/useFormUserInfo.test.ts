@@ -37,7 +37,6 @@ describe('useFormUserInfo', () => {
     const { result } = renderHook(() => useFormUserInfo());
 
     expect(result.current.name).toBe('Doe, John');
-    expect(result.current.accountNumber).toBe('00123456');
     expect(result.current.email).toBe('john.doe@example.com');
     expect(result.current.primaryAccountBalance).toBe(40000);
   });
@@ -77,7 +76,6 @@ describe('useFormUserInfo', () => {
     const { result } = renderHook(() => useFormUserInfo());
 
     expect(result.current.name).toBeUndefined();
-    expect(result.current.accountNumber).toBeUndefined();
     expect(result.current.email).toBeUndefined();
     expect(result.current.primaryAccountBalance).toBe(40000);
   });

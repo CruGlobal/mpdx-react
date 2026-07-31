@@ -635,7 +635,7 @@ describe('GoalSettingsForm', () => {
 
   describe('scenario mode', () => {
     it('renders the editable Contact Info section and hides the person cards', async () => {
-      const { findByRole, queryByText } = render(<ScenarioTestComponent />);
+      const { findByRole } = render(<ScenarioTestComponent />);
 
       expect(
         await findByRole('heading', { name: 'Contact Info' }),
@@ -643,7 +643,6 @@ describe('GoalSettingsForm', () => {
       expect(await findByRole('textbox', { name: 'First Name' })).toHaveValue(
         'John',
       );
-      expect(queryByText(/Person Number:/)).not.toBeInTheDocument();
     });
 
     it('updates other sections’ labels as the name is edited, before saving', async () => {
