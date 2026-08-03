@@ -11,5 +11,11 @@ export const getFundLabel = (fund: string | undefined, t: TFunction) => {
   if (fund === FundTypeEnum.ConferenceSavings) {
     return t('Staff Conference Savings Account');
   }
+  if (fund === FundTypeEnum.ReturnTravel) {
+    return t('Return Travel Account');
+  }
+  if (fund === FundTypeEnum.ReEntry) {
+    return t('Re-Entry Account');
+  }
   return t('N/A');
 };

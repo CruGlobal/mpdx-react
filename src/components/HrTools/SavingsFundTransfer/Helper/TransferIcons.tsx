@@ -1,47 +1,53 @@
-import { Groups, Savings, Wallet } from '@mui/icons-material';
+import {
+  getIconColorForFundType,
+  getIconForFundType,
+} from 'src/components/Reports/StaffExpenseReport/Helpers/fundTypeHelpers';
+import theme from 'src/theme';
+import { FundTypeEnum } from '../mockData';
 
-export const PrimaryAccount = (
-  <Wallet
-    titleAccess="Primary Account"
-    sx={{
-      backgroundColor: '#F08020',
-      color: 'primary.contrastText',
-      borderRadius: 1,
-      p: 0.25,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      mr: 1,
-    }}
-  />
-);
-export const SavingsAccount = (
-  <Savings
-    titleAccess="Savings Account"
-    sx={{
-      backgroundColor: '#007890',
-      color: 'primary.contrastText',
-      borderRadius: 1,
-      p: 0.25,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      mr: 1,
-    }}
-  />
-);
-export const ConferenceSavingsAccount = (
-  <Groups
-    titleAccess="Staff Conference Savings Account"
-    sx={{
-      backgroundColor: '#00C0D8',
-      color: 'primary.contrastText',
-      borderRadius: 1,
-      p: 0.25,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      mr: 1,
-    }}
-  />
-);
+const createFundIcon = (fundType: FundTypeEnum, titleAccess: string) => {
+  const Icon = getIconForFundType(fundType);
+
+  return (
+    <Icon
+      titleAccess={titleAccess}
+      sx={{
+        backgroundColor: getIconColorForFundType(fundType, theme),
+        color: 'primary.contrastText',
+        borderRadius: 1,
+        p: 0.25,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        mr: 1,
+      }}
+    />
+  );
+};
+
+const fundIcons: Record<FundTypeEnum, JSX.Element> = {
+  [FundTypeEnum.Primary]: createFundIcon(
+    FundTypeEnum.Primary,
+    'Primary Account',
+  ),
+  [FundTypeEnum.Savings]: createFundIcon(
+    FundTypeEnum.Savings,
+    'Savings Account',
+  ),
+  [FundTypeEnum.ConferenceSavings]: createFundIcon(
+    FundTypeEnum.ConferenceSavings,
+    'Staff Conference Savings Account',
+  ),
+  [FundTypeEnum.ReturnTravel]: createFundIcon(
+    FundTypeEnum.ReturnTravel,
+    'Return Travel Account',
+  ),
+  [FundTypeEnum.ReEntry]: createFundIcon(
+    FundTypeEnum.ReEntry,
+    'Re-Entry Account',
+  ),
+};
+
+export const getFundIcon = (
+  fundType: string | undefined,
+): JSX.Element | undefined => fundIcons[fundType as FundTypeEnum];

@@ -92,12 +92,12 @@ describe('BalanceCard', () => {
       expect(getByTestId('SavingsIcon')).toBeInTheDocument();
     });
 
-    it('should display group icon', () => {
+    it('should display conference savings icon', () => {
       const { getByTestId } = render(
         <Components
           fund={{
             ...defaultFund,
-            fundType: 'Conference Savings',
+            fundType: FundTypeEnum.ConferenceSavings,
           }}
         />,
       );
@@ -116,6 +116,45 @@ describe('BalanceCard', () => {
       );
 
       expect(getByTestId('WalletIcon')).toBeInTheDocument();
+    });
+
+    it('should display return travel icon', () => {
+      const { getByTestId } = render(
+        <Components
+          fund={{
+            ...defaultFund,
+            fundType: FundTypeEnum.ReturnTravel,
+          }}
+        />,
+      );
+
+      expect(getByTestId('FlightIcon')).toBeInTheDocument();
+    });
+
+    it('should display re-entry icon', () => {
+      const { getByTestId } = render(
+        <Components
+          fund={{
+            ...defaultFund,
+            fundType: FundTypeEnum.ReEntry,
+          }}
+        />,
+      );
+
+      expect(getByTestId('HomeIcon')).toBeInTheDocument();
+    });
+
+    it('should display the fallback icon for an unknown fund type', () => {
+      const { getByTestId } = render(
+        <Components
+          fund={{
+            ...defaultFund,
+            fundType: 'Unknown Fund',
+          }}
+        />,
+      );
+
+      expect(getByTestId('GroupsIcon')).toBeInTheDocument();
     });
   });
 

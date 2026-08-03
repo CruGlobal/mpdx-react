@@ -19,7 +19,8 @@ import {
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { useStaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
-import { Fund } from 'src/graphql/types.generated';
+import { useGetUserQuery } from 'src/components/User/GetUser.generated';
+import { Fund, UsStaffGroupEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import theme from 'src/theme';
 import { AccountInfoBox } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBox';
@@ -46,6 +47,7 @@ import {
   getFormattedDateString,
 } from './Helpers/formatDate';
 import {
+  compareFundTypes,
   getIconColorForFundType,
   getIconForFundType,
 } from './Helpers/fundTypeHelpers';
@@ -84,6 +86,14 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   const [filters, setFilters] = useState<Filters | null>(null);
   const [time, setTime] = useState(DateTime.now().startOf('month'));
 
+  const { data: userData, loading: userLoading } = useGetUserQuery();
+  const usStaffGroup = userData?.user.usStaffGroup;
+  const hideFunds =
+    usStaffGroup !== UsStaffGroupEnum.SeniorInternationalStaff &&
+    usStaffGroup !== UsStaffGroupEnum.NewInternationalStaff &&
+    usStaffGroup !== UsStaffGroupEnum.SeniorStaffStint &&
+    usStaffGroup !== UsStaffGroupEnum.NewStaffStint;
+
   const isFilterDateSelected = useMemo(() => {
     return Boolean(
       filters &&
@@ -91,17 +101,22 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     );
   }, [filters]);
 
-  const { data, loading } = useReportsStaffExpensesQuery({
-    variables: {
-      fundTypes: [
+  const fundTypes = hideFunds
+    ? ['Primary', 'Savings', 'Staff Conference Savings']
+    : [
         'Primary',
         'Savings',
         'Staff Conference Savings',
         'Return Travel',
         'Re-Entry',
-      ],
+      ];
+
+  const { data, loading } = useReportsStaffExpensesQuery({
+    variables: {
+      fundTypes,
       ...getStaffExpenseMonthRange(filters, time),
     },
+    skip: userLoading,
   });
 
   const { data: accountData } = useStaffAccountQuery();
@@ -119,7 +134,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   const allFunds: Fund[] = useMemo(
     () =>
       (data?.reportsStaffExpenses?.funds ?? []).toSorted((a, b) =>
-        a.id.localeCompare(b.id),
+        compareFundTypes(a.fundType, b.fundType),
       ),
     [data],
   );

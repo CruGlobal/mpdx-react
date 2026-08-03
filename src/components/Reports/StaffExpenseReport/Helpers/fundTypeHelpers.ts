@@ -37,6 +37,18 @@ const fundTypeConfig: Record<string, FundTypeConfig> = {
   },
 };
 
+const fundTypeOrder: Record<string, number> = {
+  Primary: 0,
+  'Staff Conference Savings': 1,
+  Savings: 2,
+  'Return Travel': 3,
+  'Re-Entry': 4,
+};
+
+export const compareFundTypes = (a: string, b: string): number => {
+  return fundTypeOrder[a] - fundTypeOrder[b];
+};
+
 const defaultFundTypeConfig: FundTypeConfig = {
   icon: Groups,
   getColor: (theme) => theme.palette.chartBlue.main,

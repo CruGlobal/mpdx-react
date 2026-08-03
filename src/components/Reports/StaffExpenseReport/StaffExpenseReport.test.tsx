@@ -13,10 +13,12 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   StaffAccountStatusEnum,
   StaffExpenseCategoryEnum,
   StaffExpensesSubCategoryEnum,
+  UsStaffGroupEnum,
 } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { ReportsStaffExpensesQuery } from './GetStaffExpense.generated';
@@ -25,6 +27,7 @@ import { StaffExpenseReport } from './StaffExpenseReport';
 interface TestComponentProps {
   isEmpty?: boolean;
   routerMonth?: string;
+  usStaffGroup?: UsStaffGroupEnum;
 }
 
 const mutationSpy = jest.fn();
@@ -41,6 +44,7 @@ const router = {
 const TestComponent: React.FC<TestComponentProps> = ({
   isEmpty,
   routerMonth,
+  usStaffGroup = UsStaffGroupEnum.SeniorStaff,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter
@@ -59,6 +63,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
             <GqlMockedProvider<{
               ReportsStaffExpenses: ReportsStaffExpensesQuery;
               StaffAccount: StaffAccountQuery;
+              GetUser: GetUserQuery;
             }>
               mocks={{
                 ReportsStaffExpenses: {
@@ -202,6 +207,11 @@ const TestComponent: React.FC<TestComponentProps> = ({
                     status: StaffAccountStatusEnum.Active,
                   },
                 },
+                GetUser: {
+                  user: {
+                    usStaffGroup,
+                  },
+                },
               }}
               onCall={mutationSpy}
             >
@@ -278,6 +288,47 @@ describe('StaffExpenseReport', () => {
     userEvent.click(await findByRole('button', { name: 'View Account' }));
 
     expect(queryByText('-$200')).not.toBeInTheDocument();
+  });
+
+  it.each([
+    UsStaffGroupEnum.SeniorInternationalStaff,
+    UsStaffGroupEnum.NewInternationalStaff,
+    UsStaffGroupEnum.SeniorStaffStint,
+    UsStaffGroupEnum.NewStaffStint,
+  ])(
+    'requests re-entry and return travel funds when user is %s',
+    async (usStaffGroup) => {
+      render(<TestComponent usStaffGroup={usStaffGroup} />);
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('ReportsStaffExpenses', {
+          fundTypes: [
+            'Primary',
+            'Savings',
+            'Staff Conference Savings',
+            'Return Travel',
+            'Re-Entry',
+          ],
+        }),
+      );
+    },
+  );
+
+  it('never requests re-entry and return travel funds for everyone else', async () => {
+    const { findByRole } = render(<TestComponent />);
+
+    await waitFor(() => expect(mutationSpy).toHaveGraphqlOperation('GetUser'));
+    await findByRole('heading', { name: 'Primary' });
+
+    expect(mutationSpy).not.toHaveGraphqlOperation('ReportsStaffExpenses', {
+      fundTypes: [
+        'Primary',
+        'Savings',
+        'Staff Conference Savings',
+        'Return Travel',
+        'Re-Entry',
+      ],
+    });
   });
 
   it('shows month title and navigation when only category filters are applied', async () => {

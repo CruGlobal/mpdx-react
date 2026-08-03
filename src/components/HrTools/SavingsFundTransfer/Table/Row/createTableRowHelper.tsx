@@ -1,16 +1,5 @@
 import theme from 'src/theme';
-import {
-  ConferenceSavingsAccount,
-  PrimaryAccount,
-  SavingsAccount,
-} from '../../Helper/TransferIcons';
 import { StatusEnum } from '../../mockData';
-
-export const iconMap: Record<string, React.ReactElement> = {
-  primary: PrimaryAccount,
-  conference: ConferenceSavingsAccount,
-  savings: SavingsAccount,
-};
 
 export const chipStyle: Record<
   StatusEnum,

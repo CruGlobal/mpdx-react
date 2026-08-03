@@ -24,7 +24,10 @@ import {
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { useStaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
+import { useGetUserQuery } from 'src/components/User/GetUser.generated';
+import { UsStaffGroupEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
+import { compareFundTypes } from '../../../Reports/StaffExpenseReport/Helpers/fundTypeHelpers';
 import {
   StaffSavingFundContext,
   StaffSavingFundType,
@@ -41,7 +44,6 @@ import { PrintTable } from '../Table/PrintTable';
 import { TransfersTable } from '../Table/TransfersTable';
 import { DynamicTransferModal } from '../TransferModal/DynamicTransferModal';
 import {
-  FundTypeEnum,
   ScheduleEnum,
   StatusEnum,
   TableTypeEnum,
@@ -70,7 +72,7 @@ interface TransfersPageProps {
 
 const StyledCardsBox = styled(Box)({
   flex: 1,
-  minWidth: 250,
+  minWidth: 215,
   display: 'flex',
   gap: theme.spacing(4),
 });
@@ -82,6 +84,24 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
     StaffSavingFundContext,
   ) as StaffSavingFundType;
 
+  const { data: userData, loading: userLoading } = useGetUserQuery();
+  const usStaffGroup = userData?.user.usStaffGroup;
+  const hideFunds =
+    usStaffGroup !== UsStaffGroupEnum.SeniorInternationalStaff &&
+    usStaffGroup !== UsStaffGroupEnum.NewInternationalStaff &&
+    usStaffGroup !== UsStaffGroupEnum.SeniorStaffStint &&
+    usStaffGroup !== UsStaffGroupEnum.NewStaffStint;
+
+  const fundTypes = hideFunds
+    ? ['Primary', 'Savings', 'Staff Conference Savings']
+    : [
+        'Primary',
+        'Savings',
+        'Staff Conference Savings',
+        'Return Travel',
+        'Re-Entry',
+      ];
+
   const { data: staffAccountData, error: staffAccountError } =
     useStaffAccountQuery();
 
@@ -89,18 +109,15 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
     useReportsSavingsFundTransferQuery();
   const { data: fundsData, error: fundsError } = useFundBalancesQuery({
     variables: {
-      fundTypes: [
-        FundTypeEnum.Primary,
-        FundTypeEnum.Savings,
-        FundTypeEnum.ConferenceSavings,
-      ],
+      fundTypes,
     },
+    skip: userLoading,
   });
 
   const funds = useMemo(
     () =>
       (fundsData?.reportsStaffExpenses?.funds ?? []).toSorted((a, b) =>
-        a.id.localeCompare(b.id),
+        compareFundTypes(a.fundType, b.fundType),
       ),
     [fundsData],
   );
@@ -312,11 +329,12 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                 </StyledCardsBox>
               ) : (
                 funds.map((fund) => (
-                  <BalanceCard
-                    fund={fund}
-                    key={fund.id}
-                    handleOpenTransferModal={handleOpenTransferModal}
-                  />
+                  <StyledCardsBox key={fund.id}>
+                    <BalanceCard
+                      fund={fund}
+                      handleOpenTransferModal={handleOpenTransferModal}
+                    />
+                  </StyledCardsBox>
                 ))
               )}
             </Box>

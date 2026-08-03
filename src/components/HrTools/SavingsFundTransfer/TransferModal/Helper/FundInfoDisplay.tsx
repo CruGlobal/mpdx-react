@@ -1,13 +1,8 @@
 import { Box, Typography } from '@mui/material';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
-import {
-  ConferenceSavingsAccount,
-  PrimaryAccount,
-  SavingsAccount,
-} from '../../Helper/TransferIcons';
+import { getFundIcon } from '../../Helper/TransferIcons';
 import { FundFieldsFragment } from '../../ReportsSavingsFund.generated';
-import { FundTypeEnum } from '../../mockData';
 
 type Fund = Pick<FundFieldsFragment, 'fundType' | 'endBalance'>;
 
@@ -24,11 +19,7 @@ export const FundInfoDisplay: React.FC<FundInfoDisplayProps> = ({ fund }) => {
 
   return (
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      {fund.fundType === FundTypeEnum.Primary
-        ? PrimaryAccount
-        : fund.fundType === FundTypeEnum.Savings
-          ? SavingsAccount
-          : ConferenceSavingsAccount}
+      {getFundIcon(fund.fundType)}
       <Box
         sx={{
           overflow: 'hidden',

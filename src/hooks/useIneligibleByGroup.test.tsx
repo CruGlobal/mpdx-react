@@ -175,6 +175,74 @@ describe('useIneligibleByGroup', () => {
       });
     });
 
+    it('senior international staff eligibility', async () => {
+      const { result } = renderUseIneligibleByGroup({
+        usStaffGroup: UsStaffGroupEnum.SeniorInternationalStaff,
+        spouseUsStaffGroup: null,
+      });
+
+      await waitFor(() => expect(result.current.userLoading).toBe(false));
+      expect(result.current).toMatchObject({
+        inAsrIneligibleGroup: false,
+        inSalaryCalcIneligibleGroup: false,
+        inMhaIneligibleGroup: false,
+        inMpdGoalCalcIneligibleGroup: false,
+        inNsGoalCalcIneligibleGroup: true,
+        inPdsGoalCalcIneligibleGroup: true,
+      });
+    });
+
+    it('new international staff eligibility', async () => {
+      const { result } = renderUseIneligibleByGroup({
+        usStaffGroup: UsStaffGroupEnum.NewInternationalStaff,
+        spouseUsStaffGroup: null,
+      });
+
+      await waitFor(() => expect(result.current.userLoading).toBe(false));
+      expect(result.current).toMatchObject({
+        inAsrIneligibleGroup: false,
+        inSalaryCalcIneligibleGroup: true,
+        inMhaIneligibleGroup: true,
+        inMpdGoalCalcIneligibleGroup: true,
+        inNsGoalCalcIneligibleGroup: false,
+        inPdsGoalCalcIneligibleGroup: true,
+      });
+    });
+
+    it('senior staff stint eligibility', async () => {
+      const { result } = renderUseIneligibleByGroup({
+        usStaffGroup: UsStaffGroupEnum.SeniorStaffStint,
+        spouseUsStaffGroup: null,
+      });
+
+      await waitFor(() => expect(result.current.userLoading).toBe(false));
+      expect(result.current).toMatchObject({
+        inAsrIneligibleGroup: false,
+        inSalaryCalcIneligibleGroup: false,
+        inMhaIneligibleGroup: false,
+        inMpdGoalCalcIneligibleGroup: false,
+        inNsGoalCalcIneligibleGroup: true,
+        inPdsGoalCalcIneligibleGroup: true,
+      });
+    });
+
+    it('new staff stint eligibility', async () => {
+      const { result } = renderUseIneligibleByGroup({
+        usStaffGroup: UsStaffGroupEnum.NewStaffStint,
+        spouseUsStaffGroup: null,
+      });
+
+      await waitFor(() => expect(result.current.userLoading).toBe(false));
+      expect(result.current).toMatchObject({
+        inAsrIneligibleGroup: false,
+        inSalaryCalcIneligibleGroup: true,
+        inMhaIneligibleGroup: true,
+        inMpdGoalCalcIneligibleGroup: true,
+        inNsGoalCalcIneligibleGroup: false,
+        inPdsGoalCalcIneligibleGroup: true,
+      });
+    });
+
     describe('spouse us staff group', () => {
       it('user is null and spouse is senior staff', async () => {
         const { result } = renderUseIneligibleByGroup({
@@ -187,6 +255,40 @@ describe('useIneligibleByGroup', () => {
           inAsrIneligibleGroup: false,
           inSalaryCalcIneligibleGroup: true,
           inMhaIneligibleGroup: false,
+          inMpdGoalCalcIneligibleGroup: true,
+          inNsGoalCalcIneligibleGroup: true,
+          inPdsGoalCalcIneligibleGroup: true,
+        });
+      });
+
+      it('user is null and spouse is senior international staff', async () => {
+        const { result } = renderUseIneligibleByGroup({
+          usStaffGroup: null,
+          spouseUsStaffGroup: UsStaffGroupEnum.SeniorInternationalStaff,
+        });
+
+        await waitFor(() => expect(result.current.userLoading).toBe(false));
+        expect(result.current).toMatchObject({
+          inAsrIneligibleGroup: false,
+          inSalaryCalcIneligibleGroup: true,
+          inMhaIneligibleGroup: false,
+          inMpdGoalCalcIneligibleGroup: true,
+          inNsGoalCalcIneligibleGroup: true,
+          inPdsGoalCalcIneligibleGroup: true,
+        });
+      });
+
+      it('user is null and spouse is new staff stint', async () => {
+        const { result } = renderUseIneligibleByGroup({
+          usStaffGroup: null,
+          spouseUsStaffGroup: UsStaffGroupEnum.NewStaffStint,
+        });
+
+        await waitFor(() => expect(result.current.userLoading).toBe(false));
+        expect(result.current).toMatchObject({
+          inAsrIneligibleGroup: false,
+          inSalaryCalcIneligibleGroup: true,
+          inMhaIneligibleGroup: true,
           inMpdGoalCalcIneligibleGroup: true,
           inNsGoalCalcIneligibleGroup: true,
           inPdsGoalCalcIneligibleGroup: true,
