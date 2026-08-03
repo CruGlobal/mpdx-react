@@ -162,10 +162,20 @@ describe('SettingsCategory', () => {
     });
 
     it('explains that the current year is used when no year is saved', async () => {
-      const { findByText } = render(<TestComponent calculationsYear={null} />);
+      const { getByRole, getByText } = render(
+        <TestComponent calculationsYear={null} />,
+      );
+
+      // Wait for the goal to load; the helper text only renders once the goal
+      // is available and its saved year is known to be null
+      await waitFor(() =>
+        expect(getByRole('textbox', { name: 'Goal Name' })).toHaveValue(
+          'Initial Goal Name',
+        ),
+      );
 
       expect(
-        await findByText(
+        getByText(
           "Until a year is chosen, this goal is calculated with the current year's values.",
         ),
       ).toBeInTheDocument();
