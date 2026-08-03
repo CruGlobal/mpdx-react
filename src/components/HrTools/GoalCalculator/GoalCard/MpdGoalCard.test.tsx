@@ -16,7 +16,7 @@ const mutationSpy = jest.fn();
 
 interface TestComponentProps {
   readOnly?: boolean;
-  calculationsYear?: number | null;
+  calculationsYear?: number;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -79,16 +79,10 @@ describe('MpdGoalCard', () => {
     expect(await findByText('$16,138.94')).toBeInTheDocument();
   });
 
-  it('shows the calculation year chip when the goal has a calculations year', () => {
+  it("shows the goal's calculation year as a chip", () => {
     const { getByText } = render(<TestComponent />);
 
     expect(getByText('2019')).toBeInTheDocument();
-  });
-
-  it('hides the calculation year chip when the goal has no calculations year', () => {
-    const { queryByText } = render(<TestComponent calculationsYear={null} />);
-
-    expect(queryByText('2019')).not.toBeInTheDocument();
   });
 
   it("loads the constants for the goal's calculations year", async () => {

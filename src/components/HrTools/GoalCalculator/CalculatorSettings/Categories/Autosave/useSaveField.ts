@@ -43,6 +43,11 @@ export const useSaveField = () => {
               goalCalculation: {
                 ...goalCalculation,
                 ...attributes,
+                // The update input allows a null year but the field itself is
+                // non-null, so keep the saved year if the update omits it
+                calculationsYear:
+                  attributes.calculationsYear ??
+                  goalCalculation.calculationsYear,
               },
             },
           },
