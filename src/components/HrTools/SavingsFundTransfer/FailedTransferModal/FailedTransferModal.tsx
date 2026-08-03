@@ -3,15 +3,17 @@ import {
   Chip,
   DialogActions,
   DialogContent,
+  Link,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
+  Typography,
 } from '@mui/material';
 import { DateTime } from 'luxon';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { CancelButton } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/Shared/Modal/Modal';
 import { useLocale } from 'src/hooks/useLocale';
@@ -121,6 +123,12 @@ export const FailedTransferModal: React.FC<FailedTransferModalProps> = ({
             </TableBody>
           </Table>
         </TableContainer>
+        <Typography variant="body2" sx={{ mt: 2 }}>
+          <Trans t={t}>
+            For more information about failed transfers, email{' '}
+            <Link href="mailto:HR@cru.org">HR@cru.org</Link>.
+          </Trans>
+        </Typography>
       </DialogContent>
       <DialogActions>
         <CancelButton onClick={handleClose}>{t('Close')}</CancelButton>
