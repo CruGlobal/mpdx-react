@@ -137,15 +137,15 @@ export const SavingsFundTransfer: React.FC<SavingsFundTransferProps> = ({
             </Typography>
             <Typography variant="body1" sx={{ mt: 2 }}>
               {t(
-                'If you have any questions, please contact Crystal Dunaway in Staff Services at ',
+                'If you have any questions, please contact Staff Services at ',
               )}
               <Link
-                href="mailto:Crystal.Dunaway@cru.org"
+                href="mailto:HR@cru.org"
                 underline="hover"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Crystal.Dunaway@cru.org
+                HR@cru.org
               </Link>
               .
             </Typography>
