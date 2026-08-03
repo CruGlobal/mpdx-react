@@ -33,10 +33,14 @@ export const NameDisplay: React.FC<NameDisplayProps> = ({
   const theme = useTheme();
   const currency = 'USD';
   const title = (
-    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-        <Typography variant="h6">{names}</Typography>
-      </Box>
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}
+    >
+      <Typography variant="h6">{names}</Typography>
       {spouseComponent}
     </Box>
   );

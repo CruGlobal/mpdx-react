@@ -384,6 +384,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
             handleClose={() => setModalData(null)}
             data={modalData}
             funds={funds}
+            lastName={userData?.user.lastName ?? ''}
           />
         )}
       </Box>

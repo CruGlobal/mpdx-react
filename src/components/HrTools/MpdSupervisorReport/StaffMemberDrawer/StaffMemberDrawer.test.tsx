@@ -86,16 +86,19 @@ describe('StaffMemberDrawer', () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it('renders the member name after openMember is called', () => {
+  it('renders the member name and person number after openMember is called', () => {
     renderDrawer();
     openMember(memberWithSpouse);
     expect(screen.getByText('John Smith')).toBeInTheDocument();
+    expect(screen.getByText('10000001')).toBeInTheDocument();
+    expect(screen.getByText('1000000001')).toBeInTheDocument();
   });
 
   it('renders the spouse section when a spouse is present', () => {
     renderDrawer();
     openMember(memberWithSpouse);
     expect(screen.getByText(/Spouse:/)).toHaveTextContent('Spouse: Jane Smith');
+    expect(screen.getByText('10000002')).toBeInTheDocument();
   });
 
   it('does not render the spouse section when no spouse is present', () => {

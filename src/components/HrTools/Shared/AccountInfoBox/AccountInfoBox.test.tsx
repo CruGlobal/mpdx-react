@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import { AccountInfoBox } from './AccountInfoBox';
 
 describe('AccountInfoBox', () => {
-  it('renders name, accountId, and overallBalance when provided', () => {
+  it('renders name and overallBalance when provided', () => {
     const { getByTestId } = render(
       <AccountInfoBox name="Test Name" overallBalance={1000} />,
     );

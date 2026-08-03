@@ -46,11 +46,7 @@ export const StaffInfoCard: React.FC<StaffInfoCardProps> = ({
                 height: theme.spacing(5),
               }}
             />
-            <Stack>
-              <Typography variant="h6" lineHeight={1.2}>
-                {person.name}
-              </Typography>
-            </Stack>
+            <Typography variant="h6">{person.name}</Typography>
           </Stack>
           {toggle && (
             <Button endIcon={<RightArrowIcon />} onClick={toggle.onClick}>

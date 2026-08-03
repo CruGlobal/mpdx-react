@@ -7,14 +7,35 @@ export const getUserType = (
 ) => {
   switch (userType) {
     case UserTypeEnum.UsStaff:
-      return t('Cru US Staff');
+      return {
+        label: t('Cru US Staff'),
+        sublabel: t(
+          'Users in this group receive (mostly) US donations and are paid through our US HR system.',
+        ),
+      };
     case UserTypeEnum.GlobalStaff:
-      return t('Cru Global Staff');
+      return {
+        label: t('Cru Global Staff'),
+        sublabel: t(
+          'Users in this group receive (mostly) non-US donations and are paid through our Global NetSuite system.',
+        ),
+      };
     case UserTypeEnum.NonCru:
-      return t('Non Cru User');
+      return {
+        label: t("We see you're not on staff with Cru."),
+        sublabel: null,
+      };
     case UserTypeEnum.HybridStaff:
-      return t('Cru Hybrid Staff');
+      return {
+        label: t('Cru Hybrid Staff'),
+        sublabel: t(
+          'Users in this group receive donations through our Global NetSuite system but also need access to US HR forms (Salary Calc, MHA Calc, etc).',
+        ),
+      };
     default:
-      return t('Unknown');
+      return {
+        label: t('Unknown'),
+        sublabel: null,
+      };
   }
 };

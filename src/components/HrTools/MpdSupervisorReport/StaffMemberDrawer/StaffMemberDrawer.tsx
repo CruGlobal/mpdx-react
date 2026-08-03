@@ -84,7 +84,14 @@ export const StaffMemberDrawer: React.FC = () => {
   }
 
   const { user, spouse } = selectedMember;
-  const { preferredName, lastName, userPersonType, team } = user;
+  const {
+    preferredName,
+    lastName,
+    personNumber,
+    staffAccountID,
+    userPersonType,
+    team,
+  } = user;
   const initials = getInitials(preferredName, lastName);
   const fullName = `${preferredName} ${lastName}`;
 
@@ -111,6 +118,8 @@ export const StaffMemberDrawer: React.FC = () => {
         </IconButton>
       </Box>
       <StaffInfo>
+        <DetailRow label={t('Person Number')} value={personNumber} />
+        <DetailRow label={t('Staff Account Number')} value={staffAccountID} />
         <DetailRow label={t('Employment Type')} value={userPersonType} />
         <DetailRow label={t('Team')} value={team} />
       </StaffInfo>
@@ -124,6 +133,7 @@ export const StaffMemberDrawer: React.FC = () => {
           >
             {t('Spouse')}: {`${spouse.preferredName} ${spouse.lastName}`}
           </Typography>
+          <DetailRow label={t('Person Number')} value={spouse.personNumber} />
           <DetailRow
             label={t('Staff Account Number')}
             value={spouse.staffAccountID}
