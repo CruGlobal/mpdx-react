@@ -1,10 +1,9 @@
 import React, { useMemo } from 'react';
-import InfoOutlined from '@mui/icons-material/InfoOutlined';
-import { Grid, IconButton, MenuItem, Tooltip } from '@mui/material';
+import { Grid, MenuItem } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { getCalculationYearTooltip } from '../../../../Shared/calculationYearTooltip';
+import { CalculationYearTooltip } from '../../../../Shared/CalculationYearTooltip';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
 import { AutosaveTextField } from '../Autosave/AutosaveTextField';
 
@@ -73,18 +72,10 @@ export const SettingsCategory: React.FC = () => {
           schema={validationSchema}
           select
           label={t('Calculation Year')}
-          InputProps={{
-            endAdornment: (
-              <Tooltip title={getCalculationYearTooltip(t)}>
-                <IconButton
-                  size="small"
-                  aria-label={t('About the calculation year')}
-                  sx={{ mr: 2 }}
-                >
-                  <InfoOutlined fontSize="small" />
-                </IconButton>
-              </Tooltip>
-            ),
+          slotProps={{
+            input: {
+              endAdornment: <CalculationYearTooltip sx={{ mr: 2 }} />,
+            },
           }}
         >
           {yearOptions.map((year) => (

@@ -1,20 +1,11 @@
 import React, { useId, useMemo } from 'react';
-import InfoOutlined from '@mui/icons-material/InfoOutlined';
 import LocationOn from '@mui/icons-material/LocationOnOutlined';
 import MailOutline from '@mui/icons-material/MailOutline';
 import Phone from '@mui/icons-material/Phone';
-import {
-  Box,
-  Chip,
-  Grid,
-  IconButton,
-  Stack,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import { Box, Chip, Grid, Stack, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { getCalculationYearTooltip } from '../../Shared/calculationYearTooltip';
+import { CalculationYearTooltip } from '../../Shared/CalculationYearTooltip';
 import { GoalSettingsPlaceholder } from './Fields/GoalSettingsPlaceholder';
 import { GoalSettingsSelect, SelectOption } from './Fields/GoalSettingsSelect';
 import { MpdGoalPreview } from './MpdGoalPreview';
@@ -167,11 +158,7 @@ export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
             }}
           />
         </Box>
-        <Tooltip title={getCalculationYearTooltip(t)}>
-          <IconButton size="small" aria-label={t('About the calculation year')}>
-            <InfoOutlined fontSize="small" />
-          </IconButton>
-        </Tooltip>
+        <CalculationYearTooltip />
         <MpdGoalPreview
           accountListId={accountListId}
           calculationId={calculationId}
