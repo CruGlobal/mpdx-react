@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Container, Typography, useTheme } from '@mui/material';
+import { Box, Container, Link, Typography, useTheme } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import { NameDisplay } from 'src/components/HrTools/Shared/CalculationReports/NameDisplay/NameDisplay';
@@ -27,7 +27,6 @@ export const PendingSalaryCalculationLanding: React.FC = () => {
     return <LimitedAccess noStaffAccount />;
   }
 
-  // TODO (MPDX-9298): Update text with correct HR contact info when available.
   return (
     <StyledContainer>
       <Box>
@@ -40,7 +39,10 @@ export const PendingSalaryCalculationLanding: React.FC = () => {
               We see that {{ names }} currently has a pending Salary Calculation
               Form in our system. You may review the status of that form below.
               If you have any questions regarding a pending request please
-              contact [HR Services] at [Phone] or [Email].
+              contact HR Services at{' '}
+              <Link href="tel:888-278-7233">(888) 278-7233</Link> or{' '}
+              <Link href="tel:407-826-2287">(407) 826-2287</Link>. Email:{' '}
+              <Link href="mailto:HR@cru.org">HR@cru.org</Link>
             </Trans>
           </Typography>
         </Box>
