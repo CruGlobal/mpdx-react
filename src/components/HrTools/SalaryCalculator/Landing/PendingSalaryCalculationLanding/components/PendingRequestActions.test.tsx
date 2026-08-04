@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
 import { LandingTestWrapper } from '../../NewSalaryCalculationLanding/LandingTestWrapper';
@@ -79,6 +79,27 @@ describe('PendingRequestActions', () => {
     userEvent.click(await findByRole('button', { name: 'Delete request' }));
 
     userEvent.click(await findByText('Yes, Cancel'));
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('DeleteSalaryCalculation'),
+    );
+  });
+
+  it('disables the cancel buttons and shows spinners while cancelling', async () => {
+    const { findByRole, getByRole } = render(
+      <TestComponent calculation={mockCalculation} onCall={mutationSpy} />,
+    );
+
+    const deleteButton = await findByRole('button', { name: 'Delete request' });
+    userEvent.click(deleteButton);
+
+    const confirmButton = await findByRole('button', { name: /yes, cancel/i });
+    userEvent.click(confirmButton);
+
+    expect(confirmButton).toBeDisabled();
+    expect(confirmButton).toHaveAttribute('aria-busy', 'true');
+    expect(within(confirmButton).getByRole('progressbar')).toBeInTheDocument();
+    expect(getByRole('button', { name: 'GO BACK' })).toBeDisabled();
+
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('DeleteSalaryCalculation'),
     );

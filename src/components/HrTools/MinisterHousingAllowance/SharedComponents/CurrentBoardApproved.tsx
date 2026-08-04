@@ -103,7 +103,6 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
       hideLinkTwoButton={hasOpenRequest}
       isRequest={false}
       handlePrint={handlePrint}
-      handleConfirmCancel={() => {}}
       styling={{ p: 0 }}
     >
       <TableContainer sx={{ padding: 0 }}>

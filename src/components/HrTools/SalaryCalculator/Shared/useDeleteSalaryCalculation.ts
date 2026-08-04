@@ -3,11 +3,12 @@ import { useDeleteSalaryCalculationMutation } from './DeleteSalaryCalculation.ge
 
 interface UseDeleteSalaryCalculationReturn {
   deleteSalaryCalculation: (calculationId: string) => Promise<void>;
+  deleting: boolean;
 }
 
 export const useDeleteSalaryCalculation =
   (): UseDeleteSalaryCalculationReturn => {
-    const [deleteSalaryCalculationMutation] =
+    const [deleteSalaryCalculationMutation, { loading: deleting }] =
       useDeleteSalaryCalculationMutation();
 
     const deleteSalaryCalculation = async (
@@ -20,8 +21,9 @@ export const useDeleteSalaryCalculation =
           },
         },
         refetchQueries: [LandingSalaryCalculationsDocument],
+        awaitRefetchQueries: true,
       });
     };
 
-    return { deleteSalaryCalculation };
+    return { deleteSalaryCalculation, deleting };
   };

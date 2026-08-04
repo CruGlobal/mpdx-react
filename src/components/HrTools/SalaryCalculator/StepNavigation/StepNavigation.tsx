@@ -18,7 +18,7 @@ export const DiscardButton: React.FC<ButtonProps> = (props) => {
   const { push } = useRouter();
   const accountListId = useAccountListId();
   const { calculation } = useSalaryCalculator();
-  const { deleteSalaryCalculation } = useDeleteSalaryCalculation();
+  const { deleteSalaryCalculation, deleting } = useDeleteSalaryCalculation();
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
 
   const handleDiscard = async () => {
@@ -48,6 +48,7 @@ export const DiscardButton: React.FC<ButtonProps> = (props) => {
           handleClose={() => setRemoveDialogOpen(false)}
           handleConfirm={handleDiscard}
           isDiscard
+          submitting={deleting}
         />
       )}
     </>
@@ -92,7 +93,8 @@ export const ContinueButton: React.FC<ButtonProps> = (props) => {
 export const SubmitButton: React.FC<ButtonProps> = (props) => {
   const { t } = useTranslation();
   const { handleNextStep, calculation } = useSalaryCalculator();
-  const [submit] = useSubmitSalaryCalculationMutation();
+  const [submit, { loading: submitting }] =
+    useSubmitSalaryCalculationMutation();
   const [submitDialogOpen, setSubmitDialogOpen] = useState(false);
   const { title, content, subContent } = useSubmitDialogContent();
 
@@ -132,6 +134,7 @@ export const SubmitButton: React.FC<ButtonProps> = (props) => {
           overrideTitle={title}
           overrideContent={content}
           overrideSubContent={subContent}
+          submitting={submitting}
         />
       )}
     </>

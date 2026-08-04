@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { FormikProvider, useFormik } from 'formik';
 import { SnackbarProvider } from 'notistack';
@@ -675,17 +675,24 @@ describe('RequestPage', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('shows loading indicator when creating a new request', async () => {
+  it('disables the continue button and shows a spinner while creating a new request', async () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
       ...defaultMockContextValue,
       requestData: { latestAdditionalSalaryRequest: null },
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
-    const { getByRole, findByTestId } = render(<TestWrapper />);
+    const { getByRole } = render(<TestWrapper />);
 
-    userEvent.click(getByRole('button', { name: /continue/i }));
+    const continueButton = getByRole('button', { name: /continue/i });
+    userEvent.click(continueButton);
 
-    expect(await findByTestId('Loading')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(continueButton).toBeDisabled();
+      expect(continueButton).toHaveAttribute('aria-busy', 'true');
+      expect(
+        within(continueButton).getByRole('progressbar'),
+      ).toBeInTheDocument();
+    });
   });
 
   it('hides back href on About this Form step in New mode', () => {

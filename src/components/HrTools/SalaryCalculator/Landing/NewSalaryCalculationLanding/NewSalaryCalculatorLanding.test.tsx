@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
   LandingTestWrapper,
@@ -154,7 +154,7 @@ describe('NewSalaryCalculatorLanding', () => {
     });
   });
 
-  it('disables button while mutation is in progress', async () => {
+  it('disables button and shows a spinner while mutation is in progress', async () => {
     const { findByRole } = render(<TestComponent hasApprovedCalculation />);
 
     const button = await findByRole('button', {
@@ -164,6 +164,8 @@ describe('NewSalaryCalculatorLanding', () => {
     userEvent.click(button);
     await waitFor(() => {
       expect(button).toBeDisabled();
+      expect(button).toHaveAttribute('aria-busy', 'true');
+      expect(within(button).getByRole('progressbar')).toBeInTheDocument();
     });
   });
 });

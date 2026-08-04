@@ -36,7 +36,7 @@ interface StatusCardProps {
   hideActions?: boolean;
   hideLinkTwoButton?: boolean;
   handlePrint?: () => void;
-  handleConfirmCancel: () => void;
+  handleConfirmCancel?: () => Promise<void>;
   handleLinkTwo?: () => void;
   styling?: SxProps<Theme>;
 }
@@ -66,10 +66,17 @@ export const StatusCard: React.FC<StatusCardProps> = ({
   const { t } = useTranslation();
 
   const [openCancel, setOpenCancel] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
 
-  const handleCancel = () => {
-    setOpenCancel(false);
-    handleConfirmCancel();
+  const handleCancel = async () => {
+    setCancelling(true);
+    try {
+      await handleConfirmCancel?.();
+      setOpenCancel(false);
+    } catch {
+    } finally {
+      setCancelling(false);
+    }
   };
 
   return (
@@ -168,6 +175,7 @@ export const StatusCard: React.FC<StatusCardProps> = ({
               handleClose={() => setOpenCancel(false)}
               handleConfirm={handleCancel}
               isCancel={true}
+              submitting={cancelling}
             />
           )}
         </Box>

@@ -122,11 +122,11 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
             startIcon={
               submitting ? <CircularProgress size={20} color="inherit" /> : null
             }
+            endIcon={<ChevronRight />}
           >
             <b>
               {additionalApproval ? t('Submit For Approval') : cancelButtonText}
             </b>
-            {!submitting && <ChevronRight sx={{ ml: 1 }} />}
           </Button>
         )}
       </DialogActions>
