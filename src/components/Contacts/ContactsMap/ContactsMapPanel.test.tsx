@@ -66,7 +66,7 @@ describe('ContactsMapPanel', () => {
     expect(getByText('Contact One')).toBeInTheDocument();
     expect(getByText('1 Contact Street')).toBeInTheDocument();
     expect(queryByText('Partner - Special')).not.toBeInTheDocument();
-    expect(getByText('No Primary Address Set')).toBeInTheDocument();
+    expect(getByText('Could Not Be Located')).toBeInTheDocument();
   });
 
   it('should pan to the clicked contact', async () => {
