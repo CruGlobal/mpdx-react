@@ -74,6 +74,7 @@ export const StatusCard: React.FC<StatusCardProps> = ({
       await handleConfirmCancel?.();
       setOpenCancel(false);
     } catch {
+      // The Apollo error link already notifies the user of the failure
     } finally {
       setCancelling(false);
     }

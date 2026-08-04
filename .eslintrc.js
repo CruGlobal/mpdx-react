@@ -67,6 +67,8 @@ module.exports = {
     curly: 'error',
     eqeqeq: 'error',
     'no-console': 'error',
+    'no-debugger': 'error',
+    'no-empty': 'error',
     '@typescript-eslint/no-loss-of-precision': 'warn',
     '@typescript-eslint/no-unused-vars': [
       'error',
