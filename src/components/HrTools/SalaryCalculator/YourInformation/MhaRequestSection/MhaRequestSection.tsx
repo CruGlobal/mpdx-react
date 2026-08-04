@@ -1,10 +1,11 @@
-import Link from 'next/link';
+import NextLink from 'next/link';
 import React from 'react';
 import {
   Box,
   CardContent,
   CardHeader,
   LinearProgress,
+  Link,
   TextField,
   Typography,
   styled,
@@ -139,8 +140,8 @@ export const MhaRequestSection: React.FC = () => {
                 Our records show that not all staff have an MHI for the
                 effective date of this salary calculation. To apply for MHI,
                 contact Personnel Records at{' '}
-                <a href="tel:4078262230">(407) 826-2230</a> or{' '}
-                <a href="mailto:MHA@cru.org">MHA@cru.org</a>. Pending MHI
+                <Link href="tel:4078262230">(407) 826-2230</Link> or{' '}
+                <Link href="mailto:MHA@cru.org">MHA@cru.org</Link>. Pending MHI
                 Requests will not apply to this salary calculation but a new
                 Salary Calculation Form can be submitted after approval.
               </Trans>
@@ -150,11 +151,11 @@ export const MhaRequestSection: React.FC = () => {
                 Housing Allowance for the effective date of this salary
                 calculation. If an MHA Request form has not yet been submitted,
                 it may be completed using{' '}
-                <Link
+                <NextLink
                   href={`/accountLists/${accountListId}/hrTools/mhaCalculator`}
                 >
                   this link
-                </Link>
+                </NextLink>
                 . Pending MHA Requests will not apply to this salary calculation
                 but a new Salary Calculation Form can be submitted after
                 approval.
