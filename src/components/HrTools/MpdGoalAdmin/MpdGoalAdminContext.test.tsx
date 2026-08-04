@@ -4,17 +4,19 @@ import { mockCohorts } from './mockData';
 import { MpdGoalAdminTabEnum, TrainingCosts } from './mpdGoalAdminHelpers';
 
 const trainingCosts: TrainingCosts = {
-  nsoIbsIndividual1InRoom: 100,
-  nsoIbsIndividual2InRoom: 200,
-  nsoIbsCouple: 300,
-  nsoIbsFamily: 400,
-  refreshRetreatSingle: 500,
-  refreshRetreatCouple: 600,
-  faithAndFinanceSingle: 700,
-  faithAndFinanceCouple: 800,
-  cruConferenceSingle: 900,
-  cruConferenceCouple: 1000,
-  cruConferenceFamily: 1100,
+  nsoIndividual1InRoom: 100,
+  nsoIndividual2InRoom: 200,
+  nsoCouple: 300,
+  nsoFamily: 400,
+  ibsSingle: 500,
+  ibsCouple: 600,
+  refreshRetreatSingle: 700,
+  refreshRetreatCouple: 800,
+  faithAndFinanceSingle: 900,
+  faithAndFinanceCouple: 1000,
+  cruConferenceSingle: 1100,
+  cruConferenceCouple: 1200,
+  cruConferenceFamily: 1300,
 };
 
 const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (

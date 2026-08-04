@@ -25,15 +25,24 @@ export interface StaffGoalRow {
 
 /**
  * Per-training cost figures captured in the "Edit Training Costs" modal. Every
- * value is a USD amount; the keys mirror the modal's four cost sections. All
+ * value is a USD amount; the keys mirror the modal's five cost sections. All
  * fields are required in the UI, so a saved `TrainingCosts` is fully populated.
+ *
+ * There is one key per column in `NewStaffCohort::COST_FIELDS` in mpdx_api, named
+ * to match. Note the columns are nullable while these are required, so wiring this
+ * up will need to decide how an unentered cost arrives. NSO and IBS are separate
+ * so an attendee going to NSO but not IBS can be costed (MPDX-9811; Figma node
+ * 789-32532).
  */
 export interface TrainingCosts {
-  /** NSO & IBS Cost */
-  nsoIbsIndividual1InRoom: number;
-  nsoIbsIndividual2InRoom: number;
-  nsoIbsCouple: number;
-  nsoIbsFamily: number;
+  /** NSO Cost */
+  nsoIndividual1InRoom: number;
+  nsoIndividual2InRoom: number;
+  nsoCouple: number;
+  nsoFamily: number;
+  /** IBS Cost */
+  ibsSingle: number;
+  ibsCouple: number;
   /** Refresh Retreat */
   refreshRetreatSingle: number;
   refreshRetreatCouple: number;
