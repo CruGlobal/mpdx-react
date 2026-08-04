@@ -1,6 +1,10 @@
 fragment GoalCalculationSettings on GoalCalculation {
   name
   readOnly
+  createdAt
+  # The year whose constants (benefits charges, geographic multipliers, base
+  # salary) are used for this goal's calculations
+  calculationsYear
   firstName
   spouseFirstName
   lastName

@@ -6,17 +6,17 @@ import {
   SimplePrintOnly,
   SimpleScreenOnly,
 } from 'src/components/Reports/styledComponents';
-import {
-  isBoldLine,
-  isIndentedLine,
-  isTopBorderLine,
-  useMpdGoalRows,
-} from 'src/hooks/useMpdGoalRows';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import { safeProgressRatio } from '../../../Shared/helpers/safeProgressRatio';
 import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
 import { MpdGoalHeaderCards } from './MpdGoalHeaderCards/MpdGoalHeaderCards';
 import { MpdGoalPrintTable } from './MpdGoalPrintTable/MpdGoalPrintTable';
+import {
+  isBoldLine,
+  isIndentedLine,
+  isTopBorderLine,
+  useMpdGoalRows,
+} from './useMpdGoalRows';
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   '.MuiDataGrid-columnHeaderTitle': {

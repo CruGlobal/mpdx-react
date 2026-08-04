@@ -18,7 +18,6 @@ import {
   MpdGoalBenefitsConstantPlanEnum,
   MpdGoalBenefitsConstantSizeEnum,
 } from 'src/graphql/types.generated';
-import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { getLocalizedAge } from 'src/lib/functions/getLocalizedAge';
 import { getLocalizedRole } from 'src/lib/functions/getLocalizedRole';
 import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
@@ -44,9 +43,13 @@ export const InformationCategoryPersonalForm: React.FC<
     goalCalculationResult: { data },
     isReadOnly,
     setRightPanelContent,
+    constants: {
+      goalGeographicConstantMap,
+      goalBenefitsPlans,
+      loading: constantsLoading,
+      unavailable: constantsUnavailable,
+    },
   } = useGoalCalculator();
-  const { goalGeographicConstantMap, goalBenefitsPlans } =
-    useGoalCalculatorConstants();
   const { geographicLocation, familySize, benefitsPlan } =
     data?.goalCalculation || {};
 
@@ -78,8 +81,12 @@ export const InformationCategoryPersonalForm: React.FC<
   }, [goalBenefitsPlans, familySize]);
 
   useEffect(() => {
-    // Read-only goals reject mutations, so don't try to fix an incompatible plan
-    if (isReadOnly) {
+    // Read-only goals reject mutations, so don't try to fix an incompatible
+    // plan. While the constants are loading (e.g. switching to a new
+    // calculation year's constants) or unavailable (no constants are seeded
+    // for the year), the plan options are empty, not invalid, so clearing the
+    // saved plan would be silent data loss.
+    if (isReadOnly || constantsLoading || constantsUnavailable) {
       return;
     }
 
@@ -90,7 +97,14 @@ export const InformationCategoryPersonalForm: React.FC<
         saveField({ benefitsPlan: null });
       }
     }
-  }, [isReadOnly, familySize, benefitsPlan, planOptions]);
+  }, [
+    isReadOnly,
+    constantsLoading,
+    constantsUnavailable,
+    familySize,
+    benefitsPlan,
+    planOptions,
+  ]);
 
   return (
     <>

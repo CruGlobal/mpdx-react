@@ -60,22 +60,58 @@ export const formatConstants = (
   };
 };
 
-interface UseGoalCalculatorConstantsResult extends FormattedConstants {
+export interface UseGoalCalculatorConstantsResult extends FormattedConstants {
   loading: boolean;
   error: ApolloError | undefined;
+  /**
+   * No constants are seeded for the requested year — the query loaded
+   * successfully but returned empty constants. Treat this as an error state,
+   * not as zero-valued constants: any math or autosave driven by the constants
+   * must not run while this is true.
+   */
+  unavailable: boolean;
 }
 
-export const useGoalCalculatorConstants =
-  (): UseGoalCalculatorConstantsResult => {
-    const { data, error } = useGoalCalculatorConstantsQuery({
-      fetchPolicy: 'cache-first',
-    });
+export interface UseGoalCalculatorConstantsOptions {
+  /**
+   * Skip fetching the constants, e.g. while the calculations year is still
+   * unknown. While skipped, `loading` remains true.
+   */
+  skip?: boolean;
+}
 
-    const constants = useMemo(() => formatConstants(data?.constant), [data]);
+/**
+ * Load the MPD goal calculator constants.
+ *
+ * @param year The year whose constants to load. The constants vary from year
+ *   to year, so goals pass their calculations year to keep their math on that
+ *   year's values. When omitted or null, the server uses the current year.
+ * @param options Options controlling the underlying query.
+ */
+export const useGoalCalculatorConstants = (
+  year?: number | null,
+  options?: UseGoalCalculatorConstantsOptions,
+): UseGoalCalculatorConstantsResult => {
+  const { data, error } = useGoalCalculatorConstantsQuery({
+    // Normalize undefined to null so that all callers without a year share one
+    // cache entry
+    variables: { year: year ?? null },
+    fetchPolicy: 'cache-first',
+    skip: options?.skip,
+  });
 
-    return {
+  const constants = useMemo(() => formatConstants(data?.constant), [data]);
+
+  return useMemo(
+    () => ({
       ...constants,
       error,
+      // While the query is skipped or in flight there is no data yet, so both
+      // states report as loading
       loading: !data,
-    };
-  };
+      unavailable:
+        !!data && data.constant.mpdGoalBenefitsConstants.length === 0,
+    }),
+    [constants, error, data],
+  );
+};

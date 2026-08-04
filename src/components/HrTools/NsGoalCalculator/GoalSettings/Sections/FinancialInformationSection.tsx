@@ -1,12 +1,14 @@
 import React, { useMemo } from 'react';
 import { Box, SxProps, Theme, Typography } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
+import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { useFormatters } from '../../../Shared/useFormatters';
 import { GoalSettingsNumberField } from '../Fields/GoalSettingsNumberField';
 import { GoalSettingsSelect, SelectOption } from '../Fields/GoalSettingsSelect';
 import { ColumnHeaderRow, FieldRow, Section } from '../GoalSettingsLayout';
+import { GoalSettingsFormValues } from '../goalSettingsFormValues';
 import { GoalSettingsSectionProps } from '../goalSettingsSectionProps';
 
 export const FinancialInformationSection: React.FC<
@@ -23,7 +25,13 @@ export const FinancialInformationSection: React.FC<
   const { t } = useTranslation();
   const { formatCurrency } = useFormatters();
   const seniorStaffOnly = t('Senior Staff Only');
-  const { goalGeographicConstantMap } = useGoalCalculatorConstants();
+  const {
+    values: { calculationsYear },
+  } = useFormikContext<GoalSettingsFormValues>();
+  // Keep the geographic constants on the same year the goal is calculated with
+  const { goalGeographicConstantMap } = useGoalCalculatorConstants(
+    calculationsYear ? Number(calculationsYear) : null,
+  );
 
   const geographicLocationOptions = useMemo<SelectOption[]>(
     () =>

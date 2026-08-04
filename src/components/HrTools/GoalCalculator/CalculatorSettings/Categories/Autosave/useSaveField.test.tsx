@@ -1,5 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { GoalCalculatorTestWrapper } from '../../../GoalCalculatorTestWrapper';
+import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
 import { useSaveField } from './useSaveField';
 
 const mutationSpy = jest.fn();
@@ -10,16 +11,22 @@ const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   </GoalCalculatorTestWrapper>
 );
 
+// Expose the loaded goal alongside saveField so the tests can wait for the data
+// to arrive — saveField silently no-ops until the goal calculation has loaded
+const useTestHooks = () => ({
+  saveField: useSaveField(),
+  goalCalculation:
+    useGoalCalculator().goalCalculationResult.data?.goalCalculation,
+});
+
 describe('useSaveField', () => {
   it('should update goal calculation', async () => {
-    const { result } = renderHook(useSaveField, { wrapper: Wrapper });
+    const { result } = renderHook(useTestHooks, { wrapper: Wrapper });
 
     // Wait for the goal calculation to load
-    await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('GoalCalculation'),
-    );
+    await waitFor(() => expect(result.current.goalCalculation).toBeDefined());
 
-    result.current({ name: 'New Name' });
+    result.current.saveField({ name: 'New Name' });
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('UpdateGoalCalculation', {
@@ -35,14 +42,12 @@ describe('useSaveField', () => {
   });
 
   it('should not update goal calculation when no attributes changed', async () => {
-    const { result } = renderHook(useSaveField, { wrapper: Wrapper });
+    const { result } = renderHook(useTestHooks, { wrapper: Wrapper });
 
     // Wait for the goal calculation to load
-    await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('GoalCalculation'),
-    );
+    await waitFor(() => expect(result.current.goalCalculation).toBeDefined());
 
-    result.current({ name: 'Initial Goal Name', firstName: 'John' });
+    result.current.saveField({ name: 'Initial Goal Name', firstName: 'John' });
 
     await Promise.resolve();
     await waitFor(() =>

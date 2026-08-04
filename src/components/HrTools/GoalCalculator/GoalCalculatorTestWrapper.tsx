@@ -35,6 +35,10 @@ export const goalCalculationMock = gqlMock<
       id: 'goal-calculation-1',
       name: 'Initial Goal Name',
       readOnly: false,
+      // Jest pins the current date to 2020-01-01, so the calculation year
+      // options are 2020, 2019, and 2018
+      createdAt: '2018-06-15T12:00:00-05:00',
+      calculationsYear: 2019,
       firstName: 'John',
       spouseFirstName: 'Jane',
       lastName: 'Doe',
@@ -266,10 +270,60 @@ export const constantsMock = gqlMock<
           label: MpdGoalMiscConstantLabelEnum.MarriedNy,
           fee: 140000,
         },
+        {
+          category: MpdGoalMiscConstantCategoryEnum.ReimbursementsWithMaximum,
+          label: MpdGoalMiscConstantLabelEnum.Phone,
+          fee: 35,
+        },
+        {
+          category: MpdGoalMiscConstantCategoryEnum.ReimbursementsWithMaximum,
+          label: MpdGoalMiscConstantLabelEnum.Internet,
+          fee: 30,
+        },
       ],
     },
   },
 }).constant;
+
+const emptyConstants: GoalCalculatorConstantsQuery['constant'] = {
+  mpdGoalBenefitsConstants: [],
+  mpdGoalGeographicConstants: [],
+  mpdGoalMiscConstants: [],
+};
+
+/**
+ * Build a `GoalCalculatorConstants` mock whose constant lists resolve based on
+ * the query's `year` argument. graphql-ergonomock calls function mock values
+ * as field resolvers with `(root, args, context, info)`, so each list looks up
+ * the constants for the requested year. Years without an entry (including a
+ * null year) resolve to empty constant lists.
+ *
+ * The return value is cast because `GqlMockedProvider`'s `mocks` prop is typed
+ * as the query data shape, but graphql-ergonomock also accepts resolver
+ * functions in place of field values.
+ */
+const mockConstantsByYear = (
+  constantsByYear: Record<number, GoalCalculatorConstantsQuery['constant']>,
+): GoalCalculatorConstantsQuery['constant'] => {
+  const constantsForYear = (args: {
+    year?: number | null;
+  }): GoalCalculatorConstantsQuery['constant'] =>
+    (typeof args.year === 'number' ? constantsByYear[args.year] : undefined) ??
+    emptyConstants;
+
+  return {
+    mpdGoalBenefitsConstants: (
+      _root: unknown,
+      args: { year?: number | null },
+    ) => constantsForYear(args).mpdGoalBenefitsConstants,
+    mpdGoalGeographicConstants: (
+      _root: unknown,
+      args: { year?: number | null },
+    ) => constantsForYear(args).mpdGoalGeographicConstants,
+    mpdGoalMiscConstants: (_root: unknown, args: { year?: number | null }) =>
+      constantsForYear(args).mpdGoalMiscConstants,
+  } as unknown as GoalCalculatorConstantsQuery['constant'];
+};
 
 interface MockedGoalCalculatorTestWrapperProps {
   noMocks?: false;
@@ -277,19 +331,28 @@ interface MockedGoalCalculatorTestWrapperProps {
   readOnly?: boolean;
   /** Override the mocked goal calculation (defaults to `goalCalculationMock`). */
   goalCalculation?: GoalCalculationQuery['goalCalculation'];
+  /**
+   * Mock the `GoalCalculatorConstants` query per-year instead of statically.
+   * The constant lists resolve from the entry matching the query's `year`
+   * argument; years without an entry resolve to empty constant lists. Omit to
+   * mock every year with the static `constantsMock`.
+   */
+  constantsByYear?: Record<number, GoalCalculatorConstantsQuery['constant']>;
   children?: React.ReactNode;
 }
 
 interface NoMocksGoalCalculatorTestWrapperProps {
   /**
    * Skip the `GqlMockedProvider` entirely (the test supplies its own Apollo
-   * provider). `onCall`, `readOnly`, and `goalCalculation` only configure the
-   * mocked provider, so they are disallowed here — they would silently no-op.
+   * provider). `onCall`, `readOnly`, `goalCalculation`, and `constantsByYear`
+   * only configure the mocked provider, so they are disallowed here — they
+   * would silently no-op.
    */
   noMocks: true;
   onCall?: never;
   readOnly?: never;
   goalCalculation?: never;
+  constantsByYear?: never;
   children?: React.ReactNode;
 }
 
@@ -304,6 +367,7 @@ export const GoalCalculatorTestWrapper: React.FC<
   noMocks = false,
   readOnly = false,
   goalCalculation = goalCalculationMock,
+  constantsByYear,
   children,
 }) => {
   const content = <GoalCalculatorProvider>{children}</GoalCalculatorProvider>;
@@ -332,7 +396,9 @@ export const GoalCalculatorTestWrapper: React.FC<
                     : goalCalculation,
                 },
                 GoalCalculatorConstants: {
-                  constant: constantsMock,
+                  constant: constantsByYear
+                    ? mockConstantsByYear(constantsByYear)
+                    : constantsMock,
                 },
               }}
               onCall={onCall}
