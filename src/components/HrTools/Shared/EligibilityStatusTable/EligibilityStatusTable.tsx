@@ -4,6 +4,7 @@ import {
   Card,
   CardContent,
   CardHeader,
+  Link,
   Table,
   TableBody,
   TableCell,
@@ -194,8 +195,8 @@ export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
               approved amount that can be applied to your salary. If you believe
               this is incorrect, or would like to complete the required IBS
               courses, please contact Personnel Records at{' '}
-              <a href="tel:4078262230">(407) 826-2230</a> or{' '}
-              <a href="mailto:MHA@cru.org">MHA@cru.org</a>.
+              <Link href="tel:4078262230">(407) 826-2230</Link> or{' '}
+              <Link href="mailto:MHA@cru.org">MHA@cru.org</Link>.
             </Trans>
           </Typography>
         </Box>
