@@ -107,7 +107,7 @@ export const PersonalInformationSection: React.FC = () => {
             correct, please contact HR Services with the correct information at{' '}
             <Link href="tel:888-278-7233">(888) 278-7233</Link> or{' '}
             <Link href="tel:407-826-2287">(407) 826-2287</Link>. Email:{' '}
-            <Link href="mailto:HR@cru.org">HR@cru.org</Link>
+            <Link href="mailto:HR@cru.org">HR@cru.org</Link>.
           </Trans>
         </Typography>
       </CardContent>
