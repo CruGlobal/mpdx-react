@@ -126,9 +126,9 @@ describe('ExpensesStep', () => {
     // Grids render in the same order as the family's categories
     const [phoneGrid, internetGrid, utilitiesGrid] = getAllByRole('region');
     await waitFor(() =>
-      expect(phoneGrid).toHaveAttribute('data-max-total', '75'),
+      expect(phoneGrid).toHaveAttribute('data-max-total', '35'),
     );
-    expect(internetGrid).toHaveAttribute('data-max-total', '50');
+    expect(internetGrid).toHaveAttribute('data-max-total', '30');
     expect(utilitiesGrid).not.toHaveAttribute('data-max-total');
   });
 
@@ -154,10 +154,10 @@ describe('ExpensesStep', () => {
     );
 
     // The mocked goal's calculationsYear is 2019, so the phone maximum must be
-    // the 2019 fee of 75, not the 2018 fee of 175
+    // the 2019 fee of 35, not the 2018 fee of 135
     const [phoneGrid] = getAllByRole('region');
     await waitFor(() =>
-      expect(phoneGrid).toHaveAttribute('data-max-total', '75'),
+      expect(phoneGrid).toHaveAttribute('data-max-total', '35'),
     );
   });
 });

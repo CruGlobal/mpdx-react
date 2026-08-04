@@ -273,12 +273,12 @@ export const constantsMock = gqlMock<
         {
           category: MpdGoalMiscConstantCategoryEnum.ReimbursementsWithMaximum,
           label: MpdGoalMiscConstantLabelEnum.Phone,
-          fee: 75,
+          fee: 35,
         },
         {
           category: MpdGoalMiscConstantCategoryEnum.ReimbursementsWithMaximum,
           label: MpdGoalMiscConstantLabelEnum.Internet,
-          fee: 50,
+          fee: 30,
         },
       ],
     },
