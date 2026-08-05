@@ -116,7 +116,7 @@ const MainContent: React.FC = () => {
     t,
   );
 
-  if (creatingRequest || (loading && !requestData)) {
+  if (loading && !requestData) {
     return <Loading loading />;
   }
 
@@ -175,6 +175,7 @@ const MainContent: React.FC = () => {
                   (exceedsCap && !!errors.additionalInfo)
                 }
                 overrideNext={isFirstFormPage ? handleContinue : undefined}
+                loadingNext={creatingRequest}
               />
             </Stack>
           )}

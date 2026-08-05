@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
 import { SnackbarProvider } from 'notistack';
@@ -189,9 +189,8 @@ describe('DirectionButtons', () => {
 
     const savingButton = await findByRole('button', { name: 'Saving...' });
     expect(savingButton).toBeDisabled();
-    expect(
-      savingButton.querySelector('.MuiCircularProgress-root'),
-    ).toBeInTheDocument();
+    expect(savingButton).toHaveAttribute('aria-busy', 'true');
+    expect(within(savingButton).getByRole('progressbar')).toBeInTheDocument();
   });
 
   it('suppresses the disabledNextTooltip while loadingNext is true', async () => {

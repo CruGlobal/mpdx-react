@@ -71,7 +71,9 @@ export const RentOwn: React.FC = () => {
         variant: 'success',
       });
       setHasCalcValues(false);
-    } catch (error) {}
+    } catch {
+      // The Apollo error link already notifies the user of the failure
+    }
   };
 
   const [pendingValue, setPendingValue] = useState<MhaRentOrOwnEnum | null>(
