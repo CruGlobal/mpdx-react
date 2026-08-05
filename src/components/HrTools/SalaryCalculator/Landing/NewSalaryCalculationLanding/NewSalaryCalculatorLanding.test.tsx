@@ -28,7 +28,6 @@ describe('NewSalaryCalculatorLanding', () => {
       await findByRole('heading', { name: 'Doe, John and Jane' }),
     ).toBeInTheDocument();
 
-    expect(await findByTestId('person-numbers')).toHaveTextContent('111111111');
     expect(await findByTestId('amount-one')).toHaveTextContent('$55,000.00');
     expect(await findByTestId('amount-two')).toHaveTextContent('$10,000.00');
   });

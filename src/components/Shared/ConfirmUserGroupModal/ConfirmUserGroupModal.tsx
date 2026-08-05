@@ -41,18 +41,7 @@ export const ConfirmUserGroupModal: React.FC<ConfirmUserGroupModalProps> = ({
     });
   };
 
-  const userTypeLabel = getUserType(userType, t);
-
-  const description =
-    userType === UserTypeEnum.UsStaff
-      ? t(
-          'Users in this group receive (mostly) US donations and are paid through our US HR system.',
-        )
-      : userType === UserTypeEnum.GlobalStaff
-        ? t(
-            'Users in this group receive (mostly) non-US donations and are paid through our Global NetSuite system.',
-          )
-        : undefined;
+  const { label, sublabel } = getUserType(userType, t);
 
   const handleRequestChange = async () => {
     try {
@@ -87,23 +76,21 @@ export const ConfirmUserGroupModal: React.FC<ConfirmUserGroupModalProps> = ({
       <DialogTitle>{t('Is this your user group?')}</DialogTitle>
       <DialogContent>
         <Alert severity="info" sx={{ mb: 2 }}>
-          <Box sx={{ display: 'flex', gap: 0.5, mb: description ? 0 : 2 }}>
+          <Box sx={{ display: 'flex', gap: 0.5, mb: sublabel ? 0 : 2 }}>
             {userType === UserTypeEnum.NonCru ? (
-              <Typography>
-                {t("We see you're not on staff with Cru.")}
-              </Typography>
+              <Typography>{label}</Typography>
             ) : (
               <>
                 <Typography>
                   {t('The user group for your account is:')}
                 </Typography>
-                <Typography fontWeight="bold">{userTypeLabel}</Typography>
+                <Typography fontWeight="bold">{label}</Typography>
               </>
             )}
           </Box>
-          {description && (
+          {sublabel && (
             <Typography sx={{ mb: 2, fontSize: 'body2.fontSize' }}>
-              {description}
+              {sublabel}
             </Typography>
           )}
           <Typography>

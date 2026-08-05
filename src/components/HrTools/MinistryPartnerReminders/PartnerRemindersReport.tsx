@@ -189,10 +189,7 @@ export const PartnerRemindersReport: React.FC<MPRemindersReportProps> = ({
               {staffLoading ? (
                 <AccountInfoBoxSkeleton />
               ) : (
-                <AccountInfoBox
-                  name={staffAccountData?.staffAccount?.name}
-                  accountId={staffAccountData?.staffAccount?.id}
-                />
+                <AccountInfoBox name={staffAccountData?.staffAccount?.name} />
               )}
             </Container>
           </Box>

@@ -308,10 +308,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
             {!staffAccountData && !staffAccountError ? (
               <AccountInfoBoxSkeleton />
             ) : (
-              <AccountInfoBox
-                name={staffAccountData?.staffAccount?.name}
-                accountId={staffAccountData?.staffAccount?.id}
-              />
+              <AccountInfoBox name={staffAccountData?.staffAccount?.name} />
             )}
             <Box
               display="flex"
@@ -387,6 +384,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
             handleClose={() => setModalData(null)}
             data={modalData}
             funds={funds}
+            lastName={userData?.user.lastName ?? ''}
           />
         )}
       </Box>

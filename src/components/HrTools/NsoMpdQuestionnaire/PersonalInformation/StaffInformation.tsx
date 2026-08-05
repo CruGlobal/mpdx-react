@@ -84,9 +84,6 @@ export const StaffInformation: React.FC = () => {
           name,
           // Backend doesn't currently support accessing the spouse's avatar
           avatarSrc: viewingSpouse ? null : userData?.user.avatar,
-          staffAccountId: viewingSpouse
-            ? questionnaire?.spousePersonNumber
-            : questionnaire?.personNumber,
         }}
         toggle={
           hasSpouse

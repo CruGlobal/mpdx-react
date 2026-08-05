@@ -95,7 +95,7 @@ describe('ConfirmUserGroupModal', () => {
     });
   });
 
-  it('renders user type and description correctly', async () => {
+  it('renders US user type and description correctly', async () => {
     const { getByText } = render(<TestComponent />);
 
     await waitFor(() => {
@@ -111,12 +111,51 @@ describe('ConfirmUserGroupModal', () => {
     });
   });
 
-  it('renders non cru user message correctly', async () => {
+  it('renders global user type and description correctly', async () => {
     const { getByText } = render(
+      <TestComponent userType={UserTypeEnum.GlobalStaff} />,
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText('The user group for your account is:'),
+      ).toBeInTheDocument();
+      expect(getByText('Cru Global Staff')).toBeInTheDocument();
+      expect(
+        getByText(
+          'Users in this group receive (mostly) non-US donations and are paid through our Global NetSuite system.',
+        ),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('renders hybrid user type and description correctly', async () => {
+    const { getByText } = render(
+      <TestComponent userType={UserTypeEnum.HybridStaff} />,
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText('The user group for your account is:'),
+      ).toBeInTheDocument();
+      expect(getByText('Cru Hybrid Staff')).toBeInTheDocument();
+      expect(
+        getByText(
+          'Users in this group receive donations through our Global NetSuite system but also need access to US HR forms (Salary Calc, MHA Calc, etc).',
+        ),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('renders non cru user message correctly', async () => {
+    const { getByText, queryByText } = render(
       <TestComponent userType={UserTypeEnum.NonCru} />,
     );
 
     await waitFor(() => {
+      expect(
+        queryByText('The user group for your account is:'),
+      ).not.toBeInTheDocument();
       expect(
         getByText("We see you're not on staff with Cru."),
       ).toBeInTheDocument();

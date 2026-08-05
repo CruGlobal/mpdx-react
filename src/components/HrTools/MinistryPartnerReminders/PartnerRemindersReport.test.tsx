@@ -25,7 +25,6 @@ const router = {
 const mocks = {
   StaffAccount: {
     staffAccount: {
-      id: '12345',
       name: 'Test Account',
     },
   },
@@ -104,7 +103,6 @@ describe('PartnerRemindersReport', () => {
     const { getByText, findByText } = render(<TestComponent />);
 
     expect(getByText('Ministry Partner Reminders')).toBeInTheDocument();
-    expect(await findByText('12345')).toBeInTheDocument();
     expect(await findByText('Test Account')).toBeInTheDocument();
   });
 

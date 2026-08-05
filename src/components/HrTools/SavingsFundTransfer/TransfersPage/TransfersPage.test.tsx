@@ -258,9 +258,6 @@ describe('TransfersPage', () => {
     expect(
       await findByText(mock.StaffAccount.staffAccount.name),
     ).toBeInTheDocument();
-    expect(
-      await findByText(mock.StaffAccount.staffAccount.id),
-    ).toBeInTheDocument();
   });
 
   it('should render all balance cards with correct information', async () => {

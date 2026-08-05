@@ -11,7 +11,6 @@ import { getMhiEligibility } from 'src/components/Reports/Shared/HousingAllowanc
 import { MhaStatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
-import { NameDisplay } from '../Shared/CalculationReports/NameDisplay/NameDisplay';
 import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { PanelTypeEnum } from '../Shared/CalculationReports/Shared/sharedTypes';
 import { EligibleDisplay } from './MainPages/EligibleDisplay';
@@ -50,18 +49,6 @@ export const MinisterHousingAllowanceReport = () => {
     userHcmData,
     spouseHcmData,
   } = useMinisterHousingAllowance();
-
-  const personNumber = userHcmData?.staffInfo.personNumber ?? '';
-  const spousePersonNumber = spouseHcmData?.staffInfo.personNumber ?? '';
-  const lastName = userHcmData?.staffInfo.lastName ?? '';
-  const spouseLastName = spouseHcmData?.staffInfo.lastName ?? '';
-
-  const names = isMarried
-    ? `${preferredName} ${lastName} and ${spousePreferredName} ${spouseLastName}`
-    : `${preferredName} ${lastName}`;
-  const personNumbers = isMarried
-    ? `${personNumber} and ${spousePersonNumber}`
-    : personNumber;
 
   const [createMHA] = useCreateHousingAllowanceRequestMutation();
   const [creatingRequest, setCreatingRequest] = useState(false);
@@ -159,12 +146,6 @@ export const MinisterHousingAllowanceReport = () => {
                   <Typography variant="h5">{t('Your MHA')}</Typography>
                 </Box>
 
-                <NameDisplay
-                  names={names}
-                  personNumbers={personNumbers}
-                  personNumberCount={isMarried ? 2 : 1}
-                />
-
                 {hasNoRequests ? (
                   <>
                     <NoRequestsDisplay />
@@ -197,12 +178,14 @@ export const MinisterHousingAllowanceReport = () => {
                   </>
                 ) : (
                   eitherPersonEligible && (
-                    <EligibleDisplay
-                      isPending={isCurrentRequestPending}
-                      isEditable={
-                        currentRequest.status === MhaStatusEnum.ActionRequired
-                      }
-                    />
+                    <Box mb={2}>
+                      <EligibleDisplay
+                        isPending={isCurrentRequestPending}
+                        isEditable={
+                          currentRequest.status === MhaStatusEnum.ActionRequired
+                        }
+                      />
+                    </Box>
                   )
                 )}
 

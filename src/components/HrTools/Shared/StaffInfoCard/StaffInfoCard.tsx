@@ -9,8 +9,6 @@ interface StaffInfoCardProps {
   person: {
     name: string;
     avatarSrc?: string | null;
-    /** Optional staff account number shown beneath the name. */
-    staffAccountId?: string | null;
   };
   /** The other person to switch to */
   toggle?: { name: string; onClick: () => void };
@@ -48,18 +46,7 @@ export const StaffInfoCard: React.FC<StaffInfoCardProps> = ({
                 height: theme.spacing(5),
               }}
             />
-            <Stack>
-              <Typography variant="h6" lineHeight={1.2}>
-                {person.name}
-              </Typography>
-              {person.staffAccountId && (
-                <Typography color="text.secondary" lineHeight={1.2}>
-                  {t('Person Number: {{number}}', {
-                    number: person.staffAccountId,
-                  })}
-                </Typography>
-              )}
-            </Stack>
+            <Typography variant="h6">{person.name}</Typography>
           </Stack>
           {toggle && (
             <Button endIcon={<RightArrowIcon />} onClick={toggle.onClick}>

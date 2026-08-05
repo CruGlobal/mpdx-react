@@ -28,7 +28,6 @@ describe('ViewForm', () => {
 
     expect(getByText('View Your Request')).toBeInTheDocument();
     expect(getByText('Doe, John')).toBeInTheDocument();
-    expect(getByText('Person Number: 00123456')).toBeInTheDocument();
 
     expect(
       getByRole('button', { name: /back to status/i }),

@@ -24,7 +24,7 @@ export const EditForm: React.FC = () => {
   const { calculations } = useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
 
-  const { name, accountNumber, primaryAccountBalance } = useFormUserInfo();
+  const { name, primaryAccountBalance } = useFormUserInfo();
   const individualCap = calculations?.currentSalaryCap ?? 0;
 
   const { exceedsCap } = useSalaryCalculations({
@@ -36,7 +36,6 @@ export const EditForm: React.FC = () => {
       <Typography variant="h4">{t('Edit Your Request')}</Typography>
       <NameDisplay
         names={name ?? ''}
-        personNumbers={accountNumber ?? ''}
         titleOne={t('Primary Account Balance')}
         amountOne={primaryAccountBalance}
         titleTwo={t('Your Maximum Allowable Salary (CAP)')}

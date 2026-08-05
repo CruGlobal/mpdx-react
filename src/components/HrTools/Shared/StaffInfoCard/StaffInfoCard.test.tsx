@@ -6,7 +6,6 @@ import { StaffInfoCard } from './StaffInfoCard';
 interface RenderOptions {
   hasSpouse?: boolean;
   onClick?: () => void;
-  staffAccountId?: string | null;
 }
 
 const mutationSpy = jest.fn();
@@ -14,11 +13,10 @@ const mutationSpy = jest.fn();
 const renderCard = ({
   hasSpouse = true,
   onClick = mutationSpy,
-  staffAccountId,
 }: RenderOptions = {}) =>
   render(
     <StaffInfoCard
-      person={{ name: 'John Doe', avatarSrc: 'avatar.jpg', staffAccountId }}
+      person={{ name: 'John Doe', avatarSrc: 'avatar.jpg' }}
       toggle={hasSpouse ? { name: 'Jane', onClick } : undefined}
     >
       <div>Card body</div>
@@ -51,17 +49,5 @@ describe('StaffInfoCard', () => {
     expect(
       queryByRole('button', { name: 'View Jane' }),
     ).not.toBeInTheDocument();
-  });
-
-  it('renders the staff account number when provided', () => {
-    const { getByText } = renderCard({ staffAccountId: '000123456' });
-
-    expect(getByText('Person Number: 000123456')).toBeInTheDocument();
-  });
-
-  it('omits the staff account number when not provided', () => {
-    const { queryByText } = renderCard();
-
-    expect(queryByText(/Person Number/)).not.toBeInTheDocument();
   });
 });

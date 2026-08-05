@@ -150,10 +150,7 @@ export const MPGAIncomeExpensesReport: React.FC<
             {!staffAccountData && !error ? (
               <AccountInfoBoxSkeleton />
             ) : (
-              <AccountInfoBox
-                name={staffAccountData?.staffAccount?.name}
-                accountId={staffAccountData?.staffAccount?.id}
-              />
+              <AccountInfoBox name={staffAccountData?.staffAccount?.name} />
             )}
           </Container>
         </Box>
