@@ -24,7 +24,7 @@ export const ViewForm: React.FC = () => {
   const { calculations, setPageType, pendingPrint, setPendingPrint } =
     useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
-  const { name, accountNumber, primaryAccountBalance } = useFormUserInfo();
+  const { name, primaryAccountBalance } = useFormUserInfo();
   const individualCap = calculations?.currentSalaryCap ?? 0;
 
   const { exceedsCap } = useSalaryCalculations({
@@ -65,7 +65,6 @@ export const ViewForm: React.FC = () => {
       <Typography variant="h4">{t('View Your Request')}</Typography>
       <NameDisplay
         names={name ?? ''}
-        personNumbers={accountNumber ?? ''}
         titleOne={t('Primary Account Balance')}
         amountOne={primaryAccountBalance}
         titleTwo={t('Your Maximum Allowable Salary (CAP)')}

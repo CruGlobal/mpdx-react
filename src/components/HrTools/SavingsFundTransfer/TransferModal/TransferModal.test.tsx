@@ -24,6 +24,7 @@ import {
 import { TransferModal } from './TransferModal';
 
 const accountListId = 'abc';
+const lastName = 'Doe';
 const router = {
   query: { accountListId },
   isReady: true,
@@ -89,6 +90,7 @@ const Components = ({
                   transfer,
                 }}
                 funds={fundsMock}
+                lastName={lastName}
                 handleClose={handleClose}
               />
             </StaffSavingFundProvider>
@@ -267,6 +269,7 @@ describe('TransferModal', () => {
       userEvent.clear(amountField);
       userEvent.type(amountField, '100');
 
+      userEvent.clear(noteField);
       userEvent.type(noteField, 'Test note');
 
       userEvent.click(getByRole('button', { name: /submit/i }));
@@ -295,6 +298,7 @@ describe('TransferModal', () => {
       userEvent.clear(amountField);
       userEvent.type(amountField, '100');
 
+      userEvent.clear(noteField);
       userEvent.type(noteField, 'Test note');
 
       userEvent.click(submitButton);
@@ -309,50 +313,136 @@ describe('TransferModal', () => {
       });
     });
 
-    it('should require a note for one-time transfers', async () => {
-      const { getByRole, findByText } = render(<Components />);
+    it('should leave the note empty until a to account is chosen', () => {
+      const { getByRole } = render(<Components />);
 
-      const toAccount = getByRole('combobox', { name: /to account/i });
-      const amountField = getByRole('spinbutton', { name: /amount/i });
-      const noteField = getByRole('textbox', { name: /note/i });
+      expect(getByRole('textbox', { name: /note/i })).toHaveValue('');
+    });
 
-      userEvent.click(toAccount);
+    it('should default the note once a to account is chosen', async () => {
+      const { getByRole } = render(<Components />);
+
+      userEvent.click(getByRole('combobox', { name: /to account/i }));
       userEvent.click(getByRole('option', { name: /staff savings/i }));
 
+      await waitFor(() =>
+        expect(getByRole('textbox', { name: /note/i })).toHaveValue(
+          'Doe transfer to Staff Savings 1/1/2020',
+        ),
+      );
+    });
+
+    it('should update the note when the transfer date changes', async () => {
+      const { getByRole, getByLabelText } = render(<Components />);
+
+      userEvent.click(getByRole('combobox', { name: /to account/i }));
+      userEvent.click(getByRole('option', { name: /staff savings/i }));
+
+      const transferDate = getByLabelText(/transfer date/i);
+      userEvent.clear(transferDate);
+      userEvent.type(transferDate, '02/15/2020');
+      userEvent.tab();
+
+      await waitFor(() =>
+        expect(getByRole('textbox', { name: /note/i })).toHaveValue(
+          'Doe transfer to Staff Savings 2/15/2020',
+        ),
+      );
+    });
+
+    it('should let the user override the default note', async () => {
+      const { getByRole } = render(<Components />);
+
+      userEvent.click(getByRole('combobox', { name: /to account/i }));
+      userEvent.click(getByRole('option', { name: /staff savings/i }));
+
+      const noteField = getByRole('textbox', { name: /note/i });
+      userEvent.clear(noteField);
+      userEvent.type(noteField, 'My own note');
+
+      await waitFor(() => expect(noteField).toHaveValue('My own note'));
+    });
+
+    it('should keep a custom note when the transfer date changes', async () => {
+      const { getByRole, getByLabelText } = render(<Components />);
+
+      userEvent.click(getByRole('combobox', { name: /to account/i }));
+      userEvent.click(getByRole('option', { name: /staff savings/i }));
+
+      const noteField = getByRole('textbox', { name: /note/i });
+      userEvent.clear(noteField);
+      userEvent.type(noteField, 'Money for the new roof');
+      await waitFor(() =>
+        expect(noteField).toHaveValue('Money for the new roof'),
+      );
+
+      const transferDate = getByLabelText(/transfer date/i);
+      userEvent.clear(transferDate);
+      userEvent.type(transferDate, '02/15/2020');
+      userEvent.tab();
+
+      await waitFor(() => expect(transferDate).toHaveValue('2/15/2020'));
+      expect(noteField).toHaveValue('Money for the new roof');
+    });
+
+    it('should enable submit when the amount is entered before the to account', async () => {
+      const { getByRole } = render(<Components />);
+
+      const amountField = getByRole('spinbutton', { name: /amount/i });
       userEvent.clear(amountField);
       userEvent.type(amountField, '100');
 
-      await waitFor(() =>
-        expect(getByRole('button', { name: /submit/i })).toBeDisabled(),
-      );
+      userEvent.click(getByRole('combobox', { name: /to account/i }));
+      userEvent.click(getByRole('option', { name: /staff savings/i }));
 
-      userEvent.click(noteField);
+      await waitFor(() =>
+        expect(getByRole('textbox', { name: /note/i })).toHaveValue(
+          'Doe transfer to Staff Savings 1/1/2020',
+        ),
+      );
+      await waitFor(() =>
+        expect(getByRole('button', { name: /submit/i })).toBeEnabled(),
+      );
+    });
+
+    it('should require a note for one-time transfers when cleared', async () => {
+      const { getByRole, findByText } = render(<Components />);
+
+      userEvent.click(getByRole('combobox', { name: /to account/i }));
+      userEvent.click(getByRole('option', { name: /staff savings/i }));
+
+      const amountField = getByRole('spinbutton', { name: /amount/i });
+      userEvent.clear(amountField);
+      userEvent.type(amountField, '100');
+
+      userEvent.clear(getByRole('textbox', { name: /note/i }));
       userEvent.tab();
 
       expect(await findByText('Note is required')).toBeInTheDocument();
+      await waitFor(() =>
+        expect(getByRole('button', { name: /submit/i })).toBeDisabled(),
+      );
     });
 
     it('should reject a whitespace-only note for one-time transfers', async () => {
       const { getByRole, findByText } = render(<Components />);
 
-      const toAccount = getByRole('combobox', { name: /to account/i });
-      const amountField = getByRole('spinbutton', { name: /amount/i });
-      const noteField = getByRole('textbox', { name: /note/i });
-
-      userEvent.click(toAccount);
+      userEvent.click(getByRole('combobox', { name: /to account/i }));
       userEvent.click(getByRole('option', { name: /staff savings/i }));
 
+      const amountField = getByRole('spinbutton', { name: /amount/i });
       userEvent.clear(amountField);
       userEvent.type(amountField, '100');
 
+      const noteField = getByRole('textbox', { name: /note/i });
+      userEvent.clear(noteField);
       userEvent.type(noteField, '   ');
       userEvent.tab();
 
+      expect(await findByText('Note is required')).toBeInTheDocument();
       await waitFor(() =>
         expect(getByRole('button', { name: /submit/i })).toBeDisabled(),
       );
-
-      expect(await findByText('Note is required')).toBeInTheDocument();
     });
   });
 
@@ -499,6 +589,7 @@ describe('TransferModal', () => {
       userEvent.clear(amountField);
       userEvent.type(amountField, '100');
 
+      userEvent.clear(noteField);
       userEvent.type(noteField, 'Test note');
 
       const transferDate = getByLabelText(/transfer date/i);
@@ -616,6 +707,7 @@ describe('TransferModal', () => {
       userEvent.clear(amountField);
       userEvent.type(amountField, '100');
 
+      userEvent.clear(noteField);
       userEvent.type(noteField, '  Test note  ');
 
       userEvent.click(getByRole('button', { name: /submit/i }));
@@ -657,6 +749,7 @@ describe('TransferModal', () => {
       expect(transferDate).toHaveValue('02/15/2020');
       userEvent.tab();
 
+      userEvent.clear(noteField);
       userEvent.type(noteField, 'Future transfer');
 
       userEvent.click(getByRole('button', { name: /submit/i }));

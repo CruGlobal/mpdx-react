@@ -40,7 +40,6 @@ const TestComponent: React.FC = () => {
     handleDeleteRequest,
     pageType,
     setPageType,
-    staffAccountId,
     user,
     spouse,
     isInternational,
@@ -61,7 +60,6 @@ const TestComponent: React.FC = () => {
       </div>
       <div data-testid="current-index">{currentIndex}</div>
       <div data-testid="page-type">{pageType}</div>
-      <div data-testid="staff-account-id">{staffAccountId}</div>
       <div data-testid="user-id">{user?.staffInfo.preferredName}</div>
       <div data-testid="spouse-id">{spouse?.staffInfo.preferredName}</div>
       <div data-testid="is-international">{isInternational ? 'yes' : 'no'}</div>

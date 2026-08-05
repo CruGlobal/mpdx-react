@@ -19,7 +19,7 @@ import {
 import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
-import { useTranslation } from 'react-i18next';
+import { TFunction, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { CustomDateField } from 'src/components/Shared/DateTimePickers/CustomDateField';
 import {
@@ -29,7 +29,11 @@ import {
 import Modal from 'src/components/Shared/Modal/Modal';
 import { useLocale } from 'src/hooks/useLocale';
 import i18n from 'src/lib/i18n';
-import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
+import {
+  currencyFormat,
+  dateFormat,
+  dateFormatShort,
+} from 'src/lib/intlFormat';
 import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
 import {
   useCreateRecurringTransferMutation,
@@ -60,6 +64,28 @@ const getTomorrow = (): DateTime => {
 
 const minimumTransferDate = (schedule: ScheduleEnum): DateTime =>
   schedule === ScheduleEnum.OneTime ? getToday() : getTomorrow();
+
+const buildDefaultNote = (
+  lastName: string,
+  transferTo: string,
+  transferDate: DateTime | null,
+  t: TFunction,
+  locale: string,
+): string => {
+  if (!transferTo) {
+    return '';
+  }
+
+  const date = transferDate?.isValid
+    ? dateFormatShort(transferDate, locale)
+    : '';
+
+  return t('{{lastName}} transfer to {{transferTo}} {{date}}', {
+    lastName,
+    transferTo,
+    date,
+  }).trim();
+};
 
 const pastDateMessage = (schedule: ScheduleEnum): string =>
   schedule === ScheduleEnum.OneTime
@@ -139,12 +165,14 @@ const transferSchema = (locale: string) =>
 interface TransferModalProps {
   data: TransferModalData;
   funds: FundFieldsFragment[];
+  lastName: string;
   handleClose: () => void;
 }
 
 export const TransferModal: React.FC<TransferModalProps> = ({
   data,
   funds,
+  lastName,
   handleClose,
 }) => {
   const { t } = useTranslation();
@@ -265,6 +293,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
         onSubmit={handleSubmit}
       >
         {({
+          values,
           values: {
             transferFrom,
             transferTo,
@@ -283,6 +312,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
           setFieldValue,
           setFieldTouched,
           validateField,
+          validateForm,
           handleBlur,
         }) => {
           const locale = useLocale();
@@ -360,7 +390,24 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                             labelId="transferTo"
                             name="transferTo"
                             value={transferTo}
-                            onChange={handleChange}
+                            onChange={(event) => {
+                              const destination = String(event.target.value);
+                              const nextNote = buildDefaultNote(
+                                lastName,
+                                destination,
+                                transferDate,
+                                t,
+                                locale,
+                              );
+
+                              setFieldValue('note', nextNote, false);
+                              setFieldValue('transferTo', destination, false);
+                              validateForm({
+                                ...values,
+                                transferTo: destination,
+                                note: nextNote,
+                              });
+                            }}
                             onBlur={handleBlur}
                             error={
                               touched.transferTo && Boolean(errors.transferTo)
@@ -459,8 +506,43 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                         label={t('Transfer Date')}
                         value={transferDate}
                         onChange={(date) => {
-                          setFieldValue('transferDate', date);
+                          const dateChanged =
+                            date?.isValid &&
+                            date.toMillis() !== transferDate?.toMillis();
+
+                          // Changing the destination account always rebuilds
+                          // the note, but a date change only refreshes a note
+                          // the user hasn't overridden
+                          const noteIsDefault =
+                            !note.trim() ||
+                            note ===
+                              buildDefaultNote(
+                                lastName,
+                                transferTo,
+                                transferDate,
+                                t,
+                                locale,
+                              );
+
+                          const nextNote =
+                            dateChanged && noteIsDefault
+                              ? buildDefaultNote(
+                                  lastName,
+                                  transferTo,
+                                  date,
+                                  t,
+                                  locale,
+                                )
+                              : note;
+
+                          setFieldValue('note', nextNote, false);
+                          setFieldValue('transferDate', date, false);
                           setFieldTouched('transferDate', true, false);
+                          validateForm({
+                            ...values,
+                            transferDate: date,
+                            note: nextNote,
+                          });
                         }}
                         error={
                           touched.transferDate && Boolean(errors.transferDate)

@@ -2,7 +2,6 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
 import { HcmQuery } from '../../Shared/HcmData/Hcm.generated';
 import { PayrollDatesQuery } from '../EffectiveDateStep/PayrollDates.generated';
@@ -29,7 +28,6 @@ const TestComponent: React.FC<TestComponentProps> = ({
       Hcm: HcmQuery;
       SalaryCalculation: SalaryCalculationQuery;
       PayrollDates: PayrollDatesQuery;
-      GetUser: GetUserQuery;
     }>
       mocks={{
         Hcm: {
@@ -50,11 +48,6 @@ const TestComponent: React.FC<TestComponentProps> = ({
             { startDate: '2024-01-01', regularProcessDate: '2024-01-15' },
           ],
         },
-        GetUser: {
-          user: {
-            staffAccountId: '123456',
-          },
-        },
       }}
     >
       <SalaryCalculatorProvider>
@@ -71,7 +64,6 @@ describe('StaffInfoSummaryCard', () => {
     await waitFor(() =>
       expect(getByRole('table')).toHaveTableStructure({
         cells: [
-          ['Staff Account Number', '123456'],
           ['Full Names', 'John Doe and Jane Doe'],
           ['Phone Number', '555-0123'],
           ['Email Address', 'john.doe@example.comjane.doe@example.com'],
@@ -94,7 +86,6 @@ describe('StaffInfoSummaryCard', () => {
       await waitFor(() =>
         expect(getByRole('table')).toHaveTableStructure({
           cells: [
-            ['Staff Account Number', '123456'],
             ['Full Names', 'John Doe'],
             ['Phone Number', '555-0123'],
             ['Email Address', 'john.doe@example.com'],

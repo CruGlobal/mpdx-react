@@ -115,7 +115,6 @@ describe('GoalSettingsHeader', () => {
     // Single, so the shared address isn't duplicated across two cards.
     const { getByText } = render(<TestComponent spouse={null} />);
 
-    expect(getByText('Person Number: 123')).toBeInTheDocument();
     expect(getByText('john@cru.org')).toBeInTheDocument();
     expect(getByText('555-0001')).toBeInTheDocument();
     expect(getByText('1 Lake Hart')).toBeInTheDocument();
@@ -124,14 +123,12 @@ describe('GoalSettingsHeader', () => {
   it('renders a spouse contact card for a couple', () => {
     const { getByText } = render(<TestComponent />);
 
-    expect(getByText('Person Number: 456')).toBeInTheDocument();
     expect(getByText('jane@cru.org')).toBeInTheDocument();
   });
 
   it('omits the spouse contact card when single', () => {
     const { queryByText } = render(<TestComponent spouse={null} />);
 
-    expect(queryByText('Person Number: 456')).not.toBeInTheDocument();
     expect(queryByText('jane@cru.org')).not.toBeInTheDocument();
   });
 
@@ -190,8 +187,6 @@ describe('GoalSettingsHeader', () => {
 
       expect(getByText('Scenario Only')).toBeInTheDocument();
       expect(queryByText('Incomplete')).not.toBeInTheDocument();
-      // Person cards render the "Person Number:" line; it must be absent.
-      expect(queryByText(/Person Number:/)).not.toBeInTheDocument();
       expect(queryByRole('textbox', { name: 'Coach' })).not.toBeInTheDocument();
       expect(
         queryByRole('textbox', { name: 'Coordinator' }),
@@ -199,12 +194,9 @@ describe('GoalSettingsHeader', () => {
     });
 
     it('shows the person, coach, and coordinator cards and no Scenario Only chip by default', () => {
-      const { getAllByText, getByRole, queryByText } = render(
-        <TestComponent />,
-      );
+      const { getByRole, queryByText } = render(<TestComponent />);
 
       expect(queryByText('Scenario Only')).not.toBeInTheDocument();
-      expect(getAllByText(/Person Number:/).length).toBeGreaterThan(0);
       expect(getByRole('textbox', { name: 'Coach' })).toBeInTheDocument();
       expect(getByRole('textbox', { name: 'Coordinator' })).toBeInTheDocument();
     });

@@ -8,7 +8,6 @@ import {
 } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
@@ -20,7 +19,6 @@ export const StaffInfoSummaryCard: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
   const { hcmUser, hcmSpouse, calculation } = useSalaryCalculator();
-  const { data: userData } = useGetUserQuery();
 
   const name =
     hcmUser &&
@@ -43,10 +41,6 @@ export const StaffInfoSummaryCard: React.FC = () => {
       <CardContent>
         <Table>
           <TableBody>
-            <TableRow>
-              <TableCell scope="row">{t('Staff Account Number')}</TableCell>
-              <TableCell>{userData?.user.staffAccountId}</TableCell>
-            </TableRow>
             <TableRow>
               <TableCell scope="row">{t('Full Names')}</TableCell>
               <TableCell>{fullNames}</TableCell>

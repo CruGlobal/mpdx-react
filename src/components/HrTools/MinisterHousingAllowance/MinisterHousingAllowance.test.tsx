@@ -77,25 +77,35 @@ const TestComponent: React.FC<TestComponentProps> = ({
 
 describe('MinisterHousingAllowanceReport', () => {
   it('renders single, no pending, no approved correctly', async () => {
-    const { findByText } = render(
+    const { findByText, findByRole, queryByRole } = render(
       <TestComponent hcmMock={singleNoMhaNoException} mhaRequestsMock={[]} />,
     );
 
     expect(
       await findByText(/our records indicate that you have not applied for/i),
     ).toBeInTheDocument();
-    expect(await findByText('John Doe')).toBeInTheDocument();
+    expect(
+      await findByRole('columnheader', { name: 'John' }),
+    ).toBeInTheDocument();
+    expect(
+      queryByRole('columnheader', { name: 'Jane' }),
+    ).not.toBeInTheDocument();
   });
 
   it('renders married, no pending, no approved correctly', async () => {
-    const { findByText } = render(
+    const { findByText, findByRole } = render(
       <TestComponent hcmMock={marriedNoMhaNoException} mhaRequestsMock={[]} />,
     );
 
     expect(
       await findByText(/our records indicate that you have not applied for/i),
     ).toBeInTheDocument();
-    expect(await findByText('John Doe and Jane Doe')).toBeInTheDocument();
+    expect(
+      await findByRole('columnheader', { name: 'John' }),
+    ).toBeInTheDocument();
+    expect(
+      await findByRole('columnheader', { name: 'Jane' }),
+    ).toBeInTheDocument();
   });
 
   it('renders married, no pending, approved correctly', async () => {
@@ -114,8 +124,6 @@ describe('MinisterHousingAllowanceReport', () => {
     expect(
       await findByText(/our records indicate that you have an approved/i),
     ).toBeInTheDocument();
-    expect(await findByText('John Doe and Jane Doe')).toBeInTheDocument();
-
     expect(await findByText('Current Board Approved MHA')).toBeInTheDocument();
   });
 
@@ -135,8 +143,6 @@ describe('MinisterHousingAllowanceReport', () => {
     expect(
       await findByText(/our records indicate that you have an approved/i),
     ).toBeInTheDocument();
-    expect(await findByText('John Doe')).toBeInTheDocument();
-
     expect(getByText('Current Board Approved MHA')).toBeInTheDocument();
   });
 
@@ -258,8 +264,6 @@ describe('MinisterHousingAllowanceReport', () => {
     expect(
       await findByText(/our records indicate that you have an mha request/i),
     ).toBeInTheDocument();
-    expect(await findByText('John Doe and Jane Doe')).toBeInTheDocument();
-
     expect(await findByText('Current MHA Request')).toBeInTheDocument();
   });
 
