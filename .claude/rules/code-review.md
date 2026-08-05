@@ -84,7 +84,6 @@ Additional risk modifiers, added to the universal defaults.
 - **New package added to `package.json` dependencies/devDependencies:** +2 (supply-chain risk, bundle size impact)
 - **Updated critical package** (`next`, `react`, `@apollo/client`, `@mui/material`, `formik`, `next-auth`, `typescript`, `graphql-codegen`): +3
 - **`yarn.lock` changed without matching `package.json` change:** +1 (likely a resolution drift or lockfile hand-edit)
-- **`.graphql` file changed without verifying `yarn gql` runs cleanly:** +2 (codegen out of sync — runtime errors likely). Note: `.generated.ts` files are not committed; CI regenerates them. The check is that codegen succeeds, not that generated files appear in the PR
 - **New `.graphql` file under `pages/api/Schema/` without matching resolver/dataHandler updates:** +1
 - **New file in `src/hooks/` that uses Apollo hooks without an accompanying test file:** +1 (hooks drive component behavior; untested hooks are landmines)
 - **New file in `src/components/` without an accompanying `*.test.tsx`:** +1
