@@ -2,7 +2,7 @@ import { ThemeProvider } from '@emotion/react';
 import { SvgIconProps } from '@mui/material/SvgIcon';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import { render } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
@@ -158,7 +158,7 @@ describe('CardSkeleton', () => {
 
     userEvent.click(getByRole('button', { name: /yes, cancel/i }));
 
-    expect(queryByRole('dialog')).not.toBeInTheDocument();
+    await waitFor(() => expect(queryByRole('dialog')).not.toBeInTheDocument());
   });
 
   it('hides print icon when hidePrint is true', () => {
@@ -201,7 +201,34 @@ describe('CardSkeleton', () => {
 
     expect(handleConfirmCancel).toHaveBeenCalled();
 
-    expect(queryByRole('dialog')).not.toBeInTheDocument();
+    await waitFor(() => expect(queryByRole('dialog')).not.toBeInTheDocument());
+  });
+
+  it('disables the modal buttons and shows a spinner while cancelling', async () => {
+    let resolveCancel: () => void = () => {};
+    handleConfirmCancel.mockImplementationOnce(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveCancel = resolve;
+        }),
+    );
+
+    const { getByRole, findByRole, queryByRole } = render(
+      <TestComponent isRequest={true} />,
+    );
+
+    userEvent.click(await findByRole('button', { name: 'Cancel Request' }));
+
+    const confirmButton = await findByRole('button', { name: /yes, cancel/i });
+    userEvent.click(confirmButton);
+
+    await waitFor(() => expect(confirmButton).toBeDisabled());
+    expect(confirmButton).toHaveAttribute('aria-busy', 'true');
+    expect(within(confirmButton).getByRole('progressbar')).toBeInTheDocument();
+    expect(getByRole('button', { name: 'GO BACK' })).toBeDisabled();
+
+    resolveCancel();
+    await waitFor(() => expect(queryByRole('dialog')).not.toBeInTheDocument());
   });
 
   it('should hide second button when hideLinkTwoButton is true', () => {

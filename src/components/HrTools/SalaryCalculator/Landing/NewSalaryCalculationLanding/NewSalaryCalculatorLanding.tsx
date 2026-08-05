@@ -1,7 +1,14 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
-import { Box, Button, Container, Typography, useTheme } from '@mui/material';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  Typography,
+  useTheme,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import { NameDisplay } from 'src/components/HrTools/Shared/CalculationReports/NameDisplay/NameDisplay';
@@ -133,6 +140,12 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
                 color="primary"
                 onClick={handleStartCalculation}
                 disabled={creatingCalculation}
+                aria-busy={creatingCalculation}
+                startIcon={
+                  creatingCalculation ? (
+                    <CircularProgress size={20} color="inherit" />
+                  ) : undefined
+                }
               >
                 {t('Calculate New Salary')}
               </Button>

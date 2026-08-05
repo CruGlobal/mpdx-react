@@ -161,12 +161,15 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
                 <Button
                   variant="contained"
                   color="primary"
-                  endIcon={loadingNext ? undefined : <ChevronRight />}
+                  endIcon={<ChevronRight />}
                   startIcon={
-                    loadingNext ? <CircularProgress size={20} /> : undefined
+                    loadingNext ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : undefined
                   }
                   onClick={overrideNext ?? handleNextStep}
                   disabled={disableNext || loadingNext}
+                  aria-busy={loadingNext}
                 >
                   {loadingNext
                     ? (loadingNextTitle ?? buttonTitle ?? t('Continue'))

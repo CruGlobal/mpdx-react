@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
 import {
@@ -88,6 +88,28 @@ describe('DiscardButton', () => {
       }),
     );
   });
+
+  it('disables the modal buttons and shows a spinner while deleting', async () => {
+    const { findByRole, getByRole } = render(
+      <SalaryCalculatorTestWrapper onCall={mutationSpy} editing={true}>
+        <DiscardButton />
+      </SalaryCalculatorTestWrapper>,
+    );
+
+    userEvent.click(await findByRole('button', { name: 'Discard' }));
+
+    const confirmButton = await findByRole('button', { name: /yes, discard/i });
+    userEvent.click(confirmButton);
+
+    expect(confirmButton).toBeDisabled();
+    expect(confirmButton).toHaveAttribute('aria-busy', 'true');
+    expect(within(confirmButton).getByRole('progressbar')).toBeInTheDocument();
+    expect(getByRole('button', { name: 'GO BACK' })).toBeDisabled();
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('DeleteSalaryCalculation'),
+    );
+  });
 });
 
 describe('SubmitButton', () => {
@@ -105,6 +127,29 @@ describe('SubmitButton', () => {
       expect(mutationSpy).toHaveGraphqlOperation('SubmitSalaryCalculation', {
         input: { id: 'salary-request-1' },
       }),
+    );
+  });
+
+  it('disables the modal buttons and shows a spinner while submitting', async () => {
+    const { findByRole, getByRole } = render(
+      <SalaryCalculatorTestWrapper onCall={mutationSpy} editing={true}>
+        <SubmitButton />
+      </SalaryCalculatorTestWrapper>,
+    );
+
+    userEvent.click(await findByRole('button', { name: 'Submit' }));
+
+    const confirmButton = await findByRole('button', { name: 'Yes, Continue' });
+    userEvent.click(confirmButton);
+
+    expect(confirmButton).toBeDisabled();
+    expect(confirmButton).toHaveAttribute('aria-busy', 'true');
+    expect(within(confirmButton).getByRole('progressbar')).toBeInTheDocument();
+
+    expect(getByRole('button', { name: 'GO BACK' })).toBeDisabled();
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('SubmitSalaryCalculation'),
     );
   });
 });

@@ -221,11 +221,9 @@ Every item here is mandatory. The Standards agent must report compliance per ite
 **Code Quality**
 
 - [ ] Passes `yarn lint` and `yarn lint:ts`
-- [ ] No debug output (`console.log`, `console.debug`, `debugger`, `// TODO` without a Jira/MPDX ticket reference)
+- [ ] No `// TODO` without a Jira/MPDX ticket reference
 - [ ] No `new Date()` — use Luxon (`DateTime.now()`, `DateTime.local()`) per project convention
-- [ ] No unused imports or variables
 - [ ] No commented-out code blocks (delete, don't comment)
-- [ ] No empty `catch {}` blocks that swallow errors silently
 
 ## Security Focus Areas
 

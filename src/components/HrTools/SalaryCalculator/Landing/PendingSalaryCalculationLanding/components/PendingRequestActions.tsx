@@ -19,7 +19,7 @@ export const PendingRequestActions: React.FC<PendingRequestActionsProps> = ({
 }) => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const { deleteSalaryCalculation } = useDeleteSalaryCalculation();
+  const { deleteSalaryCalculation, deleting } = useDeleteSalaryCalculation();
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
 
   const handleDelete = async () => {
@@ -67,6 +67,7 @@ export const PendingRequestActions: React.FC<PendingRequestActionsProps> = ({
           handleClose={() => setRemoveDialogOpen(false)}
           handleConfirm={handleDelete}
           isCancel
+          submitting={deleting}
         />
       )}
       <IconButton
