@@ -77,19 +77,17 @@ jobs:
             const risk_level = String(meta.risk_level || '').toUpperCase().trim();
             const verdict = String(meta.verdict || '').toUpperCase().trim();
 
+            if (isNaN(Number(meta.risk_score))) {
+              console.log(`Warning: risk_score "${meta.risk_score}" is not a number, defaulting to 0`);
+            }
             if (isNaN(Number(meta.blockers))) {
               console.log(`Warning: blockers "${meta.blockers}" is not a number, defaulting to 0`);
             }
 
+            const risk_score = Number(meta.risk_score) || 0;
             const blockers = Number(meta.blockers) || 0;
             const dismissed = Number(meta.dismissed) || 0;
-
-            // Axis risk model. These are for display only.
-            const axes = meta.axes && typeof meta.axes === 'object' ? meta.axes : null;
-            const danger = axes && !isNaN(Number(axes.danger)) ? Number(axes.danger) : null;
-            const effort = axes && !isNaN(Number(axes.effort)) ? Number(axes.effort) : null;
-            const riskDetail = `danger ${danger ?? '?'}/6, effort ${effort ?? '?'}/6`
-            console.log(`Agent review found — Risk: ${risk_level} (${riskDetail}), Blockers: ${blockers}, Verdict: ${verdict}, Dismissed: ${dismissed}`);
+            console.log(`Agent review found — Risk: ${risk_level} (${risk_score}/10), Blockers: ${blockers}, Verdict: ${verdict}, Dismissed: ${dismissed}`);
 
             // Gate 1: Only LOW or MEDIUM risk
             if (!['LOW', 'MEDIUM'].includes(risk_level)) {
@@ -135,7 +133,7 @@ jobs:
               const bodyLines = [
                 '## AI Review Auto-Approval',
                 '',
-                `**Risk Level:** ${risk_level} (${riskDetail})`,
+                `**Risk Level:** ${risk_level} (${risk_score}/10)`,
                 `**Verdict:** ${verdictDesc}`,
                 '',
                 'This PR was auto-approved because:',

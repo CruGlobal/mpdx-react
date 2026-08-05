@@ -24,7 +24,7 @@ Project-specific rules layered on top of `CLAUDE.md` for `/quality:agent-review`
 
 ## Critical File Patterns
 
-Highest-risk tier — files that control auth, routing, Apollo setup, build config, or the CI/review pipeline. Additive to the universal defaults. _(This file only sorts files into tiers; how each tier maps onto the risk axes is defined by the skill.)_
+Files that control auth, routing, Apollo setup, build config, or the CI/review pipeline. Each contributes +3 to risk score (on top of the universal defaults).
 
 - `pages/api/auth/[...nextauth].page.ts` — NextAuth handler (OAuth callbacks, session)
 - `pages/api/auth/apiOauthSignIn.ts` — API OAuth sign-in flow
@@ -34,7 +34,7 @@ Highest-risk tier — files that control auth, routing, Apollo setup, build conf
 - `pages/_app.page.tsx` — app-level providers and global wiring
 - `next.config.{js,ts}` — build-time config, headers, rewrites, CSP
 - `codegen.ts`, `codegen.*.ts` — GraphQL codegen configuration
-- `package.json` — dependency changes (supply-chain surface; the skill's universal signals also flag new/updated dependencies)
+- `package.json` — dependency changes (new packages trigger `## Special Pattern Detection` below)
 - `.github/workflows/**` — CI/CD workflows
 - `src/lib/apollo/client.ts` — Apollo Client instantiation (auth headers, default options, link chain composition)
 - `src/lib/apollo/link.ts` — Apollo Link chain (dual-server routing, auth token attachment, error handling)
@@ -44,7 +44,7 @@ Highest-risk tier — files that control auth, routing, Apollo setup, build conf
 
 ## High-Risk File Patterns
 
-Second tier — sensitive or wide-reach files below Critical.
+Each contributes +2 to risk score.
 
 - `pages/api/Schema/**/*.{ts,graphql}` — REST-proxy resolvers, schemas, and data handlers (silent data-reshaping risk)
 - `pages/api/Schema/**/datahandler*.ts` — response transformation feeding the REST proxy
@@ -58,7 +58,7 @@ Second tier — sensitive or wide-reach files below Critical.
 
 ## Medium-Risk File Patterns
 
-Third tier — everyday feature, hook, and utility files.
+Each contributes +1 to risk score.
 
 - `src/components/**/*.{ts,tsx}` — feature components (excluding Shared, already High-Risk)
 - `src/hooks/**/*.ts` — custom hooks
@@ -69,13 +69,26 @@ Third tier — everyday feature, hook, and utility files.
 
 ## Low-Risk File Patterns
 
-Lowest tier — files that may legitimately carry no risk. These override or augment the universal Low-Risk defaults.
+Zero points. These override or augment the universal Low-Risk defaults.
 
 - `**/*.test.{ts,tsx}` — test files (content changes only; new test infrastructure should still be reviewed)
 - `public/locales/**/*.json` — translation content
 - `public/static/**` — static assets
 - `public/fonts/**`, `public/images/**` — binary assets
 - `**/*.snap` — Jest snapshot files
+
+## Special Pattern Detection
+
+Additional risk modifiers, added to the universal defaults.
+
+- **New package added to `package.json` dependencies/devDependencies:** +2 (supply-chain risk, bundle size impact)
+- **Updated critical package** (`next`, `react`, `@apollo/client`, `@mui/material`, `formik`, `next-auth`, `typescript`, `graphql-codegen`): +3
+- **`yarn.lock` changed without matching `package.json` change:** +1 (likely a resolution drift or lockfile hand-edit)
+- **New `.graphql` file under `pages/api/Schema/` without matching resolver/dataHandler updates:** +1
+- **New file in `src/hooks/` that uses Apollo hooks without an accompanying test file:** +1 (hooks drive component behavior; untested hooks are landmines)
+- **New file in `src/components/` without an accompanying `*.test.tsx`:** +1
+- **Changes to `next.config.{js,ts}` rewrites, headers, CSP, or image domains:** +2 (affects all pages and external requests)
+- **Changes to `src/lib/apollo/cache.ts` `typePolicies` or `merge` functions:** +2 (can silently corrupt cached data across the app)
 
 ## Agent Triggers
 
@@ -266,8 +279,6 @@ This is where domain-specific data invariants belong.
 - **Pagination over `nodes`** — aggregating client-side over a single page of `nodes` silently ignores unpaginated data. Prefer server-provided totals
 - **Filter/search state** — when filters change, paginated data must be re-fetched from the first page, not appended to existing pages
 - **Optimistic updates on lists** — adding an item optimistically must place it in the correct sort position, not just at the end
-- **Codegen sync** — when a `.graphql` operation or schema changes, `yarn gql` must run cleanly. `.generated.ts` files are not committed (CI regenerates them), so verify codegen _succeeds_ rather than expecting generated files in the PR; drift causes runtime type errors
-- **New REST-proxy operations** — a new `.graphql` file under `pages/api/Schema/` needs a matching `resolvers.ts` / `datahandler.ts`, or it will fail at runtime
 
 ## Testing Focus Areas
 
