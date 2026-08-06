@@ -29,7 +29,7 @@ export const getLocalizedCategory = (
   value: StaffExpenseCategoryEnum,
   t: TFunction,
 ): string => {
-  const categoryLabels: Record<StaffExpenseCategoryEnum, string> = {
+  const categoryLabels: Partial<Record<StaffExpenseCategoryEnum, string>> = {
     [StaffExpenseCategoryEnum.Donation]: t('Donation'),
     [StaffExpenseCategoryEnum.Transfer]: t('Transfer'),
     [StaffExpenseCategoryEnum.AccountTransfer]: t('Account Transfer'),
@@ -45,6 +45,7 @@ export const getLocalizedCategory = (
     [StaffExpenseCategoryEnum.Benefits]: t('Benefits'),
     [StaffExpenseCategoryEnum.Assessment]: t('Assessment'),
     [StaffExpenseCategoryEnum.Other]: t('Other'),
+    [StaffExpenseCategoryEnum.Unknown]: t('Unknown'),
   };
   return categoryLabels[value] ?? t('Unknown Category');
 };
@@ -53,12 +54,15 @@ export const getLocalizedSubCategory = (
   value: StaffExpensesSubCategoryEnum,
   t: TFunction,
 ): string => {
-  const subcategoryLabels: Record<StaffExpensesSubCategoryEnum, string> = {
+  const subcategoryLabels: Partial<
+    Record<StaffExpensesSubCategoryEnum, string>
+  > = {
     [StaffExpensesSubCategoryEnum.Donation]: t('Donation'),
     [StaffExpensesSubCategoryEnum.DonationInternalGift]: t('Internal Gift'),
     [StaffExpensesSubCategoryEnum.NonCash]: t('Non Cash'),
     [StaffExpensesSubCategoryEnum.Withdrawal]: t('Withdrawal'),
     [StaffExpensesSubCategoryEnum.Deposit]: t('Deposit'),
+    [StaffExpensesSubCategoryEnum.Transfer]: t('Transfer'),
     [StaffExpensesSubCategoryEnum.MinistryReimbursement]: t(
       'Ministry Reimbursement',
     ),
@@ -153,6 +157,7 @@ export const getLocalizedSubCategory = (
     [StaffExpensesSubCategoryEnum.SummerMission]: t('Summer Mission'),
     [StaffExpensesSubCategoryEnum.Staffcard]: t('StaffCard'),
     [StaffExpensesSubCategoryEnum.PaCard]: t('PA Card'),
+    [StaffExpensesSubCategoryEnum.Unknown]: t('Unknown'),
   };
 
   return subcategoryLabels[value] ?? t('Unknown Subcategory');
