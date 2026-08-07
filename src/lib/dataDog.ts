@@ -7,7 +7,7 @@ declare global {
   }
 }
 
-export const isDataDogConfigured = (): boolean => {
+export const isDatadogConfigured = (): boolean => {
   if (typeof window === 'undefined') {
     return false;
   }
@@ -34,7 +34,7 @@ export const setDataDogUser = ({
   accountListId,
   language,
 }: SetDataDogUserProps): void => {
-  if (!isDataDogConfigured()) {
+  if (!isDatadogConfigured()) {
     return;
   }
   const rawAccountListIds = window.localStorage.getItem(
@@ -58,7 +58,7 @@ export const setDataDogUser = ({
 };
 
 export const clearDataDogUser = (): void => {
-  if (!isDataDogConfigured()) {
+  if (!isDatadogConfigured()) {
     return;
   }
   window.DD_RUM.clearUser();
