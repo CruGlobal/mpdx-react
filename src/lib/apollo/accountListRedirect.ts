@@ -6,11 +6,7 @@ import { GraphQLError } from 'graphql';
  */
 export const isAccountListNotFoundError = (error: GraphQLError): boolean => {
   const { message, extensions } = error;
-  return (
-    extensions?.code === 'NOT_FOUND' &&
-    (message.includes('AccountList') ||
-      message.includes("Resource 'AccountList'"))
-  );
+  return extensions?.code === 'NOT_FOUND' && message.includes('AccountList');
 };
 
 /*
