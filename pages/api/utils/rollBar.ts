@@ -10,6 +10,7 @@ const rollbar = new Rollbar({
   captureUncaught: true,
   captureUnhandledRejections: true,
   enabled: isRollBarEnabled,
+  codeVersion: process.env.GIT_COMMIT_SHA,
 });
 
 export const logErrorOnRollbar = (error: unknown, page: string) => {
