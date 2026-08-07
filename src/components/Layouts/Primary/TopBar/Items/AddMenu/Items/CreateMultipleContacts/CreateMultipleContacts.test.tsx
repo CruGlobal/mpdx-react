@@ -173,6 +173,7 @@ describe('CreateMultipleContacts', () => {
         },
       });
       expect(mutationSpy).toHaveGraphqlOperation('SetContactPrimaryAddress', {
+        accountListId,
         contactId: 'contact-1',
         primaryAddressId: 'address-1',
       });
@@ -506,6 +507,7 @@ describe('CreateMultipleContacts', () => {
         },
       });
       expect(mutationSpy).toHaveGraphqlOperation('SetContactPrimaryAddress', {
+        accountListId,
         contactId: 'contact-1',
         primaryAddressId: 'address-1',
       });
