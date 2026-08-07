@@ -1,7 +1,11 @@
+import { Operation } from '@apollo/client';
 import {
   accountListIdsStorageKey,
+  addDataDogError,
   clearDataDogUser,
   isDatadogConfigured,
+  reportGraphQLError,
+  reportNetworkError,
   setDataDogUser,
 } from './dataDog';
 
@@ -18,6 +22,7 @@ describe('dataDog', () => {
     window.DD_RUM = {
       setUser: jest.fn(),
       clearUser: jest.fn(),
+      addError: jest.fn(),
     };
   });
 
@@ -113,6 +118,85 @@ describe('dataDog', () => {
       expect(window.localStorage.getItem(accountListIdsStorageKey)).toBe(
         setDataDogUserMock.accountListId,
       );
+    });
+  });
+});
+
+describe('addDataDogError', () => {
+  beforeEach(() => {
+    process.env.DATADOG_CONFIGURED = 'true';
+    window.DD_RUM = {
+      setUser: jest.fn(),
+      clearUser: jest.fn(),
+      addError: jest.fn(),
+    };
+  });
+
+  it('forwards the error and context to DD_RUM.addError', () => {
+    const error = new Error('Boom');
+    addDataDogError(error, { mpdxErrorType: 'graphql' });
+
+    expect(window.DD_RUM.addError).toHaveBeenCalledWith(error, {
+      mpdxErrorType: 'graphql',
+    });
+  });
+
+  it('does nothing when Datadog is not configured', () => {
+    process.env.DATADOG_CONFIGURED = 'false';
+
+    addDataDogError(new Error('Boom'));
+
+    expect(window.DD_RUM.addError).not.toHaveBeenCalled();
+  });
+});
+
+describe('GraphQL error reporting', () => {
+  const operation = { operationName: 'ContactDetails' } as Operation;
+
+  beforeEach(() => {
+    process.env.DATADOG_CONFIGURED = 'true';
+    window.DD_RUM = {
+      setUser: jest.fn(),
+      clearUser: jest.fn(),
+      addError: jest.fn(),
+    };
+  });
+
+  describe('reportGraphQLError', () => {
+    it('reports a labeled error with operation context', () => {
+      reportGraphQLError(
+        {
+          message: 'Contact not found',
+          path: ['contact', 'name'],
+          extensions: { code: 'NOT_FOUND' },
+        },
+        operation,
+      );
+
+      expect(window.DD_RUM.addError).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'GraphQL error in ContactDetails: Contact not found',
+        }),
+        {
+          mpdxErrorType: 'graphql',
+          operationName: 'ContactDetails',
+          errorCode: 'NOT_FOUND',
+          errorPath: 'contact.name',
+        },
+      );
+    });
+  });
+
+  describe('reportNetworkError', () => {
+    it('reports the network error with operation context', () => {
+      const networkError = new Error('Failed to fetch');
+
+      reportNetworkError(networkError, operation);
+
+      expect(window.DD_RUM.addError).toHaveBeenCalledWith(networkError, {
+        mpdxErrorType: 'graphql_network',
+        operationName: 'ContactDetails',
+      });
     });
   });
 });

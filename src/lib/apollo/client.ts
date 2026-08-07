@@ -7,7 +7,11 @@ import {
   GetDefaultAccountDocument,
   GetDefaultAccountQuery,
 } from 'pages/api/getDefaultAccount.generated';
-import { clearDataDogUser } from 'src/lib/dataDog';
+import {
+  clearDataDogUser,
+  reportGraphQLError,
+  reportNetworkError,
+} from 'src/lib/dataDog';
 import snackNotifications from '../../components/Snackbar/Snackbar';
 import { dispatch } from '../analytics';
 import {
@@ -38,8 +42,7 @@ const makeClient = (apiToken: string) => {
               clearDataDogUser();
               client.clearStore();
             });
-          }
-          if (isAccountListNotFoundError(graphQLError)) {
+          } else if (isAccountListNotFoundError(graphQLError)) {
             client
               .query<GetDefaultAccountQuery>({
                 query: GetDefaultAccountDocument,
@@ -56,12 +59,14 @@ const makeClient = (apiToken: string) => {
               });
           } else if (!suppressErrors) {
             snackNotifications.error(graphQLError.message);
+            reportGraphQLError(graphQLError, operation);
           }
         });
 
         if (networkError) {
           dispatch('mpdx-api-error');
           snackNotifications.error(networkError.message);
+          reportNetworkError(networkError, operation);
         }
       }),
       batchLink,

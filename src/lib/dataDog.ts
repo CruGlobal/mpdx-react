@@ -1,8 +1,12 @@
+import { Operation } from '@apollo/client';
+import { GraphQLFormattedError } from 'graphql';
+
 declare global {
   interface Window {
     DD_RUM: {
       setUser: (user: Record<string, unknown>) => void;
       clearUser: () => void;
+      addError: (error: unknown, context?: Record<string, unknown>) => void;
     };
   }
 }
@@ -63,4 +67,39 @@ export const clearDataDogUser = (): void => {
   }
   window.DD_RUM.clearUser();
   window.localStorage.removeItem(accountListIdsStorageKey);
+};
+
+export const addDataDogError = (
+  error: unknown,
+  context?: Record<string, unknown>,
+): void => {
+  if (!isDatadogConfigured()) {
+    return;
+  }
+  window.DD_RUM.addError(error, context);
+};
+
+export const reportGraphQLError = (
+  error: GraphQLFormattedError,
+  operation: Operation,
+): void => {
+  addDataDogError(
+    new Error(`GraphQL error in ${operation.operationName}: ${error.message}`),
+    {
+      mpdxErrorType: 'graphql',
+      operationName: operation.operationName,
+      errorCode: error.extensions?.code,
+      errorPath: error.path?.join('.'),
+    },
+  );
+};
+
+export const reportNetworkError = (
+  networkError: Error,
+  operation: Operation,
+): void => {
+  addDataDogError(networkError, {
+    mpdxErrorType: 'graphql_network',
+    operationName: operation.operationName,
+  });
 };
