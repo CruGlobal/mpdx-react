@@ -378,4 +378,79 @@ describe('useFilteredFunds', () => {
       expect(result.current.expenseBreakdown).toEqual({});
     });
   });
+
+  // The API resolves any category or subcategory code it doesn't declare to
+  // UNKNOWN and does not expose the raw code, so several rows under the same
+  // parent can share that enum value.
+  describe('unknown category and subcategory row ids', () => {
+    const unknownCategory = (amount: number): Categories => ({
+      category: StaffExpenseCategoryEnum.Unknown,
+      total: amount,
+      averagePerMonth: amount,
+      breakdownByMonth: months([amount]),
+      subcategories: [
+        subcategory(StaffExpensesSubCategoryEnum.Unknown, [amount]),
+      ],
+    });
+
+    const twoUnknownCategories: Funds[] = [
+      {
+        fundType: 'Primary',
+        total: 155,
+        categories: [unknownCategory(100), unknownCategory(55)],
+      },
+    ];
+
+    const twoUnknownSubcategories: Funds[] = [
+      {
+        fundType: 'Primary',
+        total: 155,
+        categories: [
+          {
+            category: StaffExpenseCategoryEnum.Salary,
+            total: 155,
+            averagePerMonth: 155,
+            breakdownByMonth: months([155]),
+            subcategories: [
+              subcategory(StaffExpensesSubCategoryEnum.Unknown, [100]),
+              subcategory(StaffExpensesSubCategoryEnum.Unknown, [55]),
+            ],
+          },
+        ],
+      },
+    ];
+
+    it('gives each unknown subcategory in one category its own row', () => {
+      const { result } = renderUseFilteredFunds(twoUnknownSubcategories, []);
+
+      expect(result.current.incomeData.map((row) => row.id)).toEqual([
+        'Primary-SALARY-UNKNOWN-0',
+        'Primary-SALARY-UNKNOWN-1',
+      ]);
+      expect(result.current.incomeData.map((row) => row.total)).toEqual([
+        100, 55,
+      ]);
+    });
+
+    it('gives each unknown category in one fund its own row', () => {
+      const { result } = renderUseFilteredFunds(twoUnknownCategories, null);
+
+      expect(result.current.incomeData.map((row) => row.id)).toEqual([
+        'Primary-UNKNOWN-0-income',
+        'Primary-UNKNOWN-1-income',
+      ]);
+      expect(result.current.incomeData.map((row) => row.total)).toEqual([
+        100, 55,
+      ]);
+    });
+
+    it('leaves existing categories alone', () => {
+      const { result } = renderUseFilteredFunds(mockData, selectedCategories);
+
+      expect(result.current.incomeData.map((row) => row.id)).toEqual([
+        'Primary-HEALTHCARE_REIMBURSEMENT',
+        'Primary-SALARY-income',
+      ]);
+    });
+  });
 });

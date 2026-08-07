@@ -1,5 +1,8 @@
 import { TFunction } from 'react-i18next';
-import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
+import {
+  StaffExpenseCategoryEnum,
+  StaffExpensesSubCategoryEnum,
+} from 'src/graphql/types.generated';
 import {
   getLocalizedCategory,
   getLocalizedSubCategory,
@@ -82,9 +85,14 @@ export function addRowPerSubcategory({
   expenseData,
 }: AddRowProps) {
   const categoryName = getLocalizedCategory(category.category, t);
-  category.subcategories.forEach((subcategory) => {
+  category.subcategories.forEach((subcategory, index) => {
+    const subcategoryKey =
+      subcategory.subCategory === StaffExpensesSubCategoryEnum.Unknown
+        ? `UNKNOWN-${index}`
+        : subcategory.subCategory;
+
     const subcategoryName = getLocalizedSubCategory(subcategory.subCategory, t);
-    const id = `${baseId}-${subcategory.subCategory}`;
+    const id = `${baseId}-${subcategoryKey}`;
     const description =
       categoryName === subcategoryName
         ? categoryName
