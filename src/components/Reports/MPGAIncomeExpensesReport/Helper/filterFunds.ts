@@ -1,8 +1,5 @@
 import { TFunction } from 'react-i18next';
-import {
-  StaffExpenseCategoryEnum,
-  StaffExpensesSubCategoryEnum,
-} from 'src/graphql/types.generated';
+import { StaffExpensesSubCategoryEnum } from 'src/graphql/types.generated';
 import {
   getLocalizedCategory,
   getLocalizedSubCategory,
@@ -122,16 +119,7 @@ export function addCombinedSubcategoryRow({
   t,
   incomeData,
   expenseData,
-  incomeBreakdown,
-  expenseBreakdown,
-}: AddRowProps & {
-  incomeBreakdown: Partial<
-    Record<StaffExpenseCategoryEnum, TransactionBreakdown[]>
-  >;
-  expenseBreakdown: Partial<
-    Record<StaffExpenseCategoryEnum, TransactionBreakdown[]>
-  >;
-}) {
+}: AddRowProps) {
   const monthCount = category.breakdownByMonth.length;
   const incomeMonthly = new Array(monthCount).fill(0);
   const expenseMonthly = new Array(monthCount).fill(0);
@@ -159,18 +147,20 @@ export function addCombinedSubcategoryRow({
     });
   });
 
-  incomeBreakdown[category.category] = incomeTransactions;
-  expenseBreakdown[category.category] = expenseTransactions;
-
   const description =
     getPluralizedDescription(category.category, t) ||
     getLocalizedCategory(category.category, t);
-  const pushAggregateRow = (id: string, monthly: number[]) => {
+  const pushAggregateRow = (
+    id: string,
+    monthly: number[],
+    transactions: TransactionBreakdown[],
+  ) => {
     pushData(
       {
         id,
         description,
         category: category.category,
+        transactions,
         monthly,
         average: average(monthly),
         total: sum(monthly),
@@ -180,8 +170,8 @@ export function addCombinedSubcategoryRow({
     );
   };
 
-  pushAggregateRow(`${baseId}-income`, incomeMonthly);
-  pushAggregateRow(`${baseId}-expense`, expenseMonthly);
+  pushAggregateRow(`${baseId}-income`, incomeMonthly, incomeTransactions);
+  pushAggregateRow(`${baseId}-expense`, expenseMonthly, expenseTransactions);
 }
 
 // Checked or unchecked category with no subcategories: use the category-level rollup

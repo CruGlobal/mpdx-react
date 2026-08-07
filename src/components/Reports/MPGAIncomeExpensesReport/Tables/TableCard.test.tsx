@@ -23,7 +23,6 @@ const TestComponent: React.FC = () => (
     <TableCard
       type={ReportTypeEnum.Income}
       data={data.income}
-      breakdownData={mockData.incomeBreakdown}
       emptyPlaceholder={<span>Empty Table</span>}
       title={title}
     />

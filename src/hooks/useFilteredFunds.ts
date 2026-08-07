@@ -11,10 +11,7 @@ import {
   expenseCategoryRank,
   incomeCategoryRank,
 } from '../components/Reports/MPGAIncomeExpensesReport/Helper/sortFunds';
-import {
-  DataFields,
-  TransactionBreakdown,
-} from '../components/Reports/MPGAIncomeExpensesReport/mockData';
+import { DataFields } from '../components/Reports/MPGAIncomeExpensesReport/mockData';
 
 export function useFilteredFunds(
   funds: Funds[],
@@ -24,13 +21,6 @@ export function useFilteredFunds(
   return useMemo(() => {
     const incomeData: DataFields[] = [];
     const expenseData: DataFields[] = [];
-
-    const incomeBreakdown: Partial<
-      Record<StaffExpenseCategoryEnum, TransactionBreakdown[]>
-    > = {};
-    const expenseBreakdown: Partial<
-      Record<StaffExpenseCategoryEnum, TransactionBreakdown[]>
-    > = {};
 
     funds.forEach((fund) => {
       const base = fund.fundType;
@@ -60,8 +50,6 @@ export function useFilteredFunds(
             t,
             incomeData,
             expenseData,
-            incomeBreakdown,
-            expenseBreakdown,
           });
         } else {
           addCategoryRow({ baseId, category, t, incomeData, expenseData });
@@ -80,8 +68,6 @@ export function useFilteredFunds(
     return {
       incomeData,
       expenseData,
-      incomeBreakdown,
-      expenseBreakdown,
     };
   }, [funds, selectedCategories, t]);
 }

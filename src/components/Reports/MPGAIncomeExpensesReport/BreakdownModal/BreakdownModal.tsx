@@ -27,14 +27,14 @@ export interface BreakdownModalProps {
   open: boolean;
   onClose: () => void;
   category: StaffExpenseCategoryEnum;
-  breakdownData: Partial<Record<string, TransactionBreakdown[]>>;
+  transactions: TransactionBreakdown[];
 }
 
 export const BreakdownModal: React.FC<BreakdownModalProps> = ({
   open,
   onClose,
   category,
-  breakdownData,
+  transactions,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -42,13 +42,12 @@ export const BreakdownModal: React.FC<BreakdownModalProps> = ({
   const { startDate, endDate } = useMPGAIncomeExpenses();
 
   const subcategoryBreakdown = useMemo(() => {
-    const categoryBreakdown = breakdownData[category] ?? [];
     const grouped = new Map<
       StaffExpensesSubCategoryEnum,
       TransactionBreakdown[]
     >();
 
-    categoryBreakdown.forEach((transaction) => {
+    transactions.forEach((transaction) => {
       const transactions = grouped.get(transaction.subCategory);
       if (transactions) {
         transactions.push(transaction);
@@ -63,7 +62,7 @@ export const BreakdownModal: React.FC<BreakdownModalProps> = ({
       transactions,
       total: transactions.reduce((sum, { amount }) => sum + amount, 0),
     }));
-  }, [breakdownData, category]);
+  }, [transactions, category]);
 
   const overallTotal = useMemo(
     () => subcategoryBreakdown.reduce((sum, { total }) => sum + total, 0),

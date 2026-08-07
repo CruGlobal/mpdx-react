@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import { MPGAIncomeExpensesReportTestWrapper } from '../MPGAIncomeExpensesReportTestWrapper';
-import { mockBreakdownData } from '../mockData';
+import { mockTransactions } from '../mockData';
 import { BreakdownModal, BreakdownModalProps } from './BreakdownModal';
 
 const mutationSpy = jest.fn();
@@ -11,7 +11,7 @@ const defaultProps: BreakdownModalProps = {
   open: true,
   onClose: jest.fn(),
   category: StaffExpenseCategoryEnum.Donation,
-  breakdownData: mockBreakdownData,
+  transactions: mockTransactions,
 };
 
 const TestComponent: React.FC<BreakdownModalProps> = (props) => (
@@ -54,12 +54,9 @@ describe('BreakdownModal', () => {
     expect(getByText('$6,770.00')).toBeInTheDocument();
   });
 
-  it('renders no accordions for a category without breakdown data', () => {
+  it('renders no accordions for a row without transactions', () => {
     const { getByRole, queryByText } = render(
-      <TestComponent
-        {...defaultProps}
-        category={StaffExpenseCategoryEnum.Salary}
-      />,
+      <TestComponent {...defaultProps} transactions={[]} />,
     );
 
     expect(getByRole('dialog')).toBeInTheDocument();
