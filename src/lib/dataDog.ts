@@ -1,13 +1,20 @@
+interface DatadogUser {
+  id: string;
+  name?: string;
+  email?: string;
+  [key: string]: unknown;
+}
+
 declare global {
   interface Window {
     DD_RUM: {
-      setUser: (user: Record<string, unknown>) => void;
+      setUser: (user: DatadogUser) => void;
       clearUser: () => void;
     };
   }
 }
 
-export const isDataDogConfigured = (): boolean => {
+export const isDatadogConfigured = (): boolean => {
   if (typeof window === 'undefined') {
     return false;
   }
@@ -17,7 +24,7 @@ export const isDataDogConfigured = (): boolean => {
   );
 };
 
-export interface SetDataDogUserProps {
+export interface SetDatadogUserProps {
   userId: string;
   name: string;
   email: string;
@@ -27,14 +34,14 @@ export interface SetDataDogUserProps {
 
 export const accountListIdsStorageKey = 'accountListIds';
 
-export const setDataDogUser = ({
+export const setDatadogUser = ({
   userId,
   name,
   email,
   accountListId,
   language,
-}: SetDataDogUserProps): void => {
-  if (!isDataDogConfigured()) {
+}: SetDatadogUserProps): void => {
+  if (!isDatadogConfigured()) {
     return;
   }
   const rawAccountListIds = window.localStorage.getItem(
@@ -57,8 +64,8 @@ export const setDataDogUser = ({
   });
 };
 
-export const clearDataDogUser = (): void => {
-  if (!isDataDogConfigured()) {
+export const clearDatadogUser = (): void => {
+  if (!isDatadogConfigured()) {
     return;
   }
   window.DD_RUM.clearUser();
