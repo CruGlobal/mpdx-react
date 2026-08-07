@@ -1,7 +1,9 @@
 import {
   accountListIdsStorageKey,
+  addDataDogError,
   clearDataDogUser,
-  isDatadogConfigured,
+  reportGraphQLError,
+  reportNetworkError,
   setDataDogUser,
 } from './dataDog';
 
@@ -13,23 +15,33 @@ const setDataDogUserMock = {
   language: 'en-us',
 };
 
+// The real agent replays onReady callbacks after init, so run them immediately
+const loadedRum = () => ({
+  setUser: jest.fn(),
+  clearUser: jest.fn(),
+  addError: jest.fn(),
+  onReady: jest.fn((callback: () => void) => callback()),
+});
+
 describe('dataDog', () => {
   beforeEach(() => {
-    window.DD_RUM = {
-      setUser: jest.fn(),
-      clearUser: jest.fn(),
-    };
+    window.DD_RUM = loadedRum();
   });
 
   describe('when Datadog is not configured', () => {
-    it('isDatadogConfigured should return false', () => {
-      expect(isDatadogConfigured()).toEqual(false);
-    });
-
     it('setDataDogUser should not call DD_RUM methods', () => {
       setDataDogUser(setDataDogUserMock);
       expect(window.DD_RUM.clearUser).not.toHaveBeenCalled();
       expect(window.DD_RUM.setUser).not.toHaveBeenCalled();
+    });
+
+    it('clearDataDogUser should still clear the stored account list ids', () => {
+      window.localStorage.setItem(accountListIdsStorageKey, 'previous');
+
+      clearDataDogUser();
+
+      expect(window.localStorage.getItem(accountListIdsStorageKey)).toBeNull();
+      expect(window.DD_RUM.clearUser).not.toHaveBeenCalled();
     });
   });
 
@@ -39,10 +51,6 @@ describe('dataDog', () => {
     });
 
     //#region Default Tests
-    it('isDatadogConfigured should return true', () => {
-      expect(isDatadogConfigured()).toEqual(true);
-    });
-
     it('clearDataDogUser should clear the user', () => {
       clearDataDogUser();
       expect(window.DD_RUM.clearUser).toHaveBeenCalled();
@@ -113,6 +121,112 @@ describe('dataDog', () => {
       expect(window.localStorage.getItem(accountListIdsStorageKey)).toBe(
         setDataDogUserMock.accountListId,
       );
+    });
+  });
+});
+
+describe('addDataDogError', () => {
+  beforeEach(() => {
+    process.env.DATADOG_CONFIGURED = 'true';
+    window.DD_RUM = loadedRum();
+  });
+
+  it('forwards the error and context to DD_RUM.addError', () => {
+    const error = new Error('Boom');
+    addDataDogError(error, { mpdxErrorType: 'graphql' });
+
+    expect(window.DD_RUM.addError).toHaveBeenCalledWith(error, {
+      mpdxErrorType: 'graphql',
+    });
+  });
+
+  it('does nothing when Datadog is not configured', () => {
+    process.env.DATADOG_CONFIGURED = 'false';
+
+    addDataDogError(new Error('Boom'));
+
+    expect(window.DD_RUM.addError).not.toHaveBeenCalled();
+  });
+
+  it('queues errors thrown before the agent finishes loading', () => {
+    const queue: Array<() => void> = [];
+    window.DD_RUM = {
+      ...loadedRum(),
+      onReady: jest.fn((callback: () => void) => {
+        queue.push(callback);
+      }),
+    };
+    const error = new Error('Boom');
+
+    addDataDogError(error);
+    expect(window.DD_RUM.addError).not.toHaveBeenCalled();
+
+    queue.forEach((callback) => callback());
+    expect(window.DD_RUM.addError).toHaveBeenCalledWith(error, undefined);
+  });
+});
+
+describe('GraphQL error reporting', () => {
+  const operation = { operationName: 'ContactDetails' };
+
+  beforeEach(() => {
+    process.env.DATADOG_CONFIGURED = 'true';
+    window.DD_RUM = loadedRum();
+  });
+
+  describe('reportGraphQLError', () => {
+    it('reports a labeled error with operation context', () => {
+      reportGraphQLError(
+        {
+          message:
+            'Contact with id=00000000-0000-0000-0000-000000000000 not found',
+          path: ['contact'],
+          extensions: { code: 'NOT_FOUND' },
+        },
+        operation,
+      );
+
+      expect(window.DD_RUM.addError).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message:
+            'GraphQL error in ContactDetails: Contact with id=00000000-0000-0000-0000-000000000000 not found',
+        }),
+        {
+          mpdxErrorType: 'graphql',
+          operationName: 'ContactDetails',
+          errorCode: 'NOT_FOUND',
+          errorPath: 'contact',
+        },
+      );
+    });
+  });
+
+  describe('reportNetworkError', () => {
+    it('reports the network error with operation context', () => {
+      const networkError = new Error('Failed to fetch');
+
+      reportNetworkError(networkError, operation);
+
+      expect(window.DD_RUM.addError).toHaveBeenCalledWith(networkError, {
+        mpdxErrorType: 'graphql_network',
+        operationName: 'ContactDetails',
+        statusCode: undefined,
+      });
+    });
+
+    it('reports the status code when the server responded', () => {
+      const serverError = Object.assign(
+        new Error('Response not successful: Received status code 502'),
+        { statusCode: 502, result: { detail: 'roger@cru.org already exists' } },
+      );
+
+      reportNetworkError(serverError, operation);
+
+      expect(window.DD_RUM.addError).toHaveBeenCalledWith(serverError, {
+        mpdxErrorType: 'graphql_network',
+        operationName: 'ContactDetails',
+        statusCode: 502,
+      });
     });
   });
 });
