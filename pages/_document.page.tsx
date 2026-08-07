@@ -3,6 +3,22 @@ import Script from 'next/script';
 import { ReactElement } from 'react';
 import theme from 'src/theme';
 
+const dataDogConfig = {
+  clientToken: process.env.DATADOG_CLIENT_TOKEN,
+  applicationId: process.env.DATADOG_APP_ID,
+  site: 'datadoghq.com',
+  service: 'mpdx-web-react',
+  sessionSampleRate: 100,
+  sessionReplaySampleRate: 20,
+  trackUserInteractions: true,
+  trackResources: true,
+  trackLongTasks: true,
+  defaultPrivacyLevel: 'mask-user-input',
+  env: process.env.DD_ENV,
+  version: process.env.GIT_COMMIT_SHA,
+  allowedTracingUrls: [process.env.API_URL],
+};
+
 class MyDocument extends Document {
   render(): ReactElement {
     return (
@@ -45,7 +61,7 @@ window.helpjuiceSwiftyUrlMap = {};`,
           )}
           {process.env.DATADOG_CONFIGURED === 'true' && (
             <Script id="datadog-rum" strategy="afterInteractive">
-              {`!function(a,e,t,n,s){a=a[s]=a[s]||{q:[],onReady:function(e){a.q.push(e)}},(s=e.createElement(t)).async=1,s.src=n,(n=e.getElementsByTagName(t)[0]).parentNode.insertBefore(s,n)}(window,document,"script","https://www.datadoghq-browser-agent.com/datadog-rum-v5.js","DD_RUM"),DD_RUM.onReady(function(){DD_RUM.init({clientToken:"${process.env.DATADOG_CLIENT_TOKEN}",applicationId:"${process.env.DATADOG_APP_ID}",site:"datadoghq.com",service:"mpdx-web-react",sessionSampleRate:100,sessionReplaySampleRate:20,trackUserInteractions:!0,trackResources:!0,trackLongTasks:!0,defaultPrivacyLevel:"mask-user-input",env:"${process.env.DD_ENV}",version:"${process.env.GIT_COMMIT_SHA}",allowedTracingUrls:["${process.env.API_URL}"]})});`}
+              {`!function(a,e,t,n,s){a=a[s]=a[s]||{q:[],onReady:function(e){a.q.push(e)}},(s=e.createElement(t)).async=1,s.src=n,(n=e.getElementsByTagName(t)[0]).parentNode.insertBefore(s,n)}(window,document,"script","https://www.datadoghq-browser-agent.com/datadog-rum-v5.js","DD_RUM"),DD_RUM.onReady(function(){DD_RUM.init(${JSON.stringify(dataDogConfig)})});`}
             </Script>
           )}
           {process.env.GOOGLE_TAG_MANAGER_CONTAINER_ID && (
