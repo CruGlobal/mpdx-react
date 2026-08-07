@@ -17,7 +17,7 @@ import {
 import Modal from 'src/components/Shared/Modal/Modal';
 import { PaddedBox } from 'src/components/Shared/styledComponents/PaddedBox';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
-import { getErrorMessage } from 'src/lib/getErrorFromCatch';
+import { getErrorMessage } from 'src/lib/error';
 import theme from 'src/theme';
 
 export const validateFile = ({

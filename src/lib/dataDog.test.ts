@@ -1,7 +1,7 @@
 import {
   accountListIdsStorageKey,
   clearDataDogUser,
-  isDataDogConfigured,
+  isDatadogConfigured,
   setDataDogUser,
 } from './dataDog';
 
@@ -21,9 +21,9 @@ describe('dataDog', () => {
     };
   });
 
-  describe('when DataDog is not configured', () => {
-    it('isDataDogConfigured should return false', () => {
-      expect(isDataDogConfigured()).toEqual(false);
+  describe('when Datadog is not configured', () => {
+    it('isDatadogConfigured should return false', () => {
+      expect(isDatadogConfigured()).toEqual(false);
     });
 
     it('setDataDogUser should not call DD_RUM methods', () => {
@@ -33,14 +33,14 @@ describe('dataDog', () => {
     });
   });
 
-  describe('when DataDog is configured', () => {
+  describe('when Datadog is configured', () => {
     beforeEach(() => {
       process.env.DATADOG_CONFIGURED = 'true';
     });
 
     //#region Default Tests
-    it('isDataDogConfigured should return true', () => {
-      expect(isDataDogConfigured()).toEqual(true);
+    it('isDatadogConfigured should return true', () => {
+      expect(isDatadogConfigured()).toEqual(true);
     });
 
     it('clearDataDogUser should clear the user', () => {

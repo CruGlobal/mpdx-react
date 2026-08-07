@@ -1,5 +1,5 @@
 import Rollbar from 'rollbar';
-import { getErrorMessage } from 'src/lib/getErrorFromCatch';
+import { getErrorMessage } from 'src/lib/error';
 
 const rollbarServerAccessToken = process.env.ROLLBAR_SERVER_ACCESS_TOKEN;
 export const isRollBarEnabled = !!rollbarServerAccessToken;
