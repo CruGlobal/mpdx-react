@@ -48,9 +48,9 @@ export const BreakdownModal: React.FC<BreakdownModalProps> = ({
     >();
 
     transactions.forEach((transaction) => {
-      const transactions = grouped.get(transaction.subCategory);
-      if (transactions) {
-        transactions.push(transaction);
+      const existing = grouped.get(transaction.subCategory);
+      if (existing) {
+        existing.push(transaction);
       } else {
         grouped.set(transaction.subCategory, [transaction]);
       }

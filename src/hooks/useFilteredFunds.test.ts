@@ -351,9 +351,8 @@ describe('useFilteredFunds', () => {
     it('builds no breakdown for an unchecked category', () => {
       const { result } = renderUseFilteredFunds(breakdownFund, []);
 
-      expect(result.current.incomeData.map((row) => row.transactions)).toEqual([
-        undefined,
-      ]);
+      expect(result.current.incomeData).toHaveLength(1);
+      expect(result.current.incomeData[0].transactions).toBeUndefined();
     });
 
     it('builds no breakdown for a category without subcategories', () => {
@@ -451,6 +450,26 @@ describe('useFilteredFunds', () => {
       ]);
       expect(result.current.incomeData.map((row) => row.total)).toEqual([
         100, 55,
+      ]);
+    });
+
+    it('gives each unknown category with no subcategories its own row', () => {
+      const funds: Funds[] = [
+        {
+          fundType: 'Primary',
+          total: 1860,
+          categories: [
+            categoryRollup(StaffExpenseCategoryEnum.Unknown, 100),
+            categoryRollup(StaffExpenseCategoryEnum.Unknown, 55),
+          ],
+        },
+      ];
+
+      const { result } = renderUseFilteredFunds(funds, null);
+
+      expect(result.current.incomeData.map((row) => row.id)).toEqual([
+        'Primary-UNKNOWN-0',
+        'Primary-UNKNOWN-1',
       ]);
     });
 

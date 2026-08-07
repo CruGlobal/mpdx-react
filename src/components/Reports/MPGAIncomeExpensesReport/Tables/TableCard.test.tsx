@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import theme from 'src/theme';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { MPGAIncomeExpensesReportTestWrapper } from '../MPGAIncomeExpensesReportTestWrapper';
-import { mockData, months } from '../mockData';
+import { DataFields, mockData, mockTransactions, months } from '../mockData';
 import { TableCard } from './TableCard';
 
 const mutationSpy = jest.fn();
@@ -18,11 +18,13 @@ const data = {
 
 const cellText = (element: HTMLElement) => element.textContent;
 
-const TestComponent: React.FC = () => (
+const TestComponent: React.FC<{ rows?: DataFields[] }> = ({
+  rows = data.income,
+}) => (
   <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
     <TableCard
       type={ReportTypeEnum.Income}
-      data={data.income}
+      data={rows}
       emptyPlaceholder={<span>Empty Table</span>}
       title={title}
     />
@@ -150,6 +152,28 @@ describe('TableCard', () => {
         within(dialog).getByText('Total Donation Income'),
       ).toBeInTheDocument();
       expect(within(dialog).getByText('$6,770.00')).toBeInTheDocument();
+    });
+
+    it('gives each row its own breakdown when two rows share a category', async () => {
+      const [row] = mockData.income;
+      const { findAllByRole, findByRole } = render(
+        <TestComponent
+          rows={[
+            { ...row, id: 'a', transactions: [mockTransactions[0]] },
+            { ...row, id: 'b', transactions: [mockTransactions[1]] },
+          ]}
+        />,
+      );
+
+      const icons = await findAllByRole('button', { name: 'View breakdown' });
+      expect(icons).toHaveLength(2);
+      userEvent.click(icons[1]);
+
+      const dialog = await findByRole('dialog');
+      expect(
+        within(dialog).getByText('Donation - Non Cash'),
+      ).toBeInTheDocument();
+      expect(within(dialog).queryByText('Donation')).not.toBeInTheDocument();
     });
 
     it('closes the modal', async () => {

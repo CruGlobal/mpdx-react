@@ -6,6 +6,7 @@ import {
   addCategoryRow,
   addCombinedSubcategoryRow,
   addRowPerSubcategory,
+  buildUnknownKey,
 } from '../components/Reports/MPGAIncomeExpensesReport/Helper/filterFunds';
 import {
   expenseCategoryRank,
@@ -25,10 +26,11 @@ export function useFilteredFunds(
     funds.forEach((fund) => {
       const base = fund.fundType;
       fund.categories?.forEach((category, index) => {
-        const categoryKey =
-          category.category === StaffExpenseCategoryEnum.Unknown
-            ? `UNKNOWN-${index}`
-            : category.category;
+        const categoryKey = buildUnknownKey(
+          category.category,
+          StaffExpenseCategoryEnum.Unknown,
+          index,
+        );
 
         const baseId = `${base}-${categoryKey}`;
         const isSelected =

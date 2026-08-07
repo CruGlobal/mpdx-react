@@ -8,6 +8,12 @@ import {
 import { DataFields, TransactionBreakdown } from '../mockData';
 import { Categories } from './MPGAReportEnum';
 
+export const buildUnknownKey = <T extends string>(
+  value: T,
+  unknownValue: T,
+  index: number,
+): string => (value === unknownValue ? `${value}-${index}` : value);
+
 const average = (data: number[]) => {
   const total = data.reduce((acc, item) => acc + item, 0);
   return total / data.length || 0;
@@ -83,10 +89,11 @@ export function addRowPerSubcategory({
 }: AddRowProps) {
   const categoryName = getLocalizedCategory(category.category, t);
   category.subcategories.forEach((subcategory, index) => {
-    const subcategoryKey =
-      subcategory.subCategory === StaffExpensesSubCategoryEnum.Unknown
-        ? `UNKNOWN-${index}`
-        : subcategory.subCategory;
+    const subcategoryKey = buildUnknownKey(
+      subcategory.subCategory,
+      StaffExpensesSubCategoryEnum.Unknown,
+      index,
+    );
 
     const subcategoryName = getLocalizedSubCategory(subcategory.subCategory, t);
     const id = `${baseId}-${subcategoryKey}`;
