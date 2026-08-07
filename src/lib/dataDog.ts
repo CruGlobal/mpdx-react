@@ -1,7 +1,14 @@
+interface DatadogUser {
+  id: string;
+  name?: string;
+  email?: string;
+  [key: string]: unknown;
+}
+
 declare global {
   interface Window {
     DD_RUM: {
-      setUser: (user: Record<string, unknown>) => void;
+      setUser: (user: DatadogUser) => void;
       clearUser: () => void;
     };
   }
