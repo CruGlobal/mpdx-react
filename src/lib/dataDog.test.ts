@@ -166,8 +166,9 @@ describe('GraphQL error reporting', () => {
     it('reports a labeled error with operation context', () => {
       reportGraphQLError(
         {
-          message: 'Contact not found',
-          path: ['contact', 'name'],
+          message:
+            'Contact with id=00000000-0000-0000-0000-000000000000 not found',
+          path: ['contact'],
           extensions: { code: 'NOT_FOUND' },
         },
         operation,
@@ -175,13 +176,14 @@ describe('GraphQL error reporting', () => {
 
       expect(window.DD_RUM.addError).toHaveBeenCalledWith(
         expect.objectContaining({
-          message: 'GraphQL error in ContactDetails: Contact not found',
+          message:
+            'GraphQL error in ContactDetails: Contact with id=00000000-0000-0000-0000-000000000000 not found',
         }),
         {
           mpdxErrorType: 'graphql',
           operationName: 'ContactDetails',
           errorCode: 'NOT_FOUND',
-          errorPath: 'contact.name',
+          errorPath: 'contact',
         },
       );
     });
