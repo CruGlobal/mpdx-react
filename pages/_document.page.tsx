@@ -23,9 +23,26 @@ const dataDogConfig = {
 // beforeSend has to reach the browser as source text because JSON.stringify
 // drops functions. Only the patterns cross over, as data — a call to any
 // imported helper would compile to a module lookup that doesn't exist here.
-export const beforeSendSource = `function(event){return event.type!=='error'||!${JSON.stringify(
-  suppressedErrorPatterns,
-)}.some(function(pattern){return ((event.error&&event.error.message)||'').includes(pattern)})}`;
+// Avoiding modern JS features like const, arrow functions, and optional chaining
+// because this script can't be compiled.
+export const beforeSendSource = `function (event, context) {
+  if (event.type !== 'error') {
+    return true;
+  }
+
+  var message = (event.error && event.error.message) || '';
+  if (${JSON.stringify(suppressedErrorPatterns)}.some(function (pattern) {
+    return message.includes(pattern);
+  })) {
+    return false;
+  }
+
+  if (context && context.error && context.error.name === 'ApolloError') {
+    return false;
+  }
+
+  return true;
+}`;
 
 export const dataDogRumScript = `!function(a,e,t,n,s){a=a[s]=a[s]||{q:[],onReady:function(e){a.q.push(e)}},(s=e.createElement(t)).async=1,s.src=n,(n=e.getElementsByTagName(t)[0]).parentNode.insertBefore(s,n)}(window,document,"script","https://www.datadoghq-browser-agent.com/datadog-rum-v5.js","DD_RUM"),DD_RUM.onReady(function(){DD_RUM.init(Object.assign(${JSON.stringify(
   dataDogConfig,
