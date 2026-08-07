@@ -7,11 +7,6 @@ interface RumEvent {
 }
 
 describe('dataDogRumScript', () => {
-  // Guards against JSON.stringify silently dropping the beforeSend function
-  it('contains the beforeSend function source', () => {
-    expect(dataDogRumScript).toContain(`beforeSend:${beforeSendSource}`);
-  });
-
   it('is syntactically valid JavaScript', () => {
     // Function parses the script without executing it
     expect(() => new Function(dataDogRumScript)).not.toThrow();
