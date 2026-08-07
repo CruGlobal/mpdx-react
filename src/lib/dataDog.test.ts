@@ -55,10 +55,6 @@ describe('dataDog', () => {
   });
 
   describe('setDatadogUser', () => {
-    beforeEach(() => {
-      process.env.DATADOG_CONFIGURED = 'true';
-    });
-
     it('adds new account list ids to the list', () => {
       window.localStorage.setItem(accountListIdsStorageKey, 'previous');
 
