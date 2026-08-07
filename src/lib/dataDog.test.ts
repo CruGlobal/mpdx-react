@@ -2,7 +2,6 @@ import {
   accountListIdsStorageKey,
   addDataDogError,
   clearDataDogUser,
-  isDatadogConfigured,
   reportGraphQLError,
   reportNetworkError,
   setDataDogUser,
@@ -16,24 +15,33 @@ const setDataDogUserMock = {
   language: 'en-us',
 };
 
+// The real agent replays onReady callbacks after init, so run them immediately
+const loadedRum = () => ({
+  setUser: jest.fn(),
+  clearUser: jest.fn(),
+  addError: jest.fn(),
+  onReady: jest.fn((callback: () => void) => callback()),
+});
+
 describe('dataDog', () => {
   beforeEach(() => {
-    window.DD_RUM = {
-      setUser: jest.fn(),
-      clearUser: jest.fn(),
-      addError: jest.fn(),
-    };
+    window.DD_RUM = loadedRum();
   });
 
   describe('when Datadog is not configured', () => {
-    it('isDatadogConfigured should return false', () => {
-      expect(isDatadogConfigured()).toEqual(false);
-    });
-
     it('setDataDogUser should not call DD_RUM methods', () => {
       setDataDogUser(setDataDogUserMock);
       expect(window.DD_RUM.clearUser).not.toHaveBeenCalled();
       expect(window.DD_RUM.setUser).not.toHaveBeenCalled();
+    });
+
+    it('clearDataDogUser should still clear the stored account list ids', () => {
+      window.localStorage.setItem(accountListIdsStorageKey, 'previous');
+
+      clearDataDogUser();
+
+      expect(window.localStorage.getItem(accountListIdsStorageKey)).toBeNull();
+      expect(window.DD_RUM.clearUser).not.toHaveBeenCalled();
     });
   });
 
@@ -43,10 +51,6 @@ describe('dataDog', () => {
     });
 
     //#region Default Tests
-    it('isDatadogConfigured should return true', () => {
-      expect(isDatadogConfigured()).toEqual(true);
-    });
-
     it('clearDataDogUser should clear the user', () => {
       clearDataDogUser();
       expect(window.DD_RUM.clearUser).toHaveBeenCalled();
@@ -124,11 +128,7 @@ describe('dataDog', () => {
 describe('addDataDogError', () => {
   beforeEach(() => {
     process.env.DATADOG_CONFIGURED = 'true';
-    window.DD_RUM = {
-      setUser: jest.fn(),
-      clearUser: jest.fn(),
-      addError: jest.fn(),
-    };
+    window.DD_RUM = loadedRum();
   });
 
   it('forwards the error and context to DD_RUM.addError', () => {
@@ -147,6 +147,23 @@ describe('addDataDogError', () => {
 
     expect(window.DD_RUM.addError).not.toHaveBeenCalled();
   });
+
+  it('queues errors thrown before the agent finishes loading', () => {
+    const queue: Array<() => void> = [];
+    window.DD_RUM = {
+      ...loadedRum(),
+      onReady: jest.fn((callback: () => void) => {
+        queue.push(callback);
+      }),
+    };
+    const error = new Error('Boom');
+
+    addDataDogError(error);
+    expect(window.DD_RUM.addError).not.toHaveBeenCalled();
+
+    queue.forEach((callback) => callback());
+    expect(window.DD_RUM.addError).toHaveBeenCalledWith(error, undefined);
+  });
 });
 
 describe('GraphQL error reporting', () => {
@@ -154,11 +171,7 @@ describe('GraphQL error reporting', () => {
 
   beforeEach(() => {
     process.env.DATADOG_CONFIGURED = 'true';
-    window.DD_RUM = {
-      setUser: jest.fn(),
-      clearUser: jest.fn(),
-      addError: jest.fn(),
-    };
+    window.DD_RUM = loadedRum();
   });
 
   describe('reportGraphQLError', () => {
