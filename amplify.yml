@@ -37,7 +37,9 @@ frontend:
         - timeout 1m yarn crowdin:download || echo "yarn crowdin:download timed out after 1 minute or failed with an error"
     build:
       commands:
-        - yarn build:amplify
+        # Derive the commit from git rather than Amplify's AWS_COMMIT_ID, which is unreliable and
+        # can be the literal string "HEAD" instead of a commit SHA on a branch's first build
+        - GIT_COMMIT_SHA=$(git rev-parse HEAD) yarn build:amplify
   artifacts:
     baseDirectory: .next
     files:
