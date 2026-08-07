@@ -29,9 +29,6 @@ export type RenderCell = GridColDef<DataFields>['renderCell'];
 export interface TableCardProps {
   type: ReportTypeEnum;
   data: DataFields[];
-  breakdownData?: Partial<
-    Record<StaffExpenseCategoryEnum, TransactionBreakdown[]>
-  >;
   emptyPlaceholder: React.ReactElement;
   title: string;
 }
@@ -79,6 +76,7 @@ export const CreateCardTableRows = (data: DataFields): DataFields => ({
   id: data.id,
   description: data.description,
   category: data.category,
+  transactions: data.transactions,
   monthly: data.monthly,
   average: data.average,
   total: data.total,
@@ -91,7 +89,6 @@ export const summaryWidth = 98.5;
 export const TableCard: React.FC<TableCardProps> = ({
   type,
   data,
-  breakdownData = {},
   title,
   emptyPlaceholder,
 }) => {
@@ -105,8 +102,10 @@ export const TableCard: React.FC<TableCardProps> = ({
     isFutureMonth,
   } = useMPGAIncomeExpenses();
 
-  const [openBreakdownModal, setOpenBreakdownModal] =
-    useState<StaffExpenseCategoryEnum | null>(null);
+  const [openBreakdownModal, setOpenBreakdownModal] = useState<{
+    category: StaffExpenseCategoryEnum;
+    transactions: TransactionBreakdown[];
+  } | null>(null);
 
   const monthColors = useMemo(
     () => ({
@@ -130,9 +129,8 @@ export const TableCard: React.FC<TableCardProps> = ({
   }, [data]);
 
   const { description, average, total } = useMemo(
-    () =>
-      populateCardTableRows(locale, t, breakdownData, setOpenBreakdownModal),
-    [locale, t, breakdownData, setOpenBreakdownModal],
+    () => populateCardTableRows(locale, t, setOpenBreakdownModal),
+    [locale, t, setOpenBreakdownModal],
   );
 
   const columns = useMemo<GridColDef<DataFields>[]>(() => {
@@ -302,8 +300,8 @@ export const TableCard: React.FC<TableCardProps> = ({
         <BreakdownModal
           open
           onClose={() => setOpenBreakdownModal(null)}
-          category={openBreakdownModal}
-          breakdownData={breakdownData}
+          category={openBreakdownModal.category}
+          transactions={openBreakdownModal.transactions}
         />
       )}
     </>

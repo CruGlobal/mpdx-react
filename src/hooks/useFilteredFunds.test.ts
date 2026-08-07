@@ -111,6 +111,7 @@ describe('useFilteredFunds', () => {
           ],
           average: 1283.33,
           total: 15400,
+          transactions: [],
         },
       ],
       expenseData: [
@@ -121,6 +122,7 @@ describe('useFilteredFunds', () => {
           monthly: [0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           average: 16.67,
           total: 200,
+          transactions: [],
         },
         {
           id: 'Primary-HEALTHCARE_REIMBURSEMENT',
@@ -131,8 +133,6 @@ describe('useFilteredFunds', () => {
           total: 40,
         },
       ],
-      incomeBreakdown: { [StaffExpenseCategoryEnum.Salary]: [] },
-      expenseBreakdown: { [StaffExpenseCategoryEnum.Salary]: [] },
     });
   });
 
@@ -218,8 +218,6 @@ describe('useFilteredFunds', () => {
     expect(result.current).toEqual({
       incomeData: [],
       expenseData: [],
-      incomeBreakdown: {},
-      expenseBreakdown: {},
     });
   });
 
@@ -321,34 +319,29 @@ describe('useFilteredFunds', () => {
     it('lists every transaction of a net-positive month under income', () => {
       const { result } = renderUseFilteredFunds(breakdownFund, selected);
 
-      expect(result.current.incomeBreakdown).toEqual({
-        [StaffExpenseCategoryEnum.Benefits]: [
-          {
-            date: '2024-01-10T00:00:00Z',
-            description: 'Payroll',
-            category: StaffExpenseCategoryEnum.Benefits,
-            subCategory: StaffExpensesSubCategoryEnum.ProgramBased,
-            amount: 100,
-          },
-          {
-            date: '2024-01-20T00:00:00Z',
-            description: '',
-            category: StaffExpenseCategoryEnum.Benefits,
-            subCategory: StaffExpensesSubCategoryEnum.ProgramBased,
-            amount: 30,
-          },
-        ],
-      });
-      expect(result.current.expenseBreakdown).toEqual({
-        [StaffExpenseCategoryEnum.Benefits]: [],
-      });
+      expect(result.current.incomeData[0].transactions).toEqual([
+        {
+          date: '2024-01-10T00:00:00Z',
+          description: 'Payroll',
+          category: StaffExpenseCategoryEnum.Benefits,
+          subCategory: StaffExpensesSubCategoryEnum.ProgramBased,
+          amount: 100,
+        },
+        {
+          date: '2024-01-20T00:00:00Z',
+          description: '',
+          category: StaffExpenseCategoryEnum.Benefits,
+          subCategory: StaffExpensesSubCategoryEnum.ProgramBased,
+          amount: 30,
+        },
+      ]);
+      expect(result.current.expenseData).toEqual([]);
     });
 
     it('sums the breakdown back to the combined row it explains', () => {
       const { result } = renderUseFilteredFunds(breakdownFund, selected);
 
-      const entries =
-        result.current.incomeBreakdown[StaffExpenseCategoryEnum.Benefits] ?? [];
+      const entries = result.current.incomeData[0].transactions ?? [];
 
       expect(sum(entries.map((entry) => entry.amount))).toBe(
         result.current.incomeData[0].total,
@@ -358,8 +351,8 @@ describe('useFilteredFunds', () => {
     it('builds no breakdown for an unchecked category', () => {
       const { result } = renderUseFilteredFunds(breakdownFund, []);
 
-      expect(result.current.incomeBreakdown).toEqual({});
-      expect(result.current.expenseBreakdown).toEqual({});
+      expect(result.current.incomeData).toHaveLength(1);
+      expect(result.current.incomeData[0].transactions).toBeUndefined();
     });
 
     it('builds no breakdown for a category without subcategories', () => {
@@ -374,8 +367,133 @@ describe('useFilteredFunds', () => {
       const { result } = renderUseFilteredFunds(funds, null);
 
       expect(result.current.incomeData).toHaveLength(1);
-      expect(result.current.incomeBreakdown).toEqual({});
-      expect(result.current.expenseBreakdown).toEqual({});
+      expect(result.current.incomeData[0].transactions).toBeUndefined();
+    });
+  });
+
+  // The API resolves any category or subcategory code it doesn't declare to
+  // UNKNOWN and does not expose the raw code, so several rows under the same
+  // parent can share that enum value.
+  describe('unknown categories and subcategories', () => {
+    const unknownCategory = (amount: number): Categories => ({
+      category: StaffExpenseCategoryEnum.Unknown,
+      total: amount,
+      averagePerMonth: amount,
+      breakdownByMonth: months([amount]),
+      subcategories: [
+        {
+          subCategory: StaffExpensesSubCategoryEnum.Unknown,
+          total: amount,
+          averagePerMonth: amount,
+          breakdownByMonth: [
+            {
+              month: '2024-01-01',
+              total: amount,
+              transactions: [
+                {
+                  transactedAt: '2024-01-10T00:00:00Z',
+                  description: 'unknown transaction',
+                  amount,
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+
+    const twoUnknownCategories: Funds[] = [
+      {
+        fundType: 'Primary',
+        total: 155,
+        categories: [unknownCategory(100), unknownCategory(55)],
+      },
+    ];
+
+    const twoUnknownSubcategories: Funds[] = [
+      {
+        fundType: 'Primary',
+        total: 155,
+        categories: [
+          {
+            category: StaffExpenseCategoryEnum.Salary,
+            total: 155,
+            averagePerMonth: 155,
+            breakdownByMonth: months([155]),
+            subcategories: [
+              subcategory(StaffExpensesSubCategoryEnum.Unknown, [100]),
+              subcategory(StaffExpensesSubCategoryEnum.Unknown, [55]),
+            ],
+          },
+        ],
+      },
+    ];
+
+    it('gives each unknown subcategory in one category its own row', () => {
+      const { result } = renderUseFilteredFunds(twoUnknownSubcategories, []);
+
+      expect(result.current.incomeData.map((row) => row.id)).toEqual([
+        'Primary-SALARY-UNKNOWN-0',
+        'Primary-SALARY-UNKNOWN-1',
+      ]);
+      expect(result.current.incomeData.map((row) => row.total)).toEqual([
+        100, 55,
+      ]);
+    });
+
+    it('gives each unknown category in one fund its own row', () => {
+      const { result } = renderUseFilteredFunds(twoUnknownCategories, null);
+
+      expect(result.current.incomeData.map((row) => row.id)).toEqual([
+        'Primary-UNKNOWN-0-income',
+        'Primary-UNKNOWN-1-income',
+      ]);
+      expect(result.current.incomeData.map((row) => row.total)).toEqual([
+        100, 55,
+      ]);
+    });
+
+    it('gives each unknown category with no subcategories its own row', () => {
+      const funds: Funds[] = [
+        {
+          fundType: 'Primary',
+          total: 1860,
+          categories: [
+            categoryRollup(StaffExpenseCategoryEnum.Unknown, 100),
+            categoryRollup(StaffExpenseCategoryEnum.Unknown, 55),
+          ],
+        },
+      ];
+
+      const { result } = renderUseFilteredFunds(funds, null);
+
+      expect(result.current.incomeData.map((row) => row.id)).toEqual([
+        'Primary-UNKNOWN-0',
+        'Primary-UNKNOWN-1',
+      ]);
+    });
+
+    it('gives each unknown category row its own transactions', () => {
+      const { result } = renderUseFilteredFunds(twoUnknownCategories, null);
+
+      expect(
+        result.current.incomeData.map((row) => ({
+          total: row.total,
+          amounts: (row.transactions ?? []).map((entry) => entry.amount),
+        })),
+      ).toEqual([
+        { total: 100, amounts: [100] },
+        { total: 55, amounts: [55] },
+      ]);
+    });
+
+    it('leaves existing categories alone', () => {
+      const { result } = renderUseFilteredFunds(mockData, selectedCategories);
+
+      expect(result.current.incomeData.map((row) => row.id)).toEqual([
+        'Primary-HEALTHCARE_REIMBURSEMENT',
+        'Primary-SALARY-income',
+      ]);
     });
   });
 });

@@ -10,14 +10,13 @@ import { TransactionBreakdown } from '../mockData';
 export const populateCardTableRows = (
   locale: string,
   t: TFunction,
-  breakdownData: Partial<
-    Record<StaffExpenseCategoryEnum, TransactionBreakdown[]>
-  >,
-  openBreakdownModal: (category: StaffExpenseCategoryEnum) => void,
+  openBreakdownModal: (breakdown: {
+    category: StaffExpenseCategoryEnum;
+    transactions: TransactionBreakdown[];
+  }) => void,
 ) => {
   const description: RenderCell = ({ row }) => {
-    const { category } = row;
-    const breakdown = category && breakdownData[category];
+    const { category, transactions } = row;
     return (
       <Box display="flex" alignItems="center" width="100%">
         <Tooltip title={row.description}>
@@ -25,13 +24,13 @@ export const populateCardTableRows = (
             {row.description}
           </Typography>
         </Tooltip>
-        {category && !!breakdown?.length && (
+        {category && !!transactions?.length && (
           <Tooltip title={t('View breakdown')}>
             <IconButton
               size="small"
               sx={{ ml: 'auto', flexShrink: 0 }}
               aria-label={t('View breakdown')}
-              onClick={() => openBreakdownModal(category)}
+              onClick={() => openBreakdownModal({ category, transactions })}
             >
               <InfoOutlined fontSize="small" />
             </IconButton>
