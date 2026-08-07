@@ -1,4 +1,3 @@
-import { Operation } from '@apollo/client';
 import {
   accountListIdsStorageKey,
   addDataDogError,
@@ -151,7 +150,7 @@ describe('addDataDogError', () => {
 });
 
 describe('GraphQL error reporting', () => {
-  const operation = { operationName: 'ContactDetails' } as Operation;
+  const operation = { operationName: 'ContactDetails' };
 
   beforeEach(() => {
     process.env.DATADOG_CONFIGURED = 'true';
@@ -198,6 +197,22 @@ describe('GraphQL error reporting', () => {
       expect(window.DD_RUM.addError).toHaveBeenCalledWith(networkError, {
         mpdxErrorType: 'graphql_network',
         operationName: 'ContactDetails',
+        statusCode: undefined,
+      });
+    });
+
+    it('reports the status code when the server responded', () => {
+      const serverError = Object.assign(
+        new Error('Response not successful: Received status code 502'),
+        { statusCode: 502, result: { detail: 'roger@cru.org already exists' } },
+      );
+
+      reportNetworkError(serverError, operation);
+
+      expect(window.DD_RUM.addError).toHaveBeenCalledWith(serverError, {
+        mpdxErrorType: 'graphql_network',
+        operationName: 'ContactDetails',
+        statusCode: 502,
       });
     });
   });

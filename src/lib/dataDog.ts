@@ -1,4 +1,5 @@
 import { Operation } from '@apollo/client';
+import { NetworkError } from '@apollo/client/errors';
 import { GraphQLFormattedError } from 'graphql';
 
 declare global {
@@ -81,7 +82,7 @@ export const addDataDogError = (
 
 export const reportGraphQLError = (
   error: GraphQLFormattedError,
-  operation: Operation,
+  operation: Pick<Operation, 'operationName'>,
 ): void => {
   addDataDogError(
     new Error(`GraphQL error in ${operation.operationName}: ${error.message}`),
@@ -95,11 +96,13 @@ export const reportGraphQLError = (
 };
 
 export const reportNetworkError = (
-  networkError: Error,
-  operation: Operation,
+  networkError: NonNullable<NetworkError>,
+  operation: Pick<Operation, 'operationName'>,
 ): void => {
   addDataDogError(networkError, {
     mpdxErrorType: 'graphql_network',
     operationName: operation.operationName,
+    statusCode:
+      'statusCode' in networkError ? networkError.statusCode : undefined,
   });
 };
