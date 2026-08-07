@@ -34,8 +34,13 @@ export function useFilteredFunds(
 
     funds.forEach((fund) => {
       const base = fund.fundType;
-      fund.categories?.forEach((category) => {
-        const baseId = `${base}-${category.category}`;
+      fund.categories?.forEach((category, index) => {
+        const categoryKey =
+          category.category === StaffExpenseCategoryEnum.Unknown
+            ? `UNKNOWN-${index}`
+            : category.category;
+
+        const baseId = `${base}-${categoryKey}`;
         const isSelected =
           selectedCategories === null ||
           selectedCategories.includes(category.category);
