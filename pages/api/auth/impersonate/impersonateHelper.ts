@@ -1,6 +1,6 @@
 import { NextApiRequest } from 'next';
 import { getToken } from 'next-auth/jwt';
-import { getErrorMessage } from 'src/lib/getErrorFromCatch';
+import { getErrorMessage } from 'src/lib/error';
 import { cookieDefaultInfo } from '../../utils/cookies';
 import { signValue } from '../helpers';
 

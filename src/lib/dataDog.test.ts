@@ -21,7 +21,7 @@ describe('dataDog', () => {
     };
   });
 
-  describe('when DataDog is not configured', () => {
+  describe('when Datadog is not configured', () => {
     it('isDataDogConfigured should return false', () => {
       expect(isDataDogConfigured()).toEqual(false);
     });
@@ -33,7 +33,7 @@ describe('dataDog', () => {
     });
   });
 
-  describe('when DataDog is configured', () => {
+  describe('when Datadog is configured', () => {
     beforeEach(() => {
       process.env.DATADOG_CONFIGURED = 'true';
     });
