@@ -17,7 +17,7 @@ export const isDatadogConfigured = (): boolean => {
   );
 };
 
-export interface SetDataDogUserProps {
+export interface SetDatadogUserProps {
   userId: string;
   name: string;
   email: string;
@@ -27,13 +27,13 @@ export interface SetDataDogUserProps {
 
 export const accountListIdsStorageKey = 'accountListIds';
 
-export const setDataDogUser = ({
+export const setDatadogUser = ({
   userId,
   name,
   email,
   accountListId,
   language,
-}: SetDataDogUserProps): void => {
+}: SetDatadogUserProps): void => {
   if (!isDatadogConfigured()) {
     return;
   }
@@ -57,7 +57,7 @@ export const setDataDogUser = ({
   });
 };
 
-export const clearDataDogUser = (): void => {
+export const clearDatadogUser = (): void => {
   if (!isDatadogConfigured()) {
     return;
   }

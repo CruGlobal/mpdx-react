@@ -30,7 +30,7 @@ import {
 import { AccountList } from 'src/graphql/types.generated';
 import { useOptionalAccountListId } from 'src/hooks/useAccountListId';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
-import { clearDataDogUser } from 'src/lib/dataDog';
+import { clearDatadogUser } from 'src/lib/dataDog';
 import theme from 'src/theme';
 import { useGetTopBarQuery } from '../../GetTopBar.generated';
 import ProfileName from './ProfileName';
@@ -406,7 +406,7 @@ const ProfileMenu = (): ReactElement => {
               color="inherit"
               onClick={() => {
                 signOut({ callbackUrl: 'signOut' }).then(() => {
-                  clearDataDogUser();
+                  clearDatadogUser();
                   client.clearStore();
                 });
               }}

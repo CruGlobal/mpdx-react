@@ -23,7 +23,7 @@ import { OrganizationAutocomplete } from 'src/components/Shared/Autocomplete/Org
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { PaddedBox } from 'src/components/Shared/styledComponents/PaddedBox';
 import { Organization } from 'src/graphql/types.generated';
-import { clearDataDogUser } from 'src/lib/dataDog';
+import { clearDatadogUser } from 'src/lib/dataDog';
 import { getAppName } from 'src/lib/getAppName';
 import { articles } from 'src/lib/helpjuice';
 import theme from 'src/theme';
@@ -225,7 +225,7 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
                       <Link
                         onClick={() => {
                           signOut({ callbackUrl: 'signOut' }).then(() => {
-                            clearDataDogUser();
+                            clearDatadogUser();
                             client.clearStore();
                           });
                         }}
