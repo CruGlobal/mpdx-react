@@ -103,6 +103,7 @@ describe('ExportCsvButton', () => {
         transactionYears: [],
         funds: [
           {
+            id: 'fund-1',
             fundType: 'Primary',
             total: 5000,
             categories: [

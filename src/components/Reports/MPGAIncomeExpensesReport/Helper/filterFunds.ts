@@ -1,8 +1,5 @@
 import { TFunction } from 'react-i18next';
-import {
-  StaffExpenseCategoryEnum,
-  StaffExpensesSubCategoryEnum,
-} from 'src/graphql/types.generated';
+import { StaffExpensesSubCategoryEnum } from 'src/graphql/types.generated';
 import {
   getLocalizedCategory,
   getLocalizedSubCategory,
@@ -10,6 +7,12 @@ import {
 } from '../../Shared/Helpers/transformStaffExpenseEnums';
 import { DataFields, TransactionBreakdown } from '../mockData';
 import { Categories } from './MPGAReportEnum';
+
+export const buildUnknownKey = <T extends string>(
+  value: T,
+  unknownValue: T,
+  index: number,
+): string => (value === unknownValue ? `${value}-${index}` : value);
 
 const average = (data: number[]) => {
   const total = data.reduce((acc, item) => acc + item, 0);
@@ -86,10 +89,11 @@ export function addRowPerSubcategory({
 }: AddRowProps) {
   const categoryName = getLocalizedCategory(category.category, t);
   category.subcategories.forEach((subcategory, index) => {
-    const subcategoryKey =
-      subcategory.subCategory === StaffExpensesSubCategoryEnum.Unknown
-        ? `UNKNOWN-${index}`
-        : subcategory.subCategory;
+    const subcategoryKey = buildUnknownKey(
+      subcategory.subCategory,
+      StaffExpensesSubCategoryEnum.Unknown,
+      index,
+    );
 
     const subcategoryName = getLocalizedSubCategory(subcategory.subCategory, t);
     const id = `${baseId}-${subcategoryKey}`;
@@ -122,16 +126,7 @@ export function addCombinedSubcategoryRow({
   t,
   incomeData,
   expenseData,
-  incomeBreakdown,
-  expenseBreakdown,
-}: AddRowProps & {
-  incomeBreakdown: Partial<
-    Record<StaffExpenseCategoryEnum, TransactionBreakdown[]>
-  >;
-  expenseBreakdown: Partial<
-    Record<StaffExpenseCategoryEnum, TransactionBreakdown[]>
-  >;
-}) {
+}: AddRowProps) {
   const monthCount = category.breakdownByMonth.length;
   const incomeMonthly = new Array(monthCount).fill(0);
   const expenseMonthly = new Array(monthCount).fill(0);
@@ -159,18 +154,20 @@ export function addCombinedSubcategoryRow({
     });
   });
 
-  incomeBreakdown[category.category] = incomeTransactions;
-  expenseBreakdown[category.category] = expenseTransactions;
-
   const description =
     getPluralizedDescription(category.category, t) ||
     getLocalizedCategory(category.category, t);
-  const pushAggregateRow = (id: string, monthly: number[]) => {
+  const pushAggregateRow = (
+    id: string,
+    monthly: number[],
+    transactions: TransactionBreakdown[],
+  ) => {
     pushData(
       {
         id,
         description,
         category: category.category,
+        transactions,
         monthly,
         average: average(monthly),
         total: sum(monthly),
@@ -180,8 +177,8 @@ export function addCombinedSubcategoryRow({
     );
   };
 
-  pushAggregateRow(`${baseId}-income`, incomeMonthly);
-  pushAggregateRow(`${baseId}-expense`, expenseMonthly);
+  pushAggregateRow(`${baseId}-income`, incomeMonthly, incomeTransactions);
+  pushAggregateRow(`${baseId}-expense`, expenseMonthly, expenseTransactions);
 }
 
 // Checked or unchecked category with no subcategories: use the category-level rollup

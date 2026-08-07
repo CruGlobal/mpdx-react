@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import theme from 'src/theme';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { MPGAIncomeExpensesReportTestWrapper } from '../MPGAIncomeExpensesReportTestWrapper';
-import { mockData, months } from '../mockData';
+import { DataFields, mockData, mockTransactions, months } from '../mockData';
 import { TableCard } from './TableCard';
 
 const mutationSpy = jest.fn();
@@ -18,12 +18,13 @@ const data = {
 
 const cellText = (element: HTMLElement) => element.textContent;
 
-const TestComponent: React.FC = () => (
+const TestComponent: React.FC<{ rows?: DataFields[] }> = ({
+  rows = data.income,
+}) => (
   <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
     <TableCard
       type={ReportTypeEnum.Income}
-      data={data.income}
-      breakdownData={mockData.incomeBreakdown}
+      data={rows}
       emptyPlaceholder={<span>Empty Table</span>}
       title={title}
     />
@@ -153,6 +154,28 @@ describe('TableCard', () => {
       expect(within(dialog).getByText('$6,770.00')).toBeInTheDocument();
     });
 
+    it('gives each row its own breakdown when two rows share a category', async () => {
+      const [row] = mockData.income;
+      const { findAllByRole, findByRole } = render(
+        <TestComponent
+          rows={[
+            { ...row, id: 'a', transactions: [mockTransactions[0]] },
+            { ...row, id: 'b', transactions: [mockTransactions[1]] },
+          ]}
+        />,
+      );
+
+      const icons = await findAllByRole('button', { name: 'View breakdown' });
+      expect(icons).toHaveLength(2);
+      userEvent.click(icons[1]);
+
+      const dialog = await findByRole('dialog');
+      expect(
+        within(dialog).getByText('Donation - Non Cash'),
+      ).toBeInTheDocument();
+      expect(within(dialog).queryByText('Donation')).not.toBeInTheDocument();
+    });
+
     it('closes the modal', async () => {
       const { findByRole, queryByRole } = render(<TestComponent />);
 
@@ -164,6 +187,44 @@ describe('TableCard', () => {
       await waitFor(() =>
         expect(queryByRole('dialog')).not.toBeInTheDocument(),
       );
+    });
+  });
+
+  describe('row identity', () => {
+    it('renders each row with its own total when ids are unique', async () => {
+      const [row] = mockData.income;
+      const { getAllByRole, findByText } = render(
+        <TestComponent
+          rows={[
+            {
+              ...row,
+              id: '1-UNKNOWN-0',
+              description: 'Unknown one',
+              total: 111,
+            },
+            {
+              ...row,
+              id: '1-UNKNOWN-1',
+              description: 'Unknown two',
+              total: 222,
+            },
+            {
+              ...row,
+              id: '1-UNKNOWN-2',
+              description: 'Unknown three',
+              total: 444,
+            },
+          ]}
+        />,
+      );
+
+      await findByText(title);
+
+      const totals = getAllByRole('gridcell')
+        .filter((cell) => cell.getAttribute('data-field') === 'total')
+        .map((cell) => (cell.textContent ?? '').trim());
+
+      expect(totals).toEqual(['111', '222', '444']);
     });
   });
 

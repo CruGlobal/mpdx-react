@@ -10,10 +10,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import {
-  StaffExpenseCategoryEnum,
-  StaffExpensesSubCategoryEnum,
-} from 'src/graphql/types.generated';
+import { StaffExpensesSubCategoryEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, monthYearFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
@@ -21,20 +18,18 @@ import { DialogSkeleton } from '../../Shared/DialogSkeleton/DialogSkeleton';
 import { getLocalizedCategory } from '../../Shared/Helpers/transformStaffExpenseEnums';
 import { BreakdownAccordion } from '../BreakdownAccordion/BreakdownAccordion';
 import { useMPGAIncomeExpenses } from '../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
-import { TransactionBreakdown } from '../mockData';
+import { BreakdownTarget, TransactionBreakdown } from '../mockData';
 
-export interface BreakdownModalProps {
+export interface BreakdownModalProps extends BreakdownTarget {
   open: boolean;
   onClose: () => void;
-  category: StaffExpenseCategoryEnum;
-  breakdownData: Partial<Record<string, TransactionBreakdown[]>>;
 }
 
 export const BreakdownModal: React.FC<BreakdownModalProps> = ({
   open,
   onClose,
   category,
-  breakdownData,
+  transactions,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -42,28 +37,30 @@ export const BreakdownModal: React.FC<BreakdownModalProps> = ({
   const { startDate, endDate } = useMPGAIncomeExpenses();
 
   const subcategoryBreakdown = useMemo(() => {
-    const categoryBreakdown = breakdownData[category] ?? [];
     const grouped = new Map<
       StaffExpensesSubCategoryEnum,
       TransactionBreakdown[]
     >();
 
-    categoryBreakdown.forEach((transaction) => {
-      const transactions = grouped.get(transaction.subCategory);
-      if (transactions) {
-        transactions.push(transaction);
+    transactions.forEach((transaction) => {
+      const existing = grouped.get(transaction.subCategory);
+      if (existing) {
+        existing.push(transaction);
       } else {
         grouped.set(transaction.subCategory, [transaction]);
       }
     });
 
-    return Array.from(grouped, ([subCategory, transactions]) => ({
+    return Array.from(grouped, ([subCategory, subCategoryTransactions]) => ({
       category,
       subCategory,
-      transactions,
-      total: transactions.reduce((sum, { amount }) => sum + amount, 0),
+      transactions: subCategoryTransactions,
+      total: subCategoryTransactions.reduce(
+        (sum, { amount }) => sum + amount,
+        0,
+      ),
     }));
-  }, [breakdownData, category]);
+  }, [transactions, category]);
 
   const overallTotal = useMemo(
     () => subcategoryBreakdown.reduce((sum, { total }) => sum + total, 0),
@@ -111,13 +108,17 @@ export const BreakdownModal: React.FC<BreakdownModalProps> = ({
           </TableHead>
           <TableBody>
             {subcategoryBreakdown.map(
-              ({ subCategory, transactions, total }) => (
+              ({
+                subCategory,
+                transactions: subCategoryTransactions,
+                total,
+              }) => (
                 <TableRow key={subCategory}>
                   <TableCell colSpan={2} sx={{ padding: 0, border: 0 }}>
                     <BreakdownAccordion
                       category={category}
                       subCategory={subCategory}
-                      transactions={transactions}
+                      transactions={subCategoryTransactions}
                       total={total}
                     />
                   </TableCell>

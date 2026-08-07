@@ -6,15 +6,13 @@ import {
   addCategoryRow,
   addCombinedSubcategoryRow,
   addRowPerSubcategory,
+  buildUnknownKey,
 } from '../components/Reports/MPGAIncomeExpensesReport/Helper/filterFunds';
 import {
   expenseCategoryRank,
   incomeCategoryRank,
 } from '../components/Reports/MPGAIncomeExpensesReport/Helper/sortFunds';
-import {
-  DataFields,
-  TransactionBreakdown,
-} from '../components/Reports/MPGAIncomeExpensesReport/mockData';
+import { DataFields } from '../components/Reports/MPGAIncomeExpensesReport/mockData';
 
 export function useFilteredFunds(
   funds: Funds[],
@@ -25,20 +23,14 @@ export function useFilteredFunds(
     const incomeData: DataFields[] = [];
     const expenseData: DataFields[] = [];
 
-    const incomeBreakdown: Partial<
-      Record<StaffExpenseCategoryEnum, TransactionBreakdown[]>
-    > = {};
-    const expenseBreakdown: Partial<
-      Record<StaffExpenseCategoryEnum, TransactionBreakdown[]>
-    > = {};
-
     funds.forEach((fund) => {
-      const base = fund.fundType;
+      const base = fund.id;
       fund.categories?.forEach((category, index) => {
-        const categoryKey =
-          category.category === StaffExpenseCategoryEnum.Unknown
-            ? `UNKNOWN-${index}`
-            : category.category;
+        const categoryKey = buildUnknownKey(
+          category.category,
+          StaffExpenseCategoryEnum.Unknown,
+          index,
+        );
 
         const baseId = `${base}-${categoryKey}`;
         const isSelected =
@@ -60,8 +52,6 @@ export function useFilteredFunds(
             t,
             incomeData,
             expenseData,
-            incomeBreakdown,
-            expenseBreakdown,
           });
         } else {
           addCategoryRow({ baseId, category, t, incomeData, expenseData });
@@ -80,8 +70,6 @@ export function useFilteredFunds(
     return {
       incomeData,
       expenseData,
-      incomeBreakdown,
-      expenseBreakdown,
     };
   }, [funds, selectedCategories, t]);
 }

@@ -21,6 +21,7 @@ export const mpgaTransactionsMock: MpgaTransactionsQuery = {
     transactionYears: [2017, 2018, 2019],
     funds: [
       {
+        id: 'fund-1',
         fundType: FundTypes.Primary,
         total: 108856,
         categories: [
