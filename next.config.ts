@@ -89,6 +89,7 @@ const config: NextConfig = {
     DISABLE_NEW_REPORTS: process.env.DISABLE_NEW_REPORTS,
     DISABLE_NS_GOAL_CALCULATOR: process.env.DISABLE_NS_GOAL_CALCULATOR,
     DISABLE_MPD_GOAL_ADMIN: process.env.DISABLE_MPD_GOAL_ADMIN,
+    GIT_COMMIT_SHA: process.env.GIT_COMMIT_SHA,
   },
   // Force .page prefix on page files (ex. index.page.tsx) so generated files can be included in /pages directory without Next.js throwing build errors
   pageExtensions: ['page.tsx', 'page.ts', 'page.jsx', 'page.js'],

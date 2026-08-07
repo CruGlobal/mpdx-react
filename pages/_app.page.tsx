@@ -85,13 +85,13 @@ const App = ({
   const rollbarConfig: Rollbar.Configuration = {
     accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
     environment: `react_${process.env.NODE_ENV}`,
-    codeVersion: React.version,
+    codeVersion: process.env.GIT_COMMIT_SHA,
     captureUncaught: true,
     captureUnhandledRejections: true,
     payload: {
       client: {
         javascript: {
-          code_version: React.version,
+          code_version: process.env.GIT_COMMIT_SHA,
         },
       },
     },
