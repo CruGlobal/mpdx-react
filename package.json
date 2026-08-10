@@ -7,6 +7,7 @@
     "build": "next build",
     "build:analyze": "ANALYZE=true yarn build",
     "build:amplify": "AMPLIFY_NEXTJS_EXPERIMENTAL_TRACE=true next build",
+    "datadog:sourcemaps": "datadog-ci sourcemaps upload .next/static --service=mpdx-web-react --release-version=$GIT_COMMIT_SHA --minified-path-prefix=/_next/static",
     "serve": "next start",
     "disable-telemetry": "next telemetry disable",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
@@ -84,6 +85,7 @@
   },
   "devDependencies": {
     "@crowdin/cli": "^4.9.1",
+    "@datadog/datadog-ci": "^5.22.0",
     "@graphql-codegen/add": "^5.0.2",
     "@graphql-codegen/cli": "^5.0.2",
     "@graphql-codegen/fragment-matcher": "^5.0.2",

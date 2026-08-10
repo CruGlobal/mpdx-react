@@ -2138,6 +2138,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@datadog/datadog-ci@npm:^5.22.0":
+  version: 5.22.0
+  resolution: "@datadog/datadog-ci@npm:5.22.0"
+  bin:
+    datadog-ci: dist/bundle.js
+  checksum: 10/780f76f97343ba029ad107512949a6c46c53e133d25ab0731be5b59879010521a6b747bf5b505b480408e3e6dda18d0f67bd7f35d41cbe085504284ed23de2f3
+  languageName: node
+  linkType: hard
+
 "@discoveryjs/json-ext@npm:0.5.7":
   version: 0.5.7
   resolution: "@discoveryjs/json-ext@npm:0.5.7"
@@ -14618,6 +14627,7 @@ __metadata:
     "@apollo/utils.fetcher": "npm:3.0.0"
     "@as-integrations/next": "npm:^3.2.0"
     "@crowdin/cli": "npm:^4.9.1"
+    "@datadog/datadog-ci": "npm:^5.22.0"
     "@emotion/cache": "npm:^11.11.0"
     "@emotion/react": "npm:^11.11.0"
     "@emotion/styled": "npm:^11.11.0"
