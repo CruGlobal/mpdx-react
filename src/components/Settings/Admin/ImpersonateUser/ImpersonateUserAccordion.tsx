@@ -17,8 +17,8 @@ import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { SubmitButton } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import { PaddedBox } from 'src/components/Shared/styledComponents/PaddedBox';
+import { getErrorMessage } from 'src/lib/error';
 import { getAppName } from 'src/lib/getAppName';
-import { getErrorMessage } from 'src/lib/getErrorFromCatch';
 import { AccordionProps } from '../../accordionHelper';
 
 type ImpersonateUserFormType = {

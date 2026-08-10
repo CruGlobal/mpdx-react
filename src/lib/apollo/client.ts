@@ -7,7 +7,7 @@ import {
   GetDefaultAccountDocument,
   GetDefaultAccountQuery,
 } from 'pages/api/getDefaultAccount.generated';
-import { clearDataDogUser } from 'src/lib/dataDog';
+import { clearDatadogUser } from 'src/lib/dataDog';
 import snackNotifications from '../../components/Snackbar/Snackbar';
 import { dispatch } from '../analytics';
 import {
@@ -35,7 +35,7 @@ const makeClient = (apiToken: string) => {
         graphQLErrors?.forEach((graphQLError) => {
           if (graphQLError?.extensions?.code === 'AUTHENTICATION_ERROR') {
             signOut({ redirect: true, callbackUrl: 'signOut' }).then(() => {
-              clearDataDogUser();
+              clearDatadogUser();
               client.clearStore();
             });
           }

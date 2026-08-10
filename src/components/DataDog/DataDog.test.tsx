@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import { useSession } from 'next-auth/react';
 import TestRouter from '__tests__/util/TestRouter';
-import { setDataDogUser } from 'src/lib/dataDog';
+import { setDatadogUser } from 'src/lib/dataDog';
 import DataDog from './DataDog';
 
 jest.mock('src/lib/dataDog');
@@ -19,10 +19,10 @@ const TestComponent: React.FC = () => (
 );
 
 describe('DataDog', () => {
-  it('calls setDataDogUser with the user', () => {
+  it('calls setDatadogUser with the user', () => {
     render(<TestComponent />);
 
-    expect(setDataDogUser).toHaveBeenCalledWith({
+    expect(setDatadogUser).toHaveBeenCalledWith({
       accountListId: 'account-list-1',
       email: 'first.last@cru.org',
       name: 'First Last',
@@ -30,7 +30,7 @@ describe('DataDog', () => {
     });
   });
 
-  it('does not call setDataDogUser if there is no session', () => {
+  it('does not call setDatadogUser if there is no session', () => {
     (useSession as jest.MockedFn<typeof useSession>).mockReturnValueOnce({
       data: null,
       status: 'unauthenticated',
@@ -39,7 +39,7 @@ describe('DataDog', () => {
 
     render(<TestComponent />);
 
-    expect(setDataDogUser).not.toHaveBeenCalled();
+    expect(setDatadogUser).not.toHaveBeenCalled();
   });
 
   it('handles missing accountListId', () => {
@@ -49,7 +49,7 @@ describe('DataDog', () => {
       </TestRouter>,
     );
 
-    expect(setDataDogUser).toHaveBeenCalledWith({
+    expect(setDatadogUser).toHaveBeenCalledWith({
       accountListId: null,
       email: 'first.last@cru.org',
       name: 'First Last',

@@ -33,6 +33,7 @@ import { UserPreferenceProvider } from 'src/components/User/Preferences/UserPref
 import { useLocale } from 'src/hooks/useLocale';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import makeClient from 'src/lib/apollo/client';
+import { suppressedErrorPatterns } from 'src/lib/error';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import './helpjuice.css';
@@ -96,13 +97,13 @@ const App = ({
       },
     },
     enabled: Boolean(process.env.ROLLBAR_ACCESS_TOKEN),
-    checkIgnore: (_, args) =>
-      // Ignore React hydration warnings
-      [
-        'Minified React error #418',
-        'Minified React error #423',
-        'Minified React error #425',
-      ].some((error) => typeof args[0] === 'string' && args[0].includes(error)),
+    checkIgnore: (_, args) => {
+      const message = args[0];
+      return (
+        typeof message === 'string' &&
+        suppressedErrorPatterns.some((pattern) => message.includes(pattern))
+      );
+    },
   };
 
   const emotionCache = createEmotionCache({ key: 'css' });

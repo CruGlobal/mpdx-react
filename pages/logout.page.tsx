@@ -5,7 +5,7 @@ import ExitToAppRoundedIcon from '@mui/icons-material/ExitToAppRounded';
 import { Box, Typography } from '@mui/material';
 import { signOut } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
-import { clearDataDogUser } from 'src/lib/dataDog';
+import { clearDatadogUser } from 'src/lib/dataDog';
 import { getAppName } from 'src/lib/getAppName';
 import { ensureSessionAndAccountList } from './api/utils/pagePropsHelpers';
 import { StatusPageWrapper } from './styledComponents/StatusPageWrapper';
@@ -17,7 +17,7 @@ const LogoutPage = ({}): ReactElement => {
 
   useEffect(() => {
     signOut({ callbackUrl: 'signOut' }).then(() => {
-      clearDataDogUser();
+      clearDatadogUser();
       client.clearStore();
     });
   }, []);

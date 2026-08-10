@@ -16,7 +16,7 @@ import {
 } from 'src/components/Shared/Links/Links';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useNavPages } from 'src/hooks/useNavPages';
-import { clearDataDogUser } from 'src/lib/dataDog';
+import { clearDatadogUser } from 'src/lib/dataDog';
 import theme from 'src/theme';
 import { useGetTopBarQuery } from '../../../TopBar/GetTopBar.generated';
 import { LeafListItem, Title } from '../../StyledComponents';
@@ -200,7 +200,7 @@ export const ProfileMenuPanel: React.FC = () => {
             color="secondary"
             onClick={() =>
               signOut({ callbackUrl: 'signOut' }).then(() => {
-                clearDataDogUser();
+                clearDatadogUser();
                 client.clearStore();
               })
             }
