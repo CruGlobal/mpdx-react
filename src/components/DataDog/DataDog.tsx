@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
-import { setDataDogUser } from 'src/lib/dataDog';
+import { setDatadogUser } from 'src/lib/dataDog';
 
 const DataDog: React.FC = () => {
   const {
@@ -20,7 +20,7 @@ const DataDog: React.FC = () => {
   const user = session?.user;
   useEffect(() => {
     if (user) {
-      setDataDogUser({
+      setDatadogUser({
         userId: user.userID,
         accountListId,
         name: user.name,

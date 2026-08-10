@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import { getErrorMessage } from 'src/lib/getErrorFromCatch';
+import { getErrorMessage } from 'src/lib/error';
 import theme from 'src/theme';
 import {
   CsvImportContext,
