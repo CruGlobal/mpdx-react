@@ -1,6 +1,9 @@
 export const getErrorMessage = (err: unknown): string =>
   err instanceof Error ? err.message : String(err);
 
+/** Global scope key of the WeakSet of errors already reported to DataDog */
+export const reportedErrorsGlobalKey = '__reportedErrors';
+
 /** Errors deliberately ignored by Rollbar and Datadog error reporting */
 export const suppressedErrorPatterns = [
   // Deployed builds report minified React errors instead of full messages
