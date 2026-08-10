@@ -17,10 +17,16 @@ export interface SubcategoryBreakdown {
   total: number;
 }
 
+export interface BreakdownTarget {
+  category: StaffExpenseCategoryEnum;
+  transactions: TransactionBreakdown[];
+}
+
 export interface DataFields {
   id: string;
   description: string;
   category?: StaffExpenseCategoryEnum;
+  transactions?: TransactionBreakdown[];
   monthly: number[];
   average: number;
   total: number;
@@ -29,12 +35,6 @@ export interface DataFields {
 export interface AllData {
   income: DataFields[];
   expenses: DataFields[];
-  incomeBreakdown?: Partial<
-    Record<StaffExpenseCategoryEnum, TransactionBreakdown[]>
-  >;
-  expenseBreakdown?: Partial<
-    Record<StaffExpenseCategoryEnum, TransactionBreakdown[]>
-  >;
 }
 
 export const months = [
@@ -69,21 +69,13 @@ export const mockTransactions: TransactionBreakdown[] = [
   },
 ];
 
-export const mockBreakdownData: Partial<
-  Record<string, TransactionBreakdown[]>
-> = {
-  [StaffExpenseCategoryEnum.Donation]: [...mockTransactions],
-};
-
 export const mockData: AllData = {
-  incomeBreakdown: {
-    ...mockBreakdownData,
-  },
   income: [
     {
       id: crypto.randomUUID(),
       description: 'Contributions',
       category: StaffExpenseCategoryEnum.Donation,
+      transactions: [...mockTransactions],
       monthly: [
         6770, 6090, 5770, 7355, 8035, 6575, 7556, 8239, 9799, 9729, 13020,
         19215,
