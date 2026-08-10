@@ -1,7 +1,10 @@
 import Document, { Head, Html, Main, NextScript } from 'next/document';
 import Script from 'next/script';
 import { ReactElement } from 'react';
-import { suppressedErrorPatterns } from 'src/lib/error';
+import {
+  reportedErrorsGlobalKey,
+  suppressedErrorPatterns,
+} from 'src/lib/error';
 import theme from 'src/theme';
 
 const dataDogConfig = {
@@ -37,8 +40,20 @@ export const beforeSendSource = `function (event, context) {
     return false;
   }
 
-  if (context && context.error && context.error.name === 'ApolloError') {
-    return false;
+  // Drop errors the link already reported
+  var reported = window[${JSON.stringify(reportedErrorsGlobalKey)}];
+  var error = context && context.error;
+  if (reported && error) {
+    if (error.networkError && reported.has(error.networkError)) {
+      return false;
+    }
+    var graphQLErrors = error.graphQLErrors;
+    var count = (graphQLErrors && graphQLErrors.length) || 0;
+    for (var index = 0; index < count; index++) {
+      if (reported.has(graphQLErrors[index])) {
+        return false;
+      }
+    }
   }
 
   return true;

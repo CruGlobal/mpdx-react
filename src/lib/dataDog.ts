@@ -1,6 +1,7 @@
 import { Operation } from '@apollo/client';
 import { NetworkError } from '@apollo/client/errors';
 import { GraphQLFormattedError } from 'graphql';
+import { reportedErrorsGlobalKey } from './error';
 
 interface DatadogUser {
   id: string;
@@ -17,7 +18,14 @@ declare global {
       addError: (error: unknown, context?: Record<string, unknown>) => void;
       onReady: (callback: () => void) => void;
     };
+    __reportedErrors?: WeakSet<object>;
   }
+}
+
+// Track reported errors so beforeSend can drop duplicates
+const reportedErrors = new WeakSet<object>();
+if (typeof window !== 'undefined') {
+  window[reportedErrorsGlobalKey] = reportedErrors;
 }
 
 /** Run the callback once the RUM agent is ready. */
@@ -91,6 +99,7 @@ export const reportGraphQLError = (
   error: GraphQLFormattedError,
   operation: Pick<Operation, 'operationName'>,
 ): void => {
+  reportedErrors.add(error);
   addDatadogError(
     new Error(`GraphQL error in ${operation.operationName}: ${error.message}`),
     {
@@ -106,6 +115,7 @@ export const reportNetworkError = (
   networkError: NonNullable<NetworkError>,
   operation: Pick<Operation, 'operationName'>,
 ): void => {
+  reportedErrors.add(networkError);
   addDatadogError(networkError, {
     mpdxErrorType: 'graphql_network',
     operationName: operation.operationName,

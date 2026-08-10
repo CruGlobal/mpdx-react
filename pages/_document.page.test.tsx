@@ -1,3 +1,6 @@
+import { ApolloError } from '@apollo/client';
+import { GraphQLError } from 'graphql';
+import { reportGraphQLError, reportNetworkError } from 'src/lib/dataDog';
 import { suppressedErrorPatterns } from 'src/lib/error';
 import { beforeSendSource, dataDogRumScript } from './_document.page';
 
@@ -9,12 +12,10 @@ interface RumEvent {
 }
 
 interface RumEventContext {
-  error?: {
-    name?: string;
-  };
+  error?: unknown;
 }
 
-const apolloContext: RumEventContext = { error: { name: 'ApolloError' } };
+const operation = { operationName: 'ContactDetails' };
 
 describe('dataDogRumScript', () => {
   it('is syntactically valid JavaScript', () => {
@@ -64,15 +65,47 @@ describe('beforeSendSource', () => {
     expect(beforeSend({ type: 'error', error: {} })).toBe(true);
   });
 
-  it('drops Apollo errors, which the error link already reported', () => {
-    expect(beforeSend(errorEvent('SAA Error'), apolloContext)).toBe(false);
+  it('drops GraphQL errors the error link already reported', () => {
+    const graphQLError = new GraphQLError('SAA Error');
+    reportGraphQLError(graphQLError, operation);
+
+    expect(
+      beforeSend(errorEvent('SAA Error'), {
+        error: new ApolloError({ graphQLErrors: [graphQLError] }),
+      }),
+    ).toBe(false);
   });
 
-  it('keeps non-Apollo errors and errors without a context', () => {
+  it('drops network errors the error link already reported', () => {
+    const networkError = new Error('Failed to fetch');
+    reportNetworkError(networkError, operation);
+
     expect(
-      beforeSend(errorEvent('Boom'), { error: { name: 'TypeError' } }),
+      beforeSend(errorEvent('Failed to fetch'), {
+        error: new ApolloError({ networkError }),
+      }),
+    ).toBe(false);
+  });
+
+  it('keeps GraphQL errors the error link did not report', () => {
+    expect(
+      beforeSend(errorEvent('Boom'), {
+        error: new ApolloError({ graphQLErrors: [new GraphQLError('Boom')] }),
+      }),
+    ).toBe(true);
+  });
+
+  it('keeps unreported errors and errors without a context', () => {
+    expect(
+      beforeSend(errorEvent('Boom'), { error: new TypeError('Boom') }),
     ).toBe(true);
     expect(beforeSend(errorEvent('Boom'), {})).toBe(true);
     expect(beforeSend(errorEvent('Boom'))).toBe(true);
+  });
+
+  it('keeps errors whose graphQLErrors is not an array', () => {
+    expect(
+      beforeSend(errorEvent('Boom'), { error: { graphQLErrors: 'Boom' } }),
+    ).toBe(true);
   });
 });

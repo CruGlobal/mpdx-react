@@ -229,4 +229,33 @@ describe('GraphQL error reporting', () => {
       });
     });
   });
+
+  describe('marking errors as reported', () => {
+    it('marks GraphQL errors', () => {
+      const graphQLError = { message: 'Boom' };
+
+      reportGraphQLError(graphQLError, operation);
+      expect(window.__reportedErrors?.has(graphQLError)).toBe(true);
+    });
+
+    it('marks network errors', () => {
+      const networkError = new Error('Failed to fetch');
+
+      reportNetworkError(networkError, operation);
+      expect(window.__reportedErrors?.has(networkError)).toBe(true);
+    });
+
+    it('marks errors even before the agent has loaded', () => {
+      window.DD_RUM = {
+        ...loadedRum(),
+        onReady: jest.fn(),
+      };
+      const graphQLError = { message: 'Boom' };
+
+      reportGraphQLError(graphQLError, operation);
+
+      expect(window.DD_RUM.addError).not.toHaveBeenCalled();
+      expect(window.__reportedErrors?.has(graphQLError)).toBe(true);
+    });
+  });
 });
