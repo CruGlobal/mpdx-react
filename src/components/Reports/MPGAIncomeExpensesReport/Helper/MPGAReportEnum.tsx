@@ -42,6 +42,7 @@ export interface Categories {
 }
 
 export interface Funds {
+  id: string;
   fundType: string;
   categories: Categories[];
   total: number;

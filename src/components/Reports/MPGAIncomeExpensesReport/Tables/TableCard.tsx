@@ -6,7 +6,6 @@ import {
   GridSortModel,
 } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
-import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useMonthHeaders } from 'src/hooks/useMonthHeaders';
 import { amountFormat, zeroAmountFormat } from 'src/lib/intlFormat';
@@ -18,7 +17,7 @@ import { CustomToolbar } from '../CustomToolbar/CustomToolbar';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { populateCardTableRows } from '../Helper/createRows';
 import { useMPGAIncomeExpenses } from '../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
-import { DataFields, TransactionBreakdown } from '../mockData';
+import { BreakdownTarget, DataFields } from '../mockData';
 import { StyledGrid } from '../styledComponents';
 import { TotalRow } from './TotalRow';
 
@@ -29,9 +28,6 @@ export type RenderCell = GridColDef<DataFields>['renderCell'];
 export interface TableCardProps {
   type: ReportTypeEnum;
   data: DataFields[];
-  breakdownData?: Partial<
-    Record<StaffExpenseCategoryEnum, TransactionBreakdown[]>
-  >;
   emptyPlaceholder: React.ReactElement;
   title: string;
 }
@@ -75,15 +71,6 @@ const GroupHeader: React.FC<{
   </Box>
 );
 
-export const CreateCardTableRows = (data: DataFields): DataFields => ({
-  id: data.id,
-  description: data.description,
-  category: data.category,
-  monthly: data.monthly,
-  average: data.average,
-  total: data.total,
-});
-
 export const descriptionWidth = 175;
 export const monthWidth = 65;
 export const summaryWidth = 98.5;
@@ -91,7 +78,6 @@ export const summaryWidth = 98.5;
 export const TableCard: React.FC<TableCardProps> = ({
   type,
   data,
-  breakdownData = {},
   title,
   emptyPlaceholder,
 }) => {
@@ -106,7 +92,7 @@ export const TableCard: React.FC<TableCardProps> = ({
   } = useMPGAIncomeExpenses();
 
   const [openBreakdownModal, setOpenBreakdownModal] =
-    useState<StaffExpenseCategoryEnum | null>(null);
+    useState<BreakdownTarget | null>(null);
 
   const monthColors = useMemo(
     () => ({
@@ -125,14 +111,9 @@ export const TableCard: React.FC<TableCardProps> = ({
   });
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
-  const cardTableRows = useMemo(() => {
-    return data.map((data) => CreateCardTableRows(data));
-  }, [data]);
-
   const { description, average, total } = useMemo(
-    () =>
-      populateCardTableRows(locale, t, breakdownData, setOpenBreakdownModal),
-    [locale, t, breakdownData, setOpenBreakdownModal],
+    () => populateCardTableRows(locale, t, setOpenBreakdownModal),
+    [locale, t, setOpenBreakdownModal],
   );
 
   const columns = useMemo<GridColDef<DataFields>[]>(() => {
@@ -270,7 +251,7 @@ export const TableCard: React.FC<TableCardProps> = ({
       >
         <Box>
           <StyledGrid
-            rows={cardTableRows}
+            rows={data}
             columns={columns}
             columnGroupingModel={columnGroupingModel}
             sx={{
@@ -302,8 +283,8 @@ export const TableCard: React.FC<TableCardProps> = ({
         <BreakdownModal
           open
           onClose={() => setOpenBreakdownModal(null)}
-          category={openBreakdownModal}
-          breakdownData={breakdownData}
+          category={openBreakdownModal.category}
+          transactions={openBreakdownModal.transactions}
         />
       )}
     </>

@@ -35,7 +35,6 @@ export const ScreenOnlyReport: React.FC = () => {
           <TableCard
             type={ReportTypeEnum.Income}
             data={data.income}
-            breakdownData={data.incomeBreakdown ?? {}}
             emptyPlaceholder={
               <EmptyTable
                 title={t('No Income data available')}
@@ -50,7 +49,6 @@ export const ScreenOnlyReport: React.FC = () => {
           <TableCard
             type={ReportTypeEnum.Expenses}
             data={data.expenses}
-            breakdownData={data.expenseBreakdown ?? {}}
             emptyPlaceholder={
               <EmptyTable
                 title={t('No Expenses data available')}

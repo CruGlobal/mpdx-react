@@ -174,16 +174,17 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
     [reportData],
   );
 
-  const { incomeData, expenseData, incomeBreakdown, expenseBreakdown } =
-    useFilteredFunds(transformedData, filters?.categories ?? null, t);
+  const { incomeData, expenseData } = useFilteredFunds(
+    transformedData,
+    filters?.categories ?? null,
+    t,
+  );
 
   const allData: AllData = useMemo(() => {
     if (!isYearToDate) {
       return {
         income: incomeData,
         expenses: expenseData,
-        incomeBreakdown,
-        expenseBreakdown,
       };
     }
 
@@ -200,18 +201,8 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
     return {
       income: addFutureData(incomeData),
       expenses: addFutureData(expenseData),
-      incomeBreakdown,
-      expenseBreakdown,
     };
-  }, [
-    incomeData,
-    expenseData,
-    incomeBreakdown,
-    expenseBreakdown,
-    isYearToDate,
-    monthLabels,
-    isFutureMonth,
-  ]);
+  }, [incomeData, expenseData, isYearToDate, monthLabels, isFutureMonth]);
 
   const {
     ministryTotal,
