@@ -120,12 +120,10 @@ export const BreakdownAccordion: React.FC<BreakdownAccordionProps> = ({
 
                 return (
                   <TableRow key={index}>
-                    <TableCell align="left">
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {dateFormat(DateTime.fromISO(transaction.date), locale)}
                     </TableCell>
-                    <TableCell align="left">
-                      {transaction.description || t('N/A')}
-                    </TableCell>
+                    <TableCell>{transaction.description || t('N/A')}</TableCell>
                     <TableCell
                       align="right"
                       sx={{
