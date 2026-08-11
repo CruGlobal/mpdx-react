@@ -57,7 +57,7 @@ export const AboutForm: React.FC<AboutFormProps> = ({
         <Typography variant="h5">{t('About this Form')}</Typography>
       </Box>
       <p style={{ lineHeight: 1.5 }}>
-        <Trans>
+        <Trans t={t}>
           A Minister&apos;s Housing Allowance Request is a form ministers
           complete to designate part of their compensation as tax-free housing
           allowance. To complete this form for the {{ nextYear }} tax year,
@@ -90,26 +90,26 @@ export const AboutForm: React.FC<AboutFormProps> = ({
           </StyledListItem>
         </List>
       </Box>
-      <Trans values={{ boardDateFormatted, availableDateFormatted }}>
-        <Box sx={{ mt: 2 }}>
-          The next time the board will approve MHA Requests is {after} and your
-          approved annual MHA amount will appear on your{' '}
+      <Box sx={{ mt: 2 }}>
+        <Trans t={t} values={{ after, approval }}>
+          The next time the board will approve MHA Requests is {{ after }} and
+          your approved annual MHA amount will appear on your{' '}
           <Link href={salaryLink} target="_blank">
             Salary Calculation Form
           </Link>
-          {approval} Once approved by the board, keep a copy for your tax
+          {{ approval }} Once approved by the board, keep a copy for your tax
           records.
-        </Box>
-        <Box sx={{ mt: 4 }}>
-          <OpenInNew
-            fontSize="medium"
-            sx={{ verticalAlign: 'middle', opacity: 0.56 }}
-          />{' '}
-          <Link component="button" type="button">
-            What expenses can I claim on my MHA?
-          </Link>
-        </Box>
-      </Trans>
+        </Trans>
+      </Box>
+      <Box sx={{ mt: 4 }}>
+        <OpenInNew
+          fontSize="medium"
+          sx={{ verticalAlign: 'middle', opacity: 0.56 }}
+        />{' '}
+        <Link component="button" type="button">
+          {t('What expenses can I claim on my MHA?')}
+        </Link>
+      </Box>
       <DirectionButtons
         formTitle={t('MHA Request')}
         handleNextStep={handleNextStep}

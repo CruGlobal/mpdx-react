@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Checkbox, FormControl, FormControlLabel, Grid } from '@mui/material';
-import { Trans } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
@@ -44,6 +44,7 @@ export const SuggestedContactStatus: React.FC<SuggestedContactStatusProps> = ({
     skip: !!contactStatus,
   });
 
+  const { t } = useTranslation();
   const { getLocalizedContactStatus } = useLocalizedConstants();
   const { getContactStatusesByPhase } = useContactPartnershipStatuses();
 
@@ -80,6 +81,7 @@ export const SuggestedContactStatus: React.FC<SuggestedContactStatusProps> = ({
           }
           label={
             <Trans
+              t={t}
               defaults="Change the contact's status to: <bold>{{status}}</bold>" // optional defaultValue
               values={{
                 status: getLocalizedContactStatus(suggestedContactStatus),

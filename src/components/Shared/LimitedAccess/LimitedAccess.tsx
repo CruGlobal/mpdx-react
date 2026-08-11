@@ -21,9 +21,7 @@ export const LimitedAccess: React.FC<LimitedAccessProps> = ({
     <Link
       href="mailto:support@mpdx.org"
       style={{ color: theme.palette.primary.main, fontWeight: 'bold' }}
-    >
-      support@mpdx.org
-    </Link>
+    />
   );
 
   const { title, content } = getLimitedText({

@@ -104,6 +104,7 @@ const Appeals: React.FC<AppealsProps> = ({ accountListId }) => {
         <Box display="flex" justifyContent="center">
           <Typography data-testid="TypographyShowing">
             <Trans
+              t={t}
               defaults="Showing <bold>{{value}}</bold> of <bold>{{total}}</bold>"
               shouldUnescape
               values={{

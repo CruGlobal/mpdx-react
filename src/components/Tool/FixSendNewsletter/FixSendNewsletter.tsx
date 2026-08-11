@@ -132,6 +132,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
               <strong>
                 {
                   <Trans
+                    t={t}
                     defaults="You have {{amount}} newsletter statuses to confirm."
                     values={{
                       amount: loading ? '...' : totalCount,
@@ -153,6 +154,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
               <Box>
                 <Typography>
                   <Trans
+                    t={t}
                     defaults="<i>Showing <bold>{{numberOfContacts}}</bold> of <bold>{{totalCount}}</bold></i>"
                     shouldUnescape
                     values={{
@@ -173,6 +175,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
                 >
                   {
                     <Trans
+                      t={t}
                       defaults="Confirm All ({{value}})"
                       values={{
                         value: numberOfContactsShowing,
