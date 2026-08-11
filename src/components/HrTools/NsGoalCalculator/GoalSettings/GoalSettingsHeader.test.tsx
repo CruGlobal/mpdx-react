@@ -51,8 +51,6 @@ const TestComponent: React.FC<TestComponentProps> = ({
         >
           <Form>
             <GoalSettingsHeader
-              accountListId="account-list-1"
-              calculationId="goal-calculation-1"
               primaryPerson={primaryPerson}
               spousePerson={spouse}
               mpdGoal={mpdGoal}

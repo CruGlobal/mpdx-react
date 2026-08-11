@@ -1,6 +1,8 @@
 import { TextFieldProps } from '@mui/material';
 import { useField } from 'formik';
 import { NewStaffGoalCalculationAttributesInput } from 'src/graphql/types.generated';
+import { useGoalSettingsPreview } from '../GoalSettingsPreviewContext';
+import { WarningSeverity } from '../goalSettingsWarnings';
 
 export type GoalSettingsFieldBaseProps = Omit<TextFieldProps, 'name'> & {
   /** Formik field key. Required here even though MUI's `name` is optional. */
@@ -16,6 +18,19 @@ export type GoalSettingsFieldBaseProps = Omit<TextFieldProps, 'name'> & {
    */
   showLabel?: boolean;
 };
+
+const outlineSx = (severity: WarningSeverity) => ({
+  '.MuiOutlinedInput-notchedOutline': {
+    borderColor: `${severity}.main`,
+  },
+  // Needs the ampersand: :hover applies to the root, not a descendant.
+  '&:hover .MuiOutlinedInput-notchedOutline': {
+    borderColor: `${severity}.dark`,
+  },
+  '.Mui-focused .MuiOutlinedInput-notchedOutline': {
+    borderColor: `${severity}.main`,
+  },
+});
 
 /**
  * Shared wiring for every Goal Settings field: Formik binding, consistent MUI
@@ -38,6 +53,7 @@ export const useGoalSettingsField = ({
   ...props
 }: GoalSettingsFieldBaseProps): TextFieldProps => {
   const [field, meta] = useField(name);
+  const preview = useGoalSettingsPreview();
 
   const accessibleName =
     typeof label === 'string'
@@ -47,6 +63,8 @@ export const useGoalSettingsField = ({
       : undefined;
 
   const showError = Boolean(meta.touched && meta.error);
+  // A validation error is actionable, so it wins over the advisory outline.
+  const severity = showError ? undefined : preview?.fieldSeverity(name);
 
   return {
     id: name,
@@ -58,6 +76,10 @@ export const useGoalSettingsField = ({
     ...field,
     error: showError,
     helperText: showError ? meta.error : undefined,
+    sx: {
+      ...(severity ? outlineSx(severity) : {}),
+      ...props.sx,
+    },
     inputProps: {
       ...(!showLabel && accessibleName ? { 'aria-label': accessibleName } : {}),
       ...inputProps,
