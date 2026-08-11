@@ -92,6 +92,7 @@ Note: there is a test account you can use. Get this from another developer if yo
 - `NEXT_PUBLIC_MEDIA_LOGO` - Application logo image url
 - `DATADOG_APP_ID` - Datadog tracking application ID.
 - `DATADOG_CLIENT_TOKEN` - Datadog tracking client token.
+- `DATADOG_API_KEY` - Datadog API key used to upload source maps during builds.
 - `DD_ENV` - Datadog environment.
 - `HELPJUICE_ORIGIN` - Helpjuice origin for documentation and user support (example: `https://www.helpducks.org`)
 - `HELPJUICE_KNOWLEDGE_BASE_URL` - Knowledge base page to make the Helpjuice "Visit Knowledge Base" page link to (example: `https://www.helpducks.org/mpdx`)

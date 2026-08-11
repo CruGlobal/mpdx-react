@@ -18,10 +18,10 @@ frontend:
           fi
         - echo "NEXTAUTH_URL=$NEXTAUTH_URL" >> .env
         # Download git-lfs and make it executable
-        - curl -L -o git-lfs.tar.gz https://github.com/git-lfs/git-lfs/releases/download/v3.6.1/git-lfs-linux-amd64-v3.6.1.tar.gz
+        - curl -L -o git-lfs.tar.gz https://github.com/git-lfs/git-lfs/releases/download/v3.7.1/git-lfs-linux-amd64-v3.7.1.tar.gz
         - mkdir -p ./bin
         - tar -xvzf git-lfs.tar.gz
-        - mv git-lfs-3.6.1/git-lfs ./bin/
+        - mv git-lfs-3.7.1/git-lfs ./bin/
         - chmod +x ./bin/git-lfs
         # Install git-lfs and pull down the files
         - export PATH=$PATH:$(pwd)/bin && git-lfs install
@@ -34,12 +34,15 @@ frontend:
         # Build graphql files
         - yarn gql
         # Extract translations
-        - timeout 1m yarn crowdin:download || echo "yarn crowdin:download timed out after 1 minute or failed with an error"
+        - 'timeout 1m yarn crowdin:download || echo "ERROR: yarn crowdin:download timed out after 1 minute or failed with an error"'
     build:
       commands:
         # Derive the commit from git rather than Amplify's AWS_COMMIT_ID, which is unreliable and
         # can be the literal string "HEAD" instead of a commit SHA on a branch's first build
-        - GIT_COMMIT_SHA=$(git rev-parse HEAD) yarn build:amplify
+        - export GIT_COMMIT_SHA=$(git rev-parse HEAD)
+        - yarn build:amplify
+        # Requires DATADOG_API_KEY to be set
+        - 'yarn datadog:sourcemaps || echo "ERROR: yarn datadog:sourcemaps failed with an error"'
   artifacts:
     baseDirectory: .next
     files:
