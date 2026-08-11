@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon';
+
 export enum QuarterHealthEnum {
   Green = 'green',
   Yellow = 'yellow',
@@ -11,10 +13,19 @@ export interface QuarterStatus {
   payroll: number;
 }
 
+export interface MonthlyPayroll {
+  month: string;
+  payroll: number;
+  additionalSalary: number;
+  reimbursement: number;
+  percentMaxPay: number;
+}
+
 export interface EmployeeData {
   user: User;
   spouse?: Spouse;
   quarters: QuarterStatus[];
+  monthlyPayrollHistory: MonthlyPayroll[];
 }
 
 export interface User {
@@ -217,6 +228,24 @@ const healthCycle: QuarterHealthEnum[] = [
   QuarterHealthEnum.Red,
 ];
 
+// Deterministic amounts over the last 12 months, excluding the current month
+const generateMonthlyPayrollHistory = (i: number): MonthlyPayroll[] => {
+  const currentMonth = DateTime.local().startOf('month');
+
+  return Array.from({ length: 12 }, (_, mi) => {
+    const month = currentMonth.minus({ months: 12 - mi });
+    const seed = i * 12 + mi;
+
+    return {
+      month: month.toFormat('yyyy-MM'),
+      payroll: 3000 + ((seed * 7919) % 2001),
+      additionalSalary: (seed * 4177) % 501,
+      reimbursement: (seed * 3313) % 301,
+      percentMaxPay: 60 + ((seed * 977) % 41),
+    };
+  });
+};
+
 export const mockStaffMembers: EmployeeData[] = firstNames.map(
   (firstName, i) => {
     const hasSpouse = i % 2 === 0;
@@ -244,6 +273,7 @@ export const mockStaffMembers: EmployeeData[] = firstNames.map(
         team,
       },
       quarters,
+      monthlyPayrollHistory: generateMonthlyPayrollHistory(i),
     };
 
     if (hasSpouse) {

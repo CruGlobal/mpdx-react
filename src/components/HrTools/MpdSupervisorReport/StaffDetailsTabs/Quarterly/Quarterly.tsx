@@ -2,19 +2,17 @@ import React from 'react';
 import { Chip, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { useTranslation } from 'react-i18next';
-import { useMpdSupervisorReport } from '../../MpdSupervisorReportContext';
 import { healthColor } from '../../helpers';
 import { QuarterStatus } from '../../mockData';
 
-export const StaffTabQuarterly: React.FC = () => {
+interface StaffTabQuarterlyProps {
+  quarters: QuarterStatus[];
+}
+
+export const StaffTabQuarterly: React.FC<StaffTabQuarterlyProps> = ({
+  quarters,
+}) => {
   const { t } = useTranslation();
-  const { selectedMember } = useMpdSupervisorReport();
-
-  if (!selectedMember) {
-    return null;
-  }
-
-  const { quarters } = selectedMember;
 
   return (
     <>

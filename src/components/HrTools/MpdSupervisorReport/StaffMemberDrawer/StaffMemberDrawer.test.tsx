@@ -34,6 +34,7 @@ const memberWithSpouse: EmployeeData = {
     { label: 'FQ2 26', health: QuarterHealthEnum.Red, payroll: 15000 },
     { label: 'FQ3 26', health: QuarterHealthEnum.Green, payroll: 15000 },
   ],
+  monthlyPayrollHistory: [],
 };
 
 const memberWithoutSpouse: EmployeeData = {
@@ -52,6 +53,7 @@ const memberWithoutSpouse: EmployeeData = {
     { label: 'FQ2 26', health: QuarterHealthEnum.Red, payroll: 15000 },
     { label: 'FQ3 26', health: QuarterHealthEnum.Red, payroll: 15000 },
   ],
+  monthlyPayrollHistory: [],
 };
 
 let openMemberFn: (member: EmployeeData) => void;
@@ -146,6 +148,37 @@ describe('StaffMemberDrawer', () => {
     expect(
       screen.getByRole('tab', { name: 'Monthly Summary' }),
     ).toHaveAttribute('aria-selected', 'false');
+  });
+
+  it('renders the payroll history passed to it on the Payroll tab', async () => {
+    renderDrawer();
+    openMember({
+      ...memberWithSpouse,
+      monthlyPayrollHistory: [
+        {
+          month: '2023-01',
+          payroll: 3000,
+          additionalSalary: 500,
+          reimbursement: 200,
+          percentMaxPay: 80,
+        },
+      ],
+    });
+
+    userEvent.click(screen.getByRole('tab', { name: 'Payroll' }));
+
+    const table = await within(screen.getByRole('tabpanel')).findByRole(
+      'table',
+    );
+    expect(table).toHaveTableStructure({
+      columnHeaders: [
+        'Month',
+        'Payroll',
+        'Reimbursement / Additional Salary',
+        '% Max Pay',
+      ],
+      cells: [['Jan 2023', '$3,000.00', '$700.00', '80.0%']],
+    });
   });
 
   it('closes the panel when the close button is clicked', async () => {
