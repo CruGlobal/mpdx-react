@@ -9,10 +9,12 @@ import * as yup from 'yup';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { defaultGoalCalculation } from '../NsGoalCalculatorTestWrapper';
+import { GoalSettingsPreviewProvider } from './GoalSettingsPreviewContext';
 import { MpdGoalPreview } from './MpdGoalPreview';
 import { PreviewNewStaffGoalCalculationMutation } from './NewStaffGoalCalculation.generated';
 import { calculationToFormValues } from './goalSettingsApiMapping';
 import { PREVIEW_DEBOUNCE_MS } from './useMpdGoalPreview';
+import { NewStaffGoalCalculation } from './useNewStaffGoalCalculation';
 
 /**
  * A schema that rejects a negative salary, so a field can be edited into an
@@ -26,6 +28,15 @@ const accountListId = 'account-list-1';
 const calculationId = 'goal-calculation-1';
 const onCall = jest.fn();
 
+const calculation: NewStaffGoalCalculation = {
+  ...defaultGoalCalculation,
+  calculations: {
+    ...defaultGoalCalculation.calculations,
+    salaryOverCap: false,
+    debtOverCap: false,
+  },
+};
+
 const previewGoalMock = (
   monthlyGoal: number,
 ): {
@@ -35,7 +46,7 @@ const previewGoalMock = (
     previewNewStaffGoalCalculation: {
       newStaffGoalCalculation: {
         id: calculationId,
-        calculations: { monthlyGoal },
+        calculations: { monthlyGoal, salaryOverCap: false, debtOverCap: false },
       },
     },
   },
@@ -67,20 +78,21 @@ const TestComponent: React.FC<TestComponentProps> = ({
           validationSchema={validationSchema}
           onSubmit={jest.fn()}
         >
-          <Form>
-            {/* Two fields so the coalescing test can edit across both. */}
-            <Field
-              name="annualRequestedSalary"
-              type="number"
-              aria-label="Salary"
-            />
-            <Field name="tenure" type="number" aria-label="Tenure" />
-            <MpdGoalPreview
-              accountListId={accountListIdProp}
-              calculationId={calculationId}
-              savedMonthlyGoal={savedMonthlyGoal}
-            />
-          </Form>
+          <GoalSettingsPreviewProvider
+            accountListId={accountListIdProp}
+            calculation={calculation}
+          >
+            <Form>
+              {/* Two fields so the coalescing test can edit across both. */}
+              <Field
+                name="annualRequestedSalary"
+                type="number"
+                aria-label="Salary"
+              />
+              <Field name="tenure" type="number" aria-label="Tenure" />
+              <MpdGoalPreview savedMonthlyGoal={savedMonthlyGoal} />
+            </Form>
+          </GoalSettingsPreviewProvider>
         </Formik>
       </GqlMockedProvider>
     </SnackbarProvider>
