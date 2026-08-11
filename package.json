@@ -28,7 +28,8 @@
     "crowdin:sort-translations": "node ./crowdin/sort-translations.js",
     "crowdin:download": "crowdin download translations && yarn crowdin:sort-translations",
     "crowdin:upload": "crowdin upload translations",
-    "lighthouse": "lhci autorun"
+    "lighthouse": "lhci autorun",
+    "safety-nets": "tsx --env-file-if-exists=.env.local scripts/safety-nets/cli.ts"
   },
   "dependencies": {
     "@apollo/client": "^3.6.9",
