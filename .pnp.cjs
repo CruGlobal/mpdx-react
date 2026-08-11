@@ -35,6 +35,7 @@ const RAW_RUNTIME_STATE =
           ["@apollo/utils.fetcher", "npm:3.0.0"],\
           ["@as-integrations/next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.2.0"],\
           ["@crowdin/cli", "npm:4.9.1"],\
+          ["@datadog/datadog-ci", "npm:5.22.0"],\
           ["@emotion/cache", "npm:11.11.0"],\
           ["@emotion/react", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.11.4"],\
           ["@emotion/styled", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.11.0"],\
@@ -3665,6 +3666,15 @@ const RAW_RUNTIME_STATE =
           ["fast-json-stable-stringify", "npm:2.1.0"],\
           ["graphql", "npm:16.9.0"],\
           ["seedrandom", "npm:3.0.5"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@datadog/datadog-ci", [\
+      ["npm:5.22.0", {\
+        "packageLocation": "./.yarn/cache/@datadog-datadog-ci-npm-5.22.0-86b8082850-780f76f973.zip/node_modules/@datadog/datadog-ci/",\
+        "packageDependencies": [\
+          ["@datadog/datadog-ci", "npm:5.22.0"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -18945,6 +18955,7 @@ const RAW_RUNTIME_STATE =
           ["@apollo/utils.fetcher", "npm:3.0.0"],\
           ["@as-integrations/next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.2.0"],\
           ["@crowdin/cli", "npm:4.9.1"],\
+          ["@datadog/datadog-ci", "npm:5.22.0"],\
           ["@emotion/cache", "npm:11.11.0"],\
           ["@emotion/react", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.11.4"],\
           ["@emotion/styled", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.11.0"],\
