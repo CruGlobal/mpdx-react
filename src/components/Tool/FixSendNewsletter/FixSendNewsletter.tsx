@@ -82,6 +82,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
         refetchQueries: [
           { query: InvalidNewsletterDocument, variables: { accountListId } },
         ],
+        awaitRefetchQueries: true,
       });
     } catch {
       enqueueSnackbar(t('Error updating contact {{name}}', { name }), {
@@ -96,30 +97,35 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
   };
 
   const handleBulkConfirm = async () => {
-    if (!data?.contacts.nodes.length) {
+    // contactUpdates is never pruned, so ignore contacts that are no longer shown
+    const visibleContactIds = new Set(contactsToFix?.map(({ id }) => id));
+    const attributes = contactUpdates
+      .filter(({ id }) => visibleContactIds.has(id))
+      .map(({ id, sendNewsletter }) => ({ id, sendNewsletter }));
+    if (!attributes.length) {
       return;
     }
-    await updateContacts({
-      variables: {
-        accountListId,
-        attributes: contactUpdates.map((contact) => ({
-          id: contact.id,
-          sendNewsletter: contact.sendNewsletter,
-        })),
-      },
-      refetchQueries: [
-        {
-          query: InvalidNewsletterDocument,
-          variables: { accountListId },
+    try {
+      await updateContacts({
+        variables: {
+          accountListId,
+          attributes,
         },
-      ],
-      onError: () => {
-        enqueueSnackbar(t('Error updating contacts'), {
-          variant: 'error',
-          autoHideDuration: 7000,
-        });
-      },
-    });
+        refetchQueries: [
+          {
+            query: InvalidNewsletterDocument,
+            variables: { accountListId },
+          },
+        ],
+        awaitRefetchQueries: true,
+      });
+    } catch {
+      enqueueSnackbar(t('Error updating contacts'), {
+        variant: 'error',
+        autoHideDuration: 7000,
+      });
+      return;
+    }
     enqueueSnackbar(t('Newsletter statuses updated successfully'), {
       variant: 'success',
     });

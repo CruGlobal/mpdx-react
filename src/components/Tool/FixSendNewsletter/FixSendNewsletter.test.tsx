@@ -381,6 +381,11 @@ describe('FixSendNewsletter', () => {
           autoHideDuration: 7000,
         });
       });
+
+      expect(mockEnqueue).not.toHaveBeenCalledWith(
+        'Newsletter statuses updated successfully',
+        { variant: 'success' },
+      );
     });
   });
 });
