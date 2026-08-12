@@ -292,22 +292,26 @@ describe('ConfirmationModal', () => {
     });
   });
 
-  describe('Geographic location checkbox', () => {
-    it('shows a checked, disabled checkbox naming the geographic location', async () => {
-      const { findByRole } = render(
+  describe('Geographic location info alert', () => {
+    it('shows an info alert naming the geographic location', async () => {
+      const { findByText } = render(
         <TestComponent geographicLocation={location} />,
       );
 
-      const checkbox = await findByRole('checkbox', { name: /Test Location/i });
-      expect(checkbox).toBeChecked();
-      expect(checkbox).toBeDisabled();
+      expect(
+        await findByText(
+          /Your geographic location will be updated to Test Location in your account settings\./i,
+        ),
+      ).toBeInTheDocument();
     });
 
-    it('does not show checkbox when no geographic location is given', async () => {
-      const { findByRole, queryByRole } = render(<TestComponent />);
+    it('does not show info alert when no geographic location is given', async () => {
+      const { findByRole, queryByText } = render(<TestComponent />);
 
       await findByRole('dialog');
-      expect(queryByRole('checkbox')).not.toBeInTheDocument();
+      expect(
+        queryByText(/Your geographic location will be updated/i),
+      ).not.toBeInTheDocument();
     });
   });
 

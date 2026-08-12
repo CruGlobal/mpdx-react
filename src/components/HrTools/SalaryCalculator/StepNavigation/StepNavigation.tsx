@@ -6,10 +6,9 @@ import { Box, Button, ButtonProps, Stack, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { SubmitModal } from 'src/components/HrTools/Shared/CalculationReports/SubmitModal/SubmitModal';
-import { useGetAccountPreferencesQuery } from 'src/components/Settings/preferences/GetAccountPreferences.generated';
-import { useUpdateAccountPreferencesMutation } from 'src/components/Settings/preferences/accordions/UpdateAccountPreferences.generated';
 import { useAutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useApplyGoalAndLocation } from 'src/hooks/useApplyGoalAndLocation';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { useDeleteSalaryCalculation } from '../Shared/useDeleteSalaryCalculation';
 import { useSubmitSalaryCalculationMutation } from './SubmitSalaryCalculation.generated';
@@ -94,23 +93,17 @@ export const ContinueButton: React.FC<ButtonProps> = (props) => {
 
 export const SubmitButton: React.FC<ButtonProps> = (props) => {
   const { t } = useTranslation();
-  const accountListId = useAccountListId();
   const { handleNextStep, calculation } = useSalaryCalculator();
   const [submit, { loading: submitting }] =
     useSubmitSalaryCalculationMutation();
   const [submitDialogOpen, setSubmitDialogOpen] = useState(false);
   const { title, content, subContent } = useSubmitDialogContent();
 
-  const { data } = useGetAccountPreferencesQuery({
-    variables: {
-      accountListId,
-    },
-  });
-  const [updateAccountPreferences] = useUpdateAccountPreferencesMutation();
-
-  const updateGeographicLocation =
-    !!calculation?.location &&
-    data?.accountList?.settings?.geographicLocation !== calculation?.location;
+  const {
+    applyMonthlyGoal,
+    geographicLocationChanged,
+    normalizedGeographicLocation,
+  } = useApplyGoalAndLocation(calculation?.location ?? null);
 
   const handleSubmit = async () => {
     if (calculation) {
@@ -121,24 +114,11 @@ export const SubmitButton: React.FC<ButtonProps> = (props) => {
           },
         },
       });
-
-      if (updateGeographicLocation) {
-        await updateAccountPreferences({
-          variables: {
-            input: {
-              id: accountListId,
-              attributes: {
-                id: accountListId,
-                settings: {
-                  geographicLocation: calculation?.location,
-                },
-              },
-            },
-          },
-        });
-      }
-
       handleNextStep();
+
+      if (geographicLocationChanged) {
+        applyMonthlyGoal();
+      }
     }
   };
 
@@ -167,9 +147,7 @@ export const SubmitButton: React.FC<ButtonProps> = (props) => {
           overrideSubContent={subContent}
           submitting={submitting}
           geographicLocation={
-            updateGeographicLocation
-              ? (calculation?.location ?? undefined)
-              : undefined
+            geographicLocationChanged ? normalizedGeographicLocation : undefined
           }
         />
       )}

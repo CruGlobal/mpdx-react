@@ -5,12 +5,12 @@ import { SnackbarProvider } from 'notistack';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { GetAccountPreferencesQuery } from 'src/components/Settings/preferences/GetAccountPreferences.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   GoalCalculationAge,
   NewStaffQuestionnaireMaritalStatusEnum,
 } from 'src/graphql/types.generated';
+import { AccountGeographicLocationQuery } from 'src/hooks/AccountGeographicLocation.generated';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
 import { MinistriesQuery } from './MinistryInformation/Ministries.generated';
@@ -84,13 +84,13 @@ export const NsoMpdQuestionnaireTestWrapper: React.FC<
           GoalCalculatorConstants: GoalCalculatorConstantsQuery;
           NewStaffQuestionnaire: NewStaffQuestionnaireQuery;
           Ministries: MinistriesQuery;
-          GetAccountPreferences: GetAccountPreferencesQuery;
+          AccountGeographicLocation: AccountGeographicLocationQuery;
         }>
           mocks={{
             GetUser: {
               user: { avatar: 'avatar.jpg', staffAccountId: '000123456' },
             },
-            GetAccountPreferences: {
+            AccountGeographicLocation: {
               accountList: {
                 settings: {
                   geographicLocation: accountGeographicLocation,
