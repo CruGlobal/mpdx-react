@@ -13,9 +13,12 @@ import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import FixSendNewsletter from './FixSendNewsletter';
 import {
+  emptyPerson,
   mockInvalidNewslettersResponse,
   mockMassActionsUpdateContactsData,
   mockUploadNewsletterChange,
+  mpdxSourcedAddress,
+  primaryPerson,
 } from './FixSendNewsletterMock';
 import { InvalidNewsletterQuery } from './InvalidNewsletter.generated';
 import { UpdateContactNewsletterMutation } from './UpdateNewsletter.generated';
@@ -206,6 +209,45 @@ describe('FixSendNewsletter', () => {
           },
         );
       });
+
+      expect(mockEnqueue).not.toHaveBeenCalledWith('Newsletter updated!', {
+        variant: 'success',
+      });
+    });
+
+    it('should re-enable the confirm button after an error', async () => {
+      const { getAllByRole, queryByRole } = render(
+        <TestComponent
+          mocks={{
+            InvalidNewsletter: {
+              ...mockInvalidNewslettersResponse.InvalidNewsletter,
+            },
+            UpdateContactNewsletter: () => {
+              throw new Error('Server Error');
+            },
+          }}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(queryByRole('progressbar')).not.toBeInTheDocument(),
+      );
+
+      userEvent.click(getAllByRole('button', { name: 'Confirm' })[0]);
+
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          `Error updating contact ${firstContactName}`,
+          {
+            variant: 'error',
+            autoHideDuration: 7000,
+          },
+        );
+      });
+
+      await waitFor(() =>
+        expect(getAllByRole('button', { name: 'Confirm' })[0]).toBeEnabled(),
+      );
     });
   });
 
@@ -288,7 +330,7 @@ describe('FixSendNewsletter', () => {
           onCall={mutationSpy}
         />,
       );
-      confirmAll(getAllByRole, getByRole, queryByRole, getByText);
+      await confirmAll(getAllByRole, getByRole, queryByRole, getByText);
 
       await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith(
@@ -305,16 +347,16 @@ describe('FixSendNewsletter', () => {
             accountListId: 'account-id',
             attributes: [
               {
-                id: 'contactId3',
-                sendNewsletter: SendNewsletterEnum.Email,
-              },
-              {
                 id: 'contactId1',
                 sendNewsletter: SendNewsletterEnum.Physical,
               },
               {
                 id: 'contactId2',
                 sendNewsletter: SendNewsletterEnum.Both,
+              },
+              {
+                id: 'contactId3',
+                sendNewsletter: SendNewsletterEnum.Email,
               },
             ],
           },
@@ -335,13 +377,88 @@ describe('FixSendNewsletter', () => {
           }}
         />,
       );
-      confirmAll(getAllByRole, getByRole, queryByRole, getByText);
+      await confirmAll(getAllByRole, getByRole, queryByRole, getByText);
       await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith(`Error updating contacts`, {
           variant: 'error',
           autoHideDuration: 7000,
         });
       });
+
+      expect(mockEnqueue).not.toHaveBeenCalledWith(
+        'Newsletter statuses updated successfully',
+        { variant: 'success' },
+      );
+    });
+
+    it('should not submit contacts that are no longer displayed', async () => {
+      const mutationSpy = jest.fn();
+      const { contacts } = mockInvalidNewslettersResponse.InvalidNewsletter;
+      const [firstContact, secondContact] = contacts.nodes;
+      const thirdContact = { ...contacts.nodes[2], primaryPerson: emptyPerson };
+      const fourthContact = {
+        ...secondContact,
+        id: 'contactId4',
+        name: 'Took, Peregrin',
+        primaryAddress: mpdxSourcedAddress,
+        primaryPerson,
+      };
+      let invalidNewsletterCalls = 0;
+
+      const { getAllByRole, getByRole, queryByRole, queryByText } = render(
+        <TestComponent
+          mocks={{
+            InvalidNewsletter: () => {
+              invalidNewsletterCalls += 1;
+              const nodes =
+                invalidNewsletterCalls === 1
+                  ? [firstContact, secondContact, thirdContact]
+                  : [secondContact, thirdContact, fourthContact];
+              return {
+                ...mockInvalidNewslettersResponse.InvalidNewsletter,
+                contacts: { ...contacts, nodes },
+              };
+            },
+            UpdateContactNewsletter:
+              mockUploadNewsletterChange.UpdateContactNewsletter,
+            MassActionsUpdateContacts:
+              mockMassActionsUpdateContactsData.MassActionsUpdateContacts,
+          }}
+          onCall={mutationSpy}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(queryByRole('progressbar')).not.toBeInTheDocument(),
+      );
+
+      // Confirming the first contact drops it from the list but not from contactUpdates
+      userEvent.click(getAllByRole('button', { name: 'Confirm' })[0]);
+      await waitFor(() =>
+        expect(queryByText(firstContact.name)).not.toBeInTheDocument(),
+      );
+
+      userEvent.click(getByRole('button', { name: 'Confirm All (3)' }));
+      userEvent.click(getByRole('button', { name: 'Yes' }));
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('MassActionsUpdateContacts'),
+      );
+
+      const { attributes } = mutationSpy.mock.calls
+        .map(([{ operation }]) => operation)
+        .find(
+          ({ operationName }) => operationName === 'MassActionsUpdateContacts',
+        ).variables;
+
+      expect(attributes).toEqual(
+        expect.arrayContaining([
+          { id: 'contactId2', sendNewsletter: SendNewsletterEnum.None },
+          { id: 'contactId3', sendNewsletter: SendNewsletterEnum.None },
+          { id: 'contactId4', sendNewsletter: SendNewsletterEnum.Both },
+        ]),
+      );
+      expect(attributes).toHaveLength(3);
     });
   });
 });

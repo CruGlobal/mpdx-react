@@ -3,7 +3,6 @@ import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
-import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import Contact from './Contact';
 import {
@@ -40,11 +39,8 @@ const TestComponent = ({
         <ContactPanelProvider>
           <Contact
             contact={contact}
-            contactUpdates={[
-              { id: '', sendNewsletter: null as unknown as SendNewsletterEnum },
-            ]}
             setContactUpdates={jest.fn()}
-            handleSingleConfirm={jest.fn()}
+            handleSingleConfirm={jest.fn().mockResolvedValue(undefined)}
           />
         </ContactPanelProvider>
       </ThemeProvider>
