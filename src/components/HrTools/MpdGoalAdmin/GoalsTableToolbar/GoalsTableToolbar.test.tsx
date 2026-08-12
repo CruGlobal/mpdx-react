@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@mui/material/styles';
-import { act, render } from '@testing-library/react';
+import { act, render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import theme from 'src/theme';
@@ -32,18 +32,23 @@ describe('GoalsTableToolbar', () => {
       getByRole('button', { name: 'Run and Send All' }),
     ).toBeInTheDocument();
     expect(
-      queryByRole('button', { name: 'Run & Send Selected' }),
+      queryByRole('button', { name: 'More Actions' }),
     ).not.toBeInTheDocument();
   });
 
-  it('shows selection actions once rows are selected', () => {
+  it('shows the More Actions menu once rows are selected', async () => {
     const { getByRole, getByText } = renderToolbar();
     act(() => ctx.toggleRow('row-1'));
     expect(getByText('1 selected')).toBeInTheDocument();
+
+    await userEvent.click(getByRole('button', { name: 'More Actions' }));
+    const menu = getByRole('menu');
     expect(
-      getByRole('button', { name: 'Run & Send Selected' }),
+      within(menu).getByRole('menuitem', { name: 'Run & Send Selected' }),
     ).toBeInTheDocument();
-    expect(getByRole('button', { name: 'More Actions' })).toBeInTheDocument();
+    expect(
+      within(menu).getByRole('menuitem', { name: 'Assign Coach' }),
+    ).toBeInTheDocument();
   });
 
   it('drops hidden rows from the selected count when a search filters them out', async () => {
@@ -56,7 +61,7 @@ describe('GoalsTableToolbar', () => {
     await userEvent.type(getByRole('textbox', { name: 'Search' }), 'carlos');
     expect(queryByText('1 selected')).not.toBeInTheDocument();
     expect(
-      queryByRole('button', { name: 'Run & Send Selected' }),
+      queryByRole('button', { name: 'More Actions' }),
     ).not.toBeInTheDocument();
     expect(getByRole('button', { name: 'Print All' })).toBeInTheDocument();
   });
@@ -75,14 +80,17 @@ describe('GoalsTableToolbar', () => {
     );
   });
 
-  it('confirms and sends only the selected rows', async () => {
+  it('confirms and sends only the selected rows from the menu', async () => {
     const { getByRole, findByText } = renderToolbar();
     // row-1 is Complete, row-7 is Incomplete → 1 sendable of 2.
     act(() => {
       ctx.toggleRow('row-1');
       ctx.toggleRow('row-7');
     });
-    await userEvent.click(getByRole('button', { name: 'Run & Send Selected' }));
+    await userEvent.click(getByRole('button', { name: 'More Actions' }));
+    await userEvent.click(
+      getByRole('menuitem', { name: 'Run & Send Selected' }),
+    );
 
     const dialog = getByRole('dialog');
     expect(dialog).toHaveTextContent(
@@ -95,5 +103,43 @@ describe('GoalsTableToolbar', () => {
     expect(
       await findByText('1 MPD Goals were run and sent.'),
     ).toBeInTheDocument();
+  });
+
+  it('assigns a coach to every selected row from the menu', async () => {
+    const { getByRole, findByRole, findByText } = renderToolbar();
+    // row-2 (Carlos & Michaela Everts) has no coach; row-1 has one already.
+    act(() => {
+      ctx.toggleRow('row-1');
+      ctx.toggleRow('row-2');
+    });
+    await userEvent.click(getByRole('button', { name: 'More Actions' }));
+    await userEvent.click(getByRole('menuitem', { name: 'Assign Coach' }));
+
+    const dialog = getByRole('dialog');
+    expect(dialog).toHaveTextContent('Assign Coach for 2 Selected Staff');
+
+    userEvent.click(within(dialog).getByRole('combobox', { name: 'Coach' }));
+    userEvent.click(await findByRole('option', { name: 'Tom Harris' }));
+    await userEvent.click(getByRole('button', { name: 'Save' }));
+
+    expect(
+      await findByText('Coach assigned successfully.'),
+    ).toBeInTheDocument();
+    // Both rows now carry the coach, and the selection is cleared.
+    const rows = ctx.cohorts[0].rows;
+    expect(rows.find((row) => row.id === 'row-1')?.coach).toBe('Tom Harris');
+    expect(rows.find((row) => row.id === 'row-2')?.coach).toBe('Tom Harris');
+    expect(ctx.selectedRows).toHaveLength(0);
+  });
+
+  it("uses the staff member's name in the assign-coach title for a single selection", async () => {
+    const { getByRole } = renderToolbar();
+    act(() => ctx.toggleRow('row-2'));
+    await userEvent.click(getByRole('button', { name: 'More Actions' }));
+    await userEvent.click(getByRole('menuitem', { name: 'Assign Coach' }));
+
+    expect(getByRole('dialog')).toHaveTextContent(
+      'Assign Coach for Carlos & Michaela Everts',
+    );
   });
 });

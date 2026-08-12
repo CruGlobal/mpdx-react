@@ -1,27 +1,40 @@
 import React, { useState } from 'react';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import SearchIcon from '@mui/icons-material/Search';
 import {
   Box,
   Button,
   InputAdornment,
+  Menu,
+  MenuItem,
   Stack,
   TextField,
   Typography,
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { AssignCoachModal } from '../AssignCoachModal/AssignCoachModal';
 import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import { RunAndSendModal } from '../RunAndSendModal/RunAndSendModal';
+import { mockCoaches } from '../mockData';
 import { StaffGoalRow } from '../mpdGoalAdminHelpers';
 
 export const GoalsTableToolbar: React.FC = () => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const { search, setSearch, filteredRows, selectedRows, clearSelection } =
-    useMpdGoalAdmin();
+  const {
+    search,
+    setSearch,
+    filteredRows,
+    selectedRows,
+    clearSelection,
+    assignCoach,
+  } = useMpdGoalAdmin();
   const selectedCount = selectedRows.length;
   const hasSelection = selectedCount > 0;
 
+  const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement | null>(null);
+  const [assignCoachOpen, setAssignCoachOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   // Kept separate from `modalOpen` so the target rows/title persist through the
   // dialog's close transition instead of flashing empty.
@@ -42,6 +55,21 @@ export const GoalsTableToolbar: React.FC = () => {
     );
     clearSelection();
     setModalOpen(false);
+  };
+
+  // TODO(MPDX-9914): call the assignCoach mutation instead of the mock
+  // context update once the backend field is wired up.
+  const handleAssignCoach = (coachId: string) => {
+    const coach = mockCoaches.find((option) => option.id === coachId);
+    if (!coach) {
+      return;
+    }
+    assignCoach(
+      selectedRows.map((row) => row.id),
+      coach.name,
+    );
+    enqueueSnackbar(t('Coach assigned successfully.'), { variant: 'success' });
+    clearSelection();
   };
 
   return (
@@ -74,22 +102,40 @@ export const GoalsTableToolbar: React.FC = () => {
             <Typography variant="body2" color="text.secondary">
               {t('{{count}} selected', { count: selectedCount })}
             </Typography>
-            {/* Disabled until wired up so assistive tech announces the
-                inert state instead of a dead control (MPDX-9696). */}
-            <Button variant="outlined" disabled>
-              {t('More Actions')}
-            </Button>
             <Button
               variant="contained"
-              onClick={() =>
-                openRunAndSend(
-                  t('Run and Send Selected Complete MPD Goals?'),
-                  selectedRows,
-                )
-              }
+              endIcon={<ArrowDropDownIcon />}
+              onClick={(event) => setMenuAnchorEl(event.currentTarget)}
+              aria-haspopup="menu"
+              aria-expanded={menuAnchorEl ? 'true' : undefined}
             >
-              {t('Run & Send Selected')}
+              {t('More Actions')}
             </Button>
+            <Menu
+              anchorEl={menuAnchorEl}
+              open={Boolean(menuAnchorEl)}
+              onClose={() => setMenuAnchorEl(null)}
+            >
+              <MenuItem
+                onClick={() => {
+                  setMenuAnchorEl(null);
+                  openRunAndSend(
+                    t('Run and Send Selected Complete MPD Goals?'),
+                    selectedRows,
+                  );
+                }}
+              >
+                {t('Run & Send Selected')}
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  setMenuAnchorEl(null);
+                  setAssignCoachOpen(true);
+                }}
+              >
+                {t('Assign Coach')}
+              </MenuItem>
+            </Menu>
           </>
         ) : (
           <>
@@ -120,6 +166,18 @@ export const GoalsTableToolbar: React.FC = () => {
         onClose={() => setModalOpen(false)}
         onConfirm={handleConfirm}
       />
+      {assignCoachOpen && (
+        <AssignCoachModal
+          subjectName={
+            selectedCount === 1
+              ? selectedRows[0].name
+              : t('{{count}} Selected Staff', { count: selectedCount })
+          }
+          coaches={mockCoaches}
+          handleAssignCoach={handleAssignCoach}
+          handleClose={() => setAssignCoachOpen(false)}
+        />
+      )}
     </Stack>
   );
 };

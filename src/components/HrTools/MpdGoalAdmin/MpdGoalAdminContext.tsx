@@ -36,6 +36,8 @@ export interface MpdGoalAdminContextValue {
   clearSelection: () => void;
   /** Saves the training cost figures for a cohort and marks them as entered. */
   saveTrainingCosts: (cohortId: string, costs: TrainingCosts) => void;
+  /** Assigns one coach to every row in `rowIds`, across all cohorts. */
+  assignCoach: (rowIds: string[], coachName: string) => void;
 }
 
 const MpdGoalAdminContext = createContext<MpdGoalAdminContextValue | undefined>(
@@ -91,6 +93,18 @@ export const MpdGoalAdminProvider: React.FC<{
     },
     [],
   );
+
+  const assignCoach = useCallback((rowIds: string[], coachName: string) => {
+    const idSet = new Set(rowIds);
+    setCohorts((prev) =>
+      prev.map((cohort) => ({
+        ...cohort,
+        rows: cohort.rows.map((row) =>
+          idSet.has(row.id) ? { ...row, coach: coachName } : row,
+        ),
+      })),
+    );
+  }, []);
 
   // Switching cohorts clears the selection: selecting staff across different
   // training cohorts is meaningless, and stale ids would otherwise linger in
@@ -148,6 +162,7 @@ export const MpdGoalAdminProvider: React.FC<{
       toggleRows,
       clearSelection,
       saveTrainingCosts,
+      assignCoach,
     }),
     [
       activeTab,
@@ -163,6 +178,7 @@ export const MpdGoalAdminProvider: React.FC<{
       toggleRows,
       clearSelection,
       saveTrainingCosts,
+      assignCoach,
     ],
   );
 
