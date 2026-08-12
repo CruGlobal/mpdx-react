@@ -68,10 +68,9 @@ export const TagsSummary: React.FC<TagsSummaryProps> = ({
       />
       <ContentContainer style={{ padding: noTags ? undefined : 0 }}>
         {noTags &&
-          t('No tags added in last 6 {{period}}.', {
-            period:
-              period === CoachingPeriodEnum.Weekly ? t('weeks') : t('months'),
-          })}
+          (period === CoachingPeriodEnum.Weekly
+            ? t('No tags added in last 6 weeks.')
+            : t('No tags added in last 6 months.'))}
         {!noTags && loading && <MultilineSkeleton lines={4} />}
         {!noTags && !loading && (
           <TableContainer sx={{ minWidth: 600 }}>

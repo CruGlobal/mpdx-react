@@ -20,6 +20,7 @@ export const SalaryCapCard: React.FC = () => {
   const calcs = calculation?.calculations;
   const spouseCalcs = calculation?.spouseCalculations;
   const hasSpouse = !!hcmSpouse && !!spouseCalcs;
+  const city = calculation?.location ?? t('None of these');
 
   return (
     <StepCard>
@@ -60,9 +61,7 @@ export const SalaryCapCard: React.FC = () => {
               <TableCell scope="row">
                 3. {t('Geographic Adjustment')}
                 <span className="explanation">
-                  {t('City: {{city}}', {
-                    city: calculation?.location ?? t('None of these'),
-                  })}
+                  {t('City: {{city}}', { city })}
                   <br />
                   {t('Line 2 × Geographic Cost of Living Factor')}
                 </span>
