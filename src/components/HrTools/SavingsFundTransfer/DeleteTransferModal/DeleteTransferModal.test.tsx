@@ -30,7 +30,13 @@ const mockTransfer = {
   status: StatusEnum.Ongoing,
 };
 
-const TestComponent: React.FC = () => {
+interface TestComponentProps {
+  type?: ActionTypeEnum;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({
+  type = ActionTypeEnum.Stop,
+}) => {
   return (
     <SnackbarProvider>
       <ThemeProvider theme={theme}>
@@ -39,7 +45,7 @@ const TestComponent: React.FC = () => {
             <DeleteTransferModal
               handleClose={handleClose}
               transfer={mockTransfer}
-              type={ActionTypeEnum.Stop}
+              type={type}
             />
           </GqlMockedProvider>
         </LocalizationProvider>
@@ -54,7 +60,18 @@ describe('DeleteTransferModal', () => {
 
     expect(getByText('Stop Transfer')).toBeInTheDocument();
     expect(
-      getByText(/are you sure you want to stop this recurring transfer?/i),
+      getByText('Are you sure you want to stop this recurring transfer?'),
+    ).toBeInTheDocument();
+  });
+
+  it('renders the cancel wording when the type is cancel', () => {
+    const { getByText } = render(
+      <TestComponent type={ActionTypeEnum.Cancel} />,
+    );
+
+    expect(getByText('Cancel Transfer')).toBeInTheDocument();
+    expect(
+      getByText('Are you sure you want to cancel this recurring transfer?'),
     ).toBeInTheDocument();
   });
 

@@ -74,6 +74,15 @@ module.exports = {
       'error',
       { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
     ],
+    'no-restricted-syntax': [
+      'error',
+      {
+        selector:
+          "CallExpression:matches([callee.name='t'], [callee.property.name='t']) CallExpression:matches([callee.name='t'], [callee.property.name='t'])",
+        message:
+          'Do not nest t() inside t(). Prefer a separate full sentence per variant; if the value is dynamic, assign the inner t() to a variable first.',
+      },
+    ],
     'react/jsx-no-useless-fragment': 'error',
     'react/prop-types': 'off',
     'react/react-in-jsx-scope': 'off',

@@ -54,9 +54,9 @@ export const DeleteTransferModal: React.FC<DeleteTransferModalProps> = ({
     >
       <DialogContent dividers>
         <DialogContentText component={'div'}>
-          {t('Are you sure you want to {{action}} this recurring transfer?', {
-            action: type === ActionTypeEnum.Stop ? t('stop') : t('cancel'),
-          })}
+          {type === ActionTypeEnum.Stop
+            ? t('Are you sure you want to stop this recurring transfer?')
+            : t('Are you sure you want to cancel this recurring transfer?')}
         </DialogContentText>
       </DialogContent>
       <DialogActions>
