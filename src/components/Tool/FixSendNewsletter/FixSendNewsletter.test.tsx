@@ -309,16 +309,16 @@ describe('FixSendNewsletter', () => {
             accountListId: 'account-id',
             attributes: [
               {
-                id: 'contactId3',
-                sendNewsletter: SendNewsletterEnum.Email,
-              },
-              {
                 id: 'contactId1',
                 sendNewsletter: SendNewsletterEnum.Physical,
               },
               {
                 id: 'contactId2',
                 sendNewsletter: SendNewsletterEnum.Both,
+              },
+              {
+                id: 'contactId3',
+                sendNewsletter: SendNewsletterEnum.Email,
               },
             ],
           },

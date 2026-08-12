@@ -77,7 +77,6 @@ const useStyles = makeStyles()(() => ({
 
 interface Props {
   contact: InvalidNewsletterContactFragment;
-  contactUpdates: ContactUpdateData[];
   setContactUpdates: React.Dispatch<React.SetStateAction<ContactUpdateData[]>>;
   handleSingleConfirm: (
     id: string,
@@ -88,7 +87,6 @@ interface Props {
 
 const Contact = ({
   contact,
-  contactUpdates,
   setContactUpdates,
   handleSingleConfirm,
 }: Props): ReactElement => {
@@ -123,20 +121,15 @@ const Contact = ({
 
   const updateNewsletterValue = (sendNewsletter: SendNewsletterEnum): void => {
     setNewsletter(sendNewsletter);
-    const existingItem = contactUpdates.find(
-      (contactData) => contactData.id === contact.id,
-    );
-    if (existingItem) {
-      existingItem.sendNewsletter = sendNewsletter;
-    } else {
-      setContactUpdates([
-        ...contactUpdates,
-        {
-          id: contact.id,
-          sendNewsletter: sendNewsletter,
-        },
-      ]);
-    }
+    setContactUpdates((previousUpdates) => {
+      if (previousUpdates.some((update) => update.id === contact.id)) {
+        return previousUpdates.map((update) =>
+          update.id === contact.id ? { ...update, sendNewsletter } : update,
+        );
+      }
+
+      return [...previousUpdates, { id: contact.id, sendNewsletter }];
+    });
   };
 
   const handleChange = (event): void => {

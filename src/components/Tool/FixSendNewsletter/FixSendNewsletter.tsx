@@ -189,7 +189,6 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
                 contact={contact}
                 key={contact.id}
                 handleSingleConfirm={handleSingleConfirm}
-                contactUpdates={contactUpdates}
                 setContactUpdates={setContactUpdates}
               />
             ))}
