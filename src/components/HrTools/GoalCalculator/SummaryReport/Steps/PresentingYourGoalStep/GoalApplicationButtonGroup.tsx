@@ -18,6 +18,8 @@ export const GoalApplicationButtonGroup: React.FC = () => {
     constants,
   } = useGoalCalculator();
   const monthlyGoal = Math.round(overallTotal);
+  const geographicLocation =
+    goalCalculationResult.data?.goalCalculation?.geographicLocation ?? null;
   const [updateAccountPreferences, { loading }] =
     useUpdateAccountPreferencesMutation();
   const accountListId = useAccountListId() || '';
@@ -30,7 +32,10 @@ export const GoalApplicationButtonGroup: React.FC = () => {
           id: accountListId,
           attributes: {
             id: accountListId,
-            settings: { monthlyGoal },
+            settings: {
+              monthlyGoal,
+              ...(geographicLocation && { geographicLocation }),
+            },
           },
         },
       },
