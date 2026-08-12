@@ -40,7 +40,7 @@ const TestComponent = ({
           <Contact
             contact={contact}
             setContactUpdates={jest.fn()}
-            handleSingleConfirm={jest.fn()}
+            handleSingleConfirm={jest.fn().mockResolvedValue(undefined)}
           />
         </ContactPanelProvider>
       </ThemeProvider>

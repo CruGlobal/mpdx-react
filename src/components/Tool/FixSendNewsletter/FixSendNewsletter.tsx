@@ -82,7 +82,6 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
         refetchQueries: [
           { query: InvalidNewsletterDocument, variables: { accountListId } },
         ],
-        awaitRefetchQueries: true,
       });
     } catch {
       enqueueSnackbar(t('Error updating contact {{name}}', { name }), {
@@ -117,7 +116,6 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
             variables: { accountListId },
           },
         ],
-        awaitRefetchQueries: true,
       });
     } catch {
       enqueueSnackbar(t('Error updating contacts'), {
@@ -155,7 +153,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
             </Typography>
           </Box>
         </Grid>
-        {!loading && data && !!numberOfContactsShowing ? (
+        {data && !!numberOfContactsShowing ? (
           <>
             <StickyButtonHeaderBox mb={0}>
               <Box>
@@ -199,7 +197,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
               />
             ))}
           </>
-        ) : loading && !data ? (
+        ) : loading ? (
           <LoadingSpinner firstLoad={true} data-testid="LoadingSpinner" />
         ) : (
           <NoData tool="fixSendNewsletter" />
