@@ -64,7 +64,7 @@ describe('run', () => {
         '  rum_thresholds = {',
         '    error_impact = { warning = 4, critical = 6, window = "15m" }  # Calculated from 787/2689 buckets (71% empty)',
         '    frustration  = { warning = 18, critical = 30, window = "1h" } # Calculated from 787/2689 buckets (71% empty)',
-        '    failed_api   = { warning = 9, critical = 15, window = "30m" } # Calculated from 787/2689 buckets (71% empty)',
+        '    failed_api   = { warning = 4, critical = 6, window = "30m" }  # Calculated from 787/2689 buckets (71% empty)',
         '    perf         = { warning = 6012000000, critical = 6098400000, window = "2h" }',
         '  }',
         '',
@@ -115,7 +115,7 @@ describe('run', () => {
       'frustration: computed critical 1500 exceeds maxCritical 200',
     );
     expect(stderrText()).toContain(
-      'failedApi: computed critical 2000 exceeds maxCritical 60',
+      'failedApi: computed critical 2000 exceeds maxCritical 20',
     );
     expect(stderrText()).toContain('perf: HTTP-Code: 403');
     expect(process.exitCode).toBe(2);

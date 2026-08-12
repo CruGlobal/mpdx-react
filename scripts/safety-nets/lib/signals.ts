@@ -56,12 +56,12 @@ export const SIGNALS: Signal[] = [
   {
     key: 'failedApi',
     searchQuery: `${BASE_SCOPE} ((@type:error @context.mpdxErrorType:(graphql OR graphql_network)) OR (@type:resource @resource.status_code:>=500))`,
-    rollup: { aggregation: 'count' },
+    rollup: { aggregation: 'cardinality', facet: '@session.id' },
     monitorWindow: '30m',
     thresholdConfig: {
       multiplier: 2,
-      minCritical: 15,
-      maxCritical: 60,
+      minCritical: 6,
+      maxCritical: 20,
     },
   },
   {
