@@ -155,7 +155,11 @@ const Contact = ({
             variant="contained"
             onClick={() => {
               setUpdatingSingle(true);
-              handleSingleConfirm(contact?.id, contact?.name, newsletter);
+              handleSingleConfirm(
+                contact?.id,
+                contact?.name,
+                newsletter,
+              ).finally(() => setUpdatingSingle(false));
             }}
             sx={{ marginTop: '9px' }}
             disabled={updatingSingle}

@@ -211,6 +211,41 @@ describe('FixSendNewsletter', () => {
         variant: 'success',
       });
     });
+
+    it('should re-enable the confirm button after an error', async () => {
+      const { getAllByRole, queryByRole } = render(
+        <TestComponent
+          mocks={{
+            InvalidNewsletter: {
+              ...mockInvalidNewslettersResponse.InvalidNewsletter,
+            },
+            UpdateContactNewsletter: () => {
+              throw new Error('Server Error');
+            },
+          }}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(queryByRole('progressbar')).not.toBeInTheDocument(),
+      );
+
+      userEvent.click(getAllByRole('button', { name: 'Confirm' })[0]);
+
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          `Error updating contact ${firstContactName}`,
+          {
+            variant: 'error',
+            autoHideDuration: 7000,
+          },
+        );
+      });
+
+      await waitFor(() =>
+        expect(getAllByRole('button', { name: 'Confirm' })[0]).toBeEnabled(),
+      );
+    });
   });
 
   describe('bulk confirm', () => {
