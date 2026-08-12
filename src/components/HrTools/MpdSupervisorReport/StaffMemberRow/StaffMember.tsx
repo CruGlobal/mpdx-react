@@ -42,14 +42,12 @@ const GridItem = styled(Grid)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(2),
-  width: '100%',
 }));
 
 const GridQuarter = styled(Grid)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(3),
-  width: '100%',
   flexWrap: 'wrap',
   justifyContent: 'flex-end',
 }));
@@ -149,7 +147,7 @@ const FiscalYearQuartersBase: React.FC<FiscalYearQuartersProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
   return (
-    <Stack direction="row" spacing={2} sx={{ mr: 1 }}>
+    <Stack direction="row" spacing={2}>
       {quarters.map((quarter) => {
         const amount = currencyFormat(quarter.payroll, 'USD', locale);
         return (
