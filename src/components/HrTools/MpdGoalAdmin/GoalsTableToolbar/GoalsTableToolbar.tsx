@@ -141,7 +141,9 @@ export const GoalsTableToolbar: React.FC = () => {
           </MenuItem>
         </Menu>
         <Button
-          variant="contained"
+          // Only one contained CTA at a time: while rows are selected, the
+          // selection-scoped menu takes visual priority over this button.
+          variant={hasSelection ? 'outlined' : 'contained'}
           onClick={() =>
             openRunAndSend(
               t('Run and Send All Complete MPD Goals?'),
