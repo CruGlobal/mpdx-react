@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@mui/material/styles';
-import { act, render } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import theme from 'src/theme';
 import { MpdGoalAdminProvider, useMpdGoalAdmin } from '../MpdGoalAdminContext';
@@ -71,9 +71,13 @@ describe('GoalsTable', () => {
     userEvent.click(await findByRole('option', { name: 'Tom Harris' }));
     await userEvent.click(getByRole('button', { name: 'Save' }));
 
-    expect(
-      ctx.cohorts[0].rows.find((row) => row.id === 'row-2')?.coach,
-    ).toBe('Tom Harris');
+    // Formik's submit resolves asynchronously, so wait for the context update
+    // rather than asserting synchronously after the click.
+    await waitFor(() =>
+      expect(ctx.cohorts[0].rows.find((row) => row.id === 'row-2')?.coach).toBe(
+        'Tom Harris',
+      ),
+    );
   });
 
   it('renders a View/Edit action and a menu button for each row on the page', () => {
