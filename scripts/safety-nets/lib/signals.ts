@@ -2,7 +2,7 @@ const BASE_SCOPE = 'env:production service:mpdx-web-react @session.type:user';
 
 // Quote-free: cru-terraform embeds this in a `rum("...")` query. Keep in sync.
 export const NOISE_EXCLUSION_CLAUSE =
-  '-@error.message:(*ydration* OR *server-rendered* OR *Script\\ error* OR *ResizeObserver*)';
+  '-@error.message:(*ydration* OR *server-rendered* OR *Script\\ error* OR *ResizeObserver*) -@error.type:AbortError';
 
 export type SignalKey = 'errorImpact' | 'frustration' | 'failedApi' | 'perf';
 
