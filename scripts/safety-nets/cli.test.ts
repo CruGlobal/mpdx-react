@@ -62,7 +62,7 @@ describe('run', () => {
       [
         '  # Regenerate by running `yarn safety-nets` in mpdx-react',
         '  rum_thresholds = {',
-        '    error_impact = { warning = 4, critical = 6, window = "15m" } # Calculated from 787/2689 buckets (71% empty)',
+        '    error_impact = { warning = 4, critical = 6, window = "15m" }  # Calculated from 787/2689 buckets (71% empty)',
         '    frustration  = { warning = 18, critical = 30, window = "1h" } # Calculated from 787/2689 buckets (71% empty)',
         '    failed_api   = { warning = 9, critical = 15, window = "30m" } # Calculated from 787/2689 buckets (71% empty)',
         '    perf         = { warning = 6012000000, critical = 6098400000, window = "2h" }',

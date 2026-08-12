@@ -28,13 +28,21 @@ const renderThresholdsHcl = (rows: ThresholdRow[]): string => {
     ({ key, warning, critical, window }) =>
       `    ${key.padEnd(keyWidth)} = { warning = ${warning}, critical = ${critical}, window = "${window}" }`,
   );
+  const maxAttributeWidth = attributes.reduce(
+    (max, line, index) =>
+      rows[index].zeroFilled ? Math.max(max, line.length) : max,
+    0,
+  );
 
   return [
     `  # Regenerate by running \`yarn safety-nets\` in mpdx-react`,
     `  rum_thresholds = {`,
     ...attributes.map((line, index) =>
-      rows[index].zeroFilled ? `${line} ${renderCoverage(rows[index])}` : line,
+      rows[index].zeroFilled
+        ? `${line} ${' '.repeat(maxAttributeWidth - line.length)}${renderCoverage(rows[index])}`
+        : line,
     ),
+
     `  }`,
     '',
   ].join('\n');
