@@ -82,6 +82,13 @@ module.exports = {
         message:
           'Do not nest t() inside t(). Prefer a separate full sentence per variant; if the value is dynamic, assign the inner t() to a variable first.',
       },
+      // `yarn extract` can only collect a key it can resolve statically.
+      {
+        selector:
+          "CallExpression:matches([callee.name='t'], [callee.property.name='t']) > .arguments:first-child:not(Literal, TemplateLiteral[expressions.length=0], BinaryExpression:not(:has(:not(Literal, BinaryExpression))))",
+        message:
+          "Translation keys must be statically resolvable so `yarn extract` can find them. For dynamic values, use interpolation (e.g. `t('Name: {{name}}', { name })`). For dynamic keys, use separate `t()` calls.",
+      },
     ],
     'react/jsx-no-useless-fragment': 'error',
     'react/prop-types': 'off',
