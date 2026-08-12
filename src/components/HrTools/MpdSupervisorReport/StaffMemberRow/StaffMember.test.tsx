@@ -23,6 +23,7 @@ const member: EmployeeData = {
     { label: 'FQ2 26', health: QuarterHealthEnum.Red, payroll: 17000 },
     { label: 'FQ3 26', health: QuarterHealthEnum.Green, payroll: 18000 },
   ],
+  monthlyPayrollHistory: [],
 };
 
 const renderRow = (onClick = jest.fn()) => {

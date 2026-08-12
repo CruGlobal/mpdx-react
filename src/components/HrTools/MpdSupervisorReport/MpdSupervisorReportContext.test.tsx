@@ -30,6 +30,7 @@ const sampleMember: EmployeeData = {
     { label: 'FQ2 26', health: QuarterHealthEnum.Green, payroll: 15000 },
     { label: 'FQ3 26', health: QuarterHealthEnum.Green, payroll: 15000 },
   ],
+  monthlyPayrollHistory: [],
 };
 
 interface ConsumerResult {

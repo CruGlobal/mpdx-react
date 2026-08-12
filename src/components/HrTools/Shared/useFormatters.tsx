@@ -10,11 +10,15 @@ export const useFormatters = () => {
       showTrailingZeros: true,
     });
 
-  const formatFraction = (value: number | null | undefined) =>
-    percentageFormat(value ?? 0, locale, { fractionDigits: 2 });
+  const formatFraction = (
+    value: number | null | undefined,
+    fractionDigits = 2,
+  ) => percentageFormat(value ?? 0, locale, { fractionDigits });
 
-  const formatPercentage = (value: number | null | undefined) =>
-    formatFraction((value ?? 0) / 100);
+  const formatPercentage = (
+    value: number | null | undefined,
+    fractionDigits = 2,
+  ) => formatFraction((value ?? 0) / 100, fractionDigits);
 
   const formatDecimal = (value: number | null | undefined) =>
     new Intl.NumberFormat(locale, {
