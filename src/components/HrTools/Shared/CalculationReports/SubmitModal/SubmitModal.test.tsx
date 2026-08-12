@@ -23,6 +23,7 @@ const title = 'Test Title';
 const content = 'Test Content';
 const subContent = 'Test Sub Content';
 const date = '2024-12-31';
+const location = 'Test Location';
 
 const handleClose = jest.fn();
 const handleConfirm = jest.fn();
@@ -85,6 +86,7 @@ interface TestComponentProps {
   additionalApproval?: boolean;
   splitAsr?: boolean;
   submitting?: boolean;
+  geographicLocation?: string;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -100,6 +102,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   additionalApproval,
   splitAsr,
   submitting,
+  geographicLocation,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
@@ -122,6 +125,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 additionalApproval={additionalApproval}
                 splitAsr={splitAsr}
                 submitting={submitting}
+                geographicLocation={geographicLocation}
               />
             </MinisterHousingAllowanceProvider>
           </FormikWrapper>
@@ -285,6 +289,25 @@ describe('ConfirmationModal', () => {
       expect(
         await findByRole('button', { name: /Submit For Approval/i }),
       ).toBeInTheDocument();
+    });
+  });
+
+  describe('Geographic location checkbox', () => {
+    it('shows a checked, disabled checkbox naming the geographic location', async () => {
+      const { findByRole } = render(
+        <TestComponent geographicLocation={location} />,
+      );
+
+      const checkbox = await findByRole('checkbox', { name: /Test Location/i });
+      expect(checkbox).toBeChecked();
+      expect(checkbox).toBeDisabled();
+    });
+
+    it('does not show checkbox when no geographic location is given', async () => {
+      const { findByRole, queryByRole } = render(<TestComponent />);
+
+      await findByRole('dialog');
+      expect(queryByRole('checkbox')).not.toBeInTheDocument();
     });
   });
 

@@ -4,11 +4,14 @@ import {
   Alert,
   Box,
   Button,
+  Checkbox,
   CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControlLabel,
+  FormGroup,
 } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +37,7 @@ interface SubmitModalProps {
   splitAsr?: boolean;
   disableSubmit?: boolean;
   submitting?: boolean;
+  geographicLocation?: string;
 }
 
 export const SubmitModal: React.FC<SubmitModalProps> = ({
@@ -52,6 +56,7 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
   splitAsr,
   disableSubmit,
   submitting,
+  geographicLocation,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -103,6 +108,20 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
               <ApprovalProcess />
             </Box>
           </Box>
+        )}
+        {geographicLocation && (
+          <FormGroup sx={{ mt: 2 }}>
+            <FormControlLabel
+              sx={{ alignItems: 'flex-start' }}
+              control={
+                <Checkbox disabled checked size="small" sx={{ mt: -0.5 }} />
+              }
+              label={t(
+                'Your geographic location will be updated as {{geographicLocation}} in your account settings.',
+                { geographicLocation },
+              )}
+            />
+          </FormGroup>
         )}
       </DialogContent>
       <DialogActions>

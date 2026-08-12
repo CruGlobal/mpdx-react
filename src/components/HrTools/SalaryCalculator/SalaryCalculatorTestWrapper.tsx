@@ -4,6 +4,7 @@ import { merge } from 'lodash';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import { GetAccountPreferencesQuery } from 'src/components/Settings/preferences/GetAccountPreferences.generated';
 import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
@@ -111,6 +112,7 @@ export interface SalaryCalculatorTestWrapperProps {
   editing?: boolean;
   userType?: UserTypeEnum;
   usStaffGroup?: UsStaffGroupEnum;
+  accountGeographicLocation?: string | null;
 }
 
 export const SalaryCalculatorTestWrapper: React.FC<
@@ -127,6 +129,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
   editing = true,
   userType = UserTypeEnum.UsStaff,
   usStaffGroup = UsStaffGroupEnum.SeniorStaff,
+  accountGeographicLocation = null,
 }) => {
   const hcmUserMerged = merge({}, hcmUserMock, hcmUser);
   const hcmSpouseMerged = merge({}, hcmSpouseMock, hcmSpouse);
@@ -149,6 +152,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
           GoalCalculatorConstants: GoalCalculatorConstantsQuery;
           StaffAccount: StaffAccountQuery;
           GetUser: GetUserQuery;
+          GetAccountPreferences: GetAccountPreferencesQuery;
         }>
           mocks={{
             StaffAccount: {
@@ -161,6 +165,13 @@ export const SalaryCalculatorTestWrapper: React.FC<
               user: {
                 userType,
                 usStaffGroup,
+              },
+            },
+            GetAccountPreferences: {
+              accountList: {
+                settings: {
+                  geographicLocation: accountGeographicLocation,
+                },
               },
             },
             PayrollDates: {

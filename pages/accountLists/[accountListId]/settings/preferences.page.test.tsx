@@ -286,8 +286,19 @@ describe('Preferences page', () => {
         ),
       ).toBeInTheDocument();
 
-      // Home Country
+      // Geographic Location
       const skipButton = getByRole('button', { name: 'Skip Step' });
+      userEvent.click(skipButton);
+      expect(
+        await findByText('Are you within 50 miles of a major city?'),
+      ).toBeInTheDocument();
+      expect(
+        await findByText(
+          'This should be the major city within 50 miles of you. If none apply, leave this blank.',
+        ),
+      ).toBeInTheDocument();
+
+      // Home Country
       userEvent.click(skipButton);
       expect(
         await findByText(
