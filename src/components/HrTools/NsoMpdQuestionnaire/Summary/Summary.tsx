@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { Alert, Box, Divider, Link, Stack, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { useGetAccountPreferencesQuery } from 'src/components/Settings/preferences/GetAccountPreferences.generated';
+import { useUpdateAccountPreferencesMutation } from 'src/components/Settings/preferences/accordions/UpdateAccountPreferences.generated';
 import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { BackButton } from '../Shared/BackButton';
@@ -30,14 +32,57 @@ export const Summary: React.FC = () => {
     incompleteSteps.includes(section.step),
   );
 
+  const { data } = useGetAccountPreferencesQuery({
+    variables: {
+      accountListId,
+    },
+  });
+  const [updateAccountPreferences] = useUpdateAccountPreferencesMutation();
+
+  const updateGeographicLocation =
+    !!questionnaire?.geographicLocation &&
+    data?.accountList?.settings?.geographicLocation !==
+      questionnaire?.geographicLocation;
+
   // Complete the questionnaire, then redirect to the dashboard on success.
   const handleSubmit = async () => {
     await completeQuestionnaire();
+    if (updateGeographicLocation) {
+      await updateAccountPreferences({
+        variables: {
+          input: {
+            id: accountListId,
+            attributes: {
+              id: accountListId,
+              settings: {
+                geographicLocation: questionnaire?.geographicLocation,
+              },
+            },
+          },
+        },
+      });
+    }
     enqueueSnackbar(t('Questionnaire submitted successfully.'), {
       variant: 'success',
     });
     await router.push(`/accountLists/${accountListId}`);
   };
+
+  const message = (
+    <>
+      {t(
+        "Once you submit, you won't be able to make any more changes. Do you want to continue?",
+      )}
+      {updateGeographicLocation && (
+        <Alert severity="info" sx={{ mt: 2 }}>
+          {t(
+            'Your geographic location will be updated as {{geographicLocation}} in your account settings.',
+            { geographicLocation: questionnaire?.geographicLocation },
+          )}
+        </Alert>
+      )}
+    </>
+  );
 
   return (
     <NsoMpdQuestionnaireLayout>
@@ -95,9 +140,7 @@ export const Summary: React.FC = () => {
       <Confirmation
         isOpen={confirmOpen}
         title={t('Submit Questionnaire')}
-        message={t(
-          "Once you submit, you won't be able to make any more changes. Do you want to continue?",
-        )}
+        message={message}
         confirmLabel={t('Submit')}
         cancelLabel={t('Cancel')}
         mutation={handleSubmit}

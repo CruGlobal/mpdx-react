@@ -5,6 +5,7 @@ import { SnackbarProvider } from 'notistack';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GetAccountPreferencesQuery } from 'src/components/Settings/preferences/GetAccountPreferences.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   GoalCalculationAge,
@@ -59,6 +60,8 @@ export interface NsoMpdQuestionnaireTestWrapperProps {
   mockPush?: jest.Mock;
   /** Override the OneApp ministries list, e.g. `[]` to exercise the load-failure state. */
   ministries?: MinistryMock[];
+  /** The account's saved Geographic Location preference. Defaults to null. */
+  accountGeographicLocation?: string | null;
   children?: React.ReactNode;
 }
 
@@ -70,6 +73,7 @@ export const NsoMpdQuestionnaireTestWrapper: React.FC<
   onCall,
   mockPush,
   ministries = defaultMinistries,
+  accountGeographicLocation = null,
   children,
 }) => {
   return (
@@ -80,10 +84,18 @@ export const NsoMpdQuestionnaireTestWrapper: React.FC<
           GoalCalculatorConstants: GoalCalculatorConstantsQuery;
           NewStaffQuestionnaire: NewStaffQuestionnaireQuery;
           Ministries: MinistriesQuery;
+          GetAccountPreferences: GetAccountPreferencesQuery;
         }>
           mocks={{
             GetUser: {
               user: { avatar: 'avatar.jpg', staffAccountId: '000123456' },
+            },
+            GetAccountPreferences: {
+              accountList: {
+                settings: {
+                  geographicLocation: accountGeographicLocation,
+                },
+              },
             },
             NewStaffQuestionnaire: {
               newStaffQuestionnaire:
