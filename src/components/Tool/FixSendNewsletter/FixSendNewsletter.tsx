@@ -73,21 +73,23 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
       id,
       sendNewsletter: sendNewsletter as SendNewsletterEnum,
     };
-    await updateNewsletter({
-      variables: {
-        accountListId,
-        attributes,
-      },
-      refetchQueries: [
-        { query: InvalidNewsletterDocument, variables: { accountListId } },
-      ],
-      onError() {
-        enqueueSnackbar(t('Error updating contact {{name}}', { name }), {
-          variant: 'error',
-          autoHideDuration: 7000,
-        });
-      },
-    });
+    try {
+      await updateNewsletter({
+        variables: {
+          accountListId,
+          attributes,
+        },
+        refetchQueries: [
+          { query: InvalidNewsletterDocument, variables: { accountListId } },
+        ],
+      });
+    } catch {
+      enqueueSnackbar(t('Error updating contact {{name}}', { name }), {
+        variant: 'error',
+        autoHideDuration: 7000,
+      });
+      return;
+    }
     enqueueSnackbar(t('Newsletter updated!'), {
       variant: 'success',
     });

@@ -206,6 +206,10 @@ describe('FixSendNewsletter', () => {
           },
         );
       });
+
+      expect(mockEnqueue).not.toHaveBeenCalledWith('Newsletter updated!', {
+        variant: 'success',
+      });
     });
   });
 
