@@ -64,6 +64,7 @@ const MainContent: React.FC = () => {
     summaryData,
     handleContinue,
     handlePreviousStep,
+    calculation,
   } = usePdsGoalCalculator();
   const { allValid } = useAutosaveForm();
   const [updateAccountPreferences, { loading: updating }] =
@@ -78,13 +79,17 @@ const MainContent: React.FC = () => {
       return;
     }
     const monthlyGoal = Math.round(summaryData.overallTotal);
+    const geographicLocation = calculation?.geographicLocation ?? null;
     await updateAccountPreferences({
       variables: {
         input: {
           id: accountListId,
           attributes: {
             id: accountListId,
-            settings: { monthlyGoal },
+            settings: {
+              monthlyGoal,
+              ...(geographicLocation && { geographicLocation }),
+            },
           },
         },
       },

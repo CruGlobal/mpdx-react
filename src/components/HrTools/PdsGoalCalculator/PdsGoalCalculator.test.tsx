@@ -370,6 +370,69 @@ describe('PdsGoalCalculator', () => {
       ).toBeInTheDocument();
     });
 
+    it('does not send geographic location when the calculation has none', async () => {
+      const mutationSpy = jest.fn();
+      const { findByRole } = render(
+        <PdsGoalCalculatorTestWrapper
+          calculationMock={simpleFormMock}
+          onCall={mutationSpy}
+        >
+          <PdsGoalCalculator />
+        </PdsGoalCalculatorTestWrapper>,
+      );
+
+      await advanceToLastStep(findByRole);
+
+      userEvent.click(
+        await findByRole('button', { name: 'Apply Goal to MPDX' }),
+      );
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('UpdateAccountPreferences'),
+      );
+
+      const updateCall = mutationSpy.mock.calls.find(
+        ([{ operation }]) =>
+          operation.operationName === 'UpdateAccountPreferences',
+      );
+      expect(
+        updateCall?.[0].operation.variables.input.attributes.settings,
+      ).not.toHaveProperty('geographicLocation');
+    });
+
+    it('sends geographic location when the calculation has one', async () => {
+      const mutationSpy = jest.fn();
+      const { findByRole } = render(
+        <PdsGoalCalculatorTestWrapper
+          calculationMock={{
+            ...simpleFormMock,
+            geographicLocation: 'Miami, FL',
+          }}
+          onCall={mutationSpy}
+        >
+          <PdsGoalCalculator />
+        </PdsGoalCalculatorTestWrapper>,
+      );
+
+      await advanceToLastStep(findByRole);
+
+      userEvent.click(
+        await findByRole('button', { name: 'Apply Goal to MPDX' }),
+      );
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('UpdateAccountPreferences', {
+          input: {
+            id: 'abc123',
+            attributes: {
+              id: 'abc123',
+              settings: { geographicLocation: 'Miami, FL' },
+            },
+          },
+        }),
+      );
+    });
+
     it('keeps the Apply Goal to MPDX button disabled after a successful submission', async () => {
       const { findByRole, findByText } = render(
         <PdsGoalCalculatorTestWrapper calculationMock={simpleFormMock}>
