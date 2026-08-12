@@ -57,6 +57,25 @@ describe('GoalsTable', () => {
     ).toBeInTheDocument();
   });
 
+  it('assigns a coach to the row from the Assign Coach modal', async () => {
+    const { getByRole, findByRole } = renderTable();
+    // 'Carlos & Michaela Everts' (row-2) has no coach on the first page.
+    userEvent.click(getByRole('button', { name: 'Assign Coach' }));
+
+    const dialog = await findByRole('dialog');
+    expect(dialog).toHaveTextContent(
+      'Assign Coach for Carlos & Michaela Everts',
+    );
+
+    userEvent.click(getByRole('combobox', { name: 'Coach' }));
+    userEvent.click(await findByRole('option', { name: 'Tom Harris' }));
+    await userEvent.click(getByRole('button', { name: 'Save' }));
+
+    expect(
+      ctx.cohorts[0].rows.find((row) => row.id === 'row-2')?.coach,
+    ).toBe('Tom Harris');
+  });
+
   it('renders a View/Edit action and a menu button for each row on the page', () => {
     const { getAllByText, getAllByRole } = renderTable();
     const onPage = Math.min(rows.length, DEFAULT_ROWS_PER_PAGE);
