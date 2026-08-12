@@ -97,66 +97,60 @@ export const GoalsTableToolbar: React.FC = () => {
       />
 
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        {hasSelection ? (
-          <>
-            <Typography variant="body2" color="text.secondary">
-              {t('{{count}} selected', { count: selectedCount })}
-            </Typography>
-            <Button
-              variant="contained"
-              endIcon={<ArrowDropDownIcon />}
-              onClick={(event) => setMenuAnchorEl(event.currentTarget)}
-              aria-haspopup="menu"
-              aria-expanded={menuAnchorEl ? 'true' : undefined}
-            >
-              {t('More Actions')}
-            </Button>
-            <Menu
-              anchorEl={menuAnchorEl}
-              open={Boolean(menuAnchorEl)}
-              onClose={() => setMenuAnchorEl(null)}
-            >
-              <MenuItem
-                onClick={() => {
-                  setMenuAnchorEl(null);
-                  openRunAndSend(
-                    t('Run and Send Selected Complete MPD Goals?'),
-                    selectedRows,
-                  );
-                }}
-              >
-                {t('Run & Send Selected')}
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  setMenuAnchorEl(null);
-                  setAssignCoachOpen(true);
-                }}
-              >
-                {t('Assign Coach')}
-              </MenuItem>
-            </Menu>
-          </>
-        ) : (
-          <>
-            {/* Disabled until wired up so assistive tech announces the
-                inert state instead of a dead control (MPDX-9696). */}
-            <Button variant="outlined" disabled>
-              {t('Print All')}
-            </Button>
-            <Button
-              variant="contained"
-              onClick={() =>
-                openRunAndSend(
-                  t('Run and Send All Complete MPD Goals?'),
-                  filteredRows,
-                )
-              }
-            >
-              {t('Run and Send All')}
-            </Button>
-          </>
+        {hasSelection && (
+          <Typography variant="body2" color="text.secondary">
+            {t('{{count}} selected', { count: selectedCount })}
+          </Typography>
         )}
+        <Button
+          variant="outlined"
+          endIcon={<ArrowDropDownIcon />}
+          disabled={!hasSelection}
+          onClick={(event) => setMenuAnchorEl(event.currentTarget)}
+          aria-haspopup="menu"
+          aria-expanded={menuAnchorEl ? 'true' : undefined}
+        >
+          {t('More Actions')}
+        </Button>
+        <Menu
+          anchorEl={menuAnchorEl}
+          open={Boolean(menuAnchorEl)}
+          onClose={() => setMenuAnchorEl(null)}
+        >
+          {/* Disabled until wired up so assistive tech announces the
+              inert state instead of a dead control (MPDX-9702). */}
+          <MenuItem disabled>{t('Print All')}</MenuItem>
+          <MenuItem
+            onClick={() => {
+              setMenuAnchorEl(null);
+              openRunAndSend(
+                t('Run and Send Selected Complete MPD Goals?'),
+                selectedRows,
+              );
+            }}
+          >
+            {t('Run & Send Selected')}
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              setMenuAnchorEl(null);
+              setAssignCoachOpen(true);
+            }}
+          >
+            {t('Assign Coach')}
+          </MenuItem>
+        </Menu>
+        <Button
+          variant="contained"
+          onClick={() =>
+            openRunAndSend(
+              t('Run and Send All Complete MPD Goals?'),
+              filteredRows,
+            )
+          }
+        >
+          {t('Run and Send All')}
+        </Button>
       </Box>
 
       <RunAndSendModal

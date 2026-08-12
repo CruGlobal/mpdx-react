@@ -25,24 +25,25 @@ const renderToolbar = () =>
   );
 
 describe('GoalsTableToolbar', () => {
-  it('shows default bulk actions with no selection', () => {
-    const { getByRole, queryByRole } = renderToolbar();
-    expect(getByRole('button', { name: 'Print All' })).toBeInTheDocument();
+  it('disables More Actions with no selection', () => {
+    const { getByRole } = renderToolbar();
+    expect(getByRole('button', { name: 'More Actions' })).toBeDisabled();
     expect(
       getByRole('button', { name: 'Run and Send All' }),
     ).toBeInTheDocument();
-    expect(
-      queryByRole('button', { name: 'More Actions' }),
-    ).not.toBeInTheDocument();
   });
 
-  it('shows the More Actions menu once rows are selected', async () => {
+  it('enables the More Actions menu once rows are selected', async () => {
     const { getByRole, getByText } = renderToolbar();
     act(() => ctx.toggleRow('row-1'));
     expect(getByText('1 selected')).toBeInTheDocument();
 
     await userEvent.click(getByRole('button', { name: 'More Actions' }));
     const menu = getByRole('menu');
+    // Print All stays disabled until it is wired up (MPDX-9702).
+    expect(
+      within(menu).getByRole('menuitem', { name: 'Print All' }),
+    ).toHaveAttribute('aria-disabled', 'true');
     expect(
       within(menu).getByRole('menuitem', { name: 'Run & Send Selected' }),
     ).toBeInTheDocument();
@@ -52,7 +53,7 @@ describe('GoalsTableToolbar', () => {
   });
 
   it('drops hidden rows from the selected count when a search filters them out', async () => {
-    const { getByRole, getByText, queryByText, queryByRole } = renderToolbar();
+    const { getByRole, getByText, queryByText } = renderToolbar();
     act(() => ctx.toggleRow('row-1'));
     expect(getByText('1 selected')).toBeInTheDocument();
 
@@ -60,10 +61,7 @@ describe('GoalsTableToolbar', () => {
     // the count must not keep reporting a row the user can no longer see.
     await userEvent.type(getByRole('textbox', { name: 'Search' }), 'carlos');
     expect(queryByText('1 selected')).not.toBeInTheDocument();
-    expect(
-      queryByRole('button', { name: 'More Actions' }),
-    ).not.toBeInTheDocument();
-    expect(getByRole('button', { name: 'Print All' })).toBeInTheDocument();
+    expect(getByRole('button', { name: 'More Actions' })).toBeDisabled();
   });
 
   it('updates search on typing', async () => {
