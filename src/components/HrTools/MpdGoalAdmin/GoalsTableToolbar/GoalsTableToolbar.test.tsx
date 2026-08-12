@@ -78,6 +78,20 @@ describe('GoalsTableToolbar', () => {
     );
   });
 
+  it('targets every filtered row from the All button, ignoring the selection', async () => {
+    const { getByRole, getByText } = renderToolbar();
+    // row-1 is Complete; a 1-row selection must not shrink the All target.
+    act(() => ctx.toggleRow('row-1'));
+    expect(getByText('1 selected')).toBeInTheDocument();
+
+    await userEvent.click(getByRole('button', { name: 'Run and Send All' }));
+
+    // All 13 mock rows: 4 Incomplete cannot be sent, 9 Complete can.
+    const dialog = getByRole('dialog');
+    expect(dialog).toHaveTextContent('4 of the 13 MPD goals cannot be sent.');
+    expect(dialog).toHaveTextContent('Continue with 9 out of 13 MPD goals');
+  });
+
   it('confirms and sends only the selected rows from the menu', async () => {
     const { getByRole, findByText } = renderToolbar();
     // row-1 is Complete, row-7 is Incomplete → 1 sendable of 2.
