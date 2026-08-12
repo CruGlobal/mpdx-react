@@ -1,56 +1,12 @@
-import { Linter } from 'eslint';
-import eslintConfig from '../../.eslintrc';
-
-interface RestrictedSyntaxOption {
-  selector: string;
-  message: string;
-}
-
-interface LintMessage {
-  ruleId: string | null;
-  message: string;
-  severity: number;
-}
-
-// Assert against the real rules
-const restrictedSyntax = eslintConfig.rules['no-restricted-syntax'] as [
-  'error',
-  ...RestrictedSyntaxOption[],
-];
-const [, ...options] = restrictedSyntax;
-
-const ruleFor = (selectorFragment: string): RestrictedSyntaxOption => {
-  const option = options.find(({ selector }) =>
-    selector.includes(selectorFragment),
-  );
-  if (!option) {
-    throw new Error(
-      `No no-restricted-syntax rule has a selector containing "${selectorFragment}"`,
-    );
-  }
-  return option;
-};
+import { LintMessage, lintSnippet, ruleFor } from './restrictedSyntaxHarness';
 
 const nestedTRule = ruleFor("']) CallExpression:matches");
 const staticKeyRule = ruleFor('.arguments:first-child');
 
-const linter = new Linter();
-
 const rawLint = (expression: string): LintMessage[] =>
-  linter
-    .verify(
-      `export const probe = ({ name, label, count, i18n, t }) =>\n  ${expression};`,
-      {
-        parserOptions: {
-          ecmaVersion: 2020,
-          sourceType: 'module',
-        },
-        rules: { 'no-restricted-syntax': restrictedSyntax },
-      },
-    )
-    .filter(
-      (message: LintMessage) => message.ruleId === 'no-restricted-syntax',
-    );
+  lintSnippet(
+    `export const probe = ({ name, label, count, i18n, t }) =>\n  ${expression};`,
+  );
 
 const lintT = (expression: string): string[] =>
   rawLint(expression).map((message) => message.message);
@@ -134,5 +90,9 @@ describe('t() no-restricted-syntax rules', () => {
 
   it('flags a dynamic key on i18n.t()', () => {
     expect(lintT('i18n.t(label)')).toEqual([staticKeyRule.message]);
+  });
+
+  it('flags a key widened with a TypeScript cast', () => {
+    expect(lintT('t(label as string)')).toEqual([staticKeyRule.message]);
   });
 });

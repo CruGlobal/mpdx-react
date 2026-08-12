@@ -89,6 +89,12 @@ module.exports = {
         message:
           "Translation keys must be statically resolvable so `yarn extract` can find them. For dynamic values, use interpolation (e.g. `t('Name: {{name}}', { name })`). For dynamic keys, use separate `t()` calls.",
       },
+      {
+        selector:
+          "JSXOpeningElement[name.name='Trans'] > JSXAttribute[name.name='i18nKey']",
+        message:
+          'Do not pass i18nKey to <Trans>. `yarn extract` writes the id as its own value, so the English never reaches translation.json. Drop i18nKey and let the children be the key.',
+      },
     ],
     'react/jsx-no-useless-fragment': 'error',
     'react/prop-types': 'off',
