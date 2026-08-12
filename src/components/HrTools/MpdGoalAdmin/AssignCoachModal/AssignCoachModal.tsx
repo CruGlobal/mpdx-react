@@ -1,9 +1,12 @@
 import React, { ReactElement } from 'react';
 import {
+  Alert,
   Autocomplete,
+  Box,
   DialogActions,
   DialogContent,
   TextField,
+  Typography,
 } from '@mui/material';
 import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
@@ -23,6 +26,11 @@ interface AssignCoachModalProps {
   /** Name shown in the modal title, e.g. the staff member the coach is for. */
   subjectName: string;
   coaches: AssignCoachOption[];
+  /**
+   * Names of the staff who already have a coach and will be reassigned. When
+   * non-empty, a warning listing them is shown so overwrites aren't silent.
+   */
+  reassignedNames?: string[];
   handleClose: () => void;
   handleAssignCoach: (coachId: string) => Promise<void> | void;
 }
@@ -36,6 +44,7 @@ type AssignCoachFormValues = yup.InferType<typeof assignCoachSchema>;
 export const AssignCoachModal: React.FC<AssignCoachModalProps> = ({
   subjectName,
   coaches,
+  reassignedNames,
   handleClose,
   handleAssignCoach,
 }) => {
@@ -66,6 +75,26 @@ export const AssignCoachModal: React.FC<AssignCoachModalProps> = ({
         }): ReactElement => (
           <form onSubmit={handleSubmit} noValidate>
             <DialogContent dividers>
+              {reassignedNames && reassignedNames.length > 0 && (
+                <Alert severity="warning" sx={{ mb: 2 }}>
+                  <Typography variant="body2" fontWeight="bold">
+                    {t(
+                      '{{reassigned}} of the selected staff already have a coach.',
+                      { reassigned: reassignedNames.length },
+                    )}
+                  </Typography>
+                  <Typography variant="body2">
+                    {t(
+                      'Assigning a new coach will replace the current coach for the following staff.',
+                    )}
+                  </Typography>
+                  <Box component="ul" sx={{ m: 0, mt: 1, pl: 3 }}>
+                    {reassignedNames.map((name) => (
+                      <li key={name}>{name}</li>
+                    ))}
+                  </Box>
+                </Alert>
+              )}
               <Autocomplete
                 autoHighlight
                 disabled={isSubmitting}

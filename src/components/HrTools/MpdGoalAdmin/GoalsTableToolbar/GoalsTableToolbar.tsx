@@ -170,6 +170,9 @@ export const GoalsTableToolbar: React.FC = () => {
               : t('{{count}} Selected Staff', { count: selectedCount })
           }
           coaches={mockCoaches}
+          reassignedNames={selectedRows
+            .filter((row) => row.coach)
+            .map((row) => row.name)}
           handleAssignCoach={handleAssignCoach}
           handleClose={() => setAssignCoachOpen(false)}
         />
