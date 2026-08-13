@@ -64,6 +64,27 @@ module.exports = {
         ignoreMemberSort: false,
       },
     ],
+    'no-restricted-syntax': [
+      'error',
+      {
+        selector:
+          "JSXOpeningElement[name.name='Trans']:not(:has(JSXAttribute[name.name='t']))",
+        message:
+          '<Trans> must be passed a t={t} prop from useTranslation() so it resolves keys against the component i18n instance.',
+      },
+      {
+        /* i18next interpolates {{ name }}, not {name}. A bare {name} child is a
+         * plain value at runtime, so it lands in the extracted key and the
+         * lookup can never match.
+         * Includes Trans and children of Trans, and determines if the descendent matches an
+         * Identifier (e.g. {name}), MemberExpression (e.g. {user.name}), or CallExpression (e.g. {getName()})
+         */
+        selector:
+          ":matches(JSXElement[openingElement.name.name='Trans'], JSXElement[openingElement.name.name='Trans'] JSXElement) > JSXExpressionContainer > :matches(Identifier, MemberExpression, CallExpression)",
+        message:
+          'Single-brace {name} inside <Trans> becomes part of the extracted key, so the lookup never matches. Use {{ name }} which only typechecks as a direct child of <Trans>, so if this sits inside a nested element, move that element outside the <Trans> instead.',
+      },
+    ],
     curly: 'error',
     eqeqeq: 'error',
     'no-console': 'error',

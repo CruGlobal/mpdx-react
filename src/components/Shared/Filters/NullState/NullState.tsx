@@ -20,6 +20,7 @@ interface CreateButtonProps {
 }
 
 const CreateButton: React.FC<CreateButtonProps> = ({ page }) => {
+  const { t } = useTranslation();
   const { openTaskModal, preloadTaskModal } = useTaskModal();
   const [contactsDialogOpen, setContactsDialogOpen] = useState(false);
 
@@ -51,7 +52,7 @@ const CreateButton: React.FC<CreateButtonProps> = ({ page }) => {
           backgroundColor: theme.palette.mpdxBlue.main,
         }}
       >
-        <Trans defaults="Add new {{page}}" values={{ page }} />
+        <Trans t={t} defaults="Add new {{page}}" values={{ page }} />
       </Button>
       {renderDialog(
         AddMenuItemsEnum.NewContact,
@@ -104,19 +105,21 @@ const NullState: React.FC<Props> = ({
         <>
           <Typography variant="h5">
             <Trans
+              t={t}
               defaults="Looks like you haven't added any {{page}}s yet"
               values={{ page }}
             />
           </Typography>
           <Typography>
             <Trans
+              t={t}
               defaults="You can import {{page}}s from another service or add a new {{page}}."
               values={{ page }}
             />
           </Typography>
           <Box display="flex" mt={1}>
             <Button variant="contained">
-              <Trans defaults="Import {{page}}s" values={{ page }} />
+              <Trans t={t} defaults="Import {{page}}s" values={{ page }} />
             </Button>
             <CreateButton page={page} />
           </Box>

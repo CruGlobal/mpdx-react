@@ -278,7 +278,7 @@ export const Calculation: React.FC<CalculationProps> = ({
               <PersonInfo />
             ) : actionRequired ? (
               <p style={{ lineHeight: 1.5 }}>
-                <Trans values={{ after, approval }}>
+                <Trans t={t} values={{ after, approval }}>
                   Please review the Annual MHA Request that you have submitted
                   for Board approval and make any changes necessary here. The
                   board will review this {{ after }} and you will receive notice
@@ -287,7 +287,7 @@ export const Calculation: React.FC<CalculationProps> = ({
               </p>
             ) : (
               <p style={{ lineHeight: 1.5 }}>
-                <Trans values={{ after, approval }}>
+                <Trans t={t} values={{ after, approval }}>
                   Please enter dollar amounts for each category below to
                   calculate your Annual MHA. The board will review this{' '}
                   {{ after }} and you will receive notice of your {{ approval }}
@@ -302,7 +302,7 @@ export const Calculation: React.FC<CalculationProps> = ({
                   sx={{ verticalAlign: 'middle', opacity: 0.56 }}
                 />{' '}
                 <Link component="button" type="button">
-                  What expenses can I claim on my MHA?
+                  <Trans t={t}>What expenses can I claim on my MHA?</Trans>
                 </Link>
               </Box>
             </SimpleScreenOnly>

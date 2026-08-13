@@ -394,6 +394,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                 <Box width="100%" display="flex" justifyContent="center">
                   <Typography>
                     <Trans
+                      t={t}
                       defaults="Showing <bold>{{value}}</bold> of <bold>{{total}}</bold>"
                       shouldUnescape
                       values={{

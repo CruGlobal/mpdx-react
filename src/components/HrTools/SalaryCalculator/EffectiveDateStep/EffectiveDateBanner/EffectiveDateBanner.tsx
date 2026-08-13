@@ -2,7 +2,7 @@ import React from 'react';
 import { Alert, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
-import { Trans } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 
 const StyledAlert = styled(Alert)({
@@ -25,6 +25,7 @@ interface EffectiveDateBannerProps {
 export const EffectiveDateBanner: React.FC<EffectiveDateBannerProps> = ({
   onClose,
 }) => {
+  const { t } = useTranslation();
   const thisYear = DateTime.now().year;
   const nextYear = thisYear + 1;
 
@@ -36,7 +37,7 @@ export const EffectiveDateBanner: React.FC<EffectiveDateBannerProps> = ({
       data-testid="effective-date-banner-text"
     >
       <Typography fontWeight="bold" textAlign="center">
-        <Trans values={{ thisYear, nextYear }}>
+        <Trans t={t} values={{ thisYear, nextYear }}>
           Dates for {'{{nextYear}}'} are unavailable at this time while we
           update salary level tables. By December 15, {'{{thisYear}}'} you will
           be able to request a salary change for {'{{nextYear}}'}.

@@ -291,6 +291,7 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
                             }}
                             title={
                               <Trans
+                                t={t}
                                 defaults="Importing from <bold>{{email}}</bold>"
                                 shouldUnescape
                                 values={{ email: selectedAccount?.email }}

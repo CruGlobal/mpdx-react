@@ -115,6 +115,7 @@ const MergeContacts: React.FC<Props> = ({
                 >
                   <Typography>
                     <Trans
+                      t={t}
                       defaults="You have <bold>{{totalCount}}</bold> possible duplicate contacts. This is sometimes caused when you imported data into {{appName}}. We recommend reconciling these as soon as possible. Please select the duplicate that should win the merge. No data will be lost. "
                       shouldUnescape
                       values={{

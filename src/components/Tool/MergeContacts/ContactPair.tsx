@@ -229,6 +229,7 @@ const ContactItem: React.FC<ContactItemProps> = ({
         {isContactType && (
           <Typography variant="body2">
             <Trans
+              t={t}
               defaults="<bold>Source:</bold> {{where}}"
               shouldUnescape
               values={{ where: sourceToStr(t, contact.source) }}
@@ -244,6 +245,7 @@ const ContactItem: React.FC<ContactItemProps> = ({
             <Tooltip title="Source" arrow placement="right">
               <InlineTypography variant="body2">
                 <Trans
+                  t={t}
                   defaults=" ({{source}})"
                   shouldUnescape
                   values={{
@@ -263,6 +265,7 @@ const ContactItem: React.FC<ContactItemProps> = ({
             <Tooltip title="Source" arrow placement="right">
               <InlineTypography variant="body2">
                 <Trans
+                  t={t}
                   defaults=" ({{where}})"
                   shouldUnescape
                   values={{

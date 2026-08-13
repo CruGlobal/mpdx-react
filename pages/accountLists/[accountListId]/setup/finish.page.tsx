@@ -43,10 +43,10 @@ const FinishPage: React.FC = () => {
       </Head>
       <SetupPage
         title={
-          <Trans>
-            {t('Congratulations!')}
+          <Trans t={t}>
+            Congratulations!
             <br />
-            {t("You're all set!")}
+            You&apos;re all set!
           </Trans>
         }
       >
