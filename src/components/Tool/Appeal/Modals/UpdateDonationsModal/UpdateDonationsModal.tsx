@@ -125,6 +125,7 @@ export const UpdateDonationsModal: React.FC<UpdateDonationsModalProps> = ({
     } else if (pledge && totalSelectedDonationsAmount < pledge.amount) {
       setLessThanPledgeConfirmationMessage(
         <Trans
+          t={t}
           defaults="The total amount is less than the commitment amount. Would you like to update the commitment amount to match the total? If not, the contact will be moved to the <bold>Received</bold> column."
           components={{ bold: <strong /> }}
         />,

@@ -95,6 +95,12 @@ module.exports = {
         message:
           'Do not pass i18nKey to <Trans>. `yarn extract` writes the id as its own value, so the English never reaches translation.json. Drop i18nKey and let the children be the key.',
       },
+      {
+        selector:
+          "JSXOpeningElement[name.name='Trans']:not(:has(JSXAttribute[name.name='t'][parent.name.name='Trans']))",
+        message:
+          '<Trans> must be passed a t={t} prop from useTranslation() so it resolves keys against the component i18n instance.',
+      },
     ],
     'react/jsx-no-useless-fragment': 'error',
     'react/prop-types': 'off',
