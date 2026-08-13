@@ -28,7 +28,8 @@
     "crowdin:sort-translations": "node ./crowdin/sort-translations.js",
     "crowdin:download": "crowdin download translations && yarn crowdin:sort-translations",
     "crowdin:upload": "crowdin upload translations",
-    "lighthouse": "lhci autorun"
+    "lighthouse": "lhci autorun",
+    "calibrate-safety-nets": "tsx --env-file-if-exists=.env.local scripts/safety-nets/cli.ts"
   },
   "dependencies": {
     "@apollo/client": "^3.6.9",
@@ -85,6 +86,7 @@
   },
   "devDependencies": {
     "@crowdin/cli": "^4.9.1",
+    "@datadog/datadog-api-client": "^1.60.0",
     "@datadog/datadog-ci": "^5.22.0",
     "@graphql-codegen/add": "^5.0.2",
     "@graphql-codegen/cli": "^5.0.2",
@@ -141,6 +143,7 @@
     "prettier": "^3.6.2",
     "puppeteer": "24.4.0",
     "ts-essentials": "^9.3.0",
+    "tsx": "^4.23.11",
     "typescript": "~6.0.0",
     "url-loader": "^4.1.1",
     "webpack": "^5.104.1"
