@@ -8,7 +8,7 @@ baseline has to be resampled by hand.
 ## Usage
 
 ```bash
-yarn safety-nets | pbcopy
+yarn calibrate-safety-nets | pbcopy
 ```
 
 Requires `DATADOG_API_KEY` and `DATADOG_APP_KEY` (with `rum_apps_read`

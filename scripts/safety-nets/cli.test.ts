@@ -60,7 +60,7 @@ describe('run', () => {
 
     expect(stdoutText()).toBe(
       [
-        '  # Regenerate by running `yarn safety-nets` in mpdx-react',
+        '  # Regenerate by running `yarn calibrate-safety-nets` in mpdx-react',
         '  rum_thresholds = {',
         '    error_impact = { warning = 4, critical = 6, window = "15m" }  # Calculated from 787/2689 buckets (71% empty)',
         '    frustration  = { warning = 18, critical = 30, window = "1h" } # Calculated from 787/2689 buckets (71% empty)',

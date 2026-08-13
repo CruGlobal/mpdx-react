@@ -35,7 +35,7 @@ const renderThresholdsHcl = (rows: ThresholdRow[]): string => {
   );
 
   return [
-    `  # Regenerate by running \`yarn safety-nets\` in mpdx-react`,
+    `  # Regenerate by running \`yarn calibrate-safety-nets\` in mpdx-react`,
     `  rum_thresholds = {`,
     ...attributes.map((line, index) =>
       rows[index].zeroFilled
