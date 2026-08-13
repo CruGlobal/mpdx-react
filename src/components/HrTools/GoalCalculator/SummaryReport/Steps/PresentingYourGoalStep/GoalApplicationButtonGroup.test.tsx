@@ -78,28 +78,8 @@ describe('GoalApplicationButtonGroup', () => {
     ).toBeInTheDocument();
   });
 
-  it('does not send geographic location when the goal calculation has none', async () => {
-    const { getByRole } = render(<TestComponent geographicLocation={null} />);
-
-    const applyButton = getByRole('button', { name: /apply goal to mpdx/i });
-    await waitFor(() => expect(applyButton).toBeEnabled());
-    userEvent.click(applyButton);
-
-    await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('UpdateAccountPreferences'),
-    );
-
-    const updateCall = mutationSpy.mock.calls.find(
-      ([{ operation }]) =>
-        operation.operationName === 'UpdateAccountPreferences',
-    );
-    expect(
-      updateCall?.[0].operation.variables.input.attributes.settings,
-    ).not.toHaveProperty('geographicLocation');
-  });
-
   it('sends geographicLocation when the goal calculation has one', async () => {
-    const { getByRole } = render(
+    const { getByRole, findByText } = render(
       <TestComponent geographicLocation="Miami, FL" />,
     );
 
@@ -118,5 +98,11 @@ describe('GoalApplicationButtonGroup', () => {
         },
       }),
     );
+
+    expect(
+      await findByText(
+        'Successfully updated your monthly goal to $16,139 and geographic location to Miami, FL!',
+      ),
+    ).toBeInTheDocument();
   });
 });

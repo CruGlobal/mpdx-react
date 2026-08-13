@@ -259,7 +259,7 @@ describe('Summary', () => {
 
       expect(
         await findByText(
-          'Your geographic location will be updated as Miami, FL in your account settings.',
+          'Your geographic location will be updated to Miami, FL in your account settings.',
         ),
       ).toBeInTheDocument();
 
@@ -280,7 +280,7 @@ describe('Summary', () => {
     });
 
     it('does not show info alert or update the preference when it already matches', async () => {
-      const { findByRole, getByRole, queryByText } = render(
+      const { findByRole, queryByText } = render(
         <TestComponent
           onCall={mutationSpy}
           newStaffQuestionnaire={{
@@ -294,11 +294,11 @@ describe('Summary', () => {
       await waitFor(() => expect(submitButton).toBeEnabled());
       userEvent.click(submitButton);
 
-      const dialog = await waitFor(() => getByRole('dialog'));
+      const dialog = await findByRole('dialog');
       await waitFor(() =>
         expect(
           queryByText(
-            'Your geographic location will be updated as Miami, FL in your account settings.',
+            'Your geographic location will be updated to Miami, FL in your account settings.',
           ),
         ).not.toBeInTheDocument(),
       );

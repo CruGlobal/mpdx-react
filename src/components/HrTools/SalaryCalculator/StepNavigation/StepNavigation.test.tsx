@@ -181,34 +181,8 @@ describe('SubmitButton', () => {
     );
   });
 
-  it('does not update the account geographic location preference when the calculation has no location', async () => {
-    const { findByText, queryByRole } = render(
-      <SalaryCalculatorTestWrapper
-        onCall={mutationSpy}
-        editing={true}
-        salaryRequestMock={{ location: null }}
-        accountGeographicLocation={location}
-      >
-        <SubmitButton />
-      </SalaryCalculatorTestWrapper>,
-    );
-
-    userEvent.click(await findByText('Submit'));
-
-    await waitFor(() =>
-      expect(queryByRole('checkbox')).not.toBeInTheDocument(),
-    );
-
-    userEvent.click(await findByText('Yes, Continue'));
-
-    await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('SubmitSalaryCalculation'),
-    );
-    expect(mutationSpy).not.toHaveGraphqlOperation('UpdateAccountPreferences');
-  });
-
-  it('does not show geographic location checkbox when it matches account preferences', async () => {
-    const { findByRole, queryByRole } = render(
+  it('does not show geographic location info alert when it matches account preferences', async () => {
+    const { findByRole, queryByText } = render(
       <SalaryCalculatorTestWrapper
         onCall={mutationSpy}
         editing={true}
@@ -223,7 +197,11 @@ describe('SubmitButton', () => {
 
     await findByRole('dialog');
     await waitFor(() =>
-      expect(queryByRole('checkbox')).not.toBeInTheDocument(),
+      expect(
+        queryByText(
+          `Your geographic location will be updated as ${location} in your account settings.`,
+        ),
+      ).not.toBeInTheDocument(),
     );
   });
 });

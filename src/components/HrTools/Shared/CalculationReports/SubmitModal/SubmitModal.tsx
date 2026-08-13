@@ -4,14 +4,11 @@ import {
   Alert,
   Box,
   Button,
-  Checkbox,
   CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControlLabel,
-  FormGroup,
 } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -110,18 +107,12 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
           </Box>
         )}
         {geographicLocation && (
-          <FormGroup sx={{ mt: 2 }}>
-            <FormControlLabel
-              sx={{ alignItems: 'flex-start' }}
-              control={
-                <Checkbox disabled checked size="small" sx={{ mt: -0.5 }} />
-              }
-              label={t(
-                'Your geographic location will be updated as {{geographicLocation}} in your account settings.',
-                { geographicLocation },
-              )}
-            />
-          </FormGroup>
+          <Alert severity="info" sx={{ mt: 2 }}>
+            {t(
+              'Your geographic location will be updated to {{geographicLocation}} in your account settings.',
+              { geographicLocation },
+            )}
+          </Alert>
         )}
       </DialogContent>
       <DialogActions>

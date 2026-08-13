@@ -13,6 +13,7 @@ import {
   PrimaryBudgetCategoryEnum,
   SubBudgetCategoryEnum,
 } from 'src/graphql/types.generated';
+import { AccountGeographicLocationQuery } from 'src/hooks/AccountGeographicLocation.generated';
 import {
   GoalCalculatorConstantsDocument,
   GoalCalculatorConstantsQuery,
@@ -338,21 +339,24 @@ interface MockedGoalCalculatorTestWrapperProps {
    * mock every year with the static `constantsMock`.
    */
   constantsByYear?: Record<number, GoalCalculatorConstantsQuery['constant']>;
+  /** The account's currently saved geographic location preference. */
+  accountGeographicLocation?: string | null;
   children?: React.ReactNode;
 }
 
 interface NoMocksGoalCalculatorTestWrapperProps {
   /**
    * Skip the `GqlMockedProvider` entirely (the test supplies its own Apollo
-   * provider). `onCall`, `readOnly`, `goalCalculation`, and `constantsByYear`
-   * only configure the mocked provider, so they are disallowed here — they
-   * would silently no-op.
+   * provider). `onCall`, `readOnly`, `goalCalculation`, `constantsByYear`, and
+   * `accountGeographicLocation` only configure the mocked provider, so they
+   * are disallowed here — they would silently no-op.
    */
   noMocks: true;
   onCall?: never;
   readOnly?: never;
   goalCalculation?: never;
   constantsByYear?: never;
+  accountGeographicLocation?: never;
   children?: React.ReactNode;
 }
 
@@ -368,6 +372,7 @@ export const GoalCalculatorTestWrapper: React.FC<
   readOnly = false,
   goalCalculation = goalCalculationMock,
   constantsByYear,
+  accountGeographicLocation = null,
   children,
 }) => {
   const content = <GoalCalculatorProvider>{children}</GoalCalculatorProvider>;
@@ -388,6 +393,7 @@ export const GoalCalculatorTestWrapper: React.FC<
             <GqlMockedProvider<{
               GoalCalculation: GoalCalculationQuery;
               GoalCalculatorConstants: GoalCalculatorConstantsQuery;
+              AccountGeographicLocation: AccountGeographicLocationQuery;
             }>
               mocks={{
                 GoalCalculation: {
@@ -399,6 +405,13 @@ export const GoalCalculatorTestWrapper: React.FC<
                   constant: constantsByYear
                     ? mockConstantsByYear(constantsByYear)
                     : constantsMock,
+                },
+                AccountGeographicLocation: {
+                  accountList: {
+                    settings: {
+                      geographicLocation: accountGeographicLocation,
+                    },
+                  },
                 },
               }}
               onCall={onCall}

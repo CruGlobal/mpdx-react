@@ -90,6 +90,8 @@ export const GeographicLocationAccordion: React.FC<
         initialValues={{ geographicLocation: geographicLocation }}
         validationSchema={accountPreferencesSchema}
         onSubmit={onSubmit}
+        enableReinitialize
+        validateOnMount
       >
         {({
           values: { geographicLocation },
@@ -110,7 +112,7 @@ export const GeographicLocationAccordion: React.FC<
             >
               <Autocomplete
                 options={locations}
-                value={geographicLocation ?? null}
+                value={geographicLocation || null}
                 onChange={(_, location) =>
                   setFieldValue('geographicLocation', location)
                 }
