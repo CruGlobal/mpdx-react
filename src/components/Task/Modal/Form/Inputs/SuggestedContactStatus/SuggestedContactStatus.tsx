@@ -32,11 +32,10 @@ export const SuggestedContactStatus: React.FC<SuggestedContactStatusProps> = ({
   changeContactStatus,
   contactStatus,
 }) => {
-  const { t } = useTranslation();
-
   if (!contactIds || contactIds.length !== 1) {
     return null;
   }
+  const { t } = useTranslation();
   const contactId = contactIds[0];
   const { data } = useContactStatusQuery({
     variables: {
