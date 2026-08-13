@@ -57,11 +57,9 @@ export const OrganizationEditAccountModal: React.FC<
             variant: 'success',
           },
         );
+        handleClose();
       },
     });
-
-    handleClose();
-    return;
   };
 
   const OrganizationSchema: yup.ObjectSchema<
