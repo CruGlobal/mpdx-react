@@ -129,9 +129,9 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
             variant: 'success',
           },
         );
+        onDone();
       },
     });
-    onDone();
   };
 
   const donationServicesEmailLink = useMemo(

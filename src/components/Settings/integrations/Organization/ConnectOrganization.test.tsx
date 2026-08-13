@@ -170,6 +170,43 @@ describe('Connect Organization', () => {
     });
   });
 
+  it('should not call onDone when adding the account fails', async () => {
+    const { getByText, getByRole, findByRole } = render(
+      <Components>
+        <GqlMockedProvider<{
+          GetOrganizations: GetOrganizationsQuery;
+        }>
+          mocks={{
+            getOrganizations: {
+              organizations: GetOrganizationsMock,
+            },
+            CreateOrganizationAccount: () => {
+              throw new Error('Server Error');
+            },
+          }}
+        >
+          <ConnectOrganization onDone={onDone} />
+        </GqlMockedProvider>
+      </Components>,
+    );
+
+    userEvent.click(getByRole('combobox'));
+    userEvent.click(await findByRole('option', { name: 'organizationName' }));
+
+    await waitFor(() => {
+      expect(getByText('Add Account')).not.toBeDisabled();
+      userEvent.click(getByText('Add Account'));
+    });
+
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Invalid username or password.',
+        { variant: 'error' },
+      ),
+    );
+    expect(onDone).not.toHaveBeenCalled();
+  });
+
   it('allows offline Organization to be added if disableNewUsers is null', async () => {
     const mutationSpy = jest.fn();
     const { getByText, getByRole, findByRole } = render(
