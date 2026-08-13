@@ -34,7 +34,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
     <SnackbarProvider>
       <GqlMockedProvider<{
         GetUsersOrganizationsAccounts: GetUsersOrganizationsAccountsQuery;
-        getOrganizations: GetOrganizationsQuery;
+        GetOrganizations: GetOrganizationsQuery;
       }>
         mocks={{
           GetUsersOrganizationsAccounts: {
@@ -47,10 +47,12 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 ]
               : [],
           },
-          getOrganizations: {
+          GetOrganizations: {
             organizations: [1, 2, 3].map((id) => ({
               id: `org-${id}`,
               name: `Organization ${id}`,
+              apiClass: 'OfflineOrg',
+              oauth: false,
               disableNewUsers: false,
             })),
           },

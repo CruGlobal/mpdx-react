@@ -109,6 +109,45 @@ describe('OrganizationEditAccountModal', () => {
           password: 'MyPassword',
         },
       });
+      expect(handleClose).toHaveBeenCalled();
     });
+  });
+
+  it('should not close the modal when updating the account fails', async () => {
+    const { getByText, getByRole, getByTestId } = render(
+      <Components>
+        <GqlMockedProvider
+          mocks={{
+            UpdateOrganizationAccount: () => {
+              throw new Error('Server Error');
+            },
+          }}
+        >
+          <OrganizationEditAccountModal
+            handleClose={handleClose}
+            organizationId={organizationId}
+          />
+        </GqlMockedProvider>
+      </Components>,
+    );
+
+    userEvent.type(
+      getByRole('textbox', {
+        name: /username/i,
+      }),
+      'MyUsername',
+    );
+    userEvent.type(getByTestId('passwordInput'), 'MyPassword');
+
+    await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
+    userEvent.click(getByText('Save'));
+
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Unable to update your organization account',
+        { variant: 'error' },
+      ),
+    );
+    expect(handleClose).not.toHaveBeenCalled();
   });
 });

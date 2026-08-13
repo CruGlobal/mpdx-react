@@ -1,4 +1,4 @@
-query getOrganizations {
+query GetOrganizations {
   organizations {
     id
     name
