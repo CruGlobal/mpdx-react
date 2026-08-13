@@ -135,7 +135,7 @@ describe('Connect Organization', () => {
           GetOrganizations: GetOrganizationsQuery;
         }>
           mocks={{
-            getOrganizations: {
+            GetOrganizations: {
               organizations: GetOrganizationsMock,
             },
           }}
@@ -177,7 +177,7 @@ describe('Connect Organization', () => {
           GetOrganizations: GetOrganizationsQuery;
         }>
           mocks={{
-            getOrganizations: {
+            GetOrganizations: {
               organizations: GetOrganizationsMock,
             },
             CreateOrganizationAccount: () => {
@@ -215,7 +215,7 @@ describe('Connect Organization', () => {
           GetOrganizations: GetOrganizationsQuery;
         }>
           mocks={{
-            getOrganizations: {
+            GetOrganizations: {
               organizations: GetOrganizationsMock,
             },
           }}
@@ -251,7 +251,7 @@ describe('Connect Organization', () => {
           GetOrganizations: GetOrganizationsQuery;
         }>
           mocks={{
-            getOrganizations: {
+            GetOrganizations: {
               organizations: GetOrganizationsMock,
             },
           }}
@@ -285,7 +285,7 @@ describe('Connect Organization', () => {
             GetOrganizations: GetOrganizationsQuery;
           }>
             mocks={{
-              getOrganizations: {
+              GetOrganizations: {
                 organizations: GetOrganizationsMock,
               },
             }}
@@ -341,7 +341,7 @@ describe('Connect Organization', () => {
           GetOrganizations: GetOrganizationsQuery;
         }>
           mocks={{
-            getOrganizations: {
+            GetOrganizations: {
               organizations: GetOrganizationsMock,
             },
           }}
