@@ -298,7 +298,9 @@ export const SetupStep: React.FC = () => {
                 <TextField
                   {...params}
                   label={t('Geographic Multiplier')}
-                  helperText={t('If not applicable, select "None"')}
+                  helperText={t(
+                    'Do you live within 50 miles of one of these major cities?',
+                  )}
                   onBlur={(event) => {
                     if (event.target.value === '') {
                       saveField({ geographicLocation: null });
