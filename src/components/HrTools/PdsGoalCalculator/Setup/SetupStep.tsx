@@ -283,9 +283,15 @@ export const SetupStep: React.FC = () => {
               options={locations}
               getOptionLabel={getLocationLabel}
               value={calculation?.geographicLocation ?? 'None'}
-              onChange={(_, newValue: string | null) =>
-                saveField({ geographicLocation: newValue })
-              }
+              onChange={(_, newValue: string | null, reason) => {
+                // Emptying the input fires onChange(null, 'clear') while the
+                // user may still be typing a new location. Defer that save to
+                // blur so mid-edit keystrokes don't mutate and reset the field.
+                if (reason === 'clear') {
+                  return;
+                }
+                saveField({ geographicLocation: newValue });
+              }}
               disabled={!calculation}
               size="small"
               renderInput={(params: AutocompleteRenderInputParams) => (
@@ -293,6 +299,11 @@ export const SetupStep: React.FC = () => {
                   {...params}
                   label={t('Geographic Multiplier')}
                   helperText={t('If not applicable, select "None"')}
+                  onBlur={(event) => {
+                    if (event.target.value === '') {
+                      saveField({ geographicLocation: null });
+                    }
+                  }}
                 />
               )}
             />
