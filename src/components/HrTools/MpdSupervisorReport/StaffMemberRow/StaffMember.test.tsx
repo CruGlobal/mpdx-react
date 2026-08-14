@@ -2,9 +2,10 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { EmployeeData, QuarterHealthEnum } from '../mockData';
+import { EmployeeData } from '../mockData';
 import { StaffMember } from './StaffMember';
 
 const member: EmployeeData = {
@@ -18,12 +19,13 @@ const member: EmployeeData = {
     team: 'FamilyLife',
   },
   quarters: [
-    { label: 'FQ4 25', health: QuarterHealthEnum.Green, payroll: 15000 },
-    { label: 'FQ1 26', health: QuarterHealthEnum.Yellow, payroll: 16000 },
-    { label: 'FQ2 26', health: QuarterHealthEnum.Red, payroll: 17000 },
-    { label: 'FQ3 26', health: QuarterHealthEnum.Green, payroll: 18000 },
+    { label: 'FQ4 25', health: MpdHealthStatusEnum.Green, payroll: 15000 },
+    { label: 'FQ1 26', health: MpdHealthStatusEnum.Yellow, payroll: 16000 },
+    { label: 'FQ2 26', health: MpdHealthStatusEnum.Red, payroll: 17000 },
+    { label: 'FQ3 26', health: MpdHealthStatusEnum.Green, payroll: 18000 },
   ],
   monthlyPayrollHistory: [],
+  quarterlyPayrollHistory: { monthlyGrossSalary: 0, completedQuarters: [] },
   monthlySummary: [],
 };
 

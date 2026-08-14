@@ -1,14 +1,15 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render, screen } from '@testing-library/react';
+import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { QuarterHealthEnum, QuarterStatus } from '../../mockData';
+import { QuarterStatus } from '../../mockData';
 import { StaffTabQuarterly } from './Quarterly';
 
 const quarters: QuarterStatus[] = [
-  { label: 'FQ4 25', health: QuarterHealthEnum.Green, payroll: 15000 },
-  { label: 'FQ1 26', health: QuarterHealthEnum.Yellow, payroll: 16000 },
-  { label: 'FQ2 26', health: QuarterHealthEnum.Red, payroll: 17000 },
-  { label: 'FQ3 26', health: QuarterHealthEnum.Green, payroll: 18000 },
+  { label: 'FQ4 25', health: MpdHealthStatusEnum.Green, payroll: 15000 },
+  { label: 'FQ1 26', health: MpdHealthStatusEnum.Yellow, payroll: 16000 },
+  { label: 'FQ2 26', health: MpdHealthStatusEnum.Red, payroll: 17000 },
+  { label: 'FQ3 26', health: MpdHealthStatusEnum.Green, payroll: 18000 },
 ];
 
 const renderQuarterly = (quarterList: QuarterStatus[]) =>

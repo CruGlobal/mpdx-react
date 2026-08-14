@@ -11,21 +11,24 @@ import {
 import { styled } from '@mui/material/styles';
 import { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
+import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { getInitials, healthColor } from '../helpers';
-import { EmployeeData, QuarterHealthEnum } from '../mockData';
+import { EmployeeData } from '../mockData';
 
-const healthLabel = (t: TFunction, health: QuarterHealthEnum): string => {
+const healthLabel = (t: TFunction, health: MpdHealthStatusEnum): string => {
   switch (health) {
-    case QuarterHealthEnum.Green:
+    case MpdHealthStatusEnum.Green:
       return t('on track');
-    case QuarterHealthEnum.Red:
+    case MpdHealthStatusEnum.Red:
       return t('at risk');
-    case QuarterHealthEnum.Yellow:
-    default:
+    case MpdHealthStatusEnum.Yellow:
       return t('needs attention');
+    case MpdHealthStatusEnum.Gray:
+    default:
+      return t('no data');
   }
 };
 
@@ -54,7 +57,7 @@ const GridQuarter = styled(Grid)(({ theme }) => ({
 
 const QuarterChip = styled(Chip, {
   shouldForwardProp: (prop) => prop !== 'health',
-})<{ health: QuarterHealthEnum }>(({ health }) => {
+})<{ health: MpdHealthStatusEnum }>(({ health }) => {
   const { bg, color } = healthColor(theme, health);
   return {
     height: 22,
