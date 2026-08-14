@@ -288,6 +288,7 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
           title={modalState.title}
           message={
             <Trans
+              t={t}
               defaults="{{message}}"
               shouldUnescape
               values={{ message: modalState.message }}

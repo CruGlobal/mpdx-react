@@ -260,6 +260,7 @@ const Contact = ({
               {contact.primaryAddress?.source && (
                 <Typography variant="body2">
                   <Trans
+                    t={t}
                     defaults="<bold>Source:</bold> {{where}} ({{date}})"
                     shouldUnescape
                     values={{
@@ -288,6 +289,7 @@ const Contact = ({
           >
             <Typography variant="body2">
               <Trans
+                t={t}
                 defaults="<bold>Send newsletter?</bold>"
                 components={{ bold: <strong /> }}
               />

@@ -2,7 +2,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
 import { Button } from '@mui/material';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { SetupPage } from 'src/components/Setup/SetupPage';
 import { LargeButton } from 'src/components/Setup/styledComponents';
@@ -43,11 +43,11 @@ const FinishPage: React.FC = () => {
       </Head>
       <SetupPage
         title={
-          <Trans>
+          <>
             {t('Congratulations!')}
             <br />
             {t("You're all set!")}
-          </Trans>
+          </>
         }
       >
         <p>

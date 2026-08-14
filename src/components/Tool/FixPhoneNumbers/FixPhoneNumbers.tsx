@@ -199,6 +199,7 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
                 <Box className={classes.footer}>
                   <Typography>
                     <Trans
+                      t={t}
                       defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
                       shouldUnescape
                       values={{ value: data.people.totalCount }}
