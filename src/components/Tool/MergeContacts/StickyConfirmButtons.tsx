@@ -36,6 +36,7 @@ export const StickyConfirmButtons: React.FC<StickyConfirmButtonsProps> = ({
       <Box>
         <Typography>
           <Trans
+            t={t}
             defaults="<i>Showing <bold>{{duplicatesDisplayedCount}}</bold> of <bold>{{totalCount}}</bold></i>"
             shouldUnescape
             values={{
