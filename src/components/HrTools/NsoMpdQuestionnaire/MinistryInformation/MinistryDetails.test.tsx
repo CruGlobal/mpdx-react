@@ -5,10 +5,16 @@ import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
 import { NsoMpdQuestionnaireTestWrapper } from '../NsoMpdQuestionnaireTestWrapper';
 import { MinistryDetails } from './MinistryDetails';
 
-const TestComponent: React.FC<{ onCall?: MockLinkCallHandler }> = ({
-  onCall,
-}) => (
-  <NsoMpdQuestionnaireTestWrapper onCall={onCall}>
+const TestComponent: React.FC<{
+  onCall?: MockLinkCallHandler;
+  questionnaire?: React.ComponentProps<
+    typeof NsoMpdQuestionnaireTestWrapper
+  >['newStaffQuestionnaire'];
+}> = ({ onCall, questionnaire }) => (
+  <NsoMpdQuestionnaireTestWrapper
+    onCall={onCall}
+    newStaffQuestionnaire={questionnaire}
+  >
     <MinistryDetails />
   </NsoMpdQuestionnaireTestWrapper>
 );
@@ -99,6 +105,53 @@ describe('MinistryDetails', () => {
       await findByRole('option', { name: 'Atlanta, GA' }),
     ).toBeInTheDocument();
     expect(getByRole('option', { name: 'Miami, FL' })).toBeInTheDocument();
+  });
+
+  it('defaults the city question to None and does not require an answer', async () => {
+    const { findByRole } = render(
+      <TestComponent questionnaire={{ geographicLocation: null }} />,
+    );
+
+    const cityCombobox = await findByRole('combobox', {
+      name: 'Is your ministry assignment location within 50 miles of one of these cities?',
+    });
+    await waitFor(() =>
+      expect(cityCombobox).not.toHaveAttribute('aria-disabled', 'true'),
+    );
+
+    expect(cityCombobox).toHaveTextContent('None');
+    expect(cityCombobox).not.toBeRequired();
+  });
+
+  it('saves None when it is explicitly selected', async () => {
+    const mutationSpy = jest.fn();
+    const { findByRole } = render(
+      <TestComponent
+        onCall={mutationSpy}
+        questionnaire={{ geographicLocation: 'Miami, FL' }}
+      />,
+    );
+
+    const cityCombobox = await findByRole('combobox', {
+      name: 'Is your ministry assignment location within 50 miles of one of these cities?',
+    });
+    await waitFor(() =>
+      expect(cityCombobox).not.toHaveAttribute('aria-disabled', 'true'),
+    );
+    userEvent.click(cityCombobox);
+    userEvent.click(await findByRole('option', { name: 'None' }));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'UpdateNewStaffQuestionnaire',
+        {
+          input: {
+            accountListId: 'account-list-1',
+            attributes: { geographicLocation: 'None' },
+          },
+        },
+      ),
+    );
   });
 
   it('offers Field and Office assignment types', () => {

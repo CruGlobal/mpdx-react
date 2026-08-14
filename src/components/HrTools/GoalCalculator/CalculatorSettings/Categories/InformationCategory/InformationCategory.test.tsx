@@ -370,13 +370,14 @@ describe('InformationCategory', () => {
       );
     });
 
-    it('does not save when an empty Geographic Location is cleared and loses focus', async () => {
+    it('defaults to None and does not save when cleared and blurred without a saved location', async () => {
       mutationSpy.mockClear();
       const { getByRole } = render(<TestComponent />);
 
       const input = getByRole('combobox', { name: 'Geographic Location' });
       await waitFor(() => expect(input).not.toBeDisabled());
-      expect(input).toHaveValue('');
+      // An unset location displays as None
+      await waitFor(() => expect(input).toHaveValue('None'));
 
       userEvent.clear(input);
       userEvent.tab();

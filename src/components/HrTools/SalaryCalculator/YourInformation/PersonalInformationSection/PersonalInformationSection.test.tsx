@@ -12,11 +12,13 @@ const TestComponent: React.FC<{
   hasSpouse?: boolean;
   requestMock?: SalaryRequestMock;
   payrollDates?: SalaryCalculatorTestWrapperProps['payrollDates'];
-}> = ({ hasSpouse, requestMock, payrollDates }) => (
+  onCall?: SalaryCalculatorTestWrapperProps['onCall'];
+}> = ({ hasSpouse, requestMock, payrollDates, onCall }) => (
   <SalaryCalculatorTestWrapper
     hasSpouse={hasSpouse}
     salaryRequestMock={requestMock}
     payrollDates={payrollDates}
+    onCall={onCall}
   >
     <PersonalInformationSection />
   </SalaryCalculatorTestWrapper>
@@ -68,10 +70,10 @@ describe('PersonalInformationSection', () => {
   });
 
   it('should display married personal information values correctly', async () => {
-    // Explicitly clear the saved location so the combobox is empty. (MUI v7's
-    // Autocomplete renders a controlled `value` even when it isn't one of the
-    // `options`, so relying on the auto-generated mock string would populate
-    // the field.)
+    // Explicitly clear the saved location so the combobox falls back to None.
+    // (MUI v7's Autocomplete renders a controlled `value` even when it isn't
+    // one of the `options`, so relying on the auto-generated mock string would
+    // populate the field.)
     const { findByRole } = render(
       <TestComponent requestMock={{ location: null }} />,
     );
@@ -80,7 +82,7 @@ describe('PersonalInformationSection', () => {
       name: 'Nearest Geographic Multiplier Location',
     });
     await waitFor(() => {
-      expect(locationCombobox).toHaveValue('');
+      expect(locationCombobox).toHaveValue('None');
     });
 
     expect(await findByRole('cell', { name: '4 years' })).toBeInTheDocument();
@@ -112,7 +114,44 @@ describe('PersonalInformationSection', () => {
 
     userEvent.click(await findByRole('button', { name: 'Open' }));
 
-    expect(await findAllByRole('option')).toHaveLength(2);
+    // The two mocked locations plus the guaranteed None option
+    expect(await findAllByRole('option')).toHaveLength(3);
+  });
+
+  it('does not save while the location is cleared by typing and saves null on blur', async () => {
+    const mutationSpy = jest.fn();
+    const { findByRole } = render(
+      <TestComponent
+        requestMock={{ location: 'Miami, FL' }}
+        onCall={mutationSpy}
+      />,
+    );
+
+    const locationCombobox = await findByRole('combobox', {
+      name: 'Nearest Geographic Multiplier Location',
+    });
+    await waitFor(() => {
+      expect(locationCombobox).toHaveValue('Miami, FL');
+    });
+
+    userEvent.clear(locationCombobox);
+
+    // Yield to the microtask queue so any pending mutation would have fired.
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(mutationSpy).not.toHaveGraphqlOperation('UpdateSalaryCalculation');
+    expect(locationCombobox).toHaveValue('');
+
+    userEvent.tab();
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateSalaryCalculation', {
+        input: {
+          attributes: {
+            location: null,
+          },
+        },
+      }),
+    );
   });
 
   it('should render the effective paycheck note when payroll dates match', async () => {

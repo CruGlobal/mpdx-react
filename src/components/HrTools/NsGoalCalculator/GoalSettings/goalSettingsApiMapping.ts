@@ -69,7 +69,8 @@ export const calculationToFormValues = (
   staffConferenceTransfer: toNumberInput(calc.staffConferenceTransfer),
   accountTransfers: toNumberInput(calc.accountTransfers),
   advocacyTransfers: toNumberInput(calc.advocacyTransfers),
-  geographicLocation: calc.geographicLocation ?? '',
+  // An unset location defaults to the 'None' (0 multiplier) constant option
+  geographicLocation: calc.geographicLocation ?? 'None',
   studentLoanMonthlyPayment: toNumberInput(calc.studentLoanMonthlyPayment),
   carLoanMonthlyPayment: toNumberInput(calc.carLoanMonthlyPayment),
   creditCardDebtMonthlyPayment: toNumberInput(

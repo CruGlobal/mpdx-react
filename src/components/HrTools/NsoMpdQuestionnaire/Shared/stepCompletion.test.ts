@@ -107,6 +107,15 @@ describe('isStepComplete', () => {
     ).toBe(false);
   });
 
+  it('treats geographic location as optional for the Ministry step', () => {
+    expect(
+      isStepComplete(NsoMpdQuestionnaireStepEnum.MinistryInformation, {
+        ...completeSingle,
+        geographicLocation: null,
+      }),
+    ).toBe(true);
+  });
+
   it('is incomplete when a required field is missing', () => {
     expect(
       isStepComplete(NsoMpdQuestionnaireStepEnum.MinistryInformation, {

@@ -69,6 +69,7 @@ export const PersonalInformationSection: React.FC = () => {
                   label={t('Nearest Geographic Multiplier Location')}
                   fieldName="location"
                   options={locations}
+                  emptyValue="None"
                   textFieldProps={{
                     InputLabelProps: {
                       sx: { fontSize: theme.typography.body2.fontSize },

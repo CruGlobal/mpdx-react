@@ -150,7 +150,7 @@ export const InformationCategoryPersonalForm: React.FC<
           <Grid size={12}>
             <Autocomplete
               options={locations}
-              value={geographicLocation ?? null}
+              value={geographicLocation ?? 'None'}
               onChange={(_, newValue, reason) => {
                 // Emptying the input fires onChange(null, 'clear') while the
                 // user may still be typing a new location. Defer that save to

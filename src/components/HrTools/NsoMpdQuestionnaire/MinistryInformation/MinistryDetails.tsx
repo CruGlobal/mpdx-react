@@ -29,13 +29,8 @@ export const MinistryDetails: React.FC = () => {
         ministryLocation: yup
           .string()
           .required(t('Please enter an assignment location')),
-        geographicLocation: yup
-          .string()
-          .required(
-            t(
-              'Please select an answer. If none of the cities apply, select "None."',
-            ),
-          ),
+        // Optional: an unanswered question displays and calculates as "None"
+        geographicLocation: yup.string().nullable(),
         assignmentType: yup
           .string()
           .required(t('Please select an assignment type')),
@@ -102,6 +97,8 @@ export const MinistryDetails: React.FC = () => {
           startAdornment={<LocationOn />}
           helperText={t('If none of the locations apply, select "None."')}
           options={cities.map((city) => ({ value: city, label: city }))}
+          required={false}
+          emptyValue="None"
         />
       )}
 

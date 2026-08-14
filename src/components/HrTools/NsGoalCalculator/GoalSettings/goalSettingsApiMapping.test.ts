@@ -97,14 +97,21 @@ describe('calculationToFormValues', () => {
       ...baseCalculation,
       age: null,
       annualRequestedSalary: null,
-      geographicLocation: null,
       calculationsYear: null,
     });
 
     expect(values.age).toBe('');
     expect(values.annualRequestedSalary).toBe('');
-    expect(values.geographicLocation).toBe('');
     expect(values.calculationsYear).toBe('');
+  });
+
+  it('defaults geographic location to None when unset', () => {
+    const values = calculationToFormValues({
+      ...baseCalculation,
+      geographicLocation: null,
+    });
+
+    expect(values.geographicLocation).toBe('None');
   });
 
   describe('403(b) contribution default', () => {
