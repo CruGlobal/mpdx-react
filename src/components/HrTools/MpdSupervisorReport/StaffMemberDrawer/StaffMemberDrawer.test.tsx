@@ -3,12 +3,13 @@ import { ThemeProvider } from '@mui/material/styles';
 import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
+import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import {
   MpdSupervisorReportProvider,
   useMpdSupervisorReport,
 } from '../MpdSupervisorReportContext';
-import { EmployeeData, QuarterHealthEnum } from '../mockData';
+import { EmployeeData } from '../mockData';
 import { StaffMemberDrawer } from './StaffMemberDrawer';
 
 const memberWithSpouse: EmployeeData = {
@@ -29,12 +30,13 @@ const memberWithSpouse: EmployeeData = {
     staffAccountID: '1000000002',
   },
   quarters: [
-    { label: 'FQ4 25', health: QuarterHealthEnum.Green, payroll: 15000 },
-    { label: 'FQ1 26', health: QuarterHealthEnum.Yellow, payroll: 15000 },
-    { label: 'FQ2 26', health: QuarterHealthEnum.Red, payroll: 15000 },
-    { label: 'FQ3 26', health: QuarterHealthEnum.Green, payroll: 15000 },
+    { label: 'FQ4 25', health: MpdHealthStatusEnum.Green, payroll: 15000 },
+    { label: 'FQ1 26', health: MpdHealthStatusEnum.Yellow, payroll: 15000 },
+    { label: 'FQ2 26', health: MpdHealthStatusEnum.Red, payroll: 15000 },
+    { label: 'FQ3 26', health: MpdHealthStatusEnum.Green, payroll: 15000 },
   ],
   monthlyPayrollHistory: [],
+  quarterlyPayrollHistory: { monthlyGrossSalary: 0, completedQuarters: [] },
 };
 
 const memberWithoutSpouse: EmployeeData = {
@@ -48,12 +50,13 @@ const memberWithoutSpouse: EmployeeData = {
     team: 'Digital strategies',
   },
   quarters: [
-    { label: 'FQ4 25', health: QuarterHealthEnum.Red, payroll: 15000 },
-    { label: 'FQ1 26', health: QuarterHealthEnum.Red, payroll: 15000 },
-    { label: 'FQ2 26', health: QuarterHealthEnum.Red, payroll: 15000 },
-    { label: 'FQ3 26', health: QuarterHealthEnum.Red, payroll: 15000 },
+    { label: 'FQ4 25', health: MpdHealthStatusEnum.Red, payroll: 15000 },
+    { label: 'FQ1 26', health: MpdHealthStatusEnum.Red, payroll: 15000 },
+    { label: 'FQ2 26', health: MpdHealthStatusEnum.Red, payroll: 15000 },
+    { label: 'FQ3 26', health: MpdHealthStatusEnum.Red, payroll: 15000 },
   ],
   monthlyPayrollHistory: [],
+  quarterlyPayrollHistory: { monthlyGrossSalary: 0, completedQuarters: [] },
 };
 
 let openMemberFn: (member: EmployeeData) => void;

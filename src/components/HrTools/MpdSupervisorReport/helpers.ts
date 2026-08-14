@@ -1,5 +1,5 @@
 import { Theme } from '@mui/material';
-import { QuarterHealthEnum } from './mockData';
+import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
 
 /**
  * Build avatar initials from a person's first and last name.
@@ -15,24 +15,29 @@ export const getInitials = (firstName?: string, lastName?: string): string =>
  */
 export const healthColor = (
   theme: Theme,
-  health: QuarterHealthEnum,
+  health: MpdHealthStatusEnum,
 ): { bg: string; color: string } => {
   switch (health) {
-    case QuarterHealthEnum.Green:
+    case MpdHealthStatusEnum.Green:
       return {
         bg: theme.palette.chipGreenLight.main,
         color: theme.palette.chipGreenDark.main,
       };
-    case QuarterHealthEnum.Red:
+    case MpdHealthStatusEnum.Red:
       return {
         bg: theme.palette.chipRedLight.main,
         color: theme.palette.chipRedDark.main,
       };
-    case QuarterHealthEnum.Yellow:
-    default:
+    case MpdHealthStatusEnum.Yellow:
       return {
         bg: theme.palette.chipYellowLight.main,
         color: theme.palette.chipYellowDark.main,
+      };
+    case MpdHealthStatusEnum.Gray:
+    default:
+      return {
+        bg: theme.palette.chipGrayLight.main,
+        color: theme.palette.chipGrayDark.main,
       };
   }
 };
