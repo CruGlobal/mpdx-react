@@ -2,12 +2,12 @@ import NextLink from 'next/link';
 import React from 'react';
 import { Box, Link, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { useContactPanel } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { PreferredContactMethodEnum } from 'src/graphql/types.generated';
 import { formatLanguage } from 'src/lib/data/languages';
-import i18n from 'src/lib/i18n';
 import { ContactOtherFragment } from './ContactOther.generated';
 
 const ContactOtherContainer = styled(Box)(({ theme }) => ({
@@ -33,24 +33,27 @@ interface ContactDetailsOtherProp {
   contact: ContactOtherFragment;
 }
 
-export const localizedContactMethod = (method?: string | null): string => {
+export const localizedContactMethod = (
+  method: string | null | undefined,
+  t: TFunction,
+): string => {
   switch (method) {
     case PreferredContactMethodEnum.Sms:
-      return i18n.t('SMS');
+      return t('SMS');
     case PreferredContactMethodEnum.PhoneCall:
-      return i18n.t('Phone Call');
+      return t('Phone Call');
     case PreferredContactMethodEnum.Email:
-      return i18n.t('Email');
+      return t('Email');
     case PreferredContactMethodEnum.Facebook:
-      return i18n.t('Facebook');
+      return t('Facebook');
     case PreferredContactMethodEnum.Instagram:
-      return i18n.t('Instagram');
+      return t('Instagram');
     case PreferredContactMethodEnum.WeChat:
-      return i18n.t('WeChat');
+      return t('WeChat');
     case PreferredContactMethodEnum.WhatsApp:
-      return i18n.t('WhatsApp');
+      return t('WhatsApp');
     default:
-      return i18n.t('N/A');
+      return t('N/A');
   }
 };
 
@@ -123,7 +126,7 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
             {t('Preferred Contact Method')}
           </ContactOtherTextLabel>
           <Typography variant="subtitle1">
-            {localizedContactMethod(preferredContactMethod)}
+            {localizedContactMethod(preferredContactMethod, t)}
           </Typography>
         </ContactOtherTextContainer>
         <ContactOtherTextContainer>

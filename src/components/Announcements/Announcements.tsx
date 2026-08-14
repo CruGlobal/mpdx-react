@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import { getApolloContext } from '@apollo/client';
 import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
 import { AlertBanner } from 'src/components/Shared/alertBanner/AlertBanner';
 import {
   ActionEnum,
@@ -17,7 +18,6 @@ import {
 import { useOptionalAccountListId } from 'src/hooks/useAccountListId';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { dispatch } from 'src/lib/analytics';
-import i18n from 'src/lib/i18n';
 import { DynamicAddAppealModal } from '../Tool/Appeal/Modals/AddAppealModal/DynamicAddAppealModal';
 import { DynamicAnnouncementBanner } from './AnnouncementBanner/DynamicAnnouncementBanner';
 import { DynamicAnnouncementModal } from './AnnouncementModal/DynamicAnnouncementModal';
@@ -42,6 +42,7 @@ export const Announcements: React.FC = () => {
 };
 
 const Announcement: React.FC = () => {
+  const { t } = useTranslation();
   const { push } = useRouter();
   const accountListId = useOptionalAccountListId();
   const [showAppealModal, setShowAppealModal] = useState(false);
@@ -127,7 +128,7 @@ const Announcement: React.FC = () => {
     [accountListId, announcement],
   );
 
-  const appealName = `${DateTime.local().year} ${i18n.t('End of Year Ask')}`;
+  const appealName = `${DateTime.local().year} ${t('End of Year Ask')}`;
   const appealStatuses = useMemo(
     () => [
       {

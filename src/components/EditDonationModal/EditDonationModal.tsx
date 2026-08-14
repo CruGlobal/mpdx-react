@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useMemo, useState } from 'react';
 import {
   CircularProgress,
   DialogActions,
@@ -27,7 +27,6 @@ import Modal from 'src/components/Shared/Modal/Modal';
 import { FormFieldsGridContainer } from 'src/components/Task/Modal/Form/Container/FormFieldsGridContainer';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
-import i18n from 'src/lib/i18n';
 import { requiredDateTime } from 'src/lib/yupHelpers';
 import { SmallLoadingSpinner } from '../Settings/Organization/LoadingSpinner';
 import { CustomDateField } from '../Shared/DateTimePickers/CustomDateField';
@@ -45,30 +44,34 @@ interface EditDonationModalProps {
   handleClose: () => void;
 }
 
-const donationSchema = yup.object({
-  convertedAmount: yup
-    .number()
-    .typeError(i18n.t('Must be a number'))
-    .required(i18n.t('Amount is required')),
-  currency: yup.string().required(i18n.t('Currency is required')),
-  date: requiredDateTime(i18n.t('Date is required')),
-  donorAccountId: yup.string().required(i18n.t('Partner Account is required')),
-  designationAccountId: yup
-    .string()
-    .required(i18n.t('Designation Account is required')),
-  appealId: yup.string().optional(),
-  appealAmount: yup.number(),
-  memo: yup.string().optional(),
-});
-
-type Attributes = yup.InferType<typeof donationSchema>;
-
 export const EditDonationModal: React.FC<EditDonationModalProps> = ({
   open,
   donation,
   handleClose,
 }) => {
   const { t } = useTranslation();
+
+  const donationSchema = useMemo(
+    () =>
+      yup.object({
+        convertedAmount: yup
+          .number()
+          .typeError(t('Must be a number'))
+          .required(t('Amount is required')),
+        currency: yup.string().required(t('Currency is required')),
+        date: requiredDateTime(t('Date is required')),
+        donorAccountId: yup.string().required(t('Partner Account is required')),
+        designationAccountId: yup
+          .string()
+          .required(t('Designation Account is required')),
+        appealId: yup.string().optional(),
+        appealAmount: yup.number(),
+        memo: yup.string().optional(),
+      }),
+    [t],
+  );
+
+  type Attributes = yup.InferType<typeof donationSchema>;
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
   const accountListId = useAccountListId();
 
@@ -100,8 +103,8 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
         attributes: {
           id: donation.id,
           appealId: fields.appealId,
-          appealAmount: parseFloat(fields.appealAmount as unknown as string),
-          amount: parseFloat(fields.convertedAmount as unknown as string),
+          appealAmount: parseFloat(String(fields.appealAmount)),
+          amount: parseFloat(String(fields.convertedAmount)),
           currency: fields.currency,
           designationAccountId: fields.designationAccountId,
           donationDate: fields.date.toISODate(),

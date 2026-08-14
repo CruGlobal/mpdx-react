@@ -7,6 +7,7 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/HrTools/Shared/CalculationReports/Shared/sharedTypes';
+import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { HcmQuery } from '../../Shared/HcmData/Hcm.generated';
 import { AdditionalSalaryRequestTestWrapper } from '../AdditionalSalaryRequestTestWrapper';
@@ -54,7 +55,7 @@ const TestComponent: React.FC = () => {
 
   return (
     <div>
-      <h2>{getHeader(currentIndex)}</h2>
+      <h2>{getHeader(currentIndex, i18n.t)}</h2>
       <div aria-label="drawer state" data-open={isDrawerOpen}>
         Drawer: {isDrawerOpen ? 'open' : 'closed'}
       </div>

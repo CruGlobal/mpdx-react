@@ -60,7 +60,7 @@ const Preferences: React.FC = () => {
         ? (query.selectedTab as PreferenceAccordion)
         : null,
     );
-  const countries = getCountries();
+  const countries = getCountries(t);
   const timeZones = useGetTimezones();
 
   const [_, setSetupPosition] = useUserPreference({

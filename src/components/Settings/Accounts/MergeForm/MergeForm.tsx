@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import { ReactElement, useMemo } from 'react';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import {
   Alert,
@@ -23,7 +23,6 @@ import { SubmitButton } from 'src/components/Shared/Modal/ActionButtons/ActionBu
 import { PaddedBox } from 'src/components/Shared/styledComponents/PaddedBox';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import {
   useAccountListQuery,
@@ -45,20 +44,24 @@ type FormikSchema = {
   accept: boolean;
 };
 
-const formikSchema: yup.ObjectSchema<FormikSchema> = yup.object({
-  selectedAccountId: yup.string().required(i18n.t('Account is required')),
-  accept: yup
-    .boolean()
-    .oneOf([true], i18n.t('You must accept before proceeding'))
-    .required(),
-});
-
 type MergeFormProps = {
   isSpouse: boolean;
 };
 
 export const MergeForm: React.FC<MergeFormProps> = ({ isSpouse }) => {
   const { t } = useTranslation();
+
+  const formikSchema: yup.ObjectSchema<FormikSchema> = useMemo(
+    () =>
+      yup.object({
+        selectedAccountId: yup.string().required(t('Account is required')),
+        accept: yup
+          .boolean()
+          .oneOf([true], t('You must accept before proceeding'))
+          .required(),
+      }),
+    [t],
+  );
   const { enqueueSnackbar } = useSnackbar();
   const accountListId = useAccountListId() || '';
   const { data } = useGetAccountListsForMergingQuery();

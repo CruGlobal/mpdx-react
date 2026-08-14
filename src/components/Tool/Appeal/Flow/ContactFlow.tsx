@@ -1,11 +1,11 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Box } from '@mui/material';
+import { TFunction } from 'i18next';
 import { useSnackbar } from 'notistack';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useTranslation } from 'react-i18next';
 import { PledgeStatusEnum } from 'src/graphql/types.generated';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { AppealHeaderInfo } from '../AppealDetails/AppealHeaderInfo/AppealHeaderInfo';
 import { AppealQuery } from '../AppealDetails/AppealsMainPanel/AppealInfo.generated';
@@ -43,34 +43,34 @@ export const colorMap = {
   'color-received': theme.palette.progressBarOrange.main,
 };
 
-const flowOptions: ContactFlowOption[] = [
+const getFlowOptions = (t: TFunction): ContactFlowOption[] => [
   {
     id: crypto.randomUUID(),
-    name: i18n.t('Excluded'),
+    name: t('Excluded'),
     status: AppealStatusEnum.Excluded,
     color: colorMap['color-danger'],
   },
   {
     id: crypto.randomUUID(),
-    name: i18n.t('Asked'),
+    name: t('Asked'),
     status: AppealStatusEnum.Asked,
     color: colorMap['color-text'],
   },
   {
     id: crypto.randomUUID(),
-    name: i18n.t('Committed'),
+    name: t('Committed'),
     status: AppealStatusEnum.NotReceived,
     color: colorMap['color-committed'],
   },
   {
     id: crypto.randomUUID(),
-    name: i18n.t('Received'),
+    name: t('Received'),
     status: AppealStatusEnum.ReceivedNotProcessed,
     color: colorMap['color-received'],
   },
   {
     id: crypto.randomUUID(),
-    name: i18n.t('Given'),
+    name: t('Given'),
     status: AppealStatusEnum.Processed,
     color: colorMap['color-given'],
   },
@@ -82,6 +82,7 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
   appealInfoLoading,
 }: ContactFlowProps) => {
   const { t } = useTranslation();
+  const flowOptions = useMemo(() => getFlowOptions(t), [t]);
   const { enqueueSnackbar } = useSnackbar();
   const [addExcludedContactModalOpen, setAddExcludedContactModalOpen] =
     useState(false);

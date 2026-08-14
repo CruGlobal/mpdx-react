@@ -374,8 +374,10 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                         >
                           {Object.values(PreferredContactMethodEnum).map(
                             (value) => {
-                              const contactMethod =
-                                localizedContactMethod(value);
+                              const contactMethod = localizedContactMethod(
+                                value,
+                                t,
+                              );
                               return (
                                 <MenuItem
                                   key={value}

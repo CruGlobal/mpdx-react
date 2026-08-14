@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import i18next from 'src/lib/i18n';
+import { useTranslation } from 'react-i18next';
 import { useGetUserQuery } from '../GetUser.generated';
 
 export type UserPreferenceType = {
@@ -18,15 +18,16 @@ interface Props {
   children?: React.ReactNode;
 }
 export const UserPreferenceProvider: React.FC<Props> = ({ children }) => {
+  const { i18n } = useTranslation();
   const { data } = useGetUserQuery();
   const [locale, setLocale] = useState('en-US');
 
   useEffect(() => {
     if (data) {
-      i18next.changeLanguage(data.user.preferences?.language ?? 'en');
+      i18n.changeLanguage(data.user.preferences?.language ?? 'en');
       setLocale(data.user.preferences?.locale ?? 'en-US');
     }
-  }, [data]);
+  }, [data, i18n]);
 
   return (
     <UserPreferenceContext.Provider

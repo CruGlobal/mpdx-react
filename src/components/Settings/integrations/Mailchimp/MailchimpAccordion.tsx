@@ -26,7 +26,6 @@ import { SubmitButton } from 'src/components/Shared/Modal/ActionButtons/ActionBu
 import { MailchimpAccount } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';
-import i18n from 'src/lib/i18n';
 import {
   AccordionProps,
   StyledList,
@@ -43,13 +42,6 @@ import {
 } from './MailchimpAccount.generated';
 import { DeleteMailchimpAccountModal } from './Modals/DeleteMailchimpModal';
 
-const mailchimpSchema: yup.ObjectSchema<
-  Pick<MailchimpAccount, 'autoLogCampaigns' | 'primaryListId'>
-> = yup.object({
-  autoLogCampaigns: yup.boolean().required(),
-  primaryListId: yup.string().required(i18n.t('A list is required')),
-});
-
 const StyledFormControlLabel = styled(FormControlLabel)(() => ({
   flex: '0 1 50%',
   margin: '0 0 0 -11px',
@@ -65,6 +57,16 @@ export const MailchimpAccordion: React.FC<AccordionProps> = ({
   disabled,
 }) => {
   const { t } = useTranslation();
+  const mailchimpSchema: yup.ObjectSchema<
+    Pick<MailchimpAccount, 'autoLogCampaigns' | 'primaryListId'>
+  > = useMemo(
+    () =>
+      yup.object({
+        autoLogCampaigns: yup.boolean().required(),
+        primaryListId: yup.string().required(t('A list is required')),
+      }),
+    [t],
+  );
   const [showSettings, setShowSettings] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { enqueueSnackbar } = useSnackbar();

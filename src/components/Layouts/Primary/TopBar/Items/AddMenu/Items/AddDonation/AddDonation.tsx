@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import {
   Box,
   CircularProgress,
@@ -27,7 +27,6 @@ import {
 } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import { FormTextField } from 'src/components/Shared/styledComponents/FormTextField';
 import { LogFormLabel } from 'src/components/Shared/styledComponents/LogStyling';
-import i18n from 'src/lib/i18n';
 import { requiredDateTime } from 'src/lib/yupHelpers';
 import {
   useAddDonationMutation,
@@ -39,55 +38,58 @@ interface AddDonationProps {
   handleClose: () => void;
 }
 
-const donationSchema = yup.object({
-  amount: yup
-    .number()
-    .typeError('Amount must be a valid number')
-    .required(i18n.t('Amount is required'))
-    .test(
-      'Is amount in valid currency format?',
-      'Amount must be in valid currency format',
-      (amount) => /\$?[0-9][0-9.,]*/.test(amount as unknown as string),
-    )
-    .test(
-      'Is positive?',
-      'Must use a positive number for amount',
-      (value) => parseFloat(value as unknown as string) > 0,
-    ),
-  appealAmount: yup
-    .number()
-    .typeError('Appeal amount must be a valid number')
-    .nullable()
-    .test(
-      'Is appeal amount in valid currency format?',
-      'Appeal amount must be in valid currency format',
-      (amount) =>
-        !amount || /\$?[0-9][0-9.,]*/.test(amount as unknown as string),
-    )
-    .test(
-      'Is positive?',
-      'Must use a positive number for appeal amount',
-      (value) => !value || parseFloat(value as unknown as string) > 0,
-    ),
-  appealId: yup.string().nullable(),
-  currency: yup.string().required(i18n.t('Currency is required')),
-  designationAccountId: yup
-    .string()
-    .required(i18n.t('Designation Account is required')),
-  donationDate: requiredDateTime(i18n.t('Date is required')),
-  donorAccountId: yup.string().required(i18n.t('Partner Account is required')),
-  memo: yup.string().nullable(),
-  motivation: yup.string().nullable(),
-  paymentMethod: yup.string().nullable(),
-});
-
-type Attributes = yup.InferType<typeof donationSchema>;
-
 export const AddDonation = ({
   accountListId,
   handleClose,
 }: AddDonationProps): ReactElement<AddDonationProps> => {
   const { t } = useTranslation();
+
+  const donationSchema = useMemo(
+    () =>
+      yup.object({
+        amount: yup
+          .number()
+          .typeError(t('Amount must be a valid number'))
+          .required(t('Amount is required'))
+          .test(
+            'Is amount in valid currency format?',
+            t('Amount must be in valid currency format'),
+            (amount) => /\$?[0-9][0-9.,]*/.test(String(amount)),
+          )
+          .test(
+            'Is positive?',
+            t('Must use a positive number for amount'),
+            (value) => parseFloat(String(value)) > 0,
+          ),
+        appealAmount: yup
+          .number()
+          .typeError(t('Appeal amount must be a valid number'))
+          .nullable()
+          .test(
+            'Is appeal amount in valid currency format?',
+            t('Appeal amount must be in valid currency format'),
+            (amount) => !amount || /\$?[0-9][0-9.,]*/.test(String(amount)),
+          )
+          .test(
+            'Is positive?',
+            t('Must use a positive number for appeal amount'),
+            (value) => !value || parseFloat(String(value)) > 0,
+          ),
+        appealId: yup.string().nullable(),
+        currency: yup.string().required(t('Currency is required')),
+        designationAccountId: yup
+          .string()
+          .required(t('Designation Account is required')),
+        donationDate: requiredDateTime(t('Date is required')),
+        donorAccountId: yup.string().required(t('Partner Account is required')),
+        memo: yup.string().nullable(),
+        motivation: yup.string().nullable(),
+        paymentMethod: yup.string().nullable(),
+      }),
+    [t],
+  );
+
+  type Attributes = yup.InferType<typeof donationSchema>;
   const { enqueueSnackbar } = useSnackbar();
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
@@ -134,10 +136,7 @@ export const AddDonation = ({
   };
 
   const onSubmit = async (attributes: Attributes) => {
-    const amount = (attributes.amount as unknown as string).replace(
-      /[^\d.-]/g,
-      '',
-    );
+    const amount = String(attributes.amount).replace(/[^\d.-]/g, '');
 
     const { data } = await addDonation({
       variables: {
@@ -146,7 +145,7 @@ export const AddDonation = ({
           ...attributes,
           amount: parseFloat(amount),
           appealAmount: attributes.appealAmount
-            ? parseFloat(attributes.appealAmount as unknown as string)
+            ? parseFloat(String(attributes.appealAmount))
             : null,
           donationDate: attributes.donationDate.toISODate() ?? '',
         },

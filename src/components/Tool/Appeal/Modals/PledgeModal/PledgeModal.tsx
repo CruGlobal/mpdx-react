@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import {
   Alert,
   DialogActions,
@@ -28,7 +28,6 @@ import Modal from 'src/components/Shared/Modal/Modal';
 import { FormTextField } from 'src/components/Shared/styledComponents/FormTextField';
 import { LogFormLabel } from 'src/components/Shared/styledComponents/LogStyling';
 import { PledgeStatusEnum } from 'src/graphql/types.generated';
-import i18n from 'src/lib/i18n';
 import { requiredDateTime } from 'src/lib/yupHelpers';
 import {
   AppealStatusEnum,
@@ -52,28 +51,6 @@ interface PledgeModalProps {
   selectedAppealStatus?: AppealStatusEnum | null;
 }
 
-const CreatePledgeSchema = yup.object({
-  amount: yup
-    .number()
-    .typeError(i18n.t('Amount must be a valid number'))
-    .required(i18n.t('Amount is required'))
-    .test(
-      i18n.t('Is amount in valid currency format?'),
-      i18n.t('Amount must be in valid currency format'),
-      (amount) => /\$?[0-9][0-9.,]*/.test(amount as unknown as string),
-    )
-    .test(
-      i18n.t('Is positive?'),
-      i18n.t('Must use a positive number for amount'),
-      (value) => parseFloat(value as unknown as string) > 0,
-    ),
-  amountCurrency: yup.string().required(i18n.t('Currency is required')),
-  expectedDate: requiredDateTime(i18n.t('Expected Date is required')),
-  status: yup.string().required(i18n.t('Status is required')),
-});
-
-type Attributes = yup.InferType<typeof CreatePledgeSchema>;
-
 export const PledgeModal: React.FC<PledgeModalProps> = ({
   contact,
   pledge,
@@ -94,6 +71,32 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
   const pledgeCurrencies = constants?.pledgeCurrency;
 
   const isNewPledge = pledge === undefined;
+
+  const createPledgeSchema = useMemo(
+    () =>
+      yup.object({
+        amount: yup
+          .number()
+          .typeError(t('Amount must be a valid number'))
+          .required(t('Amount is required'))
+          .test(
+            t('Is amount in valid currency format?'),
+            t('Amount must be in valid currency format'),
+            (amount) => /\$?[0-9][0-9.,]*/.test(String(amount)),
+          )
+          .test(
+            t('Is positive?'),
+            t('Must use a positive number for amount'),
+            (value) => parseFloat(String(value)) > 0,
+          ),
+        amountCurrency: yup.string().required(t('Currency is required')),
+        expectedDate: requiredDateTime(t('Expected Date is required')),
+        status: yup.string().required(t('Status is required')),
+      }),
+    [t],
+  );
+
+  type Attributes = yup.InferType<typeof createPledgeSchema>;
 
   const onSubmit = async (attributes: Attributes) => {
     const amount = parseFloat(
@@ -203,7 +206,7 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
     >
       <Formik
         initialValues={initialValues}
-        validationSchema={CreatePledgeSchema}
+        validationSchema={createPledgeSchema}
         validateOnMount
         onSubmit={onSubmit}
       >
