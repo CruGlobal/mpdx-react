@@ -1,9 +1,11 @@
 import { DateTime } from 'luxon';
+import { MonthlyPayrollHistory } from 'src/graphql/types.generated';
 
 export enum QuarterHealthEnum {
   Green = 'green',
   Yellow = 'yellow',
   Red = 'red',
+  Gray = 'gray',
 }
 
 export interface QuarterStatus {
@@ -13,19 +15,11 @@ export interface QuarterStatus {
   payroll: number;
 }
 
-export interface MonthlyPayroll {
-  month: string;
-  payroll: number;
-  additionalSalary: number;
-  reimbursement: number;
-  percentMaxPay: number;
-}
-
 export interface EmployeeData {
   user: User;
   spouse?: Spouse;
   quarters: QuarterStatus[];
-  monthlyPayrollHistory: MonthlyPayroll[];
+  monthlyPayrollHistory: MonthlyPayrollHistory[];
 }
 
 export interface User {
@@ -229,7 +223,7 @@ const healthCycle: QuarterHealthEnum[] = [
 ];
 
 // Deterministic amounts over the last 12 months, excluding the current month
-const generateMonthlyPayrollHistory = (i: number): MonthlyPayroll[] => {
+const generateMonthlyPayrollHistory = (i: number): MonthlyPayrollHistory[] => {
   const currentMonth = DateTime.local().startOf('month');
 
   return Array.from({ length: 12 }, (_, mi) => {

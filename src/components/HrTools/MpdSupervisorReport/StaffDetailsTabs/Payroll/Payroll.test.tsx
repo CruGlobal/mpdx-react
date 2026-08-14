@@ -1,10 +1,10 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '__tests__/util/testingLibraryReactMock';
+import { MonthlyPayrollHistory } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { MonthlyPayroll } from '../../mockData';
 import { StaffTabPayroll } from './Payroll';
 
-const mockPayrollHistory: MonthlyPayroll[] = [
+const mockPayrollHistory: MonthlyPayrollHistory[] = [
   {
     month: '2023-01',
     payroll: 3000,
@@ -22,7 +22,7 @@ const mockPayrollHistory: MonthlyPayroll[] = [
 ];
 
 interface TestComponentProps {
-  payrollHistory: MonthlyPayroll[];
+  payrollHistory: MonthlyPayrollHistory[];
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({ payrollHistory }) => {
