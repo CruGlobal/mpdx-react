@@ -151,9 +151,15 @@ export const InformationCategoryPersonalForm: React.FC<
             <Autocomplete
               options={locations}
               value={geographicLocation ?? null}
-              onChange={(_, newValue) =>
-                saveField({ geographicLocation: newValue })
-              }
+              onChange={(_, newValue, reason) => {
+                // Emptying the input fires onChange(null, 'clear') while the
+                // user may still be typing a new location. Defer that save to
+                // blur so mid-edit keystrokes don't mutate and reset the field.
+                if (reason === 'clear') {
+                  return;
+                }
+                saveField({ geographicLocation: newValue });
+              }}
               disabled={!data || isReadOnly}
               size="small"
               renderInput={(params) => (
@@ -163,6 +169,11 @@ export const InformationCategoryPersonalForm: React.FC<
                   helperText={t(
                     'Do you live within 50 miles of one of these major cities?',
                   )}
+                  onBlur={(event) => {
+                    if (event.target.value === '') {
+                      saveField({ geographicLocation: null });
+                    }
+                  }}
                 />
               )}
             />
