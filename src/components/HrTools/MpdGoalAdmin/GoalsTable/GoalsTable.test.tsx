@@ -69,7 +69,7 @@ describe('GoalsTable', () => {
 
     userEvent.click(getByRole('combobox', { name: 'Coach' }));
     userEvent.click(await findByRole('option', { name: 'Tom Harris' }));
-    await userEvent.click(getByRole('button', { name: 'Save' }));
+    userEvent.click(getByRole('button', { name: 'Save' }));
 
     // Formik's submit resolves asynchronously, so wait for the context update
     // rather than asserting synchronously after the click.
@@ -92,14 +92,14 @@ describe('GoalsTable', () => {
   it('selects a row via its checkbox', async () => {
     const { getAllByRole } = renderTable();
     // index 0 is the header "select all" checkbox
-    await userEvent.click(getAllByRole('checkbox')[1]);
+    userEvent.click(getAllByRole('checkbox')[1]);
     expect(ctx.selectedRowIds.has('row-1')).toBe(true);
   });
 
   it('selects every row on the page via the header checkbox', async () => {
     const { getAllByRole } = renderTable();
     // index 0 is the header "select all" checkbox
-    await userEvent.click(getAllByRole('checkbox')[0]);
+    userEvent.click(getAllByRole('checkbox')[0]);
     // The header checkbox selects only the rows on the current page, not the
     // entire filtered set.
     rows.slice(0, DEFAULT_ROWS_PER_PAGE).forEach((row) => {
@@ -120,12 +120,12 @@ describe('GoalsTable', () => {
     expect(headerCheckbox).toHaveAttribute('data-indeterminate', 'false');
 
     // Select a single data row.
-    await userEvent.click(checkboxes[1]);
+    userEvent.click(checkboxes[1]);
     expect(headerCheckbox.checked).toBe(false);
     expect(headerCheckbox).toHaveAttribute('data-indeterminate', 'true');
 
     // Select the rest via the header, which now reads "select all".
-    await userEvent.click(headerCheckbox);
+    userEvent.click(headerCheckbox);
     expect(headerCheckbox.checked).toBe(true);
     expect(headerCheckbox).toHaveAttribute('data-indeterminate', 'false');
   });
@@ -167,7 +167,7 @@ describe('GoalsTable', () => {
       getByText(`Person ${DEFAULT_ROWS_PER_PAGE - 1}`),
     ).toBeInTheDocument();
     // Advance to the next page via the pagination "next page" button.
-    await userEvent.click(getByRole('button', { name: /Go to next page/i }));
+    userEvent.click(getByRole('button', { name: /Go to next page/i }));
     expect(getByText(`Person ${DEFAULT_ROWS_PER_PAGE}`)).toBeInTheDocument();
 
     // Changing the filter shrinks the result set. The table must reset to the

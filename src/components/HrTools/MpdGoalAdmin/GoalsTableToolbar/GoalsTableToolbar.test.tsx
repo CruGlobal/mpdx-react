@@ -38,7 +38,7 @@ describe('GoalsTableToolbar', () => {
     act(() => ctx.toggleRow('row-1'));
     expect(getByText('1 selected')).toBeInTheDocument();
 
-    await userEvent.click(getByRole('button', { name: 'More Actions' }));
+    userEvent.click(getByRole('button', { name: 'More Actions' }));
     const menu = getByRole('menu');
     // Print All stays disabled until it is wired up (MPDX-9702).
     expect(
@@ -59,20 +59,20 @@ describe('GoalsTableToolbar', () => {
 
     // 'row-1' (John & Jane Doe) is hidden by a search for another member, so
     // the count must not keep reporting a row the user can no longer see.
-    await userEvent.type(getByRole('textbox', { name: 'Search' }), 'carlos');
+    userEvent.type(getByRole('textbox', { name: 'Search' }), 'carlos');
     expect(queryByText('1 selected')).not.toBeInTheDocument();
     expect(getByRole('button', { name: 'More Actions' })).toBeDisabled();
   });
 
   it('updates search on typing', async () => {
     const { getByRole } = renderToolbar();
-    await userEvent.type(getByRole('textbox', { name: 'Search' }), 'doe');
+    userEvent.type(getByRole('textbox', { name: 'Search' }), 'doe');
     expect(ctx.search).toBe('doe');
   });
 
   it('opens the run-and-send confirmation from the All button', async () => {
     const { getByRole } = renderToolbar();
-    await userEvent.click(getByRole('button', { name: 'Run and Send All' }));
+    userEvent.click(getByRole('button', { name: 'Run and Send All' }));
     expect(getByRole('dialog')).toHaveTextContent(
       'Run and Send All Complete MPD Goals?',
     );
@@ -84,7 +84,7 @@ describe('GoalsTableToolbar', () => {
     act(() => ctx.toggleRow('row-1'));
     expect(getByText('1 selected')).toBeInTheDocument();
 
-    await userEvent.click(getByRole('button', { name: 'Run and Send All' }));
+    userEvent.click(getByRole('button', { name: 'Run and Send All' }));
 
     // All 13 mock rows: 4 Incomplete cannot be sent, 9 Complete can.
     const dialog = getByRole('dialog');
@@ -99,10 +99,8 @@ describe('GoalsTableToolbar', () => {
       ctx.toggleRow('row-1');
       ctx.toggleRow('row-7');
     });
-    await userEvent.click(getByRole('button', { name: 'More Actions' }));
-    await userEvent.click(
-      getByRole('menuitem', { name: 'Run & Send Selected' }),
-    );
+    userEvent.click(getByRole('button', { name: 'More Actions' }));
+    userEvent.click(getByRole('menuitem', { name: 'Run & Send Selected' }));
 
     const dialog = getByRole('dialog');
     expect(dialog).toHaveTextContent(
@@ -111,7 +109,7 @@ describe('GoalsTableToolbar', () => {
     expect(dialog).toHaveTextContent('1 of the 2 MPD goals cannot be sent.');
     expect(dialog).toHaveTextContent('Continue with 1 out of 2 MPD goals');
 
-    await userEvent.click(getByRole('button', { name: 'Yes, Continue' }));
+    userEvent.click(getByRole('button', { name: 'Yes, Continue' }));
     expect(
       await findByText('1 MPD Goals were run and sent.'),
     ).toBeInTheDocument();
@@ -124,8 +122,8 @@ describe('GoalsTableToolbar', () => {
       ctx.toggleRow('row-1');
       ctx.toggleRow('row-2');
     });
-    await userEvent.click(getByRole('button', { name: 'More Actions' }));
-    await userEvent.click(getByRole('menuitem', { name: 'Assign Coach' }));
+    userEvent.click(getByRole('button', { name: 'More Actions' }));
+    userEvent.click(getByRole('menuitem', { name: 'Assign Coach' }));
 
     const dialog = getByRole('dialog');
     expect(dialog).toHaveTextContent('Assign Coach for 2 Selected Staff');
@@ -140,7 +138,7 @@ describe('GoalsTableToolbar', () => {
 
     userEvent.click(within(dialog).getByRole('combobox', { name: 'Coach' }));
     userEvent.click(await findByRole('option', { name: 'Tom Harris' }));
-    await userEvent.click(getByRole('button', { name: 'Save' }));
+    userEvent.click(getByRole('button', { name: 'Save' }));
 
     expect(
       await findByText('Coach assigned successfully.'),
@@ -155,8 +153,8 @@ describe('GoalsTableToolbar', () => {
   it("uses the staff member's name in the assign-coach title for a single selection", async () => {
     const { getByRole } = renderToolbar();
     act(() => ctx.toggleRow('row-2'));
-    await userEvent.click(getByRole('button', { name: 'More Actions' }));
-    await userEvent.click(getByRole('menuitem', { name: 'Assign Coach' }));
+    userEvent.click(getByRole('button', { name: 'More Actions' }));
+    userEvent.click(getByRole('menuitem', { name: 'Assign Coach' }));
 
     expect(getByRole('dialog')).toHaveTextContent(
       'Assign Coach for Carlos & Michaela Everts',
