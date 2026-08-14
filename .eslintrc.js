@@ -74,6 +74,18 @@ module.exports = {
       'error',
       { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
     ],
+    'no-restricted-imports': [
+      'error',
+      {
+        patterns: [
+          {
+            group: ['*/i18n', '**/lib/i18n'],
+            message:
+              'Do not import the i18n singleton. Use `const { t } = useTranslation()`, or accept `t: TFunction` in helpers outside a component. Only getServerSideProps, where hooks cannot run, and tests are exempt.',
+          },
+        ],
+      },
+    ],
     'no-restricted-syntax': [
       'error',
       {
@@ -133,6 +145,26 @@ module.exports = {
         'jsx-a11y/anchor-is-valid': 'off',
         'jsx-a11y/click-events-have-key-events': 'off',
         'jsx-a11y/no-static-element-interactions': 'off',
+      },
+    },
+    // These two blocks lift every no-restricted-imports pattern, not just the
+    // i18n one. A second restriction added above will need re-stating here.
+    {
+      files: ['pages/**'],
+      rules: {
+        'no-restricted-imports': 'off',
+      },
+    },
+    {
+      files: [
+        '*.test.ts',
+        '*.test.tsx',
+        '__tests__/**',
+        'testUtils.tsx',
+        '*TestWrapper.tsx',
+      ],
+      rules: {
+        'no-restricted-imports': 'off',
       },
     },
   ],

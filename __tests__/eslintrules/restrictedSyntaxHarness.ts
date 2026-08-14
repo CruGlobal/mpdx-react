@@ -8,6 +8,10 @@ interface RestrictedSyntaxOption {
   message: string;
 }
 
+interface RestrictedImportsOption {
+  patterns: { group: string[]; message: string }[];
+}
+
 export interface LintMessage {
   ruleId: string | null;
   message: string;
@@ -43,18 +47,46 @@ export const ruleFor = (selectorFragment: string): RestrictedSyntaxOption => {
   return option;
 };
 
-export const lintSnippet = (code: string): LintMessage[] => {
+// Assert against the real rule
+export const restrictedImports = eslintConfig.rules[
+  'no-restricted-imports'
+] as ['error', RestrictedImportsOption];
+const [, { patterns }] = restrictedImports;
+
+export const importRuleFor = (
+  groupFragment: string,
+): RestrictedImportsOption['patterns'][number] => {
+  const pattern = patterns.find(({ group }) =>
+    group.some((glob) => glob.includes(groupFragment)),
+  );
+  if (!pattern) {
+    throw new Error(
+      `No no-restricted-imports rule has a group containing "${groupFragment}"`,
+    );
+  }
+  return pattern;
+};
+
+const lintWith = (
+  code: string,
+  ruleId: string,
+  ruleConfig: Linter.RuleEntry,
+): LintMessage[] => {
   const messages: LintMessage[] = linter.verify(code, {
     parser,
     parserOptions,
-    rules: { 'no-restricted-syntax': restrictedSyntax },
+    rules: { [ruleId]: ruleConfig },
   });
   const fatal = messages.find((message) => message.fatal);
   if (fatal) {
     throw new Error(`Probe failed to parse: ${fatal.message}`);
   }
 
-  return messages.filter(
-    (message) => message.ruleId === 'no-restricted-syntax',
-  );
+  return messages.filter((message) => message.ruleId === ruleId);
 };
+
+export const lintSnippet = (code: string): LintMessage[] =>
+  lintWith(code, 'no-restricted-syntax', restrictedSyntax);
+
+export const lintImportSnippet = (code: string): LintMessage[] =>
+  lintWith(code, 'no-restricted-imports', restrictedImports);
