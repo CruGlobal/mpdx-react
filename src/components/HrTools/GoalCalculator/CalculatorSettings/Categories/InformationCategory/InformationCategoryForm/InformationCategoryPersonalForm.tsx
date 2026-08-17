@@ -150,7 +150,10 @@ export const InformationCategoryPersonalForm: React.FC<
           <Grid size={12}>
             <Autocomplete
               options={locations}
-              value={geographicLocation ?? 'None'}
+              // While the constants load the options are empty, so any
+              // non-null value (including the 'None' fallback) would trigger
+              // MUI's "value not in options" dev warning
+              value={constantsLoading ? null : geographicLocation ?? 'None'}
               onChange={(_, newValue, reason) => {
                 // Emptying the input fires onChange(null, 'clear') while the
                 // user may still be typing a new location. Defer that save to
@@ -160,7 +163,7 @@ export const InformationCategoryPersonalForm: React.FC<
                 }
                 saveField({ geographicLocation: newValue });
               }}
-              disabled={!data || isReadOnly}
+              disabled={!data || constantsLoading || isReadOnly}
               size="small"
               renderInput={(params) => (
                 <TextField
