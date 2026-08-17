@@ -95,7 +95,7 @@ export const MinistryDetails: React.FC = () => {
           )}
           placeholder={t('Select a city')}
           startAdornment={<LocationOn />}
-          helperText={t('If none of the locations apply, select "None."')}
+          helperText={t('If none of the locations apply, leave it as "None".')}
           options={cities.map((city) => ({ value: city, label: city }))}
           required={false}
           emptyValue="None"
