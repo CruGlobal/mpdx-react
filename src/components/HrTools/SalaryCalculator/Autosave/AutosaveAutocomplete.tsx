@@ -20,6 +20,11 @@ export interface AutosaveAutocompleteProps
   emptyValue?: string;
 }
 
+/**
+ * Autocomplete that autosaves its value via `useSaveField`. Note that
+ * clearing the input and blurring saves `null` for `fieldName`, so only use
+ * this component for fields where the server accepts a `null` value.
+ */
 export const AutosaveAutocomplete: React.FC<AutosaveAutocompleteProps> = ({
   fieldName,
   label,
