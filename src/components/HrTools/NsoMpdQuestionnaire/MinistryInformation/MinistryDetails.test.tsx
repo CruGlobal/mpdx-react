@@ -123,6 +123,28 @@ describe('MinistryDetails', () => {
     expect(cityCombobox).not.toBeRequired();
   });
 
+  it('shows no validation error when the city question is blurred without an answer', async () => {
+    const { findByRole, getByText, queryByText } = render(
+      <TestComponent questionnaire={{ geographicLocation: null }} />,
+    );
+
+    const cityCombobox = await findByRole('combobox', {
+      name: 'Is your ministry assignment location within 50 miles of one of these cities?',
+    });
+    await waitFor(() =>
+      expect(cityCombobox).not.toHaveAttribute('aria-disabled', 'true'),
+    );
+
+    cityCombobox.focus();
+    userEvent.tab();
+
+    expect(queryByText(/select an answer/i)).not.toBeInTheDocument();
+    // The guidance helper text remains in place of a validation error
+    expect(
+      getByText('If none of the locations apply, leave it as "None".'),
+    ).toBeInTheDocument();
+  });
+
   it('saves None when it is explicitly selected', async () => {
     const mutationSpy = jest.fn();
     const { findByRole } = render(
