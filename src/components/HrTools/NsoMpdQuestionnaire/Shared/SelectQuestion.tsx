@@ -17,7 +17,10 @@ interface SelectQuestionProps {
   schema: yup.Schema;
   label: string;
   options: SelectOption[];
-  /** Text for the disabled, empty placeholder option. */
+  /**
+   * Text for the disabled, empty placeholder option. Not rendered when {@link emptyValue} is set,
+   * since the select then always displays a real option.
+   */
   placeholder: string;
   /** Optional leading adornment rendered inside the field. */
   startAdornment?: React.ReactNode;
@@ -101,11 +104,13 @@ export const SelectQuestion: React.FC<SelectQuestionProps> = ({
           value={value || emptyValue || ''}
           disabled={disabled}
         >
-          <MenuItem value="" disabled>
-            <Typography component="span" color="text.secondary">
-              {placeholder}
-            </Typography>
-          </MenuItem>
+          {!emptyValue && (
+            <MenuItem value="" disabled>
+              <Typography component="span" color="text.secondary">
+                {placeholder}
+              </Typography>
+            </MenuItem>
+          )}
           {options.map((option) => (
             <MenuItem key={option.value} value={option.value}>
               {option.label}
