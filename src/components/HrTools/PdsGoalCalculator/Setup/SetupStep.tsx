@@ -1,8 +1,6 @@
 import React, { useMemo } from 'react';
 import CalculateIcon from '@mui/icons-material/Calculate';
 import {
-  Autocomplete,
-  AutocompleteRenderInputParams,
   Avatar,
   Box,
   Button,
@@ -21,6 +19,7 @@ import {
   CurrencyAdornment,
   PercentageAdornment,
 } from 'src/components/HrTools/Shared/Adornments';
+import { DeferredClearAutocomplete } from 'src/components/HrTools/Shared/DeferredClearAutocomplete';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   DesignationSupportFormType,
@@ -279,34 +278,17 @@ export const SetupStep: React.FC = () => {
           )}
 
           <Grid size={12}>
-            <Autocomplete
+            <DeferredClearAutocomplete
               options={locations}
               getOptionLabel={getLocationLabel}
               value={calculation?.geographicLocation ?? 'None'}
-              onChange={(_, newValue: string | null, reason) => {
-                // Emptying the input fires onChange(null, 'clear') while the
-                // user may still be typing a new location. Defer that save to
-                // blur so mid-edit keystrokes don't mutate and reset the field.
-                if (reason === 'clear') {
-                  return;
-                }
-                saveField({ geographicLocation: newValue });
-              }}
+              onSave={(geographicLocation) =>
+                saveField({ geographicLocation })
+              }
               disabled={!calculation}
-              size="small"
-              renderInput={(params: AutocompleteRenderInputParams) => (
-                <TextField
-                  {...params}
-                  label={t('Geographic Multiplier')}
-                  helperText={t(
-                    'Do you live within 50 miles of one of these major cities?',
-                  )}
-                  onBlur={(event) => {
-                    if (event.target.value === '') {
-                      saveField({ geographicLocation: null });
-                    }
-                  }}
-                />
+              label={t('Geographic Multiplier')}
+              helperText={t(
+                'Do you live within 50 miles of one of these major cities?',
               )}
             />
           </Grid>
