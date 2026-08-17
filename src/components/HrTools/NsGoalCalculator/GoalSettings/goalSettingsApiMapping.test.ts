@@ -275,6 +275,17 @@ describe('formValuesToAttributes', () => {
     expect(attributes.maritalStatus).toBeNull();
   });
 
+  it('normalizes a geographic location of None to null on submit', () => {
+    // 'None' and null both mean no multiplier; null is the canonical stored
+    // form, so the display default of 'None' must not be persisted as-is.
+    const attributes = formValuesToAttributes({
+      ...coupleValues,
+      geographicLocation: 'None',
+    });
+
+    expect(attributes.geographicLocation).toBeNull();
+  });
+
   it('preserves a numeric 0 instead of dropping it to null', () => {
     const attributes = formValuesToAttributes({
       ...coupleValues,

@@ -163,7 +163,12 @@ export const formValuesToAttributes = (
       ? toNumberOrNull(values.advocacyTransfers)
       : null,
 
-    geographicLocation: values.geographicLocation || null,
+    // 'None' and null are equivalent (both mean no multiplier); null is the
+    // canonical stored form for NS, so normalize the display default back.
+    geographicLocation:
+      values.geographicLocation === 'None'
+        ? null
+        : values.geographicLocation || null,
 
     studentLoanMonthlyPayment: toNumberOrNull(values.studentLoanMonthlyPayment),
     carLoanMonthlyPayment: toNumberOrNull(values.carLoanMonthlyPayment),
