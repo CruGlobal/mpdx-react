@@ -12,6 +12,7 @@ import { GoalSettingsNumberField } from '../Fields/GoalSettingsNumberField';
 import { GoalSettingsPlaceholder } from '../Fields/GoalSettingsPlaceholder';
 import { GoalSettingsSelect, SelectOption } from '../Fields/GoalSettingsSelect';
 import { ColumnHeaderRow, FieldRow, Section } from '../GoalSettingsLayout';
+import { useGoalSettingsPreview } from '../GoalSettingsPreviewContext';
 import { GoalSettingsSectionProps } from '../goalSettingsSectionProps';
 
 export const NsoInformationSection: React.FC<GoalSettingsSectionProps> = ({
@@ -20,6 +21,11 @@ export const NsoInformationSection: React.FC<GoalSettingsSectionProps> = ({
 }) => {
   const { t } = useTranslation();
   const { formatCurrency } = useFormatters();
+
+  const preview = useGoalSettingsPreview();
+  const { specialNeedsLeft } = preview?.previewCalculations ?? calculations;
+
+  const calculating = preview?.calculating ?? false;
 
   const nsoHousingOptions = useMemo<SelectOption[]>(
     () =>
@@ -86,8 +92,12 @@ export const NsoInformationSection: React.FC<GoalSettingsSectionProps> = ({
       </FieldRow>
 
       <FieldRow label={t('Left to Raise')}>
-        <Typography variant="body1">
-          {formatCurrency(calculations.specialNeedsLeft)}
+        <Typography
+          variant="body1"
+          aria-busy={calculating}
+          sx={{ opacity: calculating ? 0.56 : 1 }}
+        >
+          {formatCurrency(specialNeedsLeft)}
         </Typography>
       </FieldRow>
     </Section>
