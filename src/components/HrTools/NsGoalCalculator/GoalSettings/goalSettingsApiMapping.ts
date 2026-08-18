@@ -69,7 +69,8 @@ export const calculationToFormValues = (
   staffConferenceTransfer: toNumberInput(calc.staffConferenceTransfer),
   accountTransfers: toNumberInput(calc.accountTransfers),
   advocacyTransfers: toNumberInput(calc.advocacyTransfers),
-  geographicLocation: calc.geographicLocation ?? '',
+  // An unset location defaults to the 'None' (0 multiplier) constant option
+  geographicLocation: calc.geographicLocation ?? 'None',
   studentLoanMonthlyPayment: toNumberInput(calc.studentLoanMonthlyPayment),
   carLoanMonthlyPayment: toNumberInput(calc.carLoanMonthlyPayment),
   creditCardDebtMonthlyPayment: toNumberInput(
@@ -162,7 +163,12 @@ export const formValuesToAttributes = (
       ? toNumberOrNull(values.advocacyTransfers)
       : null,
 
-    geographicLocation: values.geographicLocation || null,
+    // 'None' and null are equivalent (both mean no multiplier); null is the
+    // canonical stored form for NS, so normalize the display default back.
+    geographicLocation:
+      values.geographicLocation === 'None'
+        ? null
+        : values.geographicLocation || null,
 
     studentLoanMonthlyPayment: toNumberOrNull(values.studentLoanMonthlyPayment),
     carLoanMonthlyPayment: toNumberOrNull(values.carLoanMonthlyPayment),
