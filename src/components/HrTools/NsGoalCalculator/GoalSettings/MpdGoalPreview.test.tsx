@@ -46,7 +46,17 @@ const previewGoalMock = (
     previewNewStaffGoalCalculation: {
       newStaffGoalCalculation: {
         id: calculationId,
-        calculations: { monthlyGoal, salaryOverCap: false, debtOverCap: false },
+        calculations: {
+          monthlyGoal,
+          contributing403bAmount:
+            defaultGoalCalculation.calculations.contributing403bAmount,
+          spouseContributing403bAmount:
+            defaultGoalCalculation.calculations.spouseContributing403bAmount,
+          specialNeedsLeft:
+            defaultGoalCalculation.calculations.specialNeedsLeft,
+          salaryOverCap: false,
+          debtOverCap: false,
+        },
       },
     },
   },

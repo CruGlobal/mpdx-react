@@ -25,6 +25,12 @@ const optionalInteger = (label: string, t: TFunction) =>
 const optionalPercentage = (label: string, t: TFunction) =>
   percentage(label, t).nullable().transform(emptyToNull);
 
+const optional403bPercentage = (label: string, t: TFunction) =>
+  optionalPercentage(label, t).lessThan(
+    100,
+    t('{{fieldName}} must be less than 100%', { fieldName: label }),
+  );
+
 export const getGoalSettingsSchema = (t: TFunction) =>
   yup.object({
     // Personal
@@ -37,8 +43,11 @@ export const getGoalSettingsSchema = (t: TFunction) =>
       t('Annual Requested Salary'),
       t,
     ),
-    contribution403bPercentage: optionalPercentage(t('403(b) Contribution'), t),
-    spouseContribution403bPercentage: optionalPercentage(
+    contribution403bPercentage: optional403bPercentage(
+      t('403(b) Contribution'),
+      t,
+    ),
+    spouseContribution403bPercentage: optional403bPercentage(
       t('403(b) Contribution'),
       t,
     ),
