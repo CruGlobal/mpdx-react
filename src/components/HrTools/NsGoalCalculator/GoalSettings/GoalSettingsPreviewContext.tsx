@@ -11,10 +11,16 @@ import {
 import { useMpdGoalPreview } from './useMpdGoalPreview';
 import { NewStaffGoalCalculation } from './useNewStaffGoalCalculation';
 
+type PreviewCalculations = Pick<
+  NewStaffGoalCalculation['calculations'],
+  'contributing403bAmount' | 'spouseContributing403bAmount' | 'specialNeedsLeft'
+>;
+
 interface GoalSettingsPreviewValue {
   calculating: boolean;
   failed: boolean;
   previewGoal: number | null;
+  previewCalculations: PreviewCalculations;
   warnings: GoalSettingsWarningItem[];
   fieldSeverity: (name: string) => WarningSeverity | undefined;
 }
@@ -42,24 +48,33 @@ export const GoalSettingsPreviewProvider: React.FC<
   const { t } = useTranslation();
   const { values } = useFormikContext<GoalSettingsFormValues>();
 
-  const {
-    id: calculationId,
-    calculations: {
-      salaryOverCap: savedSalaryOverCap,
-      debtOverCap: savedDebtOverCap,
-    },
-  } = calculation;
+  const { id: calculationId, calculations: savedCalculations } = calculation;
 
   const {
     calculating,
     failed,
     previewGoal,
+    previewLineItems,
     previewSalaryOverCap,
     previewDebtOverCap,
   } = useMpdGoalPreview({ accountListId, calculationId });
 
-  const salaryOverCap = previewSalaryOverCap ?? savedSalaryOverCap;
-  const debtOverCap = previewDebtOverCap ?? savedDebtOverCap;
+  const previewCalculations = useMemo<PreviewCalculations>(
+    () => ({
+      contributing403bAmount:
+        previewLineItems?.contributing403bAmount ??
+        savedCalculations.contributing403bAmount,
+      spouseContributing403bAmount:
+        previewLineItems?.spouseContributing403bAmount ??
+        savedCalculations.spouseContributing403bAmount,
+      specialNeedsLeft:
+        previewLineItems?.specialNeedsLeft ??
+        savedCalculations.specialNeedsLeft,
+    }),
+    [savedCalculations, previewLineItems],
+  );
+  const salaryOverCap = previewSalaryOverCap ?? savedCalculations.salaryOverCap;
+  const debtOverCap = previewDebtOverCap ?? savedCalculations.debtOverCap;
 
   const value = useMemo<GoalSettingsPreviewValue>(() => {
     const warnings = buildGoalSettingsWarnings({
@@ -73,10 +88,20 @@ export const GoalSettingsPreviewProvider: React.FC<
       calculating,
       failed,
       previewGoal,
+      previewCalculations,
       warnings,
       fieldSeverity: (name) => getFieldSeverity(warnings, name),
     };
-  }, [values, salaryOverCap, debtOverCap, t, calculating, failed, previewGoal]);
+  }, [
+    values,
+    salaryOverCap,
+    debtOverCap,
+    t,
+    calculating,
+    failed,
+    previewGoal,
+    previewCalculations,
+  ]);
 
   return (
     <GoalSettingsPreviewContext.Provider value={value}>
