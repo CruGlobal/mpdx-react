@@ -10,11 +10,22 @@ import { GoalSettingsFormValues } from './goalSettingsFormValues';
 export const PREVIEW_DEBOUNCE_MS = 500;
 
 /**
+ * Worksheet lines the form displays in their own right, rather than only as
+ * part of the goal total. `null` when the request failed.
+ */
+interface PreviewLineItems {
+  contributing403bAmount: number | null;
+  spouseContributing403bAmount: number | null;
+  specialNeedsLeft: number | null;
+}
+
+/**
  * A preview tagged with the attributes it was computed for. Every value is
  * `null` when the request failed.
  */
 interface PreviewState {
   attributes: NewStaffGoalCalculationAttributesInput;
+  previewLineItems: PreviewLineItems;
   monthlyGoal: number | null;
   salaryOverCap: boolean | null;
   debtOverCap: boolean | null;
@@ -35,8 +46,10 @@ interface UseMpdGoalPreviewResult {
   previewGoal: number | null;
   /**
    * Unlike the goal, these are held across an in-flight or invalid edit, so a
-   * warning doesn't blink off and re-announce itself on every keystroke.
+   * warning doesn't blink off and re-announce itself on every keystroke, and a
+   * figure doesn't fall back to its saved value between keystrokes.
    */
+  previewLineItems: PreviewLineItems | null;
   previewSalaryOverCap: boolean | null;
   previewDebtOverCap: boolean | null;
 }
@@ -105,22 +118,33 @@ export const useMpdGoalPreview = ({
             monthlyGoal = null,
             salaryOverCap = null,
             debtOverCap = null,
+            contributing403bAmount = null,
+            spouseContributing403bAmount = null,
+            specialNeedsLeft = null,
           } = data?.previewNewStaffGoalCalculation?.newStaffGoalCalculation
             ?.calculations ?? {};
           setPreview({
             attributes: debounced,
             monthlyGoal,
+            previewLineItems: {
+              contributing403bAmount,
+              spouseContributing403bAmount,
+              specialNeedsLeft,
+            },
             salaryOverCap,
             debtOverCap,
           });
         }
       })
       .catch(() => {
-        // Record the failed attributes so the spinner stops and we fall back to
-        // the saved goal and warnings.
         if (active) {
           setPreview({
             attributes: debounced,
+            previewLineItems: {
+              contributing403bAmount: null,
+              spouseContributing403bAmount: null,
+              specialNeedsLeft: null,
+            },
             monthlyGoal: null,
             salaryOverCap: null,
             debtOverCap: null,
@@ -143,6 +167,7 @@ export const useMpdGoalPreview = ({
   const failed = settledPreview !== null && settledPreview.monthlyGoal === null;
 
   const previewGoal = settledPreview?.monthlyGoal ?? null;
+  const previewLineItems = dirty ? (preview?.previewLineItems ?? null) : null;
   const previewSalaryOverCap = dirty ? (preview?.salaryOverCap ?? null) : null;
   const previewDebtOverCap = dirty ? (preview?.debtOverCap ?? null) : null;
 
@@ -150,6 +175,7 @@ export const useMpdGoalPreview = ({
     calculating,
     failed,
     previewGoal,
+    previewLineItems,
     previewSalaryOverCap,
     previewDebtOverCap,
   };

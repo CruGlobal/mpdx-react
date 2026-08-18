@@ -8,6 +8,7 @@ import { useFormatters } from '../../../Shared/useFormatters';
 import { GoalSettingsNumberField } from '../Fields/GoalSettingsNumberField';
 import { GoalSettingsSelect, SelectOption } from '../Fields/GoalSettingsSelect';
 import { ColumnHeaderRow, FieldRow, Section } from '../GoalSettingsLayout';
+import { useGoalSettingsPreview } from '../GoalSettingsPreviewContext';
 import { GoalSettingsFormValues } from '../goalSettingsFormValues';
 import { GoalSettingsSectionProps } from '../goalSettingsSectionProps';
 
@@ -25,6 +26,13 @@ export const FinancialInformationSection: React.FC<
   const { t } = useTranslation();
   const { formatCurrency } = useFormatters();
   const seniorStaffOnly = t('Senior Staff Only');
+
+  const preview = useGoalSettingsPreview();
+  const { contributing403bAmount, spouseContributing403bAmount } =
+    preview?.previewCalculations ?? calculations;
+
+  const calculating = preview?.calculating ?? false;
+
   const {
     values: { calculationsYear },
   } = useFormikContext<GoalSettingsFormValues>();
@@ -84,18 +92,26 @@ export const FinancialInformationSection: React.FC<
         label={t('403(b) Amount')}
         helperText={t('Calculated monthly amount')}
       >
-        <Typography variant="body1">
+        <Typography
+          variant="body1"
+          aria-busy={calculating}
+          sx={{ opacity: calculating ? 0.56 : 1 }}
+        >
           <Box component="span" sx={visuallyHidden as SxProps<Theme>}>
             {t('403(b) Amount — {{name}}', { name: primaryName })}
           </Box>
-          {formatCurrency(calculations.contributing403bAmount)}
+          {formatCurrency(contributing403bAmount)}
         </Typography>
         {hasSpouse && (
-          <Typography variant="body1">
+          <Typography
+            variant="body1"
+            aria-busy={calculating}
+            sx={{ opacity: calculating ? 0.56 : 1 }}
+          >
             <Box component="span" sx={visuallyHidden as SxProps<Theme>}>
               {t('403(b) Amount — {{name}}', { name: spouseName })}
             </Box>
-            {formatCurrency(calculations.spouseContributing403bAmount)}
+            {formatCurrency(spouseContributing403bAmount)}
           </Typography>
         )}
       </FieldRow>

@@ -16,6 +16,7 @@ import {
   NewStaffGoalCalculationDocument,
   NewStaffGoalCalculationQuery,
   NewStaffGoalCalculationQueryVariables,
+  PreviewNewStaffGoalCalculationMutation,
 } from './GoalSettings/NewStaffGoalCalculation.generated';
 import { NsGoalCalculatorProvider } from './Shared/NsGoalCalculatorContext';
 
@@ -54,6 +55,7 @@ export interface NsGoalCalculatorTestWrapperProps {
   goalCalculationMock?:
     | DeepPartial<NewStaffGoalCalculationQuery>
     | ApolloErgonoMockMap;
+  previewMock?: DeepPartial<PreviewNewStaffGoalCalculationMutation>;
   onCall?: ErgonoMockedProviderProps['onCall'];
   router?: Partial<NextRouter>;
 }
@@ -63,6 +65,7 @@ export const NsGoalCalculatorTestWrapper: React.FC<
 > = ({
   children,
   goalCalculationMock = defaultGoalCalculationMock,
+  previewMock,
   onCall,
   router = { query: { accountListId } },
 }) => (
@@ -72,10 +75,12 @@ export const NsGoalCalculatorTestWrapper: React.FC<
         <GqlMockedProvider<{
           GoalCalculatorConstants: GoalCalculatorConstantsQuery;
           NewStaffGoalCalculation: NewStaffGoalCalculationQuery;
+          PreviewNewStaffGoalCalculation: PreviewNewStaffGoalCalculationMutation;
         }>
           mocks={{
             GoalCalculatorConstants: { constant: constantsMock },
             NewStaffGoalCalculation: goalCalculationMock,
+            PreviewNewStaffGoalCalculation: previewMock ?? {},
           }}
           onCall={onCall}
         >
