@@ -11,6 +11,7 @@ import {
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
+import { PrintCohortGoalsButton } from '../PrintCohortGoalsButton/PrintCohortGoalsButton';
 import { RunAndSendModal } from '../RunAndSendModal/RunAndSendModal';
 import { StaffGoalRow } from '../mpdGoalAdminHelpers';
 
@@ -93,11 +94,7 @@ export const GoalsTableToolbar: React.FC = () => {
           </>
         ) : (
           <>
-            {/* Disabled until wired up so assistive tech announces the
-                inert state instead of a dead control (MPDX-9696). */}
-            <Button variant="outlined" disabled>
-              {t('Print All')}
-            </Button>
+            <PrintCohortGoalsButton />
             <Button
               variant="contained"
               onClick={() =>

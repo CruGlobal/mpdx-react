@@ -166,4 +166,39 @@ export const mockCohorts: Cohort[] = [
       },
     ],
   },
+  // Training costs deliberately not entered yet: exercises the disabled state
+  // of actions gated on training costs (Print All, and eventually Run & Send).
+  {
+    id: 'spring-nso-2027',
+    name: 'Spring NSO 2027',
+    trainingSize: 2,
+    nsoDate: '01/11/2027',
+    trainingCostEntered: false,
+    rows: [
+      {
+        id: 'spring-row-1',
+        name: 'Amara & Tobias Fields',
+        email: 'amara.fields@cru.org',
+        ministry: 'Cru High School',
+        geography: 'Geography 02 (04-05)',
+        mpdGoal: 8420.5,
+        goalStatus: GoalStatusEnum.Complete,
+        familyStatus: 'Married',
+        coach: 'Phillip Song',
+        coordinator: 'Richard Smith',
+      },
+      {
+        id: 'spring-row-2',
+        name: 'Noah Okafor',
+        email: 'noah.okafor@cru.org',
+        ministry: 'Campus Field Ministry',
+        geography: 'Geography 05 (11-12)',
+        mpdGoal: 5210,
+        goalStatus: GoalStatusEnum.Incomplete,
+        familyStatus: 'Single',
+        coach: null,
+        coordinator: 'Richard Smith',
+      },
+    ],
+  },
 ];
