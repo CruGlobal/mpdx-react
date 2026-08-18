@@ -137,6 +137,9 @@ mutation PreviewNewStaffGoalCalculation(
     newStaffGoalCalculation {
       id
       calculations {
+        contributing403bAmount
+        spouseContributing403bAmount
+        specialNeedsLeft
         monthlyGoal
         salaryOverCap
         debtOverCap
