@@ -48,6 +48,13 @@ export const formatConstants = (
   });
 
   const goalGeographicConstantMap: GoalGeographicConstantMap = new Map();
+  if (constant) {
+    // The 'None' (0 multiplier) option is load-bearing for every geographic
+    // dropdown: it is the only way to answer that no city applies. Seed it
+    // first so it survives a curated year dataset that omits it; a
+    // server-provided 'None' row overwrites the value but keeps the position.
+    goalGeographicConstantMap.set('None', 0);
+  }
   constant?.mpdGoalGeographicConstants.forEach((constant) => {
     const { location, percentageMultiplier } = constant;
     goalGeographicConstantMap.set(location, percentageMultiplier);

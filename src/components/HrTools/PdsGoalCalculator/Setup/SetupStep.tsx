@@ -1,8 +1,6 @@
 import React, { useMemo } from 'react';
 import CalculateIcon from '@mui/icons-material/Calculate';
 import {
-  Autocomplete,
-  AutocompleteRenderInputParams,
   Avatar,
   Box,
   Button,
@@ -21,6 +19,7 @@ import {
   CurrencyAdornment,
   PercentageAdornment,
 } from 'src/components/HrTools/Shared/Adornments';
+import { DeferredClearAutocomplete } from 'src/components/HrTools/Shared/DeferredClearAutocomplete';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   DesignationSupportFormType,
@@ -279,21 +278,17 @@ export const SetupStep: React.FC = () => {
           )}
 
           <Grid size={12}>
-            <Autocomplete
+            <DeferredClearAutocomplete
               options={locations}
               getOptionLabel={getLocationLabel}
               value={calculation?.geographicLocation ?? 'None'}
-              onChange={(_, newValue: string | null) =>
-                saveField({ geographicLocation: newValue })
+              onSave={(geographicLocation) =>
+                saveField({ geographicLocation })
               }
               disabled={!calculation}
-              size="small"
-              renderInput={(params: AutocompleteRenderInputParams) => (
-                <TextField
-                  {...params}
-                  label={t('Geographic Multiplier')}
-                  helperText={t('If not applicable, select "None"')}
-                />
+              label={t('Geographic Multiplier')}
+              helperText={t(
+                'Do you live within 50 miles of one of these major cities?',
               )}
             />
           </Grid>

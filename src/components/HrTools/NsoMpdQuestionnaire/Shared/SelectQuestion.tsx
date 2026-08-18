@@ -17,7 +17,10 @@ interface SelectQuestionProps {
   schema: yup.Schema;
   label: string;
   options: SelectOption[];
-  /** Text for the disabled, empty placeholder option. */
+  /**
+   * Text for the disabled, empty placeholder option. Not rendered when {@link emptyValue} is set,
+   * since the select then always displays a real option.
+   */
   placeholder: string;
   /** Optional leading adornment rendered inside the field. */
   startAdornment?: React.ReactNode;
@@ -30,6 +33,13 @@ interface SelectQuestionProps {
    * the field renders in its error state with this message.
    */
   errorText?: string;
+  /** Whether an answer is required. Defaults to true. */
+  required?: boolean;
+  /**
+   * Option displayed when the field has no saved value (e.g. 'None'). Must match one of the
+   * options' values. Selecting it explicitly still saves it; the fallback itself saves nothing.
+   */
+  emptyValue?: string;
 }
 
 /**
@@ -47,10 +57,13 @@ export const SelectQuestion: React.FC<SelectQuestionProps> = ({
   disabled = false,
   helperText,
   errorText,
+  required = true,
+  emptyValue,
 }) => {
   const {
     error: fieldError,
     helperText: fieldErrorText,
+    value,
     ...fieldProps
   } = useQuestionnaireAutoSave({ fieldName, schema, saveOnChange: true });
 
@@ -61,14 +74,14 @@ export const SelectQuestion: React.FC<SelectQuestionProps> = ({
   return (
     <LabeledField
       label={label}
-      required
+      required={required}
       error={error}
       helperText={shownHelperText}
     >
       {(aria) => (
         <TextField
           select
-          required
+          required={required}
           error={error}
           size="small"
           slotProps={{
@@ -88,13 +101,16 @@ export const SelectQuestion: React.FC<SelectQuestionProps> = ({
               : undefined,
           }}
           {...fieldProps}
+          value={value || emptyValue || ''}
           disabled={disabled}
         >
-          <MenuItem value="" disabled>
-            <Typography component="span" color="text.secondary">
-              {placeholder}
-            </Typography>
-          </MenuItem>
+          {!emptyValue && (
+            <MenuItem value="" disabled>
+              <Typography component="span" color="text.secondary">
+                {placeholder}
+              </Typography>
+            </MenuItem>
+          )}
           {options.map((option) => (
             <MenuItem key={option.value} value={option.value}>
               {option.label}

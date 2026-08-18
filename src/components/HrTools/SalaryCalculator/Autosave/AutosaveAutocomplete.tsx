@@ -1,57 +1,43 @@
 import React from 'react';
-import {
-  Autocomplete,
-  AutocompleteProps,
-  TextField,
-  TextFieldProps,
-} from '@mui/material';
+import { TextFieldProps } from '@mui/material';
+import { DeferredClearAutocomplete } from 'src/components/HrTools/Shared/DeferredClearAutocomplete';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { useSaveField } from './useSaveField';
 
-export interface AutosaveAutocompleteProps
-  extends Omit<
-    AutocompleteProps<string, false, false, false>,
-    'renderInput' | 'onChange' | 'value'
-  > {
+export interface AutosaveAutocompleteProps {
   fieldName: string;
   label: string;
+  options: string[];
   textFieldProps?: Partial<TextFieldProps>;
+  /** Option displayed when the field has no saved value, e.g. 'None'. */
+  emptyValue?: string;
 }
 
+/**
+ * Autocomplete that autosaves its value via `useSaveField`. Note that
+ * clearing the input and blurring saves `null` for `fieldName`, so only use
+ * this component for fields where the server accepts a `null` value.
+ */
 export const AutosaveAutocomplete: React.FC<AutosaveAutocompleteProps> = ({
   fieldName,
   label,
   options,
   textFieldProps,
-  ...props
+  emptyValue,
 }) => {
   const saveField = useSaveField();
   const { calculation } = useSalaryCalculator();
 
-  const value = calculation?.[fieldName] ?? null;
+  const value = calculation?.[fieldName] ?? emptyValue ?? null;
 
   return (
-    <Autocomplete
+    <DeferredClearAutocomplete
       options={options}
       value={value}
-      onChange={(_, newValue) => saveField({ [fieldName]: newValue })}
+      onSave={(newValue) => saveField({ [fieldName]: newValue })}
       disabled={!calculation}
-      size="small"
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          label={label}
-          InputProps={{
-            ...params.InputProps,
-            ...textFieldProps?.InputProps,
-          }}
-          InputLabelProps={{
-            ...params.InputLabelProps,
-            ...textFieldProps?.InputLabelProps,
-          }}
-        />
-      )}
-      {...props}
+      label={label}
+      textFieldProps={textFieldProps}
     />
   );
 };

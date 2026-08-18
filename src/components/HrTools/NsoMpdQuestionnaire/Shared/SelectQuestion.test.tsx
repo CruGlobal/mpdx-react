@@ -18,7 +18,8 @@ const TestComponent: React.FC<{
   helperText?: string;
   errorText?: string;
   disabled?: boolean;
-}> = ({ helperText, errorText, disabled }) => (
+  emptyValue?: string;
+}> = ({ helperText, errorText, disabled, emptyValue }) => (
   <NsoMpdQuestionnaireTestWrapper>
     <SelectQuestion
       fieldName="geographicLocation"
@@ -29,6 +30,7 @@ const TestComponent: React.FC<{
       helperText={helperText}
       errorText={errorText}
       disabled={disabled}
+      emptyValue={emptyValue}
     />
   </NsoMpdQuestionnaireTestWrapper>
 );
@@ -52,6 +54,21 @@ describe('SelectQuestion', () => {
     ).toBeInTheDocument();
     expect(getByRole('option', { name: 'Miami, FL' })).toBeInTheDocument();
     expect(getByRole('option', { name: 'Select a city' })).toBeInTheDocument();
+  });
+
+  it('hides the placeholder when emptyValue is provided', async () => {
+    const { getByRole, findByRole, queryByRole } = render(
+      <TestComponent emptyValue="Atlanta, GA" />,
+    );
+
+    userEvent.click(getByRole('combobox', { name: 'Nearest city' }));
+
+    expect(
+      await findByRole('option', { name: 'Atlanta, GA' }),
+    ).toBeInTheDocument();
+    expect(
+      queryByRole('option', { name: 'Select a city' }),
+    ).not.toBeInTheDocument();
   });
 
   it('shows the guidance helper text', () => {

@@ -1,17 +1,11 @@
 import React, { useEffect, useMemo } from 'react';
 import InfoIcon from '@mui/icons-material/Info';
-import {
-  Autocomplete,
-  Grid,
-  IconButton,
-  MenuItem,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Grid, IconButton, MenuItem, Typography } from '@mui/material';
 import { range } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGoalCalculator } from 'src/components/HrTools/GoalCalculator/Shared/GoalCalculatorContext';
+import { DeferredClearAutocomplete } from 'src/components/HrTools/Shared/DeferredClearAutocomplete';
 import {
   GoalCalculationAge,
   GoalCalculationRole,
@@ -148,22 +142,19 @@ export const InformationCategoryPersonalForm: React.FC<
 
         {!isSpouse && (
           <Grid size={12}>
-            <Autocomplete
+            <DeferredClearAutocomplete
               options={locations}
-              value={geographicLocation ?? null}
-              onChange={(_, newValue) =>
-                saveField({ geographicLocation: newValue })
+              // While the constants load the options are empty, so any
+              // non-null value (including the 'None' fallback) would trigger
+              // MUI's "value not in options" dev warning
+              value={constantsLoading ? null : geographicLocation ?? 'None'}
+              onSave={(geographicLocation) =>
+                saveField({ geographicLocation })
               }
-              disabled={!data || isReadOnly}
-              size="small"
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label={t('Geographic Location')}
-                  helperText={t(
-                    'Do you live within 50 miles of one of these major cities?',
-                  )}
-                />
+              disabled={!data || constantsLoading || isReadOnly}
+              label={t('Geographic Location')}
+              helperText={t(
+                'Do you live within 50 miles of one of these major cities?',
               )}
             />
           </Grid>

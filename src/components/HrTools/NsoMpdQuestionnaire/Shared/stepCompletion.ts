@@ -18,10 +18,11 @@ const steps: NsoMpdQuestionnaireStepEnum[] = [
 const stepRequiredFields: Record<string, QuestionnaireField[]> = {
   // Personal Information is a read-only review step, so it has no fields the user must fill in.
   [NsoMpdQuestionnaireStepEnum.PersonalInformation]: [],
+  // geographicLocation is intentionally absent: it is optional and an
+  // unanswered question displays and calculates as "None".
   [NsoMpdQuestionnaireStepEnum.MinistryInformation]: [
     'ministryName',
     'ministryLocation',
-    'geographicLocation',
     'assignmentType',
   ],
   [NsoMpdQuestionnaireStepEnum.FinancialInformation]: [

@@ -60,7 +60,7 @@ export const PersonalInformationSection: React.FC = () => {
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
                   {t(
-                    'If you live within 50 miles of one of the following metropolitan areas, please select it from the list. If not, select "None."',
+                    'If you live within 50 miles of one of the following metropolitan areas, please select it from the list. Otherwise, leave it as "None".',
                   )}
                 </Typography>
               </TableCell>
@@ -69,6 +69,7 @@ export const PersonalInformationSection: React.FC = () => {
                   label={t('Nearest Geographic Multiplier Location')}
                   fieldName="location"
                   options={locations}
+                  emptyValue="None"
                   textFieldProps={{
                     InputLabelProps: {
                       sx: { fontSize: theme.typography.body2.fontSize },

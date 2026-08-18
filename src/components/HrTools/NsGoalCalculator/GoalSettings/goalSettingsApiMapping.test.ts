@@ -97,14 +97,21 @@ describe('calculationToFormValues', () => {
       ...baseCalculation,
       age: null,
       annualRequestedSalary: null,
-      geographicLocation: null,
       calculationsYear: null,
     });
 
     expect(values.age).toBe('');
     expect(values.annualRequestedSalary).toBe('');
-    expect(values.geographicLocation).toBe('');
     expect(values.calculationsYear).toBe('');
+  });
+
+  it('defaults geographic location to None when unset', () => {
+    const values = calculationToFormValues({
+      ...baseCalculation,
+      geographicLocation: null,
+    });
+
+    expect(values.geographicLocation).toBe('None');
   });
 
   describe('403(b) contribution default', () => {
@@ -266,6 +273,17 @@ describe('formValuesToAttributes', () => {
     expect(attributes.geographicLocation).toBeNull();
     expect(attributes.calculationsYear).toBeNull();
     expect(attributes.maritalStatus).toBeNull();
+  });
+
+  it('normalizes a geographic location of None to null on submit', () => {
+    // 'None' and null both mean no multiplier; null is the canonical stored
+    // form, so the display default of 'None' must not be persisted as-is.
+    const attributes = formValuesToAttributes({
+      ...coupleValues,
+      geographicLocation: 'None',
+    });
+
+    expect(attributes.geographicLocation).toBeNull();
   });
 
   it('preserves a numeric 0 instead of dropping it to null', () => {
