@@ -1,4 +1,4 @@
-const BASE_SCOPE = 'env:production service:mpdx-web-react @session.type:user';
+const BASE_SCOPE = 'env:production service:mpdx-react @session.type:user';
 
 // Quote-free: cru-terraform embeds this in a `rum("...")` query. Keep in sync.
 export const NOISE_EXCLUSION_CLAUSE =
