@@ -29,6 +29,9 @@ export const PrintCohortGoalsButton: React.FC = () => {
       const url = await generateCohortGoalsPdf(selectedCohort);
       downloadPdf(url, `MPD Goals - ${selectedCohort.name}.pdf`);
     } catch {
+      // TODO(MPDX-9691): once generation is a GraphQL mutation, the global
+      // Apollo error link will already toast failures — remove this snackbar
+      // (or suppress the generic one) so the user isn't double-toasted.
       enqueueSnackbar(t('Unable to export the MPD Goals PDF.'), {
         variant: 'error',
       });
