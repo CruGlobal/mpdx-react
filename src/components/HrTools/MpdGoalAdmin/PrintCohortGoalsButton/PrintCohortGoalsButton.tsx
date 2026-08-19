@@ -41,7 +41,9 @@ export const PrintCohortGoalsButton: React.FC = () => {
     <Tooltip
       title={
         hasTrainingCosts
-          ? ''
+          ? t('Prints every goal in {{cohort}}.', {
+              cohort: selectedCohort?.name ?? '',
+            })
           : t('Enter training costs for this cohort to print its goals.')
       }
     >
