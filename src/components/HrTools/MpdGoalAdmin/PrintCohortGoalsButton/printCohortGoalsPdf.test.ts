@@ -21,6 +21,10 @@ describe('buildPlaceholderPdf', () => {
     const pdf = buildPlaceholderPdf(['John (Jack) Doe \\ Co']);
     expect(pdf).toContain('(John \\(Jack\\) Doe \\\\ Co) Tj');
   });
+
+  it('throws when the lines exceed the single-page capacity', () => {
+    expect(() => buildPlaceholderPdf(Array(45).fill('x'))).toThrow();
+  });
 });
 
 describe('generateCohortGoalsPdf', () => {

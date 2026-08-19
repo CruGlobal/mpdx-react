@@ -13,6 +13,11 @@ const escapePdfText = (text: string): string =>
  * goes away when the printCohortGoals mutation ships (MPDX-9691).
  */
 export const buildPlaceholderPdf = (lines: string[]): string => {
+  // y = 720 - index * 18 falls below the 792pt MediaBox around line 40; fail
+  // loud rather than silently truncate a printed goals document.
+  if (lines.length > 38) {
+    throw new Error('Placeholder PDF supports at most 38 lines per page');
+  }
   const encoder = new TextEncoder();
   const content = lines
     .map(
