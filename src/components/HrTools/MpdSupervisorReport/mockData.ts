@@ -252,6 +252,12 @@ const NEW_HIRE_INTERVAL = 6;
 // Mock the same placeholder monthly gross salary for all staff members
 const MONTHLY_GROSS_SALARY = 4500.0;
 
+const averagePayrollFor = (seed: number): number =>
+  15000 + ((seed * 7919) % 25001);
+
+const OLDER_QUARTER_SEED_OFFSET = 10000;
+const STARTING_QUARTER_MONTH_SEED_OFFSET = 20000;
+
 const generateQuarterlyPayrollHistory = (
   i: number,
   quarters: QuarterStatus[],
@@ -264,17 +270,22 @@ const generateQuarterlyPayrollHistory = (
 
   quarterSequence.forEach(
     ({ fiscalYear, quarter, months: calendarMonths }, j) => {
+      const averagePayroll =
+        j >= 4
+          ? quarters[j - 4].payroll
+          : averagePayrollFor(OLDER_QUARTER_SEED_OFFSET + i * 4 + j);
+
       if (j === startingIndex) {
         // Staff started partway through the quarter, so the earliest month(s)
         // have no payroll data - only the tail end of the quarter is reported.
-        const numMonths = 1 + (i % 2);
+        const numMonths = 1 + ((i / NEW_HIRE_INTERVAL) % 2);
         const months: MpdStartingQuarterMonthlyBreakdown[] = calendarMonths
           .slice(calendarMonths.length - numMonths)
           .map((month, mi) => {
-            const seed = i * 3 + mi;
+            const seed = STARTING_QUARTER_MONTH_SEED_OFFSET + i * 3 + mi;
             return {
               month,
-              payroll: 3000 + ((seed * 7919) % 2001),
+              payroll: averagePayrollFor(seed),
               status: healthCycle[(i + mi) % healthCycle.length],
             };
           });
@@ -294,22 +305,21 @@ const generateQuarterlyPayrollHistory = (
       }
 
       if (j >= 4) {
-        // Mirror the row's last-4-quarter chips so both tabs agree
+        // Reuse the row's health status for the shared last 4 quarters
         const rowQuarter = quarters[j - 4];
         completedQuarters.push({
           fiscalYear,
           quarter,
-          averagePayroll: Math.round((rowQuarter.payroll / 3) * 100) / 100,
+          averagePayroll,
           status: rowQuarter.health,
         });
         return;
       }
 
-      const seed = i * 4 + j;
       completedQuarters.push({
         fiscalYear,
         quarter,
-        averagePayroll: 3000 + ((seed * 7919) % 2001),
+        averagePayroll,
         status: healthCycle[(i + j) % healthCycle.length],
       });
     },
