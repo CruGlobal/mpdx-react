@@ -56,9 +56,12 @@ export const PrintCohortGoalsButton: React.FC = () => {
           variant="outlined"
           disabled={!hasTrainingCosts || printing}
           onClick={handlePrint}
+          aria-busy={printing}
         >
           {t('Print All')}
-          {printing && <CircularProgress size={16} sx={{ ml: 1 }} />}
+          {printing && (
+            <CircularProgress size={16} color="inherit" sx={{ ml: 1 }} />
+          )}
         </Button>
       </span>
     </Tooltip>
