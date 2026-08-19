@@ -1,5 +1,6 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import {
   CompletedQuarterPayroll,
   MpdHealthStatusEnum,
@@ -45,7 +46,7 @@ describe('StaffTabQuarterly', () => {
 
     expect(
       screen.getByText(
-        'Average monthly payroll per fiscal quarter - last 8 quarters',
+        'Average monthly payroll per fiscal quarter · last 8 quarters',
       ),
     ).toBeInTheDocument();
   });
@@ -70,9 +71,44 @@ describe('StaffTabQuarterly', () => {
     expect(screen.getAllByText('Partial')).toHaveLength(1);
   });
 
+  it('shows tooltip message on the starting quarter chip', async () => {
+    renderQuarterly({
+      monthlyGrossSalary: 4510.6,
+      startingQuarter,
+      completedQuarters,
+    });
+
+    const icon = screen.getByTestId('InfoOutlinedIcon');
+    userEvent.hover(icon);
+    expect(await screen.findByRole('tooltip')).toHaveTextContent(
+      'Payroll started this quarter',
+    );
+  });
+
   it('renders no starting quarter chip when there is none', () => {
     renderQuarterly({ monthlyGrossSalary: 4510.6, completedQuarters });
 
     expect(screen.queryByText('Partial')).not.toBeInTheDocument();
+  });
+
+  it('renders a monthly breakdown table for the starting quarter', () => {
+    renderQuarterly({
+      monthlyGrossSalary: 4510.6,
+      startingQuarter,
+      completedQuarters,
+    });
+
+    expect(
+      screen.getByText('Starting quarter monthly payroll breakdown · FQ2 25'),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Feb 2025')).toBeInTheDocument();
+    expect(screen.getByText('$4,263.25')).toBeInTheDocument();
+    expect(screen.getByText('NEEDS ATTENTION')).toBeInTheDocument();
+  });
+
+  it('renders no breakdown table when there is no starting quarter', () => {
+    renderQuarterly({ monthlyGrossSalary: 4510.6, completedQuarters });
+
+    expect(screen.queryByRole('table')).not.toBeInTheDocument();
   });
 });

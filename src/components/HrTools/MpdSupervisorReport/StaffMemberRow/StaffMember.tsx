@@ -18,7 +18,10 @@ import theme from 'src/theme';
 import { getInitials, healthColor } from '../helpers';
 import { EmployeeData } from '../mockData';
 
-const healthLabel = (t: TFunction, health: MpdHealthStatusEnum): string => {
+export const healthLabel = (
+  t: TFunction,
+  health: MpdHealthStatusEnum,
+): string => {
   switch (health) {
     case MpdHealthStatusEnum.Green:
       return t('on track');
