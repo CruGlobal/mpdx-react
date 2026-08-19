@@ -46,7 +46,7 @@ describe('PrintCohortGoalsButton', () => {
     const button = getByRole('button', { name: 'Print All' });
     expect(button).toBeDisabled();
 
-    await userEvent.hover(button.parentElement as HTMLElement);
+    userEvent.hover(button.parentElement as HTMLElement);
     expect(
       await findByText(
         'Enter training costs for this cohort to print its goals.',
@@ -80,7 +80,7 @@ describe('PrintCohortGoalsButton', () => {
 
   it('generates the cohort PDF and downloads it', async () => {
     const { getByRole } = renderButton();
-    await userEvent.click(getByRole('button', { name: 'Print All' }));
+    userEvent.click(getByRole('button', { name: 'Print All' }));
 
     await waitFor(() =>
       expect(downloadMock).toHaveBeenCalledWith(
@@ -113,7 +113,7 @@ describe('PrintCohortGoalsButton', () => {
   it('shows an error and re-enables the button when generation fails', async () => {
     generateMock.mockRejectedValue(new Error('boom'));
     const { getByRole, findByText } = renderButton();
-    await userEvent.click(getByRole('button', { name: 'Print All' }));
+    userEvent.click(getByRole('button', { name: 'Print All' }));
 
     expect(
       await findByText('Unable to export the MPD Goals PDF.'),
