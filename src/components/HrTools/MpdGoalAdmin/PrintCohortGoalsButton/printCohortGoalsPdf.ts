@@ -66,6 +66,15 @@ const formatUsd = (amount: number): string =>
  * server (MPDX-9690) renders the real Support Goals Worksheet — one page per
  * goal — and the mutation exposes a download URL for the concatenated
  * document; this function should then reduce to mutate → return that URL.
+ * Constraints for that implementation:
+ * - The resolved URL must be same-origin or a blob URL — `anchor.download` in
+ *   `downloadPdf` is ignored for cross-origin URLs, so a signed S3/API URL
+ *   means mutate → fetch → createObjectURL (as in `exportRest.tsx`), not a
+ *   bare redirect.
+ * - `downloadPdf`'s `URL.revokeObjectURL(url)` is blob-era cleanup and a
+ *   harmless no-op on non-blob URLs.
+ * - Scope: Print All prints the whole cohort, so the mutation contract only
+ *   needs `cohortId`.
  */
 export const generateCohortGoalsPdf = async (
   cohort: Cohort,
@@ -82,7 +91,7 @@ export const generateCohortGoalsPdf = async (
  * Triggers a browser download of `url` via a temporary anchor (the same
  * mechanism as the contacts CSV export in
  * `src/components/Contacts/MassActions/Exports/exportRest.tsx`), then
- * releases the URL.
+ * releases the URL (a no-op when `url` is not a blob URL).
  */
 export const downloadPdf = (url: string, filename: string): void => {
   const anchor = document.createElement('a');
