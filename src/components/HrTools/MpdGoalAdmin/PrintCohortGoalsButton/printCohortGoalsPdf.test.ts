@@ -24,6 +24,15 @@ describe('buildPlaceholderPdf', () => {
 });
 
 describe('generateCohortGoalsPdf', () => {
+  // jsdom does not implement Blob.text(), so read the blob with a FileReader.
+  const readBlobText = (blob: Blob) =>
+    new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsText(blob);
+    });
+
   it('builds a blob URL for a PDF listing every goal in the cohort', async () => {
     const createObjectURL = jest.fn().mockReturnValue('blob:cohort-pdf');
     window.URL.createObjectURL = createObjectURL;
@@ -33,6 +42,11 @@ describe('generateCohortGoalsPdf', () => {
     );
     const blob = createObjectURL.mock.calls[0][0] as Blob;
     expect(blob.type).toBe('application/pdf');
+
+    const pdf = await readBlobText(blob);
+    expect(pdf).toContain('(MPD Goals - Fall NSO 2026) Tj');
+    expect(pdf).toContain('(John & Jane Doe: $6,430.25) Tj');
+    expect(pdf).toContain('(Carlos & Michaela Everts: $5,280.77) Tj');
   });
 });
 
