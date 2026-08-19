@@ -8,9 +8,9 @@ import { downloadPdf, generateCohortGoalsPdf } from './printCohortGoalsPdf';
 /**
  * "Print All" — exports every goal in the selected cohort as a single
  * printable PDF (used for NSO hard copies). Disabled until the cohort's
- * training costs have been entered, the same gate Run & Send uses: without
- * training costs the goal amounts aren't final, so neither action may act on
- * them.
+ * training costs have been entered: without training costs the goal amounts
+ * aren't final, so printing may not act on them. (Run & Send is expected to
+ * adopt the same gate when it is wired up — it does not enforce it yet.)
  */
 export const PrintCohortGoalsButton: React.FC = () => {
   const { t } = useTranslation();
