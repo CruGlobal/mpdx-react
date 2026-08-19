@@ -12,7 +12,7 @@ const dataDogConfig = {
   applicationId: process.env.DATADOG_APP_ID,
   site: 'datadoghq.com',
   // Keep in sync with the datadog:sourcemaps script in package.json
-  service: 'mpdx-web-react',
+  service: 'mpdx-react',
   sessionSampleRate: 100,
   sessionReplaySampleRate: 20,
   trackUserInteractions: true,
