@@ -94,6 +94,22 @@ describe('PrintCohortGoalsButton', () => {
     expect(getByRole('button', { name: 'Print All' })).toBeEnabled();
   });
 
+  it('disables the button and shows a spinner while generating', async () => {
+    let resolvePdf!: (url: string) => void;
+    generateMock.mockReturnValue(
+      new Promise((resolve) => (resolvePdf = resolve)),
+    );
+    const { getByRole, findByRole } = renderButton();
+    userEvent.click(getByRole('button', { name: 'Print All' }));
+
+    expect(await findByRole('progressbar')).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Print All' })).toBeDisabled();
+
+    resolvePdf('blob:mock-pdf');
+    await waitFor(() => expect(downloadMock).toHaveBeenCalled());
+    expect(getByRole('button', { name: 'Print All' })).toBeEnabled();
+  });
+
   it('shows an error and re-enables the button when generation fails', async () => {
     generateMock.mockRejectedValue(new Error('boom'));
     const { getByRole, findByText } = renderButton();
