@@ -178,7 +178,7 @@ export const mockCohorts: Cohort[] = [
       {
         id: 'spring-row-1',
         name: 'Amara & Tobias Fields',
-        email: 'amara.fields@cru.org',
+        email: 'amara.fields@example.com',
         ministry: 'Cru High School',
         geography: 'Geography 02 (04-05)',
         mpdGoal: 8420.5,
@@ -190,7 +190,7 @@ export const mockCohorts: Cohort[] = [
       {
         id: 'spring-row-2',
         name: 'Noah Okafor',
-        email: 'noah.okafor@cru.org',
+        email: 'noah.okafor@example.com',
         ministry: 'Campus Field Ministry',
         geography: 'Geography 05 (11-12)',
         mpdGoal: 5210,
