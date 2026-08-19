@@ -41,3 +41,6 @@ export const healthColor = (
       };
   }
 };
+
+export const getQuarterLabel = (fiscalYear: number, quarter: number): string =>
+  `FQ${quarter} ${fiscalYear.toString().slice(-2)}`;
