@@ -1,3 +1,4 @@
+import { currencyFormat } from 'src/lib/intlFormat';
 import { Cohort } from '../mpdGoalAdminHelpers';
 
 // Escape the characters that terminate or escape a PDF literal string.
@@ -52,8 +53,10 @@ export const buildPlaceholderPdf = (lines: string[]): string => {
   return pdf;
 };
 
+// The en-US pin is deliberate: it matches the server worksheet's :en/USD pin
+// (MPDX-9690) and keeps the PDF literal string ASCII-safe.
 const formatUsd = (amount: number): string =>
-  amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+  currencyFormat(amount, 'USD', 'en-US');
 
 /**
  * Generates the printable PDF of every goal in the cohort and resolves with a
