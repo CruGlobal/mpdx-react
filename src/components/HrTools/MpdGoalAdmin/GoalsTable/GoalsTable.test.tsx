@@ -71,8 +71,7 @@ describe('GoalsTable', () => {
     userEvent.click(await findByRole('option', { name: 'Tom Harris' }));
     userEvent.click(getByRole('button', { name: 'Save' }));
 
-    // Formik's submit resolves asynchronously, so wait for the context update
-    // rather than asserting synchronously after the click.
+    // Formik's submit resolves asynchronously.
     await waitFor(() =>
       expect(ctx.cohorts[0].rows.find((row) => row.id === 'row-2')?.coach).toBe(
         'Tom Harris',

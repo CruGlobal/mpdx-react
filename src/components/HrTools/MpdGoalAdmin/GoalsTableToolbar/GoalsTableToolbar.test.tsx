@@ -127,8 +127,7 @@ describe('GoalsTableToolbar', () => {
 
     const dialog = getByRole('dialog');
     expect(dialog).toHaveTextContent('Assign Coach for 2 Selected Staff');
-    // row-1 already has a coach, so the overwrite warning names it; row-2
-    // has none and is not listed.
+    // row-1 already has a coach and is named in the warning; row-2 is not.
     const warning = within(dialog).getByRole('alert');
     expect(warning).toHaveTextContent(
       '1 of the selected staff already have a coach.',

@@ -36,8 +36,7 @@ export const GoalsTableToolbar: React.FC = () => {
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement | null>(null);
   const [assignCoachOpen, setAssignCoachOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  // Kept separate from `modalOpen` so the target rows/title persist through the
-  // dialog's close transition instead of flashing empty.
+  // Kept separate so the target rows/title persist through the close transition.
   const [modalTarget, setModalTarget] = useState<{
     title: string;
     rows: StaffGoalRow[];
@@ -57,8 +56,7 @@ export const GoalsTableToolbar: React.FC = () => {
     setModalOpen(false);
   };
 
-  // TODO(MPDX-9914): call the assignCoach mutation instead of the mock
-  // context update once the backend field is wired up.
+  // TODO(MPDX-9914): call the assignCoach mutation once the backend exists.
   const handleAssignCoach = (coachId: string) => {
     const coach = mockCoaches.find((option) => option.id === coachId);
     if (!coach) {
@@ -117,8 +115,7 @@ export const GoalsTableToolbar: React.FC = () => {
           open={Boolean(menuAnchorEl)}
           onClose={() => setMenuAnchorEl(null)}
         >
-          {/* Disabled until wired up so assistive tech announces the
-              inert state instead of a dead control (MPDX-9702). */}
+          {/* Disabled until wired up (MPDX-9702). */}
           <MenuItem disabled>{t('Print All')}</MenuItem>
           <MenuItem
             onClick={() => {
@@ -141,8 +138,7 @@ export const GoalsTableToolbar: React.FC = () => {
           </MenuItem>
         </Menu>
         <Button
-          // Only one contained CTA at a time: while rows are selected, the
-          // selection-scoped menu takes visual priority over this button.
+          // Only one contained CTA at a time while rows are selected.
           variant={hasSelection ? 'outlined' : 'contained'}
           onClick={() =>
             openRunAndSend(

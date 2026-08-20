@@ -26,10 +26,7 @@ interface AssignCoachModalProps {
   /** Name shown in the modal title, e.g. the staff member the coach is for. */
   subjectName: string;
   coaches: AssignCoachOption[];
-  /**
-   * Names of the staff who already have a coach and will be reassigned. When
-   * non-empty, a warning listing them is shown so overwrites aren't silent.
-   */
+  /** Staff who already have a coach; when non-empty a reassignment warning lists them. */
   reassignedNames?: string[];
   handleClose: () => void;
   handleAssignCoach: (coachId: string) => Promise<void> | void;

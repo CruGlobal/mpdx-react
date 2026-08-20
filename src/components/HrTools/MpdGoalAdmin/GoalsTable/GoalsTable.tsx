@@ -48,12 +48,10 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
   // The staff row whose coach is being assigned; null when the modal is closed.
   const [coachRow, setCoachRow] = useState<StaffGoalRow | null>(null);
 
-  // TODO(MPDX-9914): populate from the assignable-coaches query once the
-  // backend field exists. Same mock list the toolbar's bulk path uses.
+  // TODO(MPDX-9914): populate from the assignable-coaches query.
   const assignableCoaches = mockCoaches;
 
-  // TODO(MPDX-9914): call the assignCoach mutation instead of the mock
-  // context update once the backend field is wired up.
+  // TODO(MPDX-9914): call the assignCoach mutation once the backend exists.
   const handleAssignCoach = (coachId: string) => {
     const coach = assignableCoaches.find((option) => option.id === coachId);
     if (!coach || !coachRow) {

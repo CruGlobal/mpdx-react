@@ -83,9 +83,6 @@ describe('MpdGoalAdminContext', () => {
     const rows = result.current.cohorts[0].rows;
     expect(rows.find((row) => row.id === 'row-1')?.coach).toBe('Tom Harris');
     expect(rows.find((row) => row.id === 'row-2')?.coach).toBe('Tom Harris');
-    // Untouched rows keep their original coach. Assert the literal rather than
-    // comparing against mockCohorts: the provider seeds state with that same
-    // array, so an in-place mutation would change both sides and pass trivially.
     expect(rows.find((row) => row.id === 'row-3')?.coach).toBe('Nelson Jones');
   });
 

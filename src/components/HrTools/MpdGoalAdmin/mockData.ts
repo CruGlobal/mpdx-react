@@ -1,8 +1,7 @@
 import { AssignCoachOption } from './AssignCoachModal/AssignCoachModal';
 import { Cohort, GoalStatusEnum } from './mpdGoalAdminHelpers';
 
-// Assignable coaches for the Assign Coach modal (MPDX-9693). Mirrors the coach
-// names used in the rows below; replaced by the real query in MPDX-9914.
+// Replaced by the real assignable-coaches query in MPDX-9914.
 export const mockCoaches: AssignCoachOption[] = [
   { id: 'coach-1', name: 'Amy Wilson' },
   { id: 'coach-2', name: 'Bea Christians' },
