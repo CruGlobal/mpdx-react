@@ -11,7 +11,10 @@ import { useSaveField } from './useSaveField';
 export interface AutosaveAutocompleteProps
   extends Omit<
     AutocompleteProps<string, false, boolean, false>,
-    'renderInput' | 'onChange' | 'value'
+    // disableClearable is owned by the component: it is derived from
+    // emptyValue, and letting a caller re-enable clearing would restore the
+    // mid-typing null save this component exists to prevent
+    'renderInput' | 'onChange' | 'value' | 'disableClearable'
   > {
   fieldName: string;
   label: string;
