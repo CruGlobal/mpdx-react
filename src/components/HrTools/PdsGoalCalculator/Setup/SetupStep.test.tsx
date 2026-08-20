@@ -345,7 +345,6 @@ describe('SetupStep', () => {
   });
 
   it('does not save while the Geographic Multiplier is cleared by typing', async () => {
-    mutationSpy.mockClear();
     const { findByRole } = renderSetup({
       calculationMock: {
         ...fullTimeSalariedMock,
@@ -369,7 +368,6 @@ describe('SetupStep', () => {
   });
 
   it('reverts to the saved Geographic Multiplier when the cleared field loses focus', async () => {
-    mutationSpy.mockClear();
     const { findByRole } = renderSetup({
       calculationMock: {
         ...fullTimeSalariedMock,
@@ -393,7 +391,6 @@ describe('SetupStep', () => {
   });
 
   it('saves None when it is explicitly selected', async () => {
-    mutationSpy.mockClear();
     const { findByRole } = renderSetup({
       calculationMock: {
         ...fullTimeSalariedMock,
@@ -421,7 +418,6 @@ describe('SetupStep', () => {
   });
 
   it('does not save when a Geographic Multiplier of None is cleared and loses focus', async () => {
-    mutationSpy.mockClear();
     const { findByRole } = renderSetup({
       calculationMock: fullTimeSalariedMock,
       onCall: mutationSpy,

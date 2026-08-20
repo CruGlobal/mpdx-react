@@ -328,7 +328,6 @@ describe('InformationCategory', () => {
     });
 
     it('does not save while the Geographic Location is cleared by typing', async () => {
-      mutationSpy.mockClear();
       const { getByRole } = render(
         <TestComponent geographicLocation="Orlando, FL" />,
       );
@@ -346,7 +345,6 @@ describe('InformationCategory', () => {
     });
 
     it('reverts to the saved Geographic Location when the cleared field loses focus', async () => {
-      mutationSpy.mockClear();
       const { getByRole } = render(
         <TestComponent geographicLocation="Orlando, FL" />,
       );
@@ -364,7 +362,6 @@ describe('InformationCategory', () => {
     });
 
     it('defaults to None and does not save when cleared and blurred without a saved location', async () => {
-      mutationSpy.mockClear();
       const { getByRole } = render(<TestComponent />);
 
       const input = getByRole('combobox', { name: 'Geographic Location' });
