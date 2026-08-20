@@ -249,10 +249,9 @@ describe('useGoalCalculatorConstants', () => {
     await waitFor(() =>
       expect(result.current.goalGeographicConstantMap.get('None')).toBe(0.05),
     );
-    expect(Array.from(result.current.goalGeographicConstantMap.keys())).toEqual([
-      'None',
-      'Atlanta, GA',
-    ]);
+    expect(Array.from(result.current.goalGeographicConstantMap.keys())).toEqual(
+      ['None', 'Atlanta, GA'],
+    );
   });
 
   it('should format data correctly', async () => {

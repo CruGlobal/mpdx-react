@@ -18,6 +18,7 @@ import {
   MpdGoalBenefitsConstantPlanEnum,
   MpdGoalBenefitsConstantSizeEnum,
 } from 'src/graphql/types.generated';
+import { GEOGRAPHIC_LOCATION_NONE } from 'src/hooks/useGoalCalculatorConstants';
 import { getLocalizedAge } from 'src/lib/functions/getLocalizedAge';
 import { getLocalizedRole } from 'src/lib/functions/getLocalizedRole';
 import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
@@ -153,7 +154,7 @@ export const InformationCategoryPersonalForm: React.FC<
               // The None option takes the place of clearing the field, so
               // emptying the input never fires a mid-typing null save
               disableClearable
-              value={geographicLocation ?? 'None'}
+              value={geographicLocation ?? GEOGRAPHIC_LOCATION_NONE}
               onChange={(_, newValue) =>
                 saveField({ geographicLocation: newValue })
               }
