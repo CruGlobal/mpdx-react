@@ -83,7 +83,8 @@ export const StaffMemberDrawer: React.FC = () => {
     return null;
   }
 
-  const { user, spouse, quarters, monthlyPayrollHistory } = selectedMember;
+  const { user, spouse, monthlyPayrollHistory, quarterlyPayrollHistory } =
+    selectedMember;
   const {
     preferredName,
     lastName,
@@ -176,7 +177,7 @@ export const StaffMemberDrawer: React.FC = () => {
           <StaffTabMonthlySummary />
         </TabPanel>
         <TabPanel value={StaffDetailTabEnum.Quarterly}>
-          <DynamicQuarterly quarters={quarters} />
+          <DynamicQuarterly quarterHistory={quarterlyPayrollHistory} />
         </TabPanel>
         <TabPanel value={StaffDetailTabEnum.Payroll}>
           <DynamicPayroll payrollHistory={monthlyPayrollHistory} />

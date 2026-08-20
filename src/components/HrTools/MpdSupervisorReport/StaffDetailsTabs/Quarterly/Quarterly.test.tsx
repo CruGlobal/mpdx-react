@@ -1,39 +1,138 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import {
+  CompletedQuarterPayroll,
+  MpdHealthStatusEnum,
+  QuarterlyPayrollHistory,
+  StartingQuarterPayroll,
+} from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { QuarterHealthEnum, QuarterStatus } from '../../mockData';
 import { StaffTabQuarterly } from './Quarterly';
 
-const quarters: QuarterStatus[] = [
-  { label: 'FQ4 25', health: QuarterHealthEnum.Green, payroll: 15000 },
-  { label: 'FQ1 26', health: QuarterHealthEnum.Yellow, payroll: 16000 },
-  { label: 'FQ2 26', health: QuarterHealthEnum.Red, payroll: 17000 },
-  { label: 'FQ3 26', health: QuarterHealthEnum.Green, payroll: 18000 },
+const completedQuarters: CompletedQuarterPayroll[] = [
+  {
+    fiscalYear: 2025,
+    quarter: 4,
+    averagePayroll: 4013.42,
+    status: MpdHealthStatusEnum.Yellow,
+  },
+  {
+    fiscalYear: 2026,
+    quarter: 1,
+    averagePayroll: 4548.05,
+    status: MpdHealthStatusEnum.Green,
+  },
 ];
 
-const renderQuarterly = (quarterList: QuarterStatus[]) =>
+const startingQuarter: StartingQuarterPayroll = {
+  fiscalYear: 2025,
+  quarter: 2,
+  months: [
+    { month: '2025-02', payroll: 4263.25, status: MpdHealthStatusEnum.Yellow },
+  ],
+};
+
+const renderQuarterly = (quarterHistory: QuarterlyPayrollHistory) =>
   render(
     <ThemeProvider theme={theme}>
-      <StaffTabQuarterly quarters={quarterList} />
+      <StaffTabQuarterly quarterHistory={quarterHistory} />
     </ThemeProvider>,
   );
 
 describe('StaffTabQuarterly', () => {
-  it('renders the heading and a chip per quarter (all health colors)', () => {
-    renderQuarterly(quarters);
+  it('renders the heading', () => {
+    renderQuarterly({ monthlyGrossSalary: 4510.6, completedQuarters });
 
-    expect(screen.getByText('Fiscal Year Quarters')).toBeInTheDocument();
-    // One chip per quarter, covering Green, Yellow, and Red health mappings.
-    expect(screen.getByText('FQ4 25')).toBeInTheDocument(); // Green
-    expect(screen.getByText('FQ1 26')).toBeInTheDocument(); // Yellow
-    expect(screen.getByText('FQ2 26')).toBeInTheDocument(); // Red
-    expect(screen.getByText('FQ3 26')).toBeInTheDocument(); // Green
+    expect(
+      screen.getByText(
+        'Average monthly payroll per fiscal quarter · last 8 quarters',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('renders a chip with the label and average payroll for each completed quarter', () => {
+    renderQuarterly({ monthlyGrossSalary: 4510.6, completedQuarters });
+
+    expect(screen.getByText('FQ4 25')).toBeInTheDocument();
+    expect(screen.getByText('$4,013.42')).toBeInTheDocument();
+    expect(screen.getByText('FQ1 26')).toBeInTheDocument();
+    expect(screen.getByText('$4,548.05')).toBeInTheDocument();
+  });
+
+  it('inserts the starting quarter in chronological order, labeled as partial', () => {
+    renderQuarterly({
+      monthlyGrossSalary: 4510.6,
+      startingQuarter,
+      completedQuarters,
+    });
+
+    expect(screen.getByText('FQ2 25')).toBeInTheDocument();
+    expect(screen.getAllByText('Partial')).toHaveLength(1);
+  });
+
+  it('shows tooltip message on the starting quarter chip', async () => {
+    renderQuarterly({
+      monthlyGrossSalary: 4510.6,
+      startingQuarter,
+      completedQuarters,
+    });
+
+    const icon = screen.getByTestId('InfoOutlinedIcon');
+    userEvent.hover(icon);
+    expect(await screen.findByRole('tooltip')).toHaveTextContent(
+      'Payroll started this quarter',
+    );
+  });
+
+  it('renders no starting quarter chip when there is none', () => {
+    renderQuarterly({ monthlyGrossSalary: 4510.6, completedQuarters });
+
+    expect(screen.queryByText('Partial')).not.toBeInTheDocument();
+  });
+
+  it('renders a monthly breakdown table for the starting quarter', () => {
+    renderQuarterly({
+      monthlyGrossSalary: 4510.6,
+      startingQuarter,
+      completedQuarters,
+    });
+
+    expect(
+      screen.getByText('Starting quarter monthly payroll breakdown · FQ2 25'),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Feb 2025')).toBeInTheDocument();
+    expect(screen.getByText('$4,263.25')).toBeInTheDocument();
+    expect(screen.getByText('needs attention')).toBeInTheDocument();
+  });
+
+  it('renders no breakdown table when there is no starting quarter', () => {
+    renderQuarterly({ monthlyGrossSalary: 4510.6, completedQuarters });
+
+    expect(screen.queryByRole('table')).not.toBeInTheDocument();
   });
 
   it('renders no chips when there are no quarters', () => {
-    renderQuarterly([]);
+    renderQuarterly({ monthlyGrossSalary: 0, completedQuarters: [] });
 
-    expect(screen.getByText('Fiscal Year Quarters')).toBeInTheDocument();
     expect(screen.queryByText(/^FQ/)).not.toBeInTheDocument();
+  });
+
+  it('renders a dash instead of $0.00 for a quarter with no payroll data', () => {
+    renderQuarterly({
+      monthlyGrossSalary: 0,
+      completedQuarters: [
+        {
+          fiscalYear: 2025,
+          quarter: 4,
+          averagePayroll: 0,
+          status: MpdHealthStatusEnum.Gray,
+        },
+      ],
+    });
+
+    expect(screen.getByText('FQ4 25')).toBeInTheDocument();
+    expect(screen.getByText('-')).toBeInTheDocument();
+    expect(screen.queryByText('$0.00')).not.toBeInTheDocument();
   });
 });

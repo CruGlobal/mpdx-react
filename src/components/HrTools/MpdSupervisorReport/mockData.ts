@@ -1,31 +1,26 @@
 import { DateTime } from 'luxon';
-
-export enum QuarterHealthEnum {
-  Green = 'green',
-  Yellow = 'yellow',
-  Red = 'red',
-}
+import {
+  CompletedQuarterPayroll,
+  MonthlyPayrollHistory,
+  MpdHealthStatusEnum,
+  MpdStartingQuarterMonthlyBreakdown,
+  QuarterlyPayrollHistory,
+  StartingQuarterPayroll,
+} from 'src/graphql/types.generated';
 
 export interface QuarterStatus {
   /** e.g. "FQ4 25" */
   label: string;
-  health: QuarterHealthEnum;
+  health: MpdHealthStatusEnum;
   payroll: number;
-}
-
-export interface MonthlyPayroll {
-  month: string;
-  payroll: number;
-  additionalSalary: number;
-  reimbursement: number;
-  percentMaxPay: number;
 }
 
 export interface EmployeeData {
   user: User;
   spouse?: Spouse;
   quarters: QuarterStatus[];
-  monthlyPayrollHistory: MonthlyPayroll[];
+  monthlyPayrollHistory: MonthlyPayrollHistory[];
+  quarterlyPayrollHistory: QuarterlyPayrollHistory;
 }
 
 export interface User {
@@ -216,20 +211,120 @@ const teams = [
 const quarterLabels = ['FQ4 25', 'FQ1 26', 'FQ2 26', 'FQ3 26'];
 
 // Deterministic health pattern cycling through all three values
-const healthCycle: QuarterHealthEnum[] = [
-  QuarterHealthEnum.Green,
-  QuarterHealthEnum.Yellow,
-  QuarterHealthEnum.Red,
-  QuarterHealthEnum.Green,
-  QuarterHealthEnum.Yellow,
-  QuarterHealthEnum.Red,
-  QuarterHealthEnum.Green,
-  QuarterHealthEnum.Yellow,
-  QuarterHealthEnum.Red,
+const healthCycle: MpdHealthStatusEnum[] = [
+  MpdHealthStatusEnum.Green,
+  MpdHealthStatusEnum.Yellow,
+  MpdHealthStatusEnum.Red,
+  MpdHealthStatusEnum.Green,
+  MpdHealthStatusEnum.Yellow,
+  MpdHealthStatusEnum.Red,
+  MpdHealthStatusEnum.Green,
+  MpdHealthStatusEnum.Yellow,
+  MpdHealthStatusEnum.Red,
 ];
 
+// The 8 fiscal quarters (24 months) shown on the Quarterly Breakdown tab -
+// a fixed snapshot, the same for every staff member
+const quarterSequence = [
+  { fiscalYear: 2024, quarter: 4, months: ['2024-06', '2024-07', '2024-08'] },
+  { fiscalYear: 2025, quarter: 1, months: ['2024-09', '2024-10', '2024-11'] },
+  { fiscalYear: 2025, quarter: 2, months: ['2024-12', '2025-01', '2025-02'] },
+  { fiscalYear: 2025, quarter: 3, months: ['2025-03', '2025-04', '2025-05'] },
+  { fiscalYear: 2025, quarter: 4, months: ['2025-06', '2025-07', '2025-08'] },
+  { fiscalYear: 2026, quarter: 1, months: ['2025-09', '2025-10', '2025-11'] },
+  { fiscalYear: 2026, quarter: 2, months: ['2025-12', '2026-01', '2026-02'] },
+  { fiscalYear: 2026, quarter: 3, months: ['2026-03', '2026-04', '2026-05'] },
+];
+
+// Every 6th staff member is mocked as a newer hire whose payroll history
+// doesn't cover the full 24-month window (exercise gray chips)
+const NEW_HIRE_INTERVAL = 6;
+
+// Mock the same placeholder monthly gross salary for all staff members
+const MONTHLY_GROSS_SALARY = 4500.0;
+
+const averagePayrollFor = (seed: number): number =>
+  15000 + ((seed * 7919) % 25001);
+
+const OLDER_QUARTER_SEED_OFFSET = 10000;
+const STARTING_QUARTER_MONTH_SEED_OFFSET = 20000;
+
+const generateQuarterlyPayrollHistory = (
+  i: number,
+  quarters: QuarterStatus[],
+): QuarterlyPayrollHistory => {
+  const isNewHire = i % NEW_HIRE_INTERVAL === 0;
+  const startingIndex = isNewHire ? Math.floor(i / NEW_HIRE_INTERVAL) % 4 : -1;
+
+  const completedQuarters: CompletedQuarterPayroll[] = [];
+  let startingQuarter: StartingQuarterPayroll | undefined;
+
+  quarterSequence.forEach(
+    ({ fiscalYear, quarter, months: calendarMonths }, j) => {
+      const averagePayroll =
+        j >= 4
+          ? quarters[j - 4].payroll
+          : averagePayrollFor(OLDER_QUARTER_SEED_OFFSET + i * 4 + j);
+
+      if (j === startingIndex) {
+        // Staff started partway through the quarter, so the earliest month(s)
+        // have no payroll data - only the tail end of the quarter is reported.
+        const numMonths = 1 + ((i / NEW_HIRE_INTERVAL) % 2);
+        const months: MpdStartingQuarterMonthlyBreakdown[] = calendarMonths
+          .slice(calendarMonths.length - numMonths)
+          .map((month, mi) => {
+            const seed = STARTING_QUARTER_MONTH_SEED_OFFSET + i * 3 + mi;
+            return {
+              month,
+              payroll: averagePayrollFor(seed),
+              status: healthCycle[(i + mi) % healthCycle.length],
+            };
+          });
+
+        startingQuarter = { fiscalYear, quarter, months };
+        return;
+      }
+
+      if (startingIndex !== -1 && j < startingIndex) {
+        completedQuarters.push({
+          fiscalYear,
+          quarter,
+          averagePayroll: 0,
+          status: MpdHealthStatusEnum.Gray,
+        });
+        return;
+      }
+
+      if (j >= 4) {
+        // Reuse the row's health status for the shared last 4 quarters
+        const rowQuarter = quarters[j - 4];
+        completedQuarters.push({
+          fiscalYear,
+          quarter,
+          averagePayroll,
+          status: rowQuarter.health,
+        });
+        return;
+      }
+
+      completedQuarters.push({
+        fiscalYear,
+        quarter,
+        averagePayroll,
+        status: healthCycle[(i + j) % healthCycle.length],
+      });
+    },
+  );
+
+  return {
+    monthlyGrossSalary: MONTHLY_GROSS_SALARY,
+    ...(startingQuarter ? { startingQuarter } : {}),
+    completedQuarters,
+  };
+};
+
 // Deterministic amounts over the last 12 months, excluding the current month
-const generateMonthlyPayrollHistory = (i: number): MonthlyPayroll[] => {
+const generateMonthlyPayrollHistory = (i: number): MonthlyPayrollHistory[] => {
   const currentMonth = DateTime.local().startOf('month');
 
   return Array.from({ length: 12 }, (_, mi) => {
@@ -274,6 +369,7 @@ export const mockStaffMembers: EmployeeData[] = firstNames.map(
       },
       quarters,
       monthlyPayrollHistory: generateMonthlyPayrollHistory(i),
+      quarterlyPayrollHistory: generateQuarterlyPayrollHistory(i, quarters),
     };
 
     if (hasSpouse) {
