@@ -21,11 +21,9 @@ import { visuallyHidden } from '@mui/utils';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
-import {
-  AssignCoachModal,
-  AssignCoachOption,
-} from '../AssignCoachModal/AssignCoachModal';
+import { AssignCoachModal } from '../AssignCoachModal/AssignCoachModal';
 import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
+import { mockCoaches } from '../mockData';
 import { StaffGoalRow, isSendable } from '../mpdGoalAdminHelpers';
 
 interface GoalsTableProps {
@@ -37,20 +35,29 @@ export const DEFAULT_ROWS_PER_PAGE = 5;
 export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { selectedRowIds, toggleRow, toggleRows, search, selectedCohortId } =
-    useMpdGoalAdmin();
+  const {
+    selectedRowIds,
+    toggleRow,
+    toggleRows,
+    search,
+    selectedCohortId,
+    assignCoach,
+  } = useMpdGoalAdmin();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_ROWS_PER_PAGE);
   // The staff row whose coach is being assigned; null when the modal is closed.
   const [coachRow, setCoachRow] = useState<StaffGoalRow | null>(null);
 
-  // TODO(MPDX-9699): populate from the assignable-coaches query once the
-  // backend field exists. Empty for now so the modal renders a UI-only dropdown.
-  const assignableCoaches: AssignCoachOption[] = [];
+  // TODO(MPDX-9914): populate from the assignable-coaches query.
+  const assignableCoaches = mockCoaches;
 
-  const handleAssignCoach = async (_coachId: string) => {
-    // TODO(MPDX-9699): call the assign-coach mutation with { staffId, coachId }
-    // and refresh the goal-admin rows. Backend contract pending.
+  // TODO(MPDX-9914): call the assignCoach mutation once the backend exists.
+  const handleAssignCoach = (coachId: string) => {
+    const coach = assignableCoaches.find((option) => option.id === coachId);
+    if (!coach || !coachRow) {
+      return;
+    }
+    assignCoach([coachRow.id], coach.name);
   };
 
   // Reset to the first page whenever the filter inputs change, so the user

@@ -15,15 +15,18 @@ const handleAssignCoach = jest.fn();
 
 interface TestComponentProps {
   coaches?: AssignCoachOption[];
+  reassignedNames?: string[];
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   coaches: coachesProp = coaches,
+  reassignedNames,
 }) => (
   <ThemeProvider theme={theme}>
     <AssignCoachModal
       subjectName="Carlos & Michaela Everts"
       coaches={coachesProp}
+      reassignedNames={reassignedNames}
       handleClose={handleClose}
       handleAssignCoach={handleAssignCoach}
     />
@@ -53,6 +56,28 @@ describe('AssignCoachModal', () => {
     const { getByRole } = render(<TestComponent coaches={[]} />);
 
     expect(getByRole('button', { name: 'Save' })).toBeDisabled();
+  });
+
+  it('warns about staff whose existing coach will be replaced', () => {
+    const { getByRole } = render(
+      <TestComponent reassignedNames={['John & Jane Doe', "James O'Connor"]} />,
+    );
+
+    const alert = getByRole('alert');
+    expect(alert).toHaveTextContent(
+      '2 of the selected staff already have a coach.',
+    );
+    expect(alert).toHaveTextContent(
+      'Assigning a new coach will replace the current coach for the following staff.',
+    );
+    expect(alert).toHaveTextContent('John & Jane Doe');
+    expect(alert).toHaveTextContent("James O'Connor");
+  });
+
+  it('does not warn when no selected staff already have a coach', () => {
+    const { queryByRole } = render(<TestComponent reassignedNames={[]} />);
+
+    expect(queryByRole('alert')).not.toBeInTheDocument();
   });
 
   it('closes when Cancel is clicked', () => {

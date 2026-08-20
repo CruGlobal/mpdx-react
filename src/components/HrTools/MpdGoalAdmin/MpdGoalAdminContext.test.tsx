@@ -75,6 +75,17 @@ describe('MpdGoalAdminContext', () => {
     expect(result.current.selectedCohort?.trainingCostEntered).toBe(true);
   });
 
+  it('assigns a coach to exactly the given rows', () => {
+    const { result } = renderHook(() => useMpdGoalAdmin(), { wrapper });
+
+    act(() => result.current.assignCoach(['row-1', 'row-2'], 'Tom Harris'));
+
+    const rows = result.current.cohorts[0].rows;
+    expect(rows.find((row) => row.id === 'row-1')?.coach).toBe('Tom Harris');
+    expect(rows.find((row) => row.id === 'row-2')?.coach).toBe('Tom Harris');
+    expect(rows.find((row) => row.id === 'row-3')?.coach).toBe('Nelson Jones');
+  });
+
   it('throws when used outside its provider', () => {
     expect(() => renderHook(() => useMpdGoalAdmin())).toThrow(
       'useMpdGoalAdmin must be used within a MpdGoalAdminProvider',
