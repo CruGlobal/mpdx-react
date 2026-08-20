@@ -48,6 +48,8 @@ export const formatConstants = (
   });
 
   const goalGeographicConstantMap: GoalGeographicConstantMap = new Map();
+  // Ensure the None option always exists
+  goalGeographicConstantMap.set('None', 0);
   constant?.mpdGoalGeographicConstants.forEach((constant) => {
     const { location, percentageMultiplier } = constant;
     goalGeographicConstantMap.set(location, percentageMultiplier);

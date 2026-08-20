@@ -150,7 +150,10 @@ export const InformationCategoryPersonalForm: React.FC<
           <Grid size={12}>
             <Autocomplete
               options={locations}
-              value={geographicLocation ?? null}
+              // The None option takes the place of clearing the field, so
+              // emptying the input never fires a mid-typing null save
+              disableClearable
+              value={geographicLocation ?? 'None'}
               onChange={(_, newValue) =>
                 saveField({ geographicLocation: newValue })
               }

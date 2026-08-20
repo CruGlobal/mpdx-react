@@ -344,6 +344,103 @@ describe('SetupStep', () => {
     );
   });
 
+  it('does not save while the Geographic Multiplier is cleared by typing', async () => {
+    mutationSpy.mockClear();
+    const { findByRole } = renderSetup({
+      calculationMock: {
+        ...fullTimeSalariedMock,
+        geographicLocation: 'Orlando, FL',
+      },
+      onCall: mutationSpy,
+    });
+
+    const input = await findByRole('combobox', {
+      name: 'Geographic Multiplier',
+    });
+    await waitFor(() => expect(input).toHaveValue('Orlando, FL (6%)'));
+
+    userEvent.clear(input);
+
+    // Yield to the microtask queue so any pending mutation would have fired.
+    await new Promise((r) => setTimeout(r, 0));
+    expect(mutationSpy).not.toHaveGraphqlOperation('UpdatePdsGoalCalculation');
+    // The field stays empty instead of resetting to None mid-edit
+    expect(input).toHaveValue('');
+  });
+
+  it('reverts to the saved Geographic Multiplier when the cleared field loses focus', async () => {
+    mutationSpy.mockClear();
+    const { findByRole } = renderSetup({
+      calculationMock: {
+        ...fullTimeSalariedMock,
+        geographicLocation: 'Orlando, FL',
+      },
+      onCall: mutationSpy,
+    });
+
+    const input = await findByRole('combobox', {
+      name: 'Geographic Multiplier',
+    });
+    await waitFor(() => expect(input).toHaveValue('Orlando, FL (6%)'));
+
+    userEvent.clear(input);
+    userEvent.tab();
+
+    // The field is not clearable, so blurring restores the saved value
+    // without firing a mutation
+    await waitFor(() => expect(input).toHaveValue('Orlando, FL (6%)'));
+    expect(mutationSpy).not.toHaveGraphqlOperation('UpdatePdsGoalCalculation');
+  });
+
+  it('saves None when it is explicitly selected', async () => {
+    mutationSpy.mockClear();
+    const { findByRole } = renderSetup({
+      calculationMock: {
+        ...fullTimeSalariedMock,
+        geographicLocation: 'Orlando, FL',
+      },
+      onCall: mutationSpy,
+    });
+
+    const input = await findByRole('combobox', {
+      name: 'Geographic Multiplier',
+    });
+    await waitFor(() => expect(input).toHaveValue('Orlando, FL (6%)'));
+
+    userEvent.click(input);
+    userEvent.click(await findByRole('option', { name: 'None' }));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdatePdsGoalCalculation', {
+        attributes: {
+          id: 'goal-1',
+          geographicLocation: 'None',
+        },
+      }),
+    );
+  });
+
+  it('does not save when a Geographic Multiplier of None is cleared and loses focus', async () => {
+    mutationSpy.mockClear();
+    const { findByRole } = renderSetup({
+      calculationMock: fullTimeSalariedMock,
+      onCall: mutationSpy,
+    });
+
+    const input = await findByRole('combobox', {
+      name: 'Geographic Multiplier',
+    });
+    await waitFor(() => expect(input).not.toBeDisabled());
+    await waitFor(() => expect(input).toHaveValue('None'));
+
+    userEvent.clear(input);
+    userEvent.tab();
+
+    // Yield to the microtask queue so any pending mutation would have fired.
+    await new Promise((r) => setTimeout(r, 0));
+    expect(mutationSpy).not.toHaveGraphqlOperation('UpdatePdsGoalCalculation');
+  });
+
   it('renders the Calculate my average hours button next to Hours Worked', async () => {
     const { findByRole } = renderSetup({
       calculationMock: fullTimeHourlyMock,
