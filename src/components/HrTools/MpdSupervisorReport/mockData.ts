@@ -284,23 +284,25 @@ const generateQuarterlyPayrollHistory = (
         return;
       }
 
+      const seed = i * 4 + j;
+      const averagePayroll = 3000 + ((seed * 7919) % 2001);
+
       if (j >= 4) {
-        // Mirror the row's last-4-quarter chips so both tabs agree
+        // Reuse the row's health status for the shared last 4 quarters
         const rowQuarter = quarters[j - 4];
         completedQuarters.push({
           fiscalYear,
           quarter,
-          averagePayroll: Math.round((rowQuarter.payroll / 3) * 100) / 100,
+          averagePayroll,
           status: rowQuarter.health,
         });
         return;
       }
 
-      const seed = i * 4 + j;
       completedQuarters.push({
         fiscalYear,
         quarter,
-        averagePayroll: 3000 + ((seed * 7919) % 2001),
+        averagePayroll,
         status: healthCycle[(i + j) % healthCycle.length],
       });
     },

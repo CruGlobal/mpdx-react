@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { InfoOutlined } from '@mui/icons-material';
 import {
   Chip,
@@ -15,14 +15,19 @@ import {
 import { Box } from '@mui/system';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import {
   MpdHealthStatusEnum,
   QuarterlyPayrollHistory,
 } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat, monthYearFormat } from 'src/lib/intlFormat';
-import { healthLabel } from '../../StaffMemberRow/StaffMember';
-import { getQuarterLabel, healthColor } from '../../helpers';
+import { monthYearFormat } from 'src/lib/intlFormat';
+import {
+  buildQuarterChips,
+  getQuarterLabel,
+  healthColor,
+  healthLabel,
+} from '../../helpers';
 
 interface StaffTabQuarterlyProps {
   quarterHistory: QuarterlyPayrollHistory;
@@ -33,6 +38,7 @@ export const StaffTabQuarterly: React.FC<StaffTabQuarterlyProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const { formatCurrency } = useFormatters();
   const { startingQuarter } = quarterHistory;
 
   return (
@@ -56,7 +62,11 @@ export const StaffTabQuarterly: React.FC<StaffTabQuarterlyProps> = ({
               )}
             </Typography>
             <TableContainer>
-              <Table>
+              <Table
+                aria-label={t(
+                  'Starting Quarter Monthly Payroll Breakdown Table',
+                )}
+              >
                 <TableHead>
                   <TableRow>
                     <TableCell>{t('Month')}</TableCell>
@@ -70,16 +80,14 @@ export const StaffTabQuarterly: React.FC<StaffTabQuarterlyProps> = ({
                     return (
                       <TableRow key={month.month}>
                         <TableCell>
-                          {monthYearFormat(date.month, date.year, locale)}
+                          {date.isValid
+                            ? monthYearFormat(date.month, date.year, locale)
+                            : ''}
                         </TableCell>
-                        <TableCell>
-                          {currencyFormat(month.payroll, 'USD', locale, {
-                            showTrailingZeros: true,
-                          })}
-                        </TableCell>
+                        <TableCell>{formatCurrency(month.payroll)}</TableCell>
                         <TableCell>
                           <Chip
-                            label={healthLabel(t, month.status).toUpperCase()}
+                            label={healthLabel(t, month.status)}
                             size="small"
                             sx={(theme) => {
                               const { bg, color } = healthColor(
@@ -89,6 +97,7 @@ export const StaffTabQuarterly: React.FC<StaffTabQuarterlyProps> = ({
                               return {
                                 backgroundColor: bg,
                                 color,
+                                textTransform: 'uppercase',
                               };
                             }}
                           />
@@ -112,29 +121,33 @@ interface QuarterChipsProps {
 
 const QuarterChips: React.FC<QuarterChipsProps> = ({ quarterHistory }) => {
   const { t } = useTranslation();
-  const locale = useLocale();
-  const { completedQuarters, startingQuarter } = quarterHistory;
+  const { formatCurrency } = useFormatters();
 
-  const quarters = startingQuarter
-    ? [...completedQuarters, startingQuarter].sort(
-        (a, b) => a.fiscalYear - b.fiscalYear || a.quarter - b.quarter,
-      )
-    : completedQuarters;
+  const quarters = useMemo(
+    () => buildQuarterChips(quarterHistory),
+    [quarterHistory],
+  );
 
   return (
     <Grid container spacing={1}>
       {quarters.map((quarter) => {
         const label = getQuarterLabel(quarter.fiscalYear, quarter.quarter);
-        const isStarting = !('averagePayroll' in quarter);
+        const { averagePayroll, status } = quarter;
+        const isStarting = averagePayroll === null;
         const payrollLabel = isStarting
           ? t('Partial')
-          : currencyFormat(quarter.averagePayroll, 'USD', locale, {
-              showTrailingZeros: true,
-            });
+          : status === MpdHealthStatusEnum.Gray
+            ? '-'
+            : formatCurrency(averagePayroll);
 
         return (
           <Grid key={label} size={{ xs: 6, sm: 4, md: 3 }}>
             <Chip
+              aria-label={t('{{label}}: {{amount}} ({{status}})', {
+                label,
+                amount: payrollLabel,
+                status: healthLabel(t, status),
+              })}
               label={
                 <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
                   <Box
@@ -154,6 +167,8 @@ const QuarterChips: React.FC<QuarterChipsProps> = ({ quarterHistory }) => {
                     <Tooltip title={t('Payroll started this quarter')}>
                       <InfoOutlined
                         fontSize="medium"
+                        tabIndex={0}
+                        titleAccess={t('Payroll started this quarter')}
                         color="inherit"
                         sx={{ ml: 'auto' }}
                       />
@@ -163,12 +178,7 @@ const QuarterChips: React.FC<QuarterChipsProps> = ({ quarterHistory }) => {
               }
               size="small"
               sx={(theme) => {
-                const { bg, color } = healthColor(
-                  theme,
-                  'status' in quarter
-                    ? quarter.status
-                    : MpdHealthStatusEnum.Gray,
-                );
+                const { bg, color } = healthColor(theme, status);
                 return {
                   height: 'auto',
                   width: '100%',

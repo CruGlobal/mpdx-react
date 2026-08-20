@@ -9,31 +9,13 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { getInitials, healthColor } from '../helpers';
+import { getInitials, healthColor, healthLabel } from '../helpers';
 import { EmployeeData } from '../mockData';
-
-export const healthLabel = (
-  t: TFunction,
-  health: MpdHealthStatusEnum,
-): string => {
-  switch (health) {
-    case MpdHealthStatusEnum.Green:
-      return t('on track');
-    case MpdHealthStatusEnum.Red:
-      return t('at risk');
-    case MpdHealthStatusEnum.Yellow:
-      return t('needs attention');
-    case MpdHealthStatusEnum.Gray:
-    default:
-      return t('no data');
-  }
-};
 
 const StyledCard = styled(Card)(({ theme }) => ({
   marginBottom: theme.spacing(1),

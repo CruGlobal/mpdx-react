@@ -103,12 +103,36 @@ describe('StaffTabQuarterly', () => {
     ).toBeInTheDocument();
     expect(screen.getByText('Feb 2025')).toBeInTheDocument();
     expect(screen.getByText('$4,263.25')).toBeInTheDocument();
-    expect(screen.getByText('NEEDS ATTENTION')).toBeInTheDocument();
+    expect(screen.getByText('needs attention')).toBeInTheDocument();
   });
 
   it('renders no breakdown table when there is no starting quarter', () => {
     renderQuarterly({ monthlyGrossSalary: 4510.6, completedQuarters });
 
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
+  });
+
+  it('renders no chips when there are no quarters', () => {
+    renderQuarterly({ monthlyGrossSalary: 0, completedQuarters: [] });
+
+    expect(screen.queryByText(/^FQ/)).not.toBeInTheDocument();
+  });
+
+  it('renders a dash instead of $0.00 for a quarter with no payroll data', () => {
+    renderQuarterly({
+      monthlyGrossSalary: 0,
+      completedQuarters: [
+        {
+          fiscalYear: 2025,
+          quarter: 4,
+          averagePayroll: 0,
+          status: MpdHealthStatusEnum.Gray,
+        },
+      ],
+    });
+
+    expect(screen.getByText('FQ4 25')).toBeInTheDocument();
+    expect(screen.getByText('-')).toBeInTheDocument();
+    expect(screen.queryByText('$0.00')).not.toBeInTheDocument();
   });
 });
