@@ -27,7 +27,10 @@ import {
   DesignationSupportSalaryType,
   DesignationSupportStatus,
 } from 'src/graphql/types.generated';
-import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
+import {
+  GEOGRAPHIC_LOCATION_NONE,
+  useGoalCalculatorConstants,
+} from 'src/hooks/useGoalCalculatorConstants';
 import { useLocale } from 'src/hooks/useLocale';
 import { percentageFormat } from 'src/lib/intlFormat';
 import { AutosaveTextField } from '../Shared/Autosave/AutosaveTextField';
@@ -281,9 +284,14 @@ export const SetupStep: React.FC = () => {
           <Grid size={12}>
             <Autocomplete
               options={locations}
+              // The None option takes the place of clearing the field, so
+              // emptying the input never fires a mid-typing null save
+              disableClearable
               getOptionLabel={getLocationLabel}
-              value={calculation?.geographicLocation ?? 'None'}
-              onChange={(_, newValue: string | null) =>
+              value={
+                calculation?.geographicLocation ?? GEOGRAPHIC_LOCATION_NONE
+              }
+              onChange={(_, newValue) =>
                 saveField({ geographicLocation: newValue })
               }
               disabled={!calculation}

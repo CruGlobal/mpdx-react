@@ -31,6 +31,14 @@ export type GoalMiscConstants = Partial<
 >;
 export type GoalGeographicConstantMap = Map<string, number>;
 
+/**
+ * The zero-multiplier geographic option meaning "no city applies". Must
+ * byte-match the server's constants row: the dropdowns are not clearable, so
+ * this exact string is both the guaranteed option and the value saved when a
+ * user declines a city.
+ */
+export const GEOGRAPHIC_LOCATION_NONE = 'None';
+
 export interface FormattedConstants {
   goalBenefitsPlans: GoalCalculatorConstantsQuery['constant']['mpdGoalBenefitsConstants'];
   goalMiscConstants: GoalMiscConstants;
@@ -48,6 +56,8 @@ export const formatConstants = (
   });
 
   const goalGeographicConstantMap: GoalGeographicConstantMap = new Map();
+  // Ensure the None option always exists
+  goalGeographicConstantMap.set(GEOGRAPHIC_LOCATION_NONE, 0);
   constant?.mpdGoalGeographicConstants.forEach((constant) => {
     const { location, percentageMultiplier } = constant;
     goalGeographicConstantMap.set(location, percentageMultiplier);

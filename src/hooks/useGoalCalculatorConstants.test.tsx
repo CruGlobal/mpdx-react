@@ -121,7 +121,9 @@ describe('useGoalCalculatorConstants', () => {
     expect(result.current).toEqual({
       goalBenefitsPlans: [],
       goalMiscConstants: {},
-      goalGeographicConstantMap: new Map(),
+      // The None geographic option is seeded even before the data loads so
+      // that non-clearable dropdowns always have a valid option
+      goalGeographicConstantMap: new Map([['None', 0]]),
       loading: true,
       error: undefined,
       unavailable: false,
@@ -167,6 +169,89 @@ describe('useGoalCalculatorConstants', () => {
 
     await waitFor(() => expect(result.current.unavailable).toBe(true));
     expect(result.current.loading).toBe(false);
+  });
+
+  it('guarantees a leading None geographic option when the data lacks one', async () => {
+    const { result } = renderHook(() => useGoalCalculatorConstants(), {
+      wrapper: ({ children }: { children: ReactElement }) => (
+        <GqlMockedProvider<{
+          GoalCalculatorConstants: GoalCalculatorConstantsQuery;
+        }>
+          mocks={{
+            GoalCalculatorConstants: {
+              constant: {
+                ...mockData.constant,
+                mpdGoalGeographicConstants: [
+                  {
+                    __typename: 'MpdGoalGeographicConstant' as const,
+                    id: '32818f68-59f7-4a06-83c6-6d286ec29bbf',
+                    location: 'Atlanta, GA',
+                    percentageMultiplier: 0.12,
+                  },
+                ],
+              },
+            },
+          }}
+        >
+          {children}
+        </GqlMockedProvider>
+      ),
+    });
+
+    await waitFor(() =>
+      expect(result.current.goalGeographicConstantMap).toEqual(
+        new Map([
+          ['None', 0],
+          ['Atlanta, GA', 0.12],
+        ]),
+      ),
+    );
+    expect(Array.from(result.current.goalGeographicConstantMap.keys())[0]).toBe(
+      'None',
+    );
+  });
+
+  it('lets a server None row overwrite the seeded value without moving it', async () => {
+    const { result } = renderHook(() => useGoalCalculatorConstants(), {
+      wrapper: ({ children }: { children: ReactElement }) => (
+        <GqlMockedProvider<{
+          GoalCalculatorConstants: GoalCalculatorConstantsQuery;
+        }>
+          mocks={{
+            GoalCalculatorConstants: {
+              constant: {
+                ...mockData.constant,
+                mpdGoalGeographicConstants: [
+                  {
+                    __typename: 'MpdGoalGeographicConstant' as const,
+                    id: '32818f68-59f7-4a06-83c6-6d286ec29bbf',
+                    location: 'Atlanta, GA',
+                    percentageMultiplier: 0.12,
+                  },
+                  {
+                    __typename: 'MpdGoalGeographicConstant' as const,
+                    id: 'd1097a97-2a16-4c48-9ab5-5121d8ca129e',
+                    location: 'None',
+                    percentageMultiplier: 0.05,
+                  },
+                ],
+              },
+            },
+          }}
+        >
+          {children}
+        </GqlMockedProvider>
+      ),
+    });
+
+    // The server's multiplier wins over the seeded 0 even though its row
+    // arrives second, and None keeps the leading position from the seed
+    await waitFor(() =>
+      expect(result.current.goalGeographicConstantMap.get('None')).toBe(0.05),
+    );
+    expect(Array.from(result.current.goalGeographicConstantMap.keys())).toEqual(
+      ['None', 'Atlanta, GA'],
+    );
   });
 
   it('should format data correctly', async () => {

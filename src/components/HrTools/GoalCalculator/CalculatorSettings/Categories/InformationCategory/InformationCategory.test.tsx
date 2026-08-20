@@ -23,12 +23,14 @@ interface TestComponentProps {
   single?: boolean;
   readOnly?: boolean;
   benefitsPlan?: MpdGoalBenefitsConstantPlanEnum;
+  geographicLocation?: string | null;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   single = false,
   readOnly = false,
   benefitsPlan = MpdGoalBenefitsConstantPlanEnum.Base,
+  geographicLocation = null,
 }) => (
   <GqlMockedProvider<{
     GoalCalculation: GoalCalculationQuery;
@@ -44,6 +46,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
             ? MpdGoalBenefitsConstantSizeEnum.Single
             : MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren,
           benefitsPlan,
+          geographicLocation,
         },
       },
       GoalCalculatorConstants: {
@@ -318,6 +321,80 @@ describe('InformationCategory', () => {
             attributes: {
               id: 'goal-calculation-1',
               mhaAmount: null,
+            },
+          },
+        }),
+      );
+    });
+
+    it('does not save while the Geographic Location is cleared by typing', async () => {
+      const { getByRole } = render(
+        <TestComponent geographicLocation="Orlando, FL" />,
+      );
+
+      const input = getByRole('combobox', { name: 'Geographic Location' });
+      await waitFor(() => expect(input).toHaveValue('Orlando, FL'));
+
+      userEvent.clear(input);
+
+      // Yield to the microtask queue so any pending mutation would have fired.
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(mutationSpy).not.toHaveGraphqlOperation('UpdateGoalCalculation');
+      // The field stays empty instead of resetting mid-edit
+      expect(input).toHaveValue('');
+    });
+
+    it('reverts to the saved Geographic Location when the cleared field loses focus', async () => {
+      const { getByRole } = render(
+        <TestComponent geographicLocation="Orlando, FL" />,
+      );
+
+      const input = getByRole('combobox', { name: 'Geographic Location' });
+      await waitFor(() => expect(input).toHaveValue('Orlando, FL'));
+
+      userEvent.clear(input);
+      userEvent.tab();
+
+      // The field is not clearable, so blurring restores the saved value
+      // without firing a mutation
+      await waitFor(() => expect(input).toHaveValue('Orlando, FL'));
+      expect(mutationSpy).not.toHaveGraphqlOperation('UpdateGoalCalculation');
+    });
+
+    it('defaults to None and does not save when cleared and blurred without a saved location', async () => {
+      const { getByRole } = render(<TestComponent />);
+
+      const input = getByRole('combobox', { name: 'Geographic Location' });
+      await waitFor(() => expect(input).not.toBeDisabled());
+      // An unset location displays as None
+      await waitFor(() => expect(input).toHaveValue('None'));
+
+      userEvent.clear(input);
+      userEvent.tab();
+
+      // Yield to the microtask queue so any pending mutation would have fired.
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(mutationSpy).not.toHaveGraphqlOperation('UpdateGoalCalculation');
+    });
+
+    it('saves None when it is explicitly selected', async () => {
+      const { getByRole, findByRole } = render(
+        <TestComponent geographicLocation="Orlando, FL" />,
+      );
+
+      const input = getByRole('combobox', { name: 'Geographic Location' });
+      await waitFor(() => expect(input).toHaveValue('Orlando, FL'));
+
+      userEvent.click(input);
+      userEvent.click(await findByRole('option', { name: 'None' }));
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('UpdateGoalCalculation', {
+          input: {
+            accountListId: 'account-list-1',
+            attributes: {
+              id: 'goal-calculation-1',
+              geographicLocation: 'None',
             },
           },
         }),

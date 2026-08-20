@@ -11,7 +11,10 @@ import {
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
-import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
+import {
+  GEOGRAPHIC_LOCATION_NONE,
+  useGoalCalculatorConstants,
+} from 'src/hooks/useGoalCalculatorConstants';
 import { AutosaveAutocomplete } from '../../Autosave/AutosaveAutocomplete';
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
 import { EffectiveDateNote } from '../../Shared/EffectiveDateNote';
@@ -69,6 +72,7 @@ export const PersonalInformationSection: React.FC = () => {
                   label={t('Nearest Geographic Multiplier Location')}
                   fieldName="location"
                   options={locations}
+                  emptyValue={GEOGRAPHIC_LOCATION_NONE}
                   textFieldProps={{
                     InputLabelProps: {
                       sx: { fontSize: theme.typography.body2.fontSize },
