@@ -149,6 +149,32 @@ describe('PersonalInformationSection', () => {
     expect(mutationSpy).not.toHaveGraphqlOperation('UpdateSalaryCalculation');
   });
 
+  it('saves the location when an option is explicitly selected', async () => {
+    const mutationSpy = jest.fn();
+    const { findByRole } = render(
+      <TestComponent
+        requestMock={{ location: 'Miami, FL' }}
+        onCall={mutationSpy}
+      />,
+    );
+
+    const locationCombobox = await findByRole('combobox', {
+      name: 'Nearest Geographic Multiplier Location',
+    });
+    await waitFor(() => {
+      expect(locationCombobox).toHaveValue('Miami, FL');
+    });
+
+    userEvent.click(await findByRole('button', { name: 'Open' }));
+    userEvent.click(await findByRole('option', { name: 'None' }));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateSalaryCalculation', {
+        input: { attributes: { location: 'None' } },
+      }),
+    );
+  });
+
   it('should render the effective paycheck note when payroll dates match', async () => {
     const { findByRole } = render(
       <TestComponent

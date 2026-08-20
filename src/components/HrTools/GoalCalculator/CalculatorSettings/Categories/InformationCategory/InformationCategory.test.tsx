@@ -377,6 +377,30 @@ describe('InformationCategory', () => {
       expect(mutationSpy).not.toHaveGraphqlOperation('UpdateGoalCalculation');
     });
 
+    it('saves None when it is explicitly selected', async () => {
+      const { getByRole, findByRole } = render(
+        <TestComponent geographicLocation="Orlando, FL" />,
+      );
+
+      const input = getByRole('combobox', { name: 'Geographic Location' });
+      await waitFor(() => expect(input).toHaveValue('Orlando, FL'));
+
+      userEvent.click(input);
+      userEvent.click(await findByRole('option', { name: 'None' }));
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('UpdateGoalCalculation', {
+          input: {
+            accountListId: 'account-list-1',
+            attributes: {
+              id: 'goal-calculation-1',
+              geographicLocation: 'None',
+            },
+          },
+        }),
+      );
+    });
+
     it('shows errors and does not save when input is invalid', async () => {
       const { getByRole } = render(<TestComponent />);
 
