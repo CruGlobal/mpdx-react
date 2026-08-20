@@ -8,7 +8,6 @@ import {
   ProgressiveApprovalTierReasonEnum,
 } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import i18n from 'src/lib/i18n';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { amount, phoneNumber } from 'src/lib/yupHelpers';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
@@ -133,9 +132,7 @@ export const useAdditionalSalaryRequestForm = (
             createCurrencyValidation(field.label, getMaxForField(field)),
           ]),
         ),
-        phoneNumber: phoneNumber(i18n.t).required(
-          i18n.t('Phone Number is required.'),
-        ),
+        phoneNumber: phoneNumber(t).required(t('Phone Number is required.')),
         emailAddress: yup
           .string()
           .required(t('Email address is required'))

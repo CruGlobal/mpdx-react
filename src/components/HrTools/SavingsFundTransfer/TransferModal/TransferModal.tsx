@@ -28,7 +28,6 @@ import {
 } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/Shared/Modal/Modal';
 import { useLocale } from 'src/hooks/useLocale';
-import i18n from 'src/lib/i18n';
 import {
   currencyFormat,
   dateFormat,
@@ -87,22 +86,22 @@ const buildDefaultNote = (
   }).trim();
 };
 
-const pastDateMessage = (schedule: ScheduleEnum): string =>
+const pastDateMessage = (schedule: ScheduleEnum, t: TFunction): string =>
   schedule === ScheduleEnum.OneTime
-    ? i18n.t('Transfer date cannot be in the past')
-    : i18n.t('Recurring transfers must start at least one day in the future');
+    ? t('Transfer date cannot be in the past')
+    : t('Recurring transfers must start at least one day in the future');
 
-const transferSchema = (locale: string) =>
+const transferSchema = (locale: string, t: TFunction) =>
   yup.object({
-    transferFrom: yup.string().required(i18n.t('From account is required')),
-    transferTo: yup.string().required(i18n.t('To account is required')),
+    transferFrom: yup.string().required(t('From account is required')),
+    transferTo: yup.string().required(t('To account is required')),
     schedule: yup
       .mixed<ScheduleEnum>()
       .oneOf(Object.values(ScheduleEnum))
-      .required(i18n.t('Schedule is required')),
+      .required(t('Schedule is required')),
     transferDate: yup
       .mixed<DateTime>()
-      .required(i18n.t('Transfer date is required'))
+      .required(t('Transfer date is required'))
       .test('start-date', function (value) {
         if (!value) {
           return false;
@@ -122,7 +121,7 @@ const transferSchema = (locale: string) =>
           }
 
           return this.createError({
-            message: i18n.t('Transfer date cannot be earlier than {{date}}', {
+            message: t('Transfer date cannot be earlier than {{date}}', {
               date: dateFormat(baseline, locale),
             }),
           });
@@ -132,7 +131,7 @@ const transferSchema = (locale: string) =>
           return true;
         }
 
-        return this.createError({ message: pastDateMessage(schedule) });
+        return this.createError({ message: pastDateMessage(schedule, t) });
       }),
     endDate: yup
       .mixed<DateTime>()
@@ -142,7 +141,7 @@ const transferSchema = (locale: string) =>
         then: (schema) =>
           schema.test(
             'end>start',
-            i18n.t('End date must be at least one day after the transfer date'),
+            t('End date must be at least one day after the transfer date'),
             function (end) {
               const start = this.parent.transferDate as DateTime | null;
               if (!end || !start) {
@@ -155,11 +154,11 @@ const transferSchema = (locale: string) =>
       }),
     amount: yup
       .number()
-      .required(i18n.t('Amount is required'))
-      .min(0.01, i18n.t('Amount must be at least $0.01')),
+      .required(t('Amount is required'))
+      .min(0.01, t('Amount must be at least $0.01')),
     note: yup.string().when('schedule', {
       is: ScheduleEnum.OneTime,
-      then: (schema) => schema.trim().required(i18n.t('Note is required')),
+      then: (schema) => schema.trim().required(t('Note is required')),
     }),
   });
 interface TransferModalProps {
@@ -289,7 +288,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
           isEditing: Boolean(data.transfer.id),
           originalStart: data.transfer.transferDate ?? null,
         }}
-        validationSchema={transferSchema(locale)}
+        validationSchema={transferSchema(locale, t)}
         onSubmit={handleSubmit}
       >
         {({

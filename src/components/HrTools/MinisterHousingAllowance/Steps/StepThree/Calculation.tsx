@@ -15,7 +15,7 @@ import {
 import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
-import { Trans, useTranslation } from 'react-i18next';
+import { TFunction, Trans, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { DirectionButtons } from 'src/components/HrTools/Shared/CalculationReports/DirectionButtons/DirectionButtons';
 import { PageEnum } from 'src/components/HrTools/Shared/CalculationReports/Shared/sharedTypes';
@@ -26,7 +26,6 @@ import {
 } from 'src/components/Reports/styledComponents';
 import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import i18n from 'src/lib/i18n';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { phoneNumber } from 'src/lib/yupHelpers';
 import { useSubmitMinistryHousingAllowanceRequestMutation } from '../../MinisterHousingAllowance.generated';
@@ -61,23 +60,24 @@ export interface CalculationFormValues {
   iUnderstandMhaPolicy?: boolean;
 }
 
-const getValidationSchema = (rentOrOwn?: MhaRentOrOwnEnum) => {
+const getValidationSchema = (
+  rentOrOwn: MhaRentOrOwnEnum | undefined,
+  t: TFunction,
+) => {
   const baseSchema = {
     mortgageOrRentPayment: yup.number().nullable(),
     furnitureCostsTwo: yup.number().nullable(),
     repairCosts: yup.number().nullable(),
     avgUtilityTwo: yup.number().nullable(),
     unexpectedExpenses: yup.number().nullable(),
-    phoneNumber: phoneNumber(i18n.t).required(
-      i18n.t('Phone Number is required.'),
-    ),
+    phoneNumber: phoneNumber(t).required(t('Phone Number is required.')),
     emailAddress: yup
       .string()
-      .email(i18n.t('Invalid email address.'))
-      .required(i18n.t('Email is required.')),
+      .email(t('Invalid email address.'))
+      .required(t('Email is required.')),
     iUnderstandMhaPolicy: yup
       .boolean()
-      .oneOf([true], i18n.t('This box must be checked to continue.')),
+      .oneOf([true], t('This box must be checked to continue.')),
   };
 
   // extra fields for OWN
@@ -195,7 +195,7 @@ export const Calculation: React.FC<CalculationProps> = ({
       })
     : t('approval soon');
 
-  const schema = getValidationSchema(rentOrOwn);
+  const schema = getValidationSchema(rentOrOwn, t);
 
   if (loading) {
     return <Loading loading={loading} />;

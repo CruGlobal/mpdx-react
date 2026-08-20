@@ -20,7 +20,7 @@ export const AboutForm: React.FC = () => {
   const individualCap = latestRequest?.calculations.currentSalaryCap ?? 0;
 
   return (
-    <AdditionalSalaryRequestSection title={getHeader(currentIndex)}>
+    <AdditionalSalaryRequestSection title={getHeader(currentIndex, t)}>
       <Trans t={t}>
         <Typography variant="body1" paragraph>
           You can use this form to electronically submit additional salary

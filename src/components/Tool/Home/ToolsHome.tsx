@@ -1,13 +1,14 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { Box, Grid, Theme } from '@mui/material';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useGetToolNotificationsQuery } from 'src/components/Layouts/Primary/TopBar/Items/NavMenu/GetToolNotifcations.generated';
 import { ToolName } from 'src/components/Layouts/Primary/TopBar/Items/NavMenu/NavMenu';
 import { useAccountListId } from '../../../hooks/useAccountListId';
 import { ToolsGridContainer } from '../styledComponents';
 import Tool from './Tool';
-import { ToolsListHome } from './ToolsListHome';
+import { getToolsListHome } from './ToolsListHome';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   toolIcon: {
@@ -40,7 +41,9 @@ interface ToolHomeProps {
 }
 
 const ToolsHome: React.FC<ToolHomeProps> = ({ onSetupTour }): ReactElement => {
+  const { t } = useTranslation();
   const { classes } = useStyles();
+  const toolsListHome = useMemo(() => getToolsListHome(t), [t]);
   const accountListId = useAccountListId();
 
   const { data, loading } = useGetToolNotificationsQuery({
@@ -66,7 +69,7 @@ const ToolsHome: React.FC<ToolHomeProps> = ({ onSetupTour }): ReactElement => {
     >
       <Box className={classes.outer} data-testid="Home">
         <ToolsGridContainer container spacing={3}>
-          {ToolsListHome.map((tool) => {
+          {toolsListHome.map((tool) => {
             const needsAttention =
               (!onSetupTour &&
                 toolDataTotalCount &&

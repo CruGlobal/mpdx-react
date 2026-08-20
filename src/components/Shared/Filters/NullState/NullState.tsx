@@ -11,7 +11,6 @@ import { preloadCreateContact } from 'src/components/Layouts/Primary/TopBar/Item
 import { useUrlFilters } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import useTaskModal from 'src/hooks/useTaskModal';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { NullStateBox } from './NullStateBox';
 
@@ -73,16 +72,18 @@ interface Props {
 const NullState: React.FC<Props> = ({
   page,
   totalCount,
-  title = i18n.t('You have {{count}} total {{page}}s', {
-    count: totalCount,
-    page,
-  }),
-  paragraph = i18n.t(
-    'Unfortunately none of them match your current search or filters.',
-  ),
+  title: titleProp,
+  paragraph: paragraphProp,
 }: Props) => {
   const { t } = useTranslation();
   const { searchTerm, setActiveFilters, isFiltered } = useUrlFilters();
+
+  const title =
+    titleProp ??
+    t('You have {{count}} total {{page}}s', { count: totalCount, page });
+  const paragraph =
+    paragraphProp ??
+    t('Unfortunately none of them match your current search or filters.');
 
   return (
     <NullStateBox data-testid={`${page}-null-state`}>

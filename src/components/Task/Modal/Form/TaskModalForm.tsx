@@ -48,7 +48,6 @@ import {
   getLocalizedNotificationTimeUnit,
   getLocalizedNotificationType,
 } from 'src/lib/functions/getLocalizedNotificationStrings';
-import i18n from 'src/lib/i18n';
 import { getValueFromIdValue } from 'src/lib/phases/getValueFromIdValue';
 import { inPersonActivityTypes } from 'src/lib/phases/taskActivityTypes';
 import { nullableDateTime } from 'src/lib/yupHelpers';
@@ -120,29 +119,6 @@ const getTaskDetails = (
   };
 };
 
-const taskSchema = yup.object({
-  taskPhase: yup.mixed<PhaseEnum>().required(),
-  activityType: yup.mixed<ActivityTypeEnum>().required(),
-  subject: yup.string().required(i18n.t('Task Name is required')),
-  startAt: nullableDateTime(),
-  completedAt: nullableDateTime(),
-  displayResult: yup.mixed<DisplayResultEnum>().nullable(),
-  result: yup.mixed<ResultEnum>().nullable(),
-  changeContactStatus: yup.boolean(),
-  nextAction: yup.mixed<ActivityTypeEnum>().nullable(),
-  tagList: yup.array().of(yup.string().required()).default([]),
-  contactIds: yup.array().of(yup.string().required()).default([]),
-  userId: yup.string().nullable(),
-  notificationTimeBefore: yup.number().nullable(),
-  notificationType: yup.mixed<NotificationTypeEnum>().nullable(),
-  notificationTimeUnit: yup.mixed<NotificationTimeUnitEnum>().nullable(),
-  // These field schemas should ideally be string().defined(), but Formik thinks the form is invalid
-  // when those fields fields are blank for some reason, and we need to allow blank values
-  location: yup.string(),
-  comment: yup.string(),
-});
-type Attributes = yup.InferType<typeof taskSchema>;
-
 export interface TaskModalFormProps {
   accountListId: string;
   task?: GetTaskForTaskModalQuery['task'] | null;
@@ -165,6 +141,35 @@ const TaskModalForm = ({
   const session = useSession();
 
   const { t } = useTranslation();
+
+  const taskSchema = useMemo(
+    () =>
+      yup.object({
+        taskPhase: yup.mixed<PhaseEnum>().required(),
+        activityType: yup.mixed<ActivityTypeEnum>().required(),
+        subject: yup.string().required(t('Task Name is required')),
+        startAt: nullableDateTime(),
+        completedAt: nullableDateTime(),
+        displayResult: yup.mixed<DisplayResultEnum>().nullable(),
+        result: yup.mixed<ResultEnum>().nullable(),
+        changeContactStatus: yup.boolean(),
+        nextAction: yup.mixed<ActivityTypeEnum>().nullable(),
+        tagList: yup.array().of(yup.string().required()).default([]),
+        contactIds: yup.array().of(yup.string().required()).default([]),
+        userId: yup.string().nullable(),
+        notificationTimeBefore: yup.number().nullable(),
+        notificationType: yup.mixed<NotificationTypeEnum>().nullable(),
+        notificationTimeUnit: yup.mixed<NotificationTimeUnitEnum>().nullable(),
+        // These field schemas should ideally be string().defined(), but Formik thinks the form is invalid
+        // when those fields fields are blank for some reason, and we need to allow blank values
+        location: yup.string(),
+        comment: yup.string(),
+      }),
+    [t],
+  );
+
+  type Attributes = yup.InferType<typeof taskSchema>;
+
   const { openTaskModal } = useTaskModal();
   const [removeDialogOpen, handleRemoveDialog] = useState(false);
   const [resultSelected, setResultSelected] = useState<

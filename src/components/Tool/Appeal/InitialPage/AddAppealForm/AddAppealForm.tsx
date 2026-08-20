@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { mdiClose, mdiEqual, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import {
@@ -16,6 +16,7 @@ import {
   Typography,
 } from '@mui/material';
 import { Field, Form, Formik, FormikProps, FormikValues } from 'formik';
+import { TFunction } from 'i18next';
 import { isEqual } from 'lodash';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
@@ -28,7 +29,6 @@ import {
   FilterOption,
 } from 'src/graphql/types.generated';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
-import i18n from 'src/lib/i18n';
 import removeObjectNulls from 'src/lib/removeObjectNulls';
 import { useContactTagsQuery } from './AddAppealForm.generated';
 import { useCreateAppealMutation } from './CreateAppeal.generated';
@@ -45,25 +45,25 @@ export type ContactExclusion = {
   name: string;
   value: ExclusionEnum;
 };
-export const contactExclusions: ContactExclusion[] = [
+export const getContactExclusions = (t: TFunction): ContactExclusion[] => [
   {
-    name: i18n.t('May have given a special gift in the last 3 months'),
+    name: t('May have given a special gift in the last 3 months'),
     value: ExclusionEnum.SpecialGift,
   },
   {
-    name: i18n.t('May have joined my team in the last 3 months'),
+    name: t('May have joined my team in the last 3 months'),
     value: ExclusionEnum.JoinedTeam,
   },
   {
-    name: i18n.t('May have increased their giving in the last 3 months'),
+    name: t('May have increased their giving in the last 3 months'),
     value: ExclusionEnum.IncreasedGiving,
   },
   {
-    name: i18n.t('May have missed a gift in the last 30-90 days'),
+    name: t('May have missed a gift in the last 30-90 days'),
     value: ExclusionEnum.MissedGift,
   },
   {
-    name: i18n.t('Have "Send Appeals" set to No'),
+    name: t('Have "Send Appeals" set to No'),
     value: ExclusionEnum.DoNotAskAppeals,
   },
 ];
@@ -149,63 +149,64 @@ export const buildExclusionFilter = (
 const isPositiveInteger = (value: number | undefined) =>
   typeof value === 'number' && value >= 0 && value === Math.floor(value);
 
-const appealFormSchema = yup.object({
-  name: yup.string().required('Please enter a name'),
-  initialGoal: yup
-    .number()
-    .typeError(i18n.t('Initial Goal must be a valid number'))
-    .required(i18n.t('Initial Goal is required'))
-    .test(
-      i18n.t('Is positive?'),
-      i18n.t('Must use a positive whole number for Initial Goal'),
-      isPositiveInteger,
+const getAppealFormSchema = (t: TFunction) =>
+  yup.object({
+    name: yup.string().required(t('Please enter a name')),
+    initialGoal: yup
+      .number()
+      .typeError(t('Initial Goal must be a valid number'))
+      .required(t('Initial Goal is required'))
+      .test(
+        t('Is positive?'),
+        t('Must use a positive whole number for Initial Goal'),
+        isPositiveInteger,
+      ),
+    letterCost: yup
+      .number()
+      .typeError(t('Letter Cost must be a valid number'))
+      .required(t('Letter Cost is required'))
+      .test(
+        t('Is positive?'),
+        t('Must use a positive whole number for Letter Cost'),
+        isPositiveInteger,
+      ),
+    adminPercentage: yup
+      .number()
+      .typeError(t('Admin Cost must be a valid number'))
+      .required(t('Admin Cost is required'))
+      .test(
+        t('Is positive?'),
+        t('Must use a positive whole number for Admin Cost'),
+        isPositiveInteger,
+      ),
+    goal: yup
+      .number()
+      .typeError(t('Goal must be a valid number'))
+      .required(t('Goal is required'))
+      .test(
+        t('Is positive?'),
+        t('Must use a positive number for Goal'),
+        (value) => parseFloat(String(value)) >= 0,
+      ),
+    statuses: yup.array().of(
+      yup
+        .object({
+          name: yup.string(),
+          value: yup.string(),
+        })
+        .required(),
     ),
-  letterCost: yup
-    .number()
-    .typeError(i18n.t('Letter Cost must be a valid number'))
-    .required(i18n.t('Letter Cost is required'))
-    .test(
-      i18n.t('Is positive?'),
-      i18n.t('Must use a positive whole number for Letter Cost'),
-      isPositiveInteger,
+    tags: yup.array().of(yup.string().required()),
+    exclusions: yup.array().of(
+      yup
+        .object({
+          name: yup.string(),
+          value: yup.string(),
+        })
+        .required(),
     ),
-  adminPercentage: yup
-    .number()
-    .typeError(i18n.t('Admin Cost must be a valid number'))
-    .required(i18n.t('Admin Cost is required'))
-    .test(
-      i18n.t('Is positive?'),
-      i18n.t('Must use a positive whole number for Admin Cost'),
-      isPositiveInteger,
-    ),
-  goal: yup
-    .number()
-    .typeError(i18n.t('Goal must be a valid number'))
-    .required(i18n.t('Goal is required'))
-    .test(
-      i18n.t('Is positive?'),
-      i18n.t('Must use a positive number for Goal'),
-      (value) => parseFloat(value as unknown as string) >= 0,
-    ),
-  statuses: yup.array().of(
-    yup
-      .object({
-        name: yup.string(),
-        value: yup.string(),
-      })
-      .required(),
-  ),
-  tags: yup.array().of(yup.string().required()),
-  exclusions: yup.array().of(
-    yup
-      .object({
-        name: yup.string(),
-        value: yup.string(),
-      })
-      .required(),
-  ),
-});
-type Attributes = yup.InferType<typeof appealFormSchema>;
+  });
+type Attributes = yup.InferType<ReturnType<typeof getAppealFormSchema>>;
 
 type FormikRefType = React.RefObject<
   FormikProps<{
@@ -266,6 +267,8 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
 }) => {
   const { classes } = useStyles();
   const { t } = useTranslation();
+  const contactExclusions = useMemo(() => getContactExclusions(t), [t]);
+  const appealFormSchema = useMemo(() => getAppealFormSchema(t), [t]);
   const { push } = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const { contactStatuses } = useContactPartnershipStatuses();

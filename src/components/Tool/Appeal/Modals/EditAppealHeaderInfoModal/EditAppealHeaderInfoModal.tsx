@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import {
   DialogActions,
   DialogContent,
@@ -18,7 +18,6 @@ import {
 } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/Shared/Modal/Modal';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import i18n from 'src/lib/i18n';
 import { useUpdateAppealMutation } from './EditAppeal.generated';
 
 interface EditAppealHeaderInfoModalProps {
@@ -31,23 +30,27 @@ export type EditAppealFormikSchema = {
   amount: number;
 };
 
-const EditAppealSchema: yup.ObjectSchema<EditAppealFormikSchema> = yup.object({
-  name: yup.string().required(i18n.t('Please enter a name')),
-  amount: yup
-    .number()
-    .required(i18n.t('Please enter a goal'))
-    .typeError(i18n.t('Appeal amount must be a valid number'))
-    .test(
-      i18n.t('Is positive?'),
-      i18n.t('Must use a positive number for appeal amount'),
-      (value) => !value || parseFloat(value as unknown as string) > 0,
-    ),
-});
-
 export const EditAppealHeaderInfoModal: React.FC<
   EditAppealHeaderInfoModalProps
 > = ({ appealInfo, handleClose }) => {
   const { t } = useTranslation();
+
+  const editAppealSchema: yup.ObjectSchema<EditAppealFormikSchema> = useMemo(
+    () =>
+      yup.object({
+        name: yup.string().required(t('Please enter a name')),
+        amount: yup
+          .number()
+          .required(t('Please enter a goal'))
+          .typeError(t('Appeal amount must be a valid number'))
+          .test(
+            t('Is positive?'),
+            t('Must use a positive number for appeal amount'),
+            (value) => !value || parseFloat(String(value)) > 0,
+          ),
+      }),
+    [t],
+  );
   const accountListId = useAccountListId();
   const { enqueueSnackbar } = useSnackbar();
   const [UpdateAppeal] = useUpdateAppealMutation();
@@ -98,7 +101,7 @@ export const EditAppealHeaderInfoModal: React.FC<
           name: appealInfo.name,
           amount: appealInfo.amount ?? 0,
         }}
-        validationSchema={EditAppealSchema}
+        validationSchema={editAppealSchema}
         validateOnMount
         onSubmit={onSubmit}
       >

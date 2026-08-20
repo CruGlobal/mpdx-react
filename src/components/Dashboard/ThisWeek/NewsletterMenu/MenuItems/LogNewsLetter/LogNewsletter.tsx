@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useMemo, useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import {
   DialogActions,
@@ -28,7 +28,6 @@ import {
   LogTextField,
 } from 'src/components/Shared/styledComponents/LogStyling';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
-import i18n from 'src/lib/i18n';
 import { nullableDateTime } from 'src/lib/yupHelpers';
 import { useCreateTasksMutation } from '../../../../../Task/Modal/Form/TaskModal.generated';
 import { CloseButton } from '../styledComponents/CloseButton';
@@ -50,22 +49,26 @@ const LogFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
   },
 }));
 
-const taskSchema = yup.object({
-  activityType: yup
-    .mixed<ActivityTypeEnum | 'BOTH'>()
-    .oneOf([...Object.values(ActivityTypeEnum), 'BOTH' as const])
-    .defined(),
-  completedAt: nullableDateTime(),
-  subject: yup.string().required(i18n.t('Subject is required')),
-});
-
-type Attributes = yup.InferType<typeof taskSchema>;
-
 const LogNewsletter = ({
   accountListId,
   handleClose,
 }: Props): ReactElement<Props> => {
   const { t } = useTranslation();
+
+  const taskSchema = useMemo(
+    () =>
+      yup.object({
+        activityType: yup
+          .mixed<ActivityTypeEnum | 'BOTH'>()
+          .oneOf([...Object.values(ActivityTypeEnum), 'BOTH' as const])
+          .defined(),
+        completedAt: nullableDateTime(),
+        subject: yup.string().required(t('Subject is required')),
+      }),
+    [t],
+  );
+
+  type Attributes = yup.InferType<typeof taskSchema>;
 
   const [commentBody, changeCommentBody] = useState('');
 

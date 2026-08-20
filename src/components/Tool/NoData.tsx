@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import {
   mdiAccountGroup,
   mdiCurrencyUsd,
@@ -11,7 +11,8 @@ import {
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Typography } from '@mui/material';
-import i18n from 'src/lib/i18n';
+import { TFunction } from 'i18next';
+import { useTranslation } from 'react-i18next';
 import { NullStateBox } from '../Shared/Filters/NullState/NullStateBox';
 
 interface Props {
@@ -25,66 +26,67 @@ interface ToolText {
   icon: string;
 }
 
-const textMap: { [key: string]: ToolText } = {
+const getTextMap = (t: TFunction): { [key: string]: ToolText } => ({
   fixCommitmentInfo: {
-    primaryText: i18n.t('No contacts with commitment info need attention'),
-    secondaryText: i18n.t(
+    primaryText: t('No contacts with commitment info need attention'),
+    secondaryText: t(
       'Contacts with possibly incorrect commitment info will appear here.',
     ),
     icon: mdiCurrencyUsd,
   },
   fixMailingAddresses: {
-    primaryText: i18n.t('No contacts with mailing addresses need attention'),
-    secondaryText: i18n.t(
+    primaryText: t('No contacts with mailing addresses need attention'),
+    secondaryText: t(
       'Contacts with new addresses or multiple primary mailing addresses will appear here.',
     ),
     icon: mdiMap,
   },
   fixSendNewsletter: {
-    primaryText: i18n.t(
+    primaryText: t(
       'No contacts with an empty newsletter status need attention',
     ),
-    secondaryText: i18n.t(
+    secondaryText: t(
       'Contacts that appear here have an empty newsletter status and partner status set to financial, special, or pray.',
     ),
     icon: mdiNewspaperVariantOutline,
   },
   mergeContacts: {
-    primaryText: i18n.t('No duplicate contacts need attention'),
-    secondaryText: i18n.t(
+    primaryText: t('No duplicate contacts need attention'),
+    secondaryText: t(
       'People with similar names and partner account numbers will appear here.',
     ),
     icon: mdiHome,
   },
   fixEmailAddresses: {
-    primaryText: i18n.t('No people with email addresses need attention'),
-    secondaryText: i18n.t(
+    primaryText: t('No people with email addresses need attention'),
+    secondaryText: t(
       'People with new email addresses or multiple primary email addresses will appear here.',
     ),
     icon: mdiEmailOutline,
   },
   fixPhoneNumbers: {
-    primaryText: i18n.t('No people with phone numbers need attention'),
-    secondaryText: i18n.t(
+    primaryText: t('No people with phone numbers need attention'),
+    secondaryText: t(
       'People with new phone numbers or multiple primary phone numbers will appear here.',
     ),
     icon: mdiPhone,
   },
   mergePeople: {
-    primaryText: i18n.t('No duplicate people need attention'),
-    secondaryText: i18n.t('People with similar names will appear here.'),
+    primaryText: t('No duplicate people need attention'),
+    secondaryText: t('People with similar names will appear here.'),
     icon: mdiAccountGroup,
   },
   googleImport: {
-    primaryText: i18n.t("You haven't connected a Google account yet"),
-    secondaryText: i18n.t(
-      'Add a Google account then try to import from Google.',
-    ),
+    primaryText: t("You haven't connected a Google account yet"),
+    secondaryText: t('Add a Google account then try to import from Google.'),
     icon: mdiGoogle,
   },
-};
+});
 
 const NoData: React.FC<Props> = ({ tool, button }: Props) => {
+  const { t } = useTranslation();
+  const textMap = useMemo(() => getTextMap(t), [t]);
+
   return (
     <NullStateBox data-testid={`${tool}-null-state`}>
       <Icon path={textMap[tool].icon} size={1.5} />
