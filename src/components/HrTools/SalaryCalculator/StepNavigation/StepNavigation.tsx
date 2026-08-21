@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { SubmitModal } from 'src/components/HrTools/Shared/CalculationReports/SubmitModal/SubmitModal';
 import { useAutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useApplyGoalAndLocation } from 'src/hooks/useApplyGoalAndLocation';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { useDeleteSalaryCalculation } from '../Shared/useDeleteSalaryCalculation';
 import { useSubmitSalaryCalculationMutation } from './SubmitSalaryCalculation.generated';
@@ -98,6 +99,12 @@ export const SubmitButton: React.FC<ButtonProps> = (props) => {
   const [submitDialogOpen, setSubmitDialogOpen] = useState(false);
   const { title, content, subContent } = useSubmitDialogContent();
 
+  const {
+    applyMonthlyGoal,
+    geographicLocationChanged,
+    normalizedGeographicLocation,
+  } = useApplyGoalAndLocation(calculation?.location ?? null);
+
   const handleSubmit = async () => {
     if (calculation) {
       await submit({
@@ -108,6 +115,10 @@ export const SubmitButton: React.FC<ButtonProps> = (props) => {
         },
       });
       handleNextStep();
+
+      if (geographicLocationChanged) {
+        applyMonthlyGoal();
+      }
     }
   };
 
@@ -135,6 +146,9 @@ export const SubmitButton: React.FC<ButtonProps> = (props) => {
           overrideContent={content}
           overrideSubContent={subContent}
           submitting={submitting}
+          geographicLocation={
+            geographicLocationChanged ? normalizedGeographicLocation : undefined
+          }
         />
       )}
     </>
