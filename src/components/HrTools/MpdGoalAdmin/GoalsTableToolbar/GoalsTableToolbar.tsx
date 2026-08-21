@@ -14,8 +14,8 @@ import {
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { AssignCoachModal } from '../AssignCoachModal/AssignCoachModal';
+import { ExportGoalsMenu } from '../ExportGoalsMenu/ExportGoalsMenu';
 import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
-import { PrintCohortGoalsButton } from '../PrintCohortGoalsButton/PrintCohortGoalsButton';
 import { RunAndSendModal } from '../RunAndSendModal/RunAndSendModal';
 import { mockCoaches } from '../mockData';
 import { StaffGoalRow } from '../mpdGoalAdminHelpers';
@@ -101,6 +101,7 @@ export const GoalsTableToolbar: React.FC = () => {
             {t('{{count}} selected', { count: selectedCount })}
           </Typography>
         )}
+        <ExportGoalsMenu />
         <Button
           variant="outlined"
           endIcon={<ArrowDropDownIcon />}
@@ -136,10 +137,6 @@ export const GoalsTableToolbar: React.FC = () => {
             {t('Assign Coach')}
           </MenuItem>
         </Menu>
-        {/* Cohort-scoped like "Run and Send All" (it prints every goal in the
-            selected training, ignoring row selection and the search filter), so
-            it stays out of the selection-scoped More Actions menu. */}
-        <PrintCohortGoalsButton />
         <Button
           // Only one contained CTA at a time while rows are selected.
           variant={hasSelection ? 'outlined' : 'contained'}

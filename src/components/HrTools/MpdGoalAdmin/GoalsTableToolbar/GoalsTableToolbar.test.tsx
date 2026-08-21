@@ -31,9 +31,8 @@ describe('GoalsTableToolbar', () => {
     expect(
       getByRole('button', { name: 'Run and Send All' }),
     ).toBeInTheDocument();
-    // Print All is cohort-scoped, so it stays available with no selection and
-    // is enabled because the default cohort has training costs entered.
-    expect(getByRole('button', { name: 'Print All' })).toBeEnabled();
+    // Export is cohort-scoped, so it stays available with no selection.
+    expect(getByRole('button', { name: 'Export' })).toBeEnabled();
   });
 
   it('enables the More Actions menu once rows are selected', async () => {
@@ -43,8 +42,8 @@ describe('GoalsTableToolbar', () => {
 
     userEvent.click(getByRole('button', { name: 'More Actions' }));
     const menu = getByRole('menu');
-    // Print All is a cohort-scoped standalone button, not a menu item
-    // (MPDX-9702).
+    // Print All lives in the always-available Export menu, not in the
+    // selection-scoped bulk actions (MPDX-9702).
     expect(
       within(menu).queryByRole('menuitem', { name: 'Print All' }),
     ).not.toBeInTheDocument();
