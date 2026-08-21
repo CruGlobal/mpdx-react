@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@mui/material/styles';
-import { act, render } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import theme from 'src/theme';
 import { MpdGoalAdminProvider, useMpdGoalAdmin } from '../MpdGoalAdminContext';
@@ -57,6 +57,28 @@ describe('GoalsTable', () => {
     ).toBeInTheDocument();
   });
 
+  it('assigns a coach to the row from the Assign Coach modal', async () => {
+    const { getByRole, findByRole } = renderTable();
+    // 'Carlos & Michaela Everts' (row-2) has no coach on the first page.
+    userEvent.click(getByRole('button', { name: 'Assign Coach' }));
+
+    const dialog = await findByRole('dialog');
+    expect(dialog).toHaveTextContent(
+      'Assign Coach for Carlos & Michaela Everts',
+    );
+
+    userEvent.click(getByRole('combobox', { name: 'Coach' }));
+    userEvent.click(await findByRole('option', { name: 'Tom Harris' }));
+    userEvent.click(getByRole('button', { name: 'Save' }));
+
+    // Formik's submit resolves asynchronously.
+    await waitFor(() =>
+      expect(ctx.cohorts[0].rows.find((row) => row.id === 'row-2')?.coach).toBe(
+        'Tom Harris',
+      ),
+    );
+  });
+
   it('renders a View/Edit action and a menu button for each row on the page', () => {
     const { getAllByText, getAllByRole } = renderTable();
     const onPage = Math.min(rows.length, DEFAULT_ROWS_PER_PAGE);
@@ -69,14 +91,14 @@ describe('GoalsTable', () => {
   it('selects a row via its checkbox', async () => {
     const { getAllByRole } = renderTable();
     // index 0 is the header "select all" checkbox
-    await userEvent.click(getAllByRole('checkbox')[1]);
+    userEvent.click(getAllByRole('checkbox')[1]);
     expect(ctx.selectedRowIds.has('row-1')).toBe(true);
   });
 
   it('selects every row on the page via the header checkbox', async () => {
     const { getAllByRole } = renderTable();
     // index 0 is the header "select all" checkbox
-    await userEvent.click(getAllByRole('checkbox')[0]);
+    userEvent.click(getAllByRole('checkbox')[0]);
     // The header checkbox selects only the rows on the current page, not the
     // entire filtered set.
     rows.slice(0, DEFAULT_ROWS_PER_PAGE).forEach((row) => {
@@ -97,12 +119,12 @@ describe('GoalsTable', () => {
     expect(headerCheckbox).toHaveAttribute('data-indeterminate', 'false');
 
     // Select a single data row.
-    await userEvent.click(checkboxes[1]);
+    userEvent.click(checkboxes[1]);
     expect(headerCheckbox.checked).toBe(false);
     expect(headerCheckbox).toHaveAttribute('data-indeterminate', 'true');
 
     // Select the rest via the header, which now reads "select all".
-    await userEvent.click(headerCheckbox);
+    userEvent.click(headerCheckbox);
     expect(headerCheckbox.checked).toBe(true);
     expect(headerCheckbox).toHaveAttribute('data-indeterminate', 'false');
   });
@@ -144,7 +166,7 @@ describe('GoalsTable', () => {
       getByText(`Person ${DEFAULT_ROWS_PER_PAGE - 1}`),
     ).toBeInTheDocument();
     // Advance to the next page via the pagination "next page" button.
-    await userEvent.click(getByRole('button', { name: /Go to next page/i }));
+    userEvent.click(getByRole('button', { name: /Go to next page/i }));
     expect(getByText(`Person ${DEFAULT_ROWS_PER_PAGE}`)).toBeInTheDocument();
 
     // Changing the filter shrinks the result set. The table must reset to the
