@@ -31,6 +31,8 @@ describe('GoalsTableToolbar', () => {
     expect(
       getByRole('button', { name: 'Run and Send All' }),
     ).toBeInTheDocument();
+    // Cohort-scoped, so it stays available with nothing selected.
+    expect(getByRole('button', { name: 'Print All' })).toBeEnabled();
   });
 
   it('enables the More Actions menu once rows are selected', async () => {
@@ -40,10 +42,10 @@ describe('GoalsTableToolbar', () => {
 
     userEvent.click(getByRole('button', { name: 'More Actions' }));
     const menu = getByRole('menu');
-    // Print All stays disabled until it is wired up (MPDX-9702).
+    // Print All is a top-level button, not a bulk action (MPDX-9702).
     expect(
-      within(menu).getByRole('menuitem', { name: 'Print All' }),
-    ).toHaveAttribute('aria-disabled', 'true');
+      within(menu).queryByRole('menuitem', { name: 'Print All' }),
+    ).not.toBeInTheDocument();
     expect(
       within(menu).getByRole('menuitem', { name: 'Run & Send Selected' }),
     ).toBeInTheDocument();

@@ -15,6 +15,7 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { AssignCoachModal } from '../AssignCoachModal/AssignCoachModal';
 import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
+import { PrintCohortGoalsButton } from '../PrintCohortGoalsButton/PrintCohortGoalsButton';
 import { RunAndSendModal } from '../RunAndSendModal/RunAndSendModal';
 import { mockCoaches } from '../mockData';
 import { StaffGoalRow } from '../mpdGoalAdminHelpers';
@@ -100,6 +101,8 @@ export const GoalsTableToolbar: React.FC = () => {
             {t('{{count}} selected', { count: selectedCount })}
           </Typography>
         )}
+        {/* Cohort-wide, not a bulk action: ignores selection and search. */}
+        <PrintCohortGoalsButton />
         <Button
           variant="outlined"
           endIcon={<ArrowDropDownIcon />}
@@ -115,8 +118,6 @@ export const GoalsTableToolbar: React.FC = () => {
           open={Boolean(menuAnchorEl)}
           onClose={() => setMenuAnchorEl(null)}
         >
-          {/* Disabled until wired up (MPDX-9702). */}
-          <MenuItem disabled>{t('Print All')}</MenuItem>
           <MenuItem
             onClick={() => {
               setMenuAnchorEl(null);
