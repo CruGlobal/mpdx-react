@@ -84,31 +84,6 @@ We'll forward your request to them and get back to you with their decision.",
     });
   });
 
-  describe('overlapping requests', () => {
-    it('renders overlap message when reason is OverlappingRequests', async () => {
-      const { getByTestId } = render(
-        <TestComponent
-          salaryRequestMock={{
-            progressiveApprovalTier: {
-              tier: ProgressiveApprovalTierEnum.ManagementCompensationCommittee,
-              approver: 'MCC',
-              approvalTimeframe: '2 weeks',
-            },
-            progressiveApprovalTierReason:
-              ProgressiveApprovalTierReasonEnum.OverlappingRequests,
-          }}
-        />,
-      );
-
-      await waitFor(() =>
-        expect(getByTestId('RequestSummaryCard-status')).toHaveTextContent(
-          'You or your spouse has a pending Additional Salary Request, so this request needs additional approval. \
-This will take 2 weeks as it needs to be signed off by the MCC. This may affect your selected effective date.',
-        ),
-      );
-    });
-  });
-
   describe('user over cap', () => {
     it('renders status message', async () => {
       const { getByTestId } = render(

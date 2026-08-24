@@ -49,29 +49,6 @@ We'll forward your request to them and get back to you with their decision.",
     });
   });
 
-  describe('overlapping requests', () => {
-    it('shows overlap message when reason is OverlappingRequests', async () => {
-      const { getByTestId } = render(
-        <TestComponent
-          salaryRequestMock={{
-            progressiveApprovalTier: {
-              approver: 'MCC',
-              approvalTimeframe: '2 weeks',
-            },
-            progressiveApprovalTierReason:
-              ProgressiveApprovalTierReasonEnum.OverlappingRequests,
-          }}
-        />,
-      );
-
-      await waitFor(() =>
-        expect(getByTestId('Receipt-message')).toHaveTextContent(
-          /pending Additional Salary Request/,
-        ),
-      );
-    });
-  });
-
   describe('no board cap exception', () => {
     it('should show approval info when request requires approval', async () => {
       const { getByTestId } = render(

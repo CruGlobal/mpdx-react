@@ -107,14 +107,6 @@ export const RequestSummaryCard: React.FC = () => {
       this request. We&apos;ll forward your request to them and get back to you
       with their decision.
     </Trans>
-  ) : reason === ProgressiveApprovalTierReasonEnum.OverlappingRequests ? (
-    <Trans t={t}>
-      You or your spouse has a pending Additional Salary Request, so this
-      request needs additional approval. This will take{' '}
-      {{ timeframe: progressiveApprovalTier.approvalTimeframe }} as it needs to
-      be signed off by the {{ approver: progressiveApprovalTier.approver }}.
-      This may affect your selected effective date.
-    </Trans>
   ) : reason === ProgressiveApprovalTierReasonEnum.OverCombinedCap ? (
     <Trans t={t}>
       Your {{ combined: combinedModifier }} Gross Requested Salary exceeds your{' '}

@@ -34,17 +34,6 @@ export const getCapOverrides = (
     };
   }
 
-  if (reason === ProgressiveApprovalTierReasonEnum.OverlappingRequests) {
-    return {
-      title: t(
-        'Your request requires additional approval. Please fill in the information below to continue.',
-      ),
-      content: t(
-        'Your spouse has a pending Additional Salary Request or Salary Request, so this request needs additional approval.',
-      ),
-    };
-  }
-
   const title = t(
     'Your request requires additional approval. Please fill in the information below to continue.',
   );
