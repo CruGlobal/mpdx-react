@@ -53,20 +53,6 @@ describe('getCapOverrides', () => {
     expect(result.content).toMatch(/exceed your Maximum Allowable Salary/);
   });
 
-  it('returns Progressive Approvals messaging with overlapping requests', () => {
-    const result = getCapOverrides(
-      {
-        splitAsr: false,
-        reason: ProgressiveApprovalTierReasonEnum.OverlappingRequests,
-      },
-      t,
-    );
-    expect(result.title).toMatch(/requires additional approval/);
-    expect(result.content).toMatch(
-      /pending Additional Salary Request or Salary Request/,
-    );
-  });
-
   it('returns combined-cap messaging when over combined cap', () => {
     const result = getCapOverrides(
       {

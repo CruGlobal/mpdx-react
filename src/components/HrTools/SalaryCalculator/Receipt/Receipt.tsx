@@ -59,16 +59,6 @@ export const ReceiptStep: React.FC = () => {
               their approval for this request. We&apos;ll forward your request
               to them and get back to you with their decision.
             </Trans>
-          ) : reason ===
-            ProgressiveApprovalTierReasonEnum.OverlappingRequests ? (
-            <Trans t={t}>
-              Because you or your spouse has a pending Additional Salary
-              Request, this request requires additional approval. This will take{' '}
-              {{ timeframe: progressiveApprovalTier.approvalTimeframe }} as it
-              needs to be signed off by the{' '}
-              {{ approver: progressiveApprovalTier.approver }}. This may affect
-              your selected effective date.
-            </Trans>
           ) : (
             <Trans t={t}>
               Because your request exceeds your maximum allowable salary it will
