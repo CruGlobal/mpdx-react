@@ -6,11 +6,9 @@ import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import { downloadPdf, generateCohortGoalsPdf } from './printCohortGoalsPdf';
 
 /**
- * "Print All" — exports every goal in the selected cohort as a single
- * printable PDF (used for NSO hard copies). Disabled until the cohort's
- * training costs have been entered: without training costs the goal amounts
- * aren't final, so printing may not act on them. (Run & Send is expected to
- * adopt the same gate when it is wired up — it does not enforce it yet.)
+ * "Print All" — exports every goal in the selected cohort as one printable PDF
+ * for NSO hard copies. Gated on training costs because the goal amounts aren't
+ * final without them; Run & Send does not enforce that gate yet.
  */
 export const PrintCohortGoalsButton: React.FC = () => {
   const { t } = useTranslation();
@@ -29,9 +27,8 @@ export const PrintCohortGoalsButton: React.FC = () => {
       const url = await generateCohortGoalsPdf(selectedCohort);
       downloadPdf(url, `MPD Goals - ${selectedCohort.name}.pdf`);
     } catch {
-      // TODO(MPDX-9691): once generation is a GraphQL mutation, the global
-      // Apollo error link will already toast failures — remove this snackbar
-      // (or suppress the generic one) so the user isn't double-toasted.
+      // TODO(MPDX-9691): the global Apollo error link toasts mutation
+      // failures on its own — drop this snackbar then to avoid double-toasting.
       enqueueSnackbar(t('Unable to export the MPD Goals PDF.'), {
         variant: 'error',
       });

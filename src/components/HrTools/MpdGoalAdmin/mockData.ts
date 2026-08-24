@@ -177,8 +177,7 @@ export const mockCohorts: Cohort[] = [
       },
     ],
   },
-  // Training costs deliberately not entered yet: exercises the disabled state
-  // of actions gated on training costs (Print All, and eventually Run & Send).
+  // Training costs deliberately unentered: exercises the Print All gate.
   {
     id: 'spring-nso-2027',
     name: 'Spring NSO 2027',

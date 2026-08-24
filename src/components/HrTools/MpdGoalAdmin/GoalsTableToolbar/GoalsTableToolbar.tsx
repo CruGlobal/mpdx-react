@@ -101,8 +101,7 @@ export const GoalsTableToolbar: React.FC = () => {
             {t('{{count}} selected', { count: selectedCount })}
           </Typography>
         )}
-        {/* Top-level action, not a bulk action: it prints every goal in the
-            selected training regardless of row selection or the search term. */}
+        {/* Cohort-wide, not a bulk action: ignores selection and search. */}
         <PrintCohortGoalsButton />
         <Button
           variant="outlined"
