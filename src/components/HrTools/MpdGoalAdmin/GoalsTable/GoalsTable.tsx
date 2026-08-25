@@ -24,13 +24,15 @@ import { currencyFormat } from 'src/lib/intlFormat';
 import { AssignCoachModal } from '../AssignCoachModal/AssignCoachModal';
 import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import { mockCoaches } from '../mockData';
-import { StaffGoalRow, isSendable } from '../mpdGoalAdminHelpers';
+import {
+  DEFAULT_ROWS_PER_PAGE,
+  StaffGoalRow,
+  isSendable,
+} from '../mpdGoalAdminHelpers';
 
 interface GoalsTableProps {
   rows: StaffGoalRow[];
 }
-
-export const DEFAULT_ROWS_PER_PAGE = 5;
 
 export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
   const { t } = useTranslation();

@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
@@ -19,13 +20,12 @@ import {
   Typography,
 } from '@mui/material';
 import { DateTime } from 'luxon';
-import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
-import { DEFAULT_ROWS_PER_PAGE } from '../GoalsTable/GoalsTable';
+import { DEFAULT_ROWS_PER_PAGE } from '../mpdGoalAdminHelpers';
 import {
   NewStaffScenarioGoalsQuery,
   useCreateNewStaffScenarioGoalMutation,
@@ -45,17 +45,18 @@ export const ScenarioGoals: React.FC = () => {
   const locale = useLocale();
   const router = useRouter();
   const accountListId = useAccountListId();
-  const { enqueueSnackbar } = useSnackbar();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_ROWS_PER_PAGE);
-  // The scenario goal pending deletion; null when the confirmation is closed.
+  // The scenario goal pending deletion; kept through the close transition so
+  // the confirmation message doesn't flash empty while the dialog fades out.
   const [deleteTarget, setDeleteTarget] = useState<ScenarioGoalNode | null>(
     null,
   );
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
-  // Server-side search, sort, and paging land with MPDX-9843; until then the
+  // TODO(MPDX-9843): server-side search, sort, and paging; until then the
   // first 100 scenarios cover per-user usage and the table pages client-side.
-  const { data, loading, error, refetch } = useNewStaffScenarioGoalsQuery();
+  const { data, loading, error } = useNewStaffScenarioGoalsQuery();
   const [createScenarioGoal, { loading: creating }] =
     useCreateNewStaffScenarioGoalMutation();
   const [deleteScenarioGoal] = useDeleteNewStaffScenarioGoalMutation();
@@ -64,16 +65,15 @@ export const ScenarioGoals: React.FC = () => {
     `/accountLists/${accountListId}/hrTools/mpdGoalAdmin/scenario/${id}`;
 
   const handleCreate = async () => {
-    const { data } = await createScenarioGoal({
-      onError: () => {
-        enqueueSnackbar(t('Unable to create a scenario goal.'), {
-          variant: 'error',
-        });
-      },
-    });
-    const id = data?.createNewStaffScenarioGoal?.newStaffGoalCalculation.id;
-    if (id) {
-      router.push(scenarioGoalUrl(id));
+    try {
+      const { data: createData } = await createScenarioGoal();
+      const id =
+        createData?.createNewStaffScenarioGoal?.newStaffGoalCalculation.id;
+      if (id) {
+        router.push(scenarioGoalUrl(id));
+      }
+    } catch {
+      // The global Apollo error link toasts the failure.
     }
   };
 
@@ -83,13 +83,11 @@ export const ScenarioGoals: React.FC = () => {
     }
     await deleteScenarioGoal({
       variables: { id: deleteTarget.id },
-      onError: () => {
-        enqueueSnackbar(t('Unable to delete the scenario goal.'), {
-          variant: 'error',
-        });
+      update: (cache) => {
+        cache.evict({ id: `NewStaffGoalCalculation:${deleteTarget.id}` });
+        cache.gc();
       },
     });
-    await refetch();
   };
 
   const deleteTargetName = deleteTarget
@@ -97,7 +95,10 @@ export const ScenarioGoals: React.FC = () => {
     : '';
 
   const rows = data?.newStaffScenarioGoals.nodes ?? [];
-  const safePage = Math.min(page, Math.ceil(rows.length / rowsPerPage) - 1);
+  const safePage = Math.min(
+    page,
+    Math.max(0, Math.ceil(rows.length / rowsPerPage) - 1),
+  );
   const pageRows = rows.slice(
     safePage * rowsPerPage,
     safePage * rowsPerPage + rowsPerPage,
@@ -108,23 +109,27 @@ export const ScenarioGoals: React.FC = () => {
       <Box
         sx={{
           display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row' },
           justifyContent: 'space-between',
-          alignItems: 'flex-start',
+          alignItems: { xs: 'stretch', sm: 'flex-start' },
           gap: 2,
           mb: 2,
         }}
       >
-        <Box>
-          <Typography variant="h6">{t('Scenario Goals')}</Typography>
-          <Typography variant="body2" color="text.secondary">
-            {t(
-              'Draft goal calculations that are not tied to a staff member. Use them to explore "what if" scenarios.',
-            )}
-          </Typography>
-        </Box>
+        <Typography variant="body2" color="text.secondary">
+          {t(
+            'Draft goal calculations that are not tied to a staff member. Use them to explore "what if" scenarios.',
+          )}
+        </Typography>
         <Button
           variant="contained"
-          startIcon={<AddIcon />}
+          startIcon={
+            creating ? (
+              <CircularProgress size={16} color="inherit" />
+            ) : (
+              <AddIcon />
+            )
+          }
           onClick={handleCreate}
           disabled={creating}
         >
@@ -136,7 +141,7 @@ export const ScenarioGoals: React.FC = () => {
           error rather than an empty list. */}
       {error ? (
         <Alert severity="error">{error.message}</Alert>
-      ) : loading ? (
+      ) : loading && !data ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
           <CircularProgress aria-label={t('Loading scenario goals')} />
         </Box>
@@ -165,12 +170,16 @@ export const ScenarioGoals: React.FC = () => {
                 return (
                   <TableRow key={row.id} hover>
                     <TableCell>
-                      <Link href={scenarioGoalUrl(row.id)} underline="hover">
+                      <Link
+                        component={NextLink}
+                        href={scenarioGoalUrl(row.id)}
+                        underline="hover"
+                      >
                         {name}
                       </Link>
                     </TableCell>
-                    <TableCell>{row.ministryName}</TableCell>
-                    <TableCell>{row.geographicLocation}</TableCell>
+                    <TableCell>{row.ministryName || '—'}</TableCell>
+                    <TableCell>{row.geographicLocation || '—'}</TableCell>
                     <TableCell>
                       {currencyFormat(
                         row.calculations.monthlyGoal,
@@ -185,7 +194,10 @@ export const ScenarioGoals: React.FC = () => {
                       <IconButton
                         size="small"
                         aria-label={t('Delete {{name}}', { name })}
-                        onClick={() => setDeleteTarget(row)}
+                        onClick={() => {
+                          setDeleteTarget(row);
+                          setDeleteOpen(true);
+                        }}
                       >
                         <DeleteOutlineIcon fontSize="small" />
                       </IconButton>
@@ -206,19 +218,30 @@ export const ScenarioGoals: React.FC = () => {
               setRowsPerPage(parseInt(event.target.value, 10));
               setPage(0);
             }}
+            labelRowsPerPage={t('Rows per page')}
           />
+          {data?.newStaffScenarioGoals.pageInfo.hasNextPage && (
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ display: 'block', px: 2, pb: 1 }}
+            >
+              {t('Showing the first 100 scenario goals.')}
+            </Typography>
+          )}
         </TableContainer>
       )}
 
       <Confirmation
-        isOpen={deleteTarget !== null}
+        isOpen={deleteOpen}
         title={t('Delete Scenario Goal')}
         message={t(
           'Are you sure you want to delete {{name}}? This cannot be undone.',
           { name: deleteTargetName },
         )}
         mutation={handleDelete}
-        handleClose={() => setDeleteTarget(null)}
+        confirmButtonProps={{ variant: 'contained', color: 'error' }}
+        handleClose={() => setDeleteOpen(false)}
       />
     </>
   );
