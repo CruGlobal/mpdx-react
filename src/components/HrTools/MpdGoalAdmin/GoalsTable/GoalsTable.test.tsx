@@ -1,28 +1,47 @@
+import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { MpdGoalAdminProvider, useMpdGoalAdmin } from '../MpdGoalAdminContext';
-import { mockCohorts } from '../mockData';
+import {
+  NewStaffCohortAttendeesQuery,
+  NewStaffCohortsQuery,
+} from '../NewStaffCohorts.generated';
+import { StaffGoalRow, attendeeToRow } from '../mpdGoalAdminHelpers';
+import { attendees, attendeesMock, cohortsMock } from '../mpdGoalAdminMocks';
 import { DEFAULT_ROWS_PER_PAGE, GoalsTable } from './GoalsTable';
 
-const rows = mockCohorts[0].rows;
+const rows: StaffGoalRow[] = attendees.map(attendeeToRow);
 
 let ctx: ReturnType<typeof useMpdGoalAdmin>;
-const Capture: React.FC<{ rows: (typeof mockCohorts)[0]['rows'] }> = ({
-  rows,
-}) => {
+const Capture: React.FC<{ rows: StaffGoalRow[] }> = ({ rows }) => {
   ctx = useMpdGoalAdmin();
   return <GoalsTable rows={rows} />;
 };
 
+const Providers: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <ThemeProvider theme={theme}>
+    <GqlMockedProvider<{
+      NewStaffCohorts: NewStaffCohortsQuery;
+      NewStaffCohortAttendees: NewStaffCohortAttendeesQuery;
+    }>
+      mocks={{
+        NewStaffCohorts: cohortsMock,
+        NewStaffCohortAttendees: attendeesMock(),
+      }}
+    >
+      <MpdGoalAdminProvider>{children}</MpdGoalAdminProvider>
+    </GqlMockedProvider>
+  </ThemeProvider>
+);
+
 const renderTable = (data = rows) =>
   render(
-    <ThemeProvider theme={theme}>
-      <MpdGoalAdminProvider>
-        <Capture rows={data} />
-      </MpdGoalAdminProvider>
-    </ThemeProvider>,
+    <Providers>
+      <Capture rows={data} />
+    </Providers>,
   );
 
 describe('GoalsTable', () => {
@@ -48,24 +67,22 @@ describe('GoalsTable', () => {
 
   it('opens the Assign Coach modal for the selected staff member', async () => {
     const { getByRole, findByText } = renderTable();
-    // 'Carlos & Michaela Everts' has no coach on the first page, so it renders
-    // an "Assign Coach" prompt rather than a coach name.
+    // 'John & Jane Doe' is the only attendee without a coach, so it renders an
+    // "Assign Coach" prompt rather than a coach name.
     userEvent.click(getByRole('button', { name: 'Assign Coach' }));
 
     expect(
-      await findByText('Assign Coach for Carlos & Michaela Everts'),
+      await findByText('Assign Coach for John & Jane Doe'),
     ).toBeInTheDocument();
   });
 
   it('assigns a coach to the row from the Assign Coach modal', async () => {
     const { getByRole, findByRole } = renderTable();
-    // 'Carlos & Michaela Everts' (row-2) has no coach on the first page.
+    // 'John & Jane Doe' (row-1) is the only attendee without a coach.
     userEvent.click(getByRole('button', { name: 'Assign Coach' }));
 
     const dialog = await findByRole('dialog');
-    expect(dialog).toHaveTextContent(
-      'Assign Coach for Carlos & Michaela Everts',
-    );
+    expect(dialog).toHaveTextContent('Assign Coach for John & Jane Doe');
 
     userEvent.click(getByRole('combobox', { name: 'Coach' }));
     userEvent.click(await findByRole('option', { name: 'Tom Harris' }));
@@ -73,7 +90,7 @@ describe('GoalsTable', () => {
 
     // Formik's submit resolves asynchronously.
     await waitFor(() =>
-      expect(ctx.cohorts[0].rows.find((row) => row.id === 'row-2')?.coach).toBe(
+      expect(ctx.filteredRows.find((row) => row.id === 'row-1')?.coach).toBe(
         'Tom Harris',
       ),
     );
@@ -155,11 +172,9 @@ describe('GoalsTable', () => {
       name: `Person ${i}`,
     }));
     const { getByText, getByRole, queryByText, rerender } = render(
-      <ThemeProvider theme={theme}>
-        <MpdGoalAdminProvider>
-          <Capture rows={manyRows} />
-        </MpdGoalAdminProvider>
-      </ThemeProvider>,
+      <Providers>
+        <Capture rows={manyRows} />
+      </Providers>,
     );
     // Verify page 1 is rendered first.
     expect(
@@ -175,11 +190,9 @@ describe('GoalsTable', () => {
       ctx.setSearch('Person 0');
     });
     rerender(
-      <ThemeProvider theme={theme}>
-        <MpdGoalAdminProvider>
-          <Capture rows={[manyRows[0]]} />
-        </MpdGoalAdminProvider>
-      </ThemeProvider>,
+      <Providers>
+        <Capture rows={[manyRows[0]]} />
+      </Providers>,
     );
     expect(getByText('Person 0')).toBeInTheDocument();
     expect(

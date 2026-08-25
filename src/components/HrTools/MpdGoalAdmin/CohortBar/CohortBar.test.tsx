@@ -1,43 +1,209 @@
+import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { MpdGoalAdminProvider } from '../MpdGoalAdminContext';
+import {
+  NewStaffCohortAttendeesQuery,
+  NewStaffCohortsQuery,
+} from '../NewStaffCohorts.generated';
+import {
+  attendeesMock,
+  cohortsMock,
+  cohortsWithoutCostsMock,
+} from '../mpdGoalAdminMocks';
 import { CohortBar } from './CohortBar';
 
-const renderBar = () =>
-  render(
-    <ThemeProvider theme={theme}>
-      <MpdGoalAdminProvider>
-        <CohortBar />
-      </MpdGoalAdminProvider>
-    </ThemeProvider>,
-  );
+const mutationSpy = jest.fn();
+
+interface TestComponentProps {
+  /** Renders a cohort whose costs have never been entered. */
+  withoutCosts?: boolean;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({
+  withoutCosts = false,
+}) => (
+  <ThemeProvider theme={theme}>
+    <SnackbarProvider>
+      <GqlMockedProvider<{
+        NewStaffCohorts: NewStaffCohortsQuery;
+        NewStaffCohortAttendees: NewStaffCohortAttendeesQuery;
+      }>
+        mocks={{
+          NewStaffCohorts: withoutCosts ? cohortsWithoutCostsMock : cohortsMock,
+          NewStaffCohortAttendees: attendeesMock(),
+        }}
+        onCall={mutationSpy}
+      >
+        <MpdGoalAdminProvider>
+          <CohortBar />
+        </MpdGoalAdminProvider>
+      </GqlMockedProvider>
+    </SnackbarProvider>
+  </ThemeProvider>
+);
+
+/**
+ * Opens the lazily-loaded modal and waits for it to mount. Waits for the cohort
+ * first: clicking before the query resolves opens the modal with no cohort, so
+ * it renders the generic title and prefills nothing.
+ */
+const openModal = async (screen: ReturnType<typeof render>) => {
+  await screen.findByText('Fall NSO 2026');
+  await userEvent.click(screen.getByRole('button', { name: 'View/Edit' }));
+  return screen.findByRole('heading', { name: /Training Costs for/ });
+};
 
 describe('CohortBar', () => {
-  it('renders the selected cohort name and summary stats', () => {
-    const { getByText, getByRole } = renderBar();
-    expect(getByRole('combobox', { name: 'Training' })).toHaveTextContent(
-      'Fall NSO 2026',
-    );
-    expect(getByText('13 New Staff')).toBeInTheDocument();
-    expect(getByText('08/10/2026')).toBeInTheDocument();
-    expect(getByText('View/Edit')).toBeInTheDocument();
+  beforeEach(() => {
+    mutationSpy.mockClear();
+  });
+
+  it('renders the selected cohort name and summary stats', async () => {
+    const { findByText, findByRole } = render(<TestComponent />);
+
+    await findByText('Fall NSO 2026');
+    expect(
+      await findByRole('combobox', { name: 'Training' }),
+    ).toHaveTextContent('Fall NSO 2026');
+    expect(await findByText('13 New Staff')).toBeInTheDocument();
+    expect(await findByText('8/10/2026')).toBeInTheDocument();
   });
 
   it('opens the Edit Training Costs modal for the selected cohort', async () => {
-    const { getByText, findByRole, queryByRole } = renderBar();
+    const screen = render(<TestComponent />);
+    const { queryByRole } = screen;
+
     expect(
       queryByRole('heading', { name: 'Training Costs for Fall NSO 2026' }),
     ).not.toBeInTheDocument();
 
-    await userEvent.click(getByText('View/Edit'));
-
     // The modal is lazy-loaded via next/dynamic, so it resolves asynchronously.
+    expect(await openModal(screen)).toHaveTextContent(
+      'Training Costs for Fall NSO 2026',
+    );
+  });
+
+  it('prefills the modal with the cohort saved costs', async () => {
+    const screen = render(<TestComponent />);
+    const { findByRole } = screen;
+    await openModal(screen);
+
     expect(
-      await findByRole('heading', {
-        name: 'Training Costs for Fall NSO 2026',
+      await findByRole('spinbutton', { name: /Individual \(1 in room\)/ }),
+    ).toHaveValue(100);
+    expect(
+      await findByRole('spinbutton', { name: /Individual \(2 in room\)/ }),
+    ).toHaveValue(200);
+    // "Family" appears in both the NSO and Cru Conference sections, so scope
+    // the lookup to the section to keep the two apart.
+    const cruConference = within(
+      await findByRole('group', { name: 'Cru Conference' }),
+    );
+    expect(
+      cruConference.getByRole('spinbutton', { name: /Family/ }),
+    ).toHaveValue(1300);
+  });
+
+  it('saves the costs through the mutation and toasts on success', async () => {
+    const screen = render(<TestComponent />);
+    const { findByRole, findByText, queryByRole } = screen;
+    await openModal(screen);
+
+    await userEvent.click(await findByRole('button', { name: 'Apply' }));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateNewStaffCohort', {
+        input: {
+          id: 'fall-nso-2026',
+          attributes: {
+            nsoIndividual1InRoomCost: 100,
+            nsoIndividual2InRoomCost: 200,
+            nsoCoupleCost: 300,
+            nsoFamilyCost: 400,
+            ibsSingleCost: 500,
+            ibsCoupleCost: 600,
+            refreshRetreatSingleCost: 700,
+            refreshRetreatCoupleCost: 800,
+            faithAndFinanceSingleCost: 900,
+            faithAndFinanceCoupleCost: 1000,
+            cruConferenceSingleCost: 1100,
+            cruConferenceCoupleCost: 1200,
+            cruConferenceFamilyCost: 1300,
+          },
+        },
       }),
+    );
+
+    expect(
+      await findByText('Per-Training Cost applied successfully.'),
+    ).toBeInTheDocument();
+    // A successful save closes the modal.
+    await waitFor(() =>
+      expect(
+        queryByRole('heading', { name: /Training Costs for/ }),
+      ).not.toBeInTheDocument(),
+    );
+  });
+
+  it('keeps APPLY disabled until every cost is entered', async () => {
+    const screen = render(<TestComponent withoutCosts />);
+    const { findByRole } = screen;
+    await openModal(screen);
+
+    // The cohort has no saved costs, so the form opens blank.
+    expect(await findByRole('button', { name: 'Apply' })).toBeDisabled();
+
+    await userEvent.type(
+      await findByRole('spinbutton', { name: /Individual \(1 in room\)/ }),
+      '100',
+    );
+    expect(await findByRole('button', { name: 'Apply' })).toBeDisabled();
+  });
+
+  it('leaves the modal open and does not toast when the save fails', async () => {
+    const screen = render(
+      <ThemeProvider theme={theme}>
+        <SnackbarProvider>
+          <GqlMockedProvider<{
+            NewStaffCohorts: NewStaffCohortsQuery;
+            NewStaffCohortAttendees: NewStaffCohortAttendeesQuery;
+          }>
+            mocks={{
+              NewStaffCohorts: cohortsMock,
+              NewStaffCohortAttendees: attendeesMock(),
+              UpdateNewStaffCohort: {
+                updateNewStaffCohort: () => {
+                  throw new Error('Not authorized');
+                },
+              },
+            }}
+          >
+            <MpdGoalAdminProvider>
+              <CohortBar />
+            </MpdGoalAdminProvider>
+          </GqlMockedProvider>
+        </SnackbarProvider>
+      </ThemeProvider>,
+    );
+    const { findByRole, queryByText } = screen;
+    await openModal(screen);
+
+    await userEvent.click(await findByRole('button', { name: 'Apply' }));
+
+    // The global Apollo error link owns the failure toast, so this component
+    // must not add a second one — and the entered costs stay on screen.
+    await waitFor(() =>
+      expect(
+        queryByText('Per-Training Cost applied successfully.'),
+      ).not.toBeInTheDocument(),
+    );
+    expect(
+      await findByRole('heading', { name: /Training Costs for/ }),
     ).toBeInTheDocument();
   });
 });

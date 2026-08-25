@@ -18,9 +18,13 @@ import { Formik, FormikProps } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { CurrencyAdornment } from 'src/components/HrTools/Shared/Adornments';
-import { TrainingCosts } from '../mpdGoalAdminHelpers';
+import {
+  TRAINING_COST_FIELDS,
+  TrainingCostFieldName,
+  TrainingCosts,
+} from '../mpdGoalAdminHelpers';
 
-type FieldName = keyof TrainingCosts;
+type FieldName = TrainingCostFieldName;
 
 /**
  * The cost fields as held by Formik. Empty inputs are `''`; because these
@@ -52,24 +56,8 @@ export interface EditTrainingCostsModalProps {
   onSave: (costs: TrainingCosts) => void | Promise<void>;
 }
 
-const FIELD_NAMES: FieldName[] = [
-  'nsoIndividual1InRoom',
-  'nsoIndividual2InRoom',
-  'nsoCouple',
-  'nsoFamily',
-  'ibsSingle',
-  'ibsCouple',
-  'refreshRetreatSingle',
-  'refreshRetreatCouple',
-  'faithAndFinanceSingle',
-  'faithAndFinanceCouple',
-  'cruConferenceSingle',
-  'cruConferenceCouple',
-  'cruConferenceFamily',
-];
-
 const blankValues = (): FormValues =>
-  FIELD_NAMES.reduce((acc, name) => {
+  TRAINING_COST_FIELDS.reduce((acc, name) => {
     acc[name] = '';
     return acc;
   }, {} as FormValues);
@@ -78,14 +66,14 @@ const toFormValues = (costs?: TrainingCosts): FormValues => {
   if (!costs) {
     return blankValues();
   }
-  return FIELD_NAMES.reduce((acc, name) => {
+  return TRAINING_COST_FIELDS.reduce((acc, name) => {
     acc[name] = costs[name];
     return acc;
   }, {} as FormValues);
 };
 
 const toTrainingCosts = (values: FormValues): TrainingCosts =>
-  FIELD_NAMES.reduce((acc, name) => {
+  TRAINING_COST_FIELDS.reduce((acc, name) => {
     acc[name] = Number(values[name]);
     return acc;
   }, {} as TrainingCosts);
@@ -211,7 +199,7 @@ export const EditTrainingCostsModal: React.FC<EditTrainingCostsModalProps> = ({
       .required(t('Required'));
 
     return yup.object(
-      FIELD_NAMES.reduce(
+      TRAINING_COST_FIELDS.reduce(
         (shape, name) => {
           shape[name] = amount;
           return shape;
@@ -291,7 +279,7 @@ export const EditTrainingCostsModal: React.FC<EditTrainingCostsModalProps> = ({
           // clears back to valid at mount) keeps the button disabled from the
           // first render.
           const canApply =
-            FIELD_NAMES.every((name) => values[name] !== '') &&
+            TRAINING_COST_FIELDS.every((name) => values[name] !== '') &&
             Object.keys(errors).length === 0;
 
           return (

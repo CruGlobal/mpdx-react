@@ -181,12 +181,26 @@ the request forms autosave a draft but `Submit` through the wizard's `SubmitModa
 
 ## Mock / prototype tools — not wired to a backend
 
-These are prototypes — they currently render from `mockData.ts`, have **no
-`.graphql`**, and hit neither API (that will change once they're wired). Don't
-mistake them for read paths or wire tests against a real operation:
+**MpdSupervisorReport** is still a prototype — it renders from
+`MpdSupervisorReport/mockData.ts` + `useMockInfiniteStaff.ts`, has **no
+`.graphql`**, and hits neither API. Don't mistake it for a read path or wire
+tests against a real operation.
 
-- **MpdGoalAdmin** — `MpdGoalAdmin/mockData.ts` (modals exist, no mutations).
-- **MpdSupervisorReport** — `MpdSupervisorReport/mockData.ts` + `useMockInfiniteStaff.ts`.
+**MpdGoalAdmin is partly wired** (MPDX-9913). Its cohorts and attendees come
+from `NewStaffCohorts.graphql` (`newStaffCohorts` / `newStaffCohort.attendees`),
+and the Edit Training Costs modal saves through `updateNewStaffCohort`. Two
+things to know before working in it:
+
+- **Both queries are MPD-Goals-team only.** An unauthorized user gets an error,
+  not an empty table, which is why `MpdGoalAdmin.tsx` renders explicit
+  loading/error states rather than falling through to "No goals found".
+- **Coach assignment is still mocked** — `mockData.ts` keeps `mockCoaches`, and
+  `MpdGoalAdminContext` layers assignments over the fetched rows via
+  `coachOverrides`. Both are marked `TODO(MPDX-9914)` and go away with the real
+  mutation. Attendee search is server-side and debounced, so tests can't assert
+  client-side filtering — assert the query variables instead. Shared
+  `GqlMockedProvider` fixtures live in `mpdGoalAdminMocks.ts`; they pin
+  `hasNextPage: false` because the provider drains pages with `useFetchAllPages`.
 
 Everything else (AdditionalSalaryRequest, SavingsFundTransfer, MHA, SalaryCalculator,
 NsoMpdQuestionnaire, the three goal calculators, MinistryPartnerReminders) performs

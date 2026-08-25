@@ -1,5 +1,12 @@
 import React from 'react';
-import { Box, Tab, Tabs, Typography } from '@mui/material';
+import {
+  Alert,
+  Box,
+  CircularProgress,
+  Tab,
+  Tabs,
+  Typography,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
@@ -33,7 +40,8 @@ export const MpdGoalAdmin: React.FC<MpdGoalAdminProps> = ({
   onNavListToggle,
 }) => {
   const { t } = useTranslation();
-  const { activeTab, setActiveTab, filteredRows } = useMpdGoalAdmin();
+  const { activeTab, setActiveTab, filteredRows, loading, error } =
+    useMpdGoalAdmin();
 
   return (
     <>
@@ -75,7 +83,17 @@ export const MpdGoalAdmin: React.FC<MpdGoalAdminProps> = ({
             </Typography>
             <CohortBar />
             <GoalsTableToolbar />
-            <GoalsTable rows={filteredRows} />
+            {/* These queries are restricted to the MPD Goals team, so a
+                permission failure surfaces here rather than as an empty table. */}
+            {error ? (
+              <Alert severity="error">{error.message}</Alert>
+            ) : loading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                <CircularProgress aria-label={t('Loading MPD goals')} />
+              </Box>
+            ) : (
+              <GoalsTable rows={filteredRows} />
+            )}
           </>
         ) : (
           <Typography color="text.secondary" sx={{ mt: 4 }}>

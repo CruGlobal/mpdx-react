@@ -2,16 +2,31 @@ import React, {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
-import { mockCohorts } from './mockData';
+import { ApolloError } from '@apollo/client';
+import { useDebouncedValue } from 'src/hooks/useDebounce';
+import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
+import { useLocale } from 'src/hooks/useLocale';
+import {
+  useNewStaffCohortAttendeesQuery,
+  useNewStaffCohortsQuery,
+  useUpdateNewStaffCohortMutation,
+} from './NewStaffCohorts.generated';
 import {
   Cohort,
   MpdGoalAdminTabEnum,
   StaffGoalRow,
   TrainingCosts,
+  attendeeToRow,
+  cohortNodeToCohort,
+  trainingCostsToAttributes,
 } from './mpdGoalAdminHelpers';
+
+/** Matches the debounce the contacts search uses, so typing isn't a query per keystroke. */
+const searchDebounceMs = 500;
 
 export interface MpdGoalAdminContextValue {
   activeTab: MpdGoalAdminTabEnum;
@@ -22,8 +37,15 @@ export interface MpdGoalAdminContextValue {
   selectedCohort: Cohort | undefined;
   search: string;
   setSearch: (value: string) => void;
-  /** Rows of the selected cohort that match the current search term. */
+  /**
+   * Rows of the selected cohort matching the current search term. The API does
+   * the matching (it can search fields the table never displays, such as
+   * email), so this is simply every attendee the query returned.
+   */
   filteredRows: StaffGoalRow[];
+  /** True while cohorts or the selected cohort's attendees are still loading. */
+  loading: boolean;
+  error: ApolloError | undefined;
   selectedRowIds: Set<string>;
   /**
    * The currently visible (filtered) rows that are selected. Derived from
@@ -34,8 +56,12 @@ export interface MpdGoalAdminContextValue {
   toggleRow: (id: string) => void;
   toggleRows: (ids: string[]) => void;
   clearSelection: () => void;
-  /** Saves the training cost figures for a cohort and marks them as entered. */
-  saveTrainingCosts: (cohortId: string, costs: TrainingCosts) => void;
+  /**
+   * Saves the cohort's training costs. Resolves once the goal amounts and
+   * statuses that depend on them have been refetched, so awaiting this means
+   * the table is already up to date. Rejects if the mutation fails.
+   */
+  saveTrainingCosts: (cohortId: string, costs: TrainingCosts) => Promise<void>;
   /** Assigns one coach to every row in `rowIds`, across all cohorts. */
   assignCoach: (rowIds: string[], coachName: string) => void;
 }
@@ -47,15 +73,75 @@ const MpdGoalAdminContext = createContext<MpdGoalAdminContextValue | undefined>(
 export const MpdGoalAdminProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const [cohorts, setCohorts] = useState<Cohort[]>(mockCohorts);
+  const locale = useLocale();
   const [activeTab, setActiveTab] = useState<MpdGoalAdminTabEnum>(
     MpdGoalAdminTabEnum.ActiveGoals,
   );
-  const [selectedCohortId, setSelectedCohortId] = useState<string>(
-    cohorts[0]?.id ?? '',
-  );
+  const [selectedCohortId, setSelectedCohortId] = useState<string>('');
   const [search, setSearch] = useState('');
   const [selectedRowIds, setSelectedRowIds] = useState<Set<string>>(new Set());
+  // TODO(MPDX-9914): drop this once assignCoach is a real mutation and the
+  // assigned coach comes back on the attendee. Until then the assignment is
+  // layered over the fetched rows so the flow still demos end to end.
+  const [coachOverrides, setCoachOverrides] = useState<Record<string, string>>(
+    {},
+  );
+
+  const debouncedSearch = useDebouncedValue(search, searchDebounceMs);
+
+  const {
+    data: cohortsData,
+    error: cohortsError,
+    fetchMore: fetchMoreCohorts,
+  } = useNewStaffCohortsQuery();
+  const { loading: cohortsLoading } = useFetchAllPages({
+    fetchMore: fetchMoreCohorts,
+    error: cohortsError,
+    pageInfo: cohortsData?.newStaffCohorts.pageInfo,
+  });
+
+  const cohorts = useMemo(
+    () =>
+      cohortsData?.newStaffCohorts.nodes.map((node) =>
+        cohortNodeToCohort(node, locale),
+      ) ?? [],
+    [cohortsData, locale],
+  );
+
+  // The cohort list arrives after mount, so the initial selection can only be
+  // made here. Re-runs if the selected cohort disappears from the list.
+  useEffect(() => {
+    if (cohorts.length && !cohorts.some(({ id }) => id === selectedCohortId)) {
+      setSelectedCohortId(cohorts[0].id);
+    }
+  }, [cohorts, selectedCohortId]);
+
+  const {
+    data: attendeesData,
+    error: attendeesError,
+    fetchMore: fetchMoreAttendees,
+  } = useNewStaffCohortAttendeesQuery({
+    variables: {
+      cohortId: selectedCohortId,
+      search: debouncedSearch.trim() || null,
+    },
+    skip: !selectedCohortId,
+  });
+  const { loading: attendeesLoading } = useFetchAllPages({
+    fetchMore: fetchMoreAttendees,
+    error: attendeesError,
+    pageInfo: attendeesData?.newStaffCohort.attendees.pageInfo,
+  });
+
+  const filteredRows = useMemo(() => {
+    const rows =
+      attendeesData?.newStaffCohort.attendees.nodes.map(attendeeToRow) ?? [];
+    return rows.map((row) =>
+      coachOverrides[row.id] ? { ...row, coach: coachOverrides[row.id] } : row,
+    );
+  }, [attendeesData, coachOverrides]);
+
+  const [updateNewStaffCohort] = useUpdateNewStaffCohortMutation();
 
   const toggleRow = useCallback((id: string) => {
     setSelectedRowIds((prev) => {
@@ -82,28 +168,32 @@ export const MpdGoalAdminProvider: React.FC<{
   const clearSelection = useCallback(() => setSelectedRowIds(new Set()), []);
 
   const saveTrainingCosts = useCallback(
-    (cohortId: string, costs: TrainingCosts) => {
-      setCohorts((prev) =>
-        prev.map((cohort) =>
-          cohort.id === cohortId
-            ? { ...cohort, trainingCosts: costs, trainingCostEntered: true }
-            : cohort,
-        ),
-      );
+    async (cohortId: string, costs: TrainingCosts) => {
+      await updateNewStaffCohort({
+        variables: {
+          input: {
+            id: cohortId,
+            attributes: trainingCostsToAttributes(costs),
+          },
+        },
+        // The mutation returns the cohort, so its costs, `hasTrainingCosts` and
+        // run-and-send blockers normalize into the cache on their own. The
+        // attendees are a separate query whose goal amounts and statuses the
+        // server recomputes from the new costs, so they need a real refetch —
+        // awaited so callers can toast only once the table actually reflects it.
+        refetchQueries: ['NewStaffCohortAttendees'],
+        awaitRefetchQueries: true,
+      });
     },
-    [],
+    [updateNewStaffCohort],
   );
 
   const assignCoach = useCallback((rowIds: string[], coachName: string) => {
-    const idSet = new Set(rowIds);
-    setCohorts((prev) =>
-      prev.map((cohort) => ({
-        ...cohort,
-        rows: cohort.rows.map((row) =>
-          idSet.has(row.id) ? { ...row, coach: coachName } : row,
-        ),
-      })),
-    );
+    setCoachOverrides((prev) => {
+      const next = { ...prev };
+      rowIds.forEach((id) => (next[id] = coachName));
+      return next;
+    });
   }, []);
 
   // Switching cohorts clears the selection: selecting staff across different
@@ -124,19 +214,6 @@ export const MpdGoalAdminProvider: React.FC<{
     [cohorts, selectedCohortId],
   );
 
-  const filteredRows = useMemo(() => {
-    const term = search.trim().toLowerCase();
-    const rows = selectedCohort?.rows ?? [];
-    if (!term) {
-      return rows;
-    }
-    return rows.filter(
-      (row) =>
-        row.name.toLowerCase().includes(term) ||
-        row.email.toLowerCase().includes(term),
-    );
-  }, [selectedCohort, search]);
-
   // Only count/act on rows the user can currently see. A row hidden by the
   // search term keeps its id in `selectedRowIds` (so clearing the search
   // restores it) but is excluded here so the count never lies.
@@ -156,6 +233,8 @@ export const MpdGoalAdminProvider: React.FC<{
       search,
       setSearch,
       filteredRows,
+      loading: cohortsLoading || attendeesLoading,
+      error: cohortsError ?? attendeesError,
       selectedRowIds,
       selectedRows,
       toggleRow,
@@ -172,6 +251,10 @@ export const MpdGoalAdminProvider: React.FC<{
       selectedCohort,
       search,
       filteredRows,
+      cohortsLoading,
+      attendeesLoading,
+      cohortsError,
+      attendeesError,
       selectedRowIds,
       selectedRows,
       toggleRow,

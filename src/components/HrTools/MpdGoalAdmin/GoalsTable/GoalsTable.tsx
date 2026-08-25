@@ -24,7 +24,24 @@ import { currencyFormat } from 'src/lib/intlFormat';
 import { AssignCoachModal } from '../AssignCoachModal/AssignCoachModal';
 import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import { mockCoaches } from '../mockData';
-import { StaffGoalRow, isSendable } from '../mpdGoalAdminHelpers';
+import {
+  GoalStatusEnum,
+  StaffGoalRow,
+  familyStatusLabel,
+  goalStatusLabel,
+} from '../mpdGoalAdminHelpers';
+
+// Complete is ready to send and Sent is already done; only Incomplete needs action.
+const goalStatusColor = (status: GoalStatusEnum) => {
+  switch (status) {
+    case GoalStatusEnum.Complete:
+      return 'success';
+    case GoalStatusEnum.Sent:
+      return 'info';
+    default:
+      return 'warning';
+  }
+};
 
 interface GoalsTableProps {
   rows: StaffGoalRow[];
@@ -144,11 +161,11 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
                 <Chip
                   size="small"
                   variant="outlined"
-                  label={isSendable(row) ? t('Complete') : t('Incomplete')}
-                  color={isSendable(row) ? 'success' : 'warning'}
+                  label={goalStatusLabel(row.goalStatus, t)}
+                  color={goalStatusColor(row.goalStatus)}
                 />
               </TableCell>
-              <TableCell>{row.familyStatus}</TableCell>
+              <TableCell>{familyStatusLabel(row.familyStatus, t)}</TableCell>
               <TableCell>
                 {row.coach ?? (
                   <Link

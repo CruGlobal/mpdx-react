@@ -1,4 +1,5 @@
-import { mockCohorts } from '../mockData';
+import { attendeeToRow, cohortNodeToCohort } from '../mpdGoalAdminHelpers';
+import { attendees, cohortsMock } from '../mpdGoalAdminMocks';
 import {
   buildPlaceholderPdf,
   downloadPdf,
@@ -27,6 +28,12 @@ describe('buildPlaceholderPdf', () => {
   });
 });
 
+const cohort = cohortNodeToCohort(
+  cohortsMock.newStaffCohorts.nodes[0],
+  'en-US',
+);
+const rows = attendees.map(attendeeToRow);
+
 describe('generateCohortGoalsPdf', () => {
   // jsdom does not implement Blob.text(), so read the blob with a FileReader.
   const readBlobText = (blob: Blob) =>
@@ -41,7 +48,7 @@ describe('generateCohortGoalsPdf', () => {
     const createObjectURL = jest.fn().mockReturnValue('blob:cohort-pdf');
     window.URL.createObjectURL = createObjectURL;
 
-    await expect(generateCohortGoalsPdf(mockCohorts[0])).resolves.toBe(
+    await expect(generateCohortGoalsPdf(cohort, rows)).resolves.toBe(
       'blob:cohort-pdf',
     );
     const blob = createObjectURL.mock.calls[0][0] as Blob;
@@ -50,7 +57,9 @@ describe('generateCohortGoalsPdf', () => {
     const pdf = await readBlobText(blob);
     expect(pdf).toContain('(MPD Goals - Fall NSO 2026) Tj');
     expect(pdf).toContain('(John & Jane Doe: $6,430.25) Tj');
-    expect(pdf).toContain('(Carlos & Michaela Everts: $5,280.77) Tj');
+    expect(pdf).toContain('(Sam Smith: $4,200) Tj');
+    // An attendee with no goal calculation still gets a line, at $0.
+    expect(pdf).toContain('(Carlos & Michaela Everts: $0) Tj');
   });
 });
 

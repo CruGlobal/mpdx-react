@@ -1,5 +1,5 @@
 import { currencyFormat } from 'src/lib/intlFormat';
-import { Cohort } from '../mpdGoalAdminHelpers';
+import { Cohort, StaffGoalRow } from '../mpdGoalAdminHelpers';
 
 const escapePdfText = (text: string): string =>
   text.replace(/[\\()]/g, (char) => `\\${char}`);
@@ -53,18 +53,25 @@ const formatUsd = (amount: number): string =>
 /**
  * Generates the cohort's printable PDF and resolves with a download URL.
  *
+ * `rows` are the attendees to list. Attendees are a separate, server-filtered
+ * query now, so the caller can only hand over the rows currently matching the
+ * search — meaning this placeholder prints the visible rows rather than the
+ * whole cohort while a search is active.
+ *
  * TODO(MPDX-9691): replace with the printCohortGoals mutation, which needs only
- * `cohortId` (this prints the whole cohort). The URL it returns must be
- * same-origin or a blob URL — `anchor.download` is ignored cross-origin, so a
- * signed S3 URL means mutate → fetch → createObjectURL, as `exportRest.tsx` does.
+ * `cohortId` (this prints the whole cohort, restoring the ignores-search
+ * behavior). The URL it returns must be same-origin or a blob URL —
+ * `anchor.download` is ignored cross-origin, so a signed S3 URL means
+ * mutate → fetch → createObjectURL, as `exportRest.tsx` does.
  */
 export const generateCohortGoalsPdf = async (
   cohort: Cohort,
+  rows: StaffGoalRow[],
 ): Promise<string> => {
   const pdf = buildPlaceholderPdf([
     `MPD Goals - ${cohort.name}`,
     '',
-    ...cohort.rows.map((row) => `${row.name}: ${formatUsd(row.mpdGoal)}`),
+    ...rows.map((row) => `${row.name}: ${formatUsd(row.mpdGoal)}`),
   ]);
   return URL.createObjectURL(new Blob([pdf], { type: 'application/pdf' }));
 };

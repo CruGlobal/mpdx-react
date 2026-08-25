@@ -13,10 +13,10 @@ import { downloadPdf, generateCohortGoalsPdf } from './printCohortGoalsPdf';
 export const PrintCohortGoalsButton: React.FC = () => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const { selectedCohort } = useMpdGoalAdmin();
+  const { selectedCohort, filteredRows } = useMpdGoalAdmin();
   const [printing, setPrinting] = useState(false);
 
-  const hasTrainingCosts = !!selectedCohort?.trainingCostEntered;
+  const hasTrainingCosts = !!selectedCohort?.hasTrainingCosts;
 
   const handlePrint = async () => {
     if (!selectedCohort) {
@@ -24,7 +24,7 @@ export const PrintCohortGoalsButton: React.FC = () => {
     }
     setPrinting(true);
     try {
-      const url = await generateCohortGoalsPdf(selectedCohort);
+      const url = await generateCohortGoalsPdf(selectedCohort, filteredRows);
       downloadPdf(url, `MPD Goals - ${selectedCohort.name}.pdf`);
     } catch {
       // TODO(MPDX-9691): the global Apollo error link toasts mutation

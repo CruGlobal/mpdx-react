@@ -1,6 +1,7 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { GoalStatusEnum, StaffGoalRow } from '../mpdGoalAdminHelpers';
 import { RunAndSendModal } from './RunAndSendModal';
@@ -12,12 +13,11 @@ const makeRow = (
 ): StaffGoalRow => ({
   id,
   name,
-  email: `${id}@example.com`,
   ministry: 'Campus',
-  geography: 'Geography 01 (1-4)',
+  geography: 'Orlando, FL',
   mpdGoal: 1000,
   goalStatus,
-  familyStatus: 'Single',
+  familyStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
   coach: 'Coach',
   coordinator: 'Coordinator',
 });
