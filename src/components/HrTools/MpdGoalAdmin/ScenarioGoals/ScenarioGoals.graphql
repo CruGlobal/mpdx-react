@@ -1,0 +1,33 @@
+query NewStaffScenarioGoals($after: String) {
+  newStaffScenarioGoals(first: 100, after: $after) {
+    nodes {
+      id
+      firstName
+      lastName
+      ministryName
+      geographicLocation
+      createdAt
+      calculations {
+        monthlyGoal
+      }
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+  }
+}
+
+mutation CreateNewStaffScenarioGoal {
+  createNewStaffScenarioGoal(input: {}) {
+    newStaffGoalCalculation {
+      id
+    }
+  }
+}
+
+mutation DeleteNewStaffScenarioGoal($id: ID!) {
+  deleteNewStaffScenarioGoal(input: { id: $id }) {
+    id
+  }
+}
