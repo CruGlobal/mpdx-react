@@ -21,11 +21,20 @@ export interface MonthlyPayroll {
   percentMaxPay: number;
 }
 
+export interface MonthlySummary {
+  month: string;
+  contributions: number;
+  expenses: number;
+  net: number;
+  end_balance: number;
+}
+
 export interface EmployeeData {
   user: User;
   spouse?: Spouse;
   quarters: QuarterStatus[];
   monthlyPayrollHistory: MonthlyPayroll[];
+  monthlySummary: MonthlySummary[];
 }
 
 export interface User {
@@ -246,6 +255,29 @@ const generateMonthlyPayrollHistory = (i: number): MonthlyPayroll[] => {
   });
 };
 
+const generateMonthlySummary = (i: number): MonthlySummary[] => {
+  const currentMonth = DateTime.local().startOf('month');
+  let endBalance = 8000 + ((i * 733) % 4001);
+
+  return Array.from({ length: 12 }, (_, mi) => {
+    const month = currentMonth.minus({ months: 12 - mi });
+    const seed = i * 12 + mi;
+
+    const contributions = 3500 + ((seed * 6113) % 2501);
+    const expenses = 3300 + ((seed * 5303) % 2701);
+    const net = contributions - expenses;
+    endBalance += net;
+
+    return {
+      month: month.toFormat('yyyy-MM'),
+      contributions,
+      expenses,
+      net,
+      end_balance: endBalance,
+    };
+  });
+};
+
 export const mockStaffMembers: EmployeeData[] = firstNames.map(
   (firstName, i) => {
     const hasSpouse = i % 2 === 0;
@@ -274,6 +306,7 @@ export const mockStaffMembers: EmployeeData[] = firstNames.map(
       },
       quarters,
       monthlyPayrollHistory: generateMonthlyPayrollHistory(i),
+      monthlySummary: generateMonthlySummary(i),
     };
 
     if (hasSpouse) {
