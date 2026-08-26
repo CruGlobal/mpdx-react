@@ -4,29 +4,44 @@ import { Cohort, StaffGoalRow } from '../mpdGoalAdminHelpers';
 const escapePdfText = (text: string): string =>
   text.replace(/[\\()]/g, (char) => `\\${char}`);
 
+// Text runs off the 792pt page past ~line 40, so start a new page before that.
+const maxLinesPerPage = 38;
+
 /**
- * Builds a minimal single-page PDF listing one line of text per entry.
- * Placeholder for the mock tool only: the real worksheet is rendered
+ * Builds a minimal PDF listing one line of text per entry, paginating every
+ * 38 lines. Placeholder for the mock tool only: the real worksheet is rendered
  * server-side (MPDX-9690) and this builder goes away with MPDX-9691.
  */
 export const buildPlaceholderPdf = (lines: string[]): string => {
-  // Text runs off the 792pt page past ~line 40; fail loud, never truncate.
-  if (lines.length > 38) {
-    throw new Error('Placeholder PDF supports at most 38 lines per page');
+  const pages: string[][] = [];
+  for (let start = 0; start < lines.length; start += maxLinesPerPage) {
+    pages.push(lines.slice(start, start + maxLinesPerPage));
+  }
+  if (!pages.length) {
+    pages.push([]);
   }
   const encoder = new TextEncoder();
-  const content = lines
-    .map(
-      (line, index) =>
-        `BT /F1 12 Tf 72 ${720 - index * 18} Td (${escapePdfText(line)}) Tj ET`,
-    )
-    .join('\n');
+  // Object numbers: 1 catalog, 2 pages, 3 font, then a page/content pair each.
+  const pageObjectNumber = (pageIndex: number) => 4 + pageIndex * 2;
+  const kids = pages
+    .map((_, pageIndex) => `${pageObjectNumber(pageIndex)} 0 R`)
+    .join(' ');
   const objects = [
     '<< /Type /Catalog /Pages 2 0 R >>',
-    '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
-    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>',
-    `<< /Length ${encoder.encode(content).length} >>\nstream\n${content}\nendstream`,
+    `<< /Type /Pages /Kids [${kids}] /Count ${pages.length} >>`,
     '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+    ...pages.flatMap((pageLines, pageIndex) => {
+      const content = pageLines
+        .map(
+          (line, index) =>
+            `BT /F1 12 Tf 72 ${720 - index * 18} Td (${escapePdfText(line)}) Tj ET`,
+        )
+        .join('\n');
+      return [
+        `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents ${pageObjectNumber(pageIndex) + 1} 0 R >>`,
+        `<< /Length ${encoder.encode(content).length} >>\nstream\n${content}\nendstream`,
+      ];
+    }),
   ];
 
   let pdf = '%PDF-1.4\n';

@@ -131,6 +131,7 @@ export const MpdGoalAdminProvider: React.FC<{
 
   const {
     data: attendeesData,
+    previousData: previousAttendeesData,
     error: attendeesError,
     fetchMore: fetchMoreAttendees,
   } = useNewStaffCohortAttendeesQuery({
@@ -146,13 +147,22 @@ export const MpdGoalAdminProvider: React.FC<{
     pageInfo: attendeesData?.newStaffCohort.attendees.pageInfo,
   });
 
+  // New search variables make `data` undefined mid-refetch; keep the previous
+  // rows visible then, but never another cohort's — a cohort switch starts blank.
+  const visibleAttendeesData =
+    attendeesData ??
+    (previousAttendeesData?.newStaffCohort.id === selectedCohortId
+      ? previousAttendeesData
+      : undefined);
+
   const filteredRows = useMemo(() => {
     const rows =
-      attendeesData?.newStaffCohort.attendees.nodes.map(attendeeToRow) ?? [];
+      visibleAttendeesData?.newStaffCohort.attendees.nodes.map(attendeeToRow) ??
+      [];
     return rows.map((row) =>
       coachOverrides[row.id] ? { ...row, coach: coachOverrides[row.id] } : row,
     );
-  }, [attendeesData, coachOverrides]);
+  }, [visibleAttendeesData, coachOverrides]);
 
   const [updateNewStaffCohort] = useUpdateNewStaffCohortMutation();
 

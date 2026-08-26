@@ -23,8 +23,14 @@ describe('buildPlaceholderPdf', () => {
     expect(pdf).toContain('(John \\(Jack\\) Doe \\\\ Co) Tj');
   });
 
-  it('throws when the lines exceed the single-page capacity', () => {
-    expect(() => buildPlaceholderPdf(Array(45).fill('x'))).toThrow();
+  it('paginates lines that exceed the single-page capacity', () => {
+    const lines = Array.from({ length: 45 }, (_, index) => `Line ${index + 1}`);
+    const pdf = buildPlaceholderPdf(lines);
+    expect(pdf).toContain('/Count 2');
+    expect(pdf).toContain('(Line 1) Tj');
+    // Line 39 starts the second page, back at the top margin.
+    expect(pdf).toContain('BT /F1 12 Tf 72 720 Td (Line 39) Tj ET');
+    expect(pdf).toContain('(Line 45) Tj');
   });
 });
 

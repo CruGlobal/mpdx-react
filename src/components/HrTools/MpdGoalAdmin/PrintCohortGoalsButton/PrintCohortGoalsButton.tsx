@@ -6,17 +6,20 @@ import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import { downloadPdf, generateCohortGoalsPdf } from './printCohortGoalsPdf';
 
 /**
- * "Print All" — exports every goal in the selected cohort as one printable PDF
- * for NSO hard copies. Gated on training costs because the goal amounts aren't
+ * "Print All" — exports the selected cohort's goals as one printable PDF for
+ * NSO hard copies. While a search is active only the matching rows print, so
+ * the label switches to "Print Matching" (until MPDX-9691 prints the whole
+ * cohort server-side). Gated on training costs because the goal amounts aren't
  * final without them; Run & Send does not enforce that gate yet.
  */
 export const PrintCohortGoalsButton: React.FC = () => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const { selectedCohort, filteredRows } = useMpdGoalAdmin();
+  const { selectedCohort, filteredRows, search } = useMpdGoalAdmin();
   const [printing, setPrinting] = useState(false);
 
   const hasTrainingCosts = !!selectedCohort?.hasTrainingCosts;
+  const searchActive = !!search.trim();
 
   const handlePrint = async () => {
     if (!selectedCohort) {
@@ -40,11 +43,15 @@ export const PrintCohortGoalsButton: React.FC = () => {
   return (
     <Tooltip
       title={
-        hasTrainingCosts
-          ? t('Prints every goal in {{cohort}}.', {
-              cohort: selectedCohort?.name ?? '',
-            })
-          : t('Enter training costs for this cohort to print its goals.')
+        !hasTrainingCosts
+          ? t('Enter training costs for this cohort to print its goals.')
+          : searchActive
+            ? t('Prints the goals matching your search in {{cohort}}.', {
+                cohort: selectedCohort?.name ?? '',
+              })
+            : t('Prints every goal in {{cohort}}.', {
+                cohort: selectedCohort?.name ?? '',
+              })
       }
     >
       {/* span so the tooltip still fires while the button is disabled */}
@@ -55,7 +62,7 @@ export const PrintCohortGoalsButton: React.FC = () => {
           onClick={handlePrint}
           aria-busy={printing}
         >
-          {t('Print All')}
+          {searchActive ? t('Print Matching') : t('Print All')}
           {printing && (
             <CircularProgress size={16} color="inherit" sx={{ ml: 1 }} />
           )}

@@ -89,6 +89,15 @@ describe('PrintCohortGoalsButton', () => {
     );
   });
 
+  it('relabels to Print Matching while a search is active', async () => {
+    const { getByRole } = renderButton();
+    await waitForCohorts();
+
+    act(() => ctx.setSearch('john'));
+
+    expect(getByRole('button', { name: 'Print Matching' })).toBeInTheDocument();
+  });
+
   it('generates the cohort PDF and downloads it', async () => {
     const { getByRole } = renderButton();
     await waitForCohorts();

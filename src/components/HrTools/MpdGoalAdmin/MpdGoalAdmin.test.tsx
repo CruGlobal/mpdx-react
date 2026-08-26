@@ -42,12 +42,13 @@ describe('MpdGoalAdmin', () => {
 
     expect(getByRole('progressbar')).toBeInTheDocument();
     expect(queryByRole('table')).not.toBeInTheDocument();
+    expect(getByRole('button', { name: 'Run and Send All' })).toBeDisabled();
   });
 
   it('surfaces a query failure instead of an empty table', async () => {
     // These queries are restricted to the MPD Goals team, so an unauthorized
     // user must see why the table is empty rather than "No goals found".
-    const { findByRole, queryByRole } = renderMain({
+    const { findByRole, getByRole, queryByRole } = renderMain({
       NewStaffCohorts: {
         newStaffCohorts: () => {
           throw new Error('Not authorized');
@@ -57,6 +58,7 @@ describe('MpdGoalAdmin', () => {
 
     expect(await findByRole('alert')).toHaveTextContent('Not authorized');
     expect(queryByRole('table')).not.toBeInTheDocument();
+    expect(getByRole('button', { name: 'Run and Send All' })).toBeDisabled();
   });
 
   it('switches to the scenario goals placeholder', async () => {

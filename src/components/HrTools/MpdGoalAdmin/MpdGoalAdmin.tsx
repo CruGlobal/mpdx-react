@@ -3,6 +3,7 @@ import {
   Alert,
   Box,
   CircularProgress,
+  LinearProgress,
   Tab,
   Tabs,
   Typography,
@@ -87,12 +88,22 @@ export const MpdGoalAdmin: React.FC<MpdGoalAdminProps> = ({
                 permission failure surfaces here rather than as an empty table. */}
             {error ? (
               <Alert severity="error">{error.message}</Alert>
-            ) : loading ? (
+            ) : loading && !filteredRows.length ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
                 <CircularProgress aria-label={t('Loading MPD goals')} />
               </Box>
             ) : (
-              <GoalsTable rows={filteredRows} />
+              // Search refetches keep the previous rows visible under an
+              // inline progress bar instead of swapping the table for a spinner.
+              <Box aria-live="polite" aria-busy={loading}>
+                {loading && (
+                  <LinearProgress
+                    sx={{ mb: 1 }}
+                    aria-label={t('Refreshing MPD goals')}
+                  />
+                )}
+                <GoalsTable rows={filteredRows} />
+              </Box>
             )}
           </>
         ) : (

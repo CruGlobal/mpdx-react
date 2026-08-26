@@ -57,6 +57,8 @@ export const CohortBar: React.FC = () => {
       // open with the entered costs intact so the save can be retried.
       return;
     }
+    // MPDX-9913 explicitly specifies this success toast; keep it despite the
+    // repo's no-success-snackbar preference.
     enqueueSnackbar(t('Per-Training Cost applied successfully.'), {
       variant: 'success',
     });
