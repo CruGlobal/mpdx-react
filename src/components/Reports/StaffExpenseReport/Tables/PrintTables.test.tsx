@@ -6,7 +6,22 @@ import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { ReportsStaffExpensesQuery } from '../GetStaffExpense.generated';
 import { ReportType } from '../Helpers/StaffReportEnum';
+import { AggregationPeriod } from '../Helpers/aggregationPolicy';
+import { GroupedTransaction } from '../Helpers/filterTransactions';
 import { PrintTables, PrintTablesProps } from './PrintTables';
+
+const monthlyRollup: GroupedTransaction = {
+  id: 'grouped-Primary|DONATION|2025-01',
+  fundType: 'Primary',
+  transactedAt: '2025-01-01',
+  category: StaffExpenseCategoryEnum.Donation,
+  displayCategory: 'Donations',
+  description: 'Donations',
+  amount: 250,
+  bucketKey: 'Primary|DONATION|2025-01',
+  period: AggregationPeriod.Month,
+  groupedTransactions: [],
+};
 
 const mutationSpy = jest.fn();
 
@@ -91,6 +106,46 @@ describe('PrintTables', () => {
     expect(getByRole('cell', { name: '$100' })).toBeInTheDocument();
     expect(getByRole('cell', { name: 'Total' })).toBeInTheDocument();
     expect(getByRole('cell', { name: '$0' })).toBeInTheDocument();
+  });
+
+  it('renders a monthly rollup as a month and year rather than a day', async () => {
+    const { findByRole } = render(
+      <TestComponent
+        tableProps={{
+          transactions: [monthlyRollup],
+          type: ReportType.Income,
+        }}
+      />,
+    );
+
+    expect(
+      await findByRole('cell', { name: 'January 2025' }),
+    ).toBeInTheDocument();
+  });
+
+  it('shows an itemized transaction description in place of its category', async () => {
+    const { findByRole } = render(
+      <TestComponent
+        tableProps={{
+          type: ReportType.Income,
+          transactions: [
+            {
+              id: '1',
+              fundType: 'Primary',
+              transactedAt: '2025-01-15',
+              category: StaffExpenseCategoryEnum.Donation,
+              displayCategory: 'Donation',
+              description: 'Recurring gift',
+              amount: 250,
+            },
+          ],
+        }}
+      />,
+    );
+
+    expect(
+      await findByRole('cell', { name: 'Recurring gift' }),
+    ).toBeInTheDocument();
   });
 
   it('renders empty table message when no transactions', async () => {

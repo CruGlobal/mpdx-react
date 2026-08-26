@@ -1,7 +1,21 @@
 import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import { ReportType } from '../Helpers/StaffReportEnum';
-import { Transaction } from '../Helpers/filterTransactions';
+import { AggregationPeriod } from '../Helpers/aggregationPolicy';
+import { GroupedTransaction, Transaction } from '../Helpers/filterTransactions';
 import { createCsvReport, dateSortTransactions } from './downloadReport';
+
+const monthlyRollup: GroupedTransaction = {
+  id: 'grouped-Primary|DONATION|2025-01',
+  fundType: 'Primary',
+  transactedAt: '2025-01-01',
+  category: StaffExpenseCategoryEnum.Donation,
+  displayCategory: 'Donations',
+  description: 'Donations',
+  amount: 250,
+  bucketKey: 'Primary|DONATION|2025-01',
+  period: AggregationPeriod.Month,
+  groupedTransactions: [],
+};
 
 const mockData: Transaction[] = [
   {
@@ -119,6 +133,23 @@ describe('downloadReport', () => {
     expect(appendChildMock).toHaveBeenCalledWith(realLink);
     expect(clickMock).toHaveBeenCalled();
     expect(removeChildMock).toHaveBeenCalledWith(realLink);
+  });
+
+  it('writes a monthly rollup as a month and year rather than a day', () => {
+    const realLink = document.createElement('a');
+    jest.spyOn(realLink, 'setAttribute').mockImplementation(setAttributeMock);
+    jest.spyOn(realLink, 'click').mockImplementation(clickMock);
+
+    jest.spyOn(document, 'createElement').mockReturnValue(realLink);
+
+    createCsvReport(ReportType.Income, [monthlyRollup], mockT, mockLocale);
+
+    const hrefValue = setAttributeMock.mock.calls.find(
+      ([attribute]) => attribute === 'href',
+    )?.[1];
+    const csvContent = decodeURIComponent(hrefValue);
+    expect(csvContent).toContain('January 2025');
+    expect(csvContent).not.toContain('Jan 1, 2025');
   });
 
   describe('dateSortTransactions', () => {

@@ -1,9 +1,9 @@
 import { TFunction } from 'i18next';
-import { DateTime } from 'luxon';
 import { buildURI } from 'react-csv/lib/core';
 import { Transaction } from 'src/components/Reports/StaffExpenseReport/Helpers/filterTransactions';
-import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
+import { currencyFormat } from 'src/lib/intlFormat';
 import { ReportType } from '../Helpers/StaffReportEnum';
+import { formatTransactionDate } from '../Helpers/formatDate';
 
 const createTable = (
   title: string,
@@ -17,7 +17,7 @@ const createTable = (
     [title],
     csvHeader,
     ...dateSortedTransactions.map((transaction) => [
-      dateFormat(DateTime.fromISO(transaction.transactedAt), locale),
+      formatTransactionDate(transaction, locale),
       transaction.displayCategory,
       currencyFormat(
         isExpense ? Math.abs(transaction.amount) : transaction.amount,
