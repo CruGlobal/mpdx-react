@@ -35,6 +35,7 @@ const memberWithSpouse: EmployeeData = {
     { label: 'FQ3 26', health: QuarterHealthEnum.Green, payroll: 15000 },
   ],
   monthlyPayrollHistory: [],
+  monthlySummary: [],
 };
 
 const memberWithoutSpouse: EmployeeData = {
@@ -54,6 +55,7 @@ const memberWithoutSpouse: EmployeeData = {
     { label: 'FQ3 26', health: QuarterHealthEnum.Red, payroll: 15000 },
   ],
   monthlyPayrollHistory: [],
+  monthlySummary: [],
 };
 
 let openMemberFn: (member: EmployeeData) => void;
@@ -128,13 +130,35 @@ describe('StaffMemberDrawer', () => {
 
   it('shows the Monthly Summary tab and its panel content by default', () => {
     renderDrawer();
-    openMember(memberWithSpouse);
+    openMember({
+      ...memberWithSpouse,
+      monthlySummary: [
+        {
+          month: '2023-01',
+          contributions: 4000,
+          expenses: 3500,
+          net: 500,
+          endBalance: 10000,
+        },
+      ],
+    });
     expect(
       screen.getByRole('tab', { name: 'Monthly Summary' }),
     ).toHaveAttribute('aria-selected', 'true');
-    expect(
-      within(screen.getByRole('tabpanel')).getByText('Monthly Summary'),
-    ).toBeInTheDocument();
+
+    const table = within(screen.getByRole('tabpanel')).getByRole('table');
+    expect(table).toHaveTableStructure({
+      columnHeaders: [
+        'Month',
+        'Contributions',
+        'Expenses',
+        'Net',
+        'End Balance',
+      ],
+      cells: [
+        ['Jan 2023', '$4,000.00', '($3,500.00)', '$500.00', '$10,000.00'],
+      ],
+    });
   });
 
   it('selects another tab when clicked', async () => {
