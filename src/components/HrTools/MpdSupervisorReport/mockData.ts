@@ -26,7 +26,7 @@ export interface MonthlySummary {
   contributions: number;
   expenses: number;
   net: number;
-  end_balance: number;
+  endBalance: number;
 }
 
 export interface EmployeeData {
@@ -273,7 +273,7 @@ const generateMonthlySummary = (i: number): MonthlySummary[] => {
       contributions,
       expenses,
       net,
-      end_balance: endBalance,
+      endBalance,
     };
   });
 };

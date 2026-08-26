@@ -24,6 +24,7 @@ const member: EmployeeData = {
     { label: 'FQ3 26', health: QuarterHealthEnum.Green, payroll: 18000 },
   ],
   monthlyPayrollHistory: [],
+  monthlySummary: [],
 };
 
 const renderRow = (onClick = jest.fn()) => {
