@@ -7,6 +7,11 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { MpdGoalAdminProvider, useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import {
+  NewStaffCohortAttendeesQuery,
+  NewStaffCohortsQuery,
+  UpdateNewStaffCohortMutation,
+} from '../NewStaffCohorts.generated';
+import {
   attendeesMock,
   cohortsMock,
   trainingCosts,
@@ -33,7 +38,11 @@ const renderButton = () =>
   render(
     <ThemeProvider theme={theme}>
       <SnackbarProvider>
-        <GqlMockedProvider
+        <GqlMockedProvider<{
+          NewStaffCohorts: NewStaffCohortsQuery;
+          NewStaffCohortAttendees: NewStaffCohortAttendeesQuery;
+          UpdateNewStaffCohort: UpdateNewStaffCohortMutation;
+        }>
           mocks={{
             NewStaffCohorts: cohortsMock,
             NewStaffCohortAttendees: attendeesMock(),
@@ -78,15 +87,15 @@ describe('PrintCohortGoalsButton', () => {
     const { getByRole } = renderButton();
     await waitForCohorts();
     act(() => ctx.setSelectedCohortId('spring-nso-2027'));
-    expect(getByRole('button', { name: 'Print All' })).toBeDisabled();
+    const button = getByRole('button', { name: 'Print All' });
+    expect(button).toBeDisabled();
 
     // The mutation returns the updated cohort, which normalizes into the cache
     // and clears the gate — no cohort refetch involved.
     await act(() => ctx.saveTrainingCosts('spring-nso-2027', trainingCosts));
 
-    await waitFor(() =>
-      expect(getByRole('button', { name: 'Print All' })).toBeEnabled(),
-    );
+    // findBy* can't wait on an enabled-state change, so waitFor the attribute.
+    await waitFor(() => expect(button).toBeEnabled());
   });
 
   it('relabels to Print Matching while a search is active', async () => {

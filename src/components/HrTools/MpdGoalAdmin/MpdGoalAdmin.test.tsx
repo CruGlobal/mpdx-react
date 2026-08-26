@@ -2,23 +2,35 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { MpdGoalAdmin } from './MpdGoalAdmin';
 import { MpdGoalAdminProvider } from './MpdGoalAdminContext';
+import {
+  NewStaffCohortAttendeesQuery,
+  NewStaffCohortsQuery,
+} from './NewStaffCohorts.generated';
 import { attendeesMock, cohortsMock } from './mpdGoalAdminMocks';
 
-const renderMain = (mocks: Record<string, unknown> = {}) =>
+type Mocks = {
+  NewStaffCohorts: NewStaffCohortsQuery;
+  NewStaffCohortAttendees: NewStaffCohortAttendeesQuery;
+};
+
+const renderMain = (mocks: ApolloErgonoMockMap = {}) =>
   render(
     <ThemeProvider theme={theme}>
       <SnackbarProvider>
-        <GqlMockedProvider
-          mocks={{
-            NewStaffCohorts: cohortsMock,
-            NewStaffCohortAttendees: attendeesMock(),
-            ...mocks,
-          }}
+        <GqlMockedProvider<Mocks>
+          mocks={
+            {
+              NewStaffCohorts: cohortsMock,
+              NewStaffCohortAttendees: attendeesMock(),
+              ...mocks,
+            } as ApolloErgonoMockMap
+          }
         >
           <MpdGoalAdminProvider>
             <MpdGoalAdmin onNavListToggle={jest.fn()} navListOpen={false} />
@@ -65,7 +77,7 @@ describe('MpdGoalAdmin', () => {
     const { getByRole, queryByRole, getByText, findByRole } = renderMain();
     await findByRole('table');
 
-    await userEvent.click(getByRole('tab', { name: 'Scenario Goals' }));
+    userEvent.click(getByRole('tab', { name: 'Scenario Goals' }));
 
     expect(queryByRole('table')).not.toBeInTheDocument();
     expect(getByText('Scenario goals coming soon.')).toBeInTheDocument();

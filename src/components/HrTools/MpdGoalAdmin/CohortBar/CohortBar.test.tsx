@@ -19,6 +19,12 @@ import { CohortBar } from './CohortBar';
 
 const mutationSpy = jest.fn();
 
+const mockEnqueue = jest.fn();
+jest.mock('notistack', () => ({
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => ({ enqueueSnackbar: mockEnqueue }),
+}));
+
 interface TestComponentProps {
   /** Renders a cohort whose costs have never been entered. */
   withoutCosts?: boolean;
@@ -54,13 +60,14 @@ const TestComponent: React.FC<TestComponentProps> = ({
  */
 const openModal = async (screen: ReturnType<typeof render>) => {
   await screen.findByText('Fall NSO 2026');
-  await userEvent.click(screen.getByRole('button', { name: 'View/Edit' }));
+  userEvent.click(screen.getByRole('button', { name: 'View/Edit' }));
   return screen.findByRole('heading', { name: /Training Costs for/ });
 };
 
 describe('CohortBar', () => {
   beforeEach(() => {
     mutationSpy.mockClear();
+    mockEnqueue.mockClear();
   });
 
   it('renders the selected cohort name and summary stats', async () => {
@@ -111,10 +118,10 @@ describe('CohortBar', () => {
 
   it('saves the costs through the mutation and toasts on success', async () => {
     const screen = render(<TestComponent />);
-    const { findByRole, findByText, queryByRole } = screen;
+    const { findByRole, queryByRole } = screen;
     await openModal(screen);
 
-    await userEvent.click(await findByRole('button', { name: 'Apply' }));
+    userEvent.click(await findByRole('button', { name: 'Apply' }));
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('UpdateNewStaffCohort', {
@@ -139,9 +146,12 @@ describe('CohortBar', () => {
       }),
     );
 
-    expect(
-      await findByText('Per-Training Cost applied successfully.'),
-    ).toBeInTheDocument();
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Per-Training Cost applied successfully.',
+        { variant: 'success' },
+      ),
+    );
     // A successful save closes the modal.
     await waitFor(() =>
       expect(
@@ -158,7 +168,7 @@ describe('CohortBar', () => {
     // The cohort has no saved costs, so the form opens blank.
     expect(await findByRole('button', { name: 'Apply' })).toBeDisabled();
 
-    await userEvent.type(
+    userEvent.type(
       await findByRole('spinbutton', { name: /Individual \(1 in room\)/ }),
       '100',
     );
@@ -182,6 +192,7 @@ describe('CohortBar', () => {
                 },
               },
             }}
+            onCall={mutationSpy}
           >
             <MpdGoalAdminProvider>
               <CohortBar />
@@ -190,20 +201,24 @@ describe('CohortBar', () => {
         </SnackbarProvider>
       </ThemeProvider>,
     );
-    const { findByRole, queryByText } = screen;
+    const { findByRole, getByRole } = screen;
     await openModal(screen);
 
-    await userEvent.click(await findByRole('button', { name: 'Apply' }));
+    const apply = await findByRole('button', { name: 'Apply' });
+    userEvent.click(apply);
+
+    // The failed save has fully settled once the mutation has fired and Formik
+    // has re-enabled Apply (isSubmitting clears only after the catch runs).
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateNewStaffCohort'),
+    );
+    await waitFor(() => expect(apply).toBeEnabled());
 
     // The global Apollo error link owns the failure toast, so this component
     // must not add a second one — and the entered costs stay on screen.
-    await waitFor(() =>
-      expect(
-        queryByText('Per-Training Cost applied successfully.'),
-      ).not.toBeInTheDocument(),
-    );
+    expect(mockEnqueue).not.toHaveBeenCalled();
     expect(
-      await findByRole('heading', { name: /Training Costs for/ }),
+      getByRole('heading', { name: /Training Costs for/ }),
     ).toBeInTheDocument();
   });
 });

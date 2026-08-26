@@ -5,6 +5,7 @@ import {
 import {
   NewStaffCohortAttendeesQuery,
   NewStaffCohortsQuery,
+  UpdateNewStaffCohortMutation,
 } from './NewStaffCohorts.generated';
 import { TrainingCosts } from './mpdGoalAdminHelpers';
 
@@ -135,13 +136,19 @@ export const attendees: AttendeeNode[] = [
 export const attendeesMock = (
   nodes: AttendeeNode[] = attendees,
 ): NewStaffCohortAttendeesQuery => ({
-  newStaffCohort: {
-    id: 'fall-nso-2026',
+  // Ergonomock calls function mocks with the resolver args, so echoing the
+  // queried id back keeps the attendees on the cohort the test actually
+  // requested instead of always normalizing onto fall-nso-2026.
+  newStaffCohort: ((
+    _root: unknown,
+    args: { id: string },
+  ): NewStaffCohortAttendeesQuery['newStaffCohort'] => ({
+    id: args.id,
     attendees: {
       nodes,
       pageInfo: { endCursor: null, hasNextPage: false },
     },
-  },
+  })) as unknown as NewStaffCohortAttendeesQuery['newStaffCohort'],
 });
 
 /**
@@ -149,7 +156,9 @@ export const attendeesMock = (
  * this over the cached cohort, which is what clears the "Provide Training Cost"
  * gate without refetching the cohort list.
  */
-export const updatedCohortMock = (id: string) => ({
+export const updatedCohortMock = (
+  id: string,
+): UpdateNewStaffCohortMutation => ({
   updateNewStaffCohort: {
     newStaffCohort: {
       id,

@@ -85,15 +85,16 @@ describe('GoalsTableToolbar', () => {
 
   it('drops rows the query no longer returns from the selected count', async () => {
     const { getByRole, getByText, queryByText } = await renderLoaded();
-    act(() => ctx.toggleRow('row-1'));
-    expect(getByText('1 selected')).toBeInTheDocument();
 
     // Searching re-queries the server, so a selected row can vanish from the
     // results. The count must not keep reporting a row the user cannot see.
-    act(() => ctx.toggleRow('row-1'));
     act(() => ctx.toggleRow('filtered-out-row'));
-    expect(queryByText('1 selected')).not.toBeInTheDocument();
+    expect(queryByText(/selected/)).not.toBeInTheDocument();
     expect(getByRole('button', { name: 'More Actions' })).toBeDisabled();
+
+    // A visible selected row still counts — but the hidden one never does.
+    act(() => ctx.toggleRow('row-1'));
+    expect(getByText('1 selected')).toBeInTheDocument();
   });
 
   it('updates search on typing', async () => {
