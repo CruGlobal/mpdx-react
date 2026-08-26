@@ -133,14 +133,14 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 
   const allFunds: Fund[] = useMemo(
     () =>
-      (data?.reportsStaffExpenses?.funds ?? []).toSorted((a, b) =>
-        compareFundTypes(a.fundType, b.fundType),
+      (data?.reportsStaffExpenses?.funds ?? []).toSorted((fundA, fundB) =>
+        compareFundTypes(fundA.fundType, fundB.fundType),
       ),
     [data],
   );
 
   const defaultFundType: string | null =
-    allFunds.find((f) => f.fundType === 'Primary')?.fundType ??
+    allFunds.find((fund) => fund.fundType === 'Primary')?.fundType ??
     allFunds[0]?.fundType ??
     null;
 
