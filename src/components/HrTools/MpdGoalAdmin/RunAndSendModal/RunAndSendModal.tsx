@@ -35,8 +35,8 @@ export const RunAndSendModal: React.FC<RunAndSendModalProps> = ({
   const { t } = useTranslation();
 
   const total = rows.length;
-  const { sendable, notSendable: incompleteRows } = partitionSendable(rows);
-  const incompleteCount = incompleteRows.length;
+  const { sendable, alreadySent, incomplete } = partitionSendable(rows);
+  const incompleteCount = incomplete.length;
   const sendableCount = sendable.length;
 
   return (
@@ -77,7 +77,28 @@ export const RunAndSendModal: React.FC<RunAndSendModalProps> = ({
               )}
             </Typography>
             <Box component="ul" sx={{ m: 0, mt: 1, pl: 3 }}>
-              {incompleteRows.map((row) => (
+              {incomplete.map((row) => (
+                <li key={row.id}>{row.name}</li>
+              ))}
+            </Box>
+          </Alert>
+        )}
+
+        {alreadySent.length > 0 && (
+          <Alert severity="info" sx={{ mb: 2 }}>
+            <Typography variant="body2" fontWeight="bold">
+              {t(
+                '{{sent}} of the {{total}} MPD goals have already been sent.',
+                { sent: alreadySent.length, total },
+              )}
+            </Typography>
+            <Typography variant="body2">
+              {t(
+                'The following staff already received their MPD goal, so it will not be sent again.',
+              )}
+            </Typography>
+            <Box component="ul" sx={{ m: 0, mt: 1, pl: 3 }}>
+              {alreadySent.map((row) => (
                 <li key={row.id}>{row.name}</li>
               ))}
             </Box>

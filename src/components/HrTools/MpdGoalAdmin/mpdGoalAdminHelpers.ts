@@ -3,7 +3,6 @@ import { TFunction } from 'react-i18next';
 import {
   NewStaffCohortAttendeeGoalStatusEnum,
   NewStaffCohortAttributesInput,
-  NewStaffCohortRunAndSendBlockerEnum,
   NewStaffQuestionnaireMaritalStatusEnum,
 } from 'src/graphql/types.generated';
 import { dateFormatShort } from 'src/lib/intlFormat';
@@ -32,8 +31,8 @@ export interface StaffGoalRow {
   name: string;
   ministry: string;
   geography: string;
-  /** MPD goal amount in USD; 0 until the goal calculation exists. */
-  mpdGoal: number;
+  /** MPD goal amount in USD; null until the goal calculation exists. */
+  mpdGoal: number | null;
   goalStatus: NewStaffCohortAttendeeGoalStatusEnum;
   /** null before the survey establishes the household's marital status. */
   familyStatus: NewStaffQuestionnaireMaritalStatusEnum | null;
@@ -112,8 +111,6 @@ export interface Cohort {
   /** Display string, e.g. "08/10/2026"; "—" when the API has no date yet. */
   nsoDate: string;
   hasTrainingCosts: boolean;
-  canRunAndSend: boolean;
-  runAndSendBlockers: NewStaffCohortRunAndSendBlockerEnum[];
   /** Saved training cost figures; undefined until every cost is entered. */
   trainingCosts?: TrainingCosts;
 }
@@ -160,8 +157,6 @@ export const cohortNodeToCohort = (
     ? dateFormatShort(DateTime.fromISO(node.date), locale)
     : '—',
   hasTrainingCosts: node.hasTrainingCosts,
-  canRunAndSend: node.canRunAndSend,
-  runAndSendBlockers: node.runAndSendBlockers,
   trainingCosts: cohortToTrainingCosts(node),
 });
 
@@ -171,14 +166,16 @@ export const attendeeToRow = (attendee: AttendeeNode): StaffGoalRow => ({
   ministry: attendee.ministry?.name ?? '',
   geography: attendee.geographicLocation ?? '',
   // The calculation is absent until the questionnaire completes; the row still
-  // renders, with the goal column showing $0 alongside an Incomplete chip.
-  mpdGoal: attendee.newStaffGoalCalculation?.monthlyGoal ?? 0,
+  // renders, with a placeholder in the goal column alongside an Incomplete chip.
+  mpdGoal: attendee.newStaffGoalCalculation?.monthlyGoal ?? null,
   goalStatus: attendee.goalStatus,
   familyStatus: attendee.familyStatus ?? null,
+  // `|| null`: a coach whose names are both null joins to '', which must still
+  // render the Assign Coach prompt.
   coach: attendee.coach
     ? [attendee.coach.firstName, attendee.coach.lastName]
         .filter(Boolean)
-        .join(' ')
+        .join(' ') || null
     : null,
   coordinator: attendee.coordinators.join(', '),
 });
@@ -226,21 +223,25 @@ export const isSendable = (row: {
 
 /**
  * Splits rows into those that can be sent and those that cannot, preserving
- * order within each group.
+ * order within each group. The unsendable rows are split further — already-sent
+ * goals are done, not incomplete, so the modal must describe them differently.
  */
 export const partitionSendable = <
   T extends { goalStatus: NewStaffCohortAttendeeGoalStatusEnum },
 >(
   rows: T[],
-): { sendable: T[]; notSendable: T[] } => {
+): { sendable: T[]; alreadySent: T[]; incomplete: T[] } => {
   const sendable: T[] = [];
-  const notSendable: T[] = [];
+  const alreadySent: T[] = [];
+  const incomplete: T[] = [];
   for (const row of rows) {
     if (isSendable(row)) {
       sendable.push(row);
+    } else if (row.goalStatus === NewStaffCohortAttendeeGoalStatusEnum.Sent) {
+      alreadySent.push(row);
     } else {
-      notSendable.push(row);
+      incomplete.push(row);
     }
   }
-  return { sendable, notSendable };
+  return { sendable, alreadySent, incomplete };
 };

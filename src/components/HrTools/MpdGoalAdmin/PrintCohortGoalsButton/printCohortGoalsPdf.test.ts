@@ -58,8 +58,8 @@ describe('generateCohortGoalsPdf', () => {
     expect(pdf).toContain('(MPD Goals - Fall NSO 2026) Tj');
     expect(pdf).toContain('(John & Jane Doe: $6,430.25) Tj');
     expect(pdf).toContain('(Sam Smith: $4,200) Tj');
-    // An attendee with no goal calculation still gets a line, at $0.
-    expect(pdf).toContain('(Carlos & Michaela Everts: $0) Tj');
+    // An attendee with no goal calculation still gets a line, marked Pending.
+    expect(pdf).toContain('(Carlos & Michaela Everts: Pending) Tj');
   });
 });
 

@@ -9,7 +9,11 @@ import {
   NewStaffCohortAttendeesQuery,
   NewStaffCohortsQuery,
 } from '../NewStaffCohorts.generated';
-import { StaffGoalRow, attendeeToRow } from '../mpdGoalAdminHelpers';
+import {
+  GoalStatusEnum,
+  StaffGoalRow,
+  attendeeToRow,
+} from '../mpdGoalAdminHelpers';
 import { attendees, attendeesMock, cohortsMock } from '../mpdGoalAdminMocks';
 import { DEFAULT_ROWS_PER_PAGE, GoalsTable } from './GoalsTable';
 
@@ -58,6 +62,24 @@ describe('GoalsTable', () => {
   it('renders an empty placeholder for zero rows', () => {
     const { getByText } = renderTable([]);
     expect(getByText('No goals found')).toBeInTheDocument();
+  });
+
+  it('renders a placeholder, not $0.00, for a row with no goal calculation', () => {
+    // row-2 has no goal calculation, so its goal is null.
+    const { getByText, queryByText } = renderTable();
+    expect(getByText('—')).toBeInTheDocument();
+    expect(queryByText('$0.00')).not.toBeInTheDocument();
+  });
+
+  it('renders a Sent chip with the info color for an already-sent goal', () => {
+    const sentRow: StaffGoalRow = {
+      ...rows[0],
+      id: 'sent-row',
+      goalStatus: GoalStatusEnum.Sent,
+    };
+    const { getByText } = renderTable([sentRow]);
+    const chip = getByText('Sent').closest('.MuiChip-root');
+    expect(chip).toHaveClass('MuiChip-colorInfo');
   });
 
   it('shows an Assign Coach prompt when no coach is set', () => {

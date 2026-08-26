@@ -43,6 +43,25 @@ const goalStatusColor = (status: GoalStatusEnum) => {
   }
 };
 
+const GoalStatusChip: React.FC<{ status: GoalStatusEnum }> = ({ status }) => {
+  const { t } = useTranslation();
+  const color = goalStatusColor(status);
+  return (
+    <Chip
+      size="small"
+      variant="outlined"
+      label={goalStatusLabel(status, t)}
+      color={color}
+      // Outlined chips label in palette.main, which is under WCAG AA at this
+      // size; the dark shade keeps the semantic hue at readable contrast.
+      sx={(theme) => ({
+        color: theme.palette[color].dark,
+        borderColor: theme.palette[color].dark,
+      })}
+    />
+  );
+};
+
 interface GoalsTableProps {
   rows: StaffGoalRow[];
 }
@@ -155,15 +174,13 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
               <TableCell>{row.ministry}</TableCell>
               <TableCell>{row.geography}</TableCell>
               <TableCell>
-                {currencyFormat(row.mpdGoal, 'USD', locale)}
+                {/* No goal calculation yet — a $0.00 here would read as real. */}
+                {row.mpdGoal === null
+                  ? '—'
+                  : currencyFormat(row.mpdGoal, 'USD', locale)}
               </TableCell>
               <TableCell>
-                <Chip
-                  size="small"
-                  variant="outlined"
-                  label={goalStatusLabel(row.goalStatus, t)}
-                  color={goalStatusColor(row.goalStatus)}
-                />
+                <GoalStatusChip status={row.goalStatus} />
               </TableCell>
               <TableCell>{familyStatusLabel(row.familyStatus, t)}</TableCell>
               <TableCell>

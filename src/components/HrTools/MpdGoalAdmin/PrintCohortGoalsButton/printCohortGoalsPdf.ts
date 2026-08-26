@@ -71,7 +71,11 @@ export const generateCohortGoalsPdf = async (
   const pdf = buildPlaceholderPdf([
     `MPD Goals - ${cohort.name}`,
     '',
-    ...rows.map((row) => `${row.name}: ${formatUsd(row.mpdGoal)}`),
+    // Pending, not $0: a null goal has no calculation yet (ASCII, so no em-dash).
+    ...rows.map(
+      (row) =>
+        `${row.name}: ${row.mpdGoal === null ? 'Pending' : formatUsd(row.mpdGoal)}`,
+    ),
   ]);
   return URL.createObjectURL(new Blob([pdf], { type: 'application/pdf' }));
 };

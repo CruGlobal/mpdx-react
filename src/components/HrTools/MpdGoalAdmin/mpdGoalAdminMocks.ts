@@ -119,7 +119,7 @@ const attendee = (
 /** row-1 is deliberately the only attendee without a coach. */
 export const attendees: AttendeeNode[] = [
   attendee('row-1', 'John & Jane Doe'),
-  // No goal calculation yet, so the row renders $0 with an Incomplete chip.
+  // No goal calculation yet, so the goal renders as pending with an Incomplete chip.
   attendee('row-2', 'Carlos & Michaela Everts', {
     goalStatus: NewStaffCohortAttendeeGoalStatusEnum.Incomplete,
     newStaffGoalCalculation: null,

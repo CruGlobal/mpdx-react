@@ -94,8 +94,8 @@ describe('MpdGoalAdminContext', () => {
       coach: null,
       coordinator: 'Kim Coordinator',
     });
-    // An attendee with no goal calculation yet still renders, at $0.
-    expect(result.current.filteredRows[1].mpdGoal).toBe(0);
+    // An attendee with no goal calculation yet still renders, with a null goal.
+    expect(result.current.filteredRows[1].mpdGoal).toBeNull();
     expect(result.current.filteredRows[1].coach).toBe('Nelson Jones');
   });
 
