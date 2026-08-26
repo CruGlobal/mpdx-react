@@ -39,13 +39,11 @@ const TestComponent: React.FC<TestComponentProps> = ({
 describe('RouterGuard', () => {
   describe('authenticated', () => {
     it('should render when authenticated', async () => {
-      const { getByText } = render(
+      const { findByText } = render(
         <TestComponent pathname="/authRoute">Authed route</TestComponent>,
       );
 
-      await waitFor(() =>
-        expect(getByText('Authed route')).toBeInTheDocument(),
-      );
+      expect(await findByText('Authed route')).toBeInTheDocument();
     });
 
     it('should render loading indicator while session is loading', async () => {
