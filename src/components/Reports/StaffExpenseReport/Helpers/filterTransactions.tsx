@@ -270,6 +270,25 @@ export const sortCategories = (categories: string[]): string[] => {
   });
 };
 
+const transactionsInRange = (
+  funds: Fund[],
+  filters: Filters | null | undefined,
+  targetTime: DateTime,
+): UnlabeledTransaction[] => {
+  const isInDateRange = createDateRangeFilter(filters, targetTime);
+
+  return funds
+    .flatMap((fund) => flattenFund(fund))
+    .filter((transaction) =>
+      isInDateRange(DateTime.fromISO(transaction.transactedAt)),
+    );
+};
+
+const uniqueCategories = (transactions: UnlabeledTransaction[]): string[] =>
+  sortCategories([
+    ...new Set<string>(transactions.map(({ category }) => category)),
+  ]);
+
 /**
  * Get all available categories that have transactions in the specified date range
  * Used for populating category filter options.
@@ -278,30 +297,25 @@ export const getAvailableCategories = (
   funds: Fund[],
   filters: Filters | null | undefined,
   targetTime: DateTime,
-): string[] => {
-  const isInDateRange = createDateRangeFilter(filters, targetTime);
+): string[] =>
+  uniqueCategories(transactionsInRange(funds, filters, targetTime));
 
-  const categoriesWithTransactions = new Set<string>();
-
-  funds.forEach((fund) => {
-    fund.categories?.forEach((category) => {
-      category.subcategories.forEach((subcategory) => {
-        subcategory.breakdownByMonth?.forEach((breakdown) => {
-          const hasTransactionsInRange = breakdown.transactions?.some(
-            (transaction) =>
-              isInDateRange(
-                DateTime.fromISO(
-                  transformTransactionDate(transaction.transactedAt),
-                ),
-              ),
-          );
-          if (hasTransactionsInRange) {
-            categoriesWithTransactions.add(category.category);
-          }
-        });
-      });
-    });
-  });
-
-  return sortCategories(Array.from(categoriesWithTransactions));
-};
+/**
+ * The categories holding at least one transaction the rules actually combine.
+ *
+ * Derived from the data rather than declared per category, because the rules are keyed by
+ * subcategory: Staff Expense combines only the healthcare debit card, and Donation only donations
+ * proper. Where the sheet requires individual rows there is nothing to combine, so offering a
+ * checkbox would be a control that does nothing.
+ */
+export const getCombinableCategories = (
+  funds: Fund[],
+  filters: Filters | null | undefined,
+  targetTime: DateTime,
+): string[] =>
+  uniqueCategories(
+    transactionsInRange(funds, filters, targetTime).filter(
+      ({ subcategory }) =>
+        getAggregationPolicy(subcategory).period !== AggregationPeriod.None,
+    ),
+  );

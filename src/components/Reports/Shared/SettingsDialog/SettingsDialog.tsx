@@ -24,7 +24,10 @@ import { Fund, StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import { useReportsStaffExpensesQuery } from '../../StaffExpenseReport/GetStaffExpense.generated';
 import { DateRange } from '../../StaffExpenseReport/Helpers/StaffReportEnum';
-import { getAvailableCategories } from '../../StaffExpenseReport/Helpers/filterTransactions';
+import {
+  getAvailableCategories,
+  getCombinableCategories,
+} from '../../StaffExpenseReport/Helpers/filterTransactions';
 import { getStaffExpenseMonthRange } from '../../StaffExpenseReport/Helpers/getMonthRange';
 import { getLocalizedCategory } from '../Helpers/transformStaffExpenseEnums';
 
@@ -48,8 +51,8 @@ export interface Filters {
    */
   selectedYear?: number | null;
   /**
-   * `null` means no explicit selection: every available category is shown as
-   * checked and the report aggregates all of them.
+   * Categories the user chose to combine into a single row spanning the whole date range, which
+   * overrides the standard per-subcategory aggregation. `null` or empty means no override.
    */
   categories: string[] | null;
 }
@@ -204,6 +207,30 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
     return getAvailableCategories(categoryFunds, filtersToUse, currentTime);
   }, [categoryData, previewFilters, selectedFilters, currentTime]);
 
+  // MPGA combines every category. The staff expense report combines per subcategory, so a category
+  // is only worth a checkbox when the data in range actually holds something it would combine.
+  const combinableCategories = useMemo(() => {
+    if (isMpgaReport) {
+      return availableCategories;
+    }
+
+    const categoryFunds: Fund[] =
+      categoryData?.reportsStaffExpenses?.funds ?? [];
+
+    return getCombinableCategories(
+      categoryFunds,
+      previewFilters ?? selectedFilters ?? null,
+      currentTime,
+    );
+  }, [
+    isMpgaReport,
+    availableCategories,
+    categoryData,
+    previewFilters,
+    selectedFilters,
+    currentTime,
+  ]);
+
   const validateAndRefetch = (
     validateForm: () => Promise<Record<string, unknown>>,
     filters: Filters,
@@ -258,7 +285,8 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
           setTouched,
         }) => {
           const handleCategoryToggle = (category: string, checked: boolean) => {
-            const selectedCategories = values.categories ?? availableCategories;
+            const selectedCategories =
+              values.categories ?? combinableCategories;
             const newCategories = checked
               ? [...selectedCategories, category]
               : selectedCategories.filter(
@@ -280,8 +308,8 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                   label={t('Select Date Range')}
                   fullWidth
                   value={dropdownValue}
-                  onChange={(e) => {
-                    const raw = e.target.value;
+                  onChange={(event) => {
+                    const raw = event.target.value;
                     const isYear = /^\d{4}$/.test(raw);
                     const yearValue = isYear ? Number(raw) : null;
                     const rangeValue =
@@ -388,13 +416,17 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                 )}
 
                 <Typography sx={{ mt: 2, whiteSpace: 'pre-line' }}>
-                  {t(
-                    `Income and expenses are combined by categories by default. This may be useful for long date ranges (e.g., "Year to Date").\nSelect which categories to keep consolidated.`,
-                  )}
+                  {isMpgaReport
+                    ? t(
+                        `Income and expenses are combined by categories by default. This may be useful for long date ranges (e.g., "Year to Date").\nSelect which categories to keep consolidated.`,
+                      )
+                    : t(
+                        `Income and expenses are combined using Cru's standard reporting rules. Salary and benefits by pay date, other categories by month. Uncheck a category to list every transaction in the category separately.`,
+                      )}
                 </Typography>
 
                 <Typography sx={{ mt: 2, mb: 1 }}>
-                  {t('Select Categories:')}
+                  {t('Combine these categories:')}
                 </Typography>
 
                 {categoryLoading ? (
@@ -413,9 +445,15 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                       'No transactions with categories found in the selected date range.',
                     )}
                   </Alert>
+                ) : !combinableCategories.length ? (
+                  <Alert severity="info">
+                    {t(
+                      'None of the categories in this date range can be combined.',
+                    )}
+                  </Alert>
                 ) : (
                   <FormGroup row>
-                    {availableCategories.map((category) => {
+                    {combinableCategories.map((category) => {
                       const localizedCategory = getLocalizedCategory(
                         category as StaffExpenseCategoryEnum,
                         t,
@@ -426,11 +464,13 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                           control={
                             <Checkbox
                               checked={
-                                !values.categories ||
-                                values.categories.includes(category)
+                                values.categories?.includes(category) ?? true
                               }
-                              onChange={(e) =>
-                                handleCategoryToggle(category, e.target.checked)
+                              onChange={(event) =>
+                                handleCategoryToggle(
+                                  category,
+                                  event.target.checked,
+                                )
                               }
                             />
                           }

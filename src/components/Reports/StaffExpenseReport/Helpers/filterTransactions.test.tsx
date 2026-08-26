@@ -16,6 +16,7 @@ import { DateRange, ReportType } from './StaffReportEnum';
 import {
   filterTransactions,
   getAvailableCategories,
+  getCombinableCategories,
   isGroupedTransaction,
 } from './filterTransactions';
 
@@ -753,6 +754,35 @@ describe('getAvailableCategories', () => {
     const result = getAvailableCategories([], null, targetTime);
 
     expect(result).toEqual([]);
+  });
+
+  it('reports a category as combinable when its transactions roll up', () => {
+    expect(
+      getCombinableCategories([mockFund], null, DateTime.fromISO('2025-01-15')),
+    ).toEqual([
+      StaffExpenseCategoryEnum.AdditionalSalary,
+      StaffExpenseCategoryEnum.Benefits,
+    ]);
+  });
+
+  it('excludes a category whose transactions in range all itemize', () => {
+    // Donation rolls up monthly, but non-cash gifts under it do not. The category is only
+    // combinable when the data actually holds something combinable.
+    const nonCashOnly = buildFund([
+      {
+        category: StaffExpenseCategoryEnum.Donation,
+        subCategory: StaffExpensesSubCategoryEnum.NonCash,
+        transactions: [{ amount: -25, transactedAt: '2025-01-05T00:00:00Z' }],
+      },
+    ]);
+    const targetTime = DateTime.fromISO('2025-01-15');
+
+    expect(getAvailableCategories([nonCashOnly], null, targetTime)).toEqual([
+      StaffExpenseCategoryEnum.Donation,
+    ]);
+    expect(getCombinableCategories([nonCashOnly], null, targetTime)).toEqual(
+      [],
+    );
   });
 });
 
