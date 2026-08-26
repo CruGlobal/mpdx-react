@@ -25,6 +25,23 @@ export const getPluralizedDescription = (
   return descriptions[value];
 };
 
+export const getPluralizedSubCategory = (
+  value: StaffExpensesSubCategoryEnum,
+  t: TFunction,
+): string | undefined => {
+  const descriptions: Partial<Record<StaffExpensesSubCategoryEnum, string>> = {
+    [StaffExpensesSubCategoryEnum.CreditCardFee]: t('Credit Card Fees'),
+    [StaffExpensesSubCategoryEnum.Donation]: t('Donations'),
+    [StaffExpensesSubCategoryEnum.HealthcareReimbursement]: t(
+      'Healthcare Reimbursements',
+    ),
+    [StaffExpensesSubCategoryEnum.MinistryReimbursement]: t(
+      'Ministry Reimbursements',
+    ),
+  };
+  return descriptions[value];
+};
+
 export const getLocalizedCategory = (
   value: StaffExpenseCategoryEnum,
   t: TFunction,
