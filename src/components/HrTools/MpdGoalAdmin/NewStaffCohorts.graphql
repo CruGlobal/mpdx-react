@@ -46,8 +46,6 @@ query NewStaffCohortAttendees($cohortId: ID!, $search: String, $after: String) {
         familyStatus
         geographicLocation
         goalStatus
-        goalMissingFields
-        questionnaireState
         coordinators
         coach {
           id

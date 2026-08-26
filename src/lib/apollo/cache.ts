@@ -54,6 +54,12 @@ export const createCache = () =>
         },
         merge: true,
       },
+      NewStaffCohort: {
+        fields: {
+          attendees: paginationFieldPolicy,
+        },
+        merge: true,
+      },
       SearchOrganizationsAccountListsResponse: {
         fields: {
           accountLists: {
@@ -92,6 +98,7 @@ export const createCache = () =>
           donations: paginationFieldPolicy,
           financialAccounts: paginationFieldPolicy,
           goalCalculations: paginationFieldPolicy,
+          newStaffCohorts: paginationFieldPolicy,
           people: paginationFieldPolicy,
           tasks: paginationFieldPolicy,
           userNotifications: paginationFieldPolicy,

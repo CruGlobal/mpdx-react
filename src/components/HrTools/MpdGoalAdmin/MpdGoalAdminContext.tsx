@@ -108,13 +108,26 @@ export const MpdGoalAdminProvider: React.FC<{
     [cohortsData, locale],
   );
 
+  // Switching cohorts clears the selection: selecting staff across different
+  // training cohorts is meaningless, and stale ids would otherwise linger in
+  // the set and mislead the selection count and any bulk action.
+  const selectCohort = useCallback(
+    (id: string) => {
+      if (id !== selectedCohortId) {
+        setSelectedRowIds(new Set());
+      }
+      setSelectedCohortId(id);
+    },
+    [selectedCohortId],
+  );
+
   // The cohort list arrives after mount, so the initial selection can only be
   // made here. Re-runs if the selected cohort disappears from the list.
   useEffect(() => {
     if (cohorts.length && !cohorts.some(({ id }) => id === selectedCohortId)) {
-      setSelectedCohortId(cohorts[0].id);
+      selectCohort(cohorts[0].id);
     }
-  }, [cohorts, selectedCohortId]);
+  }, [cohorts, selectedCohortId, selectCohort]);
 
   const {
     data: attendeesData,
@@ -196,19 +209,6 @@ export const MpdGoalAdminProvider: React.FC<{
     });
   }, []);
 
-  // Switching cohorts clears the selection: selecting staff across different
-  // training cohorts is meaningless, and stale ids would otherwise linger in
-  // the set and mislead the selection count and any bulk action.
-  const selectCohort = useCallback(
-    (id: string) => {
-      if (id !== selectedCohortId) {
-        setSelectedRowIds(new Set());
-      }
-      setSelectedCohortId(id);
-    },
-    [selectedCohortId],
-  );
-
   const selectedCohort = useMemo(
     () => cohorts.find((cohort) => cohort.id === selectedCohortId),
     [cohorts, selectedCohortId],
@@ -233,7 +233,13 @@ export const MpdGoalAdminProvider: React.FC<{
       search,
       setSearch,
       filteredRows,
-      loading: cohortsLoading || attendeesLoading,
+      // With no cohort selected the attendees query is skipped, so its loading only
+      // counts while a selection exists (or is imminent because cohorts exist) —
+      // otherwise zero cohorts would spin forever instead of showing the empty state.
+      // The attendees query is skipped without a selection, so with zero cohorts it must not count as loading.
+      loading:
+        cohortsLoading ||
+        (selectedCohortId ? attendeesLoading : cohorts.length > 0),
       error: cohortsError ?? attendeesError,
       selectedRowIds,
       selectedRows,

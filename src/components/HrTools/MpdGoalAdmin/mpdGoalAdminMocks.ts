@@ -1,6 +1,5 @@
 import {
   NewStaffCohortAttendeeGoalStatusEnum,
-  NewStaffCohortAttendeeQuestionnaireStateEnum,
   NewStaffQuestionnaireMaritalStatusEnum,
 } from 'src/graphql/types.generated';
 import {
@@ -110,8 +109,6 @@ const attendee = (
   familyStatus: NewStaffQuestionnaireMaritalStatusEnum.Married,
   geographicLocation: 'Orlando, FL',
   goalStatus: NewStaffCohortAttendeeGoalStatusEnum.Complete,
-  goalMissingFields: [],
-  questionnaireState: NewStaffCohortAttendeeQuestionnaireStateEnum.Completed,
   coordinators: ['Kim Coordinator'],
   coach: null,
   ministry: { id: 'ministry-1', name: 'Campus' },

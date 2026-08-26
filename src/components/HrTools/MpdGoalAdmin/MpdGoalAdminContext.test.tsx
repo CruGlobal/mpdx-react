@@ -1,4 +1,5 @@
 import React from 'react';
+import { Operation } from '@apollo/client';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { MpdGoalAdminProvider, useMpdGoalAdmin } from './MpdGoalAdminContext';
@@ -7,11 +8,23 @@ import {
   NewStaffCohortsQuery,
 } from './NewStaffCohorts.generated';
 import { MpdGoalAdminTabEnum } from './mpdGoalAdminHelpers';
-import { attendeesMock, cohortsMock, trainingCosts } from './mpdGoalAdminMocks';
+import {
+  attendees,
+  attendeesMock,
+  cohortsMock,
+  trainingCosts,
+} from './mpdGoalAdminMocks';
 
 const mutationSpy = jest.fn();
 
-const makeWrapper = (): React.FC<{ children: React.ReactNode }> =>
+const makeWrapper = (
+  mocks: {
+    cohorts?: NewStaffCohortsQuery;
+    attendees?:
+      | NewStaffCohortAttendeesQuery
+      | ((operation: Operation) => NewStaffCohortAttendeesQuery);
+  } = {},
+): React.FC<{ children: React.ReactNode }> =>
   function Wrapper({ children }) {
     return (
       <GqlMockedProvider<{
@@ -19,8 +32,9 @@ const makeWrapper = (): React.FC<{ children: React.ReactNode }> =>
         NewStaffCohortAttendees: NewStaffCohortAttendeesQuery;
       }>
         mocks={{
-          NewStaffCohorts: cohortsMock,
-          NewStaffCohortAttendees: attendeesMock(),
+          NewStaffCohorts: mocks.cohorts ?? cohortsMock,
+          NewStaffCohortAttendees: (mocks.attendees ??
+            attendeesMock()) as unknown as NewStaffCohortAttendeesQuery,
         }}
         onCall={mutationSpy}
       >
@@ -107,6 +121,51 @@ describe('MpdGoalAdminContext', () => {
     expect(result.current.selectedRows.map((row) => row.id)).toEqual(['row-1']);
     // ...but the id is kept, so it returns if that row comes back.
     expect(result.current.selectedRowIds.has('not-in-this-cohort')).toBe(true);
+  });
+
+  it('finishes loading with an empty state when there are no cohorts', async () => {
+    const { result } = renderHook(() => useMpdGoalAdmin(), {
+      wrapper: makeWrapper({
+        cohorts: {
+          newStaffCohorts: {
+            nodes: [],
+            pageInfo: { endCursor: null, hasNextPage: false },
+          },
+        },
+      }),
+    });
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.cohorts).toHaveLength(0);
+    expect(result.current.selectedCohort).toBeUndefined();
+    expect(result.current.filteredRows).toHaveLength(0);
+  });
+
+  it('drains every attendees page before reporting loaded', async () => {
+    const [firstAttendee, ...restAttendees] = attendees;
+    const pageOne: NewStaffCohortAttendeesQuery = {
+      newStaffCohort: {
+        id: 'fall-nso-2026',
+        attendees: {
+          nodes: [firstAttendee],
+          pageInfo: { endCursor: 'page-2', hasNextPage: true },
+        },
+      },
+    };
+    const pageTwo = attendeesMock(restAttendees);
+    const { result } = renderHook(() => useMpdGoalAdmin(), {
+      wrapper: makeWrapper({
+        attendees: (operation) =>
+          operation.variables.after === 'page-2' ? pageTwo : pageOne,
+      }),
+    });
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.filteredRows.map((row) => row.id)).toEqual([
+      'row-1',
+      'row-2',
+      'row-3',
+    ]);
   });
 
   it('sends the debounced search term to the attendees query', async () => {
