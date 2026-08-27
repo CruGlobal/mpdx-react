@@ -53,12 +53,10 @@ export const CohortBar: React.FC = () => {
     try {
       await saveTrainingCosts(selectedCohort.id, costs);
     } catch {
-      // The global Apollo error link already toasts the failure; keep the modal
-      // open with the entered costs intact so the save can be retried.
+      // The global Apollo error link already toasts; keep the modal open to retry.
       return;
     }
-    // MPDX-9913 explicitly specifies this success toast; keep it despite the
-    // repo's no-success-snackbar preference.
+    // MPDX-9913 specifies this toast; nothing on screen otherwise confirms the save.
     enqueueSnackbar(t('Per-Training Cost applied successfully.'), {
       variant: 'success',
     });
@@ -79,8 +77,7 @@ export const CohortBar: React.FC = () => {
         value={selectedCohortId}
         onChange={(event) => setSelectedCohortId(event.target.value)}
         sx={{ minWidth: 220 }}
-        // An empty value with no matching MenuItem would make MUI warn and
-        // render a blank box until the cohorts query resolves.
+        // An empty value with no matching MenuItem makes MUI warn.
         disabled={!cohorts.length}
       >
         {cohorts.map((cohort) => (

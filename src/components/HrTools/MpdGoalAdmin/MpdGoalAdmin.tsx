@@ -93,8 +93,7 @@ export const MpdGoalAdmin: React.FC<MpdGoalAdminProps> = ({
                 <CircularProgress aria-label={t('Loading MPD goals')} />
               </Box>
             ) : (
-              // Search refetches keep the previous rows visible under an
-              // inline progress bar instead of swapping the table for a spinner.
+              // Search refetches keep previous rows visible instead of a spinner.
               <Box aria-live="polite" aria-busy={loading}>
                 {loading && (
                   <LinearProgress

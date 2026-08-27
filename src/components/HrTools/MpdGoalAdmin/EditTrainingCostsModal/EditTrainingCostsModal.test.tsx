@@ -29,13 +29,7 @@ const filledCosts: TrainingCosts = {
   cruConferenceFamily: 1300,
 };
 
-/**
- * Every cost field grouped by its section, tied to its value in `filledCosts`
- * by field identity rather than DOM position. Labels like "Couple"/"Single"/
- * "Family" repeat across sections, so fields are located by looking them up
- * within their section heading's container instead of by a flat positional
- * index — reordering a field can no longer silently remap it to a wrong value.
- */
+/** Fields keyed by (section, label) since labels repeat across sections. */
 const fieldsBySection: {
   title: string;
   fields: { label: string; value: number }[];
@@ -86,10 +80,7 @@ const fieldsBySection: {
   },
 ];
 
-/**
- * Resolves a cost input by its (section, label) identity. Scopes the label
- * lookup to the section's container so repeated labels stay unambiguous.
- */
+/** Scopes the label lookup to its section so repeated labels stay unambiguous. */
 const inputForField = (
   getByRole: ReturnType<typeof render>['getByRole'],
   sectionTitle: string,
@@ -125,9 +116,7 @@ describe('EditTrainingCostsModal', () => {
         'Please enter the cost details that apply to this training. All fields are required.',
       ),
     ).toBeInTheDocument();
-    // Assert the section headings as an ordered list: NSO and IBS being distinct
-    // sections in this order is the point of the layout, so order is asserted
-    // rather than mere presence.
+    // NSO and IBS being distinct and in this order is the point of the layout.
     expect(
       getAllByRole('heading', { level: 3 }).map(
         (heading) => heading.textContent,
@@ -151,9 +140,7 @@ describe('EditTrainingCostsModal', () => {
 
   it('prefills the inputs from initialCosts', () => {
     const { getByRole } = render(<TestComponent initialCosts={filledCosts} />);
-    // Assert each field by its (section, label) identity so a mismatched
-    // prefill mapping surfaces on the specific field rather than passing by
-    // positional coincidence.
+    // By (section, label) identity, so a bad mapping can't pass positionally.
     fieldsBySection.forEach(({ title, fields }) => {
       fields.forEach(({ label, value }) => {
         expect(inputForField(getByRole, title, label)).toHaveValue(value);
@@ -204,9 +191,7 @@ describe('EditTrainingCostsModal', () => {
 
   it('saves parsed numeric costs when applied', async () => {
     const { getByRole } = render(<TestComponent />);
-    // Fill each field by its (section, label) identity rather than a flat
-    // positional index, so `onSave` receiving `filledCosts` genuinely proves
-    // each labelled input maps to its intended cost key.
+    // By identity, so onSave receiving filledCosts proves each label's mapping.
     for (const { title, fields } of fieldsBySection) {
       for (const { label, value } of fields) {
         await userEvent.type(
@@ -221,8 +206,7 @@ describe('EditTrainingCostsModal', () => {
     await userEvent.click(apply);
 
     await waitFor(() => expect(onSave).toHaveBeenCalledWith(filledCosts));
-    // Typing into all thirteen fields exceeds the default 5s timeout when the
-    // full suite runs in parallel, so give this test extra headroom.
+    // Typing all thirteen fields exceeds the default 5s timeout under load.
   }, 20000);
 
   it('closes via the Cancel button', async () => {

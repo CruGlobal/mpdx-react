@@ -58,8 +58,7 @@ describe('MpdGoalAdmin', () => {
   });
 
   it('surfaces a query failure instead of an empty table', async () => {
-    // These queries are restricted to the MPD Goals team, so an unauthorized
-    // user must see why the table is empty rather than "No goals found".
+    // MPD-Goals-team-only queries: show why, not "No goals found".
     const { findByRole, getByRole, queryByRole } = renderMain({
       NewStaffCohorts: {
         newStaffCohorts: () => {

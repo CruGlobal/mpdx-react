@@ -144,8 +144,7 @@ export const GoalsTableToolbar: React.FC = () => {
         <Button
           // Only one contained CTA at a time while rows are selected.
           variant={hasSelection ? 'outlined' : 'contained'}
-          // Disabled while the table is loading or errored so the modal can't
-          // open claiming "0 out of 0 MPD goals" next to the error alert.
+          // Otherwise the modal can claim "0 out of 0" beside the error alert.
           disabled={loading || !!error}
           onClick={() =>
             openRunAndSend(

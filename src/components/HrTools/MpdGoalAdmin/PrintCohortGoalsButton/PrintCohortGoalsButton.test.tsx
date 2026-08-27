@@ -90,8 +90,7 @@ describe('PrintCohortGoalsButton', () => {
     const button = getByRole('button', { name: 'Print All' });
     expect(button).toBeDisabled();
 
-    // The mutation returns the updated cohort, which normalizes into the cache
-    // and clears the gate — no cohort refetch involved.
+    // The mutation's cohort normalizes into the cache, clearing the gate.
     await act(() => ctx.saveTrainingCosts('spring-nso-2027', trainingCosts));
 
     // findBy* can't wait on an enabled-state change, so waitFor the attribute.

@@ -41,11 +41,7 @@ const renderToolbar = () =>
     </ThemeProvider>,
   );
 
-/**
- * Renders and waits for the attendees query. The fixture is:
- * row-1 John & Jane Doe (Complete, no coach), row-2 Carlos & Michaela Everts
- * (Incomplete, has a coach), row-3 Sam Smith (Complete, has a coach).
- */
+/** Fixture: row-1 Complete/no coach, row-2 Incomplete/coach, row-3 Complete/coach. */
 const renderLoaded = async () => {
   const screen = renderToolbar();
   await waitFor(() => expect(ctx.filteredRows).toHaveLength(3));
@@ -86,8 +82,7 @@ describe('GoalsTableToolbar', () => {
   it('drops rows the query no longer returns from the selected count', async () => {
     const { getByRole, getByText, queryByText } = await renderLoaded();
 
-    // Searching re-queries the server, so a selected row can vanish from the
-    // results. The count must not keep reporting a row the user cannot see.
+    // A selected row can vanish from server results; the count must not lie.
     act(() => ctx.toggleRow('filtered-out-row'));
     expect(queryByText(/selected/)).not.toBeInTheDocument();
     expect(getByRole('button', { name: 'More Actions' })).toBeDisabled();
@@ -175,7 +170,6 @@ describe('GoalsTableToolbar', () => {
     expect(
       await findByText('Coach assigned successfully.'),
     ).toBeInTheDocument();
-    // Both rows now carry the coach, and the selection is cleared.
     const byId = (id: string) => ctx.filteredRows.find((row) => row.id === id);
     expect(byId('row-1')?.coach).toBe('Tom Harris');
     expect(byId('row-2')?.coach).toBe('Tom Harris');

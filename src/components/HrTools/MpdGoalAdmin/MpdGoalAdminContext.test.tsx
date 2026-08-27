@@ -117,9 +117,8 @@ describe('MpdGoalAdminContext', () => {
     act(() => result.current.toggleRow('row-1'));
     act(() => result.current.toggleRow('not-in-this-cohort'));
 
-    // The count can't lie: only rows actually on screen are reported...
+    // Only rows on screen are reported, but the id is kept if it returns.
     expect(result.current.selectedRows.map((row) => row.id)).toEqual(['row-1']);
-    // ...but the id is kept, so it returns if that row comes back.
     expect(result.current.selectedRowIds.has('not-in-this-cohort')).toBe(true);
   });
 

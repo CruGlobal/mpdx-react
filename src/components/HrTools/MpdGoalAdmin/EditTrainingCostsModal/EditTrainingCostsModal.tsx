@@ -26,11 +26,7 @@ import {
 
 type FieldName = TrainingCostFieldName;
 
-/**
- * The cost fields as held by Formik. Empty inputs are `''`; because these
- * are `type="number"` inputs, Formik's `handleChange` coerces entered text to
- * a `number`, so a populated field is a `number`.
- */
+/** Empty inputs are `''`; number inputs coerce a populated field to `number`. */
 type FormValues = Record<FieldName, number | ''>;
 
 interface FieldConfig {
@@ -117,8 +113,7 @@ export const EditTrainingCostsModal: React.FC<EditTrainingCostsModalProps> = ({
           },
         ],
       },
-      // IBS is costed separately from NSO so an attendee who goes to NSO but not
-      // IBS can be priced without the IBS portion.
+      // Separate from NSO so an attendee skipping IBS can still be priced.
       {
         title: t('IBS Cost'),
         fields: [
@@ -214,10 +209,7 @@ export const EditTrainingCostsModal: React.FC<EditTrainingCostsModalProps> = ({
     [initialCosts],
   );
 
-  // Reset the form each time the modal reopens so a cancelled edit does not
-  // linger into the next open (matches the CreateGoalDialog pattern). Reset to
-  // the current cohort's `initialValues` rather than Formik's mount-time ref
-  // (which never updates without `enableReinitialize`) so saved costs prefill.
+  // Reset to the current cohort's values; Formik's mount-time ref never updates.
   useEffect(() => {
     if (open) {
       formikRef.current?.resetForm({ values: initialValues });
@@ -273,11 +265,7 @@ export const EditTrainingCostsModal: React.FC<EditTrainingCostsModalProps> = ({
           handleBlur,
           handleSubmit,
         }) => {
-          // Apply stays disabled until every required field holds a valid
-          // value. Deriving this from the values/errors (rather than Formik's
-          // `isValid` + `validateOnMount`, which the reset-on-open effect below
-          // clears back to valid at mount) keeps the button disabled from the
-          // first render.
+          // Derived from values/errors so Apply is disabled from the first render.
           const canApply =
             TRAINING_COST_FIELDS.every((name) => values[name] !== '') &&
             Object.keys(errors).length === 0;

@@ -52,8 +52,7 @@ const GoalStatusChip: React.FC<{ status: GoalStatusEnum }> = ({ status }) => {
       variant="outlined"
       label={goalStatusLabel(status, t)}
       color={color}
-      // Outlined chips label in palette.main, which is under WCAG AA at this
-      // size; the dark shade keeps the semantic hue at readable contrast.
+      // palette.main is under WCAG AA at this size; dark keeps the hue readable.
       sx={(theme) => ({
         color: theme.palette[color].dark,
         borderColor: theme.palette[color].dark,
@@ -96,17 +95,12 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
     assignCoach([coachRow.id], coach.name);
   };
 
-  // Reset to the first page whenever the filter inputs change, so the user
-  // isn't stranded on a now-out-of-range page. Keyed on the filter identity
-  // (search + cohort) rather than `rows.length`, which misses a filter change
-  // that swaps which rows match without changing how many do.
+  // Keyed on filter identity, not rows.length, which misses same-size changes.
   useEffect(() => {
     setPage(0);
   }, [search, selectedCohortId]);
 
-  // Clamp on render so a shrinking `rows` (refetch, optimistic removal) can't
-  // leave `page` pointing past the end and render a blank table. The reset
-  // effect above still handles the jump-to-page-1 UX on filter changes.
+  // Clamp so a shrinking `rows` can't leave `page` past the end.
   const safePage = Math.min(
     page,
     Math.max(0, Math.ceil(rows.length / rowsPerPage) - 1),

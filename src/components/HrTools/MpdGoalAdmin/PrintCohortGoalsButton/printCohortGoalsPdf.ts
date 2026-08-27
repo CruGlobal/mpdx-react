@@ -7,11 +7,7 @@ const escapePdfText = (text: string): string =>
 // Text runs off the 792pt page past ~line 40, so start a new page before that.
 const maxLinesPerPage = 38;
 
-/**
- * Builds a minimal PDF listing one line of text per entry, paginating every
- * 38 lines. Placeholder for the mock tool only: the real worksheet is rendered
- * server-side (MPDX-9690) and this builder goes away with MPDX-9691.
- */
+/** Placeholder builder; the real worksheet is server-side (MPDX-9690). */
 export const buildPlaceholderPdf = (lines: string[]): string => {
   const pages: string[][] = [];
   for (let start = 0; start < lines.length; start += maxLinesPerPage) {
@@ -65,20 +61,7 @@ export const buildPlaceholderPdf = (lines: string[]): string => {
 const formatUsd = (amount: number): string =>
   currencyFormat(amount, 'USD', 'en-US');
 
-/**
- * Generates the cohort's printable PDF and resolves with a download URL.
- *
- * `rows` are the attendees to list. Attendees are a separate, server-filtered
- * query now, so the caller can only hand over the rows currently matching the
- * search — meaning this placeholder prints the visible rows rather than the
- * whole cohort while a search is active.
- *
- * TODO(MPDX-9691): replace with the printCohortGoals mutation, which needs only
- * `cohortId` (this prints the whole cohort, restoring the ignores-search
- * behavior). The URL it returns must be same-origin or a blob URL —
- * `anchor.download` is ignored cross-origin, so a signed S3 URL means
- * mutate → fetch → createObjectURL, as `exportRest.tsx` does.
- */
+/** TODO(MPDX-9691): replace with the printCohortGoals mutation, which takes only cohortId. */
 export const generateCohortGoalsPdf = async (
   cohort: Cohort,
   rows: StaffGoalRow[],
@@ -95,9 +78,7 @@ export const generateCohortGoalsPdf = async (
   return URL.createObjectURL(new Blob([pdf], { type: 'application/pdf' }));
 };
 
-/**
- * Downloads `url` via a temporary anchor, as the contacts CSV export does.
- */
+/** Downloads `url` via a temporary anchor, as the contacts CSV export does. */
 export const downloadPdf = (url: string, filename: string): void => {
   const anchor = document.createElement('a');
   anchor.href = url;

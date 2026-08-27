@@ -16,10 +16,7 @@ export enum MpdGoalAdminTabEnum {
   ScenarioGoals = 'scenario-goals',
 }
 
-/**
- * The admin table's goal status, straight from the API. Re-exported under the
- * shorter name the table and run-and-send flow already use.
- */
+/** The API's goal status, re-exported under the shorter name this feature uses. */
 export { NewStaffCohortAttendeeGoalStatusEnum as GoalStatusEnum };
 
 type CohortNode = NewStaffCohortsQuery['newStaffCohorts']['nodes'][number];
@@ -41,17 +38,7 @@ export interface StaffGoalRow {
   coordinator: string;
 }
 
-/**
- * Per-training cost figures captured in the "Edit Training Costs" modal. Every
- * value is a USD amount; the keys mirror the modal's five cost sections. All
- * fields are required in the UI, so a saved `TrainingCosts` is fully populated.
- *
- * There is one key per column in `NewStaffCohort::COST_FIELDS` in mpdx_api. The
- * API names each column with a `Cost` suffix (`nsoCouple` here is `nsoCoupleCost`
- * there), which `costFieldName` below is the single source of truth for. NSO and
- * IBS are separate so an attendee going to NSO but not IBS can be costed
- * (MPDX-9811; Figma node 789-32532).
- */
+/** USD costs from the modal; one key per `NewStaffCohort::COST_FIELDS` column. */
 export interface TrainingCosts {
   /** NSO Cost */
   nsoIndividual1InRoom: number;
@@ -75,11 +62,7 @@ export interface TrainingCosts {
 
 export type TrainingCostFieldName = keyof TrainingCosts;
 
-/**
- * Every cost field, in the order the modal lays them out. Drives the form, the
- * validation schema, and both directions of the API mapping, so a new cost
- * column is added here once.
- */
+/** Drives the form, its validation, and both directions of the API mapping. */
 export const TRAINING_COST_FIELDS: TrainingCostFieldName[] = [
   'nsoIndividual1InRoom',
   'nsoIndividual2InRoom',
@@ -96,10 +79,7 @@ export const TRAINING_COST_FIELDS: TrainingCostFieldName[] = [
   'cruConferenceFamily',
 ];
 
-/**
- * The API's name for a cost field. Typed as a template literal so a rename on
- * either side fails to compile rather than silently dropping a cost on save.
- */
+/** Template-literal typed so a rename fails to compile rather than dropping a cost. */
 const costFieldName = <Field extends TrainingCostFieldName>(
   field: Field,
 ): `${Field}Cost` => `${field}Cost`;
@@ -115,14 +95,7 @@ export interface Cohort {
   trainingCosts?: TrainingCosts;
 }
 
-/**
- * Reads the cohort's saved costs back into the modal's shape.
- *
- * The API's cost columns are individually nullable, but the modal treats costs
- * as all-or-nothing. Returning undefined unless every field is populated opens
- * the modal blank rather than part-filled, so a partial cohort can't be saved
- * back with stale gaps.
- */
+/** Undefined unless all 13 are set, so a partial cohort opens blank not part-filled. */
 export const cohortToTrainingCosts = (
   cohort: Pick<CohortNode, `${TrainingCostFieldName}Cost`>,
 ): TrainingCosts | undefined => {
@@ -165,13 +138,11 @@ export const attendeeToRow = (attendee: AttendeeNode): StaffGoalRow => ({
   name: attendee.displayName,
   ministry: attendee.ministry?.name ?? '',
   geography: attendee.geographicLocation ?? '',
-  // The calculation is absent until the questionnaire completes; the row still
-  // renders, with a placeholder in the goal column alongside an Incomplete chip.
+  // Absent until the questionnaire completes; the row still renders.
   mpdGoal: attendee.newStaffGoalCalculation?.monthlyGoal ?? null,
   goalStatus: attendee.goalStatus,
   familyStatus: attendee.familyStatus ?? null,
-  // `|| null`: a coach whose names are both null joins to '', which must still
-  // render the Assign Coach prompt.
+  // Both names null joins to '', which must still render the Assign Coach prompt.
   coach: attendee.coach
     ? [attendee.coach.firstName, attendee.coach.lastName]
         .filter(Boolean)
@@ -210,22 +181,12 @@ export const goalStatusLabel = (
   }
 };
 
-/**
- * Single source of truth for whether a goal row can be sent (made active and
- * dispatched to staff and coach). A row is sendable only when its goal is
- * complete — an already-sent goal is deliberately excluded. Both the table
- * status chip and the run-and-send modal derive sendability from this
- * predicate so the invariant lives in exactly one place.
- */
+/** Sendable means Complete only; an already-sent goal is deliberately excluded. */
 export const isSendable = (row: {
   goalStatus: NewStaffCohortAttendeeGoalStatusEnum;
 }): boolean => row.goalStatus === NewStaffCohortAttendeeGoalStatusEnum.Complete;
 
-/**
- * Splits rows into those that can be sent and those that cannot, preserving
- * order within each group. The unsendable rows are split further — already-sent
- * goals are done, not incomplete, so the modal must describe them differently.
- */
+/** Already-sent goals are split from incomplete ones so the modal can differ. */
 export const partitionSendable = <
   T extends { goalStatus: NewStaffCohortAttendeeGoalStatusEnum },
 >(

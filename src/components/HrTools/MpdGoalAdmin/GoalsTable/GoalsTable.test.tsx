@@ -89,8 +89,7 @@ describe('GoalsTable', () => {
 
   it('opens the Assign Coach modal for the selected staff member', async () => {
     const { getByRole, findByText } = renderTable();
-    // 'John & Jane Doe' is the only attendee without a coach, so it renders an
-    // "Assign Coach" prompt rather than a coach name.
+    // 'John & Jane Doe' is the only attendee without a coach.
     userEvent.click(getByRole('button', { name: 'Assign Coach' }));
 
     expect(
@@ -110,7 +109,6 @@ describe('GoalsTable', () => {
     userEvent.click(await findByRole('option', { name: 'Tom Harris' }));
     userEvent.click(getByRole('button', { name: 'Save' }));
 
-    // Formik's submit resolves asynchronously.
     await waitFor(() =>
       expect(ctx.filteredRows.find((row) => row.id === 'row-1')?.coach).toBe(
         'Tom Harris',
@@ -138,8 +136,7 @@ describe('GoalsTable', () => {
     const { getAllByRole } = renderTable();
     // index 0 is the header "select all" checkbox
     userEvent.click(getAllByRole('checkbox')[0]);
-    // The header checkbox selects only the rows on the current page, not the
-    // entire filtered set.
+    // The header checkbox covers the current page only, not the filtered set.
     rows.slice(0, DEFAULT_ROWS_PER_PAGE).forEach((row) => {
       expect(ctx.selectedRowIds.has(row.id)).toBe(true);
     });
@@ -153,16 +150,13 @@ describe('GoalsTable', () => {
     const checkboxes = getAllByRole('checkbox');
     const headerCheckbox = checkboxes[0] as HTMLInputElement;
 
-    // Nothing selected yet: neither checked nor indeterminate.
     expect(headerCheckbox.checked).toBe(false);
     expect(headerCheckbox).toHaveAttribute('data-indeterminate', 'false');
 
-    // Select a single data row.
     userEvent.click(checkboxes[1]);
     expect(headerCheckbox.checked).toBe(false);
     expect(headerCheckbox).toHaveAttribute('data-indeterminate', 'true');
 
-    // Select the rest via the header, which now reads "select all".
     userEvent.click(headerCheckbox);
     expect(headerCheckbox.checked).toBe(true);
     expect(headerCheckbox).toHaveAttribute('data-indeterminate', 'false');
@@ -180,7 +174,6 @@ describe('GoalsTable', () => {
     expect(
       getByText(`Person ${DEFAULT_ROWS_PER_PAGE - 1}`),
     ).toBeInTheDocument();
-    // Rows beyond the first page are not rendered yet.
     expect(
       queryByText(`Person ${DEFAULT_ROWS_PER_PAGE}`),
     ).not.toBeInTheDocument();
@@ -198,16 +191,13 @@ describe('GoalsTable', () => {
         <Capture rows={manyRows} />
       </Providers>,
     );
-    // Verify page 1 is rendered first.
     expect(
       getByText(`Person ${DEFAULT_ROWS_PER_PAGE - 1}`),
     ).toBeInTheDocument();
-    // Advance to the next page via the pagination "next page" button.
     userEvent.click(getByRole('button', { name: /Go to next page/i }));
     expect(getByText(`Person ${DEFAULT_ROWS_PER_PAGE}`)).toBeInTheDocument();
 
-    // Changing the filter shrinks the result set. The table must reset to the
-    // first page rather than stranding the user on a now-out-of-range page.
+    // A shrinking result set must reset to page 1, not strand the user.
     act(() => {
       ctx.setSearch('Person 0');
     });

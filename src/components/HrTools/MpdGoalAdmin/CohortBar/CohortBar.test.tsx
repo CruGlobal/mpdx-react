@@ -53,11 +53,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   </ThemeProvider>
 );
 
-/**
- * Opens the lazily-loaded modal and waits for it to mount. Waits for the cohort
- * first: clicking before the query resolves opens the modal with no cohort, so
- * it renders the generic title and prefills nothing.
- */
+/** Waits for the cohort first; clicking early opens the modal with no cohort. */
 const openModal = async (screen: ReturnType<typeof render>) => {
   await screen.findByText('Fall NSO 2026');
   userEvent.click(screen.getByRole('button', { name: 'View/Edit' }));
@@ -106,8 +102,7 @@ describe('CohortBar', () => {
     expect(
       await findByRole('spinbutton', { name: /Individual \(2 in room\)/ }),
     ).toHaveValue(200);
-    // "Family" appears in both the NSO and Cru Conference sections, so scope
-    // the lookup to the section to keep the two apart.
+    // "Family" appears in two sections, so scope the lookup to one.
     const cruConference = within(
       await findByRole('group', { name: 'Cru Conference' }),
     );
@@ -152,7 +147,6 @@ describe('CohortBar', () => {
         { variant: 'success' },
       ),
     );
-    // A successful save closes the modal.
     await waitFor(() =>
       expect(
         queryByRole('heading', { name: /Training Costs for/ }),
@@ -207,15 +201,13 @@ describe('CohortBar', () => {
     const apply = await findByRole('button', { name: 'Apply' });
     userEvent.click(apply);
 
-    // The failed save has fully settled once the mutation has fired and Formik
-    // has re-enabled Apply (isSubmitting clears only after the catch runs).
+    // Apply re-enables only after the catch runs, so the failure has settled.
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('UpdateNewStaffCohort'),
     );
     await waitFor(() => expect(apply).toBeEnabled());
 
-    // The global Apollo error link owns the failure toast, so this component
-    // must not add a second one — and the entered costs stay on screen.
+    // The global error link owns the failure toast; this must not add a second.
     expect(mockEnqueue).not.toHaveBeenCalled();
     expect(
       getByRole('heading', { name: /Training Costs for/ }),

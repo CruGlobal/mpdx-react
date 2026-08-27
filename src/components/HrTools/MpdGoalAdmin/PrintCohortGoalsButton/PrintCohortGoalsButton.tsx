@@ -5,13 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import { downloadPdf, generateCohortGoalsPdf } from './printCohortGoalsPdf';
 
-/**
- * "Print All" — exports the selected cohort's goals as one printable PDF for
- * NSO hard copies. While a search is active only the matching rows print, so
- * the label switches to "Print Matching" (until MPDX-9691 prints the whole
- * cohort server-side). Gated on training costs because the goal amounts aren't
- * final without them; Run & Send does not enforce that gate yet.
- */
+/** Exports the cohort's goals as one PDF; gated on training costs. */
 export const PrintCohortGoalsButton: React.FC = () => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -30,8 +24,7 @@ export const PrintCohortGoalsButton: React.FC = () => {
       const url = await generateCohortGoalsPdf(selectedCohort, filteredRows);
       downloadPdf(url, `MPD Goals - ${selectedCohort.name}.pdf`);
     } catch {
-      // TODO(MPDX-9691): the global Apollo error link toasts mutation
-      // failures on its own — drop this snackbar then to avoid double-toasting.
+      // TODO(MPDX-9691): drop this snackbar once the mutation error link covers it.
       enqueueSnackbar(t('Unable to export the MPD Goals PDF.'), {
         variant: 'error',
       });

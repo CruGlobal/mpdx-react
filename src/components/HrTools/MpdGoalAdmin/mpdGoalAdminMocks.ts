@@ -9,12 +9,7 @@ import {
 } from './NewStaffCohorts.generated';
 import { TrainingCosts } from './mpdGoalAdminHelpers';
 
-/**
- * Shared `GqlMockedProvider` fixtures for the MPD Goal admin table.
- *
- * `hasNextPage: false` matters everywhere: the provider drains pages with
- * `useFetchAllPages`, and a generated `true` would leave every test loading.
- */
+// Shared fixtures. `hasNextPage: false` everywhere: useFetchAllPages drains pages.
 
 export const trainingCosts: TrainingCosts = {
   nsoIndividual1InRoom: 100,
@@ -120,7 +115,7 @@ const attendee = (
 /** row-1 is deliberately the only attendee without a coach. */
 export const attendees: AttendeeNode[] = [
   attendee('row-1', 'John & Jane Doe'),
-  // No goal calculation yet, so the goal renders as pending with an Incomplete chip.
+  // No goal calculation yet, so the goal renders as pending.
   attendee('row-2', 'Carlos & Michaela Everts', {
     goalStatus: NewStaffCohortAttendeeGoalStatusEnum.Incomplete,
     newStaffGoalCalculation: null,
@@ -136,9 +131,7 @@ export const attendees: AttendeeNode[] = [
 export const attendeesMock = (
   nodes: AttendeeNode[] = attendees,
 ): NewStaffCohortAttendeesQuery => ({
-  // Ergonomock calls function mocks with the resolver args, so echoing the
-  // queried id back keeps the attendees on the cohort the test actually
-  // requested instead of always normalizing onto fall-nso-2026.
+  // Echo the queried id so attendees land on the cohort the test requested.
   newStaffCohort: ((
     _root: unknown,
     args: { id: string },
@@ -151,11 +144,7 @@ export const attendeesMock = (
   })) as unknown as NewStaffCohortAttendeesQuery['newStaffCohort'],
 });
 
-/**
- * The cohort as the API returns it after a successful save. Apollo normalizes
- * this over the cached cohort, which is what clears the "Provide Training Cost"
- * gate without refetching the cohort list.
- */
+/** Normalizes over the cached cohort, clearing the gate without a refetch. */
 export const updatedCohortMock = (
   id: string,
 ): UpdateNewStaffCohortMutation => ({
