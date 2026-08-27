@@ -570,6 +570,7 @@ describe('MultiPageMenu', () => {
                   user: {
                     userType: UserTypeEnum.UsStaff,
                     usStaffGroup: UsStaffGroupEnum.NewStaff,
+                    spouseUsStaffGroup: null,
                     staffAccountId: '12345',
                   },
                 },
@@ -593,13 +594,13 @@ describe('MultiPageMenu', () => {
         </ThemeProvider>,
       );
 
-      expect(await findByText('Additional Salary Request')).toBeInTheDocument();
+      expect(await findByText('Savings Fund Transfer')).toBeInTheDocument();
       expect(queryByText('Salary Calculation Form')).not.toBeInTheDocument();
-      expect(getByText('Savings Fund Transfer')).toBeInTheDocument();
       expect(getByText('New Staff Goal Calculator')).toBeInTheDocument();
       expect(queryByText('MPD Goal Calculator')).not.toBeInTheDocument();
       expect(queryByText('MHA Calculation Tool')).not.toBeInTheDocument();
       expect(getByText('Ministry Partner Reminders')).toBeInTheDocument();
+      expect(queryByText('Additional Salary Request')).not.toBeInTheDocument();
       expect(
         queryByText('Paid with Designation Support Goal Calculator'),
       ).not.toBeInTheDocument();

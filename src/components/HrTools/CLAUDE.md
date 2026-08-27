@@ -55,15 +55,15 @@ variants.** `useIneligibleByGroup.ts` treats `SeniorInternationalStaff` and
 The table below is an orientation aid — verify against each tool's
 `UserTypeAccess` guard, which is authoritative and can lag this list.
 
-| Tool                                   | Eligible group (self unless noted)                          |
-| -------------------------------------- | ----------------------------------------------------------- |
-| AdditionalSalaryRequest                | SeniorStaff / NewStaff / NationalExpat (self **or spouse**) |
-| MinisterHousingAllowance               | SeniorStaff / NationalExpat (self **or spouse**)            |
-| SalaryCalculator                       | SeniorStaff / NationalExpat                                 |
-| GoalCalculator (MPD)                   | SeniorStaff                                                 |
-| NsGoalCalculator + NsoMpdQuestionnaire | NewStaff                                                    |
-| PdsGoalCalculator                      | PaidWithDesignation                                         |
-| StaffSavingFund                        | any staff account (`requireStaffAccount`, no group gate)    |
+| Tool                                   | Eligible group (self unless noted)                       |
+| -------------------------------------- | -------------------------------------------------------- |
+| AdditionalSalaryRequest                | SeniorStaff / NationalExpat (self **or spouse**)         |
+| MinisterHousingAllowance               | SeniorStaff / NationalExpat (self **or spouse**)         |
+| SalaryCalculator                       | SeniorStaff / NationalExpat                              |
+| GoalCalculator (MPD)                   | SeniorStaff                                              |
+| NsGoalCalculator + NsoMpdQuestionnaire | NewStaff                                                 |
+| PdsGoalCalculator                      | PaidWithDesignation                                      |
+| StaffSavingFund                        | any staff account (`requireStaffAccount`, no group gate) |
 
 ⚠️ **MpdSupervisorReport** and **MinistryPartnerReminders** have no
 `UserTypeAccess` page guard — nav visibility + `blockImpersonatingNonDevelopers`
