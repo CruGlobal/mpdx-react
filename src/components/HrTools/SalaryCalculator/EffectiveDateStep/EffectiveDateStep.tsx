@@ -44,6 +44,8 @@ export const EffectiveDateStep: React.FC = () => {
     return !hasNextYearDates;
   }, [dateOptions]);
 
+  const noOptions = dateOptions?.length === 0;
+
   const [showAlert, setShowAlert] = useState(shouldShowBanner);
 
   useEffect(() => {
@@ -94,6 +96,8 @@ export const EffectiveDateStep: React.FC = () => {
           schema={schema}
           label={t('Effective date')}
           required
+          disabled={noOptions}
+          InputLabelProps={noOptions ? { shrink: true } : undefined}
           SelectProps={{
             MenuProps: {
               PaperProps: {
@@ -102,6 +106,10 @@ export const EffectiveDateStep: React.FC = () => {
                 },
               },
             },
+            ...(noOptions && {
+              displayEmpty: true,
+              renderValue: () => t('No dates available'),
+            }),
           }}
         >
           {dateOptions?.map((option) => (

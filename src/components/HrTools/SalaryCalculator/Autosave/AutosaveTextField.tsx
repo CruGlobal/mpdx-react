@@ -8,13 +8,12 @@ import { useSaveField } from './useSaveField';
 export interface AutosaveTextFieldProps
   extends Omit<
     TextFieldProps<'outlined'>,
-    // Don't allow overriding any props managed by useAutoSave
-    keyof ReturnType<typeof useAutoSave> | 'variant'
+    // Only allow overriding error and disabled props managed by useAutoSave
+    | Exclude<keyof ReturnType<typeof useAutoSave>, 'disabled' | 'error'>
+    | 'variant'
   > {
   fieldName: Exclude<keyof SalaryRequestUpdateInput, 'manuallySplitCap'>;
   schema: yup.Schema;
-  /** Additional error flag from the parent; OR'd with the field's own validation error */
-  error?: boolean;
 
   /**
    * Save on every keystroke instead of on blur. Defaults to true for select
@@ -26,7 +25,8 @@ export interface AutosaveTextFieldProps
 export const AutosaveTextField: React.FC<AutosaveTextFieldProps> = ({
   fieldName,
   schema,
-  error: externalError,
+  error,
+  disabled,
   saveOnChange,
   ...props
 }) => {
@@ -39,7 +39,7 @@ export const AutosaveTextField: React.FC<AutosaveTextFieldProps> = ({
     fieldName,
     schema,
     saveOnChange: saveOnChange ?? !!props.select,
-    disabled: !calculation,
+    disabled: !!disabled || !calculation,
   });
 
   return (
@@ -48,7 +48,7 @@ export const AutosaveTextField: React.FC<AutosaveTextFieldProps> = ({
       fullWidth
       {...fieldProps}
       {...props}
-      error={!!externalError || !!fieldProps.error}
+      error={!!error || !!fieldProps.error}
     />
   );
 };
