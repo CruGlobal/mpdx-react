@@ -1,4 +1,5 @@
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { DateTime, Settings } from 'luxon';
 import { SalaryCalculatorTestWrapper } from '../SalaryCalculatorTestWrapper';
 import { EffectiveDateStep } from './EffectiveDateStep';
@@ -39,11 +40,15 @@ describe('EffectiveDateStep', () => {
   });
 
   it('renders the date selection dropdown', async () => {
-    const { findByRole } = render(<TestComponent />);
+    const { findByRole, queryAllByRole } = render(<TestComponent />);
 
-    expect(
-      await findByRole('combobox', { name: 'Effective date' }),
-    ).toBeInTheDocument();
+    const dropdown = await findByRole('combobox', { name: 'Effective date' });
+    userEvent.click(dropdown);
+
+    await waitFor(() =>
+      expect(queryAllByRole('option')).toHaveLength(testDates.length),
+    );
+    expect(dropdown).not.toHaveAttribute('aria-disabled');
   });
 
   it('renders text content', async () => {
@@ -56,19 +61,22 @@ describe('EffectiveDateStep', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders an empty dropdown when no effective dates are available', async () => {
-    const { findByRole } = render(<TestComponent />);
+  it('disables the dropdown and shows a placeholder when no effective dates are available', async () => {
+    const { findByRole } = render(<TestComponent dates={[]} />);
 
-    const dropdown = await findByRole('combobox', {
-      name: 'Effective date',
-    });
-    // The dropdown should be empty since hcm.effectiveDates doesn't exist yet
-    expect(dropdown).toBeInTheDocument();
+    const dropdown = await findByRole('combobox', { name: 'Effective date' });
+    await waitFor(() =>
+      expect(dropdown).toHaveTextContent('No dates available'),
+    );
+    expect(dropdown).toHaveAttribute('aria-disabled', 'true');
   });
 
-  it('shows the effective date banner when no dates for next year payroll exist', async () => {
-    const { findByTestId } = render(<TestComponent />);
+  it('hides the effective date banner until the effective dates load', async () => {
+    const { queryByTestId, findByTestId } = render(
+      <TestComponent dates={[]} />,
+    );
 
+    expect(queryByTestId('effective-date-banner-text')).not.toBeInTheDocument();
     expect(
       await findByTestId('effective-date-banner-text'),
     ).toBeInTheDocument();
@@ -85,15 +93,15 @@ describe('EffectiveDateStep', () => {
     expect(queryByTestId('effective-date-banner-text')).not.toBeInTheDocument();
   });
 
-  it('does not show the effective date banner before November 15th', async () => {
-    const beforeNovember15 = DateTime.fromObject({
+  it('does not show the effective date banner before November 20th', async () => {
+    const beforeNovember20 = DateTime.fromObject({
       year: 2020,
       month: 11,
       day: 10,
     }).toMillis();
 
     // Mock Settings.now to return November 10th for this test
-    Settings.now = () => beforeNovember15;
+    Settings.now = () => beforeNovember20;
 
     const { queryByTestId } = render(<TestComponent />);
 

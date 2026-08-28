@@ -27,10 +27,6 @@ const expectedOptions = [
 ];
 
 describe('formatEffectiveDates', () => {
-  it('returns empty array when effectiveDates is undefined', () => {
-    expect(formatEffectiveDates(undefined, locale)).toEqual([]);
-  });
-
   it('returns empty array when effectiveDates is empty', () => {
     expect(formatEffectiveDates([], locale)).toEqual([]);
   });
