@@ -6,7 +6,7 @@ export const useEffectivePaycheckDate = (): string | null => {
   const dateOptions = useEffectiveDateOptions();
 
   return (
-    dateOptions.find((option) => option.value === calculation?.effectiveDate)
+    dateOptions?.find((option) => option.value === calculation?.effectiveDate)
       ?.shortLabel ?? null
   );
 };

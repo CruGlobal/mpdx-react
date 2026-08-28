@@ -14,29 +14,27 @@ export interface DateOption {
 }
 
 export const formatEffectiveDates = (
-  effectiveDates: PayrollDatesQuery['payrollDates'] | undefined,
+  effectiveDates: PayrollDatesQuery['payrollDates'],
   locale: string,
 ): DateOption[] => {
-  return (
-    effectiveDates?.map(({ startDate, regularProcessDate }) => {
-      const date = DateTime.fromISO(regularProcessDate);
+  return effectiveDates.map(({ startDate, regularProcessDate }) => {
+    const date = DateTime.fromISO(regularProcessDate);
 
-      // The user sees the regularProcessDate, but we store the startDate
-      return {
-        value: startDate,
-        label: dateFormat(date, locale),
-        shortLabel: dateFormatShort(date, locale),
-      };
-    }) ?? []
-  );
+    // The user sees the regularProcessDate, but we store the startDate
+    return {
+      value: startDate,
+      label: dateFormat(date, locale),
+      shortLabel: dateFormatShort(date, locale),
+    };
+  });
 };
 
-export const useEffectiveDateOptions = (): DateOption[] => {
+export const useEffectiveDateOptions = (): DateOption[] | null => {
   const { data } = usePayrollDatesQuery();
   const locale = useLocale();
 
   return useMemo(
-    () => formatEffectiveDates(data?.payrollDates, locale),
+    () => (data ? formatEffectiveDates(data.payrollDates, locale) : null),
     [data, locale],
   );
 };
