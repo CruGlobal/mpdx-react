@@ -95,6 +95,7 @@ export const createCache = () =>
           donations: paginationFieldPolicy,
           financialAccounts: paginationFieldPolicy,
           goalCalculations: paginationFieldPolicy,
+          newStaffScenarioGoals: paginationFieldPolicy,
           people: paginationFieldPolicy,
           tasks: paginationFieldPolicy,
           userNotifications: paginationFieldPolicy,

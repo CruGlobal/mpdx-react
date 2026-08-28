@@ -259,4 +259,34 @@ describe('ScenarioGoals', () => {
     // findBy retries until the confirmation dialog's aria-hidden lifts.
     expect(await findByRole('link', { name: 'John Doe' })).toBeInTheDocument();
   });
+
+  it('drains every page of scenario goals', async () => {
+    const secondPageGoal = {
+      id: 'scenario-3',
+      firstName: 'Page',
+      lastName: 'Two',
+      ministryName: 'Cru Campus',
+      geographicLocation: 'Orlando, FL',
+      createdAt: '2026-08-20T12:00:00Z',
+      calculations: { monthlyGoal: 750 },
+    };
+    const { findByRole } = renderScenarioGoals({
+      NewStaffScenarioGoals: {
+        newStaffScenarioGoals: (_root: unknown, args: { after?: string }) =>
+          args.after
+            ? {
+                nodes: [secondPageGoal],
+                pageInfo: { endCursor: null, hasNextPage: false },
+              }
+            : {
+                ...scenarioGoalsMock.newStaffScenarioGoals,
+                pageInfo: { endCursor: 'cursor-1', hasNextPage: true },
+              },
+      },
+    } as ApolloErgonoMockMap);
+
+    // Rows from both pages merge into one table via the pagination policy.
+    expect(await findByRole('link', { name: 'John Doe' })).toBeInTheDocument();
+    expect(await findByRole('link', { name: 'Page Two' })).toBeInTheDocument();
+  });
 });

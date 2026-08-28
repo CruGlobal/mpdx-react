@@ -23,6 +23,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import { DEFAULT_ROWS_PER_PAGE } from '../mpdGoalAdminHelpers';
@@ -54,9 +55,14 @@ export const ScenarioGoals: React.FC = () => {
   );
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  // TODO(MPDX-9843): server-side search, sort, and paging; until then the
-  // first 100 scenarios cover per-user usage and the table pages client-side.
-  const { data, loading, error } = useNewStaffScenarioGoalsQuery();
+  // TODO(MPDX-9843): server-side search and sort. All pages are drained
+  // client-side (100 per request) and the table pages locally.
+  const { data, error, fetchMore } = useNewStaffScenarioGoalsQuery();
+  const { loading } = useFetchAllPages({
+    fetchMore,
+    error,
+    pageInfo: data?.newStaffScenarioGoals.pageInfo,
+  });
   const [createScenarioGoal, { loading: creating }] =
     useCreateNewStaffScenarioGoalMutation();
   const [deleteScenarioGoal] = useDeleteNewStaffScenarioGoalMutation();
@@ -220,15 +226,6 @@ export const ScenarioGoals: React.FC = () => {
             }}
             labelRowsPerPage={t('Rows per page')}
           />
-          {data?.newStaffScenarioGoals.pageInfo.hasNextPage && (
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              sx={{ display: 'block', px: 2, pb: 1 }}
-            >
-              {t('Showing the first 100 scenario goals.')}
-            </Typography>
-          )}
         </TableContainer>
       )}
 
