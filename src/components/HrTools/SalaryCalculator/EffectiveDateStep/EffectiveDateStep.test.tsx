@@ -71,7 +71,7 @@ describe('EffectiveDateStep', () => {
     expect(dropdown).toHaveAttribute('aria-disabled', 'true');
   });
 
-  it('does not show the effective date banner while the effective dates are loading', async () => {
+  it('hides the effective date banner until the effective dates load', async () => {
     const { queryByTestId, findByTestId } = render(
       <TestComponent dates={[]} />,
     );
