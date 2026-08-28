@@ -9,13 +9,13 @@ import {
 } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { MonthlyPayroll } from 'src/components/HrTools/MpdSupervisorReport/mockData';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
+import { MonthlyPayrollHistory } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { monthYearFormat } from 'src/lib/intlFormat';
 
 interface StaffTabPayrollProps {
-  payrollHistory: MonthlyPayroll[];
+  payrollHistory: MonthlyPayrollHistory[];
 }
 
 export const StaffTabPayroll: React.FC<StaffTabPayrollProps> = ({
@@ -47,7 +47,7 @@ export const StaffTabPayroll: React.FC<StaffTabPayrollProps> = ({
             </TableRow>
           ) : (
             payrollHistory.map((payroll, index) => {
-              const date = DateTime.fromISO(payroll.month);
+              const date = DateTime.fromISO(payroll.month ?? '');
 
               return (
                 <TableRow key={index}>
@@ -57,16 +57,23 @@ export const StaffTabPayroll: React.FC<StaffTabPayrollProps> = ({
                       : ''}
                   </TableCell>
                   <TableCell align="right">
-                    {formatCurrency(payroll.payroll)}
+                    {payroll.payroll === null
+                      ? '—'
+                      : formatCurrency(payroll.payroll)}
                   </TableCell>
                   <TableCell align="right">
-                    {formatCurrency(
-                      (payroll.reimbursement ?? 0) +
-                        (payroll.additionalSalary ?? 0),
-                    )}
+                    {payroll.reimbursement === null &&
+                    payroll.additionalSalary === null
+                      ? '—'
+                      : formatCurrency(
+                          (payroll.reimbursement ?? 0) +
+                            (payroll.additionalSalary ?? 0),
+                        )}
                   </TableCell>
                   <TableCell align="right">
-                    {formatPercentage(payroll.percentMaxPay, 1)}
+                    {payroll.percentMaxPay === null
+                      ? '—'
+                      : formatPercentage(payroll.percentMaxPay, 1)}
                   </TableCell>
                 </TableRow>
               );

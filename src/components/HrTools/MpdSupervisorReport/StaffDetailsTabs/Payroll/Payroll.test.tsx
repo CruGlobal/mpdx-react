@@ -1,10 +1,10 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '__tests__/util/testingLibraryReactMock';
+import { MonthlyPayrollHistory } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { MonthlyPayroll } from '../../mockData';
 import { StaffTabPayroll } from './Payroll';
 
-const mockPayrollHistory: MonthlyPayroll[] = [
+const mockPayrollHistory: MonthlyPayrollHistory[] = [
   {
     month: '2023-01',
     payroll: 3000,
@@ -22,7 +22,7 @@ const mockPayrollHistory: MonthlyPayroll[] = [
 ];
 
 interface TestComponentProps {
-  payrollHistory: MonthlyPayroll[];
+  payrollHistory: MonthlyPayrollHistory[];
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({ payrollHistory }) => {
@@ -61,6 +61,48 @@ describe('StaffTabPayroll', () => {
     expect(getByRole('table')).toHaveTableStructure({
       columnHeaders,
       cells: ['No data available.'],
+    });
+  });
+
+  it('renders a dash for null fields and an empty cell for a missing month', () => {
+    const { getByRole } = render(
+      <TestComponent
+        payrollHistory={[
+          {
+            month: null,
+            payroll: null,
+            additionalSalary: 500,
+            reimbursement: null,
+            percentMaxPay: null,
+          },
+        ]}
+      />,
+    );
+
+    expect(getByRole('table')).toHaveTableStructure({
+      columnHeaders,
+      cells: [['', '—', '$500.00', '—']],
+    });
+  });
+
+  it('renders a dash for reimbursement/additional salary only when both are null', () => {
+    const { getByRole } = render(
+      <TestComponent
+        payrollHistory={[
+          {
+            month: '2023-01',
+            payroll: 3000,
+            additionalSalary: null,
+            reimbursement: null,
+            percentMaxPay: 80,
+          },
+        ]}
+      />,
+    );
+
+    expect(getByRole('table')).toHaveTableStructure({
+      columnHeaders,
+      cells: [['Jan 2023', '$3,000.00', '—', '80.0%']],
     });
   });
 });

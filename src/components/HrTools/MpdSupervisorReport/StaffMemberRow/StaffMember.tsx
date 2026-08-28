@@ -9,25 +9,13 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
+import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { getInitials, healthColor } from '../helpers';
-import { EmployeeData, QuarterHealthEnum } from '../mockData';
-
-const healthLabel = (t: TFunction, health: QuarterHealthEnum): string => {
-  switch (health) {
-    case QuarterHealthEnum.Green:
-      return t('on track');
-    case QuarterHealthEnum.Red:
-      return t('at risk');
-    case QuarterHealthEnum.Yellow:
-    default:
-      return t('needs attention');
-  }
-};
+import { getInitials, healthColor, healthLabel } from '../helpers';
+import { EmployeeData } from '../mockData';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   marginBottom: theme.spacing(1),
@@ -54,7 +42,7 @@ const GridQuarter = styled(Grid)(({ theme }) => ({
 
 const QuarterChip = styled(Chip, {
   shouldForwardProp: (prop) => prop !== 'health',
-})<{ health: QuarterHealthEnum }>(({ health }) => {
+})<{ health: MpdHealthStatusEnum }>(({ health }) => {
   const { bg, color } = healthColor(theme, health);
   return {
     height: 22,
