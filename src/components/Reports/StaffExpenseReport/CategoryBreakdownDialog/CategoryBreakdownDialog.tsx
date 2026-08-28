@@ -16,6 +16,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { DialogSkeleton } from '../../Shared/DialogSkeleton/DialogSkeleton';
 import { Transaction } from '../Helpers/filterTransactions';
+import { usePersonLabels } from '../Helpers/usePersonLabels';
 
 export interface CategoryBreakdownDialogProps {
   isOpen: boolean;
@@ -31,6 +32,9 @@ export const CategoryBreakdownDialog: React.FC<
   const { t } = useTranslation();
   const locale = useLocale();
   const theme = useTheme();
+  const { showPerson, getPersonLabel } = usePersonLabels(transactions, {
+    skip: !isOpen,
+  });
 
   const transactionsSortedByDate = useMemo(
     () =>
@@ -54,6 +58,7 @@ export const CategoryBreakdownDialog: React.FC<
               <TableCell width={150}>{t('Date')}</TableCell>
               <TableCell width={200}>{t('Description')}</TableCell>
               <TableCell width={200}>{t('Category')}</TableCell>
+              {showPerson && <TableCell width={120}>{t('Person')}</TableCell>}
               <TableCell align="right" width={150}>
                 {t('Amount')}
               </TableCell>
@@ -70,6 +75,11 @@ export const CategoryBreakdownDialog: React.FC<
                 </TableCell>
                 <TableCell>{transaction.description}</TableCell>
                 <TableCell>{transaction.displayCategory}</TableCell>
+                {showPerson && (
+                  <TableCell>
+                    {getPersonLabel(transaction.personNumber)}
+                  </TableCell>
+                )}
                 <TableCell align="right">
                   {currencyFormat(Math.abs(transaction.amount), 'USD', locale)}
                 </TableCell>
@@ -84,7 +94,7 @@ export const CategoryBreakdownDialog: React.FC<
             }}
           >
             <TableRow>
-              <TableCell colSpan={3}>
+              <TableCell colSpan={showPerson ? 4 : 3}>
                 <Typography
                   color={theme.palette.text.primary}
                   fontWeight="bold"

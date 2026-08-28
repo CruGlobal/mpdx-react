@@ -18,6 +18,7 @@ export interface Transaction {
   amount: number;
   transactedAt: string;
   description?: string | null;
+  personNumber?: string | null;
   fundType: string;
   category: StaffExpenseCategoryEnum;
   subcategory?: StaffExpensesSubCategoryEnum;
