@@ -207,12 +207,13 @@ const groupTransactions = (
     }
   });
 
+  const belongsToSpouse = (personNumber: string | null) =>
+    personNumber !== null && personNumber !== reader?.personNumber;
+
   // Naming a person is only worth the noise once the report holds someone besides the reader. A
   // single staff member's rows read the same as they always have.
-  const namePeople = Array.from(buckets.values()).some(
-    (bucket) =>
-      bucket.personNumber !== null &&
-      bucket.personNumber !== reader?.personNumber,
+  const namePeople = Array.from(buckets.values()).some((bucket) =>
+    belongsToSpouse(bucket.personNumber),
   );
 
   // A person number HCM does not list belongs to neither spouse, so the household cannot name it.
@@ -220,9 +221,7 @@ const groupTransactions = (
 
   const grouped = Array.from(buckets, ([bucketKey, bucket]) => {
     const [first] = bucket.transactions;
-    const isSpouse =
-      bucket.personNumber !== null &&
-      bucket.personNumber !== reader?.personNumber;
+    const isSpouse = belongsToSpouse(bucket.personNumber);
     const label =
       namePeople && bucket.personNumber !== null
         ? t('{{bucket}} ({{person}})', {
