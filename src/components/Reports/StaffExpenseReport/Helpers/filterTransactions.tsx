@@ -252,6 +252,7 @@ const groupTransactions = (
         // lie. Only a bucket of one subcategory can name it.
         category: bucket.sharedCategory ?? first.category,
         subcategory: bucket.sharedCategory ? undefined : first.subcategory,
+        personNumber: bucket.personNumber,
         groupedTransactions: bucket.transactions,
         bucketKey,
         period: bucket.period,
