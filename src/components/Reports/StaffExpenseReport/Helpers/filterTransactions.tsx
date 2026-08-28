@@ -30,6 +30,14 @@ export interface Transaction {
   category: StaffExpenseCategoryEnum;
   subcategory?: StaffExpensesSubCategoryEnum;
   displayCategory: string;
+  /** Null when SAA has no employee for the transaction's EMPLID. */
+  personNumber?: string | null;
+}
+
+/** A person sharing the account, in HCM's order: the staff member reading the report, then their spouse. */
+export interface HouseholdMember {
+  personNumber: string;
+  name: string;
 }
 
 export interface GroupedTransaction extends Transaction {
@@ -45,6 +53,8 @@ interface Bucket {
   sharedCategory?: StaffExpenseCategoryEnum;
   /** Where the finished row sorts among the rollups leading its section. */
   rollupRank: number;
+  /** Whose row this is, or null where the policy keeps the household together. */
+  personNumber: string | null;
   transactions: Transaction[];
 }
 
@@ -54,6 +64,7 @@ interface FilterTransactionsParams {
   t: TFunction;
   filters?: Filters | null;
   tableType: ReportType;
+  household?: HouseholdMember[];
 }
 
 /** A transaction before it gets a localized label. */
@@ -105,9 +116,27 @@ const withDisplayCategory = (
 const bucketOf = (transaction: Transaction, policy: AggregationPolicy) =>
   policy.bucket ?? transaction.subcategory ?? transaction.category;
 
+/**
+ * Whose row a transaction lands in, or null where the policy keeps the household together. Payroll
+ * SAA could not attribute falls to the staff member reading the report: a couple share one account,
+ * so the alternative is a row belonging to nobody.
+ */
+const personOf = (
+  transaction: Transaction,
+  policy: AggregationPolicy,
+  household: HouseholdMember[],
+): string | null => {
+  const [reader] = household;
+
+  return policy.perPerson && reader
+    ? (transaction.personNumber ?? reader.personNumber)
+    : null;
+};
+
 const buildBucketKey = (
   transaction: Transaction,
   policy: AggregationPolicy,
+  personNumber: string | null,
 ): string => {
   const bucket = bucketOf(transaction, policy);
   const period =
@@ -115,7 +144,9 @@ const buildBucketKey = (
       ? transaction.transactedAt.slice(0, 7)
       : transaction.transactedAt;
 
-  return `${transaction.fundType}|${bucket}|${period}`;
+  return [transaction.fundType, bucket, period, personNumber]
+    .filter((segment) => segment !== null)
+    .join('|');
 };
 
 /** The date a rolled up row is filed under: its shared day, or the 1st for a monthly bucket. */
@@ -133,8 +164,10 @@ const bucketDate = (transactedAt: string, period: AggregationPeriod): string =>
 const groupTransactions = (
   transactions: Transaction[],
   consolidatedCategories: string[] | null,
+  household: HouseholdMember[],
   t: TFunction,
 ): (Transaction | GroupedTransaction)[] => {
+  const [reader] = household;
   const buckets = new Map<string, Bucket>();
   const itemized: Transaction[] = [];
 
@@ -151,7 +184,8 @@ const groupTransactions = (
       return;
     }
 
-    const key = buildBucketKey(transaction, policy);
+    const personNumber = personOf(transaction, policy, household);
+    const key = buildBucketKey(transaction, policy, personNumber);
     const bucket = buckets.get(key);
 
     if (bucket) {
@@ -167,16 +201,43 @@ const groupTransactions = (
         period: policy.period,
         sharedCategory: policy.bucket,
         rollupRank: getRollupRank(bucketOf(transaction, policy)),
+        personNumber,
         transactions: [transaction],
       });
     }
   });
 
+  // Naming a person is only worth the noise once the report holds someone besides the reader. A
+  // single staff member's rows read the same as they always have.
+  const namePeople = Array.from(buckets.values()).some(
+    (bucket) =>
+      bucket.personNumber !== null &&
+      bucket.personNumber !== reader?.personNumber,
+  );
+
+  // A person number HCM does not list belongs to neither spouse, so the household cannot name it.
+  const unknownName = t('Spouse');
+
   const grouped = Array.from(buckets, ([bucketKey, bucket]) => {
     const [first] = bucket.transactions;
+    const isSpouse =
+      bucket.personNumber !== null &&
+      bucket.personNumber !== reader?.personNumber;
+    const label =
+      namePeople && bucket.personNumber !== null
+        ? t('{{bucket}} ({{person}})', {
+            bucket: bucket.label,
+            person:
+              household.find(
+                (member) => member.personNumber === bucket.personNumber,
+              )?.name ?? unknownName,
+          })
+        : bucket.label;
 
     return {
       rank: bucket.rollupRank,
+      // The reader's own row, and any row the household shares, leads their spouse's.
+      personRank: isSpouse ? 1 : 0,
       row: {
         ...first,
         id: `grouped-${bucketKey}`,
@@ -185,8 +246,8 @@ const groupTransactions = (
           0,
         ),
         transactedAt: bucketDate(first.transactedAt, bucket.period),
-        description: bucket.label,
-        displayCategory: bucket.label,
+        description: label,
+        displayCategory: label,
         // Members of a shared bucket differ, so reporting the first one's subcategory would be a
         // lie. Only a bucket of one subcategory can name it.
         category: bucket.sharedCategory ?? first.category,
@@ -200,12 +261,17 @@ const groupTransactions = (
 
   return [
     ...grouped,
-    ...itemized.map((row) => ({ rank: ITEMIZED_ROW_RANK, row })),
+    ...itemized.map((row) => ({
+      rank: ITEMIZED_ROW_RANK,
+      personRank: 0,
+      row,
+    })),
   ]
     .sort(
       (rowA, rowB) =>
         rowA.rank - rowB.rank ||
         rowB.row.transactedAt.localeCompare(rowA.row.transactedAt) ||
+        rowA.personRank - rowB.personRank ||
         rowA.row.displayCategory.localeCompare(rowB.row.displayCategory),
     )
     .map(({ row }) => row);
@@ -218,6 +284,7 @@ export const filterTransactions = ({
   t,
   filters,
   tableType,
+  household,
 }: FilterTransactionsParams): (Transaction | GroupedTransaction)[] => {
   const isInDateRange = createDateRangeFilter(filters, targetTime);
   const belongsInTable = (amount: number) =>
@@ -231,7 +298,12 @@ export const filterTransactions = ({
     )
     .map((transaction) => withDisplayCategory(transaction, t));
 
-  return groupTransactions(transactions, filters?.categories ?? null, t);
+  return groupTransactions(
+    transactions,
+    filters?.categories ?? null,
+    household ?? [],
+    t,
+  );
 };
 
 /**

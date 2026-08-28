@@ -23,6 +23,7 @@ import {
 interface MockTransaction {
   amount: number;
   transactedAt: string;
+  personNumber?: string | null;
 }
 
 interface MockGroup {
@@ -48,10 +49,13 @@ const buildFund = (groups: MockGroup[]): Fund => {
         subCategory,
         breakdownByMonth: [
           {
-            transactions: transactions.map(({ amount, transactedAt }) => ({
-              amount,
-              transactedAt,
-            })),
+            transactions: transactions.map(
+              ({ amount, transactedAt, personNumber = null }) => ({
+                amount,
+                transactedAt,
+                personNumber,
+              }),
+            ),
           },
         ],
       })),
@@ -122,6 +126,9 @@ const marchParams = {
   ...baseParams,
   targetTime: DateTime.fromISO('2025-03-15'),
 };
+
+const reader = { personNumber: '000000111', name: 'Alex' };
+const spouse = { personNumber: '000000222', name: 'Jordan' };
 
 describe('filterTransactions', () => {
   it('filters transactions for the target month by default', () => {
@@ -244,6 +251,150 @@ describe('filterTransactions', () => {
     expect(result.map((row) => row.transactedAt)).toEqual([
       '2025-03-31',
       '2025-03-14',
+    ]);
+  });
+
+  it('splits salary posted on one date between the reader and their spouse', () => {
+    const result = filterTransactions({
+      ...marchParams,
+      household: [reader, spouse],
+      fund: buildFund([
+        {
+          category: StaffExpenseCategoryEnum.Salary,
+          subCategory: StaffExpensesSubCategoryEnum.RegularPay,
+          transactions: [
+            {
+              amount: -2100,
+              transactedAt: '2025-03-14T00:00:00Z',
+              personNumber: spouse.personNumber,
+            },
+            {
+              amount: -2800,
+              transactedAt: '2025-03-14T00:00:00Z',
+              personNumber: reader.personNumber,
+            },
+          ],
+        },
+      ]),
+    });
+
+    expect(result.map((row) => row.displayCategory)).toEqual([
+      'Salary (Alex)',
+      'Salary (Jordan)',
+    ]);
+    expect(result.map((row) => row.amount)).toEqual([-2800, -2100]);
+  });
+
+  it('files salary SAA could not attribute under the reader', () => {
+    const result = filterTransactions({
+      ...marchParams,
+      household: [reader, spouse],
+      fund: buildFund([
+        {
+          category: StaffExpenseCategoryEnum.Salary,
+          subCategory: StaffExpensesSubCategoryEnum.RegularPay,
+          transactions: [
+            {
+              amount: -2800,
+              transactedAt: '2025-03-14T00:00:00Z',
+              personNumber: reader.personNumber,
+            },
+            { amount: -200, transactedAt: '2025-03-14T00:00:00Z' },
+          ],
+        },
+      ]),
+    });
+
+    // Nobody but the reader is in the range, so naming the row would be noise.
+    expect(result).toHaveLength(1);
+    expect(result[0].amount).toBe(-3000);
+    expect(result[0].displayCategory).toBe('Salary');
+  });
+
+  it('keeps a benefits paycheck as one household row', () => {
+    const result = filterTransactions({
+      ...marchParams,
+      household: [reader, spouse],
+      fund: buildFund([
+        {
+          category: StaffExpenseCategoryEnum.Benefits,
+          subCategory: StaffExpensesSubCategoryEnum.HealthWelfare,
+          transactions: [
+            {
+              amount: -300,
+              transactedAt: '2025-03-14T00:00:00Z',
+              personNumber: reader.personNumber,
+            },
+            {
+              amount: -280,
+              transactedAt: '2025-03-14T00:00:00Z',
+              personNumber: spouse.personNumber,
+            },
+          ],
+        },
+      ]),
+    });
+
+    expect(result).toHaveLength(1);
+    expect(result[0].amount).toBe(-580);
+    expect(result[0].displayCategory).toBe('Benefits');
+  });
+
+  it('leaves salary in one row when HCM lists nobody', () => {
+    const result = filterTransactions({
+      ...marchParams,
+      fund: buildFund([
+        {
+          category: StaffExpenseCategoryEnum.Salary,
+          subCategory: StaffExpensesSubCategoryEnum.RegularPay,
+          transactions: [
+            {
+              amount: -2800,
+              transactedAt: '2025-03-14T00:00:00Z',
+              personNumber: reader.personNumber,
+            },
+            {
+              amount: -2100,
+              transactedAt: '2025-03-14T00:00:00Z',
+              personNumber: spouse.personNumber,
+            },
+          ],
+        },
+      ]),
+    });
+
+    expect(result).toHaveLength(1);
+    expect(result[0].amount).toBe(-4900);
+    expect(result[0].displayCategory).toBe('Salary');
+  });
+
+  it('names a person number HCM does not list as the spouse', () => {
+    const result = filterTransactions({
+      ...marchParams,
+      household: [reader],
+      fund: buildFund([
+        {
+          category: StaffExpenseCategoryEnum.Salary,
+          subCategory: StaffExpensesSubCategoryEnum.RegularPay,
+          transactions: [
+            {
+              amount: -2800,
+              transactedAt: '2025-03-14T00:00:00Z',
+              personNumber: reader.personNumber,
+            },
+            {
+              amount: -2100,
+              transactedAt: '2025-03-14T00:00:00Z',
+              personNumber: '000000999',
+            },
+          ],
+        },
+      ]),
+    });
+
+    expect(result.map((row) => row.displayCategory)).toEqual([
+      'Salary (Alex)',
+      'Salary (Spouse)',
     ]);
   });
 
