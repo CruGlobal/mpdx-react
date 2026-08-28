@@ -4,7 +4,8 @@ import userEvent from '@testing-library/user-event';
 import theme from 'src/theme';
 import { MpdGoalAdminProvider, useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import { mockCohorts } from '../mockData';
-import { DEFAULT_ROWS_PER_PAGE, GoalsTable } from './GoalsTable';
+import { DEFAULT_ROWS_PER_PAGE } from '../mpdGoalAdminHelpers';
+import { GoalsTable } from './GoalsTable';
 
 const rows = mockCohorts[0].rows;
 
