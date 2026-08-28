@@ -112,25 +112,43 @@ describe('aggregationPolicy', () => {
     });
   });
 
-  it('collapses salary subcategories into one date bucket', () => {
+  it('collapses salary subcategories into one date bucket per person', () => {
     expect(
       getAggregationPolicy(StaffExpensesSubCategoryEnum.RegularPay),
     ).toEqual({
       period: AggregationPeriod.Day,
       bucket: StaffExpenseCategoryEnum.Salary,
+      perPerson: true,
     });
     expect(
       getAggregationPolicy(StaffExpensesSubCategoryEnum.TaxFederal),
     ).toEqual({
       period: AggregationPeriod.Day,
       bucket: StaffExpenseCategoryEnum.Salary,
+      perPerson: true,
     });
     expect(
       getAggregationPolicy(StaffExpensesSubCategoryEnum.HousingAllowances),
     ).toEqual({
       period: AggregationPeriod.Day,
       bucket: StaffExpenseCategoryEnum.Salary,
+      perPerson: true,
     });
+  });
+
+  it('keeps a household together outside salary, which alone splits per person', () => {
+    // The Sheet provided by the finance team asks for "per paycheck per person" under salary only. Benefits read "subtotal all
+    // benefits by paycheck date", with no person clause.
+    expect(
+      getAggregationPolicy(StaffExpensesSubCategoryEnum.PayrollTaxes).perPerson,
+    ).toBeUndefined();
+    expect(
+      getAggregationPolicy(StaffExpensesSubCategoryEnum.Donation).perPerson,
+    ).toBeUndefined();
+    expect(
+      getAggregationPolicy(StaffExpensesSubCategoryEnum.AdditionalSalary)
+        .perPerson,
+    ).toBeUndefined();
   });
 
   it('itemizes bonuses rather than folding them into the salary bucket', () => {

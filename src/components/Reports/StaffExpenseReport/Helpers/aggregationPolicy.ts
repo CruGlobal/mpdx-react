@@ -11,11 +11,9 @@ import {
 
 /**
  * Salary and benefits collapse by transaction date because payroll posts a pay event on a single
- * date.
- *
- * TODO(MPDX-9954): The sheet says "per paycheck per person", but a staff account is shared by a married couple
- * and both spouses' payroll lands in the same fund, so these rows are household totals. Splitting
- * them needs a payee on the API's transaction type
+ * date. Salary splits further, one row per person, which the sheet asks for only there: benefits
+ * read "subtotal all benefits by paycheck date", so a married couple's benefits stay one household
+ * row.
  */
 export enum AggregationPeriod {
   /**
@@ -36,6 +34,11 @@ export interface AggregationPolicy {
    * row. Omitted means the subcategory is its own bucket.
    */
   bucket?: StaffExpenseCategoryEnum;
+  /**
+   * Whether each person in the household gets their own row, keyed by the person number the
+   * transaction carries (checked against person numbers from HCM).
+   */
+  perPerson?: boolean;
 }
 
 const itemize: AggregationPolicy = { period: AggregationPeriod.None };
@@ -55,6 +58,7 @@ const benefitsByDate: AggregationPolicy = {
 const salaryByDate: AggregationPolicy = {
   period: AggregationPeriod.Day,
   bucket: StaffExpenseCategoryEnum.Salary,
+  perPerson: true,
 };
 
 const subCategoryPolicies: Record<
