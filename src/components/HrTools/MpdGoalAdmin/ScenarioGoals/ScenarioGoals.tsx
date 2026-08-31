@@ -56,8 +56,6 @@ export const ScenarioGoals: React.FC = () => {
   );
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  // TODO(MPDX-9843): server-side search, sort, and paging. Until then every page
-  // is drained client-side and the table pages locally.
   const { data, error, fetchMore } = useNewStaffScenarioGoalsQuery();
   const { loading } = useFetchAllPages({
     fetchMore,
@@ -101,7 +99,6 @@ export const ScenarioGoals: React.FC = () => {
     ? scenarioGoalName(deleteTarget) || t('this scenario goal')
     : '';
 
-  // uniqBy guards against duplicate rows if the offset-based cursors drift.
   const rows = useMemo(
     () => uniqBy(data?.newStaffScenarioGoals.nodes ?? [], 'id'),
     [data?.newStaffScenarioGoals.nodes],
@@ -150,7 +147,6 @@ export const ScenarioGoals: React.FC = () => {
 
       {/* The scenario queries are creator-scoped, so a failure here is a real
           error rather than an empty list. */}
-      {/* Show rows as they drain; the empty state only after the drain finishes. */}
       {error ? (
         <Alert severity="error">{error.message}</Alert>
       ) : rows.length > 0 ? (

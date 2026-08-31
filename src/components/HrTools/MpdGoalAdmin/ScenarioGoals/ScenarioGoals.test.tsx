@@ -287,10 +287,8 @@ describe('ScenarioGoals', () => {
       },
     });
 
-    // Rows from both pages merge into one table via the pagination policy.
-    // Wait for the second page, then confirm the first page survived the merge.
     expect(await findByRole('link', { name: 'Page Two' })).toBeInTheDocument();
     expect(getByRole('link', { name: 'John Doe' })).toBeInTheDocument();
-    expect(getAllByRole('row')).toHaveLength(4); // header + 3 goals
+    expect(getAllByRole('row')).toHaveLength(4);
   });
 });
