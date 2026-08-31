@@ -1,6 +1,7 @@
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { GoalStatusEnum, StaffGoalRow } from '../mpdGoalAdminHelpers';
 import { RunAndSendModal } from './RunAndSendModal';
@@ -12,12 +13,11 @@ const makeRow = (
 ): StaffGoalRow => ({
   id,
   name,
-  email: `${id}@example.com`,
   ministry: 'Campus',
-  geography: 'Geography 01 (1-4)',
+  geography: 'Orlando, FL',
   mpdGoal: 1000,
   goalStatus,
-  familyStatus: 'Single',
+  familyStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
   coach: 'Coach',
   coordinator: 'Coordinator',
 });
@@ -82,6 +82,33 @@ describe('RunAndSendModal', () => {
     });
     expect(queryByText(/cannot be sent/)).not.toBeInTheDocument();
     expect(getByText(/Continue with 2 out of 2 MPD goals/)).toBeInTheDocument();
+  });
+
+  it('describes already-sent goals separately from incomplete ones', () => {
+    const { getByText } = setup({
+      rows: [
+        makeRow('r1', 'Alice Adams', GoalStatusEnum.Complete),
+        makeRow('r2', 'Dana Davis', GoalStatusEnum.Sent),
+        makeRow('r3', 'Carlos & Michaela Everts', GoalStatusEnum.Incomplete),
+      ],
+    });
+
+    // The incomplete warning counts and lists only the incomplete row.
+    const warning = getByText('1 of the 3 MPD goals cannot be sent.').closest(
+      '.MuiAlert-root',
+    ) as HTMLElement;
+    expect(
+      within(warning).getByText('Carlos & Michaela Everts'),
+    ).toBeInTheDocument();
+    expect(within(warning).queryByText('Dana Davis')).not.toBeInTheDocument();
+
+    // The already-sent row gets its own message, not "incomplete information".
+    const sent = getByText(
+      '1 of the 3 MPD goals have already been sent.',
+    ).closest('.MuiAlert-root') as HTMLElement;
+    expect(within(sent).getByText('Dana Davis')).toBeInTheDocument();
+
+    expect(getByText(/Continue with 1 out of 3 MPD goals/)).toBeInTheDocument();
   });
 
   it('disables Continue when nothing can be sent', () => {

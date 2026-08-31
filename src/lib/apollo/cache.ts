@@ -54,6 +54,12 @@ export const createCache = () =>
         },
         merge: true,
       },
+      NewStaffCohort: {
+        fields: {
+          attendees: paginationFieldPolicy,
+        },
+        merge: true,
+      },
       // The scenario list selects only calculations.monthlyGoal while the
       // calculator selects the full worksheet; merge so neither clobbers the other.
       NewStaffGoalCalculationCalculations: { merge: true },
@@ -95,6 +101,7 @@ export const createCache = () =>
           donations: paginationFieldPolicy,
           financialAccounts: paginationFieldPolicy,
           goalCalculations: paginationFieldPolicy,
+          newStaffCohorts: paginationFieldPolicy,
           people: paginationFieldPolicy,
           tasks: paginationFieldPolicy,
           userNotifications: paginationFieldPolicy,

@@ -1,29 +1,52 @@
+import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { MpdGoalAdminProvider, useMpdGoalAdmin } from '../MpdGoalAdminContext';
-import { mockCohorts } from '../mockData';
-import { DEFAULT_ROWS_PER_PAGE } from '../mpdGoalAdminHelpers';
+import {
+  NewStaffCohortAttendeesQuery,
+  NewStaffCohortsQuery,
+} from '../NewStaffCohorts.generated';
+import {
+  DEFAULT_ROWS_PER_PAGE,
+  GoalStatusEnum,
+  StaffGoalRow,
+  attendeeToRow,
+} from '../mpdGoalAdminHelpers';
+import { attendees, attendeesMock, cohortsMock } from '../mpdGoalAdminMocks';
 import { GoalsTable } from './GoalsTable';
 
-const rows = mockCohorts[0].rows;
+const rows: StaffGoalRow[] = attendees.map(attendeeToRow);
 
 let ctx: ReturnType<typeof useMpdGoalAdmin>;
-const Capture: React.FC<{ rows: (typeof mockCohorts)[0]['rows'] }> = ({
-  rows,
-}) => {
+const Capture: React.FC<{ rows: StaffGoalRow[] }> = ({ rows }) => {
   ctx = useMpdGoalAdmin();
   return <GoalsTable rows={rows} />;
 };
 
+const Providers: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <ThemeProvider theme={theme}>
+    <GqlMockedProvider<{
+      NewStaffCohorts: NewStaffCohortsQuery;
+      NewStaffCohortAttendees: NewStaffCohortAttendeesQuery;
+    }>
+      mocks={{
+        NewStaffCohorts: cohortsMock,
+        NewStaffCohortAttendees: attendeesMock(),
+      }}
+    >
+      <MpdGoalAdminProvider>{children}</MpdGoalAdminProvider>
+    </GqlMockedProvider>
+  </ThemeProvider>
+);
+
 const renderTable = (data = rows) =>
   render(
-    <ThemeProvider theme={theme}>
-      <MpdGoalAdminProvider>
-        <Capture rows={data} />
-      </MpdGoalAdminProvider>
-    </ThemeProvider>,
+    <Providers>
+      <Capture rows={data} />
+    </Providers>,
   );
 
 describe('GoalsTable', () => {
@@ -42,6 +65,24 @@ describe('GoalsTable', () => {
     expect(getByText('No goals found')).toBeInTheDocument();
   });
 
+  it('renders a placeholder, not $0.00, for a row with no goal calculation', () => {
+    // row-2 has no goal calculation, so its goal is null.
+    const { getByText, queryByText } = renderTable();
+    expect(getByText('—')).toBeInTheDocument();
+    expect(queryByText('$0.00')).not.toBeInTheDocument();
+  });
+
+  it('renders a Sent chip with the info color for an already-sent goal', () => {
+    const sentRow: StaffGoalRow = {
+      ...rows[0],
+      id: 'sent-row',
+      goalStatus: GoalStatusEnum.Sent,
+    };
+    const { getByText } = renderTable([sentRow]);
+    const chip = getByText('Sent').closest('.MuiChip-root');
+    expect(chip).toHaveClass('MuiChip-colorInfo');
+  });
+
   it('shows an Assign Coach prompt when no coach is set', () => {
     const { getAllByText } = renderTable();
     expect(getAllByText('Assign Coach').length).toBeGreaterThan(0);
@@ -49,32 +90,28 @@ describe('GoalsTable', () => {
 
   it('opens the Assign Coach modal for the selected staff member', async () => {
     const { getByRole, findByText } = renderTable();
-    // 'Carlos & Michaela Everts' has no coach on the first page, so it renders
-    // an "Assign Coach" prompt rather than a coach name.
+    // 'John & Jane Doe' is the only attendee without a coach.
     userEvent.click(getByRole('button', { name: 'Assign Coach' }));
 
     expect(
-      await findByText('Assign Coach for Carlos & Michaela Everts'),
+      await findByText('Assign Coach for John & Jane Doe'),
     ).toBeInTheDocument();
   });
 
   it('assigns a coach to the row from the Assign Coach modal', async () => {
     const { getByRole, findByRole } = renderTable();
-    // 'Carlos & Michaela Everts' (row-2) has no coach on the first page.
+    // 'John & Jane Doe' (row-1) is the only attendee without a coach.
     userEvent.click(getByRole('button', { name: 'Assign Coach' }));
 
     const dialog = await findByRole('dialog');
-    expect(dialog).toHaveTextContent(
-      'Assign Coach for Carlos & Michaela Everts',
-    );
+    expect(dialog).toHaveTextContent('Assign Coach for John & Jane Doe');
 
     userEvent.click(getByRole('combobox', { name: 'Coach' }));
     userEvent.click(await findByRole('option', { name: 'Tom Harris' }));
     userEvent.click(getByRole('button', { name: 'Save' }));
 
-    // Formik's submit resolves asynchronously.
     await waitFor(() =>
-      expect(ctx.cohorts[0].rows.find((row) => row.id === 'row-2')?.coach).toBe(
+      expect(ctx.filteredRows.find((row) => row.id === 'row-1')?.coach).toBe(
         'Tom Harris',
       ),
     );
@@ -100,8 +137,7 @@ describe('GoalsTable', () => {
     const { getAllByRole } = renderTable();
     // index 0 is the header "select all" checkbox
     userEvent.click(getAllByRole('checkbox')[0]);
-    // The header checkbox selects only the rows on the current page, not the
-    // entire filtered set.
+    // The header checkbox covers the current page only, not the filtered set.
     rows.slice(0, DEFAULT_ROWS_PER_PAGE).forEach((row) => {
       expect(ctx.selectedRowIds.has(row.id)).toBe(true);
     });
@@ -115,16 +151,13 @@ describe('GoalsTable', () => {
     const checkboxes = getAllByRole('checkbox');
     const headerCheckbox = checkboxes[0] as HTMLInputElement;
 
-    // Nothing selected yet: neither checked nor indeterminate.
     expect(headerCheckbox.checked).toBe(false);
     expect(headerCheckbox).toHaveAttribute('data-indeterminate', 'false');
 
-    // Select a single data row.
     userEvent.click(checkboxes[1]);
     expect(headerCheckbox.checked).toBe(false);
     expect(headerCheckbox).toHaveAttribute('data-indeterminate', 'true');
 
-    // Select the rest via the header, which now reads "select all".
     userEvent.click(headerCheckbox);
     expect(headerCheckbox.checked).toBe(true);
     expect(headerCheckbox).toHaveAttribute('data-indeterminate', 'false');
@@ -142,7 +175,6 @@ describe('GoalsTable', () => {
     expect(
       getByText(`Person ${DEFAULT_ROWS_PER_PAGE - 1}`),
     ).toBeInTheDocument();
-    // Rows beyond the first page are not rendered yet.
     expect(
       queryByText(`Person ${DEFAULT_ROWS_PER_PAGE}`),
     ).not.toBeInTheDocument();
@@ -156,31 +188,24 @@ describe('GoalsTable', () => {
       name: `Person ${i}`,
     }));
     const { getByText, getByRole, queryByText, rerender } = render(
-      <ThemeProvider theme={theme}>
-        <MpdGoalAdminProvider>
-          <Capture rows={manyRows} />
-        </MpdGoalAdminProvider>
-      </ThemeProvider>,
+      <Providers>
+        <Capture rows={manyRows} />
+      </Providers>,
     );
-    // Verify page 1 is rendered first.
     expect(
       getByText(`Person ${DEFAULT_ROWS_PER_PAGE - 1}`),
     ).toBeInTheDocument();
-    // Advance to the next page via the pagination "next page" button.
     userEvent.click(getByRole('button', { name: /Go to next page/i }));
     expect(getByText(`Person ${DEFAULT_ROWS_PER_PAGE}`)).toBeInTheDocument();
 
-    // Changing the filter shrinks the result set. The table must reset to the
-    // first page rather than stranding the user on a now-out-of-range page.
+    // A shrinking result set must reset to page 1, not strand the user.
     act(() => {
       ctx.setSearch('Person 0');
     });
     rerender(
-      <ThemeProvider theme={theme}>
-        <MpdGoalAdminProvider>
-          <Capture rows={[manyRows[0]]} />
-        </MpdGoalAdminProvider>
-      </ThemeProvider>,
+      <Providers>
+        <Capture rows={[manyRows[0]]} />
+      </Providers>,
     );
     expect(getByText('Person 0')).toBeInTheDocument();
     expect(

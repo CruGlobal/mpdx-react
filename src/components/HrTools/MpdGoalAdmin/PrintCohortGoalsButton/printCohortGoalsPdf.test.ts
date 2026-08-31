@@ -1,4 +1,5 @@
-import { mockCohorts } from '../mockData';
+import { attendeeToRow, cohortNodeToCohort } from '../mpdGoalAdminHelpers';
+import { attendees, cohortsMock } from '../mpdGoalAdminMocks';
 import {
   buildPlaceholderPdf,
   downloadPdf,
@@ -22,10 +23,22 @@ describe('buildPlaceholderPdf', () => {
     expect(pdf).toContain('(John \\(Jack\\) Doe \\\\ Co) Tj');
   });
 
-  it('throws when the lines exceed the single-page capacity', () => {
-    expect(() => buildPlaceholderPdf(Array(45).fill('x'))).toThrow();
+  it('paginates lines that exceed the single-page capacity', () => {
+    const lines = Array.from({ length: 45 }, (_, index) => `Line ${index + 1}`);
+    const pdf = buildPlaceholderPdf(lines);
+    expect(pdf).toContain('/Count 2');
+    expect(pdf).toContain('(Line 1) Tj');
+    // Line 39 starts the second page, back at the top margin.
+    expect(pdf).toContain('BT /F1 12 Tf 72 720 Td (Line 39) Tj ET');
+    expect(pdf).toContain('(Line 45) Tj');
   });
 });
+
+const cohort = cohortNodeToCohort(
+  cohortsMock.newStaffCohorts.nodes[0],
+  'en-US',
+);
+const rows = attendees.map(attendeeToRow);
 
 describe('generateCohortGoalsPdf', () => {
   // jsdom does not implement Blob.text(), so read the blob with a FileReader.
@@ -41,7 +54,7 @@ describe('generateCohortGoalsPdf', () => {
     const createObjectURL = jest.fn().mockReturnValue('blob:cohort-pdf');
     window.URL.createObjectURL = createObjectURL;
 
-    await expect(generateCohortGoalsPdf(mockCohorts[0])).resolves.toBe(
+    await expect(generateCohortGoalsPdf(cohort, rows)).resolves.toBe(
       'blob:cohort-pdf',
     );
     const blob = createObjectURL.mock.calls[0][0] as Blob;
@@ -50,7 +63,9 @@ describe('generateCohortGoalsPdf', () => {
     const pdf = await readBlobText(blob);
     expect(pdf).toContain('(MPD Goals - Fall NSO 2026) Tj');
     expect(pdf).toContain('(John & Jane Doe: $6,430.25) Tj');
-    expect(pdf).toContain('(Carlos & Michaela Everts: $5,280.77) Tj');
+    expect(pdf).toContain('(Sam Smith: $4,200) Tj');
+    // An attendee with no goal calculation still gets a line, marked Pending.
+    expect(pdf).toContain('(Carlos & Michaela Everts: Pending) Tj');
   });
 });
 

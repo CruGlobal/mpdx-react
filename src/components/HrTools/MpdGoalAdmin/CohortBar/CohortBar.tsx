@@ -7,6 +7,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import {
   DynamicEditTrainingCostsModal,
@@ -35,6 +36,7 @@ const Stat: React.FC<StatProps> = ({ label, children }) => (
 
 export const CohortBar: React.FC = () => {
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
   const {
     cohorts,
     selectedCohortId,
@@ -44,10 +46,20 @@ export const CohortBar: React.FC = () => {
   } = useMpdGoalAdmin();
   const [trainingCostsOpen, setTrainingCostsOpen] = useState(false);
 
-  const handleSaveTrainingCosts = (costs: TrainingCosts) => {
-    if (selectedCohort) {
-      saveTrainingCosts(selectedCohort.id, costs);
+  const handleSaveTrainingCosts = async (costs: TrainingCosts) => {
+    if (!selectedCohort) {
+      return;
     }
+    try {
+      await saveTrainingCosts(selectedCohort.id, costs);
+    } catch {
+      // The global Apollo error link already toasts; keep the modal open to retry.
+      return;
+    }
+    // MPDX-9913 specifies this toast; nothing on screen otherwise confirms the save.
+    enqueueSnackbar(t('Per-Training Cost applied successfully.'), {
+      variant: 'success',
+    });
     setTrainingCostsOpen(false);
   };
 
@@ -65,6 +77,8 @@ export const CohortBar: React.FC = () => {
         value={selectedCohortId}
         onChange={(event) => setSelectedCohortId(event.target.value)}
         sx={{ minWidth: 220 }}
+        // An empty value with no matching MenuItem makes MUI warn.
+        disabled={!cohorts.length}
       >
         {cohorts.map((cohort) => (
           <MenuItem key={cohort.id} value={cohort.id}>

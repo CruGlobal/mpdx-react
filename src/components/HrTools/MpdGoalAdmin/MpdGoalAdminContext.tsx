@@ -2,16 +2,31 @@ import React, {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
-import { mockCohorts } from './mockData';
+import { ApolloError } from '@apollo/client';
+import { useDebouncedValue } from 'src/hooks/useDebounce';
+import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
+import { useLocale } from 'src/hooks/useLocale';
+import {
+  useNewStaffCohortAttendeesQuery,
+  useNewStaffCohortsQuery,
+  useUpdateNewStaffCohortMutation,
+} from './NewStaffCohorts.generated';
 import {
   Cohort,
   MpdGoalAdminTabEnum,
   StaffGoalRow,
   TrainingCosts,
+  attendeeToRow,
+  cohortNodeToCohort,
+  trainingCostsToAttributes,
 } from './mpdGoalAdminHelpers';
+
+/** Matches the debounce the contacts search uses, so typing isn't a query per keystroke. */
+const searchDebounceMs = 500;
 
 export interface MpdGoalAdminContextValue {
   activeTab: MpdGoalAdminTabEnum;
@@ -22,20 +37,19 @@ export interface MpdGoalAdminContextValue {
   selectedCohort: Cohort | undefined;
   search: string;
   setSearch: (value: string) => void;
-  /** Rows of the selected cohort that match the current search term. */
+  /** Attendees the query returned; the API does the search matching. */
   filteredRows: StaffGoalRow[];
+  /** True while cohorts or the selected cohort's attendees are still loading. */
+  loading: boolean;
+  error: ApolloError | undefined;
   selectedRowIds: Set<string>;
-  /**
-   * The currently visible (filtered) rows that are selected. Derived from
-   * `filteredRows` so the selection never includes rows hidden by the search
-   * term or belonging to a cohort that is no longer selected.
-   */
+  /** Selected rows that are actually visible, so the count never overstates. */
   selectedRows: StaffGoalRow[];
   toggleRow: (id: string) => void;
   toggleRows: (ids: string[]) => void;
   clearSelection: () => void;
-  /** Saves the training cost figures for a cohort and marks them as entered. */
-  saveTrainingCosts: (cohortId: string, costs: TrainingCosts) => void;
+  /** Saves training costs; resolves once dependent goals have been refetched. */
+  saveTrainingCosts: (cohortId: string, costs: TrainingCosts) => Promise<void>;
   /** Assigns one coach to every row in `rowIds`, across all cohorts. */
   assignCoach: (rowIds: string[], coachName: string) => void;
 }
@@ -47,15 +61,92 @@ const MpdGoalAdminContext = createContext<MpdGoalAdminContextValue | undefined>(
 export const MpdGoalAdminProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const [cohorts, setCohorts] = useState<Cohort[]>(mockCohorts);
+  const locale = useLocale();
   const [activeTab, setActiveTab] = useState<MpdGoalAdminTabEnum>(
     MpdGoalAdminTabEnum.ActiveGoals,
   );
-  const [selectedCohortId, setSelectedCohortId] = useState<string>(
-    cohorts[0]?.id ?? '',
-  );
+  const [selectedCohortId, setSelectedCohortId] = useState<string>('');
   const [search, setSearch] = useState('');
   const [selectedRowIds, setSelectedRowIds] = useState<Set<string>>(new Set());
+  // TODO(MPDX-9914): drop once assignCoach is a real mutation.
+  const [coachOverrides, setCoachOverrides] = useState<Record<string, string>>(
+    {},
+  );
+
+  const debouncedSearch = useDebouncedValue(search, searchDebounceMs);
+
+  const {
+    data: cohortsData,
+    error: cohortsError,
+    fetchMore: fetchMoreCohorts,
+  } = useNewStaffCohortsQuery();
+  const { loading: cohortsLoading } = useFetchAllPages({
+    fetchMore: fetchMoreCohorts,
+    error: cohortsError,
+    pageInfo: cohortsData?.newStaffCohorts.pageInfo,
+  });
+
+  const cohorts = useMemo(
+    () =>
+      cohortsData?.newStaffCohorts.nodes.map((node) =>
+        cohortNodeToCohort(node, locale),
+      ) ?? [],
+    [cohortsData, locale],
+  );
+
+  // Stale ids from another cohort would mislead the count and bulk actions.
+  const selectCohort = useCallback(
+    (id: string) => {
+      if (id !== selectedCohortId) {
+        setSelectedRowIds(new Set());
+      }
+      setSelectedCohortId(id);
+    },
+    [selectedCohortId],
+  );
+
+  // The cohort list arrives after mount, so the initial selection happens here.
+  useEffect(() => {
+    if (cohorts.length && !cohorts.some(({ id }) => id === selectedCohortId)) {
+      selectCohort(cohorts[0].id);
+    }
+  }, [cohorts, selectedCohortId, selectCohort]);
+
+  const {
+    data: attendeesData,
+    previousData: previousAttendeesData,
+    error: attendeesError,
+    fetchMore: fetchMoreAttendees,
+  } = useNewStaffCohortAttendeesQuery({
+    variables: {
+      cohortId: selectedCohortId,
+      search: debouncedSearch.trim() || null,
+    },
+    skip: !selectedCohortId,
+  });
+  const { loading: attendeesLoading } = useFetchAllPages({
+    fetchMore: fetchMoreAttendees,
+    error: attendeesError,
+    pageInfo: attendeesData?.newStaffCohort.attendees.pageInfo,
+  });
+
+  // Keep previous rows through a search refetch, but never another cohort's.
+  const visibleAttendeesData =
+    attendeesData ??
+    (previousAttendeesData?.newStaffCohort.id === selectedCohortId
+      ? previousAttendeesData
+      : undefined);
+
+  const filteredRows = useMemo(() => {
+    const rows =
+      visibleAttendeesData?.newStaffCohort.attendees.nodes.map(attendeeToRow) ??
+      [];
+    return rows.map((row) =>
+      coachOverrides[row.id] ? { ...row, coach: coachOverrides[row.id] } : row,
+    );
+  }, [visibleAttendeesData, coachOverrides]);
+
+  const [updateNewStaffCohort] = useUpdateNewStaffCohortMutation();
 
   const toggleRow = useCallback((id: string) => {
     setSelectedRowIds((prev) => {
@@ -82,64 +173,36 @@ export const MpdGoalAdminProvider: React.FC<{
   const clearSelection = useCallback(() => setSelectedRowIds(new Set()), []);
 
   const saveTrainingCosts = useCallback(
-    (cohortId: string, costs: TrainingCosts) => {
-      setCohorts((prev) =>
-        prev.map((cohort) =>
-          cohort.id === cohortId
-            ? { ...cohort, trainingCosts: costs, trainingCostEntered: true }
-            : cohort,
-        ),
-      );
+    async (cohortId: string, costs: TrainingCosts) => {
+      await updateNewStaffCohort({
+        variables: {
+          input: {
+            id: cohortId,
+            attributes: trainingCostsToAttributes(costs),
+          },
+        },
+        // The cohort normalizes itself; attendee goals need a real refetch.
+        refetchQueries: ['NewStaffCohortAttendees'],
+        awaitRefetchQueries: true,
+      });
     },
-    [],
+    [updateNewStaffCohort],
   );
 
   const assignCoach = useCallback((rowIds: string[], coachName: string) => {
-    const idSet = new Set(rowIds);
-    setCohorts((prev) =>
-      prev.map((cohort) => ({
-        ...cohort,
-        rows: cohort.rows.map((row) =>
-          idSet.has(row.id) ? { ...row, coach: coachName } : row,
-        ),
-      })),
-    );
+    setCoachOverrides((prev) => {
+      const next = { ...prev };
+      rowIds.forEach((id) => (next[id] = coachName));
+      return next;
+    });
   }, []);
-
-  // Switching cohorts clears the selection: selecting staff across different
-  // training cohorts is meaningless, and stale ids would otherwise linger in
-  // the set and mislead the selection count and any bulk action.
-  const selectCohort = useCallback(
-    (id: string) => {
-      if (id !== selectedCohortId) {
-        setSelectedRowIds(new Set());
-      }
-      setSelectedCohortId(id);
-    },
-    [selectedCohortId],
-  );
 
   const selectedCohort = useMemo(
     () => cohorts.find((cohort) => cohort.id === selectedCohortId),
     [cohorts, selectedCohortId],
   );
 
-  const filteredRows = useMemo(() => {
-    const term = search.trim().toLowerCase();
-    const rows = selectedCohort?.rows ?? [];
-    if (!term) {
-      return rows;
-    }
-    return rows.filter(
-      (row) =>
-        row.name.toLowerCase().includes(term) ||
-        row.email.toLowerCase().includes(term),
-    );
-  }, [selectedCohort, search]);
-
-  // Only count/act on rows the user can currently see. A row hidden by the
-  // search term keeps its id in `selectedRowIds` (so clearing the search
-  // restores it) but is excluded here so the count never lies.
+  // A row hidden by search keeps its id but must not count as selected.
   const selectedRows = useMemo(
     () => filteredRows.filter((row) => selectedRowIds.has(row.id)),
     [filteredRows, selectedRowIds],
@@ -156,6 +219,11 @@ export const MpdGoalAdminProvider: React.FC<{
       search,
       setSearch,
       filteredRows,
+      // Skipped without a selection, so zero cohorts must not spin forever.
+      loading:
+        cohortsLoading ||
+        (selectedCohortId ? attendeesLoading : cohorts.length > 0),
+      error: cohortsError ?? attendeesError,
       selectedRowIds,
       selectedRows,
       toggleRow,
@@ -172,6 +240,10 @@ export const MpdGoalAdminProvider: React.FC<{
       selectedCohort,
       search,
       filteredRows,
+      cohortsLoading,
+      attendeesLoading,
+      cohortsError,
+      attendeesError,
       selectedRowIds,
       selectedRows,
       toggleRow,

@@ -18,15 +18,15 @@ import { Formik, FormikProps } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { CurrencyAdornment } from 'src/components/HrTools/Shared/Adornments';
-import { TrainingCosts } from '../mpdGoalAdminHelpers';
+import {
+  TRAINING_COST_FIELDS,
+  TrainingCostFieldName,
+  TrainingCosts,
+} from '../mpdGoalAdminHelpers';
 
-type FieldName = keyof TrainingCosts;
+type FieldName = TrainingCostFieldName;
 
-/**
- * The cost fields as held by Formik. Empty inputs are `''`; because these
- * are `type="number"` inputs, Formik's `handleChange` coerces entered text to
- * a `number`, so a populated field is a `number`.
- */
+/** Empty inputs are `''`; number inputs coerce a populated field to `number`. */
 type FormValues = Record<FieldName, number | ''>;
 
 interface FieldConfig {
@@ -52,24 +52,8 @@ export interface EditTrainingCostsModalProps {
   onSave: (costs: TrainingCosts) => void | Promise<void>;
 }
 
-const FIELD_NAMES: FieldName[] = [
-  'nsoIndividual1InRoom',
-  'nsoIndividual2InRoom',
-  'nsoCouple',
-  'nsoFamily',
-  'ibsSingle',
-  'ibsCouple',
-  'refreshRetreatSingle',
-  'refreshRetreatCouple',
-  'faithAndFinanceSingle',
-  'faithAndFinanceCouple',
-  'cruConferenceSingle',
-  'cruConferenceCouple',
-  'cruConferenceFamily',
-];
-
 const blankValues = (): FormValues =>
-  FIELD_NAMES.reduce((acc, name) => {
+  TRAINING_COST_FIELDS.reduce((acc, name) => {
     acc[name] = '';
     return acc;
   }, {} as FormValues);
@@ -78,14 +62,14 @@ const toFormValues = (costs?: TrainingCosts): FormValues => {
   if (!costs) {
     return blankValues();
   }
-  return FIELD_NAMES.reduce((acc, name) => {
+  return TRAINING_COST_FIELDS.reduce((acc, name) => {
     acc[name] = costs[name];
     return acc;
   }, {} as FormValues);
 };
 
 const toTrainingCosts = (values: FormValues): TrainingCosts =>
-  FIELD_NAMES.reduce((acc, name) => {
+  TRAINING_COST_FIELDS.reduce((acc, name) => {
     acc[name] = Number(values[name]);
     return acc;
   }, {} as TrainingCosts);
@@ -129,8 +113,7 @@ export const EditTrainingCostsModal: React.FC<EditTrainingCostsModalProps> = ({
           },
         ],
       },
-      // IBS is costed separately from NSO so an attendee who goes to NSO but not
-      // IBS can be priced without the IBS portion.
+      // Separate from NSO so an attendee skipping IBS can still be priced.
       {
         title: t('IBS Cost'),
         fields: [
@@ -211,7 +194,7 @@ export const EditTrainingCostsModal: React.FC<EditTrainingCostsModalProps> = ({
       .required(t('Required'));
 
     return yup.object(
-      FIELD_NAMES.reduce(
+      TRAINING_COST_FIELDS.reduce(
         (shape, name) => {
           shape[name] = amount;
           return shape;
@@ -226,10 +209,7 @@ export const EditTrainingCostsModal: React.FC<EditTrainingCostsModalProps> = ({
     [initialCosts],
   );
 
-  // Reset the form each time the modal reopens so a cancelled edit does not
-  // linger into the next open (matches the CreateGoalDialog pattern). Reset to
-  // the current cohort's `initialValues` rather than Formik's mount-time ref
-  // (which never updates without `enableReinitialize`) so saved costs prefill.
+  // Reset to the current cohort's values; Formik's mount-time ref never updates.
   useEffect(() => {
     if (open) {
       formikRef.current?.resetForm({ values: initialValues });
@@ -285,13 +265,9 @@ export const EditTrainingCostsModal: React.FC<EditTrainingCostsModalProps> = ({
           handleBlur,
           handleSubmit,
         }) => {
-          // Apply stays disabled until every required field holds a valid
-          // value. Deriving this from the values/errors (rather than Formik's
-          // `isValid` + `validateOnMount`, which the reset-on-open effect below
-          // clears back to valid at mount) keeps the button disabled from the
-          // first render.
+          // Derived from values/errors so Apply is disabled from the first render.
           const canApply =
-            FIELD_NAMES.every((name) => values[name] !== '') &&
+            TRAINING_COST_FIELDS.every((name) => values[name] !== '') &&
             Object.keys(errors).length === 0;
 
           return (

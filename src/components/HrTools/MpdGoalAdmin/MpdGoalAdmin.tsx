@@ -1,5 +1,13 @@
 import React from 'react';
-import { Box, Tab, Tabs, Typography } from '@mui/material';
+import {
+  Alert,
+  Box,
+  CircularProgress,
+  LinearProgress,
+  Tab,
+  Tabs,
+  Typography,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
@@ -34,7 +42,8 @@ export const MpdGoalAdmin: React.FC<MpdGoalAdminProps> = ({
   onNavListToggle,
 }) => {
   const { t } = useTranslation();
-  const { activeTab, setActiveTab, filteredRows } = useMpdGoalAdmin();
+  const { activeTab, setActiveTab, filteredRows, loading, error } =
+    useMpdGoalAdmin();
 
   return (
     <>
@@ -76,7 +85,25 @@ export const MpdGoalAdmin: React.FC<MpdGoalAdminProps> = ({
             </Typography>
             <CohortBar />
             <GoalsTableToolbar />
-            <GoalsTable rows={filteredRows} />
+            {/* Surface query failures here rather than as an empty table. */}
+            {error ? (
+              <Alert severity="error">{error.message}</Alert>
+            ) : loading && !filteredRows.length ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                <CircularProgress aria-label={t('Loading MPD goals')} />
+              </Box>
+            ) : (
+              // Search refetches keep previous rows visible instead of a spinner.
+              <Box aria-live="polite" aria-busy={loading}>
+                {loading && (
+                  <LinearProgress
+                    sx={{ mb: 1 }}
+                    aria-label={t('Refreshing MPD goals')}
+                  />
+                )}
+                <GoalsTable rows={filteredRows} />
+              </Box>
+            )}
           </>
         ) : (
           <ScenarioGoals />

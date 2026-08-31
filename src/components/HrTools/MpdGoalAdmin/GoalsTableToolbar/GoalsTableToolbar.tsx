@@ -30,6 +30,8 @@ export const GoalsTableToolbar: React.FC = () => {
     selectedRows,
     clearSelection,
     assignCoach,
+    loading,
+    error,
   } = useMpdGoalAdmin();
   const selectedCount = selectedRows.length;
   const hasSelection = selectedCount > 0;
@@ -101,7 +103,8 @@ export const GoalsTableToolbar: React.FC = () => {
             {t('{{count}} selected', { count: selectedCount })}
           </Typography>
         )}
-        {/* Cohort-wide, not a bulk action: ignores selection and search. */}
+        {/* Not a bulk action: ignores selection, but prints only the rows
+            matching the search until MPDX-9691 prints the whole cohort. */}
         <PrintCohortGoalsButton />
         <Button
           variant="outlined"
@@ -141,6 +144,8 @@ export const GoalsTableToolbar: React.FC = () => {
         <Button
           // Only one contained CTA at a time while rows are selected.
           variant={hasSelection ? 'outlined' : 'contained'}
+          // Otherwise the modal can claim "0 out of 0" beside the error alert.
+          disabled={loading || !!error}
           onClick={() =>
             openRunAndSend(
               t('Run and Send All Complete MPD Goals?'),
