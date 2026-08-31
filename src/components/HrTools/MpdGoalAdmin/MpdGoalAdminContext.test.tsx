@@ -56,10 +56,6 @@ const renderLoaded = async () => {
 };
 
 describe('MpdGoalAdminContext', () => {
-  beforeEach(() => {
-    mutationSpy.mockClear();
-  });
-
   it('defaults to the active-goals tab and the first cohort from the query', async () => {
     const { result } = await renderLoaded();
 

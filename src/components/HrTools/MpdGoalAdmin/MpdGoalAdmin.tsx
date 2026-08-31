@@ -84,8 +84,7 @@ export const MpdGoalAdmin: React.FC<MpdGoalAdminProps> = ({
             </Typography>
             <CohortBar />
             <GoalsTableToolbar />
-            {/* These queries are restricted to the MPD Goals team, so a
-                permission failure surfaces here rather than as an empty table. */}
+            {/* Surface query failures here rather than as an empty table. */}
             {error ? (
               <Alert severity="error">{error.message}</Alert>
             ) : loading && !filteredRows.length ? (

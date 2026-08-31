@@ -61,11 +61,6 @@ const openModal = async (screen: ReturnType<typeof render>) => {
 };
 
 describe('CohortBar', () => {
-  beforeEach(() => {
-    mutationSpy.mockClear();
-    mockEnqueue.mockClear();
-  });
-
   it('renders the selected cohort name and summary stats', async () => {
     const { findByText, findByRole } = render(<TestComponent />);
 
