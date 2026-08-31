@@ -63,7 +63,15 @@ const makeClient = (apiToken: string) => {
           }
         });
 
-        if (networkError) {
+        // Requests are aborted when a component unmounts or a query is
+        // superseded (e.g. quick navigation, list virtualization, or a
+        // batched request sharing an in-flight fetch with one that was
+        // cancelled). That's expected SPA behavior, not an API failure, so
+        // don't alarm the user with a raw "The user aborted a request."
+        // snackbar or count it as a real network error.
+        const isAbortError = networkError?.name === 'AbortError';
+
+        if (networkError && !isAbortError) {
           dispatch('mpdx-api-error');
           snackNotifications.error(networkError.message);
           reportNetworkError(networkError, operation);
