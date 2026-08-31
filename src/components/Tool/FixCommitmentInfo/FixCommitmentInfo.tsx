@@ -163,6 +163,7 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
       },
       update: (cache) => {
         cache.evict({ id: `Contact:${modalState.contact.id}` });
+        cache.gc();
       },
       onError() {
         enqueueSnackbar(
