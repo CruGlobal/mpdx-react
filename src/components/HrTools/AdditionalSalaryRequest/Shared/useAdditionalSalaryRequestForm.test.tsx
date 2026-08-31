@@ -84,17 +84,20 @@ const defaultMockContextValue = {
   requestId: 'test-request-id',
   user: gqlMock<HcmQuery>(HcmDocument, {
     mocks: {
-      staffInfo: {
-        id: 'staff-1',
-        firstName: 'John',
-        lastName: 'Doe',
-        preferredName: 'Doe, John',
-        personNumber: '00123456',
-        emailAddress: 'john.doe@example.com',
-      },
-      currentSalary: {
-        grossSalaryAmount: 40000,
-      },
+      hcm: [
+        {
+          staffInfo: {
+            id: 'staff-1',
+            lastName: 'Doe',
+            preferredName: 'Doe, John',
+            personNumber: '00123456',
+            emailAddress: 'john.doe@example.com',
+          },
+          currentSalary: {
+            grossSalaryAmount: 40000,
+          },
+        },
+      ],
     },
   }).hcm[0],
   spouse: undefined,
@@ -499,6 +502,10 @@ describe('useAdditionalSalaryRequestForm', () => {
         },
       );
 
+      await waitFor(() => {
+        expect(mutationSpy).toHaveGraphqlOperation('AdditionalSalaryRequest');
+      });
+
       let errors: Record<string, string> = {};
       await act(async () => {
         errors = await result.current.validateForm();
@@ -507,6 +514,31 @@ describe('useAdditionalSalaryRequestForm', () => {
       expect(errors.additionalInfo).toBe(
         'Additional info is required for requests exceeding your cap.',
       );
+    });
+
+    it('should not require additional info for current year backpay', async () => {
+      const { result } = renderHook(
+        () =>
+          useAdditionalSalaryRequestForm({
+            ...defaultFormValues,
+            phoneNumber: '555-123-4567',
+            currentYearSalaryNotReceived: '120000',
+          }),
+        {
+          wrapper: TestWrapper,
+        },
+      );
+
+      await waitFor(() => {
+        expect(mutationSpy).toHaveGraphqlOperation('AdditionalSalaryRequest');
+      });
+
+      let errors: Record<string, string> = {};
+      await act(async () => {
+        errors = await result.current.validateForm();
+      });
+
+      expect(errors.additionalInfo).toBeUndefined();
     });
 
     it('should not require additional info when exceedsCap is true and user has board cap exception', async () => {
