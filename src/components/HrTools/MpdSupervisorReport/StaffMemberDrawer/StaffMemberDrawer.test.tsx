@@ -185,8 +185,7 @@ describe('StaffMemberDrawer', () => {
         {
           month: '2023-01',
           payroll: 3000,
-          additionalSalary: 500,
-          reimbursement: 200,
+          asrAndReimbursements: 700,
           percentMaxPay: 80,
         },
       ],

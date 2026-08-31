@@ -57,21 +57,19 @@ export const StaffTabPayroll: React.FC<StaffTabPayrollProps> = ({
                       : ''}
                   </TableCell>
                   <TableCell align="right">
-                    {payroll.payroll === null
+                    {payroll.payroll === null || payroll.payroll === undefined
                       ? '—'
                       : formatCurrency(payroll.payroll)}
                   </TableCell>
                   <TableCell align="right">
-                    {payroll.reimbursement === null &&
-                    payroll.additionalSalary === null
+                    {payroll.asrAndReimbursements === null ||
+                    payroll.asrAndReimbursements === undefined
                       ? '—'
-                      : formatCurrency(
-                          (payroll.reimbursement ?? 0) +
-                            (payroll.additionalSalary ?? 0),
-                        )}
+                      : formatCurrency(payroll.asrAndReimbursements)}
                   </TableCell>
                   <TableCell align="right">
-                    {payroll.percentMaxPay === null
+                    {payroll.percentMaxPay === null ||
+                    payroll.percentMaxPay === undefined
                       ? '—'
                       : formatPercentage(payroll.percentMaxPay, 1)}
                   </TableCell>

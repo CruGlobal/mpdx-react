@@ -8,15 +8,13 @@ const mockPayrollHistory: MonthlyPayrollHistory[] = [
   {
     month: '2023-01',
     payroll: 3000,
-    additionalSalary: 500,
-    reimbursement: 200,
+    asrAndReimbursements: 700,
     percentMaxPay: 80,
   },
   {
     month: '2023-02',
     payroll: 3200,
-    additionalSalary: 400,
-    reimbursement: 150,
+    asrAndReimbursements: 550,
     percentMaxPay: 85,
   },
 ];
@@ -41,7 +39,7 @@ const columnHeaders = [
 ];
 
 describe('StaffTabPayroll', () => {
-  it('renders the headers and a row per month, summing reimbursement and additional salary', () => {
+  it('renders the headers and a row per month', () => {
     const { getByRole } = render(
       <TestComponent payrollHistory={mockPayrollHistory} />,
     );
@@ -71,8 +69,7 @@ describe('StaffTabPayroll', () => {
           {
             month: null,
             payroll: null,
-            additionalSalary: 500,
-            reimbursement: null,
+            asrAndReimbursements: 500,
             percentMaxPay: null,
           },
         ]}
@@ -85,15 +82,14 @@ describe('StaffTabPayroll', () => {
     });
   });
 
-  it('renders a dash for reimbursement/additional salary only when both are null', () => {
+  it('renders a dash when asrAndReimbursements is null', () => {
     const { getByRole } = render(
       <TestComponent
         payrollHistory={[
           {
             month: '2023-01',
             payroll: 3000,
-            additionalSalary: null,
-            reimbursement: null,
+            asrAndReimbursements: null,
             percentMaxPay: 80,
           },
         ]}
@@ -103,6 +99,37 @@ describe('StaffTabPayroll', () => {
     expect(getByRole('table')).toHaveTableStructure({
       columnHeaders,
       cells: [['Jan 2023', '$3,000.00', '—', '80.0%']],
+    });
+  });
+
+  it('renders a dash when fields are undefined, not just null', () => {
+    const { getByRole } = render(
+      <TestComponent payrollHistory={[{ month: '2023-01' }]} />,
+    );
+
+    expect(getByRole('table')).toHaveTableStructure({
+      columnHeaders,
+      cells: [['Jan 2023', '—', '—', '—']],
+    });
+  });
+
+  it('renders zero values rather than a dash', () => {
+    const { getByRole } = render(
+      <TestComponent
+        payrollHistory={[
+          {
+            month: '2023-01',
+            payroll: 0,
+            asrAndReimbursements: 0,
+            percentMaxPay: 0,
+          },
+        ]}
+      />,
+    );
+
+    expect(getByRole('table')).toHaveTableStructure({
+      columnHeaders,
+      cells: [['Jan 2023', '$0.00', '$0.00', '0.0%']],
     });
   });
 });
