@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { ElectionType403bEnum } from 'src/graphql/types.generated';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
-import { getTotal } from './Helper/getTotal';
+import { getNonBackpayTotal, getTotal } from './Helper/getTotal';
 
 // Tolerance for considering someone "at cap" — small rounding differences
 // (e.g. $19,998 vs $20,000 cap) are treated as effectively at cap.
@@ -10,6 +10,8 @@ export const AT_CAP_TOLERANCE = 5;
 
 export interface SalaryCalculations {
   total: number;
+  /** `total` minus current-year backpay, which does not count against the cap. */
+  nonBackpayTotal: number;
   calculatedTraditionalDeduction: number;
   calculatedRothDeduction: number;
   totalDeduction: number;
@@ -84,6 +86,7 @@ export const useSalaryCalculations = ({
 
   return useMemo(() => {
     const total = getTotal(values);
+    const nonBackpayTotal = getNonBackpayTotal(values);
     const {
       traditional: calculatedTraditionalDeduction,
       roth: calculatedRothDeduction,
@@ -104,7 +107,7 @@ export const useSalaryCalculations = ({
       requestData?.latestAdditionalSalaryRequest?.calculations
         ?.pendingAsrAmount ?? 0;
     const totalAnnualSalary =
-      grossAnnualSalary + additionalSalaryReceivedThisYear + total;
+      grossAnnualSalary + additionalSalaryReceivedThisYear + nonBackpayTotal;
 
     // Spouse annual salary calculations
     const spouseTotalThisYear = spouse
@@ -160,6 +163,7 @@ export const useSalaryCalculations = ({
 
     return {
       total,
+      nonBackpayTotal,
       calculatedTraditionalDeduction,
       calculatedRothDeduction,
       totalDeduction,

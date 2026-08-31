@@ -329,7 +329,7 @@ describe('StepList', () => {
         <AdditionalSalaryRequestTestWrapper
           initialValues={{
             ...defaultInitialValues,
-            currentYearSalaryNotReceived: '1000',
+            additionalSalaryWithinMax: '1000',
           }}
         >
           <StepList FormComponent={NewForm} />
@@ -366,7 +366,7 @@ describe('StepList', () => {
         <AdditionalSalaryRequestTestWrapper
           initialValues={{
             ...defaultInitialValues,
-            currentYearSalaryNotReceived: '1000',
+            additionalSalaryWithinMax: '1000',
           }}
         >
           <StepList FormComponent={NewForm} />
