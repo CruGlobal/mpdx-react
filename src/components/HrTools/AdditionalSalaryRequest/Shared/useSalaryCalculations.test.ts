@@ -78,7 +78,8 @@ describe('useSalaryCalculations', () => {
     expect(result.current.calculatedRothDeduction).toBe(1000); // 10000 * 0.10
     expect(result.current.totalDeduction).toBe(2200); // 1200 + 1000
     expect(result.current.netSalary).toBe(7800); // 10000 - 2200
-    expect(result.current.totalAnnualSalary).toBe(10000); // No calculations data, so just total
+    expect(result.current.nonBackpayTotal).toBe(5000); // 10000 - 5000 current-year backpay
+    expect(result.current.requestedAnnualSalary).toBe(5000); // No calculations data, so just non-backpaytotal
   });
 
   it('calculates all salary values correctly with default percentage disabled', () => {
@@ -212,10 +213,10 @@ describe('useSalaryCalculations', () => {
     expect(result.current.calculatedRothDeduction).toBe(0);
     expect(result.current.totalDeduction).toBe(0);
     expect(result.current.netSalary).toBe(0);
-    expect(result.current.totalAnnualSalary).toBe(0);
+    expect(result.current.requestedAnnualSalary).toBe(0);
   });
 
-  it('calculates totalAnnualSalary and exceedsCap under cap with calculations data', () => {
+  it('calculates requestedAnnualSalary and exceedsCap under cap with calculations data', () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
       traditional403bPercentage: 0.12,
       roth403bPercentage: 0.1,
@@ -234,7 +235,7 @@ describe('useSalaryCalculations', () => {
 
     const values: CompleteFormValues = {
       ...baseValues,
-      currentYearSalaryNotReceived: '2000',
+      additionalSalaryWithinMax: '2000',
     };
 
     const { result } = renderHook(
@@ -248,10 +249,10 @@ describe('useSalaryCalculations', () => {
     );
 
     expect(result.current.total).toBe(2000);
-    // totalAnnualSalary = grossAnnualSalary + additionalSalaryReceivedThisYear + total
+    // requestedAnnualSalary = grossAnnualSalary + additionalSalaryReceivedThisYear + total
     // = 1000 + 1000 + 2000 = 4000
-    expect(result.current.totalAnnualSalary).toBe(4000);
-    // totalAnnualSalary (4000) <= individualCap (5000)
+    expect(result.current.requestedAnnualSalary).toBe(4000);
+    // requestedAnnualSalary (4000) <= individualCap (5000)
     expect(result.current.exceedsCap).toBe(false);
   });
 
@@ -274,7 +275,7 @@ describe('useSalaryCalculations', () => {
 
     const values: CompleteFormValues = {
       ...baseValues,
-      currentYearSalaryNotReceived: '30000',
+      additionalSalaryWithinMax: '30000',
     };
 
     const { result } = renderHook(
@@ -288,10 +289,39 @@ describe('useSalaryCalculations', () => {
     );
 
     expect(result.current.total).toBe(30000);
-    // totalAnnualSalary = 50000 + 10000 + 30000 = 90000
-    expect(result.current.totalAnnualSalary).toBe(90000);
+    // requestedAnnualSalary = 50000 + 10000 + 30000 = 90000
+    expect(result.current.requestedAnnualSalary).toBe(90000);
     // total (30000) > individualCap (10000)
     expect(result.current.exceedsCap).toBe(true);
+  });
+
+  it('excludes current-year backpay from requestedAnnualSalary but not from total', () => {
+    mockUseAdditionalSalaryRequest.mockReturnValue({
+      traditional403bPercentage: 0.12,
+      roth403bPercentage: 0.1,
+      user: { currentSalary: { grossSalaryAmount: 50000 } },
+      requestData: {
+        latestAdditionalSalaryRequest: {
+          calculations: { currentSalaryCap: 60000, pendingAsrAmount: 0 },
+        },
+      },
+    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+    const values: CompleteFormValues = {
+      ...baseValues,
+      currentYearSalaryNotReceived: '15000',
+      previousYearSalaryNotReceived: '2000',
+      additionalSalaryWithinMax: '3000',
+    };
+
+    const { result } = renderHook(() => useSalaryCalculations({ values }), {
+      wrapper: ({ children }) => FormikWrapper({ children, values }),
+    });
+
+    expect(result.current.total).toBe(20000); // 15000 + 2000 + 3000
+    expect(result.current.nonBackpayTotal).toBe(5000); // 2000 + 3000
+    expect(result.current.requestedAnnualSalary).toBe(55000); // 50000 + 0 + 5000
+    expect(result.current.exceedsCap).toBe(false);
   });
 
   describe('Married - Staff Member under cap', () => {
@@ -321,7 +351,7 @@ describe('useSalaryCalculations', () => {
 
       const values: CompleteFormValues = {
         ...baseValues,
-        currentYearSalaryNotReceived: '5000',
+        additionalSalaryWithinMax: '5000',
       };
 
       const { result } = renderHook(() => useSalaryCalculations({ values }), {
@@ -340,7 +370,7 @@ describe('useSalaryCalculations', () => {
 
       const values: CompleteFormValues = {
         ...baseValues,
-        currentYearSalaryNotReceived: '5000',
+        additionalSalaryWithinMax: '5000',
       };
 
       const { result } = renderHook(() => useSalaryCalculations({ values }), {
@@ -359,7 +389,7 @@ describe('useSalaryCalculations', () => {
 
       const values: CompleteFormValues = {
         ...baseValues,
-        currentYearSalaryNotReceived: '5000',
+        additionalSalaryWithinMax: '5000',
       };
 
       const { result } = renderHook(() => useSalaryCalculations({ values }), {
@@ -378,7 +408,7 @@ describe('useSalaryCalculations', () => {
 
       const values: CompleteFormValues = {
         ...baseValues,
-        currentYearSalaryNotReceived: '5000',
+        additionalSalaryWithinMax: '5000',
       };
 
       const { result } = renderHook(() => useSalaryCalculations({ values }), {
@@ -423,7 +453,7 @@ describe('useSalaryCalculations', () => {
 
       const values: CompleteFormValues = {
         ...baseValues,
-        currentYearSalaryNotReceived: '15000',
+        additionalSalaryWithinMax: '15000',
       };
 
       const { result } = renderHook(() => useSalaryCalculations({ values }), {
@@ -443,7 +473,7 @@ describe('useSalaryCalculations', () => {
 
       const values: CompleteFormValues = {
         ...baseValues,
-        currentYearSalaryNotReceived: '15000',
+        additionalSalaryWithinMax: '15000',
       };
 
       const { result } = renderHook(() => useSalaryCalculations({ values }), {
@@ -466,7 +496,7 @@ describe('useSalaryCalculations', () => {
 
       const values: CompleteFormValues = {
         ...baseValues,
-        currentYearSalaryNotReceived: '15000',
+        additionalSalaryWithinMax: '15000',
       };
 
       const { result } = renderHook(() => useSalaryCalculations({ values }), {
@@ -489,7 +519,7 @@ describe('useSalaryCalculations', () => {
 
       const values: CompleteFormValues = {
         ...baseValues,
-        currentYearSalaryNotReceived: '15000',
+        additionalSalaryWithinMax: '15000',
       };
 
       const { result } = renderHook(() => useSalaryCalculations({ values }), {
@@ -510,7 +540,7 @@ describe('useSalaryCalculations', () => {
 
       const values: CompleteFormValues = {
         ...baseValues,
-        currentYearSalaryNotReceived: '15000',
+        additionalSalaryWithinMax: '15000',
       };
 
       const { result } = renderHook(() => useSalaryCalculations({ values }), {
@@ -531,7 +561,7 @@ describe('useSalaryCalculations', () => {
 
       const values: CompleteFormValues = {
         ...baseValues,
-        currentYearSalaryNotReceived: '15000',
+        additionalSalaryWithinMax: '15000',
       };
 
       const { result } = renderHook(() => useSalaryCalculations({ values }), {
@@ -578,7 +608,7 @@ describe('useSalaryCalculations', () => {
 
       const values: CompleteFormValues = {
         ...baseValues,
-        currentYearSalaryNotReceived: '5000',
+        additionalSalaryWithinMax: '5000',
       };
 
       const { result } = renderHook(() => useSalaryCalculations({ values }), {
@@ -597,7 +627,7 @@ describe('useSalaryCalculations', () => {
 
       const values: CompleteFormValues = {
         ...baseValues,
-        currentYearSalaryNotReceived: '5000',
+        additionalSalaryWithinMax: '5000',
       };
 
       const { result } = renderHook(() => useSalaryCalculations({ values }), {
@@ -619,7 +649,7 @@ describe('useSalaryCalculations', () => {
 
       const values: CompleteFormValues = {
         ...baseValues,
-        currentYearSalaryNotReceived: '5000',
+        additionalSalaryWithinMax: '5000',
       };
 
       const { result } = renderHook(() => useSalaryCalculations({ values }), {
@@ -639,7 +669,7 @@ describe('useSalaryCalculations', () => {
 
       const values: CompleteFormValues = {
         ...baseValues,
-        currentYearSalaryNotReceived: '5000',
+        additionalSalaryWithinMax: '5000',
       };
 
       const { result } = renderHook(() => useSalaryCalculations({ values }), {
@@ -678,7 +708,7 @@ describe('useSalaryCalculations', () => {
 
       const values: CompleteFormValues = {
         ...baseValues,
-        currentYearSalaryNotReceived: '5000',
+        additionalSalaryWithinMax: '5000',
       };
 
       const { result } = renderHook(() => useSalaryCalculations({ values }), {
@@ -697,7 +727,7 @@ describe('useSalaryCalculations', () => {
 
       const values: CompleteFormValues = {
         ...baseValues,
-        currentYearSalaryNotReceived: '5000',
+        additionalSalaryWithinMax: '5000',
       };
 
       const { result } = renderHook(() => useSalaryCalculations({ values }), {
@@ -716,7 +746,7 @@ describe('useSalaryCalculations', () => {
 
       const values: CompleteFormValues = {
         ...baseValues,
-        currentYearSalaryNotReceived: '15000',
+        additionalSalaryWithinMax: '15000',
       };
 
       const { result } = renderHook(() => useSalaryCalculations({ values }), {
@@ -756,7 +786,7 @@ describe('useSalaryCalculations', () => {
       });
 
       expect(result.current.spouseCap).toEqual({
-        totalAnnualSalary: 42000, // 40000 + 2000
+        requestedAnnualSalary: 42000, // 40000 + 2000
         individualCap: 50000,
         remainingCap: 8000, // 50000 - 42000
       });
@@ -786,7 +816,7 @@ describe('useSalaryCalculations', () => {
       });
 
       expect(result.current.spouseCap).toEqual({
-        totalAnnualSalary: 55000,
+        requestedAnnualSalary: 55000,
         individualCap: 50000,
         remainingCap: 0,
       });

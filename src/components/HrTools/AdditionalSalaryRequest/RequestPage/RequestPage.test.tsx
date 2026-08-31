@@ -418,7 +418,7 @@ describe('RequestPage', () => {
 
     const validFormValues: CompleteFormValues = {
       ...defaultCompleteFormValues,
-      currentYearSalaryNotReceived: '1000',
+      additionalSalaryWithinMax: '1000',
       phoneNumber: '123-456-7890',
       emailAddress: 'test@example.com',
       additionalInfo: 'Test additional info for exceeds cap',
@@ -461,7 +461,7 @@ describe('RequestPage', () => {
 
     const validFormValues: CompleteFormValues = {
       ...defaultCompleteFormValues,
-      currentYearSalaryNotReceived: '1000',
+      additionalSalaryWithinMax: '1000',
       phoneNumber: '123-456-7890',
       emailAddress: 'test@example.com',
       additionalInfo: 'Test additional info for exceeds cap',
@@ -521,7 +521,7 @@ describe('RequestPage', () => {
 
     const validFormValues: CompleteFormValues = {
       ...defaultCompleteFormValues,
-      currentYearSalaryNotReceived: '1000',
+      additionalSalaryWithinMax: '1000',
       phoneNumber: '123-456-7890',
       emailAddress: 'test@example.com',
       additionalInfo: 'Test additional info for exceeds cap',

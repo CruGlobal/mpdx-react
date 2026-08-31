@@ -25,7 +25,7 @@ export const SplitCapSubContent: React.FC<SplitCapSubContentProps> = ({
   const showBar = spouseCap !== null && spouseCap.individualCap > 0;
 
   const totalFormatted = showBar
-    ? currencyFormat(spouseCap.totalAnnualSalary, currency, locale, {
+    ? currencyFormat(spouseCap.requestedAnnualSalary, currency, locale, {
         showTrailingZeros: true,
       })
     : '';
@@ -45,7 +45,7 @@ export const SplitCapSubContent: React.FC<SplitCapSubContentProps> = ({
         100,
         Math.max(
           0,
-          (spouseCap.totalAnnualSalary / spouseCap.individualCap) * 100,
+          (spouseCap.requestedAnnualSalary / spouseCap.individualCap) * 100,
         ),
       )
     : 0;
