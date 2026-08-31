@@ -17,7 +17,11 @@ export interface SalaryCalculations {
   totalDeduction: number;
   netSalary: number;
   additionalSalaryReceivedThisYear: number;
-  totalAnnualSalary: number;
+  /**
+   * User's total salary requested this year including their current gross salary, any
+   * outstanding ASRs, and this ASR. This is the amount we compare against their individual cap.
+   **/
+  requestedAnnualSalary: number;
   grossAnnualSalary: number;
   /** `true` when the salary request puts the user over their individual cap */
   exceedsCap: boolean;
@@ -29,8 +33,11 @@ export interface SalaryCalculations {
   additionalApproval: boolean;
   /** Spouse cap figures. `null` when no spouse; otherwise all three fields are present. */
   spouseCap: {
-    /** Spouse's gross annual salary + pending ASR amount. */
-    totalAnnualSalary: number;
+    /**
+     * Spouse's total salary requested this year including their current gross salary and any
+     * outstanding ASRs. This is the amount we compare against their individual cap.
+     **/
+    requestedAnnualSalary: number;
     /** Spouse's individual salary cap. */
     individualCap: number;
     /** Spouse's remaining room under cap (cap - total, clamped at 0). */
@@ -106,33 +113,32 @@ export const useSalaryCalculations = ({
     const additionalSalaryReceivedThisYear =
       requestData?.latestAdditionalSalaryRequest?.calculations
         ?.pendingAsrAmount ?? 0;
-    const totalAnnualSalary =
+    const requestedAnnualSalary =
       grossAnnualSalary + additionalSalaryReceivedThisYear + nonBackpayTotal;
 
     // Spouse annual salary calculations
-    const spouseTotalThisYear = spouse
-      ? requestData?.latestAdditionalSalaryRequest?.spouseCalculations
-          ?.pendingAsrAmount
-      : null;
-    const spouseTotalAnnualSalary =
-      spouseGrossAnnualSalary + (spouseTotalThisYear ?? 0);
+    const spouseTotalThisYear =
+      requestData?.latestAdditionalSalaryRequest?.spouseCalculations
+        ?.pendingAsrAmount ?? 0;
+    const spouseRequestedAnnualSalary =
+      spouseGrossAnnualSalary + spouseTotalThisYear;
 
     // Exceeding cap calculations
     const isMarried = !!spouse;
-    const exceedsCap = totalAnnualSalary > individualCap;
+    const exceedsCap = requestedAnnualSalary > individualCap;
     const spouseExceedsCap =
       isMarried &&
       spouseIndividualCap !== null &&
-      spouseTotalAnnualSalary > spouseIndividualCap;
+      spouseRequestedAnnualSalary > spouseIndividualCap;
     // Within $5 of cap but not over — treat as "at cap"
     // e.g. an ASR of $19,998 with a cap of $20,000 is considered at cap
     const spouseAtCap =
       isMarried &&
       spouseIndividualCap !== null &&
       !spouseExceedsCap &&
-      spouseTotalAnnualSalary >= spouseIndividualCap - AT_CAP_TOLERANCE;
+      spouseRequestedAnnualSalary >= spouseIndividualCap - AT_CAP_TOLERANCE;
     const userAtCap =
-      !exceedsCap && totalAnnualSalary >= individualCap - AT_CAP_TOLERANCE;
+      !exceedsCap && requestedAnnualSalary >= individualCap - AT_CAP_TOLERANCE;
 
     const userSplitAsr =
       exceedsCap && isMarried && !spouseAtCap && !spouseExceedsCap;
@@ -152,11 +158,11 @@ export const useSalaryCalculations = ({
     const hasSpouseCap = isMarried && spouseIndividualCap !== null;
     const spouseCap = hasSpouseCap
       ? {
-          totalAnnualSalary: spouseTotalAnnualSalary,
+          requestedAnnualSalary: spouseRequestedAnnualSalary,
           individualCap: spouseIndividualCap,
           remainingCap: Math.max(
             0,
-            spouseIndividualCap - spouseTotalAnnualSalary,
+            spouseIndividualCap - spouseRequestedAnnualSalary,
           ),
         }
       : null;
@@ -170,7 +176,7 @@ export const useSalaryCalculations = ({
       netSalary,
       grossAnnualSalary,
       additionalSalaryReceivedThisYear,
-      totalAnnualSalary,
+      requestedAnnualSalary,
       exceedsCap,
       splitAsr,
       splitAsrType,

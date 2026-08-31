@@ -38,7 +38,7 @@ export const TotalSalaryTable: React.FC = () => {
 
   const {
     nonBackpayTotal,
-    totalAnnualSalary,
+    requestedAnnualSalary,
     additionalSalaryReceivedThisYear,
     grossAnnualSalary,
   } = useSalaryCalculations({
@@ -121,7 +121,7 @@ export const TotalSalaryTable: React.FC = () => {
             </Typography>
           </TableCell>
           <TableCell sx={{ color: 'warning.dark', fontWeight: 'bold' }}>
-            {currencyFormat(totalAnnualSalary, currency, locale, {
+            {currencyFormat(requestedAnnualSalary, currency, locale, {
               showTrailingZeros: true,
             })}
           </TableCell>

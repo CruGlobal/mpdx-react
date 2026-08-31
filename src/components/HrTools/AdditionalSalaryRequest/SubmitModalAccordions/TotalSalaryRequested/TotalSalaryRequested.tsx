@@ -33,11 +33,11 @@ export const TotalSalaryRequested: React.FC<TotalAnnualSalaryProps> = ({
 
   const individualCap = calculations?.currentSalaryCap ?? 0;
 
-  const { totalAnnualSalary } = useSalaryCalculations({
+  const { requestedAnnualSalary } = useSalaryCalculations({
     values,
   });
 
-  const remainingInMaxAllowable = individualCap - totalAnnualSalary;
+  const remainingInMaxAllowable = individualCap - requestedAnnualSalary;
 
   return (
     <ModalAccordion
@@ -56,7 +56,7 @@ export const TotalSalaryRequested: React.FC<TotalAnnualSalaryProps> = ({
             </Typography>
           </Box>
           <Typography>
-            {currencyFormat(Number(totalAnnualSalary), currency, locale, {
+            {currencyFormat(Number(requestedAnnualSalary), currency, locale, {
               showTrailingZeros: true,
             })}
             /
