@@ -343,8 +343,7 @@ const generateMonthlyPayrollHistory = (i: number): MonthlyPayrollHistory[] => {
     return {
       month: month.toFormat('yyyy-MM'),
       payroll: 3000 + ((seed * 7919) % 2001),
-      additionalSalary: (seed * 4177) % 501,
-      reimbursement: (seed * 3313) % 301,
+      asrAndReimbursements: ((seed * 4177) % 501) + ((seed * 3313) % 301),
       percentMaxPay: 60 + ((seed * 977) % 41),
     };
   });
