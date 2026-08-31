@@ -261,7 +261,9 @@ describe('ScenarioGoals', () => {
   });
 
   it('drains every page of scenario goals', async () => {
-    const secondPageGoal = {
+    const secondPageGoal: DeepPartial<
+      NewStaffScenarioGoalsQuery['newStaffScenarioGoals']['nodes'][number]
+    > = {
       id: 'scenario-3',
       firstName: 'Page',
       lastName: 'Two',
@@ -270,23 +272,25 @@ describe('ScenarioGoals', () => {
       createdAt: '2026-08-20T12:00:00Z',
       calculations: { monthlyGoal: 750 },
     };
-    const { findByRole } = renderScenarioGoals({
+    const { findByRole, getByRole, getAllByRole } = renderScenarioGoals({
       NewStaffScenarioGoals: {
         newStaffScenarioGoals: (_root: unknown, args: { after?: string }) =>
           args.after
             ? {
                 nodes: [secondPageGoal],
-                pageInfo: { endCursor: null, hasNextPage: false },
+                pageInfo: { endCursor: 'cursor-2', hasNextPage: false },
               }
             : {
                 ...scenarioGoalsMock.newStaffScenarioGoals,
                 pageInfo: { endCursor: 'cursor-1', hasNextPage: true },
               },
       },
-    } as ApolloErgonoMockMap);
+    });
 
     // Rows from both pages merge into one table via the pagination policy.
-    expect(await findByRole('link', { name: 'John Doe' })).toBeInTheDocument();
+    // Wait for the second page, then confirm the first page survived the merge.
     expect(await findByRole('link', { name: 'Page Two' })).toBeInTheDocument();
+    expect(getByRole('link', { name: 'John Doe' })).toBeInTheDocument();
+    expect(getAllByRole('row')).toHaveLength(4); // header + 3 goals
   });
 });

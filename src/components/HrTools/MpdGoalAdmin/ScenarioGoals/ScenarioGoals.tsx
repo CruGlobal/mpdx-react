@@ -1,6 +1,6 @@
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import {
@@ -19,6 +19,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
+import { uniqBy } from 'lodash';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
@@ -55,8 +56,8 @@ export const ScenarioGoals: React.FC = () => {
   );
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  // TODO(MPDX-9843): server-side search and sort. All pages are drained
-  // client-side (100 per request) and the table pages locally.
+  // TODO(MPDX-9843): server-side search, sort, and paging. Until then every page
+  // is drained client-side and the table pages locally.
   const { data, error, fetchMore } = useNewStaffScenarioGoalsQuery();
   const { loading } = useFetchAllPages({
     fetchMore,
@@ -100,7 +101,11 @@ export const ScenarioGoals: React.FC = () => {
     ? scenarioGoalName(deleteTarget) || t('this scenario goal')
     : '';
 
-  const rows = data?.newStaffScenarioGoals.nodes ?? [];
+  // uniqBy guards against duplicate rows if the offset-based cursors drift.
+  const rows = useMemo(
+    () => uniqBy(data?.newStaffScenarioGoals.nodes ?? [], 'id'),
+    [data?.newStaffScenarioGoals.nodes],
+  );
   const safePage = Math.min(
     page,
     Math.max(0, Math.ceil(rows.length / rowsPerPage) - 1),
@@ -145,19 +150,10 @@ export const ScenarioGoals: React.FC = () => {
 
       {/* The scenario queries are creator-scoped, so a failure here is a real
           error rather than an empty list. */}
+      {/* Show rows as they drain; the empty state only after the drain finishes. */}
       {error ? (
         <Alert severity="error">{error.message}</Alert>
-      ) : loading && !data ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-          <CircularProgress aria-label={t('Loading scenario goals')} />
-        </Box>
-      ) : rows.length === 0 ? (
-        <Box sx={{ textAlign: 'center', mt: 4 }}>
-          <Typography color="text.secondary">
-            {t('No scenario goals yet. Create one to get started.')}
-          </Typography>
-        </Box>
-      ) : (
+      ) : rows.length > 0 ? (
         <TableContainer>
           <Table size="small" aria-label={t('Scenario goals')}>
             <TableHead>
@@ -226,7 +222,27 @@ export const ScenarioGoals: React.FC = () => {
             }}
             labelRowsPerPage={t('Rows per page')}
           />
+          {loading && (
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ display: 'block', px: 2, pb: 1 }}
+              aria-live="polite"
+            >
+              {t('Loading more scenario goals…')}
+            </Typography>
+          )}
         </TableContainer>
+      ) : loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+          <CircularProgress aria-label={t('Loading scenario goals')} />
+        </Box>
+      ) : (
+        <Box sx={{ textAlign: 'center', mt: 4 }}>
+          <Typography color="text.secondary">
+            {t('No scenario goals yet. Create one to get started.')}
+          </Typography>
+        </Box>
       )}
 
       <Confirmation
