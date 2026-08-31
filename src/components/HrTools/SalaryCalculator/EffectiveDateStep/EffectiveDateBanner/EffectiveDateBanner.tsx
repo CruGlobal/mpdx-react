@@ -38,9 +38,9 @@ export const EffectiveDateBanner: React.FC<EffectiveDateBannerProps> = ({
     >
       <Typography fontWeight="bold" textAlign="center">
         <Trans t={t} values={{ thisYear, nextYear }}>
-          Dates for {'{{nextYear}}'} are unavailable at this time while we
-          update salary level tables. By December 15, {'{{thisYear}}'} you will
-          be able to request a salary change for {'{{nextYear}}'}.
+          Dates for {{ nextYear }} are unavailable at this time while we update
+          salary level tables. By December 15, {{ thisYear }} you will be able
+          to request a salary change for {{ nextYear }}.
         </Trans>
       </Typography>
     </StyledAlert>

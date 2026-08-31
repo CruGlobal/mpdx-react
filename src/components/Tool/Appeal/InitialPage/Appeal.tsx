@@ -6,6 +6,8 @@ import { Box, CardContent, IconButton, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { AppealFieldsFragment } from 'pages/accountLists/[accountListId]/tools/GetAppeals.generated';
+import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
 import { useAccountListId } from '../../../../hooks/useAccountListId';
 import theme from '../../../../theme';
 import AnimatedCard from '../../../AnimatedCard';
@@ -93,6 +95,7 @@ const Appeal = ({
   const given = pledgesAmountProcessed || 0;
   const received = pledgesAmountReceivedNotProcessed || 0;
   const committed = pledgesAmountNotReceivedNotProcessed || 0;
+  const locale = useLocale();
 
   return (
     <Box m={1}>
@@ -113,7 +116,13 @@ const Appeal = ({
             </Typography>
             <Box>
               <Typography variant="h6" display="inline">
-                {given.toFixed(2)} / {amount.toFixed(2)}
+                {currencyFormat(given, amountCurrency, locale, {
+                  showTrailingZeros: true,
+                })}{' '}
+                /{' '}
+                {currencyFormat(amount, amountCurrency, locale, {
+                  showTrailingZeros: true,
+                })}
               </Typography>
 
               <IconButton

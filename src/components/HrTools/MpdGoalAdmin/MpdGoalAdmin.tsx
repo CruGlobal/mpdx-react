@@ -23,6 +23,7 @@ import { CohortBar } from './CohortBar/CohortBar';
 import { GoalsTable } from './GoalsTable/GoalsTable';
 import { GoalsTableToolbar } from './GoalsTableToolbar/GoalsTableToolbar';
 import { useMpdGoalAdmin } from './MpdGoalAdminContext';
+import { ScenarioGoals } from './ScenarioGoals/ScenarioGoals';
 import { MpdGoalAdminTabEnum } from './mpdGoalAdminHelpers';
 
 const ContentBox = styled(Box)(({ theme }) => ({
@@ -105,9 +106,7 @@ export const MpdGoalAdmin: React.FC<MpdGoalAdminProps> = ({
             )}
           </>
         ) : (
-          <Typography color="text.secondary" sx={{ mt: 4 }}>
-            {t('Scenario goals coming soon.')}
-          </Typography>
+          <ScenarioGoals />
         )}
       </ContentBox>
     </>

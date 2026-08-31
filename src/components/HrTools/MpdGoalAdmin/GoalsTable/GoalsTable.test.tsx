@@ -10,12 +10,13 @@ import {
   NewStaffCohortsQuery,
 } from '../NewStaffCohorts.generated';
 import {
+  DEFAULT_ROWS_PER_PAGE,
   GoalStatusEnum,
   StaffGoalRow,
   attendeeToRow,
 } from '../mpdGoalAdminHelpers';
 import { attendees, attendeesMock, cohortsMock } from '../mpdGoalAdminMocks';
-import { DEFAULT_ROWS_PER_PAGE, GoalsTable } from './GoalsTable';
+import { GoalsTable } from './GoalsTable';
 
 const rows: StaffGoalRow[] = attendees.map(attendeeToRow);
 

@@ -36,21 +36,18 @@ export function useIneligibleByGroup() {
   const { SeniorStaff, NewStaff, NationalExpat, PaidWithDesignation } =
     UsStaffGroupEnum;
 
-  // Is ASR ineligible if both user and spouse are not Senior Staff, New Staff, or National Expat
-  const asrGroups = [SeniorStaff, NewStaff, NationalExpat];
-  const inAsrIneligibleGroup =
-    !isInEligibleGroup(usStaffGroup, asrGroups) &&
-    !isInEligibleGroup(spouseUsStaffGroup, asrGroups);
+  // Is ASR or MHA ineligible if both user and spouse are not Senior Staff or National Expat
+  const payrollToolGroups = [SeniorStaff, NationalExpat];
+  const inHouseholdIneligibleGroup =
+    !isInEligibleGroup(usStaffGroup, payrollToolGroups) &&
+    !isInEligibleGroup(spouseUsStaffGroup, payrollToolGroups);
 
-  // Is MHA ineligible if both user and spouse are not Senior Staff or National Expat
-  const mhaAndSalaryGroups = [SeniorStaff, NationalExpat];
-  const inMhaIneligibleGroup =
-    !isInEligibleGroup(usStaffGroup, mhaAndSalaryGroups) &&
-    !isInEligibleGroup(spouseUsStaffGroup, mhaAndSalaryGroups);
+  const inAsrIneligibleGroup = inHouseholdIneligibleGroup;
+  const inMhaIneligibleGroup = inHouseholdIneligibleGroup;
 
   const inSalaryCalcIneligibleGroup = !isInEligibleGroup(
     usStaffGroup,
-    mhaAndSalaryGroups,
+    payrollToolGroups,
   );
   const inMpdGoalCalcIneligibleGroup = !isInEligibleGroup(usStaffGroup, [
     SeniorStaff,

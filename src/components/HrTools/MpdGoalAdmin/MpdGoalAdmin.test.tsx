@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { MpdGoalAdmin } from './MpdGoalAdmin';
@@ -19,23 +20,31 @@ type Mocks = {
   NewStaffCohortAttendees: NewStaffCohortAttendeesQuery;
 };
 
+const router = {
+  query: { accountListId: 'account-list-1' },
+  isReady: true,
+  push: jest.fn(),
+};
+
 const renderMain = (mocks: ApolloErgonoMockMap = {}) =>
   render(
     <ThemeProvider theme={theme}>
       <SnackbarProvider>
-        <GqlMockedProvider<Mocks>
-          mocks={
-            {
-              NewStaffCohorts: cohortsMock,
-              NewStaffCohortAttendees: attendeesMock(),
-              ...mocks,
-            } as ApolloErgonoMockMap
-          }
-        >
-          <MpdGoalAdminProvider>
-            <MpdGoalAdmin onNavListToggle={jest.fn()} navListOpen={false} />
-          </MpdGoalAdminProvider>
-        </GqlMockedProvider>
+        <TestRouter router={router}>
+          <GqlMockedProvider<Mocks>
+            mocks={
+              {
+                NewStaffCohorts: cohortsMock,
+                NewStaffCohortAttendees: attendeesMock(),
+                ...mocks,
+              } as ApolloErgonoMockMap
+            }
+          >
+            <MpdGoalAdminProvider>
+              <MpdGoalAdmin onNavListToggle={jest.fn()} navListOpen={false} />
+            </MpdGoalAdminProvider>
+          </GqlMockedProvider>
+        </TestRouter>
       </SnackbarProvider>
     </ThemeProvider>,
   );
@@ -72,13 +81,11 @@ describe('MpdGoalAdmin', () => {
     expect(getByRole('button', { name: 'Run and Send All' })).toBeDisabled();
   });
 
-  it('switches to the scenario goals placeholder', async () => {
-    const { getByRole, queryByRole, getByText, findByRole } = renderMain();
-    await findByRole('table');
-
-    userEvent.click(getByRole('tab', { name: 'Scenario Goals' }));
-
-    expect(queryByRole('table')).not.toBeInTheDocument();
-    expect(getByText('Scenario goals coming soon.')).toBeInTheDocument();
+  it('switches to the scenario goals tab', async () => {
+    const { getByRole, findByRole } = renderMain();
+    await userEvent.click(getByRole('tab', { name: 'Scenario Goals' }));
+    expect(
+      await findByRole('button', { name: 'New Scenario Goal' }),
+    ).toBeInTheDocument();
   });
 });

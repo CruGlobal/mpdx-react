@@ -60,6 +60,9 @@ export const createCache = () =>
         },
         merge: true,
       },
+      // The scenario list selects only calculations.monthlyGoal while the
+      // calculator selects the full worksheet; merge so neither clobbers the other.
+      NewStaffGoalCalculationCalculations: { merge: true },
       SearchOrganizationsAccountListsResponse: {
         fields: {
           accountLists: {

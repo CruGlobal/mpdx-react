@@ -98,7 +98,7 @@ describe('useIneligibleByGroup', () => {
 
       await waitFor(() => expect(result.current.userLoading).toBe(false));
       expect(result.current).toMatchObject({
-        inAsrIneligibleGroup: false,
+        inAsrIneligibleGroup: true,
         inSalaryCalcIneligibleGroup: true,
         inMhaIneligibleGroup: true,
         inMpdGoalCalcIneligibleGroup: true,
@@ -200,7 +200,7 @@ describe('useIneligibleByGroup', () => {
 
       await waitFor(() => expect(result.current.userLoading).toBe(false));
       expect(result.current).toMatchObject({
-        inAsrIneligibleGroup: false,
+        inAsrIneligibleGroup: true,
         inSalaryCalcIneligibleGroup: true,
         inMhaIneligibleGroup: true,
         inMpdGoalCalcIneligibleGroup: true,
@@ -234,7 +234,7 @@ describe('useIneligibleByGroup', () => {
 
       await waitFor(() => expect(result.current.userLoading).toBe(false));
       expect(result.current).toMatchObject({
-        inAsrIneligibleGroup: false,
+        inAsrIneligibleGroup: true,
         inSalaryCalcIneligibleGroup: true,
         inMhaIneligibleGroup: true,
         inMpdGoalCalcIneligibleGroup: true,
@@ -286,11 +286,45 @@ describe('useIneligibleByGroup', () => {
 
         await waitFor(() => expect(result.current.userLoading).toBe(false));
         expect(result.current).toMatchObject({
-          inAsrIneligibleGroup: false,
+          inAsrIneligibleGroup: true,
           inSalaryCalcIneligibleGroup: true,
           inMhaIneligibleGroup: true,
           inMpdGoalCalcIneligibleGroup: true,
           inNsGoalCalcIneligibleGroup: true,
+          inPdsGoalCalcIneligibleGroup: true,
+        });
+      });
+
+      it('user is new staff and spouse is senior staff', async () => {
+        const { result } = renderUseIneligibleByGroup({
+          usStaffGroup: UsStaffGroupEnum.NewStaff,
+          spouseUsStaffGroup: UsStaffGroupEnum.SeniorStaff,
+        });
+
+        await waitFor(() => expect(result.current.userLoading).toBe(false));
+        expect(result.current).toMatchObject({
+          inAsrIneligibleGroup: false,
+          inSalaryCalcIneligibleGroup: true,
+          inMhaIneligibleGroup: false,
+          inMpdGoalCalcIneligibleGroup: true,
+          inNsGoalCalcIneligibleGroup: false,
+          inPdsGoalCalcIneligibleGroup: true,
+        });
+      });
+
+      it('user and spouse are both new staff', async () => {
+        const { result } = renderUseIneligibleByGroup({
+          usStaffGroup: UsStaffGroupEnum.NewStaff,
+          spouseUsStaffGroup: UsStaffGroupEnum.NewStaff,
+        });
+
+        await waitFor(() => expect(result.current.userLoading).toBe(false));
+        expect(result.current).toMatchObject({
+          inAsrIneligibleGroup: true,
+          inSalaryCalcIneligibleGroup: true,
+          inMhaIneligibleGroup: true,
+          inMpdGoalCalcIneligibleGroup: true,
+          inNsGoalCalcIneligibleGroup: false,
           inPdsGoalCalcIneligibleGroup: true,
         });
       });

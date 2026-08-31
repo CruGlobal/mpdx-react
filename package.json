@@ -66,7 +66,7 @@
     "luxon": "^3.4.4",
     "micro-cors": "^0.1.1",
     "next": "^15.0.3",
-    "next-auth": "^4.24.11",
+    "next-auth": "^4.24.15",
     "next-optimized-images": "^2.6.2",
     "next-pwa": "^5.6.0",
     "notistack": "^2.0.5",
@@ -79,7 +79,7 @@
     "react-i18next": "^11.18.6",
     "react-virtuoso": "2.19.0",
     "recharts": "2.3.2",
-    "rollbar": "^2.25.2",
+    "rollbar": "^2.26.5",
     "tslib": "^2.4.0",
     "tss-react": "^4.1.3",
     "yup": "^1.4.0"

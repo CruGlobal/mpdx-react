@@ -25,6 +25,7 @@ import { AssignCoachModal } from '../AssignCoachModal/AssignCoachModal';
 import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import { mockCoaches } from '../mockData';
 import {
+  DEFAULT_ROWS_PER_PAGE,
   GoalStatusEnum,
   StaffGoalRow,
   familyStatusLabel,
@@ -64,8 +65,6 @@ const GoalStatusChip: React.FC<{ status: GoalStatusEnum }> = ({ status }) => {
 interface GoalsTableProps {
   rows: StaffGoalRow[];
 }
-
-export const DEFAULT_ROWS_PER_PAGE = 5;
 
 export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
   const { t } = useTranslation();

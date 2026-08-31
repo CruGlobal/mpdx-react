@@ -1,5 +1,6 @@
 import { act, renderHook } from '@testing-library/react';
-import { EmployeeData, QuarterHealthEnum } from './mockData';
+import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
+import { EmployeeData } from './mockData';
 import { useMockInfiniteStaff } from './useMockInfiniteStaff';
 
 const makeItems = (count: number): EmployeeData[] =>
@@ -14,12 +15,14 @@ const makeItems = (count: number): EmployeeData[] =>
       team: 'Campus',
     },
     quarters: [
-      { label: 'FQ4 25', health: QuarterHealthEnum.Green, payroll: 15000 },
-      { label: 'FQ1 26', health: QuarterHealthEnum.Green, payroll: 15000 },
-      { label: 'FQ2 26', health: QuarterHealthEnum.Green, payroll: 15000 },
-      { label: 'FQ3 26', health: QuarterHealthEnum.Green, payroll: 15000 },
+      { label: 'FQ4 25', health: MpdHealthStatusEnum.Green, payroll: 15000 },
+      { label: 'FQ1 26', health: MpdHealthStatusEnum.Green, payroll: 15000 },
+      { label: 'FQ2 26', health: MpdHealthStatusEnum.Green, payroll: 15000 },
+      { label: 'FQ3 26', health: MpdHealthStatusEnum.Green, payroll: 15000 },
     ],
     monthlyPayrollHistory: [],
+    quarterlyPayrollHistory: { monthlyGrossSalary: 0, completedQuarters: [] },
+    monthlySummary: [],
   }));
 
 describe('useMockInfiniteStaff', () => {

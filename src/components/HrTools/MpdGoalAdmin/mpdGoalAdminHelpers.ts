@@ -11,6 +11,8 @@ import {
   NewStaffCohortsQuery,
 } from './NewStaffCohorts.generated';
 
+export const DEFAULT_ROWS_PER_PAGE = 5;
+
 export enum MpdGoalAdminTabEnum {
   ActiveGoals = 'active-goals',
   ScenarioGoals = 'scenario-goals',

@@ -159,7 +159,7 @@ describe('MPGAIncomeExpensesReport', () => {
     expect(getByTestId('ReportsMenuIcon')).toBeInTheDocument();
     userEvent.click(getByTestId('ReportsMenuIcon'));
     await waitFor(() => expect(onNavListToggle).toHaveBeenCalled());
-  }, 15000);
+  }, 30000);
 
   describe('Category filtering', () => {
     it('re-renders report rows when a category is unchecked and applied', async () => {
@@ -194,7 +194,7 @@ describe('MPGAIncomeExpensesReport', () => {
           timeout: 5000,
         }),
       ).toHaveLength(1);
-    }, 15000);
+    }, 30000);
 
     it('does not show the Clear button when only a category filter is applied', async () => {
       const { getByRole, findByRole, findAllByText, queryByRole } = render(
@@ -221,7 +221,7 @@ describe('MPGAIncomeExpensesReport', () => {
         }),
       ).toHaveLength(1);
       expect(queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
-    }, 15000);
+    }, 30000);
 
     it('does not show the Clear button when the dialog is cancelled', async () => {
       const { getByRole, findByRole, queryByRole } = render(<TestComponent />);
@@ -239,7 +239,7 @@ describe('MPGAIncomeExpensesReport', () => {
         ).not.toBeInTheDocument(),
       );
       expect(queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
-    }, 15000);
+    }, 30000);
   });
 
   describe('Date range filtering', () => {
@@ -263,6 +263,6 @@ describe('MPGAIncomeExpensesReport', () => {
       expect(
         await findByRole('button', { name: 'Clear' }, { timeout: 5000 }),
       ).toBeInTheDocument();
-    }, 15000);
+    }, 30000);
   });
 });

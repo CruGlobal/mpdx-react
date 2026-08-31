@@ -3,12 +3,13 @@ import { ThemeProvider } from '@mui/material/styles';
 import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
+import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import {
   MpdSupervisorReportProvider,
   useMpdSupervisorReport,
 } from '../MpdSupervisorReportContext';
-import { EmployeeData, QuarterHealthEnum } from '../mockData';
+import { EmployeeData } from '../mockData';
 import { StaffMemberDrawer } from './StaffMemberDrawer';
 
 const memberWithSpouse: EmployeeData = {
@@ -29,12 +30,14 @@ const memberWithSpouse: EmployeeData = {
     staffAccountID: '1000000002',
   },
   quarters: [
-    { label: 'FQ4 25', health: QuarterHealthEnum.Green, payroll: 15000 },
-    { label: 'FQ1 26', health: QuarterHealthEnum.Yellow, payroll: 15000 },
-    { label: 'FQ2 26', health: QuarterHealthEnum.Red, payroll: 15000 },
-    { label: 'FQ3 26', health: QuarterHealthEnum.Green, payroll: 15000 },
+    { label: 'FQ4 25', health: MpdHealthStatusEnum.Green, payroll: 15000 },
+    { label: 'FQ1 26', health: MpdHealthStatusEnum.Yellow, payroll: 15000 },
+    { label: 'FQ2 26', health: MpdHealthStatusEnum.Red, payroll: 15000 },
+    { label: 'FQ3 26', health: MpdHealthStatusEnum.Green, payroll: 15000 },
   ],
   monthlyPayrollHistory: [],
+  quarterlyPayrollHistory: { monthlyGrossSalary: 0, completedQuarters: [] },
+  monthlySummary: [],
 };
 
 const memberWithoutSpouse: EmployeeData = {
@@ -48,12 +51,14 @@ const memberWithoutSpouse: EmployeeData = {
     team: 'Digital strategies',
   },
   quarters: [
-    { label: 'FQ4 25', health: QuarterHealthEnum.Red, payroll: 15000 },
-    { label: 'FQ1 26', health: QuarterHealthEnum.Red, payroll: 15000 },
-    { label: 'FQ2 26', health: QuarterHealthEnum.Red, payroll: 15000 },
-    { label: 'FQ3 26', health: QuarterHealthEnum.Red, payroll: 15000 },
+    { label: 'FQ4 25', health: MpdHealthStatusEnum.Red, payroll: 15000 },
+    { label: 'FQ1 26', health: MpdHealthStatusEnum.Red, payroll: 15000 },
+    { label: 'FQ2 26', health: MpdHealthStatusEnum.Red, payroll: 15000 },
+    { label: 'FQ3 26', health: MpdHealthStatusEnum.Red, payroll: 15000 },
   ],
   monthlyPayrollHistory: [],
+  quarterlyPayrollHistory: { monthlyGrossSalary: 0, completedQuarters: [] },
+  monthlySummary: [],
 };
 
 let openMemberFn: (member: EmployeeData) => void;
@@ -128,13 +133,35 @@ describe('StaffMemberDrawer', () => {
 
   it('shows the Monthly Summary tab and its panel content by default', () => {
     renderDrawer();
-    openMember(memberWithSpouse);
+    openMember({
+      ...memberWithSpouse,
+      monthlySummary: [
+        {
+          month: '2023-01',
+          contributions: 4000,
+          expenses: 3500,
+          net: 500,
+          endBalance: 10000,
+        },
+      ],
+    });
     expect(
       screen.getByRole('tab', { name: 'Monthly Summary' }),
     ).toHaveAttribute('aria-selected', 'true');
-    expect(
-      within(screen.getByRole('tabpanel')).getByText('Monthly Summary'),
-    ).toBeInTheDocument();
+
+    const table = within(screen.getByRole('tabpanel')).getByRole('table');
+    expect(table).toHaveTableStructure({
+      columnHeaders: [
+        'Month',
+        'Contributions',
+        'Expenses',
+        'Net',
+        'End Balance',
+      ],
+      cells: [
+        ['Jan 2023', '$4,000.00', '($3,500.00)', '$500.00', '$10,000.00'],
+      ],
+    });
   });
 
   it('selects another tab when clicked', async () => {
@@ -158,8 +185,7 @@ describe('StaffMemberDrawer', () => {
         {
           month: '2023-01',
           payroll: 3000,
-          additionalSalary: 500,
-          reimbursement: 200,
+          asrAndReimbursements: 700,
           percentMaxPay: 80,
         },
       ],
