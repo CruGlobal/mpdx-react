@@ -13,7 +13,7 @@ import {
   NewStaffCohortAttendeesQuery,
   NewStaffCohortsQuery,
 } from './NewStaffCohorts.generated';
-import { attendeesMock, cohortsMock } from './mpdGoalAdminMocks';
+import { attendeesMock, cohortsMock, noCohortsMock } from './mpdGoalAdminMocks';
 
 type Mocks = {
   NewStaffCohorts: NewStaffCohortsQuery;
@@ -79,6 +79,45 @@ describe('MpdGoalAdmin', () => {
     expect(await findByRole('alert')).toHaveTextContent('Not authorized');
     expect(queryByRole('table')).not.toBeInTheDocument();
     expect(getByRole('button', { name: 'Run and Send All' })).toBeDisabled();
+  });
+
+  it('shows the no-training empty state when no cohort is selected', async () => {
+    // Role scoping can leave a user with no cohorts at all; the auto-select in
+    // MpdGoalAdminContext then has nothing to pick and the table is meaningless.
+    const { findByTestId, getByText, queryByRole } = renderMain({
+      NewStaffCohorts: noCohortsMock,
+    });
+
+    expect(await findByTestId('no-training-selected')).toBeInTheDocument();
+    expect(getByText('No Training Selected')).toBeInTheDocument();
+    expect(
+      getByText('There are no trainings available for you to manage.'),
+    ).toBeInTheDocument();
+    expect(queryByRole('table')).not.toBeInTheDocument();
+  });
+
+  it('hides the goals toolbar while the empty state is showing', async () => {
+    const { findByTestId, queryByRole } = renderMain({
+      NewStaffCohorts: noCohortsMock,
+    });
+
+    await findByTestId('no-training-selected');
+    expect(
+      queryByRole('button', { name: 'Run and Send All' }),
+    ).not.toBeInTheDocument();
+    expect(queryByRole('textbox', { name: 'Search' })).not.toBeInTheDocument();
+  });
+
+  it('keeps the training selector visible in the empty state', async () => {
+    // The bar stays mounted for layout stability, but with nothing to pick the dropdown is disabled.
+    const { findByTestId, getByRole } = renderMain({
+      NewStaffCohorts: noCohortsMock,
+    });
+
+    await findByTestId('no-training-selected');
+    const trainingSelect = getByRole('combobox', { name: 'Training' });
+    expect(trainingSelect).toBeInTheDocument();
+    expect(trainingSelect).toHaveAttribute('aria-disabled', 'true');
   });
 
   it('switches to the scenario goals tab', async () => {
