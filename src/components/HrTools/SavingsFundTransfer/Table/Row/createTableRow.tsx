@@ -12,8 +12,10 @@ import {
   Typography,
 } from '@mui/material';
 import { TFunction } from 'react-i18next';
-import { currencyFormat } from 'src/lib/intlFormat';
+import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { getFundIcon } from '../../Helper/TransferIcons';
+import { getEndDateLabel } from '../../Helper/getEndDateLabel';
+import { getNextPaymentDate } from '../../Helper/getNextPaymentDate';
 import {
   ScheduleEnum,
   StatusEnum,
@@ -164,10 +166,19 @@ export function populateTransferRows(options: Options) {
     );
   };
 
-  const transferDate: RenderCell = ({ row }) => {
+  const startDate: RenderCell = ({ row }) => {
     return (
       <Typography variant="body2" noWrap>
-        {row.transferDate ? row.transferDate.toFormat('MMM d, yyyy') : ''}
+        {row.transferDate?.isValid ? dateFormat(row.transferDate, locale) : ''}
+      </Typography>
+    );
+  };
+
+  const nextPaymentDate: RenderCell = ({ row }) => {
+    const nextPayment = getNextPaymentDate(row);
+    return (
+      <Typography variant="body2" noWrap>
+        {dateFormat(nextPayment, locale)}
       </Typography>
     );
   };
@@ -175,9 +186,7 @@ export function populateTransferRows(options: Options) {
   const endDate: RenderCell = ({ row }) => {
     return (
       <Typography variant="body2" noWrap>
-        {row.schedule === ScheduleEnum.Monthly && row.endDate
-          ? row.endDate.toFormat('MMM d, yyyy')
-          : ''}
+        {getEndDateLabel(row, locale, t('Indefinite'))}
       </Typography>
     );
   };
@@ -285,7 +294,8 @@ export function populateTransferRows(options: Options) {
     amount,
     schedule,
     status,
-    transferDate,
+    startDate,
+    nextPaymentDate,
     endDate,
     note,
     actions,

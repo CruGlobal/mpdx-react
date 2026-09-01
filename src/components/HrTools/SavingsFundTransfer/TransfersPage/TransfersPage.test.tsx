@@ -295,7 +295,7 @@ describe('TransfersPage', () => {
     const tables = await findAllByRole('grid');
     expect(tables.length).toBe(2);
 
-    expect(within(tables[0]).getAllByRole('columnheader')).toHaveLength(8);
+    expect(within(tables[0]).getAllByRole('columnheader')).toHaveLength(9);
   });
 
   it.each([

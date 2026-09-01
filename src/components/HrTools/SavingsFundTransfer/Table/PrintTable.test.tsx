@@ -6,7 +6,13 @@ import { render } from '@testing-library/react';
 import { DateTime } from 'luxon';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import { FundTypeEnum, StatusEnum, TableTypeEnum, mockData } from '../mockData';
+import {
+  FundTypeEnum,
+  ScheduleEnum,
+  StatusEnum,
+  TableTypeEnum,
+  mockData,
+} from '../mockData';
 import { PrintTable } from './PrintTable';
 
 const mutationSpy = jest.fn();
@@ -34,7 +40,7 @@ const mockDefault = [
 
 describe('PrintTable', () => {
   it('renders the table with transfer data', async () => {
-    const { getByRole, findByRole } = render(
+    const { getByRole, getAllByRole, findByRole } = render(
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <GqlMockedProvider onCall={mutationSpy}>
@@ -68,13 +74,17 @@ describe('PrintTable', () => {
     ).toBeInTheDocument();
     expect(getByRole('cell', { name: 'complete' })).toBeInTheDocument();
     expect(
-      await findByRole('columnheader', { name: 'Transfer Date' }),
+      await findByRole('columnheader', { name: 'Start Date' }),
     ).toBeInTheDocument();
     expect(getByRole('cell', { name: 'Jan 1, 2023' })).toBeInTheDocument();
     expect(
+      await findByRole('columnheader', { name: 'Next Payment Date' }),
+    ).toBeInTheDocument();
+    expect(
       await findByRole('columnheader', { name: 'End Date' }),
     ).toBeInTheDocument();
-    expect(getByRole('cell', { name: '' })).toBeInTheDocument();
+    // A completed one-time transfer has neither a next payment nor an end date.
+    expect(getAllByRole('cell', { name: '' })).toHaveLength(2);
     expect(
       await findByRole('columnheader', { name: 'Note' }),
     ).toBeInTheDocument();
@@ -109,5 +119,34 @@ describe('PrintTable', () => {
     );
 
     expect(getByText('No transfer history available.')).toBeInTheDocument();
+  });
+
+  it('shows the start date and the next payment date of a recurring transfer', async () => {
+    // The global test setup pins the clock to 2020-01-01.
+    const { findByText, getByText } = render(
+      <ThemeProvider theme={theme}>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <GqlMockedProvider onCall={mutationSpy}>
+            <PrintTable
+              transfers={[
+                {
+                  ...mockData[1],
+                  schedule: ScheduleEnum.Monthly,
+                  status: StatusEnum.Ongoing,
+                  transferDate: DateTime.fromISO('2019-10-15T00:00:00+00:00', {
+                    setZone: true,
+                  }),
+                  endDate: null,
+                },
+              ]}
+              type={TableTypeEnum.History}
+            />
+          </GqlMockedProvider>
+        </LocalizationProvider>
+      </ThemeProvider>,
+    );
+
+    expect(await findByText('Oct 15, 2019')).toBeInTheDocument();
+    expect(getByText('Jan 15, 2020')).toBeInTheDocument();
   });
 });

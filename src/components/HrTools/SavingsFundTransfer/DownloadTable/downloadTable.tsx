@@ -1,6 +1,8 @@
 import { TFunction } from 'i18next';
 import { buildURI } from 'react-csv/lib/core';
-import { currencyFormat } from 'src/lib/intlFormat';
+import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
+import { getEndDateLabel } from '../Helper/getEndDateLabel';
+import { getNextPaymentDate } from '../Helper/getNextPaymentDate';
 import {
   FundTypeEnum,
   ScheduleEnum,
@@ -31,10 +33,8 @@ export const createTable = (
     const status = transfer.status
       ? transfer.status[0].toUpperCase() + transfer.status.slice(1)
       : transfer.status;
-    const endDate =
-      transfer.schedule === ScheduleEnum.Monthly && transfer.endDate
-        ? transfer.endDate.toFormat('MMM d, yyyy')
-        : '';
+    const endDate = getEndDateLabel(transfer, locale, 'Indefinite');
+    const nextPaymentDate = dateFormat(getNextPaymentDate(transfer), locale);
     return [
       fromFund,
       toFund,
@@ -48,6 +48,7 @@ export const createTable = (
       transfer.transferDate
         ? transfer.transferDate.toFormat('MMM d, yyyy')
         : '',
+      nextPaymentDate,
       endDate,
       transfer.note,
     ];
@@ -72,7 +73,8 @@ export const downloadCSV = (
     t('Amount'),
     t('Schedule'),
     t('Status'),
-    t('Transfer Date'),
+    t('Start Date'),
+    t('Next Payment Date'),
     t('End Date'),
     t('Note'),
   ];

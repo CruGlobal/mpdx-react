@@ -1,4 +1,5 @@
-import { StatusEnum, TableTypeEnum, mockData } from '../mockData';
+import { DateTime } from 'luxon';
+import { ScheduleEnum, StatusEnum, TableTypeEnum, mockData } from '../mockData';
 import { createTable, downloadCSV } from './downloadTable';
 
 const mockT = (key: string) => key;
@@ -10,14 +11,15 @@ const mockClick = jest.fn();
 const mockAppendChild = jest.spyOn(document.body, 'appendChild');
 const mockRemoveChild = jest.spyOn(document.body, 'removeChild');
 
+// Must mirror downloadCSV's csvHeader; a drifted fixture hides column bugs.
 const mockHeaders = [
   'From',
   'To',
   'Amount',
-  'Date',
   'Schedule',
   'Status',
-  'Transfer Date',
+  'Start Date',
+  'Next Payment Date',
   'End Date',
   'Note',
 ];
@@ -57,7 +59,8 @@ describe('DownloadTable', () => {
   it('should contain correct data', () => {
     const csvData = createTable(mockHeaders, mockHistory, mockLocale);
 
-    expect(csvData).toContain(mockHeaders);
+    expect(csvData[0]).toEqual(mockHeaders);
+    expect(csvData[0]).toHaveLength(csvData[1].length);
     expect(csvData[1]).toEqual([
       'staffAccount',
       'staffSavings',
@@ -65,8 +68,31 @@ describe('DownloadTable', () => {
       'Monthly',
       StatusEnum.Ongoing.charAt(0).toUpperCase() + StatusEnum.Ongoing.slice(1),
       'Sep 25, 2023',
+      '',
       'Sep 25, 2025',
       'Long-term savings',
     ]);
+  });
+
+  it('should include the next payment date of an ongoing recurring transfer', () => {
+    // The global test setup pins the clock to 2020-01-01.
+    const csvData = createTable(
+      mockHeaders,
+      [
+        {
+          ...mockData[1],
+          transferDate: DateTime.fromISO('2019-10-15T00:00:00+00:00', {
+            setZone: true,
+          }),
+          endDate: null,
+          schedule: ScheduleEnum.Monthly,
+          status: StatusEnum.Ongoing,
+        },
+      ],
+      mockLocale,
+    );
+
+    expect(csvData[1][5]).toBe('Oct 15, 2019');
+    expect(csvData[1][6]).toBe('Jan 15, 2020');
   });
 });

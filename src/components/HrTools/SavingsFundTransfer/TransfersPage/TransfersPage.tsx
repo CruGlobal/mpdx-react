@@ -195,6 +195,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
       amount: tx.transaction?.amount ?? 0,
       schedule: isRecurring ? ScheduleEnum.Monthly : ScheduleEnum.OneTime,
       status: status,
+      active: tx.recurringTransfer?.active,
       transferDate: isRecurring
         ? tx.recurringTransfer?.recurringStart
         : tx.transaction?.transactedAt,
@@ -231,6 +232,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
           amount: scheduled?.amount ?? tx.recurringTransfer?.amount ?? 0,
           schedule: scheduled ? ScheduleEnum.OneTime : ScheduleEnum.Monthly,
           status: StatusEnum.Pending,
+          active: tx.recurringTransfer?.active,
           transferDate:
             scheduled?.transactedAt ?? tx.recurringTransfer?.recurringStart,
           endDate: scheduled
