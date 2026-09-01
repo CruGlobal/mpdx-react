@@ -191,7 +191,6 @@ export const runAndSentMock = (
 ): RunAndSendNewStaffCohortMutation => ({
   runAndSendNewStaffCohort: {
     sentCount,
-    sentAt,
     newStaffCohort: {
       id,
       goalsSentAt: sentAt,

@@ -28,6 +28,34 @@ const Capture: React.FC = () => {
 
 const mutationSpy = jest.fn();
 
+/** Mirrors the throwing-resolver precedent in CohortBar.test.tsx. */
+const renderFailingToolbar = () =>
+  render(
+    <ThemeProvider theme={theme}>
+      <SnackbarProvider>
+        <GqlMockedProvider<{
+          NewStaffCohorts: NewStaffCohortsQuery;
+          NewStaffCohortAttendees: NewStaffCohortAttendeesQuery;
+        }>
+          mocks={{
+            NewStaffCohorts: cohortsMock,
+            NewStaffCohortAttendees: attendeesMock(),
+            RunAndSendNewStaffCohort: {
+              runAndSendNewStaffCohort: () => {
+                throw new Error('Not authorized');
+              },
+            },
+          }}
+          onCall={mutationSpy}
+        >
+          <MpdGoalAdminProvider>
+            <Capture />
+          </MpdGoalAdminProvider>
+        </GqlMockedProvider>
+      </SnackbarProvider>
+    </ThemeProvider>,
+  );
+
 const renderToolbar = ({
   cohorts = cohortsMock,
   sentCount = 2,
@@ -197,6 +225,52 @@ describe('GoalsTableToolbar', () => {
     expect(
       await findByText('1 MPD Goals were run and sent.'),
     ).toBeInTheDocument();
+  });
+
+  it('keeps the dialog open and the selection intact when the send fails', async () => {
+    const { getByRole, queryByText } = renderFailingToolbar();
+    await waitFor(() => expect(ctx.filteredRows).toHaveLength(3));
+    act(() => ctx.toggleRow('row-1'));
+
+    userEvent.click(getByRole('button', { name: 'Run and Send All' }));
+    const confirm = getByRole('button', { name: 'Yes, Continue' });
+    userEvent.click(confirm);
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('RunAndSendNewStaffCohort'),
+    );
+    // Re-enabling proves the failure settled through the finally block.
+    await waitFor(() => expect(confirm).toBeEnabled());
+    expect(getByRole('dialog')).toBeInTheDocument();
+    // The global Apollo error link owns the failure toast; don't claim success.
+    expect(queryByText(/were run and sent/)).not.toBeInTheDocument();
+    expect(ctx.selectedRowIds.size).toBe(1);
+  });
+
+  it('does not report success when the server sends nothing', async () => {
+    const { getByRole, findByText, queryByText } = await renderLoaded({
+      sentCount: 0,
+    });
+    userEvent.click(getByRole('button', { name: 'Run and Send All' }));
+    userEvent.click(getByRole('button', { name: 'Yes, Continue' }));
+
+    // Every targeted row went stale server-side, so this is not a success.
+    expect(
+      await findByText('No MPD goals were eligible to send.'),
+    ).toBeInTheDocument();
+    expect(queryByText(/were run and sent/)).not.toBeInTheDocument();
+  });
+
+  it('blocks Run & Send Selected while the cohort is missing training costs', async () => {
+    const { getByRole } = await renderLoaded({
+      cohorts: cohortsWithoutCostsMock,
+    });
+    act(() => ctx.toggleRow('row-1'));
+
+    userEvent.click(getByRole('button', { name: 'More Actions' }));
+    expect(
+      getByRole('menuitem', { name: 'Run & Send Selected' }),
+    ).toHaveAttribute('aria-disabled', 'true');
   });
 
   it('blocks Run and Send All while the cohort is missing training costs', async () => {

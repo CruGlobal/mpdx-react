@@ -5,6 +5,7 @@ import {
   Alert,
   Box,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -118,6 +119,12 @@ export const RunAndSendModal: React.FC<RunAndSendModalProps> = ({
             { sendable: sendableCount, total },
           )}
         </Typography>
+        {/* Every control is inert mid-send, which without this reads as frozen. */}
+        {sending && (
+          <Typography variant="body2" role="status" sx={{ mt: 2 }}>
+            {t('Running and sending goals. This may take a moment.')}
+          </Typography>
+        )}
       </DialogContent>
 
       <DialogActions>
@@ -126,7 +133,13 @@ export const RunAndSendModal: React.FC<RunAndSendModalProps> = ({
         </Button>
         <Button
           variant="contained"
-          endIcon={<KeyboardArrowRightIcon />}
+          endIcon={
+            sending ? (
+              <CircularProgress color="inherit" size={20} />
+            ) : (
+              <KeyboardArrowRightIcon />
+            )
+          }
           disabled={sendableCount === 0 || sending}
           onClick={onConfirm}
         >

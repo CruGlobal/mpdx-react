@@ -98,6 +98,7 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
     selectedCohortId,
     assignCoach,
     selectedCohort,
+    loading,
   } = useMpdGoalAdmin();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_ROWS_PER_PAGE);
@@ -125,7 +126,7 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
   // Costs missing already makes every goal Incomplete, but the cohort flag also
   // covers blockers that leave a goal Complete.
   const canRunAndSendRow = (row: StaffGoalRow | undefined) =>
-    !!row && isSendable(row) && (selectedCohort?.canRunAndSend ?? false);
+    !loading && !!row && isSendable(row) && !!selectedCohort?.canRunAndSend;
 
   // Keyed on filter identity, not rows.length, which misses same-size changes.
   useEffect(() => {
@@ -239,8 +240,15 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
               </TableCell>
               <TableCell padding="checkbox" align="right">
                 {/* Run & Send is the only action, so the gate sits on the
-                    button; move it onto the item once the menu grows. */}
-                <RunAndSendTooltip show={!canRunAndSendRow(row)}>
+                    button; move it onto the item once the menu grows. A Sent
+                    row's chip already explains itself, and the blocked copy
+                    would wrongly claim its inputs are missing. */}
+                <RunAndSendTooltip
+                  show={
+                    !canRunAndSendRow(row) &&
+                    row.goalStatus !== GoalStatusEnum.Sent
+                  }
+                >
                   <IconButton
                     size="small"
                     aria-label={t('Actions for {{name}}', { name: row.name })}
@@ -281,7 +289,11 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
             if (!actionsMenu) {
               return;
             }
-            openRunAndSend(t('Run and Send this MPD Goal?'), [actionsMenu.row]);
+            openRunAndSend(
+              t('Run and Send this MPD Goal?'),
+              [actionsMenu.row],
+              { clearsSelection: false },
+            );
             setActionsMenu(null);
           }}
         >

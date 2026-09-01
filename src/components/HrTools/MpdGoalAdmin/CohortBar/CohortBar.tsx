@@ -73,13 +73,17 @@ export const CohortBar: React.FC = () => {
 
   return (
     <>
-      {lastSent && (
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          {t('The last batch of MPD goals was run and sent on {{sentAt}}.', {
-            sentAt: dateTimeFormat(DateTime.fromISO(lastSent), locale),
-          })}
-        </Typography>
-      )}
+      {/* The region must outlive the text: a node inserted together with its own
+          aria-live is not reliably announced. */}
+      <Box aria-live="polite" sx={{ mb: lastSent ? 2 : 0 }}>
+        {lastSent && (
+          <Typography variant="body2" color="text.secondary">
+            {t('The last batch of MPD goals was run and sent on {{sentAt}}.', {
+              sentAt: dateTimeFormat(DateTime.fromISO(lastSent), locale),
+            })}
+          </Typography>
+        )}
+      </Box>
       <Stack
         direction={{ xs: 'column', md: 'row' }}
         spacing={4}

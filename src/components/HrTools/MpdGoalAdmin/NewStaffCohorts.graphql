@@ -88,7 +88,6 @@ mutation RunAndSendNewStaffCohort(
 ) {
   runAndSendNewStaffCohort(input: $input) {
     sentCount
-    sentAt
     # Normalizes over the cached cohort, so the banner updates without a refetch.
     newStaffCohort {
       id

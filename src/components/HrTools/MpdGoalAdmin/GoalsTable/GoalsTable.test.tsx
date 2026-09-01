@@ -70,13 +70,17 @@ const renderTable = (data = rows, cohorts?: NewStaffCohortsQuery) =>
     </Providers>,
   );
 
-/** Resolves once the cohort query has settled, so canRunAndSend is known. */
+/**
+ * Resolves once both queries have settled: the row action gates on `loading` as
+ * well as `canRunAndSend`, so it stays disabled until the drain finishes.
+ */
 const renderLoadedTable = async (
   data = rows,
   cohorts?: NewStaffCohortsQuery,
 ) => {
   const screen = renderTable(data, cohorts);
   await waitFor(() => expect(ctx.selectedCohort).toBeDefined());
+  await waitFor(() => expect(ctx.loading).toBe(false));
   return screen;
 };
 
@@ -151,6 +155,39 @@ describe('GoalsTable', () => {
     expect(
       await findByText('1 MPD Goals were run and sent.'),
     ).toBeInTheDocument();
+  });
+
+  it('does not claim missing inputs on an already-sent row', async () => {
+    const { getAllByRole, queryByRole } = await renderLoadedTable([
+      {
+        ...rows[0],
+        goalStatus: GoalStatusEnum.Sent,
+        goalSentAt: '2026-08-10T15:40:00Z',
+      },
+    ]);
+    const button = getAllByRole('button', { name: /Actions for/ })[0];
+    expect(button).toBeDisabled();
+
+    // Its chip already says why it is inert; the blocked copy would be false.
+    // No tooltip means no wrapper span, so the button sits straight in the cell.
+    expect(button.parentElement?.tagName).toBe('TD');
+    userEvent.hover(button, undefined, { skipPointerEventsCheck: true });
+    expect(queryByRole('tooltip')).not.toBeInTheDocument();
+  });
+
+  it('leaves the bulk selection alone when sending a single row', async () => {
+    const { getAllByRole, getByRole, findByText } = await renderLoadedTable();
+    // The row action targets one household and must not clear the checkboxes.
+    act(() => ctx.toggleRow('row-3'));
+
+    userEvent.click(getAllByRole('button', { name: /Actions for/ })[0]);
+    userEvent.click(getByRole('menuitem', { name: 'Run & Send this goal' }));
+    userEvent.click(getByRole('button', { name: 'Yes, Continue' }));
+
+    expect(
+      await findByText('1 MPD Goals were run and sent.'),
+    ).toBeInTheDocument();
+    expect(ctx.selectedRowIds.has('row-3')).toBe(true);
   });
 
   it('blocks the row action for a goal that is not Complete', async () => {

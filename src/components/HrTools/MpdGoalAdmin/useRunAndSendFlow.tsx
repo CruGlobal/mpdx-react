@@ -5,9 +5,18 @@ import { useMpdGoalAdmin } from './MpdGoalAdminContext';
 import { RunAndSendModalProps } from './RunAndSendModal/RunAndSendModal';
 import { StaffGoalRow, partitionSendable } from './mpdGoalAdminHelpers';
 
+interface OpenOptions {
+  /** False for the per-row action, whose target is one row, not the selection. */
+  clearsSelection?: boolean;
+}
+
 export interface RunAndSendFlow {
   /** Opens the confirmation for `rows`; the send itself waits on the confirm. */
-  openRunAndSend: (title: string, rows: StaffGoalRow[]) => void;
+  openRunAndSend: (
+    title: string,
+    rows: StaffGoalRow[],
+    options?: OpenOptions,
+  ) => void;
   /** Spread onto a single `RunAndSendModal` rendered by the caller. */
   modalProps: RunAndSendModalProps;
 }
@@ -27,10 +36,15 @@ export const useRunAndSendFlow = (): RunAndSendFlow => {
   const [target, setTarget] = useState<{
     title: string;
     rows: StaffGoalRow[];
-  }>({ title: '', rows: [] });
+    clearsSelection: boolean;
+  }>({ title: '', rows: [], clearsSelection: true });
 
-  const openRunAndSend = (title: string, rows: StaffGoalRow[]) => {
-    setTarget({ title, rows });
+  const openRunAndSend = (
+    title: string,
+    rows: StaffGoalRow[],
+    { clearsSelection = true }: OpenOptions = {},
+  ) => {
+    setTarget({ title, rows, clearsSelection });
     setOpen(true);
   };
 
@@ -39,19 +53,33 @@ export const useRunAndSendFlow = (): RunAndSendFlow => {
     // exactly what gets sent even when a search is narrowing the table.
     const { sendable } = partitionSendable(target.rows);
     setSending(true);
+    let sentCount: number;
+    // Scoped to the mutation so a later failure can't be mistaken for a failed send.
     try {
-      const sentCount = await runAndSend(sendable.map((row) => row.id));
-      enqueueSnackbar(
-        t('{{count}} MPD Goals were run and sent.', { count: sentCount }),
-        { variant: 'success' },
-      );
+      sentCount = await runAndSend(sendable.map((row) => row.id));
     } catch {
       // The global Apollo error link already toasts; stay open to retry.
       return;
     } finally {
       setSending(false);
     }
-    clearSelection();
+
+    // The server skips anything no longer Complete, so zero means the rows went
+    // stale. The refetch has already corrected them; don't call that a success.
+    if (sentCount === 0) {
+      enqueueSnackbar(t('No MPD goals were eligible to send.'), {
+        variant: 'info',
+      });
+      return;
+    }
+
+    enqueueSnackbar(
+      t('{{count}} MPD Goals were run and sent.', { count: sentCount }),
+      { variant: 'success' },
+    );
+    if (target.clearsSelection) {
+      clearSelection();
+    }
     setOpen(false);
   };
 
