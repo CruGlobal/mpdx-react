@@ -25,6 +25,23 @@ export const getPluralizedDescription = (
   return descriptions[value];
 };
 
+export const getPluralizedSubCategory = (
+  value: StaffExpensesSubCategoryEnum,
+  t: TFunction,
+): string | undefined => {
+  const descriptions: Partial<Record<StaffExpensesSubCategoryEnum, string>> = {
+    [StaffExpensesSubCategoryEnum.CreditCardFee]: t('Credit Card Fees'),
+    [StaffExpensesSubCategoryEnum.Donation]: t('Donations'),
+    [StaffExpensesSubCategoryEnum.HealthcareReimbursement]: t(
+      'Healthcare Reimbursements',
+    ),
+    [StaffExpensesSubCategoryEnum.MinistryReimbursement]: t(
+      'Ministry Reimbursements',
+    ),
+  };
+  return descriptions[value];
+};
+
 export const getLocalizedCategory = (
   value: StaffExpenseCategoryEnum,
   t: TFunction,
@@ -156,7 +173,8 @@ export const getLocalizedSubCategory = (
     [StaffExpensesSubCategoryEnum.Purchase]: t('Purchase'),
     [StaffExpensesSubCategoryEnum.SummerMission]: t('Summer Mission'),
     [StaffExpensesSubCategoryEnum.Staffcard]: t('StaffCard'),
-    [StaffExpensesSubCategoryEnum.PaCard]: t('PA Card'),
+    // PaCard to "Healthcare Debit Card" mapping is desired by the finance team
+    [StaffExpensesSubCategoryEnum.PaCard]: t('Healthcare Debit Card'),
     [StaffExpensesSubCategoryEnum.Unknown]: t('Unknown'),
   };
 

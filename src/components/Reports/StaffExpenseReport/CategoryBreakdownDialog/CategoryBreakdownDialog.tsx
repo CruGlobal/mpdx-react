@@ -34,8 +34,11 @@ export const CategoryBreakdownDialog: React.FC<
 
   const transactionsSortedByDate = useMemo(
     () =>
-      transactions.toSorted((a, b) =>
-        a.transactedAt.localeCompare(b.transactedAt, locale),
+      transactions.toSorted((transactionA, transactionB) =>
+        transactionA.transactedAt.localeCompare(
+          transactionB.transactedAt,
+          locale,
+        ),
       ),
     [transactions, locale],
   );

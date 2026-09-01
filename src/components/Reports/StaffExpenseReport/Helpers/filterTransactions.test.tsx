@@ -1,4 +1,6 @@
+import { ErgonoMockShape } from 'graphql-ergonomock';
 import { DateTime, Settings } from 'luxon';
+import { gqlMock } from '__tests__/util/graphqlMocking';
 import {
   Fund,
   StaffExpenseCategoryEnum,
@@ -6,97 +8,110 @@ import {
 } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import { Filters } from '../../Shared/SettingsDialog/SettingsDialog';
+import {
+  ReportsStaffExpensesDocument,
+  ReportsStaffExpensesQuery,
+} from '../GetStaffExpense.generated';
 import { DateRange, ReportType } from './StaffReportEnum';
 import {
-  GroupedTransaction,
   filterTransactions,
   getAvailableCategories,
+  getCombinableCategories,
+  isGroupedTransaction,
 } from './filterTransactions';
 
-const mockFund: Fund = {
-  id: 'fund-1',
-  fundType: 'Primary',
-  startBalance: 1200,
-  endBalance: -300,
-  deficitLimit: 0,
-  total: -500,
-  categories: [
-    // Grouped category
+interface MockTransaction {
+  amount: number;
+  transactedAt: string;
+  personNumber?: string | null;
+}
+
+interface MockGroup {
+  category: StaffExpenseCategoryEnum;
+  subCategory: StaffExpensesSubCategoryEnum;
+  transactions: MockTransaction[];
+}
+
+const buildFund = (groups: MockGroup[]): Fund => {
+  const categories = new Map<StaffExpenseCategoryEnum, MockGroup[]>();
+  groups.forEach((group) => {
+    categories.set(group.category, [
+      ...(categories.get(group.category) ?? []),
+      group,
+    ]);
+  });
+
+  const categoryMocks: ErgonoMockShape[] = Array.from(
+    categories,
+    ([category, group]) => ({
+      category,
+      subcategories: group.map(({ subCategory, transactions }) => ({
+        subCategory,
+        breakdownByMonth: [
+          {
+            transactions: transactions.map(
+              ({ amount, transactedAt, personNumber = null }) => ({
+                amount,
+                transactedAt,
+                personNumber,
+              }),
+            ),
+          },
+        ],
+      })),
+    }),
+  );
+
+  const { funds } = gqlMock<ReportsStaffExpensesQuery>(
+    ReportsStaffExpensesDocument,
     {
-      category: StaffExpenseCategoryEnum.AdditionalSalary,
-      total: -300,
-      averagePerMonth: -100,
-      subcategories: [
-        {
-          subCategory: StaffExpensesSubCategoryEnum.AdditionalSalary,
-          total: -200,
-          averagePerMonth: -50,
-          breakdownByMonth: [
-            {
-              month: '2025-02-01',
-              total: -100,
-              transactions: [
-                {
-                  id: 'transaction-1',
-                  amount: 100,
-                  transactedAt: '2025-01-15T00:00:00Z',
-                  description: 'January Additional Salary',
-                },
-                {
-                  id: 'transaction-2',
-                  amount: -100,
-                  transactedAt: '2025-01-20T00:00:00Z',
-                  description: 'Star Wars Costume',
-                },
-                {
-                  id: 'transaction-3',
-                  amount: -1000,
-                  transactedAt: '2025-01-24T00:00:00Z',
-                  description: 'January Additional Salary',
-                },
-              ],
-            },
-          ],
+      mocks: {
+        reportsStaffExpenses: {
+          funds: [{ fundType: 'Primary', categories: categoryMocks }],
         },
-      ],
-      breakdownByMonth: [{ month: '2025-01-01', total: -150 }],
+      },
     },
-    // Ungrouped category
-    {
-      category: StaffExpenseCategoryEnum.Benefits,
-      total: -100,
-      averagePerMonth: -50,
-      subcategories: [
-        {
-          subCategory: StaffExpensesSubCategoryEnum.HealthWelfare,
-          total: -100,
-          averagePerMonth: -50,
-          breakdownByMonth: [
-            {
-              month: '2025-02-01',
-              total: -50,
-              transactions: [
-                {
-                  id: 'transaction-4',
-                  amount: -50,
-                  transactedAt: '2025-01-10T00:00:00Z',
-                  description: 'Health Welfare Payment',
-                },
-              ],
-            },
-          ],
-        },
-      ],
-      breakdownByMonth: [{ month: '2025-01-01', total: -50 }],
-    },
-  ],
+  ).reportsStaffExpenses;
+
+  return funds[0];
 };
+
+const mockFund = buildFund([
+  {
+    category: StaffExpenseCategoryEnum.AdditionalSalary,
+    subCategory: StaffExpensesSubCategoryEnum.AdditionalSalary,
+    transactions: [
+      {
+        amount: 100,
+        transactedAt: '2025-01-15T00:00:00Z',
+      },
+      {
+        amount: -100,
+        transactedAt: '2025-01-20T00:00:00Z',
+      },
+      {
+        amount: -1000,
+        transactedAt: '2025-01-24T00:00:00Z',
+      },
+    ],
+  },
+  {
+    category: StaffExpenseCategoryEnum.Benefits,
+    subCategory: StaffExpensesSubCategoryEnum.HealthWelfare,
+    transactions: [
+      {
+        amount: -50,
+        transactedAt: '2025-01-10T00:00:00Z',
+      },
+    ],
+  },
+]);
 
 const baseFilters: Filters = {
   selectedDateRange: null,
   startDate: null,
   endDate: null,
-  categories: [],
+  categories: null,
 };
 
 const baseParams = {
@@ -107,13 +122,21 @@ const baseParams = {
   tableType: ReportType.Expense,
 };
 
+const marchParams = {
+  ...baseParams,
+  targetTime: DateTime.fromISO('2025-03-15'),
+};
+
+const reader = { personNumber: '000000111', name: 'Alex' };
+const spouse = { personNumber: '000000222', name: 'Jordan' };
+
 describe('filterTransactions', () => {
   it('filters transactions for the target month by default', () => {
     const result = filterTransactions({
       ...baseParams,
       tableType: ReportType.Income,
     });
-    // 1 income transaction, 3 expense transactions
+
     expect(result).toHaveLength(1);
   });
 
@@ -127,15 +150,14 @@ describe('filterTransactions', () => {
         endDate: DateTime.fromISO('2025-02-03'),
       },
     });
-    // 3 expense transactions, 1 income transaction
-    expect(result).toHaveLength(3);
+
+    expect(result).toHaveLength(2);
   });
 
   it('returns empty array if no main categories', () => {
-    const emptyFund = { ...mockFund, categories: null };
     const result = filterTransactions({
       ...baseParams,
-      fund: emptyFund,
+      fund: { ...mockFund, categories: null },
       targetTime: DateTime.fromISO('2024-06-01'),
       filters: {
         ...baseFilters,
@@ -143,6 +165,7 @@ describe('filterTransactions', () => {
         endDate: DateTime.fromISO('2025-02-03'),
       },
     });
+
     expect(result).toEqual([]);
   });
 
@@ -151,6 +174,7 @@ describe('filterTransactions', () => {
       ...baseParams,
       targetTime: DateTime.fromISO('2023-01-01'),
     });
+
     expect(result).toEqual([]);
   });
 
@@ -166,44 +190,431 @@ describe('filterTransactions', () => {
       },
       tableType: ReportType.Income,
     });
+
     expect(result).toEqual([]);
   });
 
-  it('groups transactions when category is selected in filters', () => {
+  it('collapses salary lines posted on the same date into one row', () => {
+    const result = filterTransactions({
+      ...marchParams,
+      fund: buildFund([
+        {
+          category: StaffExpenseCategoryEnum.Salary,
+          subCategory: StaffExpensesSubCategoryEnum.RegularPay,
+          transactions: [
+            {
+              amount: -2800,
+              transactedAt: '2025-03-14T00:00:00Z',
+            },
+          ],
+        },
+        {
+          category: StaffExpenseCategoryEnum.Salary,
+          subCategory: StaffExpensesSubCategoryEnum.TaxFederal,
+          transactions: [
+            { amount: -310, transactedAt: '2025-03-14T00:00:00Z' },
+          ],
+        },
+      ]),
+    });
+
+    const [salary] = result.filter(isGroupedTransaction);
+    expect(result).toHaveLength(1);
+    expect(salary.amount).toBe(-3110);
+    expect(salary.groupedTransactions).toHaveLength(2);
+    expect(salary.transactedAt).toBe('2025-03-14');
+    expect(salary.displayCategory).toBe('Salary');
+  });
+
+  it('keeps salary posted on different dates in separate rows', () => {
+    const result = filterTransactions({
+      ...marchParams,
+      fund: buildFund([
+        {
+          category: StaffExpenseCategoryEnum.Salary,
+          subCategory: StaffExpensesSubCategoryEnum.RegularPay,
+          transactions: [
+            {
+              amount: -2800,
+              transactedAt: '2025-03-14T00:00:00Z',
+            },
+            {
+              amount: -2900,
+              transactedAt: '2025-03-31T00:00:00Z',
+            },
+          ],
+        },
+      ]),
+    });
+
+    expect(result).toHaveLength(2);
+    expect(result.map((row) => row.transactedAt)).toEqual([
+      '2025-03-31',
+      '2025-03-14',
+    ]);
+  });
+
+  it('splits salary posted on one date between the reader and their spouse', () => {
+    const result = filterTransactions({
+      ...marchParams,
+      household: [reader, spouse],
+      fund: buildFund([
+        {
+          category: StaffExpenseCategoryEnum.Salary,
+          subCategory: StaffExpensesSubCategoryEnum.RegularPay,
+          transactions: [
+            {
+              amount: -2100,
+              transactedAt: '2025-03-14T00:00:00Z',
+              personNumber: spouse.personNumber,
+            },
+            {
+              amount: -2800,
+              transactedAt: '2025-03-14T00:00:00Z',
+              personNumber: reader.personNumber,
+            },
+          ],
+        },
+      ]),
+    });
+
+    expect(result.map((row) => row.displayCategory)).toEqual([
+      'Salary (Alex)',
+      'Salary (Jordan)',
+    ]);
+    expect(result.map((row) => row.amount)).toEqual([-2800, -2100]);
+  });
+
+  it('files salary SAA could not attribute under the reader', () => {
+    const result = filterTransactions({
+      ...marchParams,
+      household: [reader, spouse],
+      fund: buildFund([
+        {
+          category: StaffExpenseCategoryEnum.Salary,
+          subCategory: StaffExpensesSubCategoryEnum.RegularPay,
+          transactions: [
+            {
+              amount: -2800,
+              transactedAt: '2025-03-14T00:00:00Z',
+              personNumber: reader.personNumber,
+            },
+            { amount: -200, transactedAt: '2025-03-14T00:00:00Z' },
+          ],
+        },
+      ]),
+    });
+
+    // Nobody but the reader is in the range, so naming the row would be noise.
+    expect(result).toHaveLength(1);
+    expect(result[0].amount).toBe(-3000);
+    expect(result[0].displayCategory).toBe('Salary');
+  });
+
+  it('keeps a benefits paycheck as one household row', () => {
+    const result = filterTransactions({
+      ...marchParams,
+      household: [reader, spouse],
+      fund: buildFund([
+        {
+          category: StaffExpenseCategoryEnum.Benefits,
+          subCategory: StaffExpensesSubCategoryEnum.HealthWelfare,
+          transactions: [
+            {
+              amount: -300,
+              transactedAt: '2025-03-14T00:00:00Z',
+              personNumber: reader.personNumber,
+            },
+            {
+              amount: -280,
+              transactedAt: '2025-03-14T00:00:00Z',
+              personNumber: spouse.personNumber,
+            },
+          ],
+        },
+      ]),
+    });
+
+    expect(result).toHaveLength(1);
+    expect(result[0].amount).toBe(-580);
+    expect(result[0].displayCategory).toBe('Benefits');
+  });
+
+  it('leaves salary in one row when HCM lists nobody', () => {
+    const result = filterTransactions({
+      ...marchParams,
+      fund: buildFund([
+        {
+          category: StaffExpenseCategoryEnum.Salary,
+          subCategory: StaffExpensesSubCategoryEnum.RegularPay,
+          transactions: [
+            {
+              amount: -2800,
+              transactedAt: '2025-03-14T00:00:00Z',
+              personNumber: reader.personNumber,
+            },
+            {
+              amount: -2100,
+              transactedAt: '2025-03-14T00:00:00Z',
+              personNumber: spouse.personNumber,
+            },
+          ],
+        },
+      ]),
+    });
+
+    expect(result).toHaveLength(1);
+    expect(result[0].amount).toBe(-4900);
+    expect(result[0].displayCategory).toBe('Salary');
+  });
+
+  it('names a person number HCM does not list as the spouse', () => {
+    const result = filterTransactions({
+      ...marchParams,
+      household: [reader],
+      fund: buildFund([
+        {
+          category: StaffExpenseCategoryEnum.Salary,
+          subCategory: StaffExpensesSubCategoryEnum.RegularPay,
+          transactions: [
+            {
+              amount: -2800,
+              transactedAt: '2025-03-14T00:00:00Z',
+              personNumber: reader.personNumber,
+            },
+            {
+              amount: -2100,
+              transactedAt: '2025-03-14T00:00:00Z',
+              personNumber: '000000999',
+            },
+          ],
+        },
+      ]),
+    });
+
+    expect(result.map((row) => row.displayCategory)).toEqual([
+      'Salary (Alex)',
+      'Salary (Spouse)',
+    ]);
+  });
+
+  it('merges other assessment and staff assessment into one monthly row, leaving credit card fees separate', () => {
+    const result = filterTransactions({
+      ...marchParams,
+      fund: buildFund([
+        {
+          category: StaffExpenseCategoryEnum.Assessment,
+          subCategory: StaffExpensesSubCategoryEnum.OtherAssessment,
+          transactions: [
+            {
+              amount: -10,
+              transactedAt: '2025-03-05T00:00:00Z',
+            },
+          ],
+        },
+        {
+          category: StaffExpenseCategoryEnum.Assessment,
+          subCategory: StaffExpensesSubCategoryEnum.StaffAssessment,
+          transactions: [
+            {
+              amount: -20,
+              transactedAt: '2025-03-18T00:00:00Z',
+            },
+          ],
+        },
+        {
+          category: StaffExpenseCategoryEnum.Assessment,
+          subCategory: StaffExpensesSubCategoryEnum.CreditCardFee,
+          transactions: [{ amount: -5, transactedAt: '2025-03-09T00:00:00Z' }],
+        },
+      ]),
+    });
+
+    const grouped = result.filter(isGroupedTransaction);
+    expect(result).toHaveLength(2);
+
+    const assessments = grouped.find(
+      (row) => row.displayCategory === 'Assessments',
+    );
+    expect(assessments?.amount).toBe(-30);
+    expect(assessments?.groupedTransactions).toHaveLength(2);
+    expect(assessments?.transactedAt).toBe('2025-03-01');
+
+    const fees = grouped.find(
+      (row) => row.displayCategory === 'Credit Card Fees',
+    );
+    expect(fees?.amount).toBe(-5);
+    expect(fees?.groupedTransactions).toHaveLength(1);
+  });
+
+  it('itemizes transfers', () => {
+    const result = filterTransactions({
+      ...marchParams,
+      fund: buildFund([
+        {
+          category: StaffExpenseCategoryEnum.Transfer,
+          subCategory: StaffExpensesSubCategoryEnum.Transfer,
+          transactions: [
+            {
+              amount: -100,
+              transactedAt: '2025-03-02T00:00:00Z',
+            },
+            {
+              amount: -200,
+              transactedAt: '2025-03-02T00:00:00Z',
+            },
+          ],
+        },
+      ]),
+    });
+
+    expect(result).toHaveLength(2);
+    expect(result.every((row) => !isGroupedTransaction(row))).toBe(true);
+  });
+
+  it('itemizes bonuses alongside a salary rollup on the same date', () => {
+    const result = filterTransactions({
+      ...marchParams,
+      fund: buildFund([
+        {
+          category: StaffExpenseCategoryEnum.Salary,
+          subCategory: StaffExpensesSubCategoryEnum.RegularPay,
+          transactions: [
+            {
+              amount: -2800,
+              transactedAt: '2025-03-14T00:00:00Z',
+            },
+          ],
+        },
+        {
+          category: StaffExpenseCategoryEnum.Salary,
+          subCategory: StaffExpensesSubCategoryEnum.Bonuses,
+          transactions: [
+            {
+              amount: -1000,
+              transactedAt: '2025-03-14T00:00:00Z',
+            },
+          ],
+        },
+      ]),
+    });
+
+    const [salary] = result.filter(isGroupedTransaction);
+    const itemized = result.filter((row) => !isGroupedTransaction(row));
+
+    expect(itemized.map((row) => row.amount)).toEqual([-1000]);
+    expect(salary.amount).toBe(-2800);
+  });
+
+  it('splits positive and negative salary lines across the income and expense tables', () => {
+    const fund = buildFund([
+      {
+        category: StaffExpenseCategoryEnum.Salary,
+        subCategory: StaffExpensesSubCategoryEnum.RegularPay,
+        transactions: [
+          { amount: -2800, transactedAt: '2025-03-14T00:00:00Z' },
+          {
+            amount: 120,
+            transactedAt: '2025-03-14T00:00:00Z',
+          },
+        ],
+      },
+    ]);
+
+    const income = filterTransactions({
+      ...marchParams,
+      fund,
+      tableType: ReportType.Income,
+    });
+    const expenses = filterTransactions({ ...marchParams, fund });
+
+    const [incomeSalary] = income.filter(isGroupedTransaction);
+    const [expenseSalary] = expenses.filter(isGroupedTransaction);
+
+    expect(income).toHaveLength(1);
+    expect(expenses).toHaveLength(1);
+    expect(incomeSalary.amount).toBe(120);
+    expect(expenseSalary.amount).toBe(-2800);
+  });
+
+  it('keeps monthly rollups in separate rows per month', () => {
     const result = filterTransactions({
       ...baseParams,
+      fund: buildFund([
+        {
+          category: StaffExpenseCategoryEnum.Donation,
+          subCategory: StaffExpensesSubCategoryEnum.Donation,
+          transactions: [
+            {
+              amount: -25,
+              transactedAt: '2025-01-05T00:00:00Z',
+            },
+            {
+              amount: -35,
+              transactedAt: '2025-02-08T00:00:00Z',
+            },
+          ],
+        },
+      ]),
       filters: {
         ...baseFilters,
-        categories: [StaffExpenseCategoryEnum.AdditionalSalary],
+        startDate: DateTime.fromISO('2025-01-01'),
+        endDate: DateTime.fromISO('2025-02-28'),
       },
     });
 
-    // One grouped, one ungrouped
     expect(result).toHaveLength(2);
-    const grouped = result[0] as GroupedTransaction;
-    expect(grouped.groupedTransactions).toHaveLength(2);
-
-    const ungrouped = result[1];
-    expect('groupedTransactions' in ungrouped).toBe(false);
-    expect(ungrouped.category).toBe(StaffExpenseCategoryEnum.Benefits);
+    expect(result.map((row) => row.transactedAt)).toEqual([
+      '2025-02-01',
+      '2025-01-01',
+    ]);
+    expect(result[0].displayCategory).toBe('Donations');
   });
 
-  it('does not group transactions when category is not selected in filters', () => {
+  it('itemizes a category the reader unchecked', () => {
+    const fund = buildFund([
+      {
+        category: StaffExpenseCategoryEnum.Donation,
+        subCategory: StaffExpensesSubCategoryEnum.Donation,
+        transactions: [
+          {
+            amount: -25,
+            transactedAt: '2025-01-05T00:00:00Z',
+          },
+          {
+            amount: -35,
+            transactedAt: '2025-01-08T00:00:00Z',
+          },
+        ],
+      },
+    ]);
+
+    const consolidated = filterTransactions({ ...baseParams, fund });
+    expect(consolidated).toHaveLength(1);
+
+    const itemizedResult = filterTransactions({
+      ...baseParams,
+      fund,
+      filters: { ...baseFilters, categories: [] },
+    });
+
+    expect(itemizedResult).toHaveLength(2);
+    expect(itemizedResult.every((row) => !isGroupedTransaction(row))).toBe(
+      true,
+    );
+  });
+
+  it('consolidates every category when the settings are untouched', () => {
     const result = filterTransactions({ ...baseParams });
 
-    // 3 expense transactions, 1 income transaction
-    expect(result).toHaveLength(3);
-    expect(result.every((r) => !('groupedTransactions' in r))).toBe(true);
+    expect(result).toHaveLength(2);
+    expect(result.every((row) => isGroupedTransaction(row))).toBe(true);
   });
 
-  it('groups every category by default when no categories are selected', () => {
+  it('applies the standard grouping rules when filters are absent', () => {
     const result = filterTransactions({ ...baseParams, filters: undefined });
 
-    expect(
-      result.every(
-        (groupedTransaction) => 'groupedTransactions' in groupedTransaction,
-      ),
-    ).toBe(true);
+    expect(result.every((row) => isGroupedTransaction(row))).toBe(true);
   });
 
   it('maintains income/expense separation when grouping', () => {
@@ -217,154 +628,266 @@ describe('filterTransactions', () => {
       filters,
       tableType: ReportType.Income,
     });
-
-    const expenseResult = filterTransactions({
-      ...baseParams,
-      filters,
-    });
+    const expenseResult = filterTransactions({ ...baseParams, filters });
 
     expect(incomeResult).toHaveLength(1);
     expect(expenseResult).toHaveLength(2);
 
-    const incomeGrouped = incomeResult[0] as GroupedTransaction;
-    const expenseGrouped = expenseResult[0] as GroupedTransaction;
+    const [incomeGrouped] = incomeResult.filter(isGroupedTransaction);
+    const [expenseGrouped] = expenseResult
+      .filter(isGroupedTransaction)
+      .filter(
+        (row) => row.category === StaffExpenseCategoryEnum.AdditionalSalary,
+      );
 
     expect(incomeGrouped.amount).toBeGreaterThan(0);
     expect(expenseGrouped.amount).toBeLessThan(0);
-
-    expect(incomeGrouped.groupedTransactions.every((t) => t.amount > 0)).toBe(
-      true,
-    );
-    expect(expenseGrouped.groupedTransactions.every((t) => t.amount < 0)).toBe(
-      true,
-    );
+    expect(
+      incomeGrouped.groupedTransactions.every(
+        (transaction) => transaction.amount > 0,
+      ),
+    ).toBe(true);
+    expect(
+      expenseGrouped.groupedTransactions.every(
+        (transaction) => transaction.amount < 0,
+      ),
+    ).toBe(true);
   });
 
-  it('places grouped transactions at the top of the result array', () => {
+  it('sorts rows of equal standing by date, newest first', () => {
     const result = filterTransactions({
-      ...baseParams,
-      filters: {
-        ...baseFilters,
-        categories: [StaffExpenseCategoryEnum.AdditionalSalary],
-      },
+      ...marchParams,
+      fund: buildFund([
+        {
+          category: StaffExpenseCategoryEnum.Transfer,
+          subCategory: StaffExpensesSubCategoryEnum.Transfer,
+          transactions: [
+            { amount: -100, transactedAt: '2025-03-04T00:00:00Z' },
+            { amount: -200, transactedAt: '2025-03-26T00:00:00Z' },
+          ],
+        },
+      ]),
     });
 
-    // First item should be the grouped transaction
-    expect('groupedTransactions' in result[0]).toBe(true);
-    const grouped = result[0] as GroupedTransaction;
-    expect(grouped.categoryName).toBe(
-      StaffExpenseCategoryEnum.AdditionalSalary,
-    );
-
-    // Second item should be the ungrouped transaction
-    expect('groupedTransactions' in result[1]).toBe(false);
-    expect(result[1].category).toBe(StaffExpenseCategoryEnum.Benefits);
+    expect(result.map((row) => row.transactedAt)).toEqual([
+      '2025-03-26',
+      '2025-03-04',
+    ]);
   });
 
-  it('groups multiple categories when multiple are selected', () => {
+  it('leads the expenses with assessments, credit card fees, and benefits', () => {
     const result = filterTransactions({
-      ...baseParams,
-      filters: {
-        ...baseFilters,
-        categories: [
-          StaffExpenseCategoryEnum.AdditionalSalary,
-          StaffExpenseCategoryEnum.Benefits,
-        ],
-      },
+      ...marchParams,
+      fund: buildFund([
+        {
+          category: StaffExpenseCategoryEnum.Benefits,
+          subCategory: StaffExpensesSubCategoryEnum.HealthWelfare,
+          transactions: [{ amount: -50, transactedAt: '2025-03-14T00:00:00Z' }],
+        },
+        {
+          category: StaffExpenseCategoryEnum.Transfer,
+          subCategory: StaffExpensesSubCategoryEnum.Transfer,
+          transactions: [
+            { amount: -100, transactedAt: '2025-03-28T00:00:00Z' },
+          ],
+        },
+        {
+          category: StaffExpenseCategoryEnum.Assessment,
+          subCategory: StaffExpensesSubCategoryEnum.CreditCardFee,
+          transactions: [{ amount: -5, transactedAt: '2025-03-09T00:00:00Z' }],
+        },
+        {
+          category: StaffExpenseCategoryEnum.Assessment,
+          subCategory: StaffExpensesSubCategoryEnum.StaffAssessment,
+          transactions: [{ amount: -20, transactedAt: '2025-03-05T00:00:00Z' }],
+        },
+      ]),
     });
 
-    // Both categories should be grouped
-    expect(result).toHaveLength(2);
-    expect(result.every((r) => 'groupedTransactions' in r)).toBe(true);
+    expect(result.map((row) => row.displayCategory)).toEqual([
+      'Assessments',
+      'Credit Card Fees',
+      'Benefits',
+      'Transfer',
+    ]);
+  });
 
-    const grouped1 = result[0] as GroupedTransaction;
-    const grouped2 = result[1] as GroupedTransaction;
+  it('leads the income with donations', () => {
+    const result = filterTransactions({
+      ...marchParams,
+      tableType: ReportType.Income,
+      fund: buildFund([
+        {
+          category: StaffExpenseCategoryEnum.Donation,
+          subCategory: StaffExpensesSubCategoryEnum.NonCash,
+          transactions: [{ amount: 40, transactedAt: '2025-03-20T00:00:00Z' }],
+        },
+        {
+          category: StaffExpenseCategoryEnum.Donation,
+          subCategory: StaffExpensesSubCategoryEnum.Donation,
+          transactions: [{ amount: 100, transactedAt: '2025-03-05T00:00:00Z' }],
+        },
+      ]),
+    });
 
-    expect(grouped1.categoryName).toBe(
-      StaffExpenseCategoryEnum.AdditionalSalary,
-    );
-    expect(grouped2.categoryName).toBe(StaffExpenseCategoryEnum.Benefits);
+    expect(result.map((row) => row.displayCategory)).toEqual([
+      'Donations',
+      'Donation - Non Cash',
+    ]);
+  });
+
+  it('keeps every rollup above the itemized rows, whatever their dates', () => {
+    const result = filterTransactions({
+      ...marchParams,
+      fund: buildFund([
+        {
+          category: StaffExpenseCategoryEnum.Transfer,
+          subCategory: StaffExpensesSubCategoryEnum.Transfer,
+          transactions: [
+            { amount: -100, transactedAt: '2025-03-31T00:00:00Z' },
+          ],
+        },
+        {
+          category: StaffExpenseCategoryEnum.StaffExpense,
+          subCategory: StaffExpensesSubCategoryEnum.PaCard,
+          transactions: [{ amount: -80, transactedAt: '2025-03-06T00:00:00Z' }],
+        },
+        {
+          category: StaffExpenseCategoryEnum.Salary,
+          subCategory: StaffExpensesSubCategoryEnum.TaxFederal,
+          transactions: [
+            { amount: -300, transactedAt: '2025-03-28T00:00:00Z' },
+          ],
+        },
+      ]),
+    });
+
+    expect(result.map((row) => row.displayCategory)).toEqual([
+      'Salary',
+      'Healthcare Debit Card',
+      'Transfer',
+    ]);
+  });
+
+  it('keys each bucket by fund, bucket, and period', () => {
+    const result = filterTransactions({ ...baseParams });
+
+    expect(
+      result
+        .filter(isGroupedTransaction)
+        .map((row) => row.bucketKey)
+        .sort(),
+    ).toEqual([
+      'Primary|ADDITIONAL_SALARY|2025-01',
+      'Primary|BENEFITS|2025-01-10',
+    ]);
   });
 
   it('calculates correct total amount for grouped transactions', () => {
-    const result = filterTransactions({
-      ...baseParams,
-      filters: {
-        ...baseFilters,
-        categories: [StaffExpenseCategoryEnum.AdditionalSalary],
-      },
-    });
+    const result = filterTransactions({ ...baseParams });
 
-    const grouped = result[0] as GroupedTransaction;
-    // Should sum: -100 + -1000 = -1100
+    const [grouped] = result
+      .filter(isGroupedTransaction)
+      .filter(
+        (row) => row.category === StaffExpenseCategoryEnum.AdditionalSalary,
+      );
+
     expect(grouped.amount).toBe(-1100);
     expect(grouped.groupedTransactions).toHaveLength(2);
   });
 
-  it('uses the earliest transaction date, transformed from UTC, for grouped transaction', () => {
-    const result = filterTransactions({
-      ...baseParams,
-      filters: {
-        ...baseFilters,
-        categories: [StaffExpenseCategoryEnum.AdditionalSalary],
-      },
-    });
+  it('files a monthly rollup on the first of its month', () => {
+    const result = filterTransactions({ ...baseParams });
 
-    const grouped = result[0] as GroupedTransaction;
-    // Earliest transaction is transaction-2 at 2025-01-20
-    expect(grouped.transactedAt).toBe('2025-01-20');
+    const [grouped] = result
+      .filter(isGroupedTransaction)
+      .filter(
+        (row) => row.category === StaffExpenseCategoryEnum.AdditionalSalary,
+      );
+
+    expect(grouped.transactedAt).toBe('2025-01-01');
   });
 
-  it('sets displayCategory to localized category name for grouped transactions', () => {
+  it('itemizes every category when none are checked', () => {
     const result = filterTransactions({
       ...baseParams,
-      filters: {
-        ...baseFilters,
-        categories: [StaffExpenseCategoryEnum.AdditionalSalary],
-      },
+      filters: { ...baseFilters, categories: [] },
     });
 
-    const grouped = result[0] as GroupedTransaction;
-    // displayCategory should be localized category, not category-subcategory
-    expect(grouped.displayCategory).toBe('Additional Salary');
-    expect(grouped.displayCategory).not.toContain(' - ');
-  });
-
-  it('handles empty result when no transactions match grouping criteria', () => {
-    const result = filterTransactions({
-      ...baseParams,
-      filters: {
-        ...baseFilters,
-        categories: [StaffExpenseCategoryEnum.Transfer],
-      },
-    });
-
-    // No Transfer transactions in the data, so we should only get ungrouped transactions
-    // 3 expense transactions (transaction-2, transaction-3, transaction-4)
     expect(result).toHaveLength(3);
-    expect(result.every((r) => !('groupedTransactions' in r))).toBe(true);
+    expect(result.every((row) => !isGroupedTransaction(row))).toBe(true);
   });
 
-  describe('Ungrouped transactions (categories explicitly deselected)', () => {
-    it('should set displayCategory correctly for individual transactions when category equals subcategory', () => {
-      const result = filterTransactions({ ...baseParams });
-
-      const same = result.find(
-        (r) => r.category === StaffExpenseCategoryEnum.AdditionalSalary,
-      );
-      expect(same?.displayCategory).toBe('Additional Salary');
-      expect(same?.displayCategory).not.toContain(' - ');
+  it('does not let a shared bucket claim one member subcategory', () => {
+    const result = filterTransactions({
+      ...marchParams,
+      fund: buildFund([
+        {
+          category: StaffExpenseCategoryEnum.Salary,
+          subCategory: StaffExpensesSubCategoryEnum.RegularPay,
+          transactions: [
+            { amount: -2800, transactedAt: '2025-03-14T00:00:00Z' },
+          ],
+        },
+        {
+          category: StaffExpenseCategoryEnum.Salary,
+          subCategory: StaffExpensesSubCategoryEnum.TaxFederal,
+          transactions: [
+            { amount: -310, transactedAt: '2025-03-14T00:00:00Z' },
+          ],
+        },
+      ]),
     });
 
-    it('should set displayCategory correctly for individual transactions when category differs from subcategory', () => {
-      const result = filterTransactions({ ...baseParams });
+    const [salary] = result.filter(isGroupedTransaction);
+    expect(salary.category).toBe(StaffExpenseCategoryEnum.Salary);
+    expect(salary.subcategory).toBeUndefined();
+  });
 
-      const different = result.find(
-        (r) => r.category === StaffExpenseCategoryEnum.Benefits,
+  it('keeps the subcategory on a bucket that holds only one', () => {
+    const result = filterTransactions({ ...baseParams });
+
+    const [additionalSalary] = result
+      .filter(isGroupedTransaction)
+      .filter(
+        (row) => row.category === StaffExpenseCategoryEnum.AdditionalSalary,
       );
-      expect(different?.displayCategory).toBe('Benefits - Health & Welfare');
-      expect(different?.displayCategory).toContain(' - ');
+
+    expect(additionalSalary.subcategory).toBe(
+      StaffExpensesSubCategoryEnum.AdditionalSalary,
+    );
+  });
+
+  it('joins category and subcategory only when their labels differ', () => {
+    const result = filterTransactions({
+      ...baseParams,
+      filters: { ...baseFilters, categories: [] },
     });
+
+    expect(result.map((row) => row.displayCategory)).toEqual([
+      'Additional Salary',
+      'Additional Salary',
+      'Benefits - Health & Welfare',
+    ]);
+  });
+
+  it('labels a benefits rollup with its category rather than its subcategory', () => {
+    const result = filterTransactions({ ...baseParams });
+
+    const benefits = result.find(
+      (row) => row.category === StaffExpenseCategoryEnum.Benefits,
+    );
+    expect(benefits?.displayCategory).toBe('Benefits');
+  });
+
+  it('sets displayCategory to the subcategory label for a monthly rollup', () => {
+    const result = filterTransactions({ ...baseParams });
+
+    const additionalSalary = result.find(
+      (row) => row.category === StaffExpenseCategoryEnum.AdditionalSalary,
+    );
+    expect(additionalSalary?.displayCategory).toBe('Additional Salary');
+    expect(additionalSalary?.displayCategory).not.toContain(' - ');
   });
 });
 
@@ -383,6 +906,35 @@ describe('getAvailableCategories', () => {
 
     expect(result).toEqual([]);
   });
+
+  it('reports a category as combinable when its transactions roll up', () => {
+    expect(
+      getCombinableCategories([mockFund], null, DateTime.fromISO('2025-01-15')),
+    ).toEqual([
+      StaffExpenseCategoryEnum.AdditionalSalary,
+      StaffExpenseCategoryEnum.Benefits,
+    ]);
+  });
+
+  it('excludes a category whose transactions in range all itemize', () => {
+    // Donation rolls up monthly, but non-cash gifts under it do not. The category is only
+    // combinable when the data actually holds something combinable.
+    const nonCashOnly = buildFund([
+      {
+        category: StaffExpenseCategoryEnum.Donation,
+        subCategory: StaffExpensesSubCategoryEnum.NonCash,
+        transactions: [{ amount: -25, transactedAt: '2025-01-05T00:00:00Z' }],
+      },
+    ]);
+    const targetTime = DateTime.fromISO('2025-01-15');
+
+    expect(getAvailableCategories([nonCashOnly], null, targetTime)).toEqual([
+      StaffExpenseCategoryEnum.Donation,
+    ]);
+    expect(getCombinableCategories([nonCashOnly], null, targetTime)).toEqual(
+      [],
+    );
+  });
 });
 
 describe('UTC timestamps in a behind-UTC timezone', () => {
@@ -396,38 +948,18 @@ describe('UTC timestamps in a behind-UTC timezone', () => {
     Settings.defaultZone = originalZone;
   });
 
-  const firstOfMonthFund: Fund = {
-    ...mockFund,
-    categories: [
-      {
-        category: StaffExpenseCategoryEnum.Benefits,
-        total: -50,
-        averagePerMonth: -50,
-        subcategories: [
-          {
-            subCategory: StaffExpensesSubCategoryEnum.HealthWelfare,
-            total: -50,
-            averagePerMonth: -50,
-            breakdownByMonth: [
-              {
-                month: '2025-02-01',
-                total: -50,
-                transactions: [
-                  {
-                    id: 'transaction-first',
-                    amount: -50,
-                    transactedAt: '2025-02-01T00:00:00Z',
-                    description: 'First of the month',
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-        breakdownByMonth: [{ month: '2025-02-01', total: -50 }],
-      },
-    ],
-  };
+  const firstOfMonthFund = buildFund([
+    {
+      category: StaffExpenseCategoryEnum.Benefits,
+      subCategory: StaffExpensesSubCategoryEnum.HealthWelfare,
+      transactions: [
+        {
+          amount: -50,
+          transactedAt: '2025-02-01T00:00:00Z',
+        },
+      ],
+    },
+  ]);
 
   it('keeps a first-of-month transaction inside the default month filter', () => {
     const result = filterTransactions({
@@ -453,6 +985,30 @@ describe('UTC timestamps in a behind-UTC timezone', () => {
     });
 
     expect(result).toHaveLength(1);
+  });
+
+  it('buckets a first-of-month transaction into its own month', () => {
+    const result = filterTransactions({
+      ...baseParams,
+      fund: buildFund([
+        {
+          category: StaffExpenseCategoryEnum.Donation,
+          subCategory: StaffExpensesSubCategoryEnum.Donation,
+          transactions: [
+            {
+              amount: -25,
+              transactedAt: '2025-02-01T00:00:00Z',
+            },
+          ],
+        },
+      ]),
+      targetTime: DateTime.fromISO('2025-02-15'),
+      filters: null,
+    });
+
+    const [donations] = result.filter(isGroupedTransaction);
+    expect(result).toHaveLength(1);
+    expect(donations.bucketKey).toBe('Primary|DONATION|2025-02');
   });
 
   it('getAvailableCategories includes a category whose only transaction is on the 1st', () => {

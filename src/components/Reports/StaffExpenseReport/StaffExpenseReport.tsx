@@ -14,6 +14,7 @@ import {
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { useHcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -41,7 +42,11 @@ import { BalanceCardList } from './BalanceCardList/BalanceCardList';
 import { ExportCsvButton } from './ExportCsvButton/ExportCsvButton';
 import { useReportsStaffExpensesQuery } from './GetStaffExpense.generated';
 import { ReportType } from './Helpers/StaffReportEnum';
-import { Transaction, filterTransactions } from './Helpers/filterTransactions';
+import {
+  HouseholdMember,
+  Transaction,
+  filterTransactions,
+} from './Helpers/filterTransactions';
 import {
   dateRangeToString,
   getFormattedDateString,
@@ -111,7 +116,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
         'Re-Entry',
       ];
 
-  const { data, loading } = useReportsStaffExpensesQuery({
+  const { data, loading: reportLoading } = useReportsStaffExpensesQuery({
     variables: {
       fundTypes,
       ...getStaffExpenseMonthRange(filters, time),
@@ -121,6 +126,21 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 
   const { data: accountData } = useStaffAccountQuery();
   const { name } = accountData?.staffAccount ?? {};
+
+  // Person numbers tell the reader's payroll from their spouse's. HCM lists the reader first, then
+  // their spouse. Held alongside the report data's own loading so salary is not rendered as one
+  // household total and then split.
+  const { data: hcmData, loading: hcmLoading } = useHcmQuery();
+  const household: HouseholdMember[] = useMemo(
+    () =>
+      hcmData?.hcm.map(({ staffInfo }) => ({
+        personNumber: staffInfo.personNumber,
+        name: staffInfo.preferredName ?? staffInfo.lastName,
+      })) ?? [],
+    [hcmData],
+  );
+
+  const loading = reportLoading || hcmLoading;
 
   const handlePrint = () => window.print();
 
@@ -133,14 +153,14 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 
   const allFunds: Fund[] = useMemo(
     () =>
-      (data?.reportsStaffExpenses?.funds ?? []).toSorted((a, b) =>
-        compareFundTypes(a.fundType, b.fundType),
+      (data?.reportsStaffExpenses?.funds ?? []).toSorted((fundA, fundB) =>
+        compareFundTypes(fundA.fundType, fundB.fundType),
       ),
     [data],
   );
 
   const defaultFundType: string | null =
-    allFunds.find((f) => f.fundType === 'Primary')?.fundType ??
+    allFunds.find((fund) => fund.fundType === 'Primary')?.fundType ??
     allFunds[0]?.fundType ??
     null;
 
@@ -180,6 +200,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
         targetTime: time,
         fund,
         filters,
+        household,
         t,
       });
       const expenseTransactions = filterTransactions({
@@ -187,6 +208,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
         targetTime: time,
         fund,
         filters,
+        household,
         t,
       });
 
@@ -197,7 +219,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     });
 
     return newTransactions;
-  }, [allFunds, time, t, filters]);
+  }, [allFunds, time, t, filters, household]);
 
   const selectedFundTransactions = useMemo(
     () =>

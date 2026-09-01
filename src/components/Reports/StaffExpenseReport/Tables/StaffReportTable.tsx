@@ -9,15 +9,19 @@ import {
 } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import { DataGrid, GridColDef, GridSortModel } from '@mui/x-data-grid';
-import { TFunction } from 'i18next';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
-import { getPluralizedDescription } from '../../Shared/Helpers/transformStaffExpenseEnums';
+import { currencyFormat } from 'src/lib/intlFormat';
 import { CategoryBreakdownDialog } from '../CategoryBreakdownDialog/CategoryBreakdownDialog';
 import { ReportType } from '../Helpers/StaffReportEnum';
-import { GroupedTransaction, Transaction } from '../Helpers/filterTransactions';
+import { AggregationPeriod } from '../Helpers/aggregationPolicy';
+import {
+  GroupedTransaction,
+  Transaction,
+  isGroupedTransaction,
+} from '../Helpers/filterTransactions';
+import { formatAggregatedDate } from '../Helpers/formatDate';
 
 const DEFAULT_PAGE_SIZE = 25;
 
@@ -72,32 +76,23 @@ export interface StaffReportRow {
   description: string;
   amount: number;
   isGrouped: boolean;
+  period: AggregationPeriod;
   groupedTransaction?: GroupedTransaction;
 }
-
-const descriptionName = (
-  transaction: Transaction | GroupedTransaction,
-  t: TFunction,
-): string => {
-  // Compare against the locale-invariant enum, not the localized
-  // displayCategory, so the relabel works in every locale.
-  const description = getPluralizedDescription(transaction.category, t);
-
-  return description ? description : transaction.displayCategory;
-};
 
 export const createStaffReportRow = (
   transaction: Transaction | GroupedTransaction,
   index: number,
-  t: TFunction,
 ): StaffReportRow => {
-  const isGrouped = 'groupedTransactions' in transaction;
+  const isGrouped = isGroupedTransaction(transaction);
   return {
     id: index.toString(),
     date: DateTime.fromISO(transaction.transactedAt),
-    description: descriptionName(transaction, t),
+    // A rolled up row carries its bucket label; an itemized one shows what the transaction says.
+    description: transaction.description || transaction.displayCategory,
     amount: transaction.amount,
     isGrouped,
+    period: isGrouped ? transaction.period : AggregationPeriod.None,
     groupedTransaction: isGrouped ? transaction : undefined,
   };
 };
@@ -149,14 +144,11 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
   };
 
   const staffReportRows = useMemo(() => {
-    return transactions.map((data, index) =>
-      createStaffReportRow(data, index, t),
-    );
-  }, [transactions, t]);
+    return transactions.map((data, index) => createStaffReportRow(data, index));
+  }, [transactions]);
 
-  const date: RenderCell = ({ row }) => {
-    return dateFormat(row.date, locale);
-  };
+  const date: RenderCell = ({ row }) =>
+    formatAggregatedDate(row.date, row.period, locale);
 
   const description: RenderCell = ({ row }) => (
     <Tooltip title={row.description}>
@@ -195,19 +187,6 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
     );
   };
 
-  const rowsWithSortPriority = useMemo(() => {
-    const sorted = [...staffReportRows].sort((a, b) => {
-      if (a.isGrouped !== b.isGrouped) {
-        return a.isGrouped ? -1 : 1;
-      }
-      return b.date.toMillis() - a.date.toMillis();
-    });
-
-    return sorted.map((row) => ({
-      ...row,
-    }));
-  }, [staffReportRows]);
-
   const columns: GridColDef[] = [
     {
       field: 'date',
@@ -226,10 +205,10 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
       headerName: t('Amount'),
       width: 150,
       renderCell: amount,
-      sortComparator: (v1: number, v2: number) =>
+      sortComparator: (amountA: number, amountB: number) =>
         tableType === ReportType.Expense
-          ? Math.abs(v1) - Math.abs(v2)
-          : v1 - v2,
+          ? Math.abs(amountA) - Math.abs(amountB)
+          : amountA - amountB,
     },
     {
       field: 'tooltip',
@@ -270,10 +249,10 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
       </Box>
       <StyledGrid
         tableType={tableType}
-        rows={rowsWithSortPriority || []}
+        rows={staffReportRows}
         columns={columns}
         getRowId={(row) => row.id}
-        sortingOrder={['desc', 'asc']}
+        sortingOrder={['desc', 'asc', null]}
         sortModel={sortModel}
         onSortModelChange={(size) => setSortModel(size)}
         pageSizeOptions={[DEFAULT_PAGE_SIZE]}

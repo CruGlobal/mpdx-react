@@ -13,6 +13,7 @@ import {
   attendees,
   attendeesMock,
   cohortsMock,
+  noCohortsMock,
   runAndSentMock,
   trainingCosts,
 } from './mpdGoalAdminMocks';
@@ -127,14 +128,7 @@ describe('MpdGoalAdminContext', () => {
 
   it('finishes loading with an empty state when there are no cohorts', async () => {
     const { result } = renderHook(() => useMpdGoalAdmin(), {
-      wrapper: makeWrapper({
-        cohorts: {
-          newStaffCohorts: {
-            nodes: [],
-            pageInfo: { endCursor: null, hasNextPage: false },
-          },
-        },
-      }),
+      wrapper: makeWrapper({ cohorts: noCohortsMock }),
     });
 
     await waitFor(() => expect(result.current.loading).toBe(false));

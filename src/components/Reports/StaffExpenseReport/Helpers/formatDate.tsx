@@ -1,5 +1,27 @@
 import { DateTime } from 'luxon';
+import { dateFormat, monthYearFormat } from 'src/lib/intlFormat';
 import { DateRange } from './StaffReportEnum';
+import { AggregationPeriod } from './aggregationPolicy';
+import { GroupedTransaction, Transaction } from './filterTransactions';
+
+export const formatAggregatedDate = (
+  date: DateTime,
+  period: AggregationPeriod,
+  locale: string,
+): string =>
+  period === AggregationPeriod.Month
+    ? monthYearFormat(date.month, date.year, locale, true, true)
+    : dateFormat(date, locale);
+
+export const formatTransactionDate = (
+  transaction: Transaction | GroupedTransaction,
+  locale: string,
+): string =>
+  formatAggregatedDate(
+    DateTime.fromISO(transaction.transactedAt),
+    'period' in transaction ? transaction.period : AggregationPeriod.None,
+    locale,
+  );
 
 export const formatDate = (date: DateTime, locale: string) => {
   return date.toJSDate().toLocaleDateString(locale, {

@@ -57,9 +57,9 @@ const renderButton = () =>
     </ThemeProvider>,
   );
 
-/** Waits for the cohorts query, without which no cohort is selected. */
+/** Waits for the cohorts query and the auto-select that follows it, which would otherwise overwrite a selection the test makes. */
 const waitForCohorts = () =>
-  waitFor(() => expect(ctx.cohorts).not.toHaveLength(0));
+  waitFor(() => expect(ctx.selectedCohortId).not.toBe(''));
 
 describe('PrintCohortGoalsButton', () => {
   beforeEach(() => {
