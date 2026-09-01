@@ -92,6 +92,14 @@ export const cohortsWithoutCostsMock: NewStaffCohortsQuery = {
   },
 };
 
+/** A user whose role scopes them out of every cohort; drives the empty state. */
+export const noCohortsMock: NewStaffCohortsQuery = {
+  newStaffCohorts: {
+    nodes: [],
+    pageInfo: { endCursor: null, hasNextPage: false },
+  },
+};
+
 type AttendeeNode =
   NewStaffCohortAttendeesQuery['newStaffCohort']['attendees']['nodes'][number];
 
@@ -158,11 +166,3 @@ export const updatedCohortMock = (
     },
   },
 });
-
-/** A user whose role scopes them out of every cohort; drives the empty state. */
-export const noCohortsMock: NewStaffCohortsQuery = {
-  newStaffCohorts: {
-    nodes: [],
-    pageInfo: { endCursor: null, hasNextPage: false },
-  },
-};
