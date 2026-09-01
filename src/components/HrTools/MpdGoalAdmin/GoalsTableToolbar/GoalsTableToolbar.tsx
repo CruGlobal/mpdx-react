@@ -42,9 +42,7 @@ export const GoalsTableToolbar: React.FC = () => {
   const [assignCoachOpen, setAssignCoachOpen] = useState(false);
   const { openRunAndSend, modalProps } = useRunAndSendFlow();
 
-  // Costs missing makes every goal Incomplete, so say that instead of listing
-  // the whole cohort as unsendable in the confirm modal. Fails closed on an
-  // unknown cohort, matching the per-row gate.
+  // Fails closed on an unknown cohort, matching the per-row gate.
   const blocked = !selectedCohort?.canRunAndSend;
 
   // TODO(MPDX-9914): call the assignCoach mutation once the backend exists.

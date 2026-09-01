@@ -239,7 +239,6 @@ describe('GoalsTableToolbar', () => {
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('RunAndSendNewStaffCohort'),
     );
-    // Re-enabling proves the failure settled through the finally block.
     await waitFor(() => expect(confirm).toBeEnabled());
     expect(getByRole('dialog')).toBeInTheDocument();
     // The global Apollo error link owns the failure toast; don't claim success.

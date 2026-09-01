@@ -70,10 +70,7 @@ const renderTable = (data = rows, cohorts?: NewStaffCohortsQuery) =>
     </Providers>,
   );
 
-/**
- * Resolves once both queries have settled: the row action gates on `loading` as
- * well as `canRunAndSend`, so it stays disabled until the drain finishes.
- */
+/** Resolves once both queries settle; the row action stays disabled until then. */
 const renderLoadedTable = async (
   data = rows,
   cohorts?: NewStaffCohortsQuery,
@@ -168,7 +165,6 @@ describe('GoalsTable', () => {
     const button = getAllByRole('button', { name: /Actions for/ })[0];
     expect(button).toBeDisabled();
 
-    // Its chip already says why it is inert; the blocked copy would be false.
     // No tooltip means no wrapper span, so the button sits straight in the cell.
     expect(button.parentElement?.tagName).toBe('TD');
     userEvent.hover(button, undefined, { skipPointerEventsCheck: true });
@@ -192,7 +188,6 @@ describe('GoalsTable', () => {
 
   it('blocks the row action for a goal that is not Complete', async () => {
     const { getAllByRole, findByRole } = await renderLoadedTable();
-    // rows[1] (row-2) is Incomplete.
     const button = getAllByRole('button', { name: /Actions for/ })[1];
     expect(button).toBeDisabled();
 

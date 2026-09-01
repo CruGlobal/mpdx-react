@@ -72,7 +72,6 @@ describe('RunAndSendModal', () => {
 
   it('locks the dialog down while the send is in flight', () => {
     const { getByRole } = setup({ sending: true });
-    // Run & Send emails staff and their coaches, so a double-fire matters.
     expect(getByRole('button', { name: 'Yes, Continue' })).toBeDisabled();
     expect(getByRole('button', { name: 'No, Cancel' })).toBeDisabled();
     expect(getByRole('button', { name: 'Close' })).toBeDisabled();

@@ -21,11 +21,7 @@ export interface RunAndSendFlow {
   modalProps: RunAndSendModalProps;
 }
 
-/**
- * The confirm-then-send flow behind all three Run & Send entry points: the
- * toolbar's "All" button, its "Selected" bulk action, and the per-row action.
- * Each caller renders its own modal but shares this behavior.
- */
+/** The confirm-then-send flow shared by all three Run & Send entry points. */
 export const useRunAndSendFlow = (): RunAndSendFlow => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -49,13 +45,10 @@ export const useRunAndSendFlow = (): RunAndSendFlow => {
   };
 
   const handleConfirm = async () => {
-    // Explicit ids rather than an omitted list, so what the modal previewed is
-    // exactly what gets sent even when a search is narrowing the table. The
-    // cost: an id withdrawn since then fails the whole send, not just itself.
+    // Explicit ids keep the send to what the modal previewed, but a withdrawn id fails the whole batch.
     const { sendable } = partitionSendable(target.rows);
     setSending(true);
     let sentCount: number;
-    // Scoped to the mutation so a later failure can't be mistaken for a failed send.
     try {
       sentCount = await runAndSend(sendable.map((row) => row.id));
     } catch {
@@ -65,8 +58,7 @@ export const useRunAndSendFlow = (): RunAndSendFlow => {
       setSending(false);
     }
 
-    // The server skips anything no longer Complete, so zero means the rows went
-    // stale. The refetch has already corrected them; don't call that a success.
+    // Zero means every row went stale server-side, which is not a success.
     if (sentCount === 0) {
       enqueueSnackbar(t('No MPD goals were eligible to send.'), {
         variant: 'info',

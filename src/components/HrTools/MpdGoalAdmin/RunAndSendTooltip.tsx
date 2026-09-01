@@ -8,11 +8,7 @@ interface RunAndSendTooltipProps {
   children: React.ReactElement;
 }
 
-/**
- * Explains why a Run & Send control is inert. The span is required twice over: a
- * disabled MUI control fires no mouse events for the tooltip to listen to, and
- * it leaves the tab order, so the span carries the only reachable focus target.
- */
+/** Explains why a Run & Send control is inert; the span is needed because a disabled control has neither mouse events nor a tab stop. */
 export const RunAndSendTooltip: React.FC<RunAndSendTooltipProps> = ({
   show,
   children,
@@ -29,10 +25,7 @@ export const RunAndSendTooltip: React.FC<RunAndSendTooltipProps> = ({
         'All inputs and per-training costs are required to run & send goals.',
       )}
     >
-      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex --
-          the span is the accessible stand-in for a disabled control, which is
-          out of the tab order, so without a tab stop here the reason the action
-          is unavailable is reachable by hover only. */}
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- the disabled child has no tab stop of its own */}
       <span tabIndex={0}>{children}</span>
     </Tooltip>
   );

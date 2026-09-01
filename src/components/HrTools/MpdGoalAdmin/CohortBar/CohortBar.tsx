@@ -67,14 +67,12 @@ export const CohortBar: React.FC = () => {
     setTrainingCostsOpen(false);
   };
 
-  // goalsSentAt tracks the most recent batch, so the copy says "last batch"
-  // rather than claiming every complete goal went out at that time.
+  // goalsSentAt tracks the most recent batch, so the copy says "last batch".
   const lastSent = selectedCohort?.goalsSentAt;
 
   return (
     <>
-      {/* The region must outlive the text: a node inserted together with its own
-          aria-live is not reliably announced. */}
+      {/* The region must outlive the text, or its appearance is not announced. */}
       <Box aria-live="polite" sx={{ mb: lastSent ? 2 : 0 }}>
         {lastSent && (
           <Typography variant="body2" color="text.secondary">

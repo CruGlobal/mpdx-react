@@ -51,12 +51,7 @@ export interface MpdGoalAdminContextValue {
   clearSelection: () => void;
   /** Saves training costs; resolves once dependent goals have been refetched. */
   saveTrainingCosts: (cohortId: string, costs: TrainingCosts) => Promise<void>;
-  /**
-   * Runs & sends `attendeeIds` in the selected cohort and resolves with the
-   * number the server actually sent, which can be lower than the count asked
-   * for. Resolves once the rows have been refetched, so callers can toast
-   * against fresh chips.
-   */
+  /** Resolves with the count the server actually sent, which can be lower than asked. */
   runAndSend: (attendeeIds: string[]) => Promise<number>;
   /** Assigns one coach to every row in `rowIds`, across all cohorts. */
   assignCoach: (rowIds: string[], coachName: string) => void;

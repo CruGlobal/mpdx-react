@@ -123,8 +123,7 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
     assignCoach([coachRow.id], coach.name);
   };
 
-  // Costs missing already makes every goal Incomplete, but the cohort flag also
-  // covers blockers that leave a goal Complete.
+  // The cohort flag also covers blockers that leave a goal Complete.
   const canRunAndSendRow = (row: StaffGoalRow | undefined) =>
     !loading && !!row && isSendable(row) && !!selectedCohort?.canRunAndSend;
 
@@ -239,10 +238,7 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
                 </Link>
               </TableCell>
               <TableCell padding="checkbox" align="right">
-                {/* Run & Send is the only action, so the gate sits on the
-                    button; move it onto the item once the menu grows. A Sent
-                    row's chip already explains itself, and the blocked copy
-                    would wrongly claim its inputs are missing. */}
+                {/* A Sent row's chip already explains itself; the blocked copy would claim its inputs are missing. */}
                 <RunAndSendTooltip
                   show={
                     !canRunAndSendRow(row) &&
