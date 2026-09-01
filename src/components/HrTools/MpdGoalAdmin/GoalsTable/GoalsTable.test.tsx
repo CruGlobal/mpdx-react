@@ -2,12 +2,14 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { MpdGoalAdminProvider, useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import {
   NewStaffCohortAttendeesQuery,
   NewStaffCohortsQuery,
+  RunAndSendNewStaffCohortMutation,
 } from '../NewStaffCohorts.generated';
 import {
   DEFAULT_ROWS_PER_PAGE,
@@ -15,7 +17,13 @@ import {
   StaffGoalRow,
   attendeeToRow,
 } from '../mpdGoalAdminHelpers';
-import { attendees, attendeesMock, cohortsMock } from '../mpdGoalAdminMocks';
+import {
+  attendees,
+  attendeesMock,
+  cohortsMock,
+  cohortsWithoutCostsMock,
+  runAndSentMock,
+} from '../mpdGoalAdminMocks';
 import { GoalsTable } from './GoalsTable';
 
 const rows: StaffGoalRow[] = attendees.map(attendeeToRow);
@@ -26,30 +34,55 @@ const Capture: React.FC<{ rows: StaffGoalRow[] }> = ({ rows }) => {
   return <GoalsTable rows={rows} />;
 };
 
-const Providers: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+const mutationSpy = jest.fn();
+
+const Providers: React.FC<{
+  children: React.ReactNode;
+  cohorts?: NewStaffCohortsQuery;
+}> = ({ children, cohorts = cohortsMock }) => (
   <ThemeProvider theme={theme}>
-    <GqlMockedProvider<{
-      NewStaffCohorts: NewStaffCohortsQuery;
-      NewStaffCohortAttendees: NewStaffCohortAttendeesQuery;
-    }>
-      mocks={{
-        NewStaffCohorts: cohortsMock,
-        NewStaffCohortAttendees: attendeesMock(),
-      }}
-    >
-      <MpdGoalAdminProvider>{children}</MpdGoalAdminProvider>
-    </GqlMockedProvider>
+    <SnackbarProvider>
+      <GqlMockedProvider<{
+        NewStaffCohorts: NewStaffCohortsQuery;
+        NewStaffCohortAttendees: NewStaffCohortAttendeesQuery;
+        RunAndSendNewStaffCohort: RunAndSendNewStaffCohortMutation;
+      }>
+        mocks={{
+          NewStaffCohorts: cohorts,
+          NewStaffCohortAttendees: attendeesMock(),
+          RunAndSendNewStaffCohort: runAndSentMock(
+            cohorts.newStaffCohorts.nodes[0].id,
+            1,
+          ),
+        }}
+        onCall={mutationSpy}
+      >
+        <MpdGoalAdminProvider>{children}</MpdGoalAdminProvider>
+      </GqlMockedProvider>
+    </SnackbarProvider>
   </ThemeProvider>
 );
 
-const renderTable = (data = rows) =>
+const renderTable = (data = rows, cohorts?: NewStaffCohortsQuery) =>
   render(
-    <Providers>
+    <Providers cohorts={cohorts}>
       <Capture rows={data} />
     </Providers>,
   );
 
+/** Resolves once the cohort query has settled, so canRunAndSend is known. */
+const renderLoadedTable = async (
+  data = rows,
+  cohorts?: NewStaffCohortsQuery,
+) => {
+  const screen = renderTable(data, cohorts);
+  await waitFor(() => expect(ctx.selectedCohort).toBeDefined());
+  return screen;
+};
+
 describe('GoalsTable', () => {
+  beforeEach(() => mutationSpy.mockClear());
+
   it('renders a row per staff member with a formatted goal', () => {
     const { getByText, getAllByRole } = renderTable();
     expect(getByText('John & Jane Doe')).toBeInTheDocument();
@@ -81,6 +114,64 @@ describe('GoalsTable', () => {
     const { getByText } = renderTable([sentRow]);
     const chip = getByText('Sent').closest('.MuiChip-root');
     expect(chip).toHaveClass('MuiChip-colorInfo');
+  });
+
+  it('dates the Sent chip from the row, not the cohort', () => {
+    // A later cohort batch must not re-date a row sent in an earlier one.
+    const { getByText } = renderTable([
+      {
+        ...rows[0],
+        goalStatus: GoalStatusEnum.Sent,
+        goalSentAt: '2026-08-10T15:40:00Z',
+      },
+    ]);
+    expect(getByText('Sent 8/10/2026')).toBeInTheDocument();
+  });
+
+  it('runs & sends a single row from its actions menu', async () => {
+    const { getAllByRole, getByRole, findByText } = await renderLoadedTable();
+
+    // rows[0] is Complete; its menu is the only entry point for one household.
+    userEvent.click(getAllByRole('button', { name: /Actions for/ })[0]);
+    userEvent.click(getByRole('menuitem', { name: 'Run & Send this goal' }));
+
+    const dialog = getByRole('dialog');
+    expect(dialog).toHaveTextContent('Run and Send this MPD Goal?');
+    expect(dialog).toHaveTextContent(
+      'This will make this goal active and send it to the staff and their coach.',
+    );
+
+    userEvent.click(getByRole('button', { name: 'Yes, Continue' }));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('RunAndSendNewStaffCohort', {
+        input: { cohortId: 'fall-nso-2026', attendeeIds: ['row-1'] },
+      }),
+    );
+    expect(
+      await findByText('1 MPD Goals were run and sent.'),
+    ).toBeInTheDocument();
+  });
+
+  it('blocks the row action for a goal that is not Complete', async () => {
+    const { getAllByRole, findByRole } = await renderLoadedTable();
+    // rows[1] (row-2) is Incomplete.
+    const button = getAllByRole('button', { name: /Actions for/ })[1];
+    expect(button).toBeDisabled();
+
+    userEvent.hover(button.parentElement as HTMLElement);
+    expect(await findByRole('tooltip')).toHaveTextContent(
+      'All inputs and per-training costs are required to run & send goals.',
+    );
+  });
+
+  it('blocks the row action while the cohort is missing training costs', async () => {
+    const { getAllByRole } = await renderLoadedTable(
+      rows,
+      cohortsWithoutCostsMock,
+    );
+    // rows[0] is Complete, but the cohort itself cannot run & send.
+    expect(getAllByRole('button', { name: /Actions for/ })[0]).toBeDisabled();
   });
 
   it('shows an Assign Coach prompt when no coach is set', () => {

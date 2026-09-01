@@ -33,6 +33,8 @@ export interface StaffGoalRow {
   /** MPD goal amount in USD; null until the goal calculation exists. */
   mpdGoal: number | null;
   goalStatus: NewStaffCohortAttendeeGoalStatusEnum;
+  /** ISO timestamp of the batch that sent this household; null until sent. */
+  goalSentAt: string | null;
   /** null before the survey establishes the household's marital status. */
   familyStatus: NewStaffQuestionnaireMaritalStatusEnum | null;
   /** null renders an "Assign Coach" prompt instead of a name. */
@@ -93,6 +95,10 @@ export interface Cohort {
   /** Display string, e.g. "08/10/2026"; "—" when the API has no date yet. */
   nsoDate: string;
   hasTrainingCosts: boolean;
+  /** False while `runAndSendBlockers` holds a reason Run & Send is unavailable. */
+  canRunAndSend: boolean;
+  /** ISO timestamp of the most recent Run & Send batch; null until the first. */
+  goalsSentAt: string | null;
   /** Saved training cost figures; undefined until every cost is entered. */
   trainingCosts?: TrainingCosts;
 }
@@ -132,6 +138,8 @@ export const cohortNodeToCohort = (
     ? dateFormatShort(DateTime.fromISO(node.date), locale)
     : '—',
   hasTrainingCosts: node.hasTrainingCosts,
+  canRunAndSend: node.canRunAndSend,
+  goalsSentAt: node.goalsSentAt ?? null,
   trainingCosts: cohortToTrainingCosts(node),
 });
 
@@ -143,6 +151,7 @@ export const attendeeToRow = (attendee: AttendeeNode): StaffGoalRow => ({
   // Absent until the questionnaire completes; the row still renders.
   mpdGoal: attendee.newStaffGoalCalculation?.monthlyGoal ?? null,
   goalStatus: attendee.goalStatus,
+  goalSentAt: attendee.goalSentAt ?? null,
   familyStatus: attendee.familyStatus ?? null,
   // Both names null joins to '', which must still render the Assign Coach prompt.
   coach: attendee.coach

@@ -6,12 +6,14 @@ import { MpdGoalAdminProvider, useMpdGoalAdmin } from './MpdGoalAdminContext';
 import {
   NewStaffCohortAttendeesQuery,
   NewStaffCohortsQuery,
+  RunAndSendNewStaffCohortMutation,
 } from './NewStaffCohorts.generated';
 import { MpdGoalAdminTabEnum } from './mpdGoalAdminHelpers';
 import {
   attendees,
   attendeesMock,
   cohortsMock,
+  runAndSentMock,
   trainingCosts,
 } from './mpdGoalAdminMocks';
 
@@ -23,6 +25,7 @@ const makeWrapper = (
     attendees?:
       | NewStaffCohortAttendeesQuery
       | ((operation: Operation) => NewStaffCohortAttendeesQuery);
+    runAndSend?: RunAndSendNewStaffCohortMutation;
   } = {},
 ): React.FC<{ children: React.ReactNode }> =>
   function Wrapper({ children }) {
@@ -30,11 +33,14 @@ const makeWrapper = (
       <GqlMockedProvider<{
         NewStaffCohorts: NewStaffCohortsQuery;
         NewStaffCohortAttendees: NewStaffCohortAttendeesQuery;
+        RunAndSendNewStaffCohort: RunAndSendNewStaffCohortMutation;
       }>
         mocks={{
           NewStaffCohorts: mocks.cohorts ?? cohortsMock,
           NewStaffCohortAttendees: (mocks.attendees ??
             attendeesMock()) as unknown as NewStaffCohortAttendeesQuery,
+          RunAndSendNewStaffCohort:
+            mocks.runAndSend ?? runAndSentMock('fall-nso-2026', 2),
         }}
         onCall={mutationSpy}
       >
@@ -86,6 +92,7 @@ describe('MpdGoalAdminContext', () => {
       geography: 'Orlando, FL',
       mpdGoal: 6430.25,
       goalStatus: 'COMPLETE',
+      goalSentAt: null,
       familyStatus: 'MARRIED',
       coach: null,
       coordinator: 'Kim Coordinator',
@@ -233,6 +240,51 @@ describe('MpdGoalAdminContext', () => {
         operation.operationName === 'NewStaffCohortAttendees',
     ).length;
     expect(callsAfter).toBeGreaterThan(callsBefore);
+  });
+
+  it('runs & sends the given attendees in the selected cohort', async () => {
+    const { result } = await renderLoaded();
+
+    await act(async () => {
+      await result.current.runAndSend(['row-1', 'row-3']);
+    });
+
+    expect(mutationSpy).toHaveGraphqlOperation('RunAndSendNewStaffCohort', {
+      input: { cohortId: 'fall-nso-2026', attendeeIds: ['row-1', 'row-3'] },
+    });
+  });
+
+  it("resolves with the server's sent count, not the count asked for", async () => {
+    const { result } = await renderHook(() => useMpdGoalAdmin(), {
+      // The server skips anything no longer Complete, so 3 asked can send 1.
+      wrapper: makeWrapper({ runAndSend: runAndSentMock('fall-nso-2026', 1) }),
+    });
+    await waitFor(() =>
+      expect(result.current.filteredRows).not.toHaveLength(0),
+    );
+
+    let sentCount = 0;
+    await act(async () => {
+      sentCount = await result.current.runAndSend(['row-1', 'row-2', 'row-3']);
+    });
+
+    expect(sentCount).toBe(1);
+  });
+
+  it('refetches the attendees after a send, so chips and statuses update', async () => {
+    const { result } = await renderLoaded();
+    const attendeeCalls = () =>
+      mutationSpy.mock.calls.filter(
+        ([{ operation }]) =>
+          operation.operationName === 'NewStaffCohortAttendees',
+      ).length;
+    const callsBefore = attendeeCalls();
+
+    await act(async () => {
+      await result.current.runAndSend(['row-1']);
+    });
+
+    expect(attendeeCalls()).toBeGreaterThan(callsBefore);
   });
 
   it('assigns a coach to exactly the given rows', async () => {

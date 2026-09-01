@@ -65,6 +65,8 @@ describe('cohortNodeToCohort', () => {
       trainingSize: 13,
       nsoDate: '8/10/2026',
       hasTrainingCosts: true,
+      canRunAndSend: true,
+      goalsSentAt: null,
     });
     expect(cohort.trainingCosts).toEqual(trainingCosts);
   });
@@ -73,6 +75,15 @@ describe('cohortNodeToCohort', () => {
     expect(
       cohortNodeToCohort({ ...cohortWithCosts, date: null }, 'en-US').nsoDate,
     ).toBe('—');
+  });
+
+  it('carries the most recent Run & Send batch through', () => {
+    expect(
+      cohortNodeToCohort(
+        { ...cohortWithCosts, goalsSentAt: '2026-08-10T15:40:00Z' },
+        'en-US',
+      ).goalsSentAt,
+    ).toBe('2026-08-10T15:40:00Z');
   });
 
   it('leaves trainingCosts undefined when costs are not fully entered', () => {
@@ -91,10 +102,21 @@ describe('attendeeToRow', () => {
       geography: 'Orlando, FL',
       mpdGoal: 4200,
       goalStatus: NewStaffCohortAttendeeGoalStatusEnum.Complete,
+      goalSentAt: null,
       familyStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
       coach: 'Amy Wilson',
       coordinator: 'Kim Coordinator',
     });
+  });
+
+  it("carries the row's own send timestamp, not the cohort's", () => {
+    expect(
+      attendeeToRow({
+        ...attendeeComplete,
+        goalStatus: NewStaffCohortAttendeeGoalStatusEnum.Sent,
+        goalSentAt: '2026-08-10T15:40:00Z',
+      }).goalSentAt,
+    ).toBe('2026-08-10T15:40:00Z');
   });
 
   it('keeps the goal null when there is no calculation yet', () => {

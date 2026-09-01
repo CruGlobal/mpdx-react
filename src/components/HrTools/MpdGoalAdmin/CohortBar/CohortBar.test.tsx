@@ -13,6 +13,7 @@ import {
 import {
   attendeesMock,
   cohortsMock,
+  cohortsSentMock,
   cohortsWithoutCostsMock,
 } from '../mpdGoalAdminMocks';
 import { CohortBar } from './CohortBar';
@@ -28,10 +29,13 @@ jest.mock('notistack', () => ({
 interface TestComponentProps {
   /** Renders a cohort whose costs have never been entered. */
   withoutCosts?: boolean;
+  /** Renders a cohort with a most-recent Run & Send batch. */
+  cohorts?: NewStaffCohortsQuery;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   withoutCosts = false,
+  cohorts,
 }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
@@ -40,7 +44,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
         NewStaffCohortAttendees: NewStaffCohortAttendeesQuery;
       }>
         mocks={{
-          NewStaffCohorts: withoutCosts ? cohortsWithoutCostsMock : cohortsMock,
+          NewStaffCohorts:
+            cohorts ?? (withoutCosts ? cohortsWithoutCostsMock : cohortsMock),
           NewStaffCohortAttendees: attendeesMock(),
         }}
         onCall={mutationSpy}
@@ -61,6 +66,20 @@ const openModal = async (screen: ReturnType<typeof render>) => {
 };
 
 describe('CohortBar', () => {
+  it('omits the sent banner until the cohort has been run & sent', async () => {
+    const { findByText, queryByText } = render(<TestComponent />);
+    await findByText('Fall NSO 2026');
+    expect(queryByText(/was run and sent on/)).not.toBeInTheDocument();
+  });
+
+  it('reports the most recent Run & Send batch, not every complete goal', async () => {
+    const { findByText } = render(<TestComponent cohorts={cohortsSentMock} />);
+    // goalsSentAt moves with each batch, so the copy is scoped to that batch.
+    expect(
+      await findByText(/The last batch of MPD goals was run and sent on/),
+    ).toBeInTheDocument();
+  });
+
   it('renders the selected cohort name and summary stats', async () => {
     const { findByText, findByRole } = render(<TestComponent />);
 

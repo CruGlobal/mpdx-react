@@ -25,6 +25,7 @@ query NewStaffCohorts($after: String) {
       trainingSize
       date
       hasTrainingCosts
+      goalsSentAt
       canRunAndSend
       runAndSendBlockers
       ...CohortTrainingCosts
@@ -46,6 +47,7 @@ query NewStaffCohortAttendees($cohortId: ID!, $search: String, $after: String) {
         familyStatus
         geographicLocation
         goalStatus
+        goalSentAt
         coordinators
         coach {
           id
@@ -77,6 +79,22 @@ mutation UpdateNewStaffCohort($input: NewStaffCohortUpdateMutationInput!) {
       canRunAndSend
       runAndSendBlockers
       ...CohortTrainingCosts
+    }
+  }
+}
+
+mutation RunAndSendNewStaffCohort(
+  $input: NewStaffCohortRunAndSendMutationInput!
+) {
+  runAndSendNewStaffCohort(input: $input) {
+    sentCount
+    sentAt
+    # Normalizes over the cached cohort, so the banner updates without a refetch.
+    newStaffCohort {
+      id
+      goalsSentAt
+      canRunAndSend
+      runAndSendBlockers
     }
   }
 }

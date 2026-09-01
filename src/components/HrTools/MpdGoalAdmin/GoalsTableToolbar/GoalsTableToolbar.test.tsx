@@ -9,8 +9,14 @@ import { MpdGoalAdminProvider, useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import {
   NewStaffCohortAttendeesQuery,
   NewStaffCohortsQuery,
+  RunAndSendNewStaffCohortMutation,
 } from '../NewStaffCohorts.generated';
-import { attendeesMock, cohortsMock } from '../mpdGoalAdminMocks';
+import {
+  attendeesMock,
+  cohortsMock,
+  cohortsWithoutCostsMock,
+  runAndSentMock,
+} from '../mpdGoalAdminMocks';
 import { GoalsTableToolbar } from './GoalsTableToolbar';
 
 // Test harness exposing context so we can simulate row selection.
@@ -20,18 +26,29 @@ const Capture: React.FC = () => {
   return <GoalsTableToolbar />;
 };
 
-const renderToolbar = () =>
+const mutationSpy = jest.fn();
+
+const renderToolbar = ({
+  cohorts = cohortsMock,
+  sentCount = 2,
+}: { cohorts?: NewStaffCohortsQuery; sentCount?: number } = {}) =>
   render(
     <ThemeProvider theme={theme}>
       <SnackbarProvider>
         <GqlMockedProvider<{
           NewStaffCohorts: NewStaffCohortsQuery;
           NewStaffCohortAttendees: NewStaffCohortAttendeesQuery;
+          RunAndSendNewStaffCohort: RunAndSendNewStaffCohortMutation;
         }>
           mocks={{
-            NewStaffCohorts: cohortsMock,
+            NewStaffCohorts: cohorts,
             NewStaffCohortAttendees: attendeesMock(),
+            RunAndSendNewStaffCohort: runAndSentMock(
+              cohorts.newStaffCohorts.nodes[0].id,
+              sentCount,
+            ),
           }}
+          onCall={mutationSpy}
         >
           <MpdGoalAdminProvider>
             <Capture />
@@ -42,13 +59,15 @@ const renderToolbar = () =>
   );
 
 /** Fixture: row-1 Complete/no coach, row-2 Incomplete/coach, row-3 Complete/coach. */
-const renderLoaded = async () => {
-  const screen = renderToolbar();
+const renderLoaded = async (options?: Parameters<typeof renderToolbar>[0]) => {
+  const screen = renderToolbar(options);
   await waitFor(() => expect(ctx.filteredRows).toHaveLength(3));
   return screen;
 };
 
 describe('GoalsTableToolbar', () => {
+  beforeEach(() => mutationSpy.mockClear());
+
   it('disables More Actions with no selection', async () => {
     const { getByRole } = await renderLoaded();
 
@@ -121,7 +140,7 @@ describe('GoalsTableToolbar', () => {
   });
 
   it('confirms and sends only the selected rows from the menu', async () => {
-    const { getByRole, findByText } = await renderLoaded();
+    const { getByRole, findByText } = await renderLoaded({ sentCount: 1 });
     // row-1 is Complete, row-2 is Incomplete → 1 sendable of 2.
     act(() => {
       ctx.toggleRow('row-1');
@@ -138,9 +157,60 @@ describe('GoalsTableToolbar', () => {
     expect(dialog).toHaveTextContent('Continue with 1 out of 2 MPD goals');
 
     userEvent.click(getByRole('button', { name: 'Yes, Continue' }));
+
+    // Only row-1 is sendable, so row-2 must not reach the mutation.
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('RunAndSendNewStaffCohort', {
+        input: { cohortId: 'fall-nso-2026', attendeeIds: ['row-1'] },
+      }),
+    );
     expect(
       await findByText('1 MPD Goals were run and sent.'),
     ).toBeInTheDocument();
+  });
+
+  it('sends every sendable row from the All button', async () => {
+    const { getByRole, findByText } = await renderLoaded();
+    userEvent.click(getByRole('button', { name: 'Run and Send All' }));
+    userEvent.click(getByRole('button', { name: 'Yes, Continue' }));
+
+    // row-2 is Incomplete; the other two go out.
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('RunAndSendNewStaffCohort', {
+        input: { cohortId: 'fall-nso-2026', attendeeIds: ['row-1', 'row-3'] },
+      }),
+    );
+    expect(
+      await findByText('2 MPD Goals were run and sent.'),
+    ).toBeInTheDocument();
+  });
+
+  it("toasts the server's count rather than the count it asked for", async () => {
+    const { getByRole, findByText } = await renderLoaded({ sentCount: 1 });
+    userEvent.click(getByRole('button', { name: 'Run and Send All' }));
+    // The modal previewed 2, but the server sent 1; the toast follows the server.
+    expect(getByRole('dialog')).toHaveTextContent(
+      'Continue with 2 out of 3 MPD goals',
+    );
+    userEvent.click(getByRole('button', { name: 'Yes, Continue' }));
+
+    expect(
+      await findByText('1 MPD Goals were run and sent.'),
+    ).toBeInTheDocument();
+  });
+
+  it('blocks Run and Send All while the cohort is missing training costs', async () => {
+    const { getByRole, findByRole } = await renderLoaded({
+      cohorts: cohortsWithoutCostsMock,
+    });
+    const button = getByRole('button', { name: 'Run and Send All' });
+    expect(button).toBeDisabled();
+
+    // The span wrapper is what carries the tooltip for a disabled button.
+    userEvent.hover(button.parentElement as HTMLElement);
+    expect(await findByRole('tooltip')).toHaveTextContent(
+      'All inputs and per-training costs are required to run & send goals.',
+    );
   });
 
   it('assigns a coach to every selected row from the menu', async () => {

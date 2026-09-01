@@ -1,10 +1,12 @@
 import {
   NewStaffCohortAttendeeGoalStatusEnum,
+  NewStaffCohortRunAndSendBlockerEnum,
   NewStaffQuestionnaireMaritalStatusEnum,
 } from 'src/graphql/types.generated';
 import {
   NewStaffCohortAttendeesQuery,
   NewStaffCohortsQuery,
+  RunAndSendNewStaffCohortMutation,
   UpdateNewStaffCohortMutation,
 } from './NewStaffCohorts.generated';
 import { TrainingCosts } from './mpdGoalAdminHelpers';
@@ -59,6 +61,7 @@ export const cohortsMock: NewStaffCohortsQuery = {
         trainingSize: 13,
         date: '2026-08-10',
         hasTrainingCosts: true,
+        goalsSentAt: null,
         canRunAndSend: true,
         runAndSendBlockers: [],
         ...costFields,
@@ -69,8 +72,11 @@ export const cohortsMock: NewStaffCohortsQuery = {
         trainingSize: 2,
         date: '2027-01-11',
         hasTrainingCosts: false,
+        goalsSentAt: null,
         canRunAndSend: false,
-        runAndSendBlockers: [],
+        runAndSendBlockers: [
+          NewStaffCohortRunAndSendBlockerEnum.TrainingCostsMissing,
+        ],
         ...noCostFields,
       },
     ],
@@ -85,7 +91,24 @@ export const cohortsWithoutCostsMock: NewStaffCohortsQuery = {
       {
         ...cohortsMock.newStaffCohorts.nodes[0],
         hasTrainingCosts: false,
+        canRunAndSend: false,
+        runAndSendBlockers: [
+          NewStaffCohortRunAndSendBlockerEnum.TrainingCostsMissing,
+        ],
         ...noCostFields,
+      },
+    ],
+    pageInfo: { endCursor: null, hasNextPage: false },
+  },
+};
+
+/** A cohort whose most recent Run & Send batch drives the CohortBar banner. */
+export const cohortsSentMock: NewStaffCohortsQuery = {
+  newStaffCohorts: {
+    nodes: [
+      {
+        ...cohortsMock.newStaffCohorts.nodes[0],
+        goalsSentAt: '2026-08-10T15:40:00Z',
       },
     ],
     pageInfo: { endCursor: null, hasNextPage: false },
@@ -105,6 +128,7 @@ const attendee = (
   familyStatus: NewStaffQuestionnaireMaritalStatusEnum.Married,
   geographicLocation: 'Orlando, FL',
   goalStatus: NewStaffCohortAttendeeGoalStatusEnum.Complete,
+  goalSentAt: null,
   coordinators: ['Kim Coordinator'],
   coach: null,
   ministry: { id: 'ministry-1', name: 'Campus' },
@@ -155,6 +179,24 @@ export const updatedCohortMock = (
       canRunAndSend: true,
       runAndSendBlockers: [],
       ...costFields,
+    },
+  },
+});
+
+/** Mirrors the server: `sentCount` is authoritative, not the client's guess. */
+export const runAndSentMock = (
+  id: string,
+  sentCount: number,
+  sentAt = '2026-08-10T15:40:00Z',
+): RunAndSendNewStaffCohortMutation => ({
+  runAndSendNewStaffCohort: {
+    sentCount,
+    sentAt,
+    newStaffCohort: {
+      id,
+      goalsSentAt: sentAt,
+      canRunAndSend: true,
+      runAndSendBlockers: [],
     },
   },
 });

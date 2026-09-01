@@ -17,6 +17,8 @@ const makeRow = (
   geography: 'Orlando, FL',
   mpdGoal: 1000,
   goalStatus,
+  goalSentAt:
+    goalStatus === GoalStatusEnum.Sent ? '2026-08-10T15:40:00Z' : null,
   familyStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
   coach: 'Coach',
   coordinator: 'Coordinator',
@@ -39,6 +41,7 @@ const setup = (
         open
         title="Run and Send All Complete MPD Goals?"
         rows={rows}
+        sending={false}
         onClose={onClose}
         onConfirm={onConfirm}
         {...overrides}
@@ -61,10 +64,18 @@ describe('RunAndSendModal', () => {
     expect(getByText(/Continue with 2 out of 3 MPD goals/)).toBeInTheDocument();
   });
 
-  it('confirms with the sendable count', async () => {
+  it('confirms the send', async () => {
     const { getByRole, onConfirm } = setup();
     await userEvent.click(getByRole('button', { name: 'Yes, Continue' }));
-    expect(onConfirm).toHaveBeenCalledWith(2);
+    expect(onConfirm).toHaveBeenCalled();
+  });
+
+  it('locks the dialog down while the send is in flight', () => {
+    const { getByRole } = setup({ sending: true });
+    // Run & Send emails staff and their coaches, so a double-fire matters.
+    expect(getByRole('button', { name: 'Yes, Continue' })).toBeDisabled();
+    expect(getByRole('button', { name: 'No, Cancel' })).toBeDisabled();
+    expect(getByRole('button', { name: 'Close' })).toBeDisabled();
   });
 
   it('cancels via the No, Cancel button', async () => {

@@ -13,6 +13,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import {
   useNewStaffCohortAttendeesQuery,
   useNewStaffCohortsQuery,
+  useRunAndSendNewStaffCohortMutation,
   useUpdateNewStaffCohortMutation,
 } from './NewStaffCohorts.generated';
 import {
@@ -50,6 +51,13 @@ export interface MpdGoalAdminContextValue {
   clearSelection: () => void;
   /** Saves training costs; resolves once dependent goals have been refetched. */
   saveTrainingCosts: (cohortId: string, costs: TrainingCosts) => Promise<void>;
+  /**
+   * Runs & sends `attendeeIds` in the selected cohort and resolves with the
+   * number the server actually sent, which can be lower than the count asked
+   * for. Resolves once the rows have been refetched, so callers can toast
+   * against fresh chips.
+   */
+  runAndSend: (attendeeIds: string[]) => Promise<number>;
   /** Assigns one coach to every row in `rowIds`, across all cohorts. */
   assignCoach: (rowIds: string[], coachName: string) => void;
 }
@@ -147,6 +155,7 @@ export const MpdGoalAdminProvider: React.FC<{
   }, [visibleAttendeesData, coachOverrides]);
 
   const [updateNewStaffCohort] = useUpdateNewStaffCohortMutation();
+  const [runAndSendNewStaffCohort] = useRunAndSendNewStaffCohortMutation();
 
   const toggleRow = useCallback((id: string) => {
     setSelectedRowIds((prev) => {
@@ -187,6 +196,19 @@ export const MpdGoalAdminProvider: React.FC<{
       });
     },
     [updateNewStaffCohort],
+  );
+
+  const runAndSend = useCallback(
+    async (attendeeIds: string[]): Promise<number> => {
+      const { data } = await runAndSendNewStaffCohort({
+        variables: { input: { cohortId: selectedCohortId, attendeeIds } },
+        // The cohort normalizes itself; attendee status and chips need a refetch.
+        refetchQueries: ['NewStaffCohortAttendees'],
+        awaitRefetchQueries: true,
+      });
+      return data?.runAndSendNewStaffCohort?.sentCount ?? 0;
+    },
+    [runAndSendNewStaffCohort, selectedCohortId],
   );
 
   const assignCoach = useCallback((rowIds: string[], coachName: string) => {
@@ -230,6 +252,7 @@ export const MpdGoalAdminProvider: React.FC<{
       toggleRows,
       clearSelection,
       saveTrainingCosts,
+      runAndSend,
       assignCoach,
     }),
     [
@@ -250,6 +273,7 @@ export const MpdGoalAdminProvider: React.FC<{
       toggleRows,
       clearSelection,
       saveTrainingCosts,
+      runAndSend,
       assignCoach,
     ],
   );
