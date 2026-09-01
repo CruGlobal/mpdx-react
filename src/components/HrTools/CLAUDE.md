@@ -156,7 +156,7 @@ Three patterns — know which one a form uses before adding a field:
 - **Explicit modal CRUD** — SavingsFundTransfer persists through its transfer
   modals + mutations, not autosave.
 
-The mock tools below persist nothing. Note the finalize step is separate from
+MpdSupervisorReport persists nothing. Note the finalize step is separate from
 persistence: NSO autosaves each field but has a distinct `Complete` mutation, and
 the request forms autosave a draft but `Submit` through the wizard's `SubmitModal`.
 
@@ -170,6 +170,16 @@ the request forms autosave a draft but `Submit` through the wizard's `SubmitModa
   unresolved, and separately hidden when a board-approved request is still
   processing. The request list is assumed newest-first; married state is derived
   from the HCM query returning a second record (the spouse).
+- **MpdGoalAdmin** — no longer a mock. It runs `NewStaffCohorts.graphql`
+  (`NewStaffCohorts`, `NewStaffCohortAttendees`, `UpdateNewStaffCohort`) and
+  `ScenarioGoals/ScenarioGoals.graphql`; only `mockData.ts`'s `mockCoaches` is
+  still stubbed, pending MPDX-9914. `newStaffCohorts` is **team-wide, not
+  per-user** — the page is gated on `RequiredUserGroupEnum.MpdGoalCalc`, so an
+  empty cohort list means no cohorts exist at all, not that this user has none.
+  `MpdGoalAdminContext` **auto-selects the first cohort** whenever the list is
+  non-empty, so "no cohort selected" is only reachable with zero cohorts; tests
+  that pick a cohort themselves must first wait for that auto-select to settle
+  (wait on `selectedCohortId`, not on `cohorts.length`) or it will overwrite them.
 - **NsoMpdQuestionnaire** — **no create/upsert exists.** The record is created by
   the OneApp import; the frontend only Updates/Completes, keyed by
   `accountListId` (not a questionnaire id). A null query → render
@@ -181,13 +191,12 @@ the request forms autosave a draft but `Submit` through the wizard's `SubmitModa
 
 ## Mock / prototype tools — not wired to a backend
 
-These are prototypes — they currently render from `mockData.ts`, have **no
-`.graphql`**, and hit neither API (that will change once they're wired). Don't
-mistake them for read paths or wire tests against a real operation:
+**MpdSupervisorReport** is the only remaining prototype: it renders from
+`MpdSupervisorReport/mockData.ts` + `useMockInfiniteStaff.ts`, has **no
+`.graphql`**, and hits neither API. Don't mistake it for a read path or wire
+tests against a real operation.
 
-- **MpdGoalAdmin** — `MpdGoalAdmin/mockData.ts` (modals exist, no mutations).
-- **MpdSupervisorReport** — `MpdSupervisorReport/mockData.ts` + `useMockInfiniteStaff.ts`.
-
-Everything else (AdditionalSalaryRequest, SavingsFundTransfer, MHA, SalaryCalculator,
-NsoMpdQuestionnaire, the three goal calculators, MinistryPartnerReminders) performs
-real mutations against the primary API.
+Everything else in this tree performs real operations against the primary API —
+AdditionalSalaryRequest, SavingsFundTransfer, MHA, SalaryCalculator,
+NsoMpdQuestionnaire, the three goal calculators, MinistryPartnerReminders, and
+**MpdGoalAdmin** (see its per-form gotcha above).
