@@ -1,4 +1,6 @@
 import React from 'react';
+import { mdiAccountGroup } from '@mdi/js';
+import Icon from '@mdi/react';
 import {
   Alert,
   Box,
@@ -44,6 +46,7 @@ const ActiveGoalsContent: React.FC = () => {
   if (!error && !loading && !selectedCohortId) {
     return (
       <NullStateBox role="status" data-testid="no-training-selected">
+        <Icon path={mdiAccountGroup} size={1.5} />
         <Typography variant="h5">{t('No Training Selected')}</Typography>
         <Typography>
           {t('There are no trainings available for you to manage.')}
