@@ -95,6 +95,8 @@ export interface Transfers {
   amount?: number;
   schedule?: ScheduleEnum;
   status?: StatusEnum;
+  // Mirrors RecurringTransfer.active; Upcoming rows hardcode a `Pending` status.
+  active?: boolean;
   transferDate?: DateTime<boolean>;
   endDate?: DateTime<boolean> | null;
   note?: string;
