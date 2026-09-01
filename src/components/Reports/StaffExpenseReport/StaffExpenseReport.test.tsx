@@ -12,6 +12,7 @@ import { Settings } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
@@ -28,7 +29,42 @@ interface TestComponentProps {
   isEmpty?: boolean;
   routerMonth?: string;
   usStaffGroup?: UsStaffGroupEnum;
+  withSalary?: boolean;
 }
+
+const salaryCategory = {
+  category: StaffExpenseCategoryEnum.Salary,
+  total: -4900,
+  averagePerMonth: -4900,
+  subcategories: [
+    {
+      subCategory: StaffExpensesSubCategoryEnum.RegularPay,
+      total: -4900,
+      averagePerMonth: -4900,
+      breakdownByMonth: [
+        {
+          month: '2020-01-01',
+          total: -4900,
+          transactions: [
+            {
+              id: 'salary-reader',
+              amount: -2800,
+              transactedAt: '2020-01-15',
+              personNumber: '000000111',
+            },
+            {
+              id: 'salary-spouse',
+              amount: -2100,
+              transactedAt: '2020-01-15',
+              personNumber: '000000222',
+            },
+          ],
+        },
+      ],
+    },
+  ],
+  breakdownByMonth: [{ month: '2020-01-01', total: -4900 }],
+};
 
 const mutationSpy = jest.fn();
 const onNavListToggle = jest.fn();
@@ -45,6 +81,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   isEmpty,
   routerMonth,
   usStaffGroup = UsStaffGroupEnum.SeniorStaff,
+  withSalary = false,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter
@@ -64,6 +101,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
               ReportsStaffExpenses: ReportsStaffExpensesQuery;
               StaffAccount: StaffAccountQuery;
               GetUser: GetUserQuery;
+              Hcm: HcmQuery;
             }>
               mocks={{
                 ReportsStaffExpenses: {
@@ -77,6 +115,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                             startBalance: 1000,
                             endBalance: 2000,
                             categories: [
+                              ...(withSalary ? [salaryCategory] : []),
                               {
                                 category: StaffExpenseCategoryEnum.Assessment,
                                 total: -300,
@@ -212,6 +251,22 @@ const TestComponent: React.FC<TestComponentProps> = ({
                     usStaffGroup,
                   },
                 },
+                Hcm: {
+                  hcm: [
+                    {
+                      staffInfo: {
+                        personNumber: '000000111',
+                        preferredName: 'Alex',
+                      },
+                    },
+                    {
+                      staffInfo: {
+                        personNumber: '000000222',
+                        preferredName: 'Jordan',
+                      },
+                    },
+                  ],
+                },
               }}
               onCall={mutationSpy}
             >
@@ -235,6 +290,17 @@ describe('StaffExpenseReport', () => {
     expect(getByRole('heading', { name: 'Report title' })).toBeInTheDocument();
     expect(await findByText('Test Account')).toBeInTheDocument();
     expect(await findByText('$4,000.00')).toBeInTheDocument();
+  });
+
+  it('names each salary row for the person HCM attributes it to', async () => {
+    const { findByRole, getByRole } = render(<TestComponent withSalary />);
+
+    expect(
+      await findByRole('gridcell', { name: 'Salary (Alex)' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('gridcell', { name: 'Salary (Jordan)' }),
+    ).toBeInTheDocument();
   });
 
   it('keeps the Report Settings button visible when there are no transactions', async () => {

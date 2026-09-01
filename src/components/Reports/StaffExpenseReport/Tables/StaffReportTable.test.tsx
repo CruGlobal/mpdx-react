@@ -6,6 +6,8 @@ import TestRouter from '__tests__/util/TestRouter';
 import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { ReportType } from '../Helpers/StaffReportEnum';
+import { AggregationPeriod } from '../Helpers/aggregationPolicy';
+import { GroupedTransaction } from '../Helpers/filterTransactions';
 import { StaffReportTable, StaffReportTableProps } from './StaffReportTable';
 
 const mutationSpy = jest.fn();
@@ -40,14 +42,16 @@ const defaultTransactions = [
   },
 ];
 
-const groupedTransaction = {
+const groupedTransaction: GroupedTransaction = {
   id: 'grouped-2',
   fundType: 'Primary',
   category: StaffExpenseCategoryEnum.Benefits,
   displayCategory: 'Benefits',
+  description: 'Benefits',
   transactedAt: '2025-01-20',
   amount: -300,
-  categoryName: 'Benefits',
+  bucketKey: 'Primary|BENEFITS|2025-01-20',
+  period: AggregationPeriod.Day,
   groupedTransactions: [defaultTransactions[1]],
 };
 
@@ -85,7 +89,7 @@ describe('StaffReportTable', () => {
     expect(getByRole('gridcell', { name: '$100' })).toBeInTheDocument();
   });
 
-  it('relabels a Donation category as "Total Donations" regardless of locale', async () => {
+  it('shows an itemized transaction description in place of its category', async () => {
     const { findByRole } = render(
       <TestComponent
         tableProps={{
@@ -97,9 +101,8 @@ describe('StaffReportTable', () => {
               category: StaffExpenseCategoryEnum.Donation,
               transactedAt: '2025-01-15',
               amount: 250,
-              // A localized displayCategory that does NOT equal the English
-              // literal "Donation" — proves the relabel keys off the enum.
-              displayCategory: 'Don',
+              description: 'Gift from the Smiths',
+              displayCategory: 'Donation',
             },
           ],
         }}
@@ -107,7 +110,31 @@ describe('StaffReportTable', () => {
     );
 
     expect(
-      await findByRole('gridcell', { name: 'Total Donations' }),
+      await findByRole('gridcell', { name: 'Gift from the Smiths' }),
+    ).toBeInTheDocument();
+  });
+
+  it('renders a monthly rollup as a month and year rather than a day', async () => {
+    const { findByRole } = render(
+      <TestComponent
+        tableProps={{
+          tableType: ReportType.Income,
+          transactions: [
+            {
+              ...groupedTransaction,
+              amount: 250,
+              description: 'Donations',
+              displayCategory: 'Donations',
+              transactedAt: '2025-01-01',
+              period: AggregationPeriod.Month,
+            },
+          ],
+        }}
+      />,
+    );
+
+    expect(
+      await findByRole('gridcell', { name: 'January 2025' }),
     ).toBeInTheDocument();
   });
 
@@ -203,14 +230,14 @@ describe('StaffReportTable', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('sorts grouped transactions before non-grouped transactions', async () => {
+  it('renders rows in the order the report supplies, leaving a rollup on top of a later date', async () => {
     const { getAllByRole, findByRole } = render(
       <TestComponent
         tableProps={{
           transactions: [
-            defaultTransactions[0],
             groupedTransaction,
             defaultTransactions[1],
+            defaultTransactions[0],
           ],
         }}
       />,
@@ -220,23 +247,8 @@ describe('StaffReportTable', () => {
 
     const amountCells = getAllByRole('gridcell', { name: /\$\d+/ });
 
-    // Grouped transaction
     expect(amountCells[0]).toHaveTextContent('$300');
-
-    // Ungrouped transactions
     expect(amountCells[1]).toHaveTextContent('$50');
     expect(amountCells[2]).toHaveTextContent('$100');
-  });
-
-  it('sorts transactions by date descending within each group', async () => {
-    const { getAllByRole, findByRole } = render(<TestComponent />);
-
-    await findByRole('columnheader', { name: 'Date' });
-
-    const amountCells = getAllByRole('gridcell', { name: /\$\d+/ });
-
-    // Both non-grouped should be sorted by descending date
-    expect(amountCells[0]).toHaveTextContent('$50');
-    expect(amountCells[1]).toHaveTextContent('$100');
   });
 });

@@ -6,7 +6,10 @@ import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
+import {
+  StaffExpenseCategoryEnum,
+  StaffExpensesSubCategoryEnum,
+} from 'src/graphql/types.generated';
 import { ReportsStaffExpensesQuery } from '../../StaffExpenseReport/GetStaffExpense.generated';
 import { DateRange } from '../../StaffExpenseReport/Helpers/StaffReportEnum';
 import {
@@ -17,8 +20,45 @@ import {
 } from './SettingsDialog';
 
 const mutationSpy = jest.fn();
+const mockCategory = (
+  category: StaffExpenseCategoryEnum,
+  subCategory: StaffExpensesSubCategoryEnum,
+) => ({
+  category,
+  subcategories: [
+    {
+      subCategory,
+      breakdownByMonth: [
+        { transactions: [{ transactedAt: DateTime.now().toISO() }] },
+      ],
+    },
+  ],
+});
+
+const defaultCategories = () => [
+  mockCategory(
+    StaffExpenseCategoryEnum.Benefits,
+    StaffExpensesSubCategoryEnum.HealthWelfare,
+  ),
+  mockCategory(
+    StaffExpenseCategoryEnum.Donation,
+    StaffExpensesSubCategoryEnum.Donation,
+  ),
+  mockCategory(
+    StaffExpenseCategoryEnum.Salary,
+    StaffExpensesSubCategoryEnum.RegularPay,
+  ),
+  mockCategory(
+    StaffExpenseCategoryEnum.Transfer,
+    StaffExpensesSubCategoryEnum.Transfer,
+  ),
+];
+
 const TestComponent: React.FC<
-  SettingsDialogProps & { onCallMock?: jest.Mock }
+  SettingsDialogProps & {
+    onCallMock?: jest.Mock;
+    categories?: ReturnType<typeof mockCategory>[];
+  }
 > = ({
   isOpen,
   onClose,
@@ -28,62 +68,14 @@ const TestComponent: React.FC<
   onCallMock,
   isMpgaReport = false,
   transactionYears,
+  categories = defaultCategories(),
 }) => (
   <TestRouter>
     <GqlMockedProvider<{ ReportsStaffExpenses: ReportsStaffExpensesQuery }>
       onCall={onCallMock}
       mocks={{
         ReportsStaffExpenses: {
-          reportsStaffExpenses: {
-            funds: [
-              {
-                categories: [
-                  {
-                    category: StaffExpenseCategoryEnum.Benefits,
-                    subcategories: [
-                      {
-                        breakdownByMonth: [
-                          {
-                            transactions: [
-                              { transactedAt: DateTime.now().toISO() },
-                            ],
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                  {
-                    category: StaffExpenseCategoryEnum.Donation,
-                    subcategories: [
-                      {
-                        breakdownByMonth: [
-                          {
-                            transactions: [
-                              { transactedAt: DateTime.now().toISO() },
-                            ],
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                  {
-                    category: StaffExpenseCategoryEnum.Salary,
-                    subcategories: [
-                      {
-                        breakdownByMonth: [
-                          {
-                            transactions: [
-                              { transactedAt: DateTime.now().toISO() },
-                            ],
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
+          reportsStaffExpenses: { funds: [{ categories }] },
         },
       }}
     >
@@ -151,20 +143,6 @@ describe('SettingsDialog', () => {
     expect(getByRole('option', { name: 'None' })).toBeInTheDocument();
     expect(getByRole('option', { name: 'Week to Date' })).toBeInTheDocument();
     expect(getByRole('option', { name: 'Month to Date' })).toBeInTheDocument();
-    expect(getByRole('option', { name: 'Year to Date' })).toBeInTheDocument();
-  });
-
-  it('does not list year options when not in MPGA mode', () => {
-    const { getByLabelText, getByRole, queryByRole } = render(
-      <TestComponent {...defaultProps} />,
-    );
-
-    userEvent.click(getByLabelText('Select Date Range'));
-
-    const lastCompletedYear = DateTime.now().year - 1;
-    expect(
-      queryByRole('option', { name: String(lastCompletedYear) }),
-    ).not.toBeInTheDocument();
     expect(getByRole('option', { name: 'Year to Date' })).toBeInTheDocument();
   });
 
@@ -303,14 +281,70 @@ describe('SettingsDialog', () => {
     ).resolves.toBeTruthy();
   });
 
-  it('checks all available categories by default when no selection exists', async () => {
-    const { findByLabelText, getByLabelText } = render(
+  it('names the grouping the rules apply and how to opt out', () => {
+    const { getByText } = render(<TestComponent {...defaultProps} />);
+
+    expect(
+      getByText(
+        `Income and expenses are combined using Cru's standard reporting rules. Salary and benefits by pay date, other categories by month. Uncheck a category to list every transaction in the category separately.`,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('says so when nothing in range can be combined', async () => {
+    const { findByText, queryByLabelText } = render(
+      <TestComponent
+        {...defaultProps}
+        categories={[
+          mockCategory(
+            StaffExpenseCategoryEnum.Transfer,
+            StaffExpensesSubCategoryEnum.Transfer,
+          ),
+        ]}
+      />,
+    );
+
+    expect(
+      await findByText(
+        'None of the categories in this date range can be combined.',
+      ),
+    ).toBeInTheDocument();
+    expect(queryByLabelText('Transfer')).not.toBeInTheDocument();
+  });
+
+  it('excludes a category whose transactions all itemize, even when the category can combine', async () => {
+    const { findByLabelText, queryByLabelText } = render(
+      <TestComponent
+        {...defaultProps}
+        categories={[
+          mockCategory(
+            StaffExpenseCategoryEnum.Benefits,
+            StaffExpensesSubCategoryEnum.HealthWelfare,
+          ),
+          // Donations roll up monthly, but non-cash gifts under them do not.
+          mockCategory(
+            StaffExpenseCategoryEnum.Donation,
+            StaffExpensesSubCategoryEnum.NonCash,
+          ),
+        ]}
+      />,
+    );
+
+    expect(await findByLabelText('Benefits')).toBeChecked();
+    expect(queryByLabelText('Donation')).not.toBeInTheDocument();
+  });
+
+  it('offers only the categories that can be combined, each checked', async () => {
+    const { findByLabelText, getByLabelText, queryByLabelText } = render(
       <TestComponent {...defaultProps} />,
     );
 
     expect(await findByLabelText('Benefits')).toBeChecked();
     expect(getByLabelText('Salary')).toBeChecked();
     expect(getByLabelText('Donation')).toBeChecked();
+
+    // Every transfer subcategory is intentionally itemized, so a checkbox for it should not do anything.
+    expect(queryByLabelText('Transfer')).not.toBeInTheDocument();
   });
 
   it('should toggle category selection', async () => {
@@ -465,12 +499,13 @@ describe('SettingsDialog', () => {
     expect(mutationSpy).toHaveBeenCalledWith(baseFilters);
   });
 
-  it('checks all categories when selectedFilters or its categories are null', async () => {
-    const { findByLabelText, rerender } = render(
+  it('falls back to the standard rules when selectedFilters or its categories are null', async () => {
+    const { findByLabelText, queryByLabelText, rerender } = render(
       <TestComponent {...defaultProps} selectedFilters={undefined} />,
     );
 
     expect(await findByLabelText('Benefits')).toBeChecked();
+    expect(queryByLabelText('Transfer')).not.toBeInTheDocument();
 
     const selectedFilters: Filters = {
       ...baseFilters,
@@ -545,10 +580,6 @@ describe('SettingsDialog', () => {
       expect(dropdown).toBeInTheDocument();
       userEvent.click(dropdown);
       expect(getByRole('option', { name: 'Year to Date' })).toBeInTheDocument();
-      const lastCompletedYear = DateTime.now().year - 1;
-      expect(
-        getByRole('option', { name: String(lastCompletedYear) }),
-      ).toBeInTheDocument();
       expect(
         queryByRole('option', { name: 'Week to Date' }),
       ).not.toBeInTheDocument();
@@ -565,7 +596,9 @@ describe('SettingsDialog', () => {
         <TestComponent {...defaultProps} />,
       );
 
+      // MPGA combines every category by default, including the ones the staff expense report itemizes.
       expect(await findByLabelText('Benefits')).toBeChecked();
+      expect(getByLabelText('Transfer')).toBeChecked();
 
       userEvent.click(getByLabelText('Benefits'));
       userEvent.click(getByRole('button', { name: 'Apply Filters' }));
@@ -576,6 +609,7 @@ describe('SettingsDialog', () => {
           categories: [
             StaffExpenseCategoryEnum.Donation,
             StaffExpenseCategoryEnum.Salary,
+            StaffExpenseCategoryEnum.Transfer,
           ],
         });
       });

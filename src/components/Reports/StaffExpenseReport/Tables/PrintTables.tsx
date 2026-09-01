@@ -7,12 +7,12 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
+import { currencyFormat } from 'src/lib/intlFormat';
 import { ReportType } from '../Helpers/StaffReportEnum';
 import { Transaction } from '../Helpers/filterTransactions';
+import { formatTransactionDate } from '../Helpers/formatDate';
 
 export interface PrintTablesProps {
   transactions: Transaction[];
@@ -53,10 +53,10 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
             <>
               {transactions.map((row) => (
                 <TableRow key={row.id}>
+                  <TableCell>{formatTransactionDate(row, locale)}</TableCell>
                   <TableCell>
-                    {dateFormat(DateTime.fromISO(row.transactedAt), locale)}
+                    {row.description || row.displayCategory}
                   </TableCell>
-                  <TableCell>{row.displayCategory}</TableCell>
                   <TableCell>{formatAmount(row.amount)}</TableCell>
                 </TableRow>
               ))}
