@@ -40,13 +40,25 @@ export type HandleTaskPhaseChangeProps = {
   activityType: ActivityTypeEnum | undefined;
   activityTypes: Map<ActivityTypeEnum, ActivityData>;
   setFieldTouched: SetFieldTouched;
+  currentTaskName: string;
 };
 
 export type HandleTaskActionChangeProps = {
   activityType: ActivityTypeEnum | null;
+  previousActivityType: ActivityTypeEnum | null;
+  currentTaskName: string;
   setFieldValue: SetFieldValue;
   setActionSelected: SetActionSelected;
   activityTypes: Map<ActivityTypeEnum, ActivityData>;
+  setFieldTouched: SetFieldTouched;
+};
+
+type SetTaskNameProps = {
+  activityTypes: Map<ActivityTypeEnum, ActivityData>;
+  activityType: ActivityTypeEnum | null;
+  previousActivityType: ActivityTypeEnum | null;
+  currentTaskName: string;
+  setFieldValue: SetFieldValue;
   setFieldTouched: SetFieldTouched;
 };
 
@@ -70,13 +82,13 @@ export const handleTaskPhaseChange = ({
   activityType,
   activityTypes,
   setFieldTouched,
+  currentTaskName,
 }: HandleTaskPhaseChangeProps): void => {
   setFieldValue('taskPhase', phase);
   const activitySelection = activities.find((activity) =>
     activityType?.includes(activity.replace(phase + '_', '')),
   ) as ActivityTypeEnum;
   setFieldValue('activityType', activitySelection || '');
-  setFieldValue('subject', '');
   setFieldValue('displayResult', null);
   setFieldValue('result', null);
   setFieldValue('nextAction', null);
@@ -84,7 +96,14 @@ export const handleTaskPhaseChange = ({
   setActionSelected(null);
   setPhaseId(phase);
   setSelectedSuggestedTags([]);
-  setTaskName(activityTypes, activitySelection, setFieldValue, setFieldTouched);
+  setTaskName({
+    activityTypes,
+    activityType: activitySelection,
+    previousActivityType: activityType ?? null,
+    currentTaskName,
+    setFieldValue,
+    setFieldTouched,
+  });
   if (!activitySelection) {
     focusActivity();
   }
@@ -92,14 +111,23 @@ export const handleTaskPhaseChange = ({
 
 export const handleTaskActionChange = ({
   activityType,
+  previousActivityType,
   setFieldValue,
   setActionSelected,
   activityTypes,
   setFieldTouched,
+  currentTaskName,
 }: HandleTaskActionChangeProps): void => {
   setFieldValue('activityType', activityType);
   setActionSelected(activityType || null);
-  setTaskName(activityTypes, activityType, setFieldValue, setFieldTouched);
+  setTaskName({
+    activityTypes,
+    activityType,
+    previousActivityType,
+    currentTaskName,
+    setFieldValue,
+    setFieldTouched,
+  });
 };
 
 export const handleResultChange = ({
@@ -211,13 +239,23 @@ export const getDefaultTaskName = (
   return activity?.subject ?? '';
 };
 
-const setTaskName = (
-  activityTypes: Map<ActivityTypeEnum, ActivityData>,
-  activityType: ActivityTypeEnum | null,
-  setFieldValue: SetFieldValue,
-  setFieldTouched: SetFieldTouched,
-) => {
+const setTaskName = ({
+  activityTypes,
+  activityType,
+  previousActivityType,
+  currentTaskName,
+  setFieldValue,
+  setFieldTouched,
+}: SetTaskNameProps): void => {
+  const previousDefaultTaskName = getDefaultTaskName(
+    previousActivityType,
+    activityTypes,
+  );
+
   const defaultTaskName = getDefaultTaskName(activityType, activityTypes);
+  if (currentTaskName && currentTaskName !== previousDefaultTaskName) {
+    return;
+  }
   setFieldValue('subject', defaultTaskName);
   setTimeout(() => setFieldTouched('activityType', true));
 };

@@ -469,6 +469,7 @@ const TaskModalForm = ({
                           activityType,
                           activityTypes,
                           setFieldTouched,
+                          currentTaskName: subject,
                         });
                       }}
                       inputRef={firstFocusRef}
@@ -492,9 +493,11 @@ const TaskModalForm = ({
                         }
                         label={t('Action')}
                         value={activityType || null}
-                        onChange={(activityType) => {
+                        onChange={(newActivityType) => {
                           handleTaskActionChange({
-                            activityType,
+                            activityType: newActivityType,
+                            previousActivityType: activityType,
+                            currentTaskName: subject,
                             setFieldValue,
                             setFieldTouched,
                             setActionSelected,
