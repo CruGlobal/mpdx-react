@@ -149,7 +149,7 @@ export const ScenarioGoals: React.FC = () => {
           error rather than an empty list. */}
       {error ? (
         <Alert severity="error">{error.message}</Alert>
-      ) : rows.length > 0 ? (
+      ) : !!rows.length ? (
         <TableContainer>
           <Table size="small" aria-label={t('Scenario goals')}>
             <TableHead>
