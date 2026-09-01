@@ -1,10 +1,22 @@
+import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { MpdGoalAdminProvider, useMpdGoalAdmin } from '../MpdGoalAdminContext';
-import { TrainingCosts } from '../mpdGoalAdminHelpers';
+import {
+  NewStaffCohortAttendeesQuery,
+  NewStaffCohortsQuery,
+  UpdateNewStaffCohortMutation,
+} from '../NewStaffCohorts.generated';
+import {
+  attendeesMock,
+  cohortsMock,
+  trainingCosts,
+  updatedCohortMock,
+} from '../mpdGoalAdminMocks';
 import { PrintCohortGoalsButton } from './PrintCohortGoalsButton';
 import { downloadPdf, generateCohortGoalsPdf } from './printCohortGoalsPdf';
 
@@ -26,12 +38,28 @@ const renderButton = () =>
   render(
     <ThemeProvider theme={theme}>
       <SnackbarProvider>
-        <MpdGoalAdminProvider>
-          <Capture />
-        </MpdGoalAdminProvider>
+        <GqlMockedProvider<{
+          NewStaffCohorts: NewStaffCohortsQuery;
+          NewStaffCohortAttendees: NewStaffCohortAttendeesQuery;
+          UpdateNewStaffCohort: UpdateNewStaffCohortMutation;
+        }>
+          mocks={{
+            NewStaffCohorts: cohortsMock,
+            NewStaffCohortAttendees: attendeesMock(),
+            UpdateNewStaffCohort: updatedCohortMock('spring-nso-2027'),
+          }}
+        >
+          <MpdGoalAdminProvider>
+            <Capture />
+          </MpdGoalAdminProvider>
+        </GqlMockedProvider>
       </SnackbarProvider>
     </ThemeProvider>,
   );
+
+/** Waits for the cohorts query, without which no cohort is selected. */
+const waitForCohorts = () =>
+  waitFor(() => expect(ctx.cohorts).not.toHaveLength(0));
 
 describe('PrintCohortGoalsButton', () => {
   beforeEach(() => {
@@ -40,6 +68,7 @@ describe('PrintCohortGoalsButton', () => {
 
   it('is disabled with an explanation until the cohort has training costs', async () => {
     const { getByRole, findByText } = renderButton();
+    await waitForCohorts();
     // The spring cohort's training costs have not been entered yet.
     act(() => ctx.setSelectedCohortId('spring-nso-2027'));
 
@@ -54,32 +83,32 @@ describe('PrintCohortGoalsButton', () => {
     ).toBeInTheDocument();
   });
 
-  it('becomes enabled once training costs are entered', () => {
+  it('becomes enabled once training costs are entered', async () => {
     const { getByRole } = renderButton();
+    await waitForCohorts();
     act(() => ctx.setSelectedCohortId('spring-nso-2027'));
-    expect(getByRole('button', { name: 'Print All' })).toBeDisabled();
+    const button = getByRole('button', { name: 'Print All' });
+    expect(button).toBeDisabled();
 
-    const trainingCosts: TrainingCosts = {
-      nsoIndividual1InRoom: 100,
-      nsoIndividual2InRoom: 200,
-      nsoCouple: 300,
-      nsoFamily: 400,
-      ibsSingle: 500,
-      ibsCouple: 600,
-      refreshRetreatSingle: 700,
-      refreshRetreatCouple: 800,
-      faithAndFinanceSingle: 900,
-      faithAndFinanceCouple: 1000,
-      cruConferenceSingle: 1100,
-      cruConferenceCouple: 1200,
-      cruConferenceFamily: 1300,
-    };
-    act(() => ctx.saveTrainingCosts('spring-nso-2027', trainingCosts));
-    expect(getByRole('button', { name: 'Print All' })).toBeEnabled();
+    // The mutation's cohort normalizes into the cache, clearing the gate.
+    await act(() => ctx.saveTrainingCosts('spring-nso-2027', trainingCosts));
+
+    // findBy* can't wait on an enabled-state change, so waitFor the attribute.
+    await waitFor(() => expect(button).toBeEnabled());
+  });
+
+  it('relabels to Print Matching while a search is active', async () => {
+    const { getByRole } = renderButton();
+    await waitForCohorts();
+
+    act(() => ctx.setSearch('john'));
+
+    expect(getByRole('button', { name: 'Print Matching' })).toBeInTheDocument();
   });
 
   it('generates the cohort PDF and downloads it', async () => {
     const { getByRole } = renderButton();
+    await waitForCohorts();
     userEvent.click(getByRole('button', { name: 'Print All' }));
 
     await waitFor(() =>
@@ -90,6 +119,9 @@ describe('PrintCohortGoalsButton', () => {
     );
     expect(generateMock).toHaveBeenCalledWith(
       expect.objectContaining({ id: 'fall-nso-2026' }),
+      expect.arrayContaining([
+        expect.objectContaining({ name: 'John & Jane Doe' }),
+      ]),
     );
     expect(getByRole('button', { name: 'Print All' })).toBeEnabled();
   });
@@ -100,6 +132,7 @@ describe('PrintCohortGoalsButton', () => {
       new Promise((resolve) => (resolvePdf = resolve)),
     );
     const { getByRole, findByRole } = renderButton();
+    await waitForCohorts();
     userEvent.click(getByRole('button', { name: 'Print All' }));
 
     expect(await findByRole('progressbar')).toBeInTheDocument();
@@ -113,6 +146,7 @@ describe('PrintCohortGoalsButton', () => {
   it('shows an error and re-enables the button when generation fails', async () => {
     generateMock.mockRejectedValue(new Error('boom'));
     const { getByRole, findByText } = renderButton();
+    await waitForCohorts();
     userEvent.click(getByRole('button', { name: 'Print All' }));
 
     expect(

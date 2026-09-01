@@ -1,6 +1,7 @@
 import React from 'react';
 import { act, render } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
+import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
 import {
   MpdSupervisorReportEmploymentTypeEnum,
   MpdSupervisorReportQuickFilterEnum,
@@ -12,7 +13,7 @@ import {
   useMpdSupervisorReport,
 } from './MpdSupervisorReportContext';
 import { StaffDetailTabEnum } from './StaffDetailsTabs/StaffDetailTab';
-import { EmployeeData, QuarterHealthEnum } from './mockData';
+import { EmployeeData } from './mockData';
 
 const sampleMember: EmployeeData = {
   user: {
@@ -25,12 +26,13 @@ const sampleMember: EmployeeData = {
     team: 'Campus',
   },
   quarters: [
-    { label: 'FQ4 25', health: QuarterHealthEnum.Green, payroll: 15000 },
-    { label: 'FQ1 26', health: QuarterHealthEnum.Green, payroll: 15000 },
-    { label: 'FQ2 26', health: QuarterHealthEnum.Green, payroll: 15000 },
-    { label: 'FQ3 26', health: QuarterHealthEnum.Green, payroll: 15000 },
+    { label: 'FQ4 25', health: MpdHealthStatusEnum.Green, payroll: 15000 },
+    { label: 'FQ1 26', health: MpdHealthStatusEnum.Green, payroll: 15000 },
+    { label: 'FQ2 26', health: MpdHealthStatusEnum.Green, payroll: 15000 },
+    { label: 'FQ3 26', health: MpdHealthStatusEnum.Green, payroll: 15000 },
   ],
   monthlyPayrollHistory: [],
+  quarterlyPayrollHistory: { monthlyGrossSalary: 0, completedQuarters: [] },
   monthlySummary: [],
 };
 

@@ -1,0 +1,82 @@
+# The 13 per-household training costs edited together in the "Edit Training
+# Costs" modal. Shared by the cohort query and the update mutation so the
+# mutation response normalizes straight over the cached cohort.
+fragment CohortTrainingCosts on NewStaffCohort {
+  nsoIndividual1InRoomCost
+  nsoIndividual2InRoomCost
+  nsoCoupleCost
+  nsoFamilyCost
+  ibsSingleCost
+  ibsCoupleCost
+  refreshRetreatSingleCost
+  refreshRetreatCoupleCost
+  faithAndFinanceSingleCost
+  faithAndFinanceCoupleCost
+  cruConferenceSingleCost
+  cruConferenceCoupleCost
+  cruConferenceFamilyCost
+}
+
+query NewStaffCohorts($after: String) {
+  newStaffCohorts(after: $after) {
+    nodes {
+      id
+      name
+      trainingSize
+      date
+      hasTrainingCosts
+      canRunAndSend
+      runAndSendBlockers
+      ...CohortTrainingCosts
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+  }
+}
+
+query NewStaffCohortAttendees($cohortId: ID!, $search: String, $after: String) {
+  newStaffCohort(id: $cohortId) {
+    id
+    attendees(search: $search, after: $after) {
+      nodes {
+        id
+        displayName
+        familyStatus
+        geographicLocation
+        goalStatus
+        coordinators
+        coach {
+          id
+          firstName
+          lastName
+        }
+        ministry {
+          id
+          name
+        }
+        newStaffGoalCalculation {
+          id
+          monthlyGoal
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+}
+
+mutation UpdateNewStaffCohort($input: NewStaffCohortUpdateMutationInput!) {
+  updateNewStaffCohort(input: $input) {
+    newStaffCohort {
+      id
+      hasTrainingCosts
+      canRunAndSend
+      runAndSendBlockers
+      ...CohortTrainingCosts
+    }
+  }
+}

@@ -18,7 +18,7 @@ import {
   useUpdateAdditionalSalaryRequestMutation,
 } from '../AdditionalSalaryRequest.generated';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
-import { getTotal } from './Helper/getTotal';
+import { getNonBackpayTotal, getTotal } from './Helper/getTotal';
 import { useFormUserInfo } from './useFormUserInfo';
 
 export const useAdditionalSalaryRequestForm = (
@@ -44,6 +44,10 @@ export const useAdditionalSalaryRequestForm = (
   const individualCap =
     requestData?.latestAdditionalSalaryRequest?.calculations.currentSalaryCap ??
     0;
+  const pendingAsrAmount =
+    requestData?.latestAdditionalSalaryRequest?.calculations.pendingAsrAmount ??
+    0;
+  const grossAnnualSalary = user?.currentSalary?.grossSalaryAmount ?? 0;
 
   const [updateAdditionalSalaryRequest] =
     useUpdateAdditionalSalaryRequestMutation();
@@ -52,6 +56,7 @@ export const useAdditionalSalaryRequestForm = (
     useSubmitAdditionalSalaryRequestMutation();
 
   const lastValidTotalRef = useRef<number>(0);
+  const lastValidNonBackpayTotalRef = useRef<number>(0);
 
   const createCurrencyValidation = useCallback(
     (fieldName: string, max?: number) => {
@@ -168,13 +173,20 @@ export const useAdditionalSalaryRequestForm = (
               ) {
                 return true;
               }
-              const total = getTotal(this.parent as CompleteFormValues);
-              if (total > 0) {
-                lastValidTotalRef.current = total;
+              const nonBackpayTotal = getNonBackpayTotal(
+                this.parent as CompleteFormValues,
+              );
+              if (nonBackpayTotal > 0) {
+                lastValidNonBackpayTotalRef.current = nonBackpayTotal;
               }
-              const stableTotal = total > 0 ? total : lastValidTotalRef.current;
+              const stableNonBackpayTotal =
+                nonBackpayTotal > 0
+                  ? nonBackpayTotal
+                  : lastValidNonBackpayTotalRef.current;
 
-              const exceedsCap = stableTotal > individualCap;
+              const amountRequestedYtd =
+                grossAnnualSalary + pendingAsrAmount + stableNonBackpayTotal;
+              const exceedsCap = amountRequestedYtd > individualCap;
 
               if (exceedsCap) {
                 return !!value && value.trim().length > 0;
@@ -195,6 +207,8 @@ export const useAdditionalSalaryRequestForm = (
       t,
       primaryAccountBalance,
       individualCap,
+      pendingAsrAmount,
+      grossAnnualSalary,
       locale,
       requestData,
     ],
