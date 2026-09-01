@@ -50,7 +50,8 @@ export const useRunAndSendFlow = (): RunAndSendFlow => {
 
   const handleConfirm = async () => {
     // Explicit ids rather than an omitted list, so what the modal previewed is
-    // exactly what gets sent even when a search is narrowing the table.
+    // exactly what gets sent even when a search is narrowing the table. The
+    // cost: an id withdrawn since then fails the whole send, not just itself.
     const { sendable } = partitionSendable(target.rows);
     setSending(true);
     let sentCount: number;
