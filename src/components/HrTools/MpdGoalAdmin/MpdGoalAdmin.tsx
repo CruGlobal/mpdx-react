@@ -43,7 +43,7 @@ const ActiveGoalsContent: React.FC = () => {
   // on a cohort, so neither means anything until one is selected.
   if (!error && !loading && !selectedCohortId) {
     return (
-      <NullStateBox data-testid="no-training-selected">
+      <NullStateBox role="status" data-testid="no-training-selected">
         <Typography variant="h5">{t('No Training Selected')}</Typography>
         <Typography>
           {t('There are no trainings available for you to manage.')}
