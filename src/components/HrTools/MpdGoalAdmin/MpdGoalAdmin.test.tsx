@@ -109,13 +109,15 @@ describe('MpdGoalAdmin', () => {
   });
 
   it('keeps the training selector visible in the empty state', async () => {
-    // The bar carries the Training dropdown, so hiding it would strand the user.
+    // The bar stays mounted for layout stability, but with nothing to pick the dropdown is disabled.
     const { findByTestId, getByRole } = renderMain({
       NewStaffCohorts: noCohortsMock,
     });
 
     await findByTestId('no-training-selected');
-    expect(getByRole('combobox', { name: 'Training' })).toBeInTheDocument();
+    const trainingSelect = getByRole('combobox', { name: 'Training' });
+    expect(trainingSelect).toBeInTheDocument();
+    expect(trainingSelect).toHaveAttribute('aria-disabled', 'true');
   });
 
   it('switches to the scenario goals tab', async () => {
