@@ -110,9 +110,10 @@ export const CohortBar: React.FC = () => {
               underline="hover"
               onClick={() => setTrainingCostsOpen(true)}
               onMouseEnter={preloadEditTrainingCostsModal}
-              // palette.main is under WCAG AA at this size; dark keeps the hue readable.
+              // MUI's warning palette is only 3.79:1 on white; the Cru vermilion
+              // token clears WCAG AA for body2's 14px text.
               sx={(theme) => ({
-                color: theme.palette.warning.dark,
+                color: theme.palette.statusWarning.main,
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 0.5,
