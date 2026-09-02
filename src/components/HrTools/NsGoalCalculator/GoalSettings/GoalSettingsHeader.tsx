@@ -12,11 +12,7 @@ import { GoalSettingsSelect, SelectOption } from './Fields/GoalSettingsSelect';
 import { MpdGoalPreview } from './MpdGoalPreview';
 import { GoalSettingsPerson } from './goalSettingsFormValues';
 
-/**
- * Stand-in names until MPDX-9796 exposes the attendee's coordinators on the
- * goal calculation. Coordinators are read-only in MPDX, always derived from
- * OneApp roles (MPDX-9688), and a ministry usually has several.
- */
+// Stand-ins until MPDX-9796 exposes coordinators on the goal calculation.
 const placeholderCoordinators = [
   'Nancy Coleman',
   'Francis Powell',

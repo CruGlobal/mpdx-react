@@ -24,11 +24,7 @@ interface CoordinatorsCellProps {
   staffName: string;
 }
 
-/**
- * Coordinator column cell. A ministry usually has several coordinators
- * (MPDX-9688), so the cell shows the first name and hides the rest behind a
- * "+N" chip that opens the full list.
- */
+/** Shows the first coordinator; a ministry usually has several (MPDX-9688). */
 export const CoordinatorsCell: React.FC<CoordinatorsCellProps> = ({
   coordinators,
   staffName,

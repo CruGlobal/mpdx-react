@@ -39,7 +39,6 @@ describe('CoordinatorsCell', () => {
 
     expect(getByText('Nancy Coleman')).toBeInTheDocument();
     expect(getByText('+2')).toBeInTheDocument();
-    // The others stay hidden until the chip is clicked.
     expect(queryByText('Diana Park')).not.toBeInTheDocument();
   });
 

@@ -3,15 +3,10 @@ import { Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 interface CoordinatorListProps {
-  /** Read-only OneApp coordinator names, in the order the API returns them. */
   coordinators: string[];
 }
 
-/**
- * Read-only list of the attendee's MPD coordinators. Coordinators are derived
- * from OneApp roles and a ministry commonly has several (MPDX-9688), so they
- * are shown as a list rather than a single editable field.
- */
+/** Read-only coordinators, derived from OneApp roles and never editable here. */
 export const CoordinatorList: React.FC<CoordinatorListProps> = ({
   coordinators,
 }) => {
