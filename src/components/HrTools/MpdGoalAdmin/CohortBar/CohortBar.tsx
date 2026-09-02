@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { ErrorOutline } from '@mui/icons-material';
 import {
   Box,
   Link,
   MenuItem,
   Stack,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
@@ -45,6 +47,10 @@ export const CohortBar: React.FC = () => {
     saveTrainingCosts,
   } = useMpdGoalAdmin();
   const [trainingCostsOpen, setTrainingCostsOpen] = useState(false);
+
+  // Only a loaded cohort can be short its costs; an absent one is still loading.
+  const needsTrainingCosts =
+    !!selectedCohort && !selectedCohort.hasTrainingCosts;
 
   const handleSaveTrainingCosts = async (costs: TrainingCosts) => {
     if (!selectedCohort) {
@@ -92,16 +98,42 @@ export const CohortBar: React.FC = () => {
       </Stat>
       <Stat label={t('NSO Date')}>{selectedCohort?.nsoDate ?? '—'}</Stat>
       <Stat label={t('Training Cost')}>
-        <Link
-          component="button"
-          type="button"
-          underline="hover"
-          disabled={!selectedCohort}
-          onClick={() => setTrainingCostsOpen(true)}
-          onMouseEnter={preloadEditTrainingCostsModal}
-        >
-          {t('View/Edit')}
-        </Link>
+        {needsTrainingCosts ? (
+          <Tooltip
+            // Without this the tooltip becomes the button's aria-label and hides its text.
+            describeChild
+            title={t('Training costs are required to run & send goals.')}
+          >
+            <Link
+              component="button"
+              type="button"
+              underline="hover"
+              onClick={() => setTrainingCostsOpen(true)}
+              onMouseEnter={preloadEditTrainingCostsModal}
+              // palette.main is under WCAG AA at this size; dark keeps the hue readable.
+              sx={(theme) => ({
+                color: theme.palette.warning.dark,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 0.5,
+              })}
+            >
+              <ErrorOutline fontSize="small" />
+              {t('Provide Training Cost')}
+            </Link>
+          </Tooltip>
+        ) : (
+          <Link
+            component="button"
+            type="button"
+            underline="hover"
+            disabled={!selectedCohort}
+            onClick={() => setTrainingCostsOpen(true)}
+            onMouseEnter={preloadEditTrainingCostsModal}
+          >
+            {t('View/Edit')}
+          </Link>
+        )}
       </Stat>
       {trainingCostsOpen && (
         <DynamicEditTrainingCostsModal

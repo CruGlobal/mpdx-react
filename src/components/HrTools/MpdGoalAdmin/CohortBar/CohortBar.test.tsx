@@ -54,9 +54,13 @@ const TestComponent: React.FC<TestComponentProps> = ({
 );
 
 /** Waits for the cohort first; clicking early opens the modal with no cohort. */
-const openModal = async (screen: ReturnType<typeof render>) => {
+const openModal = async (
+  screen: ReturnType<typeof render>,
+  // A cohort missing its costs prompts to provide them instead.
+  name: string = 'View/Edit',
+) => {
   await screen.findByText('Fall NSO 2026');
-  userEvent.click(screen.getByRole('button', { name: 'View/Edit' }));
+  userEvent.click(screen.getByRole('button', { name }));
   return screen.findByRole('heading', { name: /Training Costs for/ });
 };
 
@@ -70,6 +74,46 @@ describe('CohortBar', () => {
     ).toHaveTextContent('Fall NSO 2026');
     expect(await findByText('13 New Staff')).toBeInTheDocument();
     expect(await findByText('8/10/2026')).toBeInTheDocument();
+  });
+
+  it('prompts to provide the costs when the cohort has none', async () => {
+    const { findByText, findByRole, queryByRole } = render(
+      <TestComponent withoutCosts />,
+    );
+
+    await findByText('Fall NSO 2026');
+    expect(
+      await findByRole('button', { name: 'Provide Training Cost' }),
+    ).toBeInTheDocument();
+    expect(
+      queryByRole('button', { name: 'View/Edit' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('explains why the costs are needed when the cohort has none', async () => {
+    const { findByText, findByRole } = render(<TestComponent withoutCosts />);
+
+    await findByText('Fall NSO 2026');
+    const prompt = await findByRole('button', {
+      name: 'Provide Training Cost',
+    });
+
+    userEvent.hover(prompt);
+    expect(
+      await findByText('Training costs are required to run & send goals.'),
+    ).toBeInTheDocument();
+  });
+
+  it('opens the modal from the Provide Training Cost prompt', async () => {
+    const screen = render(<TestComponent withoutCosts />);
+    const { findByText, findByRole, getByRole } = screen;
+
+    await findByText('Fall NSO 2026');
+    userEvent.click(getByRole('button', { name: 'Provide Training Cost' }));
+
+    expect(
+      await findByRole('heading', { name: /Training Costs for/ }),
+    ).toHaveTextContent('Training Costs for Fall NSO 2026');
   });
 
   it('opens the Edit Training Costs modal for the selected cohort', async () => {
@@ -152,7 +196,7 @@ describe('CohortBar', () => {
   it('keeps APPLY disabled until every cost is entered', async () => {
     const screen = render(<TestComponent withoutCosts />);
     const { findByRole } = screen;
-    await openModal(screen);
+    await openModal(screen, 'Provide Training Cost');
 
     // The cohort has no saved costs, so the form opens blank.
     expect(await findByRole('button', { name: 'Apply' })).toBeDisabled();
