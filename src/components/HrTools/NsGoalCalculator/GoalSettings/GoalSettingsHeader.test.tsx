@@ -177,6 +177,21 @@ describe('GoalSettingsHeader', () => {
     expect(options.map((option) => option.textContent)).toEqual(['2020']);
   });
 
+  it('lists the coordinators after the coach field', () => {
+    const { getByRole } = render(<TestComponent />);
+
+    const coordinators = getByRole('list', { name: 'Coordinators' });
+
+    expect(
+      within(coordinators).getAllByRole('listitem').length,
+    ).toBeGreaterThan(1);
+    expect(
+      getByRole('textbox', { name: 'Coach' }).compareDocumentPosition(
+        coordinators,
+      ) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
   describe('scenario mode', () => {
     it('shows the Scenario Only chip and hides the person, coach, and coordinator cards', () => {
       const { getByText, queryByText, queryByRole } = render(
@@ -187,7 +202,7 @@ describe('GoalSettingsHeader', () => {
       expect(queryByText('Incomplete')).not.toBeInTheDocument();
       expect(queryByRole('textbox', { name: 'Coach' })).not.toBeInTheDocument();
       expect(
-        queryByRole('textbox', { name: 'Coordinator' }),
+        queryByRole('list', { name: 'Coordinators' }),
       ).not.toBeInTheDocument();
     });
 
@@ -196,7 +211,7 @@ describe('GoalSettingsHeader', () => {
 
       expect(queryByText('Scenario Only')).not.toBeInTheDocument();
       expect(getByRole('textbox', { name: 'Coach' })).toBeInTheDocument();
-      expect(getByRole('textbox', { name: 'Coordinator' })).toBeInTheDocument();
+      expect(getByRole('list', { name: 'Coordinators' })).toBeInTheDocument();
     });
   });
 });

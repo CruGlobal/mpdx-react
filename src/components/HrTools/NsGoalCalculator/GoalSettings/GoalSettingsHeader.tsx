@@ -6,10 +6,22 @@ import { Box, Chip, Grid, Stack, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { CalculationYearTooltip } from '../../Shared/CalculationYearTooltip';
+import { CoordinatorList } from './Fields/CoordinatorList';
 import { GoalSettingsPlaceholder } from './Fields/GoalSettingsPlaceholder';
 import { GoalSettingsSelect, SelectOption } from './Fields/GoalSettingsSelect';
 import { MpdGoalPreview } from './MpdGoalPreview';
 import { GoalSettingsPerson } from './goalSettingsFormValues';
+
+/**
+ * Stand-in names until MPDX-9796 exposes the attendee's coordinators on the
+ * goal calculation. Coordinators are read-only in MPDX, always derived from
+ * OneApp roles (MPDX-9688), and a ministry usually has several.
+ */
+const placeholderCoordinators = [
+  'Nancy Coleman',
+  'Francis Powell',
+  'Gerald Christianson',
+];
 
 interface ContactLineProps {
   icon: React.ReactNode;
@@ -194,11 +206,7 @@ export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
                 showLabel
               />
               {/* TODO(MPDX-9796): Attendee field */}
-              <GoalSettingsPlaceholder
-                label={t('Coordinator')}
-                value={t('Nancy Coleman')}
-                showLabel
-              />
+              <CoordinatorList coordinators={placeholderCoordinators} />
             </Stack>
           </Grid>
         </Grid>
