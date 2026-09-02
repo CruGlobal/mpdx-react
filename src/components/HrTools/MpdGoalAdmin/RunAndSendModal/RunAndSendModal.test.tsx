@@ -19,7 +19,7 @@ const makeRow = (
   goalStatus,
   familyStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
   coach: 'Coach',
-  coordinator: 'Coordinator',
+  coordinators: ['Coordinator'],
 });
 
 const rows = [

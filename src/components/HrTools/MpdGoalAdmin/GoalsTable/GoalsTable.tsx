@@ -31,6 +31,7 @@ import {
   familyStatusLabel,
   goalStatusLabel,
 } from '../mpdGoalAdminHelpers';
+import { CoordinatorsCell } from './CoordinatorsCell';
 
 // Complete is ready to send and Sent is already done; only Incomplete needs action.
 const goalStatusColor = (status: GoalStatusEnum) => {
@@ -188,7 +189,9 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
                   </Link>
                 )}
               </TableCell>
-              <TableCell>{row.coordinator}</TableCell>
+              <TableCell>
+                <CoordinatorsCell coordinators={row.coordinators} />
+              </TableCell>
               <TableCell>
                 {/* Disabled until wired up so assistive tech announces the
                     inert state instead of a dead control (MPDX-9696). */}

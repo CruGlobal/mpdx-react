@@ -122,7 +122,10 @@ const attendee = (
 
 /** row-1 is deliberately the only attendee without a coach. */
 export const attendees: AttendeeNode[] = [
-  attendee('row-1', 'John & Jane Doe'),
+  // Most ministries have several coordinators, so row-1 carries a list.
+  attendee('row-1', 'John & Jane Doe', {
+    coordinators: ['Kim Coordinator', 'Lee Coordinator', 'Pat Coordinator'],
+  }),
   // No goal calculation yet, so the goal renders as pending.
   attendee('row-2', 'Carlos & Michaela Everts', {
     goalStatus: NewStaffCohortAttendeeGoalStatusEnum.Incomplete,

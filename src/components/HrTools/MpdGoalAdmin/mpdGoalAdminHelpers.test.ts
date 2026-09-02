@@ -93,7 +93,7 @@ describe('attendeeToRow', () => {
       goalStatus: NewStaffCohortAttendeeGoalStatusEnum.Complete,
       familyStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
       coach: 'Amy Wilson',
-      coordinator: 'Kim Coordinator',
+      coordinators: ['Kim Coordinator'],
     });
   });
 
@@ -131,12 +131,12 @@ describe('attendeeToRow', () => {
     expect(row.geography).toBe('');
   });
 
-  it('joins multiple coordinators with a comma', () => {
+  it('keeps every coordinator so the cell can show the overflow count', () => {
     const row = attendeeToRow({
       ...attendeeWithoutCoach,
       coordinators: ['Kim Coordinator', 'Lee Coordinator'],
     });
-    expect(row.coordinator).toBe('Kim Coordinator, Lee Coordinator');
+    expect(row.coordinators).toEqual(['Kim Coordinator', 'Lee Coordinator']);
   });
 });
 

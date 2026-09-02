@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { act, render, waitFor } from '@testing-library/react';
+import { act, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
@@ -81,6 +81,21 @@ describe('GoalsTable', () => {
     const { getByText } = renderTable([sentRow]);
     const chip = getByText('Sent').closest('.MuiChip-root');
     expect(chip).toHaveClass('MuiChip-colorInfo');
+  });
+
+  it('shows the first coordinator and hides the rest behind a chip', () => {
+    const { getByText, getByRole, queryByText } = renderTable();
+    // row-1 is the only attendee with more than one coordinator.
+    const row = within(getByText('John & Jane Doe').closest('tr')!);
+
+    expect(row.getByText('Kim Coordinator')).toBeInTheDocument();
+    expect(queryByText('Lee Coordinator')).not.toBeInTheDocument();
+
+    userEvent.click(
+      row.getByRole('button', { name: 'Show all 3 coordinators' }),
+    );
+
+    expect(getByRole('menuitem', { name: 'Lee Coordinator' })).toBeVisible();
   });
 
   it('shows an Assign Coach prompt when no coach is set', () => {
