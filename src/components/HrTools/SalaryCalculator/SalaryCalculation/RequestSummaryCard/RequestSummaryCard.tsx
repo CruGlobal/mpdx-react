@@ -64,7 +64,11 @@ export const RequestSummaryCard: React.FC = () => {
   const approvalRequired =
     !!progressiveApprovalTier &&
     progressiveApprovalTier?.tier !== ProgressiveApprovalTierEnum.DivisionHead;
-  const { combinedGross, overCapPerson } = useCaps();
+  const {
+    combinedGross,
+    combinedEffectiveCap: combinedCap,
+    overCapPerson,
+  } = useCaps();
 
   const { formatCurrency } = useFormatters();
 
@@ -72,7 +76,6 @@ export const RequestSummaryCard: React.FC = () => {
   const spouseCalcs = calculation?.spouseCalculations;
   const hasSpouse = !!hcmSpouse && !!spouseCalcs;
 
-  const combinedCap = calcs?.combinedCap ?? 0;
   const combinedSeca =
     (calcs?.requestedSeca ?? 0) + (spouseCalcs?.requestedSeca ?? 0);
   const combined403b =
