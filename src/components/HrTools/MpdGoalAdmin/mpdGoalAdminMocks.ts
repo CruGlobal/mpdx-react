@@ -87,6 +87,8 @@ export const cohortsWithoutCostsMock: NewStaffCohortsQuery = {
       {
         ...cohortsMock.newStaffCohorts.nodes[0],
         hasTrainingCosts: false,
+        // Costs gate Run & Send, so goals cannot already have gone out.
+        goalsSentAt: null,
         ...noCostFields,
       },
     ],
