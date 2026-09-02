@@ -21,7 +21,7 @@ export const GoalsSentBanner: React.FC = () => {
 
   return (
     <Alert severity="success" role="status" sx={{ mb: 2 }}>
-      {t('All complete goals were run and sent on {{date}} at {{time}}.', {
+      {t('Goals were last run and sent on {{date}} at {{time}}.', {
         date: dateFormatShort(goalsSentAt, locale),
         time: timeFormat(goalsSentAt, locale),
       })}

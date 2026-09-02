@@ -49,7 +49,7 @@ describe('GoalsSentBanner', () => {
     const { findByRole } = render(<TestComponent />);
 
     expect(await findByRole('status')).toHaveTextContent(
-      'All complete goals were run and sent on 8/10/2026 at 3:40 PM.',
+      'Goals were last run and sent on 8/10/2026 at 3:40 PM UTC.',
     );
   });
 

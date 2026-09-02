@@ -373,10 +373,22 @@ describe('intlFormat', () => {
 
   describe('timeFormat', () => {
     const locale = 'en-US';
-    it('returns the hour and minute without the date', () => {
+    it('returns the hour, minute and time zone without the date', () => {
       const time = timeFormat(DateTime.local(2026, 8, 10, 15, 40), locale);
 
-      expect(time).toBe('3:40 PM');
+      expect(time).toBe('3:40 PM UTC');
+    });
+
+    it('uses a 24-hour clock where the locale expects one', () => {
+      expect(timeFormat(DateTime.local(2026, 8, 10, 15, 40), 'fr')).toBe(
+        '15:40 UTC',
+      );
+    });
+
+    it('returns es-419 formatted', () => {
+      expect(timeFormat(DateTime.local(2026, 8, 10, 15, 40), 'es-419')).toBe(
+        '3:40 p.m. UTC',
+      );
     });
 
     it('returns an empty string when there is no time', () => {

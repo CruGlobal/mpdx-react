@@ -254,9 +254,12 @@ export const timeFormat = (date: DateTime | null, locale: string): string => {
   if (date === null) {
     return '';
   }
+  // Server instants are rendered in the viewer's zone, so name it to keep
+  // team-wide timestamps comparable across time zones.
   return new Intl.DateTimeFormat(locale, {
     hour: 'numeric',
     minute: 'numeric',
+    timeZoneName: 'short',
   }).format(date.toJSDate());
 };
 
