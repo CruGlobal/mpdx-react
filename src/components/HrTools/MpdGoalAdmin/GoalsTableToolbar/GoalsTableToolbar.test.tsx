@@ -28,7 +28,6 @@ const Capture: React.FC = () => {
 
 const mutationSpy = jest.fn();
 
-/** Mirrors the throwing-resolver precedent in CohortBar.test.tsx. */
 const renderFailingToolbar = () =>
   render(
     <ThemeProvider theme={theme}>
@@ -202,7 +201,6 @@ describe('GoalsTableToolbar', () => {
     userEvent.click(getByRole('button', { name: 'Run and Send All' }));
     userEvent.click(getByRole('button', { name: 'Yes, Continue' }));
 
-    // row-2 is Incomplete; the other two go out.
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('RunAndSendNewStaffCohort', {
         input: { cohortId: 'fall-nso-2026', attendeeIds: ['row-1', 'row-3'] },
@@ -241,7 +239,6 @@ describe('GoalsTableToolbar', () => {
     );
     await waitFor(() => expect(confirm).toBeEnabled());
     expect(getByRole('dialog')).toBeInTheDocument();
-    // The global Apollo error link owns the failure toast; don't claim success.
     expect(queryByText(/were run and sent/)).not.toBeInTheDocument();
     expect(ctx.selectedRowIds.size).toBe(1);
   });
@@ -253,7 +250,6 @@ describe('GoalsTableToolbar', () => {
     userEvent.click(getByRole('button', { name: 'Run and Send All' }));
     userEvent.click(getByRole('button', { name: 'Yes, Continue' }));
 
-    // Every targeted row went stale server-side, so this is not a success.
     expect(
       await findByText('No MPD goals were eligible to send.'),
     ).toBeInTheDocument();
@@ -279,7 +275,6 @@ describe('GoalsTableToolbar', () => {
     const button = getByRole('button', { name: 'Run and Send All' });
     expect(button).toBeDisabled();
 
-    // The span wrapper is what carries the tooltip for a disabled button.
     userEvent.hover(button.parentElement as HTMLElement);
     expect(await findByRole('tooltip')).toHaveTextContent(
       'All inputs and per-training costs are required to run & send goals.',

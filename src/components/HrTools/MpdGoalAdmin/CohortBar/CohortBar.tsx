@@ -67,7 +67,6 @@ export const CohortBar: React.FC = () => {
     setTrainingCostsOpen(false);
   };
 
-  // goalsSentAt tracks the most recent batch, so the copy says "last batch".
   const lastSent = selectedCohort?.goalsSentAt;
 
   return (

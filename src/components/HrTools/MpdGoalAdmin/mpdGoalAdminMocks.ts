@@ -102,7 +102,6 @@ export const cohortsWithoutCostsMock: NewStaffCohortsQuery = {
   },
 };
 
-/** A cohort whose most recent Run & Send batch drives the CohortBar banner. */
 export const cohortsSentMock: NewStaffCohortsQuery = {
   newStaffCohorts: {
     nodes: [

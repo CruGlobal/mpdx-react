@@ -70,7 +70,6 @@ const renderTable = (data = rows, cohorts?: NewStaffCohortsQuery) =>
     </Providers>,
   );
 
-/** Resolves once both queries settle; the row action stays disabled until then. */
 const renderLoadedTable = async (
   data = rows,
   cohorts?: NewStaffCohortsQuery,
@@ -118,7 +117,6 @@ describe('GoalsTable', () => {
   });
 
   it('dates the Sent chip from the row, not the cohort', () => {
-    // A later cohort batch must not re-date a row sent in an earlier one.
     const { getByText } = renderTable([
       {
         ...rows[0],
@@ -132,7 +130,6 @@ describe('GoalsTable', () => {
   it('runs & sends a single row from its actions menu', async () => {
     const { getAllByRole, getByRole, findByText } = await renderLoadedTable();
 
-    // rows[0] is Complete; its menu is the only entry point for one household.
     userEvent.click(getAllByRole('button', { name: /Actions for/ })[0]);
     userEvent.click(getByRole('menuitem', { name: 'Run & Send this goal' }));
 
@@ -173,7 +170,6 @@ describe('GoalsTable', () => {
 
   it('leaves the bulk selection alone when sending a single row', async () => {
     const { getAllByRole, getByRole, findByText } = await renderLoadedTable();
-    // The row action targets one household and must not clear the checkboxes.
     act(() => ctx.toggleRow('row-3'));
 
     userEvent.click(getAllByRole('button', { name: /Actions for/ })[0]);
@@ -202,7 +198,6 @@ describe('GoalsTable', () => {
       rows,
       cohortsWithoutCostsMock,
     );
-    // rows[0] is Complete, but the cohort itself cannot run & send.
     expect(getAllByRole('button', { name: /Actions for/ })[0]).toBeDisabled();
   });
 

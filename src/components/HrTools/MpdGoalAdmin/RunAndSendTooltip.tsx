@@ -8,7 +8,7 @@ interface RunAndSendTooltipProps {
   children: React.ReactElement;
 }
 
-/** Explains why a Run & Send control is inert; the span is needed because a disabled control has neither mouse events nor a tab stop. */
+/** The span is needed: a disabled control has neither mouse events nor a tab stop. */
 export const RunAndSendTooltip: React.FC<RunAndSendTooltipProps> = ({
   show,
   children,

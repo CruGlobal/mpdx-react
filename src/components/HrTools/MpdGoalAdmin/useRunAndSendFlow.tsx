@@ -11,13 +11,11 @@ interface OpenOptions {
 }
 
 export interface RunAndSendFlow {
-  /** Opens the confirmation for `rows`; the send itself waits on the confirm. */
   openRunAndSend: (
     title: string,
     rows: StaffGoalRow[],
     options?: OpenOptions,
   ) => void;
-  /** Spread onto a single `RunAndSendModal` rendered by the caller. */
   modalProps: RunAndSendModalProps;
 }
 

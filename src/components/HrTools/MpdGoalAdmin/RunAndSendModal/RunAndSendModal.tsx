@@ -21,7 +21,6 @@ export interface RunAndSendModalProps {
   title: string;
   /** The goals targeted by the run-and-send action (all or selected rows). */
   rows: StaffGoalRow[];
-  /** True while the mutation is in flight, so the send cannot be double-fired. */
   sending: boolean;
   onClose: () => void;
   onConfirm: () => void;

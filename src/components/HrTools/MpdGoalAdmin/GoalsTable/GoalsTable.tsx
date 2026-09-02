@@ -53,7 +53,6 @@ const goalStatusColor = (status: GoalStatusEnum) => {
 
 interface GoalStatusChipProps {
   status: GoalStatusEnum;
-  /** ISO timestamp of this row's own batch; dated per row, not per cohort. */
   sentAt: string | null;
 }
 
@@ -104,7 +103,6 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
   const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_ROWS_PER_PAGE);
   // The staff row whose coach is being assigned; null when the modal is closed.
   const [coachRow, setCoachRow] = useState<StaffGoalRow | null>(null);
-  // The row whose action menu is open, paired with the element it anchors to.
   const [actionsMenu, setActionsMenu] = useState<{
     row: StaffGoalRow;
     anchorEl: HTMLElement;
@@ -123,7 +121,6 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
     assignCoach([coachRow.id], coach.name);
   };
 
-  // The cohort flag also covers blockers that leave a goal Complete.
   const canRunAndSendRow = (row: StaffGoalRow | undefined) =>
     !loading && !!row && isSendable(row) && !!selectedCohort?.canRunAndSend;
 

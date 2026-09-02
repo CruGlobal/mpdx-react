@@ -29,7 +29,6 @@ jest.mock('notistack', () => ({
 interface TestComponentProps {
   /** Renders a cohort whose costs have never been entered. */
   withoutCosts?: boolean;
-  /** Renders a cohort with a most-recent Run & Send batch. */
   cohorts?: NewStaffCohortsQuery;
 }
 
@@ -74,7 +73,6 @@ describe('CohortBar', () => {
 
   it('reports the most recent Run & Send batch, not every complete goal', async () => {
     const { findByText } = render(<TestComponent cohorts={cohortsSentMock} />);
-    // goalsSentAt moves with each batch, so the copy is scoped to that batch.
     expect(
       await findByText(/The last batch of MPD goals was run and sent on/),
     ).toBeInTheDocument();

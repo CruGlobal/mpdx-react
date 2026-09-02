@@ -95,7 +95,6 @@ export interface Cohort {
   /** Display string, e.g. "08/10/2026"; "—" when the API has no date yet. */
   nsoDate: string;
   hasTrainingCosts: boolean;
-  /** False while `runAndSendBlockers` holds a reason Run & Send is unavailable. */
   canRunAndSend: boolean;
   /** ISO timestamp of the most recent Run & Send batch; null until the first. */
   goalsSentAt: string | null;
