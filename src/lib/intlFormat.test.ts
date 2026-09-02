@@ -13,6 +13,7 @@ import {
   numberFormat,
   parseNumberFromCurrencyString,
   percentageFormat,
+  timeFormat,
   validateAndFormatInvalidDate,
 } from './intlFormat';
 
@@ -367,6 +368,19 @@ describe('intlFormat', () => {
       const date = dateTimeFormat(null, locale);
 
       expect(date).toBe('');
+    });
+  });
+
+  describe('timeFormat', () => {
+    const locale = 'en-US';
+    it('returns the hour and minute without the date', () => {
+      const time = timeFormat(DateTime.local(2026, 8, 10, 15, 40), locale);
+
+      expect(time).toBe('3:40 PM');
+    });
+
+    it('returns an empty string when there is no time', () => {
+      expect(timeFormat(null, locale)).toBe('');
     });
   });
 

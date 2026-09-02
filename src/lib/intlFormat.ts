@@ -250,6 +250,16 @@ export const dateTimeFormat = (
   }).format(date.toJSDate());
 };
 
+export const timeFormat = (date: DateTime | null, locale: string): string => {
+  if (date === null) {
+    return '';
+  }
+  return new Intl.DateTimeFormat(locale, {
+    hour: 'numeric',
+    minute: 'numeric',
+  }).format(date.toJSDate());
+};
+
 export const validateAndFormatInvalidDate = (
   year: number | null | undefined,
   month: number,
