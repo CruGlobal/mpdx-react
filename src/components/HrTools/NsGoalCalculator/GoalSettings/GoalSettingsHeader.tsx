@@ -79,6 +79,8 @@ interface GoalSettingsHeaderProps {
    * Whether the required fields are filled in.
    */
   isComplete?: boolean;
+  /** MPDX-9796 will pass the attendee's coordinators from the calculation. */
+  coordinators?: string[];
 }
 
 export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
@@ -88,6 +90,7 @@ export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
   joinedStaffYear,
   isScenario = false,
   isComplete = false,
+  coordinators = placeholderCoordinators,
 }) => {
   const { t } = useTranslation();
   const yearLabelId = useId();
@@ -205,8 +208,8 @@ export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
                 value={t('Amy Wilson')}
                 showLabel
               />
-              {/* TODO(MPDX-9796): Attendee field */}
-              <CoordinatorList coordinators={placeholderCoordinators} />
+              {/* TODO(MPDX-9796): real coordinators from the calculation */}
+              <CoordinatorList coordinators={coordinators} />
             </Stack>
           </Grid>
         </Grid>
