@@ -92,10 +92,13 @@ describe('GoalsTable', () => {
     expect(queryByText('Lee Coordinator')).not.toBeInTheDocument();
 
     userEvent.click(
-      row.getByRole('button', { name: 'Show all 3 coordinators' }),
+      row.getByRole('button', {
+        name: '+2 more coordinators for John & Jane Doe',
+      }),
     );
 
-    expect(getByRole('menuitem', { name: 'Lee Coordinator' })).toBeVisible();
+    const list = getByRole('list', { name: 'Coordinators' });
+    expect(within(list).getByText('Lee Coordinator')).toBeVisible();
   });
 
   it('shows an Assign Coach prompt when no coach is set', () => {

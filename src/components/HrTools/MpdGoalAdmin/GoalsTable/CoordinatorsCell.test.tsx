@@ -1,14 +1,24 @@
 import React from 'react';
+import { Table, TableBody, TableRow } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import theme from 'src/theme';
 import { CoordinatorsCell } from './CoordinatorsCell';
 
-const renderCell = (coordinators: string[]) =>
+const renderCell = (coordinators: string[], staffName = 'Sam Smith') =>
   render(
     <ThemeProvider theme={theme}>
-      <CoordinatorsCell coordinators={coordinators} />
+      <Table>
+        <TableBody>
+          <TableRow>
+            <CoordinatorsCell
+              coordinators={coordinators}
+              staffName={staffName}
+            />
+          </TableRow>
+        </TableBody>
+      </Table>
     </ThemeProvider>,
   );
 
@@ -40,9 +50,12 @@ describe('CoordinatorsCell', () => {
       'Ken Smith',
     ]);
 
-    userEvent.click(getByRole('button', { name: 'Show all 3 coordinators' }));
+    userEvent.click(
+      getByRole('button', { name: '+2 more coordinators for Sam Smith' }),
+    );
 
-    expect(getAllByRole('menuitem').map((item) => item.textContent)).toEqual([
+    expect(getByRole('list', { name: 'Coordinators' })).toBeInTheDocument();
+    expect(getAllByRole('listitem').map((item) => item.textContent)).toEqual([
       'Nancy Coleman',
       'Diana Park',
       'Ken Smith',
@@ -55,17 +68,22 @@ describe('CoordinatorsCell', () => {
       'Diana Park',
     ]);
 
-    userEvent.click(getByRole('button', { name: 'Show all 2 coordinators' }));
-    expect(getByRole('menu')).toBeInTheDocument();
+    const chip = getByRole('button', {
+      name: '+1 more coordinators for Sam Smith',
+    });
+    userEvent.click(chip);
 
-    userEvent.type(getByRole('menu'), '{esc}');
+    const list = getByRole('list', { name: 'Coordinators' });
+    expect(within(list).getByText('Diana Park')).toBeInTheDocument();
 
-    expect(queryByRole('menu')).not.toBeInTheDocument();
+    userEvent.type(list, '{esc}');
+
+    expect(queryByRole('list')).not.toBeInTheDocument();
   });
 
-  it('renders nothing when the attendee has no coordinators', () => {
-    const { container } = renderCell([]);
+  it('renders a placeholder when the attendee has no coordinators', () => {
+    const { getByRole } = renderCell([]);
 
-    expect(container).toBeEmptyDOMElement();
+    expect(getByRole('cell')).toHaveTextContent('—');
   });
 });

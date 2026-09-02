@@ -143,7 +143,7 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
             <TableCell>{t('Goal Status')}</TableCell>
             <TableCell>{t('Family Status')}</TableCell>
             <TableCell>{t('Coach')}</TableCell>
-            <TableCell>{t('Coordinator')}</TableCell>
+            <TableCell>{t('Coordinators')}</TableCell>
             <TableCell>{t('Actions')}</TableCell>
             <TableCell padding="checkbox">
               <Box component="span" sx={visuallyHidden as SxProps<Theme>}>
@@ -189,9 +189,10 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
                   </Link>
                 )}
               </TableCell>
-              <TableCell>
-                <CoordinatorsCell coordinators={row.coordinators} />
-              </TableCell>
+              <CoordinatorsCell
+                coordinators={row.coordinators}
+                staffName={row.name}
+              />
               <TableCell>
                 {/* Disabled until wired up so assistive tech announces the
                     inert state instead of a dead control (MPDX-9696). */}
