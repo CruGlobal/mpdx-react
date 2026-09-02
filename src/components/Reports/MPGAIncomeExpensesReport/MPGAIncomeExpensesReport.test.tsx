@@ -115,6 +115,10 @@ const TestComponent: React.FC = () => (
   </ThemeProvider>
 );
 
+// Role+name lookups walk every node of a page holding several data grids and
+// cost seconds each, so match the cell text directly instead.
+const inGridCell = { selector: '[role="gridcell"] *' };
+
 const resizeObserverMock = () => ({
   observe: jest.fn(),
   unobserve: jest.fn(),
@@ -163,11 +167,10 @@ describe('MPGAIncomeExpensesReport', () => {
 
   describe('Category filtering', () => {
     it('re-renders report rows when a category is unchecked and applied', async () => {
-      const { getByRole, findByRole, findAllByText, queryByText } = render(
-        <TestComponent />,
-      );
+      const { getByRole, findByRole, findByText, findAllByText, queryByText } =
+        render(<TestComponent />);
 
-      expect(await findByRole('gridcell', { name: 'Benefits' })).toBeVisible();
+      expect(await findByText('Benefits', inGridCell)).toBeVisible();
       expect(
         queryByText('Benefits - Workers Compensation'),
       ).not.toBeInTheDocument();
@@ -197,11 +200,10 @@ describe('MPGAIncomeExpensesReport', () => {
     }, 30000);
 
     it('does not show the Clear button when only a category filter is applied', async () => {
-      const { getByRole, findByRole, findAllByText, queryByRole } = render(
-        <TestComponent />,
-      );
+      const { getByRole, findByRole, findByText, findAllByText, queryByRole } =
+        render(<TestComponent />);
 
-      expect(await findByRole('gridcell', { name: 'Benefits' })).toBeVisible();
+      expect(await findByText('Benefits', inGridCell)).toBeVisible();
       expect(queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
 
       userEvent.click(getByRole('button', { name: 'Report Settings' }));
@@ -224,9 +226,11 @@ describe('MPGAIncomeExpensesReport', () => {
     }, 30000);
 
     it('does not show the Clear button when the dialog is cancelled', async () => {
-      const { getByRole, findByRole, queryByRole } = render(<TestComponent />);
+      const { getByRole, findByRole, findByText, queryByRole } = render(
+        <TestComponent />,
+      );
 
-      expect(await findByRole('gridcell', { name: 'Benefits' })).toBeVisible();
+      expect(await findByText('Benefits', inGridCell)).toBeVisible();
 
       userEvent.click(getByRole('button', { name: 'Report Settings' }));
 
@@ -244,9 +248,11 @@ describe('MPGAIncomeExpensesReport', () => {
 
   describe('Date range filtering', () => {
     it('shows the Clear button after a year is applied', async () => {
-      const { getByRole, findByRole, queryByRole } = render(<TestComponent />);
+      const { getByRole, findByRole, findByText, queryByRole } = render(
+        <TestComponent />,
+      );
 
-      await findByRole('gridcell', { name: 'Benefits' });
+      await findByText('Benefits', inGridCell);
       expect(queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
 
       userEvent.click(getByRole('button', { name: 'Report Settings' }));

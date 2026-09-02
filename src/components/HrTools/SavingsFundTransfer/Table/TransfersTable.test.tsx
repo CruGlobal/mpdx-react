@@ -4,10 +4,17 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import { TableTypeEnum, Transfers, mockData } from '../mockData';
+import {
+  ScheduleEnum,
+  StatusEnum,
+  TableTypeEnum,
+  Transfers,
+  mockData,
+} from '../mockData';
 import { TransfersTable } from './TransfersTable';
 
 const mutationSpy = jest.fn();
@@ -46,14 +53,20 @@ const mockHistory: Transfers[] = [
   },
 ];
 
-const TestComponent: React.FC = () => {
+interface TestComponentProps {
+  history?: Transfers[];
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({
+  history = mockHistory,
+}) => {
   return (
     <SnackbarProvider>
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <GqlMockedProvider onCall={mutationSpy}>
             <TransfersTable
-              history={mockHistory}
+              history={history}
               type={TableTypeEnum.History}
               emptyPlaceholder={<span>Empty Table</span>}
               handleOpenTransferModal={handleOpenMock}
@@ -79,7 +92,8 @@ describe('TransferHistoryTable', () => {
         'Amount',
         'Schedule',
         'Status',
-        'Transfer Date',
+        'Start Date',
+        'Next Payment Date',
         'End Date',
         'Note',
         'Actions',
@@ -92,7 +106,7 @@ describe('TransferHistoryTable', () => {
 
     const transferIconCell = cells[0];
     const statusCell = cells[3];
-    const actionCell = cells[7];
+    const actionCell = cells[8];
 
     expect(
       within(transferIconCell).getByRole('img', { name: 'Primary Account' }),
@@ -112,7 +126,9 @@ describe('TransferHistoryTable', () => {
 
     expect(getByRole('gridcell', { name: 'Sep 26, 2023' })).toBeInTheDocument();
 
-    expect(getByRole('gridcell', { name: '' })).toBeInTheDocument();
+    // A one-time transfer has neither a next payment nor an end date.
+    expect(cells[5].textContent).toBe('');
+    expect(cells[6].textContent).toBe('');
 
     expect(
       getByRole('gridcell', { name: 'Reimbursements' }),
@@ -185,7 +201,7 @@ describe('TransferHistoryTable', () => {
         name: 'Savings Account Arrow Primary Account $2,500.00 One Time pending Sep 26, 2023 Reimbursements Stop Transfer',
       });
       const cells = within(iconRow).getAllByRole('gridcell');
-      const actionCell = cells[7];
+      const actionCell = cells[8];
       const icon = within(actionCell).getByRole('button', {
         name: 'Add End Date',
       });
@@ -203,7 +219,7 @@ describe('TransferHistoryTable', () => {
         name: 'Savings Account Arrow Primary Account $2,500.00 One Time pending Sep 26, 2023 Reimbursements Stop Transfer',
       });
       const cells = within(iconRow).getAllByRole('gridcell');
-      const actionCell = cells[7];
+      const actionCell = cells[8];
       const icon = within(actionCell).getByRole('button', {
         name: 'Add End Date',
       });
@@ -229,7 +245,7 @@ describe('TransferHistoryTable', () => {
       name: 'Primary Account Arrow Savings Account $1,200.00 Monthly ongoing Sep 25, 2023 Sep 25, 2025 Long-term savings Stop Transfer',
     });
     const cells = within(iconRow).getAllByRole('gridcell');
-    const actionCell = cells[7];
+    const actionCell = cells[8];
     const icon = within(actionCell).getByRole('button', {
       name: 'Edit End Date',
     });
@@ -259,7 +275,7 @@ describe('TransferHistoryTable', () => {
       name: 'Primary Account Arrow Savings Account $1,200.00 Monthly ongoing Sep 25, 2023 Sep 25, 2025 Long-term savings Stop Transfer',
     });
     const cells = within(iconRow).getAllByRole('gridcell');
-    const actionCell = cells[7];
+    const actionCell = cells[8];
     const icon = within(actionCell).getByRole('button', {
       name: 'Edit End Date',
     });
@@ -288,6 +304,67 @@ describe('TransferHistoryTable', () => {
     await waitFor(() => expect(mutationSpy).toHaveBeenCalled());
     expect(mockEnqueue).toHaveBeenCalledWith('End date updated successfully', {
       variant: 'success',
+    });
+  });
+
+  describe('date columns', () => {
+    const nextPaymentCell = (container: HTMLElement) =>
+      container.querySelector('[role="gridcell"][data-field="nextPaymentDate"]')
+        ?.textContent;
+
+    // The global test setup pins the clock to 2020-01-01.
+    const ongoingRecurring: Transfers = {
+      ...mockData[1],
+      schedule: ScheduleEnum.Monthly,
+      status: StatusEnum.Ongoing,
+      transferDate: DateTime.fromISO('2019-10-15T00:00:00+00:00', {
+        setZone: true,
+      }),
+      endDate: null,
+    };
+
+    it('shows the start date and the next payment date of a recurring transfer', async () => {
+      const { findByText, getByText } = render(
+        <TestComponent history={[ongoingRecurring]} />,
+      );
+
+      expect(await findByText('Oct 15, 2019')).toBeInTheDocument();
+      expect(getByText('Jan 15, 2020')).toBeInTheDocument();
+    });
+
+    it('shows only the start date once the recurring transfer has ended', async () => {
+      const { container, findByText } = render(
+        <TestComponent
+          history={[
+            {
+              ...ongoingRecurring,
+              status: StatusEnum.Ended,
+              endDate: DateTime.local(2019, 12, 15),
+            },
+          ]}
+        />,
+      );
+
+      expect(await findByText('Oct 15, 2019')).toBeInTheDocument();
+      expect(nextPaymentCell(container)).toBe('');
+    });
+
+    it('shows only the transfer date of a one-time transfer', async () => {
+      const { container, findByText } = render(
+        <TestComponent
+          history={[
+            {
+              ...mockData[0],
+              transferDate: DateTime.fromISO('2019-10-15T00:00:00+00:00', {
+                setZone: true,
+              }),
+            },
+          ]}
+        />,
+      );
+
+      expect(await findByText('Oct 15, 2019')).toBeInTheDocument();
+      expect(nextPaymentCell(container)).toBe('');
     });
   });
 });

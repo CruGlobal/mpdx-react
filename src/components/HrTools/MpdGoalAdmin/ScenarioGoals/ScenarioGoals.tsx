@@ -1,6 +1,6 @@
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import {
@@ -19,10 +19,12 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
+import { uniqBy } from 'lodash';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import { DEFAULT_ROWS_PER_PAGE } from '../mpdGoalAdminHelpers';
@@ -54,9 +56,12 @@ export const ScenarioGoals: React.FC = () => {
   );
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  // TODO(MPDX-9843): server-side search, sort, and paging; until then the
-  // first 100 scenarios cover per-user usage and the table pages client-side.
-  const { data, loading, error } = useNewStaffScenarioGoalsQuery();
+  const { data, error, fetchMore } = useNewStaffScenarioGoalsQuery();
+  const { loading } = useFetchAllPages({
+    fetchMore,
+    error,
+    pageInfo: data?.newStaffScenarioGoals.pageInfo,
+  });
   const [createScenarioGoal, { loading: creating }] =
     useCreateNewStaffScenarioGoalMutation();
   const [deleteScenarioGoal] = useDeleteNewStaffScenarioGoalMutation();
@@ -94,7 +99,10 @@ export const ScenarioGoals: React.FC = () => {
     ? scenarioGoalName(deleteTarget) || t('this scenario goal')
     : '';
 
-  const rows = data?.newStaffScenarioGoals.nodes ?? [];
+  const rows = useMemo(
+    () => uniqBy(data?.newStaffScenarioGoals.nodes ?? [], 'id'),
+    [data?.newStaffScenarioGoals.nodes],
+  );
   const safePage = Math.min(
     page,
     Math.max(0, Math.ceil(rows.length / rowsPerPage) - 1),
@@ -141,17 +149,7 @@ export const ScenarioGoals: React.FC = () => {
           error rather than an empty list. */}
       {error ? (
         <Alert severity="error">{error.message}</Alert>
-      ) : loading && !data ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-          <CircularProgress aria-label={t('Loading scenario goals')} />
-        </Box>
-      ) : rows.length === 0 ? (
-        <Box sx={{ textAlign: 'center', mt: 4 }}>
-          <Typography color="text.secondary">
-            {t('No scenario goals yet. Create one to get started.')}
-          </Typography>
-        </Box>
-      ) : (
+      ) : !!rows.length ? (
         <TableContainer>
           <Table size="small" aria-label={t('Scenario goals')}>
             <TableHead>
@@ -220,16 +218,27 @@ export const ScenarioGoals: React.FC = () => {
             }}
             labelRowsPerPage={t('Rows per page')}
           />
-          {data?.newStaffScenarioGoals.pageInfo.hasNextPage && (
+          {loading && (
             <Typography
               variant="caption"
               color="text.secondary"
               sx={{ display: 'block', px: 2, pb: 1 }}
+              aria-live="polite"
             >
-              {t('Showing the first 100 scenario goals.')}
+              {t('Loading more scenario goals…')}
             </Typography>
           )}
         </TableContainer>
+      ) : loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+          <CircularProgress aria-label={t('Loading scenario goals')} />
+        </Box>
+      ) : (
+        <Box sx={{ textAlign: 'center', mt: 4 }}>
+          <Typography color="text.secondary">
+            {t('No scenario goals yet. Create one to get started.')}
+          </Typography>
+        </Box>
       )}
 
       <Confirmation
