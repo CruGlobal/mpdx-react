@@ -24,10 +24,21 @@ export const CoordinatorList: React.FC<CoordinatorListProps> = ({
 
   return (
     <Box>
-      <Typography id={headingId} variant="body2" fontWeight="bold">
+      <Typography
+        id={headingId}
+        component="h6"
+        variant="body2"
+        fontWeight="bold"
+      >
         {t('Coordinators')}
       </Typography>
-      <Box component="ul" aria-labelledby={headingId} sx={{ m: 0, p: 0 }}>
+      {/* WebKit strips the implicit list role once the markers are removed. */}
+      <Box
+        component="ul"
+        role="list"
+        aria-labelledby={headingId}
+        sx={{ m: 0, p: 0 }}
+      >
         {coordinators.map((coordinator, index) => (
           <Typography
             component="li"

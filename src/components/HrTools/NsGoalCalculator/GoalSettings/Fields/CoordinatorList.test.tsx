@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, within } from '@testing-library/react';
 import theme from 'src/theme';
 import { CoordinatorList } from './CoordinatorList';
 
@@ -13,16 +13,26 @@ const renderList = (coordinators: string[]) =>
 
 describe('CoordinatorList', () => {
   it('lists every coordinator under a heading', () => {
-    const { getByRole, getByText } = renderList([
+    const { getByRole } = renderList([
       'Nancy Coleman',
       'Francis Powell',
       'Gerald Christianson',
     ]);
 
-    expect(getByText('Coordinators')).toBeInTheDocument();
-    expect(getByRole('list', { name: 'Coordinators' }).textContent).toBe(
-      'Nancy ColemanFrancis PowellGerald Christianson',
-    );
+    // Level 6 matches the person cards in the surrounding GoalSettingsHeader.
+    expect(
+      getByRole('heading', { level: 6, name: 'Coordinators' }),
+    ).toBeInTheDocument();
+
+    const items = within(
+      getByRole('list', { name: 'Coordinators' }),
+    ).getAllByRole('listitem');
+
+    expect(items.map((item) => item.textContent)).toEqual([
+      'Nancy Coleman',
+      'Francis Powell',
+      'Gerald Christianson',
+    ]);
   });
 
   it('keeps the plural heading for a single coordinator', () => {
