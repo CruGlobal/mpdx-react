@@ -24,6 +24,7 @@ query NewStaffCohorts($after: String) {
       name
       trainingSize
       date
+      goalsSentAt
       hasTrainingCosts
       canRunAndSend
       runAndSendBlockers
