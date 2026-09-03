@@ -58,6 +58,17 @@ describe('MpdGoalAdmin', () => {
     expect(await findByText('John & Jane Doe')).toBeInTheDocument();
   });
 
+  it('reports when the cohort goals were last run and sent', async () => {
+    const { findByText } = renderMain();
+
+    // Query the sentence, not role="status", which the null state also uses.
+    expect(
+      await findByText(
+        'Goals were last run and sent on 8/10/2026 at 3:40 PM UTC.',
+      ),
+    ).toBeInTheDocument();
+  });
+
   it('shows a loading indicator until the attendees arrive', () => {
     const { getByRole, queryByRole } = renderMain();
 

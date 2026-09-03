@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import {
   NewStaffCohortAttendeeGoalStatusEnum,
   NewStaffQuestionnaireMaritalStatusEnum,
@@ -66,7 +67,6 @@ describe('cohortNodeToCohort', () => {
       nsoDate: '8/10/2026',
       hasTrainingCosts: true,
       canRunAndSend: true,
-      goalsSentAt: null,
     });
     expect(cohort.trainingCosts).toEqual(trainingCosts);
   });
@@ -77,13 +77,19 @@ describe('cohortNodeToCohort', () => {
     ).toBe('—');
   });
 
-  it('carries the most recent Run & Send batch through', () => {
+  it('keeps goalsSentAt as a DateTime the banner can format', () => {
+    const cohort = cohortNodeToCohort(cohortWithCosts, 'en-US');
+
+    expect(cohort.goalsSentAt?.toISO()).toBe(
+      DateTime.fromISO('2026-08-10T15:40:00Z').toISO(),
+    );
+  });
+
+  it('leaves goalsSentAt null until the first Run & Send', () => {
     expect(
-      cohortNodeToCohort(
-        { ...cohortWithCosts, goalsSentAt: '2026-08-10T15:40:00Z' },
-        'en-US',
-      ).goalsSentAt,
-    ).toBe('2026-08-10T15:40:00Z');
+      cohortNodeToCohort({ ...cohortWithCosts, goalsSentAt: null }, 'en-US')
+        .goalsSentAt,
+    ).toBeNull();
   });
 
   it('leaves trainingCosts undefined when costs are not fully entered', () => {

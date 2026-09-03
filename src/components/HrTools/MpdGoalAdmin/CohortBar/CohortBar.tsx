@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
+import { ErrorOutline } from '@mui/icons-material';
 import {
   Box,
   Link,
   MenuItem,
   Stack,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material';
-import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import { useLocale } from 'src/hooks/useLocale';
-import { dateTimeFormat } from 'src/lib/intlFormat';
 import {
   DynamicEditTrainingCostsModal,
   preloadEditTrainingCostsModal,
@@ -39,7 +38,6 @@ const Stat: React.FC<StatProps> = ({ label, children }) => (
 
 export const CohortBar: React.FC = () => {
   const { t } = useTranslation();
-  const locale = useLocale();
   const { enqueueSnackbar } = useSnackbar();
   const {
     cohorts,
@@ -49,6 +47,10 @@ export const CohortBar: React.FC = () => {
     saveTrainingCosts,
   } = useMpdGoalAdmin();
   const [trainingCostsOpen, setTrainingCostsOpen] = useState(false);
+
+  // Only a loaded cohort can be short its costs; an absent one is still loading.
+  const needsTrainingCosts =
+    !!selectedCohort && !selectedCohort.hasTrainingCosts;
 
   const handleSaveTrainingCosts = async (costs: TrainingCosts) => {
     if (!selectedCohort) {
@@ -67,71 +69,90 @@ export const CohortBar: React.FC = () => {
     setTrainingCostsOpen(false);
   };
 
-  const lastSent = selectedCohort?.goalsSentAt;
+  const trainingCostLink = (
+    <Link
+      component="button"
+      type="button"
+      underline="hover"
+      disabled={!selectedCohort}
+      onClick={() => setTrainingCostsOpen(true)}
+      onMouseEnter={preloadEditTrainingCostsModal}
+      sx={
+        needsTrainingCosts
+          ? (theme) => ({
+              // MUI's warning palette is only 3.79:1 on white; the Cru vermilion
+              // token clears WCAG AA for body2's 14px text.
+              color: theme.palette.statusWarning.main,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 0.5,
+            })
+          : undefined
+      }
+    >
+      {needsTrainingCosts ? (
+        <>
+          <ErrorOutline fontSize="small" />
+          {t('Provide Training Cost')}
+        </>
+      ) : (
+        t('View/Edit')
+      )}
+    </Link>
+  );
 
   return (
-    <>
-      {/* The region must outlive the text, or its appearance is not announced. */}
-      <Box aria-live="polite" sx={{ mb: lastSent ? 2 : 0 }}>
-        {lastSent && (
-          <Typography variant="body2" color="text.secondary">
-            {t('The last batch of MPD goals was run and sent on {{sentAt}}.', {
-              sentAt: dateTimeFormat(DateTime.fromISO(lastSent), locale),
-            })}
-          </Typography>
-        )}
-      </Box>
-      <Stack
-        direction={{ xs: 'column', md: 'row' }}
-        spacing={4}
-        alignItems={{ xs: 'flex-start', md: 'center' }}
-        sx={{ mb: 2 }}
+    <Stack
+      direction={{ xs: 'column', md: 'row' }}
+      spacing={4}
+      alignItems={{ xs: 'flex-start', md: 'center' }}
+      sx={{ mb: 2 }}
+    >
+      <TextField
+        select
+        label={t('Training')}
+        size="small"
+        value={selectedCohortId}
+        onChange={(event) => setSelectedCohortId(event.target.value)}
+        sx={{ minWidth: 220 }}
+        // An empty value with no matching MenuItem makes MUI warn.
+        disabled={!cohorts.length}
       >
-        <TextField
-          select
-          label={t('Training')}
-          size="small"
-          value={selectedCohortId}
-          onChange={(event) => setSelectedCohortId(event.target.value)}
-          sx={{ minWidth: 220 }}
-          // An empty value with no matching MenuItem makes MUI warn.
-          disabled={!cohorts.length}
-        >
-          {cohorts.map((cohort) => (
-            <MenuItem key={cohort.id} value={cohort.id}>
-              {cohort.name}
-            </MenuItem>
-          ))}
-        </TextField>
+        {cohorts.map((cohort) => (
+          <MenuItem key={cohort.id} value={cohort.id}>
+            {cohort.name}
+          </MenuItem>
+        ))}
+      </TextField>
 
-        <Stat label={t('Training Size')}>
-          {t('{{count}} New Staff', {
-            count: selectedCohort?.trainingSize ?? 0,
-          })}
-        </Stat>
-        <Stat label={t('NSO Date')}>{selectedCohort?.nsoDate ?? '—'}</Stat>
-        <Stat label={t('Training Cost')}>
-          <Link
-            component="button"
-            type="button"
-            underline="hover"
-            disabled={!selectedCohort}
-            onClick={() => setTrainingCostsOpen(true)}
-            onMouseEnter={preloadEditTrainingCostsModal}
+      <Stat label={t('Training Size')}>
+        {t('{{count}} New Staff', { count: selectedCohort?.trainingSize ?? 0 })}
+      </Stat>
+      <Stat label={t('NSO Date')}>{selectedCohort?.nsoDate ?? '—'}</Stat>
+      <Stat label={t('Training Cost')}>
+        {/* Only the costs-missing branch is tooltipped, and a disabled child
+            would need a wrapper element for the tooltip to fire. */}
+        {needsTrainingCosts ? (
+          <Tooltip
+            // Without this the tooltip becomes the button's aria-label and hides its text.
+            describeChild
+            title={t('Training costs are required to run & send goals.')}
           >
-            {t('View/Edit')}
-          </Link>
-        </Stat>
-        {trainingCostsOpen && (
-          <DynamicEditTrainingCostsModal
-            open
-            cohortName={selectedCohort?.name}
-            initialCosts={selectedCohort?.trainingCosts}
-            onClose={() => setTrainingCostsOpen(false)}
-            onSave={handleSaveTrainingCosts}
-          />
+            {trainingCostLink}
+          </Tooltip>
+        ) : (
+          trainingCostLink
         )}
-      </Stack>
-    </>
+      </Stat>
+      {trainingCostsOpen && (
+        <DynamicEditTrainingCostsModal
+          open
+          cohortName={selectedCohort?.name}
+          initialCosts={selectedCohort?.trainingCosts}
+          onClose={() => setTrainingCostsOpen(false)}
+          onSave={handleSaveTrainingCosts}
+        />
+      )}
+    </Stack>
   );
 };

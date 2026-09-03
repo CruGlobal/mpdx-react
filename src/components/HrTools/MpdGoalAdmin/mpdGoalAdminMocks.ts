@@ -60,8 +60,8 @@ export const cohortsMock: NewStaffCohortsQuery = {
         name: 'Fall NSO 2026',
         trainingSize: 13,
         date: '2026-08-10',
+        goalsSentAt: '2026-08-10T15:40:00Z',
         hasTrainingCosts: true,
-        goalsSentAt: null,
         canRunAndSend: true,
         runAndSendBlockers: [],
         ...costFields,
@@ -71,8 +71,8 @@ export const cohortsMock: NewStaffCohortsQuery = {
         name: 'Spring NSO 2027',
         trainingSize: 2,
         date: '2027-01-11',
-        hasTrainingCosts: false,
         goalsSentAt: null,
+        hasTrainingCosts: false,
         canRunAndSend: false,
         runAndSendBlockers: [
           NewStaffCohortRunAndSendBlockerEnum.TrainingCostsMissing,
@@ -95,19 +95,9 @@ export const cohortsWithoutCostsMock: NewStaffCohortsQuery = {
         runAndSendBlockers: [
           NewStaffCohortRunAndSendBlockerEnum.TrainingCostsMissing,
         ],
+        // Costs gate Run & Send, so goals cannot already have gone out.
+        goalsSentAt: null,
         ...noCostFields,
-      },
-    ],
-    pageInfo: { endCursor: null, hasNextPage: false },
-  },
-};
-
-export const cohortsSentMock: NewStaffCohortsQuery = {
-  newStaffCohorts: {
-    nodes: [
-      {
-        ...cohortsMock.newStaffCohorts.nodes[0],
-        goalsSentAt: '2026-08-10T15:40:00Z',
       },
     ],
     pageInfo: { endCursor: null, hasNextPage: false },
