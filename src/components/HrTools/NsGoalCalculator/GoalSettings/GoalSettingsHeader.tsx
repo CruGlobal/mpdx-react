@@ -6,10 +6,18 @@ import { Box, Chip, Grid, Stack, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { CalculationYearTooltip } from '../../Shared/CalculationYearTooltip';
+import { CoordinatorList } from './Fields/CoordinatorList';
 import { GoalSettingsPlaceholder } from './Fields/GoalSettingsPlaceholder';
 import { GoalSettingsSelect, SelectOption } from './Fields/GoalSettingsSelect';
 import { MpdGoalPreview } from './MpdGoalPreview';
 import { GoalSettingsPerson } from './goalSettingsFormValues';
+
+// Stand-ins until MPDX-9796 exposes coordinators on the goal calculation.
+const placeholderCoordinators = [
+  'Nancy Coleman',
+  'Francis Powell',
+  'Gerald Christianson',
+];
 
 interface ContactLineProps {
   icon: React.ReactNode;
@@ -67,6 +75,8 @@ interface GoalSettingsHeaderProps {
    * Whether the required fields are filled in.
    */
   isComplete?: boolean;
+  /** MPDX-9796 will pass the attendee's coordinators from the calculation. */
+  coordinators?: string[];
 }
 
 export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
@@ -76,6 +86,7 @@ export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
   joinedStaffYear,
   isScenario = false,
   isComplete = false,
+  coordinators = placeholderCoordinators,
 }) => {
   const { t } = useTranslation();
   const yearLabelId = useId();
@@ -193,12 +204,8 @@ export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
                 value={t('Amy Wilson')}
                 showLabel
               />
-              {/* TODO(MPDX-9796): Attendee field */}
-              <GoalSettingsPlaceholder
-                label={t('Coordinator')}
-                value={t('Nancy Coleman')}
-                showLabel
-              />
+              {/* TODO(MPDX-9796): real coordinators from the calculation */}
+              <CoordinatorList coordinators={coordinators} />
             </Stack>
           </Grid>
         </Grid>

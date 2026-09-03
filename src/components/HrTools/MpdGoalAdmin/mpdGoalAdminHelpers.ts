@@ -39,7 +39,8 @@ export interface StaffGoalRow {
   familyStatus: NewStaffQuestionnaireMaritalStatusEnum | null;
   /** null renders an "Assign Coach" prompt instead of a name. */
   coach: string | null;
-  coordinator: string;
+  /** Read-only OneApp coordinators; a ministry commonly has several. */
+  coordinators: string[];
 }
 
 /** USD costs from the modal; one key per `NewStaffCohort::COST_FIELDS` column. */
@@ -158,7 +159,7 @@ export const attendeeToRow = (attendee: AttendeeNode): StaffGoalRow => ({
         .filter(Boolean)
         .join(' ') || null
     : null,
-  coordinator: attendee.coordinators.join(', '),
+  coordinators: [...attendee.coordinators],
 });
 
 export const familyStatusLabel = (

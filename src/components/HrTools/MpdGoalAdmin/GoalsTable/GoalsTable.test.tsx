@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { act, render, waitFor } from '@testing-library/react';
+import { act, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -199,6 +199,24 @@ describe('GoalsTable', () => {
       cohortsWithoutCostsMock,
     );
     expect(getAllByRole('button', { name: /Actions for/ })[0]).toBeDisabled();
+  });
+
+  it('shows the first coordinator and hides the rest behind a chip', () => {
+    const { getByText, getByRole, queryByText } = renderTable();
+    // row-1 is the only attendee with more than one coordinator.
+    const row = within(getByText('John & Jane Doe').closest('tr')!);
+
+    expect(row.getByText('Kim Coordinator')).toBeInTheDocument();
+    expect(queryByText('Lee Coordinator')).not.toBeInTheDocument();
+
+    userEvent.click(
+      row.getByRole('button', {
+        name: '+2 more coordinators for John & Jane Doe',
+      }),
+    );
+
+    const list = getByRole('list', { name: 'Coordinators' });
+    expect(within(list).getByText('Lee Coordinator')).toBeVisible();
   });
 
   it('shows an Assign Coach prompt when no coach is set', () => {

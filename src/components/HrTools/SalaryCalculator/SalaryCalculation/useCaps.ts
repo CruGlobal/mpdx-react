@@ -14,6 +14,9 @@ interface UseCapsResult {
   /** The sum of the users' requested gross salaries */
   combinedGross: number;
 
+  /** The sum of the users' effective caps */
+  combinedEffectiveCap: number;
+
   /** The person whose salary is over their effective cap */
   overCapPerson: OverCapPerson | null;
 }
@@ -28,6 +31,8 @@ export const useCaps = (): UseCapsResult => {
 
   const combinedGross =
     (calcs?.requestedGross ?? 0) + (spouseCalcs?.requestedGross ?? 0);
+  const combinedEffectiveCap =
+    (calcs?.effectiveCap ?? 0) + (spouseCalcs?.effectiveCap ?? 0);
 
   const overCapPerson =
     reason === ProgressiveApprovalTierReasonEnum.OverUserCap && calcs
@@ -45,6 +50,7 @@ export const useCaps = (): UseCapsResult => {
 
   return {
     combinedGross,
+    combinedEffectiveCap,
     overCapPerson,
   };
 };

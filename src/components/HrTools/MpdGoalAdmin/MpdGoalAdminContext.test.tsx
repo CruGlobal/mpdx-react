@@ -96,7 +96,7 @@ describe('MpdGoalAdminContext', () => {
       goalSentAt: null,
       familyStatus: 'MARRIED',
       coach: null,
-      coordinator: 'Kim Coordinator',
+      coordinators: ['Kim Coordinator', 'Lee Coordinator', 'Pat Coordinator'],
     });
     // An attendee with no goal calculation yet still renders, with a null goal.
     expect(result.current.filteredRows[1].mpdGoal).toBeNull();

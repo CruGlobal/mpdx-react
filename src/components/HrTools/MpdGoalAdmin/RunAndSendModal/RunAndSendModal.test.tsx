@@ -21,7 +21,7 @@ const makeRow = (
     goalStatus === GoalStatusEnum.Sent ? '2026-08-10T15:40:00Z' : null,
   familyStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
   coach: 'Coach',
-  coordinator: 'Coordinator',
+  coordinators: ['Coordinator'],
 });
 
 const rows = [
