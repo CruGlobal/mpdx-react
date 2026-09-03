@@ -58,6 +58,7 @@ export const cohortsMock: NewStaffCohortsQuery = {
         name: 'Fall NSO 2026',
         trainingSize: 13,
         date: '2026-08-10',
+        goalsSentAt: '2026-08-10T15:40:00Z',
         hasTrainingCosts: true,
         canRunAndSend: true,
         runAndSendBlockers: [],
@@ -68,6 +69,7 @@ export const cohortsMock: NewStaffCohortsQuery = {
         name: 'Spring NSO 2027',
         trainingSize: 2,
         date: '2027-01-11',
+        goalsSentAt: null,
         hasTrainingCosts: false,
         canRunAndSend: false,
         runAndSendBlockers: [],
@@ -85,6 +87,8 @@ export const cohortsWithoutCostsMock: NewStaffCohortsQuery = {
       {
         ...cohortsMock.newStaffCohorts.nodes[0],
         hasTrainingCosts: false,
+        // Costs gate Run & Send, so goals cannot already have gone out.
+        goalsSentAt: null,
         ...noCostFields,
       },
     ],

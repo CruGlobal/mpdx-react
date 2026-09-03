@@ -9,11 +9,13 @@ import { MpdGoalAdminProvider } from '../MpdGoalAdminContext';
 import {
   NewStaffCohortAttendeesQuery,
   NewStaffCohortsQuery,
+  UpdateNewStaffCohortMutation,
 } from '../NewStaffCohorts.generated';
 import {
   attendeesMock,
   cohortsMock,
   cohortsWithoutCostsMock,
+  updatedCohortMock,
 } from '../mpdGoalAdminMocks';
 import { CohortBar } from './CohortBar';
 
@@ -38,10 +40,13 @@ const TestComponent: React.FC<TestComponentProps> = ({
       <GqlMockedProvider<{
         NewStaffCohorts: NewStaffCohortsQuery;
         NewStaffCohortAttendees: NewStaffCohortAttendeesQuery;
+        UpdateNewStaffCohort: UpdateNewStaffCohortMutation;
       }>
         mocks={{
           NewStaffCohorts: withoutCosts ? cohortsWithoutCostsMock : cohortsMock,
           NewStaffCohortAttendees: attendeesMock(),
+          // Normalizes over the selected cohort so a save clears the gate.
+          UpdateNewStaffCohort: updatedCohortMock('fall-nso-2026'),
         }}
         onCall={mutationSpy}
       >
@@ -54,9 +59,13 @@ const TestComponent: React.FC<TestComponentProps> = ({
 );
 
 /** Waits for the cohort first; clicking early opens the modal with no cohort. */
-const openModal = async (screen: ReturnType<typeof render>) => {
+const openModal = async (
+  screen: ReturnType<typeof render>,
+  // A cohort missing its costs prompts to provide them instead.
+  name: string = 'View/Edit',
+) => {
   await screen.findByText('Fall NSO 2026');
-  userEvent.click(screen.getByRole('button', { name: 'View/Edit' }));
+  userEvent.click(screen.getByRole('button', { name }));
   return screen.findByRole('heading', { name: /Training Costs for/ });
 };
 
@@ -70,6 +79,56 @@ describe('CohortBar', () => {
     ).toHaveTextContent('Fall NSO 2026');
     expect(await findByText('13 New Staff')).toBeInTheDocument();
     expect(await findByText('8/10/2026')).toBeInTheDocument();
+  });
+
+  it('renders the disabled View/Edit link while the cohort is still loading', () => {
+    const { getByRole, queryByRole } = render(<TestComponent withoutCosts />);
+
+    // The prompt must not flash before the cohorts query has resolved.
+    expect(getByRole('button', { name: 'View/Edit' })).toBeDisabled();
+    expect(
+      queryByRole('button', { name: 'Provide Training Cost' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('prompts to provide the costs when the cohort has none', async () => {
+    const { findByText, findByRole, queryByRole } = render(
+      <TestComponent withoutCosts />,
+    );
+
+    await findByText('Fall NSO 2026');
+    expect(
+      await findByRole('button', { name: 'Provide Training Cost' }),
+    ).toBeInTheDocument();
+    expect(
+      queryByRole('button', { name: 'View/Edit' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('explains why the costs are needed when the cohort has none', async () => {
+    const { findByText, findByRole } = render(<TestComponent withoutCosts />);
+
+    await findByText('Fall NSO 2026');
+    const prompt = await findByRole('button', {
+      name: 'Provide Training Cost',
+    });
+
+    userEvent.hover(prompt);
+    expect(
+      await findByText('Training costs are required to run & send goals.'),
+    ).toBeInTheDocument();
+  });
+
+  it('opens the modal from the Provide Training Cost prompt', async () => {
+    const screen = render(<TestComponent withoutCosts />);
+    const { findByText, findByRole, getByRole } = screen;
+
+    await findByText('Fall NSO 2026');
+    userEvent.click(getByRole('button', { name: 'Provide Training Cost' }));
+
+    expect(
+      await findByRole('heading', { name: /Training Costs for/ }),
+    ).toHaveTextContent('Training Costs for Fall NSO 2026');
   });
 
   it('opens the Edit Training Costs modal for the selected cohort', async () => {
@@ -149,10 +208,30 @@ describe('CohortBar', () => {
     );
   });
 
+  it('replaces the prompt with View/Edit once the costs are saved', async () => {
+    const screen = render(<TestComponent withoutCosts />);
+    const { findByRole, getAllByRole, queryByRole } = screen;
+    await openModal(screen, 'Provide Training Cost');
+
+    // Apply stays disabled until all thirteen costs are entered.
+    getAllByRole('spinbutton').forEach((input, index) =>
+      userEvent.type(input, String((index + 1) * 100)),
+    );
+    const apply = await findByRole('button', { name: 'Apply' });
+    await waitFor(() => expect(apply).toBeEnabled());
+    userEvent.click(apply);
+
+    expect(await findByRole('button', { name: 'View/Edit' })).toBeEnabled();
+    expect(
+      queryByRole('button', { name: 'Provide Training Cost' }),
+    ).not.toBeInTheDocument();
+    // Typing all thirteen fields exceeds the default 5s timeout under load.
+  }, 20000);
+
   it('keeps APPLY disabled until every cost is entered', async () => {
     const screen = render(<TestComponent withoutCosts />);
     const { findByRole } = screen;
-    await openModal(screen);
+    await openModal(screen, 'Provide Training Cost');
 
     // The cohort has no saved costs, so the form opens blank.
     expect(await findByRole('button', { name: 'Apply' })).toBeDisabled();

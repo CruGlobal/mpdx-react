@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import {
   NewStaffCohortAttendeeGoalStatusEnum,
   NewStaffQuestionnaireMaritalStatusEnum,
@@ -73,6 +74,21 @@ describe('cohortNodeToCohort', () => {
     expect(
       cohortNodeToCohort({ ...cohortWithCosts, date: null }, 'en-US').nsoDate,
     ).toBe('—');
+  });
+
+  it('keeps goalsSentAt as a DateTime the banner can format', () => {
+    const cohort = cohortNodeToCohort(cohortWithCosts, 'en-US');
+
+    expect(cohort.goalsSentAt?.toISO()).toBe(
+      DateTime.fromISO('2026-08-10T15:40:00Z').toISO(),
+    );
+  });
+
+  it('leaves goalsSentAt null until the first Run & Send', () => {
+    expect(
+      cohortNodeToCohort({ ...cohortWithCosts, goalsSentAt: null }, 'en-US')
+        .goalsSentAt,
+    ).toBeNull();
   });
 
   it('leaves trainingCosts undefined when costs are not fully entered', () => {

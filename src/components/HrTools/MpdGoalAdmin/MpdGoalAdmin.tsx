@@ -23,6 +23,7 @@ import {
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { getHeaderTitleAccess } from 'src/components/Shared/MultiPageLayout/helpers';
 import { CohortBar } from './CohortBar/CohortBar';
+import { GoalsSentBanner } from './GoalsSentBanner/GoalsSentBanner';
 import { GoalsTable } from './GoalsTable/GoalsTable';
 import { GoalsTableToolbar } from './GoalsTableToolbar/GoalsTableToolbar';
 import { useMpdGoalAdmin } from './MpdGoalAdminContext';
@@ -57,6 +58,7 @@ const ActiveGoalsContent: React.FC = () => {
 
   return (
     <>
+      <GoalsSentBanner />
       <GoalsTableToolbar />
       {/* Surface query failures here rather than as an empty table. */}
       {error ? (

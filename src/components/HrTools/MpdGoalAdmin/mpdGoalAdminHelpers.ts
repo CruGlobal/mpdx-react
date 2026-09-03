@@ -93,6 +93,9 @@ export interface Cohort {
   trainingSize: number;
   /** Display string, e.g. "08/10/2026"; "—" when the API has no date yet. */
   nsoDate: string;
+  /** When the last Run & Send batch finished; null until the first send. Kept
+   *  unformatted so the banner can split date and time across its own sentence. */
+  goalsSentAt: DateTime | null;
   hasTrainingCosts: boolean;
   /** Saved training cost figures; undefined until every cost is entered. */
   trainingCosts?: TrainingCosts;
@@ -132,6 +135,7 @@ export const cohortNodeToCohort = (
   nsoDate: node.date
     ? dateFormatShort(DateTime.fromISO(node.date), locale)
     : '—',
+  goalsSentAt: node.goalsSentAt ? DateTime.fromISO(node.goalsSentAt) : null,
   hasTrainingCosts: node.hasTrainingCosts,
   trainingCosts: cohortToTrainingCosts(node),
 });
