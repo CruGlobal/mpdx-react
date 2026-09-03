@@ -17,8 +17,9 @@ import { AssignCoachModal } from '../AssignCoachModal/AssignCoachModal';
 import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import { PrintCohortGoalsButton } from '../PrintCohortGoalsButton/PrintCohortGoalsButton';
 import { RunAndSendModal } from '../RunAndSendModal/RunAndSendModal';
+import { RunAndSendTooltip } from '../RunAndSendTooltip';
 import { mockCoaches } from '../mockData';
-import { StaffGoalRow } from '../mpdGoalAdminHelpers';
+import { useRunAndSendFlow } from '../useRunAndSendFlow';
 
 export const GoalsTableToolbar: React.FC = () => {
   const { t } = useTranslation();
@@ -30,6 +31,7 @@ export const GoalsTableToolbar: React.FC = () => {
     selectedRows,
     clearSelection,
     assignCoach,
+    selectedCohort,
     loading,
     error,
   } = useMpdGoalAdmin();
@@ -38,26 +40,9 @@ export const GoalsTableToolbar: React.FC = () => {
 
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement | null>(null);
   const [assignCoachOpen, setAssignCoachOpen] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
-  // Kept separate so the target rows/title persist through the close transition.
-  const [modalTarget, setModalTarget] = useState<{
-    title: string;
-    rows: StaffGoalRow[];
-  }>({ title: '', rows: [] });
+  const { openRunAndSend, modalProps } = useRunAndSendFlow();
 
-  const openRunAndSend = (title: string, rows: StaffGoalRow[]) => {
-    setModalTarget({ title, rows });
-    setModalOpen(true);
-  };
-
-  const handleConfirm = (sendableCount: number) => {
-    enqueueSnackbar(
-      t('{{count}} MPD Goals were run and sent.', { count: sendableCount }),
-      { variant: 'success' },
-    );
-    clearSelection();
-    setModalOpen(false);
-  };
+  const blocked = !selectedCohort?.canRunAndSend;
 
   // TODO(MPDX-9914): call the assignCoach mutation once the backend exists.
   const handleAssignCoach = (coachId: string) => {
@@ -122,6 +107,7 @@ export const GoalsTableToolbar: React.FC = () => {
           onClose={() => setMenuAnchorEl(null)}
         >
           <MenuItem
+            disabled={blocked}
             onClick={() => {
               setMenuAnchorEl(null);
               openRunAndSend(
@@ -141,29 +127,25 @@ export const GoalsTableToolbar: React.FC = () => {
             {t('Assign Coach')}
           </MenuItem>
         </Menu>
-        <Button
-          // Only one contained CTA at a time while rows are selected.
-          variant={hasSelection ? 'outlined' : 'contained'}
-          // Otherwise the modal can claim "0 out of 0" beside the error alert.
-          disabled={loading || !!error}
-          onClick={() =>
-            openRunAndSend(
-              t('Run and Send All Complete MPD Goals?'),
-              filteredRows,
-            )
-          }
-        >
-          {t('Run and Send All')}
-        </Button>
+        <RunAndSendTooltip show={blocked}>
+          <Button
+            // Only one contained CTA at a time while rows are selected.
+            variant={hasSelection ? 'outlined' : 'contained'}
+            // Otherwise the modal can claim "0 out of 0" beside the error alert.
+            disabled={loading || !!error || blocked}
+            onClick={() =>
+              openRunAndSend(
+                t('Run and Send All Complete MPD Goals?'),
+                filteredRows,
+              )
+            }
+          >
+            {t('Run and Send All')}
+          </Button>
+        </RunAndSendTooltip>
       </Box>
 
-      <RunAndSendModal
-        open={modalOpen}
-        title={modalTarget.title}
-        rows={modalTarget.rows}
-        onClose={() => setModalOpen(false)}
-        onConfirm={handleConfirm}
-      />
+      <RunAndSendModal {...modalProps} />
       {assignCoachOpen && (
         <AssignCoachModal
           subjectName={

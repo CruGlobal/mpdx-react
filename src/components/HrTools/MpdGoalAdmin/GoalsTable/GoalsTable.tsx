@@ -6,6 +6,8 @@ import {
   Chip,
   IconButton,
   Link,
+  Menu,
+  MenuItem,
   SxProps,
   Table,
   TableBody,
@@ -18,11 +20,14 @@ import {
   Typography,
 } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat } from 'src/lib/intlFormat';
+import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import { AssignCoachModal } from '../AssignCoachModal/AssignCoachModal';
 import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
+import { RunAndSendModal } from '../RunAndSendModal/RunAndSendModal';
+import { RunAndSendTooltip } from '../RunAndSendTooltip';
 import { mockCoaches } from '../mockData';
 import {
   DEFAULT_ROWS_PER_PAGE,
@@ -30,7 +35,9 @@ import {
   StaffGoalRow,
   familyStatusLabel,
   goalStatusLabel,
+  isSendable,
 } from '../mpdGoalAdminHelpers';
+import { useRunAndSendFlow } from '../useRunAndSendFlow';
 import { CoordinatorsCell } from './CoordinatorsCell';
 
 // Complete is ready to send and Sent is already done; only Incomplete needs action.
@@ -45,14 +52,27 @@ const goalStatusColor = (status: GoalStatusEnum) => {
   }
 };
 
-const GoalStatusChip: React.FC<{ status: GoalStatusEnum }> = ({ status }) => {
+interface GoalStatusChipProps {
+  status: GoalStatusEnum;
+  sentAt: string | null;
+}
+
+const GoalStatusChip: React.FC<GoalStatusChipProps> = ({ status, sentAt }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
   const color = goalStatusColor(status);
+  // A later batch moves the cohort banner, so the row carries its own date.
+  const label =
+    status === GoalStatusEnum.Sent && sentAt
+      ? t('Sent {{date}}', {
+          date: dateFormatShort(DateTime.fromISO(sentAt), locale),
+        })
+      : goalStatusLabel(status, t);
   return (
     <Chip
       size="small"
       variant="outlined"
-      label={goalStatusLabel(status, t)}
+      label={label}
       color={color}
       // palette.main is under WCAG AA at this size; dark keeps the hue readable.
       sx={(theme) => ({
@@ -77,11 +97,18 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
     search,
     selectedCohortId,
     assignCoach,
+    selectedCohort,
+    loading,
   } = useMpdGoalAdmin();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_ROWS_PER_PAGE);
   // The staff row whose coach is being assigned; null when the modal is closed.
   const [coachRow, setCoachRow] = useState<StaffGoalRow | null>(null);
+  const [actionsMenu, setActionsMenu] = useState<{
+    row: StaffGoalRow;
+    anchorEl: HTMLElement;
+  } | null>(null);
+  const { openRunAndSend, modalProps } = useRunAndSendFlow();
 
   // TODO(MPDX-9914): populate from the assignable-coaches query.
   const assignableCoaches = mockCoaches;
@@ -94,6 +121,9 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
     }
     assignCoach([coachRow.id], coach.name);
   };
+
+  const canRunAndSendRow = (row: StaffGoalRow | undefined) =>
+    !loading && !!row && isSendable(row) && !!selectedCohort?.canRunAndSend;
 
   // Keyed on filter identity, not rows.length, which misses same-size changes.
   useEffect(() => {
@@ -174,7 +204,10 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
                   : currencyFormat(row.mpdGoal, 'USD', locale)}
               </TableCell>
               <TableCell>
-                <GoalStatusChip status={row.goalStatus} />
+                <GoalStatusChip
+                  status={row.goalStatus}
+                  sentAt={row.goalSentAt}
+                />
               </TableCell>
               <TableCell>{familyStatusLabel(row.familyStatus, t)}</TableCell>
               <TableCell>
@@ -206,15 +239,25 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
                 </Link>
               </TableCell>
               <TableCell padding="checkbox" align="right">
-                {/* Disabled until wired up so assistive tech announces the
-                    inert state instead of a dead control (MPDX-9696). */}
-                <IconButton
-                  size="small"
-                  aria-label={t('Actions for {{name}}', { name: row.name })}
-                  disabled
+                {/* A Sent row's chip already explains itself; the blocked copy would claim its inputs are missing. */}
+                <RunAndSendTooltip
+                  show={
+                    !canRunAndSendRow(row) &&
+                    row.goalStatus !== GoalStatusEnum.Sent
+                  }
                 >
-                  <MoreVertIcon fontSize="small" />
-                </IconButton>
+                  <IconButton
+                    size="small"
+                    aria-label={t('Actions for {{name}}', { name: row.name })}
+                    aria-haspopup="menu"
+                    disabled={!canRunAndSendRow(row)}
+                    onClick={(event) =>
+                      setActionsMenu({ row, anchorEl: event.currentTarget })
+                    }
+                  >
+                    <MoreVertIcon fontSize="small" />
+                  </IconButton>
+                </RunAndSendTooltip>
               </TableCell>
             </TableRow>
           ))}
@@ -233,6 +276,28 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
         }}
         labelRowsPerPage={t('Rows per page')}
       />
+      <Menu
+        anchorEl={actionsMenu?.anchorEl ?? null}
+        open={Boolean(actionsMenu)}
+        onClose={() => setActionsMenu(null)}
+      >
+        <MenuItem
+          onClick={() => {
+            if (!actionsMenu) {
+              return;
+            }
+            openRunAndSend(
+              t('Run and Send this MPD Goal?'),
+              [actionsMenu.row],
+              { clearsSelection: false },
+            );
+            setActionsMenu(null);
+          }}
+        >
+          {t('Run & Send this goal')}
+        </MenuItem>
+      </Menu>
+      <RunAndSendModal {...modalProps} />
       {coachRow && (
         <AssignCoachModal
           subjectName={coachRow.name}

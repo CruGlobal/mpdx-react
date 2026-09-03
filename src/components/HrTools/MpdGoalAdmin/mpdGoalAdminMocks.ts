@@ -1,10 +1,12 @@
 import {
   NewStaffCohortAttendeeGoalStatusEnum,
+  NewStaffCohortRunAndSendBlockerEnum,
   NewStaffQuestionnaireMaritalStatusEnum,
 } from 'src/graphql/types.generated';
 import {
   NewStaffCohortAttendeesQuery,
   NewStaffCohortsQuery,
+  RunAndSendNewStaffCohortMutation,
   UpdateNewStaffCohortMutation,
 } from './NewStaffCohorts.generated';
 import { TrainingCosts } from './mpdGoalAdminHelpers';
@@ -72,7 +74,9 @@ export const cohortsMock: NewStaffCohortsQuery = {
         goalsSentAt: null,
         hasTrainingCosts: false,
         canRunAndSend: false,
-        runAndSendBlockers: [],
+        runAndSendBlockers: [
+          NewStaffCohortRunAndSendBlockerEnum.TrainingCostsMissing,
+        ],
         ...noCostFields,
       },
     ],
@@ -87,6 +91,10 @@ export const cohortsWithoutCostsMock: NewStaffCohortsQuery = {
       {
         ...cohortsMock.newStaffCohorts.nodes[0],
         hasTrainingCosts: false,
+        canRunAndSend: false,
+        runAndSendBlockers: [
+          NewStaffCohortRunAndSendBlockerEnum.TrainingCostsMissing,
+        ],
         // Costs gate Run & Send, so goals cannot already have gone out.
         goalsSentAt: null,
         ...noCostFields,
@@ -117,6 +125,7 @@ const attendee = (
   familyStatus: NewStaffQuestionnaireMaritalStatusEnum.Married,
   geographicLocation: 'Orlando, FL',
   goalStatus: NewStaffCohortAttendeeGoalStatusEnum.Complete,
+  goalSentAt: null,
   coordinators: ['Kim Coordinator'],
   coach: null,
   ministry: { id: 'ministry-1', name: 'Campus' },
@@ -170,6 +179,23 @@ export const updatedCohortMock = (
       canRunAndSend: true,
       runAndSendBlockers: [],
       ...costFields,
+    },
+  },
+});
+
+/** Mirrors the server: `sentCount` is authoritative, not the client's guess. */
+export const runAndSentMock = (
+  id: string,
+  sentCount: number,
+  sentAt = '2026-08-10T15:40:00Z',
+): RunAndSendNewStaffCohortMutation => ({
+  runAndSendNewStaffCohort: {
+    sentCount,
+    newStaffCohort: {
+      id,
+      goalsSentAt: sentAt,
+      canRunAndSend: true,
+      runAndSendBlockers: [],
     },
   },
 });

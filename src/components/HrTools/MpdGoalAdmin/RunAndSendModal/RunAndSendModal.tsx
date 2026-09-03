@@ -5,6 +5,7 @@ import {
   Alert,
   Box,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -15,20 +16,21 @@ import {
 import { useTranslation } from 'react-i18next';
 import { StaffGoalRow, partitionSendable } from '../mpdGoalAdminHelpers';
 
-interface RunAndSendModalProps {
+export interface RunAndSendModalProps {
   open: boolean;
   title: string;
   /** The goals targeted by the run-and-send action (all or selected rows). */
   rows: StaffGoalRow[];
+  sending: boolean;
   onClose: () => void;
-  /** Called with the number of complete goals that will be sent. */
-  onConfirm: (sendableCount: number) => void;
+  onConfirm: () => void;
 }
 
 export const RunAndSendModal: React.FC<RunAndSendModalProps> = ({
   open,
   title,
   rows,
+  sending,
   onClose,
   onConfirm,
 }) => {
@@ -42,7 +44,7 @@ export const RunAndSendModal: React.FC<RunAndSendModalProps> = ({
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={sending ? undefined : onClose}
       aria-labelledby="run-and-send-title"
       maxWidth="sm"
       fullWidth
@@ -57,7 +59,12 @@ export const RunAndSendModal: React.FC<RunAndSendModalProps> = ({
         }}
       >
         {title}
-        <IconButton aria-label={t('Close')} onClick={onClose} size="small">
+        <IconButton
+          aria-label={t('Close')}
+          onClick={onClose}
+          size="small"
+          disabled={sending}
+        >
           <CloseIcon />
         </IconButton>
       </DialogTitle>
@@ -111,15 +118,29 @@ export const RunAndSendModal: React.FC<RunAndSendModalProps> = ({
             { sendable: sendableCount, total },
           )}
         </Typography>
+        {/* Every control is inert mid-send, which without this reads as frozen. */}
+        {sending && (
+          <Typography variant="body2" role="status" sx={{ mt: 2 }}>
+            {t('Running and sending goals. This may take a moment.')}
+          </Typography>
+        )}
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={onClose}>{t('No, Cancel')}</Button>
+        <Button onClick={onClose} disabled={sending}>
+          {t('No, Cancel')}
+        </Button>
         <Button
           variant="contained"
-          endIcon={<KeyboardArrowRightIcon />}
-          disabled={sendableCount === 0}
-          onClick={() => onConfirm(sendableCount)}
+          endIcon={
+            sending ? (
+              <CircularProgress color="inherit" size={20} />
+            ) : (
+              <KeyboardArrowRightIcon />
+            )
+          }
+          disabled={sendableCount === 0 || sending}
+          onClick={onConfirm}
         >
           {t('Yes, Continue')}
         </Button>

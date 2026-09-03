@@ -33,6 +33,8 @@ export interface StaffGoalRow {
   /** MPD goal amount in USD; null until the goal calculation exists. */
   mpdGoal: number | null;
   goalStatus: NewStaffCohortAttendeeGoalStatusEnum;
+  /** ISO timestamp of the batch that sent this household; null until sent. */
+  goalSentAt: string | null;
   /** null before the survey establishes the household's marital status. */
   familyStatus: NewStaffQuestionnaireMaritalStatusEnum | null;
   /** null renders an "Assign Coach" prompt instead of a name. */
@@ -97,6 +99,7 @@ export interface Cohort {
    *  unformatted so the banner can split date and time across its own sentence. */
   goalsSentAt: DateTime | null;
   hasTrainingCosts: boolean;
+  canRunAndSend: boolean;
   /** Saved training cost figures; undefined until every cost is entered. */
   trainingCosts?: TrainingCosts;
 }
@@ -137,6 +140,7 @@ export const cohortNodeToCohort = (
     : '—',
   goalsSentAt: node.goalsSentAt ? DateTime.fromISO(node.goalsSentAt) : null,
   hasTrainingCosts: node.hasTrainingCosts,
+  canRunAndSend: node.canRunAndSend,
   trainingCosts: cohortToTrainingCosts(node),
 });
 
@@ -148,6 +152,7 @@ export const attendeeToRow = (attendee: AttendeeNode): StaffGoalRow => ({
   // Absent until the questionnaire completes; the row still renders.
   mpdGoal: attendee.newStaffGoalCalculation?.monthlyGoal ?? null,
   goalStatus: attendee.goalStatus,
+  goalSentAt: attendee.goalSentAt ?? null,
   familyStatus: attendee.familyStatus ?? null,
   // Both names null joins to '', which must still render the Assign Coach prompt.
   coach: attendee.coach
