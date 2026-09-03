@@ -385,6 +385,7 @@ const TaskModalLogForm = ({
                           activityType,
                           activityTypes,
                           setFieldTouched,
+                          currentTaskName: subject,
                         });
                       }}
                       required
@@ -412,6 +413,8 @@ const TaskModalLogForm = ({
                           setFieldTouched,
                           setActionSelected,
                           activityTypes,
+                          previousActivityType: activityType,
+                          currentTaskName: subject,
                         });
                       }}
                       inputRef={activityRef}

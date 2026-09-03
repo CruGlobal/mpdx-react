@@ -1,5 +1,4 @@
 import React from 'react';
-import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { ThemeProvider } from '@emotion/react';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -16,10 +15,6 @@ import { TaskModalEnum } from '../TaskModal';
 import { ContactOptionsQuery } from './Inputs/ContactsAutocomplete/ContactsAutocomplete.generated';
 import { TagOptionsQuery } from './Inputs/TagsAutocomplete/TagsAutocomplete.generated';
 import TaskModalForm, { TaskModalFormProps } from './TaskModalForm';
-import {
-  deleteTaskMutationMock,
-  updateTaskMutationMock,
-} from './TaskModalForm.mock';
 
 jest.mock('src/hooks/useTaskModal');
 
@@ -35,22 +30,36 @@ const accountListId = 'abc';
 const onClose = jest.fn();
 const mutationSpy = jest.fn();
 
-interface ComponentsProps {
-  mocks?: MockedResponse<Record<string, unknown>>[];
-  mockTask?: TaskModalFormProps['task'];
+const partnerCareDefaults = {
+  taskPhase: PhaseEnum.PartnerCare,
+  activityType: ActivityTypeEnum.PartnerCareTextMessage,
+};
+
+interface TestComponentProps {
+  defaultValues?: TaskModalFormProps['defaultValues'];
+  task?: TaskModalFormProps['task'];
+  showFlowsMessage?: TaskModalFormProps['showFlowsMessage'];
 }
-const Components = ({ mocks = [], mockTask = undefined }: ComponentsProps) => (
-  <LocalizationProvider dateAdapter={AdapterLuxon}>
-    <SnackbarProvider>
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <TaskModalForm
-          accountListId={accountListId}
-          onClose={onClose}
-          task={mockTask}
-        />
-      </MockedProvider>
-    </SnackbarProvider>
-  </LocalizationProvider>
+const TestComponent = ({
+  defaultValues,
+  task,
+  showFlowsMessage,
+}: TestComponentProps) => (
+  <ThemeProvider theme={theme}>
+    <LocalizationProvider dateAdapter={AdapterLuxon}>
+      <SnackbarProvider>
+        <GqlMockedProvider>
+          <TaskModalForm
+            defaultValues={defaultValues}
+            accountListId={accountListId}
+            onClose={onClose}
+            task={task}
+            showFlowsMessage={showFlowsMessage}
+          />
+        </GqlMockedProvider>
+      </SnackbarProvider>
+    </LocalizationProvider>
+  </ThemeProvider>
 );
 
 describe('TaskModalForm', () => {
@@ -89,13 +98,13 @@ describe('TaskModalForm', () => {
   };
 
   it('Modal should close', async () => {
-    const { getByText } = render(<Components />);
+    const { getByText } = render(<TestComponent />);
     userEvent.click(getByText('Cancel'));
     expect(onClose).toHaveBeenCalled();
   });
 
   it('Modal will not save if invalid data', async () => {
-    const { findByText, getByRole, findByRole } = render(<Components />);
+    const { findByText, getByRole, findByRole } = render(<TestComponent />);
     userEvent.click(getByRole('combobox', { name: 'Task Type' }));
     userEvent.click(await findByRole('option', { name: 'Appointment' }));
 
@@ -108,6 +117,56 @@ describe('TaskModalForm', () => {
     expect(onClose).not.toHaveBeenCalled();
     expect(await findByText('Task Name is required')).toBeInTheDocument();
     await waitFor(() => expect(onClose).not.toHaveBeenCalled());
+  });
+
+  it('preserves a custom task name when Action changes', async () => {
+    const { getByRole, findByRole } = render(
+      <TestComponent defaultValues={partnerCareDefaults} />,
+    );
+
+    const taskName = await findByRole('textbox', { name: 'Subject' });
+    expect(taskName).toHaveValue('Text Message Partner For Cultivation');
+
+    userEvent.clear(taskName);
+    userEvent.type(taskName, 'Tam wuz here');
+
+    userEvent.click(getByRole('combobox', { name: 'Action' }));
+    userEvent.click(await findByRole('option', { name: 'Email' }));
+
+    expect(await findByRole('combobox', { name: 'Action' })).toHaveValue(
+      'Email',
+    );
+
+    expect(taskName).toHaveValue('Tam wuz here');
+  });
+
+  it('autofills the taskname when the taskname is empty', async () => {
+    const { getByRole, findByRole } = render(
+      <TestComponent defaultValues={partnerCareDefaults} />,
+    );
+
+    const taskName = await findByRole('textbox', { name: 'Subject' });
+    expect(taskName).toHaveValue('Text Message Partner For Cultivation');
+    userEvent.clear(taskName);
+
+    userEvent.click(getByRole('combobox', { name: 'Action' }));
+    userEvent.click(await findByRole('option', { name: 'Email' }));
+
+    expect(taskName).toHaveValue('Email Partner For Cultivation');
+  });
+
+  it('overwrites the task name when it still holds the previous action default', async () => {
+    const { getByRole, findByRole } = render(
+      <TestComponent defaultValues={partnerCareDefaults} />,
+    );
+
+    const taskName = await findByRole('textbox', { name: 'Subject' });
+    expect(taskName).toHaveValue('Text Message Partner For Cultivation');
+
+    userEvent.click(getByRole('combobox', { name: 'Action' }));
+    userEvent.click(await findByRole('option', { name: 'Email' }));
+
+    expect(taskName).toHaveValue('Email Partner For Cultivation');
   });
 
   it('modal save data', async () => {
@@ -189,7 +248,7 @@ describe('TaskModalForm', () => {
       variables: {
         accountListId,
         attributes: {
-          subject: 'In Person Appointment',
+          subject: 'Do something',
           userId: 'user-2',
           contactIds: ['contact-2'],
           tagList: ['tag-2'],
@@ -307,7 +366,7 @@ describe('TaskModalForm', () => {
 
   it('show the location field appropriately', async () => {
     const { getByRole, findByRole, queryByRole } = render(
-      <Components mocks={[updateTaskMutationMock()]} mockTask={mockTask} />,
+      <TestComponent task={mockTask} />,
     );
 
     expect(
@@ -364,22 +423,9 @@ describe('TaskModalForm', () => {
 
   it('defaults the subject to the defaultValues subject', () => {
     const { getByRole } = render(
-      <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <SnackbarProvider>
-          <GqlMockedProvider>
-            <TaskModalForm
-              defaultValues={{
-                taskPhase: PhaseEnum.PartnerCare,
-                activityType: ActivityTypeEnum.PartnerCareTextMessage,
-                subject: 'Do something',
-              }}
-              accountListId={accountListId}
-              onClose={onClose}
-              task={null}
-            />
-          </GqlMockedProvider>
-        </SnackbarProvider>
-      </LocalizationProvider>,
+      <TestComponent
+        defaultValues={{ ...partnerCareDefaults, subject: 'Do something' }}
+      />,
     );
 
     expect(getByRole('textbox', { name: 'Subject' })).toHaveValue(
@@ -389,21 +435,7 @@ describe('TaskModalForm', () => {
 
   it('defaults the subject to the name based on phase and action', () => {
     const { getByRole } = render(
-      <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <SnackbarProvider>
-          <GqlMockedProvider>
-            <TaskModalForm
-              defaultValues={{
-                taskPhase: PhaseEnum.PartnerCare,
-                activityType: ActivityTypeEnum.PartnerCareTextMessage,
-              }}
-              accountListId={accountListId}
-              onClose={onClose}
-              task={null}
-            />
-          </GqlMockedProvider>
-        </SnackbarProvider>
-      </LocalizationProvider>,
+      <TestComponent defaultValues={partnerCareDefaults} />,
     );
 
     expect(getByRole('textbox', { name: 'Subject' })).toHaveValue(
@@ -452,9 +484,7 @@ describe('TaskModalForm', () => {
   });
 
   it('deletes a task', async () => {
-    const { getByRole } = render(
-      <Components mocks={[deleteTaskMutationMock()]} mockTask={mockTask} />,
-    );
+    const { getByRole } = render(<TestComponent task={mockTask} />);
 
     userEvent.click(getByRole('button', { name: 'Delete' }));
     expect(getByRole('heading', { name: 'Confirm' })).toBeInTheDocument();
@@ -500,15 +530,7 @@ describe('TaskModalForm', () => {
 
   describe('flows status change message', () => {
     it('does not show by default', () => {
-      const { queryByText } = render(
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <SnackbarProvider>
-            <GqlMockedProvider>
-              <TaskModalForm accountListId={accountListId} onClose={onClose} />
-            </GqlMockedProvider>
-          </SnackbarProvider>
-        </LocalizationProvider>,
-      );
+      const { queryByText } = render(<TestComponent />);
 
       expect(
         queryByText(/The contact's status has been updated/),
@@ -516,19 +538,7 @@ describe('TaskModalForm', () => {
     });
 
     it('shows when showFlowsMessage is set', () => {
-      const { getByText } = render(
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <SnackbarProvider>
-            <GqlMockedProvider>
-              <TaskModalForm
-                accountListId={accountListId}
-                onClose={onClose}
-                showFlowsMessage
-              />
-            </GqlMockedProvider>
-          </SnackbarProvider>
-        </LocalizationProvider>,
-      );
+      const { getByText } = render(<TestComponent showFlowsMessage />);
 
       expect(
         getByText(/The contact's status has been updated/),
@@ -565,6 +575,19 @@ describe('TaskModalForm', () => {
       expect(getByRole('combobox', { name: 'Action' })).toHaveValue(
         'In Person',
       );
+
+      expect(getByRole('textbox', { name: 'Subject' })).toHaveValue('Subject');
+    });
+
+    it('renames the task when the task phase changes and the name is a default', async () => {
+      const { getByRole, findByRole } = render(
+        <TestComponent
+          task={{ ...mockCompletedTask, subject: 'In Person Appointment' }}
+        />,
+      );
+
+      userEvent.click(getByRole('combobox', { name: 'Task Type' }));
+      userEvent.click(await findByRole('option', { name: 'Follow-Up' }));
 
       expect(getByRole('textbox', { name: 'Subject' })).toHaveValue(
         'Follow Up In Person',
