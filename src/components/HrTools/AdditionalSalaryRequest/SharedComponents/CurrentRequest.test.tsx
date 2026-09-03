@@ -261,7 +261,7 @@ describe('CurrentRequest', () => {
       ).toBeInTheDocument();
     });
 
-    it('displays "Request processed" for action required status', () => {
+    it('displays "Request processed on:" for action required status', () => {
       const actionRequiredRequest: RequestType = {
         ...mockRequest,
         status: AsrStatusEnum.ActionRequired,
@@ -272,7 +272,7 @@ describe('CurrentRequest', () => {
         <TestComponent request={actionRequiredRequest} />,
       );
 
-      expect(getByText('Request processed')).toBeInTheDocument();
+      expect(getByText('Action required:')).toBeInTheDocument();
     });
   });
 

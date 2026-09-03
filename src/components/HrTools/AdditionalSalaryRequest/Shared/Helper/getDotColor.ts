@@ -15,7 +15,7 @@ export const getDotColor = (
       return 'info.main';
 
     case 'processed':
-      if (isApproved) {
+      if (isApproved || status === AsrStatusEnum.ActionRequired) {
         return 'success.main';
       }
       if (isPending) {
