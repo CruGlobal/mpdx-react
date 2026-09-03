@@ -33,6 +33,7 @@ interface TestComponentProps {
   joinedStaffYear?: number | null;
   isScenario?: boolean;
   isComplete?: boolean;
+  coordinators?: string[];
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -41,6 +42,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   joinedStaffYear = 2018,
   isScenario,
   isComplete,
+  coordinators,
 }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
@@ -57,6 +59,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
               joinedStaffYear={joinedStaffYear}
               isScenario={isScenario}
               isComplete={isComplete}
+              coordinators={coordinators}
             />
           </Form>
         </Formik>
@@ -177,6 +180,46 @@ describe('GoalSettingsHeader', () => {
     expect(options.map((option) => option.textContent)).toEqual(['2020']);
   });
 
+  it('lists every coordinator it is given, after the coach field', () => {
+    const { getByRole } = render(
+      <TestComponent coordinators={['Ada Lovelace', 'Grace Hopper']} />,
+    );
+
+    const coordinators = getByRole('list', { name: 'Coordinators' });
+    const items = within(coordinators).getAllByRole('listitem');
+
+    expect(items.map((item) => item.textContent)).toEqual([
+      'Ada Lovelace',
+      'Grace Hopper',
+    ]);
+    expect(
+      getByRole('textbox', { name: 'Coach' }).compareDocumentPosition(
+        coordinators,
+      ) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
+  it('falls back to the placeholder coordinators when none are passed', () => {
+    const { getByRole } = render(<TestComponent />);
+
+    const coordinators = getByRole('list', { name: 'Coordinators' });
+    const items = within(coordinators).getAllByRole('listitem');
+
+    expect(items.map((item) => item.textContent)).toEqual([
+      'Nancy Coleman',
+      'Francis Powell',
+      'Gerald Christianson',
+    ]);
+  });
+
+  it('omits the coordinator list when the calculation has none', () => {
+    const { queryByRole } = render(<TestComponent coordinators={[]} />);
+
+    expect(
+      queryByRole('list', { name: 'Coordinators' }),
+    ).not.toBeInTheDocument();
+  });
+
   describe('scenario mode', () => {
     it('shows the Scenario Only chip and hides the person, coach, and coordinator cards', () => {
       const { getByText, queryByText, queryByRole } = render(
@@ -187,7 +230,7 @@ describe('GoalSettingsHeader', () => {
       expect(queryByText('Incomplete')).not.toBeInTheDocument();
       expect(queryByRole('textbox', { name: 'Coach' })).not.toBeInTheDocument();
       expect(
-        queryByRole('textbox', { name: 'Coordinator' }),
+        queryByRole('list', { name: 'Coordinators' }),
       ).not.toBeInTheDocument();
     });
 
@@ -196,7 +239,7 @@ describe('GoalSettingsHeader', () => {
 
       expect(queryByText('Scenario Only')).not.toBeInTheDocument();
       expect(getByRole('textbox', { name: 'Coach' })).toBeInTheDocument();
-      expect(getByRole('textbox', { name: 'Coordinator' })).toBeInTheDocument();
+      expect(getByRole('list', { name: 'Coordinators' })).toBeInTheDocument();
     });
   });
 });
