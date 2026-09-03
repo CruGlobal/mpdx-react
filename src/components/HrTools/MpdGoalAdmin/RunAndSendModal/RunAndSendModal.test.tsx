@@ -12,6 +12,7 @@ const makeRow = (
   goalStatus: GoalStatusEnum,
 ): StaffGoalRow => ({
   id,
+  accountListId: `account-list-${id}`,
   name,
   ministry: 'Campus',
   geography: 'Orlando, FL',

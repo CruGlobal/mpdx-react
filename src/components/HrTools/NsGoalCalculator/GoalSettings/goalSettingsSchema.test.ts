@@ -18,8 +18,24 @@ const validateAt = (field: string, value: unknown) =>
   });
 
 describe('getGoalSettingsSchema', () => {
-  it('accepts the blank defaults (every numeric field empty)', () => {
-    expect(() => schema.validateSync(emptyGoalSettingsValues)).not.toThrow();
+  // The blank defaults are missing every field a goal cannot be calculated
+  // without, which is what makes Save & Share name them.
+  it('rejects the blank defaults for the required fields only', async () => {
+    await expect(
+      schema.validate(emptyGoalSettingsValues, { abortEarly: false }),
+    ).rejects.toMatchObject({
+      errors: expect.arrayContaining([
+        'Calculation Year is required',
+        'Age is required',
+        'Full Time Years on Staff is required',
+        'Field or Office Based is required',
+        'Benefits Plan is required',
+      ]),
+    });
+  });
+
+  it('leaves the optional numeric fields alone when blank', () => {
+    expect(validateAt('reimbursableExpenses', '')).toBeNull();
   });
 
   it('treats an empty string as not-set rather than invalid', () => {

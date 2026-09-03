@@ -1,9 +1,9 @@
+import NextLink from 'next/link';
 import React, { useEffect, useState } from 'react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import {
   Box,
   Checkbox,
-  Chip,
   IconButton,
   Link,
   Menu,
@@ -22,8 +22,10 @@ import {
 import { visuallyHidden } from '@mui/utils';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
+import { StatusChip } from '../../Shared/StatusChip';
 import { AssignCoachModal } from '../AssignCoachModal/AssignCoachModal';
 import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import { RunAndSendModal } from '../RunAndSendModal/RunAndSendModal';
@@ -34,23 +36,13 @@ import {
   GoalStatusEnum,
   StaffGoalRow,
   familyStatusLabel,
+  goalStatusColor,
   goalStatusLabel,
   isSendable,
+  staffDetailsUrl,
 } from '../mpdGoalAdminHelpers';
 import { useRunAndSendFlow } from '../useRunAndSendFlow';
 import { CoordinatorsCell } from './CoordinatorsCell';
-
-// Complete is ready to send and Sent is already done; only Incomplete needs action.
-const goalStatusColor = (status: GoalStatusEnum) => {
-  switch (status) {
-    case GoalStatusEnum.Complete:
-      return 'success';
-    case GoalStatusEnum.Sent:
-      return 'info';
-    default:
-      return 'warning';
-  }
-};
 
 interface GoalStatusChipProps {
   status: GoalStatusEnum;
@@ -60,7 +52,6 @@ interface GoalStatusChipProps {
 const GoalStatusChip: React.FC<GoalStatusChipProps> = ({ status, sentAt }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const color = goalStatusColor(status);
   // A later batch moves the cohort banner, so the row carries its own date.
   const label =
     status === GoalStatusEnum.Sent && sentAt
@@ -68,19 +59,8 @@ const GoalStatusChip: React.FC<GoalStatusChipProps> = ({ status, sentAt }) => {
           date: dateFormatShort(DateTime.fromISO(sentAt), locale),
         })
       : goalStatusLabel(status, t);
-  return (
-    <Chip
-      size="small"
-      variant="outlined"
-      label={label}
-      color={color}
-      // palette.main is under WCAG AA at this size; dark keeps the hue readable.
-      sx={(theme) => ({
-        color: theme.palette[color].dark,
-        borderColor: theme.palette[color].dark,
-      })}
-    />
-  );
+
+  return <StatusChip label={label} color={goalStatusColor(status)} />;
 };
 
 interface GoalsTableProps {
@@ -90,6 +70,7 @@ interface GoalsTableProps {
 export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const accountListId = useAccountListId();
   const {
     selectedRowIds,
     toggleRow,
@@ -227,13 +208,11 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
                 staffName={row.name}
               />
               <TableCell>
-                {/* Disabled until wired up so assistive tech announces the
-                    inert state instead of a dead control (MPDX-9696). */}
                 <Link
-                  component="button"
-                  type="button"
+                  component={NextLink}
+                  href={staffDetailsUrl(accountListId ?? '', row.accountListId)}
                   underline="hover"
-                  disabled
+                  aria-label={t('View/Edit {{name}}', { name: row.name })}
                 >
                   {t('View/Edit')}
                 </Link>

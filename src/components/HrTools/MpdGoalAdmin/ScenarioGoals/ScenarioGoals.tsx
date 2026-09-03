@@ -22,12 +22,17 @@ import {
 import { uniqBy } from 'lodash';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { isCalculationComplete } from 'src/components/HrTools/NsGoalCalculator/GoalSettings/goalSettingsCompletion';
 import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
-import { DEFAULT_ROWS_PER_PAGE } from '../mpdGoalAdminHelpers';
+import { StatusChip } from '../../Shared/StatusChip';
+import {
+  DEFAULT_ROWS_PER_PAGE,
+  scenarioGoalUrl as buildScenarioGoalUrl,
+} from '../mpdGoalAdminHelpers';
 import {
   NewStaffScenarioGoalsQuery,
   useCreateNewStaffScenarioGoalMutation,
@@ -67,7 +72,7 @@ export const ScenarioGoals: React.FC = () => {
   const [deleteScenarioGoal] = useDeleteNewStaffScenarioGoalMutation();
 
   const scenarioGoalUrl = (id: string) =>
-    `/accountLists/${accountListId}/hrTools/mpdGoalAdmin/scenario/${id}`;
+    buildScenarioGoalUrl(accountListId ?? '', id);
 
   const handleCreate = async () => {
     try {
@@ -124,11 +129,14 @@ export const ScenarioGoals: React.FC = () => {
           mb: 2,
         }}
       >
-        <Typography variant="body2" color="text.secondary">
-          {t(
-            'Draft goal calculations that are not tied to a staff member. Use them to explore "what if" scenarios.',
-          )}
-        </Typography>
+        <Box>
+          <Typography variant="h6">{t('Scenario MPD Goals')}</Typography>
+          <Typography variant="body2" color="text.secondary">
+            {t(
+              'Draft goal calculations that are not tied to a staff member. Use them to explore "what if" scenarios.',
+            )}
+          </Typography>
+        </Box>
         <Button
           variant="contained"
           startIcon={
@@ -158,6 +166,7 @@ export const ScenarioGoals: React.FC = () => {
                 <TableCell>{t('Ministry')}</TableCell>
                 <TableCell>{t('Campus Division')}</TableCell>
                 <TableCell>{t('MPD Goal')}</TableCell>
+                <TableCell>{t('Goal Status')}</TableCell>
                 <TableCell>{t('Created')}</TableCell>
                 <TableCell>{t('Actions')}</TableCell>
               </TableRow>
@@ -183,6 +192,13 @@ export const ScenarioGoals: React.FC = () => {
                         row.calculations.monthlyGoal,
                         'USD',
                         locale,
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {isCalculationComplete(row) ? (
+                        <StatusChip color="success" label={t('Complete')} />
+                      ) : (
+                        <StatusChip color="warning" label={t('Incomplete')} />
                       )}
                     </TableCell>
                     <TableCell>

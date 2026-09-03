@@ -4,15 +4,20 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
+import { GoalSettingsNavigationProvider } from './GoalSettingsNavigationContext';
 import { GoalSettingsSidebar } from './GoalSettingsSidebar';
 
 const push = jest.fn();
 const onCollapse = jest.fn();
 
-const TestComponent: React.FC<{ view?: string; isScenario?: boolean }> = ({
-  view,
-  isScenario,
-}) => (
+const returnUrl =
+  '/accountLists/account-list-1/hrTools/mpdGoalAdmin?tab=scenario-goals';
+
+const TestComponent: React.FC<{
+  view?: string;
+  isScenario?: boolean;
+  withReturnUrl?: boolean;
+}> = ({ view, isScenario, withReturnUrl }) => (
   <ThemeProvider theme={theme}>
     <TestRouter
       router={{
@@ -26,7 +31,11 @@ const TestComponent: React.FC<{ view?: string; isScenario?: boolean }> = ({
         push,
       }}
     >
-      <GoalSettingsSidebar isScenario={isScenario} onCollapse={onCollapse} />
+      <GoalSettingsNavigationProvider
+        returnUrl={withReturnUrl ? returnUrl : undefined}
+      >
+        <GoalSettingsSidebar isScenario={isScenario} onCollapse={onCollapse} />
+      </GoalSettingsNavigationProvider>
     </TestRouter>
   </ThemeProvider>
 );
@@ -97,5 +106,23 @@ describe('GoalSettingsSidebar', () => {
         { shallow: true },
       ),
     );
+  });
+
+  describe('Back to Table', () => {
+    it('returns to the table it was opened from', async () => {
+      const { getByRole } = render(<TestComponent withReturnUrl />);
+
+      userEvent.click(getByRole('button', { name: 'Back to Table' }));
+
+      await waitFor(() => expect(push).toHaveBeenCalledWith(returnUrl));
+    });
+
+    it('is omitted when the goal was not opened from a table', () => {
+      const { queryByRole } = render(<TestComponent />);
+
+      expect(
+        queryByRole('button', { name: 'Back to Table' }),
+      ).not.toBeInTheDocument();
+    });
   });
 });

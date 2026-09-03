@@ -19,6 +19,7 @@ import {
   Theme,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useGoalSettingsNavigation } from './GoalSettingsNavigationContext';
 import {
   GoalSettingsViewEnum,
   useGoalSettingsView,
@@ -73,6 +74,7 @@ export const GoalSettingsSidebar: React.FC<GoalSettingsSidebarProps> = ({
 }) => {
   const { t } = useTranslation();
   const { view, setView } = useGoalSettingsView();
+  const { returnLabel, leave } = useGoalSettingsNavigation();
 
   return (
     <List disablePadding component="nav" aria-label={t('Goal navigation')}>
@@ -89,21 +91,22 @@ export const GoalSettingsSidebar: React.FC<GoalSettingsSidebarProps> = ({
           </IconButton>
         }
       >
-        {/* TODO(MPDX-9821): Wire up the Back to Table destination. */}
-        <ListItemButton sx={{ color: 'primary.main' }}>
-          <ListItemIcon sx={{ minWidth: 'auto', mr: 1, color: 'inherit' }}>
-            <ChevronLeftIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText
-            primary={t('Back to Table')}
-            slotProps={{
-              primary: {
-                variant: 'body2',
-                sx: { textTransform: 'uppercase' },
-              },
-            }}
-          />
-        </ListItemButton>
+        {returnLabel && (
+          <ListItemButton sx={{ color: 'primary.main' }} onClick={leave}>
+            <ListItemIcon sx={{ minWidth: 'auto', mr: 1, color: 'inherit' }}>
+              <ChevronLeftIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText
+              primary={returnLabel}
+              slotProps={{
+                primary: {
+                  variant: 'body2',
+                  sx: { textTransform: 'uppercase' },
+                },
+              }}
+            />
+          </ListItemButton>
+        )}
       </ListItem>
 
       <Divider />

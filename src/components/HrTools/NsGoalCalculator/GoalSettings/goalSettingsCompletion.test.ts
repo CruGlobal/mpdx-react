@@ -4,7 +4,11 @@ import {
   MpdGoalBenefitsConstantPlanEnum,
   NewStaffQuestionnaireMaritalStatusEnum,
 } from 'src/graphql/types.generated';
-import { isGoalSettingsComplete } from './goalSettingsCompletion';
+import {
+  GoalCompletionFields,
+  isCalculationComplete,
+  isGoalSettingsComplete,
+} from './goalSettingsCompletion';
 import { GoalSettingsFormValues } from './goalSettingsFormValues';
 
 const emptyValues: GoalSettingsFormValues = {
@@ -116,5 +120,54 @@ describe('isGoalSettingsComplete', () => {
       // required.
       expect(isGoalSettingsComplete(filledSingle)).toBe(true);
     });
+  });
+});
+
+describe('isCalculationComplete', () => {
+  // The saved shape, where an unset field is null rather than ''.
+  const savedSingle: GoalCompletionFields = {
+    maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
+    calculationsYear: 2026,
+    age: GoalCalculationAge.ThirtyToThirtyFour,
+    tenure: 0,
+    assignmentType: GoalCalculationRole.Field,
+    benefitsPlan: MpdGoalBenefitsConstantPlanEnum.Base,
+    spouseAge: null,
+    spouseTenure: null,
+  };
+
+  it('is true for a single household with every required field saved', () => {
+    expect(isCalculationComplete(savedSingle)).toBe(true);
+  });
+
+  it.each([
+    ['calculationsYear'],
+    ['age'],
+    ['tenure'],
+    ['assignmentType'],
+    ['benefitsPlan'],
+  ] as Array<[keyof GoalCompletionFields]>)(
+    'is false when %s is null',
+    (field) => {
+      expect(isCalculationComplete({ ...savedSingle, [field]: null })).toBe(
+        false,
+      );
+    },
+  );
+
+  it('requires the spouse fields once the household is married', () => {
+    const married = {
+      ...savedSingle,
+      maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Married,
+    };
+
+    expect(isCalculationComplete(married)).toBe(false);
+    expect(
+      isCalculationComplete({
+        ...married,
+        spouseAge: GoalCalculationAge.OverForty,
+        spouseTenure: 3,
+      }),
+    ).toBe(true);
   });
 });

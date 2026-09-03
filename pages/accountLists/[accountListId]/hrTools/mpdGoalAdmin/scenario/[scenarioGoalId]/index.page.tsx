@@ -3,14 +3,20 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
+import {
+  MpdGoalAdminTabEnum,
+  mpdGoalAdminUrl,
+} from 'src/components/HrTools/MpdGoalAdmin/mpdGoalAdminHelpers';
 import { GoalSettingsView } from 'src/components/HrTools/NsGoalCalculator/GoalSettings/GoalSettingsView';
 import Loading from 'src/components/Loading';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';
 import { getQueryParam } from 'src/lib/queryParam';
 
 export const NsScenarioGoalPage: React.FC = () => {
   const { t } = useTranslation();
   const appName = getAppName();
+  const accountListId = useAccountListId();
   const { query } = useRouter();
   const scenarioGoalId = getQueryParam(query, 'scenarioGoalId');
 
@@ -19,8 +25,14 @@ export const NsScenarioGoalPage: React.FC = () => {
       <Head>
         <title>{`${appName} | ${t('New Staff Goal Calculator')}`}</title>
       </Head>
-      {scenarioGoalId ? (
-        <GoalSettingsView scenarioGoalId={scenarioGoalId} />
+      {accountListId && scenarioGoalId ? (
+        <GoalSettingsView
+          scenarioGoalId={scenarioGoalId}
+          returnUrl={mpdGoalAdminUrl(
+            accountListId,
+            MpdGoalAdminTabEnum.ScenarioGoals,
+          )}
+        />
       ) : (
         <Loading loading />
       )}

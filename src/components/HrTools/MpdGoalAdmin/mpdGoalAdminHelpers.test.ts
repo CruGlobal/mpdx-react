@@ -103,6 +103,7 @@ describe('attendeeToRow', () => {
   it('maps an attendee onto a table row', () => {
     expect(attendeeToRow(attendeeComplete)).toEqual({
       id: 'row-3',
+      accountListId: 'account-list-row-3',
       name: 'Sam Smith',
       ministry: 'Campus',
       geography: 'Orlando, FL',
