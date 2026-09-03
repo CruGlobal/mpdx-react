@@ -180,7 +180,7 @@ describe('CurrentRequest', () => {
 
       const { getByText } = render(<TestComponent request={pendingRequest} />);
 
-      expect(getByText('Request In Process')).toBeInTheDocument();
+      expect(getByText('Request in process')).toBeInTheDocument();
     });
   });
 
@@ -193,7 +193,7 @@ describe('CurrentRequest', () => {
       });
     });
 
-    it('displays "Request processed on:" for approved requests - approved not paid', () => {
+    it('displays "Request processed" for approved requests - approved not paid', () => {
       const approvedRequest: RequestType = {
         ...mockRequest,
         status: AsrStatusEnum.ApprovedNotPaid,
@@ -202,10 +202,10 @@ describe('CurrentRequest', () => {
 
       const { getByText } = render(<TestComponent request={approvedRequest} />);
 
-      expect(getByText('Request processed on:')).toBeInTheDocument();
+      expect(getByText('Request processed')).toBeInTheDocument();
     });
 
-    it('displays "Request processed on:" for approved requests - approved and paid', () => {
+    it('displays "Request complete" for approved requests - approved and paid', () => {
       const approvedRequest: RequestType = {
         ...mockRequest,
         status: AsrStatusEnum.ApprovedAndPaid,
@@ -214,21 +214,24 @@ describe('CurrentRequest', () => {
 
       const { getByText } = render(<TestComponent request={approvedRequest} />);
 
-      expect(getByText('Request processed on:')).toBeInTheDocument();
+      expect(getByText('Request complete')).toBeInTheDocument();
     });
 
-    it('displays "Request Complete" for approved not paid status', () => {
+    it('displays "Payroll processing" for approved not paid status', () => {
       const approvedRequest: RequestType = {
         ...mockRequest,
         status: AsrStatusEnum.ApprovedNotPaid,
       };
 
-      const { getByText } = render(<TestComponent request={approvedRequest} />);
+      const { getByText, queryByText } = render(
+        <TestComponent request={approvedRequest} />,
+      );
 
-      expect(getByText('Request Complete')).toBeInTheDocument();
+      expect(getByText('Payroll processing')).toBeInTheDocument();
+      expect(queryByText('Request complete')).not.toBeInTheDocument();
     });
 
-    it('displays "Request Complete" for approved and paid status', () => {
+    it('displays "Request complete" for approved and paid status', () => {
       const approvedRequest: RequestType = {
         ...mockRequest,
         status: AsrStatusEnum.ApprovedAndPaid,
@@ -236,12 +239,12 @@ describe('CurrentRequest', () => {
 
       const { getByText } = render(<TestComponent request={approvedRequest} />);
 
-      expect(getByText('Request Complete')).toBeInTheDocument();
+      expect(getByText('Request complete')).toBeInTheDocument();
     });
   });
 
   describe('timeline status - ActionRequired', () => {
-    it('displays "Action Required:" with feedback', () => {
+    it('displays "Changes requested on:" with feedback', () => {
       const actionRequiredRequest: RequestType = {
         ...mockRequest,
         status: AsrStatusEnum.ActionRequired,
@@ -252,13 +255,13 @@ describe('CurrentRequest', () => {
         <TestComponent request={actionRequiredRequest} />,
       );
 
-      expect(getByText('Action Required:')).toBeInTheDocument();
+      expect(getByText('Changes requested on:')).toBeInTheDocument();
       expect(
         getByText('Please provide additional documentation'),
       ).toBeInTheDocument();
     });
 
-    it('displays "Request processed on:" for action required status', () => {
+    it('displays "Request processed" for action required status', () => {
       const actionRequiredRequest: RequestType = {
         ...mockRequest,
         status: AsrStatusEnum.ActionRequired,
@@ -269,7 +272,7 @@ describe('CurrentRequest', () => {
         <TestComponent request={actionRequiredRequest} />,
       );
 
-      expect(getByText('Request processed on:')).toBeInTheDocument();
+      expect(getByText('Request processed')).toBeInTheDocument();
     });
   });
 

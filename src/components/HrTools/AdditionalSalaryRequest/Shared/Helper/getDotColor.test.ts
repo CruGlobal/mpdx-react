@@ -43,13 +43,16 @@ describe('getDotColor', () => {
   });
 
   describe('complete step', () => {
-    it('returns success.main when status is ApprovedNotPaid or ApprovedAndPaid', () => {
-      expect(
-        getDotColor(AsrStatusEnum.ApprovedNotPaid, 'complete', false, true),
-      ).toBe('success.main');
+    it('returns success.main when status is ApprovedAndPaid', () => {
       expect(
         getDotColor(AsrStatusEnum.ApprovedAndPaid, 'complete', false, true),
       ).toBe('success.main');
+    });
+
+    it('returns warning.main when status is ApprovedNotPaid', () => {
+      expect(
+        getDotColor(AsrStatusEnum.ApprovedNotPaid, 'complete', false, true),
+      ).toBe('warning.main');
     });
 
     it('returns warning.main when status is ActionRequired', () => {

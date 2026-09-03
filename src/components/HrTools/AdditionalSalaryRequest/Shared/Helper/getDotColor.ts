@@ -15,7 +15,7 @@ export const getDotColor = (
       return 'info.main';
 
     case 'processed':
-      if (isApproved || status === AsrStatusEnum.ActionRequired) {
+      if (isApproved) {
         return 'success.main';
       }
       if (isPending) {
@@ -23,10 +23,14 @@ export const getDotColor = (
       }
     // fallthrough
     case 'complete':
-      if (isApproved) {
+      if (status === AsrStatusEnum.ApprovedAndPaid) {
         return 'success.main';
       }
-      if (status === AsrStatusEnum.ActionRequired) {
+      // Approved but payroll has not paid it yet, so the step is not done
+      if (
+        status === AsrStatusEnum.ApprovedNotPaid ||
+        status === AsrStatusEnum.ActionRequired
+      ) {
         return 'warning.main';
       }
     // fallthrough
