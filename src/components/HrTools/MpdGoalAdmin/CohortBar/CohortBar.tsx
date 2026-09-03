@@ -69,6 +69,38 @@ export const CohortBar: React.FC = () => {
     setTrainingCostsOpen(false);
   };
 
+  const trainingCostLink = (
+    <Link
+      component="button"
+      type="button"
+      underline="hover"
+      disabled={!selectedCohort}
+      onClick={() => setTrainingCostsOpen(true)}
+      onMouseEnter={preloadEditTrainingCostsModal}
+      sx={
+        needsTrainingCosts
+          ? (theme) => ({
+              // MUI's warning palette is only 3.79:1 on white; the Cru vermilion
+              // token clears WCAG AA for body2's 14px text.
+              color: theme.palette.statusWarning.main,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 0.5,
+            })
+          : undefined
+      }
+    >
+      {needsTrainingCosts ? (
+        <>
+          <ErrorOutline fontSize="small" />
+          {t('Provide Training Cost')}
+        </>
+      ) : (
+        t('View/Edit')
+      )}
+    </Link>
+  );
+
   return (
     <Stack
       direction={{ xs: 'column', md: 'row' }}
@@ -98,42 +130,18 @@ export const CohortBar: React.FC = () => {
       </Stat>
       <Stat label={t('NSO Date')}>{selectedCohort?.nsoDate ?? '—'}</Stat>
       <Stat label={t('Training Cost')}>
+        {/* Only the costs-missing branch is tooltipped, and a disabled child
+            would need a wrapper element for the tooltip to fire. */}
         {needsTrainingCosts ? (
           <Tooltip
             // Without this the tooltip becomes the button's aria-label and hides its text.
             describeChild
             title={t('Training costs are required to run & send goals.')}
           >
-            <Link
-              component="button"
-              type="button"
-              underline="hover"
-              onClick={() => setTrainingCostsOpen(true)}
-              onMouseEnter={preloadEditTrainingCostsModal}
-              // MUI's warning palette is only 3.79:1 on white; the Cru vermilion
-              // token clears WCAG AA for body2's 14px text.
-              sx={(theme) => ({
-                color: theme.palette.statusWarning.main,
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 0.5,
-              })}
-            >
-              <ErrorOutline fontSize="small" />
-              {t('Provide Training Cost')}
-            </Link>
+            {trainingCostLink}
           </Tooltip>
         ) : (
-          <Link
-            component="button"
-            type="button"
-            underline="hover"
-            disabled={!selectedCohort}
-            onClick={() => setTrainingCostsOpen(true)}
-            onMouseEnter={preloadEditTrainingCostsModal}
-          >
-            {t('View/Edit')}
-          </Link>
+          trainingCostLink
         )}
       </Stat>
       {trainingCostsOpen && (
