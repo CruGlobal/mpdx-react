@@ -42,12 +42,15 @@ fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
     currentSalaryCap
     combinedCap
     staffAccountBalance
-    pendingAsrAmount
+    ytdAsrAmount
+    grossAnnualSalary
+    outstandingSalaryRequest
   }
   spouseCalculations {
     currentSalaryCap
-    pendingAsrAmount
+    ytdAsrAmount
     staffAccountBalance
+    grossAnnualSalary
   }
 }
 

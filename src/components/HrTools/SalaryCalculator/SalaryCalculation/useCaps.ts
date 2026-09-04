@@ -14,6 +14,9 @@ interface UseCapsResult {
   /** The sum of the users' requested gross salaries */
   combinedGross: number;
 
+  /** The sum of the users' requested year-to-date gross salaries, which includes ASRs */
+  combinedYtdGross: number;
+
   /** The sum of the users' effective caps */
   combinedEffectiveCap: number;
 
@@ -31,6 +34,8 @@ export const useCaps = (): UseCapsResult => {
 
   const combinedGross =
     (calcs?.requestedGross ?? 0) + (spouseCalcs?.requestedGross ?? 0);
+  const combinedYtdGross =
+    (calcs?.requestedYtdGross ?? 0) + (spouseCalcs?.requestedYtdGross ?? 0);
   const combinedEffectiveCap =
     (calcs?.effectiveCap ?? 0) + (spouseCalcs?.effectiveCap ?? 0);
 
@@ -50,6 +55,7 @@ export const useCaps = (): UseCapsResult => {
 
   return {
     combinedGross,
+    combinedYtdGross,
     combinedEffectiveCap,
     overCapPerson,
   };

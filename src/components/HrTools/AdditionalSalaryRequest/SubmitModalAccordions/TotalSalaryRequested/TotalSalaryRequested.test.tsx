@@ -31,18 +31,15 @@ const defaultMockContextValue = {
       traditional403bContribution: 0.12,
       calculations: {
         currentSalaryCap: 100000,
-        pendingAsrAmount: 5000,
+        ytdAsrAmount: 5000,
+        grossAnnualSalary: 50000,
       },
     },
   },
   calculations: {
     currentSalaryCap: 100000,
-    pendingAsrAmount: 5000,
-  },
-  user: {
-    currentSalary: {
-      grossSalaryAmount: 50000,
-    },
+    ytdAsrAmount: 5000,
+    grossAnnualSalary: 50000,
   },
 };
 
@@ -95,8 +92,77 @@ describe('TotalSalaryRequested', () => {
     jest.clearAllMocks();
   });
 
+  it('explains that the figures include an outstanding salary request', async () => {
+    const { getAllByLabelText, getByRole } = renderComponent({
+      contextOverrides: {
+        calculations: {
+          ...defaultMockContextValue.calculations,
+          outstandingSalaryRequest: true,
+        },
+      },
+    });
+
+    userEvent.click(getByRole('button', { name: 'Expand salary details' }));
+
+    // One tooltip beside Gross Annual Salary and one beside Total Salary Requested
+    await waitFor(() =>
+      expect(
+        getAllByLabelText('Includes your pending Salary Calculation Request'),
+      ).toHaveLength(2),
+    );
+  });
+
+  it('omits the salary request explanation when there is no outstanding request', async () => {
+    const { getByRole, queryByLabelText } = renderComponent();
+
+    userEvent.click(getByRole('button', { name: 'Expand salary details' }));
+
+    await waitFor(() => expect(getByRole('table')).toBeInTheDocument());
+    expect(
+      queryByLabelText('Includes your pending Salary Calculation Request'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('explains the pending and approved ASRs behind the amount', async () => {
+    const { getAllByLabelText, getByRole } = renderComponent();
+
+    userEvent.click(getByRole('button', { name: 'Expand salary details' }));
+
+    await waitFor(() =>
+      expect(
+        getAllByLabelText(
+          'Includes $5,000.00 of pending and approved requests this year',
+        ),
+      ).toHaveLength(1),
+    );
+  });
+
+  it('omits the ASR explanation when there are none this year', async () => {
+    const { getByRole, queryByTestId } = renderComponent({
+      contextOverrides: {
+        requestData: {
+          latestAdditionalSalaryRequest: {
+            ...defaultMockContextValue.requestData
+              .latestAdditionalSalaryRequest,
+            calculations: {
+              ...defaultMockContextValue.requestData
+                .latestAdditionalSalaryRequest.calculations,
+              ytdAsrAmount: 0,
+            },
+          },
+        },
+      },
+    });
+
+    userEvent.click(getByRole('button', { name: 'Expand salary details' }));
+
+    await waitFor(() => expect(getByRole('table')).toBeInTheDocument());
+    expect(queryByTestId('YtdAsrTooltip')).not.toBeInTheDocument();
+  });
+
   it('renders accordion with title, table, and summary items', async () => {
-    const { getByText, queryByTestId, getByRole } = renderComponent();
+    const { getAllByText, getByText, queryByTestId, getByRole } =
+      renderComponent();
 
     expect(queryByTestId('card')).not.toBeInTheDocument();
 
@@ -124,17 +190,12 @@ describe('TotalSalaryRequested', () => {
     expect(getByText('Maximum Allowable Salary')).toBeInTheDocument();
     expect(getByText('Gross Annual Salary')).toBeInTheDocument();
     expect(
-      getByText('Additional Salary Received This Year'),
+      getByText('Additional Salary Previously Requested This Year'),
     ).toBeInTheDocument();
-    expect(getByText('Additional Salary on this Request')).toBeInTheDocument();
+    expect(getByText('Additional Salary on This Request')).toBeInTheDocument();
     expect(getByText('Total Salary Requested:')).toBeInTheDocument();
 
-    expect(
-      getByText('Does not include payments received for backpay.'),
-    ).toBeInTheDocument();
-    expect(
-      getByText('Does not include requests made for backpay.'),
-    ).toBeInTheDocument();
+    expect(getAllByText('Does not include backpay for 2020.')).toHaveLength(2);
   });
 
   it('renders card version when onForm is true', () => {
@@ -205,7 +266,7 @@ describe('TotalSalaryRequested', () => {
       ).toBeInTheDocument();
     });
 
-    // Additional salary on this request should be $10,000.00
+    // Additional Salary on This Request should be $10,000.00
     expect(getAllByText('$10,000.00').length).toBeGreaterThanOrEqual(1);
   });
 });
