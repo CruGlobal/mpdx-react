@@ -111,6 +111,25 @@ fragment NewStaffGoalCalculationFields on NewStaffGoalCalculation {
 
   # Calculation year-versioned constants set
   calculationsYear
+
+  # Attendee-sourced header and read-only rows. Null for scenario goals, and for anyone
+  # outside the MPD Goals team, so the staff member's own wizard shares this document safely.
+  newStaffCohortAttendee {
+    id
+    newStaffCohortId
+    cohortName
+    coordinators
+    ministry {
+      id
+      name
+    }
+    coach {
+      id
+      firstName
+      lastName
+      email
+    }
+  }
 }
 
 query NewStaffGoalCalculation($accountListId: ID, $id: ID) {

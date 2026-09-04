@@ -79,7 +79,8 @@ export const NsGoalCalculatorTestWrapper: React.FC<
         }>
           mocks={{
             GoalCalculatorConstants: { constant: constantsMock },
-            NewStaffGoalCalculation: goalCalculationMock,
+            // DeepPartial widens list fields to (T | undefined)[], which ErgonoMockShape rejects.
+            NewStaffGoalCalculation: goalCalculationMock as ApolloErgonoMockMap,
             PreviewNewStaffGoalCalculation: previewMock ?? {},
           }}
           onCall={onCall}

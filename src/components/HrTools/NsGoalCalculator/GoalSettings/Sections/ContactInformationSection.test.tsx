@@ -17,6 +17,7 @@ const marriedProps: GoalSettingsSectionProps = {
   spouseName: 'Jane',
   visibleHeaders: ['John (Joining)', 'Jane (Senior)'],
   sharedHeader: 'John (Joining) & Jane (Senior)',
+  attendee: null,
 };
 
 const renderSection = (props: GoalSettingsSectionProps) =>
