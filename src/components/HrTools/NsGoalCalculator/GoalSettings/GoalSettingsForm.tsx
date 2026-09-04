@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo } from 'react';
+import { ErrorOutline } from '@mui/icons-material';
 import {
   Box,
   Button,
   CircularProgress,
   Divider,
   Stack,
+  Tooltip,
   styled,
 } from '@mui/material';
 import { Form, Formik, useFormikContext } from 'formik';
@@ -68,6 +70,9 @@ const GoalSettingsUnsavedChangesTracker: React.FC = () => {
 
   useEffect(() => {
     registerForm({ dirty, discard: () => resetForm() });
+    // The sidebar swaps this form out for the review/present panes, so without
+    // this the provider would keep guarding a Formik that no longer exists.
+    return () => registerForm({ dirty: false, discard: () => undefined });
   }, [dirty, resetForm, registerForm]);
 
   return null;
@@ -166,6 +171,8 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
             NewStaffQuestionnaireMaritalStatusEnum.Married;
           const seniorStaffSpouse =
             hasSpouse && values.spouseJoining === 'false';
+          // Colour alone can't say "incomplete", so this also drives an icon and a tooltip.
+          const isIncomplete = !isValid && !isSubmitting;
           const primaryName = values.firstName;
           const spouseName = values.spouseFirstName || t('Spouse');
           const primaryHeader = `${primaryName} (${t('Joining')})`;
@@ -225,19 +232,33 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
                       </Button>
                       {/* Enabled while invalid so submitting can surface which
                           required fields are still missing. */}
-                      <Button
-                        type="submit"
-                        variant="contained"
-                        color={isValid ? 'primary' : 'error'}
-                        disabled={isSubmitting}
-                        startIcon={
-                          isSubmitting ? (
-                            <CircularProgress color="inherit" size={20} />
-                          ) : undefined
+                      <Tooltip
+                        // Without this the tooltip becomes the button's aria-label and hides its text.
+                        describeChild
+                        title={
+                          isIncomplete
+                            ? t(
+                                'Some required fields are still missing. Save & Share to see which ones.',
+                              )
+                            : ''
                         }
                       >
-                        {t('Save & Share')}
-                      </Button>
+                        <Button
+                          type="submit"
+                          variant="contained"
+                          color={isValid ? 'primary' : 'error'}
+                          disabled={isSubmitting}
+                          startIcon={
+                            isSubmitting ? (
+                              <CircularProgress color="inherit" size={20} />
+                            ) : isIncomplete ? (
+                              <ErrorOutline />
+                            ) : undefined
+                          }
+                        >
+                          {t('Save & Share')}
+                        </Button>
+                      </Tooltip>
                     </Stack>
                   </Stack>
                 </StickyActionBar>
