@@ -2,6 +2,10 @@ import React from 'react';
 import { Operation } from '@apollo/client';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  AssignCoachToNewStaffCohortAttendeeMutation,
+  NewStaffCohortAssignableCoachesQuery,
+} from './AssignCoach.generated';
 import { MpdGoalAdminProvider, useMpdGoalAdmin } from './MpdGoalAdminContext';
 import {
   NewStaffCohortAttendeesQuery,
@@ -10,9 +14,13 @@ import {
 } from './NewStaffCohorts.generated';
 import { MpdGoalAdminTabEnum } from './mpdGoalAdminHelpers';
 import {
+  assignableCoachesMock,
+  assignedCoachMock,
   attendees,
   attendeesMock,
   cohortsMock,
+  failedAssignableCoachesMock,
+  noAssignableCoachesMock,
   noCohortsMock,
   runAndSentMock,
   trainingCosts,
@@ -27,6 +35,8 @@ const makeWrapper = (
       | NewStaffCohortAttendeesQuery
       | ((operation: Operation) => NewStaffCohortAttendeesQuery);
     runAndSend?: RunAndSendNewStaffCohortMutation;
+    coaches?: NewStaffCohortAssignableCoachesQuery;
+    assignCoach?: AssignCoachToNewStaffCohortAttendeeMutation;
   } = {},
 ): React.FC<{ children: React.ReactNode }> =>
   function Wrapper({ children }) {
@@ -35,6 +45,8 @@ const makeWrapper = (
         NewStaffCohorts: NewStaffCohortsQuery;
         NewStaffCohortAttendees: NewStaffCohortAttendeesQuery;
         RunAndSendNewStaffCohort: RunAndSendNewStaffCohortMutation;
+        NewStaffCohortAssignableCoaches: NewStaffCohortAssignableCoachesQuery;
+        AssignCoachToNewStaffCohortAttendee: AssignCoachToNewStaffCohortAttendeeMutation;
       }>
         mocks={{
           NewStaffCohorts: mocks.cohorts ?? cohortsMock,
@@ -42,6 +54,10 @@ const makeWrapper = (
             attendeesMock()) as unknown as NewStaffCohortAttendeesQuery,
           RunAndSendNewStaffCohort:
             mocks.runAndSend ?? runAndSentMock('fall-nso-2026', 2),
+          NewStaffCohortAssignableCoaches:
+            mocks.coaches ?? assignableCoachesMock,
+          AssignCoachToNewStaffCohortAttendee:
+            mocks.assignCoach ?? assignedCoachMock(['row-1', 'row-3']),
         }}
         onCall={mutationSpy}
       >
@@ -100,7 +116,11 @@ describe('MpdGoalAdminContext', () => {
     });
     // An attendee with no goal calculation yet still renders, with a null goal.
     expect(result.current.filteredRows[1].mpdGoal).toBeNull();
-    expect(result.current.filteredRows[1].coach).toBe('Nelson Jones');
+    expect(result.current.filteredRows[1].coach).toMatchObject({
+      id: 'coach-3',
+      firstName: 'Nelson',
+      lastName: 'Jones',
+    });
   });
 
   it('toggles row selection and clears it', async () => {
@@ -281,16 +301,125 @@ describe('MpdGoalAdminContext', () => {
     expect(attendeeCalls()).toBeGreaterThan(callsBefore);
   });
 
+  it('exposes the assignable coaches for the selected cohort', async () => {
+    const { result } = await renderLoaded();
+
+    await waitFor(() =>
+      expect(result.current.assignableCoaches).not.toHaveLength(0),
+    );
+    expect(result.current.assignableCoaches.map((coach) => coach.name)).toEqual(
+      [
+        'Amy Wilson',
+        'Nelson Jones',
+        'Tom Harris',
+        // Neither name is on file, so the picker falls back to the email.
+        'coach-7@cru.org',
+      ],
+    );
+    expect(mutationSpy).toHaveGraphqlOperation(
+      'NewStaffCohortAssignableCoaches',
+      { cohortId: 'fall-nso-2026' },
+    );
+  });
+
+  it('leaves the coach list empty when the cohort has no eligible coaches', async () => {
+    const { result } = await renderHook(() => useMpdGoalAdmin(), {
+      wrapper: makeWrapper({ coaches: noAssignableCoachesMock }),
+    });
+
+    await waitFor(() =>
+      expect(result.current.assignableCoachesLoading).toBe(false),
+    );
+    expect(result.current.assignableCoaches).toEqual([]);
+    expect(result.current.assignableCoachesError).toBeUndefined();
+  });
+
+  it('reports a failed coach list instead of an empty one', async () => {
+    const { result } = renderHook(() => useMpdGoalAdmin(), {
+      wrapper: makeWrapper({ coaches: failedAssignableCoachesMock }),
+    });
+
+    await waitFor(() =>
+      expect(result.current.assignableCoachesError).toBeDefined(),
+    );
+    expect(result.current.assignableCoaches).toEqual([]);
+    // Folding it into `error` would disable Run & Send over an unrelated failure.
+    expect(result.current.error).toBeUndefined();
+  });
+
+  it('retries the coach list on demand', async () => {
+    const { result } = renderHook(() => useMpdGoalAdmin(), {
+      wrapper: makeWrapper({ coaches: failedAssignableCoachesMock }),
+    });
+    await waitFor(() =>
+      expect(result.current.assignableCoachesError).toBeDefined(),
+    );
+    const coachCalls = () =>
+      mutationSpy.mock.calls.filter(
+        ([{ operation }]) =>
+          operation.operationName === 'NewStaffCohortAssignableCoaches',
+      ).length;
+    const callsBefore = coachCalls();
+
+    await act(async () => {
+      result.current.retryAssignableCoaches();
+    });
+
+    await waitFor(() => expect(coachCalls()).toBeGreaterThan(callsBefore));
+  });
+
   it('assigns a coach to exactly the given rows', async () => {
     const { result } = await renderLoaded();
 
-    act(() => result.current.assignCoach(['row-1', 'row-3'], 'Tom Harris'));
+    await act(async () => {
+      await result.current.assignCoach(['row-1', 'row-3'], 'coach-6');
+    });
 
-    const byId = (id: string) =>
-      result.current.filteredRows.find((row) => row.id === id);
-    expect(byId('row-1')?.coach).toBe('Tom Harris');
-    expect(byId('row-3')?.coach).toBe('Tom Harris');
-    expect(byId('row-2')?.coach).toBe('Nelson Jones');
+    expect(mutationSpy).toHaveGraphqlOperation(
+      'AssignCoachToNewStaffCohortAttendee',
+      {
+        input: {
+          cohortId: 'fall-nso-2026',
+          attendeeIds: ['row-1', 'row-3'],
+          coachId: 'coach-6',
+        },
+      },
+    );
+  });
+
+  it('refetches the attendees after an assignment, so the coach cells update', async () => {
+    const { result } = await renderLoaded();
+    const attendeeCalls = () =>
+      mutationSpy.mock.calls.filter(
+        ([{ operation }]) =>
+          operation.operationName === 'NewStaffCohortAttendees',
+      ).length;
+    const callsBefore = attendeeCalls();
+
+    await act(async () => {
+      await result.current.assignCoach(['row-1'], 'coach-6');
+    });
+
+    expect(attendeeCalls()).toBeGreaterThan(callsBefore);
+  });
+
+  it('rejects when the server refuses the assignment', async () => {
+    const { result } = await renderHook(() => useMpdGoalAdmin(), {
+      wrapper: makeWrapper({
+        assignCoach: {
+          assignCoachToNewStaffCohortAttendee: () => {
+            throw new Error('Not authorized');
+          },
+        } as unknown as AssignCoachToNewStaffCohortAttendeeMutation,
+      }),
+    });
+    await waitFor(() =>
+      expect(result.current.filteredRows).not.toHaveLength(0),
+    );
+
+    await expect(
+      result.current.assignCoach(['row-1'], 'coach-6'),
+    ).rejects.toThrow('Not authorized');
   });
 
   it('throws when used outside its provider', () => {

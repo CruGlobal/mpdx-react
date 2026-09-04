@@ -54,6 +54,7 @@ query NewStaffCohortAttendees($cohortId: ID!, $search: String, $after: String) {
           id
           firstName
           lastName
+          email
         }
         ministry {
           id
