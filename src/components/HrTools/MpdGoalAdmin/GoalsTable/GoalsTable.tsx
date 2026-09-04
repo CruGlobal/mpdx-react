@@ -30,11 +30,11 @@ import { AssignCoachModal } from '../AssignCoachModal/AssignCoachModal';
 import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import { RunAndSendModal } from '../RunAndSendModal/RunAndSendModal';
 import { RunAndSendTooltip } from '../RunAndSendTooltip';
-import { mockCoaches } from '../mockData';
 import {
   DEFAULT_ROWS_PER_PAGE,
   GoalStatusEnum,
   StaffGoalRow,
+  coachLabel,
   familyStatusLabel,
   goalStatusColor,
   goalStatusLabel,
@@ -78,6 +78,10 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
     search,
     selectedCohortId,
     assignCoach,
+    assignableCoaches,
+    assignableCoachesLoading,
+    assignableCoachesError,
+    retryAssignableCoaches,
     selectedCohort,
     loading,
   } = useMpdGoalAdmin();
@@ -91,16 +95,12 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
   } | null>(null);
   const { openRunAndSend, modalProps } = useRunAndSendFlow();
 
-  // TODO(MPDX-9914): populate from the assignable-coaches query.
-  const assignableCoaches = mockCoaches;
-
-  // TODO(MPDX-9914): call the assignCoach mutation once the backend exists.
-  const handleAssignCoach = (coachId: string) => {
-    const coach = assignableCoaches.find((option) => option.id === coachId);
-    if (!coach || !coachRow) {
+  // Rejecting keeps the modal open with its error; the row updates on success.
+  const handleAssignCoach = async (coachId: string) => {
+    if (!coachRow) {
       return;
     }
-    assignCoach([coachRow.id], coach.name);
+    await assignCoach([coachRow.id], coachId);
   };
 
   const canRunAndSendRow = (row: StaffGoalRow | undefined) =>
@@ -192,7 +192,9 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
               </TableCell>
               <TableCell>{familyStatusLabel(row.familyStatus, t)}</TableCell>
               <TableCell>
-                {row.coach ?? (
+                {row.coach ? (
+                  coachLabel(row.coach, t)
+                ) : (
                   <Link
                     component="button"
                     type="button"
@@ -281,6 +283,9 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
         <AssignCoachModal
           subjectName={coachRow.name}
           coaches={assignableCoaches}
+          loading={assignableCoachesLoading}
+          coachesError={assignableCoachesError}
+          onRetryCoaches={retryAssignableCoaches}
           handleAssignCoach={handleAssignCoach}
           handleClose={() => setCoachRow(null)}
         />

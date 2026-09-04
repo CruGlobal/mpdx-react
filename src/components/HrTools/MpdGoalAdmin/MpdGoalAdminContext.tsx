@@ -8,10 +8,15 @@ import React, {
   useState,
 } from 'react';
 import { ApolloError } from '@apollo/client';
+import { useTranslation } from 'react-i18next';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
 import { getQueryParam } from 'src/lib/queryParam';
+import {
+  useAssignCoachToNewStaffCohortAttendeeMutation,
+  useNewStaffCohortAssignableCoachesQuery,
+} from './AssignCoach.generated';
 import {
   useNewStaffCohortAttendeesQuery,
   useNewStaffCohortsQuery,
@@ -19,11 +24,13 @@ import {
   useUpdateNewStaffCohortMutation,
 } from './NewStaffCohorts.generated';
 import {
+  AssignCoachOption,
   Cohort,
   MpdGoalAdminTabEnum,
   StaffGoalRow,
   TrainingCosts,
   attendeeToRow,
+  coachToOption,
   cohortNodeToCohort,
   parseMpdGoalAdminTab,
   trainingCostsToAttributes,
@@ -56,8 +63,16 @@ export interface MpdGoalAdminContextValue {
   saveTrainingCosts: (cohortId: string, costs: TrainingCosts) => Promise<void>;
   /** Resolves with the count the server actually sent, which can be lower than asked. */
   runAndSend: (attendeeIds: string[]) => Promise<number>;
-  /** Assigns one coach to every row in `rowIds`, across all cohorts. */
-  assignCoach: (rowIds: string[], coachName: string) => void;
+  /** Coaches OneApp says may take the selected cohort; legitimately empty for some. */
+  assignableCoaches: AssignCoachOption[];
+  /** True while the coach list is in flight, so the picker waits before saying "none". */
+  assignableCoachesLoading: boolean;
+  /** Kept out of `error` so a coach-list failure never disables Run & Send. */
+  assignableCoachesError: ApolloError | undefined;
+  /** Retries the coach list, so its failure is recoverable without a reload. */
+  retryAssignableCoaches: () => void;
+  /** Assigns one coach to every row in `rowIds`; rejects when nobody was assigned. */
+  assignCoach: (rowIds: string[], coachId: string) => Promise<void>;
 }
 
 const MpdGoalAdminContext = createContext<MpdGoalAdminContextValue | undefined>(
@@ -68,6 +83,7 @@ export const MpdGoalAdminProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const locale = useLocale();
+  const { t } = useTranslation();
   const router = useRouter();
   // In the URL rather than component state so Goal Settings can link back to
   // the tab the goal was opened from.
@@ -85,10 +101,6 @@ export const MpdGoalAdminProvider: React.FC<{
   const [selectedCohortId, setSelectedCohortId] = useState<string>('');
   const [search, setSearch] = useState('');
   const [selectedRowIds, setSelectedRowIds] = useState<Set<string>>(new Set());
-  // TODO(MPDX-9914): drop once assignCoach is a real mutation.
-  const [coachOverrides, setCoachOverrides] = useState<Record<string, string>>(
-    {},
-  );
 
   const debouncedSearch = useDebouncedValue(search, searchDebounceMs);
 
@@ -154,17 +166,40 @@ export const MpdGoalAdminProvider: React.FC<{
       ? previousAttendeesData
       : undefined);
 
-  const filteredRows = useMemo(() => {
-    const rows =
+  const filteredRows = useMemo(
+    () =>
       visibleAttendeesData?.newStaffCohort.attendees.nodes.map(attendeeToRow) ??
-      [];
-    return rows.map((row) =>
-      coachOverrides[row.id] ? { ...row, coach: coachOverrides[row.id] } : row,
-    );
-  }, [visibleAttendeesData, coachOverrides]);
+      [],
+    [visibleAttendeesData],
+  );
+
+  const {
+    data: coachesData,
+    loading: assignableCoachesLoading,
+    error: assignableCoachesError,
+    refetch: refetchAssignableCoaches,
+  } = useNewStaffCohortAssignableCoachesQuery({
+    variables: { cohortId: selectedCohortId },
+    skip: !selectedCohortId,
+  });
+
+  const retryAssignableCoaches = useCallback(() => {
+    // Apollo rejects a failed refetch, but the hook's own error state reports it.
+    refetchAssignableCoaches().catch(() => undefined);
+  }, [refetchAssignableCoaches]);
+
+  const assignableCoaches = useMemo(
+    () =>
+      coachesData?.newStaffCohortAssignableCoaches.map((coach) =>
+        coachToOption(coach, t),
+      ) ?? [],
+    [coachesData, t],
+  );
 
   const [updateNewStaffCohort] = useUpdateNewStaffCohortMutation();
   const [runAndSendNewStaffCohort] = useRunAndSendNewStaffCohortMutation();
+  const [assignCoachToAttendee] =
+    useAssignCoachToNewStaffCohortAttendeeMutation();
 
   const toggleRow = useCallback((id: string) => {
     setSelectedRowIds((prev) => {
@@ -220,13 +255,17 @@ export const MpdGoalAdminProvider: React.FC<{
     [runAndSendNewStaffCohort, selectedCohortId],
   );
 
-  const assignCoach = useCallback((rowIds: string[], coachName: string) => {
-    setCoachOverrides((prev) => {
-      const next = { ...prev };
-      rowIds.forEach((id) => (next[id] = coachName));
-      return next;
-    });
-  }, []);
+  const assignCoach = useCallback(
+    async (rowIds: string[], coachId: string) => {
+      // No refetch: the payload's rows normalize over the cached ones, and nothing else this query renders changes.
+      await assignCoachToAttendee({
+        variables: {
+          input: { cohortId: selectedCohortId, attendeeIds: rowIds, coachId },
+        },
+      });
+    },
+    [assignCoachToAttendee, selectedCohortId],
+  );
 
   const selectedCohort = useMemo(
     () => cohorts.find((cohort) => cohort.id === selectedCohortId),
@@ -262,6 +301,10 @@ export const MpdGoalAdminProvider: React.FC<{
       clearSelection,
       saveTrainingCosts,
       runAndSend,
+      assignableCoaches,
+      assignableCoachesLoading,
+      assignableCoachesError,
+      retryAssignableCoaches,
       assignCoach,
     }),
     [
@@ -284,6 +327,10 @@ export const MpdGoalAdminProvider: React.FC<{
       clearSelection,
       saveTrainingCosts,
       runAndSend,
+      assignableCoaches,
+      assignableCoachesLoading,
+      assignableCoachesError,
+      retryAssignableCoaches,
       assignCoach,
     ],
   );

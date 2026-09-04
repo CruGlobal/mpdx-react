@@ -7,6 +7,9 @@ import i18n from 'src/lib/i18n';
 import {
   MpdGoalAdminTabEnum,
   attendeeToRow,
+  coachLabel,
+  coachName,
+  coachToOption,
   cohortNodeToCohort,
   cohortToTrainingCosts,
   familyStatusLabel,
@@ -20,7 +23,12 @@ import {
   staffDetailsUrl,
   trainingCostsToAttributes,
 } from './mpdGoalAdminHelpers';
-import { attendees, cohortsMock, trainingCosts } from './mpdGoalAdminMocks';
+import {
+  attendees,
+  coach,
+  cohortsMock,
+  trainingCosts,
+} from './mpdGoalAdminMocks';
 
 const t = i18n.t;
 
@@ -168,7 +176,7 @@ describe('attendeeToRow', () => {
       goalStatus: NewStaffCohortAttendeeGoalStatusEnum.Complete,
       goalSentAt: null,
       familyStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
-      coach: 'Amy Wilson',
+      coach: coach('coach-1', 'Amy', 'Wilson'),
       coordinators: ['Kim Coordinator'],
     });
   });
@@ -191,20 +199,12 @@ describe('attendeeToRow', () => {
     expect(attendeeToRow(attendeeWithoutCoach).coach).toBeNull();
   });
 
-  it('treats a coach with no name on file as unassigned', () => {
+  it('keeps a coach with no name on file, for the label to fall back on', () => {
     const row = attendeeToRow({
       ...attendeeWithoutCoach,
-      coach: { id: 'coach-x', firstName: null, lastName: null },
+      coach: coach('coach-x', null, null),
     });
-    expect(row.coach).toBeNull();
-  });
-
-  it('renders a partially named coach without stray whitespace', () => {
-    const row = attendeeToRow({
-      ...attendeeWithoutCoach,
-      coach: { id: 'coach-x', firstName: null, lastName: 'Jones' },
-    });
-    expect(row.coach).toBe('Jones');
+    expect(row.coach).toEqual(coach('coach-x', null, null));
   });
 
   it('falls back to empty strings for missing ministry and geography', () => {
@@ -223,6 +223,50 @@ describe('attendeeToRow', () => {
       coordinators: ['Kim Coordinator', 'Lee Coordinator'],
     });
     expect(row.coordinators).toEqual(['Kim Coordinator', 'Lee Coordinator']);
+  });
+});
+
+describe('coachName', () => {
+  it.each([
+    ['Amy', 'Wilson', 'Amy Wilson'],
+    ['Amy', null, 'Amy'],
+    [null, 'Jones', 'Jones'],
+    [null, null, null],
+    ['', '', null],
+  ])('names (%s, %s) as %s', (firstName, lastName, name) => {
+    expect(coachName({ firstName, lastName })).toBe(name);
+  });
+});
+
+describe('coachLabel', () => {
+  it('joins the names a coach has, without stray whitespace', () => {
+    expect(coachLabel(coach('coach-x', null, 'Jones'), t)).toBe('Jones');
+    expect(coachLabel(coach('coach-x', 'Amy', 'Wilson'), t)).toBe('Amy Wilson');
+  });
+
+  it('falls back to the email when no name is on file', () => {
+    expect(coachLabel(coach('coach-7', null, null), t)).toBe('coach-7@cru.org');
+  });
+
+  it('falls back to a placeholder when there is no name and no email', () => {
+    expect(coachLabel(coach('coach-8', null, null, null), t)).toBe(
+      'Unnamed coach',
+    );
+  });
+});
+
+describe('coachToOption', () => {
+  it.each([
+    [coach('coach-1', 'Amy', 'Wilson'), 'Amy Wilson'],
+    [coach('coach-7', null, null), 'coach-7@cru.org'],
+    [coach('coach-8', null, null, null), 'Unnamed coach'],
+  ])('labels the option for %j as "%s"', (option, name) => {
+    expect(coachToOption(option, t)).toEqual({ id: option.id, name });
+  });
+
+  it('labels the option exactly as the table cell labels the same coach', () => {
+    const nameless = coach('coach-8', null, null, null);
+    expect(coachToOption(nameless, t).name).toBe(coachLabel(nameless, t));
   });
 });
 

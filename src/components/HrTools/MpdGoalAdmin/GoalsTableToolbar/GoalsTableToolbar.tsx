@@ -18,7 +18,6 @@ import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import { PrintCohortGoalsButton } from '../PrintCohortGoalsButton/PrintCohortGoalsButton';
 import { RunAndSendModal } from '../RunAndSendModal/RunAndSendModal';
 import { RunAndSendTooltip } from '../RunAndSendTooltip';
-import { mockCoaches } from '../mockData';
 import { useRunAndSendFlow } from '../useRunAndSendFlow';
 
 export const GoalsTableToolbar: React.FC = () => {
@@ -31,6 +30,10 @@ export const GoalsTableToolbar: React.FC = () => {
     selectedRows,
     clearSelection,
     assignCoach,
+    assignableCoaches,
+    assignableCoachesLoading,
+    assignableCoachesError,
+    retryAssignableCoaches,
     selectedCohort,
     loading,
     error,
@@ -44,15 +47,11 @@ export const GoalsTableToolbar: React.FC = () => {
 
   const blocked = !selectedCohort?.canRunAndSend;
 
-  // TODO(MPDX-9914): call the assignCoach mutation once the backend exists.
-  const handleAssignCoach = (coachId: string) => {
-    const coach = mockCoaches.find((option) => option.id === coachId);
-    if (!coach) {
-      return;
-    }
-    assignCoach(
+  // Rejecting keeps the modal open with its error, so nothing below runs.
+  const handleAssignCoach = async (coachId: string) => {
+    await assignCoach(
       selectedRows.map((row) => row.id),
-      coach.name,
+      coachId,
     );
     enqueueSnackbar(t('Coach assigned successfully.'), { variant: 'success' });
     clearSelection();
@@ -153,7 +152,10 @@ export const GoalsTableToolbar: React.FC = () => {
               ? selectedRows[0].name
               : t('{{count}} Selected Staff', { count: selectedCount })
           }
-          coaches={mockCoaches}
+          coaches={assignableCoaches}
+          loading={assignableCoachesLoading}
+          coachesError={assignableCoachesError}
+          onRetryCoaches={retryAssignableCoaches}
           reassignedNames={selectedRows
             .filter((row) => row.coach)
             .map((row) => row.name)}

@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 import {
   CompletedQuarterPayroll,
   MonthlyPayrollHistory,
+  MonthlyPayrollSummary,
   MpdHealthStatusEnum,
   MpdStartingQuarterMonthlyBreakdown,
   QuarterlyPayrollHistory,
@@ -15,21 +16,13 @@ export interface QuarterStatus {
   payroll: number;
 }
 
-export interface MonthlySummary {
-  month: string;
-  contributions: number;
-  expenses: number;
-  net: number;
-  endBalance: number;
-}
-
 export interface EmployeeData {
   user: User;
   spouse?: Spouse;
   quarters: QuarterStatus[];
   monthlyPayrollHistory: MonthlyPayrollHistory[];
   quarterlyPayrollHistory: QuarterlyPayrollHistory;
-  monthlySummary: MonthlySummary[];
+  monthlySummary: MonthlyPayrollSummary[];
 }
 
 export interface User {
@@ -349,7 +342,7 @@ const generateMonthlyPayrollHistory = (i: number): MonthlyPayrollHistory[] => {
   });
 };
 
-const generateMonthlySummary = (i: number): MonthlySummary[] => {
+const generateMonthlySummary = (i: number): MonthlyPayrollSummary[] => {
   const currentMonth = DateTime.local().startOf('month');
   let endBalance = 8000 + ((i * 733) % 4001);
 

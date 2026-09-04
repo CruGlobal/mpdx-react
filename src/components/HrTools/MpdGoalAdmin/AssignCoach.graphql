@@ -1,0 +1,24 @@
+query NewStaffCohortAssignableCoaches($cohortId: ID!) {
+  newStaffCohortAssignableCoaches(cohortId: $cohortId) {
+    id
+    firstName
+    lastName
+    email
+  }
+}
+
+mutation AssignCoachToNewStaffCohortAttendee(
+  $input: NewStaffCohortAttendeeAssignCoachMutationInput!
+) {
+  assignCoachToNewStaffCohortAttendee(input: $input) {
+    newStaffCohortAttendees {
+      id
+      coach {
+        id
+        firstName
+        lastName
+        email
+      }
+    }
+  }
+}
