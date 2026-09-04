@@ -1,8 +1,8 @@
 /**
  * Yup validation schema for the Goal Settings form.
  *
- * Only the numeric inputs need validation: every other field is a Select whose
- * value is constrained by its options. Numeric fields are edited as
+ * The numeric inputs need type and range checks; the Selects a goal cannot be
+ * calculated without are required too. Numeric fields are edited as
  * `number | ''` (see `goalSettingsFormValues.ts`), so each rule treats the empty
  * string as "not set" (null) rather than failing it.
  *
@@ -50,22 +50,23 @@ export const getGoalSettingsSchema = (t: TFunction) =>
   yup.object({
     // The fields a goal cannot be calculated without. Required so Save & Share
     // can name what is still missing instead of only greying itself out.
-    maritalStatus: yup.string(),
+    // Drives the spouse rules below; unset would skip them silently.
+    maritalStatus: yup.string().required(required(t('Marital Status'), t)),
     calculationsYear: yup.string().required(required(t('Calculation Year'), t)),
     age: yup.string().required(required(t('Age'), t)),
     assignmentType: yup
       .string()
       .required(required(t('Field or Office Based'), t)),
     benefitsPlan: yup.string().required(required(t('Benefits Plan'), t)),
-    spouseAge: requiredWhenMarried(yup.string(), t('Age'), t),
+    spouseAge: requiredWhenMarried(yup.string(), t('Spouse Age'), t),
 
     // Personal
     tenure: optionalInteger(t('Full Time Years on Staff'), t).required(
       required(t('Full Time Years on Staff'), t),
     ),
     spouseTenure: requiredWhenMarried(
-      optionalInteger(t('Full Time Years on Staff'), t),
-      t('Full Time Years on Staff'),
+      optionalInteger(t('Spouse Full Time Years on Staff'), t),
+      t('Spouse Full Time Years on Staff'),
       t,
     ),
 
