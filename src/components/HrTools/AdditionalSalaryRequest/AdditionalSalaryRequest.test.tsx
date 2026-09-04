@@ -194,7 +194,8 @@ describe('AdditionalSalaryRequest', () => {
       />,
     );
 
-    expect(await findByText(/Request processed on:/i)).toBeInTheDocument();
+    expect(await findByText('Request processed')).toBeInTheDocument();
+    expect(await findByText('Payroll processing')).toBeInTheDocument();
     expect(
       await findByText(/Pending Additional Salary Request/i),
     ).toBeInTheDocument();
@@ -217,7 +218,8 @@ describe('AdditionalSalaryRequest', () => {
       />,
     );
 
-    expect(await findByText(/Request processed on:/i)).toBeInTheDocument();
+    expect(await findByText('Request processed')).toBeInTheDocument();
+    expect(await findByText('Request approved')).toBeInTheDocument();
     expect(
       await findByText(/Pending Additional Salary Request/i),
     ).toBeInTheDocument();
@@ -241,7 +243,7 @@ describe('AdditionalSalaryRequest', () => {
       />,
     );
 
-    expect(await findByText('Action Required:')).toBeInTheDocument();
+    expect(await findByText('Action required:')).toBeInTheDocument();
     expect(
       await findByText('Please provide additional documentation'),
     ).toBeInTheDocument();
