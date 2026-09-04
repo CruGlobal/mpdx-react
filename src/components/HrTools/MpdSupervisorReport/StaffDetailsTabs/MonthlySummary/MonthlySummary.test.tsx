@@ -1,10 +1,10 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '__tests__/util/testingLibraryReactMock';
+import { MonthlyPayrollSummary } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { MonthlySummary } from '../../mockData';
 import { StaffTabMonthlySummary } from './MonthlySummary';
 
-const mockMonthlySummary: MonthlySummary[] = [
+const mockMonthlySummary: MonthlyPayrollSummary[] = [
   {
     month: '2023-01',
     contributions: 4000,
@@ -29,7 +29,7 @@ const mockMonthlySummary: MonthlySummary[] = [
 ];
 
 interface TestComponentProps {
-  monthlySummary: MonthlySummary[];
+  monthlySummary: MonthlyPayrollSummary[];
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({ monthlySummary }) => {
@@ -94,10 +94,10 @@ describe('StaffTabMonthlySummary', () => {
     );
 
     expect(getByRole('cell', { name: '$500.00' })).toHaveStyle({
-      color: theme.palette.success.main,
+      color: theme.palette.chipGreenDark.main,
     });
     expect(getByRole('cell', { name: '($300.00)' })).toHaveStyle({
-      color: theme.palette.error.main,
+      color: theme.palette.chipRedDark.main,
     });
     expect(getByRole('cell', { name: '$0.00' })).toHaveStyle({
       color: 'inherit',

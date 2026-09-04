@@ -10,13 +10,13 @@ import {
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
+import { MonthlyPayrollSummary } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { monthYearFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { MonthlySummary } from '../../mockData';
 
 interface StaffTabMonthlySummaryProps {
-  monthlySummary: MonthlySummary[];
+  monthlySummary: MonthlyPayrollSummary[];
 }
 
 export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
@@ -50,10 +50,11 @@ export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
             </TableRow>
           ) : (
             monthlySummary.map((summary, index) => {
-              const date = DateTime.fromISO(summary.month);
+              const date = DateTime.fromISO(summary.month ?? '');
+              const net = summary.net ?? 0;
 
-              const isNegativeNet = summary.net < 0;
-              const netDisplay = formatAccounting(summary.net);
+              const isNegativeNet = net < 0;
+              const netDisplay = formatAccounting(net);
 
               return (
                 <TableRow key={index}>
@@ -62,22 +63,24 @@ export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
                       ? monthYearFormat(date.month, date.year, locale)
                       : ''}
                   </TableCell>
-                  <TableCell>{formatCurrency(summary.contributions)}</TableCell>
-                  <TableCell>{`(${formatCurrency(summary.expenses)})`}</TableCell>
+                  <TableCell>
+                    {formatCurrency(summary.contributions ?? 0)}
+                  </TableCell>
+                  <TableCell>{`(${formatCurrency(summary.expenses ?? 0)})`}</TableCell>
                   <TableCell
                     align="right"
                     sx={{
                       color: isNegativeNet
-                        ? theme.palette.error.main
-                        : summary.net > 0
-                          ? theme.palette.success.main
+                        ? theme.palette.chipRedDark.main
+                        : net > 0
+                          ? theme.palette.chipGreenDark.main
                           : 'inherit',
                     }}
                   >
                     {netDisplay}
                   </TableCell>
                   <TableCell align="right">
-                    {formatAccounting(summary.endBalance)}
+                    {formatAccounting(summary.endBalance ?? 0)}
                   </TableCell>
                 </TableRow>
               );
