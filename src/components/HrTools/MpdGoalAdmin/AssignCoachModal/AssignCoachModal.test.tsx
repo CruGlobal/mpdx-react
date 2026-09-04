@@ -3,7 +3,8 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import theme from 'src/theme';
-import { AssignCoachModal, AssignCoachOption } from './AssignCoachModal';
+import { AssignCoachOption } from '../mpdGoalAdminHelpers';
+import { AssignCoachModal } from './AssignCoachModal';
 
 const coaches: AssignCoachOption[] = [
   { id: 'coach-1', name: 'Jane Coach' },
@@ -15,17 +16,20 @@ const handleAssignCoach = jest.fn();
 
 interface TestComponentProps {
   coaches?: AssignCoachOption[];
+  loading?: boolean;
   reassignedNames?: string[];
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   coaches: coachesProp = coaches,
+  loading,
   reassignedNames,
 }) => (
   <ThemeProvider theme={theme}>
     <AssignCoachModal
       subjectName="Carlos & Michaela Everts"
       coaches={coachesProp}
+      loading={loading}
       reassignedNames={reassignedNames}
       handleClose={handleClose}
       handleAssignCoach={handleAssignCoach}
@@ -56,6 +60,24 @@ describe('AssignCoachModal', () => {
     const { getByRole } = render(<TestComponent coaches={[]} />);
 
     expect(getByRole('button', { name: 'Save' })).toBeDisabled();
+  });
+
+  it('explains itself when there are no coaches to select', () => {
+    const { getByRole, queryByRole } = render(<TestComponent coaches={[]} />);
+
+    expect(getByRole('alert')).toHaveTextContent(
+      'No coaches are available to assign for this cohort. Coach eligibility comes from OneApp.',
+    );
+    expect(queryByRole('combobox', { name: 'Coach' })).not.toBeInTheDocument();
+  });
+
+  it('does not call the list empty while it is still loading', () => {
+    const { getByRole, queryByRole } = render(
+      <TestComponent coaches={[]} loading />,
+    );
+
+    expect(getByRole('combobox', { name: 'Coach' })).toBeDisabled();
+    expect(queryByRole('alert')).not.toBeInTheDocument();
   });
 
   it('warns about staff whose existing coach will be replaced', () => {
@@ -113,5 +135,22 @@ describe('AssignCoachModal', () => {
       expect(handleAssignCoach).toHaveBeenCalledWith('coach-1'),
     );
     await waitFor(() => expect(handleClose).toHaveBeenCalled());
+  });
+
+  it('stays open and reports a failed assignment', async () => {
+    handleAssignCoach.mockRejectedValueOnce(new Error('Not authorized'));
+    const { getByRole, findByRole } = render(<TestComponent />);
+
+    userEvent.click(getByRole('combobox', { name: 'Coach' }));
+    userEvent.click(await findByRole('option', { name: 'Jane Coach' }));
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Save' })).toBeEnabled(),
+    );
+    userEvent.click(getByRole('button', { name: 'Save' }));
+
+    expect(await findByRole('alert')).toHaveTextContent(
+      'The coach could not be assigned. Please try again.',
+    );
+    expect(handleClose).not.toHaveBeenCalled();
   });
 });

@@ -5,6 +5,10 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import {
+  AssignCoachToNewStaffCohortAttendeeMutation,
+  NewStaffCohortAssignableCoachesQuery,
+} from '../AssignCoach.generated';
 import { MpdGoalAdminProvider, useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import {
   NewStaffCohortAttendeesQuery,
@@ -18,10 +22,13 @@ import {
   attendeeToRow,
 } from '../mpdGoalAdminHelpers';
 import {
+  assignableCoachesMock,
+  assignedCoachMock,
   attendees,
   attendeesMock,
   cohortsMock,
   cohortsWithoutCostsMock,
+  noAssignableCoachesMock,
   runAndSentMock,
 } from '../mpdGoalAdminMocks';
 import { GoalsTable } from './GoalsTable';
@@ -39,13 +46,16 @@ const mutationSpy = jest.fn();
 const Providers: React.FC<{
   children: React.ReactNode;
   cohorts?: NewStaffCohortsQuery;
-}> = ({ children, cohorts = cohortsMock }) => (
+  coaches?: NewStaffCohortAssignableCoachesQuery;
+}> = ({ children, cohorts = cohortsMock, coaches = assignableCoachesMock }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
       <GqlMockedProvider<{
         NewStaffCohorts: NewStaffCohortsQuery;
         NewStaffCohortAttendees: NewStaffCohortAttendeesQuery;
         RunAndSendNewStaffCohort: RunAndSendNewStaffCohortMutation;
+        NewStaffCohortAssignableCoaches: NewStaffCohortAssignableCoachesQuery;
+        AssignCoachToNewStaffCohortAttendee: AssignCoachToNewStaffCohortAttendeeMutation;
       }>
         mocks={{
           NewStaffCohorts: cohorts,
@@ -54,6 +64,8 @@ const Providers: React.FC<{
             cohorts.newStaffCohorts.nodes[0].id,
             1,
           ),
+          NewStaffCohortAssignableCoaches: coaches,
+          AssignCoachToNewStaffCohortAttendee: assignedCoachMock(['row-1']),
         }}
         onCall={mutationSpy}
       >
@@ -63,12 +75,27 @@ const Providers: React.FC<{
   </ThemeProvider>
 );
 
-const renderTable = (data = rows, cohorts?: NewStaffCohortsQuery) =>
+const renderTable = (
+  data = rows,
+  cohorts?: NewStaffCohortsQuery,
+  coaches?: NewStaffCohortAssignableCoachesQuery,
+) =>
   render(
-    <Providers cohorts={cohorts}>
+    <Providers cohorts={cohorts} coaches={coaches}>
       <Capture rows={data} />
     </Providers>,
   );
+
+/** The picker is only usable once the assignable-coaches query has settled. */
+const renderWithCoaches = async (
+  coaches?: NewStaffCohortAssignableCoachesQuery,
+) => {
+  const screen = renderTable(rows, undefined, coaches);
+  // The query is skipped until the cohort auto-selects, so wait for that first.
+  await waitFor(() => expect(ctx.selectedCohortId).toBeTruthy());
+  await waitFor(() => expect(ctx.assignableCoachesLoading).toBe(false));
+  return screen;
+};
 
 const renderLoadedTable = async (
   data = rows,
@@ -234,8 +261,38 @@ describe('GoalsTable', () => {
     ).toBeInTheDocument();
   });
 
+  it('offers the coaches the assignable-coaches query returned', async () => {
+    const { getByRole, findAllByRole } = await renderWithCoaches();
+    userEvent.click(getByRole('button', { name: 'Assign Coach' }));
+
+    userEvent.click(getByRole('combobox', { name: 'Coach' }));
+
+    expect(
+      (await findAllByRole('option')).map((option) => option.textContent),
+    ).toEqual([
+      'Amy Wilson',
+      'Nelson Jones',
+      'Tom Harris',
+      // No name on file, so the option falls back to the coach's email.
+      'coach-7@cru.org',
+    ]);
+  });
+
+  it('explains the empty picker when the cohort has no assignable coaches', async () => {
+    const { getByRole, findByRole, queryByRole } = await renderWithCoaches(
+      noAssignableCoachesMock,
+    );
+    userEvent.click(getByRole('button', { name: 'Assign Coach' }));
+
+    const dialog = await findByRole('dialog');
+    expect(within(dialog).getByRole('alert')).toHaveTextContent(
+      'No coaches are available to assign for this cohort.',
+    );
+    expect(queryByRole('combobox', { name: 'Coach' })).not.toBeInTheDocument();
+  });
+
   it('assigns a coach to the row from the Assign Coach modal', async () => {
-    const { getByRole, findByRole } = renderTable();
+    const { getByRole, findByRole } = await renderWithCoaches();
     // 'John & Jane Doe' (row-1) is the only attendee without a coach.
     userEvent.click(getByRole('button', { name: 'Assign Coach' }));
 
@@ -247,8 +304,15 @@ describe('GoalsTable', () => {
     userEvent.click(getByRole('button', { name: 'Save' }));
 
     await waitFor(() =>
-      expect(ctx.filteredRows.find((row) => row.id === 'row-1')?.coach).toBe(
-        'Tom Harris',
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'AssignCoachToNewStaffCohortAttendee',
+        {
+          input: {
+            cohortId: 'fall-nso-2026',
+            attendeeIds: ['row-1'],
+            coachId: 'coach-6',
+          },
+        },
       ),
     );
   });

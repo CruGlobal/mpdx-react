@@ -43,6 +43,30 @@ export interface StaffGoalRow {
   coordinators: string[];
 }
 
+/** One selectable coach in the Assign Coach picker. */
+export interface AssignCoachOption {
+  id: string;
+  name: string;
+}
+
+interface CoachNameFields {
+  firstName?: string | null;
+  lastName?: string | null;
+}
+
+/** Both names are nullable, so a coach can legitimately have no name at all. */
+export const coachName = (coach: CoachNameFields): string | null =>
+  [coach.firstName, coach.lastName].filter(Boolean).join(' ') || null;
+
+/** Email is the only other identifier the picker has to fall back on. */
+export const coachToOption = (
+  coach: CoachNameFields & { id: string; email?: string | null },
+  t: TFunction,
+): AssignCoachOption => ({
+  id: coach.id,
+  name: coachName(coach) ?? coach.email ?? t('Unnamed coach'),
+});
+
 /** USD costs from the modal; one key per `NewStaffCohort::COST_FIELDS` column. */
 export interface TrainingCosts {
   /** NSO Cost */
@@ -154,12 +178,7 @@ export const attendeeToRow = (attendee: AttendeeNode): StaffGoalRow => ({
   goalStatus: attendee.goalStatus,
   goalSentAt: attendee.goalSentAt ?? null,
   familyStatus: attendee.familyStatus ?? null,
-  // Both names null joins to '', which must still render the Assign Coach prompt.
-  coach: attendee.coach
-    ? [attendee.coach.firstName, attendee.coach.lastName]
-        .filter(Boolean)
-        .join(' ') || null
-    : null,
+  coach: attendee.coach ? coachName(attendee.coach) : null,
   coordinators: [...attendee.coordinators],
 });
 
