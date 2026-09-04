@@ -5,6 +5,7 @@ import { EmptyTable } from '../../../HrTools/Shared/EmptyTable/EmptyTable';
 import { CardSkeleton } from '../Card/CardSkeleton';
 import { ExpensesPieChart } from '../Charts/ExpensesPieChart/ExpensesPieChart';
 import { MonthlySummaryChart } from '../Charts/MonthlySummaryChart/MonthlySummaryChart';
+import { useMonthlySummaryChartData } from '../Charts/MonthlySummaryChart/useMonthlySummaryChartData';
 import { SummaryBarChart } from '../Charts/SummaryBarChart/SummaryBarChart';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { useMPGAIncomeExpenses } from '../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
@@ -12,7 +13,8 @@ import { TableCard } from '../Tables/TableCard';
 
 export const ScreenOnlyReport: React.FC = () => {
   const { t } = useTranslation();
-  const { allData: data } = useMPGAIncomeExpenses();
+  const { allData: data, dataLoading, currency } = useMPGAIncomeExpenses();
+  const monthlySummaryChartData = useMonthlySummaryChartData();
 
   return (
     <Box mt={2}>
@@ -61,7 +63,13 @@ export const ScreenOnlyReport: React.FC = () => {
         </Box>
         <Box mt={2} mb={2}>
           <CardSkeleton title={t('Monthly Summary')}>
-            <MonthlySummaryChart aspect={2.5} width={100} />
+            <MonthlySummaryChart
+              data={monthlySummaryChartData}
+              currency={currency}
+              loading={dataLoading}
+              aspect={2.5}
+              width={100}
+            />
           </CardSkeleton>
         </Box>
       </Container>
