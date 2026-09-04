@@ -2,18 +2,18 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material';
 import { render } from '@testing-library/react';
 import theme from 'src/theme';
-import { GoalSettingsPlaceholder } from './GoalSettingsPlaceholder';
+import { GoalSettingsReadOnlyField } from './GoalSettingsReadOnlyField';
 
 const renderField = (
-  props: Partial<React.ComponentProps<typeof GoalSettingsPlaceholder>> = {},
+  props: Partial<React.ComponentProps<typeof GoalSettingsReadOnlyField>> = {},
 ) =>
   render(
     <ThemeProvider theme={theme}>
-      <GoalSettingsPlaceholder label="Coach" value="Amy Wilson" {...props} />
+      <GoalSettingsReadOnlyField label="Coach" value="Amy Wilson" {...props} />
     </ThemeProvider>,
   );
 
-describe('GoalSettingsPlaceholder', () => {
+describe('GoalSettingsReadOnlyField', () => {
   it('renders the hard-coded value', () => {
     const { getByRole } = renderField();
 
