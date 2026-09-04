@@ -404,7 +404,7 @@ describe('MpdGoalAdminContext', () => {
   });
 
   it('rejects when the server refuses the assignment', async () => {
-    const { result } = await renderHook(() => useMpdGoalAdmin(), {
+    const { result } = renderHook(() => useMpdGoalAdmin(), {
       wrapper: makeWrapper({
         assignCoach: {
           assignCoachToNewStaffCohortAttendee: () => {
@@ -417,9 +417,11 @@ describe('MpdGoalAdminContext', () => {
       expect(result.current.filteredRows).not.toHaveLength(0),
     );
 
-    await expect(
-      result.current.assignCoach(['row-1'], 'coach-6'),
-    ).rejects.toThrow('Not authorized');
+    await act(async () => {
+      await expect(
+        result.current.assignCoach(['row-1'], 'coach-6'),
+      ).rejects.toThrow('Not authorized');
+    });
   });
 
   it('throws when used outside its provider', () => {
