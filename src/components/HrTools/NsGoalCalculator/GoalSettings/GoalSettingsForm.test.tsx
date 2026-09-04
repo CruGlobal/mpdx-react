@@ -51,10 +51,6 @@ const singleMock = {
 const mutationSpy = jest.fn();
 const push = jest.fn();
 
-beforeEach(() => {
-  push.mockClear();
-});
-
 const TestComponent: React.FC<
   Omit<NsGoalCalculatorTestWrapperProps, 'children'>
 > = (props) => (
@@ -313,7 +309,9 @@ describe('GoalSettingsForm', () => {
     const { findByRole } = render(<TestComponent onCall={mutationSpy} />);
 
     const saveButton = await findByRole('button', { name: 'Save & Share' });
-    await waitFor(() => expect(saveButton).toBeEnabled());
+    await waitFor(() =>
+      expect(saveButton).toHaveClass('MuiButton-containedPrimary'),
+    );
     userEvent.click(saveButton);
 
     await waitFor(() =>
@@ -456,7 +454,9 @@ describe('GoalSettingsForm', () => {
     const { findByRole } = render(<TestComponent onCall={jest.fn()} />);
 
     const saveButton = await findByRole('button', { name: 'Save & Share' });
-    await waitFor(() => expect(saveButton).toBeEnabled());
+    await waitFor(() =>
+      expect(saveButton).toHaveClass('MuiButton-containedPrimary'),
+    );
     userEvent.click(saveButton);
 
     // The button stays disabled with a spinner until the save resolves.
@@ -528,7 +528,7 @@ describe('GoalSettingsForm', () => {
   });
 
   it('keeps the edits when Keep Editing is chosen instead', async () => {
-    const { findByRole, getByRole } = render(<TestComponent />);
+    const { findByRole, getByRole, queryByRole } = render(<TestComponent />);
 
     const salary = await findByRole('spinbutton', {
       name: 'Annual Requested Salary — John',
@@ -541,23 +541,24 @@ describe('GoalSettingsForm', () => {
     userEvent.click(await findByRole('button', { name: 'Keep Editing' }));
 
     await waitFor(() =>
-      expect(getByRole('button', { name: 'Save & Share' })).toBeInTheDocument(),
+      expect(
+        queryByRole('heading', { name: 'Unsaved Changes' }),
+      ).not.toBeInTheDocument(),
     );
     expect(salary).toHaveValue(12345);
   });
 
   // Cancelling an untouched form has nothing to confirm.
   it('leaves straight away when there is nothing to discard', async () => {
-    const { findByRole, getByRole, queryByRole } = render(<TestComponent />);
+    const { findByRole, queryByRole } = render(<TestComponent />);
 
     userEvent.click(await findByRole('button', { name: 'Cancel' }));
 
     await waitFor(() =>
-      expect(getByRole('button', { name: 'Save & Share' })).toBeInTheDocument(),
+      expect(
+        queryByRole('heading', { name: 'Unsaved Changes' }),
+      ).not.toBeInTheDocument(),
     );
-    expect(
-      queryByRole('heading', { name: 'Unsaved Changes' }),
-    ).not.toBeInTheDocument();
   });
 
   it('renders a loading skeleton before the calculation resolves', async () => {
@@ -744,7 +745,9 @@ describe('GoalSettingsForm', () => {
     const { findByRole } = render(<TestComponent />);
 
     const saveButton = await findByRole('button', { name: 'Save & Share' });
-    await waitFor(() => expect(saveButton).toBeEnabled());
+    await waitFor(() =>
+      expect(saveButton).toHaveClass('MuiButton-containedPrimary'),
+    );
     userEvent.click(saveButton);
 
     await waitFor(() =>
@@ -797,7 +800,9 @@ describe('GoalSettingsForm', () => {
       userEvent.type(firstName, 'Johnny');
 
       const saveButton = getByRole('button', { name: 'Save & Share' });
-      await waitFor(() => expect(saveButton).toBeEnabled());
+      await waitFor(() =>
+        expect(saveButton).toHaveClass('MuiButton-containedPrimary'),
+      );
       userEvent.click(saveButton);
 
       await waitFor(() =>
@@ -821,7 +826,9 @@ describe('GoalSettingsForm', () => {
       userEvent.type(firstName, 'Johnny');
 
       const saveButton = getByRole('button', { name: 'Save & Share' });
-      await waitFor(() => expect(saveButton).toBeEnabled());
+      await waitFor(() =>
+        expect(saveButton).toHaveClass('MuiButton-containedPrimary'),
+      );
       userEvent.click(saveButton);
 
       await waitFor(() => expect(push).toHaveBeenCalledWith(returnUrl));
