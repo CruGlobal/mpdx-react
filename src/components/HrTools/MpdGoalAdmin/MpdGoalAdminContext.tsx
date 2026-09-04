@@ -72,13 +72,16 @@ export const MpdGoalAdminProvider: React.FC<{
   // In the URL rather than component state so Goal Settings can link back to
   // the tab the goal was opened from.
   const activeTab = parseMpdGoalAdminTab(getQueryParam(router.query, 'tab'));
-  const setActiveTab = (tab: MpdGoalAdminTabEnum): void => {
-    router.push(
-      { pathname: router.pathname, query: { ...router.query, tab } },
-      undefined,
-      { shallow: true },
-    );
-  };
+  const setActiveTab = useCallback(
+    (tab: MpdGoalAdminTabEnum): void => {
+      router.push(
+        { pathname: router.pathname, query: { ...router.query, tab } },
+        undefined,
+        { shallow: true },
+      );
+    },
+    [router],
+  );
   const [selectedCohortId, setSelectedCohortId] = useState<string>('');
   const [search, setSearch] = useState('');
   const [selectedRowIds, setSelectedRowIds] = useState<Set<string>>(new Set());
@@ -263,6 +266,7 @@ export const MpdGoalAdminProvider: React.FC<{
     }),
     [
       activeTab,
+      setActiveTab,
       cohorts,
       selectedCohortId,
       selectCohort,
