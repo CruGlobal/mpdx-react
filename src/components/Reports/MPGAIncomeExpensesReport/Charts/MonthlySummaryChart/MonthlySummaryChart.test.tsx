@@ -1,10 +1,10 @@
 import '../sharedRechartMock';
 import React from 'react';
 import { render, waitFor, within } from '@testing-library/react';
-import { useMonthlySummaryChartData } from 'src/hooks/useMonthlySummaryChartData';
 import { useMPGAIncomeExpenses } from '../../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { MPGAIncomeExpensesReportTestWrapper } from '../../MPGAIncomeExpensesReportTestWrapper';
 import { MonthlySummaryChart } from './MonthlySummaryChart';
+import { useMonthlySummaryChartData } from './useMonthlySummaryChartData';
 
 const mutationSpy = jest.fn();
 const monthCount = 12;
@@ -65,18 +65,18 @@ describe('MonthlySummaryChart', () => {
       ).map((node) => node.textContent);
 
       expect(netLabels).toEqual([
-        '$5,709',
-        '$5,136',
-        '$4,655',
-        '$5,251',
-        '$6,794',
-        '$5,564',
-        '$5,856',
-        '$7,026',
-        '$7,713',
-        '$7,312',
-        '$9,579',
-        '$16,588',
+        '$5,709.00',
+        '$5,136.00',
+        '$4,655.00',
+        '$5,251.00',
+        '$6,794.00',
+        '$5,564.00',
+        '$5,856.00',
+        '$7,026.00',
+        '$7,713.00',
+        '$7,312.00',
+        '$9,579.00',
+        '$16,588.00',
       ]);
     });
   });

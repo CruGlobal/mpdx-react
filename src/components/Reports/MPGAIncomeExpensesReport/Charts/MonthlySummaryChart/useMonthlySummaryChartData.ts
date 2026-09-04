@@ -1,12 +1,6 @@
 import { useMemo } from 'react';
 import { useMPGAIncomeExpenses } from 'src/components/Reports/MPGAIncomeExpensesReport/MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
-
-export interface MonthlySummaryChartData {
-  month: string;
-  income: number;
-  expenses: number;
-  net: number;
-}
+import { MonthlySummaryChartData } from './MonthlySummaryChart';
 
 export const useMonthlySummaryChartData = (): MonthlySummaryChartData[] => {
   const {

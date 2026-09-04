@@ -1,8 +1,25 @@
 import { ThemeProvider } from '@mui/material/styles';
+import userEvent from '@testing-library/user-event';
 import { render } from '__tests__/util/testingLibraryReactMock';
+import {
+  afterTestResizeObserver,
+  beforeTestResizeObserver,
+} from '__tests__/util/windowResizeObserver';
 import { MonthlyPayrollSummary } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { StaffTabMonthlySummary } from './MonthlySummary';
+
+jest.mock('recharts', () => {
+  const OriginalModule = jest.requireActual('recharts');
+  return {
+    ...OriginalModule,
+    ResponsiveContainer: ({ children }) => (
+      <OriginalModule.ResponsiveContainer width={800} height={800}>
+        {children}
+      </OriginalModule.ResponsiveContainer>
+    ),
+  };
+});
 
 const mockMonthlySummary: MonthlyPayrollSummary[] = [
   {
@@ -49,6 +66,14 @@ const columnHeaders = [
 ];
 
 describe('StaffTabMonthlySummary', () => {
+  beforeEach(() => {
+    beforeTestResizeObserver();
+  });
+
+  afterEach(() => {
+    afterTestResizeObserver();
+  });
+
   it('renders the headers and a row per month, showing negative net and end balance in parentheses without a minus sign', () => {
     const { getByRole } = render(
       <TestComponent monthlySummary={mockMonthlySummary} />,
@@ -61,6 +86,27 @@ describe('StaffTabMonthlySummary', () => {
         ['Feb 2023', '$4,200.00', '($4,500.00)', '($300.00)', '$9,700.00'],
         ['Mar 2023', '$3,000.00', '($3,200.00)', '($200.00)', '($100.00)'],
       ],
+    });
+  });
+
+  it('renders a blank month, zeroed amounts, and a placeholder end balance when the summary fields are null', () => {
+    const { getByRole } = render(
+      <TestComponent
+        monthlySummary={[
+          {
+            month: null,
+            contributions: null,
+            expenses: null,
+            net: null,
+            endBalance: null,
+          },
+        ]}
+      />,
+    );
+
+    expect(getByRole('table')).toHaveTableStructure({
+      columnHeaders,
+      cells: [['', '$0.00', '($0.00)', '$0.00', '—']],
     });
   });
 
@@ -94,10 +140,10 @@ describe('StaffTabMonthlySummary', () => {
     );
 
     expect(getByRole('cell', { name: '$500.00' })).toHaveStyle({
-      color: theme.palette.chipGreenDark.main,
+      color: theme.palette.success.main,
     });
     expect(getByRole('cell', { name: '($300.00)' })).toHaveStyle({
-      color: theme.palette.chipRedDark.main,
+      color: theme.palette.error.main,
     });
     expect(getByRole('cell', { name: '$0.00' })).toHaveStyle({
       color: 'inherit',
@@ -111,5 +157,31 @@ describe('StaffTabMonthlySummary', () => {
       columnHeaders,
       cells: ['No data available.'],
     });
+  });
+
+  it('switches to the chart view and back when the toggle is clicked', async () => {
+    const { findByRole, getByRole, queryByRole } = render(
+      <TestComponent monthlySummary={mockMonthlySummary} />,
+    );
+
+    userEvent.click(getByRole('button', { name: 'Chart view' }));
+
+    expect(await findByRole('region')).toBeInTheDocument();
+    expect(queryByRole('table')).not.toBeInTheDocument();
+
+    userEvent.click(getByRole('button', { name: 'Table view' }));
+
+    expect(getByRole('table')).toBeInTheDocument();
+  });
+
+  it('switches to the chart view even when there is no data', async () => {
+    const { findByRole, getByRole, queryByRole } = render(
+      <TestComponent monthlySummary={[]} />,
+    );
+
+    userEvent.click(getByRole('button', { name: 'Chart view' }));
+
+    expect(await findByRole('region')).toBeInTheDocument();
+    expect(queryByRole('table')).not.toBeInTheDocument();
   });
 });

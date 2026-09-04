@@ -11,11 +11,17 @@ import {
   YAxis,
 } from 'recharts';
 import { useLocale } from 'src/hooks/useLocale';
-import { MonthlySummaryChartData } from 'src/hooks/useMonthlySummaryChartData';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { ChartFrame } from '../ChartFrame';
 import { ChartLegendContent } from '../ChartLegendContent/ChartLegendContent';
+
+export interface MonthlySummaryChartData {
+  month: string;
+  income: number;
+  expenses: number;
+  net: number;
+}
 
 interface MonthlySummaryChartProps {
   data: MonthlySummaryChartData[];
@@ -23,6 +29,7 @@ interface MonthlySummaryChartProps {
   loading?: boolean;
   aspect: number;
   width: number;
+  overrideIncomeText?: string;
 }
 
 interface MonthlyTotal extends MonthlySummaryChartData {
@@ -37,6 +44,7 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
   loading,
   aspect,
   width,
+  overrideIncomeText,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -69,7 +77,9 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
           >
             <XAxis
               dataKey="month"
-              tickFormatter={(value) => value.split(' ')[0]}
+              tickFormatter={(value) =>
+                typeof value === 'string' ? value.split(' ')[0] : value
+              }
             />
             <XAxis dataKey="month" xAxisId="net" hide />
             <YAxis
@@ -103,11 +113,16 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
                       {label}
                     </Typography>
                     <Typography variant="body1">
-                      {t('Income')}: {currencyFormat(income, currency, locale)}
+                      {overrideIncomeText ?? t('Income')}:{' '}
+                      {currencyFormat(income, currency, locale, {
+                        showTrailingZeros: true,
+                      })}
                     </Typography>
                     <Typography variant="body1">
                       {t('Expenses')}:{' '}
-                      {currencyFormat(expenses, currency, locale)}
+                      {currencyFormat(expenses, currency, locale, {
+                        showTrailingZeros: true,
+                      })}
                     </Typography>
                     <Typography
                       variant="body1"
@@ -121,13 +136,20 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
                               : chartColors[1],
                       }}
                     >
-                      {t('Net')}: {currencyFormat(net, currency, locale)}
+                      {t('Net')}:{' '}
+                      {currencyFormat(net, currency, locale, {
+                        showTrailingZeros: true,
+                      })}
                     </Typography>
                   </Box>
                 );
               }}
             />
-            <Bar dataKey="income" name={t('Income')} fill={chartColors[0]} />
+            <Bar
+              dataKey="income"
+              name={overrideIncomeText ?? t('Income')}
+              fill={chartColors[0]}
+            />
             <Bar
               dataKey="expenses"
               name={t('Expenses')}
@@ -147,7 +169,9 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
                   fontSize: theme.typography.body2.fontSize,
                 }}
                 formatter={(value: number) =>
-                  currencyFormat(value, currency, locale)
+                  currencyFormat(value, currency, locale, {
+                    showTrailingZeros: true,
+                  })
                 }
               />
             </Bar>
@@ -160,7 +184,7 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
               )}
               payload={[
                 {
-                  value: t('Income'),
+                  value: overrideIncomeText ?? t('Income'),
                   type: 'square',
                   color: chartColors[0],
                 },

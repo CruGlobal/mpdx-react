@@ -1,11 +1,11 @@
 import { HourglassDisabled } from '@mui/icons-material';
 import { Box, Container, Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useMonthlySummaryChartData } from 'src/hooks/useMonthlySummaryChartData';
 import { EmptyTable } from '../../../HrTools/Shared/EmptyTable/EmptyTable';
 import { CardSkeleton } from '../Card/CardSkeleton';
 import { ExpensesPieChart } from '../Charts/ExpensesPieChart/ExpensesPieChart';
 import { MonthlySummaryChart } from '../Charts/MonthlySummaryChart/MonthlySummaryChart';
+import { useMonthlySummaryChartData } from '../Charts/MonthlySummaryChart/useMonthlySummaryChartData';
 import { SummaryBarChart } from '../Charts/SummaryBarChart/SummaryBarChart';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { useMPGAIncomeExpenses } from '../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
