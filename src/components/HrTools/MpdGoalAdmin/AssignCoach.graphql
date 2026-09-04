@@ -1,0 +1,25 @@
+query NewStaffCohortAssignableCoaches($cohortId: ID!) {
+  newStaffCohortAssignableCoaches(cohortId: $cohortId) {
+    id
+    firstName
+    lastName
+    email
+  }
+}
+
+mutation AssignCoachToNewStaffCohortAttendee(
+  $input: NewStaffCohortAttendeeAssignCoachMutationInput!
+) {
+  assignCoachToNewStaffCohortAttendee(input: $input) {
+    # Normalizes over each cached attendee, so the Coach cells update in place.
+    newStaffCohortAttendees {
+      id
+      coach {
+        id
+        firstName
+        lastName
+        email
+      }
+    }
+  }
+}
