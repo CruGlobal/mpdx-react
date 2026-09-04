@@ -23,8 +23,11 @@ export interface GoalCompletionFields {
  * Whether a goal calculation has the fields required to produce a valid goal.
  * Age, full-time years on staff, and role (field/office) are required for each
  * person on the calculation — both spouses when married — and a calculation
- * year and benefits plan are required for the household. Drives the
- * Complete/Incomplete status chips on both admin tables and in the header.
+ * year, benefits plan, and marital status are required for the household.
+ * Drives the Complete/Incomplete chips on the Scenario Goals table and in the
+ * header; the Active Goals table uses the API's own goalStatus, which checks a
+ * different set of requirements (see
+ * NewStaffCohortAttendeeGoalMissingFieldEnum).
  */
 export const isCalculationComplete = (
   calculation: GoalCompletionFields,
@@ -34,6 +37,8 @@ export const isCalculationComplete = (
     NewStaffQuestionnaireMaritalStatusEnum.Married;
 
   const requiredFields = [
+    // Unset, the spouse checks below silently fall through to single-person.
+    calculation.maritalStatus,
     calculation.calculationsYear,
     calculation.age,
     calculation.tenure,
@@ -42,7 +47,10 @@ export const isCalculationComplete = (
     ...(isMarried ? [calculation.spouseAge, calculation.spouseTenure] : []),
   ];
 
-  return requiredFields.every((value) => value !== null && value !== undefined);
+  // Editing form values arrive as '' rather than null while still unset.
+  return requiredFields.every(
+    (value) => value !== null && value !== undefined && value !== '',
+  );
 };
 
 /** Unset numeric fields are `''` while editing, but `null` once saved. */

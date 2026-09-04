@@ -77,6 +77,7 @@ describe('isGoalSettingsComplete', () => {
   });
 
   it.each([
+    ['marital status', { maritalStatus: '' }],
     ['calculation year', { calculationsYear: '' }],
     ['age', { age: '' }],
     ['tenure', { tenure: '' }],
@@ -141,6 +142,7 @@ describe('isCalculationComplete', () => {
   });
 
   it.each([
+    ['maritalStatus'],
     ['calculationsYear'],
     ['age'],
     ['tenure'],
@@ -154,6 +156,12 @@ describe('isCalculationComplete', () => {
       );
     },
   );
+
+  it('rejects the empty string an unset Select leaves behind', () => {
+    expect(
+      isCalculationComplete({ ...savedSingle, calculationsYear: '' }),
+    ).toBe(false);
+  });
 
   it('requires the spouse fields once the household is married', () => {
     const married = {
