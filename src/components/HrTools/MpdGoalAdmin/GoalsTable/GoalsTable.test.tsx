@@ -26,6 +26,7 @@ import {
   assignedCoachMock,
   attendees,
   attendeesMock,
+  coach,
   cohortsMock,
   cohortsWithoutCostsMock,
   failedAssignableCoachesMock,
@@ -250,6 +251,28 @@ describe('GoalsTable', () => {
   it('shows an Assign Coach prompt when no coach is set', () => {
     const { getAllByText } = renderTable();
     expect(getAllByText('Assign Coach').length).toBeGreaterThan(0);
+  });
+
+  it('falls back to the email of a coach with no name on file', () => {
+    const row = attendeeToRow({
+      ...attendees[0],
+      coach: coach('coach-7', null, null),
+    });
+    const { getByText, queryByText } = renderTable([row]);
+
+    expect(getByText('coach-7@cru.org')).toBeInTheDocument();
+    expect(queryByText('Assign Coach')).not.toBeInTheDocument();
+  });
+
+  it('labels a coach with neither a name nor an email as unnamed', () => {
+    const row = attendeeToRow({
+      ...attendees[0],
+      coach: coach('coach-8', null, null, null),
+    });
+    const { getByText, queryByText } = renderTable([row]);
+
+    expect(getByText('Unnamed coach')).toBeInTheDocument();
+    expect(queryByText('Assign Coach')).not.toBeInTheDocument();
   });
 
   it('opens the Assign Coach modal for the selected staff member', async () => {

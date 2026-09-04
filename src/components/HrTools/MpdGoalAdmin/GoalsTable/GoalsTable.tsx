@@ -32,6 +32,7 @@ import {
   DEFAULT_ROWS_PER_PAGE,
   GoalStatusEnum,
   StaffGoalRow,
+  coachLabel,
   familyStatusLabel,
   goalStatusLabel,
   isSendable,
@@ -210,7 +211,9 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
               </TableCell>
               <TableCell>{familyStatusLabel(row.familyStatus, t)}</TableCell>
               <TableCell>
-                {row.coach ?? (
+                {row.coach ? (
+                  coachLabel(row.coach, t)
+                ) : (
                   <Link
                     component="button"
                     type="button"

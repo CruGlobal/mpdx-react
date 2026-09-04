@@ -116,7 +116,11 @@ describe('MpdGoalAdminContext', () => {
     });
     // An attendee with no goal calculation yet still renders, with a null goal.
     expect(result.current.filteredRows[1].mpdGoal).toBeNull();
-    expect(result.current.filteredRows[1].coach).toBe('Nelson Jones');
+    expect(result.current.filteredRows[1].coach).toMatchObject({
+      id: 'coach-3',
+      firstName: 'Nelson',
+      lastName: 'Jones',
+    });
   });
 
   it('toggles row selection and clears it', async () => {
