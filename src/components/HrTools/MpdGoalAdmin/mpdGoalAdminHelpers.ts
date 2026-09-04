@@ -37,11 +37,43 @@ export interface StaffGoalRow {
   goalSentAt: string | null;
   /** null before the survey establishes the household's marital status. */
   familyStatus: NewStaffQuestionnaireMaritalStatusEnum | null;
-  /** null renders an "Assign Coach" prompt instead of a name. */
-  coach: string | null;
+  /** Raw fields, labelled at render time; null renders an "Assign Coach" prompt. */
+  coach: CoachFields | null;
   /** Read-only OneApp coordinators; a ministry commonly has several. */
   coordinators: string[];
 }
+
+/** One selectable coach in the Assign Coach picker. */
+export interface AssignCoachOption {
+  id: string;
+  name: string;
+}
+
+/** Every identifier is independently nullable, so labelling has to fall back. */
+export interface CoachFields {
+  id: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  email?: string | null;
+}
+
+/** Both names are nullable, so a coach can legitimately have no name at all. */
+export const coachName = (
+  coach: Pick<CoachFields, 'firstName' | 'lastName'>,
+): string | null =>
+  [coach.firstName, coach.lastName].filter(Boolean).join(' ') || null;
+
+/** The picker and the Coach cell share this so the two can never disagree. */
+export const coachLabel = (coach: CoachFields, t: TFunction): string =>
+  coachName(coach) ?? coach.email ?? t('Unnamed coach');
+
+export const coachToOption = (
+  coach: CoachFields,
+  t: TFunction,
+): AssignCoachOption => ({
+  id: coach.id,
+  name: coachLabel(coach, t),
+});
 
 /** USD costs from the modal; one key per `NewStaffCohort::COST_FIELDS` column. */
 export interface TrainingCosts {
@@ -154,12 +186,7 @@ export const attendeeToRow = (attendee: AttendeeNode): StaffGoalRow => ({
   goalStatus: attendee.goalStatus,
   goalSentAt: attendee.goalSentAt ?? null,
   familyStatus: attendee.familyStatus ?? null,
-  // Both names null joins to '', which must still render the Assign Coach prompt.
-  coach: attendee.coach
-    ? [attendee.coach.firstName, attendee.coach.lastName]
-        .filter(Boolean)
-        .join(' ') || null
-    : null,
+  coach: attendee.coach ?? null,
   coordinators: [...attendee.coordinators],
 });
 
