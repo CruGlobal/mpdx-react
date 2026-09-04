@@ -73,13 +73,8 @@ const calculate403bDeductions = (
 export const useSalaryCalculations = ({
   values,
 }: UseSalaryCalculationsProps): SalaryCalculations => {
-  const {
-    traditional403bPercentage,
-    roth403bPercentage,
-    requestData,
-    user,
-    spouse,
-  } = useAdditionalSalaryRequest();
+  const { traditional403bPercentage, roth403bPercentage, requestData, spouse } =
+    useAdditionalSalaryRequest();
   const individualCap =
     requestData?.latestAdditionalSalaryRequest?.calculations.currentSalaryCap ??
     0;
@@ -88,8 +83,13 @@ export const useSalaryCalculations = ({
         ?.currentSalaryCap ?? null)
     : null;
 
-  const grossAnnualSalary = user?.currentSalary?.grossSalaryAmount ?? 0;
-  const spouseGrossAnnualSalary = spouse?.currentSalary?.grossSalaryAmount ?? 0;
+  const grossAnnualSalary =
+    requestData?.latestAdditionalSalaryRequest?.calculations
+      .grossAnnualSalary ?? 0;
+  const spouseGrossAnnualSalary = spouse
+    ? (requestData?.latestAdditionalSalaryRequest?.spouseCalculations
+        ?.grossAnnualSalary ?? 0)
+    : 0;
 
   return useMemo(() => {
     const total = getTotal(values);

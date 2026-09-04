@@ -86,13 +86,7 @@ describe('EditForm', () => {
   });
 
   it('should not render cap-related components when user does not exceed cap', () => {
-    const { queryByText } = renderComponent({
-      contextOverrides: {
-        user: {
-          currentSalary: { grossSalaryAmount: 1000 },
-        },
-      },
-    });
+    const { queryByText } = renderComponent();
 
     expect(queryByText('Total Salary Requested')).not.toBeInTheDocument();
     expect(queryByText('Approval Process')).not.toBeInTheDocument();

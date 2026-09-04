@@ -69,6 +69,7 @@ const defaultMockContextValue = {
               currentSalaryCap: 100000,
               staffAccountBalance: 50000,
               pendingAsrAmount: 0,
+              grossAnnualSalary: 40000,
             },
           },
         },
@@ -92,9 +93,6 @@ const defaultMockContextValue = {
             preferredName: 'Doe, John',
             personNumber: '00123456',
             emailAddress: 'john.doe@example.com',
-          },
-          currentSalary: {
-            grossSalaryAmount: 40000,
           },
         },
       ],
@@ -161,9 +159,12 @@ const defaultGqlMocks: DeepPartial<MocksType> = {
   AdditionalSalaryRequest: {
     latestAdditionalSalaryRequest: {
       id: 'test-request-id',
+      progressiveApprovalTierReason:
+        ProgressiveApprovalTierReasonEnum.OverUserCap,
       calculations: {
         currentSalaryCap: 100000,
         pendingAsrAmount: 0,
+        grossAnnualSalary: 40000,
       },
     },
   },

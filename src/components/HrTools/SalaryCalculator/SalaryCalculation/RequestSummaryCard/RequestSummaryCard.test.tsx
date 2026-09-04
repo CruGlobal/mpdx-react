@@ -20,13 +20,15 @@ const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
       requestedSeca: 10002,
       contributing403bAmount: 10003,
       requestedGross: 10004,
-      effectiveCap: 10005,
+      requestedYtdGross: 10005,
+      effectiveCap: 10006,
     },
     spouseCalculations: {
       requestedSeca: 20002,
       contributing403bAmount: 20003,
       requestedGross: 20004,
-      effectiveCap: 20005,
+      requestedYtdGross: 20005,
+      effectiveCap: 20006,
     },
   };
 
@@ -101,7 +103,7 @@ We'll forward your request to them and get back to you with their decision.",
         expect(getByTestId('RequestSummaryCard-status')).toHaveTextContent(
           "Your Combined Gross Requested Salary is within your Combined Maximum Allowable Salary. \
 However, John's Gross Requested Salary exceeds their individual Maximum Allowable Salary. \
-If this is correct, please provide reasoning for why John's Requested Salary should exceed $10,005.00 in the Additional Information section below \
+If this is correct, please provide reasoning for why John's Requested Salary should exceed $10,006.00 in the Additional Information section below \
 or make changes to how your Requested Salary is distributed above.",
         ),
       );
@@ -126,7 +128,7 @@ or make changes to how your Requested Salary is distributed above.",
         expect(getByTestId('RequestSummaryCard-status')).toHaveTextContent(
           "Your Combined Gross Requested Salary is within your Combined Maximum Allowable Salary. \
 However, Jane's Gross Requested Salary exceeds their individual Maximum Allowable Salary. \
-If this is correct, please provide reasoning for why Jane's Requested Salary should exceed $20,005.00 in the Additional Information section below \
+If this is correct, please provide reasoning for why Jane's Requested Salary should exceed $20,006.00 in the Additional Information section below \
 or make changes to how your Requested Salary is distributed above.",
         ),
       );
@@ -167,7 +169,7 @@ This may affect your selected effective date.',
       expect(
         getByTestId('RequestSummaryCard-requestedVsMax'),
       ).toHaveTextContent(
-        'Combined Gross Salary / Max Allowable Salary$30,008.00 / $30,010.00',
+        'Combined Gross Salary / Max Allowable Salary$30,010.00 / $30,012.00',
       ),
     );
   });
@@ -179,6 +181,24 @@ This may affect your selected effective date.',
       expect(getByTestId('RequestSummaryCard-remaining')).toHaveTextContent(
         'Remaining in Combined Max Allowable Salary$2.00',
       ),
+    );
+  });
+
+  it('compares the YTD gross against the cap', async () => {
+    const { getByTestId } = render(
+      <TestComponent
+        hasSpouse={false}
+        salaryRequestMock={{ calculations: { requestedYtdGross: 12000 } }}
+      />,
+    );
+
+    await waitFor(() =>
+      expect(
+        getByTestId('RequestSummaryCard-requestedVsMax'),
+      ).toHaveTextContent('$12,000.00 / $10,006.00'),
+    );
+    expect(getByTestId('RequestSummaryCard-remaining')).toHaveTextContent(
+      '-$1,994.00',
     );
   });
 
@@ -194,6 +214,8 @@ This may affect your selected effective date.',
             'SECA and Related Federal Taxes',
             '403b Contribution',
             'Gross Requested Salary',
+            'Additional Salary Requested This YearDoes not include backpay for 2020.',
+            'Total Gross Salary This Year',
             'Maximum Allowable Salary',
           ],
           cells: [
@@ -201,7 +223,34 @@ This may affect your selected effective date.',
             ['$10,002.00', '$20,002.00'],
             ['$10,003.00', '$20,003.00'],
             ['$10,004.00', '$20,004.00'],
+            ['$1.00', '$1.00'],
             ['$10,005.00', '$20,005.00'],
+            ['$10,006.00', '$20,006.00'],
+          ],
+        }),
+      );
+    });
+
+    it('shows the additional salary bridging the gross and YTD gross', async () => {
+      const { getByRole } = render(
+        <TestComponent
+          hasSpouse={false}
+          salaryRequestMock={{
+            calculations: { requestedGross: 60000, requestedYtdGross: 75000 },
+          }}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(getByRole('table')).toHaveTableStructure({
+          cells: [
+            '$10,001.00',
+            '$10,002.00',
+            '$10,003.00',
+            '$60,000.00',
+            '$15,000.00',
+            '$75,000.00',
+            '$10,006.00',
           ],
         }),
       );
@@ -234,7 +283,7 @@ This may affect your selected effective date.',
         expect(
           getByTestId('RequestSummaryCard-requestedVsMax'),
         ).toHaveTextContent(
-          'Your Gross Requested Salary / Max Allowable Salary$10,004.00 / $10,005.00',
+          'Your Gross Requested Salary / Max Allowable Salary$10,005.00 / $10,006.00',
         ),
       );
 
@@ -250,6 +299,8 @@ This may affect your selected effective date.',
             'SECA and Related Federal Taxes',
             '403b Contribution',
             'Gross Requested Salary',
+            'Additional Salary Requested This YearDoes not include backpay for 2020.',
+            'Total Gross Salary This Year',
             'Maximum Allowable Salary',
           ],
           cells: [
@@ -257,7 +308,9 @@ This may affect your selected effective date.',
             '$10,002.00',
             '$10,003.00',
             '$10,004.00',
+            '$1.00',
             '$10,005.00',
+            '$10,006.00',
           ],
         }),
       );

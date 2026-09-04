@@ -14,6 +14,7 @@ import {
   styled,
   useTheme,
 } from '@mui/material';
+import { DateTime } from 'luxon';
 import { Trans, useTranslation } from 'react-i18next';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import {
@@ -66,6 +67,7 @@ export const RequestSummaryCard: React.FC = () => {
     progressiveApprovalTier?.tier !== ProgressiveApprovalTierEnum.DivisionHead;
   const {
     combinedGross,
+    combinedYtdGross,
     combinedEffectiveCap: combinedCap,
     overCapPerson,
   } = useCaps();
@@ -81,6 +83,10 @@ export const RequestSummaryCard: React.FC = () => {
   const combined403b =
     (calcs?.contributing403bAmount ?? 0) +
     (spouseCalcs?.contributing403bAmount ?? 0);
+  const asrAmount =
+    (calcs?.requestedYtdGross ?? 0) - (calcs?.requestedGross ?? 0);
+  const spouseAsrAmount =
+    (spouseCalcs?.requestedYtdGross ?? 0) - (spouseCalcs?.requestedGross ?? 0);
 
   const categories: Category[] = [
     {
@@ -182,7 +188,7 @@ export const RequestSummaryCard: React.FC = () => {
               aria-describedby={requestedVsMaxId}
               className={approvalRequired ? 'invalid' : undefined}
             >
-              {formatCurrency(combinedGross)} / {formatCurrency(combinedCap)}
+              {formatCurrency(combinedYtdGross)} / {formatCurrency(combinedCap)}
             </span>
           </Stack>
 
@@ -206,7 +212,7 @@ export const RequestSummaryCard: React.FC = () => {
               id={remainingId}
               className={approvalRequired ? 'invalid' : undefined}
             >
-              {formatCurrency(combinedCap - combinedGross)}
+              {formatCurrency(combinedCap - combinedYtdGross)}
             </Typography>
           </Stack>
 
@@ -288,14 +294,49 @@ export const RequestSummaryCard: React.FC = () => {
                     <InfoIcon />
                   </Tooltip>
                 </TableCell>
+                <TableCell>{formatCurrency(calcs?.requestedGross)}</TableCell>
+                {hasSpouse && (
+                  <TableCell>
+                    {formatCurrency(spouseCalcs.requestedGross)}
+                  </TableCell>
+                )}
+              </TableRow>
+
+              <TableRow>
+                <TableCell component="th" scope="row">
+                  {t('Additional Salary Requested This Year')}
+                  <span className="explanation">
+                    {t('Does not include backpay for {{year}}.', {
+                      year: DateTime.local().year,
+                    })}
+                  </span>
+                </TableCell>
+                <TableCell>{formatCurrency(asrAmount)}</TableCell>
+                {hasSpouse && (
+                  <TableCell>{formatCurrency(spouseAsrAmount)}</TableCell>
+                )}
+              </TableRow>
+
+              <TableRow className="total">
+                <TableCell component="th" scope="row">
+                  {t('Total Gross Salary This Year')}
+                  <Tooltip
+                    title={t(
+                      'Your Gross Requested Salary plus any Additional Salary Requested This Year. \
+This is the amount compared against your Maximum Allowable Salary.',
+                    )}
+                  >
+                    <InfoIcon />
+                  </Tooltip>
+                </TableCell>
                 <TableCell className={approvalRequired ? 'invalid' : undefined}>
-                  {formatCurrency(calcs?.requestedGross)}
+                  {formatCurrency(calcs?.requestedYtdGross)}
                 </TableCell>
                 {hasSpouse && (
                   <TableCell
                     className={approvalRequired ? 'invalid' : undefined}
                   >
-                    {formatCurrency(spouseCalcs.requestedGross)}
+                    {formatCurrency(spouseCalcs.requestedYtdGross)}
                   </TableCell>
                 )}
               </TableRow>

@@ -1,14 +1,17 @@
 import { useMemo } from 'react';
+import InfoIcon from '@mui/icons-material/Info';
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
+  Tooltip,
   Typography,
   styled,
 } from '@mui/material';
 import { useFormikContext } from 'formik';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
@@ -26,6 +29,14 @@ const StyledAmountTableCell = styled(TableCell)(() => ({
   width: '30%',
 }));
 
+const InfoTooltipIcon = styled(InfoIcon)(({ theme }) => ({
+  marginLeft: theme.spacing(0.5),
+  verticalAlign: 'middle',
+  cursor: 'pointer',
+  color: theme.palette.mpdxGrayDark.main,
+  fontSize: '1rem',
+}));
+
 export const TotalSalaryTable: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -35,6 +46,13 @@ export const TotalSalaryTable: React.FC = () => {
   const { values } = useFormikContext<CompleteFormValues>();
 
   const individualCap = calculations?.currentSalaryCap ?? 0;
+  const outstandingSalaryRequest = calculations?.outstandingSalaryRequest;
+  const salaryRequestTooltip = t(
+    'Includes your pending Salary Calculation Request',
+  );
+  const backpayExplanation = t('Does not include backpay for {{year}}.', {
+    year: DateTime.local().year,
+  });
 
   const {
     nonBackpayTotal,
@@ -55,18 +73,19 @@ export const TotalSalaryTable: React.FC = () => {
       {
         id: 'grossAnnual',
         label: t('Gross Annual Salary'),
+        tooltip: outstandingSalaryRequest ? salaryRequestTooltip : undefined,
         value: grossAnnualSalary,
       },
       {
         id: 'additionalReceived',
-        label: t('Additional Salary Received This Year'),
-        description: t('Does not include payments received for backpay.'),
+        label: t('Additional Salary Previously Requested This Year'),
+        description: backpayExplanation,
         value: additionalSalaryReceivedThisYear,
       },
       {
         id: 'additionalRequested',
-        label: t('Additional Salary on this Request'),
-        description: t('Does not include requests made for backpay.'),
+        label: t('Additional Salary on This Request'),
+        description: backpayExplanation,
         value: nonBackpayTotal,
       },
     ],
@@ -76,6 +95,9 @@ export const TotalSalaryTable: React.FC = () => {
       grossAnnualSalary,
       additionalSalaryReceivedThisYear,
       nonBackpayTotal,
+      outstandingSalaryRequest,
+      salaryRequestTooltip,
+      backpayExplanation,
     ],
   );
 
@@ -92,10 +114,17 @@ export const TotalSalaryTable: React.FC = () => {
         </TableRow>
       </TableHead>
       <TableBody>
-        {summaryItems.map(({ id, label, description, value }) => (
+        {summaryItems.map(({ id, label, description, tooltip, value }) => (
           <TableRow key={id}>
             <StyledDescriptionTableCell>
-              <Typography variant="body2">{label}</Typography>
+              <Typography variant="body2">
+                {label}
+                {tooltip && (
+                  <Tooltip title={tooltip}>
+                    <InfoTooltipIcon />
+                  </Tooltip>
+                )}
+              </Typography>
               {description && (
                 <Typography variant="caption" color="text.secondary">
                   {description}
@@ -118,6 +147,11 @@ export const TotalSalaryTable: React.FC = () => {
           <TableCell>
             <Typography variant="body2" fontWeight="bold">
               {t('Total Salary Requested:')}
+              {outstandingSalaryRequest && (
+                <Tooltip title={salaryRequestTooltip}>
+                  <InfoTooltipIcon />
+                </Tooltip>
+              )}
             </Typography>
           </TableCell>
           <TableCell sx={{ color: 'warning.dark', fontWeight: 'bold' }}>

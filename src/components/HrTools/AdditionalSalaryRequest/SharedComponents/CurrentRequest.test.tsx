@@ -57,6 +57,8 @@ const mockRequest: RequestType = {
     currentSalaryCap: 50000,
     staffAccountBalance: 10000,
     pendingAsrAmount: 0,
+    grossAnnualSalary: 40000,
+    outstandingSalaryRequest: false,
   },
   spouseCalculations: null,
 };

@@ -108,6 +108,8 @@ export type AdditionalSalaryRequestType = {
     | 'combinedCap'
     | 'staffAccountBalance'
     | 'pendingAsrAmount'
+    | 'grossAnnualSalary'
+    | 'outstandingSalaryRequest'
   >;
   user: HcmQuery['hcm'][0] | undefined;
   spouse: HcmQuery['hcm'][1] | undefined;

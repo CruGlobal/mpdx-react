@@ -497,7 +497,6 @@ describe('RequestPage', () => {
       currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
       pageType: PageEnum.New,
       spouse: {
-        currentSalary: { grossSalaryAmount: 40000 },
         staffInfo: {
           preferredName: 'Jane',
           lastName: 'Doe',
@@ -506,9 +505,11 @@ describe('RequestPage', () => {
       requestData: {
         latestAdditionalSalaryRequest: {
           calculations: {
+            grossAnnualSalary: 40000,
             currentSalaryCap: 500,
           },
           spouseCalculations: {
+            grossAnnualSalary: 40000,
             currentSalaryCap: 500,
             pendingAsrAmount: 600,
           },

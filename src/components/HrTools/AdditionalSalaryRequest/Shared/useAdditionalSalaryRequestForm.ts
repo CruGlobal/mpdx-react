@@ -47,7 +47,9 @@ export const useAdditionalSalaryRequestForm = (
   const pendingAsrAmount =
     requestData?.latestAdditionalSalaryRequest?.calculations.pendingAsrAmount ??
     0;
-  const grossAnnualSalary = user?.currentSalary?.grossSalaryAmount ?? 0;
+  const grossAnnualSalary =
+    requestData?.latestAdditionalSalaryRequest?.calculations
+      .grossAnnualSalary ?? 0;
 
   const [updateAdditionalSalaryRequest] =
     useUpdateAdditionalSalaryRequestMutation();

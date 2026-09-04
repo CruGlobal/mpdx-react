@@ -21,9 +21,6 @@ export const mockUser = {
     personNumber: '00123456',
     emailAddress: 'john.doe@example.com',
   },
-  currentSalary: {
-    grossSalaryAmount: 40000,
-  },
 };
 
 export const defaultMockContextValue = {
@@ -35,6 +32,7 @@ export const defaultMockContextValue = {
         currentSalaryCap: 100000,
         staffAccountBalance: 40000,
         pendingAsrAmount: 5000,
+        grossAnnualSalary: 40000,
       },
     },
   },
@@ -42,6 +40,7 @@ export const defaultMockContextValue = {
     currentSalaryCap: 100000,
     staffAccountBalance: 40000,
     pendingAsrAmount: 5000,
+    grossAnnualSalary: 40000,
   },
   user: mockUser,
 };
