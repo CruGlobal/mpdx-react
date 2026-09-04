@@ -1,0 +1,26 @@
+query QuarterlyPayrollHistory(
+  $staffAccountId: String!
+  $historyRange: MpdHistoryRangeEnum = TWENTY_FOUR_MONTHS
+) {
+  quarterlyPayrollHistory(
+    staffAccountId: $staffAccountId
+    historyRange: $historyRange
+  ) {
+    monthlyGrossSalary
+    startingQuarter {
+      quarter
+      fiscalYear
+      months {
+        month
+        payroll
+        status
+      }
+    }
+    completedQuarters {
+      quarter
+      fiscalYear
+      averagePayroll
+      status
+    }
+  }
+}

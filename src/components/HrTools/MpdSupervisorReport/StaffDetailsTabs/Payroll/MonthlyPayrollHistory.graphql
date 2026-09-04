@@ -1,0 +1,8 @@
+query MonthlyPayrollHistory($staffAccountId: String!) {
+  monthlyPayrollHistory(staffAccountId: $staffAccountId) {
+    month
+    payroll
+    asrAndReimbursements
+    percentMaxPay
+  }
+}

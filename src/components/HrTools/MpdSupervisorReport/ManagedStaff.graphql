@@ -1,0 +1,61 @@
+query ManagedStaff(
+  $first: Int
+  $after: String
+  $name: String
+  $teamIds: [String!]
+  $negativeLastMonth: Boolean
+  $negativeThreeMonths: Boolean
+) {
+  managedStaff(
+    first: $first
+    after: $after
+    name: $name
+    teamIds: $teamIds
+    negativeLastMonth: $negativeLastMonth
+    negativeThreeMonths: $negativeThreeMonths
+  ) {
+    nodes {
+      firstName
+      lastName
+      spouseFirstName
+      spouseLastName
+      staffAccountId
+      teams {
+        employee {
+          id
+          name
+          department
+        }
+        spouse {
+          id
+          name
+          department
+        }
+      }
+      newStaffMonthlySalary
+      quarterlyHealth {
+        monthlyGrossSalary
+        startingQuarter {
+          quarter
+          fiscalYear
+          months {
+            month
+            payroll
+            status
+          }
+        }
+        completedQuarters {
+          quarter
+          fiscalYear
+          averagePayroll
+          status
+        }
+      }
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+    totalCount
+  }
+}
