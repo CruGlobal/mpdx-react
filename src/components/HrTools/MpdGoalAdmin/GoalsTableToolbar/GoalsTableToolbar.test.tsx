@@ -342,7 +342,7 @@ describe('GoalsTableToolbar', () => {
   });
 
   it('reports a failed assignment instead of claiming success', async () => {
-    const { getByRole, findByRole } = await renderLoaded({
+    const { getByRole, findByRole, queryByText } = await renderLoaded({
       assignCoach: {
         assignCoachToNewStaffCohortAttendee: () => {
           throw new Error('Not authorized');
@@ -361,6 +361,7 @@ describe('GoalsTableToolbar', () => {
     expect(await within(dialog).findByRole('alert')).toHaveTextContent(
       'The coach could not be assigned. Please try again.',
     );
+    expect(queryByText('Coach assigned successfully.')).not.toBeInTheDocument();
     // The selection is still there to retry with.
     expect(ctx.selectedRows).toHaveLength(1);
   });
