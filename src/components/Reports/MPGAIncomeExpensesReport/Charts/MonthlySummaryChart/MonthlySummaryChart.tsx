@@ -11,61 +11,44 @@ import {
   YAxis,
 } from 'recharts';
 import { useLocale } from 'src/hooks/useLocale';
+import { MonthlySummaryChartData } from 'src/hooks/useMonthlySummaryChartData';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { useMPGAIncomeExpenses } from '../../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { ChartFrame } from '../ChartFrame';
 import { ChartLegendContent } from '../ChartLegendContent/ChartLegendContent';
 
 interface MonthlySummaryChartProps {
+  data: MonthlySummaryChartData[];
+  currency: string;
+  loading?: boolean;
   aspect: number;
   width: number;
 }
 
-interface MonthlyTotal {
-  name: string;
-  income: number;
-  expenses: number;
-  net: number;
+interface MonthlyTotal extends MonthlySummaryChartData {
   tallest: number;
 }
 
 const chartColors = [theme.palette.success.main, theme.palette.error.main];
 
 export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
+  data,
+  currency,
+  loading,
   aspect,
   width,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const {
-    allData: data,
-    dataLoading,
-    monthLabels: months,
-    currency,
-  } = useMPGAIncomeExpenses();
-  const { income: incomeData, expenses: expenseData } = data;
-
-  const monthlyTotals = useMemo(() => {
-    return months.map((name, index) => {
-      const income = incomeData.reduce(
-        (sum, item) => sum + (item.monthly[index] ?? 0),
-        0,
-      );
-      const expenses = expenseData.reduce(
-        (sum, item) => sum + Math.abs(item.monthly[index] ?? 0),
-        0,
-      );
-      return {
-        name,
-        income,
-        expenses,
-        net: income - expenses,
-        tallest: Math.max(income, expenses),
-      };
-    });
-  }, [incomeData, expenseData, months]);
+  const monthlyTotals = useMemo(
+    (): MonthlyTotal[] =>
+      data.map((month) => ({
+        ...month,
+        tallest: Math.max(month.income, month.expenses),
+      })),
+    [data],
+  );
 
   return (
     <>
@@ -78,17 +61,17 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
         }}
       />
       <Box className="labels-print-only">
-        <ChartFrame width={width} aspect={aspect} loading={dataLoading}>
+        <ChartFrame width={width} aspect={aspect} loading={loading}>
           <BarChart
             data={monthlyTotals}
             barGap={0}
             margin={{ top: 15, right: 30, left: 20, bottom: 5 }}
           >
             <XAxis
-              dataKey="name"
+              dataKey="month"
               tickFormatter={(value) => value.split(' ')[0]}
             />
-            <XAxis dataKey="name" xAxisId="net" hide />
+            <XAxis dataKey="month" xAxisId="net" hide />
             <YAxis
               tickFormatter={(value) => currencyFormat(value, currency, locale)}
             />

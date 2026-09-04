@@ -1,5 +1,6 @@
 import { Box, Container, GlobalStyles, Grid, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useMonthlySummaryChartData } from 'src/hooks/useMonthlySummaryChartData';
 import { ExpensesPieChart } from '../Charts/ExpensesPieChart/ExpensesPieChart';
 import { MonthlySummaryChart } from '../Charts/MonthlySummaryChart/MonthlySummaryChart';
 import { SummaryBarChart } from '../Charts/SummaryBarChart/SummaryBarChart';
@@ -9,7 +10,8 @@ import { PrintTables } from '../Tables/PrintTables';
 
 export const PrintOnlyReport: React.FC = () => {
   const { t } = useTranslation();
-  const { allData: data } = useMPGAIncomeExpenses();
+  const { allData: data, dataLoading, currency } = useMPGAIncomeExpenses();
+  const monthlySummaryChartData = useMonthlySummaryChartData();
 
   return (
     <>
@@ -64,7 +66,13 @@ export const PrintOnlyReport: React.FC = () => {
             <Typography variant="h6" sx={{ mt: 3 }}>
               {t('Monthly Summary')}
             </Typography>
-            <MonthlySummaryChart aspect={2.7} width={80} />
+            <MonthlySummaryChart
+              data={monthlySummaryChartData}
+              currency={currency}
+              loading={dataLoading}
+              aspect={2.7}
+              width={80}
+            />
           </Box>
         </Container>
       </Box>

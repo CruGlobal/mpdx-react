@@ -1,15 +1,32 @@
 import '../sharedRechartMock';
 import React from 'react';
 import { render, waitFor, within } from '@testing-library/react';
+import { useMonthlySummaryChartData } from 'src/hooks/useMonthlySummaryChartData';
+import { useMPGAIncomeExpenses } from '../../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { MPGAIncomeExpensesReportTestWrapper } from '../../MPGAIncomeExpensesReportTestWrapper';
 import { MonthlySummaryChart } from './MonthlySummaryChart';
 
 const mutationSpy = jest.fn();
 const monthCount = 12;
 
+const ChartWithData: React.FC = () => {
+  const { dataLoading, currency } = useMPGAIncomeExpenses();
+  const data = useMonthlySummaryChartData();
+
+  return (
+    <MonthlySummaryChart
+      data={data}
+      currency={currency}
+      loading={dataLoading}
+      aspect={1.35}
+      width={100}
+    />
+  );
+};
+
 const TestComponent: React.FC = () => (
   <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
-    <MonthlySummaryChart aspect={1.35} width={100} />
+    <ChartWithData />
   </MPGAIncomeExpensesReportTestWrapper>
 );
 

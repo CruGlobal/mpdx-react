@@ -1,6 +1,7 @@
 import { HourglassDisabled } from '@mui/icons-material';
 import { Box, Container, Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useMonthlySummaryChartData } from 'src/hooks/useMonthlySummaryChartData';
 import { EmptyTable } from '../../../HrTools/Shared/EmptyTable/EmptyTable';
 import { CardSkeleton } from '../Card/CardSkeleton';
 import { ExpensesPieChart } from '../Charts/ExpensesPieChart/ExpensesPieChart';
@@ -12,7 +13,8 @@ import { TableCard } from '../Tables/TableCard';
 
 export const ScreenOnlyReport: React.FC = () => {
   const { t } = useTranslation();
-  const { allData: data } = useMPGAIncomeExpenses();
+  const { allData: data, dataLoading, currency } = useMPGAIncomeExpenses();
+  const monthlySummaryChartData = useMonthlySummaryChartData();
 
   return (
     <Box mt={2}>
@@ -61,7 +63,13 @@ export const ScreenOnlyReport: React.FC = () => {
         </Box>
         <Box mt={2} mb={2}>
           <CardSkeleton title={t('Monthly Summary')}>
-            <MonthlySummaryChart aspect={2.5} width={100} />
+            <MonthlySummaryChart
+              data={monthlySummaryChartData}
+              currency={currency}
+              loading={dataLoading}
+              aspect={2.5}
+              width={100}
+            />
           </CardSkeleton>
         </Box>
       </Container>
