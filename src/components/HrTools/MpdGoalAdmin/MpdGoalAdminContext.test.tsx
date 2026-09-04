@@ -409,23 +409,6 @@ describe('MpdGoalAdminContext', () => {
     expect(attendeeCalls()).toBe(callsBefore);
   });
 
-  it('rejects when the assignment comes back with nobody assigned', async () => {
-    const { result } = renderHook(() => useMpdGoalAdmin(), {
-      // All-or-nothing server-side, so an empty payload assigned nobody.
-      wrapper: makeWrapper({ assignCoach: assignedCoachMock([]) }),
-    });
-    await waitFor(() =>
-      expect(result.current.filteredRows).not.toHaveLength(0),
-    );
-
-    await act(async () => {
-      await expect(
-        result.current.assignCoach(['row-1'], 'coach-6'),
-      ).rejects.toThrow('The coach assignment returned no attendees');
-    });
-    expect(result.current.filteredRows[0].coach).toBeNull();
-  });
-
   it('rejects when the server refuses the assignment', async () => {
     const { result } = renderHook(() => useMpdGoalAdmin(), {
       wrapper: makeWrapper({

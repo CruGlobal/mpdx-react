@@ -11,7 +11,6 @@ mutation AssignCoachToNewStaffCohortAttendee(
   $input: NewStaffCohortAttendeeAssignCoachMutationInput!
 ) {
   assignCoachToNewStaffCohortAttendee(input: $input) {
-    # Normalizes over each cached attendee, so the Coach cells update in place.
     newStaffCohortAttendees {
       id
       coach {
