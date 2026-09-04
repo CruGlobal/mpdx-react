@@ -1,8 +1,8 @@
 /**
  * Yup validation schema for the Goal Settings form.
  *
- * Only the numeric inputs need validation: every other field is a Select whose
- * value is constrained by its options. Numeric fields are edited as
+ * The numeric inputs need type and range checks; the Selects a goal cannot be
+ * calculated without are required too. Numeric fields are edited as
  * `number | ''` (see `goalSettingsFormValues.ts`), so each rule treats the empty
  * string as "not set" (null) rather than failing it.
  *
@@ -10,6 +10,7 @@
  */
 import { TFunction } from 'react-i18next';
 import * as yup from 'yup';
+import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
 import { amount, integer, percentage } from 'src/lib/yupHelpers';
 
 /** Treat the form's empty-string ("not set") as null so it passes validation. */
@@ -31,11 +32,43 @@ const optional403bPercentage = (label: string, t: TFunction) =>
     t('{{fieldName}} must be less than 100%', { fieldName: label }),
   );
 
+const required = (label: string, t: TFunction) =>
+  t('{{fieldName}} is required', { fieldName: label });
+
+/** Only asked for when the household is married; see goalSettingsCompletion. */
+const requiredWhenMarried = <Schema extends yup.AnySchema>(
+  schema: Schema,
+  label: string,
+  t: TFunction,
+) =>
+  schema.when('maritalStatus', {
+    is: NewStaffQuestionnaireMaritalStatusEnum.Married,
+    then: (spouseSchema) => spouseSchema.required(required(label, t)),
+  });
+
 export const getGoalSettingsSchema = (t: TFunction) =>
   yup.object({
+    // The fields a goal cannot be calculated without. Required so Save & Share
+    // can name what is still missing instead of only greying itself out.
+    // Drives the spouse rules below; unset would skip them silently.
+    maritalStatus: yup.string().required(required(t('Marital Status'), t)),
+    calculationsYear: yup.string().required(required(t('Calculation Year'), t)),
+    age: yup.string().required(required(t('Age'), t)),
+    assignmentType: yup
+      .string()
+      .required(required(t('Field or Office Based'), t)),
+    benefitsPlan: yup.string().required(required(t('Benefits Plan'), t)),
+    spouseAge: requiredWhenMarried(yup.string(), t('Spouse Age'), t),
+
     // Personal
-    tenure: optionalInteger(t('Tenure'), t),
-    spouseTenure: optionalInteger(t('Tenure'), t),
+    tenure: optionalInteger(t('Full Time Years on Staff'), t).required(
+      required(t('Full Time Years on Staff'), t),
+    ),
+    spouseTenure: requiredWhenMarried(
+      optionalInteger(t('Spouse Full Time Years on Staff'), t),
+      t('Spouse Full Time Years on Staff'),
+      t,
+    ),
 
     // Financial
     annualRequestedSalary: optionalAmount(t('Annual Requested Salary'), t),

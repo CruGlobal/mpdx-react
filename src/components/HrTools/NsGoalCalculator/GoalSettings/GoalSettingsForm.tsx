@@ -1,16 +1,19 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
+import { ErrorOutline } from '@mui/icons-material';
 import {
   Box,
   Button,
   CircularProgress,
   Divider,
   Stack,
+  Tooltip,
   styled,
 } from '@mui/material';
-import { Form, Formik } from 'formik';
+import { Form, Formik, useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
 import { GoalSettingsHeader } from './GoalSettingsHeader';
+import { useGoalSettingsNavigation } from './GoalSettingsNavigationContext';
 import { GoalSettingsPreviewProvider } from './GoalSettingsPreviewContext';
 import { GoalSettingsScrollContainer } from './GoalSettingsScrollContainer';
 import { GoalSettingsWarning } from './GoalSettingsWarning';
@@ -57,6 +60,24 @@ const StickyActionBar = styled(Box)(({ theme }) => ({
   borderTop: `1px solid ${theme.palette.divider}`,
 }));
 
+/**
+ * Reports the form's unsaved edits to the navigation provider, so the sidebar's
+ * back link can confirm before discarding them.
+ */
+const GoalSettingsUnsavedChangesTracker: React.FC = () => {
+  const { dirty, resetForm } = useFormikContext<GoalSettingsFormValues>();
+  const { registerForm } = useGoalSettingsNavigation();
+
+  useEffect(() => {
+    registerForm({ dirty, discard: () => resetForm() });
+    // The sidebar swaps this form out for the review/present panes, so without
+    // this the provider would keep guarding a Formik that no longer exists.
+    return () => registerForm({ dirty: false, discard: () => undefined });
+  }, [dirty, resetForm, registerForm]);
+
+  return null;
+};
+
 export type GoalSettingsFormProps =
   | { accountListId: string }
   | { scenarioGoalId: string };
@@ -64,6 +85,7 @@ export type GoalSettingsFormProps =
 export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
   const { t } = useTranslation();
   const validationSchema = useMemo(() => getGoalSettingsSchema(t), [t]);
+  const { leave, returnToTable } = useGoalSettingsNavigation();
 
   const {
     goalCalculation: calculation,
@@ -120,7 +142,16 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
   const handleSubmit = async (
     values: GoalSettingsFormValues,
   ): Promise<void> => {
-    await save(formValuesToAttributes(values, { includeIdentity: isScenario }));
+    try {
+      await save(
+        formValuesToAttributes(values, { includeIdentity: isScenario }),
+      );
+    } catch {
+      // The global Apollo error link toasts the failure; stay put so the
+      // admin can retry without retyping.
+      return;
+    }
+    returnToTable();
   };
 
   return (
@@ -132,7 +163,7 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
         validateOnMount
         onSubmit={handleSubmit}
       >
-        {({ isSubmitting, isValid, resetForm, values }) => {
+        {({ isSubmitting, isValid, values }) => {
           // Spouse columns follow the live form value, so they appear the moment
           // marital status is set to married — before the change is saved.
           const hasSpouse =
@@ -140,6 +171,8 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
             NewStaffQuestionnaireMaritalStatusEnum.Married;
           const seniorStaffSpouse =
             hasSpouse && values.spouseJoining === 'false';
+          // Colour alone can't say "incomplete", so this also drives an icon and a tooltip.
+          const isIncomplete = !isValid && !isSubmitting;
           const primaryName = values.firstName;
           const spouseName = values.spouseFirstName || t('Spouse');
           const primaryHeader = `${primaryName} (${t('Joining')})`;
@@ -164,6 +197,7 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
               calculation={calculation}
             >
               <Form>
+                <GoalSettingsUnsavedChangesTracker />
                 <GoalSettingsHeader
                   primaryPerson={primaryPerson}
                   spousePerson={spousePerson}
@@ -193,21 +227,38 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
                   >
                     <GoalSettingsWarning />
                     <Stack direction="row" spacing={2} sx={{ ml: 'auto' }}>
-                      <Button color="inherit" onClick={() => resetForm()}>
+                      <Button color="inherit" onClick={leave}>
                         {t('Cancel')}
                       </Button>
-                      <Button
-                        type="submit"
-                        variant="contained"
-                        disabled={!isValid || isSubmitting}
-                        startIcon={
-                          isSubmitting ? (
-                            <CircularProgress color="inherit" size={20} />
-                          ) : undefined
+                      {/* Enabled while invalid so submitting can surface which
+                          required fields are still missing. */}
+                      <Tooltip
+                        // Without this the tooltip becomes the button's aria-label and hides its text.
+                        describeChild
+                        title={
+                          isIncomplete
+                            ? t(
+                                'Some required fields are still missing. Save & Share to see which ones.',
+                              )
+                            : ''
                         }
                       >
-                        {t('Save & Share')}
-                      </Button>
+                        <Button
+                          type="submit"
+                          variant="contained"
+                          color={isValid ? 'primary' : 'error'}
+                          disabled={isSubmitting}
+                          startIcon={
+                            isSubmitting ? (
+                              <CircularProgress color="inherit" size={20} />
+                            ) : isIncomplete ? (
+                              <ErrorOutline />
+                            ) : undefined
+                          }
+                        >
+                          {t('Save & Share')}
+                        </Button>
+                      </Tooltip>
                     </Stack>
                   </Stack>
                 </StickyActionBar>
