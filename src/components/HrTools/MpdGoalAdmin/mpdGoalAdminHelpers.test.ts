@@ -6,6 +6,7 @@ import {
 import i18n from 'src/lib/i18n';
 import {
   attendeeToRow,
+  coachLabel,
   cohortNodeToCohort,
   cohortToTrainingCosts,
   familyStatusLabel,
@@ -14,7 +15,12 @@ import {
   partitionSendable,
   trainingCostsToAttributes,
 } from './mpdGoalAdminHelpers';
-import { attendees, cohortsMock, trainingCosts } from './mpdGoalAdminMocks';
+import {
+  attendees,
+  coach,
+  cohortsMock,
+  trainingCosts,
+} from './mpdGoalAdminMocks';
 
 const t = i18n.t;
 
@@ -110,7 +116,7 @@ describe('attendeeToRow', () => {
       goalStatus: NewStaffCohortAttendeeGoalStatusEnum.Complete,
       goalSentAt: null,
       familyStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
-      coach: 'Amy Wilson',
+      coach: coach('coach-1', 'Amy', 'Wilson'),
       coordinators: ['Kim Coordinator'],
     });
   });
@@ -133,20 +139,12 @@ describe('attendeeToRow', () => {
     expect(attendeeToRow(attendeeWithoutCoach).coach).toBeNull();
   });
 
-  it('treats a coach with no name on file as unassigned', () => {
+  it('keeps a coach with no name on file, for the label to fall back on', () => {
     const row = attendeeToRow({
       ...attendeeWithoutCoach,
-      coach: { id: 'coach-x', firstName: null, lastName: null },
+      coach: coach('coach-x', null, null),
     });
-    expect(row.coach).toBeNull();
-  });
-
-  it('renders a partially named coach without stray whitespace', () => {
-    const row = attendeeToRow({
-      ...attendeeWithoutCoach,
-      coach: { id: 'coach-x', firstName: null, lastName: 'Jones' },
-    });
-    expect(row.coach).toBe('Jones');
+    expect(row.coach).toEqual(coach('coach-x', null, null));
   });
 
   it('falls back to empty strings for missing ministry and geography', () => {
@@ -165,6 +163,23 @@ describe('attendeeToRow', () => {
       coordinators: ['Kim Coordinator', 'Lee Coordinator'],
     });
     expect(row.coordinators).toEqual(['Kim Coordinator', 'Lee Coordinator']);
+  });
+});
+
+describe('coachLabel', () => {
+  it('joins the names a coach has, without stray whitespace', () => {
+    expect(coachLabel(coach('coach-x', null, 'Jones'), t)).toBe('Jones');
+    expect(coachLabel(coach('coach-x', 'Amy', 'Wilson'), t)).toBe('Amy Wilson');
+  });
+
+  it('falls back to the email when no name is on file', () => {
+    expect(coachLabel(coach('coach-7', null, null), t)).toBe('coach-7@cru.org');
+  });
+
+  it('falls back to a placeholder when there is no name and no email', () => {
+    expect(coachLabel(coach('coach-8', null, null, null), t)).toBe(
+      'Unnamed coach',
+    );
   });
 });
 

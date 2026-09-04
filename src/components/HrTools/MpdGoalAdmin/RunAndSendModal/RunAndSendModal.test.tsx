@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { GoalStatusEnum, StaffGoalRow } from '../mpdGoalAdminHelpers';
+import { coach } from '../mpdGoalAdminMocks';
 import { RunAndSendModal } from './RunAndSendModal';
 
 const makeRow = (
@@ -20,7 +21,7 @@ const makeRow = (
   goalSentAt:
     goalStatus === GoalStatusEnum.Sent ? '2026-08-10T15:40:00Z' : null,
   familyStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
-  coach: 'Coach',
+  coach: coach('coach-1', 'Amy', 'Wilson'),
   coordinators: ['Coordinator'],
 });
 

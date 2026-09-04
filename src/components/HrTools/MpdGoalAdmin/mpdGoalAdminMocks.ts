@@ -119,6 +119,14 @@ export const noCohortsMock: NewStaffCohortsQuery = {
 type AttendeeNode =
   NewStaffCohortAttendeesQuery['newStaffCohort']['attendees']['nodes'][number];
 
+/** Shared by the attendee rows and the picker so both carry the same fields. */
+export const coach = (
+  id: string,
+  firstName: string | null,
+  lastName: string | null,
+  email: string | null = `${id}@cru.org`,
+) => ({ id, firstName, lastName, email });
+
 const attendee = (
   id: string,
   displayName: string,
@@ -147,12 +155,12 @@ export const attendees: AttendeeNode[] = [
   attendee('row-2', 'Carlos & Michaela Everts', {
     goalStatus: NewStaffCohortAttendeeGoalStatusEnum.Incomplete,
     newStaffGoalCalculation: null,
-    coach: { id: 'coach-3', firstName: 'Nelson', lastName: 'Jones' },
+    coach: coach('coach-3', 'Nelson', 'Jones'),
   }),
   attendee('row-3', 'Sam Smith', {
     familyStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
     newStaffGoalCalculation: { id: 'calc-row-3', monthlyGoal: 4200 },
-    coach: { id: 'coach-1', firstName: 'Amy', lastName: 'Wilson' },
+    coach: coach('coach-1', 'Amy', 'Wilson'),
   }),
 ];
 
@@ -204,13 +212,6 @@ export const runAndSentMock = (
   },
 });
 
-const coach = (
-  id: string,
-  firstName: string | null,
-  lastName: string | null,
-  email: string | null = `${id}@cru.org`,
-) => ({ id, firstName, lastName, email });
-
 /** The picker's options; ids match the coaches the attendee fixtures carry. */
 export const assignableCoachesMock: NewStaffCohortAssignableCoachesQuery = {
   newStaffCohortAssignableCoaches: [
@@ -226,6 +227,13 @@ export const assignableCoachesMock: NewStaffCohortAssignableCoachesQuery = {
 export const noAssignableCoachesMock: NewStaffCohortAssignableCoachesQuery = {
   newStaffCohortAssignableCoaches: [],
 };
+
+/** The query fails, which settles with no data and must not read as "none eligible". */
+export const failedAssignableCoachesMock = {
+  newStaffCohortAssignableCoaches: () => {
+    throw new Error('Not authorized');
+  },
+} as unknown as NewStaffCohortAssignableCoachesQuery;
 
 /** Echoes the assignment back, the way the server normalizes it over each row. */
 export const assignedCoachMock = (

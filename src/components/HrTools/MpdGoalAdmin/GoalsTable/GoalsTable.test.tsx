@@ -26,8 +26,10 @@ import {
   assignedCoachMock,
   attendees,
   attendeesMock,
+  coach,
   cohortsMock,
   cohortsWithoutCostsMock,
+  failedAssignableCoachesMock,
   noAssignableCoachesMock,
   runAndSentMock,
 } from '../mpdGoalAdminMocks';
@@ -251,6 +253,28 @@ describe('GoalsTable', () => {
     expect(getAllByText('Assign Coach').length).toBeGreaterThan(0);
   });
 
+  it('falls back to the email of a coach with no name on file', () => {
+    const row = attendeeToRow({
+      ...attendees[0],
+      coach: coach('coach-7', null, null),
+    });
+    const { getByText, queryByText } = renderTable([row]);
+
+    expect(getByText('coach-7@cru.org')).toBeInTheDocument();
+    expect(queryByText('Assign Coach')).not.toBeInTheDocument();
+  });
+
+  it('labels a coach with neither a name nor an email as unnamed', () => {
+    const row = attendeeToRow({
+      ...attendees[0],
+      coach: coach('coach-8', null, null, null),
+    });
+    const { getByText, queryByText } = renderTable([row]);
+
+    expect(getByText('Unnamed coach')).toBeInTheDocument();
+    expect(queryByText('Assign Coach')).not.toBeInTheDocument();
+  });
+
   it('opens the Assign Coach modal for the selected staff member', async () => {
     const { getByRole, findByText } = renderTable();
     // 'John & Jane Doe' is the only attendee without a coach.
@@ -289,6 +313,23 @@ describe('GoalsTable', () => {
       'No coaches are available to assign for this cohort.',
     );
     expect(queryByRole('combobox', { name: 'Coach' })).not.toBeInTheDocument();
+  });
+
+  it('reports a failed coach list instead of blaming OneApp eligibility', async () => {
+    const { getByRole, findByRole, queryByText, queryByRole } =
+      await renderWithCoaches(failedAssignableCoachesMock);
+    userEvent.click(getByRole('button', { name: 'Assign Coach' }));
+
+    const dialog = await findByRole('dialog');
+    expect(within(dialog).getByRole('alert')).toHaveTextContent(
+      'The list of coaches could not be loaded, so no coach can be assigned yet.',
+    );
+    expect(queryByText(/OneApp/)).not.toBeInTheDocument();
+    // Nothing can be picked, so there is no Save button left to sit dead.
+    expect(queryByRole('button', { name: 'Save' })).not.toBeInTheDocument();
+    expect(
+      within(dialog).getByRole('button', { name: 'Try Again' }),
+    ).toBeVisible();
   });
 
   it('assigns a coach to the row from the Assign Coach modal', async () => {

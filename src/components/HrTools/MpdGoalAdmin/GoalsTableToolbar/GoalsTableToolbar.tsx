@@ -32,6 +32,8 @@ export const GoalsTableToolbar: React.FC = () => {
     assignCoach,
     assignableCoaches,
     assignableCoachesLoading,
+    assignableCoachesError,
+    retryAssignableCoaches,
     selectedCohort,
     loading,
     error,
@@ -152,6 +154,8 @@ export const GoalsTableToolbar: React.FC = () => {
           }
           coaches={assignableCoaches}
           loading={assignableCoachesLoading}
+          coachesError={assignableCoachesError}
+          onRetryCoaches={retryAssignableCoaches}
           reassignedNames={selectedRows
             .filter((row) => row.coach)
             .map((row) => row.name)}

@@ -21,6 +21,7 @@ import {
   attendeesMock,
   cohortsMock,
   cohortsWithoutCostsMock,
+  failedAssignableCoachesMock,
   runAndSentMock,
 } from '../mpdGoalAdminMocks';
 import { GoalsTableToolbar } from './GoalsTableToolbar';
@@ -65,10 +66,12 @@ const renderToolbar = ({
   cohorts = cohortsMock,
   sentCount = 2,
   assignCoach = assignedCoachMock(['row-1', 'row-2']),
+  coaches = assignableCoachesMock,
 }: {
   cohorts?: NewStaffCohortsQuery;
   sentCount?: number;
   assignCoach?: AssignCoachToNewStaffCohortAttendeeMutation;
+  coaches?: NewStaffCohortAssignableCoachesQuery;
 } = {}) =>
   render(
     <ThemeProvider theme={theme}>
@@ -87,7 +90,7 @@ const renderToolbar = ({
               cohorts.newStaffCohorts.nodes[0].id,
               sentCount,
             ),
-            NewStaffCohortAssignableCoaches: assignableCoachesMock,
+            NewStaffCohortAssignableCoaches: coaches,
             AssignCoachToNewStaffCohortAttendee: assignCoach,
           }}
           onCall={mutationSpy}
@@ -339,7 +342,7 @@ describe('GoalsTableToolbar', () => {
   });
 
   it('reports a failed assignment instead of claiming success', async () => {
-    const { getByRole, findByRole } = await renderLoaded({
+    const { getByRole, findByRole, queryByText } = await renderLoaded({
       assignCoach: {
         assignCoachToNewStaffCohortAttendee: () => {
           throw new Error('Not authorized');
@@ -358,8 +361,26 @@ describe('GoalsTableToolbar', () => {
     expect(await within(dialog).findByRole('alert')).toHaveTextContent(
       'The coach could not be assigned. Please try again.',
     );
+    expect(queryByText('Coach assigned successfully.')).not.toBeInTheDocument();
     // The selection is still there to retry with.
     expect(ctx.selectedRows).toHaveLength(1);
+  });
+
+  it('keeps Run and Send All usable when the coach list fails to load', async () => {
+    const { getByRole, findByRole } = await renderLoaded({
+      coaches: failedAssignableCoachesMock,
+    });
+    // A coach-list failure is not a goals failure, so sending stays available.
+    expect(getByRole('button', { name: 'Run and Send All' })).toBeEnabled();
+
+    act(() => ctx.toggleRow('row-1'));
+    userEvent.click(getByRole('button', { name: 'More Actions' }));
+    userEvent.click(getByRole('menuitem', { name: 'Assign Coach' }));
+
+    const dialog = await findByRole('dialog');
+    expect(within(dialog).getByRole('alert')).toHaveTextContent(
+      'The list of coaches could not be loaded, so no coach can be assigned yet.',
+    );
   });
 
   it("uses the staff member's name in the assign-coach title for a single selection", async () => {
