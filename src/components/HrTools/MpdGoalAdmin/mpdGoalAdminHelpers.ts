@@ -6,6 +6,7 @@ import {
   NewStaffQuestionnaireMaritalStatusEnum,
 } from 'src/graphql/types.generated';
 import { dateFormatShort } from 'src/lib/intlFormat';
+import { StatusChipColor } from '../Shared/StatusChip';
 import {
   NewStaffCohortAttendeesQuery,
   NewStaffCohortsQuery,
@@ -18,6 +19,32 @@ export enum MpdGoalAdminTabEnum {
   ScenarioGoals = 'scenario-goals',
 }
 
+/** The tab lives in the URL so Goal Settings can link back to the one it came from. */
+export const parseMpdGoalAdminTab = (
+  value: string | undefined,
+): MpdGoalAdminTabEnum =>
+  value === MpdGoalAdminTabEnum.ScenarioGoals
+    ? MpdGoalAdminTabEnum.ScenarioGoals
+    : MpdGoalAdminTabEnum.ActiveGoals;
+
+export const mpdGoalAdminUrl = (
+  accountListId: string,
+  tab: MpdGoalAdminTabEnum,
+): string => `/accountLists/${accountListId}/hrTools/mpdGoalAdmin?tab=${tab}`;
+
+/** Goal Settings for one training attendee, keyed by the household's account list. */
+export const staffDetailsUrl = (
+  accountListId: string,
+  staffAccountListId: string,
+): string =>
+  `/accountLists/${accountListId}/hrTools/mpdGoalAdmin/staff/${staffAccountListId}`;
+
+export const scenarioGoalUrl = (
+  accountListId: string,
+  scenarioGoalId: string,
+): string =>
+  `/accountLists/${accountListId}/hrTools/mpdGoalAdmin/scenario/${scenarioGoalId}`;
+
 /** The API's goal status, re-exported under the shorter name this feature uses. */
 export { NewStaffCohortAttendeeGoalStatusEnum as GoalStatusEnum };
 
@@ -27,6 +54,8 @@ type AttendeeNode =
 
 export interface StaffGoalRow {
   id: string;
+  /** The household's account list, which its Staff Details page is keyed by. */
+  accountListId: string;
   name: string;
   ministry: string;
   geography: string;
@@ -178,6 +207,7 @@ export const cohortNodeToCohort = (
 
 export const attendeeToRow = (attendee: AttendeeNode): StaffGoalRow => ({
   id: attendee.id,
+  accountListId: attendee.accountListId,
   name: attendee.displayName,
   ministry: attendee.ministry?.name ?? '',
   geography: attendee.geographicLocation ?? '',
@@ -217,6 +247,20 @@ export const goalStatusLabel = (
       return t('Sent');
     default:
       return t('Incomplete');
+  }
+};
+
+/** Complete is ready to send and Sent is already done; only Incomplete needs action. */
+export const goalStatusColor = (
+  status: NewStaffCohortAttendeeGoalStatusEnum,
+): StatusChipColor => {
+  switch (status) {
+    case NewStaffCohortAttendeeGoalStatusEnum.Complete:
+      return 'success';
+    case NewStaffCohortAttendeeGoalStatusEnum.Sent:
+      return 'info';
+    default:
+      return 'warning';
   }
 };
 

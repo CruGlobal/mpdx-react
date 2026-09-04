@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { MpdGoalAdminProvider, useMpdGoalAdmin } from '../MpdGoalAdminContext';
@@ -49,9 +50,11 @@ const renderButton = () =>
             UpdateNewStaffCohort: updatedCohortMock('spring-nso-2027'),
           }}
         >
-          <MpdGoalAdminProvider>
-            <Capture />
-          </MpdGoalAdminProvider>
+          <TestRouter>
+            <MpdGoalAdminProvider>
+              <Capture />
+            </MpdGoalAdminProvider>
+          </TestRouter>
         </GqlMockedProvider>
       </SnackbarProvider>
     </ThemeProvider>,
