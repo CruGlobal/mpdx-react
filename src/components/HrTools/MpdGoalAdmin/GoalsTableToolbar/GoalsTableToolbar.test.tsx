@@ -5,6 +5,10 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import {
+  AssignCoachToNewStaffCohortAttendeeMutation,
+  NewStaffCohortAssignableCoachesQuery,
+} from '../AssignCoach.generated';
 import { MpdGoalAdminProvider, useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import {
   NewStaffCohortAttendeesQuery,
@@ -12,6 +16,8 @@ import {
   RunAndSendNewStaffCohortMutation,
 } from '../NewStaffCohorts.generated';
 import {
+  assignableCoachesMock,
+  assignedCoachMock,
   attendeesMock,
   cohortsMock,
   cohortsWithoutCostsMock,
@@ -58,7 +64,12 @@ const renderFailingToolbar = () =>
 const renderToolbar = ({
   cohorts = cohortsMock,
   sentCount = 2,
-}: { cohorts?: NewStaffCohortsQuery; sentCount?: number } = {}) =>
+  assignCoach = assignedCoachMock(['row-1', 'row-2']),
+}: {
+  cohorts?: NewStaffCohortsQuery;
+  sentCount?: number;
+  assignCoach?: AssignCoachToNewStaffCohortAttendeeMutation;
+} = {}) =>
   render(
     <ThemeProvider theme={theme}>
       <SnackbarProvider>
@@ -66,6 +77,8 @@ const renderToolbar = ({
           NewStaffCohorts: NewStaffCohortsQuery;
           NewStaffCohortAttendees: NewStaffCohortAttendeesQuery;
           RunAndSendNewStaffCohort: RunAndSendNewStaffCohortMutation;
+          NewStaffCohortAssignableCoaches: NewStaffCohortAssignableCoachesQuery;
+          AssignCoachToNewStaffCohortAttendee: AssignCoachToNewStaffCohortAttendeeMutation;
         }>
           mocks={{
             NewStaffCohorts: cohorts,
@@ -74,6 +87,8 @@ const renderToolbar = ({
               cohorts.newStaffCohorts.nodes[0].id,
               sentCount,
             ),
+            NewStaffCohortAssignableCoaches: assignableCoachesMock,
+            AssignCoachToNewStaffCohortAttendee: assignCoach,
           }}
           onCall={mutationSpy}
         >
@@ -89,6 +104,8 @@ const renderToolbar = ({
 const renderLoaded = async (options?: Parameters<typeof renderToolbar>[0]) => {
   const screen = renderToolbar(options);
   await waitFor(() => expect(ctx.filteredRows).toHaveLength(3));
+  // The picker is empty until the assignable-coaches query settles.
+  await waitFor(() => expect(ctx.assignableCoachesLoading).toBe(false));
   return screen;
 };
 
@@ -308,10 +325,41 @@ describe('GoalsTableToolbar', () => {
     expect(
       await findByText('Coach assigned successfully.'),
     ).toBeInTheDocument();
-    const byId = (id: string) => ctx.filteredRows.find((row) => row.id === id);
-    expect(byId('row-1')?.coach).toBe('Tom Harris');
-    expect(byId('row-2')?.coach).toBe('Tom Harris');
+    expect(mutationSpy).toHaveGraphqlOperation(
+      'AssignCoachToNewStaffCohortAttendee',
+      {
+        input: {
+          cohortId: 'fall-nso-2026',
+          attendeeIds: ['row-1', 'row-2'],
+          coachId: 'coach-6',
+        },
+      },
+    );
     expect(ctx.selectedRows).toHaveLength(0);
+  });
+
+  it('reports a failed assignment instead of claiming success', async () => {
+    const { getByRole, findByRole } = await renderLoaded({
+      assignCoach: {
+        assignCoachToNewStaffCohortAttendee: () => {
+          throw new Error('Not authorized');
+        },
+      } as unknown as AssignCoachToNewStaffCohortAttendeeMutation,
+    });
+    act(() => ctx.toggleRow('row-1'));
+    userEvent.click(getByRole('button', { name: 'More Actions' }));
+    userEvent.click(getByRole('menuitem', { name: 'Assign Coach' }));
+
+    const dialog = getByRole('dialog');
+    userEvent.click(within(dialog).getByRole('combobox', { name: 'Coach' }));
+    userEvent.click(await findByRole('option', { name: 'Tom Harris' }));
+    userEvent.click(getByRole('button', { name: 'Save' }));
+
+    expect(await within(dialog).findByRole('alert')).toHaveTextContent(
+      'The coach could not be assigned. Please try again.',
+    );
+    // The selection is still there to retry with.
+    expect(ctx.selectedRows).toHaveLength(1);
   });
 
   it("uses the staff member's name in the assign-coach title for a single selection", async () => {
