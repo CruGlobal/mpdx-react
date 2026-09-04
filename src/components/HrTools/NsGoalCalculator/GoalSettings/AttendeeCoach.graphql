@@ -1,0 +1,21 @@
+query NewStaffCohortAttendeeAssignableCoaches($attendeeId: ID!) {
+  newStaffCohortAssignableCoaches(attendeeId: $attendeeId) {
+    id
+    firstName
+    lastName
+    email
+  }
+}
+
+mutation UnassignCoachFromNewStaffCohortAttendee(
+  $input: NewStaffCohortAttendeeUnassignCoachMutationInput!
+) {
+  unassignCoachFromNewStaffCohortAttendee(input: $input) {
+    newStaffCohortAttendees {
+      id
+      coach {
+        id
+      }
+    }
+  }
+}

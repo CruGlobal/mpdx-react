@@ -8,6 +8,16 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { GoalSettingsHeader } from './GoalSettingsHeader';
 import { GoalSettingsPerson } from './goalSettingsFormValues';
+import { GoalSettingsAttendee } from './goalSettingsSectionProps';
+
+const defaultAttendee: GoalSettingsAttendee = {
+  id: 'attendee-1',
+  newStaffCohortId: 'cohort-1',
+  cohortName: 'Fall NSO 2026',
+  coordinators: ['Ada Lovelace', 'Grace Hopper'],
+  ministry: { id: 'ministry-1', name: 'Campus' },
+  coach: null,
+};
 
 const primaryPerson: GoalSettingsPerson = {
   firstName: 'John',
@@ -33,7 +43,7 @@ interface TestComponentProps {
   joinedStaffYear?: number | null;
   isScenario?: boolean;
   isComplete?: boolean;
-  coordinators?: string[];
+  attendee?: GoalSettingsAttendee | null;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -42,7 +52,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   joinedStaffYear = 2018,
   isScenario,
   isComplete,
-  coordinators,
+  attendee = defaultAttendee,
 }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
@@ -59,7 +69,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
               joinedStaffYear={joinedStaffYear}
               isScenario={isScenario}
               isComplete={isComplete}
-              coordinators={coordinators}
+              attendee={attendee}
             />
           </Form>
         </Formik>
@@ -180,10 +190,8 @@ describe('GoalSettingsHeader', () => {
     expect(options.map((option) => option.textContent)).toEqual(['2020']);
   });
 
-  it('lists every coordinator it is given, after the coach field', () => {
-    const { getByRole } = render(
-      <TestComponent coordinators={['Ada Lovelace', 'Grace Hopper']} />,
-    );
+  it('lists every coordinator the household has, after the coach field', () => {
+    const { getByRole } = render(<TestComponent />);
 
     const coordinators = getByRole('list', { name: 'Coordinators' });
     const items = within(coordinators).getAllByRole('listitem');
@@ -199,22 +207,21 @@ describe('GoalSettingsHeader', () => {
     ).toBeTruthy();
   });
 
-  it('falls back to the placeholder coordinators when none are passed', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('omits the coordinator list when the household has none', () => {
+    const { queryByRole } = render(
+      <TestComponent attendee={{ ...defaultAttendee, coordinators: [] }} />,
+    );
 
-    const coordinators = getByRole('list', { name: 'Coordinators' });
-    const items = within(coordinators).getAllByRole('listitem');
-
-    expect(items.map((item) => item.textContent)).toEqual([
-      'Nancy Coleman',
-      'Francis Powell',
-      'Gerald Christianson',
-    ]);
+    expect(
+      queryByRole('list', { name: 'Coordinators' }),
+    ).not.toBeInTheDocument();
   });
 
-  it('omits the coordinator list when the calculation has none', () => {
-    const { queryByRole } = render(<TestComponent coordinators={[]} />);
+  // A staff member reading their own goal gets no attendee, so the admin-only cards must not render.
+  it('hides the coach and coordinator cards when there is no attendee', () => {
+    const { queryByRole } = render(<TestComponent attendee={null} />);
 
+    expect(queryByRole('textbox', { name: 'Coach' })).not.toBeInTheDocument();
     expect(
       queryByRole('list', { name: 'Coordinators' }),
     ).not.toBeInTheDocument();
