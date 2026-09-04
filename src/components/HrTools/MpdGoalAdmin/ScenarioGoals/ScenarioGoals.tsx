@@ -29,10 +29,7 @@ import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import { StatusChip } from '../../Shared/StatusChip';
-import {
-  DEFAULT_ROWS_PER_PAGE,
-  scenarioGoalUrl as buildScenarioGoalUrl,
-} from '../mpdGoalAdminHelpers';
+import { DEFAULT_ROWS_PER_PAGE, scenarioGoalUrl } from '../mpdGoalAdminHelpers';
 import {
   NewStaffScenarioGoalsQuery,
   useCreateNewStaffScenarioGoalMutation,
@@ -71,16 +68,13 @@ export const ScenarioGoals: React.FC = () => {
     useCreateNewStaffScenarioGoalMutation();
   const [deleteScenarioGoal] = useDeleteNewStaffScenarioGoalMutation();
 
-  const scenarioGoalUrl = (id: string) =>
-    buildScenarioGoalUrl(accountListId ?? '', id);
-
   const handleCreate = async () => {
     try {
       const { data: createData } = await createScenarioGoal();
       const id =
         createData?.createNewStaffScenarioGoal?.newStaffGoalCalculation.id;
       if (id) {
-        router.push(scenarioGoalUrl(id));
+        router.push(scenarioGoalUrl(accountListId, id));
       }
     } catch {
       // The global Apollo error link toasts the failure.
@@ -179,7 +173,7 @@ export const ScenarioGoals: React.FC = () => {
                     <TableCell>
                       <Link
                         component={NextLink}
-                        href={scenarioGoalUrl(row.id)}
+                        href={scenarioGoalUrl(accountListId, row.id)}
                         underline="hover"
                       >
                         {name}

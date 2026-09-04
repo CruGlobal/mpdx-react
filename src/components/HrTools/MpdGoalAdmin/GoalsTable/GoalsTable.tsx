@@ -210,7 +210,7 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
               <TableCell>
                 <Link
                   component={NextLink}
-                  href={staffDetailsUrl(accountListId ?? '', row.accountListId)}
+                  href={staffDetailsUrl(accountListId, row.accountListId)}
                   underline="hover"
                   aria-label={t('View/Edit {{name}}', { name: row.name })}
                 >
