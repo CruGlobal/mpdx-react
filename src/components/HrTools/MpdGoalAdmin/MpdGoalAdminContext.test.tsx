@@ -19,6 +19,7 @@ import {
   attendees,
   attendeesMock,
   cohortsMock,
+  failedAssignableCoachesMock,
   noAssignableCoachesMock,
   noCohortsMock,
   runAndSentMock,
@@ -326,6 +327,41 @@ describe('MpdGoalAdminContext', () => {
       expect(result.current.assignableCoachesLoading).toBe(false),
     );
     expect(result.current.assignableCoaches).toEqual([]);
+    expect(result.current.assignableCoachesError).toBeUndefined();
+  });
+
+  it('reports a failed coach list instead of an empty one', async () => {
+    const { result } = renderHook(() => useMpdGoalAdmin(), {
+      wrapper: makeWrapper({ coaches: failedAssignableCoachesMock }),
+    });
+
+    await waitFor(() =>
+      expect(result.current.assignableCoachesError).toBeDefined(),
+    );
+    expect(result.current.assignableCoaches).toEqual([]);
+    // Folding it into `error` would disable Run & Send over an unrelated failure.
+    expect(result.current.error).toBeUndefined();
+  });
+
+  it('retries the coach list on demand', async () => {
+    const { result } = renderHook(() => useMpdGoalAdmin(), {
+      wrapper: makeWrapper({ coaches: failedAssignableCoachesMock }),
+    });
+    await waitFor(() =>
+      expect(result.current.assignableCoachesError).toBeDefined(),
+    );
+    const coachCalls = () =>
+      mutationSpy.mock.calls.filter(
+        ([{ operation }]) =>
+          operation.operationName === 'NewStaffCohortAssignableCoaches',
+      ).length;
+    const callsBefore = coachCalls();
+
+    await act(async () => {
+      result.current.retryAssignableCoaches();
+    });
+
+    await waitFor(() => expect(coachCalls()).toBeGreaterThan(callsBefore));
   });
 
   it('assigns a coach to exactly the given rows', async () => {

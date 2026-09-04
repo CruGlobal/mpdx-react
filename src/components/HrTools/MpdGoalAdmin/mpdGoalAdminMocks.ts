@@ -227,6 +227,13 @@ export const noAssignableCoachesMock: NewStaffCohortAssignableCoachesQuery = {
   newStaffCohortAssignableCoaches: [],
 };
 
+/** The query fails, which settles with no data and must not read as "none eligible". */
+export const failedAssignableCoachesMock = {
+  newStaffCohortAssignableCoaches: () => {
+    throw new Error('Not authorized');
+  },
+} as unknown as NewStaffCohortAssignableCoachesQuery;
+
 /** Echoes the assignment back, the way the server normalizes it over each row. */
 export const assignedCoachMock = (
   attendeeIds: string[],

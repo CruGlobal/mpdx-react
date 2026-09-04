@@ -64,6 +64,10 @@ export interface MpdGoalAdminContextValue {
   assignableCoaches: AssignCoachOption[];
   /** True while the coach list is in flight, so the picker waits before saying "none". */
   assignableCoachesLoading: boolean;
+  /** Kept out of `error` so a coach-list failure never disables Run & Send. */
+  assignableCoachesError: ApolloError | undefined;
+  /** Retries the coach list, so its failure is recoverable without a reload. */
+  retryAssignableCoaches: () => void;
   /** Assigns one coach to every row in `rowIds`; rejects when the server refuses. */
   assignCoach: (rowIds: string[], coachId: string) => Promise<void>;
 }
@@ -155,11 +159,20 @@ export const MpdGoalAdminProvider: React.FC<{
     [visibleAttendeesData],
   );
 
-  const { data: coachesData, loading: assignableCoachesLoading } =
-    useNewStaffCohortAssignableCoachesQuery({
-      variables: { cohortId: selectedCohortId },
-      skip: !selectedCohortId,
-    });
+  const {
+    data: coachesData,
+    loading: assignableCoachesLoading,
+    error: assignableCoachesError,
+    refetch: refetchAssignableCoaches,
+  } = useNewStaffCohortAssignableCoachesQuery({
+    variables: { cohortId: selectedCohortId },
+    skip: !selectedCohortId,
+  });
+
+  const retryAssignableCoaches = useCallback(() => {
+    // Apollo rejects a failed refetch, but the hook's own error state reports it.
+    refetchAssignableCoaches().catch(() => undefined);
+  }, [refetchAssignableCoaches]);
 
   const assignableCoaches = useMemo(
     () =>
@@ -278,6 +291,8 @@ export const MpdGoalAdminProvider: React.FC<{
       runAndSend,
       assignableCoaches,
       assignableCoachesLoading,
+      assignableCoachesError,
+      retryAssignableCoaches,
       assignCoach,
     }),
     [
@@ -301,6 +316,8 @@ export const MpdGoalAdminProvider: React.FC<{
       runAndSend,
       assignableCoaches,
       assignableCoachesLoading,
+      assignableCoachesError,
+      retryAssignableCoaches,
       assignCoach,
     ],
   );

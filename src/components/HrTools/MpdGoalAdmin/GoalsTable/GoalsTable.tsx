@@ -98,6 +98,8 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
     assignCoach,
     assignableCoaches,
     assignableCoachesLoading,
+    assignableCoachesError,
+    retryAssignableCoaches,
     selectedCohort,
     loading,
   } = useMpdGoalAdmin();
@@ -300,6 +302,8 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
           subjectName={coachRow.name}
           coaches={assignableCoaches}
           loading={assignableCoachesLoading}
+          coachesError={assignableCoachesError}
+          onRetryCoaches={retryAssignableCoaches}
           handleAssignCoach={handleAssignCoach}
           handleClose={() => setCoachRow(null)}
         />
