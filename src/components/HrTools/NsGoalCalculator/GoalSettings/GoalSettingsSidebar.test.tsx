@@ -112,7 +112,10 @@ describe('GoalSettingsSidebar', () => {
     it('returns to the table it was opened from', async () => {
       const { getByRole } = render(<TestComponent withReturnUrl />);
 
-      userEvent.click(getByRole('button', { name: 'Back to Table' }));
+      const backLink = getByRole('link', { name: 'Back to Table' });
+      expect(backLink).toHaveAttribute('href', returnUrl);
+
+      userEvent.click(backLink);
 
       await waitFor(() => expect(push).toHaveBeenCalledWith(returnUrl));
     });
@@ -121,7 +124,7 @@ describe('GoalSettingsSidebar', () => {
       const { queryByRole } = render(<TestComponent />);
 
       expect(
-        queryByRole('button', { name: 'Back to Table' }),
+        queryByRole('link', { name: 'Back to Table' }),
       ).not.toBeInTheDocument();
     });
   });

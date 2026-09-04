@@ -17,6 +17,8 @@ interface RegisteredForm {
 }
 
 interface GoalSettingsNavigationContextValue {
+  /** Where the back link points, or null when there is nowhere to go back to. */
+  returnUrl: string | null;
   /** Label for the back link, or null when this view has nowhere to go back to. */
   returnLabel: string | null;
   /** Goes back, confirming first when the form has unsaved edits. */
@@ -33,6 +35,7 @@ const noop = () => undefined;
 
 const GoalSettingsNavigationContext =
   createContext<GoalSettingsNavigationContextValue>({
+    returnUrl: null,
     returnLabel: null,
     leave: noop,
     returnToTable: noop,
@@ -90,6 +93,7 @@ export const GoalSettingsNavigationProvider: React.FC<
   return (
     <GoalSettingsNavigationContext.Provider
       value={{
+        returnUrl: returnUrl ?? null,
         returnLabel: returnUrl ? (returnLabel ?? t('Back to Table')) : null,
         leave,
         returnToTable,

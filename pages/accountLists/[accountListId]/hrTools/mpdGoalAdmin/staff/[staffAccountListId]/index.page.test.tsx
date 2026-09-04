@@ -68,7 +68,13 @@ describe('Staff Details page', () => {
   it('goes back to the active goals tab of the admin table', async () => {
     const { findByRole } = render(<TestComponent />);
 
-    userEvent.click(await findByRole('button', { name: 'Back to Table' }));
+    const backLink = await findByRole('link', { name: 'Back to Table' });
+    expect(backLink).toHaveAttribute(
+      'href',
+      '/accountLists/account-list-1/hrTools/mpdGoalAdmin?tab=active-goals',
+    );
+
+    userEvent.click(backLink);
 
     await waitFor(() =>
       expect(push).toHaveBeenCalledWith(

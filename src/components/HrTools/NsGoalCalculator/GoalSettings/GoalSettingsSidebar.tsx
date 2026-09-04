@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import React from 'react';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
@@ -74,7 +75,7 @@ export const GoalSettingsSidebar: React.FC<GoalSettingsSidebarProps> = ({
 }) => {
   const { t } = useTranslation();
   const { view, setView } = useGoalSettingsView();
-  const { returnLabel, leave } = useGoalSettingsNavigation();
+  const { returnUrl, returnLabel, leave } = useGoalSettingsNavigation();
 
   return (
     <List disablePadding component="nav" aria-label={t('Goal navigation')}>
@@ -91,8 +92,18 @@ export const GoalSettingsSidebar: React.FC<GoalSettingsSidebarProps> = ({
           </IconButton>
         }
       >
-        {returnLabel && (
-          <ListItemButton sx={{ color: 'primary.main' }} onClick={leave}>
+        {returnLabel && returnUrl && (
+          // A real link so it is announced as one and can be opened in a new
+          // tab; the plain click still routes through the unsaved-edits guard.
+          <ListItemButton
+            component={NextLink}
+            href={returnUrl}
+            sx={{ color: 'primary.main' }}
+            onClick={(event: React.MouseEvent) => {
+              event.preventDefault();
+              leave();
+            }}
+          >
             <ListItemIcon sx={{ minWidth: 'auto', mr: 1, color: 'inherit' }}>
               <ChevronLeftIcon fontSize="small" />
             </ListItemIcon>
