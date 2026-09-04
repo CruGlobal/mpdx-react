@@ -4,6 +4,10 @@ import {
   NewStaffQuestionnaireMaritalStatusEnum,
 } from 'src/graphql/types.generated';
 import {
+  AssignCoachToNewStaffCohortAttendeeMutation,
+  NewStaffCohortAssignableCoachesQuery,
+} from './AssignCoach.generated';
+import {
   NewStaffCohortAttendeesQuery,
   NewStaffCohortsQuery,
   RunAndSendNewStaffCohortMutation,
@@ -197,5 +201,44 @@ export const runAndSentMock = (
       canRunAndSend: true,
       runAndSendBlockers: [],
     },
+  },
+});
+
+const coach = (
+  id: string,
+  firstName: string | null,
+  lastName: string | null,
+  email: string | null = `${id}@cru.org`,
+) => ({ id, firstName, lastName, email });
+
+/** The picker's options; ids match the coaches the attendee fixtures carry. */
+export const assignableCoachesMock: NewStaffCohortAssignableCoachesQuery = {
+  newStaffCohortAssignableCoaches: [
+    coach('coach-1', 'Amy', 'Wilson'),
+    coach('coach-3', 'Nelson', 'Jones'),
+    coach('coach-6', 'Tom', 'Harris'),
+    // Both names are nullable, so the picker has to fall back to the email.
+    coach('coach-7', null, null),
+  ],
+};
+
+/** OneApp lists nobody for the cohort — a real state, not an error. */
+export const noAssignableCoachesMock: NewStaffCohortAssignableCoachesQuery = {
+  newStaffCohortAssignableCoaches: [],
+};
+
+/** Echoes the assignment back, the way the server normalizes it over each row. */
+export const assignedCoachMock = (
+  attendeeIds: string[],
+  coachId = 'coach-6',
+): AssignCoachToNewStaffCohortAttendeeMutation => ({
+  assignCoachToNewStaffCohortAttendee: {
+    newStaffCohortAttendees: attendeeIds.map((id) => ({
+      id,
+      coach:
+        assignableCoachesMock.newStaffCohortAssignableCoaches.find(
+          (option) => option.id === coachId,
+        ) ?? null,
+    })),
   },
 });
