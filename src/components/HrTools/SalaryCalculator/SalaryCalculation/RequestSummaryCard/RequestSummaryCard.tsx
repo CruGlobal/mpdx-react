@@ -22,6 +22,7 @@ import {
   ProgressiveApprovalTierReasonEnum,
 } from 'src/graphql/types.generated';
 import { progressiveApprovalsLink } from '../../../AdditionalSalaryRequest/Shared/pdfLinks';
+import { YtdAsrTooltip } from '../../../Shared/YtdAsrTooltip';
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
 import { StepCard } from '../../Shared/StepCard';
 import { StyledCardHeader } from '../StyledCardHeader';
@@ -66,7 +67,6 @@ export const RequestSummaryCard: React.FC = () => {
     !!progressiveApprovalTier &&
     progressiveApprovalTier?.tier !== ProgressiveApprovalTierEnum.DivisionHead;
   const {
-    combinedGross,
     combinedYtdGross,
     combinedEffectiveCap: combinedCap,
     overCapPerson,
@@ -78,6 +78,9 @@ export const RequestSummaryCard: React.FC = () => {
   const spouseCalcs = calculation?.spouseCalculations;
   const hasSpouse = !!hcmSpouse && !!spouseCalcs;
 
+  const combinedSalary =
+    (calculation?.salary ?? 0) +
+    (hasSpouse ? (calculation?.spouseSalary ?? 0) : 0);
   const combinedSeca =
     (calcs?.requestedSeca ?? 0) + (spouseCalcs?.requestedSeca ?? 0);
   const combined403b =
@@ -89,8 +92,13 @@ export const RequestSummaryCard: React.FC = () => {
   const categories: Category[] = [
     {
       label: t('Requested Salary (includes MHA)'),
-      amount: combinedGross,
+      amount: combinedSalary,
       color: theme.palette.yellow.main,
+    },
+    {
+      label: t('Additional Salary Requested This Year'),
+      amount: asrAmount + spouseAsrAmount,
+      color: theme.palette.orange.main,
     },
     {
       label: t('SECA and Related Federal Taxes'),
@@ -309,9 +317,15 @@ export const RequestSummaryCard: React.FC = () => {
                     })}
                   </span>
                 </TableCell>
-                <TableCell>{formatCurrency(asrAmount)}</TableCell>
+                <TableCell>
+                  {formatCurrency(asrAmount)}
+                  <YtdAsrTooltip ytdAsrAmount={asrAmount} />
+                </TableCell>
                 {hasSpouse && (
-                  <TableCell>{formatCurrency(spouseAsrAmount)}</TableCell>
+                  <TableCell>
+                    {formatCurrency(spouseAsrAmount)}
+                    <YtdAsrTooltip ytdAsrAmount={spouseAsrAmount} />
+                  </TableCell>
                 )}
               </TableRow>
 
@@ -320,8 +334,7 @@ export const RequestSummaryCard: React.FC = () => {
                   {t('Total Gross Salary This Year')}
                   <Tooltip
                     title={t(
-                      'Your Gross Requested Salary plus any Additional Salary Requested This Year. \
-This is the amount compared against your Maximum Allowable Salary.',
+                      'Your Gross Requested Salary plus any Additional Salary Requested This Year.',
                     )}
                   >
                     <InfoIcon />

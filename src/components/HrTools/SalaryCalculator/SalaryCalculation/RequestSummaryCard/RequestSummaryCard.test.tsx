@@ -1,4 +1,5 @@
 import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { merge } from 'lodash';
 import { DeepPartial } from 'ts-essentials';
 import {
@@ -204,6 +205,31 @@ This may affect your selected effective date.',
     );
   });
 
+  it('splits the distribution bar between the salary components and the ASRs', async () => {
+    const { findByTestId } = render(
+      <TestComponent
+        hasSpouse={false}
+        salaryRequestMock={{
+          salary: 20000,
+          calculations: {
+            requestedSeca: 5000,
+            contributing403bAmount: 5000,
+            requestedGross: 30000,
+            ytdAsrAmount: 10000,
+            requestedYtdGross: 40000,
+            effectiveCap: 40000,
+          },
+        }}
+      />,
+    );
+
+    const segments = Array.from((await findByTestId('Distribution')).children);
+    expect(segments[0]).toHaveStyle('width: 50%');
+    expect(segments[1]).toHaveStyle('width: 25%');
+    expect(segments[2]).toHaveStyle('width: 12.5%');
+    expect(segments[3]).toHaveStyle('width: 12.5%');
+  });
+
   describe('table', () => {
     it('renders table headers, row headers, and cells', async () => {
       const { getByRole } = render(<TestComponent />);
@@ -260,6 +286,39 @@ This may affect your selected effective date.',
           ],
         }),
       );
+    });
+
+    it('explains the pending and approved ASRs behind the amount', async () => {
+      const { findAllByTestId, findByRole } = render(
+        <TestComponent
+          salaryRequestMock={{
+            calculations: { ytdAsrAmount: 5000 },
+            spouseCalculations: { ytdAsrAmount: 3000 },
+          }}
+        />,
+      );
+
+      const [icon] = await findAllByTestId('YtdAsrTooltip');
+      expect(icon.closest('tr')).toHaveTextContent(
+        'Additional Salary Requested This Year',
+      );
+
+      userEvent.hover(icon);
+      expect(await findByRole('tooltip')).toHaveTextContent(
+        'Includes $5,000.00 of pending and approved requests this year',
+      );
+    });
+
+    it('omits the ASR explanation when there are none this year', async () => {
+      const { findByRole, queryByTestId } = render(
+        <TestComponent
+          hasSpouse={false}
+          salaryRequestMock={{ calculations: { ytdAsrAmount: 0 } }}
+        />,
+      );
+
+      await findByRole('table');
+      expect(queryByTestId('YtdAsrTooltip')).not.toBeInTheDocument();
     });
 
     it('shows SECA opt-out text', async () => {

@@ -123,6 +123,43 @@ describe('TotalSalaryRequested', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('explains the pending and approved ASRs behind the amount', async () => {
+    const { getAllByLabelText, getByRole } = renderComponent();
+
+    userEvent.click(getByRole('button', { name: 'Expand salary details' }));
+
+    await waitFor(() =>
+      expect(
+        getAllByLabelText(
+          'Includes $5,000.00 of pending and approved requests this year',
+        ),
+      ).toHaveLength(1),
+    );
+  });
+
+  it('omits the ASR explanation when there are none this year', async () => {
+    const { getByRole, queryByTestId } = renderComponent({
+      contextOverrides: {
+        requestData: {
+          latestAdditionalSalaryRequest: {
+            ...defaultMockContextValue.requestData
+              .latestAdditionalSalaryRequest,
+            calculations: {
+              ...defaultMockContextValue.requestData
+                .latestAdditionalSalaryRequest.calculations,
+              ytdAsrAmount: 0,
+            },
+          },
+        },
+      },
+    });
+
+    userEvent.click(getByRole('button', { name: 'Expand salary details' }));
+
+    await waitFor(() => expect(getByRole('table')).toBeInTheDocument());
+    expect(queryByTestId('YtdAsrTooltip')).not.toBeInTheDocument();
+  });
+
   it('renders accordion with title, table, and summary items', async () => {
     const { getAllByText, getByText, queryByTestId, getByRole } =
       renderComponent();

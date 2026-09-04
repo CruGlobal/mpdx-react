@@ -13,6 +13,7 @@ import {
 import { useFormikContext } from 'formik';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { YtdAsrTooltip } from 'src/components/HrTools/Shared/YtdAsrTooltip';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
@@ -81,6 +82,7 @@ export const TotalSalaryTable: React.FC = () => {
         label: t('Additional Salary Previously Requested This Year'),
         description: backpayExplanation,
         value: additionalSalaryRequestedThisYear,
+        ytdAsrAmount: additionalSalaryRequestedThisYear,
       },
       {
         id: 'additionalRequested',
@@ -114,30 +116,33 @@ export const TotalSalaryTable: React.FC = () => {
         </TableRow>
       </TableHead>
       <TableBody>
-        {summaryItems.map(({ id, label, description, tooltip, value }) => (
-          <TableRow key={id}>
-            <StyledDescriptionTableCell>
-              <Typography variant="body2">
-                {label}
-                {tooltip && (
-                  <Tooltip title={tooltip}>
-                    <InfoTooltipIcon />
-                  </Tooltip>
-                )}
-              </Typography>
-              {description && (
-                <Typography variant="caption" color="text.secondary">
-                  {description}
+        {summaryItems.map(
+          ({ id, label, description, tooltip, value, ytdAsrAmount }) => (
+            <TableRow key={id}>
+              <StyledDescriptionTableCell>
+                <Typography variant="body2">
+                  {label}
+                  {tooltip && (
+                    <Tooltip title={tooltip}>
+                      <InfoTooltipIcon />
+                    </Tooltip>
+                  )}
                 </Typography>
-              )}
-            </StyledDescriptionTableCell>
-            <StyledAmountTableCell>
-              {currencyFormat(value, currency, locale, {
-                showTrailingZeros: true,
-              })}
-            </StyledAmountTableCell>
-          </TableRow>
-        ))}
+                {description && (
+                  <Typography variant="caption" color="text.secondary">
+                    {description}
+                  </Typography>
+                )}
+              </StyledDescriptionTableCell>
+              <StyledAmountTableCell>
+                {currencyFormat(value, currency, locale, {
+                  showTrailingZeros: true,
+                })}
+                <YtdAsrTooltip ytdAsrAmount={ytdAsrAmount ?? 0} />
+              </StyledAmountTableCell>
+            </TableRow>
+          ),
+        )}
         <TableRow
           sx={{
             '& td, & th': { borderBottom: 'none' },
