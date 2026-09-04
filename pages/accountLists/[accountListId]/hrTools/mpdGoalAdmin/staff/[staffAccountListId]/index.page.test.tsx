@@ -1,6 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -67,10 +68,12 @@ describe('Staff Details page', () => {
   it('goes back to the active goals tab of the admin table', async () => {
     const { findByRole } = render(<TestComponent />);
 
-    (await findByRole('button', { name: 'Back to Table' })).click();
+    userEvent.click(await findByRole('button', { name: 'Back to Table' }));
 
-    expect(push).toHaveBeenCalledWith(
-      '/accountLists/account-list-1/hrTools/mpdGoalAdmin?tab=active-goals',
+    await waitFor(() =>
+      expect(push).toHaveBeenCalledWith(
+        '/accountLists/account-list-1/hrTools/mpdGoalAdmin?tab=active-goals',
+      ),
     );
   });
 });
