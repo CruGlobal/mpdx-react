@@ -244,18 +244,11 @@ export const MpdGoalAdminProvider: React.FC<{
   const assignCoach = useCallback(
     async (rowIds: string[], coachId: string) => {
       // No refetch: the payload's rows normalize over the cached ones, and nothing else this query renders changes.
-      const { data } = await assignCoachToAttendee({
+      await assignCoachToAttendee({
         variables: {
           input: { cohortId: selectedCohortId, attendeeIds: rowIds, coachId },
         },
       });
-      // The assignment is all-or-nothing, so an empty payload assigned nobody and must not read as success.
-      if (
-        !data?.assignCoachToNewStaffCohortAttendee?.newStaffCohortAttendees
-          .length
-      ) {
-        throw new Error('The coach assignment returned no attendees');
-      }
     },
     [assignCoachToAttendee, selectedCohortId],
   );

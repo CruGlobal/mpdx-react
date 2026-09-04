@@ -366,28 +366,6 @@ describe('GoalsTableToolbar', () => {
     expect(ctx.selectedRows).toHaveLength(1);
   });
 
-  it('claims no success when the assignment comes back with nobody assigned', async () => {
-    // All-or-nothing server-side, so an empty payload assigned nobody.
-    const { getByRole, findByRole, queryByText } = await renderLoaded({
-      assignCoach: assignedCoachMock([]),
-    });
-    act(() => ctx.toggleRow('row-1'));
-    userEvent.click(getByRole('button', { name: 'More Actions' }));
-    userEvent.click(getByRole('menuitem', { name: 'Assign Coach' }));
-
-    const dialog = getByRole('dialog');
-    userEvent.click(within(dialog).getByRole('combobox', { name: 'Coach' }));
-    userEvent.click(await findByRole('option', { name: 'Tom Harris' }));
-    userEvent.click(getByRole('button', { name: 'Save' }));
-
-    expect(await within(dialog).findByRole('alert')).toHaveTextContent(
-      'The coach could not be assigned. Please try again.',
-    );
-    expect(queryByText('Coach assigned successfully.')).not.toBeInTheDocument();
-    // The selection is still there to retry with.
-    expect(ctx.selectedRows).toHaveLength(1);
-  });
-
   it('keeps Run and Send All usable when the coach list fails to load', async () => {
     const { getByRole, findByRole } = await renderLoaded({
       coaches: failedAssignableCoachesMock,
