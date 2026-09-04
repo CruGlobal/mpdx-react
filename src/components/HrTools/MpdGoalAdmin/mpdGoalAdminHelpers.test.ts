@@ -5,13 +5,19 @@ import {
 } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import {
+  MpdGoalAdminTabEnum,
   attendeeToRow,
   cohortNodeToCohort,
   cohortToTrainingCosts,
   familyStatusLabel,
+  goalStatusColor,
   goalStatusLabel,
   isSendable,
+  mpdGoalAdminUrl,
+  parseMpdGoalAdminTab,
   partitionSendable,
+  scenarioGoalUrl,
+  staffDetailsUrl,
   trainingCostsToAttributes,
 } from './mpdGoalAdminHelpers';
 import { attendees, cohortsMock, trainingCosts } from './mpdGoalAdminMocks';
@@ -20,6 +26,57 @@ const t = i18n.t;
 
 const [cohortWithCosts, cohortWithoutCosts] = cohortsMock.newStaffCohorts.nodes;
 const [attendeeWithoutCoach, attendeeWithoutGoal, attendeeComplete] = attendees;
+
+describe('parseMpdGoalAdminTab', () => {
+  it.each([
+    ['scenario-goals', MpdGoalAdminTabEnum.ScenarioGoals],
+    ['active-goals', MpdGoalAdminTabEnum.ActiveGoals],
+  ])('parses "%s" as %s', (value, tab) => {
+    expect(parseMpdGoalAdminTab(value)).toBe(tab);
+  });
+
+  it('defaults to the active goals tab when the URL has no tab', () => {
+    expect(parseMpdGoalAdminTab(undefined)).toBe(
+      MpdGoalAdminTabEnum.ActiveGoals,
+    );
+  });
+
+  it('falls back to the active goals tab for a hand-edited value', () => {
+    expect(parseMpdGoalAdminTab('nonsense')).toBe(
+      MpdGoalAdminTabEnum.ActiveGoals,
+    );
+  });
+});
+
+describe('mpdGoalAdminUrl', () => {
+  it('builds the admin URL for the active goals tab', () => {
+    expect(mpdGoalAdminUrl('list-1', MpdGoalAdminTabEnum.ActiveGoals)).toBe(
+      '/accountLists/list-1/hrTools/mpdGoalAdmin?tab=active-goals',
+    );
+  });
+
+  it('builds the admin URL for the scenario goals tab', () => {
+    expect(mpdGoalAdminUrl('list-1', MpdGoalAdminTabEnum.ScenarioGoals)).toBe(
+      '/accountLists/list-1/hrTools/mpdGoalAdmin?tab=scenario-goals',
+    );
+  });
+});
+
+describe('staffDetailsUrl', () => {
+  it("keys Goal Settings by the household's own account list", () => {
+    expect(staffDetailsUrl('list-1', 'account-list-row-3')).toBe(
+      '/accountLists/list-1/hrTools/mpdGoalAdmin/staff/account-list-row-3',
+    );
+  });
+});
+
+describe('scenarioGoalUrl', () => {
+  it('builds the scenario goal URL', () => {
+    expect(scenarioGoalUrl('list-1', 'scenario-1')).toBe(
+      '/accountLists/list-1/hrTools/mpdGoalAdmin/scenario/scenario-1',
+    );
+  });
+});
 
 describe('cohortToTrainingCosts', () => {
   it('maps every populated cost column onto the modal shape', () => {
@@ -187,6 +244,16 @@ describe('goalStatusLabel', () => {
     [NewStaffCohortAttendeeGoalStatusEnum.Incomplete, 'Incomplete'],
   ])('labels %s as "%s"', (status, label) => {
     expect(goalStatusLabel(status, t)).toBe(label);
+  });
+});
+
+describe('goalStatusColor', () => {
+  it.each([
+    [NewStaffCohortAttendeeGoalStatusEnum.Complete, 'success'],
+    [NewStaffCohortAttendeeGoalStatusEnum.Sent, 'info'],
+    [NewStaffCohortAttendeeGoalStatusEnum.Incomplete, 'warning'],
+  ])('colors %s as "%s"', (status, color) => {
+    expect(goalStatusColor(status)).toBe(color);
   });
 });
 
