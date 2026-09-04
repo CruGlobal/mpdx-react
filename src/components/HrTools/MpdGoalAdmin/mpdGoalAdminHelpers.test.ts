@@ -7,6 +7,8 @@ import i18n from 'src/lib/i18n';
 import {
   attendeeToRow,
   coachLabel,
+  coachName,
+  coachToOption,
   cohortNodeToCohort,
   cohortToTrainingCosts,
   familyStatusLabel,
@@ -166,6 +168,18 @@ describe('attendeeToRow', () => {
   });
 });
 
+describe('coachName', () => {
+  it.each([
+    ['Amy', 'Wilson', 'Amy Wilson'],
+    ['Amy', null, 'Amy'],
+    [null, 'Jones', 'Jones'],
+    [null, null, null],
+    ['', '', null],
+  ])('names (%s, %s) as %s', (firstName, lastName, name) => {
+    expect(coachName({ firstName, lastName })).toBe(name);
+  });
+});
+
 describe('coachLabel', () => {
   it('joins the names a coach has, without stray whitespace', () => {
     expect(coachLabel(coach('coach-x', null, 'Jones'), t)).toBe('Jones');
@@ -180,6 +194,21 @@ describe('coachLabel', () => {
     expect(coachLabel(coach('coach-8', null, null, null), t)).toBe(
       'Unnamed coach',
     );
+  });
+});
+
+describe('coachToOption', () => {
+  it.each([
+    [coach('coach-1', 'Amy', 'Wilson'), 'Amy Wilson'],
+    [coach('coach-7', null, null), 'coach-7@cru.org'],
+    [coach('coach-8', null, null, null), 'Unnamed coach'],
+  ])('labels the option for %j as "%s"', (option, name) => {
+    expect(coachToOption(option, t)).toEqual({ id: option.id, name });
+  });
+
+  it('labels the option exactly as the table cell labels the same coach', () => {
+    const nameless = coach('coach-8', null, null, null);
+    expect(coachToOption(nameless, t).name).toBe(coachLabel(nameless, t));
   });
 });
 

@@ -68,7 +68,7 @@ export interface MpdGoalAdminContextValue {
   assignableCoachesError: ApolloError | undefined;
   /** Retries the coach list, so its failure is recoverable without a reload. */
   retryAssignableCoaches: () => void;
-  /** Assigns one coach to every row in `rowIds`; rejects when the server refuses. */
+  /** Assigns one coach to every row in `rowIds`; rejects when nobody was assigned. */
   assignCoach: (rowIds: string[], coachId: string) => Promise<void>;
 }
 
@@ -243,14 +243,19 @@ export const MpdGoalAdminProvider: React.FC<{
 
   const assignCoach = useCallback(
     async (rowIds: string[], coachId: string) => {
-      await assignCoachToAttendee({
+      // No refetch: the payload's rows normalize over the cached ones, and nothing else this query renders changes.
+      const { data } = await assignCoachToAttendee({
         variables: {
           input: { cohortId: selectedCohortId, attendeeIds: rowIds, coachId },
         },
-        // The payload normalizes the rows it echoes; the refetch catches whatever the assignment changed alongside them.
-        refetchQueries: ['NewStaffCohortAttendees'],
-        awaitRefetchQueries: true,
       });
+      // The assignment is all-or-nothing, so an empty payload assigned nobody and must not read as success.
+      if (
+        !data?.assignCoachToNewStaffCohortAttendee?.newStaffCohortAttendees
+          .length
+      ) {
+        throw new Error('The coach assignment returned no attendees');
+      }
     },
     [assignCoachToAttendee, selectedCohortId],
   );
