@@ -387,7 +387,7 @@ describe('MpdGoalAdminContext', () => {
     );
   });
 
-  it('refetches the attendees after an assignment, so the coach cells update', async () => {
+  it('updates the coach cells from the payload without refetching the attendees', async () => {
     const { result } = await renderLoaded();
     const attendeeCalls = () =>
       mutationSpy.mock.calls.filter(
@@ -397,10 +397,33 @@ describe('MpdGoalAdminContext', () => {
     const callsBefore = attendeeCalls();
 
     await act(async () => {
-      await result.current.assignCoach(['row-1'], 'coach-6');
+      await result.current.assignCoach(['row-1', 'row-3'], 'coach-6');
     });
 
-    expect(attendeeCalls()).toBeGreaterThan(callsBefore);
+    // The echoed rows normalize over the cached ones, so no refetch is needed.
+    expect(result.current.filteredRows[0].coach).toMatchObject({
+      id: 'coach-6',
+      firstName: 'Tom',
+      lastName: 'Harris',
+    });
+    expect(attendeeCalls()).toBe(callsBefore);
+  });
+
+  it('rejects when the assignment comes back with nobody assigned', async () => {
+    const { result } = renderHook(() => useMpdGoalAdmin(), {
+      // All-or-nothing server-side, so an empty payload assigned nobody.
+      wrapper: makeWrapper({ assignCoach: assignedCoachMock([]) }),
+    });
+    await waitFor(() =>
+      expect(result.current.filteredRows).not.toHaveLength(0),
+    );
+
+    await act(async () => {
+      await expect(
+        result.current.assignCoach(['row-1'], 'coach-6'),
+      ).rejects.toThrow('The coach assignment returned no attendees');
+    });
+    expect(result.current.filteredRows[0].coach).toBeNull();
   });
 
   it('rejects when the server refuses the assignment', async () => {
