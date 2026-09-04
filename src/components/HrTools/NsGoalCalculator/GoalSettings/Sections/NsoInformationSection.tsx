@@ -9,7 +9,7 @@ import { getLocalizedNsoHousing } from 'src/lib/functions/getLocalizedNsoHousing
 import { getLocalizedNsoSessions } from 'src/lib/functions/getLocalizedNsoSessions';
 import { useFormatters } from '../../../Shared/useFormatters';
 import { GoalSettingsNumberField } from '../Fields/GoalSettingsNumberField';
-import { GoalSettingsPlaceholder } from '../Fields/GoalSettingsPlaceholder';
+import { GoalSettingsReadOnlyField } from '../Fields/GoalSettingsReadOnlyField';
 import { GoalSettingsSelect, SelectOption } from '../Fields/GoalSettingsSelect';
 import { ColumnHeaderRow, FieldRow, Section } from '../GoalSettingsLayout';
 import { useGoalSettingsPreview } from '../GoalSettingsPreviewContext';
@@ -18,6 +18,7 @@ import { GoalSettingsSectionProps } from '../goalSettingsSectionProps';
 export const NsoInformationSection: React.FC<GoalSettingsSectionProps> = ({
   calculations,
   sharedHeader,
+  attendee,
 }) => {
   const { t } = useTranslation();
   const { formatCurrency } = useFormatters();
@@ -52,11 +53,10 @@ export const NsoInformationSection: React.FC<GoalSettingsSectionProps> = ({
     <Section title={t('NSO Information')}>
       <ColumnHeaderRow columns={[sharedHeader]} />
 
-      {/* TODO(MPDX-9796): Attendee field */}
       <FieldRow label={t('Training')}>
-        <GoalSettingsPlaceholder
+        <GoalSettingsReadOnlyField
           label={t('Training')}
-          value={t('Fall NSO 2026')}
+          value={attendee?.cohortName ?? ''}
         />
       </FieldRow>
 

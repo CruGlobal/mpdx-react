@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GoalCalculationRole } from 'src/graphql/types.generated';
 import { getLocalizedRole } from 'src/lib/functions/getLocalizedRole';
-import { GoalSettingsPlaceholder } from '../Fields/GoalSettingsPlaceholder';
+import { GoalSettingsReadOnlyField } from '../Fields/GoalSettingsReadOnlyField';
 import { GoalSettingsSelect, SelectOption } from '../Fields/GoalSettingsSelect';
 import { GoalSettingsTextField } from '../Fields/GoalSettingsTextField';
 import { ColumnHeaderRow, FieldRow, Section } from '../GoalSettingsLayout';
@@ -10,6 +10,7 @@ import { GoalSettingsSectionProps } from '../goalSettingsSectionProps';
 
 export const MinistryInformationSection: React.FC<GoalSettingsSectionProps> = ({
   sharedHeader,
+  attendee,
 }) => {
   const { t } = useTranslation();
 
@@ -30,11 +31,10 @@ export const MinistryInformationSection: React.FC<GoalSettingsSectionProps> = ({
         <GoalSettingsTextField name="ministryLocation" label={t('Location')} />
       </FieldRow>
 
-      {/* TODO(MPDX-9796): Attendee field */}
       <FieldRow label={t('Ministry')}>
-        <GoalSettingsPlaceholder
+        <GoalSettingsReadOnlyField
           label={t('Ministry')}
-          value={t('Campus: University')}
+          value={attendee?.ministry?.name ?? ''}
         />
       </FieldRow>
 

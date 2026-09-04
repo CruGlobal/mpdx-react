@@ -40,6 +40,7 @@ const sectionProps: GoalSettingsSectionProps = {
   spouseName: 'Jane',
   visibleHeaders: ['John (Joining)', 'Jane (Joining)'],
   sharedHeader: 'John (Joining) & Jane (Joining)',
+  attendee: null,
 };
 
 const previewOf = (calculations: {
