@@ -31,7 +31,7 @@ export const defaultMockContextValue = {
       calculations: {
         currentSalaryCap: 100000,
         staffAccountBalance: 40000,
-        pendingAsrAmount: 5000,
+        ytdAsrAmount: 5000,
         grossAnnualSalary: 40000,
       },
     },
@@ -39,7 +39,7 @@ export const defaultMockContextValue = {
   calculations: {
     currentSalaryCap: 100000,
     staffAccountBalance: 40000,
-    pendingAsrAmount: 5000,
+    ytdAsrAmount: 5000,
     grossAnnualSalary: 40000,
   },
   user: mockUser,

@@ -225,7 +225,7 @@ describe('useSalaryCalculations', () => {
           calculations: {
             grossAnnualSalary: 1000,
             currentSalaryCap: 5000,
-            pendingAsrAmount: 1000,
+            ytdAsrAmount: 1000,
           },
         },
       },
@@ -247,7 +247,7 @@ describe('useSalaryCalculations', () => {
     );
 
     expect(result.current.total).toBe(2000);
-    // requestedAnnualSalary = grossAnnualSalary + additionalSalaryReceivedThisYear + total
+    // requestedAnnualSalary = grossAnnualSalary + additionalSalaryRequestedThisYear + total
     // = 1000 + 1000 + 2000 = 4000
     expect(result.current.requestedAnnualSalary).toBe(4000);
     // requestedAnnualSalary (4000) <= individualCap (5000)
@@ -263,7 +263,7 @@ describe('useSalaryCalculations', () => {
           calculations: {
             grossAnnualSalary: 50000,
             currentSalaryCap: 10000,
-            pendingAsrAmount: 10000,
+            ytdAsrAmount: 10000,
           },
         },
       },
@@ -300,7 +300,7 @@ describe('useSalaryCalculations', () => {
           calculations: {
             grossAnnualSalary: 72000,
             currentSalaryCap: 80000,
-            pendingAsrAmount: 0,
+            ytdAsrAmount: 0,
           },
         },
       },
@@ -329,7 +329,7 @@ describe('useSalaryCalculations', () => {
           calculations: {
             grossAnnualSalary: 50000,
             currentSalaryCap: 60000,
-            pendingAsrAmount: 0,
+            ytdAsrAmount: 0,
           },
         },
       },
@@ -356,7 +356,7 @@ describe('useSalaryCalculations', () => {
     // Cases 1-4: Staff Member under cap — nothing triggers regardless of spouse status
     const setupUnderCap = (spouseCalculations: {
       currentSalaryCap: number;
-      pendingAsrAmount: number;
+      ytdAsrAmount: number;
     }) => {
       mockUseAdditionalSalaryRequest.mockReturnValue({
         traditional403bPercentage: 0.12,
@@ -378,7 +378,7 @@ describe('useSalaryCalculations', () => {
     };
 
     it('Staff Member under cap, spouse has no pending ASR', () => {
-      setupUnderCap({ currentSalaryCap: 50000, pendingAsrAmount: 0 });
+      setupUnderCap({ currentSalaryCap: 50000, ytdAsrAmount: 0 });
 
       const values: CompleteFormValues = {
         ...baseValues,
@@ -397,7 +397,7 @@ describe('useSalaryCalculations', () => {
     });
 
     it('Staff Member under cap, spouse has ASR under their cap', () => {
-      setupUnderCap({ currentSalaryCap: 50000, pendingAsrAmount: 5000 });
+      setupUnderCap({ currentSalaryCap: 50000, ytdAsrAmount: 5000 });
 
       const values: CompleteFormValues = {
         ...baseValues,
@@ -416,7 +416,7 @@ describe('useSalaryCalculations', () => {
     });
 
     it('Staff Member under cap, spouse is over their cap', () => {
-      setupUnderCap({ currentSalaryCap: 50000, pendingAsrAmount: 15000 });
+      setupUnderCap({ currentSalaryCap: 50000, ytdAsrAmount: 15000 });
 
       const values: CompleteFormValues = {
         ...baseValues,
@@ -435,7 +435,7 @@ describe('useSalaryCalculations', () => {
     });
 
     it('Staff Member under cap, spouse is at their cap', () => {
-      setupUnderCap({ currentSalaryCap: 40003, pendingAsrAmount: 0 });
+      setupUnderCap({ currentSalaryCap: 40003, ytdAsrAmount: 0 });
 
       const values: CompleteFormValues = {
         ...baseValues,
@@ -458,7 +458,7 @@ describe('useSalaryCalculations', () => {
     const setupOverCap = (
       spouseCalculations: {
         currentSalaryCap: number;
-        pendingAsrAmount: number;
+        ytdAsrAmount: number;
       },
       progressiveApprovalTier: unknown = null,
     ) => {
@@ -483,7 +483,7 @@ describe('useSalaryCalculations', () => {
     };
 
     it('Staff Member over cap, spouse has no pending ASR — splitAsr', () => {
-      setupOverCap({ currentSalaryCap: 50000, pendingAsrAmount: 0 });
+      setupOverCap({ currentSalaryCap: 50000, ytdAsrAmount: 0 });
 
       const values: CompleteFormValues = {
         ...baseValues,
@@ -503,7 +503,7 @@ describe('useSalaryCalculations', () => {
     });
 
     it('Staff Member over cap, spouse has ASR under their cap — splitAsr', () => {
-      setupOverCap({ currentSalaryCap: 50000, pendingAsrAmount: 5000 });
+      setupOverCap({ currentSalaryCap: 50000, ytdAsrAmount: 5000 });
 
       const values: CompleteFormValues = {
         ...baseValues,
@@ -524,7 +524,7 @@ describe('useSalaryCalculations', () => {
 
     it('Staff Member over cap, spouse is over their cap — additionalApproval', () => {
       setupOverCap(
-        { currentSalaryCap: 50000, pendingAsrAmount: 15000 },
+        { currentSalaryCap: 50000, ytdAsrAmount: 15000 },
         { id: 'tier-1' },
       );
 
@@ -547,7 +547,7 @@ describe('useSalaryCalculations', () => {
 
     it('Staff Member over cap, spouse is at their cap — additionalApproval', () => {
       setupOverCap(
-        { currentSalaryCap: 40003, pendingAsrAmount: 0 },
+        { currentSalaryCap: 40003, ytdAsrAmount: 0 },
         { id: 'tier-1' },
       );
 
@@ -570,7 +570,7 @@ describe('useSalaryCalculations', () => {
 
     it('Staff Member over cap, spouse exactly $5 below cap — treated as at cap', () => {
       const currentSalaryCap = 40000 + AT_CAP_TOLERANCE;
-      setupOverCap({ currentSalaryCap, pendingAsrAmount: 0 }, { id: 'tier-1' });
+      setupOverCap({ currentSalaryCap, ytdAsrAmount: 0 }, { id: 'tier-1' });
 
       const values: CompleteFormValues = {
         ...baseValues,
@@ -591,7 +591,7 @@ describe('useSalaryCalculations', () => {
 
     it('Staff Member over cap, spouse $6 below cap — not at cap, splitAsr', () => {
       const currentSalaryCap = 40000 + AT_CAP_TOLERANCE + 1;
-      setupOverCap({ currentSalaryCap, pendingAsrAmount: 0 });
+      setupOverCap({ currentSalaryCap, ytdAsrAmount: 0 });
 
       const values: CompleteFormValues = {
         ...baseValues,
@@ -616,7 +616,7 @@ describe('useSalaryCalculations', () => {
     const setupAtCap = (
       spouseCalculations: {
         currentSalaryCap: number;
-        pendingAsrAmount: number;
+        ytdAsrAmount: number;
       },
       progressiveApprovalTier: unknown = null,
     ) => {
@@ -641,7 +641,7 @@ describe('useSalaryCalculations', () => {
     };
 
     it('Staff Member at cap, spouse has no pending ASR', () => {
-      setupAtCap({ currentSalaryCap: 50000, pendingAsrAmount: 0 });
+      setupAtCap({ currentSalaryCap: 50000, ytdAsrAmount: 0 });
 
       const values: CompleteFormValues = {
         ...baseValues,
@@ -660,7 +660,7 @@ describe('useSalaryCalculations', () => {
     });
 
     it('Staff Member at cap, spouse has ASR under their cap', () => {
-      setupAtCap({ currentSalaryCap: 50000, pendingAsrAmount: 5000 });
+      setupAtCap({ currentSalaryCap: 50000, ytdAsrAmount: 5000 });
 
       const values: CompleteFormValues = {
         ...baseValues,
@@ -680,7 +680,7 @@ describe('useSalaryCalculations', () => {
 
     it('Staff Member at cap, spouse is over their cap', () => {
       setupAtCap(
-        { currentSalaryCap: 50000, pendingAsrAmount: 15000 },
+        { currentSalaryCap: 50000, ytdAsrAmount: 15000 },
         { id: 'tier-1' },
       );
 
@@ -702,7 +702,7 @@ describe('useSalaryCalculations', () => {
     });
 
     it('Staff Member at cap, spouse is at their cap', () => {
-      setupAtCap({ currentSalaryCap: 40003, pendingAsrAmount: 0 });
+      setupAtCap({ currentSalaryCap: 40003, ytdAsrAmount: 0 });
 
       const values: CompleteFormValues = {
         ...baseValues,
@@ -809,7 +809,7 @@ describe('useSalaryCalculations', () => {
             spouseCalculations: {
               grossAnnualSalary: 40000,
               currentSalaryCap: 50000,
-              pendingAsrAmount: 2000,
+              ytdAsrAmount: 2000,
             },
           },
         },
@@ -839,7 +839,7 @@ describe('useSalaryCalculations', () => {
             spouseCalculations: {
               grossAnnualSalary: 40000,
               currentSalaryCap: 50000,
-              pendingAsrAmount: 15000,
+              ytdAsrAmount: 15000,
             },
           },
         },

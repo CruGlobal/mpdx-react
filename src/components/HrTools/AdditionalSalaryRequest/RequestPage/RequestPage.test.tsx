@@ -511,7 +511,7 @@ describe('RequestPage', () => {
           spouseCalculations: {
             grossAnnualSalary: 40000,
             currentSalaryCap: 500,
-            pendingAsrAmount: 600,
+            ytdAsrAmount: 600,
           },
           progressiveApprovalTier: { id: 'tier-1' },
           progressiveApprovalTierReason:
@@ -723,7 +723,7 @@ describe('RequestPage', () => {
             currentSalaryCap: 10000,
             combinedCap: null,
             staffAccountBalance: 999999,
-            pendingAsrAmount: 0,
+            ytdAsrAmount: 0,
           },
           progressiveApprovalTier: { id: 'tier-1' },
           progressiveApprovalTierReason:

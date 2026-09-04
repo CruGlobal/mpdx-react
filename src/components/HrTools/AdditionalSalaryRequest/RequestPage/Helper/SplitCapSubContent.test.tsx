@@ -42,14 +42,14 @@ const setupContext = (opts: {
         calculations: {
           grossAnnualSalary: 50000,
           currentSalaryCap: 60000,
-          pendingAsrAmount: 0,
+          ytdAsrAmount: 0,
         },
         spouseCalculations:
           spouseCap !== null
             ? {
                 grossAnnualSalary: spouseGross,
                 currentSalaryCap: spouseCap,
-                pendingAsrAmount: spousePending,
+                ytdAsrAmount: spousePending,
               }
             : null,
       },

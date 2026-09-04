@@ -83,10 +83,8 @@ export const RequestSummaryCard: React.FC = () => {
   const combined403b =
     (calcs?.contributing403bAmount ?? 0) +
     (spouseCalcs?.contributing403bAmount ?? 0);
-  const asrAmount =
-    (calcs?.requestedYtdGross ?? 0) - (calcs?.requestedGross ?? 0);
-  const spouseAsrAmount =
-    (spouseCalcs?.requestedYtdGross ?? 0) - (spouseCalcs?.requestedGross ?? 0);
+  const asrAmount = calcs?.ytdAsrAmount ?? 0;
+  const spouseAsrAmount = spouseCalcs?.ytdAsrAmount ?? 0;
 
   const categories: Category[] = [
     {

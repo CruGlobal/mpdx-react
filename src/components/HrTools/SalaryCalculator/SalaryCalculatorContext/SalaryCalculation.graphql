@@ -57,6 +57,7 @@ fragment CalculationFields on SalaryRequestCalculations {
   requestedWithSeca
   requestedGross
   requestedYtdGross
+  ytdAsrAmount
   requestedAboveMinimum
   requestedMha
   requestedAboveMha

@@ -16,7 +16,7 @@ export interface SalaryCalculations {
   calculatedRothDeduction: number;
   totalDeduction: number;
   netSalary: number;
-  additionalSalaryReceivedThisYear: number;
+  additionalSalaryRequestedThisYear: number;
   /**
    * User's total salary requested this year including their current gross salary, any
    * outstanding ASRs, and this ASR. This is the amount we compare against their individual cap.
@@ -110,16 +110,16 @@ export const useSalaryCalculations = ({
     const netSalary = total - totalDeduction;
 
     // Annual salary calculations
-    const additionalSalaryReceivedThisYear =
-      requestData?.latestAdditionalSalaryRequest?.calculations
-        ?.pendingAsrAmount ?? 0;
+    const additionalSalaryRequestedThisYear =
+      requestData?.latestAdditionalSalaryRequest?.calculations?.ytdAsrAmount ??
+      0;
     const requestedAnnualSalary =
-      grossAnnualSalary + additionalSalaryReceivedThisYear + nonBackpayTotal;
+      grossAnnualSalary + additionalSalaryRequestedThisYear + nonBackpayTotal;
 
     // Spouse annual salary calculations
     const spouseTotalThisYear =
       requestData?.latestAdditionalSalaryRequest?.spouseCalculations
-        ?.pendingAsrAmount ?? 0;
+        ?.ytdAsrAmount ?? 0;
     const spouseRequestedAnnualSalary =
       spouseGrossAnnualSalary + spouseTotalThisYear;
 
@@ -175,7 +175,7 @@ export const useSalaryCalculations = ({
       totalDeduction,
       netSalary,
       grossAnnualSalary,
-      additionalSalaryReceivedThisYear,
+      additionalSalaryRequestedThisYear,
       requestedAnnualSalary,
       exceedsCap,
       splitAsr,

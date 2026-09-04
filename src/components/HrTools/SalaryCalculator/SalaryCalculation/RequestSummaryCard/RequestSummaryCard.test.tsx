@@ -21,6 +21,7 @@ const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
       contributing403bAmount: 10003,
       requestedGross: 10004,
       requestedYtdGross: 10005,
+      ytdAsrAmount: 1,
       effectiveCap: 10006,
     },
     spouseCalculations: {
@@ -28,6 +29,7 @@ const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
       contributing403bAmount: 20003,
       requestedGross: 20004,
       requestedYtdGross: 20005,
+      ytdAsrAmount: 1,
       effectiveCap: 20006,
     },
   };
@@ -236,7 +238,11 @@ This may affect your selected effective date.',
         <TestComponent
           hasSpouse={false}
           salaryRequestMock={{
-            calculations: { requestedGross: 60000, requestedYtdGross: 75000 },
+            calculations: {
+              requestedGross: 60000,
+              requestedYtdGross: 75000,
+              ytdAsrAmount: 15000,
+            },
           }}
         />,
       );

@@ -31,14 +31,14 @@ const defaultMockContextValue = {
       traditional403bContribution: 0.12,
       calculations: {
         currentSalaryCap: 100000,
-        pendingAsrAmount: 5000,
+        ytdAsrAmount: 5000,
         grossAnnualSalary: 50000,
       },
     },
   },
   calculations: {
     currentSalaryCap: 100000,
-    pendingAsrAmount: 5000,
+    ytdAsrAmount: 5000,
     grossAnnualSalary: 50000,
   },
 };

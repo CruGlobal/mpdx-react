@@ -356,7 +356,7 @@ describe('StepList', () => {
             },
             spouseCalculations: {
               currentSalaryCap: 500,
-              pendingAsrAmount: 600,
+              ytdAsrAmount: 600,
             },
           },
         },

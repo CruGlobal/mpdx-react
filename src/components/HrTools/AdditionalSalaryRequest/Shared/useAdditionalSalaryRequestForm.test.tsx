@@ -68,7 +68,7 @@ const defaultMockContextValue = {
             calculations: {
               currentSalaryCap: 100000,
               staffAccountBalance: 50000,
-              pendingAsrAmount: 0,
+              ytdAsrAmount: 0,
               grossAnnualSalary: 40000,
             },
           },
@@ -163,7 +163,7 @@ const defaultGqlMocks: DeepPartial<MocksType> = {
         ProgressiveApprovalTierReasonEnum.OverUserCap,
       calculations: {
         currentSalaryCap: 100000,
-        pendingAsrAmount: 0,
+        ytdAsrAmount: 0,
         grossAnnualSalary: 40000,
       },
     },
@@ -288,7 +288,7 @@ describe('useAdditionalSalaryRequestForm', () => {
             calculations: {
               currentSalaryCap: 50000,
               staffAccountBalance: 20000,
-              pendingAsrAmount: 0,
+              ytdAsrAmount: 0,
             },
           },
         },

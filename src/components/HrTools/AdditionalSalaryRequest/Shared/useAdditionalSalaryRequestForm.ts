@@ -44,9 +44,8 @@ export const useAdditionalSalaryRequestForm = (
   const individualCap =
     requestData?.latestAdditionalSalaryRequest?.calculations.currentSalaryCap ??
     0;
-  const pendingAsrAmount =
-    requestData?.latestAdditionalSalaryRequest?.calculations.pendingAsrAmount ??
-    0;
+  const ytdAsrAmount =
+    requestData?.latestAdditionalSalaryRequest?.calculations.ytdAsrAmount ?? 0;
   const grossAnnualSalary =
     requestData?.latestAdditionalSalaryRequest?.calculations
       .grossAnnualSalary ?? 0;
@@ -187,7 +186,7 @@ export const useAdditionalSalaryRequestForm = (
                   : lastValidNonBackpayTotalRef.current;
 
               const amountRequestedYtd =
-                grossAnnualSalary + pendingAsrAmount + stableNonBackpayTotal;
+                grossAnnualSalary + ytdAsrAmount + stableNonBackpayTotal;
               const exceedsCap = amountRequestedYtd > individualCap;
 
               if (exceedsCap) {
@@ -209,7 +208,7 @@ export const useAdditionalSalaryRequestForm = (
       t,
       primaryAccountBalance,
       individualCap,
-      pendingAsrAmount,
+      ytdAsrAmount,
       grossAnnualSalary,
       locale,
       requestData,

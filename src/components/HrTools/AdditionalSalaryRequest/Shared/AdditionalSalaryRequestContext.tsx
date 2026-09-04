@@ -107,7 +107,7 @@ export type AdditionalSalaryRequestType = {
     | 'currentSalaryCap'
     | 'combinedCap'
     | 'staffAccountBalance'
-    | 'pendingAsrAmount'
+    | 'ytdAsrAmount'
     | 'grossAnnualSalary'
     | 'outstandingSalaryRequest'
   >;

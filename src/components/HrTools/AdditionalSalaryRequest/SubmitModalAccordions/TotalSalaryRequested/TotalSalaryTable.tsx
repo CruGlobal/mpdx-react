@@ -57,7 +57,7 @@ export const TotalSalaryTable: React.FC = () => {
   const {
     nonBackpayTotal,
     requestedAnnualSalary,
-    additionalSalaryReceivedThisYear,
+    additionalSalaryRequestedThisYear,
     grossAnnualSalary,
   } = useSalaryCalculations({
     values,
@@ -80,7 +80,7 @@ export const TotalSalaryTable: React.FC = () => {
         id: 'additionalReceived',
         label: t('Additional Salary Previously Requested This Year'),
         description: backpayExplanation,
-        value: additionalSalaryReceivedThisYear,
+        value: additionalSalaryRequestedThisYear,
       },
       {
         id: 'additionalRequested',
@@ -93,7 +93,7 @@ export const TotalSalaryTable: React.FC = () => {
       t,
       individualCap,
       grossAnnualSalary,
-      additionalSalaryReceivedThisYear,
+      additionalSalaryRequestedThisYear,
       nonBackpayTotal,
       outstandingSalaryRequest,
       salaryRequestTooltip,
