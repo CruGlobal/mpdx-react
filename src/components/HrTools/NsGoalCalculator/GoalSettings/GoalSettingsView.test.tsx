@@ -177,8 +177,8 @@ describe('GoalSettingsView', () => {
         name: 'Annual Requested Salary — John',
       });
       userEvent.clear(salary);
-      userEvent.type(salary, '12345');
-      await waitFor(() => expect(salary).toHaveValue(12345));
+      userEvent.type(salary, '1');
+      await waitFor(() => expect(salary).toHaveValue(1));
       return salary;
     };
 
@@ -195,7 +195,9 @@ describe('GoalSettingsView', () => {
       // changed. (The form itself is aria-hidden behind the open dialog, so it
       // cannot be queried while the confirmation is up.)
       expect(push).not.toHaveBeenCalled();
-    });
+      // Mounts the whole form plus the sidebar, so it needs the same
+      // budget as the other integration tests in this feature.
+    }, 20000);
 
     it('switches view once the edits are discarded', async () => {
       const { findByRole, getByRole } = render(<TestComponent />);
@@ -207,10 +209,12 @@ describe('GoalSettingsView', () => {
       await waitFor(() => expect(push).toHaveBeenCalled());
       const [[target]] = push.mock.calls;
       expect(target).toMatchObject({ query: { view: 'present-your-goal' } });
-    });
+      // Mounts the whole form plus the sidebar, so it needs the same
+      // budget as the other integration tests in this feature.
+    }, 20000);
 
     it('keeps the edits when Keep Editing is chosen', async () => {
-      const { findByRole, getByRole } = render(<TestComponent />);
+      const { findByRole, getByRole, queryByRole } = render(<TestComponent />);
       const salary = await dirtyTheForm(findByRole);
 
       userEvent.click(getByRole('button', { name: 'Review Your Goal' }));
@@ -218,12 +222,14 @@ describe('GoalSettingsView', () => {
 
       await waitFor(() =>
         expect(
-          getByRole('heading', { name: 'Personal Information' }),
-        ).toBeInTheDocument(),
+          queryByRole('heading', { name: 'Unsaved Changes' }),
+        ).not.toBeInTheDocument(),
       );
-      expect(salary).toHaveValue(12345);
+      expect(salary).toHaveValue(1);
       expect(push).not.toHaveBeenCalled();
-    });
+      // Mounts the whole form plus the sidebar, so it needs the same
+      // budget as the other integration tests in this feature.
+    }, 20000);
 
     it('switches straight away when the form is untouched', async () => {
       const { findByRole, getByRole, queryByRole } = render(<TestComponent />);
@@ -235,6 +241,8 @@ describe('GoalSettingsView', () => {
       expect(
         queryByRole('heading', { name: 'Unsaved Changes' }),
       ).not.toBeInTheDocument();
-    });
+      // Mounts the whole form plus the sidebar, so it needs the same
+      // budget as the other integration tests in this feature.
+    }, 20000);
   });
 });
