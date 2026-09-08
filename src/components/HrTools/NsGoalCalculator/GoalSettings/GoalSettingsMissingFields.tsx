@@ -28,9 +28,7 @@ export const GoalSettingsMissingFields: React.FC = () => {
     // not interrupt a screen reader mid-edit.
     <Alert role="status" severity="warning" sx={{ ul: { pl: 2, mb: 0 } }}>
       <AlertTitle sx={{ mb: 0.5 }}>
-        {t('{{count}} field(s) still needs a value', {
-          count: messages.length,
-        })}
+        {t('{{count}} field still needs a value', { count: messages.length })}
       </AlertTitle>
       <ul>
         {messages.map((message) => (

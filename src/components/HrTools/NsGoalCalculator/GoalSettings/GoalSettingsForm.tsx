@@ -234,9 +234,7 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
                       <Button color="inherit" onClick={() => leave()}>
                         {t('Cancel')}
                       </Button>
-                      {/* Stays enabled while invalid: GoalSettingsMissingFields
-                          already names what is missing, so a dead button would
-                          only hide a reachable action. */}
+                      {/* Enabled while invalid so submitting marks every field touched. */}
                       <Tooltip
                         // Without this the tooltip becomes the button's aria-label and hides its text.
                         describeChild
