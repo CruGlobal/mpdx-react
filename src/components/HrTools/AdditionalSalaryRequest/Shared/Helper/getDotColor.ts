@@ -26,7 +26,7 @@ export const getDotColor = (
       if (status === AsrStatusEnum.ApprovedAndPaid) {
         return 'success.main';
       }
-      // Approved but payroll has not paid it yet, so the step is not done
+      // ASR is approved but not paid, so the step is incomplete
       if (
         status === AsrStatusEnum.ApprovedNotPaid ||
         status === AsrStatusEnum.ActionRequired

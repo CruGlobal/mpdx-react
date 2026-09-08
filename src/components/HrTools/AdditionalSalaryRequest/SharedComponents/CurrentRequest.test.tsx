@@ -172,7 +172,7 @@ describe('CurrentRequest', () => {
       expect(getByText(/Jun 10, 2025/)).toBeInTheDocument();
     });
 
-    it('displays "Request In Process" for pending status', () => {
+    it('displays "Request in process" for pending status', () => {
       const pendingRequest: RequestType = {
         ...mockRequest,
         status: AsrStatusEnum.Pending,
@@ -261,7 +261,7 @@ describe('CurrentRequest', () => {
       ).toBeInTheDocument();
     });
 
-    it('displays "Request processed on:" for action required status', () => {
+    it('displays "Action required:" for action required status', () => {
       const actionRequiredRequest: RequestType = {
         ...mockRequest,
         status: AsrStatusEnum.ActionRequired,
