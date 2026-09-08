@@ -5,6 +5,7 @@ import {
   NewStaffQuestionnaireMaritalStatusEnum,
 } from 'src/graphql/types.generated';
 import { GoalSettingsFormValues } from './goalSettingsFormValues';
+import { emptyToNull } from './goalSettingsSchema';
 
 /** The saved fields a goal needs before it can be calculated. */
 export interface GoalCompletionFields {
@@ -53,10 +54,6 @@ export const isCalculationComplete = (
   );
 };
 
-/** Unset numeric fields are `''` while editing, but `null` once saved. */
-const editedNumber = (value: number | ''): number | null =>
-  value === '' ? null : value;
-
 export const isGoalSettingsComplete = (
   values: GoalSettingsFormValues,
 ): boolean =>
@@ -64,9 +61,9 @@ export const isGoalSettingsComplete = (
     maritalStatus: values.maritalStatus || null,
     calculationsYear: values.calculationsYear || null,
     age: values.age || null,
-    tenure: editedNumber(values.tenure),
+    tenure: emptyToNull(values.tenure),
     assignmentType: values.assignmentType || null,
     benefitsPlan: values.benefitsPlan || null,
     spouseAge: values.spouseAge || null,
-    spouseTenure: editedNumber(values.spouseTenure),
+    spouseTenure: emptyToNull(values.spouseTenure),
   });

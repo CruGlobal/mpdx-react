@@ -135,11 +135,16 @@ export const MpdGoalAdminProvider: React.FC<{
   );
 
   // The cohort list arrives after mount, so the initial selection happens here.
+  // A `cohortId` in the URL wins over the first-cohort default, so returning
+  // from Goal Settings lands on the cohort the goal was opened from.
   useEffect(() => {
-    if (cohorts.length && !cohorts.some(({ id }) => id === selectedCohortId)) {
-      selectCohort(cohorts[0].id);
+    if (!cohorts.length || cohorts.some(({ id }) => id === selectedCohortId)) {
+      return;
     }
-  }, [cohorts, selectedCohortId, selectCohort]);
+    const urlCohortId = getQueryParam(router.query, 'cohortId');
+    const requested = cohorts.find(({ id }) => id === urlCohortId);
+    selectCohort(requested?.id ?? cohorts[0].id);
+  }, [cohorts, selectedCohortId, selectCohort, router.query]);
 
   const {
     data: attendeesData,

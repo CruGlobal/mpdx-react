@@ -13,6 +13,7 @@ import { Form, Formik, useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
 import { GoalSettingsHeader } from './GoalSettingsHeader';
+import { GoalSettingsMissingFields } from './GoalSettingsMissingFields';
 import { useGoalSettingsNavigation } from './GoalSettingsNavigationContext';
 import { GoalSettingsPreviewProvider } from './GoalSettingsPreviewContext';
 import { GoalSettingsScrollContainer } from './GoalSettingsScrollContainer';
@@ -171,7 +172,7 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
             NewStaffQuestionnaireMaritalStatusEnum.Married;
           const seniorStaffSpouse =
             hasSpouse && values.spouseJoining === 'false';
-          // Colour alone can't say "incomplete", so this also drives an icon and a tooltip.
+          // Color alone can't say "incomplete", so this also drives an icon and a tooltip.
           const isIncomplete = !isValid && !isSubmitting;
           const primaryName = values.firstName;
           const spouseName = values.spouseFirstName || t('Spouse');
@@ -225,9 +226,12 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
                     flexWrap="wrap"
                     useFlexGap
                   >
+                    <GoalSettingsMissingFields />
                     <GoalSettingsWarning />
                     <Stack direction="row" spacing={2} sx={{ ml: 'auto' }}>
-                      <Button color="inherit" onClick={leave}>
+                      {/* Wrapped: leave() takes an optional continuation, so
+                          passing it directly would hand it the click event. */}
+                      <Button color="inherit" onClick={() => leave()}>
                         {t('Cancel')}
                       </Button>
                       {/* Enabled while invalid so submitting can surface which

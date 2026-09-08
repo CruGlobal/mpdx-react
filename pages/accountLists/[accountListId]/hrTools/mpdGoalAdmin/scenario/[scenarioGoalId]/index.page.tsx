@@ -25,7 +25,7 @@ export const NsScenarioGoalPage: React.FC = () => {
       <Head>
         <title>{`${appName} | ${t('New Staff Goal Calculator')}`}</title>
       </Head>
-      {accountListId && scenarioGoalId ? (
+      {scenarioGoalId ? (
         <GoalSettingsView
           scenarioGoalId={scenarioGoalId}
           returnUrl={mpdGoalAdminUrl(

@@ -20,18 +20,23 @@ export const NsStaffDetailsPage: React.FC = () => {
   const accountListId = useAccountListId();
   const { query } = useRouter();
   const staffAccountListId = getQueryParam(query, 'staffAccountListId');
+  // Carried through so Back to Table reselects the cohort this goal came from.
+  const cohortId = getQueryParam(query, 'cohortId');
 
   return (
     <>
       <Head>
-        <title>{`${appName} | ${t('MPD Goal Calculator - Staff Details')}`}</title>
+        <title>{`${appName} | ${t(
+          'HR Tools | MPD Goal Calculator | Staff Details',
+        )}`}</title>
       </Head>
-      {accountListId && staffAccountListId ? (
+      {staffAccountListId ? (
         <GoalSettingsView
           accountListId={staffAccountListId}
           returnUrl={mpdGoalAdminUrl(
             accountListId,
             MpdGoalAdminTabEnum.ActiveGoals,
+            cohortId,
           )}
         />
       ) : (

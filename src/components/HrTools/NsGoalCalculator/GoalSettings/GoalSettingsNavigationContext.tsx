@@ -21,8 +21,13 @@ interface GoalSettingsNavigationContextValue {
   returnUrl: string | null;
   /** Label for the back link, or null when this view has nowhere to go back to. */
   returnLabel: string | null;
-  /** Goes back, confirming first when the form has unsaved edits. */
-  leave: () => void;
+  /**
+   * Runs `proceed` (default: return to the table), confirming first when the
+   * form has unsaved edits. Every exit from Goal Settings should go through
+   * this — switching to a Staff Documents view unmounts the form and discards
+   * edits just as thoroughly as navigating away does.
+   */
+  leave: (proceed?: () => void) => void;
   /**
    * Goes back with no confirmation, for use after a successful save. With
    * nowhere to go back to it just clears the unsaved edits.
@@ -82,13 +87,22 @@ export const GoalSettingsNavigationProvider: React.FC<
     }
   }, [returnUrl, router]);
 
-  const leave = useCallback(() => {
-    if (formRef.current.dirty) {
-      setConfirming(true);
-    } else {
-      returnToTable();
-    }
-  }, [returnToTable]);
+  // Held in a ref so a pending confirmation keeps acting on the exit that
+  // opened it, even if the component re-renders in the meantime.
+  const proceedRef = useRef<() => void>(returnToTable);
+
+  const leave = useCallback(
+    (proceed?: () => void) => {
+      const exit = proceed ?? returnToTable;
+      if (formRef.current.dirty) {
+        proceedRef.current = exit;
+        setConfirming(true);
+      } else {
+        exit();
+      }
+    },
+    [returnToTable],
+  );
 
   return (
     <GoalSettingsNavigationContext.Provider
@@ -109,7 +123,7 @@ export const GoalSettingsNavigationProvider: React.FC<
         )}
         confirmLabel={t('Discard Changes')}
         cancelLabel={t('Keep Editing')}
-        mutation={async () => returnToTable()}
+        mutation={async () => proceedRef.current()}
         handleClose={() => setConfirming(false)}
       />
     </GoalSettingsNavigationContext.Provider>

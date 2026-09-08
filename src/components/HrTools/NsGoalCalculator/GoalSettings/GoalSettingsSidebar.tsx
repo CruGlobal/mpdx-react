@@ -77,6 +77,15 @@ export const GoalSettingsSidebar: React.FC<GoalSettingsSidebarProps> = ({
   const { view, setView } = useGoalSettingsView();
   const { returnUrl, returnLabel, leave } = useGoalSettingsNavigation();
 
+  // Switching view unmounts the form, so it needs the same unsaved-edits
+  // confirmation as leaving the page. Re-selecting the current view is not an
+  // exit and must not prompt.
+  const selectView = (next: GoalSettingsViewEnum) => () => {
+    if (next !== view) {
+      leave(() => setView(next));
+    }
+  };
+
   return (
     <List disablePadding component="nav" aria-label={t('Goal navigation')}>
       <ListItem
@@ -124,7 +133,7 @@ export const GoalSettingsSidebar: React.FC<GoalSettingsSidebarProps> = ({
 
       <NavItem
         current={view === GoalSettingsViewEnum.GoalSettings}
-        onSelect={() => setView(GoalSettingsViewEnum.GoalSettings)}
+        onSelect={selectView(GoalSettingsViewEnum.GoalSettings)}
         icon={<SettingsIcon />}
         label={t('Goal Settings')}
         secondary={t('Editable by Admins, Coordinators, and Coaches')}
@@ -154,14 +163,14 @@ export const GoalSettingsSidebar: React.FC<GoalSettingsSidebarProps> = ({
           <List disablePadding>
             <NavItem
               current={view === GoalSettingsViewEnum.ReviewYourGoal}
-              onSelect={() => setView(GoalSettingsViewEnum.ReviewYourGoal)}
+              onSelect={selectView(GoalSettingsViewEnum.ReviewYourGoal)}
               label={t('Review Your Goal')}
               sx={{ pl: 6 }}
             />
             {!isScenario && (
               <NavItem
                 current={view === GoalSettingsViewEnum.PresentYourGoal}
-                onSelect={() => setView(GoalSettingsViewEnum.PresentYourGoal)}
+                onSelect={selectView(GoalSettingsViewEnum.PresentYourGoal)}
                 label={t('Presenting Your Goal')}
                 sx={{ pl: 6 }}
               />

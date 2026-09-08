@@ -27,17 +27,23 @@ export const parseMpdGoalAdminTab = (
     ? MpdGoalAdminTabEnum.ScenarioGoals
     : MpdGoalAdminTabEnum.ActiveGoals;
 
+/** `cohortId` round-trips through Goal Settings so returning reselects the cohort. */
 export const mpdGoalAdminUrl = (
   accountListId: string,
   tab: MpdGoalAdminTabEnum,
-): string => `/accountLists/${accountListId}/hrTools/mpdGoalAdmin?tab=${tab}`;
+  cohortId?: string,
+): string =>
+  `/accountLists/${accountListId}/hrTools/mpdGoalAdmin?tab=${tab}` +
+  (cohortId ? `&cohortId=${encodeURIComponent(cohortId)}` : '');
 
 /** Goal Settings for one training attendee, keyed by the household's account list. */
 export const staffDetailsUrl = (
   accountListId: string,
   staffAccountListId: string,
+  cohortId?: string,
 ): string =>
-  `/accountLists/${accountListId}/hrTools/mpdGoalAdmin/staff/${staffAccountListId}`;
+  `/accountLists/${accountListId}/hrTools/mpdGoalAdmin/staff/${staffAccountListId}` +
+  (cohortId ? `?cohortId=${encodeURIComponent(cohortId)}` : '');
 
 export const scenarioGoalUrl = (
   accountListId: string,

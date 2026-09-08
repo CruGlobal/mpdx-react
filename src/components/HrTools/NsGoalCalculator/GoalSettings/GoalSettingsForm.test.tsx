@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import TestRouter from '__tests__/util/TestRouter';
@@ -459,8 +459,9 @@ describe('GoalSettingsForm', () => {
     );
     userEvent.click(saveButton);
 
-    // The button stays disabled with a spinner until the save resolves.
-    expect(await findByRole('progressbar')).toBeInTheDocument();
+    // Asserted synchronously: the save resolves on the next microtask, so an
+    // awaited query would miss the in-flight state entirely.
+    expect(within(saveButton).getByRole('progressbar')).toBeInTheDocument();
     expect(saveButton).toBeDisabled();
   });
 
@@ -478,6 +479,28 @@ describe('GoalSettingsForm', () => {
     expect(mutationSpy).not.toHaveGraphqlOperation(
       'UpdateNewStaffGoalCalculation',
     );
+  });
+
+  // The required fields sit far up a long form, so the sticky bar has to say
+  // what is missing rather than relying on them turning red off-screen.
+  it('names the missing required fields beside the save actions', async () => {
+    const { findByRole } = render(
+      <TestComponent
+        goalCalculationMock={{
+          newStaffGoalCalculation: {
+            ...defaultMock.newStaffGoalCalculation,
+            benefitsPlan: null,
+          },
+        }}
+      />,
+    );
+
+    // validateOnMount resolves after the first paint, so wait for the summary.
+    const summary = await findByRole('status');
+
+    expect(summary).toHaveTextContent('Benefits Plan is required');
+    // Deduplicated, so a married household does not list the same rule twice.
+    expect(summary).not.toHaveTextContent('Age is requiredAge is required');
   });
 
   // Red rather than disabled: clicking it is how an admin finds out which

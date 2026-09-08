@@ -13,18 +13,26 @@ import * as yup from 'yup';
 import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
 import { amount, integer, percentage } from 'src/lib/yupHelpers';
 
-/** Treat the form's empty-string ("not set") as null so it passes validation. */
-const emptyToNull = (value: number, original: unknown): number | null =>
-  original === '' ? null : value;
+/** The form's "not set" sentinel. Shared with `goalSettingsCompletion`. */
+export const emptyToNull = <T>(value: T | ''): T | null =>
+  value === '' ? null : value;
+
+/** yup hands over the cast value, so the '' sentinel is read off the original. */
+const emptyStringToNull = (value: number, original: unknown): number | null =>
+  emptyToNull(original as number | '') === null ? null : value;
 
 const optionalAmount = (label: string, t: TFunction) =>
-  amount(label, t).nullable().transform(emptyToNull);
+  amount(label, t).nullable().transform(emptyStringToNull);
 
 const optionalInteger = (label: string, t: TFunction) =>
-  integer(label, t).nullable().transform(emptyToNull);
+  integer(label, t).nullable().transform(emptyStringToNull);
+
+/** An integer field a goal cannot be calculated without; `''` reads as missing. */
+const requiredInteger = (label: string, t: TFunction) =>
+  optionalInteger(label, t).required(required(label, t));
 
 const optionalPercentage = (label: string, t: TFunction) =>
-  percentage(label, t).nullable().transform(emptyToNull);
+  percentage(label, t).nullable().transform(emptyStringToNull);
 
 const optional403bPercentage = (label: string, t: TFunction) =>
   optionalPercentage(label, t).lessThan(
@@ -61,9 +69,7 @@ export const getGoalSettingsSchema = (t: TFunction) =>
     spouseAge: requiredWhenMarried(yup.string(), t('Spouse Age'), t),
 
     // Personal
-    tenure: optionalInteger(t('Full Time Years on Staff'), t).required(
-      required(t('Full Time Years on Staff'), t),
-    ),
+    tenure: requiredInteger(t('Full Time Years on Staff'), t),
     spouseTenure: requiredWhenMarried(
       optionalInteger(t('Spouse Full Time Years on Staff'), t),
       t('Spouse Full Time Years on Staff'),
