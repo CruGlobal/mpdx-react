@@ -89,6 +89,8 @@ export const useNewStaffGoalCalculation = (
       if (!goalCalculation) {
         return;
       }
+      const accountListId = isScenario ? null : source.accountListId;
+
       return updateGoalCalculation({
         variables: {
           input: isScenario
@@ -98,6 +100,20 @@ export const useNewStaffGoalCalculation = (
                 id: goalCalculation.id,
                 attributes,
               },
+        },
+        // The payload returns the goal as a scalar, so nothing normalizes it for us.
+        update: (cache, { data }) => {
+          const monthlyGoal = data?.updateNewStaffGoalCalculation?.monthlyGoal;
+          if (accountListId === null || typeof monthlyGoal !== 'number') {
+            return;
+          }
+          cache.modify({
+            id: cache.identify({
+              __typename: 'AccountList',
+              id: accountListId,
+            }),
+            fields: { monthlyGoal: () => monthlyGoal },
+          });
         },
       });
     },
