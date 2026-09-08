@@ -3,16 +3,19 @@ import {
   Avatar,
   Box,
   Card,
+  CardActionArea,
   Chip,
   Grid,
   Stack,
+  SxProps,
+  Theme,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { visuallyHidden } from '@mui/utils';
 import { useTranslation } from 'react-i18next';
+import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
-import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import {
   ManagedStaffMember,
@@ -23,6 +26,7 @@ import {
   healthColor,
   healthLabel,
   pendingField,
+  quarterAmountLabel,
 } from '../helpers';
 
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -92,13 +96,10 @@ export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
   );
 
   return (
-    <StyledCard
-      role="button"
-      tabIndex={0}
-      aria-label={t('View details for {{name}}', { name: names })}
-      onClick={onClick}
-    >
-      <Box
+    <StyledCard>
+      <CardActionArea
+        aria-label={t('View details for {{name}}', { name: names })}
+        onClick={onClick}
         sx={{
           paddingInline: theme.spacing(4),
           paddingTop: theme.spacing(1),
@@ -130,42 +131,56 @@ export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
             </Box>
           </GridItem>
           <GridQuarter size={6}>
-            <FiscalYearQuarters quarters={quarters} />
+            <FiscalYearQuarters
+              quarters={quarters}
+              hasStaffAccount={!!staffAccountId}
+            />
           </GridQuarter>
         </Grid>
-      </Box>
+      </CardActionArea>
     </StyledCard>
   );
 };
 
 interface FiscalYearQuartersProps {
   quarters: QuarterChipData[];
+  hasStaffAccount: boolean;
 }
 const FiscalYearQuartersBase: React.FC<FiscalYearQuartersProps> = ({
   quarters,
+  hasStaffAccount,
 }) => {
   const { t } = useTranslation();
-  const locale = useLocale();
+  const { formatCurrency } = useFormatters();
+
   return (
     <Stack direction="row" spacing={2}>
       {quarters.map(({ fiscalYear, quarter, status, averagePayroll }) => {
         const label = getQuarterLabel(fiscalYear, quarter);
-        // A quarter payroll started partway through reports no average.
-        const amount =
-          averagePayroll === null
-            ? t('Partial')
-            : currencyFormat(averagePayroll, 'USD', locale);
+        const amount = quarterAmountLabel({
+          t,
+          hasStaffAccount,
+          status,
+          averagePayroll,
+          formatCurrency,
+        });
+
         return (
           <QuarterChip
             key={label}
-            label={amount}
-            // Health is also conveyed by color; include it in the label for
-            // screen-reader users (WCAG 1.4.1 — not color alone).
-            aria-label={t('{{label}}: {{amount}} ({{status}})', {
-              label,
-              amount,
-              status: healthLabel(t, status),
-            })}
+            // Health is also conveyed by color, so name it for screen-reader
+            // users (WCAG 1.4.1 — not color alone).
+            label={
+              <>
+                <Box component="span" sx={visuallyHidden as SxProps<Theme>}>
+                  {t('{{label}}, {{status}}', {
+                    label,
+                    status: healthLabel(t, status),
+                  })}
+                </Box>
+                {amount}
+              </>
+            }
             health={status}
             size="small"
           />

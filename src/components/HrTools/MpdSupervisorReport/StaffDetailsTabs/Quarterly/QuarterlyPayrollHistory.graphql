@@ -1,5 +1,5 @@
 query QuarterlyPayrollHistory(
-  $staffAccountId: String!
+  $staffAccountId: String
   $historyRange: MpdHistoryRangeEnum = TWENTY_FOUR_MONTHS
 ) {
   quarterlyPayrollHistory(

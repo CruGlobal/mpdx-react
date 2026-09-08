@@ -2,11 +2,14 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { MpdSupervisorReportFilterPanel } from './Filters/MpdSupervisorReportFilterPanel';
 import { ManagedStaffQuery } from './ManagedStaff.generated';
+import { ManagedStaffTeamsQuery } from './ManagedStaffTeams.generated';
 import { MpdSupervisorReport } from './MpdSupervisorReport';
 import {
   MpdSupervisorReportProvider,
@@ -16,45 +19,8 @@ import { StaffMemberDrawer } from './StaffMemberDrawer/StaffMemberDrawer';
 import {
   managedStaffMember,
   managedStaffMock,
+  managedStaffTeamsMock,
 } from './mpdSupervisorReportMocks';
-
-// react-virtuoso requires ResizeObserver (unavailable in jsdom). Wrap
-// InfiniteList so all items render synchronously without a layout engine.
-jest.mock('src/components/InfiniteList/InfiniteList', () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const ReactLib = jest.requireActual<any>('react');
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const InfiniteList = ({
-    data,
-    itemContent,
-    loading,
-    EmptyPlaceholder,
-  }: any) => {
-    if (loading) {
-      return ReactLib.createElement('div', {
-        'data-testid': 'infinite-list-skeleton-loading',
-      });
-    }
-    if (!data || data.length === 0) {
-      return EmptyPlaceholder ?? null;
-    }
-    return ReactLib.createElement(
-      'div',
-      { 'data-testid': 'infinite-list' },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ...data.map((item: any, index: number) =>
-        ReactLib.createElement(
-          ReactLib.Fragment,
-          { key: index },
-          itemContent(index, item),
-        ),
-      ),
-    );
-  };
-
-  return { InfiniteList, ItemWithBorders: 'div' };
-});
 
 const onNavListToggle = jest.fn();
 const onFilterListToggle = jest.fn();
@@ -73,11 +39,17 @@ const staff = [
 interface RenderOptions {
   panelOpen?: Panel | null;
   managedStaff?: ManagedStaffQuery;
+  /** Renders the filter panel too, so a chip click can drive the query. */
+  withFilters?: boolean;
+  /** Overrides the default mocks, e.g. to make an operation throw. */
+  mocks?: ApolloErgonoMockMap;
 }
 
 const renderReport = ({
   panelOpen = Panel.Filters,
   managedStaff = managedStaffMock(staff),
+  withFilters = false,
+  mocks = {},
 }: RenderOptions = {}) =>
   render(
     <TestRouter>
@@ -85,8 +57,17 @@ const renderReport = ({
         <VirtuosoMockContext.Provider
           value={{ viewportHeight: 800, itemHeight: 80 }}
         >
-          <GqlMockedProvider<{ ManagedStaff: ManagedStaffQuery }>
-            mocks={{ ManagedStaff: managedStaff }}
+          <GqlMockedProvider<{
+            ManagedStaff: ManagedStaffQuery;
+            ManagedStaffTeams: ManagedStaffTeamsQuery;
+          }>
+            mocks={
+              {
+                ManagedStaff: managedStaff,
+                ManagedStaffTeams: managedStaffTeamsMock(),
+                ...mocks,
+              } as ApolloErgonoMockMap
+            }
             onCall={mutationSpy}
           >
             <MpdSupervisorReportProvider>
@@ -96,6 +77,9 @@ const renderReport = ({
                 onFilterListToggle={onFilterListToggle}
                 title="MPD Supervisor Report"
               />
+              {withFilters && (
+                <MpdSupervisorReportFilterPanel onClose={jest.fn()} />
+              )}
               <StaffMemberDrawer />
             </MpdSupervisorReportProvider>
           </GqlMockedProvider>
@@ -112,6 +96,25 @@ describe('MpdSupervisorReport', () => {
     expect(screen.getByText('Alice Jones')).toBeInTheDocument();
   });
 
+  it('surfaces a query failure instead of an empty roster', async () => {
+    renderReport({
+      mocks: {
+        ManagedStaff: {
+          managedStaff: () => {
+            throw new Error('Not authorized');
+          },
+        },
+      },
+    });
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Not authorized',
+    );
+    expect(
+      screen.queryByText('No staff members found'),
+    ).not.toBeInTheDocument();
+  });
+
   it('shows the loaded count against the total the query reports', async () => {
     renderReport();
 
@@ -124,7 +127,7 @@ describe('MpdSupervisorReport', () => {
     renderReport();
     await screen.findByText('John Smith');
 
-    await userEvent.type(
+    userEvent.type(
       screen.getByRole('textbox', { name: 'Search name' }),
       'Jones',
     );
@@ -143,6 +146,46 @@ describe('MpdSupervisorReport', () => {
     expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
       teamIds: null,
     });
+  });
+
+  it('omits both health flags while All people is selected', async () => {
+    renderReport({ withFilters: true });
+    await screen.findByText('John Smith');
+
+    expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+      negativeLastMonth: null,
+      negativeThreeMonths: null,
+    });
+  });
+
+  it('sends negativeLastMonth when that chip is clicked', async () => {
+    renderReport({ withFilters: true });
+    await screen.findByText('John Smith');
+
+    userEvent.click(
+      screen.getByRole('button', { name: 'Negative last month' }),
+    );
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        negativeLastMonth: true,
+        negativeThreeMonths: null,
+      }),
+    );
+  });
+
+  it('sends negativeThreeMonths when that chip is clicked', async () => {
+    renderReport({ withFilters: true });
+    await screen.findByText('John Smith');
+
+    userEvent.click(screen.getByRole('button', { name: '3+ months negative' }));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        negativeLastMonth: null,
+        negativeThreeMonths: true,
+      }),
+    );
   });
 
   it('shows the empty state when the query returns no staff', async () => {

@@ -1,4 +1,5 @@
 import { ThemeProvider } from '@mui/material/styles';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
 import theme from 'src/theme';
@@ -25,17 +26,22 @@ const mockPayrollHistory: PayrollHistory = [
 interface TestComponentProps {
   payrollHistory?: PayrollHistory;
   staffAccountId?: string | null;
+  mocks?: ApolloErgonoMockMap;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   payrollHistory = mockPayrollHistory,
   staffAccountId = '1000000001',
+  mocks = {},
 }) => (
   <ThemeProvider theme={theme}>
     <GqlMockedProvider<{ MonthlyPayrollHistory: MonthlyPayrollHistoryQuery }>
-      mocks={{
-        MonthlyPayrollHistory: { monthlyPayrollHistory: payrollHistory },
-      }}
+      mocks={
+        {
+          MonthlyPayrollHistory: { monthlyPayrollHistory: payrollHistory },
+          ...mocks,
+        } as ApolloErgonoMockMap
+      }
     >
       <StaffTabPayroll staffAccountId={staffAccountId} />
     </GqlMockedProvider>
@@ -50,6 +56,14 @@ const columnHeaders = [
 ];
 
 describe('StaffTabPayroll', () => {
+  it('renders the heading', async () => {
+    const { findByText } = render(<TestComponent />);
+
+    expect(
+      await findByText('Payroll and reimbursements · last 12 months'),
+    ).toBeInTheDocument();
+  });
+
   it('renders the headers and a row per month', async () => {
     const { findByRole } = render(<TestComponent />);
 
@@ -60,6 +74,24 @@ describe('StaffTabPayroll', () => {
         ['Feb 2023', '$3,200.00', '$550.00', '85.0%'],
       ],
     });
+  });
+
+  it('surfaces a query failure instead of the empty state', async () => {
+    const { findByRole, queryByRole, queryByText } = render(
+      <TestComponent
+        mocks={{
+          MonthlyPayrollHistory: {
+            monthlyPayrollHistory: () => {
+              throw new Error('Not authorized');
+            },
+          },
+        }}
+      />,
+    );
+
+    expect(await findByRole('alert')).toHaveTextContent('Not authorized');
+    expect(queryByRole('table')).not.toBeInTheDocument();
+    expect(queryByText('No data available.')).not.toBeInTheDocument();
   });
 
   it('renders an empty-state row when payroll history is empty', async () => {

@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import {
+  Alert,
   Box,
   Container,
   InputAdornment,
@@ -99,8 +100,8 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
 
   const debouncedSearch = useDebouncedValue(search, searchDebounceMs);
 
-  // TODO: Add employment type filter once the API supports it
-  const { data, loading, fetchMore } = useManagedStaffQuery({
+  // TODO(MPDX-9987): Add employment type filter once the API supports it
+  const { data, loading, error, fetchMore } = useManagedStaffQuery({
     variables: {
       first: pageSize,
       name: debouncedSearch.trim() || null,
@@ -205,31 +206,35 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
         </QuartersContainer>
 
         <Box sx={{ flex: 1, minHeight: 0 }}>
-          <InfiniteList
-            loading={loading}
-            data={staffMembers}
-            disableHover
-            style={{ height: '100%' }}
-            itemContent={(_index, item: ManagedStaffMember) => (
-              <StaffMember
-                key={item.personNumber}
-                data={item}
-                onClick={() => openMember(item)}
-              />
-            )}
-            endReached={() => {
-              if (pageInfo?.hasNextPage) {
-                fetchMore({ variables: { after: pageInfo.endCursor } });
+          {error && !staffMembers.length ? (
+            <Alert severity="error">{error.message}</Alert>
+          ) : (
+            <InfiniteList
+              loading={loading}
+              data={staffMembers}
+              disableHover
+              style={{ height: '100%' }}
+              itemContent={(_index, item: ManagedStaffMember) => (
+                <StaffMember
+                  key={item.personNumber}
+                  data={item}
+                  onClick={() => openMember(item)}
+                />
+              )}
+              endReached={() => {
+                if (pageInfo?.hasNextPage) {
+                  fetchMore({ variables: { after: pageInfo.endCursor } });
+                }
+              }}
+              EmptyPlaceholder={
+                <Box sx={{ textAlign: 'center', mt: 4 }}>
+                  <Typography color="text.secondary">
+                    {t('No staff members found')}
+                  </Typography>
+                </Box>
               }
-            }}
-            EmptyPlaceholder={
-              <Box sx={{ textAlign: 'center', mt: 4 }}>
-                <Typography color="text.secondary">
-                  {t('No staff members found')}
-                </Typography>
-              </Box>
-            }
-          />
+            />
+          )}
         </Box>
       </StyledContainer>
     </>

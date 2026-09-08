@@ -152,7 +152,7 @@ describe('StaffMemberDrawer', () => {
   it('selects another tab when clicked', async () => {
     renderDrawer();
     openMember(memberWithSpouse);
-    await userEvent.click(screen.getByRole('tab', { name: 'Quarterly' }));
+    userEvent.click(screen.getByRole('tab', { name: 'Quarterly' }));
     expect(screen.getByRole('tab', { name: 'Quarterly' })).toHaveAttribute(
       'aria-selected',
       'true',
@@ -195,7 +195,7 @@ describe('StaffMemberDrawer', () => {
     renderDrawer();
     openMember(memberWithSpouse);
     expect(screen.getByText('John Smith')).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Close' }));
+    userEvent.click(screen.getByRole('button', { name: 'Close' }));
     expect(screen.queryByText('John Smith')).not.toBeInTheDocument();
   });
 });

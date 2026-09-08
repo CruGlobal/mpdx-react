@@ -2,7 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { currencyFormat } from 'src/lib/intlFormat';
+import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { ManagedStaffMember } from '../helpers';
 import { managedStaffMember } from '../mpdSupervisorReportMocks';
@@ -66,18 +66,10 @@ describe('StaffMember', () => {
 
   it('renders a currency-formatted payroll chip for each quarter', () => {
     renderRow();
-    expect(
-      screen.getByText(currencyFormat(15000, 'USD', 'en-US')),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(currencyFormat(16000, 'USD', 'en-US')),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(currencyFormat(17000, 'USD', 'en-US')),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(currencyFormat(18000, 'USD', 'en-US')),
-    ).toBeInTheDocument();
+    expect(screen.getByText('$4,600.00')).toBeInTheDocument();
+    expect(screen.getByText('$3,500.00')).toBeInTheDocument();
+    expect(screen.getByText('$2,200.00')).toBeInTheDocument();
+    expect(screen.getByText('$4,500.00')).toBeInTheDocument();
   });
 
   it('labels a quarter payroll started partway through as Partial', () => {
@@ -94,6 +86,30 @@ describe('StaffMember', () => {
     expect(screen.getByText('Partial')).toBeInTheDocument();
   });
 
+  it('renders a dash instead of $0.00 for a quarter with no payroll data', () => {
+    renderRow(
+      jest.fn(),
+      managedStaffMember({
+        quarterlyHealth: {
+          monthlyGrossSalary: 0,
+          startingQuarter: null,
+          completedQuarters: [
+            {
+              fiscalYear: 2025,
+              quarter: 4,
+              averagePayroll: 0,
+              status: MpdHealthStatusEnum.Gray,
+            },
+          ],
+        },
+      }),
+    );
+
+    expect(screen.getByText('-')).toBeInTheDocument();
+    expect(screen.queryByText('$0.00')).not.toBeInTheDocument();
+    expect(screen.getByText('FQ4 25, no data')).toBeInTheDocument();
+  });
+
   it('exposes an accessible button with a descriptive label', () => {
     renderRow();
     expect(
@@ -103,9 +119,16 @@ describe('StaffMember', () => {
 
   it('calls onClick when the card is clicked', async () => {
     const onClick = renderRow();
-    await userEvent.click(
+    userEvent.click(
       screen.getByRole('button', { name: 'View details for Brooke Butler' }),
     );
     expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders the card as a real button so the keyboard can activate it', () => {
+    renderRow();
+    expect(
+      screen.getByRole('button', { name: 'View details for Brooke Butler' }),
+    ).toHaveProperty('tagName', 'BUTTON');
   });
 });

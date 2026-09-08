@@ -1,5 +1,6 @@
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
 import {
@@ -51,18 +52,23 @@ const mockMonthlySummary: MonthlySummary = [
 interface TestComponentProps {
   monthlySummary: MonthlySummary;
   staffAccountId?: string | null;
+  mocks?: ApolloErgonoMockMap;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   monthlySummary,
   staffAccountId = '1000000001',
+  mocks = {},
 }) => {
   return (
     <ThemeProvider theme={theme}>
       <GqlMockedProvider<{ MonthlyPayrollSummary: MonthlyPayrollSummaryQuery }>
-        mocks={{
-          MonthlyPayrollSummary: { monthlyPayrollSummary: monthlySummary },
-        }}
+        mocks={
+          {
+            MonthlyPayrollSummary: { monthlyPayrollSummary: monthlySummary },
+            ...mocks,
+          } as ApolloErgonoMockMap
+        }
       >
         <StaffTabMonthlySummary staffAccountId={staffAccountId} />
       </GqlMockedProvider>
@@ -102,7 +108,26 @@ describe('StaffTabMonthlySummary', () => {
     });
   });
 
-  it('renders a blank month, zeroed amounts, and a placeholder end balance when the summary fields are null', async () => {
+  it('surfaces a query failure instead of the empty state', async () => {
+    const { findByRole, queryByRole, queryByText } = render(
+      <TestComponent
+        monthlySummary={[]}
+        mocks={{
+          MonthlyPayrollSummary: {
+            monthlyPayrollSummary: () => {
+              throw new Error('Not authorized');
+            },
+          },
+        }}
+      />,
+    );
+
+    expect(await findByRole('alert')).toHaveTextContent('Not authorized');
+    expect(queryByRole('table')).not.toBeInTheDocument();
+    expect(queryByText('No data available.')).not.toBeInTheDocument();
+  });
+
+  it('renders a blank month and a placeholder in every amount when the summary fields are null', async () => {
     const { findByRole } = render(
       <TestComponent
         monthlySummary={[
@@ -119,11 +144,11 @@ describe('StaffTabMonthlySummary', () => {
 
     expect(await findByRole('table')).toHaveTableStructure({
       columnHeaders,
-      cells: [['', '$0.00', '($0.00)', '$0.00', '—']],
+      cells: [['', '—', '—', '—', '—']],
     });
   });
 
-  it('colors net green when positive, red when negative, and the default text color when exactly zero', async () => {
+  it('colors net green when positive, red when negative, and the default text color when zero or unknown', async () => {
     const { findByRole, getByRole } = render(
       <TestComponent
         monthlySummary={[
@@ -148,6 +173,13 @@ describe('StaffTabMonthlySummary', () => {
             net: 0,
             endBalance: 9700,
           },
+          {
+            month: '2023-04',
+            contributions: 4000,
+            expenses: 4000,
+            net: null,
+            endBalance: 9700,
+          },
         ]}
       />,
     );
@@ -161,6 +193,9 @@ describe('StaffTabMonthlySummary', () => {
       color: theme.palette.error.main,
     });
     expect(getByRole('cell', { name: '$0.00' })).toHaveStyle({
+      color: 'inherit',
+    });
+    expect(getByRole('cell', { name: '—' })).toHaveStyle({
       color: 'inherit',
     });
   });
@@ -200,8 +235,8 @@ describe('StaffTabMonthlySummary', () => {
     expect(getByRole('table')).toBeInTheDocument();
   });
 
-  it('switches to the chart view even when there is no data', async () => {
-    const { findByRole, queryByRole } = render(
+  it('charts labelled empty months without showing a zero amount', async () => {
+    const { container, findByRole, queryByRole, queryByText } = render(
       <TestComponent monthlySummary={[]} />,
     );
 
@@ -209,5 +244,27 @@ describe('StaffTabMonthlySummary', () => {
 
     expect(await findByRole('region')).toBeInTheDocument();
     expect(queryByRole('table')).not.toBeInTheDocument();
+    expect(queryByText(/^\$/)).not.toBeInTheDocument();
+
+    // Tests run pinned to 2020-01-01, so the window ends on the current month.
+    const ticks = Array.from(
+      container.querySelectorAll(
+        '.recharts-cartesian-axis .recharts-cartesian-axis-tick tspan',
+      ),
+    ).map((tick) => tick.textContent);
+    expect(ticks).toEqual([
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+      'Jan',
+    ]);
   });
 });

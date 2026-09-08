@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -53,7 +53,7 @@ describe('MpdSupervisorReportFilterPanel', () => {
   it('calls onClose when the close button is clicked', async () => {
     renderFilterPanel();
     const closeButton = screen.getByRole('button', { name: 'Close' });
-    await userEvent.click(closeButton);
+    userEvent.click(closeButton);
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
@@ -79,7 +79,7 @@ describe('MpdSupervisorReportFilterPanel', () => {
     });
 
     // Click 3+ months negative to make it active
-    await userEvent.click(threeMonthsChip);
+    userEvent.click(threeMonthsChip);
 
     // After click, '3+ months negative' should be filled (active)
     // We can't easily check MUI variant in RTL, so we check re-render with a consumer
@@ -87,7 +87,7 @@ describe('MpdSupervisorReportFilterPanel', () => {
     expect(threeMonthsChip).toBeInTheDocument();
 
     // Click All People to switch back
-    await userEvent.click(allPeopleChip);
+    userEvent.click(allPeopleChip);
     expect(allPeopleChip).toBeInTheDocument();
   });
 
@@ -148,7 +148,7 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
     const threeMonthsChip = screen.getByRole('button', {
       name: '3+ months negative',
     });
-    await userEvent.click(threeMonthsChip);
+    userEvent.click(threeMonthsChip);
     expect(screen.getByTestId('activeQuickFilter').textContent).toBe(
       'threeMonthsNegative',
     );
@@ -158,57 +158,73 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
     renderWithConsumer();
 
     // First switch to 3+ months negative
-    await userEvent.click(
-      screen.getByRole('button', { name: '3+ months negative' }),
-    );
+    userEvent.click(screen.getByRole('button', { name: '3+ months negative' }));
     expect(screen.getByTestId('activeQuickFilter').textContent).toBe(
       'threeMonthsNegative',
     );
 
     // Then click All people to switch back
-    await userEvent.click(screen.getByRole('button', { name: 'All people' }));
+    userEvent.click(screen.getByRole('button', { name: 'All people' }));
     expect(screen.getByTestId('activeQuickFilter').textContent).toBe(
       'allPeople',
     );
   });
 
-  it('selecting a Team option puts its id in context', async () => {
-    renderWithConsumer();
-    expect(screen.getByTestId('team').textContent).toBe(ALL_TEAMS);
+  describe('Team select', () => {
+    // The select stays disabled until the teams query resolves.
+    const openTeamSelect = async () => {
+      const select = screen.getByLabelText('Team');
+      await waitFor(() =>
+        expect(select).not.toHaveAttribute('aria-disabled', 'true'),
+      );
+      userEvent.click(select);
+      await screen.findByRole('option', { name: 'Solution Delivery Team' });
+    };
 
-    await userEvent.click(screen.getByLabelText('Team'));
-    await userEvent.click(
-      await screen.findByRole('option', { name: 'Solution Delivery Team' }),
-    );
+    it('is disabled until the teams arrive', () => {
+      renderWithConsumer();
+      expect(screen.getByLabelText('Team')).toHaveAttribute(
+        'aria-disabled',
+        'true',
+      );
+    });
 
-    expect(screen.getByTestId('team').textContent).toBe('team-1');
-  });
+    it('puts the selected team id in context', async () => {
+      renderWithConsumer();
+      expect(screen.getByTestId('team').textContent).toBe(ALL_TEAMS);
 
-  it('sorts the team options by name', async () => {
-    renderWithConsumer();
+      await openTeamSelect();
+      userEvent.click(
+        screen.getByRole('option', { name: 'Solution Delivery Team' }),
+      );
 
-    await userEvent.click(screen.getByLabelText('Team'));
-    await screen.findByRole('option', { name: 'Solution Delivery Team' });
+      expect(screen.getByTestId('team').textContent).toBe('team-1');
+    });
 
-    const names = screen
-      .getAllByRole('option')
-      .map((option) => option.textContent);
-    expect(names).toEqual([
-      'All teams',
-      'Solution Delivery Team',
-      'User Interaction Team',
-    ]);
-  });
+    it('sorts the team options by name', async () => {
+      renderWithConsumer();
 
-  it('omits a team that has no id', async () => {
-    renderWithConsumer();
+      await openTeamSelect();
 
-    await userEvent.click(screen.getByLabelText('Team'));
-    await screen.findByRole('option', { name: 'Solution Delivery Team' });
+      const names = screen
+        .getAllByRole('option')
+        .map((option) => option.textContent);
+      expect(names).toEqual([
+        'All teams',
+        'Solution Delivery Team',
+        'User Interaction Team',
+      ]);
+    });
 
-    expect(
-      screen.queryByRole('option', { name: 'Unassigned' }),
-    ).not.toBeInTheDocument();
+    it('omits a team that has no id', async () => {
+      renderWithConsumer();
+
+      await openTeamSelect();
+
+      expect(
+        screen.queryByRole('option', { name: 'Unassigned' }),
+      ).not.toBeInTheDocument();
+    });
   });
 
   it('selecting an Employment type option updates employmentType in context', async () => {
@@ -217,8 +233,8 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
       MpdSupervisorReportEmploymentTypeEnum.All,
     );
 
-    await userEvent.click(screen.getByLabelText('Employment type'));
-    await userEvent.click(screen.getByRole('option', { name: 'Part time' }));
+    userEvent.click(screen.getByLabelText('Employment type'));
+    userEvent.click(screen.getByRole('option', { name: 'Part time' }));
 
     expect(screen.getByTestId('employmentType').textContent).toBe(
       MpdSupervisorReportEmploymentTypeEnum.PartTime,

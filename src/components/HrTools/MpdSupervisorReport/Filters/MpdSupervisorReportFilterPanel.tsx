@@ -86,10 +86,6 @@ export const MpdSupervisorReportFilterPanel: React.FC<
       </Box>
 
       <Stack spacing={2} sx={{ p: 2 }}>
-        {/* TODO(MPDX): The quick-filter chips currently only highlight the
-            active selection in context — they do not yet filter the report
-            data. Wire up the filtering behaviour once the MPD-health history
-            backing these filters is available. */}
         <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
           {quickFilterIds.map((filterId) => (
             <Chip
@@ -116,6 +112,8 @@ export const MpdSupervisorReportFilterPanel: React.FC<
           onChange={handleSetTeam}
           size="small"
           label={t('Team')}
+          // Still loading, or the query failed; either way there is nothing to pick.
+          disabled={!teamOptions.length}
         >
           <MenuItem value={ALL_TEAMS}>{t('All teams')}</MenuItem>
           {teamOptions.map(({ id, name }) => (

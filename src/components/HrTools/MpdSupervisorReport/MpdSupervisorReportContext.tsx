@@ -79,11 +79,11 @@ export const MpdSupervisorReportProvider: React.FC<{
   const handleTabChange = useCallback(
     (_event: React.SyntheticEvent, newKey: StaffDetailTabEnum) => {
       setSelectedTabKey(newKey);
-      router?.replace({ query: { ...router.query, tab: newKey } }, undefined, {
-        shallow: true,
-      });
+      const url = new URL(window.location.href);
+      url.searchParams.set('tab', newKey);
+      window.history.replaceState(window.history.state, '', url.toString());
     },
-    [router],
+    [],
   );
 
   const value = useMemo<MpdSupervisorReportContextValue>(

@@ -7,8 +7,10 @@ import { useTranslation } from 'react-i18next';
 import theme from 'src/theme';
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
 import { DynamicMPGA, preloadMPGA } from '../StaffDetailsTabs/MPGA/DynamicMPGA';
-import { preloadMonthlySummary } from '../StaffDetailsTabs/MonthlySummary/DynamicMonthlySummary';
-import { StaffTabMonthlySummary } from '../StaffDetailsTabs/MonthlySummary/MonthlySummary';
+import {
+  DynamicMonthlySummary,
+  preloadMonthlySummary,
+} from '../StaffDetailsTabs/MonthlySummary/DynamicMonthlySummary';
 import {
   DynamicPayroll,
   preloadPayroll,
@@ -183,7 +185,7 @@ export const StaffMemberDrawer: React.FC = () => {
         </ContactTabsWrapper>
 
         <TabPanel value={StaffDetailTabEnum.MonthlySummary}>
-          <StaffTabMonthlySummary staffAccountId={staffAccountId ?? null} />
+          <DynamicMonthlySummary staffAccountId={staffAccountId ?? null} />
         </TabPanel>
         <TabPanel value={StaffDetailTabEnum.Quarterly}>
           <DynamicQuarterly staffAccountId={staffAccountId ?? null} />

@@ -232,10 +232,32 @@ const TabSwitcher: React.FC = () => {
 
 describe('MpdSupervisorReportContext — selectedTabKey to URL', () => {
   it('syncs the selected tab back to the URL on change', async () => {
+    const replaceState = jest.spyOn(window.history, 'replaceState');
+    const { getByTestId } = render(
+      <TestRouter router={{ query: { accountListId: 'account-list-1' } }}>
+        <MpdSupervisorReportProvider>
+          <TabSwitcher />
+        </MpdSupervisorReportProvider>
+      </TestRouter>,
+    );
+
+    await act(async () => {
+      getByTestId('tab').click();
+    });
+
+    expect(replaceState).toHaveBeenCalledTimes(1);
+    expect(replaceState.mock.lastCall?.[2]).toContain(
+      `tab=${StaffDetailTabEnum.Payroll}`,
+    );
+    replaceState.mockRestore();
+  });
+
+  it('does not route through Next when syncing the tab', async () => {
     const replace = jest.fn();
+    const push = jest.fn();
     const { getByTestId } = render(
       <TestRouter
-        router={{ query: { accountListId: 'account-list-1' }, replace }}
+        router={{ query: { accountListId: 'account-list-1' }, replace, push }}
       >
         <MpdSupervisorReportProvider>
           <TabSwitcher />
@@ -247,12 +269,7 @@ describe('MpdSupervisorReportContext — selectedTabKey to URL', () => {
       getByTestId('tab').click();
     });
 
-    expect(replace).toHaveBeenCalledWith(
-      expect.objectContaining({
-        query: expect.objectContaining({ tab: StaffDetailTabEnum.Payroll }),
-      }),
-      undefined,
-      { shallow: true },
-    );
+    expect(replace).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
   });
 });
