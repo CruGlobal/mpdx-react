@@ -22,7 +22,11 @@ export const NsGoalCalculatorPage: React.FC = () => {
         <title>{`${appName} | ${t('Coaching Accounts | New Staff Goal Calculator')}`}</title>
       </Head>
       {accountListId && coachingId ? (
-        <GoalSettingsView accountListId={coachingId} />
+        <GoalSettingsView
+          accountListId={coachingId}
+          returnUrl={`/accountLists/${accountListId}/coaching/${coachingId}`}
+          returnLabel={t('Back to Coaching')}
+        />
       ) : (
         <Loading loading />
       )}

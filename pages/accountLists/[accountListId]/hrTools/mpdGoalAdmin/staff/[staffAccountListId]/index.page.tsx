@@ -18,26 +18,34 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';
 import { getQueryParam } from 'src/lib/queryParam';
 
-/** Gated like the admin table it is reached from; scenario goals are admin-built. */
-export const NsScenarioGoalPage: React.FC = () => {
+/**
+ * Staff Details: one training attendee's goal, opened from the admin table.
+ * Gated like that table, since it reaches another household's salary and debt.
+ */
+export const NsStaffDetailsPage: React.FC = () => {
   const { t } = useTranslation();
   const appName = getAppName();
   const accountListId = useAccountListId();
   const { query } = useRouter();
-  const scenarioGoalId = getQueryParam(query, 'scenarioGoalId');
+  const staffAccountListId = getQueryParam(query, 'staffAccountListId');
+  // Carried through so Back to Table reselects the cohort this goal came from.
+  const cohortId = getQueryParam(query, 'cohortId');
 
   return (
     <>
       <Head>
-        <title>{`${appName} | ${t('New Staff Goal Calculator')}`}</title>
+        <title>{`${appName} | ${t(
+          'HR Tools | MPD Goal Calculator | Staff Details',
+        )}`}</title>
       </Head>
-      {scenarioGoalId ? (
+      {staffAccountListId ? (
         <UserTypeAccess requireUserGroups={RequiredUserGroupEnum.MpdGoalCalc}>
           <GoalSettingsView
-            scenarioGoalId={scenarioGoalId}
+            accountListId={staffAccountListId}
             returnUrl={mpdGoalAdminUrl(
               accountListId,
-              MpdGoalAdminTabEnum.ScenarioGoals,
+              MpdGoalAdminTabEnum.ActiveGoals,
+              cohortId,
             )}
           />
         </UserTypeAccess>
@@ -48,8 +56,8 @@ export const NsScenarioGoalPage: React.FC = () => {
   );
 };
 
-// Matches the admin table this is reached from: the same flag hides this page,
-// so the work in progress is never reachable by URL alone.
+// Matches the admin table that links here: the same flag hides this page, so
+// the work in progress is never reachable by URL alone.
 export const getServerSideProps: GetServerSideProps = async (context) => {
   if (process.env.DISABLE_MPD_GOAL_ADMIN === 'true') {
     return { notFound: true };
@@ -57,4 +65,4 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return blockImpersonatingNonDevelopers(context);
 };
 
-export default NsScenarioGoalPage;
+export default NsStaffDetailsPage;

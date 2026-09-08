@@ -7,6 +7,12 @@ import { SnackbarProvider } from 'notistack';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  GoalCalculationAge,
+  GoalCalculationRole,
+  MpdGoalBenefitsConstantPlanEnum,
+  NewStaffQuestionnaireMaritalStatusEnum,
+} from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { ScenarioGoals } from './ScenarioGoals';
 import {
@@ -41,6 +47,14 @@ const scenarioGoalsMock: DeepPartial<NewStaffScenarioGoalsQuery> = {
         ministryName: 'Cru Campus',
         geographicLocation: 'Orlando, FL',
         createdAt: '2026-08-01T12:00:00Z',
+        maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
+        calculationsYear: 2026,
+        age: GoalCalculationAge.ThirtyToThirtyFour,
+        tenure: 0,
+        assignmentType: GoalCalculationRole.Field,
+        benefitsPlan: MpdGoalBenefitsConstantPlanEnum.Select,
+        spouseAge: null,
+        spouseTenure: null,
         calculations: { monthlyGoal: 5000 },
       },
       {
@@ -50,6 +64,14 @@ const scenarioGoalsMock: DeepPartial<NewStaffScenarioGoalsQuery> = {
         ministryName: null,
         geographicLocation: null,
         createdAt: '2026-08-15T12:00:00Z',
+        maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
+        calculationsYear: null,
+        age: null,
+        tenure: null,
+        assignmentType: null,
+        benefitsPlan: null,
+        spouseAge: null,
+        spouseTenure: null,
         calculations: { monthlyGoal: 0 },
       },
     ],
@@ -117,12 +139,21 @@ describe('ScenarioGoals', () => {
         'Ministry',
         'Campus Division',
         'MPD Goal',
+        'Goal Status',
         'Created',
         'Actions',
       ],
       cells: [
-        ['John Doe', 'Cru Campus', 'Orlando, FL', '$5,000', '8/1/2026', ''],
-        ['Untitled scenario', '—', '—', '$0', '8/15/2026', ''],
+        [
+          'John Doe',
+          'Cru Campus',
+          'Orlando, FL',
+          '$5,000',
+          'Complete',
+          '8/1/2026',
+          '',
+        ],
+        ['Untitled scenario', '—', '—', '$0', 'Incomplete', '8/15/2026', ''],
       ],
     });
   });

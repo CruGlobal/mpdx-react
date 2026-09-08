@@ -152,17 +152,21 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
-              {isApproved || status === AsrStatusEnum.ActionRequired ? (
+              {isApproved ? (
+                <Typography sx={{ fontWeight: 'bold' }}>
+                  {t('Request processed')}
+                </Typography>
+              ) : status === AsrStatusEnum.ActionRequired ? (
                 <Typography>
                   <Box component="span" sx={{ fontWeight: 'bold' }}>
-                    {t('Request processed on:')}
+                    {t('Changes requested on:')}
                   </Box>
                   {changesRequestedAt &&
                     ` ${dateFormat(DateTime.fromISO(changesRequestedAt), locale)}`}
                 </Typography>
               ) : (
                 <Typography sx={{ fontWeight: 'bold' }}>
-                  {t('Request In Process')}
+                  {t('Request in process')}
                 </Typography>
               )}
             </TimelineContent>
@@ -190,13 +194,17 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
               {status === AsrStatusEnum.ActionRequired ? (
                 <>
                   <Typography sx={{ fontWeight: 'bold' }}>
-                    {t('Action Required:')}{' '}
+                    {t('Action required:')}{' '}
                   </Typography>
                   <Typography paragraph>{request?.feedback}</Typography>
                 </>
+              ) : status === AsrStatusEnum.ApprovedNotPaid ? (
+                <Typography sx={{ fontWeight: 'bold' }}>
+                  {t('Payroll processing')}
+                </Typography>
               ) : (
                 <Typography sx={{ fontWeight: 'bold' }}>
-                  {t('Request Complete')}
+                  {t('Request complete')}
                 </Typography>
               )}
             </TimelineContent>

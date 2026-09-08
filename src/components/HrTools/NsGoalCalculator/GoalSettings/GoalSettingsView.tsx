@@ -4,6 +4,7 @@ import { Box, IconButton, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { GoalSettingsForm, GoalSettingsFormProps } from './GoalSettingsForm';
+import { GoalSettingsNavigationProvider } from './GoalSettingsNavigationContext';
 import { GoalSettingsPresentContent } from './GoalSettingsPresentContent';
 import { GoalSettingsReviewContent } from './GoalSettingsReviewContent';
 import { GoalSettingsScrollContainer } from './GoalSettingsScrollContainer';
@@ -46,10 +47,17 @@ const Sidebar = styled(SidebarColumn, {
   },
 }));
 
+export type GoalSettingsViewProps = GoalSettingsFormProps & {
+  /** Where Back to Table, Cancel, and a successful save return to. */
+  returnUrl?: string;
+  /** Defaults to "Back to Table". */
+  returnLabel?: string;
+};
+
 // The view is a sidebar wrapper around the Goal Settings form and its
 // staff-document panes, so it takes the same goal source (an account-list goal
 // or a scenario goal) and passes it straight through to each pane.
-export const GoalSettingsView: React.FC<GoalSettingsFormProps> = (props) => {
+export const GoalSettingsView: React.FC<GoalSettingsViewProps> = (props) => {
   const { t } = useTranslation();
   const { view } = useGoalSettingsView();
   const [isNavCollapsed, setIsNavCollapsed] = useState(false);
@@ -58,6 +66,9 @@ export const GoalSettingsView: React.FC<GoalSettingsFormProps> = (props) => {
   const collapseButtonRef = useRef<HTMLButtonElement>(null);
   const prevCollapsedRef = useRef(isNavCollapsed);
   const isScenario = 'scenarioGoalId' in props;
+  const goalSource: GoalSettingsFormProps = isScenario
+    ? { scenarioGoalId: props.scenarioGoalId }
+    : { accountListId: props.accountListId };
 
   // Keep the collapsed nav out of the tab order and the accessibility tree.
   useEffect(() => {
@@ -88,46 +99,51 @@ export const GoalSettingsView: React.FC<GoalSettingsFormProps> = (props) => {
       case GoalSettingsViewEnum.ReviewYourGoal:
         return (
           <GoalSettingsScrollContainer>
-            <GoalSettingsReviewContent {...props} />
+            <GoalSettingsReviewContent {...goalSource} />
           </GoalSettingsScrollContainer>
         );
       case GoalSettingsViewEnum.PresentYourGoal:
         return (
           <GoalSettingsScrollContainer>
-            <GoalSettingsPresentContent {...props} />
+            <GoalSettingsPresentContent {...goalSource} />
           </GoalSettingsScrollContainer>
         );
       default:
         // GoalSettingsForm uses GoalSettingsScrollContainer internally
-        return <GoalSettingsForm {...props} />;
+        return <GoalSettingsForm {...goalSource} />;
     }
   };
 
   return (
-    <Layout>
-      {isNavCollapsed && (
-        <SidebarColumn className="goal-settings-sidebar">
-          <IconButton
-            ref={expandButtonRef}
-            aria-label={t('Show navigation')}
-            onClick={() => setIsNavCollapsed(false)}
-          >
-            <MenuSharp />
-          </IconButton>
-        </SidebarColumn>
-      )}
-      <Sidebar
-        ref={sidebarRef}
-        className="goal-settings-sidebar"
-        open={!isNavCollapsed}
-      >
-        <GoalSettingsSidebar
-          isScenario={isScenario}
-          onCollapse={() => setIsNavCollapsed(true)}
-          collapseButtonRef={collapseButtonRef}
-        />
-      </Sidebar>
-      {renderMainContent()}
-    </Layout>
+    <GoalSettingsNavigationProvider
+      returnUrl={props.returnUrl}
+      returnLabel={props.returnLabel}
+    >
+      <Layout>
+        {isNavCollapsed && (
+          <SidebarColumn className="goal-settings-sidebar">
+            <IconButton
+              ref={expandButtonRef}
+              aria-label={t('Show navigation')}
+              onClick={() => setIsNavCollapsed(false)}
+            >
+              <MenuSharp />
+            </IconButton>
+          </SidebarColumn>
+        )}
+        <Sidebar
+          ref={sidebarRef}
+          className="goal-settings-sidebar"
+          open={!isNavCollapsed}
+        >
+          <GoalSettingsSidebar
+            isScenario={isScenario}
+            onCollapse={() => setIsNavCollapsed(true)}
+            collapseButtonRef={collapseButtonRef}
+          />
+        </Sidebar>
+        {renderMainContent()}
+      </Layout>
+    </GoalSettingsNavigationProvider>
   );
 };

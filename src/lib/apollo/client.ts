@@ -63,7 +63,7 @@ const makeClient = (apiToken: string) => {
           }
         });
 
-        if (networkError) {
+        if (networkError && networkError?.name !== 'AbortError') {
           dispatch('mpdx-api-error');
           snackNotifications.error(networkError.message);
           reportNetworkError(networkError, operation);

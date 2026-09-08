@@ -7,6 +7,15 @@ query NewStaffScenarioGoals($after: String) {
       ministryName
       geographicLocation
       createdAt
+      # Drives the Goal Status chip; see goalSettingsCompletion.
+      maritalStatus
+      calculationsYear
+      age
+      tenure
+      assignmentType
+      benefitsPlan
+      spouseAge
+      spouseTenure
       calculations {
         monthlyGoal
       }

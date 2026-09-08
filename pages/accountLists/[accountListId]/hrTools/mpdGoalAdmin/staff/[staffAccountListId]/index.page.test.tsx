@@ -1,7 +1,8 @@
 import { GetServerSidePropsContext } from 'next';
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -16,7 +17,7 @@ import {
 } from 'src/graphql/types.generated';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
-import { NsScenarioGoalPage, getServerSideProps } from './index.page';
+import { NsStaffDetailsPage, getServerSideProps } from './index.page';
 
 jest.mock('pages/api/utils/pagePropsHelpers', () => ({
   blockImpersonatingNonDevelopers: jest.fn(),
@@ -27,20 +28,27 @@ const mockBlockImpersonatingNonDevelopers =
     typeof blockImpersonatingNonDevelopers
   >;
 
+const push = jest.fn();
+const mutationSpy = jest.fn();
+
 interface TestComponentProps {
   /** Senior Staff is the group the MPD goal tools are open to. */
   usStaffGroup?: UsStaffGroupEnum;
+  /** Empty stands in for a router that has not resolved the path yet. */
+  staffAccountListId?: string;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   usStaffGroup = UsStaffGroupEnum.SeniorStaff,
+  staffAccountListId = 'staff-account-list-1',
 }) => (
   <TestRouter
     router={{
       query: {
         accountListId: 'account-list-1',
-        scenarioGoalId: 'scenario-1',
+        ...(staffAccountListId ? { staffAccountListId } : {}),
       },
+      push,
     }}
   >
     <ThemeProvider theme={theme}>
@@ -61,7 +69,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
             GoalCalculatorConstants: { constant: constantsMock },
             NewStaffGoalCalculation: {
               newStaffGoalCalculation: {
-                id: 'scenario-1',
+                id: 'calc-1',
                 firstName: 'John',
                 lastName: 'Doe',
                 spouseFirstName: 'Jane',
@@ -70,25 +78,66 @@ const TestComponent: React.FC<TestComponentProps> = ({
               },
             },
           }}
+          onCall={mutationSpy}
         >
-          <NsScenarioGoalPage />
+          <NsStaffDetailsPage />
         </GqlMockedProvider>
       </SnackbarProvider>
     </ThemeProvider>
   </TestRouter>
 );
 
-describe('Scenario NsGoalCalculator page', () => {
+describe('Staff Details page', () => {
   beforeEach(() => {
     process.env.DEVELOPMENT_ENV = 'false';
   });
 
-  it('renders the goal settings form in scenario mode', async () => {
+  it("renders the household's goal settings", async () => {
     const { findByRole } = render(<TestComponent />);
 
     expect(
-      await findByRole('heading', { name: 'Contact Info' }),
+      await findByRole('heading', { name: 'John & Jane Doe' }),
     ).toBeInTheDocument();
+  });
+
+  it('goes back to the active goals tab of the admin table', async () => {
+    const { findByRole } = render(<TestComponent />);
+
+    const backLink = await findByRole('link', { name: 'Back to Table' });
+    expect(backLink).toHaveAttribute(
+      'href',
+      '/accountLists/account-list-1/hrTools/mpdGoalAdmin?tab=active-goals',
+    );
+
+    userEvent.click(backLink);
+
+    await waitFor(() =>
+      expect(push).toHaveBeenCalledWith(
+        '/accountLists/account-list-1/hrTools/mpdGoalAdmin?tab=active-goals',
+      ),
+    );
+  });
+
+  // The page's whole purpose is the household's goal, and the mock answers with
+  // the same fixture whatever it is asked for, so assert the variables.
+  it("loads the household's goal, not the signed-in admin's", async () => {
+    render(<TestComponent />);
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('NewStaffGoalCalculation', {
+        accountListId: 'staff-account-list-1',
+        id: null,
+      }),
+    );
+  });
+
+  it('renders a loading state until the route supplies the household', () => {
+    const { getByRole, queryByRole } = render(
+      <TestComponent staffAccountListId="" />,
+    );
+
+    expect(getByRole('progressbar')).toBeInTheDocument();
+    expect(queryByRole('navigation')).not.toBeInTheDocument();
   });
 
   it("denies a user outside the admin table's group", async () => {
@@ -104,7 +153,7 @@ describe('Scenario NsGoalCalculator page', () => {
   });
 });
 
-describe('Scenario NsGoalCalculator getServerSideProps', () => {
+describe('Staff Details getServerSideProps', () => {
   const context = {} as GetServerSidePropsContext;
   const originalFlag = process.env.DISABLE_MPD_GOAL_ADMIN;
 

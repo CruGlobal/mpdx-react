@@ -20,17 +20,25 @@ type Mocks = {
   NewStaffCohortAttendees: NewStaffCohortAttendeesQuery;
 };
 
+const push = jest.fn();
+
 const router = {
+  pathname: '/accountLists/[accountListId]/hrTools/mpdGoalAdmin',
   query: { accountListId: 'account-list-1' },
   isReady: true,
-  push: jest.fn(),
+  push,
 };
 
-const renderMain = (mocks: ApolloErgonoMockMap = {}) =>
+const renderMain = (
+  mocks: ApolloErgonoMockMap = {},
+  query: Record<string, string> = {},
+) =>
   render(
     <ThemeProvider theme={theme}>
       <SnackbarProvider>
-        <TestRouter router={router}>
+        <TestRouter
+          router={{ ...router, query: { ...router.query, ...query } }}
+        >
           <GqlMockedProvider<Mocks>
             mocks={
               {
@@ -131,9 +139,32 @@ describe('MpdGoalAdmin', () => {
     expect(trainingSelect).toHaveAttribute('aria-disabled', 'true');
   });
 
-  it('switches to the scenario goals tab', async () => {
-    const { getByRole, findByRole } = renderMain();
+  // The tab lives in the URL so Goal Settings can link back to the right one.
+  it('puts the selected tab in the URL', async () => {
+    const { getByRole } = renderMain();
+
     await userEvent.click(getByRole('tab', { name: 'Scenario Goals' }));
+
+    expect(push).toHaveBeenCalledWith(
+      {
+        pathname: '/accountLists/[accountListId]/hrTools/mpdGoalAdmin',
+        query: {
+          accountListId: 'account-list-1',
+          tab: 'scenario-goals',
+        },
+      },
+      undefined,
+      { shallow: true },
+    );
+  });
+
+  it('renders the scenario goals tab from the URL', async () => {
+    const { findByRole, findByText } = renderMain(
+      {},
+      { tab: 'scenario-goals' },
+    );
+
+    expect(await findByText('Scenario MPD Goals')).toBeInTheDocument();
     expect(
       await findByRole('button', { name: 'New Scenario Goal' }),
     ).toBeInTheDocument();
