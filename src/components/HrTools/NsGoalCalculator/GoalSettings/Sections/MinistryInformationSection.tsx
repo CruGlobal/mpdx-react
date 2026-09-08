@@ -13,6 +13,7 @@ export const MinistryInformationSection: React.FC<GoalSettingsSectionProps> = ({
   attendee,
 }) => {
   const { t } = useTranslation();
+  const ministryName = attendee?.ministry?.name;
 
   const roleOptions = useMemo<SelectOption[]>(
     () =>
@@ -31,12 +32,15 @@ export const MinistryInformationSection: React.FC<GoalSettingsSectionProps> = ({
         <GoalSettingsTextField name="ministryLocation" label={t('Location')} />
       </FieldRow>
 
-      <FieldRow label={t('Ministry')}>
-        <GoalSettingsReadOnlyField
-          label={t('Ministry')}
-          value={attendee?.ministry?.name ?? ''}
-        />
-      </FieldRow>
+      {/* Scenario goals have no attendee, so the row would only ever be blank. */}
+      {ministryName && (
+        <FieldRow label={t('Ministry')}>
+          <GoalSettingsReadOnlyField
+            label={t('Ministry')}
+            value={ministryName}
+          />
+        </FieldRow>
+      )}
 
       <FieldRow label={t('Field or Office')}>
         <GoalSettingsSelect
