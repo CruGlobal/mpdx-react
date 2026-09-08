@@ -9,21 +9,32 @@ import {
 } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { DynamicComponentPlaceholder } from 'src/components/DynamicPlaceholders/DynamicComponentPlaceholder';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
-import { MonthlyPayrollHistory } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { monthYearFormat } from 'src/lib/intlFormat';
+import { useMonthlyPayrollHistoryQuery } from './MonthlyPayrollHistory.generated';
 
 interface StaffTabPayrollProps {
-  payrollHistory: MonthlyPayrollHistory[];
+  staffAccountId: string | null;
 }
 
 export const StaffTabPayroll: React.FC<StaffTabPayrollProps> = ({
-  payrollHistory,
+  staffAccountId,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const { formatCurrency, formatPercentage } = useFormatters();
+
+  const { data, loading } = useMonthlyPayrollHistoryQuery({
+    variables: { staffAccountId: staffAccountId ?? '' },
+    skip: !staffAccountId,
+  });
+  const payrollHistory = data?.monthlyPayrollHistory ?? [];
+
+  if (loading) {
+    return <DynamicComponentPlaceholder />;
+  }
 
   return (
     <TableContainer>

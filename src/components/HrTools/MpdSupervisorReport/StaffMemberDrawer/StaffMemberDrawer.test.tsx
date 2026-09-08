@@ -3,65 +3,30 @@ import { ThemeProvider } from '@mui/material/styles';
 import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
-import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import {
   MpdSupervisorReportProvider,
   useMpdSupervisorReport,
 } from '../MpdSupervisorReportContext';
-import { EmployeeData } from '../mockData';
+import { MonthlyPayrollSummaryQuery } from '../StaffDetailsTabs/MonthlySummary/MonthlyPayrollSummary.generated';
+import { MonthlyPayrollHistoryQuery } from '../StaffDetailsTabs/Payroll/MonthlyPayrollHistory.generated';
+import { ManagedStaffMember } from '../helpers';
+import { managedStaffMember } from '../mpdSupervisorReportMocks';
 import { StaffMemberDrawer } from './StaffMemberDrawer';
 
-const memberWithSpouse: EmployeeData = {
-  user: {
-    id: '1',
-    preferredName: 'John',
-    lastName: 'Smith',
-    personNumber: '10000001',
-    staffAccountID: '1000000001',
-    userPersonType: 'Full time',
-    team: 'Campus',
-  },
-  spouse: {
-    id: '2',
-    preferredName: 'Jane',
-    lastName: 'Smith',
-    personNumber: '10000002',
-    staffAccountID: '1000000002',
-  },
-  quarters: [
-    { label: 'FQ4 25', health: MpdHealthStatusEnum.Green, payroll: 15000 },
-    { label: 'FQ1 26', health: MpdHealthStatusEnum.Yellow, payroll: 15000 },
-    { label: 'FQ2 26', health: MpdHealthStatusEnum.Red, payroll: 15000 },
-    { label: 'FQ3 26', health: MpdHealthStatusEnum.Green, payroll: 15000 },
-  ],
-  monthlyPayrollHistory: [],
-  quarterlyPayrollHistory: { monthlyGrossSalary: 0, completedQuarters: [] },
-  monthlySummary: [],
-};
+const memberWithSpouse = managedStaffMember();
 
-const memberWithoutSpouse: EmployeeData = {
-  user: {
-    id: '3',
-    preferredName: 'Alice',
-    lastName: 'Jones',
-    personNumber: '10000003',
-    staffAccountID: '1000000003',
-    userPersonType: 'Part time',
-    team: 'Digital strategies',
-  },
-  quarters: [
-    { label: 'FQ4 25', health: MpdHealthStatusEnum.Red, payroll: 15000 },
-    { label: 'FQ1 26', health: MpdHealthStatusEnum.Red, payroll: 15000 },
-    { label: 'FQ2 26', health: MpdHealthStatusEnum.Red, payroll: 15000 },
-    { label: 'FQ3 26', health: MpdHealthStatusEnum.Red, payroll: 15000 },
-  ],
-  monthlyPayrollHistory: [],
-  quarterlyPayrollHistory: { monthlyGrossSalary: 0, completedQuarters: [] },
-  monthlySummary: [],
-};
+const memberWithoutSpouse = managedStaffMember({
+  firstName: 'Alice',
+  lastName: 'Jones',
+  spouseFirstName: null,
+  spouseLastName: null,
+  personNumber: '10000003',
+  staffAccountId: '1000000003',
+});
 
-let openMemberFn: (member: EmployeeData) => void;
+let openMemberFn: (member: ManagedStaffMember) => void;
 
 const Opener: React.FC = () => {
   const { openMember } = useMpdSupervisorReport();
@@ -69,19 +34,37 @@ const Opener: React.FC = () => {
   return null;
 };
 
-const renderDrawer = () =>
+interface TestComponentProps {
+  monthlySummary?: MonthlyPayrollSummaryQuery['monthlyPayrollSummary'];
+  payrollHistory?: MonthlyPayrollHistoryQuery['monthlyPayrollHistory'];
+}
+
+const renderDrawer = ({
+  monthlySummary = [],
+  payrollHistory = [],
+}: TestComponentProps = {}) =>
   render(
     <TestRouter>
       <ThemeProvider theme={theme}>
-        <MpdSupervisorReportProvider>
-          <Opener />
-          <StaffMemberDrawer />
-        </MpdSupervisorReportProvider>
+        <GqlMockedProvider<{
+          MonthlyPayrollSummary: MonthlyPayrollSummaryQuery;
+          MonthlyPayrollHistory: MonthlyPayrollHistoryQuery;
+        }>
+          mocks={{
+            MonthlyPayrollSummary: { monthlyPayrollSummary: monthlySummary },
+            MonthlyPayrollHistory: { monthlyPayrollHistory: payrollHistory },
+          }}
+        >
+          <MpdSupervisorReportProvider>
+            <Opener />
+            <StaffMemberDrawer />
+          </MpdSupervisorReportProvider>
+        </GqlMockedProvider>
       </ThemeProvider>
     </TestRouter>,
   );
 
-const openMember = (member: EmployeeData) => {
+const openMember = (member: ManagedStaffMember) => {
   act(() => {
     openMemberFn(member);
   });
@@ -101,11 +84,10 @@ describe('StaffMemberDrawer', () => {
     expect(screen.getByText('1000000001')).toBeInTheDocument();
   });
 
-  it('renders the spouse section when a spouse is present', () => {
+  it('renders the spouse name', () => {
     renderDrawer();
     openMember(memberWithSpouse);
     expect(screen.getByText(/Spouse:/)).toHaveTextContent('Spouse: Jane Smith');
-    expect(screen.getByText('10000002')).toBeInTheDocument();
   });
 
   it('does not render the spouse section when no spouse is present', () => {
@@ -131,10 +113,8 @@ describe('StaffMemberDrawer', () => {
     ).toBeInTheDocument();
   });
 
-  it('shows the Monthly Summary tab and its panel content by default', () => {
-    renderDrawer();
-    openMember({
-      ...memberWithSpouse,
+  it('shows the Monthly Summary tab and its panel content by default', async () => {
+    renderDrawer({
       monthlySummary: [
         {
           month: '2023-01',
@@ -145,11 +125,14 @@ describe('StaffMemberDrawer', () => {
         },
       ],
     });
+    openMember(memberWithSpouse);
     expect(
       screen.getByRole('tab', { name: 'Monthly Summary' }),
     ).toHaveAttribute('aria-selected', 'true');
 
-    const table = within(screen.getByRole('tabpanel')).getByRole('table');
+    const table = await within(screen.getByRole('tabpanel')).findByRole(
+      'table',
+    );
     expect(table).toHaveTableStructure({
       columnHeaders: [
         'Month',
@@ -177,11 +160,9 @@ describe('StaffMemberDrawer', () => {
     ).toHaveAttribute('aria-selected', 'false');
   });
 
-  it('renders the payroll history passed to it on the Payroll tab', async () => {
-    renderDrawer();
-    openMember({
-      ...memberWithSpouse,
-      monthlyPayrollHistory: [
+  it('renders the payroll history on the Payroll tab', async () => {
+    renderDrawer({
+      payrollHistory: [
         {
           month: '2023-01',
           payroll: 3000,
@@ -190,6 +171,7 @@ describe('StaffMemberDrawer', () => {
         },
       ],
     });
+    openMember(memberWithSpouse);
 
     userEvent.click(screen.getByRole('tab', { name: 'Payroll' }));
 

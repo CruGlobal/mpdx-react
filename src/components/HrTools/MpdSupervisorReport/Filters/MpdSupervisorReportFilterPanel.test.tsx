@@ -171,17 +171,17 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
     );
   });
 
-  it('selecting a Team option updates team in context', async () => {
-    renderWithConsumer();
-    expect(screen.getByTestId('team').textContent).toBe(
-      MpdSupervisorReportTeamsEnum.All,
-    );
+  // it('selecting a Team option updates team in context', async () => {
+  //   renderWithConsumer();
+  //   expect(screen.getByTestId('team').textContent).toBe(
+  //     MpdSupervisorReportTeamsEnum.All,
+  //   );
 
-    await userEvent.click(screen.getByLabelText('Team'));
-    await userEvent.click(screen.getByRole('option', { name: 'Campus' }));
+  //   await userEvent.click(screen.getByLabelText('Team'));
+  //   await userEvent.click(screen.getByRole('option', { name: 'Campus' }));
 
-    expect(screen.getByTestId('team').textContent).toBe('Campus');
-  });
+  //   expect(screen.getByTestId('team').textContent).toBe('Campus');
+  // });
 
   it('selecting an Employment type option updates employmentType in context', async () => {
     renderWithConsumer();

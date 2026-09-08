@@ -1,7 +1,6 @@
 import React from 'react';
 import { act, render } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
-import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
 import {
   MpdSupervisorReportEmploymentTypeEnum,
   MpdSupervisorReportQuickFilterEnum,
@@ -13,33 +12,15 @@ import {
   useMpdSupervisorReport,
 } from './MpdSupervisorReportContext';
 import { StaffDetailTabEnum } from './StaffDetailsTabs/StaffDetailTab';
-import { EmployeeData } from './mockData';
+import { ManagedStaffMember } from './helpers';
+import { managedStaffMember } from './mpdSupervisorReportMocks';
 
-const sampleMember: EmployeeData = {
-  user: {
-    id: '1',
-    preferredName: 'John',
-    lastName: 'Smith',
-    personNumber: '10000001',
-    staffAccountID: '1000000001',
-    userPersonType: 'Full time',
-    team: 'Campus',
-  },
-  quarters: [
-    { label: 'FQ4 25', health: MpdHealthStatusEnum.Green, payroll: 15000 },
-    { label: 'FQ1 26', health: MpdHealthStatusEnum.Green, payroll: 15000 },
-    { label: 'FQ2 26', health: MpdHealthStatusEnum.Green, payroll: 15000 },
-    { label: 'FQ3 26', health: MpdHealthStatusEnum.Green, payroll: 15000 },
-  ],
-  monthlyPayrollHistory: [],
-  quarterlyPayrollHistory: { monthlyGrossSalary: 0, completedQuarters: [] },
-  monthlySummary: [],
-};
+const sampleMember = managedStaffMember();
 
 interface ConsumerResult {
   isOpen: boolean;
-  selectedMember: EmployeeData | undefined;
-  openMember: (member: EmployeeData) => void;
+  selectedMember: ManagedStaffMember | undefined;
+  openMember: (member: ManagedStaffMember) => void;
   closePanel: () => void;
   search: string;
   setSearch: (v: string) => void;
@@ -60,7 +41,7 @@ const Consumer: React.FC = () => {
     <div>
       <span data-testid="isOpen">{String(ctx.isOpen)}</span>
       <span data-testid="memberName">
-        {ctx.selectedMember?.user.lastName ?? 'none'}
+        {ctx.selectedMember?.lastName ?? 'none'}
       </span>
       <span data-testid="search">{ctx.search}</span>
       <span data-testid="team">{ctx.team}</span>

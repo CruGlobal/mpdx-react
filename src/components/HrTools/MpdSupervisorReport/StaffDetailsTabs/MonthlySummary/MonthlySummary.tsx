@@ -11,15 +11,16 @@ import {
 } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { DynamicComponentPlaceholder } from 'src/components/DynamicPlaceholders/DynamicComponentPlaceholder';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import {
   MonthlySummaryChart,
   MonthlySummaryChartData,
 } from 'src/components/Reports/MPGAIncomeExpensesReport/Charts/MonthlySummaryChart/MonthlySummaryChart';
-import { MonthlyPayrollSummary } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { monthYearFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
+import { useMonthlyPayrollSummaryQuery } from './MonthlyPayrollSummary.generated';
 import { ToggleSummaryView } from './ToggleSummaryView/ToggleSummaryView';
 
 export enum MonthlySummaryView {
@@ -28,11 +29,11 @@ export enum MonthlySummaryView {
 }
 
 interface StaffTabMonthlySummaryProps {
-  monthlySummary: MonthlyPayrollSummary[];
+  staffAccountId: string | null;
 }
 
 export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
-  monthlySummary,
+  staffAccountId,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -40,6 +41,12 @@ export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
   const [view, setView] = useState<MonthlySummaryView>(
     MonthlySummaryView.Table,
   );
+
+  const { data, loading } = useMonthlyPayrollSummaryQuery({
+    variables: { staffAccountId: staffAccountId ?? '' },
+    skip: !staffAccountId,
+  });
+  const monthlySummary = data?.monthlyPayrollSummary ?? [];
 
   const formatAccounting = (value: number) =>
     value < 0 ? `(${formatCurrency(Math.abs(value))})` : formatCurrency(value);
@@ -61,6 +68,10 @@ export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
   );
 
   const showChart = view === MonthlySummaryView.Chart;
+
+  if (loading) {
+    return <DynamicComponentPlaceholder />;
+  }
 
   return (
     <>

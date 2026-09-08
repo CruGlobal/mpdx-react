@@ -1,13 +1,16 @@
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
 import {
   afterTestResizeObserver,
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
-import { MonthlyPayrollSummary } from 'src/graphql/types.generated';
 import theme from 'src/theme';
+import { MonthlyPayrollSummaryQuery } from './MonthlyPayrollSummary.generated';
 import { StaffTabMonthlySummary } from './MonthlySummary';
+
+type MonthlySummary = MonthlyPayrollSummaryQuery['monthlyPayrollSummary'];
 
 jest.mock('recharts', () => {
   const OriginalModule = jest.requireActual('recharts');
@@ -21,7 +24,7 @@ jest.mock('recharts', () => {
   };
 });
 
-const mockMonthlySummary: MonthlyPayrollSummary[] = [
+const mockMonthlySummary: MonthlySummary = [
   {
     month: '2023-01',
     contributions: 4000,
@@ -46,13 +49,23 @@ const mockMonthlySummary: MonthlyPayrollSummary[] = [
 ];
 
 interface TestComponentProps {
-  monthlySummary: MonthlyPayrollSummary[];
+  monthlySummary: MonthlySummary;
+  staffAccountId?: string | null;
 }
 
-const TestComponent: React.FC<TestComponentProps> = ({ monthlySummary }) => {
+const TestComponent: React.FC<TestComponentProps> = ({
+  monthlySummary,
+  staffAccountId = '1000000001',
+}) => {
   return (
     <ThemeProvider theme={theme}>
-      <StaffTabMonthlySummary monthlySummary={monthlySummary} />
+      <GqlMockedProvider<{ MonthlyPayrollSummary: MonthlyPayrollSummaryQuery }>
+        mocks={{
+          MonthlyPayrollSummary: { monthlyPayrollSummary: monthlySummary },
+        }}
+      >
+        <StaffTabMonthlySummary staffAccountId={staffAccountId} />
+      </GqlMockedProvider>
     </ThemeProvider>
   );
 };
@@ -74,12 +87,12 @@ describe('StaffTabMonthlySummary', () => {
     afterTestResizeObserver();
   });
 
-  it('renders the headers and a row per month, showing negative net and end balance in parentheses without a minus sign', () => {
-    const { getByRole } = render(
+  it('renders the headers and a row per month, showing negative net and end balance in parentheses without a minus sign', async () => {
+    const { findByRole } = render(
       <TestComponent monthlySummary={mockMonthlySummary} />,
     );
 
-    expect(getByRole('table')).toHaveTableStructure({
+    expect(await findByRole('table')).toHaveTableStructure({
       columnHeaders,
       cells: [
         ['Jan 2023', '$4,000.00', '($3,500.00)', '$500.00', '$10,000.00'],
@@ -89,8 +102,8 @@ describe('StaffTabMonthlySummary', () => {
     });
   });
 
-  it('renders a blank month, zeroed amounts, and a placeholder end balance when the summary fields are null', () => {
-    const { getByRole } = render(
+  it('renders a blank month, zeroed amounts, and a placeholder end balance when the summary fields are null', async () => {
+    const { findByRole } = render(
       <TestComponent
         monthlySummary={[
           {
@@ -104,14 +117,14 @@ describe('StaffTabMonthlySummary', () => {
       />,
     );
 
-    expect(getByRole('table')).toHaveTableStructure({
+    expect(await findByRole('table')).toHaveTableStructure({
       columnHeaders,
       cells: [['', '$0.00', '($0.00)', '$0.00', '—']],
     });
   });
 
-  it('colors net green when positive, red when negative, and the default text color when exactly zero', () => {
-    const { getByRole } = render(
+  it('colors net green when positive, red when negative, and the default text color when exactly zero', async () => {
+    const { findByRole, getByRole } = render(
       <TestComponent
         monthlySummary={[
           {
@@ -139,6 +152,8 @@ describe('StaffTabMonthlySummary', () => {
       />,
     );
 
+    await findByRole('table');
+
     expect(getByRole('cell', { name: '$500.00' })).toHaveStyle({
       color: theme.palette.success.main,
     });
@@ -150,10 +165,21 @@ describe('StaffTabMonthlySummary', () => {
     });
   });
 
-  it('renders an empty-state row when the monthly summary is empty', () => {
-    const { getByRole } = render(<TestComponent monthlySummary={[]} />);
+  it('renders an empty-state row when the monthly summary is empty', async () => {
+    const { findByRole } = render(<TestComponent monthlySummary={[]} />);
 
-    expect(getByRole('table')).toHaveTableStructure({
+    expect(await findByRole('table')).toHaveTableStructure({
+      columnHeaders,
+      cells: ['No data available.'],
+    });
+  });
+
+  it('renders the empty state when there is no staff account', async () => {
+    const { findByRole } = render(
+      <TestComponent monthlySummary={[]} staffAccountId={null} />,
+    );
+
+    expect(await findByRole('table')).toHaveTableStructure({
       columnHeaders,
       cells: ['No data available.'],
     });
@@ -164,7 +190,7 @@ describe('StaffTabMonthlySummary', () => {
       <TestComponent monthlySummary={mockMonthlySummary} />,
     );
 
-    userEvent.click(getByRole('button', { name: 'Chart view' }));
+    userEvent.click(await findByRole('button', { name: 'Chart view' }));
 
     expect(await findByRole('region')).toBeInTheDocument();
     expect(queryByRole('table')).not.toBeInTheDocument();
@@ -175,11 +201,11 @@ describe('StaffTabMonthlySummary', () => {
   });
 
   it('switches to the chart view even when there is no data', async () => {
-    const { findByRole, getByRole, queryByRole } = render(
+    const { findByRole, queryByRole } = render(
       <TestComponent monthlySummary={[]} />,
     );
 
-    userEvent.click(getByRole('button', { name: 'Chart view' }));
+    userEvent.click(await findByRole('button', { name: 'Chart view' }));
 
     expect(await findByRole('region')).toBeInTheDocument();
     expect(queryByRole('table')).not.toBeInTheDocument();

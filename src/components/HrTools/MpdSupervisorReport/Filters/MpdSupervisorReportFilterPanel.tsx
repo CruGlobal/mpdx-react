@@ -11,7 +11,6 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
-import { mockStaffMembers } from '../mockData';
 import {
   ALL_TEAMS,
   ALL_TYPES,
@@ -39,8 +38,12 @@ export const MpdSupervisorReportFilterPanel: React.FC<
     setEmploymentType,
   } = useMpdSupervisorReport();
 
+  // TODO: Replace placeholder values with actual list of teams
   const teamOptions = useMemo(
-    () => [...new Set(mockStaffMembers.map((data) => data.user?.team))].sort(),
+    () =>
+      Object.values(MpdSupervisorReportTeamsEnum).filter(
+        (option) => option !== ALL_TEAMS,
+      ),
     [],
   );
 

@@ -20,7 +20,7 @@ import {
 import { StaffDetailTabEnum } from '../StaffDetailsTabs/StaffDetailTab';
 import { preloadStaffExpenseReport } from '../StaffDetailsTabs/StaffExpenseReport/DynamicStaffExpenseReport';
 import { StaffTabStaffExpenseReport } from '../StaffDetailsTabs/StaffExpenseReport/StaffExpenseReport';
-import { getInitials } from '../helpers';
+import { getInitials, pendingField } from '../helpers';
 
 interface DetailRowProps {
   label: string;
@@ -84,22 +84,18 @@ export const StaffMemberDrawer: React.FC = () => {
   }
 
   const {
-    user,
-    spouse,
-    monthlyPayrollHistory,
-    quarterlyPayrollHistory,
-    monthlySummary,
-  } = selectedMember;
-  const {
-    preferredName,
+    firstName,
     lastName,
+    spouseFirstName,
+    spouseLastName,
     personNumber,
-    staffAccountID,
-    userPersonType,
-    team,
-  } = user;
-  const initials = getInitials(preferredName, lastName);
-  const fullName = `${preferredName} ${lastName}`;
+    staffAccountId,
+    teams,
+  } = selectedMember;
+  const initials = getInitials(firstName, lastName);
+  const fullName = `${firstName} ${lastName}`;
+  const team =
+    teams.employee.map(({ name }) => name).join(', ') || pendingField;
 
   return (
     <Box
@@ -125,25 +121,25 @@ export const StaffMemberDrawer: React.FC = () => {
       </Box>
       <StaffInfo>
         <DetailRow label={t('Person Number')} value={personNumber} />
-        <DetailRow label={t('Staff Account Number')} value={staffAccountID} />
-        <DetailRow label={t('Employment Type')} value={userPersonType} />
+        <DetailRow
+          label={t('Staff Account Number')}
+          value={staffAccountId ?? pendingField}
+        />
+        <DetailRow label={t('Employment Type')} value={pendingField} />
         <DetailRow label={t('Team')} value={team} />
       </StaffInfo>
 
-      {spouse && (
+      {spouseFirstName && (
         <StaffInfo>
           <Typography
             variant="subtitle2"
             fontWeight="bold"
             sx={{ width: '100%' }}
           >
-            {t('Spouse')}: {`${spouse.preferredName} ${spouse.lastName}`}
+            {t('Spouse')}: {`${spouseFirstName} ${spouseLastName ?? lastName}`}
           </Typography>
-          <DetailRow label={t('Person Number')} value={spouse.personNumber} />
-          <DetailRow
-            label={t('Staff Account Number')}
-            value={spouse.staffAccountID}
-          />
+          <DetailRow label={t('Person Number')} value={pendingField} />
+          <DetailRow label={t('Staff Account Number')} value={pendingField} />
         </StaffInfo>
       )}
 
@@ -179,13 +175,13 @@ export const StaffMemberDrawer: React.FC = () => {
         </ContactTabsWrapper>
 
         <TabPanel value={StaffDetailTabEnum.MonthlySummary}>
-          <StaffTabMonthlySummary monthlySummary={monthlySummary} />
+          <StaffTabMonthlySummary staffAccountId={staffAccountId ?? null} />
         </TabPanel>
         <TabPanel value={StaffDetailTabEnum.Quarterly}>
-          <DynamicQuarterly quarterHistory={quarterlyPayrollHistory} />
+          <DynamicQuarterly staffAccountId={staffAccountId ?? null} />
         </TabPanel>
         <TabPanel value={StaffDetailTabEnum.Payroll}>
-          <DynamicPayroll payrollHistory={monthlyPayrollHistory} />
+          <DynamicPayroll staffAccountId={staffAccountId ?? null} />
         </TabPanel>
         <TabPanel value={StaffDetailTabEnum.MPGAReport}>
           <DynamicMPGA />

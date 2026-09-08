@@ -14,8 +14,16 @@ import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { getInitials, healthColor, healthLabel } from '../helpers';
-import { EmployeeData } from '../mockData';
+import {
+  ManagedStaffMember,
+  QuarterChipData,
+  buildQuarterChips,
+  getInitials,
+  getQuarterLabel,
+  healthColor,
+  healthLabel,
+  pendingField,
+} from '../helpers';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   marginBottom: theme.spacing(1),
@@ -57,20 +65,13 @@ const QuarterChip = styled(Chip, {
 });
 
 interface StaffMemberProps {
-  data: EmployeeData;
+  data: ManagedStaffMember;
   onClick?: () => void;
 }
 
 export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
   const { t } = useTranslation();
-  const { user, quarters } = data;
-  const {
-    preferredName: name,
-    lastName,
-    staffAccountID,
-    userPersonType,
-    team,
-  } = user;
+  const { firstName: name, lastName, staffAccountId, teams } = data;
 
   const names = useMemo(() => {
     if (!name || !lastName) {
@@ -78,6 +79,17 @@ export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
     }
     return `${name} ${lastName}`;
   }, [name, lastName]);
+
+  const quarters = useMemo(
+    () => buildQuarterChips(data.quarterlyHealth),
+    [data.quarterlyHealth],
+  );
+
+  // A member can be on several teams; the API has no employment type at all.
+  const team = useMemo(
+    () => teams.employee.map(({ name }) => name).join(', ') || pendingField,
+    [teams],
+  );
 
   return (
     <StyledCard
@@ -110,8 +122,8 @@ export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
               >
                 <StaffInfo
                   names={names}
-                  staffAccountID={staffAccountID}
-                  userPersonType={userPersonType}
+                  staffAccountID={staffAccountId ?? pendingField}
+                  userPersonType={pendingField}
                   team={team}
                 />
               </Box>
@@ -127,7 +139,7 @@ export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
 };
 
 interface FiscalYearQuartersProps {
-  quarters: EmployeeData['quarters'];
+  quarters: QuarterChipData[];
 }
 const FiscalYearQuartersBase: React.FC<FiscalYearQuartersProps> = ({
   quarters,
@@ -136,20 +148,25 @@ const FiscalYearQuartersBase: React.FC<FiscalYearQuartersProps> = ({
   const locale = useLocale();
   return (
     <Stack direction="row" spacing={2}>
-      {quarters.map((quarter) => {
-        const amount = currencyFormat(quarter.payroll, 'USD', locale);
+      {quarters.map(({ fiscalYear, quarter, status, averagePayroll }) => {
+        const label = getQuarterLabel(fiscalYear, quarter);
+        // A quarter payroll started partway through reports no average.
+        const amount =
+          averagePayroll === null
+            ? t('Partial')
+            : currencyFormat(averagePayroll, 'USD', locale);
         return (
           <QuarterChip
-            key={quarter.label}
+            key={label}
             label={amount}
             // Health is also conveyed by color; include it in the label for
             // screen-reader users (WCAG 1.4.1 — not color alone).
             aria-label={t('{{label}}: {{amount}} ({{status}})', {
-              label: quarter.label,
+              label,
               amount,
-              status: healthLabel(t, quarter.health),
+              status: healthLabel(t, status),
             })}
-            health={quarter.health}
+            health={status}
             size="small"
           />
         );

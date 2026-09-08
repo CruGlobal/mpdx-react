@@ -15,6 +15,7 @@ import {
 import { Box } from '@mui/system';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { DynamicComponentPlaceholder } from 'src/components/DynamicPlaceholders/DynamicComponentPlaceholder';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import {
   MpdHealthStatusEnum,
@@ -28,18 +29,36 @@ import {
   healthColor,
   healthLabel,
 } from '../../helpers';
+import { useQuarterlyPayrollHistoryQuery } from './QuarterlyPayrollHistory.generated';
+
+const emptyHistory: QuarterlyPayrollHistory = {
+  monthlyGrossSalary: 0,
+  completedQuarters: [],
+};
 
 interface StaffTabQuarterlyProps {
-  quarterHistory: QuarterlyPayrollHistory;
+  staffAccountId: string | null;
 }
 
 export const StaffTabQuarterly: React.FC<StaffTabQuarterlyProps> = ({
-  quarterHistory,
+  staffAccountId,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const { formatCurrency } = useFormatters();
+
+  // The query defaults to the 24-month range, which is the eight quarters this
+  // tab shows.
+  const { data, loading } = useQuarterlyPayrollHistoryQuery({
+    variables: { staffAccountId: staffAccountId ?? '' },
+    skip: !staffAccountId,
+  });
+  const quarterHistory = data?.quarterlyPayrollHistory ?? emptyHistory;
   const { startingQuarter } = quarterHistory;
+
+  if (loading) {
+    return <DynamicComponentPlaceholder />;
+  }
 
   return (
     <>

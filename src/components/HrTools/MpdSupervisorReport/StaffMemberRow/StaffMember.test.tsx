@@ -2,44 +2,34 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { EmployeeData } from '../mockData';
+import { ManagedStaffMember } from '../helpers';
+import { managedStaffMember } from '../mpdSupervisorReportMocks';
 import { StaffMember } from './StaffMember';
 
-const member: EmployeeData = {
-  user: {
-    id: '1',
-    preferredName: 'Brooke',
-    lastName: 'Butler',
-    personNumber: '10000001',
-    staffAccountID: '1000000001',
-    userPersonType: 'Full time',
-    team: 'FamilyLife',
+const member = managedStaffMember({
+  firstName: 'Brooke',
+  lastName: 'Butler',
+  teams: {
+    employee: [
+      { id: 'team-1', name: 'FamilyLife', department: 'US FamilyLife' },
+    ],
+    spouse: [],
   },
-  quarters: [
-    { label: 'FQ4 25', health: MpdHealthStatusEnum.Green, payroll: 15000 },
-    { label: 'FQ1 26', health: MpdHealthStatusEnum.Yellow, payroll: 16000 },
-    { label: 'FQ2 26', health: MpdHealthStatusEnum.Red, payroll: 17000 },
-    { label: 'FQ3 26', health: MpdHealthStatusEnum.Green, payroll: 18000 },
-  ],
-  monthlyPayrollHistory: [],
-  quarterlyPayrollHistory: { monthlyGrossSalary: 0, completedQuarters: [] },
-  monthlySummary: [],
-};
+});
 
-const renderRow = (onClick = jest.fn()) => {
+const renderRow = (onClick = jest.fn(), data: ManagedStaffMember = member) => {
   render(
     <ThemeProvider theme={theme}>
-      <StaffMember data={member} onClick={onClick} />
+      <StaffMember data={data} onClick={onClick} />
     </ThemeProvider>,
   );
   return onClick;
 };
 
 describe('StaffMember', () => {
-  it('renders the staff member name as "{preferredName} {lastName}"', () => {
+  it('renders the staff member name as "{firstName} {lastName}"', () => {
     renderRow();
     expect(screen.getByText('Brooke Butler')).toBeInTheDocument();
   });
@@ -47,7 +37,30 @@ describe('StaffMember', () => {
   it('renders the staff account, employment type, and team line', () => {
     renderRow();
     expect(screen.getByTestId('person-numbers')).toHaveTextContent(
-      '1000000001 · Full time · FamilyLife',
+      '1000000001 · — · FamilyLife',
+    );
+  });
+
+  it('dashes the staff account when the API has none', () => {
+    renderRow(jest.fn(), managedStaffMember({ staffAccountId: null }));
+    expect(screen.getByTestId('person-numbers')).toHaveTextContent('— · —');
+  });
+
+  it('joins the names when a member is on several teams', () => {
+    renderRow(
+      jest.fn(),
+      managedStaffMember({
+        teams: {
+          employee: [
+            { id: 'team-1', name: 'Campus', department: null },
+            { id: 'team-2', name: 'Cru City', department: null },
+          ],
+          spouse: [],
+        },
+      }),
+    );
+    expect(screen.getByTestId('person-numbers')).toHaveTextContent(
+      'Campus, Cru City',
     );
   });
 
@@ -65,6 +78,20 @@ describe('StaffMember', () => {
     expect(
       screen.getByText(currencyFormat(18000, 'USD', 'en-US')),
     ).toBeInTheDocument();
+  });
+
+  it('labels a quarter payroll started partway through as Partial', () => {
+    renderRow(
+      jest.fn(),
+      managedStaffMember({
+        quarterlyHealth: {
+          monthlyGrossSalary: 4500,
+          completedQuarters: [],
+          startingQuarter: { fiscalYear: 2026, quarter: 3, months: [] },
+        },
+      }),
+    );
+    expect(screen.getByText('Partial')).toBeInTheDocument();
   });
 
   it('exposes an accessible button with a descriptive label', () => {

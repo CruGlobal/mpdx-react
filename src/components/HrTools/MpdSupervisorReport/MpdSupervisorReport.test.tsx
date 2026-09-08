@@ -1,31 +1,22 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { ManagedStaffQuery } from './ManagedStaff.generated';
 import { MpdSupervisorReport } from './MpdSupervisorReport';
 import {
   MpdSupervisorReportProvider,
   Panel,
 } from './MpdSupervisorReportContext';
 import { StaffMemberDrawer } from './StaffMemberDrawer/StaffMemberDrawer';
-import { EmployeeData, mockStaffMembers } from './mockData';
-
-// useMockInfiniteStaff is a pagination wrapper around the filtered list.
-// In tests we bypass pagination and return the full filtered array directly,
-// so all items are visible without needing react-virtuoso to render them.
-jest.mock('./useMockInfiniteStaff', () => ({
-  useMockInfiniteStaff: (allItems: EmployeeData[]) => ({
-    data: {
-      nodes: allItems,
-      pageInfo: { endCursor: String(allItems.length), hasNextPage: false },
-    },
-    loading: false,
-    fetchMore: jest.fn(),
-  }),
-}));
+import {
+  managedStaffMember,
+  managedStaffMock,
+} from './mpdSupervisorReportMocks';
 
 // react-virtuoso requires ResizeObserver (unavailable in jsdom). Wrap
 // InfiniteList so all items render synchronously without a layout engine.
@@ -67,87 +58,101 @@ jest.mock('src/components/InfiniteList/InfiniteList', () => {
 
 const onNavListToggle = jest.fn();
 const onFilterListToggle = jest.fn();
+const mutationSpy = jest.fn();
 
-const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <TestRouter>
-    <ThemeProvider theme={theme}>
-      <VirtuosoMockContext.Provider
-        value={{ viewportHeight: 800, itemHeight: 80 }}
-      >
-        <MpdSupervisorReportProvider>{children}</MpdSupervisorReportProvider>
-      </VirtuosoMockContext.Provider>
-    </ThemeProvider>
-  </TestRouter>
-);
+const staff = [
+  managedStaffMember(),
+  managedStaffMember({
+    firstName: 'Alice',
+    lastName: 'Jones',
+    personNumber: '10000003',
+    staffAccountId: '1000000003',
+  }),
+];
 
-const renderReport = (panelOpen: Panel | null = Panel.Filters) =>
+interface RenderOptions {
+  panelOpen?: Panel | null;
+  managedStaff?: ManagedStaffQuery;
+}
+
+const renderReport = ({
+  panelOpen = Panel.Filters,
+  managedStaff = managedStaffMock(staff),
+}: RenderOptions = {}) =>
   render(
-    <Wrapper>
-      <MpdSupervisorReport
-        panelOpen={panelOpen}
-        onNavListToggle={onNavListToggle}
-        onFilterListToggle={onFilterListToggle}
-        title="MPD Supervisor Report"
-      />
-      <StaffMemberDrawer />
-    </Wrapper>,
+    <TestRouter>
+      <ThemeProvider theme={theme}>
+        <VirtuosoMockContext.Provider
+          value={{ viewportHeight: 800, itemHeight: 80 }}
+        >
+          <GqlMockedProvider<{ ManagedStaff: ManagedStaffQuery }>
+            mocks={{ ManagedStaff: managedStaff }}
+            onCall={mutationSpy}
+          >
+            <MpdSupervisorReportProvider>
+              <MpdSupervisorReport
+                panelOpen={panelOpen}
+                onNavListToggle={onNavListToggle}
+                onFilterListToggle={onFilterListToggle}
+                title="MPD Supervisor Report"
+              />
+              <StaffMemberDrawer />
+            </MpdSupervisorReportProvider>
+          </GqlMockedProvider>
+        </VirtuosoMockContext.Provider>
+      </ThemeProvider>
+    </TestRouter>,
   );
 
 describe('MpdSupervisorReport', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
+  it('renders a row per staff member the query returns', async () => {
+    renderReport();
+
+    expect(await screen.findByText('John Smith')).toBeInTheDocument();
+    expect(screen.getByText('Alice Jones')).toBeInTheDocument();
   });
 
-  it('renders staff member rows', async () => {
+  it('shows the loaded count against the total the query reports', async () => {
     renderReport();
-    const firstMember = mockStaffMembers[0];
-    // The card displays the name as "{preferredName} {lastName}".
-    const cardName = `${firstMember.user.preferredName} ${firstMember.user.lastName}`;
-    expect(await screen.findByText(cardName)).toBeInTheDocument();
-  });
 
-  it('shows the correct "Showing X of Y" count initially', () => {
-    renderReport();
     expect(
-      screen.getByText(
-        `Showing ${mockStaffMembers.length} of ${mockStaffMembers.length} · sorted by MPD health`,
-      ),
+      await screen.findByText('Showing 2 of 2 · sorted by MPD health'),
     ).toBeInTheDocument();
   });
 
-  it('filters the list when typing in the search box and updates the count', async () => {
+  it('sends the search box text to the server as the name filter', async () => {
     renderReport();
-    const firstMember = mockStaffMembers[0];
-    const searchInput = screen.getByRole('textbox', { name: 'Search name' });
+    await screen.findByText('John Smith');
 
-    await userEvent.type(searchInput, firstMember.user.lastName);
-
-    const matching = mockStaffMembers.filter((m) =>
-      `${m.user.preferredName} ${m.user.lastName}`
-        .toLowerCase()
-        .includes(firstMember.user.lastName.toLowerCase()),
+    await userEvent.type(
+      screen.getByRole('textbox', { name: 'Search name' }),
+      'Jones',
     );
-    expect(
-      await screen.findByText(
-        `Showing ${matching.length} of ${mockStaffMembers.length} · sorted by MPD health`,
-      ),
-    ).toBeInTheDocument();
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        name: 'Jones',
+      }),
+    );
   });
 
-  it('shows the empty state when the search matches nothing', async () => {
-    renderReport();
-    const searchInput = screen.getByRole('textbox', { name: 'Search name' });
-
-    await userEvent.type(searchInput, 'zzzzzz_no_match_at_all');
+  it('shows the empty state when the query returns no staff', async () => {
+    renderReport({ managedStaff: managedStaffMock([]) });
 
     expect(
       await screen.findByText('No staff members found'),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(
-        `Showing 0 of ${mockStaffMembers.length} · sorted by MPD health`,
-      ),
+      screen.getByText('Showing 0 of 0 · sorted by MPD health'),
     ).toBeInTheDocument();
+  });
+
+  it('labels the quarter columns from the first row', async () => {
+    renderReport();
+    await screen.findByText('John Smith');
+
+    expect(screen.getByText('FQ4 25')).toBeInTheDocument();
+    expect(screen.getByText('FQ3 26')).toBeInTheDocument();
   });
 
   // The card and the drawer both display the same name, so the drawer is
@@ -169,28 +174,23 @@ describe('MpdSupervisorReport', () => {
 
   it('calls onFilterListToggle when the filter toggle button is clicked', async () => {
     renderReport();
-    const filterButton = screen.getByRole('button', {
-      name: 'Toggle Filters Panel',
-    });
-    userEvent.click(filterButton);
+    await screen.findByText('John Smith');
+
+    userEvent.click(
+      screen.getByRole('button', { name: 'Toggle Filters Panel' }),
+    );
     expect(onFilterListToggle).toHaveBeenCalledTimes(1);
   });
 
-  it('renders with panelOpen=null (no panel open)', () => {
-    renderReport(null);
-    expect(
-      screen.getByText(
-        `Showing ${mockStaffMembers.length} of ${mockStaffMembers.length} · sorted by MPD health`,
-      ),
-    ).toBeInTheDocument();
+  it('renders with panelOpen=null (no panel open)', async () => {
+    renderReport({ panelOpen: null });
+
+    expect(await screen.findByText('John Smith')).toBeInTheDocument();
   });
 
-  it('renders with panelOpen=Panel.Navigation', () => {
-    renderReport(Panel.Navigation);
-    expect(
-      screen.getByText(
-        `Showing ${mockStaffMembers.length} of ${mockStaffMembers.length} · sorted by MPD health`,
-      ),
-    ).toBeInTheDocument();
+  it('renders with panelOpen=Panel.Navigation', async () => {
+    renderReport({ panelOpen: Panel.Navigation });
+
+    expect(await screen.findByText('John Smith')).toBeInTheDocument();
   });
 });

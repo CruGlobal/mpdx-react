@@ -1,16 +1,17 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-  CompletedQuarterPayroll,
-  MpdHealthStatusEnum,
-  QuarterlyPayrollHistory,
-  StartingQuarterPayroll,
-} from 'src/graphql/types.generated';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { StaffTabQuarterly } from './Quarterly';
+import { QuarterlyPayrollHistoryQuery } from './QuarterlyPayrollHistory.generated';
 
-const completedQuarters: CompletedQuarterPayroll[] = [
+type QuarterHistory = QuarterlyPayrollHistoryQuery['quarterlyPayrollHistory'];
+
+const heading = 'Average monthly payroll per fiscal quarter · last 8 quarters';
+
+const completedQuarters = [
   {
     fiscalYear: 2025,
     quarter: 4,
@@ -25,7 +26,7 @@ const completedQuarters: CompletedQuarterPayroll[] = [
   },
 ];
 
-const startingQuarter: StartingQuarterPayroll = {
+const startingQuarter = {
   fiscalYear: 2025,
   quarter: 2,
   months: [
@@ -33,41 +34,56 @@ const startingQuarter: StartingQuarterPayroll = {
   ],
 };
 
-const renderQuarterly = (quarterHistory: QuarterlyPayrollHistory) =>
+const renderQuarterly = (
+  quarterHistory: QuarterHistory,
+  staffAccountId: string | null = '1000000001',
+) =>
   render(
     <ThemeProvider theme={theme}>
-      <StaffTabQuarterly quarterHistory={quarterHistory} />
+      <GqlMockedProvider<{
+        QuarterlyPayrollHistory: QuarterlyPayrollHistoryQuery;
+      }>
+        mocks={{
+          QuarterlyPayrollHistory: { quarterlyPayrollHistory: quarterHistory },
+        }}
+      >
+        <StaffTabQuarterly staffAccountId={staffAccountId} />
+      </GqlMockedProvider>
     </ThemeProvider>,
   );
 
 describe('StaffTabQuarterly', () => {
-  it('renders the heading', () => {
-    renderQuarterly({ monthlyGrossSalary: 4510.6, completedQuarters });
+  it('renders the heading', async () => {
+    renderQuarterly({
+      monthlyGrossSalary: 4510.6,
+      startingQuarter: null,
+      completedQuarters,
+    });
 
-    expect(
-      screen.getByText(
-        'Average monthly payroll per fiscal quarter · last 8 quarters',
-      ),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(heading)).toBeInTheDocument();
   });
 
-  it('renders a chip with the label and average payroll for each completed quarter', () => {
-    renderQuarterly({ monthlyGrossSalary: 4510.6, completedQuarters });
+  it('renders a chip with the label and average payroll for each completed quarter', async () => {
+    renderQuarterly({
+      monthlyGrossSalary: 4510.6,
+      startingQuarter: null,
+      completedQuarters,
+    });
 
-    expect(screen.getByText('FQ4 25')).toBeInTheDocument();
+    expect(await screen.findByText('FQ4 25')).toBeInTheDocument();
     expect(screen.getByText('$4,013.42')).toBeInTheDocument();
     expect(screen.getByText('FQ1 26')).toBeInTheDocument();
     expect(screen.getByText('$4,548.05')).toBeInTheDocument();
   });
 
-  it('inserts the starting quarter in chronological order, labeled as partial', () => {
+  it('inserts the starting quarter in chronological order, labeled as partial', async () => {
     renderQuarterly({
       monthlyGrossSalary: 4510.6,
       startingQuarter,
       completedQuarters,
     });
 
-    expect(screen.getByText('FQ2 25')).toBeInTheDocument();
+    expect(await screen.findByText('FQ2 25')).toBeInTheDocument();
     expect(screen.getAllByText('Partial')).toHaveLength(1);
   });
 
@@ -78,20 +94,25 @@ describe('StaffTabQuarterly', () => {
       completedQuarters,
     });
 
-    const icon = screen.getByTestId('InfoOutlinedIcon');
+    const icon = await screen.findByTestId('InfoOutlinedIcon');
     userEvent.hover(icon);
     expect(await screen.findByRole('tooltip')).toHaveTextContent(
       'Payroll started this quarter',
     );
   });
 
-  it('renders no starting quarter chip when there is none', () => {
-    renderQuarterly({ monthlyGrossSalary: 4510.6, completedQuarters });
+  it('renders no starting quarter chip when there is none', async () => {
+    renderQuarterly({
+      monthlyGrossSalary: 4510.6,
+      startingQuarter: null,
+      completedQuarters,
+    });
 
+    await screen.findByText(heading);
     expect(screen.queryByText('Partial')).not.toBeInTheDocument();
   });
 
-  it('renders a monthly breakdown table for the starting quarter', () => {
+  it('renders a monthly breakdown table for the starting quarter', async () => {
     renderQuarterly({
       monthlyGrossSalary: 4510.6,
       startingQuarter,
@@ -99,28 +120,51 @@ describe('StaffTabQuarterly', () => {
     });
 
     expect(
-      screen.getByText('Starting quarter monthly payroll breakdown · FQ2 25'),
+      await screen.findByText(
+        'Starting quarter monthly payroll breakdown · FQ2 25',
+      ),
     ).toBeInTheDocument();
     expect(screen.getByText('Feb 2025')).toBeInTheDocument();
     expect(screen.getByText('$4,263.25')).toBeInTheDocument();
     expect(screen.getByText('needs attention')).toBeInTheDocument();
   });
 
-  it('renders no breakdown table when there is no starting quarter', () => {
-    renderQuarterly({ monthlyGrossSalary: 4510.6, completedQuarters });
+  it('renders no breakdown table when there is no starting quarter', async () => {
+    renderQuarterly({
+      monthlyGrossSalary: 4510.6,
+      startingQuarter: null,
+      completedQuarters,
+    });
 
+    await screen.findByText(heading);
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
   });
 
-  it('renders no chips when there are no quarters', () => {
-    renderQuarterly({ monthlyGrossSalary: 0, completedQuarters: [] });
+  it('renders no chips when there are no quarters', async () => {
+    renderQuarterly({
+      monthlyGrossSalary: 0,
+      startingQuarter: null,
+      completedQuarters: [],
+    });
 
+    await screen.findByText(heading);
     expect(screen.queryByText(/^FQ/)).not.toBeInTheDocument();
   });
 
-  it('renders a dash instead of $0.00 for a quarter with no payroll data', () => {
+  it('renders no chips when there is no staff account', async () => {
+    renderQuarterly(
+      { monthlyGrossSalary: 0, startingQuarter: null, completedQuarters: [] },
+      null,
+    );
+
+    await screen.findByText(heading);
+    expect(screen.queryByText(/^FQ/)).not.toBeInTheDocument();
+  });
+
+  it('renders a dash instead of $0.00 for a quarter with no payroll data', async () => {
     renderQuarterly({
       monthlyGrossSalary: 0,
+      startingQuarter: null,
       completedQuarters: [
         {
           fiscalYear: 2025,
@@ -131,7 +175,7 @@ describe('StaffTabQuarterly', () => {
       ],
     });
 
-    expect(screen.getByText('FQ4 25')).toBeInTheDocument();
+    expect(await screen.findByText('FQ4 25')).toBeInTheDocument();
     expect(screen.getByText('-')).toBeInTheDocument();
     expect(screen.queryByText('$0.00')).not.toBeInTheDocument();
   });

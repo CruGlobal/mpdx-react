@@ -4,6 +4,13 @@ import {
   MpdHealthStatusEnum,
   QuarterlyPayrollHistory,
 } from 'src/graphql/types.generated';
+import { ManagedStaffQuery } from './ManagedStaff.generated';
+
+export type ManagedStaffMember =
+  ManagedStaffQuery['managedStaff']['nodes'][number];
+
+/** Stands in for fields `managedStaff` cannot supply yet. */
+export const pendingField = '—';
 
 /**
  * Build avatar initials from a person's first and last name.

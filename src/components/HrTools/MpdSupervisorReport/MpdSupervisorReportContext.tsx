@@ -14,7 +14,7 @@ import {
   MpdSupervisorReportTeamsEnum,
 } from './Filters/mpdSupervisorReportFilters';
 import { StaffDetailTabEnum } from './StaffDetailsTabs/StaffDetailTab';
-import { EmployeeData } from './mockData';
+import { ManagedStaffMember } from './helpers';
 
 export enum Panel {
   Navigation = 'Navigation',
@@ -22,9 +22,9 @@ export enum Panel {
 }
 
 export interface MpdSupervisorReportContextValue {
-  selectedMember: EmployeeData | undefined;
+  selectedMember: ManagedStaffMember | undefined;
   isOpen: boolean;
-  openMember: (member: EmployeeData) => void;
+  openMember: (member: ManagedStaffMember) => void;
   closePanel: () => void;
   search: string;
   setSearch: (v: string) => void;
@@ -64,7 +64,7 @@ export const MpdSupervisorReportProvider: React.FC<{
   const query = router?.query;
 
   const [selectedMember, setSelectedMember] = useState<
-    EmployeeData | undefined
+    ManagedStaffMember | undefined
   >(undefined);
   const [search, setSearch] = useState('');
   const [team, setTeam] = useState<MpdSupervisorReportTeamsEnum>(ALL_TEAMS);
@@ -91,7 +91,7 @@ export const MpdSupervisorReportProvider: React.FC<{
     () => ({
       selectedMember,
       isOpen: selectedMember !== undefined,
-      openMember: (member: EmployeeData) => setSelectedMember(member),
+      openMember: (member: ManagedStaffMember) => setSelectedMember(member),
       closePanel: () => setSelectedMember(undefined),
       search,
       setSearch,

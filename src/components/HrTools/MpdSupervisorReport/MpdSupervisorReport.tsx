@@ -20,12 +20,20 @@ import {
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { getHeaderTitleAccess } from 'src/components/Shared/MultiPageLayout/helpers';
 import { NavFilterIcon } from 'src/components/Shared/styledComponents/NavFilterIcon';
+import { useDebouncedValue } from 'src/hooks/useDebounce';
 import theme from 'src/theme';
-import { ALL_TEAMS, ALL_TYPES } from './Filters/mpdSupervisorReportFilters';
+import { MpdSupervisorReportQuickFilterEnum } from './Filters/mpdSupervisorReportFilters';
+import { useManagedStaffQuery } from './ManagedStaff.generated';
 import { Panel, useMpdSupervisorReport } from './MpdSupervisorReportContext';
 import { StaffMember } from './StaffMemberRow/StaffMember';
-import { EmployeeData, mockStaffMembers } from './mockData';
-import { useMockInfiniteStaff } from './useMockInfiniteStaff';
+import {
+  ManagedStaffMember,
+  buildQuarterChips,
+  getQuarterLabel,
+} from './helpers';
+
+const searchDebounceMs = 500;
+const pageSize = 25;
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -83,33 +91,40 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
   title,
 }) => {
   const { t } = useTranslation();
-  const { openMember, search, setSearch, team, employmentType } =
+  const { openMember, search, setSearch, activeQuickFilter } =
     useMpdSupervisorReport();
 
-  // TODO(MPDX): Replace this client-side filtering with server-side filtering.
-  // Note: `activeQuickFilter` (Negative last month / 3+ months negative) is
-  // tracked in context and highlights the chip, but is not yet applied here —
-  // it needs MPD-health history that the mock data lacks.
-  const staffMembers = useMemo(
+  const debouncedSearch = useDebouncedValue(search, searchDebounceMs);
+
+  // TODO: Add employment type filter once the API supports it
+  const { data, loading, fetchMore } = useManagedStaffQuery({
+    variables: {
+      first: pageSize,
+      name: debouncedSearch.trim() || null,
+      // Send the flag only when its chip is active; false would filter on it.
+      negativeLastMonth:
+        activeQuickFilter ===
+          MpdSupervisorReportQuickFilterEnum.NegativeLastMonth || null,
+      negativeThreeMonths:
+        activeQuickFilter ===
+          MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative || null,
+    },
+  });
+
+  const staffMembers = data?.managedStaff.nodes ?? [];
+  const totalCount = data?.managedStaff.totalCount ?? 0;
+  const pageInfo = data?.managedStaff.pageInfo;
+
+  // Every row covers the same four quarters, so the first one labels the header.
+  const quarterLabels = useMemo(
     () =>
-      mockStaffMembers.filter((data) => {
-        const { user } = data;
-        const fullName = `${user.preferredName} ${user.lastName}`;
-        const matchesSearch = fullName
-          .toLowerCase()
-          .includes(search.trim().toLowerCase());
-        const matchesTeam = team === ALL_TEAMS || user.team === team;
-        const matchesType =
-          employmentType === ALL_TYPES ||
-          user.userPersonType === employmentType;
-        return matchesSearch && matchesTeam && matchesType;
-      }),
-    [search, team, employmentType],
+      staffMembers.length
+        ? buildQuarterChips(staffMembers[0].quarterlyHealth).map(
+            ({ fiscalYear, quarter }) => getQuarterLabel(fiscalYear, quarter),
+          )
+        : [],
+    [staffMembers],
   );
-
-  const { data, loading, fetchMore } = useMockInfiniteStaff(staffMembers);
-
-  const { quarters } = data.nodes[0] || {};
 
   return (
     <>
@@ -143,7 +158,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
             >
               {t('Showing {{count}} of {{total}} · sorted by MPD health', {
                 count: staffMembers.length,
-                total: mockStaffMembers.length,
+                total: totalCount,
               })}
             </Typography>
           </TitleBox>
@@ -169,8 +184,8 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
 
       <StyledContainer maxWidth={false}>
         <QuartersContainer>
-          {quarters?.map((quarter) => (
-            <Quarter key={quarter.label}>
+          {quarterLabels.map((label) => (
+            <Quarter key={label}>
               <Typography
                 variant="body2"
                 fontWeight={'bold'}
@@ -179,7 +194,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
                 }}
                 textAlign={'center'}
               >
-                {quarter.label}
+                {label}
               </Typography>
             </Quarter>
           ))}
@@ -188,19 +203,19 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
         <Box sx={{ flex: 1, minHeight: 0 }}>
           <InfiniteList
             loading={loading}
-            data={data.nodes}
+            data={staffMembers}
             disableHover
             style={{ height: '100%' }}
-            itemContent={(_index, item: EmployeeData) => (
+            itemContent={(_index, item: ManagedStaffMember) => (
               <StaffMember
-                key={item.user.id}
+                key={item.personNumber}
                 data={item}
                 onClick={() => openMember(item)}
               />
             )}
             endReached={() => {
-              if (data.pageInfo.hasNextPage) {
-                fetchMore();
+              if (pageInfo?.hasNextPage) {
+                fetchMore({ variables: { after: pageInfo.endCursor } });
               }
             }}
             EmptyPlaceholder={
