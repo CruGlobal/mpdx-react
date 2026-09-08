@@ -5,9 +5,20 @@ import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { assignableCoachesMock } from 'src/components/HrTools/MpdGoalAdmin/mpdGoalAdminMocks';
+import { AssignCoachToNewStaffCohortAttendeeMutation } from 'src/components/HrTools/MpdGoalAdmin/AssignCoach.generated';
+import {
+  assignableCoachesMock,
+  assignedCoachMock,
+} from 'src/components/HrTools/MpdGoalAdmin/mpdGoalAdminMocks';
 import theme from 'src/theme';
-import { NewStaffCohortAttendeeAssignableCoachesQuery } from '../AttendeeCoach.generated';
+import {
+  NewStaffCohortAttendeeAssignableCoachesQuery,
+  UnassignCoachFromNewStaffCohortAttendeeMutation,
+} from '../AttendeeCoach.generated';
+import {
+  NewStaffGoalCalculationQuery,
+  useNewStaffGoalCalculationQuery,
+} from '../NewStaffGoalCalculation.generated';
 import { GoalSettingsAttendee } from '../goalSettingsSectionProps';
 import { GoalSettingsCoachField } from './GoalSettingsCoachField';
 
@@ -61,6 +72,65 @@ const TestComponent: React.FC<TestComponentProps> = ({
           attendee={household}
           subjectName="John & Jane Doe"
         />
+      </GqlMockedProvider>
+    </SnackbarProvider>
+  </ThemeProvider>
+);
+
+/** Reads the attendee back out of the cache, as GoalSettingsHeader does, so a mutation payload that normalizes over it reaches the field. */
+const CachedCoachField: React.FC = () => {
+  const { data } = useNewStaffGoalCalculationQuery({
+    variables: { accountListId: 'account-list-1', id: null },
+  });
+  const cachedAttendee = data?.newStaffGoalCalculation?.newStaffCohortAttendee;
+
+  return cachedAttendee ? (
+    <GoalSettingsCoachField
+      attendee={cachedAttendee}
+      subjectName="John & Jane Doe"
+    />
+  ) : null;
+};
+
+interface CachedTestComponentProps {
+  household?: GoalSettingsAttendee;
+}
+
+const CachedTestComponent: React.FC<CachedTestComponentProps> = ({
+  household = coachedAttendee,
+}) => (
+  <ThemeProvider theme={theme}>
+    <SnackbarProvider>
+      <GqlMockedProvider<{
+        NewStaffGoalCalculation: NewStaffGoalCalculationQuery;
+        NewStaffCohortAttendeeAssignableCoaches: NewStaffCohortAttendeeAssignableCoachesQuery;
+        AssignCoachToNewStaffCohortAttendee: AssignCoachToNewStaffCohortAttendeeMutation;
+        UnassignCoachFromNewStaffCohortAttendee: UnassignCoachFromNewStaffCohortAttendeeMutation;
+      }>
+        mocks={{
+          NewStaffGoalCalculation: {
+            newStaffGoalCalculation: {
+              id: 'goal-calculation-1',
+              newStaffCohortAttendee: household,
+            },
+          },
+          NewStaffCohortAttendeeAssignableCoaches: {
+            newStaffCohortAssignableCoaches:
+              assignableCoachesMock.newStaffCohortAssignableCoaches,
+          },
+          AssignCoachToNewStaffCohortAttendee: assignedCoachMock(
+            [attendee.id],
+            'coach-1',
+          ),
+          UnassignCoachFromNewStaffCohortAttendee: {
+            unassignCoachFromNewStaffCohortAttendee: {
+              newStaffCohortAttendees: [{ id: attendee.id, coach: null }],
+            },
+          },
+        }}
+        onCall={mutationSpy}
+      >
+        <CachedCoachField />
       </GqlMockedProvider>
     </SnackbarProvider>
   </ThemeProvider>
@@ -181,5 +251,46 @@ describe('GoalSettingsCoachField', () => {
       'The coach could not be removed. Please try again.',
     );
     expect(getByRole('textbox', { name: 'Coach' })).toHaveValue('Amy Wilson');
+  });
+
+  // Neither mutation refetches, so the payload normalizing over the cached attendee is the only thing that updates the field.
+  describe('with the attendee read from the cache', () => {
+    it('clears the coach after removal', async () => {
+      const { findByRole, getByRole, queryByRole } = render(
+        <CachedTestComponent />,
+      );
+
+      expect(await findByRole('textbox', { name: 'Coach' })).toHaveValue(
+        'Amy Wilson',
+      );
+
+      await userEvent.click(getByRole('button', { name: 'Remove' }));
+      await userEvent.click(getByRole('button', { name: 'Yes' }));
+
+      await waitFor(() =>
+        expect(getByRole('textbox', { name: 'Coach' })).toHaveValue(''),
+      );
+      expect(getByRole('button', { name: 'Assign Coach' })).toBeInTheDocument();
+      expect(queryByRole('button', { name: 'Remove' })).not.toBeInTheDocument();
+    });
+
+    it('shows the new coach after assignment', async () => {
+      const { findByRole, getByRole } = render(
+        <CachedTestComponent household={attendee} />,
+      );
+
+      await userEvent.click(
+        await findByRole('button', { name: 'Assign Coach' }),
+      );
+      await userEvent.click(await findByRole('combobox', { name: 'Coach' }));
+      await userEvent.click(await findByRole('option', { name: 'Amy Wilson' }));
+      await userEvent.click(getByRole('button', { name: 'Save' }));
+
+      await waitFor(() =>
+        expect(getByRole('textbox', { name: 'Coach' })).toHaveValue(
+          'Amy Wilson',
+        ),
+      );
+    });
   });
 });
