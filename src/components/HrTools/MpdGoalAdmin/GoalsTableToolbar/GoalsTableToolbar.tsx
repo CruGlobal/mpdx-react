@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import { AssignCoachModal } from '../AssignCoachModal/AssignCoachModal';
+import { AssignCoachModal } from '../../Shared/AssignCoach/AssignCoachModal';
 import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import { PrintCohortGoalsButton } from '../PrintCohortGoalsButton/PrintCohortGoalsButton';
 import { RunAndSendModal } from '../RunAndSendModal/RunAndSendModal';

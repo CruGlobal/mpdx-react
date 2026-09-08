@@ -4,8 +4,8 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import theme from 'src/theme';
-import { AssignCoachOption } from '../mpdGoalAdminHelpers';
 import { AssignCoachModal } from './AssignCoachModal';
+import { AssignCoachOption } from './coachHelpers';
 
 const coaches: AssignCoachOption[] = [
   { id: 'coach-1', name: 'Jane Coach' },

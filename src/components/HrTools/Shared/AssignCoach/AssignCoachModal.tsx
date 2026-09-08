@@ -19,7 +19,7 @@ import {
   SubmitButton,
 } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/Shared/Modal/Modal';
-import { AssignCoachOption } from '../mpdGoalAdminHelpers';
+import { AssignCoachOption } from './coachHelpers';
 
 interface AssignCoachModalProps {
   /** Name shown in the modal title, e.g. the staff member the coach is for. */

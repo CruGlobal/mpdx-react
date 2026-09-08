@@ -24,7 +24,8 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
-import { AssignCoachModal } from '../AssignCoachModal/AssignCoachModal';
+import { AssignCoachModal } from '../../Shared/AssignCoach/AssignCoachModal';
+import { coachLabel } from '../../Shared/AssignCoach/coachHelpers';
 import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import { RunAndSendModal } from '../RunAndSendModal/RunAndSendModal';
 import { RunAndSendTooltip } from '../RunAndSendTooltip';
@@ -32,7 +33,6 @@ import {
   DEFAULT_ROWS_PER_PAGE,
   GoalStatusEnum,
   StaffGoalRow,
-  coachLabel,
   familyStatusLabel,
   goalStatusLabel,
   isSendable,

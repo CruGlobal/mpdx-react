@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { Box, Button, Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useAssignCoachToNewStaffCohortAttendeeMutation } from 'src/components/HrTools/MpdGoalAdmin/AssignCoach.generated';
-import { AssignCoachModal } from 'src/components/HrTools/MpdGoalAdmin/AssignCoachModal/AssignCoachModal';
+import { AssignCoachModal } from 'src/components/HrTools/Shared/AssignCoach/AssignCoachModal';
 import {
   coachLabel,
   coachToOption,
-} from 'src/components/HrTools/MpdGoalAdmin/mpdGoalAdminHelpers';
+} from 'src/components/HrTools/Shared/AssignCoach/coachHelpers';
 import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
 import {
   useNewStaffCohortAttendeeAssignableCoachesLazyQuery,
