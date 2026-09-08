@@ -29,20 +29,24 @@ const mockBlockImpersonatingNonDevelopers =
   >;
 
 const push = jest.fn();
+const mutationSpy = jest.fn();
 
 interface TestComponentProps {
   /** Senior Staff is the group the MPD goal tools are open to. */
   usStaffGroup?: UsStaffGroupEnum;
+  /** Empty stands in for a router that has not resolved the path yet. */
+  staffAccountListId?: string;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   usStaffGroup = UsStaffGroupEnum.SeniorStaff,
+  staffAccountListId = 'staff-account-list-1',
 }) => (
   <TestRouter
     router={{
       query: {
         accountListId: 'account-list-1',
-        staffAccountListId: 'staff-account-list-1',
+        ...(staffAccountListId ? { staffAccountListId } : {}),
       },
       push,
     }}
@@ -74,6 +78,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
               },
             },
           }}
+          onCall={mutationSpy}
         >
           <NsStaffDetailsPage />
         </GqlMockedProvider>
@@ -111,6 +116,28 @@ describe('Staff Details page', () => {
         '/accountLists/account-list-1/hrTools/mpdGoalAdmin?tab=active-goals',
       ),
     );
+  });
+
+  // The page's whole purpose is the household's goal, and the mock answers with
+  // the same fixture whatever it is asked for, so assert the variables.
+  it("loads the household's goal, not the signed-in admin's", async () => {
+    render(<TestComponent />);
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('NewStaffGoalCalculation', {
+        accountListId: 'staff-account-list-1',
+        id: null,
+      }),
+    );
+  });
+
+  it('renders a loading state until the route supplies the household', () => {
+    const { getByRole, queryByRole } = render(
+      <TestComponent staffAccountListId="" />,
+    );
+
+    expect(getByRole('progressbar')).toBeInTheDocument();
+    expect(queryByRole('navigation')).not.toBeInTheDocument();
   });
 
   it("denies a user outside the admin table's group", async () => {
