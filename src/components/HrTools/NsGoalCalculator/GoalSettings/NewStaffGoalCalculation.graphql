@@ -126,6 +126,11 @@ mutation UpdateNewStaffGoalCalculation(
     newStaffGoalCalculation {
       ...NewStaffGoalCalculationFields
     }
+    # Selected so Apollo normalizes the goal the server republishes on a post-send edit
+    accountList {
+      id
+      monthlyGoal
+    }
   }
 }
 
