@@ -90,6 +90,8 @@ export const StaffMemberDrawer: React.FC = () => {
     spouseLastName,
     personNumber,
     staffAccountId,
+    spousePersonNumber,
+    spouseStaffAccountId,
     teams,
   } = selectedMember;
   const initials = getInitials(firstName, lastName);
@@ -138,8 +140,14 @@ export const StaffMemberDrawer: React.FC = () => {
           >
             {t('Spouse')}: {`${spouseFirstName} ${spouseLastName ?? lastName}`}
           </Typography>
-          <DetailRow label={t('Person Number')} value={pendingField} />
-          <DetailRow label={t('Staff Account Number')} value={pendingField} />
+          <DetailRow
+            label={t('Person Number')}
+            value={spousePersonNumber ?? pendingField}
+          />
+          <DetailRow
+            label={t('Staff Account Number')}
+            value={spouseStaffAccountId ?? pendingField}
+          />
         </StaffInfo>
       )}
 

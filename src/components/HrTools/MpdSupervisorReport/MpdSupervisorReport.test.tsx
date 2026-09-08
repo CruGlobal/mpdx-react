@@ -136,6 +136,15 @@ describe('MpdSupervisorReport', () => {
     );
   });
 
+  it('omits teamIds until a team is chosen', async () => {
+    renderReport();
+    await screen.findByText('John Smith');
+
+    expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+      teamIds: null,
+    });
+  });
+
   it('shows the empty state when the query returns no staff', async () => {
     renderReport({ managedStaff: managedStaffMock([]) });
 

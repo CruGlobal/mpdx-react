@@ -2,9 +2,9 @@ import React from 'react';
 import { act, render } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import {
+  ALL_TEAMS,
   MpdSupervisorReportEmploymentTypeEnum,
   MpdSupervisorReportQuickFilterEnum,
-  MpdSupervisorReportTeamsEnum,
 } from './Filters/mpdSupervisorReportFilters';
 import {
   MpdSupervisorReportProvider,
@@ -24,8 +24,8 @@ interface ConsumerResult {
   closePanel: () => void;
   search: string;
   setSearch: (v: string) => void;
-  team: MpdSupervisorReportTeamsEnum;
-  setTeam: (v: MpdSupervisorReportTeamsEnum) => void;
+  team: string;
+  setTeam: (v: string) => void;
   employmentType: MpdSupervisorReportEmploymentTypeEnum;
   setEmploymentType: (v: MpdSupervisorReportEmploymentTypeEnum) => void;
   activeQuickFilter: MpdSupervisorReportQuickFilterEnum;
@@ -107,9 +107,7 @@ describe('MpdSupervisorReportContext', () => {
 
   it('starts with team=all', () => {
     const { getByTestId } = renderConsumer();
-    expect(getByTestId('team').textContent).toBe(
-      MpdSupervisorReportTeamsEnum.All,
-    );
+    expect(getByTestId('team').textContent).toBe(ALL_TEAMS);
   });
 
   it('starts with employmentType=all', () => {
@@ -137,11 +135,9 @@ describe('MpdSupervisorReportContext', () => {
   it('setTeam updates the team value', () => {
     const { getByTestId } = renderConsumer();
     act(() => {
-      consumerResult.setTeam(MpdSupervisorReportTeamsEnum.TeamA);
+      consumerResult.setTeam('team-1');
     });
-    expect(getByTestId('team').textContent).toBe(
-      MpdSupervisorReportTeamsEnum.TeamA,
-    );
+    expect(getByTestId('team').textContent).toBe('team-1');
   });
 
   it('setEmploymentType updates the employmentType value', () => {

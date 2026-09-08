@@ -21,6 +21,8 @@ query ManagedStaff(
       spouseLastName
       staffAccountId
       personNumber
+      spousePersonNumber
+      spouseStaffAccountId
       teams {
         employee {
           id

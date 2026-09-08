@@ -11,7 +11,6 @@ import {
   ALL_TYPES,
   MpdSupervisorReportEmploymentTypeEnum,
   MpdSupervisorReportQuickFilterEnum,
-  MpdSupervisorReportTeamsEnum,
 } from './Filters/mpdSupervisorReportFilters';
 import { StaffDetailTabEnum } from './StaffDetailsTabs/StaffDetailTab';
 import { ManagedStaffMember } from './helpers';
@@ -28,8 +27,8 @@ export interface MpdSupervisorReportContextValue {
   closePanel: () => void;
   search: string;
   setSearch: (v: string) => void;
-  team: MpdSupervisorReportTeamsEnum;
-  setTeam: (v: MpdSupervisorReportTeamsEnum) => void;
+  team: string;
+  setTeam: (v: string) => void;
   employmentType: MpdSupervisorReportEmploymentTypeEnum;
   setEmploymentType: (v: MpdSupervisorReportEmploymentTypeEnum) => void;
   activeQuickFilter: MpdSupervisorReportQuickFilterEnum;
@@ -67,7 +66,7 @@ export const MpdSupervisorReportProvider: React.FC<{
     ManagedStaffMember | undefined
   >(undefined);
   const [search, setSearch] = useState('');
-  const [team, setTeam] = useState<MpdSupervisorReportTeamsEnum>(ALL_TEAMS);
+  const [team, setTeam] = useState<string>(ALL_TEAMS);
   const [employmentType, setEmploymentType] =
     useState<MpdSupervisorReportEmploymentTypeEnum>(ALL_TYPES);
   const [activeQuickFilter, setActiveQuickFilter] =

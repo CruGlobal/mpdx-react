@@ -3,15 +3,18 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { ManagedStaffTeamsQuery } from '../ManagedStaffTeams.generated';
 import {
   MpdSupervisorReportProvider,
   useMpdSupervisorReport,
 } from '../MpdSupervisorReportContext';
+import { managedStaffTeamsMock } from '../mpdSupervisorReportMocks';
 import { MpdSupervisorReportFilterPanel } from './MpdSupervisorReportFilterPanel';
 import {
+  ALL_TEAMS,
   MpdSupervisorReportEmploymentTypeEnum,
-  MpdSupervisorReportTeamsEnum,
 } from './mpdSupervisorReportFilters';
 
 const onClose = jest.fn();
@@ -19,7 +22,11 @@ const onClose = jest.fn();
 const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <TestRouter>
     <ThemeProvider theme={theme}>
-      <MpdSupervisorReportProvider>{children}</MpdSupervisorReportProvider>
+      <GqlMockedProvider<{ ManagedStaffTeams: ManagedStaffTeamsQuery }>
+        mocks={{ ManagedStaffTeams: managedStaffTeamsMock() }}
+      >
+        <MpdSupervisorReportProvider>{children}</MpdSupervisorReportProvider>
+      </GqlMockedProvider>
     </ThemeProvider>
   </TestRouter>
 );
@@ -119,21 +126,15 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
 
   const renderWithConsumer = () =>
     render(
-      <TestRouter>
-        <ThemeProvider theme={theme}>
-          <MpdSupervisorReportProvider>
-            <MpdSupervisorReportFilterPanel onClose={onClose} />
-            <FilterContextConsumer />
-          </MpdSupervisorReportProvider>
-        </ThemeProvider>
-      </TestRouter>,
+      <Wrapper>
+        <MpdSupervisorReportFilterPanel onClose={onClose} />
+        <FilterContextConsumer />
+      </Wrapper>,
     );
 
   it('starts with default filter values in context', () => {
     renderWithConsumer();
-    expect(screen.getByTestId('team').textContent).toBe(
-      MpdSupervisorReportTeamsEnum.All,
-    );
+    expect(screen.getByTestId('team').textContent).toBe(ALL_TEAMS);
     expect(screen.getByTestId('employmentType').textContent).toBe(
       MpdSupervisorReportEmploymentTypeEnum.All,
     );
@@ -171,17 +172,44 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
     );
   });
 
-  // it('selecting a Team option updates team in context', async () => {
-  //   renderWithConsumer();
-  //   expect(screen.getByTestId('team').textContent).toBe(
-  //     MpdSupervisorReportTeamsEnum.All,
-  //   );
+  it('selecting a Team option puts its id in context', async () => {
+    renderWithConsumer();
+    expect(screen.getByTestId('team').textContent).toBe(ALL_TEAMS);
 
-  //   await userEvent.click(screen.getByLabelText('Team'));
-  //   await userEvent.click(screen.getByRole('option', { name: 'Campus' }));
+    await userEvent.click(screen.getByLabelText('Team'));
+    await userEvent.click(
+      await screen.findByRole('option', { name: 'Solution Delivery Team' }),
+    );
 
-  //   expect(screen.getByTestId('team').textContent).toBe('Campus');
-  // });
+    expect(screen.getByTestId('team').textContent).toBe('team-1');
+  });
+
+  it('sorts the team options by name', async () => {
+    renderWithConsumer();
+
+    await userEvent.click(screen.getByLabelText('Team'));
+    await screen.findByRole('option', { name: 'Solution Delivery Team' });
+
+    const names = screen
+      .getAllByRole('option')
+      .map((option) => option.textContent);
+    expect(names).toEqual([
+      'All teams',
+      'Solution Delivery Team',
+      'User Interaction Team',
+    ]);
+  });
+
+  it('omits a team that has no id', async () => {
+    renderWithConsumer();
+
+    await userEvent.click(screen.getByLabelText('Team'));
+    await screen.findByRole('option', { name: 'Solution Delivery Team' });
+
+    expect(
+      screen.queryByRole('option', { name: 'Unassigned' }),
+    ).not.toBeInTheDocument();
+  });
 
   it('selecting an Employment type option updates employmentType in context', async () => {
     renderWithConsumer();

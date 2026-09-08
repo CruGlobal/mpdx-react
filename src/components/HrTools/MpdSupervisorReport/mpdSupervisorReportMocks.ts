@@ -1,5 +1,6 @@
 import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
 import { ManagedStaffQuery } from './ManagedStaff.generated';
+import { ManagedStaffTeamsQuery } from './ManagedStaffTeams.generated';
 import { ManagedStaffMember } from './helpers';
 
 const baseMember: ManagedStaffMember = {
@@ -9,6 +10,8 @@ const baseMember: ManagedStaffMember = {
   spouseLastName: 'Smith',
   personNumber: '10000001',
   staffAccountId: '1000000001',
+  spousePersonNumber: '10000002',
+  spouseStaffAccountId: '1000000002',
   newStaffMonthlySalary: 4500,
   teams: {
     employee: [{ id: 'team-1', name: 'Campus', department: 'US Campus' }],
@@ -48,6 +51,22 @@ const baseMember: ManagedStaffMember = {
 export const managedStaffMember = (
   overrides: Partial<ManagedStaffMember> = {},
 ): ManagedStaffMember => ({ ...baseMember, ...overrides });
+
+export const managedStaffTeamsMock = (): ManagedStaffTeamsQuery => ({
+  managedStaffTeams: [
+    {
+      id: 'team-2',
+      name: 'User Interaction Team',
+      department: 'US Technology',
+    },
+    {
+      id: 'team-1',
+      name: 'Solution Delivery Team',
+      department: 'US Technology',
+    },
+    { id: null, name: 'Unassigned', department: null },
+  ],
+});
 
 export const managedStaffMock = (
   nodes: ManagedStaffMember[] = [managedStaffMember()],

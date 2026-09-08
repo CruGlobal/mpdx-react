@@ -22,7 +22,10 @@ import { getHeaderTitleAccess } from 'src/components/Shared/MultiPageLayout/help
 import { NavFilterIcon } from 'src/components/Shared/styledComponents/NavFilterIcon';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
 import theme from 'src/theme';
-import { MpdSupervisorReportQuickFilterEnum } from './Filters/mpdSupervisorReportFilters';
+import {
+  ALL_TEAMS,
+  MpdSupervisorReportQuickFilterEnum,
+} from './Filters/mpdSupervisorReportFilters';
 import { useManagedStaffQuery } from './ManagedStaff.generated';
 import { Panel, useMpdSupervisorReport } from './MpdSupervisorReportContext';
 import { StaffMember } from './StaffMemberRow/StaffMember';
@@ -91,7 +94,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
   title,
 }) => {
   const { t } = useTranslation();
-  const { openMember, search, setSearch, activeQuickFilter } =
+  const { openMember, search, setSearch, team, activeQuickFilter } =
     useMpdSupervisorReport();
 
   const debouncedSearch = useDebouncedValue(search, searchDebounceMs);
@@ -101,6 +104,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
     variables: {
       first: pageSize,
       name: debouncedSearch.trim() || null,
+      teamIds: team === ALL_TEAMS ? null : [team],
       // Send the flag only when its chip is active; false would filter on it.
       negativeLastMonth:
         activeQuickFilter ===

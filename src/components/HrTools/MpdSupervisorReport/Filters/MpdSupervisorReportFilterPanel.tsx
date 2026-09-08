@@ -10,13 +10,13 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useManagedStaffTeamsQuery } from '../ManagedStaffTeams.generated';
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
 import {
   ALL_TEAMS,
   ALL_TYPES,
   MpdSupervisorReportEmploymentTypeEnum,
   MpdSupervisorReportQuickFilterEnum,
-  MpdSupervisorReportTeamsEnum,
   quickFilterIds,
   quickFilterLabel,
 } from './mpdSupervisorReportFilters';
@@ -38,13 +38,14 @@ export const MpdSupervisorReportFilterPanel: React.FC<
     setEmploymentType,
   } = useMpdSupervisorReport();
 
-  // TODO: Replace placeholder values with actual list of teams
+  const { data: teamsData } = useManagedStaffTeamsQuery();
+
   const teamOptions = useMemo(
     () =>
-      Object.values(MpdSupervisorReportTeamsEnum).filter(
-        (option) => option !== ALL_TEAMS,
-      ),
-    [],
+      (teamsData?.managedStaffTeams ?? [])
+        .flatMap(({ id, name }) => (id ? [{ id, name }] : []))
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    [teamsData],
   );
 
   const handleQuickFilter = (filterId: MpdSupervisorReportQuickFilterEnum) => {
@@ -52,7 +53,7 @@ export const MpdSupervisorReportFilterPanel: React.FC<
   };
 
   const handleSetTeam = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setTeam(event.target.value as MpdSupervisorReportTeamsEnum);
+    setTeam(event.target.value as string);
   };
 
   const handleSetEmploymentType = (
@@ -117,9 +118,9 @@ export const MpdSupervisorReportFilterPanel: React.FC<
           label={t('Team')}
         >
           <MenuItem value={ALL_TEAMS}>{t('All teams')}</MenuItem>
-          {teamOptions.map((option) => (
-            <MenuItem key={option} value={option}>
-              {option}
+          {teamOptions.map(({ id, name }) => (
+            <MenuItem key={id} value={id}>
+              {name}
             </MenuItem>
           ))}
         </TextField>
