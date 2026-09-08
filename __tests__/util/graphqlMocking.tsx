@@ -19,9 +19,18 @@ import {
 import { DefaultMockResolvers } from 'graphql-ergonomock/dist/mock';
 import random from 'graphql-ergonomock/dist/utils/random';
 import { gql } from 'graphql-tag';
-import { DeepPartial } from 'ts-essentials';
+import { Builtin, DeepPartial } from 'ts-essentials';
 import schema from 'src/graphql/schema.graphql';
 import { createCache } from 'src/lib/apollo/cache';
+
+/** Like `DeepPartial`, minus the `| undefined` it adds to list elements, which `ErgonoMockShape` rejects. */
+export type DeepPartialMock<T> = T extends Builtin
+  ? T
+  : T extends Array<infer U>
+    ? Array<DeepPartialMock<U>>
+    : T extends object
+      ? { [K in keyof T]?: DeepPartialMock<T[K]> }
+      : T;
 
 const seed = 'seed';
 

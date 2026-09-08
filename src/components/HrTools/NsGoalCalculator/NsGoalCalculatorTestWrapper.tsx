@@ -7,7 +7,11 @@ import {
 import { SnackbarProvider } from 'notistack';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
-import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import {
+  DeepPartialMock,
+  GqlMockedProvider,
+  gqlMock,
+} from '__tests__/util/graphqlMocking';
 import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
@@ -53,7 +57,7 @@ export interface NsGoalCalculatorTestWrapperProps {
    * which share the query.
    */
   goalCalculationMock?:
-    | DeepPartial<NewStaffGoalCalculationQuery>
+    | DeepPartialMock<NewStaffGoalCalculationQuery>
     | ApolloErgonoMockMap;
   previewMock?: DeepPartial<PreviewNewStaffGoalCalculationMutation>;
   onCall?: ErgonoMockedProviderProps['onCall'];
@@ -79,8 +83,7 @@ export const NsGoalCalculatorTestWrapper: React.FC<
         }>
           mocks={{
             GoalCalculatorConstants: { constant: constantsMock },
-            // DeepPartial widens list fields to (T | undefined)[], which ErgonoMockShape rejects.
-            NewStaffGoalCalculation: goalCalculationMock as ApolloErgonoMockMap,
+            NewStaffGoalCalculation: goalCalculationMock,
             PreviewNewStaffGoalCalculation: previewMock ?? {},
           }}
           onCall={onCall}
