@@ -220,10 +220,14 @@ describe('GoalSettingsView', () => {
       userEvent.click(getByRole('button', { name: 'Review Your Goal' }));
       userEvent.click(await findByRole('button', { name: 'Keep Editing' }));
 
-      await waitFor(() =>
-        expect(
-          queryByRole('heading', { name: 'Unsaved Changes' }),
-        ).not.toBeInTheDocument(),
+      // waitFor defaults to 1s, which the dialog's close transition can exceed
+      // on slower CI hardware.
+      await waitFor(
+        () =>
+          expect(
+            queryByRole('heading', { name: 'Unsaved Changes' }),
+          ).not.toBeInTheDocument(),
+        { timeout: 10000 },
       );
       expect(salary).toHaveValue(1);
       expect(push).not.toHaveBeenCalled();
