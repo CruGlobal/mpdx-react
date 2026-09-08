@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, Stack } from '@mui/material';
+import { Alert, Box, Button, Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useAssignCoachToNewStaffCohortAttendeeMutation } from 'src/components/HrTools/MpdGoalAdmin/AssignCoach.generated';
 import { AssignCoachModal } from 'src/components/HrTools/Shared/AssignCoach/AssignCoachModal';
@@ -29,6 +29,7 @@ export const GoalSettingsCoachField: React.FC<GoalSettingsCoachFieldProps> = ({
   const { t } = useTranslation();
   const [picking, setPicking] = useState(false);
   const [removing, setRemoving] = useState(false);
+  const [removeFailed, setRemoveFailed] = useState(false);
 
   // Lazy: most visits to Staff Details never open the picker, and the list costs an OneApp lookup.
   const [loadCoaches, { data, loading, error, refetch }] =
@@ -57,15 +58,22 @@ export const GoalSettingsCoachField: React.FC<GoalSettingsCoachFieldProps> = ({
     });
   };
 
-  const handleRemoveCoach = () =>
-    unassignCoach({
-      variables: {
-        input: {
-          cohortId: attendee.newStaffCohortId,
-          attendeeIds: [attendee.id],
+  const handleRemoveCoach = async () => {
+    setRemoveFailed(false);
+    try {
+      await unassignCoach({
+        variables: {
+          input: {
+            cohortId: attendee.newStaffCohortId,
+            attendeeIds: [attendee.id],
+          },
         },
-      },
-    });
+      });
+    } catch {
+      // Confirmation closes whatever the outcome, so the failure has to show outside it.
+      setRemoveFailed(true);
+    }
+  };
 
   return (
     <Box>
@@ -100,6 +108,11 @@ export const GoalSettingsCoachField: React.FC<GoalSettingsCoachFieldProps> = ({
           handleClose={() => setPicking(false)}
           handleAssignCoach={handleAssignCoach}
         />
+      )}
+      {removeFailed && (
+        <Alert severity="error" sx={{ mt: 1 }}>
+          {t('The coach could not be removed. Please try again.')}
+        </Alert>
       )}
       <Confirmation
         isOpen={removing}

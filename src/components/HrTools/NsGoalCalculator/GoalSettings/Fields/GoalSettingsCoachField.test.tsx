@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { assignableCoachesMock } from 'src/components/HrTools/MpdGoalAdmin/mpdGoalAdminMocks';
@@ -33,22 +34,27 @@ const coachedAttendee: GoalSettingsAttendee = {
 
 interface TestComponentProps {
   household?: GoalSettingsAttendee;
+  mocks?: ApolloErgonoMockMap;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   household = attendee,
+  mocks = {},
 }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
       <GqlMockedProvider<{
         NewStaffCohortAttendeeAssignableCoaches: NewStaffCohortAttendeeAssignableCoachesQuery;
       }>
-        mocks={{
-          NewStaffCohortAttendeeAssignableCoaches: {
-            newStaffCohortAssignableCoaches:
-              assignableCoachesMock.newStaffCohortAssignableCoaches,
-          },
-        }}
+        mocks={
+          {
+            NewStaffCohortAttendeeAssignableCoaches: {
+              newStaffCohortAssignableCoaches:
+                assignableCoachesMock.newStaffCohortAssignableCoaches,
+            },
+            ...mocks,
+          } as ApolloErgonoMockMap
+        }
         onCall={mutationSpy}
       >
         <GoalSettingsCoachField
@@ -152,5 +158,28 @@ describe('GoalSettingsCoachField', () => {
         attendeeIds: ['attendee-1'],
       });
     });
+  });
+
+  it('reports a failed removal instead of closing on a silent failure', async () => {
+    const { getByRole, findByRole } = render(
+      <TestComponent
+        household={coachedAttendee}
+        mocks={{
+          UnassignCoachFromNewStaffCohortAttendee: {
+            unassignCoachFromNewStaffCohortAttendee: () => {
+              throw new Error('Not authorized');
+            },
+          },
+        }}
+      />,
+    );
+
+    await userEvent.click(getByRole('button', { name: 'Remove' }));
+    await userEvent.click(getByRole('button', { name: 'Yes' }));
+
+    expect(await findByRole('alert')).toHaveTextContent(
+      'The coach could not be removed. Please try again.',
+    );
+    expect(getByRole('textbox', { name: 'Coach' })).toHaveValue('Amy Wilson');
   });
 });
