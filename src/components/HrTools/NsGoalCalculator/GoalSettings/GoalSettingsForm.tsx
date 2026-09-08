@@ -234,16 +234,13 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
                       <Button color="inherit" onClick={() => leave()}>
                         {t('Cancel')}
                       </Button>
-                      {/* Enabled while invalid so submitting can surface which
-                          required fields are still missing. */}
+                      {/* Enabled while invalid so submitting marks every field touched. */}
                       <Tooltip
                         // Without this the tooltip becomes the button's aria-label and hides its text.
                         describeChild
                         title={
                           isIncomplete
-                            ? t(
-                                'Some required fields are still missing. Save & Share to see which ones.',
-                              )
+                            ? t('Some required fields are still missing.')
                             : ''
                         }
                       >

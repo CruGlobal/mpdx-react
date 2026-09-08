@@ -498,6 +498,9 @@ describe('GoalSettingsForm', () => {
     // validateOnMount resolves after the first paint, so wait for the summary.
     const summary = await findByRole('status');
 
+    // Count-agnostic: pins that the heading renders and interpolates, without
+    // asserting translated copy.
+    expect(summary).toHaveTextContent(/\d+ field still needs a value/);
     expect(summary).toHaveTextContent('Benefits Plan is required');
     // Deduplicated, so a married household does not list the same rule twice.
     expect(summary).not.toHaveTextContent('Age is requiredAge is required');
