@@ -8,6 +8,7 @@ import {
   coachToOption,
 } from 'src/components/HrTools/Shared/AssignCoach/coachHelpers';
 import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
+import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   useNewStaffCohortAttendeeAssignableCoachesLazyQuery,
   useUnassignCoachFromNewStaffCohortAttendeeMutation,
@@ -27,6 +28,9 @@ export const GoalSettingsCoachField: React.FC<GoalSettingsCoachFieldProps> = ({
   subjectName,
 }) => {
   const { t } = useTranslation();
+  // Coaches read this page through the coaching route, but only the MPD Goals team may reassign.
+  const { data: userData } = useGetUserQuery();
+  const canEdit = userData?.user.mpdSupervisorAdmin ?? false;
   const [picking, setPicking] = useState(false);
   const [removing, setRemoving] = useState(false);
   const [removeFailed, setRemoveFailed] = useState(false);
@@ -82,16 +86,22 @@ export const GoalSettingsCoachField: React.FC<GoalSettingsCoachFieldProps> = ({
         value={coachName}
         showLabel
       />
-      <Stack direction="row" spacing={1} sx={{ mt: 0.5 }}>
-        <Button size="small" onClick={openPicker}>
-          {coach ? t('Change') : t('Assign Coach')}
-        </Button>
-        {coach && (
-          <Button size="small" color="error" onClick={() => setRemoving(true)}>
-            {t('Remove')}
+      {canEdit && (
+        <Stack direction="row" spacing={1} sx={{ mt: 0.5 }}>
+          <Button size="small" onClick={openPicker}>
+            {coach ? t('Change') : t('Assign Coach')}
           </Button>
-        )}
-      </Stack>
+          {coach && (
+            <Button
+              size="small"
+              color="error"
+              onClick={() => setRemoving(true)}
+            >
+              {t('Remove')}
+            </Button>
+          )}
+        </Stack>
+      )}
       {picking && (
         <AssignCoachModal
           subjectName={subjectName}
