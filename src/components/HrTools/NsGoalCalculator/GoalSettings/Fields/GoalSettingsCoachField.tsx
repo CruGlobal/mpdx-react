@@ -21,10 +21,7 @@ interface GoalSettingsCoachFieldProps {
   subjectName: string;
 }
 
-/**
- * The household's goals-team coach, with the assign / change / remove actions.
- * Reuses the admin table's picker so both places offer the same coach list.
- */
+/** Reuses the admin table's picker, so both places offer the same coach list. */
 export const GoalSettingsCoachField: React.FC<GoalSettingsCoachFieldProps> = ({
   attendee,
   subjectName,

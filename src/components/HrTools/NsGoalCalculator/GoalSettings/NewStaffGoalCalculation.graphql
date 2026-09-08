@@ -112,8 +112,7 @@ fragment NewStaffGoalCalculationFields on NewStaffGoalCalculation {
   # Calculation year-versioned constants set
   calculationsYear
 
-  # Attendee-sourced header and read-only rows. Null for scenario goals, and for anyone
-  # outside the MPD Goals team, so the staff member's own wizard shares this document safely.
+  # Null for scenario goals and outside the MPD Goals team, so the staff wizard shares this safely.
   newStaffCohortAttendee {
     id
     newStaffCohortId
