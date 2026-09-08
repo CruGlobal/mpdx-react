@@ -315,7 +315,7 @@ describe('useSalaryCalculations', () => {
       wrapper: ({ children }) => FormikWrapper({ children, values }),
     });
 
-    // 72000 + 0 + 10000 = 82000, over the 80000 cap; the HCM salary would have given 60000
+    // 72000 + 0 + 10000 = 82000, over the 80000 cap
     expect(result.current.requestedAnnualSalary).toBe(82000);
     expect(result.current.exceedsCap).toBe(true);
   });

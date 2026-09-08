@@ -1,39 +1,30 @@
 import React from 'react';
-import InfoIcon from '@mui/icons-material/Info';
-import { Tooltip, styled } from '@mui/material';
+import { Tooltip } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { InfoTooltipIcon } from './InfoTooltipIcon';
 import { useFormatters } from './useFormatters';
 
-const StyledInfoIcon = styled(InfoIcon)(({ theme }) => ({
-  marginLeft: theme.spacing(0.5),
-  verticalAlign: 'middle',
-  cursor: 'pointer',
-  color: theme.palette.mpdxGrayDark.main,
-  fontSize: '1rem',
-}));
-
 interface YtdAsrTooltipProps {
-  ytdAsrAmount: number;
+  unpaidAmount: number;
 }
 
 export const YtdAsrTooltip: React.FC<YtdAsrTooltipProps> = ({
-  ytdAsrAmount,
+  unpaidAmount,
 }) => {
   const { t } = useTranslation();
   const { formatCurrency } = useFormatters();
 
-  if (ytdAsrAmount <= 0) {
+  if (unpaidAmount <= 0) {
     return null;
   }
 
   return (
     <Tooltip
-      title={t(
-        'Includes {{ amount }} of pending and approved requests this year',
-        { amount: formatCurrency(ytdAsrAmount) },
-      )}
+      title={t('{{ amount }} of this is awaiting approval or payment', {
+        amount: formatCurrency(unpaidAmount),
+      })}
     >
-      <StyledInfoIcon data-testid="YtdAsrTooltip" />
+      <InfoTooltipIcon data-testid="YtdAsrTooltip" />
     </Tooltip>
   );
 };

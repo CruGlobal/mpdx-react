@@ -58,6 +58,7 @@ fragment CalculationFields on SalaryRequestCalculations {
   requestedGross
   requestedYtdGross
   ytdAsrAmount
+  unpaidAsrAmount
   requestedAboveMinimum
   requestedMha
   requestedAboveMha

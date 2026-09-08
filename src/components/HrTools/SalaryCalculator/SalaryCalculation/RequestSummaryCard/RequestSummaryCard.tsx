@@ -87,7 +87,9 @@ export const RequestSummaryCard: React.FC = () => {
     (calcs?.contributing403bAmount ?? 0) +
     (spouseCalcs?.contributing403bAmount ?? 0);
   const asrAmount = calcs?.ytdAsrAmount ?? 0;
+  const unpaidAsrAmount = calcs?.unpaidAsrAmount ?? 0;
   const spouseAsrAmount = spouseCalcs?.ytdAsrAmount ?? 0;
+  const spouseUnpaidAsrAmount = spouseCalcs?.unpaidAsrAmount ?? 0;
 
   const categories: Category[] = [
     {
@@ -186,8 +188,8 @@ export const RequestSummaryCard: React.FC = () => {
           >
             <span id={requestedVsMaxId}>
               {hasSpouse
-                ? t('Combined Gross Salary')
-                : t('Your Gross Requested Salary')}{' '}
+                ? t('Combined Total Gross Salary This Year')
+                : t('Total Gross Salary This Year')}{' '}
               / {t('Max Allowable Salary')}
             </span>
             <span
@@ -319,12 +321,12 @@ export const RequestSummaryCard: React.FC = () => {
                 </TableCell>
                 <TableCell>
                   {formatCurrency(asrAmount)}
-                  <YtdAsrTooltip ytdAsrAmount={asrAmount} />
+                  <YtdAsrTooltip unpaidAmount={unpaidAsrAmount} />
                 </TableCell>
                 {hasSpouse && (
                   <TableCell>
                     {formatCurrency(spouseAsrAmount)}
-                    <YtdAsrTooltip ytdAsrAmount={spouseAsrAmount} />
+                    <YtdAsrTooltip unpaidAmount={spouseUnpaidAsrAmount} />
                   </TableCell>
                 )}
               </TableRow>

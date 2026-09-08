@@ -23,6 +23,7 @@ const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
       requestedGross: 10004,
       requestedYtdGross: 10005,
       ytdAsrAmount: 1,
+      unpaidAsrAmount: 1,
       effectiveCap: 10006,
     },
     spouseCalculations: {
@@ -31,6 +32,7 @@ const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
       requestedGross: 20004,
       requestedYtdGross: 20005,
       ytdAsrAmount: 1,
+      unpaidAsrAmount: 1,
       effectiveCap: 20006,
     },
   };
@@ -172,7 +174,7 @@ This may affect your selected effective date.',
       expect(
         getByTestId('RequestSummaryCard-requestedVsMax'),
       ).toHaveTextContent(
-        'Combined Gross Salary / Max Allowable Salary$30,010.00 / $30,012.00',
+        'Combined Total Gross Salary This Year / Max Allowable Salary$30,010.00 / $30,012.00',
       ),
     );
   });
@@ -288,12 +290,12 @@ This may affect your selected effective date.',
       );
     });
 
-    it('explains the pending and approved ASRs behind the amount', async () => {
+    it('explains how much of the amount is still unpaid', async () => {
       const { findAllByTestId, findByRole } = render(
         <TestComponent
           salaryRequestMock={{
-            calculations: { ytdAsrAmount: 5000 },
-            spouseCalculations: { ytdAsrAmount: 3000 },
+            calculations: { ytdAsrAmount: 5000, unpaidAsrAmount: 2000 },
+            spouseCalculations: { ytdAsrAmount: 3000, unpaidAsrAmount: 1000 },
           }}
         />,
       );
@@ -302,18 +304,21 @@ This may affect your selected effective date.',
       expect(icon.closest('tr')).toHaveTextContent(
         'Additional Salary Requested This Year',
       );
+      expect(icon.closest('tr')).toHaveTextContent('$5,000.00');
 
       userEvent.hover(icon);
       expect(await findByRole('tooltip')).toHaveTextContent(
-        'Includes $5,000.00 of pending and approved requests this year',
+        '$2,000.00 of this is awaiting approval or payment',
       );
     });
 
-    it('omits the ASR explanation when there are none this year', async () => {
+    it('omits the explanation when nothing is unpaid', async () => {
       const { findByRole, queryByTestId } = render(
         <TestComponent
           hasSpouse={false}
-          salaryRequestMock={{ calculations: { ytdAsrAmount: 0 } }}
+          salaryRequestMock={{
+            calculations: { ytdAsrAmount: 5000, unpaidAsrAmount: 0 },
+          }}
         />,
       );
 
@@ -348,7 +353,7 @@ This may affect your selected effective date.',
         expect(
           getByTestId('RequestSummaryCard-requestedVsMax'),
         ).toHaveTextContent(
-          'Your Gross Requested Salary / Max Allowable Salary$10,005.00 / $10,006.00',
+          'Total Gross Salary This Year / Max Allowable Salary$10,005.00 / $10,006.00',
         ),
       );
 
