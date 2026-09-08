@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { act, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import {
@@ -54,9 +55,11 @@ const renderFailingToolbar = () =>
           }}
           onCall={mutationSpy}
         >
-          <MpdGoalAdminProvider>
-            <Capture />
-          </MpdGoalAdminProvider>
+          <TestRouter>
+            <MpdGoalAdminProvider>
+              <Capture />
+            </MpdGoalAdminProvider>
+          </TestRouter>
         </GqlMockedProvider>
       </SnackbarProvider>
     </ThemeProvider>,
@@ -95,9 +98,11 @@ const renderToolbar = ({
           }}
           onCall={mutationSpy}
         >
-          <MpdGoalAdminProvider>
-            <Capture />
-          </MpdGoalAdminProvider>
+          <TestRouter>
+            <MpdGoalAdminProvider>
+              <Capture />
+            </MpdGoalAdminProvider>
+          </TestRouter>
         </GqlMockedProvider>
       </SnackbarProvider>
     </ThemeProvider>,

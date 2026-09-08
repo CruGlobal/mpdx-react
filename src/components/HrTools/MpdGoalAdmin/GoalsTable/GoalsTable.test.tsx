@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { act, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import {
@@ -71,7 +72,9 @@ const Providers: React.FC<{
         }}
         onCall={mutationSpy}
       >
-        <MpdGoalAdminProvider>{children}</MpdGoalAdminProvider>
+        <TestRouter>
+          <MpdGoalAdminProvider>{children}</MpdGoalAdminProvider>
+        </TestRouter>
       </GqlMockedProvider>
     </SnackbarProvider>
   </ThemeProvider>
@@ -355,6 +358,16 @@ describe('GoalsTable', () => {
           },
         },
       ),
+    );
+  });
+
+  it("links View/Edit to the row's Staff Details page", async () => {
+    const { findAllByRole } = renderTable();
+
+    const [viewEdit] = await findAllByRole('link', { name: /View\/Edit/ });
+    expect(viewEdit).toHaveAttribute(
+      'href',
+      '/accountLists/account-list-1/hrTools/mpdGoalAdmin/staff/account-list-row-1',
     );
   });
 

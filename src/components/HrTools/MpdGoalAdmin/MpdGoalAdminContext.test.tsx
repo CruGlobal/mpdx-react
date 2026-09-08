@@ -1,6 +1,7 @@
 import React from 'react';
 import { Operation } from '@apollo/client';
 import { act, renderHook, waitFor } from '@testing-library/react';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import {
   AssignCoachToNewStaffCohortAttendeeMutation,
@@ -61,7 +62,9 @@ const makeWrapper = (
         }}
         onCall={mutationSpy}
       >
-        <MpdGoalAdminProvider>{children}</MpdGoalAdminProvider>
+        <TestRouter>
+          <MpdGoalAdminProvider>{children}</MpdGoalAdminProvider>
+        </TestRouter>
       </GqlMockedProvider>
     );
   };
@@ -104,6 +107,7 @@ describe('MpdGoalAdminContext', () => {
 
     expect(result.current.filteredRows[0]).toEqual({
       id: 'row-1',
+      accountListId: 'account-list-row-1',
       name: 'John & Jane Doe',
       ministry: 'Campus',
       geography: 'Orlando, FL',

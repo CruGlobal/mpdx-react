@@ -133,6 +133,7 @@ const attendee = (
   overrides: Partial<AttendeeNode> = {},
 ): AttendeeNode => ({
   id,
+  accountListId: `account-list-${id}`,
   displayName,
   familyStatus: NewStaffQuestionnaireMaritalStatusEnum.Married,
   geographicLocation: 'Orlando, FL',

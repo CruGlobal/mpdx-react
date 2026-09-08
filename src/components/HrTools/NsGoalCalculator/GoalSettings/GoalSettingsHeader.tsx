@@ -2,10 +2,11 @@ import React, { useId, useMemo } from 'react';
 import LocationOn from '@mui/icons-material/LocationOnOutlined';
 import MailOutline from '@mui/icons-material/MailOutline';
 import Phone from '@mui/icons-material/Phone';
-import { Box, Chip, Grid, Stack, Typography } from '@mui/material';
+import { Box, Grid, Stack, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { CalculationYearTooltip } from '../../Shared/CalculationYearTooltip';
+import { StatusChip } from '../../Shared/StatusChip';
 import { CoordinatorList } from './Fields/CoordinatorList';
 import { GoalSettingsPlaceholder } from './Fields/GoalSettingsPlaceholder';
 import { GoalSettingsSelect, SelectOption } from './Fields/GoalSettingsSelect';
@@ -117,26 +118,11 @@ export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
       >
         <Typography variant="h5">{householdTitle}</Typography>
         {isScenario ? (
-          <Chip
-            color="info"
-            variant="outlined"
-            label={t('Scenario Only')}
-            size="small"
-          />
+          <StatusChip color="info" label={t('Scenario Only')} />
         ) : isComplete ? (
-          <Chip
-            color="success"
-            variant="outlined"
-            label={t('Complete')}
-            size="small"
-          />
+          <StatusChip color="success" label={t('Complete')} />
         ) : (
-          <Chip
-            color="warning"
-            variant="outlined"
-            label={t('Incomplete')}
-            size="small"
-          />
+          <StatusChip color="warning" label={t('Incomplete')} />
         )}
       </Stack>
       <Stack

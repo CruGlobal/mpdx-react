@@ -13,24 +13,30 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';
 import { getQueryParam } from 'src/lib/queryParam';
 
-export const NsScenarioGoalPage: React.FC = () => {
+/** Staff Details: one training attendee's goal, opened from the admin table. */
+export const NsStaffDetailsPage: React.FC = () => {
   const { t } = useTranslation();
   const appName = getAppName();
   const accountListId = useAccountListId();
   const { query } = useRouter();
-  const scenarioGoalId = getQueryParam(query, 'scenarioGoalId');
+  const staffAccountListId = getQueryParam(query, 'staffAccountListId');
+  // Carried through so Back to Table reselects the cohort this goal came from.
+  const cohortId = getQueryParam(query, 'cohortId');
 
   return (
     <>
       <Head>
-        <title>{`${appName} | ${t('New Staff Goal Calculator')}`}</title>
+        <title>{`${appName} | ${t(
+          'HR Tools | MPD Goal Calculator | Staff Details',
+        )}`}</title>
       </Head>
-      {scenarioGoalId ? (
+      {staffAccountListId ? (
         <GoalSettingsView
-          scenarioGoalId={scenarioGoalId}
+          accountListId={staffAccountListId}
           returnUrl={mpdGoalAdminUrl(
             accountListId,
-            MpdGoalAdminTabEnum.ScenarioGoals,
+            MpdGoalAdminTabEnum.ActiveGoals,
+            cohortId,
           )}
         />
       ) : (
@@ -42,4 +48,4 @@ export const NsScenarioGoalPage: React.FC = () => {
 
 export const getServerSideProps = ensureSessionAndAccountList;
 
-export default NsScenarioGoalPage;
+export default NsStaffDetailsPage;

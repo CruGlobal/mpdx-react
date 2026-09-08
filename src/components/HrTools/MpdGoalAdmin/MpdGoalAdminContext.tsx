@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React, {
   createContext,
   useCallback,
@@ -11,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
+import { getQueryParam } from 'src/lib/queryParam';
 import {
   useAssignCoachToNewStaffCohortAttendeeMutation,
   useNewStaffCohortAssignableCoachesQuery,
@@ -30,6 +32,7 @@ import {
   attendeeToRow,
   coachToOption,
   cohortNodeToCohort,
+  parseMpdGoalAdminTab,
   trainingCostsToAttributes,
 } from './mpdGoalAdminHelpers';
 
@@ -81,8 +84,19 @@ export const MpdGoalAdminProvider: React.FC<{
 }> = ({ children }) => {
   const locale = useLocale();
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<MpdGoalAdminTabEnum>(
-    MpdGoalAdminTabEnum.ActiveGoals,
+  const router = useRouter();
+  // In the URL rather than component state so Goal Settings can link back to
+  // the tab the goal was opened from.
+  const activeTab = parseMpdGoalAdminTab(getQueryParam(router.query, 'tab'));
+  const setActiveTab = useCallback(
+    (tab: MpdGoalAdminTabEnum): void => {
+      router.push(
+        { pathname: router.pathname, query: { ...router.query, tab } },
+        undefined,
+        { shallow: true },
+      );
+    },
+    [router],
   );
   const [selectedCohortId, setSelectedCohortId] = useState<string>('');
   const [search, setSearch] = useState('');
@@ -121,11 +135,16 @@ export const MpdGoalAdminProvider: React.FC<{
   );
 
   // The cohort list arrives after mount, so the initial selection happens here.
+  // A `cohortId` in the URL wins over the first-cohort default, so returning
+  // from Goal Settings lands on the cohort the goal was opened from.
   useEffect(() => {
-    if (cohorts.length && !cohorts.some(({ id }) => id === selectedCohortId)) {
-      selectCohort(cohorts[0].id);
+    if (!cohorts.length || cohorts.some(({ id }) => id === selectedCohortId)) {
+      return;
     }
-  }, [cohorts, selectedCohortId, selectCohort]);
+    const urlCohortId = getQueryParam(router.query, 'cohortId');
+    const requested = cohorts.find(({ id }) => id === urlCohortId);
+    selectCohort(requested?.id ?? cohorts[0].id);
+  }, [cohorts, selectedCohortId, selectCohort, router.query]);
 
   const {
     data: attendeesData,
@@ -295,6 +314,7 @@ export const MpdGoalAdminProvider: React.FC<{
     }),
     [
       activeTab,
+      setActiveTab,
       cohorts,
       selectedCohortId,
       selectCohort,

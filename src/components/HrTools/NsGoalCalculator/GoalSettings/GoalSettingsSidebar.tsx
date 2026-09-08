@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import React from 'react';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
@@ -19,6 +20,7 @@ import {
   Theme,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useGoalSettingsNavigation } from './GoalSettingsNavigationContext';
 import {
   GoalSettingsViewEnum,
   useGoalSettingsView,
@@ -73,6 +75,16 @@ export const GoalSettingsSidebar: React.FC<GoalSettingsSidebarProps> = ({
 }) => {
   const { t } = useTranslation();
   const { view, setView } = useGoalSettingsView();
+  const { returnUrl, returnLabel, leave } = useGoalSettingsNavigation();
+
+  // Switching view unmounts the form, so it needs the same unsaved-edits
+  // confirmation as leaving the page. Re-selecting the current view is not an
+  // exit and must not prompt.
+  const selectView = (next: GoalSettingsViewEnum) => () => {
+    if (next !== view) {
+      leave(() => setView(next));
+    }
+  };
 
   return (
     <List disablePadding component="nav" aria-label={t('Goal navigation')}>
@@ -89,28 +101,39 @@ export const GoalSettingsSidebar: React.FC<GoalSettingsSidebarProps> = ({
           </IconButton>
         }
       >
-        {/* TODO(MPDX-9821): Wire up the Back to Table destination. */}
-        <ListItemButton sx={{ color: 'primary.main' }}>
-          <ListItemIcon sx={{ minWidth: 'auto', mr: 1, color: 'inherit' }}>
-            <ChevronLeftIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText
-            primary={t('Back to Table')}
-            slotProps={{
-              primary: {
-                variant: 'body2',
-                sx: { textTransform: 'uppercase' },
-              },
+        {returnLabel && returnUrl && (
+          // A real link so it is announced as one and can be opened in a new
+          // tab; the plain click still routes through the unsaved-edits guard.
+          <ListItemButton
+            component={NextLink}
+            href={returnUrl}
+            sx={{ color: 'primary.main' }}
+            onClick={(event: React.MouseEvent) => {
+              event.preventDefault();
+              leave();
             }}
-          />
-        </ListItemButton>
+          >
+            <ListItemIcon sx={{ minWidth: 'auto', mr: 1, color: 'inherit' }}>
+              <ChevronLeftIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText
+              primary={returnLabel}
+              slotProps={{
+                primary: {
+                  variant: 'body2',
+                  sx: { textTransform: 'uppercase' },
+                },
+              }}
+            />
+          </ListItemButton>
+        )}
       </ListItem>
 
       <Divider />
 
       <NavItem
         current={view === GoalSettingsViewEnum.GoalSettings}
-        onSelect={() => setView(GoalSettingsViewEnum.GoalSettings)}
+        onSelect={selectView(GoalSettingsViewEnum.GoalSettings)}
         icon={<SettingsIcon />}
         label={t('Goal Settings')}
         secondary={t('Editable by Admins, Coordinators, and Coaches')}
@@ -140,14 +163,14 @@ export const GoalSettingsSidebar: React.FC<GoalSettingsSidebarProps> = ({
           <List disablePadding>
             <NavItem
               current={view === GoalSettingsViewEnum.ReviewYourGoal}
-              onSelect={() => setView(GoalSettingsViewEnum.ReviewYourGoal)}
+              onSelect={selectView(GoalSettingsViewEnum.ReviewYourGoal)}
               label={t('Review Your Goal')}
               sx={{ pl: 6 }}
             />
             {!isScenario && (
               <NavItem
                 current={view === GoalSettingsViewEnum.PresentYourGoal}
-                onSelect={() => setView(GoalSettingsViewEnum.PresentYourGoal)}
+                onSelect={selectView(GoalSettingsViewEnum.PresentYourGoal)}
                 label={t('Presenting Your Goal')}
                 sx={{ pl: 6 }}
               />
