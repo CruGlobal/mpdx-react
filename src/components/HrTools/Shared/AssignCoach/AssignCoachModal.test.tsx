@@ -149,6 +149,31 @@ describe('AssignCoachModal', () => {
     expect(alert).toHaveTextContent("James O'Connor");
   });
 
+  it('warns without a count or a list when the subject is the only staff reassigned', () => {
+    const { getByRole } = render(
+      <TestComponent reassignedNames={['Carlos & Michaela Everts']} />,
+    );
+
+    const alert = getByRole('alert');
+    expect(alert).toHaveTextContent(
+      'A coach is already assigned. Assigning a new coach will replace the current coach.',
+    );
+    expect(alert).not.toHaveTextContent('Carlos & Michaela Everts');
+    expect(alert.querySelector('li')).not.toBeInTheDocument();
+  });
+
+  it('still counts and lists a lone reassignment from a wider selection', () => {
+    const { getByRole } = render(
+      <TestComponent reassignedNames={['John & Jane Doe']} />,
+    );
+
+    const alert = getByRole('alert');
+    expect(alert).toHaveTextContent(
+      '1 of the selected staff already have a coach.',
+    );
+    expect(alert).toHaveTextContent('John & Jane Doe');
+  });
+
   it('does not warn when no selected staff already have a coach', () => {
     const { queryByRole } = render(<TestComponent reassignedNames={[]} />);
 

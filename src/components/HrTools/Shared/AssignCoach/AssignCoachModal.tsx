@@ -31,7 +31,7 @@ interface AssignCoachModalProps {
   coachesError?: ApolloError;
   /** Retries the coach list from the error state. */
   onRetryCoaches?: () => void;
-  /** Staff who already have a coach; when non-empty a reassignment warning lists them. */
+  /** Staff who already have a coach; when non-empty a reassignment warning names them. */
   reassignedNames?: string[];
   handleClose: () => void;
   handleAssignCoach: (coachId: string) => Promise<void> | void;
@@ -58,6 +58,9 @@ export const AssignCoachModal: React.FC<AssignCoachModalProps> = ({
   const noCoaches = !loading && !coachesError && coaches.length === 0;
   // Without a picker there is nothing to submit, so Save could only ever be dead.
   const canPickCoach = !coachesError && !noCoaches;
+  // The title already names a lone subject, so counting and listing them only repeats it.
+  const onlySubjectReassigned =
+    reassignedNames?.length === 1 && reassignedNames[0] === subjectName;
 
   const onSubmit = async ({ coachId }: AssignCoachFormValues) => {
     setFailed(false);
@@ -99,22 +102,32 @@ export const AssignCoachModal: React.FC<AssignCoachModalProps> = ({
               )}
               {reassignedNames && reassignedNames.length > 0 && (
                 <Alert severity="warning" sx={{ mb: 2 }}>
-                  <Typography variant="body2" fontWeight="bold">
-                    {t(
-                      '{{reassigned}} of the selected staff already have a coach.',
-                      { reassigned: reassignedNames.length },
-                    )}
-                  </Typography>
-                  <Typography variant="body2">
-                    {t(
-                      'Assigning a new coach will replace the current coach for the following staff.',
-                    )}
-                  </Typography>
-                  <Box component="ul" sx={{ m: 0, mt: 1, pl: 3 }}>
-                    {reassignedNames.map((name) => (
-                      <li key={name}>{name}</li>
-                    ))}
-                  </Box>
+                  {onlySubjectReassigned ? (
+                    <Typography variant="body2">
+                      {t(
+                        'A coach is already assigned. Assigning a new coach will replace the current coach.',
+                      )}
+                    </Typography>
+                  ) : (
+                    <>
+                      <Typography variant="body2" fontWeight="bold">
+                        {t(
+                          '{{reassigned}} of the selected staff already have a coach.',
+                          { reassigned: reassignedNames.length },
+                        )}
+                      </Typography>
+                      <Typography variant="body2">
+                        {t(
+                          'Assigning a new coach will replace the current coach for the following staff.',
+                        )}
+                      </Typography>
+                      <Box component="ul" sx={{ m: 0, mt: 1, pl: 3 }}>
+                        {reassignedNames.map((name) => (
+                          <li key={name}>{name}</li>
+                        ))}
+                      </Box>
+                    </>
+                  )}
                 </Alert>
               )}
               {coachesError ? (
