@@ -23,10 +23,14 @@ export const getDotColor = (
       }
     // fallthrough
     case 'complete':
-      if (isApproved) {
+      if (status === AsrStatusEnum.ApprovedAndPaid) {
         return 'success.main';
       }
-      if (status === AsrStatusEnum.ActionRequired) {
+      // ASR is approved but not paid, so the step is incomplete
+      if (
+        status === AsrStatusEnum.ApprovedNotPaid ||
+        status === AsrStatusEnum.ActionRequired
+      ) {
         return 'warning.main';
       }
     // fallthrough
