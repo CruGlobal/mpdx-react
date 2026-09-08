@@ -288,11 +288,18 @@ describe('TransfersPage', () => {
   it('should render cards and transfer tables', async () => {
     const { findAllByRole } = render(<Components />);
 
+    // findBy* waits on waitFor's own 1s default, independent of the per-test
+    // budget. This page mounts two full tables, which exceeds 1s on a loaded
+    // CI shard.
     expect(
-      await findAllByRole('button', { name: 'TRANSFER FROM' }),
+      await findAllByRole(
+        'button',
+        { name: 'TRANSFER FROM' },
+        { timeout: 10000 },
+      ),
     ).toHaveLength(2);
 
-    const tables = await findAllByRole('grid');
+    const tables = await findAllByRole('grid', {}, { timeout: 10000 });
     expect(tables.length).toBe(2);
 
     expect(within(tables[0]).getAllByRole('columnheader')).toHaveLength(9);
