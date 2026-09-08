@@ -53,12 +53,15 @@ export const NsoInformationSection: React.FC<GoalSettingsSectionProps> = ({
     <Section title={t('NSO Information')}>
       <ColumnHeaderRow columns={[sharedHeader]} />
 
-      <FieldRow label={t('Training')}>
-        <GoalSettingsReadOnlyField
-          label={t('Training')}
-          value={attendee?.cohortName ?? ''}
-        />
-      </FieldRow>
+      {/* Attendee is null for scenario goals and non-admins, leaving nothing to show. */}
+      {attendee?.cohortName && (
+        <FieldRow label={t('Training')}>
+          <GoalSettingsReadOnlyField
+            label={t('Training')}
+            value={attendee.cohortName}
+          />
+        </FieldRow>
+      )}
 
       <FieldRow label={t('Housing')}>
         <GoalSettingsSelect
