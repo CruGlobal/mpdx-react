@@ -10,6 +10,7 @@ import {
 import {
   NewStaffCohortAttendeesQuery,
   NewStaffCohortsQuery,
+  PrintNewStaffCohortGoalsMutation,
   RunAndSendNewStaffCohortMutation,
   UpdateNewStaffCohortMutation,
 } from './NewStaffCohorts.generated';
@@ -211,6 +212,15 @@ export const runAndSentMock = (
       runAndSendBlockers: [],
     },
   },
+});
+
+/** `downloadUrl` is null when nothing was printable, which is not an error. */
+export const printedGoalsMock = (
+  printedCount: number,
+  skippedCount = 0,
+  downloadUrl: string | null = 'https://api.mpdx.org/exports/token-1.pdf',
+): PrintNewStaffCohortGoalsMutation => ({
+  printNewStaffCohortGoals: { downloadUrl, printedCount, skippedCount },
 });
 
 /** The picker's options; ids match the coaches the attendee fixtures carry. */

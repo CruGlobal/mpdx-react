@@ -10,23 +10,26 @@ import { MpdGoalAdminProvider, useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import {
   NewStaffCohortAttendeesQuery,
   NewStaffCohortsQuery,
+  PrintNewStaffCohortGoalsMutation,
   UpdateNewStaffCohortMutation,
 } from '../NewStaffCohorts.generated';
 import {
   attendeesMock,
   cohortsMock,
+  printedGoalsMock,
   trainingCosts,
   updatedCohortMock,
 } from '../mpdGoalAdminMocks';
 import { PrintCohortGoalsButton } from './PrintCohortGoalsButton';
-import { downloadPdf, generateCohortGoalsPdf } from './printCohortGoalsPdf';
+import { downloadPdf, fetchCohortGoalsPdf } from './printCohortGoalsPdf';
 
 jest.mock('./printCohortGoalsPdf');
 
-const generateMock = generateCohortGoalsPdf as jest.MockedFunction<
-  typeof generateCohortGoalsPdf
+const fetchPdfMock = fetchCohortGoalsPdf as jest.MockedFunction<
+  typeof fetchCohortGoalsPdf
 >;
 const downloadMock = downloadPdf as jest.MockedFunction<typeof downloadPdf>;
+const mutationSpy = jest.fn();
 
 // Test harness exposing context so we can switch cohorts.
 let ctx: ReturnType<typeof useMpdGoalAdmin>;
@@ -35,7 +38,9 @@ const Capture: React.FC = () => {
   return <PrintCohortGoalsButton />;
 };
 
-const renderButton = () =>
+const renderButton = (
+  printGoals: PrintNewStaffCohortGoalsMutation = printedGoalsMock(3),
+) =>
   render(
     <ThemeProvider theme={theme}>
       <SnackbarProvider>
@@ -43,12 +48,15 @@ const renderButton = () =>
           NewStaffCohorts: NewStaffCohortsQuery;
           NewStaffCohortAttendees: NewStaffCohortAttendeesQuery;
           UpdateNewStaffCohort: UpdateNewStaffCohortMutation;
+          PrintNewStaffCohortGoals: PrintNewStaffCohortGoalsMutation;
         }>
           mocks={{
             NewStaffCohorts: cohortsMock,
             NewStaffCohortAttendees: attendeesMock(),
             UpdateNewStaffCohort: updatedCohortMock('spring-nso-2027'),
+            PrintNewStaffCohortGoals: printGoals,
           }}
+          onCall={mutationSpy}
         >
           <TestRouter>
             <MpdGoalAdminProvider>
@@ -66,7 +74,7 @@ const waitForCohorts = () =>
 
 describe('PrintCohortGoalsButton', () => {
   beforeEach(() => {
-    generateMock.mockResolvedValue('blob:mock-pdf');
+    fetchPdfMock.mockResolvedValue('blob:goals-pdf');
   });
 
   it('is disabled with an explanation until the cohort has training costs', async () => {
@@ -109,29 +117,88 @@ describe('PrintCohortGoalsButton', () => {
     expect(getByRole('button', { name: 'Print Matching' })).toBeInTheDocument();
   });
 
-  it('generates the cohort PDF and downloads it', async () => {
+  it('prints the whole cohort and downloads the worksheets', async () => {
     const { getByRole } = renderButton();
     await waitForCohorts();
     userEvent.click(getByRole('button', { name: 'Print All' }));
 
     await waitFor(() =>
       expect(downloadMock).toHaveBeenCalledWith(
-        'blob:mock-pdf',
+        'blob:goals-pdf',
         'MPD Goals - Fall NSO 2026.pdf',
       ),
     );
-    expect(generateMock).toHaveBeenCalledWith(
-      expect.objectContaining({ id: 'fall-nso-2026' }),
-      expect.arrayContaining([
-        expect.objectContaining({ name: 'John & Jane Doe' }),
-      ]),
+    expect(fetchPdfMock).toHaveBeenCalledWith(
+      'https://api.mpdx.org/exports/token-1.pdf',
+      'apiToken',
     );
     expect(getByRole('button', { name: 'Print All' })).toBeEnabled();
   });
 
-  it('disables the button and shows a spinner while generating', async () => {
+  // filteredRows holds only the pages fetched so far, so ids could print a subset of the training.
+  it('omits attendeeIds when unsearched so the server prints every household', async () => {
+    const { getByRole } = renderButton();
+    await waitForCohorts();
+    userEvent.click(getByRole('button', { name: 'Print All' }));
+
+    await waitFor(() => expect(downloadMock).toHaveBeenCalled());
+    expect(mutationSpy).toHaveGraphqlOperation('PrintNewStaffCohortGoals', {
+      input: { cohortId: 'fall-nso-2026' },
+    });
+    const [{ operation }] = mutationSpy.mock.calls.find(
+      ([{ operation }]) =>
+        operation.operationName === 'PrintNewStaffCohortGoals',
+    );
+    expect(operation.variables.input).not.toHaveProperty('attendeeIds');
+  });
+
+  it('scopes the print to the matching rows while a search is active', async () => {
+    const { getByRole } = renderButton();
+    await waitForCohorts();
+    await waitFor(() => expect(ctx.filteredRows).not.toHaveLength(0));
+    const matchingIds = ctx.filteredRows.map((row) => row.id);
+
+    act(() => ctx.setSearch('john'));
+    userEvent.click(getByRole('button', { name: 'Print Matching' }));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('PrintNewStaffCohortGoals', {
+        input: { cohortId: 'fall-nso-2026', attendeeIds: matchingIds },
+      }),
+    );
+  });
+
+  it('warns about households left out for having no goal calculation', async () => {
+    const { getByRole, findByText } = renderButton(printedGoalsMock(3, 2));
+    await waitForCohorts();
+    userEvent.click(getByRole('button', { name: 'Print All' }));
+
+    expect(
+      await findByText(
+        '2 households have no MPD goal calculation yet and were left out.',
+      ),
+    ).toBeInTheDocument();
+    expect(downloadMock).toHaveBeenCalled();
+  });
+
+  it('reports that nothing was printable instead of downloading an empty file', async () => {
+    const { getByRole, findByText } = renderButton(
+      printedGoalsMock(0, 4, null),
+    );
+    await waitForCohorts();
+    userEvent.click(getByRole('button', { name: 'Print All' }));
+
+    expect(
+      await findByText('No MPD goals are ready to print.'),
+    ).toBeInTheDocument();
+    expect(fetchPdfMock).not.toHaveBeenCalled();
+    expect(downloadMock).not.toHaveBeenCalled();
+    expect(getByRole('button', { name: 'Print All' })).toBeEnabled();
+  });
+
+  it('disables the button and shows a spinner while printing', async () => {
     let resolvePdf!: (url: string) => void;
-    generateMock.mockReturnValue(
+    fetchPdfMock.mockReturnValue(
       new Promise((resolve) => (resolvePdf = resolve)),
     );
     const { getByRole, findByRole } = renderButton();
@@ -141,19 +208,20 @@ describe('PrintCohortGoalsButton', () => {
     expect(await findByRole('progressbar')).toBeInTheDocument();
     expect(getByRole('button', { name: 'Print All' })).toBeDisabled();
 
-    resolvePdf('blob:mock-pdf');
+    resolvePdf('blob:goals-pdf');
     await waitFor(() => expect(downloadMock).toHaveBeenCalled());
     expect(getByRole('button', { name: 'Print All' })).toBeEnabled();
   });
 
-  it('shows an error and re-enables the button when generation fails', async () => {
-    generateMock.mockRejectedValue(new Error('boom'));
+  // The single-use token is already burned, so this is the one failure with no global toast.
+  it('shows an error and re-enables the button when the download fails', async () => {
+    fetchPdfMock.mockRejectedValue(new Error('boom'));
     const { getByRole, findByText } = renderButton();
     await waitForCohorts();
     userEvent.click(getByRole('button', { name: 'Print All' }));
 
     expect(
-      await findByText('Unable to export the MPD Goals PDF.'),
+      await findByText('Unable to download the MPD Goals PDF.'),
     ).toBeInTheDocument();
     expect(downloadMock).not.toHaveBeenCalled();
     expect(getByRole('button', { name: 'Print All' })).toBeEnabled();
