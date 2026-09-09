@@ -43,6 +43,11 @@ const coachedAttendee: GoalSettingsAttendee = {
   },
 };
 
+const operation = (name: string) =>
+  mutationSpy.mock.calls.find(
+    ([call]) => call.operation.operationName === name,
+  )?.[0].operation;
+
 interface TestComponentProps {
   household?: GoalSettingsAttendee;
   mocks?: ApolloErgonoMockMap;
@@ -94,10 +99,12 @@ const CachedCoachField: React.FC = () => {
 
 interface CachedTestComponentProps {
   household?: GoalSettingsAttendee;
+  assignedCoachId?: string;
 }
 
 const CachedTestComponent: React.FC<CachedTestComponentProps> = ({
   household = coachedAttendee,
+  assignedCoachId = 'coach-1',
 }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
@@ -120,7 +127,7 @@ const CachedTestComponent: React.FC<CachedTestComponentProps> = ({
           },
           AssignCoachToNewStaffCohortAttendee: assignedCoachMock(
             [attendee.id],
-            'coach-1',
+            assignedCoachId,
           ),
           UnassignCoachFromNewStaffCohortAttendee: {
             unassignCoachFromNewStaffCohortAttendee: {
@@ -141,73 +148,109 @@ describe('GoalSettingsCoachField', () => {
     mutationSpy.mockClear();
   });
 
-  it('offers to assign a coach and shows no name when the household has none', () => {
+  it('shows an empty picker when the household has no coach', () => {
     const { getByRole, queryByRole } = render(<TestComponent />);
 
-    expect(getByRole('textbox', { name: 'Coach' })).toHaveValue('');
-    expect(getByRole('button', { name: 'Assign Coach' })).toBeInTheDocument();
-    expect(queryByRole('button', { name: 'Remove' })).not.toBeInTheDocument();
+    expect(getByRole('combobox', { name: 'Coach' })).toHaveValue('');
+    // Nothing to clear, so the picker offers no clear button either.
+    expect(queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
   });
 
-  it('shows the assigned coach with change and remove actions', () => {
+  it('shows the assigned coach with a clear button', () => {
     const { getByRole } = render(<TestComponent household={coachedAttendee} />);
 
-    expect(getByRole('textbox', { name: 'Coach' })).toHaveValue('Amy Wilson');
-    expect(getByRole('button', { name: 'Change' })).toBeInTheDocument();
-    expect(getByRole('button', { name: 'Remove' })).toBeInTheDocument();
+    expect(getByRole('combobox', { name: 'Coach' })).toHaveValue('Amy Wilson');
+    expect(getByRole('button', { name: 'Clear' })).toBeInTheDocument();
   });
 
-  // The list costs a OneApp lookup, so it must not load until the picker is opened.
+  // The list costs a OneApp lookup, so it must not load until the picker opens.
   it('loads the coach list only when the picker opens', async () => {
     const { getByRole } = render(<TestComponent />);
 
     expect(mutationSpy).not.toHaveBeenCalled();
 
-    await userEvent.click(getByRole('button', { name: 'Assign Coach' }));
+    userEvent.click(getByRole('button', { name: 'Open' }));
 
     await waitFor(() =>
-      expect(mutationSpy.mock.calls[0][0].operation.operationName).toBe(
-        'NewStaffCohortAttendeeAssignableCoaches',
-      ),
+      expect(
+        operation('NewStaffCohortAttendeeAssignableCoaches'),
+      ).toBeDefined(),
     );
-    expect(mutationSpy.mock.calls[0][0].operation.variables).toEqual({
-      attendeeId: 'attendee-1',
-    });
+    expect(
+      operation('NewStaffCohortAttendeeAssignableCoaches').variables,
+    ).toEqual({ attendeeId: 'attendee-1' });
   });
 
-  it('assigns the chosen coach to this household alone', async () => {
-    const { getByRole } = render(<TestComponent />);
+  it('assigns the first coach without a confirmation', async () => {
+    const { getByRole, findByRole, queryByRole } = render(<TestComponent />);
 
-    await userEvent.click(getByRole('button', { name: 'Assign Coach' }));
-    const picker = await waitFor(() =>
-      getByRole('combobox', { name: 'Coach' }),
-    );
-    await userEvent.click(picker);
-    await userEvent.click(
-      await waitFor(() => getByRole('option', { name: 'Amy Wilson' })),
-    );
-    await userEvent.click(getByRole('button', { name: 'Save' }));
+    userEvent.click(getByRole('button', { name: 'Open' }));
+    userEvent.click(await findByRole('option', { name: 'Amy Wilson' }));
 
-    await waitFor(() => {
-      const assign = mutationSpy.mock.calls.find(
-        ([call]) =>
-          call.operation.operationName ===
-          'AssignCoachToNewStaffCohortAttendee',
-      );
-      expect(assign?.[0].operation.variables.input).toEqual({
+    await waitFor(() =>
+      expect(
+        operation('AssignCoachToNewStaffCohortAttendee').variables.input,
+      ).toEqual({
         cohortId: 'cohort-1',
         attendeeIds: ['attendee-1'],
         coachId: 'coach-1',
-      });
-    });
+      }),
+    );
+    expect(queryByRole('dialog')).not.toBeInTheDocument();
   });
 
-  it('warns that removing the coach revokes their access, then unassigns', async () => {
+  it('confirms the switch before reassigning to another coach', async () => {
+    const { getByRole, getByText, findByRole } = render(
+      <TestComponent household={coachedAttendee} />,
+    );
+
+    userEvent.click(getByRole('button', { name: 'Open' }));
+    userEvent.click(await findByRole('option', { name: 'Nelson Jones' }));
+
+    expect(
+      getByText(
+        'Are you sure you want to make Nelson Jones the coach for John & Jane Doe? Amy Wilson will lose access to this account.',
+      ),
+    ).toBeInTheDocument();
+    expect(operation('AssignCoachToNewStaffCohortAttendee')).toBeUndefined();
+
+    userEvent.click(getByRole('button', { name: 'Yes' }));
+
+    await waitFor(() =>
+      expect(
+        operation('AssignCoachToNewStaffCohortAttendee').variables.input,
+      ).toEqual({
+        cohortId: 'cohort-1',
+        attendeeIds: ['attendee-1'],
+        coachId: 'coach-3',
+      }),
+    );
+  });
+
+  it('keeps the current coach when the switch is declined', async () => {
+    const { getByRole, findByRole } = render(
+      <TestComponent household={coachedAttendee} />,
+    );
+
+    userEvent.click(getByRole('button', { name: 'Open' }));
+    userEvent.click(await findByRole('option', { name: 'Nelson Jones' }));
+    userEvent.click(getByRole('button', { name: 'No' }));
+
+    // The picker is driven by the assignment, so declining puts the name back.
+    await waitFor(() =>
+      expect(getByRole('combobox', { name: 'Coach' })).toHaveValue(
+        'Amy Wilson',
+      ),
+    );
+    expect(operation('AssignCoachToNewStaffCohortAttendee')).toBeUndefined();
+  });
+
+  it('warns that clearing the coach revokes their access, then unassigns', async () => {
     const { getByRole, getByText } = render(
       <TestComponent household={coachedAttendee} />,
     );
 
-    await userEvent.click(getByRole('button', { name: 'Remove' }));
+    userEvent.click(getByRole('button', { name: 'Clear' }));
 
     expect(
       getByText(
@@ -215,19 +258,13 @@ describe('GoalSettingsCoachField', () => {
       ),
     ).toBeInTheDocument();
 
-    await userEvent.click(getByRole('button', { name: 'Yes' }));
+    userEvent.click(getByRole('button', { name: 'Yes' }));
 
-    await waitFor(() => {
-      const unassign = mutationSpy.mock.calls.find(
-        ([call]) =>
-          call.operation.operationName ===
-          'UnassignCoachFromNewStaffCohortAttendee',
-      );
-      expect(unassign?.[0].operation.variables.input).toEqual({
-        cohortId: 'cohort-1',
-        attendeeIds: ['attendee-1'],
-      });
-    });
+    await waitFor(() =>
+      expect(
+        operation('UnassignCoachFromNewStaffCohortAttendee').variables.input,
+      ).toEqual({ cohortId: 'cohort-1', attendeeIds: ['attendee-1'] }),
+    );
   });
 
   it('reports a failed removal instead of closing on a silent failure', async () => {
@@ -244,51 +281,72 @@ describe('GoalSettingsCoachField', () => {
       />,
     );
 
-    await userEvent.click(getByRole('button', { name: 'Remove' }));
-    await userEvent.click(getByRole('button', { name: 'Yes' }));
+    userEvent.click(getByRole('button', { name: 'Clear' }));
+    userEvent.click(getByRole('button', { name: 'Yes' }));
 
     expect(await findByRole('alert')).toHaveTextContent(
       'The coach could not be removed. Please try again.',
     );
-    expect(getByRole('textbox', { name: 'Coach' })).toHaveValue('Amy Wilson');
+    expect(getByRole('combobox', { name: 'Coach' })).toHaveValue('Amy Wilson');
   });
 
-  // Neither mutation refetches, so the payload normalizing over the cached attendee is the only thing that updates the field.
+  it('reports a failed assignment', async () => {
+    const { getByRole, findByRole } = render(
+      <TestComponent
+        mocks={{
+          AssignCoachToNewStaffCohortAttendee: {
+            assignCoachToNewStaffCohortAttendee: () => {
+              throw new Error('Not authorized');
+            },
+          },
+        }}
+      />,
+    );
+
+    userEvent.click(getByRole('button', { name: 'Open' }));
+    userEvent.click(await findByRole('option', { name: 'Amy Wilson' }));
+
+    expect(await findByRole('alert')).toHaveTextContent(
+      'The coach could not be assigned. Please try again.',
+    );
+  });
+
+  // Neither mutation refetches, so the payload normalizing over the cached attendee is the only thing that updates the picker.
   describe('with the attendee read from the cache', () => {
     it('clears the coach after removal', async () => {
       const { findByRole, getByRole, queryByRole } = render(
         <CachedTestComponent />,
       );
 
-      expect(await findByRole('textbox', { name: 'Coach' })).toHaveValue(
+      expect(await findByRole('combobox', { name: 'Coach' })).toHaveValue(
         'Amy Wilson',
       );
 
-      await userEvent.click(getByRole('button', { name: 'Remove' }));
-      await userEvent.click(getByRole('button', { name: 'Yes' }));
+      userEvent.click(getByRole('button', { name: 'Clear' }));
+      userEvent.click(getByRole('button', { name: 'Yes' }));
 
       await waitFor(() =>
-        expect(getByRole('textbox', { name: 'Coach' })).toHaveValue(''),
+        expect(getByRole('combobox', { name: 'Coach' })).toHaveValue(''),
       );
-      expect(getByRole('button', { name: 'Assign Coach' })).toBeInTheDocument();
-      expect(queryByRole('button', { name: 'Remove' })).not.toBeInTheDocument();
+      expect(queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
     });
 
-    it('shows the new coach after assignment', async () => {
+    it('shows the new coach after a confirmed switch', async () => {
       const { findByRole, getByRole } = render(
-        <CachedTestComponent household={attendee} />,
+        <CachedTestComponent assignedCoachId="coach-3" />,
       );
 
-      await userEvent.click(
-        await findByRole('button', { name: 'Assign Coach' }),
+      expect(await findByRole('combobox', { name: 'Coach' })).toHaveValue(
+        'Amy Wilson',
       );
-      await userEvent.click(await findByRole('combobox', { name: 'Coach' }));
-      await userEvent.click(await findByRole('option', { name: 'Amy Wilson' }));
-      await userEvent.click(getByRole('button', { name: 'Save' }));
+
+      userEvent.click(getByRole('button', { name: 'Open' }));
+      userEvent.click(await findByRole('option', { name: 'Nelson Jones' }));
+      userEvent.click(getByRole('button', { name: 'Yes' }));
 
       await waitFor(() =>
-        expect(getByRole('textbox', { name: 'Coach' })).toHaveValue(
-          'Amy Wilson',
+        expect(getByRole('combobox', { name: 'Coach' })).toHaveValue(
+          'Nelson Jones',
         ),
       );
     });
