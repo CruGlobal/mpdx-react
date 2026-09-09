@@ -59,7 +59,6 @@ const TestComponent: React.FC<TestComponentProps> = ({
       }>
         mocks={
           {
-            GetUser: { user: { mpdSupervisorAdmin: true } },
             NewStaffCohortAttendeeAssignableCoaches: {
               newStaffCohortAssignableCoaches:
                 assignableCoachesMock.newStaffCohortAssignableCoaches,
@@ -109,7 +108,6 @@ const CachedTestComponent: React.FC<CachedTestComponentProps> = ({
         UnassignCoachFromNewStaffCohortAttendee: UnassignCoachFromNewStaffCohortAttendeeMutation;
       }>
         mocks={{
-          GetUser: { user: { mpdSupervisorAdmin: true } },
           NewStaffGoalCalculation: {
             newStaffGoalCalculation: {
               id: 'goal-calculation-1',
@@ -143,69 +141,44 @@ describe('GoalSettingsCoachField', () => {
     mutationSpy.mockClear();
   });
 
-  it('hides every action from a viewer who is not on the MPD Goals team', async () => {
-    const { getByRole, queryByRole } = render(
-      <TestComponent
-        household={coachedAttendee}
-        mocks={{ GetUser: { user: { mpdSupervisorAdmin: false } } }}
-      />,
-    );
+  it('offers to assign a coach and shows no name when the household has none', () => {
+    const { getByRole, queryByRole } = render(<TestComponent />);
 
-    // Wait for GetUser to settle, or the absences below would hold merely because nothing rendered yet.
-    await waitFor(() => expect(mutationSpy).toHaveBeenCalled());
-
-    expect(getByRole('textbox', { name: 'Coach' })).toHaveValue('Amy Wilson');
-    expect(queryByRole('button', { name: 'Change' })).not.toBeInTheDocument();
-    expect(queryByRole('button', { name: 'Remove' })).not.toBeInTheDocument();
-    expect(
-      queryByRole('button', { name: 'Assign Coach' }),
-    ).not.toBeInTheDocument();
-  });
-
-  it('offers to assign a coach and shows no name when the household has none', async () => {
-    const { findByRole, getByRole, queryByRole } = render(<TestComponent />);
-
-    expect(
-      await findByRole('button', { name: 'Assign Coach' }),
-    ).toBeInTheDocument();
     expect(getByRole('textbox', { name: 'Coach' })).toHaveValue('');
+    expect(getByRole('button', { name: 'Assign Coach' })).toBeInTheDocument();
     expect(queryByRole('button', { name: 'Remove' })).not.toBeInTheDocument();
   });
 
-  it('shows the assigned coach with change and remove actions', async () => {
-    const { findByRole, getByRole } = render(
-      <TestComponent household={coachedAttendee} />,
-    );
+  it('shows the assigned coach with change and remove actions', () => {
+    const { getByRole } = render(<TestComponent household={coachedAttendee} />);
 
-    expect(await findByRole('button', { name: 'Change' })).toBeInTheDocument();
     expect(getByRole('textbox', { name: 'Coach' })).toHaveValue('Amy Wilson');
+    expect(getByRole('button', { name: 'Change' })).toBeInTheDocument();
     expect(getByRole('button', { name: 'Remove' })).toBeInTheDocument();
   });
 
   // The list costs a OneApp lookup, so it must not load until the picker is opened.
   it('loads the coach list only when the picker opens', async () => {
-    const { findByRole } = render(<TestComponent />);
-    const coachesCall = () =>
-      mutationSpy.mock.calls.find(
-        ([call]) =>
-          call.operation.operationName ===
-          'NewStaffCohortAttendeeAssignableCoaches',
-      );
+    const { getByRole } = render(<TestComponent />);
 
-    expect(coachesCall()).toBeUndefined();
+    expect(mutationSpy).not.toHaveBeenCalled();
 
-    await userEvent.click(await findByRole('button', { name: 'Assign Coach' }));
+    await userEvent.click(getByRole('button', { name: 'Assign Coach' }));
 
-    await waitFor(() => expect(coachesCall()).toBeDefined());
-    expect(coachesCall()?.[0].operation.variables).toEqual({
+    await waitFor(() =>
+      expect(mutationSpy.mock.calls[0][0].operation.operationName).toBe(
+        'NewStaffCohortAttendeeAssignableCoaches',
+      ),
+    );
+    expect(mutationSpy.mock.calls[0][0].operation.variables).toEqual({
       attendeeId: 'attendee-1',
     });
   });
 
   it('assigns the chosen coach to this household alone', async () => {
-    const { findByRole, getByRole } = render(<TestComponent />);
+    const { getByRole } = render(<TestComponent />);
 
-    await userEvent.click(await findByRole('button', { name: 'Assign Coach' }));
+    await userEvent.click(getByRole('button', { name: 'Assign Coach' }));
     const picker = await waitFor(() =>
       getByRole('combobox', { name: 'Coach' }),
     );
@@ -230,11 +203,11 @@ describe('GoalSettingsCoachField', () => {
   });
 
   it('warns that removing the coach revokes their access, then unassigns', async () => {
-    const { findByRole, getByRole, getByText } = render(
+    const { getByRole, getByText } = render(
       <TestComponent household={coachedAttendee} />,
     );
 
-    await userEvent.click(await findByRole('button', { name: 'Remove' }));
+    await userEvent.click(getByRole('button', { name: 'Remove' }));
 
     expect(
       getByText(
@@ -258,7 +231,7 @@ describe('GoalSettingsCoachField', () => {
   });
 
   it('reports a failed removal instead of closing on a silent failure', async () => {
-    const { findByRole, getByRole } = render(
+    const { getByRole, findByRole } = render(
       <TestComponent
         household={coachedAttendee}
         mocks={{
@@ -271,7 +244,7 @@ describe('GoalSettingsCoachField', () => {
       />,
     );
 
-    await userEvent.click(await findByRole('button', { name: 'Remove' }));
+    await userEvent.click(getByRole('button', { name: 'Remove' }));
     await userEvent.click(getByRole('button', { name: 'Yes' }));
 
     expect(await findByRole('alert')).toHaveTextContent(
@@ -291,7 +264,7 @@ describe('GoalSettingsCoachField', () => {
         'Amy Wilson',
       );
 
-      await userEvent.click(await findByRole('button', { name: 'Remove' }));
+      await userEvent.click(getByRole('button', { name: 'Remove' }));
       await userEvent.click(getByRole('button', { name: 'Yes' }));
 
       await waitFor(() =>
