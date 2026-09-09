@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { VirtuosoMockContext } from 'react-virtuoso';
@@ -90,14 +90,14 @@ const renderReport = ({
 
 describe('MpdSupervisorReport', () => {
   it('renders a row per staff member the query returns', async () => {
-    renderReport();
+    const { findByText, getByText } = renderReport();
 
-    expect(await screen.findByText('John Smith')).toBeInTheDocument();
-    expect(screen.getByText('Alice Jones')).toBeInTheDocument();
+    expect(await findByText('John Smith')).toBeInTheDocument();
+    expect(getByText('Alice Jones')).toBeInTheDocument();
   });
 
   it('surfaces a query failure instead of an empty roster', async () => {
-    renderReport({
+    const { findByRole, queryByText } = renderReport({
       mocks: {
         ManagedStaff: {
           managedStaff: () => {
@@ -107,30 +107,23 @@ describe('MpdSupervisorReport', () => {
       },
     });
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Not authorized',
-    );
-    expect(
-      screen.queryByText('No staff members found'),
-    ).not.toBeInTheDocument();
+    expect(await findByRole('alert')).toHaveTextContent('Not authorized');
+    expect(queryByText('No staff members found')).not.toBeInTheDocument();
   });
 
   it('shows the loaded count against the total the query reports', async () => {
-    renderReport();
+    const { findByText } = renderReport();
 
     expect(
-      await screen.findByText('Showing 2 of 2 · sorted by MPD health'),
+      await findByText('Showing 2 of 2 · sorted by MPD health'),
     ).toBeInTheDocument();
   });
 
   it('sends the search box text to the server as the name filter', async () => {
-    renderReport();
-    await screen.findByText('John Smith');
+    const { findByText, getByRole } = renderReport();
+    await findByText('John Smith');
 
-    userEvent.type(
-      screen.getByRole('textbox', { name: 'Search name' }),
-      'Jones',
-    );
+    userEvent.type(getByRole('textbox', { name: 'Search name' }), 'Jones');
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
@@ -140,8 +133,8 @@ describe('MpdSupervisorReport', () => {
   });
 
   it('omits teamIds until a team is chosen', async () => {
-    renderReport();
-    await screen.findByText('John Smith');
+    const { findByText } = renderReport();
+    await findByText('John Smith');
 
     expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
       teamIds: null,
@@ -149,8 +142,8 @@ describe('MpdSupervisorReport', () => {
   });
 
   it('omits both health flags while All people is selected', async () => {
-    renderReport({ withFilters: true });
-    await screen.findByText('John Smith');
+    const { findByText } = renderReport({ withFilters: true });
+    await findByText('John Smith');
 
     expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
       negativeLastMonth: null,
@@ -159,12 +152,10 @@ describe('MpdSupervisorReport', () => {
   });
 
   it('sends negativeLastMonth when that chip is clicked', async () => {
-    renderReport({ withFilters: true });
-    await screen.findByText('John Smith');
+    const { findByText, getByRole } = renderReport({ withFilters: true });
+    await findByText('John Smith');
 
-    userEvent.click(
-      screen.getByRole('button', { name: 'Negative last month' }),
-    );
+    userEvent.click(getByRole('button', { name: 'Negative last month' }));
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
@@ -175,10 +166,10 @@ describe('MpdSupervisorReport', () => {
   });
 
   it('sends negativeThreeMonths when that chip is clicked', async () => {
-    renderReport({ withFilters: true });
-    await screen.findByText('John Smith');
+    const { findByText, getByRole } = renderReport({ withFilters: true });
+    await findByText('John Smith');
 
-    userEvent.click(screen.getByRole('button', { name: '3+ months negative' }));
+    userEvent.click(getByRole('button', { name: '3+ months negative' }));
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
@@ -189,60 +180,56 @@ describe('MpdSupervisorReport', () => {
   });
 
   it('shows the empty state when the query returns no staff', async () => {
-    renderReport({ managedStaff: managedStaffMock([]) });
+    const { findByText, getByText } = renderReport({
+      managedStaff: managedStaffMock([]),
+    });
 
+    expect(await findByText('No staff members found')).toBeInTheDocument();
     expect(
-      await screen.findByText('No staff members found'),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText('Showing 0 of 0 · sorted by MPD health'),
+      getByText('Showing 0 of 0 · sorted by MPD health'),
     ).toBeInTheDocument();
   });
 
   it('labels the quarter columns from the first row', async () => {
-    renderReport();
-    await screen.findByText('John Smith');
+    const { findByText, getByText } = renderReport();
+    await findByText('John Smith');
 
-    expect(screen.getByText('FQ4 25')).toBeInTheDocument();
-    expect(screen.getByText('FQ3 26')).toBeInTheDocument();
+    expect(getByText('FQ4 25')).toBeInTheDocument();
+    expect(getByText('FQ3 26')).toBeInTheDocument();
   });
 
   // The card and the drawer both display the same name, so the drawer is
   // identified by its unique Close button and the "Employment Type" detail label
   // (which appears only in the user section, not the spouse section).
   it('opens the drawer when a staff member card is clicked', async () => {
-    renderReport();
+    const { findAllByRole, findByRole, getByText } = renderReport();
 
-    const cards = await screen.findAllByRole('button', {
+    const cards = await findAllByRole('button', {
       name: new RegExp('View details for'),
     });
     userEvent.click(cards[0]);
 
-    expect(
-      await screen.findByRole('button', { name: 'Close' }),
-    ).toBeInTheDocument();
-    expect(screen.getByText('Employment Type')).toBeInTheDocument();
+    expect(await findByRole('button', { name: 'Close' })).toBeInTheDocument();
+    expect(getByText('Employment Type')).toBeInTheDocument();
   });
 
   it('calls onFilterListToggle when the filter toggle button is clicked', async () => {
-    renderReport();
-    await screen.findByText('John Smith');
+    const { findByText, getByRole } = renderReport();
+    await findByText('John Smith');
 
-    userEvent.click(
-      screen.getByRole('button', { name: 'Toggle Filters Panel' }),
-    );
+    userEvent.click(getByRole('button', { name: 'Toggle Filters Panel' }));
     expect(onFilterListToggle).toHaveBeenCalledTimes(1);
   });
 
   it('renders with panelOpen=null (no panel open)', async () => {
-    renderReport({ panelOpen: null });
+    const { findByText } = renderReport({ panelOpen: null });
 
-    expect(await screen.findByText('John Smith')).toBeInTheDocument();
+    expect(await findByText('John Smith')).toBeInTheDocument();
   });
 
   it('renders with panelOpen=Panel.Navigation', async () => {
-    renderReport({ panelOpen: Panel.Navigation });
+    const { findByText } = renderReport({ panelOpen: Panel.Navigation });
 
-    expect(await screen.findByText('John Smith')).toBeInTheDocument();
+    expect(await findByText('John Smith')).toBeInTheDocument();
   });
 });

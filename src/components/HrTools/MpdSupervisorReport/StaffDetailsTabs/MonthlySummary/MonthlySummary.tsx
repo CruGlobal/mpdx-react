@@ -126,7 +126,7 @@ export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
         />
       ) : (
         <TableContainer>
-          <Table aria-label={t('Monthly Summary Table')}>
+          <Table size="small" aria-label={t('Monthly Summary Table')}>
             <TableHead>
               <TableRow>
                 <TableCell>{t('Month')}</TableCell>

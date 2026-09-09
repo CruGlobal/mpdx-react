@@ -92,6 +92,7 @@ export const StaffTabQuarterly: React.FC<StaffTabQuarterlyProps> = ({
             </Typography>
             <TableContainer>
               <Table
+                size="small"
                 aria-label={t(
                   'Starting Quarter Monthly Payroll Breakdown Table',
                 )}
@@ -113,7 +114,15 @@ export const StaffTabQuarterly: React.FC<StaffTabQuarterlyProps> = ({
                             ? monthYearFormat(date.month, date.year, locale)
                             : ''}
                         </TableCell>
-                        <TableCell>{formatCurrency(month.payroll)}</TableCell>
+                        <TableCell>
+                          {quarterAmountLabel({
+                            t,
+                            hasStaffAccount: !!staffAccountId,
+                            status: month.status,
+                            averagePayroll: month.payroll,
+                            formatCurrency,
+                          })}
+                        </TableCell>
                         <TableCell>
                           <Chip
                             label={healthLabel(t, month.status)}

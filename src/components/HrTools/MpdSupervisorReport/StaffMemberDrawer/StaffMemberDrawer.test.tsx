@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { act, render, screen, within } from '@testing-library/react';
+import { act, render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -77,46 +77,42 @@ describe('StaffMemberDrawer', () => {
   });
 
   it('renders the member name and person number after openMember is called', () => {
-    renderDrawer();
+    const { getByText } = renderDrawer();
     openMember(memberWithSpouse);
-    expect(screen.getByText('John Smith')).toBeInTheDocument();
-    expect(screen.getByText('10000001')).toBeInTheDocument();
-    expect(screen.getByText('1000000001')).toBeInTheDocument();
+    expect(getByText('John Smith')).toBeInTheDocument();
+    expect(getByText('10000001')).toBeInTheDocument();
+    expect(getByText('1000000001')).toBeInTheDocument();
   });
 
   it('renders the spouse name and identifiers', () => {
-    renderDrawer();
+    const { getByText } = renderDrawer();
     openMember(memberWithSpouse);
-    expect(screen.getByText(/Spouse:/)).toHaveTextContent('Spouse: Jane Smith');
-    expect(screen.getByText('10000002')).toBeInTheDocument();
-    expect(screen.getByText('1000000002')).toBeInTheDocument();
+    expect(getByText(/Spouse:/)).toHaveTextContent('Spouse: Jane Smith');
+    expect(getByText('10000002')).toBeInTheDocument();
+    expect(getByText('1000000002')).toBeInTheDocument();
   });
 
   it('does not render the spouse section when no spouse is present', () => {
-    renderDrawer();
+    const { getByText, queryByText } = renderDrawer();
     openMember(memberWithoutSpouse);
-    expect(screen.getByText('Alice Jones')).toBeInTheDocument();
-    expect(screen.queryByText(/Spouse:/)).not.toBeInTheDocument();
+    expect(getByText('Alice Jones')).toBeInTheDocument();
+    expect(queryByText(/Spouse:/)).not.toBeInTheDocument();
   });
 
   it('renders all five detail tabs', () => {
-    renderDrawer();
+    const { getByRole } = renderDrawer();
     openMember(memberWithSpouse);
+    expect(getByRole('tab', { name: 'Monthly Summary' })).toBeInTheDocument();
+    expect(getByRole('tab', { name: 'Quarterly' })).toBeInTheDocument();
+    expect(getByRole('tab', { name: 'Payroll' })).toBeInTheDocument();
+    expect(getByRole('tab', { name: 'MPGA Report' })).toBeInTheDocument();
     expect(
-      screen.getByRole('tab', { name: 'Monthly Summary' }),
-    ).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: 'Quarterly' })).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: 'Payroll' })).toBeInTheDocument();
-    expect(
-      screen.getByRole('tab', { name: 'MPGA Report' }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('tab', { name: 'Staff Expense Report' }),
+      getByRole('tab', { name: 'Staff Expense Report' }),
     ).toBeInTheDocument();
   });
 
   it('shows the Monthly Summary tab and its panel content by default', async () => {
-    renderDrawer({
+    const { getByRole } = renderDrawer({
       monthlySummary: [
         {
           month: '2023-01',
@@ -128,13 +124,12 @@ describe('StaffMemberDrawer', () => {
       ],
     });
     openMember(memberWithSpouse);
-    expect(
-      screen.getByRole('tab', { name: 'Monthly Summary' }),
-    ).toHaveAttribute('aria-selected', 'true');
-
-    const table = await within(screen.getByRole('tabpanel')).findByRole(
-      'table',
+    expect(getByRole('tab', { name: 'Monthly Summary' })).toHaveAttribute(
+      'aria-selected',
+      'true',
     );
+
+    const table = await within(getByRole('tabpanel')).findByRole('table');
     expect(table).toHaveTableStructure({
       columnHeaders: [
         'Month',
@@ -150,20 +145,21 @@ describe('StaffMemberDrawer', () => {
   });
 
   it('selects another tab when clicked', async () => {
-    renderDrawer();
+    const { getByRole } = renderDrawer();
     openMember(memberWithSpouse);
-    userEvent.click(screen.getByRole('tab', { name: 'Quarterly' }));
-    expect(screen.getByRole('tab', { name: 'Quarterly' })).toHaveAttribute(
+    userEvent.click(getByRole('tab', { name: 'Quarterly' }));
+    expect(getByRole('tab', { name: 'Quarterly' })).toHaveAttribute(
       'aria-selected',
       'true',
     );
-    expect(
-      screen.getByRole('tab', { name: 'Monthly Summary' }),
-    ).toHaveAttribute('aria-selected', 'false');
+    expect(getByRole('tab', { name: 'Monthly Summary' })).toHaveAttribute(
+      'aria-selected',
+      'false',
+    );
   });
 
   it('renders the payroll history on the Payroll tab', async () => {
-    renderDrawer({
+    const { getByRole } = renderDrawer({
       payrollHistory: [
         {
           month: '2023-01',
@@ -175,11 +171,9 @@ describe('StaffMemberDrawer', () => {
     });
     openMember(memberWithSpouse);
 
-    userEvent.click(screen.getByRole('tab', { name: 'Payroll' }));
+    userEvent.click(getByRole('tab', { name: 'Payroll' }));
 
-    const table = await within(screen.getByRole('tabpanel')).findByRole(
-      'table',
-    );
+    const table = await within(getByRole('tabpanel')).findByRole('table');
     expect(table).toHaveTableStructure({
       columnHeaders: [
         'Month',
@@ -192,10 +186,10 @@ describe('StaffMemberDrawer', () => {
   });
 
   it('closes the panel when the close button is clicked', async () => {
-    renderDrawer();
+    const { getByRole, getByText, queryByText } = renderDrawer();
     openMember(memberWithSpouse);
-    expect(screen.getByText('John Smith')).toBeInTheDocument();
-    userEvent.click(screen.getByRole('button', { name: 'Close' }));
-    expect(screen.queryByText('John Smith')).not.toBeInTheDocument();
+    expect(getByText('John Smith')).toBeInTheDocument();
+    userEvent.click(getByRole('button', { name: 'Close' }));
+    expect(queryByText('John Smith')).not.toBeInTheDocument();
   });
 });

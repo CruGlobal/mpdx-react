@@ -79,6 +79,9 @@ export const MpdSupervisorReportProvider: React.FC<{
   const handleTabChange = useCallback(
     (_event: React.SyntheticEvent, newKey: StaffDetailTabEnum) => {
       setSelectedTabKey(newKey);
+      // Not router.replace: the global Loading listens to routeChangeStart
+      // without checking `shallow`, so a shallow replace still flashes the
+      // page spinner on every tab click.
       const url = new URL(window.location.href);
       url.searchParams.set('tab', newKey);
       window.history.replaceState(window.history.state, '', url.toString());

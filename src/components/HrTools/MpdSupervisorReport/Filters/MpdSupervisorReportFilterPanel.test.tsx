@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -44,37 +44,33 @@ describe('MpdSupervisorReportFilterPanel', () => {
   });
 
   it('renders the Filters heading', () => {
-    renderFilterPanel();
-    expect(
-      screen.getByRole('heading', { name: 'Filters' }),
-    ).toBeInTheDocument();
+    const { getByRole } = renderFilterPanel();
+    expect(getByRole('heading', { name: 'Filters' })).toBeInTheDocument();
   });
 
   it('calls onClose when the close button is clicked', async () => {
-    renderFilterPanel();
-    const closeButton = screen.getByRole('button', { name: 'Close' });
+    const { getByRole } = renderFilterPanel();
+    const closeButton = getByRole('button', { name: 'Close' });
     userEvent.click(closeButton);
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
   it('renders quick-filter chips', () => {
-    renderFilterPanel();
+    const { getByRole } = renderFilterPanel();
+    expect(getByRole('button', { name: 'All people' })).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'All people' }),
+      getByRole('button', { name: 'Negative last month' }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'Negative last month' }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: '3+ months negative' }),
+      getByRole('button', { name: '3+ months negative' }),
     ).toBeInTheDocument();
   });
 
   it('clicking a quick-filter chip toggles active state', async () => {
-    renderFilterPanel();
+    const { getByRole } = renderFilterPanel();
     // 'All people' chip is active by default (filled variant)
-    const allPeopleChip = screen.getByRole('button', { name: 'All people' });
-    const threeMonthsChip = screen.getByRole('button', {
+    const allPeopleChip = getByRole('button', { name: 'All people' });
+    const threeMonthsChip = getByRole('button', {
       name: '3+ months negative',
     });
 
@@ -92,18 +88,18 @@ describe('MpdSupervisorReportFilterPanel', () => {
   });
 
   it('renders the Team select with All teams option', () => {
-    renderFilterPanel();
-    expect(screen.getByLabelText('Team')).toBeInTheDocument();
+    const { getByLabelText } = renderFilterPanel();
+    expect(getByLabelText('Team')).toBeInTheDocument();
   });
 
   it('renders the Employment type select', () => {
-    renderFilterPanel();
-    expect(screen.getByLabelText('Employment type')).toBeInTheDocument();
+    const { getByLabelText } = renderFilterPanel();
+    expect(getByLabelText('Employment type')).toBeInTheDocument();
   });
 
   it('close button has correct aria-label', () => {
-    renderFilterPanel();
-    expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
+    const { getByRole } = renderFilterPanel();
+    expect(getByRole('button', { name: 'Close' })).toBeInTheDocument();
   });
 });
 
@@ -133,82 +129,69 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
     );
 
   it('starts with default filter values in context', () => {
-    renderWithConsumer();
-    expect(screen.getByTestId('team').textContent).toBe(ALL_TEAMS);
-    expect(screen.getByTestId('employmentType').textContent).toBe(
+    const { getByTestId } = renderWithConsumer();
+    expect(getByTestId('team').textContent).toBe(ALL_TEAMS);
+    expect(getByTestId('employmentType').textContent).toBe(
       MpdSupervisorReportEmploymentTypeEnum.All,
     );
-    expect(screen.getByTestId('activeQuickFilter').textContent).toBe(
-      'allPeople',
-    );
+    expect(getByTestId('activeQuickFilter').textContent).toBe('allPeople');
   });
 
   it('clicking a quick-filter chip updates activeQuickFilter in context', async () => {
-    renderWithConsumer();
-    const threeMonthsChip = screen.getByRole('button', {
+    const { getByRole, getByTestId } = renderWithConsumer();
+    const threeMonthsChip = getByRole('button', {
       name: '3+ months negative',
     });
     userEvent.click(threeMonthsChip);
-    expect(screen.getByTestId('activeQuickFilter').textContent).toBe(
+    expect(getByTestId('activeQuickFilter').textContent).toBe(
       'threeMonthsNegative',
     );
   });
 
   it('clicking All people chip sets activeQuickFilter back to allPeople', async () => {
-    renderWithConsumer();
+    const { getByRole, getByTestId } = renderWithConsumer();
 
     // First switch to 3+ months negative
-    userEvent.click(screen.getByRole('button', { name: '3+ months negative' }));
-    expect(screen.getByTestId('activeQuickFilter').textContent).toBe(
+    userEvent.click(getByRole('button', { name: '3+ months negative' }));
+    expect(getByTestId('activeQuickFilter').textContent).toBe(
       'threeMonthsNegative',
     );
 
     // Then click All people to switch back
-    userEvent.click(screen.getByRole('button', { name: 'All people' }));
-    expect(screen.getByTestId('activeQuickFilter').textContent).toBe(
-      'allPeople',
-    );
+    userEvent.click(getByRole('button', { name: 'All people' }));
+    expect(getByTestId('activeQuickFilter').textContent).toBe('allPeople');
   });
 
   describe('Team select', () => {
-    // The select stays disabled until the teams query resolves.
+    // Renders, waits out the teams query, then opens the select.
     const openTeamSelect = async () => {
-      const select = screen.getByLabelText('Team');
+      const view = renderWithConsumer();
+      const select = view.getByLabelText('Team');
       await waitFor(() =>
         expect(select).not.toHaveAttribute('aria-disabled', 'true'),
       );
       userEvent.click(select);
-      await screen.findByRole('option', { name: 'Solution Delivery Team' });
+      await view.findByRole('option', { name: 'Solution Delivery Team' });
+      return view;
     };
 
     it('is disabled until the teams arrive', () => {
-      renderWithConsumer();
-      expect(screen.getByLabelText('Team')).toHaveAttribute(
-        'aria-disabled',
-        'true',
-      );
+      const { getByLabelText } = renderWithConsumer();
+      expect(getByLabelText('Team')).toHaveAttribute('aria-disabled', 'true');
     });
 
     it('puts the selected team id in context', async () => {
-      renderWithConsumer();
-      expect(screen.getByTestId('team').textContent).toBe(ALL_TEAMS);
+      const { getByRole, getByTestId } = await openTeamSelect();
 
-      await openTeamSelect();
-      userEvent.click(
-        screen.getByRole('option', { name: 'Solution Delivery Team' }),
-      );
+      userEvent.click(getByRole('option', { name: 'Solution Delivery Team' }));
 
-      expect(screen.getByTestId('team').textContent).toBe('team-1');
+      expect(getByTestId('team').textContent).toBe('team-1');
     });
 
     it('sorts the team options by name', async () => {
-      renderWithConsumer();
+      const { getAllByRole } = await openTeamSelect();
 
-      await openTeamSelect();
-
-      const names = screen
-        .getAllByRole('option')
-        .map((option) => option.textContent);
+      const names = getAllByRole('option').map((option) => option.textContent);
       expect(names).toEqual([
         'All teams',
         'Solution Delivery Team',
@@ -217,26 +200,24 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
     });
 
     it('omits a team that has no id', async () => {
-      renderWithConsumer();
-
-      await openTeamSelect();
+      const { queryByRole } = await openTeamSelect();
 
       expect(
-        screen.queryByRole('option', { name: 'Unassigned' }),
+        queryByRole('option', { name: 'Unassigned' }),
       ).not.toBeInTheDocument();
     });
   });
 
   it('selecting an Employment type option updates employmentType in context', async () => {
-    renderWithConsumer();
-    expect(screen.getByTestId('employmentType').textContent).toBe(
+    const { getByLabelText, getByRole, getByTestId } = renderWithConsumer();
+    expect(getByTestId('employmentType').textContent).toBe(
       MpdSupervisorReportEmploymentTypeEnum.All,
     );
 
-    userEvent.click(screen.getByLabelText('Employment type'));
-    userEvent.click(screen.getByRole('option', { name: 'Part time' }));
+    userEvent.click(getByLabelText('Employment type'));
+    userEvent.click(getByRole('option', { name: 'Part time' }));
 
-    expect(screen.getByTestId('employmentType').textContent).toBe(
+    expect(getByTestId('employmentType').textContent).toBe(
       MpdSupervisorReportEmploymentTypeEnum.PartTime,
     );
   });

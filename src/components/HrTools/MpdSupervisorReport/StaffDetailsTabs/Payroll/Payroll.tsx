@@ -15,6 +15,7 @@ import { DynamicComponentPlaceholder } from 'src/components/DynamicPlaceholders/
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import { useLocale } from 'src/hooks/useLocale';
 import { monthYearFormat } from 'src/lib/intlFormat';
+import { pendingField } from '../../helpers';
 import { useMonthlyPayrollHistoryQuery } from './MonthlyPayrollHistory.generated';
 
 interface StaffTabPayrollProps {
@@ -48,7 +49,7 @@ export const StaffTabPayroll: React.FC<StaffTabPayrollProps> = ({
         {t('Payroll and reimbursements · last 12 months')}
       </Typography>
       <TableContainer>
-        <Table aria-label={t('Monthly Payroll History Table')}>
+        <Table size="small" aria-label={t('Monthly Payroll History Table')}>
           <TableHead>
             <TableRow>
               <TableCell>{t('Month')}</TableCell>
@@ -79,19 +80,19 @@ export const StaffTabPayroll: React.FC<StaffTabPayrollProps> = ({
                     </TableCell>
                     <TableCell align="right">
                       {payroll.payroll === null || payroll.payroll === undefined
-                        ? '—'
+                        ? pendingField
                         : formatCurrency(payroll.payroll)}
                     </TableCell>
                     <TableCell align="right">
                       {payroll.asrAndReimbursements === null ||
                       payroll.asrAndReimbursements === undefined
-                        ? '—'
+                        ? pendingField
                         : formatCurrency(payroll.asrAndReimbursements)}
                     </TableCell>
                     <TableCell align="right">
                       {payroll.percentMaxPay === null ||
                       payroll.percentMaxPay === undefined
-                        ? '—'
+                        ? pendingField
                         : formatPercentage(payroll.percentMaxPay, 1)}
                     </TableCell>
                   </TableRow>

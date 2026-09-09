@@ -131,6 +131,7 @@ describe('NavMenu', () => {
             user: {
               userType: UserTypeEnum.UsStaff,
               usStaffGroup: UsStaffGroupEnum.SeniorStaff,
+              supervisesStaff: true,
             },
           },
         }}
@@ -155,6 +156,9 @@ describe('NavMenu', () => {
     ).toBeInTheDocument();
     expect(
       getByRole('menuitem', { name: 'Ministry Partner Reminders' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { name: 'MPD Supervisor Report' }),
     ).toBeInTheDocument();
   });
 

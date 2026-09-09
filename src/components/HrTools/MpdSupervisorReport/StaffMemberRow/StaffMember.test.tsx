@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
@@ -19,35 +19,38 @@ const member = managedStaffMember({
   },
 });
 
-const renderRow = (onClick = jest.fn(), data: ManagedStaffMember = member) => {
-  render(
+const renderRow = (onClick = jest.fn(), data: ManagedStaffMember = member) => ({
+  onClick,
+  ...render(
     <ThemeProvider theme={theme}>
       <StaffMember data={data} onClick={onClick} />
     </ThemeProvider>,
-  );
-  return onClick;
-};
+  ),
+});
 
 describe('StaffMember', () => {
   it('renders the staff member name as "{firstName} {lastName}"', () => {
-    renderRow();
-    expect(screen.getByText('Brooke Butler')).toBeInTheDocument();
+    const { getByText } = renderRow();
+    expect(getByText('Brooke Butler')).toBeInTheDocument();
   });
 
   it('renders the staff account, employment type, and team line', () => {
-    renderRow();
-    expect(screen.getByTestId('person-numbers')).toHaveTextContent(
+    const { getByTestId } = renderRow();
+    expect(getByTestId('person-numbers')).toHaveTextContent(
       '1000000001 · — · FamilyLife',
     );
   });
 
   it('dashes the staff account when the API has none', () => {
-    renderRow(jest.fn(), managedStaffMember({ staffAccountId: null }));
-    expect(screen.getByTestId('person-numbers')).toHaveTextContent('— · —');
+    const { getByTestId } = renderRow(
+      jest.fn(),
+      managedStaffMember({ staffAccountId: null }),
+    );
+    expect(getByTestId('person-numbers')).toHaveTextContent('— · —');
   });
 
   it('joins the names when a member is on several teams', () => {
-    renderRow(
+    const { getByTestId } = renderRow(
       jest.fn(),
       managedStaffMember({
         teams: {
@@ -59,21 +62,19 @@ describe('StaffMember', () => {
         },
       }),
     );
-    expect(screen.getByTestId('person-numbers')).toHaveTextContent(
-      'Campus, Cru City',
-    );
+    expect(getByTestId('person-numbers')).toHaveTextContent('Campus, Cru City');
   });
 
   it('renders a currency-formatted payroll chip for each quarter', () => {
-    renderRow();
-    expect(screen.getByText('$4,600.00')).toBeInTheDocument();
-    expect(screen.getByText('$3,500.00')).toBeInTheDocument();
-    expect(screen.getByText('$2,200.00')).toBeInTheDocument();
-    expect(screen.getByText('$4,500.00')).toBeInTheDocument();
+    const { getByText } = renderRow();
+    expect(getByText('$4,600.00')).toBeInTheDocument();
+    expect(getByText('$3,500.00')).toBeInTheDocument();
+    expect(getByText('$2,200.00')).toBeInTheDocument();
+    expect(getByText('$4,500.00')).toBeInTheDocument();
   });
 
   it('labels a quarter payroll started partway through as Partial', () => {
-    renderRow(
+    const { getByText } = renderRow(
       jest.fn(),
       managedStaffMember({
         quarterlyHealth: {
@@ -83,11 +84,11 @@ describe('StaffMember', () => {
         },
       }),
     );
-    expect(screen.getByText('Partial')).toBeInTheDocument();
+    expect(getByText('Partial')).toBeInTheDocument();
   });
 
   it('renders a dash instead of $0.00 for a quarter with no payroll data', () => {
-    renderRow(
+    const { getByText, queryByText } = renderRow(
       jest.fn(),
       managedStaffMember({
         quarterlyHealth: {
@@ -105,30 +106,30 @@ describe('StaffMember', () => {
       }),
     );
 
-    expect(screen.getByText('-')).toBeInTheDocument();
-    expect(screen.queryByText('$0.00')).not.toBeInTheDocument();
-    expect(screen.getByText('FQ4 25, no data')).toBeInTheDocument();
+    expect(getByText('-')).toBeInTheDocument();
+    expect(queryByText('$0.00')).not.toBeInTheDocument();
+    expect(getByText('FQ4 25, no data')).toBeInTheDocument();
   });
 
   it('exposes an accessible button with a descriptive label', () => {
-    renderRow();
+    const { getByRole } = renderRow();
     expect(
-      screen.getByRole('button', { name: 'View details for Brooke Butler' }),
+      getByRole('button', { name: 'View details for Brooke Butler' }),
     ).toBeInTheDocument();
   });
 
   it('calls onClick when the card is clicked', async () => {
-    const onClick = renderRow();
+    const { onClick, getByRole } = renderRow();
     userEvent.click(
-      screen.getByRole('button', { name: 'View details for Brooke Butler' }),
+      getByRole('button', { name: 'View details for Brooke Butler' }),
     );
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 
   it('renders the card as a real button so the keyboard can activate it', () => {
-    renderRow();
+    const { getByRole } = renderRow();
     expect(
-      screen.getByRole('button', { name: 'View details for Brooke Butler' }),
+      getByRole('button', { name: 'View details for Brooke Butler' }),
     ).toHaveProperty('tagName', 'BUTTON');
   });
 });
