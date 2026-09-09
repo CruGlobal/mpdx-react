@@ -4,6 +4,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import {
@@ -20,6 +21,8 @@ const mutationSpy = jest.fn();
 const onNavListToggle = jest.fn();
 
 const title = 'MPGA Report';
+const staffAccountId = '1000000001';
+const staffName = 'Jane Doe';
 
 // Twelve positive monthly totals so the category aggregates to income only.
 const generateBreakdown = (base: number) =>
@@ -92,26 +95,44 @@ const mockData = {
   },
 };
 
-const TestComponent: React.FC = () => (
+interface TestComponentProps {
+  staffAccountId?: string;
+  staffName?: string;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({
+  staffAccountId,
+  staffName,
+}) => (
   <ThemeProvider theme={theme}>
-    <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <GqlMockedProvider<{
-        StaffAccount: StaffAccountQuery;
-        MPGATransactions: MpgaTransactionsQuery;
-        ReportsStaffExpenses: ReportsStaffExpensesQuery;
-      }>
-        mocks={mockData}
-        onCall={mutationSpy}
-      >
-        <MPGAIncomeExpensesReportProvider>
-          <MPGAIncomeExpensesReport
-            onNavListToggle={onNavListToggle}
-            isNavListOpen={true}
-            title={title}
-          />
-        </MPGAIncomeExpensesReportProvider>
-      </GqlMockedProvider>
-    </LocalizationProvider>
+    <TestRouter>
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <GqlMockedProvider<{
+          StaffAccount: StaffAccountQuery;
+          MPGATransactions: MpgaTransactionsQuery;
+          ReportsStaffExpenses: ReportsStaffExpensesQuery;
+        }>
+          mocks={{
+            ...mockData,
+            MPGATransactions: {
+              reportsStaffExpenses: {
+                ...mockData.MPGATransactions.reportsStaffExpenses,
+                ...(staffName && { name: staffName }),
+              },
+            },
+          }}
+          onCall={mutationSpy}
+        >
+          <MPGAIncomeExpensesReportProvider staffAccountId={staffAccountId}>
+            <MPGAIncomeExpensesReport
+              onNavListToggle={onNavListToggle}
+              isNavListOpen={true}
+              title={title}
+            />
+          </MPGAIncomeExpensesReportProvider>
+        </GqlMockedProvider>
+      </LocalizationProvider>
+    </TestRouter>
   </ThemeProvider>
 );
 
@@ -147,6 +168,32 @@ describe('MPGAIncomeExpensesReport', () => {
     ).toBeInTheDocument();
 
     expect(await findByText('Test Account')).toBeInTheDocument();
+  });
+
+  describe('supervisor view', () => {
+    it('does not show the view only banner on your own report', async () => {
+      const { findByText, queryByRole } = render(<TestComponent />);
+
+      expect(await findByText('Test Account')).toBeInTheDocument();
+      expect(
+        queryByRole('link', { name: 'Back to MPD Supervisor Report' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('shows the view only banner naming the staff member', async () => {
+      const { findByText, getByRole } = render(
+        <TestComponent staffAccountId={staffAccountId} staffName={staffName} />,
+      );
+
+      expect(
+        await findByText(
+          "Currently viewing Jane Doe's MPGA report · read only.",
+        ),
+      ).toBeInTheDocument();
+      expect(
+        getByRole('link', { name: 'Back to MPD Supervisor Report' }),
+      ).toBeInTheDocument();
+    });
   });
 
   it('should print', async () => {

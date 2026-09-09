@@ -21,6 +21,7 @@ import {
   Filters,
   SettingsDialog,
 } from '../Shared/SettingsDialog/SettingsDialog';
+import { ViewOnlyBanner } from '../Shared/ViewOnlyBanner/ViewOnlyBanner';
 import { DateRange } from '../StaffExpenseReport/Helpers/StaffReportEnum';
 import {
   SimplePrintOnly,
@@ -60,6 +61,8 @@ export const MPGAIncomeExpensesReport: React.FC<
     endDate,
     subtitle,
     transactionYears,
+    staffName,
+    isSupervisorView,
   } = useMPGAIncomeExpenses();
 
   const defaultFilters: Filters = useMemo(
@@ -82,7 +85,16 @@ export const MPGAIncomeExpensesReport: React.FC<
     window.print();
   };
 
-  const { data: staffAccountData, error } = useStaffAccountQuery();
+  const { data: staffAccountData, error } = useStaffAccountQuery({
+    skip: isSupervisorView,
+  });
+
+  const accountName = isSupervisorView
+    ? staffName
+    : staffAccountData?.staffAccount?.name;
+  const isAccountInfoLoading = isSupervisorView
+    ? staffName === undefined
+    : !staffAccountData && !error;
 
   return (
     <>
@@ -110,6 +122,9 @@ export const MPGAIncomeExpensesReport: React.FC<
             title={title}
           />
         </SimpleScreenOnly>
+        {isSupervisorView && (
+          <ViewOnlyBanner staffName={staffName} reportName={t('MPGA')} />
+        )}
         <Box mt={2}>
           <Container>
             <StyledHeaderBox>
@@ -147,10 +162,10 @@ export const MPGAIncomeExpensesReport: React.FC<
                 </StyledPrintButton>
               </SimpleScreenOnly>
             </StyledHeaderBox>
-            {!staffAccountData && !error ? (
+            {isAccountInfoLoading ? (
               <AccountInfoBoxSkeleton />
             ) : (
-              <AccountInfoBox name={staffAccountData?.staffAccount?.name} />
+              <AccountInfoBox name={accountName} />
             )}
           </Container>
         </Box>

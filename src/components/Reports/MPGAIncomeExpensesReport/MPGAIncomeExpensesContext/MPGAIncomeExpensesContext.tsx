@@ -31,6 +31,11 @@ export type ContextType = {
 
   subtitle: string;
 
+  /** Name of the staff member the report covers when staff account id given */
+  staffName: string | undefined;
+  /** Whether a supervisor is viewing another staff member's report */
+  isSupervisorView: boolean;
+
   /** Income and expenses totals */
   totals: {
     income: number;
@@ -59,6 +64,7 @@ export const useMPGAIncomeExpenses = (): ContextType => {
 
 interface Props {
   children?: React.ReactNode;
+  staffAccountId?: string | null;
 }
 
 const sum = (rows?: DataFields[]): number => {
@@ -67,6 +73,7 @@ const sum = (rows?: DataFields[]): number => {
 
 export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
   children,
+  staffAccountId,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -137,8 +144,12 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
       fundTypes: [FundTypes.Primary],
       startMonth: startDate.toISODate(),
       endMonth: endDate.toISODate(),
+      staffAccountId,
     },
   });
+
+  const staffName = reportData?.reportsStaffExpenses?.name;
+  const isSupervisorView = Boolean(staffAccountId);
 
   // Filter out the current year since we only want to show previous years in filter dropdown
   const transactionYears = useMemo(
@@ -253,6 +264,8 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
       endDate,
       transactionYears,
       subtitle,
+      staffName,
+      isSupervisorView,
       totals,
     }),
     [
@@ -268,6 +281,8 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
       endDate,
       transactionYears,
       subtitle,
+      staffName,
+      isSupervisorView,
       totals,
     ],
   );
