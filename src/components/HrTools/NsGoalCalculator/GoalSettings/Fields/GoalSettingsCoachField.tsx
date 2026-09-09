@@ -47,7 +47,8 @@ export const GoalSettingsCoachField: React.FC<GoalSettingsCoachFieldProps> = ({
   // Lazy: most visits to Staff Details never open the list, and it costs an OneApp lookup.
   const [loadCoaches, { data, loading, error, refetch }] =
     useNewStaffCohortAttendeeAssignableCoachesLazyQuery();
-  const [assignCoach] = useAssignCoachToNewStaffCohortAttendeeMutation();
+  const [assignCoach, { loading: assigning }] =
+    useAssignCoachToNewStaffCohortAttendeeMutation();
   const [unassignCoach] = useUnassignCoachFromNewStaffCohortAttendeeMutation();
 
   const { coach } = attendee;
@@ -114,6 +115,9 @@ export const GoalSettingsCoachField: React.FC<GoalSettingsCoachFieldProps> = ({
       <Autocomplete
         autoHighlight
         loading={loading}
+        // A first assignment saves straight from here, so the picker has to
+        // close for that round trip or a second pick races the first.
+        disabled={assigning}
         // Controlled by the assignment, so a declined confirmation reverts the input on its own.
         value={value}
         onOpen={() => loadCoaches({ variables: { attendeeId: attendee.id } })}
@@ -127,22 +131,28 @@ export const GoalSettingsCoachField: React.FC<GoalSettingsCoachFieldProps> = ({
         fullWidth
         // Removing the coach is a first-class action here, so the clear button
         // stays put instead of appearing only on hover.
+        clearText={t('Remove coach')}
         slotProps={{ clearIndicator: { sx: { visibility: 'visible' } } }}
         renderInput={(params) => (
           <TextField
             {...params}
             label={t('Coach')}
             placeholder={t('Select a coach')}
-            inputProps={{ ...params.inputProps, 'aria-busy': loading }}
+            inputProps={{
+              ...params.inputProps,
+              'aria-busy': loading || assigning,
+            }}
             InputProps={{
               ...params.InputProps,
               endAdornment: (
                 <>
-                  {loading && (
+                  {(loading || assigning) && (
                     <CircularProgress
                       color="primary"
                       size={20}
-                      aria-label={t('Loading coaches')}
+                      aria-label={
+                        assigning ? t('Assigning coach') : t('Loading coaches')
+                      }
                     />
                   )}
                   {params.InputProps.endAdornment}
@@ -182,26 +192,30 @@ export const GoalSettingsCoachField: React.FC<GoalSettingsCoachFieldProps> = ({
           {t('The coach could not be removed. Please try again.')}
         </Alert>
       )}
-      <Confirmation
-        isOpen={switchingTo !== null}
-        title={t('Change Coach')}
-        message={t(
-          'Are you sure you want to make {{coach}} the coach for {{name}}? {{current}} will lose access to this account.',
-          { coach: switchingTo?.name, name: subjectName, current: coachName },
-        )}
-        mutation={() => handleAssignCoach(switchingTo?.id ?? '')}
-        handleClose={() => setSwitchingTo(null)}
-      />
-      <Confirmation
-        isOpen={removing}
-        title={t('Remove Coach')}
-        message={t(
-          'Are you sure you want to remove {{coach}} as the coach for {{name}}? They will lose access to this account.',
-          { coach: coachName, name: subjectName },
-        )}
-        mutation={handleRemoveCoach}
-        handleClose={() => setRemoving(false)}
-      />
+      {switchingTo && (
+        <Confirmation
+          isOpen
+          title={t('Change Coach')}
+          message={t(
+            'Are you sure you want to make {{coach}} the coach for {{name}}? {{current}} will lose access to this account.',
+            { coach: switchingTo.name, name: subjectName, current: coachName },
+          )}
+          mutation={() => handleAssignCoach(switchingTo.id)}
+          handleClose={() => setSwitchingTo(null)}
+        />
+      )}
+      {removing && (
+        <Confirmation
+          isOpen
+          title={t('Remove Coach')}
+          message={t(
+            'Are you sure you want to remove {{coach}} as the coach for {{name}}? They will lose access to this account.',
+            { coach: coachName, name: subjectName },
+          )}
+          mutation={handleRemoveCoach}
+          handleClose={() => setRemoving(false)}
+        />
+      )}
     </Box>
   );
 };

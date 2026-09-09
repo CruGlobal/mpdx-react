@@ -9,6 +9,7 @@ import { AssignCoachToNewStaffCohortAttendeeMutation } from 'src/components/HrTo
 import {
   assignableCoachesMock,
   assignedCoachMock,
+  failedAssignableCoachesMock,
 } from 'src/components/HrTools/MpdGoalAdmin/mpdGoalAdminMocks';
 import theme from 'src/theme';
 import {
@@ -42,11 +43,6 @@ const coachedAttendee: GoalSettingsAttendee = {
     email: 'amy@cru.org',
   },
 };
-
-const operation = (name: string) =>
-  mutationSpy.mock.calls.find(
-    ([call]) => call.operation.operationName === name,
-  )?.[0].operation;
 
 interface TestComponentProps {
   household?: GoalSettingsAttendee;
@@ -153,14 +149,16 @@ describe('GoalSettingsCoachField', () => {
 
     expect(getByRole('combobox', { name: 'Coach' })).toHaveValue('');
     // Nothing to clear, so the picker offers no clear button either.
-    expect(queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
+    expect(
+      queryByRole('button', { name: 'Remove coach' }),
+    ).not.toBeInTheDocument();
   });
 
   it('shows the assigned coach with a clear button', () => {
     const { getByRole } = render(<TestComponent household={coachedAttendee} />);
 
     expect(getByRole('combobox', { name: 'Coach' })).toHaveValue('Amy Wilson');
-    expect(getByRole('button', { name: 'Clear' })).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Remove coach' })).toBeInTheDocument();
   });
 
   // The list costs a OneApp lookup, so it must not load until the picker opens.
@@ -172,13 +170,11 @@ describe('GoalSettingsCoachField', () => {
     userEvent.click(getByRole('button', { name: 'Open' }));
 
     await waitFor(() =>
-      expect(
-        operation('NewStaffCohortAttendeeAssignableCoaches'),
-      ).toBeDefined(),
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'NewStaffCohortAttendeeAssignableCoaches',
+        { attendeeId: 'attendee-1' },
+      ),
     );
-    expect(
-      operation('NewStaffCohortAttendeeAssignableCoaches').variables,
-    ).toEqual({ attendeeId: 'attendee-1' });
   });
 
   it('assigns the first coach without a confirmation', async () => {
@@ -188,15 +184,64 @@ describe('GoalSettingsCoachField', () => {
     userEvent.click(await findByRole('option', { name: 'Amy Wilson' }));
 
     await waitFor(() =>
-      expect(
-        operation('AssignCoachToNewStaffCohortAttendee').variables.input,
-      ).toEqual({
-        cohortId: 'cohort-1',
-        attendeeIds: ['attendee-1'],
-        coachId: 'coach-1',
-      }),
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'AssignCoachToNewStaffCohortAttendee',
+        {
+          input: {
+            cohortId: 'cohort-1',
+            attendeeIds: ['attendee-1'],
+            coachId: 'coach-1',
+          },
+        },
+      ),
     );
     expect(queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  // Assigning saves straight from the picker, so it has to close for the round
+  // trip or a second pick races the first.
+  it('closes the picker while an assignment is in flight', async () => {
+    const { getByRole, findByRole } = render(<TestComponent />);
+
+    userEvent.click(getByRole('button', { name: 'Open' }));
+    userEvent.click(await findByRole('option', { name: 'Amy Wilson' }));
+
+    // Asserted synchronously: the mutation resolves on the next microtask, so
+    // an awaited query would miss the in-flight state entirely.
+    expect(getByRole('combobox', { name: 'Coach' })).toBeDisabled();
+
+    await waitFor(() =>
+      expect(getByRole('combobox', { name: 'Coach' })).toBeEnabled(),
+    );
+  });
+
+  // A failed list must not read as "nobody is eligible".
+  it('offers a retry when the coach list fails to load', async () => {
+    const { getByRole, findByRole } = render(
+      <TestComponent
+        mocks={{
+          NewStaffCohortAttendeeAssignableCoaches: failedAssignableCoachesMock,
+        }}
+      />,
+    );
+
+    userEvent.click(getByRole('button', { name: 'Open' }));
+
+    expect(await findByRole('alert')).toHaveTextContent(
+      'The list of coaches could not be loaded, so no coach can be assigned yet.',
+    );
+
+    userEvent.click(getByRole('button', { name: 'Try Again' }));
+
+    await waitFor(() =>
+      expect(
+        mutationSpy.mock.calls.filter(
+          ([{ operation }]) =>
+            operation.operationName ===
+            'NewStaffCohortAttendeeAssignableCoaches',
+        ),
+      ).toHaveLength(2),
+    );
   });
 
   it('confirms the switch before reassigning to another coach', async () => {
@@ -212,18 +257,23 @@ describe('GoalSettingsCoachField', () => {
         'Are you sure you want to make Nelson Jones the coach for John & Jane Doe? Amy Wilson will lose access to this account.',
       ),
     ).toBeInTheDocument();
-    expect(operation('AssignCoachToNewStaffCohortAttendee')).toBeUndefined();
+    expect(mutationSpy).not.toHaveGraphqlOperation(
+      'AssignCoachToNewStaffCohortAttendee',
+    );
 
     userEvent.click(getByRole('button', { name: 'Yes' }));
 
     await waitFor(() =>
-      expect(
-        operation('AssignCoachToNewStaffCohortAttendee').variables.input,
-      ).toEqual({
-        cohortId: 'cohort-1',
-        attendeeIds: ['attendee-1'],
-        coachId: 'coach-3',
-      }),
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'AssignCoachToNewStaffCohortAttendee',
+        {
+          input: {
+            cohortId: 'cohort-1',
+            attendeeIds: ['attendee-1'],
+            coachId: 'coach-3',
+          },
+        },
+      ),
     );
   });
 
@@ -242,7 +292,9 @@ describe('GoalSettingsCoachField', () => {
         'Amy Wilson',
       ),
     );
-    expect(operation('AssignCoachToNewStaffCohortAttendee')).toBeUndefined();
+    expect(mutationSpy).not.toHaveGraphqlOperation(
+      'AssignCoachToNewStaffCohortAttendee',
+    );
   });
 
   it('warns that clearing the coach revokes their access, then unassigns', async () => {
@@ -250,7 +302,7 @@ describe('GoalSettingsCoachField', () => {
       <TestComponent household={coachedAttendee} />,
     );
 
-    userEvent.click(getByRole('button', { name: 'Clear' }));
+    userEvent.click(getByRole('button', { name: 'Remove coach' }));
 
     expect(
       getByText(
@@ -261,9 +313,10 @@ describe('GoalSettingsCoachField', () => {
     userEvent.click(getByRole('button', { name: 'Yes' }));
 
     await waitFor(() =>
-      expect(
-        operation('UnassignCoachFromNewStaffCohortAttendee').variables.input,
-      ).toEqual({ cohortId: 'cohort-1', attendeeIds: ['attendee-1'] }),
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'UnassignCoachFromNewStaffCohortAttendee',
+        { input: { cohortId: 'cohort-1', attendeeIds: ['attendee-1'] } },
+      ),
     );
   });
 
@@ -281,7 +334,7 @@ describe('GoalSettingsCoachField', () => {
       />,
     );
 
-    userEvent.click(getByRole('button', { name: 'Clear' }));
+    userEvent.click(getByRole('button', { name: 'Remove coach' }));
     userEvent.click(getByRole('button', { name: 'Yes' }));
 
     expect(await findByRole('alert')).toHaveTextContent(
@@ -322,13 +375,15 @@ describe('GoalSettingsCoachField', () => {
         'Amy Wilson',
       );
 
-      userEvent.click(getByRole('button', { name: 'Clear' }));
+      userEvent.click(getByRole('button', { name: 'Remove coach' }));
       userEvent.click(getByRole('button', { name: 'Yes' }));
 
       await waitFor(() =>
         expect(getByRole('combobox', { name: 'Coach' })).toHaveValue(''),
       );
-      expect(queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
+      expect(
+        queryByRole('button', { name: 'Remove coach' }),
+      ).not.toBeInTheDocument();
     });
 
     it('shows the new coach after a confirmed switch', async () => {
