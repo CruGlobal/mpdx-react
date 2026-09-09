@@ -73,7 +73,6 @@ export interface MpdGoalAdminContextValue {
   assignableCoachesError: ApolloError | undefined;
   /** Retries the coach list, so its failure is recoverable without a reload. */
   retryAssignableCoaches: () => void;
-  /** Assigns one coach to every row in `rowIds`; rejects when nobody was assigned. */
   /** Resolves with how many of `rowIds` the server assigned; ids gone stale are skipped. */
   assignCoach: (rowIds: string[], coachId: string) => Promise<number>;
 }
