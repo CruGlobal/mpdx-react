@@ -144,6 +144,8 @@ mutation UpdateNewStaffGoalCalculation(
     newStaffGoalCalculation {
       ...NewStaffGoalCalculationFields
     }
+    # A scalar, so the cache write is explicit in useNewStaffGoalCalculation
+    monthlyGoal
   }
 }
 
