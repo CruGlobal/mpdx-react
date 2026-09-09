@@ -17,6 +17,7 @@ export function useHrToolsNavItems(): {
     inMpdGoalCalcIneligibleGroup,
     inNsGoalCalcIneligibleGroup,
     inPdsGoalCalcIneligibleGroup,
+    inMpdSupervisorIneligibleGroup,
     hasNoStaffAccount,
     userLoading,
   } = useIneligibleByGroup();
@@ -93,7 +94,7 @@ export function useHrToolsNavItems(): {
       {
         id: 'mpdSupervisorReport',
         title: t('MPD Supervisor Report'),
-        hideItem: reportsDisabled || hasNoStaffAccount,
+        hideItem: reportsDisabled || inMpdSupervisorIneligibleGroup,
       },
     ].filter((item) => developerBypass || !item.hideItem);
   }, [
@@ -104,6 +105,7 @@ export function useHrToolsNavItems(): {
     inMpdGoalCalcIneligibleGroup,
     inNsGoalCalcIneligibleGroup,
     inPdsGoalCalcIneligibleGroup,
+    inMpdSupervisorIneligibleGroup,
     userLoading,
     hasNoStaffAccount,
     developerBypass,

@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import {
+  Alert,
   Box,
   Table,
   TableBody,
@@ -11,15 +12,17 @@ import {
 } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { DynamicComponentPlaceholder } from 'src/components/DynamicPlaceholders/DynamicComponentPlaceholder';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import {
   MonthlySummaryChart,
   MonthlySummaryChartData,
 } from 'src/components/Reports/MPGAIncomeExpensesReport/Charts/MonthlySummaryChart/MonthlySummaryChart';
-import { MonthlyPayrollSummary } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { monthYearFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
+import { pendingField } from '../../helpers';
+import { useMonthlyPayrollSummaryQuery } from './MonthlyPayrollSummary.generated';
 import { ToggleSummaryView } from './ToggleSummaryView/ToggleSummaryView';
 
 export enum MonthlySummaryView {
@@ -28,11 +31,11 @@ export enum MonthlySummaryView {
 }
 
 interface StaffTabMonthlySummaryProps {
-  monthlySummary: MonthlyPayrollSummary[];
+  staffAccountId: string | null;
 }
 
 export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
-  monthlySummary,
+  staffAccountId,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -41,8 +44,22 @@ export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
     MonthlySummaryView.Table,
   );
 
+  const { data, loading, error } = useMonthlyPayrollSummaryQuery({
+    variables: { staffAccountId: staffAccountId ?? '' },
+    skip: !staffAccountId,
+  });
+  const monthlySummary = data?.monthlyPayrollSummary ?? [];
+
   const formatAccounting = (value: number) =>
     value < 0 ? `(${formatCurrency(Math.abs(value))})` : formatCurrency(value);
+
+  const formatExpense = (value: number) =>
+    value === 0 ? formatCurrency(value) : `(${formatCurrency(value)})`;
+
+  const amountOrDash = (
+    value: number | null | undefined,
+    format: (value: number) => string,
+  ) => (value === null || value === undefined ? pendingField : format(value));
 
   const chartData = useMemo(
     (): MonthlySummaryChartData[] =>
@@ -61,6 +78,28 @@ export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
   );
 
   const showChart = view === MonthlySummaryView.Chart;
+  const hasData = monthlySummary.length > 0;
+
+  const emptyChartData = useMemo((): MonthlySummaryChartData[] => {
+    const thisMonth = DateTime.local().startOf('month');
+    return Array.from({ length: 12 }, (_, index) => {
+      const date = thisMonth.minus({ months: 11 - index });
+      return {
+        month: monthYearFormat(date.month, date.year, locale),
+        income: 0,
+        expenses: 0,
+        net: 0,
+      };
+    });
+  }, [locale]);
+
+  if (loading) {
+    return <DynamicComponentPlaceholder />;
+  }
+
+  if (error) {
+    return <Alert severity="error">{error.message}</Alert>;
+  }
 
   return (
     <>
@@ -78,15 +117,16 @@ export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
       </Box>
       {showChart ? (
         <MonthlySummaryChart
-          data={chartData}
+          data={hasData ? chartData : emptyChartData}
           currency="USD"
           aspect={2.5}
           width={100}
           overrideIncomeText={t('Contributions')}
+          noDataLabel={hasData ? undefined : t('N/A')}
         />
       ) : (
         <TableContainer>
-          <Table aria-label={t('Monthly Summary Table')}>
+          <Table size="small" aria-label={t('Monthly Summary Table')}>
             <TableHead>
               <TableRow>
                 <TableCell>{t('Month')}</TableCell>
@@ -106,10 +146,14 @@ export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
               ) : (
                 monthlySummary.map((summary, index) => {
                   const date = DateTime.fromISO(summary.month ?? '');
-                  const net = summary.net ?? 0;
+                  const { contributions, expenses, net, endBalance } = summary;
 
-                  const isNegativeNet = net < 0;
-                  const netDisplay = formatAccounting(net);
+                  const netColor =
+                    net === null || net === undefined || net === 0
+                      ? 'inherit'
+                      : net < 0
+                        ? theme.palette.error.main
+                        : theme.palette.success.main;
 
                   return (
                     <TableRow key={index}>
@@ -119,26 +163,16 @@ export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
                           : ''}
                       </TableCell>
                       <TableCell>
-                        {formatCurrency(summary.contributions ?? 0)}
+                        {amountOrDash(contributions, formatCurrency)}
                       </TableCell>
-                      <TableCell>{`(${formatCurrency(summary.expenses ?? 0)})`}</TableCell>
-                      <TableCell
-                        align="right"
-                        sx={{
-                          color: isNegativeNet
-                            ? theme.palette.error.main
-                            : net > 0
-                              ? theme.palette.success.main
-                              : 'inherit',
-                        }}
-                      >
-                        {netDisplay}
+                      <TableCell>
+                        {amountOrDash(expenses, formatExpense)}
+                      </TableCell>
+                      <TableCell align="right" sx={{ color: netColor }}>
+                        {amountOrDash(net, formatAccounting)}
                       </TableCell>
                       <TableCell align="right">
-                        {summary.endBalance === null ||
-                        summary.endBalance === undefined
-                          ? '—'
-                          : formatAccounting(summary.endBalance)}
+                        {amountOrDash(endBalance, formatAccounting)}
                       </TableCell>
                     </TableRow>
                   );
