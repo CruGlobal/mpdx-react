@@ -344,7 +344,8 @@ describe('GoalsTable', () => {
   });
 
   it('assigns a coach to the row from the Assign Coach modal', async () => {
-    const { getByRole, findByRole } = await renderWithCoaches();
+    const { getByRole, findByRole, queryByRole, queryByText } =
+      await renderWithCoaches();
     // 'John & Jane Doe' (row-1) is the only attendee without a coach.
     userEvent.click(getByRole('button', { name: 'Assign Coach' }));
 
@@ -367,6 +368,13 @@ describe('GoalsTable', () => {
         },
       ),
     );
+
+    // The modal closing is the whole confirmation; the row updates from the payload.
+    await waitFor(() => expect(queryByRole('dialog')).not.toBeInTheDocument());
+    expect(queryByText('Coach assigned successfully.')).not.toBeInTheDocument();
+    expect(
+      queryByText('No staff were eligible for a coach.'),
+    ).not.toBeInTheDocument();
   });
 
   // The row's own assign has no success toast, so a skipped row would otherwise look assigned.
