@@ -1,4 +1,5 @@
 import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { merge } from 'lodash';
 import { DeepPartial } from 'ts-essentials';
 import {
@@ -20,13 +21,19 @@ const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
       requestedSeca: 10002,
       contributing403bAmount: 10003,
       requestedGross: 10004,
-      effectiveCap: 10005,
+      requestedYtdGross: 10005,
+      ytdAsrAmount: 1,
+      unpaidAsrAmount: 1,
+      effectiveCap: 10006,
     },
     spouseCalculations: {
       requestedSeca: 20002,
       contributing403bAmount: 20003,
       requestedGross: 20004,
-      effectiveCap: 20005,
+      requestedYtdGross: 20005,
+      ytdAsrAmount: 1,
+      unpaidAsrAmount: 1,
+      effectiveCap: 20006,
     },
   };
 
@@ -101,7 +108,7 @@ We'll forward your request to them and get back to you with their decision.",
         expect(getByTestId('RequestSummaryCard-status')).toHaveTextContent(
           "Your Combined Gross Requested Salary is within your Combined Maximum Allowable Salary. \
 However, John's Gross Requested Salary exceeds their individual Maximum Allowable Salary. \
-If this is correct, please provide reasoning for why John's Requested Salary should exceed $10,005.00 in the Additional Information section below \
+If this is correct, please provide reasoning for why John's Requested Salary should exceed $10,006.00 in the Additional Information section below \
 or make changes to how your Requested Salary is distributed above.",
         ),
       );
@@ -126,7 +133,7 @@ or make changes to how your Requested Salary is distributed above.",
         expect(getByTestId('RequestSummaryCard-status')).toHaveTextContent(
           "Your Combined Gross Requested Salary is within your Combined Maximum Allowable Salary. \
 However, Jane's Gross Requested Salary exceeds their individual Maximum Allowable Salary. \
-If this is correct, please provide reasoning for why Jane's Requested Salary should exceed $20,005.00 in the Additional Information section below \
+If this is correct, please provide reasoning for why Jane's Requested Salary should exceed $20,006.00 in the Additional Information section below \
 or make changes to how your Requested Salary is distributed above.",
         ),
       );
@@ -167,7 +174,7 @@ This may affect your selected effective date.',
       expect(
         getByTestId('RequestSummaryCard-requestedVsMax'),
       ).toHaveTextContent(
-        'Combined Gross Salary / Max Allowable Salary$30,008.00 / $30,010.00',
+        'Combined Total Gross Salary This Year / Max Allowable Salary$30,010.00 / $30,012.00',
       ),
     );
   });
@@ -182,6 +189,49 @@ This may affect your selected effective date.',
     );
   });
 
+  it('compares the YTD gross against the cap', async () => {
+    const { getByTestId } = render(
+      <TestComponent
+        hasSpouse={false}
+        salaryRequestMock={{ calculations: { requestedYtdGross: 12000 } }}
+      />,
+    );
+
+    await waitFor(() =>
+      expect(
+        getByTestId('RequestSummaryCard-requestedVsMax'),
+      ).toHaveTextContent('$12,000.00 / $10,006.00'),
+    );
+    expect(getByTestId('RequestSummaryCard-remaining')).toHaveTextContent(
+      '-$1,994.00',
+    );
+  });
+
+  it('splits the distribution bar between the salary components and the ASRs', async () => {
+    const { findByTestId } = render(
+      <TestComponent
+        hasSpouse={false}
+        salaryRequestMock={{
+          salary: 20000,
+          calculations: {
+            requestedSeca: 5000,
+            contributing403bAmount: 5000,
+            requestedGross: 30000,
+            ytdAsrAmount: 10000,
+            requestedYtdGross: 40000,
+            effectiveCap: 40000,
+          },
+        }}
+      />,
+    );
+
+    const segments = Array.from((await findByTestId('Distribution')).children);
+    expect(segments[0]).toHaveStyle('width: 50%');
+    expect(segments[1]).toHaveStyle('width: 25%');
+    expect(segments[2]).toHaveStyle('width: 12.5%');
+    expect(segments[3]).toHaveStyle('width: 12.5%');
+  });
+
   describe('table', () => {
     it('renders table headers, row headers, and cells', async () => {
       const { getByRole } = render(<TestComponent />);
@@ -194,6 +244,8 @@ This may affect your selected effective date.',
             'SECA and Related Federal Taxes',
             '403b Contribution',
             'Gross Requested Salary',
+            'Additional Salary Requested This YearDoes not include backpay for 2020.',
+            'Total Gross Salary This Year',
             'Maximum Allowable Salary',
           ],
           cells: [
@@ -201,10 +253,77 @@ This may affect your selected effective date.',
             ['$10,002.00', '$20,002.00'],
             ['$10,003.00', '$20,003.00'],
             ['$10,004.00', '$20,004.00'],
+            ['$1.00', '$1.00'],
             ['$10,005.00', '$20,005.00'],
+            ['$10,006.00', '$20,006.00'],
           ],
         }),
       );
+    });
+
+    it('shows the additional salary bridging the gross and YTD gross', async () => {
+      const { getByRole } = render(
+        <TestComponent
+          hasSpouse={false}
+          salaryRequestMock={{
+            calculations: {
+              requestedGross: 60000,
+              requestedYtdGross: 75000,
+              ytdAsrAmount: 15000,
+            },
+          }}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(getByRole('table')).toHaveTableStructure({
+          cells: [
+            '$10,001.00',
+            '$10,002.00',
+            '$10,003.00',
+            '$60,000.00',
+            '$15,000.00',
+            '$75,000.00',
+            '$10,006.00',
+          ],
+        }),
+      );
+    });
+
+    it('explains how much of the amount is still unpaid', async () => {
+      const { findAllByTestId, findByRole } = render(
+        <TestComponent
+          salaryRequestMock={{
+            calculations: { ytdAsrAmount: 5000, unpaidAsrAmount: 2000 },
+            spouseCalculations: { ytdAsrAmount: 3000, unpaidAsrAmount: 1000 },
+          }}
+        />,
+      );
+
+      const [icon] = await findAllByTestId('YtdAsrTooltip');
+      expect(icon.closest('tr')).toHaveTextContent(
+        'Additional Salary Requested This Year',
+      );
+      expect(icon.closest('tr')).toHaveTextContent('$5,000.00');
+
+      userEvent.hover(icon);
+      expect(await findByRole('tooltip')).toHaveTextContent(
+        '$2,000.00 of this is awaiting approval or payment',
+      );
+    });
+
+    it('omits the explanation when nothing is unpaid', async () => {
+      const { findByRole, queryByTestId } = render(
+        <TestComponent
+          hasSpouse={false}
+          salaryRequestMock={{
+            calculations: { ytdAsrAmount: 5000, unpaidAsrAmount: 0 },
+          }}
+        />,
+      );
+
+      await findByRole('table');
+      expect(queryByTestId('YtdAsrTooltip')).not.toBeInTheDocument();
     });
 
     it('shows SECA opt-out text', async () => {
@@ -234,7 +353,7 @@ This may affect your selected effective date.',
         expect(
           getByTestId('RequestSummaryCard-requestedVsMax'),
         ).toHaveTextContent(
-          'Your Gross Requested Salary / Max Allowable Salary$10,004.00 / $10,005.00',
+          'Total Gross Salary This Year / Max Allowable Salary$10,005.00 / $10,006.00',
         ),
       );
 
@@ -250,6 +369,8 @@ This may affect your selected effective date.',
             'SECA and Related Federal Taxes',
             '403b Contribution',
             'Gross Requested Salary',
+            'Additional Salary Requested This YearDoes not include backpay for 2020.',
+            'Total Gross Salary This Year',
             'Maximum Allowable Salary',
           ],
           cells: [
@@ -257,7 +378,9 @@ This may affect your selected effective date.',
             '$10,002.00',
             '$10,003.00',
             '$10,004.00',
+            '$1.00',
             '$10,005.00',
+            '$10,006.00',
           ],
         }),
       );

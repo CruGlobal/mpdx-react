@@ -90,13 +90,7 @@ describe('ViewForm', () => {
   });
 
   it('should not render total salary requested or approval process when under cap', () => {
-    const { queryByText } = renderComponent({
-      contextOverrides: {
-        user: {
-          currentSalary: { grossSalaryAmount: 1000 },
-        },
-      },
-    });
+    const { queryByText } = renderComponent();
 
     expect(queryByText('Total Salary Requested')).not.toBeInTheDocument();
     expect(queryByText('Approval Process')).not.toBeInTheDocument();

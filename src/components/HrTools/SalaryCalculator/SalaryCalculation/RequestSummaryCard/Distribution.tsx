@@ -20,6 +20,7 @@ export const Distribution: React.FC<DistributionProps> = ({
   invalid,
 }) => (
   <DistributionContainer
+    data-testid="Distribution"
     sx={(theme) => ({
       border: invalid ? `2px solid ${theme.palette.error.main}` : undefined,
     })}
