@@ -9,7 +9,7 @@ import {
 } from '@mui/lab';
 import { Box, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { AsrStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
@@ -45,6 +45,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
     totalAdditionalSalaryRequested,
     submittedAt,
     changesRequestedAt,
+    approvedAt,
   } = request;
 
   const handlePrint = () => {
@@ -152,7 +153,20 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
-              {isApproved ? (
+              {status === AsrStatusEnum.ApprovedNotPaid ? (
+                <Typography>
+                  <Trans
+                    t={t}
+                    defaults="<bold>Request approved on:</bold> {{date}}"
+                    values={{
+                      date: approvedAt
+                        ? dateFormat(DateTime.fromISO(approvedAt), locale)
+                        : '',
+                    }}
+                    components={{ bold: <strong /> }}
+                  />
+                </Typography>
+              ) : status === AsrStatusEnum.ApprovedAndPaid ? (
                 <Typography sx={{ fontWeight: 'bold' }}>
                   {t('Request processed')}
                 </Typography>
@@ -199,9 +213,16 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
                   <Typography paragraph>{request?.feedback}</Typography>
                 </>
               ) : status === AsrStatusEnum.ApprovedNotPaid ? (
-                <Typography sx={{ fontWeight: 'bold' }}>
-                  {t('Payroll processing')}
-                </Typography>
+                <>
+                  <Typography sx={{ fontWeight: 'bold' }}>
+                    {t('Payroll processing')}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                    {t(
+                      'You are unable to create a new Additional Salary Request until this one has been paid.',
+                    )}
+                  </Typography>
+                </>
               ) : (
                 <Typography sx={{ fontWeight: 'bold' }}>
                   {t('Request complete')}
