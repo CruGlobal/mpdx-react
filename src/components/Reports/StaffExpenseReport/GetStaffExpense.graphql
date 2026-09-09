@@ -2,12 +2,16 @@ query ReportsStaffExpenses(
   $startMonth: ISO8601Date
   $endMonth: ISO8601Date
   $fundTypes: [String!]
+  $staffAccountId: String
 ) {
   reportsStaffExpenses(
     startMonth: $startMonth
     endMonth: $endMonth
     fundTypes: $fundTypes
+    staffAccountId: $staffAccountId
   ) {
+    accountId
+    name
     funds {
       id
       fundType

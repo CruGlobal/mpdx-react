@@ -94,6 +94,17 @@ function FilterConsumer() {
   );
 }
 
+function StaffAccountConsumer() {
+  const { staffName, isSupervisorView } = useMPGAIncomeExpenses();
+
+  return (
+    <div>
+      <div data-testid="staffName">{staffName ?? 'none'}</div>
+      <div data-testid="isSupervisorView">{String(isSupervisorView)}</div>
+    </div>
+  );
+}
+
 describe('MPGAIncomeExpensesContext', () => {
   it('throws an error when used outside of the provider', () => {
     const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -203,10 +214,71 @@ describe('MPGAIncomeExpensesContext', () => {
     });
   });
 
+  describe('supervisor view', () => {
+    it('queries the logged-in user own report when no staffAccountId is given', async () => {
+      const { getByTestId } = render(
+        <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
+          <StaffAccountConsumer />
+        </MPGAIncomeExpensesReportTestWrapper>,
+      );
+
+      expect(getByTestId('isSupervisorView')).toHaveTextContent('false');
+
+      await waitFor(() =>
+        expect(getByTestId('staffName')).toHaveTextContent('Test Account'),
+      );
+    });
+
+    it('queries the given staff account and flags supervisor view', async () => {
+      const { getByTestId } = render(
+        <MPGAIncomeExpensesReportTestWrapper
+          staffAccountId="987654"
+          onCall={mutationSpy}
+        >
+          <StaffAccountConsumer />
+        </MPGAIncomeExpensesReportTestWrapper>,
+      );
+
+      expect(getByTestId('isSupervisorView')).toHaveTextContent('true');
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('MPGATransactions', {
+          staffAccountId: '987654',
+          fundTypes: ['Primary'],
+        }),
+      );
+    });
+
+    it('exposes the staff account name from the response', async () => {
+      const { getByTestId } = render(
+        <MPGAIncomeExpensesReportTestWrapper
+          staffAccountId="987654"
+          mocks={{
+            reportsStaffExpenses: {
+              accountId: '987654',
+              name: 'Jane Doe',
+              transactionYears: [],
+              funds: [],
+            },
+          }}
+          onCall={mutationSpy}
+        >
+          <StaffAccountConsumer />
+        </MPGAIncomeExpensesReportTestWrapper>,
+      );
+
+      await waitFor(() =>
+        expect(getByTestId('staffName')).toHaveTextContent('Jane Doe'),
+      );
+    });
+  });
+
   describe('transaction years', () => {
     it('excludes the current year from the list', async () => {
       const yearsMock: MpgaTransactionsQuery = {
         reportsStaffExpenses: {
+          accountId: 'staff-account-1',
+          name: 'Test Account',
           transactionYears: [2018, 2019, 2020],
           funds: [],
         },

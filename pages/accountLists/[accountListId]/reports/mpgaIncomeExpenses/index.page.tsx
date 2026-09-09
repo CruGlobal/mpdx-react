@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -11,8 +12,12 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
-import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
+import {
+  RequiredUserGroupEnum,
+  UserTypeAccess,
+} from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { getAppName } from 'src/lib/getAppName';
+import { getQueryParam } from 'src/lib/queryParam';
 
 const MPGAReportPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -21,6 +26,8 @@ const MPGAReportPageWrapper = styled(Box)(({ theme }) => ({
 const MPGAReportPage: React.FC = () => {
   const appName = getAppName();
   const { t } = useTranslation();
+  const { query } = useRouter();
+  const staffAccountId = getQueryParam(query, 'staffAccountId');
 
   const [isNavListOpen, setIsNavListOpen] = useState<boolean>(false);
 
@@ -35,7 +42,12 @@ const MPGAReportPage: React.FC = () => {
           'Income/Expense Analysis',
         )}`}</title>
       </Head>
-      <UserTypeAccess requireStaffAccount>
+      <UserTypeAccess
+        requireStaffAccount={!staffAccountId}
+        requireUserGroups={
+          staffAccountId ? RequiredUserGroupEnum.MpdSupervisor : undefined
+        }
+      >
         <MPGAReportPageWrapper>
           <SidePanelsLayout
             isScrollBox={false}
@@ -50,7 +62,7 @@ const MPGAReportPage: React.FC = () => {
             leftOpen={isNavListOpen}
             leftWidth="290px"
             mainContent={
-              <MPGAIncomeExpensesReportProvider>
+              <MPGAIncomeExpensesReportProvider staffAccountId={staffAccountId}>
                 <MPGAIncomeExpensesReport
                   isNavListOpen={isNavListOpen}
                   onNavListToggle={handleNavListToggle}

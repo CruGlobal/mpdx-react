@@ -1,9 +1,21 @@
 import React from 'react';
-import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { ViewReportLink } from '../ViewReportLink/ViewReportLink';
 
-export const StaffTabMPGA: React.FC = () => {
+interface StaffTabMPGAProps {
+  staffAccountId: string | null;
+}
+
+export const StaffTabMPGA: React.FC<StaffTabMPGAProps> = ({
+  staffAccountId,
+}) => {
   const { t } = useTranslation();
 
-  return <Typography>{t('MPGA')}</Typography>;
+  return (
+    <ViewReportLink
+      staffAccountId={staffAccountId}
+      reportLink="mpgaIncomeExpenses"
+      reportName={t('MPGA')}
+    />
+  );
 };

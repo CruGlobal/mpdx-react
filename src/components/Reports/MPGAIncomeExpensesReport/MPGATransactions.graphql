@@ -2,12 +2,16 @@ query MPGATransactions(
   $fundTypes: [String!]
   $startMonth: ISO8601Date
   $endMonth: ISO8601Date
+  $staffAccountId: String
 ) {
   reportsStaffExpenses(
     fundTypes: $fundTypes
     startMonth: $startMonth
     endMonth: $endMonth
+    staffAccountId: $staffAccountId
   ) {
+    accountId
+    name
     transactionYears
     funds {
       categories {
