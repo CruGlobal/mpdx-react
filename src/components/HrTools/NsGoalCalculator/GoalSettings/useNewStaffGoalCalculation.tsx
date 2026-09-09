@@ -78,18 +78,19 @@ export const useNewStaffGoalCalculation = (
 
   const [updateGoalCalculation] = useUpdateNewStaffGoalCalculationMutation();
 
+  const accountListId = isScenario ? null : source.accountListId;
+
   return {
     goalCalculation,
     loading,
     error,
     fallback,
     isScenario,
-    accountListId: isScenario ? null : source.accountListId,
+    accountListId,
     save: async (attributes) => {
       if (!goalCalculation) {
         return;
       }
-      const accountListId = isScenario ? null : source.accountListId;
 
       return updateGoalCalculation({
         variables: {
@@ -107,11 +108,16 @@ export const useNewStaffGoalCalculation = (
           if (accountListId === null || typeof monthlyGoal !== 'number') {
             return;
           }
+          const cacheId = cache.identify({
+            __typename: 'AccountList',
+            id: accountListId,
+          });
+          // Without an id, cache.modify would silently target ROOT_QUERY instead.
+          if (!cacheId) {
+            return;
+          }
           cache.modify({
-            id: cache.identify({
-              __typename: 'AccountList',
-              id: accountListId,
-            }),
+            id: cacheId,
             fields: { monthlyGoal: () => monthlyGoal },
           });
         },
