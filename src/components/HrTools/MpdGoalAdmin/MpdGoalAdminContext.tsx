@@ -14,6 +14,10 @@ import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
 import { getQueryParam } from 'src/lib/queryParam';
 import {
+  AssignCoachOption,
+  coachToOption,
+} from '../Shared/AssignCoach/coachHelpers';
+import {
   useAssignCoachToNewStaffCohortAttendeeMutation,
   useNewStaffCohortAssignableCoachesQuery,
 } from './AssignCoach.generated';
@@ -24,13 +28,11 @@ import {
   useUpdateNewStaffCohortMutation,
 } from './NewStaffCohorts.generated';
 import {
-  AssignCoachOption,
   Cohort,
   MpdGoalAdminTabEnum,
   StaffGoalRow,
   TrainingCosts,
   attendeeToRow,
-  coachToOption,
   cohortNodeToCohort,
   parseMpdGoalAdminTab,
   trainingCostsToAttributes,

@@ -6,6 +6,7 @@ import {
   NewStaffQuestionnaireMaritalStatusEnum,
 } from 'src/graphql/types.generated';
 import { dateFormatShort } from 'src/lib/intlFormat';
+import { CoachFields } from '../Shared/AssignCoach/coachHelpers';
 import { StatusChipColor } from '../Shared/StatusChip';
 import {
   NewStaffCohortAttendeesQuery,
@@ -77,38 +78,6 @@ export interface StaffGoalRow {
   /** Read-only OneApp coordinators; a ministry commonly has several. */
   coordinators: string[];
 }
-
-/** One selectable coach in the Assign Coach picker. */
-export interface AssignCoachOption {
-  id: string;
-  name: string;
-}
-
-/** Every identifier is independently nullable, so labelling has to fall back. */
-export interface CoachFields {
-  id: string;
-  firstName?: string | null;
-  lastName?: string | null;
-  email?: string | null;
-}
-
-/** Both names are nullable, so a coach can legitimately have no name at all. */
-export const coachName = (
-  coach: Pick<CoachFields, 'firstName' | 'lastName'>,
-): string | null =>
-  [coach.firstName, coach.lastName].filter(Boolean).join(' ') || null;
-
-/** The picker and the Coach cell share this so the two can never disagree. */
-export const coachLabel = (coach: CoachFields, t: TFunction): string =>
-  coachName(coach) ?? coach.email ?? t('Unnamed coach');
-
-export const coachToOption = (
-  coach: CoachFields,
-  t: TFunction,
-): AssignCoachOption => ({
-  id: coach.id,
-  name: coachLabel(coach, t),
-});
 
 /** USD costs from the modal; one key per `NewStaffCohort::COST_FIELDS` column. */
 export interface TrainingCosts {

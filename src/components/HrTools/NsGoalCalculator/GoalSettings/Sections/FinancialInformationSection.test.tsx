@@ -17,6 +17,7 @@ const defaultProps: GoalSettingsSectionProps = {
   spouseName: 'Jane',
   visibleHeaders: ['John (Joining)', 'Jane (Senior)'],
   sharedHeader: 'John (Joining) & Jane (Senior)',
+  attendee: null,
 };
 
 const TestComponent: React.FC<Partial<GoalSettingsSectionProps>> = (

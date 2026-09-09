@@ -1,5 +1,10 @@
 import { NewStaffGoalCalculationFieldsFragment } from './NewStaffGoalCalculation.generated';
 
+/** The cohort household behind the calculation; null outside the MPD Goals team. */
+export type GoalSettingsAttendee = NonNullable<
+  NewStaffGoalCalculationFieldsFragment['newStaffCohortAttendee']
+>;
+
 export interface GoalSettingsSectionProps {
   hasSpouse: boolean;
   /**
@@ -23,4 +28,6 @@ export interface GoalSettingsSectionProps {
   visibleHeaders: string[];
   /** Combined household header, e.g. "John (Joining) & Jane (Senior)". */
   sharedHeader: string;
+  /** Attendee-owned read-only values; absent for scenario goals and non-admins. */
+  attendee: GoalSettingsAttendee | null;
 }

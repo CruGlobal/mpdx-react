@@ -5,8 +5,20 @@ import {
   NsGoalCalculatorTestWrapper,
   defaultGoalCalculation,
 } from '../../NsGoalCalculatorTestWrapper';
-import { GoalSettingsSectionProps } from '../goalSettingsSectionProps';
+import {
+  GoalSettingsAttendee,
+  GoalSettingsSectionProps,
+} from '../goalSettingsSectionProps';
 import { NsoInformationSection } from './NsoInformationSection';
+
+const defaultAttendee: GoalSettingsAttendee = {
+  id: 'attendee-1',
+  newStaffCohortId: 'cohort-1',
+  cohortName: 'Fall NSO 2026',
+  coordinators: ['Ada Lovelace'],
+  ministry: { id: 'ministry-1', name: 'Campus' },
+  coach: null,
+};
 
 const defaultProps: GoalSettingsSectionProps = {
   hasSpouse: true,
@@ -16,6 +28,7 @@ const defaultProps: GoalSettingsSectionProps = {
   spouseName: 'Jane',
   visibleHeaders: ['John (Joining)', 'Jane (Senior)'],
   sharedHeader: 'John (Joining) & Jane (Senior)',
+  attendee: null,
 };
 
 const TestComponent: React.FC<Partial<GoalSettingsSectionProps>> = (
@@ -50,6 +63,26 @@ describe('NsoInformationSection', () => {
     expect(
       getByRole('spinbutton', { name: 'Support Raised for NSO' }),
     ).toBeInTheDocument();
+  });
+
+  it('renders the training row with the cohort name when an attendee is given', () => {
+    const { getByRole } = render(<TestComponent attendee={defaultAttendee} />);
+
+    expect(getByRole('textbox', { name: 'Training' })).toHaveValue(
+      'Fall NSO 2026',
+    );
+  });
+
+  it('hides the training row when there is no attendee', () => {
+    const { queryByRole, queryByText } = render(
+      <TestComponent attendee={null} />,
+    );
+
+    expect(
+      queryByRole('textbox', { name: 'Training' }),
+    ).not.toBeInTheDocument();
+    // The row label lives outside the field, so it has to go with it.
+    expect(queryByText('Training')).not.toBeInTheDocument();
   });
 
   it('renders the left-to-raise amount from the calculations prop', () => {

@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GoalCalculationRole } from 'src/graphql/types.generated';
 import { getLocalizedRole } from 'src/lib/functions/getLocalizedRole';
-import { GoalSettingsPlaceholder } from '../Fields/GoalSettingsPlaceholder';
+import { GoalSettingsReadOnlyField } from '../Fields/GoalSettingsReadOnlyField';
 import { GoalSettingsSelect, SelectOption } from '../Fields/GoalSettingsSelect';
 import { GoalSettingsTextField } from '../Fields/GoalSettingsTextField';
 import { ColumnHeaderRow, FieldRow, Section } from '../GoalSettingsLayout';
@@ -10,8 +10,10 @@ import { GoalSettingsSectionProps } from '../goalSettingsSectionProps';
 
 export const MinistryInformationSection: React.FC<GoalSettingsSectionProps> = ({
   sharedHeader,
+  attendee,
 }) => {
   const { t } = useTranslation();
+  const ministryName = attendee?.ministry?.name;
 
   const roleOptions = useMemo<SelectOption[]>(
     () =>
@@ -30,13 +32,15 @@ export const MinistryInformationSection: React.FC<GoalSettingsSectionProps> = ({
         <GoalSettingsTextField name="ministryLocation" label={t('Location')} />
       </FieldRow>
 
-      {/* TODO(MPDX-9796): Attendee field */}
-      <FieldRow label={t('Ministry')}>
-        <GoalSettingsPlaceholder
-          label={t('Ministry')}
-          value={t('Campus: University')}
-        />
-      </FieldRow>
+      {/* Scenario goals have no attendee, so the row would only ever be blank. */}
+      {ministryName && (
+        <FieldRow label={t('Ministry')}>
+          <GoalSettingsReadOnlyField
+            label={t('Ministry')}
+            value={ministryName}
+          />
+        </FieldRow>
+      )}
 
       <FieldRow label={t('Field or Office')}>
         <GoalSettingsSelect

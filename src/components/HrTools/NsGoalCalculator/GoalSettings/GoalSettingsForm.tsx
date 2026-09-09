@@ -190,6 +190,7 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
               ? `${primaryHeader} & ${spouseHeader}`
               : primaryHeader,
             seniorStaff: seniorStaffSpouse,
+            attendee: calculation.newStaffCohortAttendee ?? null,
           };
 
           return (
@@ -206,6 +207,7 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
                   joinedStaffYear={calculation.joinedStaffYear}
                   isScenario={isScenario}
                   isComplete={isGoalSettingsComplete(values)}
+                  attendee={calculation.newStaffCohortAttendee ?? null}
                 />
 
                 <Divider sx={{ mb: 3 }} />

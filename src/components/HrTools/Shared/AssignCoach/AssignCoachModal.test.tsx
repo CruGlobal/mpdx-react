@@ -4,8 +4,8 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import theme from 'src/theme';
-import { AssignCoachOption } from '../mpdGoalAdminHelpers';
 import { AssignCoachModal } from './AssignCoachModal';
+import { AssignCoachOption } from './coachHelpers';
 
 const coaches: AssignCoachOption[] = [
   { id: 'coach-1', name: 'Jane Coach' },
@@ -147,6 +147,31 @@ describe('AssignCoachModal', () => {
     );
     expect(alert).toHaveTextContent('John & Jane Doe');
     expect(alert).toHaveTextContent("James O'Connor");
+  });
+
+  it('warns without a count or a list when the subject is the only staff reassigned', () => {
+    const { getByRole } = render(
+      <TestComponent reassignedNames={['Carlos & Michaela Everts']} />,
+    );
+
+    const alert = getByRole('alert');
+    expect(alert).toHaveTextContent(
+      'A coach is already assigned. Assigning a new coach will replace the current coach.',
+    );
+    expect(alert).not.toHaveTextContent('Carlos & Michaela Everts');
+    expect(alert.querySelector('li')).not.toBeInTheDocument();
+  });
+
+  it('still counts and lists a lone reassignment from a wider selection', () => {
+    const { getByRole } = render(
+      <TestComponent reassignedNames={['John & Jane Doe']} />,
+    );
+
+    const alert = getByRole('alert');
+    expect(alert).toHaveTextContent(
+      '1 of the selected staff already have a coach.',
+    );
+    expect(alert).toHaveTextContent('John & Jane Doe');
   });
 
   it('does not warn when no selected staff already have a coach', () => {

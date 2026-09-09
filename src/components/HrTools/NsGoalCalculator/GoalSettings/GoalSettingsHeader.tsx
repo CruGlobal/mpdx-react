@@ -8,17 +8,11 @@ import { useTranslation } from 'react-i18next';
 import { CalculationYearTooltip } from '../../Shared/CalculationYearTooltip';
 import { StatusChip } from '../../Shared/StatusChip';
 import { CoordinatorList } from './Fields/CoordinatorList';
-import { GoalSettingsPlaceholder } from './Fields/GoalSettingsPlaceholder';
+import { GoalSettingsCoachField } from './Fields/GoalSettingsCoachField';
 import { GoalSettingsSelect, SelectOption } from './Fields/GoalSettingsSelect';
 import { MpdGoalPreview } from './MpdGoalPreview';
 import { GoalSettingsPerson } from './goalSettingsFormValues';
-
-// Stand-ins until MPDX-9796 exposes coordinators on the goal calculation.
-const placeholderCoordinators = [
-  'Nancy Coleman',
-  'Francis Powell',
-  'Gerald Christianson',
-];
+import { GoalSettingsAttendee } from './goalSettingsSectionProps';
 
 interface ContactLineProps {
   icon: React.ReactNode;
@@ -76,8 +70,8 @@ interface GoalSettingsHeaderProps {
    * Whether the required fields are filled in.
    */
   isComplete?: boolean;
-  /** MPDX-9796 will pass the attendee's coordinators from the calculation. */
-  coordinators?: string[];
+  /** The cohort household; null for scenario goals and outside the MPD Goals team. */
+  attendee: GoalSettingsAttendee | null;
 }
 
 export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
@@ -87,7 +81,7 @@ export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
   joinedStaffYear,
   isScenario = false,
   isComplete = false,
-  coordinators = placeholderCoordinators,
+  attendee,
 }) => {
   const { t } = useTranslation();
   const yearLabelId = useId();
@@ -184,14 +178,15 @@ export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
             }}
           >
             <Stack spacing={3}>
-              {/* TODO(MPDX-9796): Attendee field */}
-              <GoalSettingsPlaceholder
-                label={t('Coach')}
-                value={t('Amy Wilson')}
-                showLabel
-              />
-              {/* TODO(MPDX-9796): real coordinators from the calculation */}
-              <CoordinatorList coordinators={coordinators} />
+              {attendee && (
+                <>
+                  <GoalSettingsCoachField
+                    attendee={attendee}
+                    subjectName={householdTitle}
+                  />
+                  <CoordinatorList coordinators={attendee.coordinators} />
+                </>
+              )}
             </Stack>
           </Grid>
         </Grid>

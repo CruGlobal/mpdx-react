@@ -25,8 +25,9 @@ import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
+import { AssignCoachModal } from '../../Shared/AssignCoach/AssignCoachModal';
+import { coachLabel } from '../../Shared/AssignCoach/coachHelpers';
 import { StatusChip } from '../../Shared/StatusChip';
-import { AssignCoachModal } from '../AssignCoachModal/AssignCoachModal';
 import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import { RunAndSendModal } from '../RunAndSendModal/RunAndSendModal';
 import { RunAndSendTooltip } from '../RunAndSendTooltip';
@@ -34,7 +35,6 @@ import {
   DEFAULT_ROWS_PER_PAGE,
   GoalStatusEnum,
   StaffGoalRow,
-  coachLabel,
   familyStatusLabel,
   goalStatusColor,
   goalStatusLabel,
