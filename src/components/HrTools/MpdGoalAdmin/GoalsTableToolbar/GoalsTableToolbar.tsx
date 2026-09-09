@@ -49,11 +49,28 @@ export const GoalsTableToolbar: React.FC = () => {
 
   // Rejecting keeps the modal open with its error, so nothing below runs.
   const handleAssignCoach = async (coachId: string) => {
-    await assignCoach(
+    const assignedCount = await assignCoach(
       selectedRows.map((row) => row.id),
       coachId,
     );
-    enqueueSnackbar(t('Coach assigned successfully.'), { variant: 'success' });
+
+    // Zero means every row went stale server-side, which is not a success.
+    if (assignedCount === 0) {
+      enqueueSnackbar(t('No staff were eligible for a coach.'), {
+        variant: 'info',
+      });
+      return;
+    }
+
+    enqueueSnackbar(
+      assignedCount < selectedCount
+        ? t('Coach assigned to {{assignedCount}} of {{selectedCount}} staff.', {
+            assignedCount,
+            selectedCount,
+          })
+        : t('Coach assigned successfully.'),
+      { variant: 'success' },
+    );
     clearSelection();
   };
 

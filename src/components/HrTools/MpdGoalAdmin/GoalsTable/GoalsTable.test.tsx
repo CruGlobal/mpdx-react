@@ -50,7 +50,13 @@ const Providers: React.FC<{
   children: React.ReactNode;
   cohorts?: NewStaffCohortsQuery;
   coaches?: NewStaffCohortAssignableCoachesQuery;
-}> = ({ children, cohorts = cohortsMock, coaches = assignableCoachesMock }) => (
+  assignCoach?: AssignCoachToNewStaffCohortAttendeeMutation;
+}> = ({
+  children,
+  cohorts = cohortsMock,
+  coaches = assignableCoachesMock,
+  assignCoach = assignedCoachMock(['row-1']),
+}) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
       <GqlMockedProvider<{
@@ -68,7 +74,7 @@ const Providers: React.FC<{
             1,
           ),
           NewStaffCohortAssignableCoaches: coaches,
-          AssignCoachToNewStaffCohortAttendee: assignedCoachMock(['row-1']),
+          AssignCoachToNewStaffCohortAttendee: assignCoach,
         }}
         onCall={mutationSpy}
       >
@@ -84,9 +90,10 @@ const renderTable = (
   data = rows,
   cohorts?: NewStaffCohortsQuery,
   coaches?: NewStaffCohortAssignableCoachesQuery,
+  assignCoach?: AssignCoachToNewStaffCohortAttendeeMutation,
 ) =>
   render(
-    <Providers cohorts={cohorts} coaches={coaches}>
+    <Providers cohorts={cohorts} coaches={coaches} assignCoach={assignCoach}>
       <Capture rows={data} />
     </Providers>,
   );
@@ -94,8 +101,9 @@ const renderTable = (
 /** The picker is only usable once the assignable-coaches query has settled. */
 const renderWithCoaches = async (
   coaches?: NewStaffCohortAssignableCoachesQuery,
+  assignCoach?: AssignCoachToNewStaffCohortAttendeeMutation,
 ) => {
-  const screen = renderTable(rows, undefined, coaches);
+  const screen = renderTable(rows, undefined, coaches, assignCoach);
   // The query is skipped until the cohort auto-selects, so wait for that first.
   await waitFor(() => expect(ctx.selectedCohortId).toBeTruthy());
   await waitFor(() => expect(ctx.assignableCoachesLoading).toBe(false));
@@ -359,6 +367,24 @@ describe('GoalsTable', () => {
         },
       ),
     );
+  });
+
+  // The row's own assign has no success toast, so a skipped row would otherwise look assigned.
+  it('says nothing was eligible when the server skipped the row', async () => {
+    const { getByRole, findByRole, findByText } = await renderWithCoaches(
+      undefined,
+      assignedCoachMock([], 'coach-6', 0),
+    );
+    userEvent.click(getByRole('button', { name: 'Assign Coach' }));
+
+    const dialog = await findByRole('dialog');
+    userEvent.click(within(dialog).getByRole('combobox', { name: 'Coach' }));
+    userEvent.click(await findByRole('option', { name: 'Tom Harris' }));
+    userEvent.click(getByRole('button', { name: 'Save' }));
+
+    expect(
+      await findByText('No staff were eligible for a coach.'),
+    ).toBeInTheDocument();
   });
 
   it("links View/Edit to the row's Staff Details page", async () => {

@@ -346,6 +346,51 @@ describe('GoalsTableToolbar', () => {
     expect(ctx.selectedRows).toHaveLength(0);
   });
 
+  // AttendeeSync withdraws households daily, so a row can go stale between load and Save.
+  it('says how many of the selected rows the server assigned', async () => {
+    const { getByRole, findByRole, findByText } = await renderLoaded({
+      assignCoach: assignedCoachMock(['row-1'], 'coach-6', 1),
+    });
+    act(() => {
+      ctx.toggleRow('row-1');
+      ctx.toggleRow('row-2');
+    });
+    userEvent.click(getByRole('button', { name: 'More Actions' }));
+    userEvent.click(getByRole('menuitem', { name: 'Assign Coach' }));
+
+    const dialog = getByRole('dialog');
+    userEvent.click(within(dialog).getByRole('combobox', { name: 'Coach' }));
+    userEvent.click(await findByRole('option', { name: 'Tom Harris' }));
+    userEvent.click(getByRole('button', { name: 'Save' }));
+
+    expect(
+      await findByText('Coach assigned to 1 of 2 staff.'),
+    ).toBeInTheDocument();
+    await waitFor(() => expect(ctx.selectedRows).toHaveLength(0));
+  });
+
+  it('reports a zero count as nothing eligible rather than success', async () => {
+    const { getByRole, findByRole, findByText, queryByText } =
+      await renderLoaded({
+        assignCoach: assignedCoachMock([], 'coach-6', 0),
+      });
+    act(() => ctx.toggleRow('row-1'));
+    userEvent.click(getByRole('button', { name: 'More Actions' }));
+    userEvent.click(getByRole('menuitem', { name: 'Assign Coach' }));
+
+    const dialog = getByRole('dialog');
+    userEvent.click(within(dialog).getByRole('combobox', { name: 'Coach' }));
+    userEvent.click(await findByRole('option', { name: 'Tom Harris' }));
+    userEvent.click(getByRole('button', { name: 'Save' }));
+
+    expect(
+      await findByText('No staff were eligible for a coach.'),
+    ).toBeInTheDocument();
+    expect(queryByText('Coach assigned successfully.')).not.toBeInTheDocument();
+    // The selection stays, the same way a zero-count Run & Send leaves it.
+    expect(ctx.selectedRows).toHaveLength(1);
+  });
+
   it('reports a failed assignment instead of claiming success', async () => {
     const { getByRole, findByRole, queryByText } = await renderLoaded({
       assignCoach: {
