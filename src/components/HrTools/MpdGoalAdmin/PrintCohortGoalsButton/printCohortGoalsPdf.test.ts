@@ -2,6 +2,18 @@ import { downloadPdf, fetchCohortGoalsPdf } from './printCohortGoalsPdf';
 
 const downloadUrl = 'https://api.mpdx.org/exports/token-1.pdf';
 
+const originalFetch = global.fetch;
+const originalCreateObjectURL = window.URL.createObjectURL;
+const originalRevokeObjectURL = window.URL.revokeObjectURL;
+
+// jest.config.js sets clearMocks but not restoreMocks, so anything put on a global has to be put back by hand.
+afterEach(() => {
+  global.fetch = originalFetch;
+  window.URL.createObjectURL = originalCreateObjectURL;
+  window.URL.revokeObjectURL = originalRevokeObjectURL;
+  jest.restoreAllMocks();
+});
+
 describe('fetchCohortGoalsPdf', () => {
   const fetchMock = jest.fn();
 
