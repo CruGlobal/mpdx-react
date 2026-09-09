@@ -2,11 +2,16 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Settings } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import { MpdGoalAdminProvider, useMpdGoalAdmin } from '../MpdGoalAdminContext';
+import {
+  MpdGoalAdminProvider,
+  searchDebounceMs,
+  useMpdGoalAdmin,
+} from '../MpdGoalAdminContext';
 import {
   NewStaffCohortAttendeesQuery,
   NewStaffCohortsQuery,
@@ -72,9 +77,20 @@ const renderButton = (
 const waitForCohorts = () =>
   waitFor(() => expect(ctx.selectedCohortId).not.toBe(''));
 
+/** The button is gated on rows that have finished loading, so a print can only start once it is enabled. */
+const clickWhenEnabled = async (button: HTMLElement): Promise<void> => {
+  await waitFor(() => expect(button).toBeEnabled());
+  userEvent.click(button);
+};
+
 describe('PrintCohortGoalsButton', () => {
   beforeEach(() => {
     fetchPdfMock.mockResolvedValue('blob:goals-pdf');
+    Settings.now = () => Date.parse('2026-09-09T12:00:00Z');
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   it('is disabled with an explanation until the cohort has training costs', async () => {
@@ -117,15 +133,14 @@ describe('PrintCohortGoalsButton', () => {
     expect(getByRole('button', { name: 'Print Matching' })).toBeInTheDocument();
   });
 
-  it('prints the whole cohort and downloads the worksheets', async () => {
+  it('prints the whole cohort and downloads the dated worksheets', async () => {
     const { getByRole } = renderButton();
-    await waitForCohorts();
-    userEvent.click(getByRole('button', { name: 'Print All' }));
+    await clickWhenEnabled(getByRole('button', { name: 'Print All' }));
 
     await waitFor(() =>
       expect(downloadMock).toHaveBeenCalledWith(
         'blob:goals-pdf',
-        'MPD Goals - Fall NSO 2026.pdf',
+        'MPD Goals - Fall NSO 2026 - 2026-09-09.pdf',
       ),
     );
     expect(fetchPdfMock).toHaveBeenCalledWith(
@@ -135,11 +150,9 @@ describe('PrintCohortGoalsButton', () => {
     expect(getByRole('button', { name: 'Print All' })).toBeEnabled();
   });
 
-  // filteredRows holds only the pages fetched so far, so ids could print a subset of the training.
   it('omits attendeeIds when unsearched so the server prints every household', async () => {
     const { getByRole } = renderButton();
-    await waitForCohorts();
-    userEvent.click(getByRole('button', { name: 'Print All' }));
+    await clickWhenEnabled(getByRole('button', { name: 'Print All' }));
 
     await waitFor(() => expect(downloadMock).toHaveBeenCalled());
     expect(mutationSpy).toHaveGraphqlOperation('PrintNewStaffCohortGoals', {
@@ -152,30 +165,51 @@ describe('PrintCohortGoalsButton', () => {
     expect(operation.variables.input).not.toHaveProperty('attendeeIds');
   });
 
-  it('scopes the print to the matching rows while a search is active', async () => {
+  // Clicking inside the debounce window would have sent the previous search's ids.
+  it('stays disabled while the typed search has not reached the query', async () => {
+    jest.useFakeTimers();
     const { getByRole } = renderButton();
-    await waitForCohorts();
-    await waitFor(() => expect(ctx.filteredRows).not.toHaveLength(0));
-    const matchingIds = ctx.filteredRows.map((row) => row.id);
+    const button = getByRole('button', { name: 'Print All' });
+    await waitFor(() => expect(button).toBeEnabled());
 
-    act(() => ctx.setSearch('john'));
-    userEvent.click(getByRole('button', { name: 'Print Matching' }));
+    act(() => ctx.setSearch('Sam'));
+
+    expect(getByRole('button', { name: 'Print Matching' })).toBeDisabled();
+  });
+
+  it('scopes the print to the rows the settled search returned', async () => {
+    jest.useFakeTimers();
+    const { getByRole } = renderButton();
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Print All' })).toBeEnabled(),
+    );
+    expect(ctx.filteredRows.map((row) => row.id)).toEqual([
+      'row-1',
+      'row-2',
+      'row-3',
+    ]);
+
+    act(() => ctx.setSearch('Sam'));
+    expect(getByRole('button', { name: 'Print Matching' })).toBeDisabled();
+    act(() => jest.advanceTimersByTime(searchDebounceMs));
+
+    // Only Sam Smith matches, so the gate is what keeps the other two ids out of the mutation.
+    await clickWhenEnabled(getByRole('button', { name: 'Print Matching' }));
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('PrintNewStaffCohortGoals', {
-        input: { cohortId: 'fall-nso-2026', attendeeIds: matchingIds },
+        input: { cohortId: 'fall-nso-2026', attendeeIds: ['row-3'] },
       }),
     );
   });
 
   it('warns about households left out for having no goal calculation', async () => {
     const { getByRole, findByText } = renderButton(printedGoalsMock(3, 2));
-    await waitForCohorts();
-    userEvent.click(getByRole('button', { name: 'Print All' }));
+    await clickWhenEnabled(getByRole('button', { name: 'Print All' }));
 
     expect(
       await findByText(
-        '2 households have no MPD goal calculation yet and were left out.',
+        'Printed 3 MPD goals. 2 households have no MPD goal calculation yet and were left out.',
       ),
     ).toBeInTheDocument();
     expect(downloadMock).toHaveBeenCalled();
@@ -183,10 +217,9 @@ describe('PrintCohortGoalsButton', () => {
 
   it('reports that nothing was printable instead of downloading an empty file', async () => {
     const { getByRole, findByText } = renderButton(
-      printedGoalsMock(0, 4, null),
+      printedGoalsMock(0, 0, null),
     );
-    await waitForCohorts();
-    userEvent.click(getByRole('button', { name: 'Print All' }));
+    await clickWhenEnabled(getByRole('button', { name: 'Print All' }));
 
     expect(
       await findByText('No MPD goals are ready to print.'),
@@ -196,14 +229,28 @@ describe('PrintCohortGoalsButton', () => {
     expect(getByRole('button', { name: 'Print All' })).toBeEnabled();
   });
 
+  // Without the count the user is told nothing is printable but never why.
+  it('reports the skipped households when nothing was printable', async () => {
+    const { getByRole, findByText } = renderButton(
+      printedGoalsMock(0, 4, null),
+    );
+    await clickWhenEnabled(getByRole('button', { name: 'Print All' }));
+
+    expect(
+      await findByText(
+        'No MPD goals are ready to print: 4 households have no MPD goal calculation yet.',
+      ),
+    ).toBeInTheDocument();
+    expect(downloadMock).not.toHaveBeenCalled();
+  });
+
   it('disables the button and shows a spinner while printing', async () => {
     let resolvePdf!: (url: string) => void;
     fetchPdfMock.mockReturnValue(
       new Promise((resolve) => (resolvePdf = resolve)),
     );
     const { getByRole, findByRole } = renderButton();
-    await waitForCohorts();
-    userEvent.click(getByRole('button', { name: 'Print All' }));
+    await clickWhenEnabled(getByRole('button', { name: 'Print All' }));
 
     expect(await findByRole('progressbar')).toBeInTheDocument();
     expect(getByRole('button', { name: 'Print All' })).toBeDisabled();
@@ -217,11 +264,12 @@ describe('PrintCohortGoalsButton', () => {
   it('shows an error and re-enables the button when the download fails', async () => {
     fetchPdfMock.mockRejectedValue(new Error('boom'));
     const { getByRole, findByText } = renderButton();
-    await waitForCohorts();
-    userEvent.click(getByRole('button', { name: 'Print All' }));
+    await clickWhenEnabled(getByRole('button', { name: 'Print All' }));
 
     expect(
-      await findByText('Unable to download the MPD Goals PDF.'),
+      await findByText(
+        'Unable to download the MPD Goals PDF. Please try printing again.',
+      ),
     ).toBeInTheDocument();
     expect(downloadMock).not.toHaveBeenCalled();
     expect(getByRole('button', { name: 'Print All' })).toBeEnabled();

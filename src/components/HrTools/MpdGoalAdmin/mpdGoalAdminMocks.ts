@@ -175,10 +175,18 @@ export const attendeesMock = (
     args: { id: string },
   ): NewStaffCohortAttendeesQuery['newStaffCohort'] => ({
     id: args.id,
-    attendees: {
-      nodes,
+    // Matches on the name like the API does, so a search actually narrows the rows.
+    attendees: ((
+      _cohort: unknown,
+      { search }: { search?: string | null },
+    ): NewStaffCohortAttendeesQuery['newStaffCohort']['attendees'] => ({
+      nodes: search
+        ? nodes.filter((node) =>
+            node.displayName.toLowerCase().includes(search.toLowerCase()),
+          )
+        : nodes,
       pageInfo: { endCursor: null, hasNextPage: false },
-    },
+    })) as unknown as NewStaffCohortAttendeesQuery['newStaffCohort']['attendees'],
   })) as unknown as NewStaffCohortAttendeesQuery['newStaffCohort'],
 });
 

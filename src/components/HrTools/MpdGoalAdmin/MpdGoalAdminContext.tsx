@@ -39,7 +39,7 @@ import {
 } from './mpdGoalAdminHelpers';
 
 /** Matches the debounce the contacts search uses, so typing isn't a query per keystroke. */
-const searchDebounceMs = 500;
+export const searchDebounceMs = 500;
 
 export interface MpdGoalAdminContextValue {
   activeTab: MpdGoalAdminTabEnum;
@@ -50,6 +50,8 @@ export interface MpdGoalAdminContextValue {
   selectedCohort: Cohort | undefined;
   search: string;
   setSearch: (value: string) => void;
+  /** True while the typed search hasn't reached the query, so the rows are still the previous search's. */
+  searchPending: boolean;
   /** Attendees the query returned; the API does the search matching. */
   filteredRows: StaffGoalRow[];
   /** True while cohorts or the selected cohort's attendees are still loading. */
@@ -105,6 +107,7 @@ export const MpdGoalAdminProvider: React.FC<{
   const [selectedRowIds, setSelectedRowIds] = useState<Set<string>>(new Set());
 
   const debouncedSearch = useDebouncedValue(search, searchDebounceMs);
+  const searchPending = search !== debouncedSearch;
 
   const {
     data: cohortsData,
@@ -295,6 +298,7 @@ export const MpdGoalAdminProvider: React.FC<{
       selectedCohort,
       search,
       setSearch,
+      searchPending,
       filteredRows,
       // Skipped without a selection, so zero cohorts must not spin forever.
       loading:
@@ -322,6 +326,7 @@ export const MpdGoalAdminProvider: React.FC<{
       selectCohort,
       selectedCohort,
       search,
+      searchPending,
       filteredRows,
       cohortsLoading,
       attendeesLoading,

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button, CircularProgress, Tooltip } from '@mui/material';
+import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
@@ -12,7 +13,14 @@ export const PrintCohortGoalsButton: React.FC = () => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { apiToken } = useRequiredSession();
-  const { selectedCohort, filteredRows, search } = useMpdGoalAdmin();
+  const {
+    selectedCohort,
+    filteredRows,
+    search,
+    searchPending,
+    loading,
+    error,
+  } = useMpdGoalAdmin();
   const [printNewStaffCohortGoals] = usePrintNewStaffCohortGoalsMutation();
   const [printing, setPrinting] = useState(false);
 
@@ -28,10 +36,11 @@ export const PrintCohortGoalsButton: React.FC = () => {
       downloadPdf(await fetchCohortGoalsPdf(downloadUrl, apiToken), filename);
       return true;
     } catch {
-      // Not an Apollo call, so the global error link never sees this failure.
-      enqueueSnackbar(t('Unable to download the MPD Goals PDF.'), {
-        variant: 'error',
-      });
+      // Not an Apollo call, so the global error link never sees this failure; the burned token is why the fix is a fresh print, not a retry.
+      enqueueSnackbar(
+        t('Unable to download the MPD Goals PDF. Please try printing again.'),
+        { variant: 'error' },
+      );
       return false;
     }
   };
@@ -46,8 +55,7 @@ export const PrintCohortGoalsButton: React.FC = () => {
         variables: {
           input: {
             cohortId: selectedCohort.id,
-            // Omitted unsearched so the server prints the whole training: filteredRows holds only
-            // the pages fetched so far, so sending ids could quietly print a subset.
+            // Omitted unsearched so the server prints the whole training; the disabled gate is what makes these ids the settled search's full set.
             ...(searchActive && {
               attendeeIds: filteredRows.map((row) => row.id),
             }),
@@ -57,22 +65,33 @@ export const PrintCohortGoalsButton: React.FC = () => {
 
       const printResult = data?.printNewStaffCohortGoals;
       if (!printResult?.downloadUrl) {
-        enqueueSnackbar(t('No MPD goals are ready to print.'), {
-          variant: 'info',
-        });
+        // The skipped count is the only explanation of why nothing was printable.
+        enqueueSnackbar(
+          printResult?.skippedCount
+            ? t(
+                'No MPD goals are ready to print: {{count}} households have no MPD goal calculation yet.',
+                { count: printResult.skippedCount },
+              )
+            : t('No MPD goals are ready to print.'),
+          { variant: 'info' },
+        );
         return;
       }
 
+      // Dated so repeat prints don't collide as "(1)", "(2)" in the downloads folder.
       const saved = await savePdf(
         printResult.downloadUrl,
-        `MPD Goals - ${selectedCohort.name}.pdf`,
+        `MPD Goals - ${selectedCohort.name} - ${DateTime.local().toFormat('yyyy-MM-dd')}.pdf`,
       );
       // Otherwise a household with no calculation is missing from the PDF with no explanation.
       if (saved && printResult.skippedCount > 0) {
         enqueueSnackbar(
           t(
-            '{{count}} households have no MPD goal calculation yet and were left out.',
-            { count: printResult.skippedCount },
+            'Printed {{printed}} MPD goals. {{count}} households have no MPD goal calculation yet and were left out.',
+            {
+              printed: printResult.printedCount,
+              count: printResult.skippedCount,
+            },
           ),
           { variant: 'warning' },
         );
@@ -103,7 +122,10 @@ export const PrintCohortGoalsButton: React.FC = () => {
       <span>
         <Button
           variant="outlined"
-          disabled={!hasTrainingCosts || printing}
+          // Otherwise a click mid-search prints the previous search's rows, or a partial page of them.
+          disabled={
+            !hasTrainingCosts || printing || loading || searchPending || !!error
+          }
           onClick={handlePrint}
           aria-busy={printing}
         >

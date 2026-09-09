@@ -193,9 +193,11 @@ the request forms autosave a draft but `Submit` through the wizard's `SubmitModa
   full-account JWT into history and proxy logs) and saves the blob. The PDF is
   Prawn's per-household Support Goals Worksheet from mpdx_api, so its contents
   are not this repo's to change. `attendeeIds` is omitted unless a search is
-  active, because `filteredRows` holds only the pages fetched so far. Mutation
-  failures toast through the global Apollo error link; only the blob fetch needs
-  its own message.
+  active, and the button is disabled while `searchPending` or `loading` is true.
+  The search debounce plus `MpdGoalAdminContext`'s deliberate hold on the previous
+  result set means a click mid-search would otherwise send the ids the preceding
+  search returned. Mutation failures toast through the global Apollo error link;
+  only the blob fetch needs its own message.
 - **NsoMpdQuestionnaire** — **no create/upsert exists.** The record is created by
   the OneApp import; the frontend only Updates/Completes, keyed by
   `accountListId` (not a questionnaire id). A null query → render
