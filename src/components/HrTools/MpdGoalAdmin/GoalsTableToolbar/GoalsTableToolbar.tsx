@@ -87,8 +87,7 @@ export const GoalsTableToolbar: React.FC = () => {
             {t('{{count}} selected', { count: selectedCount })}
           </Typography>
         )}
-        {/* Not a bulk action: ignores selection, but prints only the rows
-            matching the search until MPDX-9691 prints the whole cohort. */}
+        {/* Not a bulk action: ignores selection, printing the whole cohort or the search matches. */}
         <PrintCohortGoalsButton />
         <Button
           variant="outlined"
