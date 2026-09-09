@@ -1,3 +1,6 @@
+// Two minutes, not seconds: the endpoint renders the whole cohort's multi-page Prawn PDF inside the request.
+const PDF_REQUEST_TIMEOUT_MS = 120_000;
+
 /**
  * Redeems the print mutation's single-use `downloadUrl` for a blob URL.
  *
@@ -8,16 +11,35 @@ export const fetchCohortGoalsPdf = async (
   downloadUrl: string,
   apiToken: string,
 ): Promise<string> => {
-  const response = await fetch(downloadUrl, {
-    headers: { authorization: `Bearer ${apiToken}` },
-  });
+  const abortController = new AbortController();
+  const timer = setTimeout(
+    () => abortController.abort(),
+    PDF_REQUEST_TIMEOUT_MS,
+  );
 
-  // The token burns on the first redemption, so a failure here cannot be retried with the same URL.
-  if (!response.ok) {
-    throw new Error(`MPD Goals PDF request failed: ${response.status}`);
+  try {
+    const response = await fetch(downloadUrl, {
+      headers: { authorization: `Bearer ${apiToken}` },
+      signal: abortController.signal,
+    });
+
+    // The token burns on the first redemption, so a failure here cannot be retried with the same URL.
+    if (!response.ok) {
+      throw new Error(`MPD Goals PDF request failed: ${response.status}`);
+    }
+
+    return URL.createObjectURL(await response.blob());
+  } catch (error) {
+    // Rethrown as a plain error because the native AbortError reads as if the user cancelled.
+    if (abortController.signal.aborted) {
+      throw new Error(
+        `MPD Goals PDF request timed out after ${PDF_REQUEST_TIMEOUT_MS}ms`,
+      );
+    }
+    throw error;
+  } finally {
+    clearTimeout(timer);
   }
-
-  return URL.createObjectURL(await response.blob());
 };
 
 /** Downloads `url` via a temporary anchor, as the contacts CSV export does. */

@@ -31,6 +31,7 @@ describe('fetchCohortGoalsPdf', () => {
     );
     expect(fetchMock).toHaveBeenCalledWith(downloadUrl, {
       headers: { authorization: 'Bearer api-token' },
+      signal: expect.any(AbortSignal),
     });
     expect(window.URL.createObjectURL).toHaveBeenCalledWith(blob);
   });
@@ -51,6 +52,25 @@ describe('fetchCohortGoalsPdf', () => {
       '403',
     );
     expect(window.URL.createObjectURL).not.toHaveBeenCalled();
+  });
+
+  // Without this the button spins forever while the server renders the whole cohort.
+  it('aborts and rejects once the render passes the timeout', async () => {
+    jest.useFakeTimers();
+    fetchMock.mockImplementation(
+      (_url, { signal }) =>
+        new Promise((_resolve, reject) =>
+          signal.addEventListener('abort', () =>
+            reject(new DOMException('Aborted', 'AbortError')),
+          ),
+        ),
+    );
+
+    const pending = fetchCohortGoalsPdf(downloadUrl, 'api-token');
+    jest.advanceTimersByTime(120_000); // matches the module's two-minute budget
+    jest.useRealTimers();
+
+    await expect(pending).rejects.toThrow('timed out');
   });
 });
 
