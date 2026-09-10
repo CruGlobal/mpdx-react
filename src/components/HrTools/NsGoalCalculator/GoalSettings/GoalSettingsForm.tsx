@@ -1,12 +1,10 @@
 import React, { useEffect, useMemo } from 'react';
-import { ErrorOutline } from '@mui/icons-material';
 import {
   Box,
   Button,
   CircularProgress,
   Divider,
   Stack,
-  Tooltip,
   styled,
 } from '@mui/material';
 import { Form, Formik, useFormikContext } from 'formik';
@@ -164,7 +162,7 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
         validateOnMount
         onSubmit={handleSubmit}
       >
-        {({ isSubmitting, isValid, values }) => {
+        {({ isSubmitting, values }) => {
           // Spouse columns follow the live form value, so they appear the moment
           // marital status is set to married — before the change is saved.
           const hasSpouse =
@@ -172,8 +170,6 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
             NewStaffQuestionnaireMaritalStatusEnum.Married;
           const seniorStaffSpouse =
             hasSpouse && values.spouseJoining === 'false';
-          // Color alone can't say "incomplete", so this also drives an icon and a tooltip.
-          const isIncomplete = !isValid && !isSubmitting;
           const primaryName = values.firstName;
           const spouseName = values.spouseFirstName || t('Spouse');
           const primaryHeader = `${primaryName} (${t('Joining')})`;
@@ -236,32 +232,20 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
                       <Button color="inherit" onClick={() => leave()}>
                         {t('Cancel')}
                       </Button>
-                      {/* Enabled while invalid so submitting marks every field touched. */}
-                      <Tooltip
-                        // Without this the tooltip becomes the button's aria-label and hides its text.
-                        describeChild
-                        title={
-                          isIncomplete
-                            ? t('Some required fields are still missing.')
-                            : ''
+                      {/* Never blocked by validation: clicking it is how an admin
+                          finds out what is still missing. */}
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        disabled={isSubmitting}
+                        startIcon={
+                          isSubmitting ? (
+                            <CircularProgress color="inherit" size={20} />
+                          ) : undefined
                         }
                       >
-                        <Button
-                          type="submit"
-                          variant="contained"
-                          color={isValid ? 'primary' : 'error'}
-                          disabled={isSubmitting}
-                          startIcon={
-                            isSubmitting ? (
-                              <CircularProgress color="inherit" size={20} />
-                            ) : isIncomplete ? (
-                              <ErrorOutline />
-                            ) : undefined
-                          }
-                        >
-                          {t('Save & Share')}
-                        </Button>
-                      </Tooltip>
+                        {t('Save & Share')}
+                      </Button>
                     </Stack>
                   </Stack>
                 </StickyActionBar>
