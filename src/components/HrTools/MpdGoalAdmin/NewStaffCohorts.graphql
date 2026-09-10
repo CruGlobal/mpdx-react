@@ -100,3 +100,14 @@ mutation RunAndSendNewStaffCohort(
     }
   }
 }
+
+mutation PrintNewStaffCohortGoals(
+  $input: NewStaffCohortPrintGoalsMutationInput!
+) {
+  printNewStaffCohortGoals(input: $input) {
+    # Single-use, so it must be fetched once with the Authorization header and never re-requested.
+    downloadUrl
+    printedCount
+    skippedCount
+  }
+}
