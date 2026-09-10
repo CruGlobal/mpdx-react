@@ -39,6 +39,7 @@ export interface SettingsDialogProps {
   time?: DateTime;
   isMpgaReport?: boolean;
   transactionYears?: number[];
+  staffAccountId?: string | null;
 }
 
 export interface Filters {
@@ -164,6 +165,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   time,
   isMpgaReport,
   transactionYears,
+  staffAccountId,
 }) => {
   const { t } = useTranslation();
   const [previewFilters, setPreviewFilters] = useState<Filters | null>(null);
@@ -185,6 +187,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
 
   const getQueryVariables = (filterParams: Filters | null) => ({
     fundTypes: selectedFundType ? [selectedFundType] : null,
+    staffAccountId,
     ...getStaffExpenseMonthRange(filterParams, currentTime),
   });
 

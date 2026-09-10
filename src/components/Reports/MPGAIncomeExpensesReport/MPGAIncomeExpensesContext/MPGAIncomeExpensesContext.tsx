@@ -35,6 +35,8 @@ export type ContextType = {
   staffName: string | undefined;
   /** Whether a supervisor is viewing another staff member's report */
   isSupervisorView: boolean;
+  /** Staff account the report covers, when not the logged in user's own */
+  staffAccountId: string | null | undefined;
 
   /** Income and expenses totals */
   totals: {
@@ -266,6 +268,7 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
       subtitle,
       staffName,
       isSupervisorView,
+      staffAccountId,
       totals,
     }),
     [
@@ -283,6 +286,7 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
       subtitle,
       staffName,
       isSupervisorView,
+      staffAccountId,
       totals,
     ],
   );

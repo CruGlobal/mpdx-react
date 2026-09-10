@@ -194,6 +194,20 @@ describe('MPGAIncomeExpensesReport', () => {
         getByRole('link', { name: 'Back to MPD Supervisor Report' }),
       ).toBeInTheDocument();
     });
+
+    it('loads report settings categories for the staff member being viewed', async () => {
+      const { getByRole } = render(
+        <TestComponent staffAccountId={staffAccountId} staffName={staffName} />,
+      );
+
+      userEvent.click(getByRole('button', { name: 'Report Settings' }));
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('ReportsStaffExpenses', {
+          staffAccountId,
+        }),
+      );
+    });
   });
 
   it('should print', async () => {

@@ -63,6 +63,7 @@ export const MPGAIncomeExpensesReport: React.FC<
     transactionYears,
     staffName,
     isSupervisorView,
+    staffAccountId,
   } = useMPGAIncomeExpenses();
 
   const defaultFilters: Filters = useMemo(
@@ -188,6 +189,7 @@ export const MPGAIncomeExpensesReport: React.FC<
             setIsSettingsOpen(false);
           }}
           isMpgaReport
+          staffAccountId={staffAccountId}
           transactionYears={transactionYears ?? []}
         />
       )}
