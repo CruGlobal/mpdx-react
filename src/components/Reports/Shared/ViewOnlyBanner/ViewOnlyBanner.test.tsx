@@ -30,12 +30,12 @@ describe('ViewOnlyBanner', () => {
     ).toBeInTheDocument();
   });
 
-  it('falls back to a generic message before the name loads', () => {
+  it('keeps the same sentence while the name is still loading', () => {
     const { getByText } = render(<TestComponent />);
 
     expect(
       getByText(
-        "You are viewing another staff member's MPGA report · read only.",
+        "Currently viewing this staff member's MPGA report · read only.",
       ),
     ).toBeInTheDocument();
   });

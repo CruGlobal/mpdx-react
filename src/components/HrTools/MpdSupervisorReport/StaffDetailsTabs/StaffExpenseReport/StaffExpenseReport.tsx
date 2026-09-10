@@ -1,9 +1,21 @@
 import React from 'react';
-import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { ViewReportLink } from '../ViewReportLink/ViewReportLink';
 
-export const StaffTabStaffExpenseReport: React.FC = () => {
+interface StaffTabStaffExpenseReportProps {
+  staffAccountId: string | null;
+}
+
+export const StaffTabStaffExpenseReport: React.FC<
+  StaffTabStaffExpenseReportProps
+> = ({ staffAccountId }) => {
   const { t } = useTranslation();
 
-  return <Typography>{t('Staff Expense Report')}</Typography>;
+  return (
+    <ViewReportLink
+      staffAccountId={staffAccountId}
+      reportLink="staffExpense"
+      reportName={t('Staff Expense')}
+    />
+  );
 };
