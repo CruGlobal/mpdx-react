@@ -186,13 +186,14 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
                 <NsoInformationSection {...sectionProps} />
                 <ExemptionsSection {...sectionProps} />
 
+                <Divider sx={{ mb: 3 }} />
+
                 <Stack
                   direction="row"
                   spacing={2}
                   alignItems="center"
                   flexWrap="wrap"
                   useFlexGap
-                  sx={{ mt: 2 }}
                 >
                   <GoalSettingsMissingFields />
                   <GoalSettingsWarning />
