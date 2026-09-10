@@ -187,6 +187,13 @@ the request forms autosave a draft but `Submit` through the wizard's `SubmitModa
   non-empty, so "no cohort selected" is only reachable with zero cohorts; tests
   that pick a cohort themselves must first wait for that auto-select to settle
   (wait on `selectedCohortId`, not on `cohorts.length`) or it will overwrite them.
+  **Print All renders server-side**: the button calls
+  `printNewStaffCohortGoals`, then fetches the returned single-use `downloadUrl`
+  with the Authorization header and saves the blob.
+  The search debounce plus `MpdGoalAdminContext`'s deliberate hold on the previous
+  result set means a click mid-search would otherwise send the ids the preceding
+  search returned. Mutation failures toast through the global Apollo error link;
+  only the blob fetch needs its own message.
 - **NsoMpdQuestionnaire** — **no create/upsert exists.** The record is created by
   the OneApp import; the frontend only Updates/Completes, keyed by
   `accountListId` (not a questionnaire id). A null query → render
