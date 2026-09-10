@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { ApolloError } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
+import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
@@ -48,6 +49,9 @@ export interface MpdGoalAdminContextValue {
   selectedCohortId: string;
   setSelectedCohortId: (id: string) => void;
   selectedCohort: Cohort | undefined;
+  /** The MPD Goals team, who alone may act on the whole cohort; a coordinator only reads it.
+   * False until the user lands, so nothing gated on it flashes into view first. */
+  isGoalsAdmin: boolean;
   search: string;
   setSearch: (value: string) => void;
   /** True while the typed search hasn't reached the query, so the rows are still the previous search's. */
@@ -102,6 +106,8 @@ export const MpdGoalAdminProvider: React.FC<{
     },
     [router],
   );
+  const { data: userData } = useGetUserQuery();
+  const isGoalsAdmin = !!userData?.user.mpdSupervisorAdmin;
   const [selectedCohortId, setSelectedCohortId] = useState<string>('');
   const [search, setSearch] = useState('');
   const [selectedRowIds, setSelectedRowIds] = useState<Set<string>>(new Set());
@@ -296,6 +302,7 @@ export const MpdGoalAdminProvider: React.FC<{
       selectedCohortId,
       setSelectedCohortId: selectCohort,
       selectedCohort,
+      isGoalsAdmin,
       search,
       setSearch,
       searchPending,
@@ -325,6 +332,7 @@ export const MpdGoalAdminProvider: React.FC<{
       selectedCohortId,
       selectCohort,
       selectedCohort,
+      isGoalsAdmin,
       search,
       searchPending,
       filteredRows,

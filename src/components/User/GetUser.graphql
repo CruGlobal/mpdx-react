@@ -15,5 +15,6 @@ query GetUser {
     usStaffGroup
     spouseUsStaffGroup
     supervisesStaff
+    mpdSupervisorAdmin
   }
 }

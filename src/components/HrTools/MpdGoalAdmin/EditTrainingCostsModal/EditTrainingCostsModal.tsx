@@ -47,6 +47,8 @@ export interface EditTrainingCostsModalProps {
   cohortName?: string;
   /** Existing costs to prefill; undefined starts every field blank. */
   initialCosts?: TrainingCosts;
+  /** Shows the costs without letting them be saved, for a viewer the API refuses the write to. */
+  readOnly?: boolean;
   onClose: () => void;
   /** Persists the entered costs. May be async (e.g. a mutation). */
   onSave: (costs: TrainingCosts) => void | Promise<void>;
@@ -80,6 +82,7 @@ export const EditTrainingCostsModal: React.FC<EditTrainingCostsModalProps> = ({
   open,
   cohortName,
   initialCosts,
+  readOnly = false,
   onClose,
   onSave,
 }) => {
@@ -243,9 +246,11 @@ export const EditTrainingCostsModal: React.FC<EditTrainingCostsModalProps> = ({
           </IconButton>
         </Box>
         <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
-          {t(
-            'Please enter the cost details that apply to this training. All fields are required.',
-          )}
+          {readOnly
+            ? t('The cost details that apply to this training.')
+            : t(
+                'Please enter the cost details that apply to this training. All fields are required.',
+              )}
         </Typography>
       </DialogTitle>
       <Formik<FormValues>
@@ -303,7 +308,8 @@ export const EditTrainingCostsModal: React.FC<EditTrainingCostsModalProps> = ({
                               type="number"
                               fullWidth
                               size="small"
-                              required
+                              disabled={readOnly}
+                              required={!readOnly}
                               error={
                                 touched[field.name] &&
                                 Boolean(errors[field.name])
@@ -324,19 +330,23 @@ export const EditTrainingCostsModal: React.FC<EditTrainingCostsModalProps> = ({
                 })}
               </DialogContent>
               <DialogActions>
-                <Button onClick={onClose}>{t('Cancel')}</Button>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  disabled={!canApply || isSubmitting}
-                  startIcon={
-                    isSubmitting ? (
-                      <CircularProgress size={16} color="inherit" />
-                    ) : null
-                  }
-                >
-                  {t('Apply')}
+                <Button onClick={onClose}>
+                  {readOnly ? t('Close') : t('Cancel')}
                 </Button>
+                {!readOnly && (
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    disabled={!canApply || isSubmitting}
+                    startIcon={
+                      isSubmitting ? (
+                        <CircularProgress size={16} color="inherit" />
+                      ) : null
+                    }
+                  >
+                    {t('Apply')}
+                  </Button>
+                )}
               </DialogActions>
             </form>
           );

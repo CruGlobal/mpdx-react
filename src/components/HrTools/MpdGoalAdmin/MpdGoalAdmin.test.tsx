@@ -6,6 +6,7 @@ import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import theme from 'src/theme';
 import { MpdGoalAdmin } from './MpdGoalAdmin';
 import { MpdGoalAdminProvider } from './MpdGoalAdminContext';
@@ -13,9 +14,15 @@ import {
   NewStaffCohortAttendeesQuery,
   NewStaffCohortsQuery,
 } from './NewStaffCohorts.generated';
-import { attendeesMock, cohortsMock, noCohortsMock } from './mpdGoalAdminMocks';
+import {
+  attendeesMock,
+  cohortsMock,
+  goalsAdminUserMock,
+  noCohortsMock,
+} from './mpdGoalAdminMocks';
 
 type Mocks = {
+  GetUser: GetUserQuery;
   NewStaffCohorts: NewStaffCohortsQuery;
   NewStaffCohortAttendees: NewStaffCohortAttendeesQuery;
 };
@@ -42,6 +49,7 @@ const renderMain = (
           <GqlMockedProvider<Mocks>
             mocks={
               {
+                GetUser: goalsAdminUserMock,
                 NewStaffCohorts: cohortsMock,
                 NewStaffCohortAttendees: attendeesMock(),
                 ...mocks,
@@ -82,7 +90,9 @@ describe('MpdGoalAdmin', () => {
 
     expect(getByRole('progressbar')).toBeInTheDocument();
     expect(queryByRole('table')).not.toBeInTheDocument();
-    expect(getByRole('button', { name: 'Run and Send All' })).toBeDisabled();
+    expect(
+      queryByRole('button', { name: 'Run and Send All' }),
+    ).not.toBeInTheDocument();
   });
 
   it('surfaces a query failure instead of an empty table', async () => {
