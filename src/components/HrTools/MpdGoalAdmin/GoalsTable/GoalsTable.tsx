@@ -21,6 +21,7 @@ import {
 } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { DateTime } from 'luxon';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
@@ -69,6 +70,7 @@ interface GoalsTableProps {
 
 export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
   const locale = useLocale();
   const accountListId = useAccountListId();
   const {
@@ -100,7 +102,13 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
     if (!coachRow) {
       return;
     }
-    await assignCoach([coachRow.id], coachId);
+
+    // Zero means the row went stale server-side, so nothing was assigned to say so.
+    if ((await assignCoach([coachRow.id], coachId)) === 0) {
+      enqueueSnackbar(t('No staff were eligible for a coach.'), {
+        variant: 'info',
+      });
+    }
   };
 
   const canRunAndSendRow = (row: StaffGoalRow | undefined) =>

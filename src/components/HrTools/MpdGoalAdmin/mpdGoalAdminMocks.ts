@@ -255,11 +255,14 @@ export const failedAssignableCoachesMock = {
 } as unknown as NewStaffCohortAssignableCoachesQuery;
 
 /** Echoes the assignment back, the way the server normalizes it over each row. */
+/** `assignedCount` defaults to every id echoed back; pass it to mock a batch the server shortened. */
 export const assignedCoachMock = (
   attendeeIds: string[],
   coachId = 'coach-6',
+  assignedCount = attendeeIds.length,
 ): AssignCoachToNewStaffCohortAttendeeMutation => ({
   assignCoachToNewStaffCohortAttendee: {
+    assignedCount,
     newStaffCohortAttendees: attendeeIds.map((id) => ({
       id,
       coach:
