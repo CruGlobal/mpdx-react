@@ -371,6 +371,24 @@ describe('GoalSettingsCoachField', () => {
 
   // Neither mutation refetches, so the payload normalizing over the cached attendee is the only thing that updates the picker.
   describe('with the attendee read from the cache', () => {
+    it('shows the coach after a first assignment', async () => {
+      const { findByRole, getByRole, queryByRole } = render(
+        <CachedTestComponent household={attendee} assignedCoachId="coach-1" />,
+      );
+
+      expect(await findByRole('combobox', { name: 'Coach' })).toHaveValue('');
+
+      userEvent.click(getByRole('button', { name: 'Open' }));
+      userEvent.click(await findByRole('option', { name: 'Amy Wilson' }));
+
+      await waitFor(() =>
+        expect(getByRole('combobox', { name: 'Coach' })).toHaveValue(
+          'Amy Wilson',
+        ),
+      );
+      expect(queryByRole('dialog')).not.toBeInTheDocument();
+    });
+
     it('clears the coach after removal', async () => {
       const { findByRole, getByRole, queryByRole } = render(
         <CachedTestComponent />,
