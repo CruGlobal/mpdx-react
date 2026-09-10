@@ -73,8 +73,8 @@ export interface MpdGoalAdminContextValue {
   assignableCoachesError: ApolloError | undefined;
   /** Retries the coach list, so its failure is recoverable without a reload. */
   retryAssignableCoaches: () => void;
-  /** Assigns one coach to every row in `rowIds`; rejects when nobody was assigned. */
-  assignCoach: (rowIds: string[], coachId: string) => Promise<void>;
+  /** Resolves with how many of `rowIds` the server assigned; ids gone stale are skipped. */
+  assignCoach: (rowIds: string[], coachId: string) => Promise<number>;
 }
 
 const MpdGoalAdminContext = createContext<MpdGoalAdminContextValue | undefined>(
@@ -263,13 +263,20 @@ export const MpdGoalAdminProvider: React.FC<{
   );
 
   const assignCoach = useCallback(
-    async (rowIds: string[], coachId: string) => {
-      // No refetch: the payload's rows normalize over the cached ones, and nothing else this query renders changes.
-      await assignCoachToAttendee({
+    async (rowIds: string[], coachId: string): Promise<number> => {
+      const { data } = await assignCoachToAttendee({
         variables: {
           input: { cohortId: selectedCohortId, attendeeIds: rowIds, coachId },
         },
+        // Assigned rows normalize over the cached ones; a skipped id means the table itself is stale.
+        refetchQueries: (result) =>
+          result.data?.assignCoachToNewStaffCohortAttendee?.assignedCount ===
+          rowIds.length
+            ? []
+            : ['NewStaffCohortAttendees'],
+        awaitRefetchQueries: true,
       });
+      return data?.assignCoachToNewStaffCohortAttendee?.assignedCount ?? 0;
     },
     [assignCoachToAttendee, selectedCohortId],
   );
