@@ -13,6 +13,13 @@ import matchMediaMock from './matchMediaMock';
 // Configure i18next in tests
 import 'src/lib/i18n';
 
+// jsdom omits AbortSignal.timeout, which every browser we support implements.
+AbortSignal.timeout ??= (ms: number) => {
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(new DOMException('', 'TimeoutError')), ms);
+  return controller.signal;
+};
+
 jest.mock('src/components/Constants/UseApiConstants');
 jest.mock('next-auth/react', () => {
   return {

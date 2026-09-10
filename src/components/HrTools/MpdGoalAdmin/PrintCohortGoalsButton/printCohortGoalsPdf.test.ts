@@ -57,12 +57,11 @@ describe('fetchCohortGoalsPdf', () => {
   // Without this the button spins forever while the server renders the whole cohort.
   it('aborts and rejects once the render passes the timeout', async () => {
     jest.useFakeTimers();
+    // Real fetch rejects with the signal's reason, which AbortSignal.timeout sets to a TimeoutError.
     fetchMock.mockImplementation(
       (_url, { signal }) =>
         new Promise((_resolve, reject) =>
-          signal.addEventListener('abort', () =>
-            reject(new DOMException('Aborted', 'AbortError')),
-          ),
+          signal.addEventListener('abort', () => reject(signal.reason)),
         ),
     );
 

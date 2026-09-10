@@ -189,11 +189,7 @@ the request forms autosave a draft but `Submit` through the wizard's `SubmitModa
   (wait on `selectedCohortId`, not on `cohorts.length`) or it will overwrite them.
   **Print All renders server-side**: the button calls
   `printNewStaffCohortGoals`, then fetches the returned single-use `downloadUrl`
-  with the Authorization header (never `?access_token=`, which would leak a
-  full-account JWT into history and proxy logs) and saves the blob. The PDF is
-  Prawn's per-household Support Goals Worksheet from mpdx_api, so its contents
-  are not this repo's to change. `attendeeIds` is omitted unless a search is
-  active, and the button is disabled while `searchPending` or `loading` is true.
+  with the Authorization header and saves the blob.
   The search debounce plus `MpdGoalAdminContext`'s deliberate hold on the previous
   result set means a click mid-search would otherwise send the ids the preceding
   search returned. Mutation failures toast through the global Apollo error link;
