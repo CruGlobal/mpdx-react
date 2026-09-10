@@ -11,16 +11,10 @@ export const fetchCohortGoalsPdf = async (
   downloadUrl: string,
   apiToken: string,
 ): Promise<string> => {
-  const abortController = new AbortController();
-  const timer = setTimeout(
-    () => abortController.abort(),
-    PDF_REQUEST_TIMEOUT_MS,
-  );
-
   try {
     const response = await fetch(downloadUrl, {
       headers: { authorization: `Bearer ${apiToken}` },
-      signal: abortController.signal,
+      signal: AbortSignal.timeout(PDF_REQUEST_TIMEOUT_MS),
     });
 
     // The token burns on the first redemption, so a failure here cannot be retried with the same URL.
@@ -30,15 +24,13 @@ export const fetchCohortGoalsPdf = async (
 
     return URL.createObjectURL(await response.blob());
   } catch (error) {
-    // Rethrown as a plain error because the native AbortError reads as if the user cancelled.
-    if (abortController.signal.aborted) {
+    // Retimed as a plain error because the native TimeoutError reads as if the user cancelled.
+    if (error instanceof DOMException && error.name === 'TimeoutError') {
       throw new Error(
         `MPD Goals PDF request timed out after ${PDF_REQUEST_TIMEOUT_MS}ms`,
       );
     }
     throw error;
-  } finally {
-    clearTimeout(timer);
   }
 };
 
