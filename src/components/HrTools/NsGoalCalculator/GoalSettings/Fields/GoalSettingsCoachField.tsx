@@ -64,19 +64,21 @@ export const GoalSettingsCoachField: React.FC<GoalSettingsCoachFieldProps> = ({
       ? [value, ...loadedOptions]
       : loadedOptions;
 
-  const handleAssignCoach = async (coachId: string) => {
-    setAssignFailed(false);
-    try {
-      // No refetch: the payload's attendee normalizes over the cached one, coach and all.
-      await assignCoach({
-        variables: {
-          input: {
-            cohortId: attendee.newStaffCohortId,
-            attendeeIds: [attendee.id],
-            coachId,
-          },
+  // No refetch: the payload's attendee normalizes over the cached one, coach and all.
+  const assignCoachTo = (coachId: string) =>
+    assignCoach({
+      variables: {
+        input: {
+          cohortId: attendee.newStaffCohortId,
+          attendeeIds: [attendee.id],
+          coachId,
         },
-      });
+      },
+    });
+
+  const handleSwitchCoach = async (coachId: string) => {
+    try {
+      await assignCoachTo(coachId);
     } catch {
       // The confirmation closes whatever the outcome, so the failure has to show outside it.
       setAssignFailed(true);
@@ -100,11 +102,13 @@ export const GoalSettingsCoachField: React.FC<GoalSettingsCoachFieldProps> = ({
   };
 
   const handleChange = (selected: AssignCoachOption | null) => {
+    // Any new pick supersedes the last failure, so the stale alert goes with it.
+    setAssignFailed(false);
     if (!selected) {
       setRemoving(true);
     } else if (!coach) {
-      // A first assignment takes nobody's access away, so it needs no confirmation.
-      handleAssignCoach(selected.id);
+      // A first assignment takes nobody's access away, so no confirmation, and no modal to hide the global error toast.
+      assignCoachTo(selected.id).catch(() => undefined);
     } else if (selected.id !== coach.id) {
       setSwitchingTo(selected);
     }
@@ -200,7 +204,7 @@ export const GoalSettingsCoachField: React.FC<GoalSettingsCoachFieldProps> = ({
             'Are you sure you want to make {{coach}} the coach for {{name}}? {{current}} will lose access to this account.',
             { coach: switchingTo.name, name: subjectName, current: coachName },
           )}
-          mutation={() => handleAssignCoach(switchingTo.id)}
+          mutation={() => handleSwitchCoach(switchingTo.id)}
           handleClose={() => setSwitchingTo(null)}
         />
       )}

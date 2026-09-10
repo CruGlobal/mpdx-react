@@ -344,9 +344,11 @@ describe('GoalSettingsCoachField', () => {
     expect(getByRole('combobox', { name: 'Coach' })).toHaveValue('Amy Wilson');
   });
 
-  it('reports a failed assignment', async () => {
+  // Only the switch reports inline: a first assignment has no modal hiding the global error snackbar.
+  it('reports a failed switch instead of closing on a silent failure', async () => {
     const { getByRole, findByRole } = render(
       <TestComponent
+        household={coachedAttendee}
         mocks={{
           AssignCoachToNewStaffCohortAttendee: {
             assignCoachToNewStaffCohortAttendee: () => {
@@ -358,11 +360,13 @@ describe('GoalSettingsCoachField', () => {
     );
 
     userEvent.click(getByRole('button', { name: 'Open' }));
-    userEvent.click(await findByRole('option', { name: 'Amy Wilson' }));
+    userEvent.click(await findByRole('option', { name: 'Nelson Jones' }));
+    userEvent.click(getByRole('button', { name: 'Yes' }));
 
     expect(await findByRole('alert')).toHaveTextContent(
       'The coach could not be assigned. Please try again.',
     );
+    expect(getByRole('combobox', { name: 'Coach' })).toHaveValue('Amy Wilson');
   });
 
   // Neither mutation refetches, so the payload normalizing over the cached attendee is the only thing that updates the picker.
