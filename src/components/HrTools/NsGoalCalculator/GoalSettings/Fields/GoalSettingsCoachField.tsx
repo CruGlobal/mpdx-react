@@ -115,9 +115,9 @@ export const GoalSettingsCoachField: React.FC<GoalSettingsCoachFieldProps> = ({
       <Autocomplete
         autoHighlight
         loading={loading}
-        // A first assignment saves straight from here, so the picker has to
-        // close for that round trip or a second pick races the first.
-        disabled={assigning}
+        // A first assignment saves straight from here, so the picker must close
+        // for that round trip; readOnly does it without taking the focus.
+        readOnly={assigning}
         // Controlled by the assignment, so a declined confirmation reverts the input on its own.
         value={value}
         onOpen={() => loadCoaches({ variables: { attendeeId: attendee.id } })}

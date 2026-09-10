@@ -208,11 +208,12 @@ describe('GoalSettingsCoachField', () => {
 
     // Asserted synchronously: the mutation resolves on the next microtask, so
     // an awaited query would miss the in-flight state entirely.
-    expect(getByRole('combobox', { name: 'Coach' })).toBeDisabled();
+    const combobox = getByRole('combobox', { name: 'Coach' });
+    expect(combobox).toHaveAttribute('readonly');
+    // Disabling it instead would drop the focus to the body mid-save.
+    expect(combobox).toHaveFocus();
 
-    await waitFor(() =>
-      expect(getByRole('combobox', { name: 'Coach' })).toBeEnabled(),
-    );
+    await waitFor(() => expect(combobox).not.toHaveAttribute('readonly'));
   });
 
   // A failed list must not read as "nobody is eligible".
