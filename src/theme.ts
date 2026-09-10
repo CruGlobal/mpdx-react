@@ -332,7 +332,6 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: '16px',
-          backgroundColor: '#fff',
         },
       },
     },
