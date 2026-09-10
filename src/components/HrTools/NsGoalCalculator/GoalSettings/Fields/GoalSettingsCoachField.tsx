@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
 import { GoalSettingsAttendee } from '../goalSettingsSectionProps';
 import { CoachFieldAlerts } from './CoachFieldAlerts';
+import { GoalSettingsReadOnlyField } from './GoalSettingsReadOnlyField';
 import { useCoachAssignment } from './useCoachAssignment';
 
 interface GoalSettingsCoachFieldProps {
@@ -24,6 +25,17 @@ export const GoalSettingsCoachField: React.FC<GoalSettingsCoachFieldProps> = ({
   const { t } = useTranslation();
   const coach = useCoachAssignment(attendee);
   const busy = coach.loading || coach.assigning;
+
+  if (!attendee.canEditCoach) {
+    // An invite-sourced coaching grant is enough to read this, so the goals team may have assigned nobody.
+    return attendee.coach ? (
+      <GoalSettingsReadOnlyField
+        label={t('Coach')}
+        value={coach.coachName}
+        showLabel
+      />
+    ) : null;
+  }
 
   return (
     <Box>

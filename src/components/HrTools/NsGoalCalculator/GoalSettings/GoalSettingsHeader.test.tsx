@@ -17,6 +17,7 @@ const defaultAttendee: GoalSettingsAttendee = {
   coordinators: ['Ada Lovelace', 'Grace Hopper'],
   ministry: { id: 'ministry-1', name: 'Campus' },
   coach: null,
+  canEditCoach: true,
 };
 
 const primaryPerson: GoalSettingsPerson = {
