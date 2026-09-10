@@ -1,19 +1,49 @@
 import React, { useState } from 'react';
 import { Button, CircularProgress, Tooltip } from '@mui/material';
+import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
-import { downloadPdf, generateCohortGoalsPdf } from './printCohortGoalsPdf';
+import { usePrintNewStaffCohortGoalsMutation } from '../NewStaffCohorts.generated';
+import { downloadPdf, fetchCohortGoalsPdf } from './printCohortGoalsPdf';
 
-/** Exports the cohort's goals as one PDF; gated on training costs. */
+/** Exports the cohort's Support Goals Worksheets as one PDF; gated on training costs. */
 export const PrintCohortGoalsButton: React.FC = () => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const { selectedCohort, filteredRows, search } = useMpdGoalAdmin();
+  const { apiToken } = useRequiredSession();
+  const {
+    selectedCohort,
+    filteredRows,
+    search,
+    searchPending,
+    loading,
+    error,
+  } = useMpdGoalAdmin();
+  const [printNewStaffCohortGoals] = usePrintNewStaffCohortGoalsMutation();
   const [printing, setPrinting] = useState(false);
 
   const hasTrainingCosts = !!selectedCohort?.hasTrainingCosts;
   const searchActive = !!search.trim();
+
+  /** Redeems the single-use URL and saves the file; false when the download itself failed. */
+  const savePdf = async (
+    downloadUrl: string,
+    filename: string,
+  ): Promise<boolean> => {
+    try {
+      downloadPdf(await fetchCohortGoalsPdf(downloadUrl, apiToken), filename);
+      return true;
+    } catch {
+      // Not an Apollo call, so the global error link never sees this failure; the burned token is why the fix is a fresh print, not a retry.
+      enqueueSnackbar(
+        t('Unable to download the MPD Goals PDF. Please try printing again.'),
+        { variant: 'error' },
+      );
+      return false;
+    }
+  };
 
   const handlePrint = async () => {
     if (!selectedCohort) {
@@ -21,13 +51,54 @@ export const PrintCohortGoalsButton: React.FC = () => {
     }
     setPrinting(true);
     try {
-      const url = await generateCohortGoalsPdf(selectedCohort, filteredRows);
-      downloadPdf(url, `MPD Goals - ${selectedCohort.name}.pdf`);
-    } catch {
-      // TODO(MPDX-9691): drop this snackbar once the mutation error link covers it.
-      enqueueSnackbar(t('Unable to export the MPD Goals PDF.'), {
-        variant: 'error',
+      const { data } = await printNewStaffCohortGoals({
+        variables: {
+          input: {
+            cohortId: selectedCohort.id,
+            // Omitted unsearched so the server prints the whole training; the disabled gate is what makes these ids the settled search's full set.
+            ...(searchActive && {
+              attendeeIds: filteredRows.map((row) => row.id),
+            }),
+          },
+        },
       });
+
+      const printResult = data?.printNewStaffCohortGoals;
+      if (!printResult?.downloadUrl) {
+        // The skipped count is the only explanation of why nothing was printable.
+        enqueueSnackbar(
+          printResult?.skippedCount
+            ? t(
+                'No MPD goals are ready to print: {{count}} households have no MPD goal calculation yet.',
+                { count: printResult.skippedCount },
+              )
+            : t('No MPD goals are ready to print.'),
+          { variant: 'info' },
+        );
+        return;
+      }
+
+      // Dated so repeat prints don't collide as "(1)", "(2)" in the downloads folder.
+      const saved = await savePdf(
+        printResult.downloadUrl,
+        `MPD Goals - ${selectedCohort.name} - ${DateTime.local().toFormat('yyyy-MM-dd')}.pdf`,
+      );
+      // Otherwise a household with no calculation is missing from the PDF with no explanation.
+      if (saved && printResult.skippedCount > 0) {
+        enqueueSnackbar(
+          t(
+            'Printed {{printed}} MPD goals. {{count}} households have no MPD goal calculation yet and were left out.',
+            {
+              printed: printResult.printedCount,
+              count: printResult.skippedCount,
+            },
+          ),
+          { variant: 'warning' },
+        );
+      }
+    } catch {
+      // The mutation rejected; the global Apollo error link already toasted the reason.
+      return;
     } finally {
       setPrinting(false);
     }
@@ -51,7 +122,10 @@ export const PrintCohortGoalsButton: React.FC = () => {
       <span>
         <Button
           variant="outlined"
-          disabled={!hasTrainingCosts || printing}
+          // Otherwise a click mid-search prints the previous search's rows, or a partial page of them.
+          disabled={
+            !hasTrainingCosts || printing || loading || searchPending || !!error
+          }
           onClick={handlePrint}
           aria-busy={printing}
         >
