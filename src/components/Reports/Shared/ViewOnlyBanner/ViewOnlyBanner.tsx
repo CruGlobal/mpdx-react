@@ -42,18 +42,13 @@ export const ViewOnlyBanner: React.FC<ViewOnlyBannerProps> = ({
           },
         }}
       >
-        {staffName
-          ? t(
-              "Currently viewing {{staffName}}'s {{reportName}} report · read only.",
-              {
-                staffName,
-                reportName,
-              },
-            )
-          : t(
-              "You are viewing another staff member's {{reportName}} report · read only.",
-              { reportName },
-            )}
+        {t(
+          "Currently viewing {{staffName}}'s {{reportName}} report · read only.",
+          {
+            staffName: staffName ?? 'this staff member',
+            reportName,
+          },
+        )}
       </Alert>
     </SimpleScreenOnly>
   );

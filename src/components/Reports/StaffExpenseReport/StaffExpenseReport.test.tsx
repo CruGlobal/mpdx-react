@@ -30,6 +30,8 @@ interface TestComponentProps {
   routerMonth?: string;
   usStaffGroup?: UsStaffGroupEnum;
   withSalary?: boolean;
+  staffAccountId?: string;
+  staffName?: string;
 }
 
 const salaryCategory = {
@@ -71,6 +73,8 @@ const onNavListToggle = jest.fn();
 const push = jest.fn();
 
 const title = 'Report title';
+const staffAccountId = '1000000001';
+const staffName = 'Jane Doe';
 
 const router = {
   isReady: true,
@@ -82,6 +86,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
   routerMonth,
   usStaffGroup = UsStaffGroupEnum.SeniorStaff,
   withSalary = false,
+  staffAccountId = null,
+  staffName,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter
@@ -106,6 +112,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
               mocks={{
                 ReportsStaffExpenses: {
                   reportsStaffExpenses: {
+                    accountId: '1000000001',
+                    name: staffName ?? 'Test Account',
                     funds: isEmpty
                       ? []
                       : [
@@ -274,6 +282,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 isNavListOpen={true}
                 onNavListToggle={onNavListToggle}
                 title={title}
+                staffAccountId={staffAccountId}
               />
             </GqlMockedProvider>
           </TestRouter>
@@ -301,6 +310,59 @@ describe('StaffExpenseReport', () => {
     expect(
       getByRole('gridcell', { name: 'Salary (Jordan)' }),
     ).toBeInTheDocument();
+  });
+
+  describe('supervisor view', () => {
+    it('does not show the view only banner on your own report', async () => {
+      const { findByText, queryByRole } = render(<TestComponent />);
+
+      expect(await findByText('Test Account')).toBeInTheDocument();
+      expect(
+        queryByRole('link', { name: 'Back to MPD Supervisor Report' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('shows the view only banner naming the staff member', async () => {
+      const { findByText, getByRole } = render(
+        <TestComponent staffAccountId={staffAccountId} staffName={staffName} />,
+      );
+
+      expect(
+        await findByText(
+          "Currently viewing Jane Doe's Staff Expense report · read only.",
+        ),
+      ).toBeInTheDocument();
+      expect(
+        getByRole('link', { name: 'Back to MPD Supervisor Report' }),
+      ).toBeInTheDocument();
+    });
+
+    it('requests the report for the staff member being viewed', async () => {
+      render(
+        <TestComponent staffAccountId={staffAccountId} staffName={staffName} />,
+      );
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('ReportsStaffExpenses', {
+          staffAccountId: staffAccountId,
+        }),
+      );
+    });
+
+    it('loads report settings categories for the staff member being viewed', async () => {
+      const { findByRole } = render(
+        <TestComponent staffAccountId={staffAccountId} staffName={staffName} />,
+      );
+
+      userEvent.click(await findByRole('button', { name: 'Report Settings' }));
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('ReportsStaffExpenses', {
+          staffAccountId: staffAccountId,
+          fundTypes: ['Primary'],
+        }),
+      );
+    });
   });
 
   it('keeps the Report Settings button visible when there are no transactions', async () => {
