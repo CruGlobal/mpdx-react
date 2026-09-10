@@ -1,5 +1,12 @@
 import React, { useEffect, useMemo } from 'react';
-import { Button, CircularProgress, Divider, Stack } from '@mui/material';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Divider,
+  Stack,
+  styled,
+} from '@mui/material';
 import { Form, Formik, useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
@@ -28,6 +35,29 @@ import {
 import { getGoalSettingsSchema } from './goalSettingsSchema';
 import { GoalSettingsSectionProps } from './goalSettingsSectionProps';
 import { useNewStaffGoalCalculation } from './useNewStaffGoalCalculation';
+
+/**
+ * Sticky save/cancel bar pinned to the bottom of the scroll area.
+ *
+ * GoalSettingsScrollContainer wraps this form in spacing(4) = 32px padding on
+ * every side. This bar breaks out of that padding so it spans the full width
+ * and sits flush against the scroll-area edges. Each side cancels the 32px:
+ *   marginX -4 + paddingX 4 -> full-bleed width, content stays inset
+ *   marginBottom -4         -> flush at the bottom once fully scrolled
+ *   bottom spacing(-4)      -> flush while the bar is still stuck
+ */
+const StickyActionBar = styled(Box)(({ theme }) => ({
+  position: 'sticky',
+  bottom: theme.spacing(-4),
+  zIndex: 1,
+  marginInline: theme.spacing(-4),
+  marginTop: theme.spacing(2),
+  marginBottom: theme.spacing(-4),
+  paddingInline: theme.spacing(4),
+  paddingBlock: theme.spacing(2),
+  backgroundColor: theme.palette.background.paper,
+  borderTop: `1px solid ${theme.palette.divider}`,
+}));
 
 /**
  * Reports the form's unsaved edits to the navigation provider, so the sidebar's
@@ -186,39 +216,39 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
                 <NsoInformationSection {...sectionProps} />
                 <ExemptionsSection {...sectionProps} />
 
-                <Divider sx={{ mb: 3 }} />
-
-                <Stack
-                  direction="row"
-                  spacing={2}
-                  alignItems="center"
-                  flexWrap="wrap"
-                  useFlexGap
-                >
-                  <GoalSettingsMissingFields />
-                  <GoalSettingsWarning />
-                  <Stack direction="row" spacing={2} sx={{ ml: 'auto' }}>
-                    {/* Wrapped: leave() takes an optional continuation, so
-                        passing it directly would hand it the click event. */}
-                    <Button color="inherit" onClick={() => leave()}>
-                      {t('Cancel')}
-                    </Button>
-                    {/* Never blocked by validation: clicking it is how an admin
-                        finds out what is still missing. */}
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      disabled={isSubmitting}
-                      startIcon={
-                        isSubmitting ? (
-                          <CircularProgress color="inherit" size={20} />
-                        ) : undefined
-                      }
-                    >
-                      {t('Save & Share')}
-                    </Button>
+                <StickyActionBar>
+                  <Stack
+                    direction="row"
+                    spacing={2}
+                    alignItems="center"
+                    flexWrap="wrap"
+                    useFlexGap
+                  >
+                    <GoalSettingsMissingFields />
+                    <GoalSettingsWarning />
+                    <Stack direction="row" spacing={2} sx={{ ml: 'auto' }}>
+                      {/* Wrapped: leave() takes an optional continuation, so
+                          passing it directly would hand it the click event. */}
+                      <Button color="inherit" onClick={() => leave()}>
+                        {t('Cancel')}
+                      </Button>
+                      {/* Never blocked by validation: clicking it is how an admin
+                          finds out what is still missing. */}
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        disabled={isSubmitting}
+                        startIcon={
+                          isSubmitting ? (
+                            <CircularProgress color="inherit" size={20} />
+                          ) : undefined
+                        }
+                      >
+                        {t('Save & Share')}
+                      </Button>
+                    </Stack>
                   </Stack>
-                </Stack>
+                </StickyActionBar>
               </Form>
             </GoalSettingsPreviewProvider>
           );

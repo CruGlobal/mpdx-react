@@ -5,10 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { GoalSettingsFormValues } from './goalSettingsFormValues';
 
 /**
- * Names the fields a goal cannot be calculated without, beside Save & Share.
- * The required fields sit far up a long form, so turning them red is invisible
- * from the actions — this summary is the feedback the admin can actually see
- * when Save & Share refuses to submit.
+ * Names the fields a goal cannot be calculated without, beside the save
+ * actions. The required fields sit far up a long scrolling form, so turning
+ * them red on submit is invisible from the sticky bar — this summary is the
+ * feedback the admin can actually see when Save & Share refuses to submit.
  *
  * Held back until the first submit: Save & Share looks ordinary and stays
  * clickable, so nothing should accuse the admin of missing fields before they

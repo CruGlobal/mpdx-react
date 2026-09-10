@@ -7,13 +7,14 @@ import { WarningSeverity } from './goalSettingsWarnings';
 const SEVERITIES: readonly WarningSeverity[] = ['error', 'warning'];
 
 /**
- * The non-blocking admin warnings from NSGC A33, rendered beside Save & Share
- * so an admin sees them at the point of saving. Built by the preview provider,
- * which also drives the matching field outlines, so the two always agree.
+ * The non-blocking admin warnings from NSGC A33, rendered beside the save
+ * actions so an admin sees them at the point of Save & Share regardless of how
+ * far the long form has scrolled. Built by the preview provider, which also
+ * drives the matching field outlines, so the two always agree.
  *
  * Grouped into one alert per severity rather than a row per warning: up to five
  * can apply at once, and five separately coloured rows read as noise. The two
- * alerts sit side by side so the actions row stays short.
+ * alerts sit side by side so the sticky bar stays short.
  */
 export const GoalSettingsWarning: React.FC = () => {
   const warnings = useGoalSettingsPreview()?.warnings ?? [];
