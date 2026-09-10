@@ -79,6 +79,10 @@ const ScenarioTestComponent: React.FC<
   </NsGoalCalculatorTestWrapper>
 );
 
+// Every case renders the whole 50-field form, so typing a value costs a Yup
+// pass and a re-render per keystroke and the default 5s runs out on loaded CI.
+jest.setTimeout(15000);
+
 describe('GoalSettingsForm', () => {
   it('renders all six section headings', async () => {
     const { findByRole, getByRole } = render(<TestComponent />);
