@@ -1,5 +1,6 @@
-query Hcm($effectiveDate: ISO8601Date) {
-  hcm(effectiveDate: $effectiveDate) {
+query Hcm($effectiveDate: ISO8601Date, $personNumber: String) {
+  hcm(effectiveDate: $effectiveDate, personNumber: $personNumber) {
+    usStaffGroup
     staffInfo {
       id
       preferredName

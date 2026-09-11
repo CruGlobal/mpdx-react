@@ -197,7 +197,10 @@ export const StaffMemberDrawer: React.FC = () => {
           <DynamicMPGA staffAccountId={staffAccountId ?? null} />
         </TabPanel>
         <TabPanel value={StaffDetailTabEnum.StaffExpenseReport}>
-          <StaffTabStaffExpenseReport staffAccountId={staffAccountId ?? null} />
+          <StaffTabStaffExpenseReport
+            staffAccountId={staffAccountId ?? null}
+            personNumber={personNumber}
+          />
         </TabPanel>
       </TabContext>
     </Box>

@@ -6,11 +6,13 @@ import theme from 'src/theme';
 import { ViewReportLink } from './ViewReportLink';
 
 const staffAccountId = '1000000001';
+const personNumber = '000000111';
 const accountListId = 'account-list-1';
 const router = { query: { accountListId }, isReady: true };
 
 const renderViewReportLink = (
   staffAccountId: string | null,
+  personNumber?: string,
   reportLink = 'staffExpense',
   reportName = 'Staff Expense',
 ) =>
@@ -21,6 +23,7 @@ const renderViewReportLink = (
           staffAccountId={staffAccountId}
           reportLink={reportLink}
           reportName={reportName}
+          personNumber={personNumber}
         />
       </TestRouter>
     </ThemeProvider>,
@@ -40,7 +43,16 @@ describe('ViewReportLink', () => {
 
     expect(getByRole('link')).toHaveAttribute(
       'href',
-      `/accountLists/${accountListId}/reports/staffExpense?staffAccountId=1000000001`,
+      `/accountLists/${accountListId}/reports/staffExpense?staffAccountId=${staffAccountId}`,
+    );
+  });
+
+  it('adds the person number when one is given', () => {
+    const { getByRole } = renderViewReportLink(staffAccountId, personNumber);
+
+    expect(getByRole('link')).toHaveAttribute(
+      'href',
+      `/accountLists/${accountListId}/reports/staffExpense?staffAccountId=${staffAccountId}&personNumber=${personNumber}`,
     );
   });
 
