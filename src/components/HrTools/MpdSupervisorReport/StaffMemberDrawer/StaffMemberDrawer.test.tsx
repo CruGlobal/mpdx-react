@@ -99,6 +99,45 @@ describe('StaffMemberDrawer', () => {
     expect(queryByText(/Spouse:/)).not.toBeInTheDocument();
   });
 
+  it('renders the benchmark labels and amounts', () => {
+    const { getByText } = renderDrawer();
+    openMember(memberWithSpouse);
+    expect(getByText('MPD Health Benchmark:')).toBeInTheDocument();
+    expect(getByText('Monthly Gross Salary')).toBeInTheDocument();
+    expect(getByText('$4,500.00')).toBeInTheDocument();
+    expect(getByText('New Staff Monthly Salary')).toBeInTheDocument();
+    expect(getByText('$2,500.00')).toBeInTheDocument();
+  });
+
+  it('renders a zero benchmark as currency rather than a dash', () => {
+    const { getAllByText } = renderDrawer();
+    openMember(
+      managedStaffMember({
+        newStaffMonthlySalary: 0,
+        quarterlyHealth: { monthlyGrossSalary: 0, completedQuarters: [] },
+      }),
+    );
+    expect(getAllByText('$0.00')).toHaveLength(2);
+  });
+
+  it('omits the amount when the monthly gross salary is missing', () => {
+    const { getByText, queryByText } = renderDrawer();
+    openMember(
+      managedStaffMember({
+        quarterlyHealth: { monthlyGrossSalary: null, completedQuarters: [] },
+      }),
+    );
+    expect(queryByText('$4,500.00')).not.toBeInTheDocument();
+    expect(getByText('$2,500.00')).toBeInTheDocument();
+  });
+
+  it('omits the amount when the new staff monthly salary is missing', () => {
+    const { getByText, queryByText } = renderDrawer();
+    openMember(managedStaffMember({ newStaffMonthlySalary: null }));
+    expect(queryByText('$2,500.00')).not.toBeInTheDocument();
+    expect(getByText('$4,500.00')).toBeInTheDocument();
+  });
+
   it('renders all five detail tabs', () => {
     const { getByRole } = renderDrawer();
     openMember(memberWithSpouse);

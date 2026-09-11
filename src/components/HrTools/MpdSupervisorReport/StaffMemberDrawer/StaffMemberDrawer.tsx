@@ -4,6 +4,7 @@ import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { Avatar, Box, IconButton, Tab, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import theme from 'src/theme';
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
 import { DynamicMPGA, preloadMPGA } from '../StaffDetailsTabs/MPGA/DynamicMPGA';
@@ -74,6 +75,7 @@ const ContactTab = styled(Tab)(({}) => ({
 
 export const StaffMemberDrawer: React.FC = () => {
   const { t } = useTranslation();
+  const { formatCurrency } = useFormatters();
   const {
     selectedMember,
     closePanel,
@@ -95,11 +97,14 @@ export const StaffMemberDrawer: React.FC = () => {
     spousePersonNumber,
     spouseStaffAccountId,
     teams,
+    newStaffMonthlySalary,
+    quarterlyHealth,
   } = selectedMember;
   const initials = getInitials(firstName, lastName);
   const fullName = `${firstName} ${lastName}`;
   const team =
     teams.employee.map(({ name }) => name).join(', ') || pendingField;
+  const monthlyGrossSalary = quarterlyHealth?.monthlyGrossSalary ?? null;
 
   return (
     <Box
@@ -152,6 +157,32 @@ export const StaffMemberDrawer: React.FC = () => {
           />
         </StaffInfo>
       )}
+
+      <StaffInfo>
+        <Typography
+          variant="subtitle2"
+          fontWeight="bold"
+          sx={{ width: '100%' }}
+        >
+          {t('MPD Health Benchmark:')}
+        </Typography>
+        <DetailRow
+          label={t('New Staff Monthly Salary')}
+          value={
+            newStaffMonthlySalary !== null
+              ? formatCurrency(newStaffMonthlySalary)
+              : pendingField
+          }
+        />
+        <DetailRow
+          label={t('Monthly Gross Salary')}
+          value={
+            monthlyGrossSalary !== null
+              ? formatCurrency(monthlyGrossSalary)
+              : pendingField
+          }
+        />
+      </StaffInfo>
 
       <TabContext value={selectedTabKey}>
         <ContactTabsWrapper>
