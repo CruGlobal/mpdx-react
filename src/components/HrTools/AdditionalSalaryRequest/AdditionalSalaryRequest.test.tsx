@@ -196,7 +196,8 @@ describe('AdditionalSalaryRequest', () => {
       />,
     );
 
-    expect(await findByText('Request processed')).toBeInTheDocument();
+    expect(await findByText('Request approved on:')).toBeInTheDocument();
+    expect(getByText(/Feb 1, 2024/)).toBeInTheDocument();
     expect(getByText('Payroll processing')).toBeInTheDocument();
     expect(
       await findByText(/Pending Additional Salary Request/i),
