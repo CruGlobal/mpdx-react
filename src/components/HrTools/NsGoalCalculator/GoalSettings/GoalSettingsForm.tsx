@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import { Form, Formik, useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { SendScenarioGoalButton } from 'src/components/HrTools/Shared/SendScenarioGoal/SendScenarioGoalButton';
 import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
 import { GoalSettingsHeader } from './GoalSettingsHeader';
 import { GoalSettingsMissingFields } from './GoalSettingsMissingFields';
@@ -164,7 +165,7 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
         validateOnMount
         onSubmit={handleSubmit}
       >
-        {({ isSubmitting, isValid, values }) => {
+        {({ dirty, isSubmitting, isValid, values }) => {
           // Spouse columns follow the live form value, so they appear the moment
           // marital status is set to married — before the change is saved.
           const hasSpouse =
@@ -231,6 +232,19 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
                     <GoalSettingsMissingFields />
                     <GoalSettingsWarning />
                     <Stack direction="row" spacing={2} sx={{ ml: 'auto' }}>
+                      {isScenario && (
+                        <SendScenarioGoalButton
+                          goal={calculation}
+                          // Sending emails the saved record, so unsaved edits would ship a stale worksheet.
+                          disabledReason={
+                            dirty
+                              ? t(
+                                  'Save your changes before emailing the worksheet.',
+                                )
+                              : null
+                          }
+                        />
+                      )}
                       {/* Wrapped: leave() takes an optional continuation, so
                           passing it directly would hand it the click event. */}
                       <Button color="inherit" onClick={() => leave()}>

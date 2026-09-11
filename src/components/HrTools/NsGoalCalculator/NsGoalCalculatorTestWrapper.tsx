@@ -16,6 +16,7 @@ import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.genera
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
 import { constantsMock } from '../GoalCalculator/GoalCalculatorTestWrapper';
+import { SendNewStaffScenarioGoalMutation } from '../Shared/SendScenarioGoal/SendScenarioGoal.generated';
 import {
   NewStaffGoalCalculationDocument,
   NewStaffGoalCalculationQuery,
@@ -49,6 +50,15 @@ export const defaultGoalCalculationMock = gqlMock<
 export const defaultGoalCalculation =
   defaultGoalCalculationMock.newStaffGoalCalculation!;
 
+/** Scenario sends echo back the address the default scenario fixture carries. */
+const sendScenarioGoalMock: DeepPartialMock<SendNewStaffScenarioGoalMutation> =
+  {
+    sendNewStaffScenarioGoal: {
+      newStaffGoalCalculation: { id: 'scenario-1' },
+      sentTo: ['john@example.com'],
+    },
+  };
+
 export interface NsGoalCalculatorTestWrapperProps {
   children?: React.ReactNode;
   /**
@@ -80,11 +90,13 @@ export const NsGoalCalculatorTestWrapper: React.FC<
           GoalCalculatorConstants: GoalCalculatorConstantsQuery;
           NewStaffGoalCalculation: NewStaffGoalCalculationQuery;
           PreviewNewStaffGoalCalculation: PreviewNewStaffGoalCalculationMutation;
+          SendNewStaffScenarioGoal: SendNewStaffScenarioGoalMutation;
         }>
           mocks={{
             GoalCalculatorConstants: { constant: constantsMock },
             NewStaffGoalCalculation: goalCalculationMock,
             PreviewNewStaffGoalCalculation: previewMock ?? {},
+            SendNewStaffScenarioGoal: sendScenarioGoalMock,
           }}
           onCall={onCall}
         >

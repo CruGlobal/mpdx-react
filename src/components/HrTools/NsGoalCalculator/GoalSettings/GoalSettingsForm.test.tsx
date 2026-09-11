@@ -48,6 +48,19 @@ const singleMock = {
   },
 };
 
+/** A scenario goal with everything the API needs before it will email the worksheet. */
+const sendableScenarioMock = {
+  newStaffGoalCalculation: {
+    ...defaultGoalCalculation,
+    // A scenario goal is fetched by its own id, so the record carries it.
+    id: 'scenario-1',
+    lastName: 'Doe',
+    emailAddress: 'john@example.com',
+    spouseEmailAddress: null,
+    geographicLocation: 'Orlando',
+  },
+};
+
 const mutationSpy = jest.fn();
 const push = jest.fn();
 
@@ -101,6 +114,15 @@ describe('GoalSettingsForm', () => {
     expect(
       getByRole('heading', { name: 'Exemptions & Exceptions' }),
     ).toBeInTheDocument();
+  });
+
+  it('does not offer the scenario-only Email Worksheet action on a real goal', async () => {
+    const { findByRole, queryByRole } = render(<TestComponent />);
+
+    await findByRole('button', { name: 'Save & Share' });
+    expect(
+      queryByRole('button', { name: 'Email Worksheet' }),
+    ).not.toBeInTheDocument();
   });
 
   it('renders Cancel and Save & Share actions', async () => {
@@ -842,6 +864,47 @@ describe('GoalSettingsForm', () => {
           },
         ),
       );
+    });
+
+    it('emails the worksheet for the scenario goal being viewed', async () => {
+      const { findByRole, findByText, getByRole, getByText } = render(
+        <ScenarioTestComponent goalCalculationMock={sendableScenarioMock} />,
+      );
+
+      userEvent.click(await findByRole('button', { name: 'Email Worksheet' }));
+
+      expect(
+        getByText(
+          'Email the support goals worksheet for John Doe to john@example.com? This cannot be undone.',
+        ),
+      ).toBeInTheDocument();
+
+      userEvent.click(getByRole('button', { name: 'Send Worksheet' }));
+
+      expect(
+        await findByText('Support goals worksheet sent to john@example.com.'),
+      ).toBeInTheDocument();
+      expect(mutationSpy).toHaveGraphqlOperation('SendNewStaffScenarioGoal', {
+        id: 'scenario-1',
+      });
+    });
+
+    it('will not email a worksheet that does not match the unsaved edits', async () => {
+      const { findByRole, findByText, getByRole } = render(
+        <ScenarioTestComponent goalCalculationMock={sendableScenarioMock} />,
+      );
+
+      const firstName = await findByRole('textbox', { name: 'First Name' });
+      userEvent.clear(firstName);
+      userEvent.type(firstName, 'Johnny');
+
+      const emailButton = getByRole('button', { name: 'Email Worksheet' });
+      await waitFor(() => expect(emailButton).toBeDisabled());
+
+      userEvent.hover(emailButton.parentElement as HTMLElement);
+      expect(
+        await findByText('Save your changes before emailing the worksheet.'),
+      ).toBeInTheDocument();
     });
 
     it('returns to the scenario goals table once the save succeeds', async () => {

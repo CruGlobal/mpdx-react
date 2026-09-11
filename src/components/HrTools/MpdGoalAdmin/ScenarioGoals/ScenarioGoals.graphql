@@ -6,6 +6,9 @@ query NewStaffScenarioGoals($after: String) {
       lastName
       ministryName
       geographicLocation
+      # Drives the send action's recipient list and its disabled reason.
+      emailAddress
+      spouseEmailAddress
       createdAt
       # Drives the Goal Status chip; see goalSettingsCompletion.
       maritalStatus

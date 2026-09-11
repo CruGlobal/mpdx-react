@@ -1,0 +1,9 @@
+mutation SendNewStaffScenarioGoal($id: ID!) {
+  sendNewStaffScenarioGoal(input: { id: $id }) {
+    newStaffGoalCalculation {
+      id
+    }
+    # Delivery is queued, so this is the address list rather than a receipt.
+    sentTo
+  }
+}

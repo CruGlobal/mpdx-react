@@ -6,7 +6,11 @@ import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  DeepPartialMock,
+  GqlMockedProvider,
+} from '__tests__/util/graphqlMocking';
+import { SendNewStaffScenarioGoalMutation } from 'src/components/HrTools/Shared/SendScenarioGoal/SendScenarioGoal.generated';
 import {
   GoalCalculationAge,
   GoalCalculationRole,
@@ -35,6 +39,7 @@ type ScenarioGoalsMocks = {
   NewStaffScenarioGoals: NewStaffScenarioGoalsQuery;
   CreateNewStaffScenarioGoal: CreateNewStaffScenarioGoalMutation;
   DeleteNewStaffScenarioGoal: DeleteNewStaffScenarioGoalMutation;
+  SendNewStaffScenarioGoal: SendNewStaffScenarioGoalMutation;
 };
 
 const scenarioGoalsMock: DeepPartial<NewStaffScenarioGoalsQuery> = {
@@ -49,6 +54,8 @@ const scenarioGoalsMock: DeepPartial<NewStaffScenarioGoalsQuery> = {
         createdAt: '2026-08-01T12:00:00Z',
         maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
         calculationsYear: 2026,
+        emailAddress: 'john@example.com',
+        spouseEmailAddress: null,
         age: GoalCalculationAge.ThirtyToThirtyFour,
         tenure: 0,
         assignmentType: GoalCalculationRole.Field,
@@ -66,6 +73,8 @@ const scenarioGoalsMock: DeepPartial<NewStaffScenarioGoalsQuery> = {
         createdAt: '2026-08-15T12:00:00Z',
         maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
         calculationsYear: null,
+        emailAddress: null,
+        spouseEmailAddress: null,
         age: null,
         tenure: null,
         assignmentType: null,
@@ -95,6 +104,14 @@ const manyScenarioGoalsMock: DeepPartial<NewStaffScenarioGoalsQuery> = {
   },
 };
 
+const sendScenarioGoalMock: DeepPartialMock<SendNewStaffScenarioGoalMutation> =
+  {
+    sendNewStaffScenarioGoal: {
+      newStaffGoalCalculation: { id: 'scenario-1' },
+      sentTo: ['john@example.com'],
+    },
+  };
+
 const renderScenarioGoals = (mocks: ApolloErgonoMockMap = {}) =>
   render(
     <ThemeProvider theme={theme}>
@@ -104,6 +121,7 @@ const renderScenarioGoals = (mocks: ApolloErgonoMockMap = {}) =>
             mocks={
               {
                 NewStaffScenarioGoals: scenarioGoalsMock,
+                SendNewStaffScenarioGoal: sendScenarioGoalMock,
                 ...mocks,
               } as ApolloErgonoMockMap
             }
@@ -156,6 +174,44 @@ describe('ScenarioGoals', () => {
         ['Untitled scenario', '—', '—', '$0', 'Incomplete', '8/15/2026', ''],
       ],
     });
+  });
+
+  it('emails the worksheet for a scenario goal from its row', async () => {
+    const { findByRole, findByText, getByRole, getByText } =
+      renderScenarioGoals();
+
+    userEvent.click(await findByRole('button', { name: 'Email John Doe' }));
+
+    expect(
+      getByText(
+        'Email the support goals worksheet for John Doe to john@example.com? This cannot be undone.',
+      ),
+    ).toBeInTheDocument();
+
+    userEvent.click(getByRole('button', { name: 'Send Worksheet' }));
+
+    expect(
+      await findByText('Support goals worksheet sent to john@example.com.'),
+    ).toBeInTheDocument();
+    expect(mutationSpy).toHaveGraphqlOperation('SendNewStaffScenarioGoal', {
+      id: 'scenario-1',
+    });
+  });
+
+  it('blocks sending a scenario goal that is missing required fields', async () => {
+    const { findByRole, getByRole, findByText } = renderScenarioGoals();
+
+    await findByRole('link', { name: 'John Doe' });
+    const send = getByRole('button', { name: 'Email Untitled scenario' });
+    expect(send).toBeDisabled();
+
+    // The tooltip lives on the wrapper span; a disabled button takes no pointer events.
+    await userEvent.hover(send.parentElement as HTMLElement);
+    expect(
+      await findByText(
+        'A first name, last name, campus division, and year are required before the worksheet can be emailed.',
+      ),
+    ).toBeInTheDocument();
   });
 
   it('links each scenario goal to its calculator page', async () => {
