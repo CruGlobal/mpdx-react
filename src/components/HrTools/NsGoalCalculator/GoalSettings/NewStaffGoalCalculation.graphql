@@ -128,6 +128,7 @@ fragment NewStaffGoalCalculationFields on NewStaffGoalCalculation {
       lastName
       email
     }
+    canEditCoach
   }
 }
 

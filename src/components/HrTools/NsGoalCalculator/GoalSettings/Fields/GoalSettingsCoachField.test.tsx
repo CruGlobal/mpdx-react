@@ -33,6 +33,7 @@ const attendee: GoalSettingsAttendee = {
   coordinators: [],
   ministry: { id: 'ministry-1', name: 'Campus' },
   coach: null,
+  canEditCoach: true,
 };
 
 const coachedAttendee: GoalSettingsAttendee = {
@@ -164,6 +165,27 @@ describe('GoalSettingsCoachField', () => {
 
     expect(getByRole('combobox', { name: 'Coach' })).toHaveValue('Amy Wilson');
     expect(getByRole('button', { name: 'Remove coach' })).toBeInTheDocument();
+  });
+
+  // A coach who is neither an admin nor a coordinator reaches Staff Details for the
+  // households they coach, but may not reassign the coach there.
+  it('shows the coach read-only to a coach viewing a household they coach', () => {
+    const { getByRole, queryAllByRole } = render(
+      <TestComponent household={{ ...coachedAttendee, canEditCoach: false }} />,
+    );
+
+    expect(getByRole('textbox', { name: 'Coach' })).toHaveValue('Amy Wilson');
+    expect(queryAllByRole('button')).toHaveLength(0);
+  });
+
+  // A coaching invite grants read access on its own, so coach_id can still be unset.
+  it('hides the row for an invited coach on a household with no assigned coach', () => {
+    const { queryByRole, queryByText } = render(
+      <TestComponent household={{ ...attendee, canEditCoach: false }} />,
+    );
+
+    expect(queryByRole('textbox', { name: 'Coach' })).not.toBeInTheDocument();
+    expect(queryByText('Coach')).not.toBeInTheDocument();
   });
 
   // The list costs a OneApp lookup, so it must not load until the picker opens.
