@@ -1,8 +1,18 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import theme from 'src/theme';
 import { NsoMpdQuestionnaireTestWrapper } from '../NsoMpdQuestionnaireTestWrapper';
 import { StaffInformation } from './StaffInformation';
+
+const recordFieldLabels = [
+  'Staff Status',
+  'Family Status',
+  'Age',
+  'Tenure',
+  'Address',
+  'Cell Phone Number',
+];
 
 describe('StaffInformation', () => {
   it("shows the staff member's information from the questionnaire", async () => {
@@ -99,5 +109,29 @@ describe('StaffInformation', () => {
     const phone = await findByRole('textbox', { name: 'Cell Phone Number' });
     expect(phone).toHaveValue('');
     expect(phone).toHaveAttribute('placeholder', 'Not on record');
+  });
+
+  it('greys out every on-record field so none of them look editable', async () => {
+    const { findByRole, getByRole } = render(
+      <NsoMpdQuestionnaireTestWrapper>
+        <StaffInformation />
+      </NsoMpdQuestionnaireTestWrapper>,
+    );
+
+    await findByRole('heading', { name: 'John Doe' });
+
+    const expectGreyed = (name: string) => {
+      const field = getByRole('textbox', { name });
+      expect(field).toHaveAttribute('readonly');
+      expect(field.closest('.MuiInputBase-root')).toHaveStyle({
+        backgroundColor: theme.palette.grey[100],
+      });
+    };
+
+    recordFieldLabels.forEach(expectGreyed);
+
+    // The fields re-render inside the spouse toggle, so the greying has to survive it.
+    userEvent.click(getByRole('button', { name: 'View Jane' }));
+    recordFieldLabels.forEach(expectGreyed);
   });
 });
