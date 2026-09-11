@@ -53,11 +53,13 @@ const Providers: React.FC<{
   children: React.ReactNode;
   cohorts?: NewStaffCohortsQuery;
   coaches?: NewStaffCohortAssignableCoachesQuery;
+  assignCoach?: AssignCoachToNewStaffCohortAttendeeMutation;
   isGoalsAdmin?: boolean;
 }> = ({
   children,
   cohorts = cohortsMock,
   coaches = assignableCoachesMock,
+  assignCoach = assignedCoachMock(['row-1']),
   isGoalsAdmin = true,
 }) => (
   <ThemeProvider theme={theme}>
@@ -79,7 +81,7 @@ const Providers: React.FC<{
             1,
           ),
           NewStaffCohortAssignableCoaches: coaches,
-          AssignCoachToNewStaffCohortAttendee: assignedCoachMock(['row-1']),
+          AssignCoachToNewStaffCohortAttendee: assignCoach,
         }}
         onCall={mutationSpy}
       >
@@ -96,9 +98,15 @@ const renderTable = (
   cohorts?: NewStaffCohortsQuery,
   coaches?: NewStaffCohortAssignableCoachesQuery,
   isGoalsAdmin?: boolean,
+  assignCoach?: AssignCoachToNewStaffCohortAttendeeMutation,
 ) =>
   render(
-    <Providers cohorts={cohorts} coaches={coaches} isGoalsAdmin={isGoalsAdmin}>
+    <Providers
+      cohorts={cohorts}
+      coaches={coaches}
+      assignCoach={assignCoach}
+      isGoalsAdmin={isGoalsAdmin}
+    >
       <Capture rows={data} />
     </Providers>,
   );
@@ -106,8 +114,9 @@ const renderTable = (
 /** The picker is only usable once the assignable-coaches query has settled. */
 const renderWithCoaches = async (
   coaches?: NewStaffCohortAssignableCoachesQuery,
+  assignCoach?: AssignCoachToNewStaffCohortAttendeeMutation,
 ) => {
-  const screen = renderTable(rows, undefined, coaches);
+  const screen = renderTable(rows, undefined, coaches, undefined, assignCoach);
   // The query is skipped until the cohort auto-selects, so wait for that first.
   await waitFor(() => expect(ctx.selectedCohortId).toBeTruthy());
   await waitFor(() => expect(ctx.assignableCoachesLoading).toBe(false));
@@ -349,7 +358,8 @@ describe('GoalsTable', () => {
   });
 
   it('assigns a coach to the row from the Assign Coach modal', async () => {
-    const { getByRole, findByRole } = await renderWithCoaches();
+    const { getByRole, findByRole, queryByRole, queryByText } =
+      await renderWithCoaches();
     // 'John & Jane Doe' (row-1) is the only attendee without a coach.
     userEvent.click(getByRole('button', { name: 'Assign Coach' }));
 
@@ -372,6 +382,31 @@ describe('GoalsTable', () => {
         },
       ),
     );
+
+    // The modal closing is the whole confirmation; the row updates from the payload.
+    await waitFor(() => expect(queryByRole('dialog')).not.toBeInTheDocument());
+    expect(queryByText('Coach assigned successfully.')).not.toBeInTheDocument();
+    expect(
+      queryByText('No staff were eligible for a coach.'),
+    ).not.toBeInTheDocument();
+  });
+
+  // The row's own assign has no success toast, so a skipped row would otherwise look assigned.
+  it('says nothing was eligible when the server skipped the row', async () => {
+    const { getByRole, findByRole, findByText } = await renderWithCoaches(
+      undefined,
+      assignedCoachMock([], 'coach-6', 0),
+    );
+    userEvent.click(getByRole('button', { name: 'Assign Coach' }));
+
+    const dialog = await findByRole('dialog');
+    userEvent.click(within(dialog).getByRole('combobox', { name: 'Coach' }));
+    userEvent.click(await findByRole('option', { name: 'Tom Harris' }));
+    userEvent.click(getByRole('button', { name: 'Save' }));
+
+    expect(
+      await findByText('No staff were eligible for a coach.'),
+    ).toBeInTheDocument();
   });
 
   it("links View/Edit to the row's Staff Details page", async () => {

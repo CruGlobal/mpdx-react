@@ -78,12 +78,12 @@ const makeWrapper = (
     );
   };
 
-const renderContext = () =>
-  renderHook(() => useMpdGoalAdmin(), { wrapper: makeWrapper() });
+const renderContext = (mocks?: Parameters<typeof makeWrapper>[0]) =>
+  renderHook(() => useMpdGoalAdmin(), { wrapper: makeWrapper(mocks) });
 
 /** Resolves once both queries have populated the context. */
-const renderLoaded = async () => {
-  const rendered = renderContext();
+const renderLoaded = async (mocks?: Parameters<typeof makeWrapper>[0]) => {
+  const rendered = renderContext(mocks);
   await waitFor(() =>
     expect(rendered.result.current.filteredRows).not.toHaveLength(0),
   );
@@ -420,6 +420,30 @@ describe('MpdGoalAdminContext', () => {
       lastName: 'Harris',
     });
     expect(attendeeCalls()).toBe(callsBefore);
+  });
+
+  it('resolves with the count the server assigned and refetches the stale rows', async () => {
+    const { result } = await renderLoaded({
+      assignCoach: assignedCoachMock(['row-1'], 'coach-6', 1),
+    });
+    const attendeeCalls = () =>
+      mutationSpy.mock.calls.filter(
+        ([{ operation }]) =>
+          operation.operationName === 'NewStaffCohortAttendees',
+      ).length;
+    const callsBefore = attendeeCalls();
+
+    let assignedCount = 0;
+    await act(async () => {
+      assignedCount = await result.current.assignCoach(
+        ['row-1', 'row-3'],
+        'coach-6',
+      );
+    });
+
+    // A skipped id means the table still lists a row the server no longer accepts.
+    expect(assignedCount).toBe(1);
+    await waitFor(() => expect(attendeeCalls()).toBeGreaterThan(callsBefore));
   });
 
   it('rejects when the server refuses the assignment', async () => {
