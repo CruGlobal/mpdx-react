@@ -370,6 +370,47 @@ describe('PdsGoalCalculator', () => {
       ).toBeInTheDocument();
     });
 
+    it('sends geographic location when the calculation has one', async () => {
+      const mutationSpy = jest.fn();
+      const { findByRole, findByText } = render(
+        <PdsGoalCalculatorTestWrapper
+          calculationMock={{
+            ...simpleFormMock,
+            geographicLocation: 'Miami, FL',
+          }}
+          onCall={mutationSpy}
+        >
+          <PdsGoalCalculator />
+        </PdsGoalCalculatorTestWrapper>,
+      );
+
+      await advanceToLastStep(findByRole);
+
+      userEvent.click(
+        await findByRole('button', { name: 'Apply Goal to MPDX' }),
+      );
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('UpdateAccountPreferences', {
+          input: {
+            id: 'abc123',
+            attributes: {
+              id: 'abc123',
+              settings: { geographicLocation: 'Miami, FL' },
+            },
+          },
+        }),
+      );
+
+      expect(
+        await findByText(
+          `Successfully updated your monthly goal to $${EXPECTED_MONTHLY_GOAL.toLocaleString(
+            'en-US',
+          )} and geographic location to Miami, FL!`,
+        ),
+      ).toBeInTheDocument();
+    });
+
     it('keeps the Apply Goal to MPDX button disabled after a successful submission', async () => {
       const { findByRole, findByText } = render(
         <PdsGoalCalculatorTestWrapper calculationMock={simpleFormMock}>

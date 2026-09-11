@@ -85,6 +85,7 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
     assignableCoachesError,
     retryAssignableCoaches,
     selectedCohort,
+    isGoalsAdmin,
     loading,
   } = useMpdGoalAdmin();
   const [page, setPage] = useState(0);
@@ -164,11 +165,13 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
             <TableCell>{t('Coach')}</TableCell>
             <TableCell>{t('Coordinators')}</TableCell>
             <TableCell>{t('Actions')}</TableCell>
-            <TableCell padding="checkbox">
-              <Box component="span" sx={visuallyHidden as SxProps<Theme>}>
-                {t('Row actions')}
-              </Box>
-            </TableCell>
+            {isGoalsAdmin && (
+              <TableCell padding="checkbox">
+                <Box component="span" sx={visuallyHidden as SxProps<Theme>}>
+                  {t('Row actions')}
+                </Box>
+              </TableCell>
+            )}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -231,27 +234,29 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
                   {t('View/Edit')}
                 </Link>
               </TableCell>
-              <TableCell padding="checkbox" align="right">
-                {/* A Sent row's chip already explains itself; the blocked copy would claim its inputs are missing. */}
-                <RunAndSendTooltip
-                  show={
-                    !canRunAndSendRow(row) &&
-                    row.goalStatus !== GoalStatusEnum.Sent
-                  }
-                >
-                  <IconButton
-                    size="small"
-                    aria-label={t('Actions for {{name}}', { name: row.name })}
-                    aria-haspopup="menu"
-                    disabled={!canRunAndSendRow(row)}
-                    onClick={(event) =>
-                      setActionsMenu({ row, anchorEl: event.currentTarget })
+              {isGoalsAdmin && (
+                <TableCell padding="checkbox" align="right">
+                  {/* A Sent row's chip already explains itself; the blocked copy would claim its inputs are missing. */}
+                  <RunAndSendTooltip
+                    show={
+                      !canRunAndSendRow(row) &&
+                      row.goalStatus !== GoalStatusEnum.Sent
                     }
                   >
-                    <MoreVertIcon fontSize="small" />
-                  </IconButton>
-                </RunAndSendTooltip>
-              </TableCell>
+                    <IconButton
+                      size="small"
+                      aria-label={t('Actions for {{name}}', { name: row.name })}
+                      aria-haspopup="menu"
+                      disabled={!canRunAndSendRow(row)}
+                      onClick={(event) =>
+                        setActionsMenu({ row, anchorEl: event.currentTarget })
+                      }
+                    >
+                      <MoreVertIcon fontSize="small" />
+                    </IconButton>
+                  </RunAndSendTooltip>
+                </TableCell>
+              )}
             </TableRow>
           ))}
         </TableBody>

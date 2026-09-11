@@ -1,0 +1,9 @@
+query MonthlyPayrollSummary($staffAccountId: String!) {
+  monthlyPayrollSummary(staffAccountId: $staffAccountId) {
+    month
+    contributions
+    expenses
+    net
+    endBalance
+  }
+}

@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import theme from 'src/theme';
 import { MpdGoalAdminProvider } from '../MpdGoalAdminContext';
 import {
@@ -16,6 +17,8 @@ import {
   attendeesMock,
   cohortsMock,
   cohortsWithoutCostsMock,
+  coordinatorUserMock,
+  goalsAdminUserMock,
   updatedCohortMock,
 } from '../mpdGoalAdminMocks';
 import { CohortBar } from './CohortBar';
@@ -31,19 +34,24 @@ jest.mock('notistack', () => ({
 interface TestComponentProps {
   /** Renders a cohort whose costs have never been entered. */
   withoutCosts?: boolean;
+  /** False renders the bar as an OneApp coordinator sees it. */
+  isGoalsAdmin?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   withoutCosts = false,
+  isGoalsAdmin = true,
 }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
       <GqlMockedProvider<{
+        GetUser: GetUserQuery;
         NewStaffCohorts: NewStaffCohortsQuery;
         NewStaffCohortAttendees: NewStaffCohortAttendeesQuery;
         UpdateNewStaffCohort: UpdateNewStaffCohortMutation;
       }>
         mocks={{
+          GetUser: isGoalsAdmin ? goalsAdminUserMock : coordinatorUserMock,
           NewStaffCohorts: withoutCosts ? cohortsWithoutCostsMock : cohortsMock,
           NewStaffCohortAttendees: attendeesMock(),
           // Normalizes over the selected cohort so a save clears the gate.
@@ -84,11 +92,11 @@ describe('CohortBar', () => {
     expect(await findByText('8/10/2026')).toBeInTheDocument();
   });
 
-  it('renders the disabled View/Edit link while the cohort is still loading', () => {
+  it('renders the link disabled while the cohort is still loading', () => {
     const { getByRole, queryByRole } = render(<TestComponent withoutCosts />);
 
     // The prompt must not flash before the cohorts query has resolved.
-    expect(getByRole('button', { name: 'View/Edit' })).toBeDisabled();
+    expect(getByRole('button', { name: 'View' })).toBeDisabled();
     expect(
       queryByRole('button', { name: 'Provide Training Cost' }),
     ).not.toBeInTheDocument();
@@ -251,10 +259,12 @@ describe('CohortBar', () => {
       <ThemeProvider theme={theme}>
         <SnackbarProvider>
           <GqlMockedProvider<{
+            GetUser: GetUserQuery;
             NewStaffCohorts: NewStaffCohortsQuery;
             NewStaffCohortAttendees: NewStaffCohortAttendeesQuery;
           }>
             mocks={{
+              GetUser: goalsAdminUserMock,
               NewStaffCohorts: cohortsMock,
               NewStaffCohortAttendees: attendeesMock(),
               UpdateNewStaffCohort: {
@@ -291,5 +301,43 @@ describe('CohortBar', () => {
     expect(
       getByRole('heading', { name: /Training Costs for/ }),
     ).toBeInTheDocument();
+  });
+
+  describe('as a coordinator', () => {
+    it('offers View rather than View/Edit', async () => {
+      const { findByText, getByRole, queryByRole } = render(
+        <TestComponent isGoalsAdmin={false} />,
+      );
+
+      // 'View' is also the pre-load label, so the cohort has to land first.
+      await findByText('Fall NSO 2026');
+      expect(getByRole('button', { name: 'View' })).toBeEnabled();
+      expect(
+        queryByRole('button', { name: 'View/Edit' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('never prompts for costs it cannot save', async () => {
+      const { findByText, queryByRole } = render(
+        <TestComponent withoutCosts isGoalsAdmin={false} />,
+      );
+
+      await findByText('Fall NSO 2026');
+      expect(
+        queryByRole('button', { name: 'Provide Training Cost' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('opens the modal read-only, with the costs shown but no Apply', async () => {
+      const screen = render(<TestComponent isGoalsAdmin={false} />);
+      const { findByRole, queryByRole } = screen;
+      await openModal(screen, 'View');
+
+      expect(
+        await findByRole('spinbutton', { name: /Individual \(1 in room\)/ }),
+      ).toBeDisabled();
+      expect(queryByRole('button', { name: 'Apply' })).not.toBeInTheDocument();
+      expect(queryByRole('button', { name: 'Cancel' })).not.toBeInTheDocument();
+    });
   });
 });

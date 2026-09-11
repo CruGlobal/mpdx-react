@@ -1,50 +1,26 @@
 import React, { useState } from 'react';
 import { Button, CircularProgress, Stack } from '@mui/material';
-import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import { useUpdateAccountPreferencesMutation } from 'src/components/Settings/preferences/accordions/UpdateAccountPreferences.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat } from 'src/lib/intlFormat';
+import { useApplyGoalAndLocation } from 'src/hooks/useApplyGoalAndLocation';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
 
 export const GoalApplicationButtonGroup: React.FC = () => {
   const { t } = useTranslation();
-  const locale = useLocale();
-  const { enqueueSnackbar } = useSnackbar();
   const {
     goalCalculationResult,
     goalTotals: { overallTotal },
     constants,
   } = useGoalCalculator();
   const monthlyGoal = Math.round(overallTotal);
-  const [updateAccountPreferences, { loading }] =
-    useUpdateAccountPreferencesMutation();
-  const accountListId = useAccountListId() || '';
+  const geographicLocation =
+    goalCalculationResult.data?.goalCalculation?.geographicLocation ?? null;
+  const { applyMonthlyGoal, loading } =
+    useApplyGoalAndLocation(geographicLocation);
   const [buttonsHidden, setButtonsHidden] = useState(false);
 
   const onSave = async () => {
-    await updateAccountPreferences({
-      variables: {
-        input: {
-          id: accountListId,
-          attributes: {
-            id: accountListId,
-            settings: { monthlyGoal },
-          },
-        },
-      },
-      onCompleted: () => {
-        enqueueSnackbar(
-          t('Successfully updated your monthly goal to {{formattedTotal}}!', {
-            formattedTotal: currencyFormat(monthlyGoal, 'USD', locale),
-          }),
-          {
-            variant: 'success',
-          },
-        );
-      },
-    });
+    await applyMonthlyGoal(monthlyGoal);
+    setButtonsHidden(true);
   };
 
   if (buttonsHidden) {
@@ -62,10 +38,7 @@ export const GoalApplicationButtonGroup: React.FC = () => {
     >
       <Button
         variant="contained"
-        onClick={() => {
-          onSave();
-          setButtonsHidden(true);
-        }}
+        onClick={onSave}
         disabled={
           goalCalculationResult.loading ||
           // Without the year's constants the total would be understated, so

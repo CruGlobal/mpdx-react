@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
-import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { DirectionButtons } from 'src/components/HrTools/Shared/CalculationReports/DirectionButtons/DirectionButtons';
-import { useUpdateAccountPreferencesMutation } from 'src/components/Settings/preferences/accordions/UpdateAccountPreferences.generated';
 import {
   AutosaveForm,
   useAutosaveForm,
 } from 'src/components/Shared/Autosave/AutosaveForm';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat } from 'src/lib/intlFormat';
+import { useApplyGoalAndLocation } from 'src/hooks/useApplyGoalAndLocation';
 import { PdsGoalCalculatorStepEnum } from './PdsGoalCalculatorHelper';
 import { ReimbursableExpensesSectionList } from './ReimbursableExpenses/ReimbursableExpensesSectionList';
 import { ReimbursableExpensesStep } from './ReimbursableExpenses/ReimbursableExpensesStep';
@@ -54,8 +51,6 @@ const CurrentSectionList: React.FC = () => {
 
 const MainContent: React.FC = () => {
   const { t } = useTranslation();
-  const locale = useLocale();
-  const { enqueueSnackbar } = useSnackbar();
   const accountListId = useAccountListId();
   const {
     currentStep,
@@ -64,10 +59,12 @@ const MainContent: React.FC = () => {
     summaryData,
     handleContinue,
     handlePreviousStep,
+    calculation,
   } = usePdsGoalCalculator();
   const { allValid } = useAutosaveForm();
-  const [updateAccountPreferences, { loading: updating }] =
-    useUpdateAccountPreferencesMutation();
+  const geographicLocation = calculation?.geographicLocation ?? null;
+  const { applyMonthlyGoal, loading: updating } =
+    useApplyGoalAndLocation(geographicLocation);
   const [submitted, setSubmitted] = useState(false);
 
   const isFirstStep = stepIndex === 0;
@@ -78,27 +75,10 @@ const MainContent: React.FC = () => {
       return;
     }
     const monthlyGoal = Math.round(summaryData.overallTotal);
-    await updateAccountPreferences({
-      variables: {
-        input: {
-          id: accountListId,
-          attributes: {
-            id: accountListId,
-            settings: { monthlyGoal },
-          },
-        },
-      },
+    await applyMonthlyGoal(monthlyGoal, {
       refetchQueries: ['GetDashboard', 'GetDonationGraph'],
-      onCompleted: () => {
-        setSubmitted(true);
-        enqueueSnackbar(
-          t('Successfully updated your monthly goal to {{formattedTotal}}!', {
-            formattedTotal: currencyFormat(monthlyGoal, 'USD', locale),
-          }),
-          { variant: 'success' },
-        );
-      },
     });
+    setSubmitted(true);
   };
 
   return (

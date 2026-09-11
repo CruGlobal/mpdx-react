@@ -1,16 +1,18 @@
 import { ThemeProvider } from '@mui/material/styles';
-import { render, screen } from '@testing-library/react';
+import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-  CompletedQuarterPayroll,
-  MpdHealthStatusEnum,
-  QuarterlyPayrollHistory,
-  StartingQuarterPayroll,
-} from 'src/graphql/types.generated';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { StaffTabQuarterly } from './Quarterly';
+import { QuarterlyPayrollHistoryQuery } from './QuarterlyPayrollHistory.generated';
 
-const completedQuarters: CompletedQuarterPayroll[] = [
+type QuarterHistory = QuarterlyPayrollHistoryQuery['quarterlyPayrollHistory'];
+
+const heading = 'Average monthly payroll per fiscal quarter · last 8 quarters';
+
+const completedQuarters = [
   {
     fiscalYear: 2025,
     quarter: 4,
@@ -25,7 +27,7 @@ const completedQuarters: CompletedQuarterPayroll[] = [
   },
 ];
 
-const startingQuarter: StartingQuarterPayroll = {
+const startingQuarter = {
   fiscalYear: 2025,
   quarter: 2,
   months: [
@@ -33,94 +35,188 @@ const startingQuarter: StartingQuarterPayroll = {
   ],
 };
 
-const renderQuarterly = (quarterHistory: QuarterlyPayrollHistory) =>
+const renderQuarterly = (
+  quarterHistory: QuarterHistory,
+  staffAccountId: string | null = '1000000001',
+  mocks: ApolloErgonoMockMap = {},
+) =>
   render(
     <ThemeProvider theme={theme}>
-      <StaffTabQuarterly quarterHistory={quarterHistory} />
+      <GqlMockedProvider<{
+        QuarterlyPayrollHistory: QuarterlyPayrollHistoryQuery;
+      }>
+        mocks={
+          {
+            QuarterlyPayrollHistory: {
+              quarterlyPayrollHistory: quarterHistory,
+            },
+            ...mocks,
+          } as ApolloErgonoMockMap
+        }
+      >
+        <StaffTabQuarterly staffAccountId={staffAccountId} />
+      </GqlMockedProvider>
     </ThemeProvider>,
   );
 
 describe('StaffTabQuarterly', () => {
-  it('renders the heading', () => {
-    renderQuarterly({ monthlyGrossSalary: 4510.6, completedQuarters });
+  it('renders the heading', async () => {
+    const { findByText } = renderQuarterly({
+      monthlyGrossSalary: 4510.6,
+      startingQuarter: null,
+      completedQuarters,
+    });
 
-    expect(
-      screen.getByText(
-        'Average monthly payroll per fiscal quarter · last 8 quarters',
-      ),
-    ).toBeInTheDocument();
+    expect(await findByText(heading)).toBeInTheDocument();
   });
 
-  it('renders a chip with the label and average payroll for each completed quarter', () => {
-    renderQuarterly({ monthlyGrossSalary: 4510.6, completedQuarters });
+  it('surfaces a query failure instead of an empty quarter window', async () => {
+    const { findByRole, queryByText } = renderQuarterly(
+      { monthlyGrossSalary: 0, startingQuarter: null, completedQuarters: [] },
+      '1000000001',
+      {
+        QuarterlyPayrollHistory: {
+          quarterlyPayrollHistory: () => {
+            throw new Error('Not authorized');
+          },
+        },
+      },
+    );
 
-    expect(screen.getByText('FQ4 25')).toBeInTheDocument();
-    expect(screen.getByText('$4,013.42')).toBeInTheDocument();
-    expect(screen.getByText('FQ1 26')).toBeInTheDocument();
-    expect(screen.getByText('$4,548.05')).toBeInTheDocument();
+    expect(await findByRole('alert')).toHaveTextContent('Not authorized');
+    expect(queryByText(heading)).not.toBeInTheDocument();
   });
 
-  it('inserts the starting quarter in chronological order, labeled as partial', () => {
-    renderQuarterly({
+  it('renders a chip with the label and average payroll for each completed quarter', async () => {
+    const { findByText, getByText } = renderQuarterly({
+      monthlyGrossSalary: 4510.6,
+      startingQuarter: null,
+      completedQuarters,
+    });
+
+    expect(await findByText('FQ4 25')).toBeInTheDocument();
+    expect(getByText('$4,013.42')).toBeInTheDocument();
+    expect(getByText('FQ1 26')).toBeInTheDocument();
+    expect(getByText('$4,548.05')).toBeInTheDocument();
+  });
+
+  it('inserts the starting quarter in chronological order, labeled as partial', async () => {
+    const { findByText, getAllByText } = renderQuarterly({
       monthlyGrossSalary: 4510.6,
       startingQuarter,
       completedQuarters,
     });
 
-    expect(screen.getByText('FQ2 25')).toBeInTheDocument();
-    expect(screen.getAllByText('Partial')).toHaveLength(1);
+    expect(await findByText('FQ2 25')).toBeInTheDocument();
+    expect(getAllByText('Partial')).toHaveLength(1);
   });
 
   it('shows tooltip message on the starting quarter chip', async () => {
-    renderQuarterly({
+    const { findByRole, findByTestId } = renderQuarterly({
       monthlyGrossSalary: 4510.6,
       startingQuarter,
       completedQuarters,
     });
 
-    const icon = screen.getByTestId('InfoOutlinedIcon');
+    const icon = await findByTestId('InfoOutlinedIcon');
     userEvent.hover(icon);
-    expect(await screen.findByRole('tooltip')).toHaveTextContent(
+    expect(await findByRole('tooltip')).toHaveTextContent(
       'Payroll started this quarter',
     );
   });
 
-  it('renders no starting quarter chip when there is none', () => {
-    renderQuarterly({ monthlyGrossSalary: 4510.6, completedQuarters });
+  it('renders no starting quarter chip when there is none', async () => {
+    const { findByText, queryByText } = renderQuarterly({
+      monthlyGrossSalary: 4510.6,
+      startingQuarter: null,
+      completedQuarters,
+    });
 
-    expect(screen.queryByText('Partial')).not.toBeInTheDocument();
+    await findByText(heading);
+    expect(queryByText('Partial')).not.toBeInTheDocument();
   });
 
-  it('renders a monthly breakdown table for the starting quarter', () => {
-    renderQuarterly({
+  it('renders a monthly breakdown table for the starting quarter', async () => {
+    const { findByText, getByRole } = renderQuarterly({
       monthlyGrossSalary: 4510.6,
       startingQuarter,
       completedQuarters,
     });
 
     expect(
-      screen.getByText('Starting quarter monthly payroll breakdown · FQ2 25'),
+      await findByText('Starting quarter monthly payroll breakdown · FQ2 25'),
     ).toBeInTheDocument();
-    expect(screen.getByText('Feb 2025')).toBeInTheDocument();
-    expect(screen.getByText('$4,263.25')).toBeInTheDocument();
-    expect(screen.getByText('needs attention')).toBeInTheDocument();
+    const table = within(getByRole('table'));
+    expect(table.getByText('Feb 2025')).toBeInTheDocument();
+    expect(table.getByText('$4,263.25')).toBeInTheDocument();
+    expect(table.getByText('needs attention')).toBeInTheDocument();
   });
 
-  it('renders no breakdown table when there is no starting quarter', () => {
-    renderQuarterly({ monthlyGrossSalary: 4510.6, completedQuarters });
+  it('dashes a gray month in the breakdown rather than showing $0.00', async () => {
+    const { findByRole } = renderQuarterly({
+      monthlyGrossSalary: 4510.6,
+      startingQuarter: {
+        ...startingQuarter,
+        months: [
+          { month: '2025-01', payroll: 0, status: MpdHealthStatusEnum.Gray },
+          ...startingQuarter.months,
+        ],
+      },
+      completedQuarters,
+    });
 
-    expect(screen.queryByRole('table')).not.toBeInTheDocument();
+    const table = within(await findByRole('table'));
+    expect(table.getByText('-')).toBeInTheDocument();
+    expect(table.queryByText('$0.00')).not.toBeInTheDocument();
+    expect(table.getByText('$4,263.25')).toBeInTheDocument();
   });
 
-  it('renders no chips when there are no quarters', () => {
-    renderQuarterly({ monthlyGrossSalary: 0, completedQuarters: [] });
+  it('renders no breakdown table when there is no starting quarter', async () => {
+    const { findByText, queryByRole } = renderQuarterly({
+      monthlyGrossSalary: 4510.6,
+      startingQuarter: null,
+      completedQuarters,
+    });
 
-    expect(screen.queryByText(/^FQ/)).not.toBeInTheDocument();
+    await findByText(heading);
+    expect(queryByRole('table')).not.toBeInTheDocument();
   });
 
-  it('renders a dash instead of $0.00 for a quarter with no payroll data', () => {
-    renderQuarterly({
+  it('renders no chips when there are no quarters', async () => {
+    const { findByText, queryByText } = renderQuarterly({
       monthlyGrossSalary: 0,
+      startingQuarter: null,
+      completedQuarters: [],
+    });
+
+    await findByText(heading);
+    expect(queryByText(/^FQ/)).not.toBeInTheDocument();
+  });
+
+  it('reads N/A in every quarter when there is no staff account', async () => {
+    const { findByText, getAllByText, queryByText } = renderQuarterly(
+      {
+        monthlyGrossSalary: 0,
+        startingQuarter: null,
+        completedQuarters: completedQuarters.map((quarter) => ({
+          ...quarter,
+          averagePayroll: 0,
+          status: MpdHealthStatusEnum.Gray,
+        })),
+      },
+      null,
+    );
+
+    expect(await findByText('FQ4 25')).toBeInTheDocument();
+    expect(getAllByText('N/A')).toHaveLength(completedQuarters.length);
+    expect(queryByText('-')).not.toBeInTheDocument();
+    expect(queryByText('$0.00')).not.toBeInTheDocument();
+  });
+
+  it('renders a dash instead of $0.00 for a quarter with no payroll data', async () => {
+    const { findByText, getByText, queryByText } = renderQuarterly({
+      monthlyGrossSalary: 0,
+      startingQuarter: null,
       completedQuarters: [
         {
           fiscalYear: 2025,
@@ -131,8 +227,8 @@ describe('StaffTabQuarterly', () => {
       ],
     });
 
-    expect(screen.getByText('FQ4 25')).toBeInTheDocument();
-    expect(screen.getByText('-')).toBeInTheDocument();
-    expect(screen.queryByText('$0.00')).not.toBeInTheDocument();
+    expect(await findByText('FQ4 25')).toBeInTheDocument();
+    expect(getByText('-')).toBeInTheDocument();
+    expect(queryByText('$0.00')).not.toBeInTheDocument();
   });
 });

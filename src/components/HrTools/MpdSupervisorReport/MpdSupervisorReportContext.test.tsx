@@ -1,11 +1,10 @@
 import React from 'react';
 import { act, render } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
-import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
 import {
+  ALL_TEAMS,
   MpdSupervisorReportEmploymentTypeEnum,
   MpdSupervisorReportQuickFilterEnum,
-  MpdSupervisorReportTeamsEnum,
 } from './Filters/mpdSupervisorReportFilters';
 import {
   MpdSupervisorReportProvider,
@@ -13,38 +12,20 @@ import {
   useMpdSupervisorReport,
 } from './MpdSupervisorReportContext';
 import { StaffDetailTabEnum } from './StaffDetailsTabs/StaffDetailTab';
-import { EmployeeData } from './mockData';
+import { ManagedStaffMember } from './helpers';
+import { managedStaffMember } from './mpdSupervisorReportMocks';
 
-const sampleMember: EmployeeData = {
-  user: {
-    id: '1',
-    preferredName: 'John',
-    lastName: 'Smith',
-    personNumber: '10000001',
-    staffAccountID: '1000000001',
-    userPersonType: 'Full time',
-    team: 'Campus',
-  },
-  quarters: [
-    { label: 'FQ4 25', health: MpdHealthStatusEnum.Green, payroll: 15000 },
-    { label: 'FQ1 26', health: MpdHealthStatusEnum.Green, payroll: 15000 },
-    { label: 'FQ2 26', health: MpdHealthStatusEnum.Green, payroll: 15000 },
-    { label: 'FQ3 26', health: MpdHealthStatusEnum.Green, payroll: 15000 },
-  ],
-  monthlyPayrollHistory: [],
-  quarterlyPayrollHistory: { monthlyGrossSalary: 0, completedQuarters: [] },
-  monthlySummary: [],
-};
+const sampleMember = managedStaffMember();
 
 interface ConsumerResult {
   isOpen: boolean;
-  selectedMember: EmployeeData | undefined;
-  openMember: (member: EmployeeData) => void;
+  selectedMember: ManagedStaffMember | undefined;
+  openMember: (member: ManagedStaffMember) => void;
   closePanel: () => void;
   search: string;
   setSearch: (v: string) => void;
-  team: MpdSupervisorReportTeamsEnum;
-  setTeam: (v: MpdSupervisorReportTeamsEnum) => void;
+  team: string;
+  setTeam: (v: string) => void;
   employmentType: MpdSupervisorReportEmploymentTypeEnum;
   setEmploymentType: (v: MpdSupervisorReportEmploymentTypeEnum) => void;
   activeQuickFilter: MpdSupervisorReportQuickFilterEnum;
@@ -60,7 +41,7 @@ const Consumer: React.FC = () => {
     <div>
       <span data-testid="isOpen">{String(ctx.isOpen)}</span>
       <span data-testid="memberName">
-        {ctx.selectedMember?.user.lastName ?? 'none'}
+        {ctx.selectedMember?.lastName ?? 'none'}
       </span>
       <span data-testid="search">{ctx.search}</span>
       <span data-testid="team">{ctx.team}</span>
@@ -126,9 +107,7 @@ describe('MpdSupervisorReportContext', () => {
 
   it('starts with team=all', () => {
     const { getByTestId } = renderConsumer();
-    expect(getByTestId('team').textContent).toBe(
-      MpdSupervisorReportTeamsEnum.All,
-    );
+    expect(getByTestId('team').textContent).toBe(ALL_TEAMS);
   });
 
   it('starts with employmentType=all', () => {
@@ -156,11 +135,9 @@ describe('MpdSupervisorReportContext', () => {
   it('setTeam updates the team value', () => {
     const { getByTestId } = renderConsumer();
     act(() => {
-      consumerResult.setTeam(MpdSupervisorReportTeamsEnum.TeamA);
+      consumerResult.setTeam('team-1');
     });
-    expect(getByTestId('team').textContent).toBe(
-      MpdSupervisorReportTeamsEnum.TeamA,
-    );
+    expect(getByTestId('team').textContent).toBe('team-1');
   });
 
   it('setEmploymentType updates the employmentType value', () => {
@@ -255,10 +232,32 @@ const TabSwitcher: React.FC = () => {
 
 describe('MpdSupervisorReportContext — selectedTabKey to URL', () => {
   it('syncs the selected tab back to the URL on change', async () => {
+    const replaceState = jest.spyOn(window.history, 'replaceState');
+    const { getByTestId } = render(
+      <TestRouter router={{ query: { accountListId: 'account-list-1' } }}>
+        <MpdSupervisorReportProvider>
+          <TabSwitcher />
+        </MpdSupervisorReportProvider>
+      </TestRouter>,
+    );
+
+    await act(async () => {
+      getByTestId('tab').click();
+    });
+
+    expect(replaceState).toHaveBeenCalledTimes(1);
+    expect(replaceState.mock.lastCall?.[2]).toContain(
+      `tab=${StaffDetailTabEnum.Payroll}`,
+    );
+    replaceState.mockRestore();
+  });
+
+  it('does not route through Next when syncing the tab', async () => {
     const replace = jest.fn();
+    const push = jest.fn();
     const { getByTestId } = render(
       <TestRouter
-        router={{ query: { accountListId: 'account-list-1' }, replace }}
+        router={{ query: { accountListId: 'account-list-1' }, replace, push }}
       >
         <MpdSupervisorReportProvider>
           <TabSwitcher />
@@ -270,12 +269,7 @@ describe('MpdSupervisorReportContext — selectedTabKey to URL', () => {
       getByTestId('tab').click();
     });
 
-    expect(replace).toHaveBeenCalledWith(
-      expect.objectContaining({
-        query: expect.objectContaining({ tab: StaffDetailTabEnum.Payroll }),
-      }),
-      undefined,
-      { shallow: true },
-    );
+    expect(replace).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
   });
 });

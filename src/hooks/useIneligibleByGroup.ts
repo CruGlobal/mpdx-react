@@ -32,6 +32,7 @@ export function useIneligibleByGroup() {
   const spouseUsStaffGroup = getBaseGroup(data?.user.spouseUsStaffGroup);
   const userType = data?.user.userType;
   const hasNoStaffAccount = !data?.user.staffAccountId;
+  const supervisesStaff = data?.user.supervisesStaff;
 
   const { SeniorStaff, NewStaff, NationalExpat, PaidWithDesignation } =
     UsStaffGroupEnum;
@@ -59,6 +60,8 @@ export function useIneligibleByGroup() {
     PaidWithDesignation,
   ]);
 
+  const inMpdSupervisorIneligibleGroup = !supervisesStaff;
+
   return useMemo(
     () => ({
       inAsrIneligibleGroup,
@@ -67,6 +70,7 @@ export function useIneligibleByGroup() {
       inMpdGoalCalcIneligibleGroup,
       inNsGoalCalcIneligibleGroup,
       inPdsGoalCalcIneligibleGroup,
+      inMpdSupervisorIneligibleGroup,
       userType,
       hasNoStaffAccount,
       userLoading,
@@ -79,6 +83,7 @@ export function useIneligibleByGroup() {
       inMpdGoalCalcIneligibleGroup,
       inNsGoalCalcIneligibleGroup,
       inPdsGoalCalcIneligibleGroup,
+      inMpdSupervisorIneligibleGroup,
       userType,
       hasNoStaffAccount,
       userLoading,

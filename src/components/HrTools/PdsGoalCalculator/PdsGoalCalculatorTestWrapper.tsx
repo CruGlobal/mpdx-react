@@ -15,6 +15,7 @@ import {
   MpdGoalMiscConstantCategoryEnum,
   MpdGoalMiscConstantLabelEnum,
 } from 'src/graphql/types.generated';
+import { AccountGeographicLocationQuery } from 'src/hooks/AccountGeographicLocation.generated';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
 import { AccountListSupportRaisedQuery } from '../GoalCalculator/Shared/GoalLineItems.generated';
@@ -144,6 +145,8 @@ export interface PdsGoalCalculatorTestWrapperProps<
   userMock?: GetUserMock;
   constantsMock?: GoalCalculatorConstantsMock;
   supportRaisedMock?: number;
+  /** The account's currently saved geographic location preference. */
+  accountGeographicLocation?: string | null;
   /**
    * Extra GqlMockedProvider mocks merged on top of the defaults. Pass the
    * operation map as a generic argument so mock shapes are type-checked:
@@ -171,6 +174,7 @@ export const PdsGoalCalculatorTestWrapper = <
   userMock,
   constantsMock,
   supportRaisedMock,
+  accountGeographicLocation = null,
   extraMocks,
   onCall,
   router,
@@ -191,9 +195,17 @@ export const PdsGoalCalculatorTestWrapper = <
             HcmUser: HcmUserQuery;
             GetUser: GetUserQuery;
             AccountListSupportRaised: AccountListSupportRaisedQuery;
+            AccountGeographicLocation: AccountGeographicLocationQuery;
           }>
             mocks={merge(
               {
+                AccountGeographicLocation: {
+                  accountList: {
+                    settings: {
+                      geographicLocation: accountGeographicLocation,
+                    },
+                  },
+                },
                 PdsGoalCalculations: {
                   designationSupportCalculations: merge(
                     {},

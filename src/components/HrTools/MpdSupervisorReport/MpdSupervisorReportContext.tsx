@@ -11,10 +11,9 @@ import {
   ALL_TYPES,
   MpdSupervisorReportEmploymentTypeEnum,
   MpdSupervisorReportQuickFilterEnum,
-  MpdSupervisorReportTeamsEnum,
 } from './Filters/mpdSupervisorReportFilters';
 import { StaffDetailTabEnum } from './StaffDetailsTabs/StaffDetailTab';
-import { EmployeeData } from './mockData';
+import { ManagedStaffMember } from './helpers';
 
 export enum Panel {
   Navigation = 'Navigation',
@@ -22,14 +21,14 @@ export enum Panel {
 }
 
 export interface MpdSupervisorReportContextValue {
-  selectedMember: EmployeeData | undefined;
+  selectedMember: ManagedStaffMember | undefined;
   isOpen: boolean;
-  openMember: (member: EmployeeData) => void;
+  openMember: (member: ManagedStaffMember) => void;
   closePanel: () => void;
   search: string;
   setSearch: (v: string) => void;
-  team: MpdSupervisorReportTeamsEnum;
-  setTeam: (v: MpdSupervisorReportTeamsEnum) => void;
+  team: string;
+  setTeam: (v: string) => void;
   employmentType: MpdSupervisorReportEmploymentTypeEnum;
   setEmploymentType: (v: MpdSupervisorReportEmploymentTypeEnum) => void;
   activeQuickFilter: MpdSupervisorReportQuickFilterEnum;
@@ -64,10 +63,10 @@ export const MpdSupervisorReportProvider: React.FC<{
   const query = router?.query;
 
   const [selectedMember, setSelectedMember] = useState<
-    EmployeeData | undefined
+    ManagedStaffMember | undefined
   >(undefined);
   const [search, setSearch] = useState('');
-  const [team, setTeam] = useState<MpdSupervisorReportTeamsEnum>(ALL_TEAMS);
+  const [team, setTeam] = useState<string>(ALL_TEAMS);
   const [employmentType, setEmploymentType] =
     useState<MpdSupervisorReportEmploymentTypeEnum>(ALL_TYPES);
   const [activeQuickFilter, setActiveQuickFilter] =
@@ -80,18 +79,21 @@ export const MpdSupervisorReportProvider: React.FC<{
   const handleTabChange = useCallback(
     (_event: React.SyntheticEvent, newKey: StaffDetailTabEnum) => {
       setSelectedTabKey(newKey);
-      router?.replace({ query: { ...router.query, tab: newKey } }, undefined, {
-        shallow: true,
-      });
+      // Not router.replace: the global Loading listens to routeChangeStart
+      // without checking `shallow`, so a shallow replace still flashes the
+      // page spinner on every tab click.
+      const url = new URL(window.location.href);
+      url.searchParams.set('tab', newKey);
+      window.history.replaceState(window.history.state, '', url.toString());
     },
-    [router],
+    [],
   );
 
   const value = useMemo<MpdSupervisorReportContextValue>(
     () => ({
       selectedMember,
       isOpen: selectedMember !== undefined,
-      openMember: (member: EmployeeData) => setSelectedMember(member),
+      openMember: (member: ManagedStaffMember) => setSelectedMember(member),
       closePanel: () => setSelectedMember(undefined),
       search,
       setSearch,

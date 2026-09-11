@@ -1,3 +1,5 @@
+import { DeepPartialMock } from '__tests__/util/graphqlMocking';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   NewStaffCohortAttendeeGoalStatusEnum,
   NewStaffCohortRunAndSendBlockerEnum,
@@ -10,12 +12,20 @@ import {
 import {
   NewStaffCohortAttendeesQuery,
   NewStaffCohortsQuery,
+  PrintNewStaffCohortGoalsMutation,
   RunAndSendNewStaffCohortMutation,
   UpdateNewStaffCohortMutation,
 } from './NewStaffCohorts.generated';
 import { TrainingCosts } from './mpdGoalAdminHelpers';
 
 // Shared fixtures. `hasNextPage: false` everywhere: useFetchAllPages drains pages.
+
+export const goalsAdminUserMock: DeepPartialMock<GetUserQuery> = {
+  user: { mpdSupervisorAdmin: true },
+};
+export const coordinatorUserMock: DeepPartialMock<GetUserQuery> = {
+  user: { mpdSupervisorAdmin: false },
+};
 
 export const trainingCosts: TrainingCosts = {
   nsoIndividual1InRoom: 100,
@@ -174,10 +184,18 @@ export const attendeesMock = (
     args: { id: string },
   ): NewStaffCohortAttendeesQuery['newStaffCohort'] => ({
     id: args.id,
-    attendees: {
-      nodes,
+    // Matches on the name like the API does, so a search actually narrows the rows.
+    attendees: ((
+      _cohort: unknown,
+      { search }: { search?: string | null },
+    ): NewStaffCohortAttendeesQuery['newStaffCohort']['attendees'] => ({
+      nodes: search
+        ? nodes.filter((node) =>
+            node.displayName.toLowerCase().includes(search.toLowerCase()),
+          )
+        : nodes,
       pageInfo: { endCursor: null, hasNextPage: false },
-    },
+    })) as unknown as NewStaffCohortAttendeesQuery['newStaffCohort']['attendees'],
   })) as unknown as NewStaffCohortAttendeesQuery['newStaffCohort'],
 });
 
@@ -211,6 +229,15 @@ export const runAndSentMock = (
       runAndSendBlockers: [],
     },
   },
+});
+
+/** `downloadUrl` is null when nothing was printable, which is not an error. */
+export const printedGoalsMock = (
+  printedCount: number,
+  skippedCount = 0,
+  downloadUrl: string | null = 'https://api.mpdx.org/exports/token-1.pdf',
+): PrintNewStaffCohortGoalsMutation => ({
+  printNewStaffCohortGoals: { downloadUrl, printedCount, skippedCount },
 });
 
 /** The picker's options; ids match the coaches the attendee fixtures carry. */

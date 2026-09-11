@@ -522,7 +522,9 @@ describe('MultiPageMenu', () => {
                   user: {
                     userType: UserTypeEnum.UsStaff,
                     usStaffGroup: UsStaffGroupEnum.SeniorStaff,
+                    spouseUsStaffGroup: null,
                     staffAccountId: '12345',
+                    supervisesStaff: true,
                   },
                 },
                 UserOption: {
@@ -555,6 +557,7 @@ describe('MultiPageMenu', () => {
         queryByText('Paid with Designation Support Goal Calculator'),
       ).not.toBeInTheDocument();
       expect(queryByText('New Staff Goal Calculator')).not.toBeInTheDocument();
+      expect(getByText('MPD Supervisor Report')).toBeInTheDocument();
     });
 
     it('shows hr tools for new staff', async () => {
@@ -572,6 +575,7 @@ describe('MultiPageMenu', () => {
                     usStaffGroup: UsStaffGroupEnum.NewStaff,
                     spouseUsStaffGroup: null,
                     staffAccountId: '12345',
+                    supervisesStaff: true,
                   },
                 },
                 UserOption: {
@@ -604,6 +608,7 @@ describe('MultiPageMenu', () => {
       expect(
         queryByText('Paid with Designation Support Goal Calculator'),
       ).not.toBeInTheDocument();
+      expect(getByText('MPD Supervisor Report')).toBeInTheDocument();
     });
 
     it('shows hr tools for national expat staff', async () => {
@@ -619,7 +624,9 @@ describe('MultiPageMenu', () => {
                   user: {
                     userType: UserTypeEnum.UsStaff,
                     usStaffGroup: UsStaffGroupEnum.NationalExpat,
+                    spouseUsStaffGroup: null,
                     staffAccountId: '12345',
+                    supervisesStaff: true,
                   },
                 },
                 UserOption: {
@@ -652,6 +659,7 @@ describe('MultiPageMenu', () => {
         queryByText('Paid with Designation Support Goal Calculator'),
       ).not.toBeInTheDocument();
       expect(queryByText('New Staff Goal Calculator')).not.toBeInTheDocument();
+      expect(getByText('MPD Supervisor Report')).toBeInTheDocument();
     });
 
     it('shows hr tools for paid with designation', async () => {
@@ -667,7 +675,9 @@ describe('MultiPageMenu', () => {
                   user: {
                     userType: UserTypeEnum.UsStaff,
                     usStaffGroup: UsStaffGroupEnum.PaidWithDesignation,
+                    spouseUsStaffGroup: null,
                     staffAccountId: null,
+                    supervisesStaff: true,
                   },
                 },
                 UserOption: {
@@ -700,6 +710,7 @@ describe('MultiPageMenu', () => {
       expect(queryByText('MPD Goal Calculator')).not.toBeInTheDocument();
       expect(queryByText('MHA Calculation Tool')).not.toBeInTheDocument();
       expect(queryByText('New Staff Goal Calculator')).not.toBeInTheDocument();
+      expect(getByText('MPD Supervisor Report')).toBeInTheDocument();
     });
 
     it('shows hr tools for part time field staff', async () => {
@@ -715,7 +726,9 @@ describe('MultiPageMenu', () => {
                   user: {
                     userType: UserTypeEnum.UsStaff,
                     usStaffGroup: UsStaffGroupEnum.PartTimeFieldStaff,
+                    spouseUsStaffGroup: null,
                     staffAccountId: '12345',
+                    supervisesStaff: true,
                   },
                 },
                 UserOption: {
@@ -748,6 +761,7 @@ describe('MultiPageMenu', () => {
       expect(queryByText('MPD Goal Calculator')).not.toBeInTheDocument();
       expect(queryByText('MHA Calculation Tool')).not.toBeInTheDocument();
       expect(queryByText('New Staff Goal Calculator')).not.toBeInTheDocument();
+      expect(getByText('MPD Supervisor Report')).toBeInTheDocument();
     });
 
     it('shows hr tools for interns', async () => {
@@ -763,7 +777,9 @@ describe('MultiPageMenu', () => {
                   user: {
                     userType: UserTypeEnum.UsStaff,
                     usStaffGroup: UsStaffGroupEnum.Intern,
+                    spouseUsStaffGroup: null,
                     staffAccountId: '12345',
+                    supervisesStaff: true,
                   },
                 },
                 UserOption: {
@@ -796,6 +812,51 @@ describe('MultiPageMenu', () => {
       expect(queryByText('MPD Goal Calculator')).not.toBeInTheDocument();
       expect(queryByText('MHA Calculation Tool')).not.toBeInTheDocument();
       expect(queryByText('New Staff Goal Calculator')).not.toBeInTheDocument();
+      expect(getByText('MPD Supervisor Report')).toBeInTheDocument();
+    });
+
+    it('hides mpd supervisor report when user does not supervise staff', async () => {
+      const { findByText, queryByText } = render(
+        <ThemeProvider theme={theme}>
+          <TestRouter router={router}>
+            <GqlMockedProvider<{
+              GetUser: GetUserQuery;
+              UserOption: UserOptionQuery;
+            }>
+              mocks={{
+                GetUser: {
+                  user: {
+                    userType: UserTypeEnum.UsStaff,
+                    usStaffGroup: UsStaffGroupEnum.SeniorStaff,
+                    spouseUsStaffGroup: null,
+                    staffAccountId: '12345',
+                    supervisesStaff: false,
+                  },
+                },
+                UserOption: {
+                  userOption: {
+                    value: 'true',
+                  },
+                },
+              }}
+            >
+              <MultiPageMenu
+                selectedId={selected}
+                isOpen={true}
+                onClose={() => {}}
+                designationAccounts={[]}
+                setDesignationAccounts={() => {}}
+                navType={NavTypeEnum.HrTools}
+              />
+            </GqlMockedProvider>
+          </TestRouter>
+        </ThemeProvider>,
+      );
+
+      expect(
+        await findByText('Ministry Partner Reminders'),
+      ).toBeInTheDocument();
+      expect(queryByText('MPD Supervisor Report')).not.toBeInTheDocument();
     });
   });
 });

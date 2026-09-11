@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import theme from 'src/theme';
 import {
   AssignCoachToNewStaffCohortAttendeeMutation,
@@ -22,7 +23,9 @@ import {
   attendeesMock,
   cohortsMock,
   cohortsWithoutCostsMock,
+  coordinatorUserMock,
   failedAssignableCoachesMock,
+  goalsAdminUserMock,
   runAndSentMock,
 } from '../mpdGoalAdminMocks';
 import { GoalsTableToolbar } from './GoalsTableToolbar';
@@ -41,10 +44,12 @@ const renderFailingToolbar = () =>
     <ThemeProvider theme={theme}>
       <SnackbarProvider>
         <GqlMockedProvider<{
+          GetUser: GetUserQuery;
           NewStaffCohorts: NewStaffCohortsQuery;
           NewStaffCohortAttendees: NewStaffCohortAttendeesQuery;
         }>
           mocks={{
+            GetUser: goalsAdminUserMock,
             NewStaffCohorts: cohortsMock,
             NewStaffCohortAttendees: attendeesMock(),
             RunAndSendNewStaffCohort: {
@@ -70,16 +75,20 @@ const renderToolbar = ({
   sentCount = 2,
   assignCoach = assignedCoachMock(['row-1', 'row-2']),
   coaches = assignableCoachesMock,
+  isGoalsAdmin = true,
 }: {
   cohorts?: NewStaffCohortsQuery;
   sentCount?: number;
   assignCoach?: AssignCoachToNewStaffCohortAttendeeMutation;
   coaches?: NewStaffCohortAssignableCoachesQuery;
+  /** False renders the toolbar as an OneApp coordinator sees it. */
+  isGoalsAdmin?: boolean;
 } = {}) =>
   render(
     <ThemeProvider theme={theme}>
       <SnackbarProvider>
         <GqlMockedProvider<{
+          GetUser: GetUserQuery;
           NewStaffCohorts: NewStaffCohortsQuery;
           NewStaffCohortAttendees: NewStaffCohortAttendeesQuery;
           RunAndSendNewStaffCohort: RunAndSendNewStaffCohortMutation;
@@ -87,6 +96,7 @@ const renderToolbar = ({
           AssignCoachToNewStaffCohortAttendee: AssignCoachToNewStaffCohortAttendeeMutation;
         }>
           mocks={{
+            GetUser: isGoalsAdmin ? goalsAdminUserMock : coordinatorUserMock,
             NewStaffCohorts: cohorts,
             NewStaffCohortAttendees: attendeesMock(),
             RunAndSendNewStaffCohort: runAndSentMock(
@@ -442,5 +452,55 @@ describe('GoalsTableToolbar', () => {
     expect(getByRole('dialog')).toHaveTextContent(
       'Assign Coach for Carlos & Michaela Everts',
     );
+  });
+
+  describe('as a coordinator', () => {
+    it('offers Assign Coach alone, with no Print or Run & Send', async () => {
+      const { getByRole, queryByRole } = await renderLoaded({
+        isGoalsAdmin: false,
+      });
+      act(() => ctx.toggleRow('row-1'));
+
+      expect(
+        queryByRole('button', { name: 'Print All' }),
+      ).not.toBeInTheDocument();
+      expect(
+        queryByRole('button', { name: 'Run and Send All' }),
+      ).not.toBeInTheDocument();
+
+      userEvent.click(getByRole('button', { name: 'More Actions' }));
+      expect(
+        within(getByRole('menu'))
+          .getAllByRole('menuitem')
+          .map((item) => item.textContent),
+      ).toEqual(['Assign Coach']);
+    });
+
+    it('still assigns a coach to the selection', async () => {
+      const { getByRole, findByRole } = await renderLoaded({
+        isGoalsAdmin: false,
+      });
+      act(() => ctx.toggleRow('row-1'));
+
+      userEvent.click(getByRole('button', { name: 'More Actions' }));
+      userEvent.click(getByRole('menuitem', { name: 'Assign Coach' }));
+
+      userEvent.click(await findByRole('combobox', { name: 'Coach' }));
+      userEvent.click(await findByRole('option', { name: 'Tom Harris' }));
+      userEvent.click(getByRole('button', { name: 'Save' }));
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation(
+          'AssignCoachToNewStaffCohortAttendee',
+          {
+            input: {
+              cohortId: 'fall-nso-2026',
+              attendeeIds: ['row-1'],
+              coachId: 'coach-6',
+            },
+          },
+        ),
+      );
+    });
   });
 });

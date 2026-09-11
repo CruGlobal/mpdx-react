@@ -14,5 +14,7 @@ query GetUser {
     userType
     usStaffGroup
     spouseUsStaffGroup
+    supervisesStaff
+    mpdSupervisorAdmin
   }
 }

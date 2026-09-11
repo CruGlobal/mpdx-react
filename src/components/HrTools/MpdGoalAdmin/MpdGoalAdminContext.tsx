@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { ApolloError } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
+import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
@@ -39,7 +40,7 @@ import {
 } from './mpdGoalAdminHelpers';
 
 /** Matches the debounce the contacts search uses, so typing isn't a query per keystroke. */
-const searchDebounceMs = 500;
+export const searchDebounceMs = 500;
 
 export interface MpdGoalAdminContextValue {
   activeTab: MpdGoalAdminTabEnum;
@@ -48,8 +49,13 @@ export interface MpdGoalAdminContextValue {
   selectedCohortId: string;
   setSelectedCohortId: (id: string) => void;
   selectedCohort: Cohort | undefined;
+  /** The MPD Goals team, who alone may act on the whole cohort; a coordinator only reads it.
+   * False until the user lands, so nothing gated on it flashes into view first. */
+  isGoalsAdmin: boolean;
   search: string;
   setSearch: (value: string) => void;
+  /** True while the typed search hasn't reached the query, so the rows are still the previous search's. */
+  searchPending: boolean;
   /** Attendees the query returned; the API does the search matching. */
   filteredRows: StaffGoalRow[];
   /** True while cohorts or the selected cohort's attendees are still loading. */
@@ -100,11 +106,14 @@ export const MpdGoalAdminProvider: React.FC<{
     },
     [router],
   );
+  const { data: userData } = useGetUserQuery();
+  const isGoalsAdmin = !!userData?.user.mpdSupervisorAdmin;
   const [selectedCohortId, setSelectedCohortId] = useState<string>('');
   const [search, setSearch] = useState('');
   const [selectedRowIds, setSelectedRowIds] = useState<Set<string>>(new Set());
 
   const debouncedSearch = useDebouncedValue(search, searchDebounceMs);
+  const searchPending = search !== debouncedSearch;
 
   const {
     data: cohortsData,
@@ -300,8 +309,10 @@ export const MpdGoalAdminProvider: React.FC<{
       selectedCohortId,
       setSelectedCohortId: selectCohort,
       selectedCohort,
+      isGoalsAdmin,
       search,
       setSearch,
+      searchPending,
       filteredRows,
       // Skipped without a selection, so zero cohorts must not spin forever.
       loading:
@@ -328,7 +339,9 @@ export const MpdGoalAdminProvider: React.FC<{
       selectedCohortId,
       selectCohort,
       selectedCohort,
+      isGoalsAdmin,
       search,
+      searchPending,
       filteredRows,
       cohortsLoading,
       attendeesLoading,
