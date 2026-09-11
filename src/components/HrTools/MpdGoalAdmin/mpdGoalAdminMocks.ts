@@ -1,3 +1,5 @@
+import { DeepPartialMock } from '__tests__/util/graphqlMocking';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   NewStaffCohortAttendeeGoalStatusEnum,
   NewStaffCohortRunAndSendBlockerEnum,
@@ -17,6 +19,13 @@ import {
 import { TrainingCosts } from './mpdGoalAdminHelpers';
 
 // Shared fixtures. `hasNextPage: false` everywhere: useFetchAllPages drains pages.
+
+export const goalsAdminUserMock: DeepPartialMock<GetUserQuery> = {
+  user: { mpdSupervisorAdmin: true },
+};
+export const coordinatorUserMock: DeepPartialMock<GetUserQuery> = {
+  user: { mpdSupervisorAdmin: false },
+};
 
 export const trainingCosts: TrainingCosts = {
   nsoIndividual1InRoom: 100,

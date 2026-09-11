@@ -35,6 +35,7 @@ export const GoalsTableToolbar: React.FC = () => {
     assignableCoachesError,
     retryAssignableCoaches,
     selectedCohort,
+    isGoalsAdmin,
     loading,
     error,
   } = useMpdGoalAdmin();
@@ -88,7 +89,7 @@ export const GoalsTableToolbar: React.FC = () => {
           </Typography>
         )}
         {/* Not a bulk action: ignores selection, printing the whole cohort or the search matches. */}
-        <PrintCohortGoalsButton />
+        {isGoalsAdmin && <PrintCohortGoalsButton />}
         <Button
           variant="outlined"
           endIcon={<ArrowDropDownIcon />}
@@ -104,18 +105,20 @@ export const GoalsTableToolbar: React.FC = () => {
           open={Boolean(menuAnchorEl)}
           onClose={() => setMenuAnchorEl(null)}
         >
-          <MenuItem
-            disabled={blocked}
-            onClick={() => {
-              setMenuAnchorEl(null);
-              openRunAndSend(
-                t('Run and Send Selected Complete MPD Goals?'),
-                selectedRows,
-              );
-            }}
-          >
-            {t('Run & Send Selected')}
-          </MenuItem>
+          {isGoalsAdmin && (
+            <MenuItem
+              disabled={blocked}
+              onClick={() => {
+                setMenuAnchorEl(null);
+                openRunAndSend(
+                  t('Run and Send Selected Complete MPD Goals?'),
+                  selectedRows,
+                );
+              }}
+            >
+              {t('Run & Send Selected')}
+            </MenuItem>
+          )}
           <MenuItem
             onClick={() => {
               setMenuAnchorEl(null);
@@ -125,22 +128,24 @@ export const GoalsTableToolbar: React.FC = () => {
             {t('Assign Coach')}
           </MenuItem>
         </Menu>
-        <RunAndSendTooltip show={blocked}>
-          <Button
-            // Only one contained CTA at a time while rows are selected.
-            variant={hasSelection ? 'outlined' : 'contained'}
-            // Otherwise the modal can claim "0 out of 0" beside the error alert.
-            disabled={loading || !!error || blocked}
-            onClick={() =>
-              openRunAndSend(
-                t('Run and Send All Complete MPD Goals?'),
-                filteredRows,
-              )
-            }
-          >
-            {t('Run and Send All')}
-          </Button>
-        </RunAndSendTooltip>
+        {isGoalsAdmin && (
+          <RunAndSendTooltip show={blocked}>
+            <Button
+              // Only one contained CTA at a time while rows are selected.
+              variant={hasSelection ? 'outlined' : 'contained'}
+              // Otherwise the modal can claim "0 out of 0" beside the error alert.
+              disabled={loading || !!error || blocked}
+              onClick={() =>
+                openRunAndSend(
+                  t('Run and Send All Complete MPD Goals?'),
+                  filteredRows,
+                )
+              }
+            >
+              {t('Run and Send All')}
+            </Button>
+          </RunAndSendTooltip>
+        )}
       </Box>
 
       <RunAndSendModal {...modalProps} />

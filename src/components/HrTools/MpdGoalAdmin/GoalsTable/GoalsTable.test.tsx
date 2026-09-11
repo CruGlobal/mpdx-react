@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import theme from 'src/theme';
 import {
   AssignCoachToNewStaffCohortAttendeeMutation,
@@ -30,7 +31,9 @@ import {
   coach,
   cohortsMock,
   cohortsWithoutCostsMock,
+  coordinatorUserMock,
   failedAssignableCoachesMock,
+  goalsAdminUserMock,
   noAssignableCoachesMock,
   runAndSentMock,
 } from '../mpdGoalAdminMocks';
@@ -50,10 +53,17 @@ const Providers: React.FC<{
   children: React.ReactNode;
   cohorts?: NewStaffCohortsQuery;
   coaches?: NewStaffCohortAssignableCoachesQuery;
-}> = ({ children, cohorts = cohortsMock, coaches = assignableCoachesMock }) => (
+  isGoalsAdmin?: boolean;
+}> = ({
+  children,
+  cohorts = cohortsMock,
+  coaches = assignableCoachesMock,
+  isGoalsAdmin = true,
+}) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
       <GqlMockedProvider<{
+        GetUser: GetUserQuery;
         NewStaffCohorts: NewStaffCohortsQuery;
         NewStaffCohortAttendees: NewStaffCohortAttendeesQuery;
         RunAndSendNewStaffCohort: RunAndSendNewStaffCohortMutation;
@@ -61,6 +71,7 @@ const Providers: React.FC<{
         AssignCoachToNewStaffCohortAttendee: AssignCoachToNewStaffCohortAttendeeMutation;
       }>
         mocks={{
+          GetUser: isGoalsAdmin ? goalsAdminUserMock : coordinatorUserMock,
           NewStaffCohorts: cohorts,
           NewStaffCohortAttendees: attendeesMock(),
           RunAndSendNewStaffCohort: runAndSentMock(
@@ -84,9 +95,10 @@ const renderTable = (
   data = rows,
   cohorts?: NewStaffCohortsQuery,
   coaches?: NewStaffCohortAssignableCoachesQuery,
+  isGoalsAdmin?: boolean,
 ) =>
   render(
-    <Providers cohorts={cohorts} coaches={coaches}>
+    <Providers cohorts={cohorts} coaches={coaches} isGoalsAdmin={isGoalsAdmin}>
       <Capture rows={data} />
     </Providers>,
   );
@@ -109,6 +121,7 @@ const renderLoadedTable = async (
   const screen = renderTable(data, cohorts);
   await waitFor(() => expect(ctx.selectedCohort).toBeDefined());
   await waitFor(() => expect(ctx.loading).toBe(false));
+  await waitFor(() => expect(ctx.isGoalsAdmin).toBe(true));
   return screen;
 };
 
@@ -371,13 +384,33 @@ describe('GoalsTable', () => {
     );
   });
 
-  it('renders a View/Edit action and a menu button for each row on the page', () => {
-    const { getAllByText, getAllByRole } = renderTable();
+  it('renders a View/Edit action and a menu button for each row on the page', async () => {
+    const { getAllByText, getByRole, findAllByRole } = renderTable();
     const onPage = Math.min(rows.length, DEFAULT_ROWS_PER_PAGE);
-    expect(getAllByText('View/Edit')).toHaveLength(onPage);
-    expect(getAllByRole('button', { name: /Actions for/ })).toHaveLength(
+    expect(await findAllByRole('button', { name: /Actions for/ })).toHaveLength(
       onPage,
     );
+    expect(getAllByText('View/Edit')).toHaveLength(onPage);
+    expect(
+      getByRole('columnheader', { name: 'Row actions' }),
+    ).toBeInTheDocument();
+  });
+
+  it('gives a coordinator no row menu', async () => {
+    const { queryAllByRole, queryByRole } = renderTable(
+      rows,
+      undefined,
+      undefined,
+      false,
+    );
+    // GetUser is subscribed before the cohorts query, so a settled table means the tier landed.
+    await waitFor(() => expect(ctx.selectedCohort).toBeDefined());
+    await waitFor(() => expect(ctx.loading).toBe(false));
+
+    expect(queryAllByRole('button', { name: /Actions for/ })).toHaveLength(0);
+    expect(
+      queryByRole('columnheader', { name: 'Row actions' }),
+    ).not.toBeInTheDocument();
   });
 
   it('selects a row via its checkbox', async () => {
