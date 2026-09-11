@@ -1,6 +1,7 @@
 import { ThemeProvider } from '@emotion/react';
 import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
 import { merge } from 'lodash';
+import { SnackbarProvider } from 'notistack';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
@@ -11,6 +12,7 @@ import {
   UsStaffGroupEnum,
   UserTypeEnum,
 } from 'src/graphql/types.generated';
+import { AccountGeographicLocationQuery } from 'src/hooks/AccountGeographicLocation.generated';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
 import {
@@ -111,6 +113,7 @@ export interface SalaryCalculatorTestWrapperProps {
   editing?: boolean;
   userType?: UserTypeEnum;
   usStaffGroup?: UsStaffGroupEnum;
+  accountGeographicLocation?: string | null;
 }
 
 export const SalaryCalculatorTestWrapper: React.FC<
@@ -127,85 +130,96 @@ export const SalaryCalculatorTestWrapper: React.FC<
   editing = true,
   userType = UserTypeEnum.UsStaff,
   usStaffGroup = UsStaffGroupEnum.SeniorStaff,
+  accountGeographicLocation = null,
 }) => {
   const hcmUserMerged = merge({}, hcmUserMock, hcmUser);
   const hcmSpouseMerged = merge({}, hcmSpouseMock, hcmSpouse);
   return (
     <ThemeProvider theme={theme}>
-      <TestRouter
-        router={{
-          query: {
-            accountListId: 'account-list-1',
-            calculationId: 'salary-request-1',
-            ...(editing ? {} : { mode: 'view' }),
-          },
-        }}
-      >
-        <GqlMockedProvider<{
-          Hcm: HcmQuery;
-          PayrollDates: PayrollDatesQuery;
-          SalaryCalculation: SalaryCalculationQuery;
-          EffectiveSalaryCalculation: EffectiveSalaryCalculationQuery;
-          GoalCalculatorConstants: GoalCalculatorConstantsQuery;
-          StaffAccount: StaffAccountQuery;
-          GetUser: GetUserQuery;
-        }>
-          mocks={{
-            StaffAccount: {
-              staffAccount: {
-                id: '12345',
-                name: 'Test Account',
-              },
-            },
-            GetUser: {
-              user: {
-                userType,
-                usStaffGroup,
-              },
-            },
-            PayrollDates: {
-              payrollDates,
-            },
-            EffectiveSalaryCalculation: {
-              salaryRequest: effectiveSalaryRequestMock,
-            },
-            GoalCalculatorConstants: {
-              constant: {
-                mpdGoalGeographicConstants: [
-                  { location: 'Atlanta, GA' },
-                  { location: 'Miami, FL' },
-                ],
-              },
-            },
-            Hcm: {
-              hcm: hasSpouse
-                ? [hcmUserMerged, hcmSpouseMerged]
-                : [hcmUserMerged],
-            },
-            SalaryCalculation: {
-              salaryRequest: merge(
-                {
-                  id: 'salary-request-1',
-                  status: SalaryRequestStatusEnum.InProgress,
-                  effectiveDate: '2025-01-01',
-                  calculations: {
-                    hardCap: 80000,
-                    exceptionCap: null,
-                    combinedCap: 125000,
-                  },
-                  progressiveApprovalTier: null,
-                  progressiveApprovalTierReason: null,
-                } satisfies SalaryRequestMock,
-                salaryRequestMock,
-                hasSpouse ? undefined : { spouseCalculations: null },
-              ),
+      <SnackbarProvider>
+        <TestRouter
+          router={{
+            query: {
+              accountListId: 'account-list-1',
+              calculationId: 'salary-request-1',
+              ...(editing ? {} : { mode: 'view' }),
             },
           }}
-          onCall={onCall}
         >
-          <SalaryCalculatorProvider>{children}</SalaryCalculatorProvider>
-        </GqlMockedProvider>
-      </TestRouter>
+          <GqlMockedProvider<{
+            Hcm: HcmQuery;
+            PayrollDates: PayrollDatesQuery;
+            SalaryCalculation: SalaryCalculationQuery;
+            EffectiveSalaryCalculation: EffectiveSalaryCalculationQuery;
+            GoalCalculatorConstants: GoalCalculatorConstantsQuery;
+            StaffAccount: StaffAccountQuery;
+            GetUser: GetUserQuery;
+            AccountGeographicLocation: AccountGeographicLocationQuery;
+          }>
+            mocks={{
+              StaffAccount: {
+                staffAccount: {
+                  id: '12345',
+                  name: 'Test Account',
+                },
+              },
+              GetUser: {
+                user: {
+                  userType,
+                  usStaffGroup,
+                },
+              },
+              AccountGeographicLocation: {
+                accountList: {
+                  settings: {
+                    geographicLocation: accountGeographicLocation,
+                  },
+                },
+              },
+              PayrollDates: {
+                payrollDates,
+              },
+              EffectiveSalaryCalculation: {
+                salaryRequest: effectiveSalaryRequestMock,
+              },
+              GoalCalculatorConstants: {
+                constant: {
+                  mpdGoalGeographicConstants: [
+                    { location: 'Atlanta, GA' },
+                    { location: 'Miami, FL' },
+                  ],
+                },
+              },
+              Hcm: {
+                hcm: hasSpouse
+                  ? [hcmUserMerged, hcmSpouseMerged]
+                  : [hcmUserMerged],
+              },
+              SalaryCalculation: {
+                salaryRequest: merge(
+                  {
+                    id: 'salary-request-1',
+                    status: SalaryRequestStatusEnum.InProgress,
+                    effectiveDate: '2025-01-01',
+                    calculations: {
+                      hardCap: 80000,
+                      exceptionCap: null,
+                      combinedCap: 125000,
+                    },
+                    progressiveApprovalTier: null,
+                    progressiveApprovalTierReason: null,
+                  } satisfies SalaryRequestMock,
+                  salaryRequestMock,
+                  hasSpouse ? undefined : { spouseCalculations: null },
+                ),
+              },
+            }}
+            onCall={onCall}
+          >
+            <SalaryCalculatorProvider>{children}</SalaryCalculatorProvider>
+          </GqlMockedProvider>
+        </TestRouter>
+      </SnackbarProvider>
     </ThemeProvider>
   );
 };

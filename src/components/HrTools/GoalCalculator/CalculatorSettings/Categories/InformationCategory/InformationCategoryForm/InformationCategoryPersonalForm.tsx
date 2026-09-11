@@ -12,6 +12,7 @@ import { range } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGoalCalculator } from 'src/components/HrTools/GoalCalculator/Shared/GoalCalculatorContext';
+import { LocationInfoAlert } from 'src/components/HrTools/Shared/LocationInfoAlert/LocationInfoAlert';
 import {
   GoalCalculationAge,
   GoalCalculationRole,
@@ -170,6 +171,7 @@ export const InformationCategoryPersonalForm: React.FC<
                 />
               )}
             />
+            <LocationInfoAlert />
           </Grid>
         )}
 
