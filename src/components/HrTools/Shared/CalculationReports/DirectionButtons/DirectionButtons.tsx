@@ -13,7 +13,6 @@ interface DirectionButtonsProps {
   handlePreviousStep?: () => void;
   handleDiscard?: () => void;
   buttonTitle?: string;
-  deadlineDate?: string;
   actionRequired?: boolean;
   overrideNext?: () => void;
   showBackButton?: boolean;
@@ -54,7 +53,6 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
   submitCount,
   isValid,
   isSubmitting,
-  deadlineDate,
   actionRequired,
   additionalApproval,
   splitAsr,
@@ -187,7 +185,6 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
           overrideTitle={overrideTitle}
           overrideContent={overrideContent}
           overrideSubContent={overrideSubContent}
-          deadlineDate={deadlineDate}
           actionRequired={actionRequired}
           additionalApproval={additionalApproval}
           splitAsr={splitAsr}
