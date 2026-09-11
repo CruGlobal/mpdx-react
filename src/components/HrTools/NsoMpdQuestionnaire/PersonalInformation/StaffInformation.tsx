@@ -1,10 +1,45 @@
 import React, { useState } from 'react';
-import { Stack, TextField, Typography } from '@mui/material';
+import { Stack, TextField, Typography, styled } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { getLocalizedAge } from 'src/lib/functions/getLocalizedAge';
 import { StaffInfoCard } from '../../Shared/StaffInfoCard/StaffInfoCard';
 import { useNsoMpdQuestionnaire } from '../Shared/NsoMpdQuestionnaireContext';
+
+const GreyedTextField = styled(TextField)(({ theme }) => ({
+  '& .MuiInputBase-root': {
+    backgroundColor: theme.palette.grey[100],
+  },
+  '& .MuiInputBase-input': {
+    cursor: 'default',
+  },
+  // Focus shouldn't tint the label blue the way it does on the real questions.
+  '& .MuiInputLabel-root.Mui-focused': {
+    color: theme.palette.text.secondary,
+  },
+  // The field still takes focus so the value can be copied, but it shouldn't look active.
+  [`& .MuiOutlinedInput-notchedOutline,
+    & .MuiInputBase-root:hover .MuiOutlinedInput-notchedOutline,
+    & .MuiInputBase-root.Mui-focused .MuiOutlinedInput-notchedOutline`]: {
+    borderColor: theme.palette.action.disabled,
+    borderWidth: 1,
+  },
+}));
+
+interface ReadOnlyFieldProps {
+  label: string;
+  value: string;
+  placeholder: string;
+}
+
+/** Greyed and locked so these on-record values don't read as questions the user is meant to answer. */
+const ReadOnlyField: React.FC<ReadOnlyFieldProps> = (props) => (
+  <GreyedTextField
+    {...props}
+    size="small"
+    slotProps={{ input: { readOnly: true }, inputLabel: { shrink: true } }}
+  />
+);
 
 export const StaffInformation: React.FC = () => {
   const { t } = useTranslation();
@@ -96,16 +131,11 @@ export const StaffInformation: React.FC = () => {
       >
         <Stack spacing={2}>
           {fields.map((field) => (
-            <TextField
+            <ReadOnlyField
               key={field.label}
               label={field.label}
               value={field.value}
               placeholder={t('Not on record')}
-              size="small"
-              slotProps={{
-                input: { readOnly: true },
-                inputLabel: { shrink: true },
-              }}
             />
           ))}
         </Stack>
