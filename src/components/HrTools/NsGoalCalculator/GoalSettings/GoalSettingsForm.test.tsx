@@ -79,6 +79,10 @@ const ScenarioTestComponent: React.FC<
   </NsGoalCalculatorTestWrapper>
 );
 
+// Every case renders the whole 50-field form, so typing a value costs a Yup
+// pass and a re-render per keystroke and the default 5s runs out on loaded CI.
+jest.setTimeout(15000);
+
 describe('GoalSettingsForm', () => {
   it('renders all six section headings', async () => {
     const { findByRole, getByRole } = render(<TestComponent />);
@@ -309,9 +313,6 @@ describe('GoalSettingsForm', () => {
     const { findByRole } = render(<TestComponent onCall={mutationSpy} />);
 
     const saveButton = await findByRole('button', { name: 'Save & Share' });
-    await waitFor(() =>
-      expect(saveButton).toHaveClass('MuiButton-containedPrimary'),
-    );
     userEvent.click(saveButton);
 
     await waitFor(() =>
@@ -454,9 +455,6 @@ describe('GoalSettingsForm', () => {
     const { findByRole } = render(<TestComponent onCall={jest.fn()} />);
 
     const saveButton = await findByRole('button', { name: 'Save & Share' });
-    await waitFor(() =>
-      expect(saveButton).toHaveClass('MuiButton-containedPrimary'),
-    );
     userEvent.click(saveButton);
 
     // Asserted synchronously: the save resolves on the next microtask, so an
@@ -481,9 +479,64 @@ describe('GoalSettingsForm', () => {
     );
   });
 
-  // The required fields sit far up a long form, so the sticky bar has to say
-  // what is missing rather than relying on them turning red off-screen.
-  it('names the missing required fields beside the save actions', async () => {
+  // Save & Share looks ordinary and stays clickable, so nothing should accuse
+  // the admin of missing values before they have asked to save.
+  it('holds the missing-value summary back until Save & Share is clicked', async () => {
+    const { findByRole, getByRole, queryByRole } = render(<TestComponent />);
+
+    const contribution = await findByRole('spinbutton', {
+      name: '403(b) Contribution — John',
+    });
+    userEvent.clear(contribution);
+    userEvent.type(contribution, '9999');
+    userEvent.tab();
+
+    // The field itself is flagged, so validation has run and Formik is holding
+    // an error — the summary is simply not showing it yet.
+    await waitFor(() => expect(contribution).toBeInvalid());
+    expect(queryByRole('status')).not.toBeInTheDocument();
+
+    userEvent.click(getByRole('button', { name: 'Save & Share' }));
+
+    expect(await findByRole('status')).toBeInTheDocument();
+  });
+
+  // The required fields sit far up a long form, so the summary beside the
+  // actions has to say what is missing rather than relying on them turning red
+  // off-screen.
+  it('names and flags the missing required fields once Save & Share is clicked', async () => {
+    const { findByRole, getByRole } = render(
+      <TestComponent
+        goalCalculationMock={{
+          newStaffGoalCalculation: {
+            ...defaultMock.newStaffGoalCalculation,
+            benefitsPlan: null,
+          },
+        }}
+      />,
+    );
+
+    const saveButton = await findByRole('button', { name: 'Save & Share' });
+    expect(getByRole('combobox', { name: 'Benefits Selection' })).toBeValid();
+
+    userEvent.click(saveButton);
+
+    // Count-agnostic: pins that the heading renders and interpolates, without
+    // asserting translated copy.
+    const summary = await findByRole('status');
+    expect(summary).toHaveTextContent(/\d+ field still needs a value/);
+    expect(summary).toHaveTextContent('Benefits Plan is required');
+    // Deduplicated, so a married household does not list the same rule twice.
+    expect(summary).not.toHaveTextContent('Age is requiredAge is required');
+    expect(getByRole('combobox', { name: 'Benefits Selection' })).toBeInvalid();
+    expect(mutationSpy).not.toHaveGraphqlOperation(
+      'UpdateNewStaffGoalCalculation',
+    );
+  });
+
+  // Plain and clickable however incomplete the form is: clicking it is how an
+  // admin finds out which required fields are still missing.
+  it('leaves Save & Share plain and clickable when it blocks the submit', async () => {
     const { findByRole } = render(
       <TestComponent
         goalCalculationMock={{
@@ -495,42 +548,14 @@ describe('GoalSettingsForm', () => {
       />,
     );
 
-    // validateOnMount resolves after the first paint, so wait for the summary.
-    const summary = await findByRole('status');
-
-    // Count-agnostic: pins that the heading renders and interpolates, without
-    // asserting translated copy.
-    expect(summary).toHaveTextContent(/\d+ field still needs a value/);
-    expect(summary).toHaveTextContent('Benefits Plan is required');
-    // Deduplicated, so a married household does not list the same rule twice.
-    expect(summary).not.toHaveTextContent('Age is requiredAge is required');
-  });
-
-  // Red rather than disabled: clicking it is how an admin finds out which
-  // required fields are still missing.
-  it('turns Save & Share red while the form is invalid', async () => {
-    const { findByRole, getByRole } = render(<TestComponent />);
-
     const saveButton = await findByRole('button', { name: 'Save & Share' });
     expect(saveButton).toHaveClass('MuiButton-containedPrimary');
 
-    const contribution = getByRole('spinbutton', {
-      name: '403(b) Contribution — John',
-    });
-    userEvent.clear(contribution);
-    userEvent.type(contribution, '9999');
+    userEvent.click(saveButton);
 
-    await waitFor(() =>
-      expect(saveButton).toHaveClass('MuiButton-containedError'),
-    );
+    await findByRole('status');
     expect(saveButton).toBeEnabled();
-
-    userEvent.clear(contribution);
-    userEvent.type(contribution, '5');
-
-    await waitFor(() =>
-      expect(saveButton).toHaveClass('MuiButton-containedPrimary'),
-    );
+    expect(saveButton).toHaveClass('MuiButton-containedPrimary');
   });
 
   it('discards edits once Cancel is confirmed', async () => {
@@ -771,9 +796,6 @@ describe('GoalSettingsForm', () => {
     const { findByRole } = render(<TestComponent />);
 
     const saveButton = await findByRole('button', { name: 'Save & Share' });
-    await waitFor(() =>
-      expect(saveButton).toHaveClass('MuiButton-containedPrimary'),
-    );
     userEvent.click(saveButton);
 
     await waitFor(() =>
@@ -826,9 +848,6 @@ describe('GoalSettingsForm', () => {
       userEvent.type(firstName, 'Johnny');
 
       const saveButton = getByRole('button', { name: 'Save & Share' });
-      await waitFor(() =>
-        expect(saveButton).toHaveClass('MuiButton-containedPrimary'),
-      );
       userEvent.click(saveButton);
 
       await waitFor(() =>
@@ -852,9 +871,6 @@ describe('GoalSettingsForm', () => {
       userEvent.type(firstName, 'Johnny');
 
       const saveButton = getByRole('button', { name: 'Save & Share' });
-      await waitFor(() =>
-        expect(saveButton).toHaveClass('MuiButton-containedPrimary'),
-      );
       userEvent.click(saveButton);
 
       await waitFor(() => expect(push).toHaveBeenCalledWith(returnUrl));

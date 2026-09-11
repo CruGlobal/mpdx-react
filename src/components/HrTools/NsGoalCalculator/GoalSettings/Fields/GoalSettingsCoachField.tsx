@@ -1,129 +1,115 @@
-import React, { useState } from 'react';
-import { Alert, Box, Button, Stack } from '@mui/material';
+import React from 'react';
+import { Autocomplete, Box, CircularProgress, TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useAssignCoachToNewStaffCohortAttendeeMutation } from 'src/components/HrTools/MpdGoalAdmin/AssignCoach.generated';
-import { AssignCoachModal } from 'src/components/HrTools/Shared/AssignCoach/AssignCoachModal';
-import {
-  coachLabel,
-  coachToOption,
-} from 'src/components/HrTools/Shared/AssignCoach/coachHelpers';
 import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
-import {
-  useNewStaffCohortAttendeeAssignableCoachesLazyQuery,
-  useUnassignCoachFromNewStaffCohortAttendeeMutation,
-} from '../AttendeeCoach.generated';
 import { GoalSettingsAttendee } from '../goalSettingsSectionProps';
-import { GoalSettingsReadOnlyField } from './GoalSettingsReadOnlyField';
+import { CoachFieldAlerts } from './CoachFieldAlerts';
+import { useCoachAssignment } from './useCoachAssignment';
 
 interface GoalSettingsCoachFieldProps {
   attendee: GoalSettingsAttendee;
-  /** Household name, shown in the assign and remove confirmations. */
+  /** Household name, shown in the switch and remove confirmations. */
   subjectName: string;
 }
 
-/** Reuses the admin table's picker, so both places offer the same coach list. */
+/**
+ * One dropdown for the whole coach assignment: pick to assign, pick someone
+ * else to switch, clear to remove. `useCoachAssignment` owns what each of those
+ * does; this renders it and the confirmations the destructive two need.
+ */
 export const GoalSettingsCoachField: React.FC<GoalSettingsCoachFieldProps> = ({
   attendee,
   subjectName,
 }) => {
   const { t } = useTranslation();
-  const [picking, setPicking] = useState(false);
-  const [removing, setRemoving] = useState(false);
-  const [removeFailed, setRemoveFailed] = useState(false);
-
-  // Lazy: most visits to Staff Details never open the picker, and the list costs an OneApp lookup.
-  const [loadCoaches, { data, loading, error, refetch }] =
-    useNewStaffCohortAttendeeAssignableCoachesLazyQuery();
-  const [assignCoach] = useAssignCoachToNewStaffCohortAttendeeMutation();
-  const [unassignCoach] = useUnassignCoachFromNewStaffCohortAttendeeMutation();
-
-  const { coach } = attendee;
-  const coachName = coach ? coachLabel(coach, t) : '';
-
-  const openPicker = () => {
-    loadCoaches({ variables: { attendeeId: attendee.id } });
-    setPicking(true);
-  };
-
-  const handleAssignCoach = async (coachId: string) => {
-    // No refetch: the payload's attendee normalizes over the cached one, coach and all.
-    await assignCoach({
-      variables: {
-        input: {
-          cohortId: attendee.newStaffCohortId,
-          attendeeIds: [attendee.id],
-          coachId,
-        },
-      },
-    });
-  };
-
-  const handleRemoveCoach = async () => {
-    setRemoveFailed(false);
-    try {
-      await unassignCoach({
-        variables: {
-          input: {
-            cohortId: attendee.newStaffCohortId,
-            attendeeIds: [attendee.id],
-          },
-        },
-      });
-    } catch {
-      // Confirmation closes whatever the outcome, so the failure has to show outside it.
-      setRemoveFailed(true);
-    }
-  };
+  const coach = useCoachAssignment(attendee);
+  const busy = coach.loading || coach.assigning;
 
   return (
     <Box>
-      <GoalSettingsReadOnlyField
-        label={t('Coach')}
-        value={coachName}
-        showLabel
-      />
-      <Stack direction="row" spacing={1} sx={{ mt: 0.5 }}>
-        <Button size="small" onClick={openPicker}>
-          {coach ? t('Change') : t('Assign Coach')}
-        </Button>
-        {coach && (
-          <Button size="small" color="error" onClick={() => setRemoving(true)}>
-            {t('Remove')}
-          </Button>
+      <Autocomplete
+        autoHighlight
+        loading={coach.loading}
+        // A first assignment saves straight from here, so the picker must close
+        // for that round trip; readOnly does it without taking the focus.
+        readOnly={coach.assigning}
+        // Controlled by the assignment, so a declined confirmation reverts the input on its own.
+        value={coach.value}
+        onOpen={coach.loadCoaches}
+        onChange={(_, selected) => coach.pick(selected)}
+        options={coach.options}
+        getOptionLabel={(option) => option.name}
+        isOptionEqualToValue={(option, selected) => option.id === selected.id}
+        noOptionsText={t(
+          'No coaches are available for this cohort. Coach eligibility comes from OneApp.',
         )}
-      </Stack>
-      {picking && (
-        <AssignCoachModal
-          subjectName={subjectName}
-          coaches={(data?.newStaffCohortAssignableCoaches ?? []).map((option) =>
-            coachToOption(option, t),
+        fullWidth
+        // Removing the coach is a first-class action here, so the clear button
+        // stays put instead of appearing only on hover.
+        clearText={t('Remove coach')}
+        slotProps={{ clearIndicator: { sx: { visibility: 'visible' } } }}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label={t('Coach')}
+            placeholder={t('Select a coach')}
+            inputProps={{ ...params.inputProps, 'aria-busy': busy }}
+            InputProps={{
+              ...params.InputProps,
+              endAdornment: (
+                <>
+                  {busy && (
+                    <CircularProgress
+                      color="primary"
+                      size={20}
+                      aria-label={
+                        coach.assigning
+                          ? t('Assigning coach')
+                          : t('Loading coaches')
+                      }
+                    />
+                  )}
+                  {params.InputProps.endAdornment}
+                </>
+              ),
+            }}
+          />
+        )}
+      />
+      <CoachFieldAlerts
+        listError={coach.listError}
+        onRetryCoaches={coach.retryCoaches}
+        assignFailed={coach.assignFailed}
+        removeFailed={coach.removeFailed}
+      />
+      {coach.switchingTo && (
+        <Confirmation
+          isOpen
+          title={t('Change Coach')}
+          message={t(
+            'Are you sure you want to make {{coach}} the coach for {{name}}? {{current}} will lose access to this account.',
+            {
+              coach: coach.switchingTo.name,
+              name: subjectName,
+              current: coach.coachName,
+            },
           )}
-          loading={loading}
-          coachesError={error}
-          onRetryCoaches={() => {
-            // Apollo rejects a failed refetch, but the hook's own error state reports it.
-            refetch?.().catch(() => undefined);
-          }}
-          reassignedNames={coach ? [subjectName] : undefined}
-          handleClose={() => setPicking(false)}
-          handleAssignCoach={handleAssignCoach}
+          mutation={coach.confirmSwitch}
+          handleClose={coach.cancelSwitch}
         />
       )}
-      {removeFailed && (
-        <Alert severity="error" sx={{ mt: 1 }}>
-          {t('The coach could not be removed. Please try again.')}
-        </Alert>
+      {coach.removing && (
+        <Confirmation
+          isOpen
+          title={t('Remove Coach')}
+          message={t(
+            'Are you sure you want to remove {{coach}} as the coach for {{name}}? They will lose access to this account.',
+            { coach: coach.coachName, name: subjectName },
+          )}
+          mutation={coach.confirmRemove}
+          handleClose={coach.cancelRemove}
+        />
       )}
-      <Confirmation
-        isOpen={removing}
-        title={t('Remove Coach')}
-        message={t(
-          'Are you sure you want to remove {{coach}} as the coach for {{name}}? They will lose access to this account.',
-          { coach: coachName, name: subjectName },
-        )}
-        mutation={handleRemoveCoach}
-        handleClose={() => setRemoving(false)}
-      />
     </Box>
   );
 };
