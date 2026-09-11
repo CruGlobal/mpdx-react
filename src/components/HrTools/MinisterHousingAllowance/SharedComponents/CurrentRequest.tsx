@@ -51,18 +51,8 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   const editLink = getRequestUrl(accountListId, requestId, 'edit');
   const viewLink = getRequestUrl(accountListId, requestId, 'view');
 
-  const {
-    boardApprovedAt,
-    deadlineDate,
-    submittedAt,
-    availableDate,
-    overallAmount,
-  } = requestAttributes || {};
-
-  const pastDeadlineDate = deadlineDate
-    ? DateTime.fromISO(deadlineDate) < DateTime.now()
-    : false;
-  const hideEditButton = !canEdit || pastDeadlineDate;
+  const { boardApprovedAt, submittedAt, availableDate, overallAmount } =
+    requestAttributes || {};
 
   const handleCancelRequest = async () => {
     await deleteRequestMutation({
@@ -94,7 +84,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
       linkOne={viewLink}
       linkTwoText={t('Edit Request')}
       linkTwo={editLink}
-      hideLinkTwoButton={hideEditButton}
+      hideLinkTwoButton={!canEdit}
       isRequest={true}
       handleConfirmCancel={handleCancelRequest}
       disableCancel={approved}
@@ -105,16 +95,6 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
           <Alert severity="info" sx={{ mb: 3 }}>
             {t(
               'This request is still pending board approval. You cannot make changes at this time.',
-            )}
-          </Alert>
-        )}
-        {pastDeadlineDate && !approved && (
-          <Alert severity="info" sx={{ mb: 3 }}>
-            {t(
-              'The deadline to make changes to this request was {{date}}. Please contact support if you need further assistance.',
-              {
-                date: dateFormat(DateTime.fromISO(deadlineDate ?? ''), locale),
-              },
             )}
           </Alert>
         )}
@@ -182,22 +162,6 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
             <TimelineSeparator>
               <TimelineDot
                 sx={{
-                  bgcolor: getDotColor(status, 'deadline'),
-                }}
-                variant={getDotVariant(status, 'deadline')}
-              />
-              <TimelineConnector />
-            </TimelineSeparator>
-            <TimelineContent>
-              <Typography fontWeight="bold">
-                {`${t('Deadline for changes')}${deadlineDate ? `: ${dateFormat(DateTime.fromISO(deadlineDate), locale)}` : ''}`}
-              </Typography>
-            </TimelineContent>
-          </TimelineItem>
-          <TimelineItem>
-            <TimelineSeparator>
-              <TimelineDot
-                sx={{
                   bgcolor: getDotColor(status, 'boardApproval'),
                 }}
                 variant={getDotVariant(status, 'boardApproval')}
@@ -234,7 +198,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
 // Helper to get timeline dot color based on current status and step
 export const getDotColor = (
   status: MhaStatusEnum,
-  step: 'submitted' | 'inProcess' | 'deadline' | 'boardApproval' | 'available',
+  step: 'submitted' | 'inProcess' | 'boardApproval' | 'available',
 ): string => {
   switch (step) {
     case 'submitted':
@@ -249,18 +213,6 @@ export const getDotColor = (
       }
       if (status === MhaStatusEnum.ActionRequired) {
         return 'warning.main';
-      }
-      return 'success.main';
-
-    case 'deadline':
-      if (status === MhaStatusEnum.Pending) {
-        return 'info.main';
-      }
-      if (
-        status === MhaStatusEnum.InProgress ||
-        status === MhaStatusEnum.ActionRequired
-      ) {
-        return 'transparent';
       }
       return 'success.main';
 
@@ -282,7 +234,7 @@ export const getDotColor = (
 // Helper to determine if dot should be filled or outlined
 export const getDotVariant = (
   status: MhaStatusEnum,
-  step: 'submitted' | 'inProcess' | 'deadline' | 'boardApproval' | 'available',
+  step: 'submitted' | 'inProcess' | 'boardApproval' | 'available',
 ): 'filled' | 'outlined' => {
   switch (step) {
     case 'submitted':
@@ -290,13 +242,6 @@ export const getDotVariant = (
 
     case 'inProcess':
       return status === MhaStatusEnum.InProgress ? 'outlined' : 'filled';
-
-    case 'deadline':
-      return status === MhaStatusEnum.Pending ||
-        status === MhaStatusEnum.HrApproved ||
-        status === MhaStatusEnum.BoardApproved
-        ? 'filled'
-        : 'outlined';
 
     case 'boardApproval':
       return status === MhaStatusEnum.HrApproved ||

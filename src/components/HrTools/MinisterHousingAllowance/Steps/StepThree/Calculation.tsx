@@ -43,7 +43,6 @@ import { RequestSummaryCard } from './CalcComponents/RequestSummaryCard';
 interface CalculationProps {
   boardApprovedAt: string | null;
   availableDate: string | null;
-  deadlineDate?: string | null;
   rentOrOwn?: MhaRentOrOwnEnum;
   handlePrint?: () => void;
 }
@@ -96,7 +95,6 @@ const getValidationSchema = (rentOrOwn?: MhaRentOrOwnEnum) => {
 export const Calculation: React.FC<CalculationProps> = ({
   boardApprovedAt,
   availableDate,
-  deadlineDate,
   rentOrOwn,
   handlePrint,
 }) => {
@@ -391,7 +389,6 @@ export const Calculation: React.FC<CalculationProps> = ({
                 submitCount={submitCount}
                 isValid={isValid}
                 isSubmitting={isSubmitting}
-                deadlineDate={deadlineDate ?? ''}
                 actionRequired={actionRequired}
                 isEdit={isEdit}
               />

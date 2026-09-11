@@ -7,7 +7,6 @@ interface GetModalTextProps {
   isDiscard: boolean;
   isDiscardEdit: boolean;
   actionRequired: boolean;
-  formattedDeadlineDate: string | null;
 }
 
 interface ModalText {
@@ -25,7 +24,6 @@ export const getModalText = ({
   isDiscard,
   isDiscardEdit,
   actionRequired,
-  formattedDeadlineDate,
 }: GetModalTextProps): ModalText => {
   const isError = isCancel || isDiscard || isDiscardEdit;
 
@@ -79,10 +77,7 @@ export const getModalText = ({
                 formTitle,
               }),
         contentText: t(
-          'This updated request will take the place of your previous request. Once submitted, you can return and make edits until {{date}}. After this date, your request will be processed as is.',
-          {
-            date: formattedDeadlineDate,
-          },
+          'This updated request will take the place of your previous request. Once submitted, your request will be processed as is.',
         ),
         cancelButtonText: t('Yes, Continue'),
         isError,
@@ -96,12 +91,7 @@ export const getModalText = ({
                 formTitle,
               })
             : t('You are submitting your {{formTitle}}.', { formTitle }),
-        contentText: t(
-          'Once submitted, you can return and make edits until {{date}}. After this date, your request will be processed as is.',
-          {
-            date: formattedDeadlineDate,
-          },
-        ),
+        contentText: t('Once submitted, your request will be processed as is.'),
         cancelButtonText: t('Yes, Continue'),
         isError,
       };

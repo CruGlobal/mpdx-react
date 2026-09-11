@@ -84,9 +84,6 @@ describe('CurrentRequest Component', () => {
     expect(getByText('$10,000.00')).toBeInTheDocument();
 
     expect(getByText(/Requested on: Oct 1, 2019/i)).toBeInTheDocument();
-    expect(
-      getByText(/Deadline for changes: Oct 23, 2019/i),
-    ).toBeInTheDocument();
     expect(getByText(/Board Approval on: Oct 30, 2019/i)).toBeInTheDocument();
     expect(getByText(/MHA Available on: Nov 20, 2019/i)).toBeInTheDocument();
   });
@@ -246,30 +243,6 @@ describe('getDotColor', () => {
     });
   });
 
-  describe('deadline step', () => {
-    it('returns info.main when status is Pending', () => {
-      expect(getDotColor(MhaStatusEnum.Pending, 'deadline')).toBe('info.main');
-    });
-
-    it('returns transparent when status is InProgress or ActionRequired', () => {
-      expect(getDotColor(MhaStatusEnum.InProgress, 'deadline')).toBe(
-        'transparent',
-      );
-      expect(getDotColor(MhaStatusEnum.ActionRequired, 'deadline')).toBe(
-        'transparent',
-      );
-    });
-
-    it('returns success.main for completed statuses', () => {
-      expect(getDotColor(MhaStatusEnum.HrApproved, 'deadline')).toBe(
-        'success.main',
-      );
-      expect(getDotColor(MhaStatusEnum.BoardApproved, 'deadline')).toBe(
-        'success.main',
-      );
-    });
-  });
-
   describe('boardApproval step', () => {
     it('returns info.main when status is HrApproved', () => {
       expect(getDotColor(MhaStatusEnum.HrApproved, 'boardApproval')).toBe(
@@ -329,27 +302,6 @@ describe('getDotVariant', () => {
       expect(getDotVariant(MhaStatusEnum.Pending, 'inProcess')).toBe('filled');
       expect(getDotVariant(MhaStatusEnum.ActionRequired, 'inProcess')).toBe(
         'filled',
-      );
-    });
-  });
-
-  describe('deadline step', () => {
-    it('returns filled when status is Pending, HrApproved, or BoardApproved', () => {
-      expect(getDotVariant(MhaStatusEnum.Pending, 'deadline')).toBe('filled');
-      expect(getDotVariant(MhaStatusEnum.HrApproved, 'deadline')).toBe(
-        'filled',
-      );
-      expect(getDotVariant(MhaStatusEnum.BoardApproved, 'deadline')).toBe(
-        'filled',
-      );
-    });
-
-    it('returns outlined for other statuses', () => {
-      expect(getDotVariant(MhaStatusEnum.InProgress, 'deadline')).toBe(
-        'outlined',
-      );
-      expect(getDotVariant(MhaStatusEnum.ActionRequired, 'deadline')).toBe(
-        'outlined',
       );
     });
   });
