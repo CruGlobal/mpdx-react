@@ -18,13 +18,13 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Tooltip,
   Typography,
 } from '@mui/material';
 import { uniqBy } from 'lodash';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { isCalculationComplete } from 'src/components/HrTools/NsGoalCalculator/GoalSettings/goalSettingsCompletion';
+import { DisabledReasonTooltip } from 'src/components/HrTools/Shared/DisabledReasonTooltip';
 import { scenarioGoalSendBlockedReason } from 'src/components/HrTools/Shared/SendScenarioGoal/sendScenarioGoalHelpers';
 import { useSendScenarioGoal } from 'src/components/HrTools/Shared/SendScenarioGoal/useSendScenarioGoal';
 import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
@@ -206,20 +206,16 @@ export const ScenarioGoals: React.FC = () => {
                       {dateFormatShort(DateTime.fromISO(row.createdAt), locale)}
                     </TableCell>
                     <TableCell>
-                      <Tooltip title={sendBlockedReason ?? ''}>
-                        {/* The span is needed: a disabled button has neither mouse events nor a tab stop. */}
-                        {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- the disabled child has no tab stop of its own */}
-                        <span tabIndex={0}>
-                          <IconButton
-                            size="small"
-                            aria-label={t('Email {{name}}', { name })}
-                            disabled={Boolean(sendBlockedReason)}
-                            onClick={() => requestSend(row)}
-                          >
-                            <MailOutlineIcon fontSize="small" />
-                          </IconButton>
-                        </span>
-                      </Tooltip>
+                      <DisabledReasonTooltip reason={sendBlockedReason}>
+                        <IconButton
+                          size="small"
+                          aria-label={t('Email {{name}}', { name })}
+                          disabled={Boolean(sendBlockedReason)}
+                          onClick={() => requestSend(row)}
+                        >
+                          <MailOutlineIcon fontSize="small" />
+                        </IconButton>
+                      </DisabledReasonTooltip>
                       <IconButton
                         size="small"
                         aria-label={t('Delete {{name}}', { name })}

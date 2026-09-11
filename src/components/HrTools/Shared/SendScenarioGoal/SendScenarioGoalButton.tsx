@@ -1,8 +1,9 @@
 import React from 'react';
 import { MailOutline } from '@mui/icons-material';
-import { Button, Tooltip } from '@mui/material';
+import { Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
+import { DisabledReasonTooltip } from '../DisabledReasonTooltip';
 import {
   SendableScenarioGoal,
   scenarioGoalSendBlockedReason,
@@ -28,20 +29,16 @@ export const SendScenarioGoalButton: React.FC<SendScenarioGoalButtonProps> = ({
 
   return (
     <>
-      <Tooltip title={blockedReason ?? ''}>
-        {/* The span is needed: a disabled button has neither mouse events nor a tab stop. */}
-        {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- the disabled child has no tab stop of its own */}
-        <span tabIndex={0}>
-          <Button
-            color="inherit"
-            startIcon={<MailOutline />}
-            disabled={Boolean(blockedReason)}
-            onClick={() => requestSend(goal)}
-          >
-            {t('Email Worksheet')}
-          </Button>
-        </span>
-      </Tooltip>
+      <DisabledReasonTooltip reason={blockedReason}>
+        <Button
+          color="inherit"
+          startIcon={<MailOutline />}
+          disabled={Boolean(blockedReason)}
+          onClick={() => requestSend(goal)}
+        >
+          {t('Email Worksheet')}
+        </Button>
+      </DisabledReasonTooltip>
       <Confirmation {...confirmationProps} />
     </>
   );
