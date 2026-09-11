@@ -57,11 +57,6 @@ export const useSendScenarioGoal = (): SendScenarioGoalFlow => {
     );
   };
 
-  const name = target
-    ? [target.firstName, target.lastName].filter(Boolean).join(' ') ||
-      t('this scenario goal')
-    : '';
-
   return {
     requestSend,
     confirmationProps: {
@@ -70,8 +65,11 @@ export const useSendScenarioGoal = (): SendScenarioGoalFlow => {
       message: t(
         'Email the support goals worksheet for {{name}} to {{recipients}}? This cannot be undone.',
         {
-          name,
-          recipients: scenarioGoalRecipients(target ?? { id: '' }).join(', '),
+          name: target
+            ? [target.firstName, target.lastName].filter(Boolean).join(' ') ||
+              t('this scenario goal')
+            : '',
+          recipients: target ? scenarioGoalRecipients(target).join(', ') : '',
         },
       ),
       confirmLabel: t('Send Worksheet'),
