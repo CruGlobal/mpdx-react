@@ -104,6 +104,27 @@ const manyScenarioGoalsMock: DeepPartial<NewStaffScenarioGoalsQuery> = {
   },
 };
 
+// A goal with every required field filled in but nowhere to send the worksheet.
+const noEmailScenarioGoalMock: DeepPartial<NewStaffScenarioGoalsQuery> = {
+  newStaffScenarioGoals: {
+    nodes: [
+      {
+        id: 'scenario-4',
+        firstName: 'Jane',
+        lastName: 'Roe',
+        ministryName: 'Cru Campus',
+        geographicLocation: 'Orlando, FL',
+        createdAt: '2026-08-05T12:00:00Z',
+        calculationsYear: 2026,
+        emailAddress: null,
+        spouseEmailAddress: null,
+        calculations: { monthlyGoal: 2500 },
+      },
+    ],
+    pageInfo: { endCursor: null, hasNextPage: false },
+  },
+};
+
 const sendScenarioGoalMock: DeepPartialMock<SendNewStaffScenarioGoalMutation> =
   {
     sendNewStaffScenarioGoal: {
@@ -198,6 +219,31 @@ describe('ScenarioGoals', () => {
     });
   });
 
+  it('does not claim success when sending fails', async () => {
+    const { findByRole, getByRole, queryByRole, queryByText } =
+      renderScenarioGoals({
+        SendNewStaffScenarioGoal: {
+          sendNewStaffScenarioGoal: () => {
+            throw new Error('Send failed');
+          },
+        },
+      });
+
+    userEvent.click(await findByRole('button', { name: 'Email John Doe' }));
+    userEvent.click(getByRole('button', { name: 'Send Worksheet' }));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('SendNewStaffScenarioGoal', {
+        id: 'scenario-1',
+      }),
+    );
+    // The dialog only closes once the send settles, so by now a toast would have appeared.
+    await waitFor(() => expect(queryByRole('dialog')).not.toBeInTheDocument());
+    expect(
+      queryByText('Support goals worksheet sent to john@example.com.'),
+    ).not.toBeInTheDocument();
+  });
+
   it('blocks sending a scenario goal that is missing required fields', async () => {
     const { findByRole, getByRole, findByText } = renderScenarioGoals();
 
@@ -210,6 +256,24 @@ describe('ScenarioGoals', () => {
     expect(
       await findByText(
         'A first name, last name, campus division, and year are required before the worksheet can be emailed.',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('blocks sending a complete scenario goal that has no email address', async () => {
+    const { findByRole, getByRole, findByText } = renderScenarioGoals({
+      NewStaffScenarioGoals: noEmailScenarioGoalMock,
+    } as ApolloErgonoMockMap);
+
+    await findByRole('link', { name: 'Jane Roe' });
+    const send = getByRole('button', { name: 'Email Jane Roe' });
+    expect(send).toBeDisabled();
+
+    // The tooltip lives on the wrapper span; a disabled button takes no pointer events.
+    await userEvent.hover(send.parentElement as HTMLElement);
+    expect(
+      await findByText(
+        'This scenario goal has no email address to send the worksheet to.',
       ),
     ).toBeInTheDocument();
   });
