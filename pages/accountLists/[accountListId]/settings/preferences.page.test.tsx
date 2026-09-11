@@ -6,6 +6,7 @@ import userEvent from '@testing-library/user-event';
 import { session } from '__tests__/fixtures/session';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { mockSession } from '__tests__/util/mockSession';
 import { MailchimpAccountQuery } from 'src/components/Settings/integrations/Mailchimp/MailchimpAccount.generated';
 import { GetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
 import { PrayerlettersAccountQuery } from 'src/components/Settings/integrations/Prayerletters/PrayerlettersAccount.generated';
@@ -16,10 +17,12 @@ import {
 import { GetPersonalPreferencesQuery } from 'src/components/Settings/preferences/GetPersonalPreferences.generated';
 import { GetProfileInfoQuery } from 'src/components/Settings/preferences/GetProfileInfo.generated';
 import { TestSetupProvider } from 'src/components/Setup/SetupProvider';
+import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
 import theme from 'src/theme';
 import Preferences from './preferences.page';
 
 const accountListId = 'account-list-1';
+const geographicLocationName = /^Geographic Location/;
 
 const mockEnqueue = jest.fn();
 const mutationSpy = jest.fn();
@@ -49,6 +52,7 @@ interface MocksProvidersProps {
   singleOrg?: boolean;
   setup?: boolean;
   router?: Partial<NextRouter> | undefined;
+  reportsDisabled?: boolean;
 }
 
 const MocksProviders: React.FC<MocksProvidersProps> = ({
@@ -57,6 +61,7 @@ const MocksProviders: React.FC<MocksProvidersProps> = ({
   singleOrg,
   setup = false,
   router = defaultRouter,
+  reportsDisabled = false,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
@@ -68,6 +73,7 @@ const MocksProviders: React.FC<MocksProvidersProps> = ({
         GetPersonalPreferences: GetPersonalPreferencesQuery;
         GetProfileInfo: GetProfileInfoQuery;
         CanUserExportData: CanUserExportDataQuery;
+        UserOption: UserOptionQuery;
       }>
         mocks={{
           GetAccountPreferences: {
@@ -85,6 +91,7 @@ const MocksProviders: React.FC<MocksProvidersProps> = ({
                 currency: 'USD',
                 homeCountry: 'USA',
                 monthlyGoal: 100,
+                geographicLocation: 'None',
                 tester: true,
               },
             },
@@ -130,6 +137,12 @@ const MocksProviders: React.FC<MocksProvidersProps> = ({
             canUserExportData: {
               allowed: canUserExportData,
               exportedAt: null,
+            },
+          },
+          UserOption: {
+            userOption: {
+              key: 'user_type_verified',
+              value: reportsDisabled ? 'false' : 'true',
             },
           },
         }}
@@ -318,5 +331,118 @@ describe('Preferences page', () => {
         );
       });
     }, 15000);
+
+    it('skips geographic location when reports are disabled', async () => {
+      const { findByText, getByRole, queryByRole } = render(
+        <MocksProviders
+          canUserExportData={false}
+          singleOrg={true}
+          setup
+          reportsDisabled
+        >
+          <Preferences />
+        </MocksProviders>,
+      );
+
+      expect(await findByText("Let's set your locale!")).toBeInTheDocument();
+      await waitFor(() =>
+        expect(
+          queryByRole('button', { name: geographicLocationName }),
+        ).not.toBeInTheDocument(),
+      );
+
+      // Monthly Goal, then straight to Home Country
+      const skipButton = getByRole('button', { name: 'Skip Step' });
+      userEvent.click(skipButton);
+      expect(
+        await findByText('Great progress comes from great goals!'),
+      ).toBeInTheDocument();
+
+      userEvent.click(skipButton);
+      expect(await findByText('What country are you in?')).toBeInTheDocument();
+    }, 15000);
+  });
+
+  it('hides the Geographic Location accordion when reports are disabled', async () => {
+    const { findByRole, queryByRole } = render(
+      <MocksProviders canUserExportData={false} reportsDisabled>
+        <Preferences />
+      </MocksProviders>,
+    );
+
+    expect(await findByRole('button', { name: 'Home Country' })).toBeVisible();
+    expect(
+      queryByRole('button', { name: geographicLocationName }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows the Geographic Location accordion when reports are enabled', async () => {
+    const { findByRole } = render(
+      <MocksProviders canUserExportData={false}>
+        <Preferences />
+      </MocksProviders>,
+    );
+
+    expect(
+      await findByRole('button', { name: geographicLocationName }),
+    ).toBeVisible();
+  });
+
+  describe('developer bypass', () => {
+    afterEach(() => {
+      process.env.DEVELOPMENT_ENV = 'false';
+      mockSession({ developer: false });
+    });
+
+    it('shows the accordion to a developer in a development env', async () => {
+      process.env.DEVELOPMENT_ENV = 'true';
+      mockSession({ developer: true });
+
+      const { findByRole } = render(
+        <MocksProviders canUserExportData={false} reportsDisabled>
+          <Preferences />
+        </MocksProviders>,
+      );
+
+      expect(
+        await findByRole('button', { name: geographicLocationName }),
+      ).toBeVisible();
+    });
+
+    it('hides the accordion from a non-developer in a development env', async () => {
+      process.env.DEVELOPMENT_ENV = 'true';
+      mockSession({ developer: false });
+
+      const { findByRole, queryByRole } = render(
+        <MocksProviders canUserExportData={false} reportsDisabled>
+          <Preferences />
+        </MocksProviders>,
+      );
+
+      expect(
+        await findByRole('button', { name: 'Home Country' }),
+      ).toBeVisible();
+      expect(
+        queryByRole('button', { name: geographicLocationName }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('hides the accordion from a developer outside a development env', async () => {
+      process.env.DEVELOPMENT_ENV = 'false';
+      mockSession({ developer: true });
+
+      const { findByRole, queryByRole } = render(
+        <MocksProviders canUserExportData={false} reportsDisabled>
+          <Preferences />
+        </MocksProviders>,
+      );
+
+      expect(
+        await findByRole('button', { name: 'Home Country' }),
+      ).toBeVisible();
+      expect(
+        queryByRole('button', { name: geographicLocationName }),
+      ).not.toBeInTheDocument();
+    });
   });
 });

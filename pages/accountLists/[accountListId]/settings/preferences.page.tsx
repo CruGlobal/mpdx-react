@@ -31,7 +31,9 @@ import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/Acco
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
 import { StickyBox } from 'src/components/Shared/Header/styledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useDeveloperBypass } from 'src/hooks/useDeveloperBypass';
 import { useGetTimezones } from 'src/hooks/useGetTimezones';
+import { useReportsDisabled } from 'src/hooks/useReportsDisabled';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { useUserPreference } from 'src/hooks/useUserPreference';
 import { getCountries } from 'src/lib/data/countries';
@@ -49,13 +51,19 @@ const Preferences: React.FC = () => {
   const { onSetupTour } = useSetupContext();
   const session = useRequiredSession();
 
+  const { reportsDisabled } = useReportsDisabled();
+  const developerBypass = useDeveloperBypass();
+  const hideGeographicLocation = reportsDisabled && !developerBypass;
+
   const setupAccordions = [
     PreferenceAccordion.Locale,
     PreferenceAccordion.MonthlyGoal,
-    PreferenceAccordion.GeographicLocation,
+    ...(hideGeographicLocation ? [] : [PreferenceAccordion.GeographicLocation]),
     PreferenceAccordion.HomeCountry,
   ];
   const [setup, setSetup] = useState(0);
+  const isSetupStep = (accordion: PreferenceAccordion) =>
+    setupAccordions[setup] === accordion;
   const [expandedAccordion, setExpandedAccordion] =
     useState<PreferenceAccordion | null>(
       typeof query.selectedTab === 'string'
@@ -125,7 +133,7 @@ const Preferences: React.FC = () => {
     }
     const nextNav = setup + 1;
 
-    if (setupAccordions.length === nextNav) {
+    if (nextNav >= setupAccordions.length) {
       setSetupPosition('preferences.notifications');
       push(`/accountLists/${accountListId}/settings/notifications`);
     } else {
@@ -135,14 +143,14 @@ const Preferences: React.FC = () => {
   };
 
   const getSetupMessage = (setup: number) => {
-    switch (setup) {
-      case 0:
+    switch (setupAccordions[setup]) {
+      case PreferenceAccordion.Locale:
         return t("Let's set your locale!");
-      case 1:
+      case PreferenceAccordion.MonthlyGoal:
         return t('Great progress comes from great goals!');
-      case 2:
+      case PreferenceAccordion.GeographicLocation:
         return t('Are you within 50 miles of a major city?');
-      case 3:
+      case PreferenceAccordion.HomeCountry:
         return t('What country are you in?');
       default:
         return '';
@@ -192,7 +200,7 @@ const Preferences: React.FC = () => {
               localeDisplay={
                 personalPreferencesData?.user?.preferences?.localeDisplay || ''
               }
-              disabled={onSetupTour && setup !== 0}
+              disabled={onSetupTour && !isSetupStep(PreferenceAccordion.Locale)}
               handleSetupChange={handleSetupChange}
             />
             <DefaultAccountAccordion
@@ -255,20 +263,27 @@ const Preferences: React.FC = () => {
               currency={
                 accountPreferencesData?.accountList?.settings?.currency || ''
               }
-              disabled={onSetupTour && setup !== 1}
-              handleSetupChange={handleSetupChange}
-            />
-            <GeographicLocationAccordion
-              handleAccordionChange={setExpandedAccordion}
-              expandedAccordion={expandedAccordion}
-              geographicLocation={
-                accountPreferencesData?.accountList?.settings
-                  ?.geographicLocation || ''
+              disabled={
+                onSetupTour && !isSetupStep(PreferenceAccordion.MonthlyGoal)
               }
-              accountListId={accountListId}
-              disabled={onSetupTour && setup !== 2}
               handleSetupChange={handleSetupChange}
             />
+            {!hideGeographicLocation && (
+              <GeographicLocationAccordion
+                handleAccordionChange={setExpandedAccordion}
+                expandedAccordion={expandedAccordion}
+                geographicLocation={
+                  accountPreferencesData?.accountList?.settings
+                    ?.geographicLocation || ''
+                }
+                accountListId={accountListId}
+                disabled={
+                  onSetupTour &&
+                  !isSetupStep(PreferenceAccordion.GeographicLocation)
+                }
+                handleSetupChange={handleSetupChange}
+              />
+            )}
             <HomeCountryAccordion
               handleAccordionChange={setExpandedAccordion}
               expandedAccordion={expandedAccordion}
@@ -277,7 +292,9 @@ const Preferences: React.FC = () => {
               }
               accountListId={accountListId}
               countries={countries}
-              disabled={onSetupTour && setup !== 3}
+              disabled={
+                onSetupTour && !isSetupStep(PreferenceAccordion.HomeCountry)
+              }
               handleSetupChange={handleSetupChange}
             />
             <CurrencyAccordion
