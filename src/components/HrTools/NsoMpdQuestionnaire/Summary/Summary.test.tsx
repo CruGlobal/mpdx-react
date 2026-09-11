@@ -240,4 +240,79 @@ describe('Summary', () => {
     await waitFor(() => expect(submitButton).toBeEnabled());
     expect(queryByRole('alert')).not.toBeInTheDocument();
   });
+
+  describe('Geographic location preference', () => {
+    it('shows info alert and updates the account preference when it differs', async () => {
+      const { findByRole, getByRole, findByText } = render(
+        <TestComponent
+          onCall={mutationSpy}
+          newStaffQuestionnaire={{
+            ...filledDebtFields,
+            geographicLocation: 'Miami, FL',
+          }}
+          accountGeographicLocation="Atlanta, GA"
+        />,
+      );
+      const submitButton = await findByRole('button', { name: 'Submit' });
+      await waitFor(() => expect(submitButton).toBeEnabled());
+      userEvent.click(submitButton);
+
+      expect(
+        await findByText(
+          'Your geographic location will be updated to Miami, FL in your account settings.',
+        ),
+      ).toBeInTheDocument();
+
+      const dialog = getByRole('dialog');
+      userEvent.click(within(dialog).getByRole('button', { name: 'Submit' }));
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('UpdateAccountPreferences', {
+          input: {
+            id: 'account-list-1',
+            attributes: {
+              id: 'account-list-1',
+              settings: { geographicLocation: 'Miami, FL' },
+            },
+          },
+        }),
+      );
+    });
+
+    it('does not show info alert or update the preference when it already matches', async () => {
+      const { findByRole, queryByText } = render(
+        <TestComponent
+          onCall={mutationSpy}
+          newStaffQuestionnaire={{
+            ...filledDebtFields,
+            geographicLocation: 'Miami, FL',
+          }}
+          accountGeographicLocation="Miami, FL"
+        />,
+      );
+      const submitButton = await findByRole('button', { name: 'Submit' });
+      await waitFor(() => expect(submitButton).toBeEnabled());
+      userEvent.click(submitButton);
+
+      const dialog = await findByRole('dialog');
+      await waitFor(() =>
+        expect(
+          queryByText(
+            'Your geographic location will be updated to Miami, FL in your account settings.',
+          ),
+        ).not.toBeInTheDocument(),
+      );
+
+      userEvent.click(within(dialog).getByRole('button', { name: 'Submit' }));
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation(
+          'CompleteNewStaffQuestionnaire',
+        ),
+      );
+      expect(mutationSpy).not.toHaveGraphqlOperation(
+        'UpdateAccountPreferences',
+      );
+    });
+  });
 });

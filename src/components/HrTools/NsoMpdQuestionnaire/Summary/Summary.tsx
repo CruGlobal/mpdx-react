@@ -5,6 +5,7 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useApplyGoalAndLocation } from 'src/hooks/useApplyGoalAndLocation';
 import { BackButton } from '../Shared/BackButton';
 import { useNsoMpdQuestionnaire } from '../Shared/NsoMpdQuestionnaireContext';
 import { NsoMpdQuestionnaireLayout } from '../Shared/NsoMpdQuestionnaireLayout';
@@ -30,14 +31,41 @@ export const Summary: React.FC = () => {
     incompleteSteps.includes(section.step),
   );
 
+  const {
+    applyMonthlyGoal,
+    geographicLocationChanged,
+    normalizedGeographicLocation,
+  } = useApplyGoalAndLocation(questionnaire?.geographicLocation ?? null);
+
   // Complete the questionnaire, then redirect to the dashboard on success.
   const handleSubmit = async () => {
     await completeQuestionnaire();
+
+    if (geographicLocationChanged) {
+      applyMonthlyGoal();
+    }
+
     enqueueSnackbar(t('Questionnaire submitted successfully.'), {
       variant: 'success',
     });
     await router.push(`/accountLists/${accountListId}`);
   };
+
+  const message = (
+    <>
+      {t(
+        "Once you submit, you won't be able to make any more changes. Do you want to continue?",
+      )}
+      {geographicLocationChanged && (
+        <Alert severity="info" sx={{ mt: 2 }}>
+          {t(
+            'Your geographic location will be updated to {{geographicLocation}} in your account settings.',
+            { geographicLocation: normalizedGeographicLocation },
+          )}
+        </Alert>
+      )}
+    </>
+  );
 
   return (
     <NsoMpdQuestionnaireLayout>
@@ -95,9 +123,7 @@ export const Summary: React.FC = () => {
       <Confirmation
         isOpen={confirmOpen}
         title={t('Submit Questionnaire')}
-        message={t(
-          "Once you submit, you won't be able to make any more changes. Do you want to continue?",
-        )}
+        message={message}
         confirmLabel={t('Submit')}
         cancelLabel={t('Cancel')}
         mutation={handleSubmit}

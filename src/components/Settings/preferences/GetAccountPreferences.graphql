@@ -9,6 +9,7 @@ fragment AccountList on AccountList {
     currency
     homeCountry
     monthlyGoal
+    geographicLocation
     tester
   }
 }
