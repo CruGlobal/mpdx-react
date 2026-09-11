@@ -32,6 +32,7 @@ interface TestComponentProps {
   withSalary?: boolean;
   staffAccountId?: string;
   staffName?: string;
+  personNumber?: string;
 }
 
 const salaryCategory = {
@@ -74,6 +75,7 @@ const push = jest.fn();
 
 const title = 'Report title';
 const staffAccountId = '1000000001';
+const personNumber = '000000111';
 const staffName = 'Jane Doe';
 
 const router = {
@@ -88,6 +90,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   withSalary = false,
   staffAccountId = null,
   staffName,
+  personNumber,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter
@@ -283,6 +286,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 onNavListToggle={onNavListToggle}
                 title={title}
                 staffAccountId={staffAccountId}
+                personNumber={personNumber}
               />
             </GqlMockedProvider>
           </TestRouter>
@@ -335,6 +339,32 @@ describe('StaffExpenseReport', () => {
       expect(
         getByRole('link', { name: 'Back to MPD Supervisor Report' }),
       ).toBeInTheDocument();
+    });
+
+    it('requests the household of the staff member being viewed', async () => {
+      render(
+        <TestComponent
+          staffAccountId={staffAccountId}
+          staffName={staffName}
+          personNumber={personNumber}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('Hcm', {
+          personNumber: personNumber,
+        }),
+      );
+    });
+
+    it('requests your own household when no person number is given', async () => {
+      render(<TestComponent />);
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('Hcm', {
+          personNumber: undefined,
+        }),
+      );
     });
 
     it('requests the report for the staff member being viewed', async () => {

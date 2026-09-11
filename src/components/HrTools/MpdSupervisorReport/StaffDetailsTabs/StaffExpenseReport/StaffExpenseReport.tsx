@@ -4,11 +4,12 @@ import { ViewReportLink } from '../ViewReportLink/ViewReportLink';
 
 interface StaffTabStaffExpenseReportProps {
   staffAccountId: string | null;
+  personNumber: string;
 }
 
 export const StaffTabStaffExpenseReport: React.FC<
   StaffTabStaffExpenseReportProps
-> = ({ staffAccountId }) => {
+> = ({ staffAccountId, personNumber }) => {
   const { t } = useTranslation();
 
   return (
@@ -16,6 +17,7 @@ export const StaffTabStaffExpenseReport: React.FC<
       staffAccountId={staffAccountId}
       reportLink="staffExpense"
       reportName={t('Staff Expense')}
+      personNumber={personNumber}
     />
   );
 };

@@ -28,6 +28,9 @@ export const StaffExpenseReportPage: React.FC = () => {
   const [isNavListOpen, setIsNavListOpen] = useState<boolean>(false);
   const { query } = useRouter();
   const staffAccountId = getQueryParam(query, 'staffAccountId');
+  // A blank person number is a request for somebody else, which the API denies.
+  // Only a missing one falls back to your own HCM record.
+  const personNumber = getQueryParam(query, 'personNumber') || undefined;
 
   const handleNavListToggle = () => {
     setIsNavListOpen(!isNavListOpen);
@@ -65,6 +68,7 @@ export const StaffExpenseReportPage: React.FC = () => {
                 onNavListToggle={handleNavListToggle}
                 title={t('Staff Expense Report')}
                 staffAccountId={staffAccountId ?? null}
+                personNumber={personNumber}
               />
             }
           />

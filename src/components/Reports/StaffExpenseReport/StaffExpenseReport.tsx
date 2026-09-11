@@ -80,6 +80,7 @@ interface StaffExpenseReportProps {
   onNavListToggle: () => void;
   title: string;
   staffAccountId: string | null;
+  personNumber?: string;
 }
 
 export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
@@ -87,6 +88,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   onNavListToggle,
   title,
   staffAccountId,
+  personNumber,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -141,7 +143,9 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   // Person numbers tell the reader's payroll from their spouse's. HCM lists the reader first, then
   // their spouse. Held alongside the report data's own loading so salary is not rendered as one
   // household total and then split.
-  const { data: hcmData, loading: hcmLoading } = useHcmQuery();
+  const { data: hcmData, loading: hcmLoading } = useHcmQuery({
+    variables: { personNumber },
+  });
   const household: HouseholdMember[] = useMemo(
     () =>
       hcmData?.hcm.map(({ staffInfo }) => ({

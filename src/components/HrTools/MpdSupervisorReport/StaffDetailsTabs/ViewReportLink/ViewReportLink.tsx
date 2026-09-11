@@ -9,12 +9,14 @@ interface ViewReportLinkProps {
   staffAccountId: string | null;
   reportLink: string;
   reportName: string;
+  personNumber?: string;
 }
 
 export const ViewReportLink: React.FC<ViewReportLinkProps> = ({
   staffAccountId,
   reportLink,
   reportName,
+  personNumber,
 }) => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
@@ -32,9 +34,13 @@ export const ViewReportLink: React.FC<ViewReportLinkProps> = ({
       <OpenInNew fontSize="small" color="action" />
       <Link
         component={NextLink}
-        href={`/accountLists/${accountListId}/reports/${reportLink}?staffAccountId=${encodeURIComponent(
-          staffAccountId,
-        )}`}
+        href={{
+          pathname: `/accountLists/${accountListId}/reports/${reportLink}`,
+          query: {
+            staffAccountId,
+            ...(personNumber && { personNumber }),
+          },
+        }}
         underline="hover"
       >
         {t('View {{reportName}} Report', { reportName })}
