@@ -20,7 +20,6 @@ import {
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { useStaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
-import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { Fund, UsStaffGroupEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import theme from 'src/theme';
@@ -98,8 +97,22 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 
   const isSupervisorView = !!staffAccountId;
 
-  const { data: userData, loading: userLoading } = useGetUserQuery();
-  const usStaffGroup = userData?.user.usStaffGroup;
+  // Person numbers tell the reader's payroll from their spouse's. HCM lists the reader first, then
+  // their spouse. Held alongside the report data's own loading so salary is not rendered as one
+  // household total and then split.
+  const { data: hcmData, loading: hcmLoading } = useHcmQuery({
+    variables: { personNumber },
+  });
+  const household: HouseholdMember[] = useMemo(
+    () =>
+      hcmData?.hcm.map(({ staffInfo }) => ({
+        personNumber: staffInfo.personNumber,
+        name: staffInfo.preferredName ?? staffInfo.lastName,
+      })) ?? [],
+    [hcmData],
+  );
+
+  const usStaffGroup = hcmData?.hcm[0]?.usStaffGroup;
   const hideFunds =
     usStaffGroup !== UsStaffGroupEnum.SeniorInternationalStaff &&
     usStaffGroup !== UsStaffGroupEnum.NewInternationalStaff &&
@@ -129,7 +142,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       staffAccountId,
       ...getStaffExpenseMonthRange(filters, time),
     },
-    skip: userLoading,
+    skip: hcmLoading,
   });
 
   const { data: accountData } = useStaffAccountQuery({
@@ -139,21 +152,6 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   const accountName = isSupervisorView
     ? data?.reportsStaffExpenses?.name
     : accountData?.staffAccount?.name;
-
-  // Person numbers tell the reader's payroll from their spouse's. HCM lists the reader first, then
-  // their spouse. Held alongside the report data's own loading so salary is not rendered as one
-  // household total and then split.
-  const { data: hcmData, loading: hcmLoading } = useHcmQuery({
-    variables: { personNumber },
-  });
-  const household: HouseholdMember[] = useMemo(
-    () =>
-      hcmData?.hcm.map(({ staffInfo }) => ({
-        personNumber: staffInfo.personNumber,
-        name: staffInfo.preferredName ?? staffInfo.lastName,
-      })) ?? [],
-    [hcmData],
-  );
 
   const loading = reportLoading || hcmLoading;
 

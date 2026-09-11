@@ -14,7 +14,6 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
-import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   StaffAccountStatusEnum,
   StaffExpenseCategoryEnum,
@@ -109,7 +108,6 @@ const TestComponent: React.FC<TestComponentProps> = ({
             <GqlMockedProvider<{
               ReportsStaffExpenses: ReportsStaffExpensesQuery;
               StaffAccount: StaffAccountQuery;
-              GetUser: GetUserQuery;
               Hcm: HcmQuery;
             }>
               mocks={{
@@ -257,20 +255,17 @@ const TestComponent: React.FC<TestComponentProps> = ({
                     status: StaffAccountStatusEnum.Active,
                   },
                 },
-                GetUser: {
-                  user: {
-                    usStaffGroup,
-                  },
-                },
                 Hcm: {
                   hcm: [
                     {
+                      usStaffGroup,
                       staffInfo: {
                         personNumber: '000000111',
                         preferredName: 'Alex',
                       },
                     },
                     {
+                      usStaffGroup,
                       staffInfo: {
                         personNumber: '000000222',
                         preferredName: 'Jordan',
@@ -474,7 +469,7 @@ describe('StaffExpenseReport', () => {
   it('never requests re-entry and return travel funds for everyone else', async () => {
     const { findByRole } = render(<TestComponent />);
 
-    await waitFor(() => expect(mutationSpy).toHaveGraphqlOperation('GetUser'));
+    await waitFor(() => expect(mutationSpy).toHaveGraphqlOperation('Hcm'));
     await findByRole('heading', { name: 'Primary' });
 
     expect(mutationSpy).not.toHaveGraphqlOperation('ReportsStaffExpenses', {
