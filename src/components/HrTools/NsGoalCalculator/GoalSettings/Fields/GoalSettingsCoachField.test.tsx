@@ -1,4 +1,5 @@
 import React from 'react';
+import { DefaultOptions } from '@apollo/client';
 import { ThemeProvider } from '@mui/material';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -47,17 +48,21 @@ const coachedAttendee: GoalSettingsAttendee = {
 interface TestComponentProps {
   household?: GoalSettingsAttendee;
   mocks?: ApolloErgonoMockMap;
+  /** Lets a test mirror the app client's own fetch policies. */
+  defaultOptions?: DefaultOptions;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   household = attendee,
   mocks = {},
+  defaultOptions,
 }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
       <GqlMockedProvider<{
         NewStaffCohortAttendeeAssignableCoaches: NewStaffCohortAttendeeAssignableCoachesQuery;
       }>
+        defaultOptions={defaultOptions}
         mocks={
           {
             NewStaffCohortAttendeeAssignableCoaches: {
@@ -175,6 +180,30 @@ describe('GoalSettingsCoachField', () => {
         { attendeeId: 'attendee-1' },
       ),
     );
+  });
+
+  // Rendered with the app client's own cache-and-network default, since under
+  // that policy an unguarded reopen spends another OneApp lookup.
+  it('loads the coach list once however often the picker is reopened', async () => {
+    const { getByRole, findByRole } = render(
+      <TestComponent
+        defaultOptions={{ watchQuery: { fetchPolicy: 'cache-and-network' } }}
+      />,
+    );
+
+    userEvent.click(getByRole('button', { name: 'Open' }));
+    await findByRole('option', { name: 'Amy Wilson' });
+
+    userEvent.click(getByRole('button', { name: 'Close' }));
+    userEvent.click(getByRole('button', { name: 'Open' }));
+    await findByRole('option', { name: 'Amy Wilson' });
+
+    expect(
+      mutationSpy.mock.calls.filter(
+        ([{ operation }]) =>
+          operation.operationName === 'NewStaffCohortAttendeeAssignableCoaches',
+      ),
+    ).toHaveLength(1);
   });
 
   it('assigns the first coach without a confirmation', async () => {

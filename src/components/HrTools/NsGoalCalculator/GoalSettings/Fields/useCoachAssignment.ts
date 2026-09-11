@@ -55,7 +55,7 @@ export const useCoachAssignment = (
   const [removeFailed, setRemoveFailed] = useState(false);
 
   // Lazy: most visits to Staff Details never open the list, and it costs an OneApp lookup.
-  const [loadCoaches, { data, loading, error, refetch }] =
+  const [loadCoaches, { data, loading, error, refetch, called }] =
     useNewStaffCohortAttendeeAssignableCoachesLazyQuery();
   const [assignCoach, { loading: assigning }] =
     useAssignCoachToNewStaffCohortAttendeeMutation();
@@ -137,7 +137,13 @@ export const useCoachAssignment = (
     removing,
     assignFailed,
     removeFailed,
-    loadCoaches: () => loadCoaches({ variables: { attendeeId: attendee.id } }),
+    // Eligibility can't change while the page is open, so reopening the list
+    // reuses the first lookup; Try Again is the only way to fetch it again.
+    loadCoaches: () => {
+      if (!called) {
+        loadCoaches({ variables: { attendeeId: attendee.id } });
+      }
+    },
     // Apollo rejects a failed refetch, but the hook's own error state reports it.
     retryCoaches: () => refetch?.().catch(() => undefined),
     pick,
