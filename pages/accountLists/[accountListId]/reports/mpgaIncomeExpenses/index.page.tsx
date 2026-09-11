@@ -27,7 +27,9 @@ const MPGAReportPage: React.FC = () => {
   const appName = getAppName();
   const { t } = useTranslation();
   const { query } = useRouter();
-  const staffAccountId = getQueryParam(query, 'staffAccountId');
+  // A blank param is a request for somebody else, which the API denies.
+  // Only a missing one falls back to your own account.
+  const staffAccountId = getQueryParam(query, 'staffAccountId') || undefined;
 
   const [isNavListOpen, setIsNavListOpen] = useState<boolean>(false);
 

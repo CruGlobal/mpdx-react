@@ -31,11 +31,9 @@ export type ContextType = {
 
   subtitle: string;
 
-  /** Name of the staff member the report covers when staff account id given */
+  /** Set when a supervisor is viewing another staff member's report */
   staffName: string | undefined;
-  /** Whether a supervisor is viewing another staff member's report */
   isSupervisorView: boolean;
-  /** Staff account the report covers, when not the logged in user's own */
   staffAccountId: string | null | undefined;
 
   /** Income and expenses totals */

@@ -255,7 +255,6 @@ describe('MPGAIncomeExpensesContext', () => {
           staffAccountId="987654"
           mocks={{
             reportsStaffExpenses: {
-              accountId: '987654',
               name: 'Jane Doe',
               transactionYears: [],
               funds: [],
@@ -277,7 +276,6 @@ describe('MPGAIncomeExpensesContext', () => {
     it('excludes the current year from the list', async () => {
       const yearsMock: MpgaTransactionsQuery = {
         reportsStaffExpenses: {
-          accountId: 'staff-account-1',
           name: 'Test Account',
           transactionYears: [2018, 2019, 2020],
           funds: [],

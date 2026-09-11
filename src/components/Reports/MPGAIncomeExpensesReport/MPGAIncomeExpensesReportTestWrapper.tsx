@@ -18,7 +18,6 @@ const toBreakdown = (values: number[]): { month: string; total: number }[] =>
 
 export const mpgaTransactionsMock: MpgaTransactionsQuery = {
   reportsStaffExpenses: {
-    accountId: 'staff-account-1',
     name: 'Test Account',
     transactionYears: [2017, 2018, 2019],
     funds: [
@@ -124,7 +123,6 @@ export const MPGAIncomeExpensesReportTestWrapper: React.FC<
     (isEmpty
       ? {
           reportsStaffExpenses: {
-            accountId: 'staff-account-1',
             name: 'Test Account',
             transactionYears: [],
             funds: [],

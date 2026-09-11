@@ -10,7 +10,6 @@ query MPGATransactions(
     endMonth: $endMonth
     staffAccountId: $staffAccountId
   ) {
-    accountId
     name
     transactionYears
     funds {

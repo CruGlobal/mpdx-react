@@ -64,6 +64,7 @@ export const MPGAIncomeExpensesReport: React.FC<
     staffName,
     isSupervisorView,
     staffAccountId,
+    dataLoading,
   } = useMPGAIncomeExpenses();
 
   const defaultFilters: Filters = useMemo(
@@ -94,7 +95,7 @@ export const MPGAIncomeExpensesReport: React.FC<
     ? staffName
     : staffAccountData?.staffAccount?.name;
   const isAccountInfoLoading = isSupervisorView
-    ? staffName === undefined
+    ? dataLoading
     : !staffAccountData && !error;
 
   return (

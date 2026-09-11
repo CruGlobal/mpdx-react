@@ -5,9 +5,9 @@ import { Box, Link, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 
-interface ViewReportLinkProps {
+export interface ViewReportLinkProps {
   staffAccountId: string | null;
-  reportLink: string;
+  reportLink: 'mpgaIncomeExpenses' | 'staffExpense';
   reportName: string;
   personNumber?: string;
 }

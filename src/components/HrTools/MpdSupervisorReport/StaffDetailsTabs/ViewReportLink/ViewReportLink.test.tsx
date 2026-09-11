@@ -3,7 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
-import { ViewReportLink } from './ViewReportLink';
+import { ViewReportLink, ViewReportLinkProps } from './ViewReportLink';
 
 const staffAccountId = '1000000001';
 const personNumber = '000000111';
@@ -13,7 +13,7 @@ const router = { query: { accountListId }, isReady: true };
 const renderViewReportLink = (
   staffAccountId: string | null,
   personNumber?: string,
-  reportLink = 'staffExpense',
+  reportLink: ViewReportLinkProps['reportLink'] = 'staffExpense',
   reportName = 'Staff Expense',
 ) =>
   render(
