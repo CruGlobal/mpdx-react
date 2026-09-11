@@ -1,4 +1,5 @@
 import { ThemeProvider } from '@emotion/react';
+import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -14,23 +15,37 @@ import theme from 'src/theme';
 import MPGAReportPage, { getServerSideProps } from './index.page';
 
 const mutationSpy = jest.fn();
+const id = '1000000001';
 
 interface ComponentProps {
   userType?: UserTypeEnum;
-  staffAccountId?: string;
+  staffAccountId?: string | null;
+  supervisesStaff?: boolean;
+  viewedStaffAccountId?: string;
 }
 
 const Components = ({
   userType = UserTypeEnum.UsStaff,
   staffAccountId = '12345',
+  supervisesStaff = false,
+  viewedStaffAccountId,
 }: ComponentProps) => (
   <ThemeProvider theme={theme}>
-    <TestRouter>
+    <TestRouter
+      router={{
+        query: {
+          accountListId: 'account-list-1',
+          ...(viewedStaffAccountId && {
+            staffAccountId: viewedStaffAccountId,
+          }),
+        },
+      }}
+    >
       <GqlMockedProvider<{
         GetUser: GetUserQuery;
       }>
         mocks={{
-          GetUser: { user: { userType, staffAccountId } },
+          GetUser: { user: { userType, staffAccountId, supervisesStaff } },
         }}
         onCall={mutationSpy}
       >
@@ -107,5 +122,41 @@ describe('MPGA Report Page', () => {
     expect(
       await findByText('Access to this feature is limited.'),
     ).toBeInTheDocument();
+  });
+
+  describe('supervisor view', () => {
+    it('lets a supervisor without their own staff account view a staff report', async () => {
+      const { findByText } = render(
+        <Components
+          staffAccountId={null}
+          supervisesStaff
+          viewedStaffAccountId={id}
+        />,
+      );
+
+      expect(
+        await findByText(/ministry partner giving analysis/i),
+      ).toBeInTheDocument();
+    });
+
+    it('blocks a non-supervisor from viewing another staff report', async () => {
+      const { findByText } = render(
+        <Components supervisesStaff={false} viewedStaffAccountId={id} />,
+      );
+
+      expect(
+        await findByText(/you do not supervise any staff/i),
+      ).toBeInTheDocument();
+    });
+
+    it('passes the staff account from the url into the report query', async () => {
+      render(<Components supervisesStaff viewedStaffAccountId={id} />);
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('MPGATransactions', {
+          staffAccountId: id,
+        }),
+      );
+    });
   });
 });

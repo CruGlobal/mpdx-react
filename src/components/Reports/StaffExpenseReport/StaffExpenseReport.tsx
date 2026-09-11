@@ -20,7 +20,6 @@ import {
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { useStaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
-import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { Fund, UsStaffGroupEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import theme from 'src/theme';
@@ -32,6 +31,7 @@ import {
   Filters,
   SettingsDialog,
 } from '../Shared/SettingsDialog/SettingsDialog';
+import { ViewOnlyBanner } from '../Shared/ViewOnlyBanner/ViewOnlyBanner';
 import {
   SimplePrintOnly,
   SimpleScreenOnly,
@@ -78,12 +78,16 @@ interface StaffExpenseReportProps {
   isNavListOpen: boolean;
   onNavListToggle: () => void;
   title: string;
+  staffAccountId: string | null;
+  personNumber?: string;
 }
 
 export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   isNavListOpen,
   onNavListToggle,
   title,
+  staffAccountId,
+  personNumber,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -91,8 +95,24 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   const [filters, setFilters] = useState<Filters | null>(null);
   const [time, setTime] = useState(DateTime.now().startOf('month'));
 
-  const { data: userData, loading: userLoading } = useGetUserQuery();
-  const usStaffGroup = userData?.user.usStaffGroup;
+  const isSupervisorView = !!staffAccountId;
+
+  // Person numbers tell the reader's payroll from their spouse's. HCM lists the reader first, then
+  // their spouse. Held alongside the report data's own loading so salary is not rendered as one
+  // household total and then split.
+  const { data: hcmData, loading: hcmLoading } = useHcmQuery({
+    variables: { personNumber },
+  });
+  const household: HouseholdMember[] = useMemo(
+    () =>
+      hcmData?.hcm.map(({ staffInfo }) => ({
+        personNumber: staffInfo.personNumber,
+        name: staffInfo.preferredName ?? staffInfo.lastName,
+      })) ?? [],
+    [hcmData],
+  );
+
+  const usStaffGroup = hcmData?.hcm[0]?.usStaffGroup;
   const hideFunds =
     usStaffGroup !== UsStaffGroupEnum.SeniorInternationalStaff &&
     usStaffGroup !== UsStaffGroupEnum.NewInternationalStaff &&
@@ -119,26 +139,19 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   const { data, loading: reportLoading } = useReportsStaffExpensesQuery({
     variables: {
       fundTypes,
+      staffAccountId,
       ...getStaffExpenseMonthRange(filters, time),
     },
-    skip: userLoading,
+    skip: hcmLoading,
   });
 
-  const { data: accountData } = useStaffAccountQuery();
-  const { name } = accountData?.staffAccount ?? {};
+  const { data: accountData } = useStaffAccountQuery({
+    skip: isSupervisorView,
+  });
 
-  // Person numbers tell the reader's payroll from their spouse's. HCM lists the reader first, then
-  // their spouse. Held alongside the report data's own loading so salary is not rendered as one
-  // household total and then split.
-  const { data: hcmData, loading: hcmLoading } = useHcmQuery();
-  const household: HouseholdMember[] = useMemo(
-    () =>
-      hcmData?.hcm.map(({ staffInfo }) => ({
-        personNumber: staffInfo.personNumber,
-        name: staffInfo.preferredName ?? staffInfo.lastName,
-      })) ?? [],
-    [hcmData],
-  );
+  const accountName = isSupervisorView
+    ? data?.reportsStaffExpenses?.name
+    : accountData?.staffAccount?.name;
 
   const loading = reportLoading || hcmLoading;
 
@@ -304,6 +317,12 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
           headerType={HeaderTypeEnum.Report}
         />
       </SimpleScreenOnly>
+      {isSupervisorView && (
+        <ViewOnlyBanner
+          staffName={accountName}
+          reportName={t('Staff Expense')}
+        />
+      )}
       <Box mt={2}>
         <Container>
           <Box>
@@ -364,7 +383,10 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
             {loading ? (
               <AccountInfoBoxSkeleton hasOverallBalance />
             ) : (
-              <AccountInfoBox name={name} overallBalance={overallBalance} />
+              <AccountInfoBox
+                name={accountName}
+                overallBalance={overallBalance}
+              />
             )}
             <SimpleScreenOnly>
               <Box
@@ -456,6 +478,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
             setFilters(newFilters ?? null);
             setIsSettingsOpen(false);
           }}
+          staffAccountId={staffAccountId ?? null}
         />
         <SimpleScreenOnly mt={2}>
           <Container>

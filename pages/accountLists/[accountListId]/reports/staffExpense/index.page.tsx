@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -10,8 +11,12 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
-import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
+import {
+  RequiredUserGroupEnum,
+  UserTypeAccess,
+} from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { getAppName } from 'src/lib/getAppName';
+import { getQueryParam } from 'src/lib/queryParam';
 
 const StaffExpenseReportPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -21,6 +26,11 @@ export const StaffExpenseReportPage: React.FC = () => {
   const appName = getAppName();
   const { t } = useTranslation();
   const [isNavListOpen, setIsNavListOpen] = useState<boolean>(false);
+  const { query } = useRouter();
+  const staffAccountId = getQueryParam(query, 'staffAccountId');
+  // A blank person number is a request for somebody else, which the API denies.
+  // Only a missing one falls back to your own HCM record.
+  const personNumber = getQueryParam(query, 'personNumber') || undefined;
 
   const handleNavListToggle = () => {
     setIsNavListOpen(!isNavListOpen);
@@ -33,7 +43,12 @@ export const StaffExpenseReportPage: React.FC = () => {
           'Staff Expense Report',
         )}`}</title>
       </Head>
-      <UserTypeAccess requireStaffAccount>
+      <UserTypeAccess
+        requireStaffAccount={!staffAccountId}
+        requireUserGroups={
+          staffAccountId ? RequiredUserGroupEnum.MpdSupervisor : undefined
+        }
+      >
         <StaffExpenseReportPageWrapper>
           <SidePanelsLayout
             isScrollBox={false}
@@ -52,6 +67,8 @@ export const StaffExpenseReportPage: React.FC = () => {
                 isNavListOpen={isNavListOpen}
                 onNavListToggle={handleNavListToggle}
                 title={t('Staff Expense Report')}
+                staffAccountId={staffAccountId ?? null}
+                personNumber={personNumber}
               />
             }
           />

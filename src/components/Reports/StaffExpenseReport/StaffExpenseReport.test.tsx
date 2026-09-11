@@ -14,7 +14,6 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
-import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   StaffAccountStatusEnum,
   StaffExpenseCategoryEnum,
@@ -30,6 +29,9 @@ interface TestComponentProps {
   routerMonth?: string;
   usStaffGroup?: UsStaffGroupEnum;
   withSalary?: boolean;
+  staffAccountId?: string;
+  staffName?: string;
+  personNumber?: string;
 }
 
 const salaryCategory = {
@@ -71,6 +73,9 @@ const onNavListToggle = jest.fn();
 const push = jest.fn();
 
 const title = 'Report title';
+const staffAccountId = '1000000001';
+const personNumber = '000000111';
+const staffName = 'Jane Doe';
 
 const router = {
   isReady: true,
@@ -82,6 +87,9 @@ const TestComponent: React.FC<TestComponentProps> = ({
   routerMonth,
   usStaffGroup = UsStaffGroupEnum.SeniorStaff,
   withSalary = false,
+  staffAccountId = null,
+  staffName,
+  personNumber,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter
@@ -100,12 +108,13 @@ const TestComponent: React.FC<TestComponentProps> = ({
             <GqlMockedProvider<{
               ReportsStaffExpenses: ReportsStaffExpensesQuery;
               StaffAccount: StaffAccountQuery;
-              GetUser: GetUserQuery;
               Hcm: HcmQuery;
             }>
               mocks={{
                 ReportsStaffExpenses: {
                   reportsStaffExpenses: {
+                    accountId: '1000000001',
+                    name: staffName ?? 'Test Account',
                     funds: isEmpty
                       ? []
                       : [
@@ -246,20 +255,17 @@ const TestComponent: React.FC<TestComponentProps> = ({
                     status: StaffAccountStatusEnum.Active,
                   },
                 },
-                GetUser: {
-                  user: {
-                    usStaffGroup,
-                  },
-                },
                 Hcm: {
                   hcm: [
                     {
+                      usStaffGroup,
                       staffInfo: {
                         personNumber: '000000111',
                         preferredName: 'Alex',
                       },
                     },
                     {
+                      usStaffGroup,
                       staffInfo: {
                         personNumber: '000000222',
                         preferredName: 'Jordan',
@@ -274,6 +280,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 isNavListOpen={true}
                 onNavListToggle={onNavListToggle}
                 title={title}
+                staffAccountId={staffAccountId}
+                personNumber={personNumber}
               />
             </GqlMockedProvider>
           </TestRouter>
@@ -301,6 +309,85 @@ describe('StaffExpenseReport', () => {
     expect(
       getByRole('gridcell', { name: 'Salary (Jordan)' }),
     ).toBeInTheDocument();
+  });
+
+  describe('supervisor view', () => {
+    it('does not show the view only banner on your own report', async () => {
+      const { findByText, queryByRole } = render(<TestComponent />);
+
+      expect(await findByText('Test Account')).toBeInTheDocument();
+      expect(
+        queryByRole('link', { name: 'Back to MPD Supervisor Report' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('shows the view only banner naming the staff member', async () => {
+      const { findByText, getByRole } = render(
+        <TestComponent staffAccountId={staffAccountId} staffName={staffName} />,
+      );
+
+      expect(
+        await findByText(
+          "Currently viewing Jane Doe's Staff Expense report · read only.",
+        ),
+      ).toBeInTheDocument();
+      expect(
+        getByRole('link', { name: 'Back to MPD Supervisor Report' }),
+      ).toBeInTheDocument();
+    });
+
+    it('requests the household of the staff member being viewed', async () => {
+      render(
+        <TestComponent
+          staffAccountId={staffAccountId}
+          staffName={staffName}
+          personNumber={personNumber}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('Hcm', {
+          personNumber: personNumber,
+        }),
+      );
+    });
+
+    it('requests your own household when no person number is given', async () => {
+      render(<TestComponent />);
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('Hcm', {
+          personNumber: undefined,
+        }),
+      );
+    });
+
+    it('requests the report for the staff member being viewed', async () => {
+      render(
+        <TestComponent staffAccountId={staffAccountId} staffName={staffName} />,
+      );
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('ReportsStaffExpenses', {
+          staffAccountId: staffAccountId,
+        }),
+      );
+    });
+
+    it('loads report settings categories for the staff member being viewed', async () => {
+      const { findByRole } = render(
+        <TestComponent staffAccountId={staffAccountId} staffName={staffName} />,
+      );
+
+      userEvent.click(await findByRole('button', { name: 'Report Settings' }));
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('ReportsStaffExpenses', {
+          staffAccountId: staffAccountId,
+          fundTypes: ['Primary'],
+        }),
+      );
+    });
   });
 
   it('keeps the Report Settings button visible when there are no transactions', async () => {
@@ -382,7 +469,7 @@ describe('StaffExpenseReport', () => {
   it('never requests re-entry and return travel funds for everyone else', async () => {
     const { findByRole } = render(<TestComponent />);
 
-    await waitFor(() => expect(mutationSpy).toHaveGraphqlOperation('GetUser'));
+    await waitFor(() => expect(mutationSpy).toHaveGraphqlOperation('Hcm'));
     await findByRole('heading', { name: 'Primary' });
 
     expect(mutationSpy).not.toHaveGraphqlOperation('ReportsStaffExpenses', {
