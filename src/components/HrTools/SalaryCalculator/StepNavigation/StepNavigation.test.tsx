@@ -21,6 +21,7 @@ jest.mock('src/components/Shared/Autosave/AutosaveForm', () => {
   };
 });
 
+const location = 'Chicago, IL';
 const mutationSpy = jest.fn();
 
 const TestComponent: React.FC<SalaryCalculatorTestWrapperProps> = (props) => (
@@ -150,6 +151,57 @@ describe('SubmitButton', () => {
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('SubmitSalaryCalculation'),
+    );
+  });
+
+  it('updates the account geographic location preference when submitting', async () => {
+    const { findByText } = render(
+      <SalaryCalculatorTestWrapper
+        onCall={mutationSpy}
+        editing={true}
+        salaryRequestMock={{ location }}
+      >
+        <SubmitButton />
+      </SalaryCalculatorTestWrapper>,
+    );
+
+    userEvent.click(await findByText('Submit'));
+    userEvent.click(await findByText('Yes, Continue'));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateAccountPreferences', {
+        input: {
+          id: 'account-list-1',
+          attributes: {
+            id: 'account-list-1',
+            settings: { geographicLocation: location },
+          },
+        },
+      }),
+    );
+  });
+
+  it('does not show geographic location info alert when it matches account preferences', async () => {
+    const { findByRole, queryByText } = render(
+      <SalaryCalculatorTestWrapper
+        onCall={mutationSpy}
+        editing={true}
+        salaryRequestMock={{ location }}
+        accountGeographicLocation={location}
+      >
+        <SubmitButton />
+      </SalaryCalculatorTestWrapper>,
+    );
+
+    userEvent.click(await findByRole('button', { name: 'Submit' }));
+
+    await findByRole('dialog');
+    await waitFor(() =>
+      expect(
+        queryByText(
+          `Your geographic location will be updated as ${location} in your account settings.`,
+        ),
+      ).not.toBeInTheDocument(),
     );
   });
 });

@@ -76,7 +76,10 @@ export const Confirmation: React.FC<ConfirmationProps> = ({
               </StyledDialogContentText>
             )}
             {message && (
-              <StyledDialogContentText data-testid="confirmModalMessage">
+              <StyledDialogContentText
+                component="div"
+                data-testid="confirmModalMessage"
+              >
                 {message}
               </StyledDialogContentText>
             )}
