@@ -57,6 +57,12 @@ export const useSendScenarioGoal = (): SendScenarioGoalFlow => {
     );
   };
 
+  // Lifted out of the message below: the repo forbids nesting t() inside t().
+  const name = target
+    ? [target.firstName, target.lastName].filter(Boolean).join(' ') ||
+      t('this scenario goal')
+    : '';
+
   return {
     requestSend,
     confirmationProps: {
@@ -65,10 +71,7 @@ export const useSendScenarioGoal = (): SendScenarioGoalFlow => {
       message: t(
         'Email the support goals worksheet for {{name}} to {{recipients}}? This cannot be undone.',
         {
-          name: target
-            ? [target.firstName, target.lastName].filter(Boolean).join(' ') ||
-              t('this scenario goal')
-            : '',
+          name,
           recipients: target ? scenarioGoalRecipients(target).join(', ') : '',
         },
       ),
