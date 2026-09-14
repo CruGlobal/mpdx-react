@@ -1,5 +1,12 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Alert, Autocomplete, Box, Button, TextField } from '@mui/material';
+import React, { useMemo, useState } from 'react';
+import {
+  Alert,
+  Autocomplete,
+  Box,
+  Button,
+  CircularProgress,
+  TextField,
+} from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import {
@@ -23,7 +30,8 @@ export const GeographicLocationSelect: React.FC<
   const { t } = useTranslation();
   const locale = useLocale();
   const { enqueueSnackbar } = useSnackbar();
-  const { goalGeographicConstantMap, loading } = useGoalCalculatorConstants();
+  const { goalGeographicConstantMap, loading, unavailable } =
+    useGoalCalculatorConstants();
   const savedLocation = geographicLocation ?? null;
   const [selected, setSelected] = useState<string | null>(savedLocation);
   const [updateGeographicLocation, { loading: saving }] =
@@ -42,10 +50,6 @@ export const GeographicLocationSelect: React.FC<
     return `${location} (${percentageFormat(multiplier, locale)})`;
   };
 
-  useEffect(() => {
-    setSelected(savedLocation);
-  }, [personNumber, savedLocation]);
-
   const handleSave = async () => {
     if (!selected) {
       return;
@@ -53,6 +57,7 @@ export const GeographicLocationSelect: React.FC<
 
     await updateGeographicLocation({
       variables: { input: { personNumber, geographicLocation: selected } },
+      refetchQueries: ['QuarterlyPayrollHistory'],
       update: (cache, { data }) => {
         const payload = data?.updateManagedStaffGeographicLocation;
         if (!payload) {
@@ -76,6 +81,12 @@ export const GeographicLocationSelect: React.FC<
       onCompleted: (data) => {
         const payload = data.updateManagedStaffGeographicLocation;
         if (!payload) {
+          enqueueSnackbar(
+            t('Failed to save geographic location. Please try again.'),
+            {
+              variant: 'error',
+            },
+          );
           return;
         }
         enqueueSnackbar(t('Saved successfully'), { variant: 'success' });
@@ -86,13 +97,20 @@ export const GeographicLocationSelect: React.FC<
 
   return (
     <>
-      <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: 1,
+          flexWrap: 'wrap',
+        }}
+      >
         <Autocomplete
           options={locations}
           getOptionLabel={getLocationLabel}
           value={selected}
           onChange={(_, location) => setSelected(location)}
-          disabled={loading || saving}
+          disabled={loading || saving || unavailable}
           size="small"
           sx={{ minWidth: 220 }}
           renderInput={(params) => (
@@ -109,13 +127,27 @@ export const GeographicLocationSelect: React.FC<
         <Button
           variant="contained"
           onClick={handleSave}
-          disabled={!selected || selected === savedLocation || saving}
+          disabled={
+            !selected || selected === savedLocation || saving || unavailable
+          }
+          aria-busy={saving}
+          startIcon={
+            saving ? <CircularProgress size={20} color="inherit" /> : null
+          }
         >
-          {t('Save')}
+          {saving ? t('Saving...') : t('Save')}
         </Button>
       </Box>
 
-      {!savedLocation && (
+      {unavailable && (
+        <Alert severity="warning" sx={{ width: '100%' }}>
+          {t(
+            'Geographic locations are not available for this year, so this cannot be updated right now.',
+          )}
+        </Alert>
+      )}
+
+      {!unavailable && !savedLocation && (
         <Alert severity="warning" sx={{ width: '100%' }}>
           {t(
             'No geographic location is set for {{firstName}}. Select one so the new staff monthly salary reflects their cost of living correctly.',

@@ -199,6 +199,7 @@ export const StaffMemberDrawer: React.FC = () => {
             {t('Geographic Multiplier:')}
           </Typography>
           <GeographicLocationSelect
+            key={personNumber}
             firstName={firstName}
             personNumber={personNumber}
             geographicLocation={geographicLocation}

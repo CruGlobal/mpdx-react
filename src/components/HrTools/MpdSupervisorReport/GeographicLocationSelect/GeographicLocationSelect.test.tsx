@@ -1,7 +1,7 @@
 import React from 'react';
 import { InMemoryCache, gql } from '@apollo/client';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -16,7 +16,7 @@ const firstName = 'John';
 
 const geographicConstants = {
   constant: {
-    mpdGoalBenefitsConstants: [],
+    mpdGoalBenefitsConstants: [{ id: 'benefits-1' }],
     mpdGoalGeographicConstants: [
       { location: 'None', percentageMultiplier: 0 },
       { location: 'Orlando, FL', percentageMultiplier: 0.06 },
@@ -39,6 +39,7 @@ interface TestComponentProps {
   onSaved?: jest.Mock;
   onCall?: jest.Mock;
   cache?: InMemoryCache;
+  constants?: typeof geographicConstants;
 }
 
 const renderSelect = ({
@@ -46,6 +47,7 @@ const renderSelect = ({
   onSaved = jest.fn(),
   onCall,
   cache,
+  constants = geographicConstants,
 }: TestComponentProps = {}) =>
   render(
     <ThemeProvider theme={theme}>
@@ -56,7 +58,7 @@ const renderSelect = ({
         }>
           cache={cache}
           mocks={{
-            GoalCalculatorConstants: geographicConstants,
+            GoalCalculatorConstants: constants,
             UpdateStaffGeographicLocation: {
               updateManagedStaffGeographicLocation: {
                 geographicLocation: 'New York, NY',
@@ -145,6 +147,28 @@ describe('GeographicLocationSelect', () => {
     expect(await findByText('Saved successfully')).toBeInTheDocument();
   });
 
+  it('shows a spinner on the save button while saving', async () => {
+    const { findByRole, getByRole } = renderSelect();
+    const input = await findByRole('combobox', { name: 'Geographic Location' });
+    await waitFor(() => expect(input).not.toBeDisabled());
+
+    userEvent.type(input, 'New York');
+    userEvent.click(await findByRole('option', { name: 'New York, NY (12%)' }));
+
+    const saveButton = getByRole('button', { name: 'Save' });
+    userEvent.click(saveButton);
+
+    await waitFor(() =>
+      expect(saveButton).toHaveAttribute('aria-busy', 'true'),
+    );
+    expect(saveButton).toHaveTextContent('Saving...');
+    expect(within(saveButton).getByRole('progressbar')).toBeInTheDocument();
+
+    await waitFor(() =>
+      expect(saveButton).not.toHaveAttribute('aria-busy', 'true'),
+    );
+  });
+
   it('patches the cached staff member with the saved values', async () => {
     const cache = createCache();
     const managedStaffFragmentQuery = {
@@ -175,6 +199,25 @@ describe('GeographicLocationSelect', () => {
         newStaffMonthlySalary: 3000,
       }),
     );
+  });
+
+  it('blocks editing when the year has no seeded constants', async () => {
+    const { findByRole, findByText, getByRole } = renderSelect({
+      constants: {
+        constant: {
+          ...geographicConstants.constant,
+          mpdGoalBenefitsConstants: [],
+        },
+      },
+    });
+
+    expect(
+      await findByText(/Geographic locations are not available for this year/),
+    ).toBeInTheDocument();
+    expect(
+      await findByRole('combobox', { name: 'Geographic Location' }),
+    ).toBeDisabled();
+    expect(getByRole('button', { name: 'Save' })).toBeDisabled();
   });
 
   it('warns by name when the employee has no location set', async () => {

@@ -20,7 +20,7 @@ import { StaffMemberDrawer } from './StaffMemberDrawer';
 
 const geographicConstants = {
   constant: {
-    mpdGoalBenefitsConstants: [],
+    mpdGoalBenefitsConstants: [{ id: 'benefits-1' }],
     mpdGoalGeographicConstants: [
       { location: 'None', percentageMultiplier: 0 },
       { location: 'Orlando, FL', percentageMultiplier: 0.06 },
