@@ -6,6 +6,12 @@ import { getLocalizedAge } from 'src/lib/functions/getLocalizedAge';
 import { StaffInfoCard } from '../../Shared/StaffInfoCard/StaffInfoCard';
 import { useNsoMpdQuestionnaire } from '../Shared/NsoMpdQuestionnaireContext';
 
+interface StaffInfoField {
+  label: string;
+  value: string;
+  helperText?: string;
+}
+
 export const StaffInformation: React.FC = () => {
   const { t } = useTranslation();
   const { questionnaire, hasSpouse } = useNsoMpdQuestionnaire();
@@ -35,7 +41,7 @@ export const StaffInformation: React.FC = () => {
   const toggleName =
     otherFirstName ?? (viewingSpouse ? t('Yourself') : t('Spouse'));
 
-  const fields = [
+  const fields: StaffInfoField[] = [
     {
       label: t('Staff Status'),
       value: staffStatus,
@@ -58,6 +64,9 @@ export const StaffInformation: React.FC = () => {
           ? questionnaire?.spouseTenure
           : questionnaire?.tenure
         )?.toString() ?? '',
+      helperText: t(
+        "If this doesn't seem correct, please talk to your MPD coordinator about updating this.",
+      ),
     },
     { label: t('Address'), value: questionnaire?.address ?? '' },
     {
@@ -100,6 +109,7 @@ export const StaffInformation: React.FC = () => {
               key={field.label}
               label={field.label}
               value={field.value}
+              helperText={field.helperText}
               placeholder={t('Not on record')}
               size="small"
               slotProps={{

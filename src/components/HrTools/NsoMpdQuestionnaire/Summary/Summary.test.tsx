@@ -76,6 +76,15 @@ describe('Summary', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('shows the stored tenure for each person', async () => {
+    const { findByRole, getByRole } = render(<TestComponent />);
+
+    await findByRole('rowheader', { name: 'Spouse name' });
+
+    expect(getByRole('row', { name: 'Tenure 0' })).toBeInTheDocument();
+    expect(getByRole('row', { name: 'Spouse tenure 2' })).toBeInTheDocument();
+  });
+
   it('shows the spouse cell phone for a married staff member', async () => {
     const { findByRole, getByRole } = render(
       <TestComponent
