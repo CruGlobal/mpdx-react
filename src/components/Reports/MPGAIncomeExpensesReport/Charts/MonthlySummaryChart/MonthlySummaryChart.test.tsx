@@ -30,6 +30,21 @@ const TestComponent: React.FC = () => (
   </MPGAIncomeExpensesReportTestWrapper>
 );
 
+const ChartWithNoDataLabel: React.FC = () => (
+  <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
+    <MonthlySummaryChart
+      data={[
+        { month: 'Jan 2023', income: 0, expenses: 0, net: 0 },
+        { month: 'Feb 2023', income: 0, expenses: 0, net: 0 },
+      ]}
+      currency="USD"
+      aspect={1.35}
+      width={100}
+      noDataLabel="N/A"
+    />
+  </MPGAIncomeExpensesReportTestWrapper>
+);
+
 describe('MonthlySummaryChart', () => {
   it('renders the bar chart', async () => {
     const { findByRole } = render(<TestComponent />);
@@ -79,6 +94,20 @@ describe('MonthlySummaryChart', () => {
         '$16,588.00',
       ]);
     });
+  });
+
+  it('hides the net labels and the currency axis when given a noDataLabel', async () => {
+    const { findByRole } = render(<ChartWithNoDataLabel />);
+
+    const region = await findByRole('region');
+
+    await waitFor(() =>
+      expect(region.querySelector('svg.recharts-surface')).toBeTruthy(),
+    );
+    expect(region.querySelectorAll('.recharts-label-list text')).toHaveLength(
+      0,
+    );
+    expect(within(region).queryByText(/^\$/)).not.toBeInTheDocument();
   });
 
   it('renders legend with correct labels', async () => {

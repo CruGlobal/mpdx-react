@@ -1,10 +1,14 @@
 import { ThemeProvider } from '@mui/material/styles';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
-import { MonthlyPayrollHistory } from 'src/graphql/types.generated';
 import theme from 'src/theme';
+import { MonthlyPayrollHistoryQuery } from './MonthlyPayrollHistory.generated';
 import { StaffTabPayroll } from './Payroll';
 
-const mockPayrollHistory: MonthlyPayrollHistory[] = [
+type PayrollHistory = MonthlyPayrollHistoryQuery['monthlyPayrollHistory'];
+
+const mockPayrollHistory: PayrollHistory = [
   {
     month: '2023-01',
     payroll: 3000,
@@ -20,16 +24,29 @@ const mockPayrollHistory: MonthlyPayrollHistory[] = [
 ];
 
 interface TestComponentProps {
-  payrollHistory: MonthlyPayrollHistory[];
+  payrollHistory?: PayrollHistory;
+  staffAccountId?: string | null;
+  mocks?: ApolloErgonoMockMap;
 }
 
-const TestComponent: React.FC<TestComponentProps> = ({ payrollHistory }) => {
-  return (
-    <ThemeProvider theme={theme}>
-      <StaffTabPayroll payrollHistory={payrollHistory} />
-    </ThemeProvider>
-  );
-};
+const TestComponent: React.FC<TestComponentProps> = ({
+  payrollHistory = mockPayrollHistory,
+  staffAccountId = '1000000001',
+  mocks = {},
+}) => (
+  <ThemeProvider theme={theme}>
+    <GqlMockedProvider<{ MonthlyPayrollHistory: MonthlyPayrollHistoryQuery }>
+      mocks={
+        {
+          MonthlyPayrollHistory: { monthlyPayrollHistory: payrollHistory },
+          ...mocks,
+        } as ApolloErgonoMockMap
+      }
+    >
+      <StaffTabPayroll staffAccountId={staffAccountId} />
+    </GqlMockedProvider>
+  </ThemeProvider>
+);
 
 const columnHeaders = [
   'Month',
@@ -39,12 +56,18 @@ const columnHeaders = [
 ];
 
 describe('StaffTabPayroll', () => {
-  it('renders the headers and a row per month', () => {
-    const { getByRole } = render(
-      <TestComponent payrollHistory={mockPayrollHistory} />,
-    );
+  it('renders the heading', async () => {
+    const { findByText } = render(<TestComponent />);
 
-    expect(getByRole('table')).toHaveTableStructure({
+    expect(
+      await findByText('Payroll and reimbursements · last 12 months'),
+    ).toBeInTheDocument();
+  });
+
+  it('renders the headers and a row per month', async () => {
+    const { findByRole } = render(<TestComponent />);
+
+    expect(await findByRole('table')).toHaveTableStructure({
       columnHeaders,
       cells: [
         ['Jan 2023', '$3,000.00', '$700.00', '80.0%'],
@@ -53,17 +76,44 @@ describe('StaffTabPayroll', () => {
     });
   });
 
-  it('renders an empty-state row when payroll history is empty', () => {
-    const { getByRole } = render(<TestComponent payrollHistory={[]} />);
+  it('surfaces a query failure instead of the empty state', async () => {
+    const { findByRole, queryByRole, queryByText } = render(
+      <TestComponent
+        mocks={{
+          MonthlyPayrollHistory: {
+            monthlyPayrollHistory: () => {
+              throw new Error('Not authorized');
+            },
+          },
+        }}
+      />,
+    );
 
-    expect(getByRole('table')).toHaveTableStructure({
+    expect(await findByRole('alert')).toHaveTextContent('Not authorized');
+    expect(queryByRole('table')).not.toBeInTheDocument();
+    expect(queryByText('No data available.')).not.toBeInTheDocument();
+  });
+
+  it('renders an empty-state row when payroll history is empty', async () => {
+    const { findByRole } = render(<TestComponent payrollHistory={[]} />);
+
+    expect(await findByRole('table')).toHaveTableStructure({
       columnHeaders,
       cells: ['No data available.'],
     });
   });
 
-  it('renders a dash for null fields and an empty cell for a missing month', () => {
-    const { getByRole } = render(
+  it('renders the empty state when there is no staff account', async () => {
+    const { findByRole } = render(<TestComponent staffAccountId={null} />);
+
+    expect(await findByRole('table')).toHaveTableStructure({
+      columnHeaders,
+      cells: ['No data available.'],
+    });
+  });
+
+  it('renders a dash for null fields and an empty cell for a missing month', async () => {
+    const { findByRole } = render(
       <TestComponent
         payrollHistory={[
           {
@@ -76,14 +126,14 @@ describe('StaffTabPayroll', () => {
       />,
     );
 
-    expect(getByRole('table')).toHaveTableStructure({
+    expect(await findByRole('table')).toHaveTableStructure({
       columnHeaders,
       cells: [['', '—', '$500.00', '—']],
     });
   });
 
-  it('renders a dash when asrAndReimbursements is null', () => {
-    const { getByRole } = render(
+  it('renders a dash when asrAndReimbursements is null', async () => {
+    const { findByRole } = render(
       <TestComponent
         payrollHistory={[
           {
@@ -96,25 +146,14 @@ describe('StaffTabPayroll', () => {
       />,
     );
 
-    expect(getByRole('table')).toHaveTableStructure({
+    expect(await findByRole('table')).toHaveTableStructure({
       columnHeaders,
       cells: [['Jan 2023', '$3,000.00', '—', '80.0%']],
     });
   });
 
-  it('renders a dash when fields are undefined, not just null', () => {
-    const { getByRole } = render(
-      <TestComponent payrollHistory={[{ month: '2023-01' }]} />,
-    );
-
-    expect(getByRole('table')).toHaveTableStructure({
-      columnHeaders,
-      cells: [['Jan 2023', '—', '—', '—']],
-    });
-  });
-
-  it('renders zero values rather than a dash', () => {
-    const { getByRole } = render(
+  it('renders zero values rather than a dash', async () => {
+    const { findByRole } = render(
       <TestComponent
         payrollHistory={[
           {
@@ -127,7 +166,7 @@ describe('StaffTabPayroll', () => {
       />,
     );
 
-    expect(getByRole('table')).toHaveTableStructure({
+    expect(await findByRole('table')).toHaveTableStructure({
       columnHeaders,
       cells: [['Jan 2023', '$0.00', '$0.00', '0.0%']],
     });

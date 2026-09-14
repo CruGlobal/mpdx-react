@@ -14,14 +14,16 @@ import {
 } from 'src/components/HrTools/MpdSupervisorReport/MpdSupervisorReportContext';
 import { StaffMemberDrawer } from 'src/components/HrTools/MpdSupervisorReport/StaffMemberDrawer/StaffMemberDrawer';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
-import Loading from 'src/components/Loading';
 import { multiPageHeaderHeight } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import {
+  RequiredUserGroupEnum,
+  UserTypeAccess,
+} from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';
 
 const MpdSupervisorReportContent: React.FC = () => {
@@ -73,22 +75,19 @@ const MpdSupervisorReportContent: React.FC = () => {
 export const MpdSupervisorReportPage: React.FC = () => {
   const { t } = useTranslation();
   const appName = getAppName();
-  const accountListId = useAccountListId();
 
   return (
     <>
       <Head>
         <title>{`${appName} | ${t('HR Tools | MPD Supervisor Report')}`}</title>
       </Head>
-      {accountListId ? (
+      <UserTypeAccess requireUserGroups={RequiredUserGroupEnum.MpdSupervisor}>
         <ReportPageWrapper>
           <MpdSupervisorReportProvider>
             <MpdSupervisorReportContent />
           </MpdSupervisorReportProvider>
         </ReportPageWrapper>
-      ) : (
-        <Loading loading />
-      )}
+      </UserTypeAccess>
     </>
   );
 };

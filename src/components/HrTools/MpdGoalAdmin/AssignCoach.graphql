@@ -11,6 +11,7 @@ mutation AssignCoachToNewStaffCohortAttendee(
   $input: NewStaffCohortAttendeeAssignCoachMutationInput!
 ) {
   assignCoachToNewStaffCohortAttendee(input: $input) {
+    assignedCount
     newStaffCohortAttendees {
       id
       coach {

@@ -33,6 +33,7 @@ import {
 } from 'src/hooks/useGoalCalculatorConstants';
 import { useLocale } from 'src/hooks/useLocale';
 import { percentageFormat } from 'src/lib/intlFormat';
+import { LocationInfoAlert } from '../../Shared/LocationInfoAlert/LocationInfoAlert';
 import { AutosaveTextField } from '../Shared/Autosave/AutosaveTextField';
 import { useSaveField } from '../Shared/Autosave/useSaveField';
 import { usePdsGoalCalculator } from '../Shared/PdsGoalCalculatorContext';
@@ -304,6 +305,7 @@ export const SetupStep: React.FC = () => {
                 />
               )}
             />
+            <LocationInfoAlert />
           </Grid>
         </Grid>
       </Card>

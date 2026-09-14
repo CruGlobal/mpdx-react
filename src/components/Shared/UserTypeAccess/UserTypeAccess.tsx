@@ -11,6 +11,7 @@ export enum RequiredUserGroupEnum {
   MpdGoalCalc = 'mpdGoalCalc',
   NsGoalCalc = 'nsGoalCalc',
   PdsGoalCalc = 'pdsGoalCalc',
+  MpdSupervisor = 'mpdSupervisor',
 }
 
 export const isUsStaffLike = (user?: UserTypeEnum) =>
@@ -40,6 +41,7 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     inMpdGoalCalcIneligibleGroup,
     inNsGoalCalcIneligibleGroup,
     inPdsGoalCalcIneligibleGroup,
+    inMpdSupervisorIneligibleGroup,
     userType,
     hasNoStaffAccount,
     userLoading,
@@ -54,6 +56,7 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     [RequiredUserGroupEnum.MpdGoalCalc]: inMpdGoalCalcIneligibleGroup,
     [RequiredUserGroupEnum.NsGoalCalc]: inNsGoalCalcIneligibleGroup,
     [RequiredUserGroupEnum.PdsGoalCalc]: inPdsGoalCalcIneligibleGroup,
+    [RequiredUserGroupEnum.MpdSupervisor]: inMpdSupervisorIneligibleGroup,
   };
 
   const meetsRequiredUserType =
@@ -79,7 +82,13 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
   }
 
   if (limitedAccess && !developerBypass) {
-    return <LimitedAccess />;
+    return (
+      <LimitedAccess
+        notSupervisor={
+          requireUserGroups === RequiredUserGroupEnum.MpdSupervisor
+        }
+      />
+    );
   }
 
   if (requireStaffAccount && hasNoStaffAccount) {

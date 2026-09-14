@@ -11,6 +11,7 @@ import {
   getQuarterLabel,
   healthColor,
   healthLabel,
+  quarterAmountLabel,
 } from './helpers';
 
 const t = ((key: string) => key) as unknown as TFunction;
@@ -86,6 +87,47 @@ describe('healthLabel', () => {
     [MpdHealthStatusEnum.Gray, 'no data'],
   ])('maps %s to "%s"', (health, expected) => {
     expect(healthLabel(t, health)).toBe(expected);
+  });
+});
+
+describe('quarterAmountLabel', () => {
+  const formatCurrency = (value: number) => `$${value.toFixed(2)}`;
+  const label = (args: Partial<Parameters<typeof quarterAmountLabel>[0]>) =>
+    quarterAmountLabel({
+      t,
+      hasStaffAccount: true,
+      status: MpdHealthStatusEnum.Green,
+      averagePayroll: 4013.42,
+      formatCurrency,
+      ...args,
+    });
+
+  it('formats the amount when the quarter has payroll data', () => {
+    expect(label({})).toBe('$4013.42');
+  });
+
+  it('reads N/A when there is no staff account to look payroll up in', () => {
+    expect(label({ hasStaffAccount: false })).toBe('N/A');
+  });
+
+  it('reads Partial when the quarter reports no average', () => {
+    expect(label({ averagePayroll: null })).toBe('Partial');
+  });
+
+  it('dashes a gray quarter rather than formatting a zero', () => {
+    expect(label({ averagePayroll: 0, status: MpdHealthStatusEnum.Gray })).toBe(
+      '-',
+    );
+  });
+
+  it('prefers N/A over Partial when both apply', () => {
+    expect(label({ hasStaffAccount: false, averagePayroll: null })).toBe('N/A');
+  });
+
+  it('prefers Partial over the gray dash when both apply', () => {
+    expect(
+      label({ averagePayroll: null, status: MpdHealthStatusEnum.Gray }),
+    ).toBe('Partial');
   });
 });
 

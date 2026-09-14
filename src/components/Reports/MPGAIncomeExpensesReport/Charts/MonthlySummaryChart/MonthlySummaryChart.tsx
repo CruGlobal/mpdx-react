@@ -30,6 +30,7 @@ interface MonthlySummaryChartProps {
   aspect: number;
   width: number;
   overrideIncomeText?: string;
+  noDataLabel?: string;
 }
 
 interface MonthlyTotal extends MonthlySummaryChartData {
@@ -45,9 +46,17 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
   aspect,
   width,
   overrideIncomeText,
+  noDataLabel,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+
+  const maskAmounts = noDataLabel !== undefined;
+
+  const formatAmount = (value: number) =>
+    maskAmounts
+      ? noDataLabel
+      : currencyFormat(value, currency, locale, { showTrailingZeros: true });
 
   const monthlyTotals = useMemo(
     (): MonthlyTotal[] =>
@@ -83,6 +92,7 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
             />
             <XAxis dataKey="month" xAxisId="net" hide />
             <YAxis
+              hide={maskAmounts}
               tickFormatter={(value) => currencyFormat(value, currency, locale)}
             />
             <Tooltip
@@ -114,15 +124,10 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
                     </Typography>
                     <Typography variant="body1">
                       {overrideIncomeText ?? t('Income')}:{' '}
-                      {currencyFormat(income, currency, locale, {
-                        showTrailingZeros: true,
-                      })}
+                      {formatAmount(income)}
                     </Typography>
                     <Typography variant="body1">
-                      {t('Expenses')}:{' '}
-                      {currencyFormat(expenses, currency, locale, {
-                        showTrailingZeros: true,
-                      })}
+                      {t('Expenses')}: {formatAmount(expenses)}
                     </Typography>
                     <Typography
                       variant="body1"
@@ -136,10 +141,7 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
                               : chartColors[1],
                       }}
                     >
-                      {t('Net')}:{' '}
-                      {currencyFormat(net, currency, locale, {
-                        showTrailingZeros: true,
-                      })}
+                      {t('Net')}: {formatAmount(net)}
                     </Typography>
                   </Box>
                 );
@@ -161,19 +163,21 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
               shape={() => <g />}
               isAnimationActive={false}
             >
-              <LabelList
-                dataKey="net"
-                position="top"
-                style={{
-                  fill: theme.palette.chartBlack.main,
-                  fontSize: theme.typography.body2.fontSize,
-                }}
-                formatter={(value: number) =>
-                  currencyFormat(value, currency, locale, {
-                    showTrailingZeros: true,
-                  })
-                }
-              />
+              {!maskAmounts && (
+                <LabelList
+                  dataKey="net"
+                  position="top"
+                  style={{
+                    fill: theme.palette.chartBlack.main,
+                    fontSize: theme.typography.body2.fontSize,
+                  }}
+                  formatter={(value: number) =>
+                    currencyFormat(value, currency, locale, {
+                      showTrailingZeros: true,
+                    })
+                  }
+                />
+              )}
             </Bar>
             <Legend
               verticalAlign="top"

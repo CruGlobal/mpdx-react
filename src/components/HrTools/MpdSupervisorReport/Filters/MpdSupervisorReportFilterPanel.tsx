@@ -10,14 +10,13 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useManagedStaffTeamsQuery } from '../ManagedStaffTeams.generated';
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
-import { mockStaffMembers } from '../mockData';
 import {
   ALL_TEAMS,
   ALL_TYPES,
   MpdSupervisorReportEmploymentTypeEnum,
   MpdSupervisorReportQuickFilterEnum,
-  MpdSupervisorReportTeamsEnum,
   quickFilterIds,
   quickFilterLabel,
 } from './mpdSupervisorReportFilters';
@@ -39,9 +38,14 @@ export const MpdSupervisorReportFilterPanel: React.FC<
     setEmploymentType,
   } = useMpdSupervisorReport();
 
+  const { data: teamsData } = useManagedStaffTeamsQuery();
+
   const teamOptions = useMemo(
-    () => [...new Set(mockStaffMembers.map((data) => data.user?.team))].sort(),
-    [],
+    () =>
+      (teamsData?.managedStaffTeams ?? [])
+        .flatMap(({ id, name }) => (id ? [{ id, name }] : []))
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    [teamsData],
   );
 
   const handleQuickFilter = (filterId: MpdSupervisorReportQuickFilterEnum) => {
@@ -49,7 +53,7 @@ export const MpdSupervisorReportFilterPanel: React.FC<
   };
 
   const handleSetTeam = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setTeam(event.target.value as MpdSupervisorReportTeamsEnum);
+    setTeam(event.target.value as string);
   };
 
   const handleSetEmploymentType = (
@@ -82,10 +86,6 @@ export const MpdSupervisorReportFilterPanel: React.FC<
       </Box>
 
       <Stack spacing={2} sx={{ p: 2 }}>
-        {/* TODO(MPDX): The quick-filter chips currently only highlight the
-            active selection in context — they do not yet filter the report
-            data. Wire up the filtering behaviour once the MPD-health history
-            backing these filters is available. */}
         <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
           {quickFilterIds.map((filterId) => (
             <Chip
@@ -112,11 +112,13 @@ export const MpdSupervisorReportFilterPanel: React.FC<
           onChange={handleSetTeam}
           size="small"
           label={t('Team')}
+          // Still loading, or the query failed; either way there is nothing to pick.
+          disabled={!teamOptions.length}
         >
           <MenuItem value={ALL_TEAMS}>{t('All teams')}</MenuItem>
-          {teamOptions.map((option) => (
-            <MenuItem key={option} value={option}>
-              {option}
+          {teamOptions.map(({ id, name }) => (
+            <MenuItem key={id} value={id}>
+              {name}
             </MenuItem>
           ))}
         </TextField>

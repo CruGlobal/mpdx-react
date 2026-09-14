@@ -133,9 +133,9 @@ export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
           <GoalSettingsSelect
             name="calculationsYear"
             options={calculationsYearOptions}
-            inputProps={{
-              'aria-labelledby': yearLabelId,
-            }}
+            // A select's inputProps land on the hidden input, so the label has
+            // to go to the select slot to reach the combobox itself.
+            slotProps={{ select: { labelId: yearLabelId } }}
           />
         </Box>
         <CalculationYearTooltip />

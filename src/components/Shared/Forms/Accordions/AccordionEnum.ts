@@ -34,6 +34,7 @@ export enum PreferenceAccordion {
   DefaultAccount = 'DefaultAccount',
   EarlyAdopter = 'EarlyAdopter',
   ExportAllData = 'ExportAllData',
+  GeographicLocation = 'GeographicLocation',
   HomeCountry = 'HomeCountry',
   HourToSendNotifications = 'HourToSendNotifications',
   Language = 'Language',

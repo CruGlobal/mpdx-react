@@ -195,16 +195,21 @@ describe('CurrentRequest', () => {
       });
     });
 
-    it('displays "Request processed" for approved requests - approved not paid', () => {
+    it('displays "Request approved on:" with date for approved not paid requests', () => {
       const approvedRequest: RequestType = {
         ...mockRequest,
         status: AsrStatusEnum.ApprovedNotPaid,
         submittedAt: '2025-06-10T00:00:00.000Z',
+        approvedAt: '2025-06-12T00:00:00.000Z',
       };
 
-      const { getByText } = render(<TestComponent request={approvedRequest} />);
+      const { getByText, queryByText } = render(
+        <TestComponent request={approvedRequest} />,
+      );
 
-      expect(getByText('Request processed')).toBeInTheDocument();
+      expect(getByText('Request approved on:')).toBeInTheDocument();
+      expect(getByText(/Jun 12, 2025/)).toBeInTheDocument();
+      expect(queryByText('Request processed')).not.toBeInTheDocument();
     });
 
     it('displays "Request complete" for approved requests - approved and paid', () => {
@@ -214,12 +219,20 @@ describe('CurrentRequest', () => {
         submittedAt: '2025-06-10T00:00:00.000Z',
       };
 
-      const { getByText } = render(<TestComponent request={approvedRequest} />);
+      const { getByText, queryByText } = render(
+        <TestComponent request={approvedRequest} />,
+      );
 
+      expect(getByText('Request processed')).toBeInTheDocument();
       expect(getByText('Request complete')).toBeInTheDocument();
+      expect(
+        queryByText(
+          'You are unable to create a new Additional Salary Request until this one has been paid.',
+        ),
+      ).not.toBeInTheDocument();
     });
 
-    it('displays "Payroll processing" for approved not paid status', () => {
+    it('displays "Payroll processing" and the new request explanation for approved not paid status', () => {
       const approvedRequest: RequestType = {
         ...mockRequest,
         status: AsrStatusEnum.ApprovedNotPaid,
@@ -231,17 +244,11 @@ describe('CurrentRequest', () => {
 
       expect(getByText('Payroll processing')).toBeInTheDocument();
       expect(queryByText('Request complete')).not.toBeInTheDocument();
-    });
-
-    it('displays "Request complete" for approved and paid status', () => {
-      const approvedRequest: RequestType = {
-        ...mockRequest,
-        status: AsrStatusEnum.ApprovedAndPaid,
-      };
-
-      const { getByText } = render(<TestComponent request={approvedRequest} />);
-
-      expect(getByText('Request complete')).toBeInTheDocument();
+      expect(
+        getByText(
+          'You are unable to create a new Additional Salary Request until this one has been paid.',
+        ),
+      ).toBeInTheDocument();
     });
   });
 

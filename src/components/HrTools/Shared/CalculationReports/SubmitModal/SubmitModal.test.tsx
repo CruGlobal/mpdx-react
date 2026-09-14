@@ -23,6 +23,7 @@ const title = 'Test Title';
 const content = 'Test Content';
 const subContent = 'Test Sub Content';
 const date = '2024-12-31';
+const location = 'Test Location';
 
 const handleClose = jest.fn();
 const handleConfirm = jest.fn();
@@ -85,6 +86,7 @@ interface TestComponentProps {
   additionalApproval?: boolean;
   splitAsr?: boolean;
   submitting?: boolean;
+  geographicLocation?: string;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -100,6 +102,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   additionalApproval,
   splitAsr,
   submitting,
+  geographicLocation,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
@@ -122,6 +125,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 additionalApproval={additionalApproval}
                 splitAsr={splitAsr}
                 submitting={submitting}
+                geographicLocation={geographicLocation}
               />
             </MinisterHousingAllowanceProvider>
           </FormikWrapper>
@@ -285,6 +289,29 @@ describe('ConfirmationModal', () => {
       expect(
         await findByRole('button', { name: /Submit For Approval/i }),
       ).toBeInTheDocument();
+    });
+  });
+
+  describe('Geographic location info alert', () => {
+    it('shows an info alert naming the geographic location', async () => {
+      const { findByText } = render(
+        <TestComponent geographicLocation={location} />,
+      );
+
+      expect(
+        await findByText(
+          /Your geographic location will be updated to Test Location in your account settings\./i,
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it('does not show info alert when no geographic location is given', async () => {
+      const { findByRole, queryByText } = render(<TestComponent />);
+
+      await findByRole('dialog');
+      expect(
+        queryByText(/Your geographic location will be updated/i),
+      ).not.toBeInTheDocument();
     });
   });
 

@@ -16,7 +16,9 @@ interface TestComponentProps {
   requireStaffAccount?: boolean;
   userType?: UserTypeEnum;
   usStaffGroup?: UsStaffGroupEnum;
+  spouseUsStaffGroup?: UsStaffGroupEnum;
   staffAccountId?: string | null;
+  supervisesStaff?: boolean;
   requireUserGroups?: RequiredUserGroupEnum;
 }
 
@@ -25,7 +27,9 @@ const TestComponent: React.FC<TestComponentProps> = ({
   requireStaffAccount,
   userType = UserTypeEnum.UsStaff,
   usStaffGroup = UsStaffGroupEnum.PartTimeFieldStaff,
+  spouseUsStaffGroup = UsStaffGroupEnum.PartTimeFieldStaff,
   staffAccountId = id,
+  supervisesStaff = true,
   requireUserGroups,
 }) => (
   <ThemeProvider theme={theme}>
@@ -34,7 +38,15 @@ const TestComponent: React.FC<TestComponentProps> = ({
         GetUser: GetUserQuery;
       }>
         mocks={{
-          GetUser: { user: { userType, usStaffGroup, staffAccountId } },
+          GetUser: {
+            user: {
+              userType,
+              usStaffGroup,
+              spouseUsStaffGroup,
+              staffAccountId,
+              supervisesStaff,
+            },
+          },
         }}
       >
         <UserTypeAccess
@@ -173,6 +185,34 @@ describe('UserTypeAccess', () => {
       <TestComponent
         requireUserGroups={RequiredUserGroupEnum.PdsGoalCalc}
         usStaffGroup={UsStaffGroupEnum.PaidWithDesignation}
+      />,
+    );
+    expect(await findByText('Test Content')).toBeInTheDocument();
+  });
+
+  it('should render LimitedAccess when the user supervises no staff', async () => {
+    const { findByRole, getByText } = render(
+      <TestComponent
+        requireUserGroups={RequiredUserGroupEnum.MpdSupervisor}
+        supervisesStaff={false}
+      />,
+    );
+
+    expect(
+      await findByRole('heading', {
+        name: 'Access to this feature is limited.',
+      }),
+    ).toBeInTheDocument();
+    expect(
+      getByText(/our records show that you do not supervise any staff/i),
+    ).toBeInTheDocument();
+  });
+
+  it('should render child component when the user supervises staff', async () => {
+    const { findByText } = render(
+      <TestComponent
+        requireUserGroups={RequiredUserGroupEnum.MpdSupervisor}
+        supervisesStaff
       />,
     );
     expect(await findByText('Test Content')).toBeInTheDocument();

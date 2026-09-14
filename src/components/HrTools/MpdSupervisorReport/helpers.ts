@@ -4,6 +4,13 @@ import {
   MpdHealthStatusEnum,
   QuarterlyPayrollHistory,
 } from 'src/graphql/types.generated';
+import { ManagedStaffQuery } from './ManagedStaff.generated';
+
+export type ManagedStaffMember =
+  ManagedStaffQuery['managedStaff']['nodes'][number];
+
+/** Stands in for fields `managedStaff` cannot supply yet. */
+export const pendingField = '—';
 
 /**
  * Build avatar initials from a person's first and last name.
@@ -67,6 +74,40 @@ export const healthLabel = (
     default:
       return t('no data');
   }
+};
+
+interface QuarterAmountArgs {
+  t: TFunction;
+  /** Payroll is keyed on the staff account; without one there was nothing to
+   *  look up, which is a different fact from looking and finding nothing. */
+  hasStaffAccount: boolean;
+  status: MpdHealthStatusEnum;
+  averagePayroll: number | null;
+  /** `formatCurrency` from `useFormatters`, which helpers can't call itself. */
+  formatCurrency: (value: number) => string;
+}
+
+/**
+ * Only the last branch is a real amount — the other three are distinct kinds of
+ * absence, and none of them is a real $0.00.
+ */
+export const quarterAmountLabel = ({
+  t,
+  hasStaffAccount,
+  status,
+  averagePayroll,
+  formatCurrency,
+}: QuarterAmountArgs): string => {
+  if (!hasStaffAccount) {
+    return t('N/A');
+  }
+  if (averagePayroll === null) {
+    return t('Partial');
+  }
+  if (status === MpdHealthStatusEnum.Gray) {
+    return '-';
+  }
+  return formatCurrency(averagePayroll);
 };
 
 export interface QuarterChipData {

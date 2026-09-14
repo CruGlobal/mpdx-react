@@ -78,17 +78,20 @@ export const useNewStaffGoalCalculation = (
 
   const [updateGoalCalculation] = useUpdateNewStaffGoalCalculationMutation();
 
+  const accountListId = isScenario ? null : source.accountListId;
+
   return {
     goalCalculation,
     loading,
     error,
     fallback,
     isScenario,
-    accountListId: isScenario ? null : source.accountListId,
+    accountListId,
     save: async (attributes) => {
       if (!goalCalculation) {
         return;
       }
+
       return updateGoalCalculation({
         variables: {
           input: isScenario
@@ -98,6 +101,25 @@ export const useNewStaffGoalCalculation = (
                 id: goalCalculation.id,
                 attributes,
               },
+        },
+        // The payload returns the goal as a scalar, so nothing normalizes it for us.
+        update: (cache, { data }) => {
+          const monthlyGoal = data?.updateNewStaffGoalCalculation?.monthlyGoal;
+          if (accountListId === null || typeof monthlyGoal !== 'number') {
+            return;
+          }
+          const cacheId = cache.identify({
+            __typename: 'AccountList',
+            id: accountListId,
+          });
+          // Without an id, cache.modify would silently target ROOT_QUERY instead.
+          if (!cacheId) {
+            return;
+          }
+          cache.modify({
+            id: cacheId,
+            fields: { monthlyGoal: () => monthlyGoal },
+          });
         },
       });
     },

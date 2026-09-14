@@ -46,6 +46,8 @@ export const createCache = () =>
       Constant: { keyFields: [] },
       // For Options, use the key as the unique id to make it easier to find them in the cache
       Option: { keyFields: ['key'] },
+      // MpdManagedStaff has no id; person numbers are unique, so key on those
+      MpdManagedStaff: { keyFields: ['personNumber'] },
       User: { merge: true },
       Contact: {
         fields: {
@@ -101,6 +103,7 @@ export const createCache = () =>
           donations: paginationFieldPolicy,
           financialAccounts: paginationFieldPolicy,
           goalCalculations: paginationFieldPolicy,
+          managedStaff: paginationFieldPolicy,
           newStaffCohorts: paginationFieldPolicy,
           newStaffScenarioGoals: paginationFieldPolicy,
           people: paginationFieldPolicy,

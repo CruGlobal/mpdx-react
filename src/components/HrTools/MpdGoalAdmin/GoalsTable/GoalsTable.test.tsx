@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import theme from 'src/theme';
 import {
   AssignCoachToNewStaffCohortAttendeeMutation,
@@ -30,7 +31,9 @@ import {
   coach,
   cohortsMock,
   cohortsWithoutCostsMock,
+  coordinatorUserMock,
   failedAssignableCoachesMock,
+  goalsAdminUserMock,
   noAssignableCoachesMock,
   runAndSentMock,
 } from '../mpdGoalAdminMocks';
@@ -50,10 +53,19 @@ const Providers: React.FC<{
   children: React.ReactNode;
   cohorts?: NewStaffCohortsQuery;
   coaches?: NewStaffCohortAssignableCoachesQuery;
-}> = ({ children, cohorts = cohortsMock, coaches = assignableCoachesMock }) => (
+  assignCoach?: AssignCoachToNewStaffCohortAttendeeMutation;
+  isGoalsAdmin?: boolean;
+}> = ({
+  children,
+  cohorts = cohortsMock,
+  coaches = assignableCoachesMock,
+  assignCoach = assignedCoachMock(['row-1']),
+  isGoalsAdmin = true,
+}) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
       <GqlMockedProvider<{
+        GetUser: GetUserQuery;
         NewStaffCohorts: NewStaffCohortsQuery;
         NewStaffCohortAttendees: NewStaffCohortAttendeesQuery;
         RunAndSendNewStaffCohort: RunAndSendNewStaffCohortMutation;
@@ -61,6 +73,7 @@ const Providers: React.FC<{
         AssignCoachToNewStaffCohortAttendee: AssignCoachToNewStaffCohortAttendeeMutation;
       }>
         mocks={{
+          GetUser: isGoalsAdmin ? goalsAdminUserMock : coordinatorUserMock,
           NewStaffCohorts: cohorts,
           NewStaffCohortAttendees: attendeesMock(),
           RunAndSendNewStaffCohort: runAndSentMock(
@@ -68,7 +81,7 @@ const Providers: React.FC<{
             1,
           ),
           NewStaffCohortAssignableCoaches: coaches,
-          AssignCoachToNewStaffCohortAttendee: assignedCoachMock(['row-1']),
+          AssignCoachToNewStaffCohortAttendee: assignCoach,
         }}
         onCall={mutationSpy}
       >
@@ -84,9 +97,16 @@ const renderTable = (
   data = rows,
   cohorts?: NewStaffCohortsQuery,
   coaches?: NewStaffCohortAssignableCoachesQuery,
+  isGoalsAdmin?: boolean,
+  assignCoach?: AssignCoachToNewStaffCohortAttendeeMutation,
 ) =>
   render(
-    <Providers cohorts={cohorts} coaches={coaches}>
+    <Providers
+      cohorts={cohorts}
+      coaches={coaches}
+      assignCoach={assignCoach}
+      isGoalsAdmin={isGoalsAdmin}
+    >
       <Capture rows={data} />
     </Providers>,
   );
@@ -94,8 +114,9 @@ const renderTable = (
 /** The picker is only usable once the assignable-coaches query has settled. */
 const renderWithCoaches = async (
   coaches?: NewStaffCohortAssignableCoachesQuery,
+  assignCoach?: AssignCoachToNewStaffCohortAttendeeMutation,
 ) => {
-  const screen = renderTable(rows, undefined, coaches);
+  const screen = renderTable(rows, undefined, coaches, undefined, assignCoach);
   // The query is skipped until the cohort auto-selects, so wait for that first.
   await waitFor(() => expect(ctx.selectedCohortId).toBeTruthy());
   await waitFor(() => expect(ctx.assignableCoachesLoading).toBe(false));
@@ -109,6 +130,7 @@ const renderLoadedTable = async (
   const screen = renderTable(data, cohorts);
   await waitFor(() => expect(ctx.selectedCohort).toBeDefined());
   await waitFor(() => expect(ctx.loading).toBe(false));
+  await waitFor(() => expect(ctx.isGoalsAdmin).toBe(true));
   return screen;
 };
 
@@ -336,7 +358,8 @@ describe('GoalsTable', () => {
   });
 
   it('assigns a coach to the row from the Assign Coach modal', async () => {
-    const { getByRole, findByRole } = await renderWithCoaches();
+    const { getByRole, findByRole, queryByRole, queryByText } =
+      await renderWithCoaches();
     // 'John & Jane Doe' (row-1) is the only attendee without a coach.
     userEvent.click(getByRole('button', { name: 'Assign Coach' }));
 
@@ -359,6 +382,31 @@ describe('GoalsTable', () => {
         },
       ),
     );
+
+    // The modal closing is the whole confirmation; the row updates from the payload.
+    await waitFor(() => expect(queryByRole('dialog')).not.toBeInTheDocument());
+    expect(queryByText('Coach assigned successfully.')).not.toBeInTheDocument();
+    expect(
+      queryByText('No staff were eligible for a coach.'),
+    ).not.toBeInTheDocument();
+  });
+
+  // The row's own assign has no success toast, so a skipped row would otherwise look assigned.
+  it('says nothing was eligible when the server skipped the row', async () => {
+    const { getByRole, findByRole, findByText } = await renderWithCoaches(
+      undefined,
+      assignedCoachMock([], 'coach-6', 0),
+    );
+    userEvent.click(getByRole('button', { name: 'Assign Coach' }));
+
+    const dialog = await findByRole('dialog');
+    userEvent.click(within(dialog).getByRole('combobox', { name: 'Coach' }));
+    userEvent.click(await findByRole('option', { name: 'Tom Harris' }));
+    userEvent.click(getByRole('button', { name: 'Save' }));
+
+    expect(
+      await findByText('No staff were eligible for a coach.'),
+    ).toBeInTheDocument();
   });
 
   it("links View/Edit to the row's Staff Details page", async () => {
@@ -371,13 +419,33 @@ describe('GoalsTable', () => {
     );
   });
 
-  it('renders a View/Edit action and a menu button for each row on the page', () => {
-    const { getAllByText, getAllByRole } = renderTable();
+  it('renders a View/Edit action and a menu button for each row on the page', async () => {
+    const { getAllByText, getByRole, findAllByRole } = renderTable();
     const onPage = Math.min(rows.length, DEFAULT_ROWS_PER_PAGE);
-    expect(getAllByText('View/Edit')).toHaveLength(onPage);
-    expect(getAllByRole('button', { name: /Actions for/ })).toHaveLength(
+    expect(await findAllByRole('button', { name: /Actions for/ })).toHaveLength(
       onPage,
     );
+    expect(getAllByText('View/Edit')).toHaveLength(onPage);
+    expect(
+      getByRole('columnheader', { name: 'Row actions' }),
+    ).toBeInTheDocument();
+  });
+
+  it('gives a coordinator no row menu', async () => {
+    const { queryAllByRole, queryByRole } = renderTable(
+      rows,
+      undefined,
+      undefined,
+      false,
+    );
+    // GetUser is subscribed before the cohorts query, so a settled table means the tier landed.
+    await waitFor(() => expect(ctx.selectedCohort).toBeDefined());
+    await waitFor(() => expect(ctx.loading).toBe(false));
+
+    expect(queryAllByRole('button', { name: /Actions for/ })).toHaveLength(0);
+    expect(
+      queryByRole('columnheader', { name: 'Row actions' }),
+    ).not.toBeInTheDocument();
   });
 
   it('selects a row via its checkbox', async () => {

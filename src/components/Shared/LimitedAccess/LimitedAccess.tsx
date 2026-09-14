@@ -8,11 +8,13 @@ import { getLimitedText } from './getLimitedText';
 interface LimitedAccessProps {
   noStaffAccount?: boolean;
   userGroupError?: boolean;
+  notSupervisor?: boolean;
 }
 
 export const LimitedAccess: React.FC<LimitedAccessProps> = ({
   noStaffAccount,
   userGroupError,
+  notSupervisor,
 }) => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
@@ -31,6 +33,7 @@ export const LimitedAccess: React.FC<LimitedAccessProps> = ({
     link,
     noStaffAccount,
     userGroupError,
+    notSupervisor,
   });
 
   return (

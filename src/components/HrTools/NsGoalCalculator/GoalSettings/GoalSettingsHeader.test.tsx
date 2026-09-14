@@ -17,6 +17,7 @@ const defaultAttendee: GoalSettingsAttendee = {
   coordinators: ['Ada Lovelace', 'Grace Hopper'],
   ministry: { id: 'ministry-1', name: 'Campus' },
   coach: null,
+  canEditCoach: true,
 };
 
 const primaryPerson: GoalSettingsPerson = {
@@ -147,8 +148,9 @@ describe('GoalSettingsHeader', () => {
     const { getByText, getByRole } = render(<TestComponent />);
 
     expect(getByText('Calculate using:')).toBeInTheDocument();
-    // The select's only combobox displays the chosen year.
-    expect(getByRole('combobox')).toHaveTextContent('2020');
+    expect(
+      getByRole('combobox', { name: 'Calculate using:' }),
+    ).toHaveTextContent('2020');
   });
 
   it('exposes an accessible label on the calculation-year help button', () => {
@@ -162,7 +164,7 @@ describe('GoalSettingsHeader', () => {
   it('spans calculation years from joinedStaffYear to the current year, newest first', () => {
     const { getByRole } = render(<TestComponent joinedStaffYear={2018} />);
 
-    userEvent.click(getByRole('combobox'));
+    userEvent.click(getByRole('combobox', { name: 'Calculate using:' }));
     const options = within(getByRole('listbox')).getAllByRole('option');
 
     expect(options.map((option) => option.textContent)).toEqual([
@@ -175,7 +177,7 @@ describe('GoalSettingsHeader', () => {
   it('offers only the current year when joinedStaffYear is missing', () => {
     const { getByRole } = render(<TestComponent joinedStaffYear={null} />);
 
-    userEvent.click(getByRole('combobox'));
+    userEvent.click(getByRole('combobox', { name: 'Calculate using:' }));
     const options = within(getByRole('listbox')).getAllByRole('option');
 
     expect(options.map((option) => option.textContent)).toEqual(['2020']);
@@ -184,7 +186,7 @@ describe('GoalSettingsHeader', () => {
   it('offers only the current year when joinedStaffYear is in the future', () => {
     const { getByRole } = render(<TestComponent joinedStaffYear={2030} />);
 
-    userEvent.click(getByRole('combobox'));
+    userEvent.click(getByRole('combobox', { name: 'Calculate using:' }));
     const options = within(getByRole('listbox')).getAllByRole('option');
 
     expect(options.map((option) => option.textContent)).toEqual(['2020']);
@@ -201,7 +203,7 @@ describe('GoalSettingsHeader', () => {
       'Grace Hopper',
     ]);
     expect(
-      getByRole('textbox', { name: 'Coach' }).compareDocumentPosition(
+      getByRole('combobox', { name: 'Coach' }).compareDocumentPosition(
         coordinators,
       ) & Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
@@ -221,7 +223,7 @@ describe('GoalSettingsHeader', () => {
   it('hides the coach and coordinator cards when there is no attendee', () => {
     const { queryByRole } = render(<TestComponent attendee={null} />);
 
-    expect(queryByRole('textbox', { name: 'Coach' })).not.toBeInTheDocument();
+    expect(queryByRole('combobox', { name: 'Coach' })).not.toBeInTheDocument();
     expect(
       queryByRole('list', { name: 'Coordinators' }),
     ).not.toBeInTheDocument();
@@ -235,7 +237,9 @@ describe('GoalSettingsHeader', () => {
 
       expect(getByText('Scenario Only')).toBeInTheDocument();
       expect(queryByText('Incomplete')).not.toBeInTheDocument();
-      expect(queryByRole('textbox', { name: 'Coach' })).not.toBeInTheDocument();
+      expect(
+        queryByRole('combobox', { name: 'Coach' }),
+      ).not.toBeInTheDocument();
       expect(
         queryByRole('list', { name: 'Coordinators' }),
       ).not.toBeInTheDocument();
@@ -245,7 +249,7 @@ describe('GoalSettingsHeader', () => {
       const { getByRole, queryByText } = render(<TestComponent />);
 
       expect(queryByText('Scenario Only')).not.toBeInTheDocument();
-      expect(getByRole('textbox', { name: 'Coach' })).toBeInTheDocument();
+      expect(getByRole('combobox', { name: 'Coach' })).toBeInTheDocument();
       expect(getByRole('list', { name: 'Coordinators' })).toBeInTheDocument();
     });
   });

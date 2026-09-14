@@ -35,6 +35,7 @@ export const GoalsTableToolbar: React.FC = () => {
     assignableCoachesError,
     retryAssignableCoaches,
     selectedCohort,
+    isGoalsAdmin,
     loading,
     error,
   } = useMpdGoalAdmin();
@@ -49,11 +50,28 @@ export const GoalsTableToolbar: React.FC = () => {
 
   // Rejecting keeps the modal open with its error, so nothing below runs.
   const handleAssignCoach = async (coachId: string) => {
-    await assignCoach(
+    const assignedCount = await assignCoach(
       selectedRows.map((row) => row.id),
       coachId,
     );
-    enqueueSnackbar(t('Coach assigned successfully.'), { variant: 'success' });
+
+    // Zero means every row went stale server-side, which is not a success.
+    if (assignedCount === 0) {
+      enqueueSnackbar(t('No staff were eligible for a coach.'), {
+        variant: 'info',
+      });
+      return;
+    }
+
+    enqueueSnackbar(
+      assignedCount < selectedCount
+        ? t('Coach assigned to {{assignedCount}} of {{selectedCount}} staff.', {
+            assignedCount,
+            selectedCount,
+          })
+        : t('Coach assigned successfully.'),
+      { variant: 'success' },
+    );
     clearSelection();
   };
 
@@ -87,9 +105,8 @@ export const GoalsTableToolbar: React.FC = () => {
             {t('{{count}} selected', { count: selectedCount })}
           </Typography>
         )}
-        {/* Not a bulk action: ignores selection, but prints only the rows
-            matching the search until MPDX-9691 prints the whole cohort. */}
-        <PrintCohortGoalsButton />
+        {/* Not a bulk action: ignores selection, printing the whole cohort or the search matches. */}
+        {isGoalsAdmin && <PrintCohortGoalsButton />}
         <Button
           variant="outlined"
           endIcon={<ArrowDropDownIcon />}
@@ -105,18 +122,20 @@ export const GoalsTableToolbar: React.FC = () => {
           open={Boolean(menuAnchorEl)}
           onClose={() => setMenuAnchorEl(null)}
         >
-          <MenuItem
-            disabled={blocked}
-            onClick={() => {
-              setMenuAnchorEl(null);
-              openRunAndSend(
-                t('Run and Send Selected Complete MPD Goals?'),
-                selectedRows,
-              );
-            }}
-          >
-            {t('Run & Send Selected')}
-          </MenuItem>
+          {isGoalsAdmin && (
+            <MenuItem
+              disabled={blocked}
+              onClick={() => {
+                setMenuAnchorEl(null);
+                openRunAndSend(
+                  t('Run and Send Selected Complete MPD Goals?'),
+                  selectedRows,
+                );
+              }}
+            >
+              {t('Run & Send Selected')}
+            </MenuItem>
+          )}
           <MenuItem
             onClick={() => {
               setMenuAnchorEl(null);
@@ -126,22 +145,24 @@ export const GoalsTableToolbar: React.FC = () => {
             {t('Assign Coach')}
           </MenuItem>
         </Menu>
-        <RunAndSendTooltip show={blocked}>
-          <Button
-            // Only one contained CTA at a time while rows are selected.
-            variant={hasSelection ? 'outlined' : 'contained'}
-            // Otherwise the modal can claim "0 out of 0" beside the error alert.
-            disabled={loading || !!error || blocked}
-            onClick={() =>
-              openRunAndSend(
-                t('Run and Send All Complete MPD Goals?'),
-                filteredRows,
-              )
-            }
-          >
-            {t('Run and Send All')}
-          </Button>
-        </RunAndSendTooltip>
+        {isGoalsAdmin && (
+          <RunAndSendTooltip show={blocked}>
+            <Button
+              // Only one contained CTA at a time while rows are selected.
+              variant={hasSelection ? 'outlined' : 'contained'}
+              // Otherwise the modal can claim "0 out of 0" beside the error alert.
+              disabled={loading || !!error || blocked}
+              onClick={() =>
+                openRunAndSend(
+                  t('Run and Send All Complete MPD Goals?'),
+                  filteredRows,
+                )
+              }
+            >
+              {t('Run and Send All')}
+            </Button>
+          </RunAndSendTooltip>
+        )}
       </Box>
 
       <RunAndSendModal {...modalProps} />

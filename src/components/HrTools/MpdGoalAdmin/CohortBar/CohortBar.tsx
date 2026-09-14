@@ -44,13 +44,15 @@ export const CohortBar: React.FC = () => {
     selectedCohortId,
     setSelectedCohortId,
     selectedCohort,
+    isGoalsAdmin,
     saveTrainingCosts,
   } = useMpdGoalAdmin();
   const [trainingCostsOpen, setTrainingCostsOpen] = useState(false);
 
   // Only a loaded cohort can be short its costs; an absent one is still loading.
+  // Never for a coordinator, who cannot act on the prompt.
   const needsTrainingCosts =
-    !!selectedCohort && !selectedCohort.hasTrainingCosts;
+    isGoalsAdmin && !!selectedCohort && !selectedCohort.hasTrainingCosts;
 
   const handleSaveTrainingCosts = async (costs: TrainingCosts) => {
     if (!selectedCohort) {
@@ -95,8 +97,10 @@ export const CohortBar: React.FC = () => {
           <ErrorOutline fontSize="small" />
           {t('Provide Training Cost')}
         </>
-      ) : (
+      ) : isGoalsAdmin ? (
         t('View/Edit')
+      ) : (
+        t('View')
       )}
     </Link>
   );
@@ -147,6 +151,7 @@ export const CohortBar: React.FC = () => {
       {trainingCostsOpen && (
         <DynamicEditTrainingCostsModal
           open
+          readOnly={!isGoalsAdmin}
           cohortName={selectedCohort?.name}
           initialCosts={selectedCohort?.trainingCosts}
           onClose={() => setTrainingCostsOpen(false)}

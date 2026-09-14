@@ -155,7 +155,7 @@ describe('EditTrainingCostsModal', () => {
 
     const inputs = getAllByRole('spinbutton');
     for (let i = 0; i < inputs.length; i++) {
-      await userEvent.type(inputs[i], String((i + 1) * 100));
+      userEvent.type(inputs[i], String((i + 1) * 100));
     }
 
     await waitFor(() => expect(apply).toBeEnabled());
@@ -166,12 +166,12 @@ describe('EditTrainingCostsModal', () => {
     const inputs = getAllByRole('spinbutton');
 
     // Enter a negative amount in the first field and valid amounts elsewhere.
-    await userEvent.type(inputs[0], '-5');
+    userEvent.type(inputs[0], '-5');
     for (let i = 1; i < inputs.length; i++) {
-      await userEvent.type(inputs[i], String((i + 1) * 100));
+      userEvent.type(inputs[i], String((i + 1) * 100));
     }
     // Blur the last field so every field is touched and validation has run.
-    await userEvent.tab();
+    userEvent.tab();
 
     expect(await findByText('Amount must be 0 or more')).toBeInTheDocument();
     expect(getByRole('button', { name: 'Apply' })).toBeDisabled();
@@ -183,7 +183,7 @@ describe('EditTrainingCostsModal', () => {
 
     // Fill every field except the first, which stays blank.
     for (let i = 1; i < inputs.length; i++) {
-      await userEvent.type(inputs[i], String((i + 1) * 100));
+      userEvent.type(inputs[i], String((i + 1) * 100));
     }
 
     expect(getByRole('button', { name: 'Apply' })).toBeDisabled();
@@ -194,30 +194,59 @@ describe('EditTrainingCostsModal', () => {
     // By identity, so onSave receiving filledCosts proves each label's mapping.
     for (const { title, fields } of fieldsBySection) {
       for (const { label, value } of fields) {
-        await userEvent.type(
-          inputForField(getByRole, title, label),
-          String(value),
-        );
+        userEvent.type(inputForField(getByRole, title, label), String(value));
       }
     }
 
     const apply = getByRole('button', { name: 'Apply' });
     await waitFor(() => expect(apply).toBeEnabled());
-    await userEvent.click(apply);
+    userEvent.click(apply);
 
     await waitFor(() => expect(onSave).toHaveBeenCalledWith(filledCosts));
     // Typing all thirteen fields exceeds the default 5s timeout under load.
   }, 20000);
 
-  it('closes via the Cancel button', async () => {
+  it('closes via the Cancel button', () => {
     const { getByRole } = render(<TestComponent />);
-    await userEvent.click(getByRole('button', { name: 'Cancel' }));
+    userEvent.click(getByRole('button', { name: 'Cancel' }));
     expect(onClose).toHaveBeenCalled();
   });
 
-  it('closes via the close icon', async () => {
+  it('closes via the close icon', () => {
     const { getByRole } = render(<TestComponent />);
-    await userEvent.click(getByRole('button', { name: 'Close' }));
+    userEvent.click(getByRole('button', { name: 'Close' }));
     expect(onClose).toHaveBeenCalled();
+  });
+
+  describe('readOnly', () => {
+    it('shows the saved costs with every field disabled', () => {
+      const { getAllByRole } = render(
+        <TestComponent readOnly initialCosts={filledCosts} />,
+      );
+
+      const inputs = getAllByRole('spinbutton');
+      expect(inputs).toHaveLength(13);
+      inputs.forEach((input) => expect(input).toBeDisabled());
+      expect(inputs[0]).toHaveValue(filledCosts.nsoIndividual1InRoom);
+    });
+
+    it('drops Apply and asks for no input', () => {
+      const { getByText, queryByRole } = render(<TestComponent readOnly />);
+
+      expect(queryByRole('button', { name: 'Apply' })).not.toBeInTheDocument();
+      expect(queryByRole('button', { name: 'Cancel' })).not.toBeInTheDocument();
+      expect(
+        getByText('The cost details that apply to this training.'),
+      ).toBeInTheDocument();
+    });
+
+    it('closes via the Close button in the action row', async () => {
+      const { getAllByRole } = render(<TestComponent readOnly />);
+
+      // The title bar's icon button carries the same name.
+      const [, close] = getAllByRole('button', { name: 'Close' });
+      userEvent.click(close);
+      expect(onClose).toHaveBeenCalled();
+    });
   });
 });

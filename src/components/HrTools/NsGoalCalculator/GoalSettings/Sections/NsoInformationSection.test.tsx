@@ -18,6 +18,7 @@ const defaultAttendee: GoalSettingsAttendee = {
   coordinators: ['Ada Lovelace'],
   ministry: { id: 'ministry-1', name: 'Campus' },
   coach: null,
+  canEditCoach: true,
 };
 
 const defaultProps: GoalSettingsSectionProps = {

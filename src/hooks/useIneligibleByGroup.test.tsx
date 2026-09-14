@@ -11,6 +11,7 @@ interface MockUser {
   userType?: UserTypeEnum;
   staffAccountId?: string | null;
   spouseUsStaffGroup?: UsStaffGroupEnum | null;
+  supervisesStaff?: boolean;
 }
 
 const renderUseIneligibleByGroup = (user: MockUser = {}) =>
@@ -22,6 +23,7 @@ const renderUseIneligibleByGroup = (user: MockUser = {}) =>
             user: {
               userType: UserTypeEnum.UsStaff,
               staffAccountId: 'staff-account-1',
+              supervisesStaff: true,
               ...user,
             },
           },
@@ -345,6 +347,27 @@ describe('useIneligibleByGroup', () => {
         inNsGoalCalcIneligibleGroup: true,
         inPdsGoalCalcIneligibleGroup: true,
       });
+    });
+  });
+
+  describe('mpd supervisor eligibility', () => {
+    it('is eligible when the user supervises staff', async () => {
+      const { result } = renderUseIneligibleByGroup({
+        usStaffGroup: UsStaffGroupEnum.PartTimeFieldStaff,
+      });
+
+      await waitFor(() => expect(result.current.userLoading).toBe(false));
+      expect(result.current.inMpdSupervisorIneligibleGroup).toBe(false);
+    });
+
+    it('is ineligible when the user supervises nobody', async () => {
+      const { result } = renderUseIneligibleByGroup({
+        usStaffGroup: UsStaffGroupEnum.SeniorStaff,
+        supervisesStaff: false,
+      });
+
+      await waitFor(() => expect(result.current.userLoading).toBe(false));
+      expect(result.current.inMpdSupervisorIneligibleGroup).toBe(true);
     });
   });
 });

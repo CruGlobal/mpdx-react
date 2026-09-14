@@ -6,6 +6,7 @@ interface GetLimitedTextProps {
   link: React.ReactNode;
   noStaffAccount?: boolean;
   userGroupError?: boolean;
+  notSupervisor?: boolean;
 }
 
 export const getLimitedText = ({
@@ -13,6 +14,7 @@ export const getLimitedText = ({
   link,
   noStaffAccount,
   userGroupError,
+  notSupervisor,
 }: GetLimitedTextProps) => {
   if (userGroupError) {
     return {
@@ -34,6 +36,19 @@ export const getLimitedText = ({
           Our records show that you do not have a staff account. You cannot
           access this feature if you do not have a staff account. If you think
           this is a mistake, please contact {link}.
+        </Trans>
+      ),
+    };
+  }
+
+  if (notSupervisor) {
+    return {
+      title: t('Access to this feature is limited.'),
+      content: (
+        <Trans t={t}>
+          Our records show that you do not supervise any staff. You cannot
+          access this feature if you do not supervise staff. If you think this
+          is a mistake, please contact {link}.
         </Trans>
       ),
     };

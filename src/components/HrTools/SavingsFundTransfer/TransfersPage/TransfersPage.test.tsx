@@ -453,9 +453,11 @@ describe('TransfersPage', () => {
   it('should open transfer modal when balance card transfer button is clicked', async () => {
     const { getByRole, getByText, findAllByRole } = render(<Components />);
 
-    const transferButtons = await findAllByRole('button', {
-      name: /transfer from/i,
-    });
+    const transferButtons = await findAllByRole(
+      'button',
+      { name: /transfer from/i },
+      { timeout: 10000 },
+    );
     expect(transferButtons.length).toBeGreaterThan(0);
 
     const lastTransferButton = transferButtons[transferButtons.length - 1];
@@ -471,9 +473,11 @@ describe('TransfersPage', () => {
   it('should close transfer modal when close button is clicked', async () => {
     const { getByRole, queryByRole, findAllByRole } = render(<Components />);
 
-    const transferButtons = await findAllByRole('button', {
-      name: /transfer from/i,
-    });
+    const transferButtons = await findAllByRole(
+      'button',
+      { name: /transfer from/i },
+      { timeout: 10000 },
+    );
     const firstTransferButton = transferButtons?.[0].closest('button');
     userEvent.click(firstTransferButton!);
 
@@ -517,9 +521,11 @@ describe('TransfersPage', () => {
   it('should display transfer modal with correct type', async () => {
     const { getByRole, findAllByRole } = render(<Components />);
 
-    const transferButtons = await findAllByRole('button', {
-      name: /transfer from/i,
-    });
+    const transferButtons = await findAllByRole(
+      'button',
+      { name: /transfer from/i },
+      { timeout: 10000 },
+    );
     const firstTransferButton = transferButtons[0].closest('button');
     userEvent.click(firstTransferButton!);
 

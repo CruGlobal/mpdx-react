@@ -64,15 +64,23 @@ The table below is an orientation aid — verify against each tool's
 | NsGoalCalculator + NsoMpdQuestionnaire | NewStaff                                                 |
 | PdsGoalCalculator                      | PaidWithDesignation                                      |
 | StaffSavingFund                        | any staff account (`requireStaffAccount`, no group gate) |
+| MpdSupervisorReport                    | `supervisesStaff` (no group gate)                        |
 
-⚠️ **MpdSupervisorReport** and **MinistryPartnerReminders** have no
-`UserTypeAccess` page guard — nav visibility + `blockImpersonatingNonDevelopers`
-only. Direct-URL access isn't blocked at the page level, but that's UX-only:
-read data is authorized server-side (`ministryPartnerReminders` scopes to the
-user's own account lists). **MpdSupervisorReport currently renders mock data**
-(`mockData.ts`); when wiring it to real data, add the page guard and verify
-server-side authz — a supervisor report shows _other_ staff's data, so
-account-list scoping alone won't be the right check.
+**MpdSupervisorReport gates on supervision, not a staff group.**
+`useIneligibleByGroup` derives `inMpdSupervisorIneligibleGroup` from
+`user.supervisesStaff` alone, and it reaches both layers through the usual
+`RequiredUserGroupEnum` opt-in — `RequiredUserGroupEnum.MpdSupervisor` on the
+page's `UserTypeAccess`, and the same flag on the nav item. Register any future
+non-group gate the same way: a standalone check inside `UserTypeAccess` applies
+to all ~20 pages that wrap it and skips `developerBypass`.
+
+⚠️ **MinistryPartnerReminders** has no `UserTypeAccess` page guard — nav
+visibility + `blockImpersonatingNonDevelopers` only. Direct-URL access isn't
+blocked at the page level, but that's UX-only: read data is authorized
+server-side (`ministryPartnerReminders` scopes to the user's own account lists).
+MpdSupervisorReport now has the page guard, but it is still UX-only for the same
+reason — it shows _other_ staff's data, so server-side scoping is what actually
+protects it, and account-list scoping alone would be the wrong check.
 
 ## GraphQL routing
 
@@ -172,14 +180,20 @@ the request forms autosave a draft but `Submit` through the wizard's `SubmitModa
   from the HCM query returning a second record (the spouse).
 - **MpdGoalAdmin** — no longer a mock. It runs `NewStaffCohorts.graphql`
   (`NewStaffCohorts`, `NewStaffCohortAttendees`, `UpdateNewStaffCohort`) and
-  `ScenarioGoals/ScenarioGoals.graphql`; only `mockData.ts`'s `mockCoaches` is
-  still stubbed, pending MPDX-9914. `newStaffCohorts` is **team-wide, not
+  `ScenarioGoals/ScenarioGoals.graphql`. `newStaffCohorts` is **team-wide, not
   per-user** — the page is gated on `RequiredUserGroupEnum.MpdGoalCalc`, so an
   empty cohort list means no cohorts exist at all, not that this user has none.
   `MpdGoalAdminContext` **auto-selects the first cohort** whenever the list is
   non-empty, so "no cohort selected" is only reachable with zero cohorts; tests
   that pick a cohort themselves must first wait for that auto-select to settle
   (wait on `selectedCohortId`, not on `cohorts.length`) or it will overwrite them.
+  **Print All renders server-side**: the button calls
+  `printNewStaffCohortGoals`, then fetches the returned single-use `downloadUrl`
+  with the Authorization header and saves the blob.
+  The search debounce plus `MpdGoalAdminContext`'s deliberate hold on the previous
+  result set means a click mid-search would otherwise send the ids the preceding
+  search returned. Mutation failures toast through the global Apollo error link;
+  only the blob fetch needs its own message.
 - **NsoMpdQuestionnaire** — **no create/upsert exists.** The record is created by
   the OneApp import; the frontend only Updates/Completes, keyed by
   `accountListId` (not a questionnaire id). A null query → render
@@ -189,14 +203,9 @@ the request forms autosave a draft but `Submit` through the wizard's `SubmitModa
   ministry dropdown is a separate OneApp source with brittle string-matched
   labels.
 
-## Mock / prototype tools — not wired to a backend
+## Every tool in this tree is wired to the primary API
 
-**MpdSupervisorReport** is the only remaining prototype: it renders from
-`MpdSupervisorReport/mockData.ts` + `useMockInfiniteStaff.ts`, has **no
-`.graphql`**, and hits neither API. Don't mistake it for a read path or wire
-tests against a real operation.
-
-Everything else in this tree performs real operations against the primary API —
-AdditionalSalaryRequest, SavingsFundTransfer, MHA, SalaryCalculator,
-NsoMpdQuestionnaire, the three goal calculators, MinistryPartnerReminders, and
-**MpdGoalAdmin** (see its per-form gotcha above).
+No prototypes remain. AdditionalSalaryRequest, SavingsFundTransfer, MHA,
+SalaryCalculator, NsoMpdQuestionnaire, the three goal calculators,
+MinistryPartnerReminders, **MpdGoalAdmin** and **MpdSupervisorReport** (both see
+their per-form gotchas above) all perform real operations.

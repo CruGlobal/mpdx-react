@@ -2,7 +2,11 @@ import React from 'react';
 import { Operation } from '@apollo/client';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  DeepPartialMock,
+  GqlMockedProvider,
+} from '__tests__/util/graphqlMocking';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   AssignCoachToNewStaffCohortAttendeeMutation,
   NewStaffCohortAssignableCoachesQuery,
@@ -20,7 +24,9 @@ import {
   attendees,
   attendeesMock,
   cohortsMock,
+  coordinatorUserMock,
   failedAssignableCoachesMock,
+  goalsAdminUserMock,
   noAssignableCoachesMock,
   noCohortsMock,
   runAndSentMock,
@@ -38,11 +44,13 @@ const makeWrapper = (
     runAndSend?: RunAndSendNewStaffCohortMutation;
     coaches?: NewStaffCohortAssignableCoachesQuery;
     assignCoach?: AssignCoachToNewStaffCohortAttendeeMutation;
+    user?: DeepPartialMock<GetUserQuery>;
   } = {},
 ): React.FC<{ children: React.ReactNode }> =>
   function Wrapper({ children }) {
     return (
       <GqlMockedProvider<{
+        GetUser: GetUserQuery;
         NewStaffCohorts: NewStaffCohortsQuery;
         NewStaffCohortAttendees: NewStaffCohortAttendeesQuery;
         RunAndSendNewStaffCohort: RunAndSendNewStaffCohortMutation;
@@ -50,6 +58,7 @@ const makeWrapper = (
         AssignCoachToNewStaffCohortAttendee: AssignCoachToNewStaffCohortAttendeeMutation;
       }>
         mocks={{
+          GetUser: mocks.user ?? goalsAdminUserMock,
           NewStaffCohorts: mocks.cohorts ?? cohortsMock,
           NewStaffCohortAttendees: (mocks.attendees ??
             attendeesMock()) as unknown as NewStaffCohortAttendeesQuery,
@@ -69,12 +78,12 @@ const makeWrapper = (
     );
   };
 
-const renderContext = () =>
-  renderHook(() => useMpdGoalAdmin(), { wrapper: makeWrapper() });
+const renderContext = (mocks?: Parameters<typeof makeWrapper>[0]) =>
+  renderHook(() => useMpdGoalAdmin(), { wrapper: makeWrapper(mocks) });
 
 /** Resolves once both queries have populated the context. */
-const renderLoaded = async () => {
-  const rendered = renderContext();
+const renderLoaded = async (mocks?: Parameters<typeof makeWrapper>[0]) => {
+  const rendered = renderContext(mocks);
   await waitFor(() =>
     expect(rendered.result.current.filteredRows).not.toHaveLength(0),
   );
@@ -413,6 +422,30 @@ describe('MpdGoalAdminContext', () => {
     expect(attendeeCalls()).toBe(callsBefore);
   });
 
+  it('resolves with the count the server assigned and refetches the stale rows', async () => {
+    const { result } = await renderLoaded({
+      assignCoach: assignedCoachMock(['row-1'], 'coach-6', 1),
+    });
+    const attendeeCalls = () =>
+      mutationSpy.mock.calls.filter(
+        ([{ operation }]) =>
+          operation.operationName === 'NewStaffCohortAttendees',
+      ).length;
+    const callsBefore = attendeeCalls();
+
+    let assignedCount = 0;
+    await act(async () => {
+      assignedCount = await result.current.assignCoach(
+        ['row-1', 'row-3'],
+        'coach-6',
+      );
+    });
+
+    // A skipped id means the table still lists a row the server no longer accepts.
+    expect(assignedCount).toBe(1);
+    await waitFor(() => expect(attendeeCalls()).toBeGreaterThan(callsBefore));
+  });
+
   it('rejects when the server refuses the assignment', async () => {
     const { result } = renderHook(() => useMpdGoalAdmin(), {
       wrapper: makeWrapper({
@@ -438,5 +471,26 @@ describe('MpdGoalAdminContext', () => {
     expect(() => renderHook(() => useMpdGoalAdmin())).toThrow(
       'useMpdGoalAdmin must be used within a MpdGoalAdminProvider',
     );
+  });
+
+  it('reports the MPD Goals team from the user query', async () => {
+    const { result } = renderHook(() => useMpdGoalAdmin(), {
+      wrapper: makeWrapper(),
+    });
+
+    // Fail closed: the tier is not admin until the user says so.
+    expect(result.current.isGoalsAdmin).toBe(false);
+    await waitFor(() => expect(result.current.isGoalsAdmin).toBe(true));
+  });
+
+  it('leaves a coordinator outside the MPD Goals team', async () => {
+    const { result } = renderHook(() => useMpdGoalAdmin(), {
+      wrapper: makeWrapper({ user: coordinatorUserMock }),
+    });
+
+    await waitFor(() =>
+      expect(result.current.selectedCohort?.id).toBe('fall-nso-2026'),
+    );
+    expect(result.current.isGoalsAdmin).toBe(false);
   });
 });

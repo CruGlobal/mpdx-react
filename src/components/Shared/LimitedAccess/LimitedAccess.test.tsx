@@ -11,17 +11,20 @@ const router = {
 interface ComponentsProps {
   noStaffAccount?: boolean;
   userGroupError?: boolean;
+  notSupervisor?: boolean;
 }
 
 const Components: React.FC<ComponentsProps> = ({
   noStaffAccount,
   userGroupError,
+  notSupervisor,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
       <LimitedAccess
         noStaffAccount={noStaffAccount}
         userGroupError={userGroupError}
+        notSupervisor={notSupervisor}
       />
     </TestRouter>
   </ThemeProvider>
@@ -55,6 +58,23 @@ describe('LimitedAccess', () => {
       getByText(
         /our records show that you are not part of the user group that has access to this feature/i,
       ),
+    ).toBeInTheDocument();
+    expect(getByRole('link', { name: 'support@mpdx.org' })).toBeInTheDocument();
+
+    const button = getByRole('link', { name: 'Back to Dashboard' });
+    expect(button).toBeInTheDocument();
+
+    expect(button).toHaveAttribute('href', `/accountLists/acc_123`);
+  });
+
+  it('should render the LimitedAccess component and dashboard link when user does not supervise any staff', () => {
+    const { getByText, getByRole } = render(<Components notSupervisor />);
+
+    expect(
+      getByRole('heading', { name: 'Access to this feature is limited.' }),
+    ).toBeInTheDocument();
+    expect(
+      getByText(/our records show that you do not supervise any staff/i),
     ).toBeInTheDocument();
     expect(getByRole('link', { name: 'support@mpdx.org' })).toBeInTheDocument();
 

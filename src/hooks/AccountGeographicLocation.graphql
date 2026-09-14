@@ -1,0 +1,8 @@
+query AccountGeographicLocation($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    id
+    settings {
+      geographicLocation
+    }
+  }
+}

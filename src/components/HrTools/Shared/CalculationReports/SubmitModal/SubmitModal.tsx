@@ -34,6 +34,7 @@ interface SubmitModalProps {
   splitAsr?: boolean;
   disableSubmit?: boolean;
   submitting?: boolean;
+  geographicLocation?: string;
 }
 
 export const SubmitModal: React.FC<SubmitModalProps> = ({
@@ -52,6 +53,7 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
   splitAsr,
   disableSubmit,
   submitting,
+  geographicLocation,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -103,6 +105,14 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
               <ApprovalProcess />
             </Box>
           </Box>
+        )}
+        {geographicLocation && (
+          <Alert severity="info" sx={{ mt: 2 }}>
+            {t(
+              'Your geographic location will be updated to {{geographicLocation}} in your account settings.',
+              { geographicLocation },
+            )}
+          </Alert>
         )}
       </DialogContent>
       <DialogActions>
