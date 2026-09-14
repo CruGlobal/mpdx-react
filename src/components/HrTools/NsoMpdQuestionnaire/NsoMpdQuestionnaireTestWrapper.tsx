@@ -29,7 +29,8 @@ export const newStaffQuestionnaireMock: DeepPartial<
   maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Married,
   age: GoalCalculationAge.ThirtyToThirtyFour,
   spouseAge: GoalCalculationAge.UnderThirty,
-  tenure: 4,
+  // New staff always start at zero; the senior-staff spouse keeps their real HCM tenure.
+  tenure: 0,
   spouseTenure: 2,
   address: '123 Main St, Apt 4, Miami, FL 33101',
   studentLoanMonthlyPayment: null,
