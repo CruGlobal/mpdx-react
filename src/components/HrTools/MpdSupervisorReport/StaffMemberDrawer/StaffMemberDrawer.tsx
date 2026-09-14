@@ -6,6 +6,7 @@ import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import theme from 'src/theme';
+import { GeographicLocationSelect } from '../GeographicLocationSelect/GeographicLocationSelect';
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
 import { DynamicMPGA, preloadMPGA } from '../StaffDetailsTabs/MPGA/DynamicMPGA';
 import {
@@ -78,6 +79,7 @@ export const StaffMemberDrawer: React.FC = () => {
   const { formatCurrency } = useFormatters();
   const {
     selectedMember,
+    updateSelectedMember,
     closePanel,
     selectedTabKey,
     handleTabChange: handleChange,
@@ -94,6 +96,7 @@ export const StaffMemberDrawer: React.FC = () => {
     spouseLastName,
     personNumber,
     staffAccountId,
+    geographicLocation,
     spousePersonNumber,
     spouseStaffAccountId,
     teams,
@@ -159,29 +162,54 @@ export const StaffMemberDrawer: React.FC = () => {
       )}
 
       <StaffInfo>
-        <Typography
-          variant="subtitle2"
-          fontWeight="bold"
-          sx={{ width: '100%' }}
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <Typography variant="subtitle2" fontWeight="bold">
+            {t('MPD Health Benchmark:')}
+          </Typography>
+          <StaffInfo>
+            <DetailRow
+              label={t('New Staff Monthly Salary')}
+              value={
+                newStaffMonthlySalary !== null
+                  ? formatCurrency(newStaffMonthlySalary)
+                  : pendingField
+              }
+            />
+            <DetailRow
+              label={t('Monthly Gross Salary')}
+              value={
+                monthlyGrossSalary !== null
+                  ? formatCurrency(monthlyGrossSalary)
+                  : pendingField
+              }
+            />
+          </StaffInfo>
+        </Box>
+
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 1,
+            flex: 1,
+            minWidth: 260,
+          }}
         >
-          {t('MPD Health Benchmark:')}
-        </Typography>
-        <DetailRow
-          label={t('New Staff Monthly Salary')}
-          value={
-            newStaffMonthlySalary !== null
-              ? formatCurrency(newStaffMonthlySalary)
-              : pendingField
-          }
-        />
-        <DetailRow
-          label={t('Monthly Gross Salary')}
-          value={
-            monthlyGrossSalary !== null
-              ? formatCurrency(monthlyGrossSalary)
-              : pendingField
-          }
-        />
+          <Typography variant="subtitle2" fontWeight="bold">
+            {t('Geographic Multiplier:')}
+          </Typography>
+          <GeographicLocationSelect
+            firstName={firstName}
+            personNumber={personNumber}
+            geographicLocation={geographicLocation}
+            onSaved={(geographicLocation, newStaffMonthlySalary) =>
+              updateSelectedMember(personNumber, {
+                geographicLocation,
+                newStaffMonthlySalary,
+              })
+            }
+          />
+        </Box>
       </StaffInfo>
 
       <TabContext value={selectedTabKey}>

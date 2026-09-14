@@ -13,6 +13,7 @@ const baseMember: ManagedStaffMember = {
   spousePersonNumber: '10000002',
   spouseStaffAccountId: '1000000002',
   newStaffMonthlySalary: 2500,
+  geographicLocation: 'Orlando, FL',
   teams: {
     employee: [{ id: 'team-1', name: 'Campus', department: 'US Campus' }],
     spouse: [],

@@ -1,10 +1,13 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { act, render, within } from '@testing-library/react';
+import { act, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
+import { UpdateStaffGeographicLocationMutation } from '../GeographicLocationSelect/UpdateStaffGeographicLocation.generated';
 import {
   MpdSupervisorReportProvider,
   useMpdSupervisorReport,
@@ -14,6 +17,18 @@ import { MonthlyPayrollHistoryQuery } from '../StaffDetailsTabs/Payroll/MonthlyP
 import { ManagedStaffMember } from '../helpers';
 import { managedStaffMember } from '../mpdSupervisorReportMocks';
 import { StaffMemberDrawer } from './StaffMemberDrawer';
+
+const geographicConstants = {
+  constant: {
+    mpdGoalBenefitsConstants: [],
+    mpdGoalGeographicConstants: [
+      { location: 'None', percentageMultiplier: 0 },
+      { location: 'Orlando, FL', percentageMultiplier: 0.06 },
+      { location: 'New York, NY', percentageMultiplier: 0.12 },
+    ],
+    mpdGoalMiscConstants: [],
+  },
+};
 
 const memberWithSpouse = managedStaffMember();
 
@@ -46,20 +61,31 @@ const renderDrawer = ({
   render(
     <TestRouter>
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{
-          MonthlyPayrollSummary: MonthlyPayrollSummaryQuery;
-          MonthlyPayrollHistory: MonthlyPayrollHistoryQuery;
-        }>
-          mocks={{
-            MonthlyPayrollSummary: { monthlyPayrollSummary: monthlySummary },
-            MonthlyPayrollHistory: { monthlyPayrollHistory: payrollHistory },
-          }}
-        >
-          <MpdSupervisorReportProvider>
-            <Opener />
-            <StaffMemberDrawer />
-          </MpdSupervisorReportProvider>
-        </GqlMockedProvider>
+        <SnackbarProvider>
+          <GqlMockedProvider<{
+            MonthlyPayrollSummary: MonthlyPayrollSummaryQuery;
+            MonthlyPayrollHistory: MonthlyPayrollHistoryQuery;
+            GoalCalculatorConstants: GoalCalculatorConstantsQuery;
+            UpdateStaffGeographicLocation: UpdateStaffGeographicLocationMutation;
+          }>
+            mocks={{
+              MonthlyPayrollSummary: { monthlyPayrollSummary: monthlySummary },
+              MonthlyPayrollHistory: { monthlyPayrollHistory: payrollHistory },
+              GoalCalculatorConstants: geographicConstants,
+              UpdateStaffGeographicLocation: {
+                updateManagedStaffGeographicLocation: {
+                  geographicLocation: 'New York, NY',
+                  newStaffMonthlySalary: 3000,
+                },
+              },
+            }}
+          >
+            <MpdSupervisorReportProvider>
+              <Opener />
+              <StaffMemberDrawer />
+            </MpdSupervisorReportProvider>
+          </GqlMockedProvider>
+        </SnackbarProvider>
       </ThemeProvider>
     </TestRouter>,
   );
@@ -136,6 +162,28 @@ describe('StaffMemberDrawer', () => {
     openMember(managedStaffMember({ newStaffMonthlySalary: null }));
     expect(queryByText('$2,500.00')).not.toBeInTheDocument();
     expect(getByText('$4,500.00')).toBeInTheDocument();
+  });
+
+  it('shows the selected member saved geographic location', async () => {
+    const { findByRole } = renderDrawer();
+    openMember(memberWithSpouse);
+    const input = await findByRole('combobox', { name: 'Geographic Location' });
+    await waitFor(() => expect(input).toHaveValue('Orlando, FL (6%)'));
+  });
+
+  it('updates the new staff monthly salary after saving a location', async () => {
+    const { findByRole, getByRole, getByText, queryByText } = renderDrawer();
+    openMember(memberWithSpouse);
+
+    const input = await findByRole('combobox', { name: 'Geographic Location' });
+    await waitFor(() => expect(input).not.toBeDisabled());
+
+    userEvent.type(input, 'New York');
+    userEvent.click(await findByRole('option', { name: 'New York, NY (12%)' }));
+    userEvent.click(getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => expect(getByText('$3,000.00')).toBeInTheDocument());
+    expect(queryByText('$2,500.00')).not.toBeInTheDocument();
   });
 
   it('renders all five detail tabs', () => {
