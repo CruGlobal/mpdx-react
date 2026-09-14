@@ -18,6 +18,7 @@ const toBreakdown = (values: number[]): { month: string; total: number }[] =>
 
 export const mpgaTransactionsMock: MpgaTransactionsQuery = {
   reportsStaffExpenses: {
+    name: 'Test Account',
     transactionYears: [2017, 2018, 2019],
     funds: [
       {
@@ -110,16 +111,23 @@ interface MPGAIncomeExpensesReportTestWrapperProps {
   onCall?: MockLinkCallHandler;
   isEmpty?: boolean;
   mocks?: MpgaTransactionsQuery;
+  staffAccountId?: string | null;
   children?: React.ReactNode;
 }
 
 export const MPGAIncomeExpensesReportTestWrapper: React.FC<
   MPGAIncomeExpensesReportTestWrapperProps
-> = ({ onCall, isEmpty, mocks, children }) => {
+> = ({ onCall, isEmpty, mocks, staffAccountId, children }) => {
   const mpgaTransactions =
     mocks ??
     (isEmpty
-      ? { reportsStaffExpenses: { transactionYears: [], funds: [] } }
+      ? {
+          reportsStaffExpenses: {
+            name: 'Test Account',
+            transactionYears: [],
+            funds: [],
+          },
+        }
       : mpgaTransactionsMock);
 
   return (
@@ -129,7 +137,7 @@ export const MPGAIncomeExpensesReportTestWrapper: React.FC<
           mocks={{ MPGATransactions: mpgaTransactions }}
           onCall={onCall}
         >
-          <MPGAIncomeExpensesReportProvider>
+          <MPGAIncomeExpensesReportProvider staffAccountId={staffAccountId}>
             {children}
           </MPGAIncomeExpensesReportProvider>
         </GqlMockedProvider>

@@ -19,6 +19,7 @@ import {
   getValidationSchema,
 } from './SettingsDialog';
 
+const id = '1000000001';
 const mutationSpy = jest.fn();
 const mockCategory = (
   category: StaffExpenseCategoryEnum,
@@ -68,6 +69,7 @@ const TestComponent: React.FC<
   onCallMock,
   isMpgaReport = false,
   transactionYears,
+  staffAccountId,
   categories = defaultCategories(),
 }) => (
   <TestRouter>
@@ -88,6 +90,7 @@ const TestComponent: React.FC<
           time={time}
           isMpgaReport={isMpgaReport}
           transactionYears={transactionYears}
+          staffAccountId={staffAccountId}
         />
       </LocalizationProvider>
     </GqlMockedProvider>
@@ -542,6 +545,23 @@ describe('SettingsDialog', () => {
       expect(mutationSpy).toHaveGraphqlOperation('ReportsStaffExpenses', {
         startMonth: '2020-01-01',
         endMonth: '2020-01-31',
+        fundTypes: ['Primary'],
+      });
+    });
+  });
+
+  it('should query categories for the staff account it is given', async () => {
+    render(
+      <TestComponent
+        {...defaultProps}
+        staffAccountId={id}
+        onCallMock={mutationSpy}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveGraphqlOperation('ReportsStaffExpenses', {
+        staffAccountId: id,
         fundTypes: ['Primary'],
       });
     });

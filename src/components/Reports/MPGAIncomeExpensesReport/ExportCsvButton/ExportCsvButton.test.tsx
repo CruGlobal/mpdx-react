@@ -100,6 +100,7 @@ describe('ExportCsvButton', () => {
   it('disables an export option when its dataset is empty', async () => {
     const incomeOnlyMock: MpgaTransactionsQuery = {
       reportsStaffExpenses: {
+        name: 'Test Account',
         transactionYears: [],
         funds: [
           {
