@@ -1,0 +1,8 @@
+mutation UpdateStaffGeographicLocation(
+  $input: ManagedStaffGeographicLocationUpdateMutationInput!
+) {
+  updateManagedStaffGeographicLocation(input: $input) {
+    geographicLocation
+    newStaffMonthlySalary
+  }
+}
