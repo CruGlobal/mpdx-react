@@ -2,8 +2,8 @@ mutation CreateRecurringTransfer(
   $amount: Float!
   $sourceFundTypeName: String!
   $destinationFundTypeName: String!
-  $recurringStart: ISO8601DateTime!
-  $recurringEnd: ISO8601DateTime
+  $recurringStart: ISO8601Date!
+  $recurringEnd: ISO8601Date
 ) {
   createRecurringTransfer(
     input: {
@@ -27,8 +27,8 @@ mutation DeleteRecurringTransfer($id: ID!) {
 mutation UpdateRecurringTransfer(
   $id: ID!
   $amount: Float
-  $recurringStart: ISO8601DateTime
-  $recurringEnd: ISO8601DateTime
+  $recurringStart: ISO8601Date
+  $recurringEnd: ISO8601Date
 ) {
   updateRecurringTransfer(
     input: {

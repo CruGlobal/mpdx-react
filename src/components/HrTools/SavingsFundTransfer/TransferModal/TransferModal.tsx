@@ -214,9 +214,14 @@ export const TransferModal: React.FC<TransferModalProps> = ({
       note,
     } = values;
 
-    const convertedTransferDate =
+    // Recurring boundaries are calendar dates, but transactedAt is a full timestamp
+    const recurringStart =
+      transferDate && transferDate.isValid
+        ? (transferDate.toISODate() ?? '')
+        : '';
+    const recurringEnd = endDate?.toISODate() ?? null;
+    const transactedAt =
       transferDate && transferDate.isValid ? (transferDate.toISO() ?? '') : '';
-    const convertedEndDate = endDate?.toISO() ?? null;
 
     const successMessage =
       type === TransferTypeEnum.New
@@ -236,8 +241,8 @@ export const TransferModal: React.FC<TransferModalProps> = ({
             amount: amount,
             sourceFundTypeName: transferFrom,
             destinationFundTypeName: transferTo,
-            recurringStart: convertedTransferDate,
-            recurringEnd: convertedEndDate,
+            recurringStart,
+            recurringEnd,
           },
         });
       } else if (isNew && isOneTime) {
@@ -247,7 +252,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
             sourceFundTypeName: transferFrom,
             destinationFundTypeName: transferTo,
             description: note.trim(),
-            transactedAt: convertedTransferDate,
+            transactedAt,
           },
         });
       } else {
@@ -255,8 +260,8 @@ export const TransferModal: React.FC<TransferModalProps> = ({
           variables: {
             id: data.transfer.recurringId ?? '',
             amount: amount,
-            recurringStart: convertedTransferDate,
-            recurringEnd: convertedEndDate,
+            recurringStart,
+            recurringEnd,
           },
         });
       }
