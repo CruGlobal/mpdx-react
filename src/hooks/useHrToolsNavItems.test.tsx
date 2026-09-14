@@ -1,4 +1,5 @@
 import { ReactElement } from 'react';
+import { waitFor } from '@testing-library/dom';
 import { renderHook } from '@testing-library/react-hooks';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
@@ -267,6 +268,26 @@ describe('useHrToolsNavItems', () => {
 
       expect(result.current.items.map((item) => item.id)).not.toContain(
         'nsoMpdQuestionnaire',
+      );
+    });
+
+    it('stays visible for new staff when the status query fails', async () => {
+      const { result } = renderHook(() => useHrToolsNavItems(), {
+        wrapper: makeWrapper({
+          GetUser: { user: newStaffUser },
+          UserOption: verifiedUserOption,
+          NewStaffQuestionnaireStatus: {
+            newStaffQuestionnaire: () => {
+              throw new Error('Not authorized');
+            },
+          },
+        } as unknown as DeepPartial<Mocks>),
+      });
+
+      await waitFor(() =>
+        expect(result.current.items.map((item) => item.id)).toContain(
+          'nsoMpdQuestionnaire',
+        ),
       );
     });
   });
