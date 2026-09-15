@@ -186,6 +186,14 @@ describe('buildSupportItemBreakdownRows', () => {
       expect(row).not.toHaveProperty('formula');
     });
   });
+
+  it('includes a tooltip on the gross monthly pay row', () => {
+    const rows = buildRows(fullTimeCalculation);
+    const row = rows.find((row) => row.id === 'gross-monthly-pay');
+    expect(row?.tooltip).toBe(
+      'Monthly Base plus any geographic location adjustment',
+    );
+  });
 });
 
 describe('buildSupportItemBreakdownColumns', () => {
