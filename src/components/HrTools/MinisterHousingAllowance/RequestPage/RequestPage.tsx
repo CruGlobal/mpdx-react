@@ -74,7 +74,6 @@ export const RequestPage: React.FC = () => {
 
   const boardDate = requestData?.requestAttributes?.boardApprovedAt ?? '';
   const availableDate = requestData?.requestAttributes?.availableDate ?? '';
-  const deadlineDate = requestData?.requestAttributes?.deadlineDate ?? '';
 
   const iconPanelItems = useIconPanelItems(isDrawerOpen, toggleDrawer);
 
@@ -167,7 +166,6 @@ export const RequestPage: React.FC = () => {
                     boardApprovedAt={boardDate}
                     availableDate={availableDate}
                     rentOrOwn={values.rentOrOwn}
-                    deadlineDate={deadlineDate}
                   />
                 )}
                 {currentIndex === 3 && (
