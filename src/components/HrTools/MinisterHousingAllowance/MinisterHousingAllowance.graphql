@@ -15,7 +15,6 @@ fragment RequestAttributes on MhaRequestAttributes {
   hrApprovedAt
   availableDate
   boardApprovedAt
-  deadlineDate
   submittedAt
   changesRequestedAt
 }

@@ -22,7 +22,6 @@ jest.mock(
 const title = 'Test Title';
 const content = 'Test Content';
 const subContent = 'Test Sub Content';
-const date = '2024-12-31';
 const location = 'Test Location';
 
 const handleClose = jest.fn();
@@ -120,7 +119,6 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 isCancel={isCancel}
                 isDiscard={isDiscard}
                 isDiscardEdit={isDiscardEdit}
-                deadlineDate={date}
                 actionRequired={actionRequired}
                 additionalApproval={additionalApproval}
                 splitAsr={splitAsr}
@@ -159,8 +157,6 @@ describe('ConfirmationModal', () => {
     expect(
       getByText('You are submitting your Main Title.'),
     ).toBeInTheDocument();
-
-    expect(getByText(/12\/31\/2024/)).toBeInTheDocument();
 
     await userEvent.click(getByRole('button', { name: /YES, CONTINUE/i }));
     expect(handleConfirm).toHaveBeenCalled();

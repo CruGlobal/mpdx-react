@@ -9,7 +9,6 @@ export const mockMHARequest: MHARequest = {
   feedback: null,
   requestAttributes: {
     submittedAt: '2019-10-01T15:30:45.123Z',
-    deadlineDate: '2019-10-23T15:30:45.123Z',
     boardApprovedAt: '2019-10-30T15:30:45.123Z',
     availableDate: '2019-11-20T15:30:45.123Z',
     rentOrOwn: null,
