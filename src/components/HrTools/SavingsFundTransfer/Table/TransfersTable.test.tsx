@@ -301,7 +301,11 @@ describe('TransferHistoryTable', () => {
     const acceptButton = within(dialog).getByRole('button', { name: /ok/i });
     userEvent.click(acceptButton);
 
-    await waitFor(() => expect(mutationSpy).toHaveBeenCalled());
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateRecurringTransfer', {
+        recurringEnd: '2025-09-30',
+      }),
+    );
     expect(mockEnqueue).toHaveBeenCalledWith('End date updated successfully', {
       variant: 'success',
     });

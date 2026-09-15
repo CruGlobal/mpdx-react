@@ -68,8 +68,8 @@ const mock = {
         recurringTransfer: {
           id: '1',
           amount: 1200,
-          recurringStart: '2023-09-30T00:00:00+00:00',
-          recurringEnd: '2025-09-30T00:00:00+00:00',
+          recurringStart: '2023-09-30',
+          recurringEnd: '2025-09-30',
           active: true,
         },
         scheduledTransfer: null,
@@ -84,8 +84,8 @@ const mock = {
         recurringTransfer: {
           id: '2',
           amount: 100,
-          recurringStart: '2024-05-30T00:00:00+00:00',
-          recurringEnd: '2025-05-30T00:00:00+00:00',
+          recurringStart: '2024-05-30',
+          recurringEnd: '2025-05-30',
           active: true,
         },
         scheduledTransfer: null,
@@ -123,7 +123,7 @@ const mock = {
         recurringTransfer: {
           id: '3',
           amount: 300,
-          recurringStart: '2023-10-05T00:00:00+00:00',
+          recurringStart: '2023-10-05',
           recurringEnd: null,
           active: false,
         },

@@ -141,14 +141,9 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                 ...tx.recurringTransfer,
                 recurringStart: DateTime.fromISO(
                   tx.recurringTransfer.recurringStart,
-                  {
-                    setZone: true,
-                  },
                 ),
                 recurringEnd: tx.recurringTransfer.recurringEnd
-                  ? DateTime.fromISO(tx.recurringTransfer.recurringEnd, {
-                      setZone: true,
-                    })
+                  ? DateTime.fromISO(tx.recurringTransfer.recurringEnd)
                   : null,
               }
             : null,
