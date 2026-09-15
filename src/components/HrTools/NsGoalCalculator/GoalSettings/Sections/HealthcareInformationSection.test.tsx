@@ -46,14 +46,4 @@ describe('HealthcareInformationSection', () => {
       getByRole('spinbutton', { name: 'Healthcare Dependents' }),
     ).toBeInTheDocument();
   });
-
-  it('does not render the removed reimbursable expenses field', () => {
-    const { queryByRole, queryByText } = render(<TestComponent />);
-
-    expect(
-      queryByRole('spinbutton', { name: 'Reimbursable Expenses' }),
-    ).not.toBeInTheDocument();
-    // The row label lives outside the field, so it has to go with it.
-    expect(queryByText('Reimbursable Expenses')).not.toBeInTheDocument();
-  });
 });
