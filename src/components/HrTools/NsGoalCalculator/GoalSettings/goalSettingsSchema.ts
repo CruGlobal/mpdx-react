@@ -103,7 +103,6 @@ export const getGoalSettingsSchema = (t: TFunction) =>
     ),
 
     // Healthcare
-    reimbursableExpenses: optionalAmount(t('Reimbursable Expenses'), t),
     healthcareDependentsCount: optionalInteger(t('Healthcare Dependents'), t),
 
     // NSO

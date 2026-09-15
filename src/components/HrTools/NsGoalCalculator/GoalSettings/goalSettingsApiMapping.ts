@@ -78,7 +78,6 @@ export const calculationToFormValues = (
   otherExpenses: toNumberInput(calc.otherExpenses),
 
   benefitsPlan: calc.benefitsPlan ?? '',
-  reimbursableExpenses: toNumberInput(calc.reimbursableExpenses),
   healthcareDependentsCount: toNumberInput(calc.healthcareDependentsCount),
 
   ministryLocation: calc.ministryLocation ?? '',
@@ -173,7 +172,6 @@ export const formValuesToAttributes = (
 
     // Healthcare
     benefitsPlan: values.benefitsPlan || null,
-    reimbursableExpenses: toNumberOrNull(values.reimbursableExpenses),
     healthcareDependentsCount: toNumberOrNull(values.healthcareDependentsCount),
 
     // Ministry (spouse variants have no API field — dropped)
