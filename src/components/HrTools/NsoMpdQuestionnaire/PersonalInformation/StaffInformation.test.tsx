@@ -1,7 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import theme from 'src/theme';
 import { NsoMpdQuestionnaireTestWrapper } from '../NsoMpdQuestionnaireTestWrapper';
 import { StaffInformation } from './StaffInformation';
 
@@ -64,9 +63,7 @@ describe('StaffInformation', () => {
 
     expect(
       await findByRole('textbox', { name: 'Tenure' }),
-    ).toHaveAccessibleDescription(
-      'Talk to your MPD coordinator to update this',
-    );
+    ).toHaveAccessibleDescription('Talk to your MPD coordinator to update this');
   });
 
   it('shows each person read-only cell phone number', async () => {
@@ -86,7 +83,7 @@ describe('StaffInformation', () => {
 
     const phone = getByRole('textbox', { name: 'Cell Phone Number' });
     expect(phone).toHaveValue('(305) 000-1111');
-    expect(phone).toHaveAttribute('readonly');
+    expect(phone).toBeDisabled();
 
     userEvent.click(getByRole('button', { name: 'View Jane' }));
 
@@ -125,7 +122,7 @@ describe('StaffInformation', () => {
     expect(phone).toHaveAttribute('placeholder', 'Not on record');
   });
 
-  it('greys out every on-record field so none of them look editable', async () => {
+  it('disables every on-record field so none of them look editable', async () => {
     const { findByRole, getByRole } = render(
       <NsoMpdQuestionnaireTestWrapper>
         <StaffInformation />
@@ -134,18 +131,13 @@ describe('StaffInformation', () => {
 
     await findByRole('heading', { name: 'John Doe' });
 
-    const expectGreyed = (name: string) => {
-      const field = getByRole('textbox', { name });
-      expect(field).toHaveAttribute('readonly');
-      expect(field.closest('.MuiInputBase-root')).toHaveStyle({
-        backgroundColor: theme.palette.grey[100],
-      });
-    };
+    const expectDisabled = (name: string) =>
+      expect(getByRole('textbox', { name })).toBeDisabled();
 
-    recordFieldLabels.forEach(expectGreyed);
+    recordFieldLabels.forEach(expectDisabled);
 
     // The fields re-render inside the spouse toggle, so the greying has to survive it.
     userEvent.click(getByRole('button', { name: 'View Jane' }));
-    recordFieldLabels.forEach(expectGreyed);
+    recordFieldLabels.forEach(expectDisabled);
   });
 });
