@@ -23,6 +23,7 @@ query ManagedStaff(
       personNumber
       spousePersonNumber
       spouseStaffAccountId
+      geographicLocation
       teams {
         employee {
           id
