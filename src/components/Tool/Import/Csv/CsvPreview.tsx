@@ -17,10 +17,12 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { cloneDeep } from 'lodash/fp';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { useGetContactTagListQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Tags/ContactTags.generated';
 import { ContactTagIcon, ContactTagInput } from 'src/components/Tags/Tags';
+import { getErrorMessage } from 'src/lib/error';
 import { getAppName } from 'src/lib/getAppName';
 import theme from 'src/theme';
 import {
@@ -61,6 +63,7 @@ const CsvPreview: React.FC<CsvPreviewProps> = ({
     useContext(CsvImportContext) as CsvImportValue;
 
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
   const appName = getAppName();
   const constants = useApiConstants();
   const supportedHeaders = useSupportedHeaders();
@@ -111,6 +114,9 @@ const CsvPreview: React.FC<CsvPreviewProps> = ({
     })
       .then(() => {
         setShowSuccessModal(true);
+      })
+      .catch((err) => {
+        enqueueSnackbar(getErrorMessage(err), { variant: 'error' });
       })
       .finally(() => {
         setSaving(false);
