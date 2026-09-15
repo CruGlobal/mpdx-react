@@ -91,6 +91,7 @@ export const buildSupportItemBreakdownRows = (
       category: t('Gross Monthly Pay'),
       amount: grossMonthlyPay,
       format: 'currency',
+      tooltip: t('Monthly Base plus any geographic location adjustment'),
     },
     {
       id: 'employer-fica',
