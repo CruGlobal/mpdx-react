@@ -20,6 +20,6 @@ export const getLocalizedReminderStatus = (
       return t('Requested No Reminder');
     case MinistryPartnerReminderFrequencyEnum.NotReminded:
     default:
-      return t('Not Yet Enrolled');
+      return t('None');
   }
 };
