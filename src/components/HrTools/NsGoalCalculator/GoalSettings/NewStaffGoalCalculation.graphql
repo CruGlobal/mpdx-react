@@ -87,7 +87,6 @@ fragment NewStaffGoalCalculationFields on NewStaffGoalCalculation {
 
   # Healthcare
   benefitsPlan
-  reimbursableExpenses
   healthcareDependentsCount
 
   # Ministry
