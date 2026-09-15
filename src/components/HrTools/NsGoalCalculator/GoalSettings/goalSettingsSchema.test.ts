@@ -82,12 +82,9 @@ describe('getGoalSettingsSchema', () => {
     );
   });
 
-  it('leaves the optional numeric fields alone when blank', () => {
-    expect(validateAt('otherExpenses', '')).toBeNull();
-  });
-
-  it('treats an empty string as not-set rather than invalid', () => {
+  it('treats a blank optional amount or count as not-set rather than invalid', () => {
     expect(validateAt('annualRequestedSalary', '')).toBeNull();
+    expect(validateAt('healthcareDependentsCount', '')).toBeNull();
   });
 
   it('accepts a zero amount', () => {
