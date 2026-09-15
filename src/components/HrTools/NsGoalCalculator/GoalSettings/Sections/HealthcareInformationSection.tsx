@@ -36,14 +36,6 @@ export const HealthcareInformationSection: React.FC<
         />
       </FieldRow>
 
-      <FieldRow label={t('Reimbursable Expenses')}>
-        <GoalSettingsNumberField
-          name="reimbursableExpenses"
-          label={t('Reimbursable Expenses')}
-          adornment="currency"
-        />
-      </FieldRow>
-
       <FieldRow
         label={t('Healthcare Dependents')}
         helperText={t('If SOSA, can include spouse')}

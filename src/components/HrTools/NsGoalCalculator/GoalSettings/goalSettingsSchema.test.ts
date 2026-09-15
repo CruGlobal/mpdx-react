@@ -12,7 +12,6 @@ const emptyGoalSettingsValues = {
   contribution403bPercentage: '',
   childcareChildrenCount: '',
   tenure: '',
-  reimbursableExpenses: '',
 };
 
 const marriedGoalSettingsValues = {
@@ -84,7 +83,7 @@ describe('getGoalSettingsSchema', () => {
   });
 
   it('leaves the optional numeric fields alone when blank', () => {
-    expect(validateAt('reimbursableExpenses', '')).toBeNull();
+    expect(validateAt('otherExpenses', '')).toBeNull();
   });
 
   it('treats an empty string as not-set rather than invalid', () => {
