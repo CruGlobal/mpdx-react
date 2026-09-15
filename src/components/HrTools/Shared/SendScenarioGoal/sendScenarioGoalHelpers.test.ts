@@ -70,7 +70,7 @@ describe('scenarioGoalSendBlockedReason', () => {
     expect(
       scenarioGoalSendBlockedReason({ ...sendableGoal, [field]: null }, t),
     ).toBe(
-      'A first name, last name, campus division, and year are required before the worksheet can be emailed.',
+      'A first name, last name, geographic location, and year are required before the worksheet can be emailed.',
     );
   });
 
@@ -90,7 +90,7 @@ describe('scenarioGoalSendBlockedReason', () => {
         t,
       ),
     ).toBe(
-      'A first name, last name, campus division, and year are required before the worksheet can be emailed.',
+      'A first name, last name, geographic location, and year are required before the worksheet can be emailed.',
     );
   });
 });

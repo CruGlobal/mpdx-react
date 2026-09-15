@@ -255,7 +255,7 @@ describe('ScenarioGoals', () => {
     await userEvent.hover(send.parentElement as HTMLElement);
     expect(
       await findByText(
-        'A first name, last name, campus division, and year are required before the worksheet can be emailed.',
+        'A first name, last name, geographic location, and year are required before the worksheet can be emailed.',
       ),
     ).toBeInTheDocument();
   });

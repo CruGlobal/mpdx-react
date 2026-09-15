@@ -44,7 +44,7 @@ export const scenarioGoalSendBlockedReason = (
 
   if (required.some(isBlank)) {
     return t(
-      'A first name, last name, campus division, and year are required before the worksheet can be emailed.',
+      'A first name, last name, geographic location, and year are required before the worksheet can be emailed.',
     );
   }
 
