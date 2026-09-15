@@ -62,14 +62,14 @@ describe('RemindersTable', () => {
     expect(date).toBeTruthy();
 
     const select = getAllByRole('combobox', { name: /reminder status/i });
-    expect(select[0]).toHaveTextContent('Not Yet Enrolled');
+    expect(select[0]).toHaveTextContent('None');
   });
 
   it('should change the select value', async () => {
     const { getAllByRole, getByRole } = render(<TestComponent />);
 
     const select = getAllByRole('combobox', { name: /reminder status/i });
-    expect(select[0]).toHaveTextContent('Not Yet Enrolled');
+    expect(select[0]).toHaveTextContent('None');
 
     await userEvent.click(select[0]);
     const option = getByRole('option', { name: 'Monthly' });
