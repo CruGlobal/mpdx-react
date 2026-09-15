@@ -12,7 +12,6 @@ const emptyGoalSettingsValues = {
   contribution403bPercentage: '',
   childcareChildrenCount: '',
   tenure: '',
-  reimbursableExpenses: '',
 };
 
 const marriedGoalSettingsValues = {
@@ -81,10 +80,6 @@ describe('getGoalSettingsSchema', () => {
     expect(() => validateAt('tenure', '')).toThrow(
       'Full Time Years on Staff is required',
     );
-  });
-
-  it('leaves the optional numeric fields alone when blank', () => {
-    expect(validateAt('reimbursableExpenses', '')).toBeNull();
   });
 
   it('treats an empty string as not-set rather than invalid', () => {
