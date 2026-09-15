@@ -22,7 +22,7 @@ describe('StaffInformation', () => {
       'Married',
     );
     expect(getByRole('textbox', { name: 'Age' })).toHaveValue('30-34');
-    expect(getByRole('textbox', { name: 'Tenure' })).toHaveValue('4');
+    expect(getByRole('textbox', { name: 'Tenure' })).toHaveValue('0');
     expect(getByRole('textbox', { name: 'Address' })).toHaveValue(
       '123 Main St, Apt 4, Miami, FL 33101',
     );
@@ -42,6 +42,20 @@ describe('StaffInformation', () => {
     expect(getByRole('textbox', { name: 'Tenure' })).toHaveValue('2');
     expect(getByRole('textbox', { name: 'Staff Status' })).toHaveValue(
       'Already on Staff',
+    );
+  });
+
+  it('points the user at their coordinator to correct the tenure', async () => {
+    const { findByRole } = render(
+      <NsoMpdQuestionnaireTestWrapper>
+        <StaffInformation />
+      </NsoMpdQuestionnaireTestWrapper>,
+    );
+
+    expect(
+      await findByRole('textbox', { name: 'Tenure' }),
+    ).toHaveAccessibleDescription(
+      "If this doesn't seem correct, please talk to your MPD coordinator about updating this.",
     );
   });
 

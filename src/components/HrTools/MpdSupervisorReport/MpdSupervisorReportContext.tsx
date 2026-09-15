@@ -24,6 +24,10 @@ export interface MpdSupervisorReportContextValue {
   selectedMember: ManagedStaffMember | undefined;
   isOpen: boolean;
   openMember: (member: ManagedStaffMember) => void;
+  updateSelectedMember: (
+    personNumber: string,
+    patch: Partial<ManagedStaffMember>,
+  ) => void;
   closePanel: () => void;
   search: string;
   setSearch: (v: string) => void;
@@ -94,6 +98,14 @@ export const MpdSupervisorReportProvider: React.FC<{
       selectedMember,
       isOpen: selectedMember !== undefined,
       openMember: (member: ManagedStaffMember) => setSelectedMember(member),
+      updateSelectedMember: (
+        personNumber: string,
+        patch: Partial<ManagedStaffMember>,
+      ) =>
+        setSelectedMember((prev) =>
+          // Apply the save to the open drawer, but never another staff member's.
+          prev?.personNumber === personNumber ? { ...prev, ...patch } : prev,
+        ),
       closePanel: () => setSelectedMember(undefined),
       search,
       setSearch,

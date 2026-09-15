@@ -21,6 +21,10 @@ interface ConsumerResult {
   isOpen: boolean;
   selectedMember: ManagedStaffMember | undefined;
   openMember: (member: ManagedStaffMember) => void;
+  updateSelectedMember: (
+    personNumber: string,
+    patch: Partial<ManagedStaffMember>,
+  ) => void;
   closePanel: () => void;
   search: string;
   setSearch: (v: string) => void;
@@ -162,6 +166,39 @@ describe('MpdSupervisorReportContext', () => {
     expect(getByTestId('activeQuickFilter').textContent).toBe(
       MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative,
     );
+  });
+});
+
+describe('updateSelectedMember', () => {
+  it('patches the open member', () => {
+    const { getByTestId } = renderConsumer();
+    act(() => {
+      consumerResult.openMember(sampleMember);
+    });
+    act(() => {
+      consumerResult.updateSelectedMember('10000001', { lastName: 'Patched' });
+    });
+    expect(getByTestId('memberName').textContent).toBe('Patched');
+  });
+
+  it('ignores a patch for another staff member', () => {
+    const { getByTestId } = renderConsumer();
+    act(() => {
+      consumerResult.openMember(sampleMember);
+    });
+    act(() => {
+      consumerResult.updateSelectedMember('99999999', { lastName: 'Patched' });
+    });
+    expect(getByTestId('memberName').textContent).toBe('Smith');
+  });
+
+  it('does nothing when the panel is closed', () => {
+    const { getByTestId } = renderConsumer();
+    act(() => {
+      consumerResult.updateSelectedMember('10000001', { lastName: 'Patched' });
+    });
+    expect(getByTestId('isOpen').textContent).toBe('false');
+    expect(getByTestId('memberName').textContent).toBe('none');
   });
 });
 

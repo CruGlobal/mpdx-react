@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
+import { SnackbarProvider } from 'notistack';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -54,36 +55,38 @@ const renderReport = ({
   render(
     <TestRouter>
       <ThemeProvider theme={theme}>
-        <VirtuosoMockContext.Provider
-          value={{ viewportHeight: 800, itemHeight: 80 }}
-        >
-          <GqlMockedProvider<{
-            ManagedStaff: ManagedStaffQuery;
-            ManagedStaffTeams: ManagedStaffTeamsQuery;
-          }>
-            mocks={
-              {
-                ManagedStaff: managedStaff,
-                ManagedStaffTeams: managedStaffTeamsMock(),
-                ...mocks,
-              } as ApolloErgonoMockMap
-            }
-            onCall={mutationSpy}
+        <SnackbarProvider>
+          <VirtuosoMockContext.Provider
+            value={{ viewportHeight: 800, itemHeight: 80 }}
           >
-            <MpdSupervisorReportProvider>
-              <MpdSupervisorReport
-                panelOpen={panelOpen}
-                onNavListToggle={onNavListToggle}
-                onFilterListToggle={onFilterListToggle}
-                title="MPD Supervisor Report"
-              />
-              {withFilters && (
-                <MpdSupervisorReportFilterPanel onClose={jest.fn()} />
-              )}
-              <StaffMemberDrawer />
-            </MpdSupervisorReportProvider>
-          </GqlMockedProvider>
-        </VirtuosoMockContext.Provider>
+            <GqlMockedProvider<{
+              ManagedStaff: ManagedStaffQuery;
+              ManagedStaffTeams: ManagedStaffTeamsQuery;
+            }>
+              mocks={
+                {
+                  ManagedStaff: managedStaff,
+                  ManagedStaffTeams: managedStaffTeamsMock(),
+                  ...mocks,
+                } as ApolloErgonoMockMap
+              }
+              onCall={mutationSpy}
+            >
+              <MpdSupervisorReportProvider>
+                <MpdSupervisorReport
+                  panelOpen={panelOpen}
+                  onNavListToggle={onNavListToggle}
+                  onFilterListToggle={onFilterListToggle}
+                  title="MPD Supervisor Report"
+                />
+                {withFilters && (
+                  <MpdSupervisorReportFilterPanel onClose={jest.fn()} />
+                )}
+                <StaffMemberDrawer />
+              </MpdSupervisorReportProvider>
+            </GqlMockedProvider>
+          </VirtuosoMockContext.Provider>
+        </SnackbarProvider>
       </ThemeProvider>
     </TestRouter>,
   );

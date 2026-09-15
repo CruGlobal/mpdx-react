@@ -1,10 +1,13 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { act, render, within } from '@testing-library/react';
+import { act, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
+import { UpdateStaffGeographicLocationMutation } from '../GeographicLocationSelect/UpdateStaffGeographicLocation.generated';
 import {
   MpdSupervisorReportProvider,
   useMpdSupervisorReport,
@@ -14,6 +17,18 @@ import { MonthlyPayrollHistoryQuery } from '../StaffDetailsTabs/Payroll/MonthlyP
 import { ManagedStaffMember } from '../helpers';
 import { managedStaffMember } from '../mpdSupervisorReportMocks';
 import { StaffMemberDrawer } from './StaffMemberDrawer';
+
+const geographicConstants = {
+  constant: {
+    mpdGoalBenefitsConstants: [{ id: 'benefits-1' }],
+    mpdGoalGeographicConstants: [
+      { location: 'None', percentageMultiplier: 0 },
+      { location: 'Orlando, FL', percentageMultiplier: 0.06 },
+      { location: 'New York, NY', percentageMultiplier: 0.12 },
+    ],
+    mpdGoalMiscConstants: [],
+  },
+};
 
 const memberWithSpouse = managedStaffMember();
 
@@ -46,20 +61,31 @@ const renderDrawer = ({
   render(
     <TestRouter>
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{
-          MonthlyPayrollSummary: MonthlyPayrollSummaryQuery;
-          MonthlyPayrollHistory: MonthlyPayrollHistoryQuery;
-        }>
-          mocks={{
-            MonthlyPayrollSummary: { monthlyPayrollSummary: monthlySummary },
-            MonthlyPayrollHistory: { monthlyPayrollHistory: payrollHistory },
-          }}
-        >
-          <MpdSupervisorReportProvider>
-            <Opener />
-            <StaffMemberDrawer />
-          </MpdSupervisorReportProvider>
-        </GqlMockedProvider>
+        <SnackbarProvider>
+          <GqlMockedProvider<{
+            MonthlyPayrollSummary: MonthlyPayrollSummaryQuery;
+            MonthlyPayrollHistory: MonthlyPayrollHistoryQuery;
+            GoalCalculatorConstants: GoalCalculatorConstantsQuery;
+            UpdateStaffGeographicLocation: UpdateStaffGeographicLocationMutation;
+          }>
+            mocks={{
+              MonthlyPayrollSummary: { monthlyPayrollSummary: monthlySummary },
+              MonthlyPayrollHistory: { monthlyPayrollHistory: payrollHistory },
+              GoalCalculatorConstants: geographicConstants,
+              UpdateStaffGeographicLocation: {
+                updateManagedStaffGeographicLocation: {
+                  geographicLocation: 'New York, NY',
+                  newStaffMonthlySalary: 3000,
+                },
+              },
+            }}
+          >
+            <MpdSupervisorReportProvider>
+              <Opener />
+              <StaffMemberDrawer />
+            </MpdSupervisorReportProvider>
+          </GqlMockedProvider>
+        </SnackbarProvider>
       </ThemeProvider>
     </TestRouter>,
   );
@@ -97,6 +123,67 @@ describe('StaffMemberDrawer', () => {
     openMember(memberWithoutSpouse);
     expect(getByText('Alice Jones')).toBeInTheDocument();
     expect(queryByText(/Spouse:/)).not.toBeInTheDocument();
+  });
+
+  it('renders the benchmark labels and amounts', () => {
+    const { getByText } = renderDrawer();
+    openMember(memberWithSpouse);
+    expect(getByText('MPD Health Benchmark:')).toBeInTheDocument();
+    expect(getByText('Monthly Gross Salary')).toBeInTheDocument();
+    expect(getByText('$4,500.00')).toBeInTheDocument();
+    expect(getByText('New Staff Monthly Salary')).toBeInTheDocument();
+    expect(getByText('$2,500.00')).toBeInTheDocument();
+  });
+
+  it('renders a zero benchmark as currency rather than a dash', () => {
+    const { getAllByText } = renderDrawer();
+    openMember(
+      managedStaffMember({
+        newStaffMonthlySalary: 0,
+        quarterlyHealth: { monthlyGrossSalary: 0, completedQuarters: [] },
+      }),
+    );
+    expect(getAllByText('$0.00')).toHaveLength(2);
+  });
+
+  it('omits the amount when the monthly gross salary is missing', () => {
+    const { getByText, queryByText } = renderDrawer();
+    openMember(
+      managedStaffMember({
+        quarterlyHealth: { monthlyGrossSalary: null, completedQuarters: [] },
+      }),
+    );
+    expect(queryByText('$4,500.00')).not.toBeInTheDocument();
+    expect(getByText('$2,500.00')).toBeInTheDocument();
+  });
+
+  it('omits the amount when the new staff monthly salary is missing', () => {
+    const { getByText, queryByText } = renderDrawer();
+    openMember(managedStaffMember({ newStaffMonthlySalary: null }));
+    expect(queryByText('$2,500.00')).not.toBeInTheDocument();
+    expect(getByText('$4,500.00')).toBeInTheDocument();
+  });
+
+  it('shows the selected member saved geographic location', async () => {
+    const { findByRole } = renderDrawer();
+    openMember(memberWithSpouse);
+    const input = await findByRole('combobox', { name: 'Geographic Location' });
+    await waitFor(() => expect(input).toHaveValue('Orlando, FL (6%)'));
+  });
+
+  it('updates the new staff monthly salary after saving a location', async () => {
+    const { findByRole, getByRole, getByText, queryByText } = renderDrawer();
+    openMember(memberWithSpouse);
+
+    const input = await findByRole('combobox', { name: 'Geographic Location' });
+    await waitFor(() => expect(input).not.toBeDisabled());
+
+    userEvent.type(input, 'New York');
+    userEvent.click(await findByRole('option', { name: 'New York, NY (12%)' }));
+    userEvent.click(getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => expect(getByText('$3,000.00')).toBeInTheDocument());
+    expect(queryByText('$2,500.00')).not.toBeInTheDocument();
   });
 
   it('renders all five detail tabs', () => {
