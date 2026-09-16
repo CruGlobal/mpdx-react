@@ -22,7 +22,7 @@ export const quickFilterLabel = (
     case MpdSupervisorReportQuickFilterEnum.NegativeLastMonth:
       return t('Negative last month');
     case MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative:
-      return t('3+ months negative');
+      return t('Negative last 3+ months');
     case MpdSupervisorReportQuickFilterEnum.AllPeople:
     default:
       return t('All people');
