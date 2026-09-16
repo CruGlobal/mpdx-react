@@ -104,7 +104,7 @@ export const quarterAmountLabel = ({
   if (averagePayroll === null) {
     return t('Partial');
   }
-  if (status === MpdHealthStatusEnum.Gray) {
+  if (status === MpdHealthStatusEnum.Gray && !averagePayroll) {
     return '-';
   }
   return formatCurrency(averagePayroll);

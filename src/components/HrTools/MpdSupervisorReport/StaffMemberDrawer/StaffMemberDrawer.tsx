@@ -1,7 +1,7 @@
 import React from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { Avatar, Box, IconButton, Tab, Typography } from '@mui/material';
+import { Alert, Avatar, Box, IconButton, Tab, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
@@ -109,6 +109,8 @@ export const StaffMemberDrawer: React.FC = () => {
   const team =
     teams.employee.map(({ name }) => name).join(', ') || pendingField;
   const monthlyGrossSalary = quarterlyHealth?.monthlyGrossSalary ?? null;
+  const missingBenchmark =
+    monthlyGrossSalary === null || newStaffMonthlySalary === null;
 
   return (
     <Box
@@ -185,6 +187,11 @@ export const StaffMemberDrawer: React.FC = () => {
               }
             />
           </StaffInfo>
+          {missingBenchmark && (
+            <Alert severity="error" sx={{ width: 0, minWidth: '100%' }}>
+              {t('MPD health cannot be graded without both benchmarks.')}
+            </Alert>
+          )}
         </Box>
 
         <Box

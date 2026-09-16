@@ -120,6 +120,12 @@ describe('quarterAmountLabel', () => {
     );
   });
 
+  it('shows the amount for a gray quarter that has real payroll', () => {
+    expect(
+      label({ averagePayroll: 3200, status: MpdHealthStatusEnum.Gray }),
+    ).toBe('$3200.00');
+  });
+
   it('prefers N/A over Partial when both apply', () => {
     expect(label({ hasStaffAccount: false, averagePayroll: null })).toBe('N/A');
   });
