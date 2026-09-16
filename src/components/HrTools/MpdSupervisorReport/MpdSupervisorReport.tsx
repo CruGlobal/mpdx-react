@@ -21,13 +21,7 @@ import {
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { getHeaderTitleAccess } from 'src/components/Shared/MultiPageLayout/helpers';
 import { NavFilterIcon } from 'src/components/Shared/styledComponents/NavFilterIcon';
-import { useDebouncedValue } from 'src/hooks/useDebounce';
 import theme from 'src/theme';
-import {
-  ALL_TEAMS,
-  MpdSupervisorReportQuickFilterEnum,
-} from './Filters/mpdSupervisorReportFilters';
-import { useManagedStaffQuery } from './ManagedStaff.generated';
 import { Panel, useMpdSupervisorReport } from './MpdSupervisorReportContext';
 import { StaffMember } from './StaffMemberRow/StaffMember';
 import {
@@ -35,9 +29,6 @@ import {
   buildQuarterChips,
   getQuarterLabel,
 } from './helpers';
-
-const searchDebounceMs = 500;
-const pageSize = 25;
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -95,30 +86,17 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
   title,
 }) => {
   const { t } = useTranslation();
-  const { openMember, search, setSearch, team, activeQuickFilter } =
-    useMpdSupervisorReport();
-
-  const debouncedSearch = useDebouncedValue(search, searchDebounceMs);
-
-  // TODO(MPDX-9987): Add employment type filter once the API supports it
-  const { data, loading, error, fetchMore } = useManagedStaffQuery({
-    variables: {
-      first: pageSize,
-      name: debouncedSearch.trim() || null,
-      teamIds: team === ALL_TEAMS ? null : [team],
-      // Send the flag only when its chip is active; false would filter on it.
-      negativeLastMonth:
-        activeQuickFilter ===
-          MpdSupervisorReportQuickFilterEnum.NegativeLastMonth || null,
-      negativeThreeMonths:
-        activeQuickFilter ===
-          MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative || null,
-    },
-  });
-
-  const staffMembers = data?.managedStaff.nodes ?? [];
-  const totalCount = data?.managedStaff.totalCount ?? 0;
-  const pageInfo = data?.managedStaff.pageInfo;
+  const {
+    openMember,
+    search,
+    setSearch,
+    staffMembers,
+    totalCount,
+    staffLoading,
+    staffError,
+    hasNextPage,
+    loadMore,
+  } = useMpdSupervisorReport();
 
   // Every row covers the same four quarters, so the first one labels the header.
   const quarterLabels = useMemo(
@@ -206,11 +184,11 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
         </QuartersContainer>
 
         <Box sx={{ flex: 1, minHeight: 0 }}>
-          {error && !staffMembers.length ? (
-            <Alert severity="error">{error.message}</Alert>
+          {staffError && !staffMembers.length ? (
+            <Alert severity="error">{staffError.message}</Alert>
           ) : (
             <InfiniteList
-              loading={loading}
+              loading={staffLoading}
               data={staffMembers}
               disableHover
               style={{ height: '100%' }}
@@ -222,8 +200,8 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
                 />
               )}
               endReached={() => {
-                if (pageInfo?.hasNextPage) {
-                  fetchMore({ variables: { after: pageInfo.endCursor } });
+                if (hasNextPage) {
+                  loadMore();
                 }
               }}
               EmptyPlaceholder={

@@ -83,6 +83,7 @@ export const StaffMemberDrawer: React.FC = () => {
     closePanel,
     selectedTabKey,
     handleTabChange: handleChange,
+    refetchStaff,
   } = useMpdSupervisorReport();
 
   if (!selectedMember) {
@@ -203,12 +204,13 @@ export const StaffMemberDrawer: React.FC = () => {
             firstName={firstName}
             personNumber={personNumber}
             geographicLocation={geographicLocation}
-            onSaved={(geographicLocation, newStaffMonthlySalary) =>
+            onSaved={(geographicLocation, newStaffMonthlySalary) => {
               updateSelectedMember(personNumber, {
                 geographicLocation,
                 newStaffMonthlySalary,
-              })
-            }
+              });
+              refetchStaff();
+            }}
           />
         </Box>
       </StaffInfo>
