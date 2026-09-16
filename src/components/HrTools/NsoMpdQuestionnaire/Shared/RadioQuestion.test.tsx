@@ -77,6 +77,31 @@ describe('RadioQuestion', () => {
     );
   });
 
+  it('shows an option description under its label and links it to the radio', () => {
+    const { getByRole, getByText } = render(
+      <NsoMpdQuestionnaireTestWrapper>
+        <RadioQuestion
+          fieldName="geographicLocation"
+          schema={schema}
+          label="Pick one"
+          options={[
+            { value: 'A', label: 'Option A', description: 'The first choice' },
+            { value: 'B', label: 'Option B' },
+          ]}
+        />
+      </NsoMpdQuestionnaireTestWrapper>,
+    );
+
+    const radio = getByRole('radio', { name: 'Option A' });
+    expect(getByText('The first choice')).toHaveAttribute(
+      'id',
+      radio.getAttribute('aria-describedby'),
+    );
+    expect(getByRole('radio', { name: 'Option B' })).not.toHaveAttribute(
+      'aria-describedby',
+    );
+  });
+
   it('lays options out in a row when row is set', () => {
     const { getByRole } = render(<TestComponent row />);
 
