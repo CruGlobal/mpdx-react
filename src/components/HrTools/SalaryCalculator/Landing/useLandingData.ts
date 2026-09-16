@@ -96,6 +96,13 @@ export const useLandingData = (): LandingData => {
     };
   }, [hcmData]);
 
+  // The latest calculation may have been created by the spouse, so orient it to the user's
+  // perspective before exposing its amounts
+  const calculation = useMemo(
+    () => orientSalaryRequest(latestCalculation, self?.staffInfo.personNumber),
+    [latestCalculation, self],
+  );
+
   const staffAccountId = useMemo(
     () => staffAccountIdData?.user?.staffAccountId ?? null,
     [staffAccountIdData],
@@ -264,7 +271,7 @@ export const useLandingData = (): LandingData => {
       calculationLoading ||
       accountBalanceLoading ||
       staffAccountIdLoading,
-    calculation: latestCalculation,
+    calculation,
     requestedOn,
     processedOn,
     feedback,
