@@ -532,6 +532,9 @@ describe('GoalSettingsForm', () => {
         goalCalculationMock={{
           newStaffGoalCalculation: {
             ...defaultMock.newStaffGoalCalculation,
+            // Age still blocks the save; the null benefits plan does not,
+            // because it defaults to Select.
+            age: null,
             benefitsPlan: null,
           },
         }}
@@ -547,10 +550,12 @@ describe('GoalSettingsForm', () => {
     // asserting translated copy.
     const summary = await findByRole('status');
     expect(summary).toHaveTextContent(/\d+ field still needs a value/);
-    expect(summary).toHaveTextContent('Benefits Plan is required');
+    expect(summary).toHaveTextContent('Age is required');
+    // The unset benefits plan defaulted to Select, so it is not missing.
+    expect(summary).not.toHaveTextContent('Benefits Plan is required');
     // Deduplicated, so a married household does not list the same rule twice.
     expect(summary).not.toHaveTextContent('Age is requiredAge is required');
-    expect(getByRole('combobox', { name: 'Benefits Selection' })).toBeInvalid();
+    expect(getByRole('combobox', { name: 'Benefits Selection' })).toBeValid();
     expect(mutationSpy).not.toHaveGraphqlOperation(
       'UpdateNewStaffGoalCalculation',
     );
@@ -564,7 +569,7 @@ describe('GoalSettingsForm', () => {
         goalCalculationMock={{
           newStaffGoalCalculation: {
             ...defaultMock.newStaffGoalCalculation,
-            benefitsPlan: null,
+            age: null,
           },
         }}
       />,
@@ -680,7 +685,7 @@ describe('GoalSettingsForm', () => {
           goalCalculationMock={{
             newStaffGoalCalculation: {
               ...completeMock.newStaffGoalCalculation,
-              benefitsPlan: null,
+              age: null,
             },
           }}
         />,
@@ -688,6 +693,23 @@ describe('GoalSettingsForm', () => {
 
       expect(await findByText('Incomplete')).toBeInTheDocument();
       expect(queryByText('Complete')).not.toBeInTheDocument();
+    });
+
+    it('keeps the Complete chip when the benefits plan is unset', async () => {
+      // A null plan defaults to Select, so it can never block completion.
+      const { findByText, queryByText } = render(
+        <TestComponent
+          goalCalculationMock={{
+            newStaffGoalCalculation: {
+              ...completeMock.newStaffGoalCalculation,
+              benefitsPlan: null,
+            },
+          }}
+        />,
+      );
+
+      expect(await findByText('Complete')).toBeInTheDocument();
+      expect(queryByText('Incomplete')).not.toBeInTheDocument();
     });
 
     it('shows an Incomplete chip when the spouse required fields are missing', async () => {
