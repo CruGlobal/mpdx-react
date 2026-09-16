@@ -151,7 +151,7 @@ export const TransfersTable: React.FC<TransfersTableProps> = ({
         : t('Failed to add end date');
     try {
       if (calendarRow) {
-        const recurringEnd: string | null = date ? date.toISO() : null;
+        const recurringEnd: string | null = date ? date.toISODate() : null;
         await updateRecurringTransfer({
           variables: {
             id: calendarRow.recurringId ?? '',
