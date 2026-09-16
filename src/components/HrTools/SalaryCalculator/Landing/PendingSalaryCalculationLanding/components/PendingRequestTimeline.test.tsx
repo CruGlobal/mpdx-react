@@ -15,6 +15,7 @@ const createCalculation = (
 ): LatestCalculation => ({
   id: '1',
   status,
+  personNumber: '000123456',
   mhaAmount: null,
   spouseMhaAmount: null,
   salary: null,
@@ -22,6 +23,8 @@ const createCalculation = (
   submittedAt: '2025-01-15T10:00:00Z',
   changesRequestedAt: null,
   feedback,
+  calculations: { requestedGross: 0 },
+  spouseCalculations: null,
 });
 
 interface TestComponentProps {
