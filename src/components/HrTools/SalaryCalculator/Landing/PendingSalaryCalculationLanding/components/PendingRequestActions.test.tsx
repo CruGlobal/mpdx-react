@@ -9,6 +9,7 @@ type LatestCalculation = LandingSalaryCalculationsQuery['latestCalculation'];
 
 const mockCalculation: LatestCalculation = {
   id: '1',
+  personNumber: '000123456',
   mhaAmount: null,
   spouseMhaAmount: null,
   salary: null,
@@ -17,6 +18,8 @@ const mockCalculation: LatestCalculation = {
   changesRequestedAt: null,
   feedback: null,
   status: SalaryRequestStatusEnum.Pending,
+  calculations: { requestedGross: 0 },
+  spouseCalculations: null,
 };
 
 const mutationSpy = jest.fn();
