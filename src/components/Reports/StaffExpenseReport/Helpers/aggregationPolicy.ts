@@ -61,8 +61,9 @@ const salaryByDate: AggregationPolicy = {
   perPerson: true,
 };
 
-const subCategoryPolicies: Partial<
-  Record<StaffExpensesSubCategoryEnum, AggregationPolicy>
+const subCategoryPolicies: Record<
+  StaffExpensesSubCategoryEnum,
+  AggregationPolicy
 > = {
   [StaffExpensesSubCategoryEnum.AccountTransfer]: itemize,
   [StaffExpensesSubCategoryEnum.AccountTransferInternalGift]: itemize,
@@ -142,6 +143,7 @@ const subCategoryPolicies: Partial<
   [StaffExpensesSubCategoryEnum.SummerMission]: itemize,
   // The Sheet gives no rule for Staffcard.
   [StaffExpensesSubCategoryEnum.Staffcard]: itemize,
+  [StaffExpensesSubCategoryEnum.OutOfPocket]: itemize,
   [StaffExpensesSubCategoryEnum.PaCard]: monthly,
 
   [StaffExpensesSubCategoryEnum.Transfer]: itemize,
