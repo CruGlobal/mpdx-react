@@ -76,6 +76,26 @@ describe('Summary', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('omits spouse rows and shows SOSA for a sosa staff member', async () => {
+    const { findByRole, queryByRole } = render(
+      <TestComponent
+        newStaffQuestionnaire={{
+          maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Sosa,
+          variant: NewStaffQuestionnaireVariantEnum.Sosa,
+          spouseFirstName: null,
+          spouseAge: null,
+          spouseTenure: null,
+        }}
+      />,
+    );
+    expect(
+      await findByRole('row', { name: 'Family status SOSA' }),
+    ).toBeInTheDocument();
+    expect(
+      queryByRole('rowheader', { name: 'Spouse name' }),
+    ).not.toBeInTheDocument();
+  });
+
   it('shows the stored tenure for each person', async () => {
     const { findByRole, getByRole } = render(<TestComponent />);
 
