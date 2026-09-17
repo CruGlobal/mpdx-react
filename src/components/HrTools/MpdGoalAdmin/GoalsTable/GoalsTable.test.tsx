@@ -1,6 +1,12 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { act, render, waitFor, within } from '@testing-library/react';
+import {
+  RenderResult,
+  act,
+  render,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
@@ -134,6 +140,17 @@ const renderLoadedTable = async (
   return screen;
 };
 
+const getFirstRowCell = (
+  getAllByRole: RenderResult['getAllByRole'],
+  header: string,
+) => {
+  const headers = getAllByRole('columnheader').map((cell) => cell.textContent);
+  // Fail on the missing header rather than on an undefined cell if it is renamed.
+  expect(headers).toContain(header);
+  const cells = within(getAllByRole('row')[1]).getAllByRole('cell');
+  return cells[headers.indexOf(header)];
+};
+
 describe('GoalsTable', () => {
   beforeEach(() => mutationSpy.mockClear());
 
@@ -144,6 +161,22 @@ describe('GoalsTable', () => {
     // header row + the first page of data rows
     expect(getAllByRole('row')).toHaveLength(
       Math.min(rows.length, DEFAULT_ROWS_PER_PAGE) + 1,
+    );
+  });
+
+  it('shows the OneApp sub-ministry under Campus Division', () => {
+    const { getAllByRole } = renderTable([
+      { ...rows[0], subministry: 'CMCH01' },
+    ]);
+    expect(getFirstRowCell(getAllByRole, 'Campus Division')).toHaveTextContent(
+      'CMCH01',
+    );
+  });
+
+  it('renders a placeholder, not a blank cell, for a missing sub-ministry', () => {
+    const { getAllByRole } = renderTable([{ ...rows[0], subministry: '' }]);
+    expect(getFirstRowCell(getAllByRole, 'Campus Division')).toHaveTextContent(
+      '—',
     );
   });
 

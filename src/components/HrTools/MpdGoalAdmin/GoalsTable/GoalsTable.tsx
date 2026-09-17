@@ -188,7 +188,7 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
               </TableCell>
               <TableCell>{row.name}</TableCell>
               <TableCell>{row.ministry}</TableCell>
-              <TableCell>{row.geography}</TableCell>
+              <TableCell>{row.subministry || '—'}</TableCell>
               <TableCell>
                 {/* No goal calculation yet — a $0.00 here would read as real. */}
                 {row.mpdGoal === null

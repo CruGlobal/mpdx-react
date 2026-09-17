@@ -65,7 +65,8 @@ export interface StaffGoalRow {
   accountListId: string;
   name: string;
   ministry: string;
-  geography: string;
+  /** OneApp sub-ministry, rendered as the table's Campus Division. */
+  subministry: string;
   /** MPD goal amount in USD; null until the goal calculation exists. */
   mpdGoal: number | null;
   goalStatus: NewStaffCohortAttendeeGoalStatusEnum;
@@ -185,7 +186,7 @@ export const attendeeToRow = (attendee: AttendeeNode): StaffGoalRow => ({
   accountListId: attendee.accountListId,
   name: attendee.displayName,
   ministry: attendee.ministry?.name ?? '',
-  geography: attendee.geographicLocation ?? '',
+  subministry: attendee.subministry ?? '',
   // Absent until the questionnaire completes; the row still renders.
   mpdGoal: attendee.newStaffGoalCalculation?.monthlyGoal ?? null,
   goalStatus: attendee.goalStatus,

@@ -146,7 +146,7 @@ const attendee = (
   accountListId: `account-list-${id}`,
   displayName,
   familyStatus: NewStaffQuestionnaireMaritalStatusEnum.Married,
-  geographicLocation: 'Orlando, FL',
+  subministry: 'CMCH01',
   goalStatus: NewStaffCohortAttendeeGoalStatusEnum.Complete,
   goalSentAt: null,
   coordinators: ['Kim Coordinator'],
