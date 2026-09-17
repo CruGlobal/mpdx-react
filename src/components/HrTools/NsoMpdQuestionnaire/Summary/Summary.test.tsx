@@ -77,7 +77,7 @@ describe('Summary', () => {
   });
 
   it('omits spouse rows and shows SOSA for a sosa staff member', async () => {
-    const { findByRole, queryByRole } = render(
+    const { findByRole, getByRole, queryByRole } = render(
       <TestComponent
         newStaffQuestionnaire={{
           maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Sosa,
@@ -90,6 +90,9 @@ describe('Summary', () => {
     );
     expect(
       await findByRole('row', { name: 'Family status SOSA' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('rowheader', { name: 'Healthcare dependents' }),
     ).toBeInTheDocument();
     expect(
       queryByRole('rowheader', { name: 'Spouse name' }),
