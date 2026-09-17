@@ -3,15 +3,19 @@ import React, {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
+import { ApolloError } from '@apollo/client';
+import { useDebouncedValue } from 'src/hooks/useDebounce';
 import {
   ALL_TEAMS,
   ALL_TYPES,
   MpdSupervisorReportEmploymentTypeEnum,
   MpdSupervisorReportQuickFilterEnum,
 } from './Filters/mpdSupervisorReportFilters';
+import { useManagedStaffQuery } from './ManagedStaff.generated';
 import { StaffDetailTabEnum } from './StaffDetailsTabs/StaffDetailTab';
 import { ManagedStaffMember } from './helpers';
 
@@ -19,6 +23,9 @@ export enum Panel {
   Navigation = 'Navigation',
   Filters = 'Filters',
 }
+
+const searchDebounceMs = 500;
+const pageSize = 25;
 
 export interface MpdSupervisorReportContextValue {
   selectedMember: ManagedStaffMember | undefined;
@@ -43,6 +50,15 @@ export interface MpdSupervisorReportContextValue {
     event: React.SyntheticEvent,
     newKey: StaffDetailTabEnum,
   ) => void;
+
+  // Managed staff query
+  staffMembers: ManagedStaffMember[];
+  totalCount: number;
+  staffLoading: boolean;
+  staffError: ApolloError | undefined;
+  hasNextPage: boolean;
+  loadMore: () => void;
+  refetchStaff: () => void;
 }
 
 export const MpdSupervisorReportContext = createContext<
@@ -80,6 +96,52 @@ export const MpdSupervisorReportProvider: React.FC<{
   const [selectedTabKey, setSelectedTabKey] = useState<StaffDetailTabEnum>(() =>
     parseTabFromQuery(query?.tab),
   );
+
+  const debouncedSearch = useDebouncedValue(search, searchDebounceMs);
+
+  // TODO(MPDX-9987): Add employment type filter once the API supports it
+  const { data, loading, error, fetchMore, refetch } = useManagedStaffQuery({
+    variables: {
+      first: pageSize,
+      name: debouncedSearch.trim() || null,
+      teamIds: team === ALL_TEAMS ? null : [team],
+      // Send the flag only when its chip is active; false would filter on it.
+      negativeLastMonth:
+        activeQuickFilter ===
+          MpdSupervisorReportQuickFilterEnum.NegativeLastMonth || null,
+      negativeThreeMonths:
+        activeQuickFilter ===
+          MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative || null,
+    },
+  });
+
+  const pageInfo = data?.managedStaff.pageInfo;
+  const [wantsNextPage, setWantsNextPage] = useState(false);
+  const loadMore = useCallback(() => setWantsNextPage(true), []);
+
+  useEffect(() => {
+    if (!wantsNextPage || loading) {
+      return;
+    }
+    if (!pageInfo?.hasNextPage || !pageInfo.endCursor) {
+      setWantsNextPage(false);
+      return;
+    }
+    setWantsNextPage(false);
+    fetchMore({ variables: { after: pageInfo.endCursor } });
+  }, [
+    wantsNextPage,
+    loading,
+    pageInfo?.hasNextPage,
+    pageInfo?.endCursor,
+    fetchMore,
+  ]);
+
+  const refetchStaff = useCallback(() => {
+    // Apollo rejects a failed refetch, but the hook's own error state reports it.
+    refetch().catch(() => undefined);
+  }, [refetch]);
+
   const handleTabChange = useCallback(
     (_event: React.SyntheticEvent, newKey: StaffDetailTabEnum) => {
       setSelectedTabKey(newKey);
@@ -118,6 +180,13 @@ export const MpdSupervisorReportProvider: React.FC<{
       selectedTabKey,
       setSelectedTabKey,
       handleTabChange,
+      staffMembers: data?.managedStaff.nodes ?? [],
+      totalCount: data?.managedStaff.totalCount ?? 0,
+      staffLoading: loading,
+      staffError: error,
+      hasNextPage: pageInfo?.hasNextPage ?? false,
+      loadMore,
+      refetchStaff,
     }),
     [
       selectedMember,
@@ -127,6 +196,12 @@ export const MpdSupervisorReportProvider: React.FC<{
       activeQuickFilter,
       selectedTabKey,
       handleTabChange,
+      data,
+      loading,
+      error,
+      pageInfo?.hasNextPage,
+      loadMore,
+      refetchStaff,
     ],
   );
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { Avatar, Box, IconButton, Tab, Typography } from '@mui/material';
+import { Alert, Avatar, Box, IconButton, Tab, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
@@ -83,6 +83,7 @@ export const StaffMemberDrawer: React.FC = () => {
     closePanel,
     selectedTabKey,
     handleTabChange: handleChange,
+    refetchStaff,
   } = useMpdSupervisorReport();
 
   if (!selectedMember) {
@@ -108,6 +109,8 @@ export const StaffMemberDrawer: React.FC = () => {
   const team =
     teams.employee.map(({ name }) => name).join(', ') || pendingField;
   const monthlyGrossSalary = quarterlyHealth?.monthlyGrossSalary ?? null;
+  const missingBenchmark =
+    monthlyGrossSalary === null || newStaffMonthlySalary === null;
 
   return (
     <Box
@@ -133,10 +136,7 @@ export const StaffMemberDrawer: React.FC = () => {
       </Box>
       <StaffInfo>
         <DetailRow label={t('Person Number')} value={personNumber} />
-        <DetailRow
-          label={t('Staff Account Number')}
-          value={staffAccountId ?? pendingField}
-        />
+        <DetailRow label={t('Staff Account Number')} value={staffAccountId} />
         <DetailRow label={t('Employment Type')} value={pendingField} />
         <DetailRow label={t('Team')} value={team} />
       </StaffInfo>
@@ -184,6 +184,11 @@ export const StaffMemberDrawer: React.FC = () => {
               }
             />
           </StaffInfo>
+          {missingBenchmark && (
+            <Alert severity="error" sx={{ width: 0, minWidth: '100%' }}>
+              {t('MPD health cannot be graded without both benchmarks.')}
+            </Alert>
+          )}
         </Box>
 
         <Box
@@ -203,12 +208,13 @@ export const StaffMemberDrawer: React.FC = () => {
             firstName={firstName}
             personNumber={personNumber}
             geographicLocation={geographicLocation}
-            onSaved={(geographicLocation, newStaffMonthlySalary) =>
+            onSaved={(geographicLocation, newStaffMonthlySalary) => {
               updateSelectedMember(personNumber, {
                 geographicLocation,
                 newStaffMonthlySalary,
-              })
-            }
+              });
+              refetchStaff();
+            }}
           />
         </Box>
       </StaffInfo>
@@ -245,20 +251,20 @@ export const StaffMemberDrawer: React.FC = () => {
         </ContactTabsWrapper>
 
         <TabPanel value={StaffDetailTabEnum.MonthlySummary}>
-          <DynamicMonthlySummary staffAccountId={staffAccountId ?? null} />
+          <DynamicMonthlySummary staffAccountId={staffAccountId} />
         </TabPanel>
         <TabPanel value={StaffDetailTabEnum.Quarterly}>
-          <DynamicQuarterly staffAccountId={staffAccountId ?? null} />
+          <DynamicQuarterly staffAccountId={staffAccountId} />
         </TabPanel>
         <TabPanel value={StaffDetailTabEnum.Payroll}>
-          <DynamicPayroll staffAccountId={staffAccountId ?? null} />
+          <DynamicPayroll staffAccountId={staffAccountId} />
         </TabPanel>
         <TabPanel value={StaffDetailTabEnum.MPGAReport}>
-          <DynamicMPGA staffAccountId={staffAccountId ?? null} />
+          <DynamicMPGA staffAccountId={staffAccountId} />
         </TabPanel>
         <TabPanel value={StaffDetailTabEnum.StaffExpenseReport}>
           <StaffTabStaffExpenseReport
-            staffAccountId={staffAccountId ?? null}
+            staffAccountId={staffAccountId}
             personNumber={personNumber}
           />
         </TabPanel>

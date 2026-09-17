@@ -51,7 +51,7 @@ const mockMonthlySummary: MonthlySummary = [
 
 interface TestComponentProps {
   monthlySummary: MonthlySummary;
-  staffAccountId?: string | null;
+  staffAccountId?: string;
   mocks?: ApolloErgonoMockMap;
 }
 
@@ -202,17 +202,6 @@ describe('StaffTabMonthlySummary', () => {
 
   it('renders an empty-state row when the monthly summary is empty', async () => {
     const { findByRole } = render(<TestComponent monthlySummary={[]} />);
-
-    expect(await findByRole('table')).toHaveTableStructure({
-      columnHeaders,
-      cells: ['No data available.'],
-    });
-  });
-
-  it('renders the empty state when there is no staff account', async () => {
-    const { findByRole } = render(
-      <TestComponent monthlySummary={[]} staffAccountId={null} />,
-    );
 
     expect(await findByRole('table')).toHaveTableStructure({
       columnHeaders,

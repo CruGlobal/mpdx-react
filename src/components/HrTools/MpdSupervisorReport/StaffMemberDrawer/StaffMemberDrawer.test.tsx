@@ -30,6 +30,8 @@ const geographicConstants = {
   },
 };
 
+const benchmarkWarning = 'MPD health cannot be graded without both benchmarks.';
+
 const memberWithSpouse = managedStaffMember();
 
 const memberWithoutSpouse = managedStaffMember({
@@ -162,6 +164,28 @@ describe('StaffMemberDrawer', () => {
     openMember(managedStaffMember({ newStaffMonthlySalary: null }));
     expect(queryByText('$2,500.00')).not.toBeInTheDocument();
     expect(getByText('$4,500.00')).toBeInTheDocument();
+  });
+
+  it('warns that health cannot be graded without the gross salary', () => {
+    const { getByText } = renderDrawer();
+    openMember(
+      managedStaffMember({
+        quarterlyHealth: { monthlyGrossSalary: null, completedQuarters: [] },
+      }),
+    );
+    expect(getByText(benchmarkWarning)).toBeInTheDocument();
+  });
+
+  it('warns that health cannot be graded without the new staff salary', () => {
+    const { getByText } = renderDrawer();
+    openMember(managedStaffMember({ newStaffMonthlySalary: null }));
+    expect(getByText(benchmarkWarning)).toBeInTheDocument();
+  });
+
+  it('does not warn about benchmarks when both are set', () => {
+    const { queryByText } = renderDrawer();
+    openMember(memberWithSpouse);
+    expect(queryByText(benchmarkWarning)).not.toBeInTheDocument();
   });
 
   it('shows the selected member saved geographic location', async () => {

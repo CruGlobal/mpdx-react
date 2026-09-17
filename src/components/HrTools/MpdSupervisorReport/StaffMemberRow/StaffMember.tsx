@@ -123,7 +123,7 @@ export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
               >
                 <StaffInfo
                   names={names}
-                  staffAccountID={staffAccountId ?? pendingField}
+                  staffAccountID={staffAccountId}
                   userPersonType={pendingField}
                   team={team}
                 />
@@ -131,10 +131,7 @@ export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
             </Box>
           </GridItem>
           <GridQuarter size={6}>
-            <FiscalYearQuarters
-              quarters={quarters}
-              hasStaffAccount={!!staffAccountId}
-            />
+            <FiscalYearQuarters quarters={quarters} />
           </GridQuarter>
         </Grid>
       </CardActionArea>
@@ -144,11 +141,9 @@ export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
 
 interface FiscalYearQuartersProps {
   quarters: QuarterChipData[];
-  hasStaffAccount: boolean;
 }
 const FiscalYearQuartersBase: React.FC<FiscalYearQuartersProps> = ({
   quarters,
-  hasStaffAccount,
 }) => {
   const { t } = useTranslation();
   const { formatCurrency } = useFormatters();
@@ -159,7 +154,6 @@ const FiscalYearQuartersBase: React.FC<FiscalYearQuartersProps> = ({
         const label = getQuarterLabel(fiscalYear, quarter);
         const amount = quarterAmountLabel({
           t,
-          hasStaffAccount,
           status,
           averagePayroll,
           formatCurrency,
