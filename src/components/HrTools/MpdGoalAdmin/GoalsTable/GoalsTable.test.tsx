@@ -1,6 +1,12 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { act, render, waitFor, within } from '@testing-library/react';
+import {
+  RenderResult,
+  act,
+  render,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
@@ -134,6 +140,17 @@ const renderLoadedTable = async (
   return screen;
 };
 
+const getFirstRowCell = (
+  getAllByRole: RenderResult['getAllByRole'],
+  header: string,
+) => {
+  const headers = getAllByRole('columnheader').map((cell) => cell.textContent);
+  // Fail on the missing header rather than on an undefined cell if it is renamed.
+  expect(headers).toContain(header);
+  const cells = within(getAllByRole('row')[1]).getAllByRole('cell');
+  return cells[headers.indexOf(header)];
+};
+
 describe('GoalsTable', () => {
   beforeEach(() => mutationSpy.mockClear());
 
@@ -151,22 +168,16 @@ describe('GoalsTable', () => {
     const { getAllByRole } = renderTable([
       { ...rows[0], subministry: 'CMCH01' },
     ]);
-    const headers = getAllByRole('columnheader').map(
-      (cell) => cell.textContent,
-    );
-    const cells = within(getAllByRole('row')[1]).getAllByRole('cell');
-    expect(cells[headers.indexOf('Campus Division')]).toHaveTextContent(
+    expect(getFirstRowCell(getAllByRole, 'Campus Division')).toHaveTextContent(
       'CMCH01',
     );
   });
 
   it('renders a placeholder, not a blank cell, for a missing sub-ministry', () => {
     const { getAllByRole } = renderTable([{ ...rows[0], subministry: '' }]);
-    const headers = getAllByRole('columnheader').map(
-      (cell) => cell.textContent,
+    expect(getFirstRowCell(getAllByRole, 'Campus Division')).toHaveTextContent(
+      '—',
     );
-    const cells = within(getAllByRole('row')[1]).getAllByRole('cell');
-    expect(cells[headers.indexOf('Campus Division')]).toHaveTextContent('—');
   });
 
   it('renders an empty placeholder for zero rows', () => {
