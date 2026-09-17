@@ -5,6 +5,7 @@ import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { getLocalizedAge } from 'src/lib/functions/getLocalizedAge';
 import { StaffInfoCard } from '../../Shared/StaffInfoCard/StaffInfoCard';
 import { useNsoMpdQuestionnaire } from '../Shared/NsoMpdQuestionnaireContext';
+import { getFamilyStatusLabel } from '../Shared/helpers/getFamilyStatusLabel';
 
 interface StaffInfoField {
   label: string;
@@ -48,7 +49,7 @@ export const StaffInformation: React.FC = () => {
     },
     {
       label: t('Family Status'),
-      value: hasSpouse ? t('Married') : t('Single'),
+      value: getFamilyStatusLabel(t, questionnaire?.maritalStatus) ?? '',
     },
     {
       label: t('Age'),

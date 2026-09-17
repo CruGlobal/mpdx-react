@@ -1,6 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
 import { NsoMpdQuestionnaireTestWrapper } from '../NsoMpdQuestionnaireTestWrapper';
 import { StaffInformation } from './StaffInformation';
 
@@ -108,6 +109,25 @@ describe('StaffInformation', () => {
     expect(getByRole('textbox', { name: 'Family Status' })).toHaveValue(
       'Single',
     );
+  });
+
+  it('hides the spouse toggle and shows SOSA for a sosa staff member', async () => {
+    const { findByRole, getByRole, queryByRole } = render(
+      <NsoMpdQuestionnaireTestWrapper
+        newStaffQuestionnaire={{
+          maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Sosa,
+          spouseFirstName: null,
+        }}
+      >
+        <StaffInformation />
+      </NsoMpdQuestionnaireTestWrapper>,
+    );
+
+    expect(
+      await findByRole('heading', { name: 'John Doe' }),
+    ).toBeInTheDocument();
+    expect(queryByRole('button', { name: /View/ })).not.toBeInTheDocument();
+    expect(getByRole('textbox', { name: 'Family Status' })).toHaveValue('SOSA');
   });
 
   it('shows a "Not on record" placeholder for an empty field', async () => {
