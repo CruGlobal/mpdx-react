@@ -20,6 +20,8 @@ import { SnackbarProvider } from 'notistack';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 import Rollbar from 'rollbar';
 import { Announcements } from 'src/components/Announcements/Announcements';
+import { AssistantProvider } from 'src/components/Assistant/AssistantProvider';
+import { DynamicAssistantDrawer } from 'src/components/Assistant/DynamicAssistantDrawer';
 import DataDog from 'src/components/DataDog/DataDog';
 import { GlobalStyles } from 'src/components/GlobalStyles/GlobalStyles';
 import { Helpjuice } from 'src/components/Helpjuice/Helpjuice';
@@ -116,18 +118,21 @@ const App = ({
 
   const pageContent = (
     <TaskModalProvider>
-      <Layout>
-        <SnackbarUtilsConfigurator />
-        <Helpjuice />
-        <Announcements />
-        <Box
-          sx={(theme) => ({
-            fontFamily: theme.typography.fontFamily,
-          })}
-        >
-          <Component {...pageProps} key={router.route} />
-        </Box>
-      </Layout>
+      <AssistantProvider>
+        <Layout>
+          <SnackbarUtilsConfigurator />
+          <Helpjuice />
+          <Announcements />
+          <DynamicAssistantDrawer />
+          <Box
+            sx={(theme) => ({
+              fontFamily: theme.typography.fontFamily,
+            })}
+          >
+            <Component {...pageProps} key={router.route} />
+          </Box>
+        </Layout>
+      </AssistantProvider>
     </TaskModalProvider>
   );
 

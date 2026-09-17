@@ -4,6 +4,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
+import { mockSession } from '__tests__/util/mockSession';
 import { TestSetupProvider } from 'src/components/Setup/SetupProvider';
 import theme from '../../../../theme';
 import { getNotificationsMocks } from './Items/NotificationMenu/NotificationMenu.mock';
@@ -56,6 +57,10 @@ const TestComponent: React.FC<TestComponentProps> = ({ onSetupTour }) => (
 );
 
 describe('TopBar', () => {
+  afterEach(() => {
+    process.env.DEVELOPMENT_ENV = 'false';
+  });
+
   it('default', () => {
     const { getByTestId, getByText } = render(<TestComponent />);
 
@@ -67,5 +72,14 @@ describe('TopBar', () => {
     const { queryByText } = render(<TestComponent onSetupTour />);
 
     expect(queryByText('Dashboard')).not.toBeInTheDocument();
+  });
+
+  it('shows the assistant launcher for a developer in a development env', () => {
+    process.env.DEVELOPMENT_ENV = 'true';
+    mockSession({ developer: true });
+
+    const { getByRole } = render(<TestComponent />);
+
+    expect(getByRole('button', { name: 'Open Assistant' })).toBeInTheDocument();
   });
 });
