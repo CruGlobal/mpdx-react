@@ -53,7 +53,7 @@ export const defaultMinistries: MinistryMock[] = [
 ];
 
 export interface NsoMpdQuestionnaireTestWrapperProps {
-  hasSpouse?: boolean;
+  maritalStatus?: NewStaffQuestionnaireMaritalStatusEnum;
   newStaffQuestionnaire?: DeepPartial<
     NewStaffQuestionnaireQuery['newStaffQuestionnaire']
   > | null;
@@ -69,7 +69,7 @@ export interface NsoMpdQuestionnaireTestWrapperProps {
 export const NsoMpdQuestionnaireTestWrapper: React.FC<
   NsoMpdQuestionnaireTestWrapperProps
 > = ({
-  hasSpouse = true,
+  maritalStatus = NewStaffQuestionnaireMaritalStatusEnum.Married,
   newStaffQuestionnaire,
   onCall,
   mockPush,
@@ -105,13 +105,8 @@ export const NsoMpdQuestionnaireTestWrapper: React.FC<
                   : merge(
                       {},
                       newStaffQuestionnaireMock,
+                      { maritalStatus },
                       newStaffQuestionnaire,
-                      hasSpouse
-                        ? undefined
-                        : {
-                            maritalStatus:
-                              NewStaffQuestionnaireMaritalStatusEnum.Single,
-                          },
                     ),
             },
             GoalCalculatorConstants: {

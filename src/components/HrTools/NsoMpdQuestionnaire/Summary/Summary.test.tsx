@@ -61,9 +61,8 @@ describe('Summary', () => {
   it('omits spouse rows for a single staff member', async () => {
     const { findByRole, queryByRole } = render(
       <TestComponent
-        hasSpouse={false}
+        maritalStatus={NewStaffQuestionnaireMaritalStatusEnum.Single}
         newStaffQuestionnaire={{
-          maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
           spouseFirstName: null,
           spouseAge: null,
           spouseTenure: null,
@@ -79,8 +78,8 @@ describe('Summary', () => {
   it('omits spouse rows and shows SOSA for a sosa staff member', async () => {
     const { findByRole, getByRole, queryByRole } = render(
       <TestComponent
+        maritalStatus={NewStaffQuestionnaireMaritalStatusEnum.Sosa}
         newStaffQuestionnaire={{
-          maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Sosa,
           variant: NewStaffQuestionnaireVariantEnum.Sosa,
           spouseFirstName: null,
           spouseAge: null,
@@ -123,10 +122,7 @@ describe('Summary', () => {
   it('omits the spouse cell phone for a single staff member', async () => {
     const { findByRole, queryByRole } = render(
       <TestComponent
-        hasSpouse={false}
-        newStaffQuestionnaire={{
-          maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
-        }}
+        maritalStatus={NewStaffQuestionnaireMaritalStatusEnum.Single}
       />,
     );
     await findByRole('heading', { level: 6, name: 'Personal Information' });

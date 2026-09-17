@@ -97,7 +97,9 @@ describe('StaffInformation', () => {
 
   it('hides the spouse toggle and shows Single without a spouse', async () => {
     const { findByRole, getByRole, queryByRole } = render(
-      <NsoMpdQuestionnaireTestWrapper hasSpouse={false}>
+      <NsoMpdQuestionnaireTestWrapper
+        maritalStatus={NewStaffQuestionnaireMaritalStatusEnum.Single}
+      >
         <StaffInformation />
       </NsoMpdQuestionnaireTestWrapper>,
     );
@@ -114,10 +116,8 @@ describe('StaffInformation', () => {
   it('hides the spouse toggle and shows SOSA for a sosa staff member', async () => {
     const { findByRole, getByRole, queryByRole } = render(
       <NsoMpdQuestionnaireTestWrapper
-        newStaffQuestionnaire={{
-          maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Sosa,
-          spouseFirstName: null,
-        }}
+        maritalStatus={NewStaffQuestionnaireMaritalStatusEnum.Sosa}
+        newStaffQuestionnaire={{ spouseFirstName: null }}
       >
         <StaffInformation />
       </NsoMpdQuestionnaireTestWrapper>,
