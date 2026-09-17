@@ -41,23 +41,37 @@ describe('NsoDetails', () => {
     ).toBeInTheDocument();
   });
 
-  it('explains each housing option under its label', () => {
-    const { getByRole, getByText } = render(<TestComponent />);
+  it.each([
+    ['Single in hotel/dorm room', 'You have no roommate and no suitemates.'],
+    [
+      'Sharing 2 in hotel/suite dorm room',
+      'You have a roommate, or your own bedroom in a shared suite.',
+    ],
+    [
+      'Married couple in hotel/suite dorm room',
+      "You're staying together as a couple or family.",
+    ],
+    [
+      'Family in hotel/suite dorm room',
+      "You're staying together as a couple or family.",
+    ],
+    [
+      'Virtual / Local / Commuting',
+      "You're attending virtually or commuting daily and not using NSO housing.",
+    ],
+  ])(
+    'explains the "%s" housing option under its label',
+    (label, description) => {
+      const { getByRole } = render(<TestComponent />);
 
-    expect(
-      getByText('You have no roommate and no suitemates.'),
-    ).toHaveAttribute(
-      'id',
-      getByRole('radio', { name: 'Single in hotel/dorm room' }).getAttribute(
+      const descriptionId = getByRole('radio', { name: label }).getAttribute(
         'aria-describedby',
-      ),
-    );
-    expect(
-      getByText(
-        "You're attending virtually or commuting daily and not using NSO housing.",
-      ),
-    ).toBeInTheDocument();
-  });
+      );
+      expect(document.getElementById(descriptionId ?? '')).toHaveTextContent(
+        description,
+      );
+    },
+  );
 
   it('saves the housing enum constant', async () => {
     const { getByRole } = render(<TestComponent onCall={mutationSpy} />);
