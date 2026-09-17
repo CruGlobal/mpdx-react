@@ -119,7 +119,7 @@ describe('MpdGoalAdminContext', () => {
       accountListId: 'account-list-row-1',
       name: 'John & Jane Doe',
       ministry: 'Campus',
-      geography: 'Orlando, FL',
+      subministry: 'CMCH01',
       mpdGoal: 6430.25,
       goalStatus: 'COMPLETE',
       goalSentAt: null,
