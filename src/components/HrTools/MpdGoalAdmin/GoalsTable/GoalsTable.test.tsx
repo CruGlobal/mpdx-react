@@ -147,6 +147,19 @@ describe('GoalsTable', () => {
     );
   });
 
+  it('shows the OneApp sub-ministry under Campus Division', () => {
+    const { getAllByRole } = renderTable([
+      { ...rows[0], subministry: 'CMCH01' },
+    ]);
+    const headers = getAllByRole('columnheader').map(
+      (cell) => cell.textContent,
+    );
+    const cells = within(getAllByRole('row')[1]).getAllByRole('cell');
+    expect(cells[headers.indexOf('Campus Division')]).toHaveTextContent(
+      'CMCH01',
+    );
+  });
+
   it('renders an empty placeholder for zero rows', () => {
     const { getByText } = renderTable([]);
     expect(getByText('No goals found')).toBeInTheDocument();

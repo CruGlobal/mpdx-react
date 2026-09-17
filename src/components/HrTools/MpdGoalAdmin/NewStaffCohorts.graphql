@@ -47,7 +47,7 @@ query NewStaffCohortAttendees($cohortId: ID!, $search: String, $after: String) {
         accountListId
         displayName
         familyStatus
-        geographicLocation
+        subministry
         goalStatus
         goalSentAt
         coordinators
