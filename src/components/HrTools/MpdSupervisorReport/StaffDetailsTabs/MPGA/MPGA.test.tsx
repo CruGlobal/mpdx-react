@@ -9,7 +9,7 @@ const staffAccountId = '1000000001';
 const accountListId = 'account-list-1';
 const router = { query: { accountListId }, isReady: true };
 
-const renderMPGA = (staffAccountId: string | null) =>
+const renderMPGA = (staffAccountId: string) =>
   render(
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>

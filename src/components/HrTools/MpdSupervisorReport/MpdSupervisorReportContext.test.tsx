@@ -40,6 +40,7 @@ interface ConsumerResult {
   setEmploymentType: (v: MpdSupervisorReportEmploymentTypeEnum) => void;
   activeQuickFilter: MpdSupervisorReportQuickFilterEnum;
   setActiveQuickFilter: (v: MpdSupervisorReportQuickFilterEnum) => void;
+  loadMore: () => void;
 }
 
 let consumerResult: ConsumerResult;
@@ -64,11 +65,12 @@ const Consumer: React.FC = () => {
 const renderInProvider = (
   children: React.ReactNode,
   router: React.ComponentProps<typeof TestRouter>['router'] = {},
+  managedStaff: ManagedStaffQuery = managedStaffMock([sampleMember]),
 ) =>
   render(
     <TestRouter router={router}>
       <GqlMockedProvider<{ ManagedStaff: ManagedStaffQuery }>
-        mocks={{ ManagedStaff: managedStaffMock([sampleMember]) }}
+        mocks={{ ManagedStaff: managedStaff }}
         onCall={mutationSpy}
       >
         <MpdSupervisorReportProvider>{children}</MpdSupervisorReportProvider>
@@ -246,6 +248,49 @@ describe('managed staff query variables', () => {
       expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
         negativeLastMonth: null,
         negativeThreeMonths: true,
+      }),
+    );
+  });
+});
+
+describe('loadMore', () => {
+  const withNextPage: ManagedStaffQuery = {
+    managedStaff: {
+      nodes: [sampleMember],
+      pageInfo: { endCursor: 'cursor-1', hasNextPage: true },
+      totalCount: 2,
+    },
+  };
+
+  it('fetches the next page when asked before the first page arrives', async () => {
+    renderInProvider(<Consumer />, {}, withNextPage);
+
+    act(() => {
+      consumerResult.loadMore();
+    });
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        after: 'cursor-1',
+      }),
+    );
+  });
+
+  it('does not fetch when there is no next page', async () => {
+    renderInProvider(<Consumer />);
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        teamIds: null,
+      }),
+    );
+    act(() => {
+      consumerResult.loadMore();
+    });
+
+    await waitFor(() =>
+      expect(mutationSpy).not.toHaveGraphqlOperation('ManagedStaff', {
+        after: '1',
       }),
     );
   });

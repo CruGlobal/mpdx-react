@@ -136,10 +136,7 @@ export const StaffMemberDrawer: React.FC = () => {
       </Box>
       <StaffInfo>
         <DetailRow label={t('Person Number')} value={personNumber} />
-        <DetailRow
-          label={t('Staff Account Number')}
-          value={staffAccountId ?? pendingField}
-        />
+        <DetailRow label={t('Staff Account Number')} value={staffAccountId} />
         <DetailRow label={t('Employment Type')} value={pendingField} />
         <DetailRow label={t('Team')} value={team} />
       </StaffInfo>
@@ -254,20 +251,20 @@ export const StaffMemberDrawer: React.FC = () => {
         </ContactTabsWrapper>
 
         <TabPanel value={StaffDetailTabEnum.MonthlySummary}>
-          <DynamicMonthlySummary staffAccountId={staffAccountId ?? null} />
+          <DynamicMonthlySummary staffAccountId={staffAccountId} />
         </TabPanel>
         <TabPanel value={StaffDetailTabEnum.Quarterly}>
-          <DynamicQuarterly staffAccountId={staffAccountId ?? null} />
+          <DynamicQuarterly staffAccountId={staffAccountId} />
         </TabPanel>
         <TabPanel value={StaffDetailTabEnum.Payroll}>
-          <DynamicPayroll staffAccountId={staffAccountId ?? null} />
+          <DynamicPayroll staffAccountId={staffAccountId} />
         </TabPanel>
         <TabPanel value={StaffDetailTabEnum.MPGAReport}>
-          <DynamicMPGA staffAccountId={staffAccountId ?? null} />
+          <DynamicMPGA staffAccountId={staffAccountId} />
         </TabPanel>
         <TabPanel value={StaffDetailTabEnum.StaffExpenseReport}>
           <StaffTabStaffExpenseReport
-            staffAccountId={staffAccountId ?? null}
+            staffAccountId={staffAccountId}
             personNumber={personNumber}
           />
         </TabPanel>

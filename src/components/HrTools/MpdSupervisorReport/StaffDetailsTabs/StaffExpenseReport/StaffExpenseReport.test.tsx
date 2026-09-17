@@ -10,7 +10,7 @@ const personNumber = '000000111';
 const accountListId = 'account-list-1';
 const router = { query: { accountListId }, isReady: true };
 
-const renderStaffExpenseReport = (staffAccountId: string | null) =>
+const renderStaffExpenseReport = (staffAccountId: string) =>
   render(
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ViewReportLink } from '../ViewReportLink/ViewReportLink';
 
 interface StaffTabMPGAProps {
-  staffAccountId: string | null;
+  staffAccountId: string;
 }
 
 export const StaffTabMPGA: React.FC<StaffTabMPGAProps> = ({

@@ -3,6 +3,7 @@ import React, {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -115,12 +116,26 @@ export const MpdSupervisorReportProvider: React.FC<{
   });
 
   const pageInfo = data?.managedStaff.pageInfo;
+  const [wantsNextPage, setWantsNextPage] = useState(false);
+  const loadMore = useCallback(() => setWantsNextPage(true), []);
 
-  const loadMore = useCallback(() => {
-    if (pageInfo?.hasNextPage) {
-      fetchMore({ variables: { after: pageInfo.endCursor } });
+  useEffect(() => {
+    if (!wantsNextPage || loading) {
+      return;
     }
-  }, [fetchMore, pageInfo?.hasNextPage, pageInfo?.endCursor]);
+    if (!pageInfo?.hasNextPage || !pageInfo.endCursor) {
+      setWantsNextPage(false);
+      return;
+    }
+    setWantsNextPage(false);
+    fetchMore({ variables: { after: pageInfo.endCursor } });
+  }, [
+    wantsNextPage,
+    loading,
+    pageInfo?.hasNextPage,
+    pageInfo?.endCursor,
+    fetchMore,
+  ]);
 
   const refetchStaff = useCallback(() => {
     // Apollo rejects a failed refetch, but the hook's own error state reports it.

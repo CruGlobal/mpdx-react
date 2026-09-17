@@ -37,7 +37,7 @@ const startingQuarter = {
 
 const renderQuarterly = (
   quarterHistory: QuarterHistory,
-  staffAccountId: string | null = '1000000001',
+  staffAccountId: string = '1000000001',
   mocks: ApolloErgonoMockMap = {},
 ) =>
   render(
@@ -191,26 +191,6 @@ describe('StaffTabQuarterly', () => {
 
     await findByText(heading);
     expect(queryByText(/^FQ/)).not.toBeInTheDocument();
-  });
-
-  it('reads N/A in every quarter when there is no staff account', async () => {
-    const { findByText, getAllByText, queryByText } = renderQuarterly(
-      {
-        monthlyGrossSalary: 0,
-        startingQuarter: null,
-        completedQuarters: completedQuarters.map((quarter) => ({
-          ...quarter,
-          averagePayroll: 0,
-          status: MpdHealthStatusEnum.Gray,
-        })),
-      },
-      null,
-    );
-
-    expect(await findByText('FQ4 25')).toBeInTheDocument();
-    expect(getAllByText('N/A')).toHaveLength(completedQuarters.length);
-    expect(queryByText('-')).not.toBeInTheDocument();
-    expect(queryByText('$0.00')).not.toBeInTheDocument();
   });
 
   it('renders a dash instead of $0.00 for a quarter with no payroll data', async () => {
