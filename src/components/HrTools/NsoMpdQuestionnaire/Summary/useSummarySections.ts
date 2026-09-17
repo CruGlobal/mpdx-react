@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   GoalCalculationRole,
-  NewStaffQuestionnaireMaritalStatusEnum,
   NewStaffQuestionnaireVariantEnum,
 } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
@@ -12,6 +11,7 @@ import { getLocalizedNsoSessions } from 'src/lib/functions/getLocalizedNsoSessio
 import { currencyFormat } from 'src/lib/intlFormat';
 import { NsoMpdQuestionnaireStepEnum } from '../NsoMpdQuestionnaireHelper';
 import { useNsoMpdQuestionnaire } from '../Shared/NsoMpdQuestionnaireContext';
+import { getFamilyStatusLabel } from '../Shared/helpers/getFamilyStatusLabel';
 import { SummaryRow } from './SummarySection';
 
 export interface SummarySectionData {
@@ -80,11 +80,7 @@ export const useSummarySections = (): SummarySectionData[] => {
           ? t('Field')
           : null;
 
-    const familyStatus = maritalStatus
-      ? maritalStatus === NewStaffQuestionnaireMaritalStatusEnum.Single
-        ? t('Single')
-        : t('Married')
-      : null;
+    const familyStatus = getFamilyStatusLabel(t, maritalStatus);
 
     // Gate variant/spouse-dependent rows
     const isSosa = variant === NewStaffQuestionnaireVariantEnum.Sosa;
