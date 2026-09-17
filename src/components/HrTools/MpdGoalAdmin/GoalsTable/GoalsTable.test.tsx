@@ -160,6 +160,15 @@ describe('GoalsTable', () => {
     );
   });
 
+  it('renders a placeholder, not a blank cell, for a missing sub-ministry', () => {
+    const { getAllByRole } = renderTable([{ ...rows[0], subministry: '' }]);
+    const headers = getAllByRole('columnheader').map(
+      (cell) => cell.textContent,
+    );
+    const cells = within(getAllByRole('row')[1]).getAllByRole('cell');
+    expect(cells[headers.indexOf('Campus Division')]).toHaveTextContent('—');
+  });
+
   it('renders an empty placeholder for zero rows', () => {
     const { getByText } = renderTable([]);
     expect(getByText('No goals found')).toBeInTheDocument();
