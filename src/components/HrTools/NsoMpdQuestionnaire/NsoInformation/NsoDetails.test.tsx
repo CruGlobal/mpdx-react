@@ -28,23 +28,43 @@ describe('NsoDetails', () => {
       getByRole('radio', { name: 'Single in hotel/dorm room' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('radio', { name: 'Sharing 2 in hotel/dorm room' }),
+      getByRole('radio', { name: 'Sharing 2 in hotel/suite dorm room' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('radio', { name: 'Couple in hotel/dorm room' }),
+      getByRole('radio', { name: 'Married couple in hotel/suite dorm room' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('radio', { name: 'Family in a hotel/room' }),
+      getByRole('radio', { name: 'Family in hotel/suite dorm room' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('radio', { name: 'Local / Commuting' }),
+      getByRole('radio', { name: 'Virtual / Local / Commuting' }),
+    ).toBeInTheDocument();
+  });
+
+  it('explains each housing option under its label', () => {
+    const { getByRole, getByText } = render(<TestComponent />);
+
+    expect(
+      getByText('You have no roommate and no suitemates.'),
+    ).toHaveAttribute(
+      'id',
+      getByRole('radio', { name: 'Single in hotel/dorm room' }).getAttribute(
+        'aria-describedby',
+      ),
+    );
+    expect(
+      getByText(
+        "You're attending virtually or commuting daily and not using NSO housing.",
+      ),
     ).toBeInTheDocument();
   });
 
   it('saves the housing enum constant', async () => {
     const { getByRole } = render(<TestComponent onCall={mutationSpy} />);
 
-    userEvent.click(getByRole('radio', { name: 'Family in a hotel/room' }));
+    userEvent.click(
+      getByRole('radio', { name: 'Family in hotel/suite dorm room' }),
+    );
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation(

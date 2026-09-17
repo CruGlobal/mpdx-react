@@ -1,5 +1,11 @@
-import React from 'react';
-import { FormControlLabel, Radio, RadioGroup } from '@mui/material';
+import React, { useId } from 'react';
+import {
+  Box,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+  Typography,
+} from '@mui/material';
 import * as yup from 'yup';
 import { LabeledField } from './LabeledField';
 import {
@@ -10,6 +16,8 @@ import {
 export interface RadioOption {
   value: string;
   label: string;
+  /** Shown under the label in muted text to clarify what the option means. */
+  description?: string;
 }
 
 interface RadioQuestionProps {
@@ -20,6 +28,48 @@ interface RadioQuestionProps {
   /** Lay the options out horizontally instead of stacked. */
   row?: boolean;
 }
+
+// Matches the Radio's own padding so the first label line lines up with the circle.
+const radioPadding = '9px';
+
+const RadioQuestionOption: React.FC<{ option: RadioOption }> = ({ option }) => {
+  const labelId = useId();
+  const descriptionId = useId();
+
+  return (
+    <FormControlLabel
+      value={option.value}
+      control={
+        <Radio
+          inputProps={{
+            'aria-labelledby': labelId,
+            'aria-describedby': option.description ? descriptionId : undefined,
+          }}
+        />
+      }
+      disableTypography
+      label={
+        <Box sx={{ paddingBlock: radioPadding }}>
+          <Typography id={labelId} component="span" display="block">
+            {option.label}
+          </Typography>
+          {option.description && (
+            <Typography
+              id={descriptionId}
+              component="span"
+              display="block"
+              variant="caption"
+              color="text.secondary"
+            >
+              {option.description}
+            </Typography>
+          )}
+        </Box>
+      }
+      sx={{ alignItems: 'flex-start' }}
+    />
+  );
+};
 
 /**
  * A single required radio question wired to {@link useQuestionnaireAutoSave}. Saves on change and
@@ -49,12 +99,7 @@ export const RadioQuestion: React.FC<RadioQuestionProps> = ({
           {...fieldProps}
         >
           {options.map((option) => (
-            <FormControlLabel
-              key={option.value}
-              value={option.value}
-              control={<Radio />}
-              label={option.label}
-            />
+            <RadioQuestionOption key={option.value} option={option} />
           ))}
         </RadioGroup>
       )}
