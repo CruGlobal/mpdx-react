@@ -112,10 +112,8 @@ export const StaffInformation: React.FC = () => {
               helperText={field.helperText}
               placeholder={t('Not on record')}
               size="small"
-              slotProps={{
-                input: { readOnly: true },
-                inputLabel: { shrink: true },
-              }}
+              disabled
+              slotProps={{ inputLabel: { shrink: true } }}
             />
           ))}
         </Stack>

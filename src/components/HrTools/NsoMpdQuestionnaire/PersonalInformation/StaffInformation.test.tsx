@@ -4,6 +4,15 @@ import userEvent from '@testing-library/user-event';
 import { NsoMpdQuestionnaireTestWrapper } from '../NsoMpdQuestionnaireTestWrapper';
 import { StaffInformation } from './StaffInformation';
 
+const recordFieldLabels = [
+  'Staff Status',
+  'Family Status',
+  'Age',
+  'Tenure',
+  'Address',
+  'Cell Phone Number',
+];
+
 describe('StaffInformation', () => {
   it("shows the staff member's information from the questionnaire", async () => {
     const { findByRole, getByRole } = render(
@@ -76,7 +85,7 @@ describe('StaffInformation', () => {
 
     const phone = getByRole('textbox', { name: 'Cell Phone Number' });
     expect(phone).toHaveValue('(305) 000-1111');
-    expect(phone).toHaveAttribute('readonly');
+    expect(phone).toBeDisabled();
 
     userEvent.click(getByRole('button', { name: 'View Jane' }));
 
@@ -113,5 +122,24 @@ describe('StaffInformation', () => {
     const phone = await findByRole('textbox', { name: 'Cell Phone Number' });
     expect(phone).toHaveValue('');
     expect(phone).toHaveAttribute('placeholder', 'Not on record');
+  });
+
+  it('disables every on-record field so none of them look editable', async () => {
+    const { findByRole, getByRole } = render(
+      <NsoMpdQuestionnaireTestWrapper>
+        <StaffInformation />
+      </NsoMpdQuestionnaireTestWrapper>,
+    );
+
+    await findByRole('heading', { name: 'John Doe' });
+
+    const expectDisabled = (name: string) =>
+      expect(getByRole('textbox', { name })).toBeDisabled();
+
+    recordFieldLabels.forEach(expectDisabled);
+
+    // The fields re-render inside the spouse toggle, so the greying has to survive it.
+    userEvent.click(getByRole('button', { name: 'View Jane' }));
+    recordFieldLabels.forEach(expectDisabled);
   });
 });
