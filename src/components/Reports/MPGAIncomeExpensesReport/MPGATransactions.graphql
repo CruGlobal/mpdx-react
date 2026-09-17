@@ -31,6 +31,7 @@ query MPGATransactions(
               amount
               transactedAt
               description
+              personNumber
             }
           }
           subCategory

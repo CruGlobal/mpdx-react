@@ -16,12 +16,14 @@ import MPGAReportPage, { getServerSideProps } from './index.page';
 
 const mutationSpy = jest.fn();
 const id = '1000000001';
+const personNumber = '000000111';
 
 interface ComponentProps {
   userType?: UserTypeEnum;
   staffAccountId?: string | null;
   supervisesStaff?: boolean;
   viewedStaffAccountId?: string;
+  viewedPersonNumber?: string;
 }
 
 const Components = ({
@@ -29,6 +31,7 @@ const Components = ({
   staffAccountId = '12345',
   supervisesStaff = false,
   viewedStaffAccountId,
+  viewedPersonNumber,
 }: ComponentProps) => (
   <ThemeProvider theme={theme}>
     <TestRouter
@@ -38,6 +41,7 @@ const Components = ({
           ...(viewedStaffAccountId && {
             staffAccountId: viewedStaffAccountId,
           }),
+          ...(viewedPersonNumber && { personNumber: viewedPersonNumber }),
         },
       }}
     >
@@ -156,6 +160,20 @@ describe('MPGA Report Page', () => {
         expect(mutationSpy).toHaveGraphqlOperation('MPGATransactions', {
           staffAccountId: id,
         }),
+      );
+    });
+
+    it('passes the person number from the url into the household query', async () => {
+      render(
+        <Components
+          supervisesStaff
+          viewedStaffAccountId={id}
+          viewedPersonNumber={personNumber}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('Hcm', { personNumber }),
       );
     });
   });
