@@ -63,7 +63,9 @@ describe('StaffInformation', () => {
 
     expect(
       await findByRole('textbox', { name: 'Tenure' }),
-    ).toHaveAccessibleDescription('Talk to your MPD coordinator to update this');
+    ).toHaveAccessibleDescription(
+      'Talk to your MPD coordinator to update this.',
+    );
   });
 
   it('shows each person read-only cell phone number', async () => {

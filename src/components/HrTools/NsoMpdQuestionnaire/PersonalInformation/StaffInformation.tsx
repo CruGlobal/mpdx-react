@@ -64,7 +64,7 @@ export const StaffInformation: React.FC = () => {
           ? questionnaire?.spouseTenure
           : questionnaire?.tenure
         )?.toString() ?? '',
-      helperText: t('Talk to your MPD coordinator to update this'),
+      helperText: t('Talk to your MPD coordinator to update this.'),
     },
     { label: t('Address'), value: questionnaire?.address ?? '' },
     {
