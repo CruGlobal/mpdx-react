@@ -31,7 +31,7 @@ export enum MonthlySummaryView {
 }
 
 interface StaffTabMonthlySummaryProps {
-  staffAccountId: string | null;
+  staffAccountId: string;
 }
 
 export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
@@ -45,8 +45,7 @@ export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
   );
 
   const { data, loading, error } = useMonthlyPayrollSummaryQuery({
-    variables: { staffAccountId: staffAccountId ?? '' },
-    skip: !staffAccountId,
+    variables: { staffAccountId },
   });
   const monthlySummary = data?.monthlyPayrollSummary ?? [];
 

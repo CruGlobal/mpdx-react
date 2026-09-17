@@ -62,7 +62,7 @@ describe('MpdSupervisorReportFilterPanel', () => {
       getByRole('button', { name: 'Negative last month' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('button', { name: '3+ months negative' }),
+      getByRole('button', { name: 'Negative last 3+ months' }),
     ).toBeInTheDocument();
   });
 
@@ -71,13 +71,13 @@ describe('MpdSupervisorReportFilterPanel', () => {
     // 'All people' chip is active by default (filled variant)
     const allPeopleChip = getByRole('button', { name: 'All people' });
     const threeMonthsChip = getByRole('button', {
-      name: '3+ months negative',
+      name: 'Negative last 3+ months',
     });
 
-    // Click 3+ months negative to make it active
+    // Click the 3+ months chip to make it active
     userEvent.click(threeMonthsChip);
 
-    // After click, '3+ months negative' should be filled (active)
+    // After click, 'Negative last 3+ months' should be filled (active)
     // We can't easily check MUI variant in RTL, so we check re-render with a consumer
     // that reads context. Instead we verify the chip is still rendered and clickable.
     expect(threeMonthsChip).toBeInTheDocument();
@@ -140,7 +140,7 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
   it('clicking a quick-filter chip updates activeQuickFilter in context', async () => {
     const { getByRole, getByTestId } = renderWithConsumer();
     const threeMonthsChip = getByRole('button', {
-      name: '3+ months negative',
+      name: 'Negative last 3+ months',
     });
     userEvent.click(threeMonthsChip);
     expect(getByTestId('activeQuickFilter').textContent).toBe(
@@ -151,8 +151,8 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
   it('clicking All people chip sets activeQuickFilter back to allPeople', async () => {
     const { getByRole, getByTestId } = renderWithConsumer();
 
-    // First switch to 3+ months negative
-    userEvent.click(getByRole('button', { name: '3+ months negative' }));
+    // First switch to negative last 3+ months
+    userEvent.click(getByRole('button', { name: 'Negative last 3+ months' }));
     expect(getByTestId('activeQuickFilter').textContent).toBe(
       'threeMonthsNegative',
     );

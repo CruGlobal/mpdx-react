@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ViewReportLink } from '../ViewReportLink/ViewReportLink';
 
 interface StaffTabStaffExpenseReportProps {
-  staffAccountId: string | null;
+  staffAccountId: string;
   personNumber: string;
 }
 

@@ -78,9 +78,6 @@ export const healthLabel = (
 
 interface QuarterAmountArgs {
   t: TFunction;
-  /** Payroll is keyed on the staff account; without one there was nothing to
-   *  look up, which is a different fact from looking and finding nothing. */
-  hasStaffAccount: boolean;
   status: MpdHealthStatusEnum;
   averagePayroll: number | null;
   /** `formatCurrency` from `useFormatters`, which helpers can't call itself. */
@@ -88,23 +85,19 @@ interface QuarterAmountArgs {
 }
 
 /**
- * Only the last branch is a real amount — the other three are distinct kinds of
- * absence, and none of them is a real $0.00.
+ * Only the last branch is a real amount — the other two are distinct kinds of
+ * absence, and neither is a real $0.00.
  */
 export const quarterAmountLabel = ({
   t,
-  hasStaffAccount,
   status,
   averagePayroll,
   formatCurrency,
 }: QuarterAmountArgs): string => {
-  if (!hasStaffAccount) {
-    return t('N/A');
-  }
   if (averagePayroll === null) {
     return t('Partial');
   }
-  if (status === MpdHealthStatusEnum.Gray) {
+  if (status === MpdHealthStatusEnum.Gray && !averagePayroll) {
     return '-';
   }
   return formatCurrency(averagePayroll);

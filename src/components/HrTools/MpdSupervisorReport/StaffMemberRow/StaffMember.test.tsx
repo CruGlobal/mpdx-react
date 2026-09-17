@@ -41,14 +41,6 @@ describe('StaffMember', () => {
     );
   });
 
-  it('dashes the staff account when the API has none', () => {
-    const { getByTestId } = renderRow(
-      jest.fn(),
-      managedStaffMember({ staffAccountId: null }),
-    );
-    expect(getByTestId('person-numbers')).toHaveTextContent('— · —');
-  });
-
   it('joins the names when a member is on several teams', () => {
     const { getByTestId } = renderRow(
       jest.fn(),
