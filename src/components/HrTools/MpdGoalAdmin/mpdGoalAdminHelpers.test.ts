@@ -168,7 +168,7 @@ describe('attendeeToRow', () => {
       accountListId: 'account-list-row-3',
       name: 'Sam Smith',
       ministry: 'Campus',
-      geography: 'Orlando, FL',
+      subministry: 'CMCH01',
       mpdGoal: 4200,
       goalStatus: NewStaffCohortAttendeeGoalStatusEnum.Complete,
       goalSentAt: null,
@@ -204,14 +204,14 @@ describe('attendeeToRow', () => {
     expect(row.coach).toEqual(coach('coach-x', null, null));
   });
 
-  it('falls back to empty strings for missing ministry and geography', () => {
+  it('falls back to empty strings for missing ministry and subministry', () => {
     const row = attendeeToRow({
       ...attendeeWithoutCoach,
       ministry: null,
-      geographicLocation: null,
+      subministry: null,
     });
     expect(row.ministry).toBe('');
-    expect(row.geography).toBe('');
+    expect(row.subministry).toBe('');
   });
 
   it('keeps every coordinator so the cell can show the overflow count', () => {
