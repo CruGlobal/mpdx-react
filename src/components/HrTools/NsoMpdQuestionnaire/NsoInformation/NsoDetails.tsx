@@ -3,11 +3,15 @@ import { Stack } from '@mui/material';
 import { TFunction, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { CurrencyAdornment } from 'src/components/HrTools/Shared/Adornments';
-import { NewStaffQuestionnaireNsoHousingEnum } from 'src/graphql/types.generated';
+import {
+  NewStaffQuestionnaireNsoHousingEnum,
+  NewStaffQuestionnaireNsoSessionsEnum,
+} from 'src/graphql/types.generated';
 import {
   getLocalizedNsoHousing,
   getLocalizedNsoHousingDescription,
 } from 'src/lib/functions/getLocalizedNsoHousing';
+import { getLocalizedNsoSessions } from 'src/lib/functions/getLocalizedNsoSessions';
 import { NumberQuestion } from '../Shared/NumberQuestion';
 import { RadioOption, RadioQuestion } from '../Shared/RadioQuestion';
 import { getAmountSchema } from '../Shared/helpers/getAmountSchema';
@@ -45,10 +49,14 @@ export const NsoDetails: React.FC = () => {
     [t],
   );
 
-  const sessionOptions: RadioOption[] = [
-    { value: 'IBS_AND_NSO', label: t('IBS and NSO') },
-    { value: 'NSO', label: t('NSO') },
-  ];
+  const sessionOptions = useMemo<RadioOption[]>(
+    () =>
+      [
+        NewStaffQuestionnaireNsoSessionsEnum.IbsAndNso,
+        NewStaffQuestionnaireNsoSessionsEnum.Nso,
+      ].map((value) => ({ value, label: getLocalizedNsoSessions(t, value) })),
+    [t],
+  );
 
   return (
     <Stack spacing={4}>
