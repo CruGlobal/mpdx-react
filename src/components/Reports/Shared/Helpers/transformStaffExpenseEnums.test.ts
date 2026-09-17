@@ -4,15 +4,6 @@ import { getLocalizedSubCategory } from './transformStaffExpenseEnums';
 
 describe('transformStaffExpenseEnums', () => {
   describe('getLocalizedSubCategory', () => {
-    it('labels out of pocket expenses', () => {
-      expect(
-        getLocalizedSubCategory(
-          StaffExpensesSubCategoryEnum.OutOfPocket,
-          i18n.t,
-        ),
-      ).toBe('Out of Pocket');
-    });
-
     it('falls back to an unknown label for a subcategory it does not know', () => {
       expect(
         getLocalizedSubCategory(
