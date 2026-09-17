@@ -173,6 +173,7 @@ export const getLocalizedSubCategory = (
     [StaffExpensesSubCategoryEnum.Purchase]: t('Purchase'),
     [StaffExpensesSubCategoryEnum.SummerMission]: t('Summer Mission'),
     [StaffExpensesSubCategoryEnum.Staffcard]: t('StaffCard'),
+    [StaffExpensesSubCategoryEnum.OutOfPocket]: t('Out of Pocket'),
     // PaCard to "Healthcare Debit Card" mapping is desired by the finance team
     [StaffExpensesSubCategoryEnum.PaCard]: t('Healthcare Debit Card'),
     [StaffExpensesSubCategoryEnum.Unknown]: t('Unknown'),
