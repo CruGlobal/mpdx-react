@@ -61,8 +61,9 @@ const salaryByDate: AggregationPolicy = {
   perPerson: true,
 };
 
-const subCategoryPolicies: Partial<
-  Record<StaffExpensesSubCategoryEnum, AggregationPolicy>
+const subCategoryPolicies: Record<
+  StaffExpensesSubCategoryEnum,
+  AggregationPolicy
 > = {
   [StaffExpensesSubCategoryEnum.AccountTransfer]: itemize,
   [StaffExpensesSubCategoryEnum.AccountTransferInternalGift]: itemize,
