@@ -142,6 +142,7 @@ const subCategoryPolicies: Partial<
   [StaffExpensesSubCategoryEnum.SummerMission]: itemize,
   // The Sheet gives no rule for Staffcard.
   [StaffExpensesSubCategoryEnum.Staffcard]: itemize,
+  [StaffExpensesSubCategoryEnum.OutOfPocket]: itemize,
   [StaffExpensesSubCategoryEnum.PaCard]: monthly,
 
   [StaffExpensesSubCategoryEnum.Transfer]: itemize,
