@@ -1,12 +1,7 @@
-import React, { useId } from 'react';
-import {
-  Box,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-  Typography,
-} from '@mui/material';
+import React from 'react';
+import { RadioGroup } from '@mui/material';
 import * as yup from 'yup';
+import { DescribedRadioOption } from 'src/components/HrTools/Shared/DescribedRadioOption';
 import { LabeledField } from './LabeledField';
 import {
   QuestionnaireField,
@@ -29,48 +24,6 @@ interface RadioQuestionProps {
   row?: boolean;
 }
 
-// Matches the Radio's own padding so the first label line lines up with the circle.
-const radioPadding = '9px';
-
-const RadioQuestionOption: React.FC<{ option: RadioOption }> = ({ option }) => {
-  const labelId = useId();
-  const descriptionId = useId();
-
-  return (
-    <FormControlLabel
-      value={option.value}
-      control={
-        <Radio
-          inputProps={{
-            'aria-labelledby': labelId,
-            'aria-describedby': option.description ? descriptionId : undefined,
-          }}
-        />
-      }
-      disableTypography
-      label={
-        <Box sx={{ paddingBlock: radioPadding }}>
-          <Typography id={labelId} component="span" display="block">
-            {option.label}
-          </Typography>
-          {option.description && (
-            <Typography
-              id={descriptionId}
-              component="span"
-              display="block"
-              variant="caption"
-              color="text.secondary"
-            >
-              {option.description}
-            </Typography>
-          )}
-        </Box>
-      }
-      sx={{ alignItems: 'flex-start' }}
-    />
-  );
-};
-
 /**
  * A single required radio question wired to {@link useQuestionnaireAutoSave}. Saves on change and
  * surfaces the schema's validation message as helper text while empty.
@@ -88,18 +41,20 @@ export const RadioQuestion: React.FC<RadioQuestionProps> = ({
     saveOnChange: true,
   });
 
+  const hasDescriptions = options.some((option) => option.description);
+
   return (
     <LabeledField label={label} required error={error} helperText={helperText}>
       {(aria) => (
         <RadioGroup
           row={row}
-          sx={{ paddingInline: 2 }}
+          sx={{ paddingInline: 2, gap: hasDescriptions ? 2 : 0 }}
           aria-required
           {...aria}
           {...fieldProps}
         >
           {options.map((option) => (
-            <RadioQuestionOption key={option.value} option={option} />
+            <DescribedRadioOption key={option.value} {...option} />
           ))}
         </RadioGroup>
       )}
