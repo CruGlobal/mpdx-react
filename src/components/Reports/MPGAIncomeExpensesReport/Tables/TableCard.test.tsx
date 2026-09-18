@@ -260,6 +260,77 @@ describe('TableCard', () => {
       expect(headers).not.toContain('Total');
     });
 
+    it('does not offer sorting on a single balance row', async () => {
+      const { getAllByRole, findByText, queryByTestId } = render(
+        <BalanceComponent />,
+      );
+
+      await findByText('Balance');
+      const monthHeader = getAllByRole('columnheader').find(
+        (header) => header.getAttribute('data-field') === 'month0',
+      ) as HTMLElement;
+
+      expect(
+        within(monthHeader).queryByTestId('ArrowDownwardIcon'),
+      ).not.toBeInTheDocument();
+      expect(queryByTestId('ArrowUpwardIcon')).not.toBeInTheDocument();
+    });
+
+    it('tells a zero balance apart from a month with no balance', async () => {
+      const { getAllByRole, findByText } = render(
+        <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
+          <TableCard
+            type={ReportTypeEnum.Balance}
+            data={[{ ...balanceRows[0], monthly: [0, 1000] }]}
+            emptyPlaceholder={<span>Empty Table</span>}
+            title="Balance"
+          />
+        </MPGAIncomeExpensesReportTestWrapper>,
+      );
+
+      await findByText('Balance');
+      const monthCells = getAllByRole('gridcell')
+        .filter((cell) => cell.getAttribute('data-field')?.startsWith('month'))
+        .map((cell) => (cell.textContent ?? '').trim());
+
+      expect(monthCells[0]).toBe('0');
+      expect(monthCells[1]).toBe('1,000');
+      expect(monthCells[2]).toBe('-');
+    });
+
+    it('shows a dash for the months after the balance stops', async () => {
+      const { getAllByRole, findByText } = render(
+        <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
+          <TableCard
+            type={ReportTypeEnum.Balance}
+            data={[{ ...balanceRows[0], monthly: [1000, 2000, 3000] }]}
+            emptyPlaceholder={<span>Empty Table</span>}
+            title="Balance"
+          />
+        </MPGAIncomeExpensesReportTestWrapper>,
+      );
+
+      await findByText('Balance');
+      const monthCells = getAllByRole('gridcell')
+        .filter((cell) => cell.getAttribute('data-field')?.startsWith('month'))
+        .map((cell) => (cell.textContent ?? '').trim());
+
+      expect(monthCells).toEqual([
+        '1,000',
+        '2,000',
+        '3,000',
+        '-',
+        '-',
+        '-',
+        '-',
+        '-',
+        '-',
+        '-',
+        '-',
+        '-',
+      ]);
+    });
+
     it('does not render the overall total row', async () => {
       const { findByText, queryByText } = render(<BalanceComponent />);
 

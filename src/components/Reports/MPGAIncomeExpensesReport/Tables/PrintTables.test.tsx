@@ -138,6 +138,60 @@ describe('PrintTables', () => {
       ).not.toBeInTheDocument();
     });
 
+    it('tells a zero balance apart from a month with no balance', async () => {
+      const { findByRole } = render(
+        <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
+          <PrintTables
+            type={ReportTypeEnum.Balance}
+            data={[{ ...balanceRows[0], monthly: [0, 1000] }]}
+            title="Balance"
+          />
+        </MPGAIncomeExpensesReportTestWrapper>,
+      );
+
+      const row = await findByRole('row', { name: /Ending Balance/ });
+      const monthCells = Array.from(row.querySelectorAll('td'))
+        .slice(1, 13)
+        .map((td) => td.textContent?.trim());
+
+      expect(monthCells[0]).toBe('0');
+      expect(monthCells[1]).toBe('1,000');
+      expect(monthCells[2]).toBe('-');
+    });
+
+    it('shows a dash for the months after the balance stops', async () => {
+      const { findByRole } = render(
+        <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
+          <PrintTables
+            type={ReportTypeEnum.Balance}
+            data={[{ ...balanceRows[0], monthly: [1000, 2000, 3000] }]}
+            title="Balance"
+          />
+        </MPGAIncomeExpensesReportTestWrapper>,
+      );
+
+      const row = await findByRole('row', { name: /Ending Balance/ });
+      const cells = Array.from(row.querySelectorAll('td'));
+
+      // description + 12 months + average (spanning the missing total column)
+      expect(cells).toHaveLength(14);
+      const monthCells = cells.slice(1, 13).map((td) => td.textContent?.trim());
+      expect(monthCells).toEqual([
+        '1,000',
+        '2,000',
+        '3,000',
+        '-',
+        '-',
+        '-',
+        '-',
+        '-',
+        '-',
+        '-',
+        '-',
+        '-',
+      ]);
+    });
+
     it('colors a negative balance red and leaves a positive one alone', async () => {
       const { findByRole, getByText } = render(
         <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>

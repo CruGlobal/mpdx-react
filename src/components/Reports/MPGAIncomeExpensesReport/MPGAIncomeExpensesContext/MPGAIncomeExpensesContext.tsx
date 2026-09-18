@@ -29,9 +29,8 @@ export type ContextType = {
   endDate: DateTime;
   transactionYears: number[];
 
-  /** Fund balances at the start and end of the queried period, or null when the report has no funds */
+  /** Fund balance at the start of the queried period, or null when the report has no funds */
   startBalance: number | null;
-  endBalance: number | null;
 
   subtitle: string;
 
@@ -168,9 +167,6 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
   const startBalance = funds?.length
     ? funds.reduce((acc, fund) => acc + fund.startBalance, 0)
     : null;
-  const endBalance = funds?.length
-    ? funds.reduce((acc, fund) => acc + fund.endBalance, 0)
-    : null;
 
   // Transform the data to ensure that all optional fields are defined, so we don't have to check for them later
   const transformedData: Funds[] = useMemo(
@@ -276,7 +272,6 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
       endDate,
       transactionYears,
       startBalance,
-      endBalance,
       subtitle,
       staffName,
       isSupervisorView,
@@ -296,7 +291,6 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
       endDate,
       transactionYears,
       startBalance,
-      endBalance,
       subtitle,
       staffName,
       isSupervisorView,

@@ -17,6 +17,7 @@ import { CardSkeleton } from '../Card/CardSkeleton';
 import { CustomToolbar } from '../CustomToolbar/CustomToolbar';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { populateCardTableRows } from '../Helper/createRows';
+import { formatBalance } from '../Helper/formatBalance';
 import { useMPGAIncomeExpenses } from '../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { BreakdownTarget, DataFields } from '../mockData';
 import { StyledGrid } from '../styledComponents';
@@ -142,7 +143,9 @@ export const TableCard: React.FC<TableCardProps> = ({
             return typeof v === 'number' ? v : null;
           },
           renderCell: (params) => {
-            const formattedValue = zeroAmountFormat(params.value, locale);
+            const formattedValue = isBalance
+              ? formatBalance(params.value, locale)
+              : zeroAmountFormat(params.value, locale);
             return (
               <Tooltip title={amountFormat(params.value, locale)}>
                 <Typography variant="body2" noWrap>
@@ -180,7 +183,15 @@ export const TableCard: React.FC<TableCardProps> = ({
         field: 'average',
         headerName: t('Average'),
         width: isBalance ? summaryWidth * 2 : summaryWidth,
-        renderCell: average,
+        renderCell: isBalance
+          ? ({ row }) => (
+              <Tooltip title={amountFormat(row.average, locale)}>
+                <Typography variant="body2" noWrap>
+                  {formatBalance(row.average, locale)}
+                </Typography>
+              </Tooltip>
+            )
+          : average,
         cellClassName: ({ row }) =>
           clsx(isNegativeBalance(row.average) && 'negative-balance'),
         align: 'right',
@@ -311,6 +322,7 @@ export const TableCard: React.FC<TableCardProps> = ({
             disableRowSelectionOnClick
             pagination
             hideFooter={isBalance}
+            disableColumnSorting={isBalance}
             disableColumnMenu
           />
           {!isBalance && (
