@@ -5,17 +5,30 @@ import { CsvExportMenu } from '../../Shared/CsvExportMenu/CsvExportMenu';
 import { exportToCsv } from '../CustomExport/CustomExport';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { useMPGAIncomeExpenses } from '../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
+import { useBalanceTableData } from '../Tables/useBalanceTableData';
 
 export const ExportCsvButton: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
 
   const { allData: data, monthLabels } = useMPGAIncomeExpenses();
+  const balanceData = useBalanceTableData();
 
   return (
     <CsvExportMenu
       label={t('Export CSV')}
       items={[
+        {
+          label: t('Balance Report'),
+          disabled: !balanceData.length,
+          onClick: () =>
+            exportToCsv(
+              balanceData,
+              ReportTypeEnum.Balance,
+              monthLabels,
+              locale,
+            ),
+        },
         {
           label: t('Income Report'),
           disabled: !data.income.length,

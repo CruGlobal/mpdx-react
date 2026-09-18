@@ -9,7 +9,7 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { useMonthHeaders } from 'src/hooks/useMonthHeaders';
-import { amountFormat, zeroAmountFormat } from 'src/lib/intlFormat';
+import { zeroAmountFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { LoadingBox, LoadingIndicator } from '../../styledComponents';
 import { BreakdownModal } from '../BreakdownModal/BreakdownModal';
@@ -17,6 +17,7 @@ import { CardSkeleton } from '../Card/CardSkeleton';
 import { CustomToolbar } from '../CustomToolbar/CustomToolbar';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { populateCardTableRows } from '../Helper/createRows';
+import { formatBalance } from '../Helper/formatBalance';
 import { useMPGAIncomeExpenses } from '../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { BreakdownTarget, DataFields } from '../mockData';
 import { StyledGrid } from '../styledComponents';
@@ -76,6 +77,9 @@ export const descriptionWidth = 175;
 export const monthWidth = 65;
 export const summaryWidth = 98.5;
 
+const tooltipFor = (formattedValue: string): string =>
+  formattedValue === '-' ? '' : formattedValue;
+
 export const TableCard: React.FC<TableCardProps> = ({
   type,
   data,
@@ -104,7 +108,6 @@ export const TableCard: React.FC<TableCardProps> = ({
   );
   const { monthCount, getBorderColor } = useMonthHeaders(months, monthColors);
 
-  const overallTotal = type === ReportTypeEnum.Income ? income : expenses;
   const isBalance = type === ReportTypeEnum.Balance;
 
   const [paginationModel, setPaginationModel] = useState({
@@ -142,9 +145,11 @@ export const TableCard: React.FC<TableCardProps> = ({
             return typeof v === 'number' ? v : null;
           },
           renderCell: (params) => {
-            const formattedValue = zeroAmountFormat(params.value, locale);
+            const formattedValue = isBalance
+              ? formatBalance(params.value, locale)
+              : zeroAmountFormat(params.value, locale);
             return (
-              <Tooltip title={amountFormat(params.value, locale)}>
+              <Tooltip title={tooltipFor(formattedValue)}>
                 <Typography variant="body2" noWrap>
                   {formattedValue}
                 </Typography>
@@ -180,7 +185,18 @@ export const TableCard: React.FC<TableCardProps> = ({
         field: 'average',
         headerName: t('Average'),
         width: isBalance ? summaryWidth * 2 : summaryWidth,
-        renderCell: average,
+        renderCell: isBalance
+          ? ({ row }) => {
+              const formattedAverage = formatBalance(row.average, locale);
+              return (
+                <Tooltip title={tooltipFor(formattedAverage)}>
+                  <Typography variant="body2" noWrap>
+                    {formattedAverage}
+                  </Typography>
+                </Tooltip>
+              );
+            }
+          : average,
         cellClassName: ({ row }) =>
           clsx(isNegativeBalance(row.average) && 'negative-balance'),
         align: 'right',
@@ -311,11 +327,17 @@ export const TableCard: React.FC<TableCardProps> = ({
             disableRowSelectionOnClick
             pagination
             hideFooter={isBalance}
+            disableColumnSorting={isBalance}
             disableColumnMenu
           />
           {!isBalance && (
             <Box>
-              <TotalRow data={data} overallTotal={overallTotal} />
+              <TotalRow
+                data={data}
+                overallTotal={
+                  type === ReportTypeEnum.Income ? income : expenses
+                }
+              />
             </Box>
           )}
         </Box>

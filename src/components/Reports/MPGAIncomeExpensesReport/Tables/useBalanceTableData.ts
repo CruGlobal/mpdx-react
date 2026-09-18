@@ -15,23 +15,23 @@ export const useBalanceTableData = (): DataFields[] => {
       return [];
     }
 
-    const starting: number[] = [];
+    const ending: number[] = [];
 
     let balance = startBalance;
     monthLabels.forEach((_month, index) => {
       if (isFutureMonth(index)) {
         return;
       }
-      starting.push(balance);
       balance += monthlyNet[index]?.net ?? 0;
+      ending.push(balance);
     });
 
     return [
       {
-        id: 'starting-balance',
-        description: t('Starting Balance'),
-        monthly: starting,
-        average: average(starting),
+        id: 'ending-balance',
+        description: t('Ending Balance'),
+        monthly: ending,
+        average: average(ending),
         total: 0,
       },
     ];

@@ -13,12 +13,13 @@ const mutationSpy = jest.fn();
 function TestConsumer() {
   const rows = useBalanceTableData();
   const { setFilters } = useMPGAIncomeExpenses();
+  const monthly = rows[0]?.monthly ?? [];
 
   return (
     <div>
       <div data-testid="rowCount">{rows.length}</div>
       <div data-testid="description">{rows[0]?.description ?? 'none'}</div>
-      <div data-testid="monthly">{(rows[0]?.monthly ?? []).join(',')}</div>
+      <div data-testid="monthly">{monthly.join(',')}</div>
       <div data-testid="average">{rows[0]?.average ?? 'none'}</div>
       <button
         onClick={() =>
@@ -52,17 +53,17 @@ describe('useBalanceTableData', () => {
 
     await waitFor(() =>
       expect(getByTestId('monthly')).toHaveTextContent(
-        /^12000,17709,22845,27500,32751,39545,45109,50965,57991,65704,73016,82595$/,
+        /^17709,22845,27500,32751,39545,45109,50965,57991,65704,73016,82595,99183$/,
       ),
     );
-    expect(getByTestId('description')).toHaveTextContent('Starting Balance');
+    expect(getByTestId('description')).toHaveTextContent('Ending Balance');
   });
 
   it('averages the balance across the months shown', async () => {
     const { getByTestId } = renderConsumer();
 
     await waitFor(() =>
-      expect(getByTestId('average')).toHaveTextContent('43977.5'),
+      expect(getByTestId('average')).toHaveTextContent('51242.75'),
     );
   });
 
@@ -99,13 +100,13 @@ describe('useBalanceTableData', () => {
     const { getByTestId, getByRole } = renderConsumer();
 
     await waitFor(() =>
-      expect(getByTestId('monthly')).toHaveTextContent(/^12000,/),
+      expect(getByTestId('monthly')).toHaveTextContent(/^17709,/),
     );
 
     userEvent.click(getByRole('button', { name: 'Year to Date' }));
 
     await waitFor(() =>
-      expect(getByTestId('monthly')).toHaveTextContent(/^12000$/),
+      expect(getByTestId('monthly')).toHaveTextContent(/^17709$/),
     );
   });
 });

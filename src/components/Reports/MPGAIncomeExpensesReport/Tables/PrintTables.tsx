@@ -15,6 +15,7 @@ import { zeroAmountFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { LoadingBox, LoadingIndicator } from '../../styledComponents';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
+import { formatBalance } from '../Helper/formatBalance';
 import { useMPGAIncomeExpenses } from '../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { DataFields } from '../mockData';
 import { StyledRow, StyledTypography } from '../styledComponents';
@@ -40,7 +41,6 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
     firstFutureMonthIndex,
   } = useMPGAIncomeExpenses();
 
-  const overallTotal = type === ReportTypeEnum.Income ? income : expenses;
   const isBalance = type === ReportTypeEnum.Balance;
   const summaryColSpan = isBalance ? 2 : 1;
 
@@ -195,19 +195,26 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                   <TableCell>
                     <StyledTypography>{value.description}</StyledTypography>
                   </TableCell>
-                  {value.monthly.map((amount, index) => (
-                    <TableCell
-                      key={index}
-                      sx={isFutureMonth(index) ? futureCellSx : undefined}
-                    >
-                      <StyledTypography sx={negativeBalanceSx(amount)}>
-                        {zeroAmountFormat(amount, locale)}
-                      </StyledTypography>
-                    </TableCell>
-                  ))}
+                  {months.map((month, index) => {
+                    const amount = value.monthly[index] ?? null;
+                    return (
+                      <TableCell
+                        key={month}
+                        sx={isFutureMonth(index) ? futureCellSx : undefined}
+                      >
+                        <StyledTypography sx={negativeBalanceSx(amount ?? 0)}>
+                          {isBalance
+                            ? formatBalance(amount, locale)
+                            : zeroAmountFormat(amount, locale)}
+                        </StyledTypography>
+                      </TableCell>
+                    );
+                  })}
                   <TableCell colSpan={summaryColSpan} align="right">
                     <StyledTypography sx={negativeBalanceSx(value.average)}>
-                      {zeroAmountFormat(value.average, locale)}
+                      {isBalance
+                        ? formatBalance(value.average, locale)
+                        : zeroAmountFormat(value.average, locale)}
                     </StyledTypography>
                   </TableCell>
                   {!isBalance && (
@@ -234,16 +241,16 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                       <strong>{t('Overall Total')}</strong>
                     </StyledTypography>
                   </TableCell>
-                  {data[0].monthly.map((_, index) => (
+                  {months.map((month, index) => (
                     <TableCell
-                      key={index}
+                      key={month}
                       sx={isFutureMonth(index) ? futureCellSx : undefined}
                     >
                       <StyledTypography>
                         <strong>
                           {zeroAmountFormat(
                             data.reduce(
-                              (sum, value) => sum + value.monthly[index],
+                              (sum, value) => sum + (value.monthly[index] ?? 0),
                               0,
                             ),
                             locale,
@@ -264,7 +271,12 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                   </TableCell>
                   <TableCell align="right">
                     <StyledTypography>
-                      <strong>{zeroAmountFormat(overallTotal, locale)}</strong>
+                      <strong>
+                        {zeroAmountFormat(
+                          type === ReportTypeEnum.Income ? income : expenses,
+                          locale,
+                        )}
+                      </strong>
                     </StyledTypography>
                   </TableCell>
                 </TableRow>
