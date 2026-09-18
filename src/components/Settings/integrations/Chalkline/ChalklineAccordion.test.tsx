@@ -89,9 +89,9 @@ describe('PrayerlettersAccount', () => {
       </Components>,
     );
     await waitFor(() => {
-      expect(getByText('Chalkline Overview')).toBeInTheDocument();
+      expect(getByText('Chalk Line Overview')).toBeInTheDocument();
     });
-    userEvent.click(getByText('Send my current Contacts to Chalkline'));
+    userEvent.click(getByText('Send my current Contacts to Chalk Line'));
     await waitFor(() => {
       expect(getByText('Confirm')).toBeInTheDocument();
     });
@@ -99,7 +99,7 @@ describe('PrayerlettersAccount', () => {
 
     await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith(
-        'Successfully Emailed Chalkine',
+        'Successfully Emailed Chalk Line',
         {
           variant: 'success',
         },
@@ -115,7 +115,7 @@ describe('PrayerlettersAccount', () => {
     await waitFor(
       () =>
         expect(openMock).toHaveBeenCalledWith(
-          'https://chalkline.org/order_mpdx/',
+          'https://www.chalkline.org/order-mpdx',
           '_blank',
         ),
       { timeout: 3000 },

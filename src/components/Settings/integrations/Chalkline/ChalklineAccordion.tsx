@@ -37,14 +37,14 @@ export const ChalklineAccordion: React.FC<AccordionProps> = ({
         },
       },
       onCompleted: () => {
-        enqueueSnackbar(t('Successfully Emailed Chalkine'), {
+        enqueueSnackbar(t('Successfully Emailed Chalk Line'), {
           variant: 'success',
         });
-        enqueueSnackbar(t('Redirecting you to Chalkine.'), {
+        enqueueSnackbar(t('Redirecting you to Chalk Line.'), {
           variant: 'success',
         });
         setTimeout(() => {
-          window.open('https://chalkline.org/order_mpdx/', '_blank');
+          window.open('https://www.chalkline.org/order-mpdx', '_blank');
         }, 1000);
       },
     });
@@ -65,22 +65,22 @@ export const ChalklineAccordion: React.FC<AccordionProps> = ({
         />
       }
     >
-      <StyledFormLabel>{t('Chalkline Overview')}</StyledFormLabel>
+      <StyledFormLabel>{t('Chalk Line Overview')}</StyledFormLabel>
       <Typography>
-        {t(`Chalkline is a significant way to save valuable ministry time while more effectively
+        {t(`Chalk Line is a significant way to save valuable ministry time while more effectively
             connecting with your partners. Send physical newsletters to your current list using
-            Chalkline with a simple click. Chalkline is a one way send available anytime you’re
+            Chalk Line with a simple click. Chalk Line is a one way send available anytime you’re
             ready to send a new newsletter out.`)}
       </Typography>
       <StyledServicesButton variant="contained" onClick={handleOpenModal}>
-        {t('Send my current Contacts to Chalkline')}
+        {t('Send my current Contacts to Chalk Line')}
       </StyledServicesButton>
 
       <Confirmation
         isOpen={showModal}
         title={t('Confirm')}
         message={t(
-          'Would you like {{appName}} to email Chalkline your newsletter list and open their order form in a new tab?',
+          'Would you like {{appName}} to email Chalk Line your newsletter list and open their order form in a new tab?',
           { appName },
         )}
         handleClose={handleCloseModal}
