@@ -4,8 +4,13 @@ import userEvent from '@testing-library/user-event';
 import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import { exportToCsv } from '../CustomExport/CustomExport';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
+import {
+  ContextType,
+  MPGAIncomeExpensesContext,
+} from '../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { MPGAIncomeExpensesReportTestWrapper } from '../MPGAIncomeExpensesReportTestWrapper';
 import { MpgaTransactionsQuery } from '../MPGATransactions.generated';
+import { mockData, months } from '../mockData';
 import { ExportCsvButton } from './ExportCsvButton';
 
 const mutationSpy = jest.fn();
@@ -151,11 +156,42 @@ describe('ExportCsvButton', () => {
     expect(exportToCsv).not.toHaveBeenCalled();
   });
 
+  it('disables both exports while the report is still loading', async () => {
+    // Rows can exist before the household has answered, and an export taken then would show a
+    // couple's salary as one row. Only the finished report is exportable.
+    const loadingContext = {
+      allData: mockData,
+      dataLoading: true,
+      monthLabels: months,
+    } as unknown as ContextType;
+
+    const { getByRole, findByRole } = render(
+      <MPGAIncomeExpensesContext.Provider value={loadingContext}>
+        <ExportCsvButton />
+      </MPGAIncomeExpensesContext.Provider>,
+    );
+
+    userEvent.click(getByRole('button', { name: 'Export CSV' }));
+
+    expect(
+      await findByRole('menuitem', { name: 'Income Report' }),
+    ).toHaveAttribute('aria-disabled', 'true');
+    expect(getByRole('menuitem', { name: 'Expenses Report' })).toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
+  });
+
   it('closes the menu after an export is selected', async () => {
     const { findByRole, queryByRole } = render(<TestComponent />);
 
     userEvent.click(await findByRole('button', { name: 'Export CSV' }));
-    userEvent.click(await findByRole('menuitem', { name: 'Income Report' }));
+
+    const income = await findByRole('menuitem', { name: 'Income Report' });
+    await waitFor(() =>
+      expect(income).not.toHaveAttribute('aria-disabled', 'true'),
+    );
+    userEvent.click(income);
 
     await waitFor(() =>
       expect(

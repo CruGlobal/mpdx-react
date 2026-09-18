@@ -1,11 +1,22 @@
 import React from 'react';
 import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
+import {
+  StaffExpenseCategoryEnum,
+  StaffExpensesSubCategoryEnum,
+} from 'src/graphql/types.generated';
 import { DateRange } from '../../StaffExpenseReport/Helpers/StaffReportEnum';
-import { MPGAIncomeExpensesReportTestWrapper } from '../MPGAIncomeExpensesReportTestWrapper';
+import {
+  MPGAIncomeExpensesReportTestWrapper,
+  hcmHouseholdMock,
+} from '../MPGAIncomeExpensesReportTestWrapper';
 import { MpgaTransactionsQuery } from '../MPGATransactions.generated';
-import { useMPGAIncomeExpenses } from './MPGAIncomeExpensesContext';
+import {
+  MPGAIncomeExpensesReportProvider,
+  useMPGAIncomeExpenses,
+} from './MPGAIncomeExpensesContext';
 
 const mutationSpy = jest.fn();
 const lastCompletedYear = 2019;
@@ -90,6 +101,19 @@ function FilterConsumer() {
       >
         Year to Date
       </button>
+    </div>
+  );
+}
+
+function IncomeRowsConsumer() {
+  const { allData, dataLoading } = useMPGAIncomeExpenses();
+
+  return (
+    <div>
+      <div data-testid="dataLoading">{String(dataLoading)}</div>
+      <div data-testid="incomeRows">
+        {allData.income.map((row) => row.description).join('|')}
+      </div>
     </div>
   );
 }
@@ -294,6 +318,162 @@ describe('MPGAIncomeExpensesContext', () => {
       await waitFor(() =>
         expect(getByTestId('transactionYears')).toHaveTextContent(
           /^2018,2019$/,
+        ),
+      );
+    });
+  });
+
+  describe('household', () => {
+    const payroll = (amount: number, personNumber: string | null) => ({
+      id: `${personNumber}-${amount}`,
+      amount,
+      transactedAt: '2019-01-15T00:00:00Z',
+      description: 'Payroll',
+      personNumber,
+    });
+
+    const coupleSalaryMock: MpgaTransactionsQuery = {
+      reportsStaffExpenses: {
+        name: 'Test Account',
+        transactionYears: [],
+        funds: [
+          {
+            id: 'fund-1',
+            fundType: 'Primary',
+            total: 300,
+            categories: [
+              {
+                category: StaffExpenseCategoryEnum.Salary,
+                averagePerMonth: 300,
+                total: 300,
+                breakdownByMonth: [{ month: '2019-01-01', total: 300 }],
+                subcategories: [
+                  {
+                    subCategory: StaffExpensesSubCategoryEnum.RegularPay,
+                    averagePerMonth: 300,
+                    total: 300,
+                    breakdownByMonth: [
+                      {
+                        month: '2019-01-01',
+                        total: 300,
+                        transactions: [
+                          payroll(200, '000000111'),
+                          payroll(100, '000000222'),
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    };
+
+    it('requests your own household when no person number is given', async () => {
+      render(
+        <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
+          <IncomeRowsConsumer />
+        </MPGAIncomeExpensesReportTestWrapper>,
+      );
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('Hcm', {
+          personNumber: undefined,
+        }),
+      );
+    });
+
+    it('requests the household of the staff member being viewed', async () => {
+      render(
+        <MPGAIncomeExpensesReportTestWrapper
+          staffAccountId="987654"
+          personNumber="000000111"
+          onCall={mutationSpy}
+        >
+          <IncomeRowsConsumer />
+        </MPGAIncomeExpensesReportTestWrapper>,
+      );
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('Hcm', {
+          personNumber: '000000111',
+        }),
+      );
+    });
+
+    it('requests the report without waiting for the household', async () => {
+      // A mock given as a function runs when the request leaves, and onCall runs when its
+      // response lands, so the log shows whether the report waited on HCM.
+      const log: string[] = [];
+      const requestLogger =
+        <T,>(name: string, data: T) =>
+        () => {
+          log.push(`request ${name}`);
+          return data;
+        };
+
+      render(
+        <GqlMockedProvider
+          mocks={
+            {
+              Hcm: requestLogger('Hcm', hcmHouseholdMock),
+              MPGATransactions: requestLogger(
+                'MPGATransactions',
+                coupleSalaryMock,
+              ),
+            } as unknown as Record<string, never>
+          }
+          onCall={({ operation }) =>
+            log.push(`response ${operation.operationName}`)
+          }
+        >
+          <MPGAIncomeExpensesReportProvider>
+            <IncomeRowsConsumer />
+          </MPGAIncomeExpensesReportProvider>
+        </GqlMockedProvider>,
+      );
+
+      await waitFor(() => expect(log).toContain('response MPGATransactions'));
+      expect(log).toEqual([
+        'request Hcm',
+        'request MPGATransactions',
+        'response Hcm',
+        'response MPGATransactions',
+      ]);
+    });
+
+    it('does not request a household for a supervisor with no person number', async () => {
+      const { getByTestId } = render(
+        <MPGAIncomeExpensesReportTestWrapper
+          staffAccountId="987654"
+          onCall={mutationSpy}
+        >
+          <IncomeRowsConsumer />
+        </MPGAIncomeExpensesReportTestWrapper>,
+      );
+
+      await waitFor(() =>
+        expect(getByTestId('dataLoading')).toHaveTextContent('false'),
+      );
+      expect(mutationSpy).not.toHaveGraphqlOperation('Hcm');
+    });
+
+    it("splits a couple's salary into one row per person", async () => {
+      const { getByTestId } = render(
+        <MPGAIncomeExpensesReportTestWrapper
+          mocks={coupleSalaryMock}
+          hcmMocks={hcmHouseholdMock}
+          onCall={mutationSpy}
+        >
+          <IncomeRowsConsumer />
+        </MPGAIncomeExpensesReportTestWrapper>,
+      );
+
+      await waitFor(() =>
+        expect(getByTestId('incomeRows')).toHaveTextContent(
+          'Salary (Alex)|Salary (Jordan)',
         ),
       );
     });
