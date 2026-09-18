@@ -6,6 +6,7 @@ import {
   Card,
   CardContent,
   CardHeader,
+  Grid,
   IconButton,
   Typography,
 } from '@mui/material';
@@ -21,15 +22,18 @@ import { PendingRequestTimeline } from './components/PendingRequestTimeline';
 export const PendingRequestCard: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const {
-    calculation,
-    requestedOn,
-    processedOn,
-    feedback,
-    salaryData: { currentGrossSalary },
-  } = useLandingData();
+  const { calculation, self, spouse, requestedOn, processedOn, feedback } =
+    useLandingData();
 
   const locale = useLocale();
+
+  // The gross request is the requested salary plus SECA and 403(b) contributions
+  const requestedGross = calculation?.calculations?.requestedGross ?? 0;
+  const spouseRequestedGross = calculation?.spouseCalculations?.requestedGross;
+  const hasSpouse = !!spouse && spouseRequestedGross !== undefined;
+
+  const formatGross = (amount: number) =>
+    currencyFormat(amount, 'USD', locale, { showTrailingZeros: true });
 
   return (
     <Card sx={{ marginBlock: theme.spacing(3) }}>
@@ -61,16 +65,38 @@ export const PendingRequestCard: React.FC = () => {
         >
           {t('Gross Salary Requested')?.toUpperCase()}
         </Typography>
-        <Typography
-          variant="h3"
-          fontWeight="bold"
-          sx={{ color: 'primary.main' }}
-          data-testid="gross-salary-amount"
-        >
-          {currencyFormat(currentGrossSalary, 'USD', locale, {
-            showTrailingZeros: true,
-          })}
-        </Typography>
+        <Grid container spacing={theme.spacing(2)}>
+          <Grid size={hasSpouse ? { xs: 12, md: 6 } : 12}>
+            {hasSpouse && (
+              <Typography variant="body2" color="textSecondary">
+                {self?.staffInfo.preferredName}
+              </Typography>
+            )}
+            <Typography
+              variant="h3"
+              fontWeight="bold"
+              sx={{ color: 'primary.main' }}
+              data-testid="gross-salary-amount"
+            >
+              {formatGross(requestedGross)}
+            </Typography>
+          </Grid>
+          {hasSpouse && (
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Typography variant="body2" color="textSecondary">
+                {spouse.staffInfo.preferredName}
+              </Typography>
+              <Typography
+                variant="h3"
+                fontWeight="bold"
+                sx={{ color: 'primary.main' }}
+                data-testid="spouse-gross-salary-amount"
+              >
+                {formatGross(spouseRequestedGross)}
+              </Typography>
+            </Grid>
+          )}
+        </Grid>
         <PendingRequestTimeline
           calculation={calculation}
           requestedOn={requestedOn}
