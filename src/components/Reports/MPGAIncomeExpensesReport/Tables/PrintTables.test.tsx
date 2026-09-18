@@ -1,8 +1,9 @@
 import React from 'react';
 import { render } from '@testing-library/react';
+import theme from 'src/theme';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { MPGAIncomeExpensesReportTestWrapper } from '../MPGAIncomeExpensesReportTestWrapper';
-import { mockData, months } from '../mockData';
+import { DataFields, mockData, months } from '../mockData';
 import { PrintTables } from './PrintTables';
 
 const mutationSpy = jest.fn();
@@ -94,6 +95,82 @@ describe('PrintTables', () => {
     );
 
     expect(await findByText(/no income data available/i)).toBeInTheDocument();
+  });
+
+  describe('balance table', () => {
+    const balanceRows: DataFields[] = [
+      {
+        id: 'starting-balance',
+        description: 'Starting Balance',
+        monthly: months.map((_month, index) => 1000 + index),
+        average: 1005.5,
+        total: 0,
+      },
+    ];
+
+    const BalanceComponent: React.FC = () => (
+      <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
+        <PrintTables
+          type={ReportTypeEnum.Balance}
+          data={balanceRows}
+          title="Balance"
+        />
+      </MPGAIncomeExpensesReportTestWrapper>
+    );
+
+    it('keeps the average column but drops the total column', async () => {
+      const { findByRole, queryByRole } = render(<BalanceComponent />);
+
+      expect(
+        await findByRole('columnheader', { name: 'Average' }),
+      ).toBeInTheDocument();
+      expect(
+        queryByRole('columnheader', { name: 'Total' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('does not render the overall total row', async () => {
+      const { findByRole, queryByRole } = render(<BalanceComponent />);
+
+      await findByRole('table');
+      expect(
+        queryByRole('cell', { name: 'Overall Total' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('colors a negative balance red and leaves a positive one alone', async () => {
+      const { findByRole, getByText } = render(
+        <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
+          <PrintTables
+            type={ReportTypeEnum.Balance}
+            data={[
+              {
+                ...balanceRows[0],
+                monthly: months.map((_month, index) =>
+                  index === 0 ? -500 : 1000 + index,
+                ),
+              },
+            ]}
+            title="Balance"
+          />
+        </MPGAIncomeExpensesReportTestWrapper>,
+      );
+
+      await findByRole('table');
+      expect(getByText('-500')).toHaveStyle({
+        color: theme.palette.error.main,
+      });
+      expect(getByText('1,001')).not.toHaveStyle({
+        color: theme.palette.error.main,
+      });
+    });
+
+    it('renders the overall total row for the income table', async () => {
+      const { findByRole, getByRole } = render(<TestComponent />);
+
+      await findByRole('table');
+      expect(getByRole('cell', { name: 'Overall Total' })).toBeInTheDocument();
+    });
   });
 
   it('should span the correct number of months per year', async () => {

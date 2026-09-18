@@ -41,6 +41,8 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
   } = useMPGAIncomeExpenses();
 
   const overallTotal = type === ReportTypeEnum.Income ? income : expenses;
+  const isBalance = type === ReportTypeEnum.Balance;
+  const summaryColSpan = isBalance ? 2 : 1;
 
   const emptyMessage = {
     [ReportTypeEnum.Income]: t(
@@ -53,6 +55,10 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
       'No balance data available in the last 12 months',
     ),
   }[type];
+
+  const negativeBalanceSx = (amount: number) => ({
+    color: isBalance && amount < 0 ? theme.palette.error.main : undefined,
+  });
 
   const grayColor = theme.palette.text.disabled;
   const futureCellSx = {
@@ -168,16 +174,18 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                   </StyledTypography>
                 </TableCell>
               ))}
-              <TableCell sx={{ textAlign: 'right' }}>
+              <TableCell colSpan={summaryColSpan} sx={{ textAlign: 'right' }}>
                 <StyledTypography>
                   <strong>{t('Average')}</strong>
                 </StyledTypography>
               </TableCell>
-              <TableCell sx={{ textAlign: 'right' }}>
-                <StyledTypography>
-                  <strong>{t('Total')}</strong>
-                </StyledTypography>
-              </TableCell>
+              {!isBalance && (
+                <TableCell sx={{ textAlign: 'right' }}>
+                  <StyledTypography>
+                    <strong>{t('Total')}</strong>
+                  </StyledTypography>
+                </TableCell>
+              )}
             </TableRow>
           </TableHead>
           {data?.length ? (
@@ -192,71 +200,75 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                       key={index}
                       sx={isFutureMonth(index) ? futureCellSx : undefined}
                     >
-                      <StyledTypography>
+                      <StyledTypography sx={negativeBalanceSx(amount)}>
                         {zeroAmountFormat(amount, locale)}
+                      </StyledTypography>
+                    </TableCell>
+                  ))}
+                  <TableCell colSpan={summaryColSpan} align="right">
+                    <StyledTypography sx={negativeBalanceSx(value.average)}>
+                      {zeroAmountFormat(value.average, locale)}
+                    </StyledTypography>
+                  </TableCell>
+                  {!isBalance && (
+                    <TableCell align="right">
+                      <StyledTypography>
+                        {zeroAmountFormat(value.total, locale)}
+                      </StyledTypography>
+                    </TableCell>
+                  )}
+                </StyledRow>
+              ))}
+              {!isBalance && (
+                <TableRow
+                  sx={{
+                    '@media print': {
+                      backgroundColor: theme.palette.chartBlueLight.main,
+                      WebkitPrintColorAdjust: 'exact',
+                      printColorAdjust: 'exact',
+                    },
+                  }}
+                >
+                  <TableCell>
+                    <StyledTypography>
+                      <strong>{t('Overall Total')}</strong>
+                    </StyledTypography>
+                  </TableCell>
+                  {data[0].monthly.map((_, index) => (
+                    <TableCell
+                      key={index}
+                      sx={isFutureMonth(index) ? futureCellSx : undefined}
+                    >
+                      <StyledTypography>
+                        <strong>
+                          {zeroAmountFormat(
+                            data.reduce(
+                              (sum, value) => sum + value.monthly[index],
+                              0,
+                            ),
+                            locale,
+                          )}
+                        </strong>
                       </StyledTypography>
                     </TableCell>
                   ))}
                   <TableCell align="right">
                     <StyledTypography>
-                      {zeroAmountFormat(value.average, locale)}
-                    </StyledTypography>
-                  </TableCell>
-                  <TableCell align="right">
-                    <StyledTypography>
-                      {zeroAmountFormat(value.total, locale)}
-                    </StyledTypography>
-                  </TableCell>
-                </StyledRow>
-              ))}
-              <TableRow
-                sx={{
-                  '@media print': {
-                    backgroundColor: theme.palette.chartBlueLight.main,
-                    WebkitPrintColorAdjust: 'exact',
-                    printColorAdjust: 'exact',
-                  },
-                }}
-              >
-                <TableCell>
-                  <StyledTypography>
-                    <strong>{t('Overall Total')}</strong>
-                  </StyledTypography>
-                </TableCell>
-                {data[0].monthly.map((_, index) => (
-                  <TableCell
-                    key={index}
-                    sx={isFutureMonth(index) ? futureCellSx : undefined}
-                  >
-                    <StyledTypography>
                       <strong>
                         {zeroAmountFormat(
-                          data.reduce(
-                            (sum, value) => sum + value.monthly[index],
-                            0,
-                          ),
+                          data.reduce((sum, value) => sum + value.average, 0),
                           locale,
                         )}
                       </strong>
                     </StyledTypography>
                   </TableCell>
-                ))}
-                <TableCell align="right">
-                  <StyledTypography>
-                    <strong>
-                      {zeroAmountFormat(
-                        data.reduce((sum, value) => sum + value.average, 0),
-                        locale,
-                      )}
-                    </strong>
-                  </StyledTypography>
-                </TableCell>
-                <TableCell align="right">
-                  <StyledTypography>
-                    <strong>{zeroAmountFormat(overallTotal, locale)}</strong>
-                  </StyledTypography>
-                </TableCell>
-              </TableRow>
+                  <TableCell align="right">
+                    <StyledTypography>
+                      <strong>{zeroAmountFormat(overallTotal, locale)}</strong>
+                    </StyledTypography>
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           ) : (
             <TableBody>
