@@ -24,7 +24,7 @@ describe('ScreenOnlyReport', () => {
   it('renders data correctly', async () => {
     const { getByRole, findAllByRole } = render(<TestComponent />);
 
-    expect(await findAllByRole('grid')).toHaveLength(6);
+    expect(await findAllByRole('grid')).toHaveLength(5);
     expect(getByRole('gridcell', { name: 'Donation' })).toBeInTheDocument();
     expect(getByRole('gridcell', { name: 'Assessment' })).toBeInTheDocument();
     expect(

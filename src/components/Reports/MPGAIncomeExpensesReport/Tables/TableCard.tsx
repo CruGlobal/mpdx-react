@@ -5,6 +5,7 @@ import {
   GridColumnGroupingModel,
   GridSortModel,
 } from '@mui/x-data-grid';
+import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { useMonthHeaders } from 'src/hooks/useMonthHeaders';
@@ -104,6 +105,7 @@ export const TableCard: React.FC<TableCardProps> = ({
   const { monthCount, getBorderColor } = useMonthHeaders(months, monthColors);
 
   const overallTotal = type === ReportTypeEnum.Income ? income : expenses;
+  const isBalance = type === ReportTypeEnum.Balance;
 
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
@@ -117,6 +119,9 @@ export const TableCard: React.FC<TableCardProps> = ({
   );
 
   const columns = useMemo<GridColDef<DataFields>[]>(() => {
+    const isNegativeBalance = (amount: number | null | undefined) =>
+      isBalance && (amount ?? 0) < 0;
+
     const monthColumns: GridColDef<DataFields>[] = months.map(
       (month, index) => {
         return {
@@ -127,7 +132,11 @@ export const TableCard: React.FC<TableCardProps> = ({
           headerClassName: isFutureMonth(index)
             ? 'future-month-header'
             : undefined,
-          cellClassName: isFutureMonth(index) ? 'future-month' : undefined,
+          cellClassName: ({ value }) =>
+            clsx(
+              isFutureMonth(index) && 'future-month',
+              isNegativeBalance(value) && 'negative-balance',
+            ),
           valueGetter: (_value, row) => {
             const v = row.monthly?.[index];
             return typeof v === 'number' ? v : null;
@@ -146,6 +155,19 @@ export const TableCard: React.FC<TableCardProps> = ({
       },
     );
 
+    const totalColumn: GridColDef<DataFields>[] = isBalance
+      ? []
+      : [
+          {
+            field: 'total',
+            headerName: t('Total'),
+            width: summaryWidth,
+            renderCell: total,
+            align: 'right',
+            headerAlign: 'right',
+          },
+        ];
+
     return [
       {
         field: 'description',
@@ -157,21 +179,25 @@ export const TableCard: React.FC<TableCardProps> = ({
       {
         field: 'average',
         headerName: t('Average'),
-        width: summaryWidth,
+        width: isBalance ? summaryWidth * 2 : summaryWidth,
         renderCell: average,
+        cellClassName: ({ row }) =>
+          clsx(isNegativeBalance(row.average) && 'negative-balance'),
         align: 'right',
         headerAlign: 'right',
       },
-      {
-        field: 'total',
-        headerName: t('Total'),
-        width: summaryWidth,
-        renderCell: total,
-        align: 'right',
-        headerAlign: 'right',
-      },
+      ...totalColumn,
     ];
-  }, [months, isFutureMonth, locale, t, description, average, total]);
+  }, [
+    months,
+    isFutureMonth,
+    isBalance,
+    locale,
+    t,
+    description,
+    average,
+    total,
+  ]);
 
   const columnGroupingModel = useMemo<GridColumnGroupingModel>(() => {
     const yearGroups = monthCount.map(({ year, count }, index) => {
@@ -224,7 +250,10 @@ export const TableCard: React.FC<TableCardProps> = ({
         groupId: 'summary',
         headerName: t('Summary'),
         headerAlign: 'left' as const,
-        children: [{ field: 'average' }, { field: 'total' }],
+        children: [
+          { field: 'average' },
+          ...(isBalance ? [] : [{ field: 'total' }]),
+        ],
         renderHeaderGroup: () => (
           <GroupHeader
             label={t('Summary')}
@@ -233,7 +262,7 @@ export const TableCard: React.FC<TableCardProps> = ({
         ),
       },
     ];
-  }, [monthCount, getBorderColor, firstFutureMonthIndex, t]);
+  }, [monthCount, getBorderColor, firstFutureMonthIndex, isBalance, t]);
 
   return dataLoading ? (
     <LoadingBox>
@@ -261,6 +290,15 @@ export const TableCard: React.FC<TableCardProps> = ({
               '.future-month': {
                 backgroundColor: theme.palette.action.hover,
               },
+              '.negative-balance, .negative-balance *': {
+                color: theme.palette.error.main,
+              },
+              ...(isBalance && {
+                '.MuiDataGrid-columnHeader[data-field="average"] .MuiDataGrid-columnHeaderTitleContainerContent':
+                  {
+                    width: 'auto',
+                  },
+              }),
             }}
             getRowId={(row) => row.id}
             sortingOrder={['desc', 'asc', null]}
@@ -272,11 +310,14 @@ export const TableCard: React.FC<TableCardProps> = ({
             disableVirtualization
             disableRowSelectionOnClick
             pagination
+            hideFooter={isBalance}
             disableColumnMenu
           />
-          <Box>
-            <TotalRow data={data} overallTotal={overallTotal} />
-          </Box>
+          {!isBalance && (
+            <Box>
+              <TotalRow data={data} overallTotal={overallTotal} />
+            </Box>
+          )}
         </Box>
       </CardSkeleton>
       {openBreakdownModal && (
