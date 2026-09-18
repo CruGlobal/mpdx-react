@@ -107,6 +107,7 @@ describe('ExportCsvButton', () => {
             id: 'fund-1',
             fundType: 'Primary',
             total: 5000,
+            startBalance: 0,
             categories: [
               {
                 category: StaffExpenseCategoryEnum.Donation,

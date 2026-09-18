@@ -13,6 +13,7 @@ query MPGATransactions(
     name
     transactionYears
     funds {
+      startBalance
       categories {
         averagePerMonth
         breakdownByMonth {

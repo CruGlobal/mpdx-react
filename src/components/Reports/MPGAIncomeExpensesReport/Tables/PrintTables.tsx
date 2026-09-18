@@ -42,6 +42,18 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
 
   const overallTotal = type === ReportTypeEnum.Income ? income : expenses;
 
+  const emptyMessage = {
+    [ReportTypeEnum.Income]: t(
+      'No income data available in the last 12 months',
+    ),
+    [ReportTypeEnum.Expenses]: t(
+      'No expenses data available in the last 12 months',
+    ),
+    [ReportTypeEnum.Balance]: t(
+      'No balance data available in the last 12 months',
+    ),
+  }[type];
+
   const grayColor = theme.palette.text.disabled;
   const futureCellSx = {
     backgroundColor: theme.palette.action.hover,
@@ -250,9 +262,7 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
             <TableBody>
               <TableRow>
                 <TableCell colSpan={15} align="center">
-                  {type === ReportTypeEnum.Income
-                    ? t('No income data available in the last 12 months')
-                    : t('No expenses data available in the last 12 months')}
+                  {emptyMessage}
                 </TableCell>
               </TableRow>
             </TableBody>
