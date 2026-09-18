@@ -41,7 +41,6 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
     firstFutureMonthIndex,
   } = useMPGAIncomeExpenses();
 
-  const overallTotal = type === ReportTypeEnum.Income ? income : expenses;
   const isBalance = type === ReportTypeEnum.Balance;
   const summaryColSpan = isBalance ? 2 : 1;
 
@@ -272,7 +271,12 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                   </TableCell>
                   <TableCell align="right">
                     <StyledTypography>
-                      <strong>{zeroAmountFormat(overallTotal, locale)}</strong>
+                      <strong>
+                        {zeroAmountFormat(
+                          type === ReportTypeEnum.Income ? income : expenses,
+                          locale,
+                        )}
+                      </strong>
                     </StyledTypography>
                   </TableCell>
                 </TableRow>
