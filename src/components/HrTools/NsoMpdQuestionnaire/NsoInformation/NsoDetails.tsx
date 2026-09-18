@@ -3,6 +3,15 @@ import { Stack } from '@mui/material';
 import { TFunction, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { CurrencyAdornment } from 'src/components/HrTools/Shared/Adornments';
+import {
+  NewStaffQuestionnaireNsoHousingEnum,
+  NewStaffQuestionnaireNsoSessionsEnum,
+} from 'src/graphql/types.generated';
+import {
+  getLocalizedNsoHousing,
+  getLocalizedNsoHousingDescription,
+} from 'src/lib/functions/getLocalizedNsoHousing';
+import { getLocalizedNsoSessions } from 'src/lib/functions/getLocalizedNsoSessions';
 import { NumberQuestion } from '../Shared/NumberQuestion';
 import { RadioOption, RadioQuestion } from '../Shared/RadioQuestion';
 import { getAmountSchema } from '../Shared/helpers/getAmountSchema';
@@ -24,18 +33,30 @@ export const NsoDetails: React.FC = () => {
 
   const schema = useMemo(() => getNsoDetailsSchema(t), [t]);
 
-  const housingOptions: RadioOption[] = [
-    { value: 'SINGLE_ROOM', label: t('Single in hotel/dorm room') },
-    { value: 'SHARED_ROOM', label: t('Sharing 2 in hotel/dorm room') },
-    { value: 'COUPLE_ROOM', label: t('Couple in hotel/dorm room') },
-    { value: 'FAMILY_ROOM', label: t('Family in a hotel/room') },
-    { value: 'LOCAL_COMMUTING', label: t('Local / Commuting') },
-  ];
+  const housingOptions = useMemo<RadioOption[]>(
+    () =>
+      [
+        NewStaffQuestionnaireNsoHousingEnum.SingleRoom,
+        NewStaffQuestionnaireNsoHousingEnum.SharedRoom,
+        NewStaffQuestionnaireNsoHousingEnum.CoupleRoom,
+        NewStaffQuestionnaireNsoHousingEnum.FamilyRoom,
+        NewStaffQuestionnaireNsoHousingEnum.LocalCommuting,
+      ].map((value) => ({
+        value,
+        label: getLocalizedNsoHousing(t, value),
+        description: getLocalizedNsoHousingDescription(t, value),
+      })),
+    [t],
+  );
 
-  const sessionOptions: RadioOption[] = [
-    { value: 'IBS_AND_NSO', label: t('IBS and NSO') },
-    { value: 'NSO', label: t('NSO') },
-  ];
+  const sessionOptions = useMemo<RadioOption[]>(
+    () =>
+      [
+        NewStaffQuestionnaireNsoSessionsEnum.IbsAndNso,
+        NewStaffQuestionnaireNsoSessionsEnum.Nso,
+      ].map((value) => ({ value, label: getLocalizedNsoSessions(t, value) })),
+    [t],
+  );
 
   return (
     <Stack spacing={4}>
