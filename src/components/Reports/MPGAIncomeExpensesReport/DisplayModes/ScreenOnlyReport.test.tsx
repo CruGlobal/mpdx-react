@@ -24,9 +24,12 @@ describe('ScreenOnlyReport', () => {
   it('renders data correctly', async () => {
     const { getByRole, findAllByRole } = render(<TestComponent />);
 
-    expect(await findAllByRole('grid')).toHaveLength(4);
+    expect(await findAllByRole('grid')).toHaveLength(6);
     expect(getByRole('gridcell', { name: 'Donation' })).toBeInTheDocument();
     expect(getByRole('gridcell', { name: 'Assessment' })).toBeInTheDocument();
+    expect(
+      getByRole('gridcell', { name: 'Starting Balance' }),
+    ).toBeInTheDocument();
   });
 
   it('shows empty placeholders when there is no data', async () => {
@@ -38,6 +41,7 @@ describe('ScreenOnlyReport', () => {
 
     expect(await findByText('No Income data available')).toBeInTheDocument();
     expect(getByText('No Expenses data available')).toBeInTheDocument();
+    expect(getByText('No Balance data available')).toBeInTheDocument();
     expect(queryAllByRole('grid')).toHaveLength(0);
   });
 });

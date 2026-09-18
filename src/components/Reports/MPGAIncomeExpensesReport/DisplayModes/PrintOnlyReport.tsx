@@ -7,11 +7,13 @@ import { SummaryBarChart } from '../Charts/SummaryBarChart/SummaryBarChart';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { useMPGAIncomeExpenses } from '../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { PrintTables } from '../Tables/PrintTables';
+import { useBalanceTableData } from '../Tables/useBalanceTableData';
 
 export const PrintOnlyReport: React.FC = () => {
   const { t } = useTranslation();
   const { allData: data, dataLoading, currency } = useMPGAIncomeExpenses();
   const monthlySummaryChartData = useMonthlySummaryChartData();
+  const balanceData = useBalanceTableData();
 
   return (
     <>
@@ -47,6 +49,13 @@ export const PrintOnlyReport: React.FC = () => {
                 <ExpensesPieChart aspect={1.85} width={80} />
               </Grid>
             </Grid>
+          </Box>
+          <Box mt={2}>
+            <PrintTables
+              type={ReportTypeEnum.Balance}
+              data={balanceData}
+              title={t('Balance')}
+            />
           </Box>
           <Box mt={2}>
             <PrintTables

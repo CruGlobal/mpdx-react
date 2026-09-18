@@ -14,7 +14,7 @@ export const buildUnknownKey = <T extends string>(
   index: number,
 ): string => (value === unknownValue ? `${value}-${index}` : value);
 
-const average = (data: number[]) => {
+export const average = (data: number[]) => {
   const total = data.reduce((acc, item) => acc + item, 0);
   return total / data.length || 0;
 };
