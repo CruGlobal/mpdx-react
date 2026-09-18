@@ -33,6 +33,8 @@ export function useIneligibleByGroup() {
   const userType = data?.user.userType;
   const hasNoStaffAccount = !data?.user.staffAccountId;
   const supervisesStaff = data?.user.supervisesStaff;
+  // A role rather than a group: the MPD Goals team and MPD coordinators only.
+  const canViewNewStaffCohorts = !!data?.user.canViewNewStaffCohorts;
 
   const { SeniorStaff, NewStaff, NationalExpat, PaidWithDesignation } =
     UsStaffGroupEnum;
@@ -71,6 +73,7 @@ export function useIneligibleByGroup() {
       inNsGoalCalcIneligibleGroup,
       inPdsGoalCalcIneligibleGroup,
       inMpdSupervisorIneligibleGroup,
+      canViewNewStaffCohorts,
       userType,
       hasNoStaffAccount,
       userLoading,
@@ -84,6 +87,7 @@ export function useIneligibleByGroup() {
       inNsGoalCalcIneligibleGroup,
       inPdsGoalCalcIneligibleGroup,
       inMpdSupervisorIneligibleGroup,
+      canViewNewStaffCohorts,
       userType,
       hasNoStaffAccount,
       userLoading,
