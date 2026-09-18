@@ -86,6 +86,9 @@ export interface Transactions {
   failedCount?: number;
   summarizedTransfers?: Map<string, Transactions> | null;
   missingMonths?: DateTime[] | null;
+  // True when the recurring transfer started before the fetched history window, so the
+  // summarized rows and missed months only cover part of its life.
+  historyTruncated?: boolean;
 }
 
 export interface Transfers {
@@ -106,6 +109,7 @@ export interface Transfers {
   failedCount?: number;
   summarizedTransfers?: Map<string, Transactions> | null;
   missingMonths?: DateTime[] | null;
+  historyTruncated?: boolean;
 }
 
 export const incomingTransfers = [
