@@ -28,7 +28,7 @@ describe('ScreenOnlyReport', () => {
     expect(getByRole('gridcell', { name: 'Donation' })).toBeInTheDocument();
     expect(getByRole('gridcell', { name: 'Assessment' })).toBeInTheDocument();
     expect(
-      getByRole('gridcell', { name: 'Starting Balance' }),
+      getByRole('gridcell', { name: 'Ending Balance' }),
     ).toBeInTheDocument();
   });
 

@@ -231,8 +231,8 @@ describe('TableCard', () => {
   describe('balance table', () => {
     const balanceRows: DataFields[] = [
       {
-        id: 'starting-balance',
-        description: 'Starting Balance',
+        id: 'ending-balance',
+        description: 'Ending Balance',
         monthly: months.map((_month, index) => 1000 + index),
         average: 1005.5,
         total: 0,

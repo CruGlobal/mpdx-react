@@ -35,7 +35,7 @@ describe('PrintOnlyReport', () => {
     expect(await findAllByRole('table')).toHaveLength(3);
     expect(getByRole('cell', { name: 'Donation' })).toBeInTheDocument();
     expect(getByRole('cell', { name: 'Assessment' })).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'Starting Balance' })).toBeInTheDocument();
+    expect(getByRole('cell', { name: 'Ending Balance' })).toBeInTheDocument();
   });
 
   it('displays the tables that should be showing', async () => {
