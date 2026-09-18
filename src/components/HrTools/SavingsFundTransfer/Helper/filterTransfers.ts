@@ -13,7 +13,13 @@ interface Summary {
 // Transfer history contains multiple transactions for recurring transfers.
 // This hook summarizes those recurring transfers into a single transaction with the total amount.
 // It also identifies any missed transfers and includes them as separate transactions with a failed status.
-export function filteredTransfers(transfers: Transactions[]) {
+//
+// historyStart is the start of the window the page requested the transfers for. Months before it
+// have no rows even when they ran, so the missed-month scan must not begin before it (MPDX-10044).
+export function filteredTransfers(
+  transfers: Transactions[],
+  historyStart: DateTime,
+) {
   const filtered: Transactions[] = [];
   const upcoming: Transactions[] = [];
   const summary = new Map<string, Summary>();
@@ -57,11 +63,13 @@ export function filteredTransfers(transfers: Transactions[]) {
     }
   }
 
+  const currentDate = DateTime.local().startOf('day');
+  const windowStart = historyStart.startOf('day');
+
   for (const [, item] of summary) {
     const { index, seenMonths, transactions } = item;
     const transferRow = filtered[index];
 
-    const currentDate = DateTime.local().startOf('day');
     const recurring = transferRow.recurringTransfer;
     const start = recurring?.recurringStart.startOf('day');
     const recurringEnd = recurring?.recurringEnd?.startOf('day') ?? null;
@@ -84,8 +92,9 @@ export function filteredTransfers(transfers: Transactions[]) {
     }
 
     transferRow.missingMonths = [];
+    transferRow.historyTruncated = start < windowStart;
 
-    let current = start;
+    let current = firstOccurrenceOnOrAfter(start, windowStart);
     while (current <= end) {
       const key = `${current.year}-${current.month}`;
       if (!seenMonths.has(key)) {
@@ -99,4 +108,20 @@ export function filteredTransfers(transfers: Transactions[]) {
   }
 
   return { filtered, upcoming };
+}
+
+// The first monthly occurrence of a schedule starting at `start` that falls on or after `floor`.
+// Steps in whole months from `start` (rather than snapping to `floor`) so the result keeps the
+// schedule's day of the month, which is what the failed-transfer modal displays.
+function firstOccurrenceOnOrAfter(start: DateTime, floor: DateTime): DateTime {
+  if (start >= floor) {
+    return start;
+  }
+
+  const wholeMonths = Math.floor(floor.diff(start, 'months').months);
+  let occurrence = start.plus({ months: wholeMonths });
+  if (occurrence < floor) {
+    occurrence = start.plus({ months: wholeMonths + 1 });
+  }
+  return occurrence;
 }
