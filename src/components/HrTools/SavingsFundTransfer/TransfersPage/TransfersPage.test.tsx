@@ -305,6 +305,18 @@ describe('TransfersPage', () => {
     expect(within(tables[0]).getAllByRole('columnheader')).toHaveLength(9);
   });
 
+  it('requests transfer history from the start of the month one year ago', async () => {
+    render(<Components />);
+
+    // SAA would default to this same window; sending it explicitly lets the page
+    // know where the history begins so it does not flag earlier months as failed.
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ReportsSavingsFundTransfer', {
+        transactedAtStart: '2023-01-01',
+      }),
+    );
+  });
+
   it.each([
     UsStaffGroupEnum.SeniorInternationalStaff,
     UsStaffGroupEnum.NewInternationalStaff,

@@ -2170,6 +2170,7 @@
     "Only delete if you know that this user will not be returning to any other missional organization that uses {{appName}}. You may need to confirm this with them.": "Only delete if you know that this user will not be returning to any other missional organization that uses {{appName}}. You may need to confirm this with them.",
     "Only import contacts from certain groups": "Only import contacts from certain groups",
     "Only include medical expenses that are not reimbursable through your staff account.": "Only include medical expenses that are not reimbursable through your staff account.",
+    "Only the last 12 months of transfer history are shown. Earlier transfers are not listed.": "Only the last 12 months of transfer history are shown. Earlier transfers are not listed.",
     "Only the portion not reimbursed as ministry expense.": "Only the portion not reimbursed as ministry expense.",
     "Open hours per week calculator": "Open hours per week calculator",
     "Opening Balance": "Opening Balance",
