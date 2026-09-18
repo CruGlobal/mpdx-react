@@ -6,6 +6,7 @@ import {
 export enum ReportTypeEnum {
   Income = 'income',
   Expenses = 'expenses',
+  Balance = 'balance',
 }
 
 export enum FundTypes {

@@ -228,6 +228,173 @@ describe('TableCard', () => {
     });
   });
 
+  describe('balance table', () => {
+    const balanceRows: DataFields[] = [
+      {
+        id: 'ending-balance',
+        description: 'Ending Balance',
+        monthly: months.map((_month, index) => 1000 + index),
+        average: 1005.5,
+        total: 0,
+      },
+    ];
+
+    const BalanceComponent: React.FC = () => (
+      <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
+        <TableCard
+          type={ReportTypeEnum.Balance}
+          data={balanceRows}
+          emptyPlaceholder={<span>Empty Table</span>}
+          title="Balance"
+        />
+      </MPGAIncomeExpensesReportTestWrapper>
+    );
+
+    it('keeps the average column but drops the total column', async () => {
+      const { getAllByRole, findByText } = render(<BalanceComponent />);
+
+      await findByText('Balance');
+      const headers = getAllByRole('columnheader').map(cellText);
+
+      expect(headers).toContain('Average');
+      expect(headers).not.toContain('Total');
+    });
+
+    it('does not offer sorting on a single balance row', async () => {
+      const { getAllByRole, findByText, queryByTestId } = render(
+        <BalanceComponent />,
+      );
+
+      await findByText('Balance');
+      const monthHeader = getAllByRole('columnheader').find(
+        (header) => header.getAttribute('data-field') === 'month0',
+      ) as HTMLElement;
+
+      expect(
+        within(monthHeader).queryByTestId('ArrowDownwardIcon'),
+      ).not.toBeInTheDocument();
+      expect(queryByTestId('ArrowUpwardIcon')).not.toBeInTheDocument();
+    });
+
+    it('tells a zero balance apart from a month with no balance', async () => {
+      const { getAllByRole, findByText } = render(
+        <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
+          <TableCard
+            type={ReportTypeEnum.Balance}
+            data={[{ ...balanceRows[0], monthly: [0, 1000] }]}
+            emptyPlaceholder={<span>Empty Table</span>}
+            title="Balance"
+          />
+        </MPGAIncomeExpensesReportTestWrapper>,
+      );
+
+      await findByText('Balance');
+      const monthCells = getAllByRole('gridcell')
+        .filter((cell) => cell.getAttribute('data-field')?.startsWith('month'))
+        .map((cell) => (cell.textContent ?? '').trim());
+
+      expect(monthCells[0]).toBe('0');
+      expect(monthCells[1]).toBe('1,000');
+      expect(monthCells[2]).toBe('-');
+    });
+
+    it('shows a dash for the months after the balance stops', async () => {
+      const { getAllByRole, findByText } = render(
+        <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
+          <TableCard
+            type={ReportTypeEnum.Balance}
+            data={[{ ...balanceRows[0], monthly: [1000, 2000, 3000] }]}
+            emptyPlaceholder={<span>Empty Table</span>}
+            title="Balance"
+          />
+        </MPGAIncomeExpensesReportTestWrapper>,
+      );
+
+      await findByText('Balance');
+      const monthCells = getAllByRole('gridcell')
+        .filter((cell) => cell.getAttribute('data-field')?.startsWith('month'))
+        .map((cell) => (cell.textContent ?? '').trim());
+
+      expect(monthCells).toEqual([
+        '1,000',
+        '2,000',
+        '3,000',
+        '-',
+        '-',
+        '-',
+        '-',
+        '-',
+        '-',
+        '-',
+        '-',
+        '-',
+      ]);
+    });
+
+    it('does not render the overall total row', async () => {
+      const { findByText, queryByText } = render(<BalanceComponent />);
+
+      await findByText('Balance');
+      expect(queryByText('Overall Total')).not.toBeInTheDocument();
+    });
+
+    it('renders the overall total row for the income table', async () => {
+      const { findByText, getByText } = render(<TestComponent />);
+
+      await findByText(title);
+      expect(getByText('Overall Total')).toBeInTheDocument();
+    });
+
+    it('colors a negative balance red and leaves a positive one alone', async () => {
+      const { getAllByRole, findByText } = render(
+        <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
+          <TableCard
+            type={ReportTypeEnum.Balance}
+            data={[
+              {
+                ...balanceRows[0],
+                monthly: months.map((_month, index) =>
+                  index === 0 ? -500 : 1000,
+                ),
+              },
+            ]}
+            emptyPlaceholder={<span>Empty Table</span>}
+            title="Balance"
+          />
+        </MPGAIncomeExpensesReportTestWrapper>,
+      );
+
+      await findByText('Balance');
+      const monthCell = (field: string) =>
+        getAllByRole('gridcell').find(
+          (cell) => cell.getAttribute('data-field') === field,
+        ) as HTMLElement;
+
+      expect(monthCell('month0')).toHaveStyle({
+        color: theme.palette.error.main,
+      });
+      expect(monthCell('month1')).not.toHaveStyle({
+        color: theme.palette.error.main,
+      });
+    });
+
+    it('does not render pagination controls', async () => {
+      const { findByText, queryByRole } = render(<BalanceComponent />);
+
+      await findByText('Balance');
+      expect(
+        queryByRole('button', { name: /next page/i }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('renders pagination controls for the income table', async () => {
+      const { findByText, getByRole } = render(<TestComponent />);
+
+      await findByText(title);
+      expect(getByRole('button', { name: /next page/i })).toBeInTheDocument();
+    });
+  });
+
   it('updates the sort order', async () => {
     const { getAllByRole, findByText } = render(<TestComponent />);
 

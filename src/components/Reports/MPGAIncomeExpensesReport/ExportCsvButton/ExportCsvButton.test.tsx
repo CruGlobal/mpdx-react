@@ -74,6 +74,27 @@ describe('ExportCsvButton', () => {
     );
   });
 
+  it('exports the balance CSV when Balance is selected', async () => {
+    const { getByRole, findByRole } = render(<TestComponent />);
+
+    userEvent.click(getByRole('button', { name: 'Export CSV' }));
+
+    const balance = await findByRole('menuitem', { name: 'Balance Report' });
+    await waitFor(() =>
+      expect(balance).not.toHaveAttribute('aria-disabled', 'true'),
+    );
+    userEvent.click(balance);
+
+    expect(exportToCsv).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({ description: 'Ending Balance' }),
+      ]),
+      ReportTypeEnum.Balance,
+      expect.any(Array),
+      'en-US',
+    );
+  });
+
   it('exports the expenses CSV when Expenses is selected', async () => {
     const { getByRole, findByRole } = render(<TestComponent />);
 
@@ -107,6 +128,7 @@ describe('ExportCsvButton', () => {
             id: 'fund-1',
             fundType: 'Primary',
             total: 5000,
+            startBalance: 0,
             categories: [
               {
                 category: StaffExpenseCategoryEnum.Donation,
