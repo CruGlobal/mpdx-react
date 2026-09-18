@@ -289,15 +289,14 @@ export function addCombinedSubcategoryRow({
   const unknownName = t('Spouse');
 
   people.forEach((accumulator, personNumber) => {
-    const description =
+    const person =
       namePeople && personNumber !== null
-        ? t('{{bucket}} ({{person}})', {
-            bucket: categoryLabel,
-            person:
-              household.find((member) => member.personNumber === personNumber)
-                ?.name ?? unknownName,
-          })
-        : categoryLabel;
+        ? (household.find((member) => member.personNumber === personNumber)
+            ?.name ?? unknownName)
+        : undefined;
+    const description = person
+      ? t('{{bucket}} ({{person}})', { bucket: categoryLabel, person })
+      : categoryLabel;
     const rowId = namePeople ? `${baseId}-${personNumber}` : baseId;
 
     const pushAggregateRow = (
@@ -310,6 +309,7 @@ export function addCombinedSubcategoryRow({
           id,
           description,
           category: category.category,
+          person,
           transactions,
           monthly,
           average: average(monthly),

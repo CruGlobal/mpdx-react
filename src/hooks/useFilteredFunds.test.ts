@@ -604,6 +604,35 @@ describe('useFilteredFunds', () => {
       expect(result.current.expenseData).toEqual([]);
     });
 
+    it('names the person on each split row so the breakdown can too', () => {
+      const funds = salaryFund([
+        {
+          total: 300,
+          transactions: [
+            payroll(100, spouse.personNumber),
+            payroll(200, reader.personNumber),
+          ],
+        },
+      ]);
+
+      const { result } = renderUseFilteredFunds(funds, null, [reader, spouse]);
+
+      expect(result.current.incomeData.map((row) => row.person)).toEqual([
+        'Alex',
+        'Jordan',
+      ]);
+    });
+
+    it("names nobody on a single staff member's row", () => {
+      const funds = salaryFund([
+        { total: 300, transactions: [payroll(300, reader.personNumber)] },
+      ]);
+
+      const { result } = renderUseFilteredFunds(funds, null, [reader, spouse]);
+
+      expect(result.current.incomeData[0].person).toBeUndefined();
+    });
+
     it("lists only that person's transactions in each row's breakdown", () => {
       const funds = salaryFund([
         {
