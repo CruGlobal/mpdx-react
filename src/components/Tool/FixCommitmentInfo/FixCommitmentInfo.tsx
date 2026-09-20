@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ApolloError, useApolloClient } from '@apollo/client';
 import { Box, CircularProgress, Grid, Theme, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
@@ -87,6 +88,14 @@ const defaultModalState = {
   updateType: null,
 };
 
+// The backend returns a NOT_FOUND GraphQL error when the contact being
+// updated has already been deleted or merged elsewhere. Retrying never
+// succeeds in that case, so treat it differently from a transient error.
+const isContactNotFoundError = (error: ApolloError): boolean =>
+  error.graphQLErrors.some(
+    (graphQLError) => graphQLError.extensions?.code === 'NOT_FOUND',
+  );
+
 interface Props {
   accountListId: string;
 }
@@ -108,6 +117,7 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const appName = getAppName();
+  const client = useApolloClient();
   const { data, loading, fetchMore } = useInvalidStatusesQuery({
     variables: { accountListId },
   });
@@ -165,7 +175,27 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
         cache.evict({ id: `Contact:${modalState.contact.id}` });
         cache.gc();
       },
-      onError() {
+      onError(error) {
+        if (isContactNotFoundError(error)) {
+          // The contact was already deleted or merged elsewhere, so this
+          // row can never be updated. Remove it instead of leaving it in
+          // the list for the user to retry indefinitely.
+          client.cache.evict({ id: `Contact:${modalState.contact.id}` });
+          client.cache.gc();
+          enqueueSnackbar(
+            t(
+              `{{name}} no longer needs review and was removed from this list`,
+              {
+                name: modalState.contact.name,
+              },
+            ),
+            {
+              variant: 'info',
+            },
+          );
+          return;
+        }
+
         enqueueSnackbar(
           t(`Error updating {{name}}'s commitment info`, {
             name: modalState.contact.name,
