@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon';
 import { Transactions } from 'src/components/HrTools/SavingsFundTransfer/mockData';
+import { monthsUntilOccurrenceOnOrAfter } from './monthsUntilOccurrenceOnOrAfter';
 
 // index is the position of the summarized transfer in the filtered array
 // seenMonths is a set of months that have been seen for the recurring transfer
@@ -97,7 +98,7 @@ export function filteredTransfers(
     transferRow.historyTruncated = start < windowStart;
 
     // Add whole months to the start so an end-of-month day does not drift once clamped.
-    let months = monthsUntilOnOrAfter(start, windowStart);
+    let months = monthsUntilOccurrenceOnOrAfter(start, windowStart);
     let current = start.plus({ months });
     while (current <= end) {
       const key = `${current.year}-${current.month}`;
@@ -112,18 +113,4 @@ export function filteredTransfers(
   }
 
   return { filtered, upcoming };
-}
-
-// Number of whole months to add to `start` so the monthly occurrence lands on or after `floor`.
-// Counting months (rather than snapping to `floor`) keeps the schedule's day of the month,
-// which is what the failed-transfer modal displays.
-function monthsUntilOnOrAfter(start: DateTime, floor: DateTime): number {
-  if (start >= floor) {
-    return 0;
-  }
-
-  const wholeMonths = Math.floor(floor.diff(start, 'months').months);
-  return start.plus({ months: wholeMonths }) < floor
-    ? wholeMonths + 1
-    : wholeMonths;
 }
