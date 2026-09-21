@@ -1,0 +1,7 @@
+id: no-awaited-user-event
+valid:
+  - "userEvent.click(getByRole('button'));"
+  - "await findByText('Saved');"
+invalid:
+  - "await userEvent.click(getByRole('button'));"
+  - "await userEvent.type(input, 'hello');"

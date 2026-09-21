@@ -1,0 +1,488 @@
+# agent-review configuration (v2)
+#
+# Lives at `.claude/review/config.yml` in the repo being reviewed.
+# Validate any edit with: `agent-review config validate`
+#
+# Bootstrapped by `/agent-review:init` from the mpdx-react codebase scan and 50
+# merged PRs. Much of the risk model below was carried over from the team's
+# hand-authored `.claude/rules/code-review.md`, which predates this plugin.
+
+version: 2
+
+# Global severity/verbosity dial.
+# chill     → fewer, high-confidence findings; raises the consensus threshold
+# standard  → default behavior
+# assertive → more findings, lower threshold, may be nitpicky
+profile: standard
+
+# Branch every review diffs against unless `--base` is passed.
+base_branch: main
+
+# ── Risk scoring ──────────────────────────────────────────────────────────────
+risk:
+  # File-pattern contributions. `tier` is descriptive; `points` drives the score.
+  # Per file, the highest-scoring matching pattern wins (patterns don't stack on
+  # one file; files sum across the diff). A 0-point entry never changes the score
+  # (max starts at 0) — it documents that a path was considered and deemed
+  # no-risk; use `excluded_paths` to actually exclude.
+  patterns:
+    # ── critical (3) ──────────────────────────────────────────────────────────
+    - { glob: '.github/workflows/**', points: 3, tier: critical }
+    # NextAuth handler, Okta / API-OAuth sign-in, token helpers, impersonation.
+    - { glob: 'pages/api/auth/**', points: 3, tier: critical }
+    - {
+        glob: 'pages/api/stop-impersonating.page.ts',
+        points: 3,
+        tier: critical,
+      }
+    # REST-proxy entry point: forwards the bearer token to the upstream API.
+    - { glob: 'pages/api/graphql-rest.page.ts', points: 3, tier: critical }
+    # Schema registration for the whole REST proxy.
+    - { glob: 'pages/api/Schema/index.ts', points: 3, tier: critical }
+    # Build/runtime config: env exposure, CSP/headers, PWA, image domains.
+    - { glob: 'next.config.ts', points: 3, tier: critical }
+    - { glob: 'pages/_app.page.tsx', points: 3, tier: critical }
+    - { glob: 'pages/_document.page.tsx', points: 3, tier: critical }
+    # Apollo wiring: dual-server routing, auth headers, cache normalization.
+    - { glob: 'src/lib/apollo/client.ts', points: 3, tier: critical }
+    - { glob: 'src/lib/apollo/link.ts', points: 3, tier: critical }
+    - { glob: 'src/lib/apollo/ssrClient.ts', points: 3, tier: critical }
+    - { glob: 'src/lib/apollo/cache.ts', points: 3, tier: critical }
+    # The review harness itself — weakening it weakens every future review.
+    - { glob: '.claude/review/config.yml', points: 3, tier: critical }
+    - { glob: '.claude/settings.json', points: 3, tier: critical }
+    - { glob: '.claude/rules/**', points: 3, tier: critical }
+
+    # ── high (2) ──────────────────────────────────────────────────────────────
+    # REST-proxy schemas, resolvers, and data handlers: silent data reshaping.
+    - { glob: 'pages/api/Schema/**', points: 2, tier: high }
+    # Any other API/lambda route.
+    - { glob: 'pages/api/**', points: 2, tier: high }
+    # Remaining Apollo helpers (pagination merge, redirect).
+    - { glob: 'src/lib/apollo/**', points: 2, tier: high }
+    # Shared components: blast radius across every feature.
+    - { glob: 'src/components/Shared/**', points: 2, tier: high }
+    # Account-list switching and impersonation UI.
+    - { glob: 'src/components/User/**', points: 2, tier: high }
+    - {
+        glob: 'src/components/Settings/**/ImpersonateUser/**',
+        points: 2,
+        tier: high,
+      }
+    # Money: donation/goal/expense reporting and HR salary tooling.
+    - { glob: 'src/components/Reports/**', points: 2, tier: high }
+    - { glob: 'src/components/HrTools/**', points: 2, tier: high }
+    - { glob: 'src/components/EditDonationModal/**', points: 2, tier: high }
+    - { glob: 'src/components/Dashboard/MonthlyGoal/**', points: 2, tier: high }
+    - {
+        glob: 'src/components/Dashboard/DonationHistories/**',
+        points: 2,
+        tier: high,
+      }
+    - { glob: 'src/lib/intlFormat.ts', points: 2, tier: high }
+    # GraphQL operations: cache normalization, pagination, dual-server routing.
+    - { glob: '**/*.graphql', points: 2, tier: high }
+    # App-wide error suppression feeding BOTH Rollbar and Datadog filters.
+    - { glob: 'src/lib/error.ts', points: 2, tier: high }
+    # Build/lint/test harness.
+    - { glob: 'codegen.ts', points: 2, tier: high }
+    - { glob: 'jest.config.js', points: 2, tier: high }
+    - { glob: '.eslintrc.js', points: 2, tier: high }
+    - { glob: 'i18next-parser.config.js', points: 2, tier: high }
+    - { glob: 'apollo.config.js', points: 2, tier: high }
+    - { glob: 'amplify.yml', points: 2, tier: high }
+    - { glob: '.husky/**', points: 2, tier: high }
+
+    # ── medium (1) ────────────────────────────────────────────────────────────
+    - { glob: 'src/**/*.{ts,tsx}', points: 1, tier: medium }
+    - { glob: 'pages/**/*.{ts,tsx}', points: 1, tier: medium }
+    - { glob: 'scripts/**/*.ts', points: 1, tier: medium }
+    # Shared test infrastructure: a broken helper breaks every suite that uses it.
+    - { glob: '__tests__/util/**', points: 1, tier: medium }
+
+    # ── low (0) — documentation of intent; these never change the score ───────
+    - { glob: '**/*.test.{ts,tsx}', points: 0, tier: low }
+    - { glob: '**/*.snap', points: 0, tier: low }
+    - { glob: '__tests__/fixtures/**', points: 0, tier: low }
+
+  # Unknown paths are not zero-risk. Each non-excluded file that matches none of
+  # the patterns above gets this many points, preventing a newly introduced
+  # directory from being silently skipped by auto mode.
+  unmatched_file_points: 1
+
+  # Dependency manifests and lockfiles, used by the special detections below.
+  manifests: ['package.json']
+  lockfiles: ['yarn.lock']
+
+  # Change-volume → points (lines changed across the diff).
+  volume_multiplier:
+    - { upTo: 50, points: 0 }
+    - { upTo: 200, points: 1 }
+    - { upTo: 500, points: 2 }
+    - { upTo: 1000, points: 3 }
+    - { upTo: null, points: 4 } # 1000+
+
+  # Scope multiplier applied to the pattern+volume subtotal.
+  scope_multiplier:
+    single_file: 1.0
+    single_feature: 1.0
+    multi_feature: 1.3
+    cross_cutting: 1.7
+    core_infra: 2.0
+
+  # Special detections. Entries with empty `paths`/`files`/`packages` never fire —
+  # fill them in to enable the detection.
+  special:
+    # package.json is a JSON manifest, so both dependency detections work here.
+    - { when: new_dependency, points: 2 }
+    - {
+        when: critical_pkg_update,
+        points: 3,
+        packages:
+          [
+            next,
+            react,
+            react-dom,
+            typescript,
+            '@apollo/client',
+            '@apollo/server',
+            '@apollo/subgraph',
+            '@apollo/datasource-rest',
+            graphql,
+            next-auth,
+            '@mui/material',
+            '@mui/system',
+            '@mui/x-data-grid',
+            '@mui/x-date-pickers',
+            formik,
+            yup,
+            luxon,
+            i18next,
+            react-i18next,
+            '@graphql-codegen/cli',
+          ],
+      }
+    # yarn.lock moving without package.json = resolution drift or a hand edit.
+    - { when: lockfile_only_change, points: 1 }
+    # No database and no migrations in this repo — the detection stays inert.
+    - { when: migration_change, points: 3, paths: [] }
+    # `files` = security-relevant config; `keywords` = diff text that signals a
+    # security-relevant edit. NEXT_PUBLIC_ is here because prefixing a server-only
+    # variable with it ships the secret into the client bundle.
+    - {
+        when: config_security_change,
+        points: 2,
+        files:
+          [
+            'next.config.ts',
+            'pages/api/auth/[...nextauth].page.ts',
+            'pages/_app.page.tsx',
+            'pages/_document.page.tsx',
+            'amplify.yml',
+          ],
+        keywords:
+          [
+            headers,
+            content-security,
+            csp,
+            cors,
+            redirects,
+            rewrites,
+            domains,
+            NEXT_PUBLIC_,
+            JWT_SECRET,
+            CLIENT_SECRET,
+          ],
+      }
+
+  # Score → risk level + required reviewer.
+  levels:
+    - { range: [0, 3], level: LOW, reviewer: entry }
+    - { range: [4, 6], level: MEDIUM, reviewer: entry }
+    - { range: [7, 9], level: HIGH, reviewer: experienced }
+    - { range: [10, null], level: CRITICAL, reviewer: 'senior maintainer' }
+
+# ── Agents ────────────────────────────────────────────────────────────────────
+# `always: true` runs the agent on every review. Otherwise the agent runs only
+# when a changed file matches `triggers.paths` or the diff contains one of
+# `triggers.content`. `rules[]` paths resolve against `.claude/review/`.
+agents:
+  - id: security
+    title: Security Review Agent
+    expertise: Authentication, authorization, data protection, vulnerability detection, secure coding.
+    enabled: true
+    model: smart # smart | opus | sonnet | haiku
+    always: false
+    escalates: true # deserves Opus on HIGH/CRITICAL PRs
+    triggers:
+      paths:
+        - 'pages/api/**'
+        - 'pages/_app.page.tsx'
+        - 'pages/_document.page.tsx'
+        - 'pages/login*.tsx'
+        - 'pages/logout.page.tsx'
+        - 'pages/acceptInvite.page.tsx'
+        - 'next.config.ts'
+        - 'amplify.yml'
+        - 'src/lib/apollo/**'
+        - 'src/lib/extractCookie*.ts'
+        - 'src/hooks/useRequiredSession.tsx'
+        - 'src/components/Settings/**/ImpersonateUser/**'
+        - 'src/components/OauthLink/**'
+        - 'src/components/Settings/integrations/useOauthUrl.ts'
+        - 'lighthouse/lighthouse-auth*'
+        - '.github/workflows/**'
+        - '.claude/**'
+      content:
+        - 'process.env.'
+        - 'NEXT_PUBLIC_'
+        - 'JWT_SECRET'
+        - 'CLIENT_SECRET'
+        - 'apiToken'
+        - 'impersonat'
+        - 'Authorization'
+        - 'Bearer '
+        - 'createHmac'
+        - 'timingSafeEqual'
+        - 'dangerouslySetInnerHTML'
+        - 'innerHTML'
+        - 'window.location'
+        - 'router.push('
+        - 'signIn('
+        - 'useSession'
+        - 'getSession'
+        - 'setHeader('
+        - 'Set-Cookie'
+    rules: ['rules/security.md']
+
+  - id: architecture
+    title: Architecture Review Agent
+    expertise: System design, patterns, technical debt, maintainability, scalability.
+    enabled: true
+    always: true
+    escalates: true # deserves Opus on HIGH/CRITICAL PRs
+    rules: ['rules/architecture.md']
+
+  - id: data-integrity
+    title: Data Integrity Review Agent
+    expertise: Data flow, persistence, caching, input validation, type safety, data consistency.
+    enabled: true
+    always: false
+    escalates: true # deserves Opus on HIGH/CRITICAL PRs
+    triggers:
+      paths:
+        - 'pages/api/Schema/**'
+        - 'pages/api/graphql-rest.page.ts'
+        - 'src/lib/apollo/**'
+        - 'src/lib/deserializeJsonApi.ts'
+        - 'src/lib/snakeToCamel.ts'
+        - 'src/lib/createPatch.ts'
+        - 'src/lib/removeObjectNulls.ts'
+        - 'src/lib/yupHelpers.ts'
+        - '**/*.graphql'
+      content:
+        - 'typePolicies'
+        - 'keyFields'
+        - 'fetchMore'
+        - 'optimisticResponse'
+        - 'refetchQueries'
+        - 'cache.modify'
+        - 'cache.evict'
+        - 'cache.writeQuery'
+        - '__typename'
+        - 'pageInfo'
+        - 'endCursor'
+        - 'hasNextPage'
+        - 'useMutation'
+        - 'yup.object'
+        - 'toISODate'
+        - 'setZone'
+        - 'keepLocalTime'
+    rules: ['rules/data-integrity.md']
+
+  - id: testing
+    title: Testing & Quality Review Agent
+    expertise: Test coverage, test quality, edge cases, error handling, code quality.
+    enabled: true
+    always: true
+    rules: ['rules/testing.md']
+
+  - id: standards
+    title: Standards Compliance Review Agent
+    expertise: Project-specific coding standards, patterns, and conventions.
+    enabled: true
+    always: true
+    rules: ['rules/standards.md']
+
+  - id: financial
+    title: Financial Correctness Review Agent
+    expertise: Donation, pledge, goal, and salary aggregation; currency handling; rounding; reporting date windows.
+    enabled: true
+    model: smart
+    always: false
+    triggers:
+      paths:
+        - 'src/components/Reports/**'
+        - 'src/components/HrTools/**'
+        - 'src/components/EditDonationModal/**'
+        - 'src/components/Dashboard/MonthlyGoal/**'
+        - 'src/components/Dashboard/DonationHistories/**'
+        - 'src/lib/intlFormat.ts'
+        - 'pages/api/Schema/donations/**'
+        - 'pages/api/Schema/reports/**'
+        - 'pages/api/Schema/AccountListAnalytics/**'
+        - 'pages/api/Schema/AccountListDonorAccounts/**'
+      content:
+        - 'convertedAmount'
+        - 'pledgeAmount'
+        - 'currencyCode'
+        - 'currencyFormat'
+        - 'amountFormat'
+        - 'zeroAmountFormat'
+        - '.toFixed('
+        - 'parseFloat('
+        - 'parseInt('
+        - 'Math.round('
+    rules: ['rules/financial.md']
+
+  - id: api-contracts
+    title: API Contract Review Agent
+    expertise: Dual-GraphQL routing, REST-proxy schema/resolver/data-handler contract, codegen, cross-repo API deploy order.
+    enabled: true
+    model: smart
+    always: false
+    triggers:
+      paths:
+        - 'pages/api/Schema/**'
+        - 'pages/api/graphql-rest.page.ts'
+        - 'codegen.ts'
+        - 'extractRootFields.js'
+        - '**/*.graphql'
+      content:
+        - 'Resolvers'
+        - 'dataSources'
+        - 'mpdxRestApi'
+        - 'datahandler'
+        - 'DataHandler'
+        - 'typeDefs'
+        - 'extend type'
+        - 'ISO8601Date'
+        - 'rootFields'
+    rules: ['rules/api-contracts.md']
+
+  - id: ux
+    title: UX & Accessibility Review Agent
+    expertise: Material UI v7 conventions, loading/error states, Formik wiring, notification behavior, code-split modals, accessibility.
+    enabled: true
+    model: smart
+    always: false
+    triggers:
+      paths:
+        - 'src/components/**/*.tsx'
+        - 'pages/**/*.page.tsx'
+        - 'src/theme.ts'
+      content:
+        - 'useFormik'
+        - '<Formik'
+        - '<Field'
+        - 'enqueueSnackbar'
+        - 'snackNotifications'
+        - 'aria-'
+        - 'role='
+        - 'IconButton'
+        - '<Dialog'
+        - 'Skeleton'
+        - 'CircularProgress'
+        - 'next/dynamic'
+        - 'webpackChunkName'
+    rules: ['rules/ux.md']
+
+# ── Per-path rules ────────────────────────────────────────────────────────────
+# Extra rule docs applied to EVERY agent reviewing a matching file.
+path_rules: []
+
+# ── Exclusions — never reviewed, never scored ─────────────────────────────────
+excluded_paths:
+  - '**/*.snap'
+  - '**/*.generated.*' # graphql-codegen output; gitignored, regenerated by CI
+  - 'src/graphql/**' # codegen output directory; gitignored
+  - 'docs/**'
+  - '.claude/review/rules/**' # prose rule docs — config/guidance, not reviewable code
+  - 'yarn.lock' # Yarn Berry lockfile — generated
+  - '.yarn/**' # committed Yarn cache (git-lfs zips)
+  - '.next/**'
+  - 'storybook-static/**'
+  - 'public/locales/**' # Crowdin-managed translation content
+  - 'public/images/**'
+  - 'public/icons/**'
+  - 'public/fonts/**'
+  - 'src/images/**'
+  - '.github/ISSUE_TEMPLATE/**'
+
+# ── Deterministic evidence ────────────────────────────────────────────────────
+# ast-grep runs trusted, repo-authored AST rules before the model. Only matches
+# on added lines become ledger findings.
+#
+# DISABLED at bootstrap: four candidate rules are written under `static/rules/`
+# with tests, but `ast-grep` is not installed on the machine that ran init, so
+# `ast-grep test --config .claude/review/static/sgconfig.yml` has never been run
+# against them. Install ast-grep 0.45.0, run the tests, then flip `enabled: true`.
+static_analysis:
+  ast_grep:
+    enabled: false
+    config: static/sgconfig.yml
+    version: 0.45.0 # pin the CI binary; do not use "latest"
+    severity: { error: 8, warning: 6, info: 4, hint: 2 }
+    excluded_paths: []
+
+# Snapshot existing GitHub checks and their annotations into the review prompt.
+ci:
+  enabled: true
+  # `staging-api-block` fails on purpose whenever the "Staging API" label is
+  # present — it is a merge policy, not a defect signal, and feeding it to the
+  # reviewer as a failing check would be misleading.
+  ignore_checks: ['staging-api-block']
+
+# Optional SHA-pinned API/client/documentation repositories.
+#
+# DISABLED at bootstrap. The obvious candidate is `CruGlobal/mpdx_api` (the
+# upstream GraphQL/REST API this repo is a client of) — PR mining found repeated
+# cross-repo deploy-order incidents. Enabling it requires a full commit SHA to
+# pin and, for private access, the `AGENT_REVIEW_CONTEXT_TOKEN` secret.
+context:
+  enabled: false
+  manifest: context/repositories.json
+
+# Stay label-gated and non-approving until `agent-review rollout` says the
+# seeded suite and real PR dismissal telemetry meet these gates.
+rollout:
+  mode: shadow
+  label: agent-review
+  minimum_evaluated_runs: 50
+  minimum_dispositions: 30
+  thresholds:
+    dismissal_rate: 0.35
+    false_positive_dismissal_rate: 0.20
+
+# ── Index layer: file-level import graph for impact analysis ──────────────────
+index:
+  enabled: true
+  path: '.claude/review/index'
+  roots: ['src', 'pages', '__tests__', 'scripts']
+  extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs']
+  # From tsconfig.json compilerOptions.paths.
+  aliases:
+    - { prefix: 'src/', target: 'src/' }
+    - { prefix: 'pages/', target: 'pages/' }
+    - { prefix: '__tests__/', target: '__tests__/' }
+
+# ── Learning layer: approval-gated feedback loop ──────────────────────────────
+learning:
+  enabled: true
+  path: '.claude/review/learnings'
+  approval_required: true # not yet enforced — reserved; promotion is always approval-gated today
+  min_support: 3
+  scope: local # not yet enforced — reserved (local | shared)
+
+enforcement:
+  mode: warn # warn | block — reserved for future merge-gating
