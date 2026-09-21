@@ -20,6 +20,7 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
+import { filterOptionsByWords } from 'src/components/Shared/Autocomplete/filterOptionsByWords';
 import {
   CancelButton,
   SubmitButton,
@@ -331,7 +332,10 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                         loading={loadingAssigneeOptions}
                         autoSelect
                         autoHighlight
+                        filterOptions={filterOptionsByWords}
                         options={users.map(({ id }) => id)}
+                        // Override default MUI key: the option label
+                        getOptionKey={(userId) => userId}
                         getOptionLabel={(userId) => {
                           const user = users.find(({ id }) => id === userId);
                           return user ? userName(user) : '';
@@ -549,6 +553,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                         loading={loadingFilteredById || loadingFilteredByName}
                         autoSelect
                         autoHighlight
+                        filterOptions={filterOptionsByWords}
                         options={
                           (
                             mergedContacts &&
@@ -557,6 +562,8 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                             )
                           )?.map(({ id }) => id) || []
                         }
+                        // Override default MUI key: the option label
+                        getOptionKey={(contactId) => contactId}
                         getOptionLabel={(contactId) =>
                           mergedContacts.find(({ id }) => id === contactId)
                             ?.name ?? ''
