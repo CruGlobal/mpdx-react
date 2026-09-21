@@ -68,6 +68,7 @@ const subCategoryPolicies: Partial<
   [StaffExpensesSubCategoryEnum.AccountTransferInternalGift]: itemize,
 
   [StaffExpensesSubCategoryEnum.AdditionalSalary]: monthly,
+  [StaffExpensesSubCategoryEnum.HousingAllowance]: monthly,
 
   [StaffExpensesSubCategoryEnum.CreditCardFee]: monthly,
   [StaffExpensesSubCategoryEnum.OtherAssessment]: assessmentMonthly,

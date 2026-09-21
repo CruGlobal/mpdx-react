@@ -38,6 +38,7 @@ export const getPluralizedSubCategory = (
     [StaffExpensesSubCategoryEnum.MinistryReimbursement]: t(
       'Ministry Reimbursements',
     ),
+    [StaffExpensesSubCategoryEnum.HousingAllowances]: t('Housing Allowances'),
   };
   return descriptions[value];
 };
@@ -127,6 +128,7 @@ export const getLocalizedSubCategory = (
       'Health & Wellness Credits',
     ),
     [StaffExpensesSubCategoryEnum.HousingAllowances]: t('Housing Allowances'),
+    [StaffExpensesSubCategoryEnum.HousingAllowance]: t('Housing Allowance'),
     [StaffExpensesSubCategoryEnum.ImputedIncome]: t('Imputed Income'),
     [StaffExpensesSubCategoryEnum.InternationalPayments]: t(
       'International Payments',

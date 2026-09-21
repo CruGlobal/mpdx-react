@@ -178,7 +178,7 @@ describe('aggregationPolicy', () => {
   it('resolves a policy for every subcategory the schema defines', () => {
     const subCategories = Object.values(StaffExpensesSubCategoryEnum);
 
-    expect(subCategories).toHaveLength(71);
+    expect(subCategories).toHaveLength(72);
     subCategories.forEach((subCategory) => {
       expect(getAggregationPolicy(subCategory).period).toEqual(
         expect.any(String),
