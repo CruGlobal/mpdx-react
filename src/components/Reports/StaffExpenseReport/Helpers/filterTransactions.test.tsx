@@ -447,6 +447,99 @@ describe('filterTransactions', () => {
     expect(fees?.groupedTransactions).toHaveLength(1);
   });
 
+  it('splits other standard earnings between its salary and additional salary homes', () => {
+    const result = filterTransactions({
+      ...marchParams,
+      household: [reader, spouse],
+      fund: buildFund([
+        {
+          category: StaffExpenseCategoryEnum.Salary,
+          subCategory: StaffExpensesSubCategoryEnum.RegularPay,
+          transactions: [
+            {
+              amount: -2800,
+              transactedAt: '2025-03-14T00:00:00Z',
+              personNumber: reader.personNumber,
+            },
+            {
+              amount: -2100,
+              transactedAt: '2025-03-14T00:00:00Z',
+              personNumber: spouse.personNumber,
+            },
+          ],
+        },
+        {
+          category: StaffExpenseCategoryEnum.Salary,
+          subCategory: StaffExpensesSubCategoryEnum.OtherStandardEarnings,
+          transactions: [
+            {
+              amount: -11,
+              transactedAt: '2025-03-14T00:00:00Z',
+              personNumber: reader.personNumber,
+            },
+            {
+              amount: -12,
+              transactedAt: '2025-03-14T00:00:00Z',
+              personNumber: spouse.personNumber,
+            },
+          ],
+        },
+        {
+          category: StaffExpenseCategoryEnum.AdditionalSalary,
+          subCategory: StaffExpensesSubCategoryEnum.OtherStandardEarnings,
+          transactions: [
+            { amount: -25, transactedAt: '2025-03-05T00:00:00Z' },
+            { amount: -35, transactedAt: '2025-03-19T00:00:00Z' },
+          ],
+        },
+      ]),
+    });
+
+    expect(result.map((row) => row.displayCategory)).toEqual([
+      'Salary (Alex)',
+      'Salary (Jordan)',
+      'Other Standard Earnings',
+    ]);
+    expect(result.map((row) => row.amount)).toEqual([-2811, -2112, -60]);
+
+    const earnings = result
+      .filter(isGroupedTransaction)
+      .find((row) => row.displayCategory === 'Other Standard Earnings');
+    expect(earnings?.category).toBe(StaffExpenseCategoryEnum.AdditionalSalary);
+    expect(earnings?.transactedAt).toBe('2025-03-01');
+    expect(earnings?.groupedTransactions).toHaveLength(2);
+  });
+
+  it('keeps housing allowance in its own monthly row beside additional salary', () => {
+    const result = filterTransactions({
+      ...marchParams,
+      fund: buildFund([
+        {
+          category: StaffExpenseCategoryEnum.AdditionalSalary,
+          subCategory: StaffExpensesSubCategoryEnum.AdditionalSalary,
+          transactions: [
+            { amount: -100, transactedAt: '2025-03-05T00:00:00Z' },
+            { amount: -200, transactedAt: '2025-03-19T00:00:00Z' },
+          ],
+        },
+        {
+          category: StaffExpenseCategoryEnum.AdditionalSalary,
+          subCategory: StaffExpensesSubCategoryEnum.HousingAllowance,
+          transactions: [
+            { amount: -800, transactedAt: '2025-03-05T00:00:00Z' },
+            { amount: -800, transactedAt: '2025-03-19T00:00:00Z' },
+          ],
+        },
+      ]),
+    });
+
+    expect(result.map((row) => row.displayCategory)).toEqual([
+      'Additional Salary',
+      'Housing Allowances',
+    ]);
+    expect(result.map((row) => row.amount)).toEqual([-300, -1600]);
+  });
+
   it('itemizes transfers', () => {
     const result = filterTransactions({
       ...marchParams,

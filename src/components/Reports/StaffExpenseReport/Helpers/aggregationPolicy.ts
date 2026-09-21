@@ -160,8 +160,16 @@ const subCategoryPolicies: Partial<
  */
 export const getAggregationPolicy = (
   subCategory: StaffExpensesSubCategoryEnum | undefined,
-): AggregationPolicy =>
-  subCategory ? (subCategoryPolicies[subCategory] ?? itemize) : itemize;
+  category?: StaffExpenseCategoryEnum,
+): AggregationPolicy => {
+  if (
+    subCategory === StaffExpensesSubCategoryEnum.OtherStandardEarnings &&
+    category === StaffExpenseCategoryEnum.AdditionalSalary
+  ) {
+    return monthly;
+  }
+  return subCategory ? (subCategoryPolicies[subCategory] ?? itemize) : itemize;
+};
 
 /**
  * Rolled up rows lead their section, ahead of everything the table files by date.
@@ -177,6 +185,8 @@ const rollupRowOrder: (
   StaffExpenseCategoryEnum.Benefits,
   StaffExpenseCategoryEnum.Salary,
   StaffExpensesSubCategoryEnum.AdditionalSalary,
+  StaffExpensesSubCategoryEnum.HousingAllowance,
+  StaffExpensesSubCategoryEnum.OtherStandardEarnings,
   StaffExpensesSubCategoryEnum.HealthcareReimbursement,
   StaffExpensesSubCategoryEnum.PaCard,
   StaffExpensesSubCategoryEnum.MinistryReimbursement,

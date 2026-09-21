@@ -38,7 +38,7 @@ export const getPluralizedSubCategory = (
     [StaffExpensesSubCategoryEnum.MinistryReimbursement]: t(
       'Ministry Reimbursements',
     ),
-    [StaffExpensesSubCategoryEnum.HousingAllowances]: t('Housing Allowances'),
+    [StaffExpensesSubCategoryEnum.HousingAllowance]: t('Housing Allowances'),
   };
   return descriptions[value];
 };

@@ -176,7 +176,7 @@ const groupTransactions = (
       consolidatedCategories === null ||
       consolidatedCategories.includes(transaction.category);
     const policy = isConsolidated
-      ? getAggregationPolicy(transaction.subcategory)
+      ? getAggregationPolicy(transaction.subcategory, transaction.category)
       : { period: AggregationPeriod.None };
 
     if (policy.period === AggregationPeriod.None) {
@@ -387,7 +387,8 @@ export const getCombinableCategories = (
 ): string[] =>
   uniqueCategories(
     transactionsInRange(funds, filters, targetTime).filter(
-      ({ subcategory }) =>
-        getAggregationPolicy(subcategory).period !== AggregationPeriod.None,
+      ({ subcategory, category }) =>
+        getAggregationPolicy(subcategory, category).period !==
+        AggregationPeriod.None,
     ),
   );

@@ -72,7 +72,7 @@ describe('aggregationPolicy', () => {
     ).toEqual({ period: AggregationPeriod.Month });
   });
 
-  it('rounds additional salary, healthcare reimbursement, and the healthcare debit card monthly', () => {
+  it('rounds additional salary, housing allowance, healthcare reimbursement, and the healthcare debit card monthly', () => {
     expect(
       getAggregationPolicy(StaffExpensesSubCategoryEnum.AdditionalSalary),
     ).toEqual({ period: AggregationPeriod.Month });
@@ -84,6 +84,42 @@ describe('aggregationPolicy', () => {
     expect(getAggregationPolicy(StaffExpensesSubCategoryEnum.PaCard)).toEqual({
       period: AggregationPeriod.Month,
     });
+    expect(
+      getAggregationPolicy(StaffExpensesSubCategoryEnum.HousingAllowance),
+    ).toEqual({ period: AggregationPeriod.Month });
+  });
+
+  it('reads the category to place other standard earnings, which belongs to two', () => {
+    const salaryRule = {
+      period: AggregationPeriod.Day,
+      bucket: StaffExpenseCategoryEnum.Salary,
+      perPerson: true,
+    };
+
+    expect(
+      getAggregationPolicy(
+        StaffExpensesSubCategoryEnum.OtherStandardEarnings,
+        StaffExpenseCategoryEnum.AdditionalSalary,
+      ),
+    ).toEqual({ period: AggregationPeriod.Month });
+    expect(
+      getAggregationPolicy(
+        StaffExpensesSubCategoryEnum.OtherStandardEarnings,
+        StaffExpenseCategoryEnum.Salary,
+      ),
+    ).toEqual(salaryRule);
+    expect(
+      getAggregationPolicy(StaffExpensesSubCategoryEnum.OtherStandardEarnings),
+    ).toEqual(salaryRule);
+  });
+
+  it('leaves every other subcategory unchanged by the category argument', () => {
+    expect(
+      getAggregationPolicy(
+        StaffExpensesSubCategoryEnum.RegularPay,
+        StaffExpenseCategoryEnum.AdditionalSalary,
+      ),
+    ).toEqual(getAggregationPolicy(StaffExpensesSubCategoryEnum.RegularPay));
   });
 
   it('collapses every benefits subcategory into one date bucket', () => {
@@ -269,6 +305,35 @@ describe('aggregationPolicy', () => {
       getRollupRank(StaffExpensesSubCategoryEnum.MinistryReimbursement),
     );
     expect(unnamed).toBeLessThan(ITEMIZED_ROW_RANK);
+  });
+
+  it('labels the housing allowance rollup with its plural', () => {
+    expect(
+      getBucketLabel(
+        getAggregationPolicy(StaffExpensesSubCategoryEnum.HousingAllowance),
+        StaffExpenseCategoryEnum.AdditionalSalary,
+        StaffExpensesSubCategoryEnum.HousingAllowance,
+        i18n.t,
+      ),
+    ).toBe('Housing Allowances');
+  });
+
+  it('ranks the new additional salary rollups beside additional salary', () => {
+    const additionalSalary = getRollupRank(
+      StaffExpensesSubCategoryEnum.AdditionalSalary,
+    );
+    const housingAllowance = getRollupRank(
+      StaffExpensesSubCategoryEnum.HousingAllowance,
+    );
+    const otherStandardEarnings = getRollupRank(
+      StaffExpensesSubCategoryEnum.OtherStandardEarnings,
+    );
+
+    expect(housingAllowance).toBeGreaterThan(additionalSalary);
+    expect(otherStandardEarnings).toBeGreaterThan(housingAllowance);
+    expect(
+      getRollupRank(StaffExpensesSubCategoryEnum.HealthcareReimbursement),
+    ).toBeGreaterThan(otherStandardEarnings);
   });
 
   it('labels the healthcare debit card bucket with its renamed label', () => {
