@@ -127,6 +127,37 @@ describe('MassActionsAddTags', () => {
     expect(mutationSpy).not.toHaveGraphqlOperation('ContactsAddTags');
   });
 
+  it('submits the remaining tags after removing a redundant one', async () => {
+    const mutationSpy = jest.fn();
+    const handleClose = jest.fn();
+
+    const { getByRole, getByText } = render(
+      <TestComponent
+        mutationSpy={mutationSpy}
+        handleClose={handleClose}
+        contacts={[
+          { id: 'abc', tagList: ['tag123'] },
+          { id: 'def', tagList: ['tag123'] },
+        ]}
+      />,
+    );
+
+    const input = getByRole('combobox') as HTMLInputElement;
+    userEvent.type(input, 'tag123{enter}newtag{enter}');
+    await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
+    userEvent.click(getByText('Save'));
+    await waitFor(() => expect(handleClose).toHaveBeenCalled());
+
+    expect(mockEnqueue).toHaveBeenCalledWith(...duplicateTagError);
+    expect(mutationSpy).toHaveGraphqlOperation('ContactsAddTags', {
+      accountListId,
+      attributes: [
+        { id: 'abc', tagList: ['newtag', 'tag123'] },
+        { id: 'def', tagList: ['newtag', 'tag123'] },
+      ],
+    });
+  });
+
   it('keeps a tag that only some of the selected contacts have', async () => {
     const mutationSpy = jest.fn();
     const handleClose = jest.fn();
