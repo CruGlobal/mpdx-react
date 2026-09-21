@@ -26,6 +26,7 @@ import theme from 'src/theme';
 import { AccountInfoBox } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBox';
 import { AccountInfoBoxSkeleton } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBoxSkeleton';
 import { EmptyTable } from '../../HrTools/Shared/EmptyTable/EmptyTable';
+import { HouseholdMember } from '../Shared/Helpers/household';
 import { SettingsButtonGroup } from '../Shared/SettingsButtonGroup/SettingsButtonGroup';
 import {
   Filters,
@@ -42,11 +43,7 @@ import { BalanceCardList } from './BalanceCardList/BalanceCardList';
 import { ExportCsvButton } from './ExportCsvButton/ExportCsvButton';
 import { useReportsStaffExpensesQuery } from './GetStaffExpense.generated';
 import { ReportType } from './Helpers/StaffReportEnum';
-import {
-  HouseholdMember,
-  Transaction,
-  filterTransactions,
-} from './Helpers/filterTransactions';
+import { Transaction, filterTransactions } from './Helpers/filterTransactions';
 import {
   dateRangeToString,
   getFormattedDateString,

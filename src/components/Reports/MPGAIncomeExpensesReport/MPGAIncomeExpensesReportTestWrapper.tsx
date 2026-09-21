@@ -4,6 +4,7 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { FundTypes } from './Helper/MPGAReportEnum';
@@ -108,17 +109,46 @@ export const mpgaTransactionsMock: MpgaTransactionsQuery = {
   },
 };
 
+/** A staff member on their own, so unattributed payroll in a mock never splits into a spouse row. */
+export const hcmSingleMock: HcmQuery = {
+  hcm: [
+    {
+      staffInfo: { personNumber: '000000111', preferredName: 'Alex' },
+    },
+  ],
+} as HcmQuery;
+
+/** HCM lists the reader first, then their spouse. */
+export const hcmHouseholdMock: HcmQuery = {
+  hcm: [
+    ...hcmSingleMock.hcm,
+    {
+      staffInfo: { personNumber: '000000222', preferredName: 'Jordan' },
+    },
+  ],
+} as HcmQuery;
+
 interface MPGAIncomeExpensesReportTestWrapperProps {
   onCall?: MockLinkCallHandler;
   isEmpty?: boolean;
   mocks?: MpgaTransactionsQuery;
+  hcmMocks?: HcmQuery;
   staffAccountId?: string | null;
+  personNumber?: string;
   children?: React.ReactNode;
 }
 
 export const MPGAIncomeExpensesReportTestWrapper: React.FC<
   MPGAIncomeExpensesReportTestWrapperProps
-> = ({ onCall, isEmpty, mocks, staffAccountId, children }) => {
+> = ({
+  onCall,
+  isEmpty,
+  mocks,
+  hcmMocks = hcmSingleMock,
+  staffAccountId,
+  personNumber,
+  children,
+}) => {
   const mpgaTransactions =
     mocks ??
     (isEmpty
@@ -134,11 +164,17 @@ export const MPGAIncomeExpensesReportTestWrapper: React.FC<
   return (
     <ThemeProvider theme={theme}>
       <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <GqlMockedProvider<{ MPGATransactions: MpgaTransactionsQuery }>
-          mocks={{ MPGATransactions: mpgaTransactions }}
+        <GqlMockedProvider<{
+          MPGATransactions: MpgaTransactionsQuery;
+          Hcm: HcmQuery;
+        }>
+          mocks={{ MPGATransactions: mpgaTransactions, Hcm: hcmMocks }}
           onCall={onCall}
         >
-          <MPGAIncomeExpensesReportProvider staffAccountId={staffAccountId}>
+          <MPGAIncomeExpensesReportProvider
+            staffAccountId={staffAccountId}
+            personNumber={personNumber}
+          >
             {children}
           </MPGAIncomeExpensesReportProvider>
         </GqlMockedProvider>

@@ -6,6 +6,7 @@ import {
   StaffExpenseCategoryEnum,
   StaffExpensesSubCategoryEnum,
 } from 'src/graphql/types.generated';
+import { HouseholdMember } from '../../Shared/Helpers/household';
 import {
   getLocalizedCategory,
   getLocalizedSubCategory,
@@ -32,12 +33,6 @@ export interface Transaction {
   displayCategory: string;
   /** Null when SAA has no employee for the transaction's EMPLID. */
   personNumber?: string | null;
-}
-
-/** A person sharing the account, in HCM's order: the staff member reading the report, then their spouse. */
-export interface HouseholdMember {
-  personNumber: string;
-  name: string;
 }
 
 export interface GroupedTransaction extends Transaction {

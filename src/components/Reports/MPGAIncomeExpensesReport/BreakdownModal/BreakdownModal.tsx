@@ -10,7 +10,10 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { StaffExpensesSubCategoryEnum } from 'src/graphql/types.generated';
+import {
+  StaffExpenseCategoryEnum,
+  StaffExpensesSubCategoryEnum,
+} from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, monthYearFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
@@ -29,12 +32,23 @@ export const BreakdownModal: React.FC<BreakdownModalProps> = ({
   open,
   onClose,
   category,
+  person,
   transactions,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const currency = 'USD';
   const { startDate, endDate } = useMPGAIncomeExpenses();
+
+  // Salary is the only category split one row per person. Its breakdown is named the way the row
+  // is, so two people's modals cannot be mistaken for each other; no other category names anyone.
+  const categoryName =
+    person && category === StaffExpenseCategoryEnum.Salary
+      ? t('{{bucket}} ({{person}})', {
+          bucket: getLocalizedCategory(category, t),
+          person,
+        })
+      : getLocalizedCategory(category, t);
 
   const subcategoryBreakdown = useMemo(() => {
     const grouped = new Map<
@@ -68,11 +82,7 @@ export const BreakdownModal: React.FC<BreakdownModalProps> = ({
   );
 
   return (
-    <DialogSkeleton
-      categoryName={getLocalizedCategory(category, t)}
-      open={open}
-      onClose={onClose}
-    >
+    <DialogSkeleton categoryName={categoryName} open={open} onClose={onClose}>
       <TableContainer
         sx={{
           borderBottom: `1px solid ${theme.palette.divider}`,
@@ -143,11 +153,9 @@ export const BreakdownModal: React.FC<BreakdownModalProps> = ({
                   fontWeight="bold"
                 >
                   {overallTotal >= 0
-                    ? t('Total {{category}} Income', {
-                        category: getLocalizedCategory(category, t),
-                      })
+                    ? t('Total {{category}} Income', { category: categoryName })
                     : t('Total {{category}} Expense', {
-                        category: getLocalizedCategory(category, t),
+                        category: categoryName,
                       })}
                 </Typography>
               </TableCell>
