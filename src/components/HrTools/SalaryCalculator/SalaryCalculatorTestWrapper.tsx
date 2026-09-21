@@ -206,6 +206,9 @@ export const SalaryCalculatorTestWrapper: React.FC<
                       exceptionCap: null,
                       combinedCap: 125000,
                     },
+                    spouseCalculations: {
+                      hardCap: 80000,
+                    },
                     progressiveApprovalTier: null,
                     progressiveApprovalTierReason: null,
                   } satisfies SalaryRequestMock,
