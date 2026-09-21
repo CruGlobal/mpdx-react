@@ -21,27 +21,62 @@ jest.mock('notistack', () => ({
     };
   },
 }));
-const selectedIds = ['abc'];
+
+const selectedIds = ['abc', 'def'];
 const accountListId = '123456789';
+
+const duplicateTagError: [string, { variant: string }] = [
+  'All selected contacts already have this tag',
+  { variant: 'error' },
+];
+
+interface TestComponentProps {
+  mutationSpy?: jest.Mock;
+  handleClose?: () => void;
+  contacts: GetContactsForAddingTagsQuery['contacts']['nodes'];
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({
+  mutationSpy,
+  handleClose = jest.fn(),
+  contacts,
+}) => (
+  <ThemeProvider theme={theme}>
+    <GqlMockedProvider<{
+      GetContactsForAddingTags: GetContactsForAddingTagsQuery;
+    }>
+      onCall={mutationSpy}
+      mocks={{
+        GetContactsForAddingTags: { contacts: { nodes: contacts } },
+      }}
+    >
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <SnackbarProvider>
+          <MassActionsAddTagsModal
+            accountListId={accountListId}
+            ids={selectedIds}
+            handleClose={handleClose}
+          />
+        </SnackbarProvider>
+      </LocalizationProvider>
+    </GqlMockedProvider>
+  </ThemeProvider>
+);
+
 describe('MassActionsAddTags', () => {
-  it('opens the more actions menu and clicks the add tags action', async () => {
+  it('adds the tag to all of the selected contacts', async () => {
     const mutationSpy = jest.fn();
     const handleClose = jest.fn();
 
     const { getByRole, getByText } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider onCall={mutationSpy}>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <SnackbarProvider>
-              <MassActionsAddTagsModal
-                accountListId={accountListId}
-                ids={selectedIds}
-                handleClose={handleClose}
-              />
-            </SnackbarProvider>
-          </LocalizationProvider>
-        </GqlMockedProvider>
-      </ThemeProvider>,
+      <TestComponent
+        mutationSpy={mutationSpy}
+        handleClose={handleClose}
+        contacts={[
+          { id: 'abc', tagList: [] },
+          { id: 'def', tagList: [] },
+        ]}
+      />,
     );
 
     const input = getByRole('combobox') as HTMLInputElement;
@@ -52,75 +87,105 @@ describe('MassActionsAddTags', () => {
     userEvent.click(getByText('Save'));
     await waitFor(() => expect(handleClose).toHaveBeenCalled());
 
-    const { operation } = mutationSpy.mock.calls[2][0];
-    expect(operation.variables.attributes[0].tagList[0]).toEqual('tag123');
-    await waitFor(() =>
-      expect(mockEnqueue).toHaveBeenCalledWith('Tags added to contacts!', {
-        variant: 'success',
-      }),
-    );
+    expect(mutationSpy).toHaveGraphqlOperation('ContactsAddTags', {
+      accountListId,
+      attributes: [
+        { id: 'abc', tagList: ['tag123'] },
+        { id: 'def', tagList: ['tag123'] },
+      ],
+    });
+    expect(mockEnqueue).toHaveBeenCalledWith('Tags added to contacts!', {
+      variant: 'success',
+    });
   });
-  it('should delete the duplicate tag', async () => {
+
+  it('removes a tag that every selected contact already has', async () => {
     const mutationSpy = jest.fn();
     const handleClose = jest.fn();
 
-    const GetContactsForAddingTags: GetContactsForAddingTagsQuery = {
-      contacts: {
-        nodes: [
-          {
-            id: 'abc',
-            tagList: ['tag123'],
-          },
-        ],
-      },
-    };
-
     const { getByRole, getByText } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{
-          GetContactsForAddingTags: GetContactsForAddingTagsQuery;
-        }>
-          onCall={mutationSpy}
-          mocks={{
-            GetContactsForAddingTags,
-          }}
-        >
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <SnackbarProvider>
-              <MassActionsAddTagsModal
-                accountListId={accountListId}
-                ids={selectedIds}
-                handleClose={handleClose}
-              />
-            </SnackbarProvider>
-          </LocalizationProvider>
-        </GqlMockedProvider>
-      </ThemeProvider>,
+      <TestComponent
+        mutationSpy={mutationSpy}
+        handleClose={handleClose}
+        contacts={[
+          { id: 'abc', tagList: ['tag123'] },
+          { id: 'def', tagList: ['tag123'] },
+        ]}
+      />,
     );
 
-    expect(GetContactsForAddingTags.contacts.nodes[0].tagList).toEqual([
-      'tag123',
-    ]);
     const input = getByRole('combobox') as HTMLInputElement;
-    userEvent.type(input, 'tag123');
-    expect(GetContactsForAddingTags.contacts.nodes[0].tagList.length).toBe(1);
-    expect(input.value).toBe('tag123');
-    userEvent.type(input, '{enter}');
+    userEvent.type(input, 'tag123{enter}');
+    await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
+    userEvent.click(getByText('Save'));
+
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith(...duplicateTagError),
+    );
+    await waitFor(() => expect(getByText('Save')).toBeDisabled());
+    expect(handleClose).not.toHaveBeenCalled();
+    expect(mutationSpy).not.toHaveGraphqlOperation('ContactsAddTags');
+  });
+
+  it('keeps a tag that only some of the selected contacts have', async () => {
+    const mutationSpy = jest.fn();
+    const handleClose = jest.fn();
+
+    const { getByRole, getByText } = render(
+      <TestComponent
+        mutationSpy={mutationSpy}
+        handleClose={handleClose}
+        contacts={[
+          { id: 'abc', tagList: ['tag123'] },
+          { id: 'def', tagList: [] },
+        ]}
+      />,
+    );
+
+    const input = getByRole('combobox') as HTMLInputElement;
+    userEvent.type(input, 'tag123{enter}');
     await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
     userEvent.click(getByText('Save'));
     await waitFor(() => expect(handleClose).toHaveBeenCalled());
 
-    // Simulate the mutation being called twice with the same tag
-    const { operation } = mutationSpy.mock.calls[2][0];
-    expect(operation.variables.attributes[0].tagList[0]).toEqual('tag123');
-    await waitFor(() =>
-      expect(mockEnqueue).toHaveBeenCalledWith(
-        'All selected contacts already have this tag',
-        {
-          variant: 'error',
-        },
-      ),
+    expect(mockEnqueue).not.toHaveBeenCalledWith(...duplicateTagError);
+    expect(mutationSpy).toHaveGraphqlOperation('ContactsAddTags', {
+      accountListId,
+      attributes: [
+        { id: 'abc', tagList: ['tag123'] },
+        { id: 'def', tagList: ['tag123'] },
+      ],
+    });
+  });
+
+  it('keeps a new tag when the selected contacts share other tags', async () => {
+    const mutationSpy = jest.fn();
+    const handleClose = jest.fn();
+
+    const { getByRole, getByText } = render(
+      <TestComponent
+        mutationSpy={mutationSpy}
+        handleClose={handleClose}
+        contacts={[
+          { id: 'abc', tagList: ['tag1', 'tag2'] },
+          { id: 'def', tagList: ['tag1', 'tag2'] },
+        ]}
+      />,
     );
-    expect(GetContactsForAddingTags.contacts.nodes[0].tagList.length).toBe(1);
+
+    const input = getByRole('combobox') as HTMLInputElement;
+    userEvent.type(input, 'tag3{enter}');
+    await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
+    userEvent.click(getByText('Save'));
+    await waitFor(() => expect(handleClose).toHaveBeenCalled());
+
+    expect(mockEnqueue).not.toHaveBeenCalledWith(...duplicateTagError);
+    expect(mutationSpy).toHaveGraphqlOperation('ContactsAddTags', {
+      accountListId,
+      attributes: [
+        { id: 'abc', tagList: ['tag3', 'tag1', 'tag2'] },
+        { id: 'def', tagList: ['tag3', 'tag1', 'tag2'] },
+      ],
+    });
   });
 });
