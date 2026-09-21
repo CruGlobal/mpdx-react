@@ -9,6 +9,7 @@ import {
   useScrollTrigger,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { AssistantLauncher } from 'src/components/Assistant/AssistantLauncher';
 import { useSetupContext } from 'src/components/Setup/SetupProvider';
 import { LogoLink } from '../LogoLink/LogoLink';
 import AddMenu from './Items/AddMenu/AddMenu';
@@ -80,6 +81,7 @@ const TopBar = ({
                 <SearchMenu />
                 <AddMenu />
                 <NotificationMenu />
+                <AssistantLauncher />
               </>
             )}
             <Box ml={{ lg: 1, xl: 2 }}>
