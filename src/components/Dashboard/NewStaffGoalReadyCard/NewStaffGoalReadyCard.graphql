@@ -1,0 +1,14 @@
+# A staff member's own goal is only returned once it has been sent, so a result
+# here is the "your goal is ready" signal for the dashboard card.
+query NewStaffGoalReady($accountListId: ID!) {
+  newStaffGoalCalculation(accountListId: $accountListId) {
+    id
+    updatedAt
+    # Null for the staff member themselves; present for the goals team, whose
+    # read is not gated on the send, so goalSentAt keeps unsent goals hidden.
+    newStaffCohortAttendee {
+      id
+      goalSentAt
+    }
+  }
+}
