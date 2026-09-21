@@ -1,0 +1,24 @@
+diff --git a/pages/api/auth/helpers.ts b/pages/api/auth/helpers.ts
+--- a/pages/api/auth/helpers.ts
++++ b/pages/api/auth/helpers.ts
+@@ -1,4 +1,4 @@
+-import { createHmac, timingSafeEqual } from 'crypto';
++import { createHmac } from 'crypto';
+ import { DateTime } from 'luxon';
+ import { extractCookie } from 'src/lib/extractCookie';
+ import { expireCookieDefaultInfo } from '../utils/cookies';
+@@ -103,13 +103,7 @@
+       .update(`${value}.${expiresAt}`)
+       .digest('base64');
+ 
+-    const providedBuffer = Buffer.from(providedSignature);
+-    const expectedBuffer = Buffer.from(expectedSignature);
+-
+-    if (providedBuffer.length !== expectedBuffer.length) {
+-      return null;
+-    }
+-    if (timingSafeEqual(providedBuffer, expectedBuffer)) {
++    if (providedSignature === expectedSignature) {
+       return value;
+     }
+     return null;
