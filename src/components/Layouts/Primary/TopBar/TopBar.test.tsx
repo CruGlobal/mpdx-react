@@ -5,6 +5,7 @@ import { render } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { mockSession } from '__tests__/util/mockSession';
+import { AssistantProvider } from 'src/components/Assistant/AssistantProvider';
 import { TestSetupProvider } from 'src/components/Setup/SetupProvider';
 import theme from '../../../../theme';
 import { getNotificationsMocks } from './Items/NotificationMenu/NotificationMenu.mock';
@@ -45,10 +46,12 @@ const TestComponent: React.FC<TestComponentProps> = ({ onSetupTour }) => (
           addTypename={false}
         >
           <TestSetupProvider onSetupTour={onSetupTour}>
-            <TopBar
-              accountListId={accountListId}
-              onMobileNavOpen={onMobileNavOpen}
-            />
+            <AssistantProvider>
+              <TopBar
+                accountListId={accountListId}
+                onMobileNavOpen={onMobileNavOpen}
+              />
+            </AssistantProvider>
           </TestSetupProvider>
         </MockedProvider>
       </TestRouter>
@@ -59,6 +62,7 @@ const TestComponent: React.FC<TestComponentProps> = ({ onSetupTour }) => (
 describe('TopBar', () => {
   afterEach(() => {
     process.env.DEVELOPMENT_ENV = 'false';
+    mockSession({});
   });
 
   it('default', () => {

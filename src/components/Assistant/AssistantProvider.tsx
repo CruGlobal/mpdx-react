@@ -7,20 +7,23 @@ import React, {
   useState,
 } from 'react';
 
-export interface AssistantContext {
+export interface AssistantContextValue {
   open: boolean;
   openAssistant: () => void;
   closeAssistant: () => void;
 }
 
-const AssistantContext = createContext<AssistantContext>({
-  open: false,
-  openAssistant: () => undefined,
-  closeAssistant: () => undefined,
-});
+const AssistantContext = createContext<AssistantContextValue | null>(null);
 
-export const useAssistantContext = (): AssistantContext =>
-  useContext(AssistantContext);
+export const useAssistantContext = (): AssistantContextValue => {
+  const context = useContext(AssistantContext);
+  if (context === null) {
+    throw new Error(
+      'Could not find AssistantContext. Make sure that your component is inside <AssistantProvider>.',
+    );
+  }
+  return context;
+};
 
 interface AssistantProviderProps {
   children: ReactNode;
