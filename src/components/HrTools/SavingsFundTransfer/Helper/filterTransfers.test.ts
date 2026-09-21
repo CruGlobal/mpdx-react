@@ -336,6 +336,43 @@ describe('useFilteredTransfers', () => {
     });
   });
 
+  describe('invalid dates', () => {
+    // Every comparison against an invalid DateTime is false, so the scan's `current > end`
+    // exit would never fire; the row has to be skipped before the scan starts.
+    it('should report no missed months when recurringStart cannot be parsed', () => {
+      const { filtered } = filteredTransfers(
+        makeRecurringTransactions({
+          id: '5',
+          recurringStart: '2023-13-01',
+          dates: ['2023-10-15', '2023-12-15'],
+        }),
+        historyStart,
+      );
+      const invalidStart = filtered.find(
+        (tx) => tx.recurringTransfer?.id === '5',
+      );
+      expect(invalidStart?.missingMonths ?? []).toHaveLength(0);
+      expect(invalidStart?.failedCount).toBe(0);
+    });
+
+    it('should report no missed months when a stopped transfer has an unparseable transaction date', () => {
+      const { filtered } = filteredTransfers(
+        makeRecurringTransactions({
+          id: '6',
+          recurringStart: '2023-09-15',
+          active: false,
+          dates: ['2023-09-15', 'not-a-date'],
+        }),
+        historyStart,
+      );
+      const invalidEnd = filtered.find(
+        (tx) => tx.recurringTransfer?.id === '6',
+      );
+      expect(invalidEnd?.missingMonths ?? []).toHaveLength(0);
+      expect(invalidEnd?.failedCount).toBe(0);
+    });
+  });
+
   describe('history window', () => {
     // The page only requests about the last year of transactions, so a long-running recurring
     // transfer has no rows before the window even when every month ran successfully.
@@ -425,6 +462,34 @@ describe('useFilteredTransfers', () => {
       expect(
         longRunning?.missingMonths?.map((month) => month.toISODate()),
       ).toEqual(['2023-01-20']);
+    });
+
+    it('should keep an end-of-month schedule on the last day of each month', () => {
+      const { filtered } = filteredTransfers(
+        makeLongRunningTransactions(
+          [
+            '2023-01-31',
+            '2023-02-28',
+            '2023-04-30',
+            '2023-05-31',
+            '2023-06-30',
+            '2023-07-31',
+            '2023-08-31',
+            '2023-09-30',
+            '2023-10-31',
+            '2023-11-30',
+            '2023-12-31',
+          ],
+          '2022-01-31',
+        ),
+        historyStart,
+      );
+      const longRunning = filtered.find(
+        (tx) => tx.recurringTransfer?.id === '4',
+      );
+      expect(
+        longRunning?.missingMonths?.map((month) => month.toISODate()),
+      ).toEqual(['2023-03-31']);
     });
 
     it('should scan from recurringStart, and not flag the history as truncated, when it is inside the window', () => {

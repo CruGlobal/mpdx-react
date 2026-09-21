@@ -87,20 +87,24 @@ export function filteredTransfers(
       end = DateTime.min(end, lastTransactedAt);
     }
 
-    if (!start) {
+    // An invalid DateTime compares false against everything, which would keep the scan
+    // below from ever failing its `current <= end` check, so bail out before it starts.
+    if (!start?.isValid || !end.isValid || !windowStart.isValid) {
       continue;
     }
 
     transferRow.missingMonths = [];
     transferRow.historyTruncated = start < windowStart;
 
-    let current = firstOccurrenceOnOrAfter(start, windowStart);
+    // Add whole months to the start so an end-of-month day does not drift once clamped.
+    let months = monthsUntilOnOrAfter(start, windowStart);
+    let current = start.plus({ months });
     while (current <= end) {
       const key = `${current.year}-${current.month}`;
       if (!seenMonths.has(key)) {
         transferRow.missingMonths.push(current);
       }
-      current = current.plus({ months: 1 });
+      current = start.plus({ months: ++months });
     }
 
     transferRow.failedCount = transferRow.missingMonths.length;
@@ -110,18 +114,16 @@ export function filteredTransfers(
   return { filtered, upcoming };
 }
 
-// The first monthly occurrence of a schedule starting at `start` that falls on or after `floor`.
-// Steps in whole months from `start` (rather than snapping to `floor`) so the result keeps the
-// schedule's day of the month, which is what the failed-transfer modal displays.
-function firstOccurrenceOnOrAfter(start: DateTime, floor: DateTime): DateTime {
+// Number of whole months to add to `start` so the monthly occurrence lands on or after `floor`.
+// Counting months (rather than snapping to `floor`) keeps the schedule's day of the month,
+// which is what the failed-transfer modal displays.
+function monthsUntilOnOrAfter(start: DateTime, floor: DateTime): number {
   if (start >= floor) {
-    return start;
+    return 0;
   }
 
   const wholeMonths = Math.floor(floor.diff(start, 'months').months);
-  let occurrence = start.plus({ months: wholeMonths });
-  if (occurrence < floor) {
-    occurrence = start.plus({ months: wholeMonths + 1 });
-  }
-  return occurrence;
+  return start.plus({ months: wholeMonths }) < floor
+    ? wholeMonths + 1
+    : wholeMonths;
 }
