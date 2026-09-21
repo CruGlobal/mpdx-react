@@ -8,7 +8,6 @@ import {
 } from '@mui/material';
 import { map, unionBy } from 'lodash';
 import { useDebouncedCallback } from 'src/hooks/useDebounce';
-import { filterOptionsByWords } from '../filterOptionsByWords';
 import { useGetDonorAccountsLazyQuery } from './DonorAccountAutocomplete.generated';
 
 export interface DonorAccountAutocompleteProps {
@@ -63,7 +62,6 @@ export const DonorAccountAutocomplete: React.FC<
       autoSelect
       autoHighlight
       loading={loading}
-      filterOptions={filterOptionsByWords}
       options={map(donors, 'id')}
       // Override default MUI key: the option label
       getOptionKey={(donorAccountId) => donorAccountId}

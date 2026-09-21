@@ -7,8 +7,7 @@ export const filterOptionsByWords = <T>(
 ): T[] => {
   const filter = createFilterOptions<T>();
 
-  // Split on the same characters as the API's wildcardSearch filter, so this never hides a
-  // result the server matched.
+  // Split on punctuation too, so "John, Smith" matches the label "Smith, John".
   return state.inputValue
     .split(/[\s,-]+/)
     .filter(Boolean)

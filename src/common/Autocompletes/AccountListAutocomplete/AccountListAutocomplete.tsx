@@ -26,7 +26,7 @@ export const AccountListAutocomplete: React.FC<
       filterOptions={filterOptionsByWords}
       {...props}
       getOptionKey={(account) => account.id}
-      getOptionLabel={(account) => account?.name ?? ''}
+      getOptionLabel={(account) => account.name ?? ''}
       renderInput={(params) => <TextField {...params} {...textFieldProps} />}
     />
   );
