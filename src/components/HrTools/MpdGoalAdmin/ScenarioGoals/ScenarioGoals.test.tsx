@@ -15,6 +15,7 @@ import {
   GoalCalculationAge,
   GoalCalculationRole,
   MpdGoalBenefitsConstantPlanEnum,
+  NewStaffGoalCalculationSortEnum,
   NewStaffQuestionnaireMaritalStatusEnum,
 } from 'src/graphql/types.generated';
 import theme from 'src/theme';
@@ -300,6 +301,116 @@ describe('ScenarioGoals', () => {
     expect(
       await findByText('No scenario goals yet. Create one to get started.'),
     ).toBeInTheDocument();
+  });
+
+  it('sends the debounced search term to the query', async () => {
+    const { findByRole, getByRole, queryByRole } = renderScenarioGoals({
+      NewStaffScenarioGoals: {
+        newStaffScenarioGoals: (_root: unknown, args: { search?: string }) =>
+          args.search
+            ? {
+                nodes: scenarioGoalsMock.newStaffScenarioGoals?.nodes?.slice(
+                  0,
+                  1,
+                ),
+                pageInfo: { endCursor: null, hasNextPage: false },
+              }
+            : scenarioGoalsMock.newStaffScenarioGoals,
+      },
+    });
+
+    await findByRole('link', { name: 'John Doe' });
+    userEvent.type(getByRole('textbox', { name: 'Search' }), 'john');
+
+    // The API does the matching, so the searched result set replaces the full one.
+    await waitFor(
+      () =>
+        expect(
+          queryByRole('link', { name: 'Untitled scenario' }),
+        ).not.toBeInTheDocument(),
+      { timeout: 3000 },
+    );
+    expect(mutationSpy).toHaveGraphqlOperation('NewStaffScenarioGoals', {
+      search: 'john',
+    });
+    // Only the settled term reaches the API, not one query per keystroke.
+    expect(mutationSpy).not.toHaveGraphqlOperation('NewStaffScenarioGoals', {
+      search: 'j',
+    });
+  });
+
+  it('sorts by name A to Z, then Z to A, from the Name header', async () => {
+    const { findByRole, getByRole } = renderScenarioGoals();
+
+    await findByRole('link', { name: 'John Doe' });
+    const nameHeader = getByRole('button', { name: 'Name' });
+
+    userEvent.click(nameHeader);
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('NewStaffScenarioGoals', {
+        sortBy: NewStaffGoalCalculationSortEnum.LastNameAsc,
+      }),
+    );
+
+    userEvent.click(nameHeader);
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('NewStaffScenarioGoals', {
+        sortBy: NewStaffGoalCalculationSortEnum.LastNameDesc,
+      }),
+    );
+  });
+
+  it('returns to the first page when the sort changes', async () => {
+    const sortedNodes = manyScenarioGoalsMock.newStaffScenarioGoals?.nodes?.map(
+      (node) => ({ ...node, firstName: 'Sorted' }),
+    );
+    const { findByRole, getByRole, queryByRole } = renderScenarioGoals({
+      NewStaffScenarioGoals: {
+        newStaffScenarioGoals: (_root: unknown, args: { sortBy?: string }) =>
+          args.sortBy
+            ? {
+                nodes: sortedNodes,
+                pageInfo: { endCursor: null, hasNextPage: false },
+              }
+            : manyScenarioGoalsMock.newStaffScenarioGoals,
+      },
+    });
+
+    await findByRole('link', { name: 'Person 0' });
+    userEvent.click(getByRole('button', { name: 'Go to next page' }));
+    expect(await findByRole('link', { name: 'Person 5' })).toBeInTheDocument();
+
+    userEvent.click(getByRole('button', { name: 'Name' }));
+
+    expect(await findByRole('link', { name: 'Sorted 0' })).toBeInTheDocument();
+    expect(queryByRole('link', { name: 'Sorted 5' })).not.toBeInTheDocument();
+  });
+
+  it('shows a no-matches message when a search returns nothing', async () => {
+    const { findByRole, findByText, getByRole, queryByText } =
+      renderScenarioGoals({
+        NewStaffScenarioGoals: {
+          newStaffScenarioGoals: (_root: unknown, args: { search?: string }) =>
+            args.search
+              ? {
+                  nodes: [],
+                  pageInfo: { endCursor: null, hasNextPage: false },
+                }
+              : scenarioGoalsMock.newStaffScenarioGoals,
+        },
+      });
+
+    await findByRole('link', { name: 'John Doe' });
+    userEvent.type(getByRole('textbox', { name: 'Search' }), 'zzz');
+
+    expect(
+      await findByText('No scenario goals match your search.', undefined, {
+        timeout: 3000,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      queryByText('No scenario goals yet. Create one to get started.'),
+    ).not.toBeInTheDocument();
   });
 
   it('surfaces a query failure instead of an empty list', async () => {

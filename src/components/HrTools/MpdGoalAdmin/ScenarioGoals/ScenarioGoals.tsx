@@ -1,15 +1,17 @@
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
+import SearchIcon from '@mui/icons-material/Search';
 import {
   Alert,
   Box,
   Button,
   CircularProgress,
   IconButton,
+  InputAdornment,
   Link,
   Table,
   TableBody,
@@ -18,6 +20,8 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  TableSortLabel,
+  TextField,
   Typography,
 } from '@mui/material';
 import { uniqBy } from 'lodash';
@@ -28,11 +32,14 @@ import { DisabledReasonTooltip } from 'src/components/HrTools/Shared/DisabledRea
 import { scenarioGoalSendBlockedReason } from 'src/components/HrTools/Shared/SendScenarioGoal/sendScenarioGoalHelpers';
 import { useSendScenarioGoal } from 'src/components/HrTools/Shared/SendScenarioGoal/useSendScenarioGoal';
 import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
+import { NewStaffGoalCalculationSortEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useDebouncedValue } from 'src/hooks/useDebounce';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import { StatusChip } from '../../Shared/StatusChip';
+import { searchDebounceMs } from '../MpdGoalAdminContext';
 import { DEFAULT_ROWS_PER_PAGE, scenarioGoalUrl } from '../mpdGoalAdminHelpers';
 import {
   NewStaffScenarioGoalsQuery,
@@ -48,6 +55,16 @@ type ScenarioGoalNode =
 const scenarioGoalName = (node: ScenarioGoalNode): string =>
   [node.firstName, node.lastName].filter(Boolean).join(' ');
 
+type NameSort =
+  | NewStaffGoalCalculationSortEnum.LastNameAsc
+  | NewStaffGoalCalculationSortEnum.LastNameDesc;
+
+// Only the Name column sorts; the API's default (newest first) applies when it's off.
+const nextNameSort = (current: NameSort | null): NameSort =>
+  current === NewStaffGoalCalculationSortEnum.LastNameAsc
+    ? NewStaffGoalCalculationSortEnum.LastNameDesc
+    : NewStaffGoalCalculationSortEnum.LastNameAsc;
+
 export const ScenarioGoals: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -61,8 +78,24 @@ export const ScenarioGoals: React.FC = () => {
     null,
   );
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [nameSort, setNameSort] = useState<NameSort | null>(null);
 
-  const { data, error, fetchMore } = useNewStaffScenarioGoalsQuery();
+  const debouncedSearch = useDebouncedValue(search, searchDebounceMs).trim();
+  const nameSortDirection =
+    nameSort === NewStaffGoalCalculationSortEnum.LastNameDesc ? 'desc' : 'asc';
+
+  useEffect(() => {
+    setPage(0);
+  }, [debouncedSearch, nameSort]);
+
+  const { data, previousData, error, fetchMore } =
+    useNewStaffScenarioGoalsQuery({
+      variables: {
+        search: debouncedSearch || null,
+        sortBy: nameSort,
+      },
+    });
   const { loading } = useFetchAllPages({
     fetchMore,
     error,
@@ -104,9 +137,11 @@ export const ScenarioGoals: React.FC = () => {
     ? scenarioGoalName(deleteTarget) || t('this scenario goal')
     : '';
 
+  // Keep the previous rows on screen through a search or sort refetch.
+  const visibleData = data ?? previousData;
   const rows = useMemo(
-    () => uniqBy(data?.newStaffScenarioGoals.nodes ?? [], 'id'),
-    [data?.newStaffScenarioGoals.nodes],
+    () => uniqBy(visibleData?.newStaffScenarioGoals.nodes ?? [], 'id'),
+    [visibleData?.newStaffScenarioGoals.nodes],
   );
   const safePage = Math.min(
     page,
@@ -153,6 +188,22 @@ export const ScenarioGoals: React.FC = () => {
         </Button>
       </Box>
 
+      <TextField
+        value={search}
+        onChange={(event) => setSearch(event.target.value)}
+        label={t('Search')}
+        placeholder={t('Name, email, etc...')}
+        size="small"
+        sx={{ minWidth: { xs: '100%', sm: 260 }, mb: 2 }}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <SearchIcon fontSize="small" />
+            </InputAdornment>
+          ),
+        }}
+      />
+
       {/* The scenario queries are creator-scoped, so a failure here is a real
           error rather than an empty list. */}
       {error ? (
@@ -162,7 +213,15 @@ export const ScenarioGoals: React.FC = () => {
           <Table size="small" aria-label={t('Scenario goals')}>
             <TableHead>
               <TableRow>
-                <TableCell>{t('Name')}</TableCell>
+                <TableCell sortDirection={nameSort ? nameSortDirection : false}>
+                  <TableSortLabel
+                    active={nameSort !== null}
+                    direction={nameSortDirection}
+                    onClick={() => setNameSort(nextNameSort(nameSort))}
+                  >
+                    {t('Name')}
+                  </TableSortLabel>
+                </TableCell>
                 <TableCell>{t('Ministry')}</TableCell>
                 <TableCell>{t('Campus Division')}</TableCell>
                 <TableCell>{t('MPD Goal')}</TableCell>
@@ -263,7 +322,9 @@ export const ScenarioGoals: React.FC = () => {
       ) : (
         <Box sx={{ textAlign: 'center', mt: 4 }}>
           <Typography color="text.secondary">
-            {t('No scenario goals yet. Create one to get started.')}
+            {debouncedSearch
+              ? t('No scenario goals match your search.')
+              : t('No scenario goals yet. Create one to get started.')}
           </Typography>
         </Box>
       )}
