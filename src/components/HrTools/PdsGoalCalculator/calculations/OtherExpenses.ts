@@ -25,6 +25,7 @@ export interface OtherExpensesTotals {
   fourOThreeBContributions: number;
   workComp: number;
   benefits: number;
+  otherSubtotal: number;
   subtotal: number;
   attrition: number;
   creditCardFees: number;
@@ -44,12 +45,10 @@ export const calculateOtherExpenses = (
   const workComp = isPartTime ? constants.workCompAmount : 0;
   const benefits = isFullTime ? (calculation.benefits ?? 0) : 0;
 
-  const subtotal =
-    constants.salarySubtotal +
-    reimbursableExpenses +
-    fourOThreeBContributions +
-    workComp +
-    benefits;
+  const otherSubtotal =
+    reimbursableExpenses + fourOThreeBContributions + workComp + benefits;
+
+  const subtotal = otherSubtotal + constants.salarySubtotal;
 
   const attrition = subtotal * constants.attritionRate;
   const creditCardFees =
@@ -65,6 +64,7 @@ export const calculateOtherExpenses = (
     fourOThreeBContributions,
     workComp,
     benefits,
+    otherSubtotal,
     subtotal,
     attrition,
     creditCardFees,
