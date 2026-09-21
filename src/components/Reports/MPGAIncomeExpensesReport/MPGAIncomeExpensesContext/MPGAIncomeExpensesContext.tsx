@@ -29,6 +29,9 @@ export type ContextType = {
   endDate: DateTime;
   transactionYears: number[];
 
+  /** Fund balance at the start of the queried period, or null when the report has no funds */
+  startBalance: number | null;
+
   subtitle: string;
 
   /** Set when a supervisor is viewing another staff member's report */
@@ -160,6 +163,11 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
     [reportData, now.year],
   );
 
+  const funds = reportData?.reportsStaffExpenses?.funds;
+  const startBalance = funds?.length
+    ? funds.reduce((acc, fund) => acc + fund.startBalance, 0)
+    : null;
+
   // Transform the data to ensure that all optional fields are defined, so we don't have to check for them later
   const transformedData: Funds[] = useMemo(
     () =>
@@ -263,6 +271,7 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
       startDate,
       endDate,
       transactionYears,
+      startBalance,
       subtitle,
       staffName,
       isSupervisorView,
@@ -281,6 +290,7 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
       startDate,
       endDate,
       transactionYears,
+      startBalance,
       subtitle,
       staffName,
       isSupervisorView,

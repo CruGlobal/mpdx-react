@@ -10,11 +10,13 @@ import { SummaryBarChart } from '../Charts/SummaryBarChart/SummaryBarChart';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { useMPGAIncomeExpenses } from '../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { TableCard } from '../Tables/TableCard';
+import { useBalanceTableData } from '../Tables/useBalanceTableData';
 
 export const ScreenOnlyReport: React.FC = () => {
   const { t } = useTranslation();
   const { allData: data, dataLoading, currency } = useMPGAIncomeExpenses();
   const monthlySummaryChartData = useMonthlySummaryChartData();
+  const balanceData = useBalanceTableData();
 
   return (
     <Box mt={2}>
@@ -32,6 +34,20 @@ export const ScreenOnlyReport: React.FC = () => {
               </CardSkeleton>
             </Grid>
           </Grid>
+        </Box>
+        <Box mt={2}>
+          <TableCard
+            type={ReportTypeEnum.Balance}
+            data={balanceData}
+            emptyPlaceholder={
+              <EmptyTable
+                title={t('No Balance data available')}
+                subtitle={t('Data not found in the last 12 months')}
+                icon={HourglassDisabled}
+              />
+            }
+            title={t('Balance')}
+          />
         </Box>
         <Box mt={2}>
           <TableCard

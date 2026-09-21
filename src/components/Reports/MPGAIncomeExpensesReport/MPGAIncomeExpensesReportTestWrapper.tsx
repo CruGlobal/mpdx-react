@@ -25,6 +25,7 @@ export const mpgaTransactionsMock: MpgaTransactionsQuery = {
         id: 'fund-1',
         fundType: FundTypes.Primary,
         total: 108856,
+        startBalance: 12000,
         categories: [
           {
             category: StaffExpenseCategoryEnum.Donation,
