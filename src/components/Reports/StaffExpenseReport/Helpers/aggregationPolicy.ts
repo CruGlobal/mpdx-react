@@ -157,6 +157,9 @@ const subCategoryPolicies: Partial<
  * A subcategory the schema does not yet cover falls back to itemizing rather than throwing, so the
  * transaction still renders with its correct amount. That fallback is a safety net and is separate
  * from the sheet's deliberate "individual rows" rule above, which the table below spells out.
+ *
+ * category is consulted only for other standard earnings, the one subcategory that is under multiple
+ * categories (salary and additional salary).
  */
 export const getAggregationPolicy = (
   subCategory: StaffExpensesSubCategoryEnum | undefined,
