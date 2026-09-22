@@ -19,7 +19,7 @@ import {
   NewStaffQuestionnaireMaritalStatusEnum,
 } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { searchDebounceMs } from '../MpdGoalAdminContext';
+import { searchDebounceMs } from '../mpdGoalAdminHelpers';
 import { ScenarioGoals } from './ScenarioGoals';
 import {
   CreateNewStaffScenarioGoalMutation,

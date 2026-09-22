@@ -4,14 +4,12 @@ import React, { useEffect, useMemo, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
-import SearchIcon from '@mui/icons-material/Search';
 import {
   Alert,
   Box,
   Button,
   CircularProgress,
   IconButton,
-  InputAdornment,
   Link,
   Table,
   TableBody,
@@ -21,7 +19,6 @@ import {
   TablePagination,
   TableRow,
   TableSortLabel,
-  TextField,
   Typography,
 } from '@mui/material';
 import { uniqBy } from 'lodash';
@@ -29,6 +26,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { isCalculationComplete } from 'src/components/HrTools/NsGoalCalculator/GoalSettings/goalSettingsCompletion';
 import { DisabledReasonTooltip } from 'src/components/HrTools/Shared/DisabledReasonTooltip';
+import { SearchField } from 'src/components/HrTools/Shared/SearchField/SearchField';
 import { scenarioGoalSendBlockedReason } from 'src/components/HrTools/Shared/SendScenarioGoal/sendScenarioGoalHelpers';
 import { useSendScenarioGoal } from 'src/components/HrTools/Shared/SendScenarioGoal/useSendScenarioGoal';
 import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
@@ -39,8 +37,11 @@ import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import { StatusChip } from '../../Shared/StatusChip';
-import { searchDebounceMs } from '../MpdGoalAdminContext';
-import { DEFAULT_ROWS_PER_PAGE, scenarioGoalUrl } from '../mpdGoalAdminHelpers';
+import {
+  DEFAULT_ROWS_PER_PAGE,
+  scenarioGoalUrl,
+  searchDebounceMs,
+} from '../mpdGoalAdminHelpers';
 import {
   NewStaffScenarioGoalsQuery,
   useCreateNewStaffScenarioGoalMutation,
@@ -190,21 +191,7 @@ export const ScenarioGoals: React.FC = () => {
         </Button>
       </Box>
 
-      <TextField
-        value={search}
-        onChange={(event) => setSearch(event.target.value)}
-        label={t('Search')}
-        placeholder={t('Name, email, etc...')}
-        size="small"
-        sx={{ minWidth: { xs: '100%', sm: 260 }, mb: 2 }}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon fontSize="small" />
-            </InputAdornment>
-          ),
-        }}
-      />
+      <SearchField value={search} onChange={setSearch} sx={{ mb: 2 }} />
 
       {/* The scenario queries are creator-scoped, so a failure here is a real
           error rather than an empty list. */}
