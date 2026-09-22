@@ -127,7 +127,17 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const previousDefaultTypeRef = useRef<DefaultTypeEnum | null>(null);
   const [defaultTypeChanged, setDefaultTypeChanged] = useState(false);
 
+  const goalLoaded = !!goalCalculationResult.data;
+
   useEffect(() => {
+    // Until the goal loads, defaultType is derived from the SingleField
+    // fallback, not from the goal. Seeding the tracker with that guess would
+    // make the loaded value register as a change and reset predefined line
+    // items to the New Staff reference amounts.
+    if (!goalLoaded) {
+      return;
+    }
+
     const previousDefaultType = previousDefaultTypeRef.current;
 
     if (previousDefaultType && previousDefaultType !== defaultType) {
@@ -135,7 +145,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     }
 
     previousDefaultTypeRef.current = defaultType;
-  }, [defaultType]);
+  }, [defaultType, goalLoaded]);
 
   const clearDefaultTypeChanged = useCallback(() => {
     setDefaultTypeChanged(false);
