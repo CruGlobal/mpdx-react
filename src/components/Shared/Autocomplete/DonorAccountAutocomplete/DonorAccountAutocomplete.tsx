@@ -63,6 +63,8 @@ export const DonorAccountAutocomplete: React.FC<
       autoHighlight
       loading={loading}
       options={map(donors, 'id')}
+      // Override default MUI key: the option label
+      getOptionKey={(donorAccountId) => donorAccountId}
       getOptionLabel={(donorAccountId) =>
         donors.find((donor) => donor.id === donorAccountId)?.name ?? ''
       }
