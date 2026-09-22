@@ -41,6 +41,11 @@ export type ContactsType = {
   mapRef: React.MutableRefObject<google.maps.Map | null>;
   panTo: (coords: { lat: number; lng: number }) => void;
   mapData: Coordinates[] | undefined;
+  // False while the "load all pages of contacts" fetchMore loop (below) is still
+  // pulling in additional pages for the map view. The map should only fit its
+  // bounds to mapData once this is true, otherwise every incoming page re-fits
+  // the bounds and cancels out any zoom/pan the user is actively doing.
+  contactsFullyLoaded: boolean;
   filterPanelOpen: boolean;
   setFilterPanelOpen: (open: boolean) => void;
   viewMode: TableViewModeEnum | undefined;
@@ -192,6 +197,9 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     [data],
   );
 
+  // See the comment on ContactsType.contactsFullyLoaded above.
+  const contactsFullyLoaded = !!data && !data.contacts.pageInfo.hasNextPage;
+
   const contextValue = useMemo(
     () => ({
       accountListId,
@@ -210,6 +218,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
       setSelected,
       mapRef,
       mapData,
+      contactsFullyLoaded,
       panTo,
       filterPanelOpen,
       setFilterPanelOpen,
@@ -233,6 +242,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
       selected,
       setSelected,
       mapData,
+      contactsFullyLoaded,
       panTo,
       filterPanelOpen,
       setFilterPanelOpen,
