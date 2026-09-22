@@ -110,18 +110,19 @@ const mockTransfer: Transfers = {
   missingMonths: [DateTime.fromISO('2023-08-15')],
 };
 
-const TestComponent: React.FC = () => {
+const TestComponent: React.FC<{ transfer?: Transfers }> = ({
+  transfer = mockTransfer,
+}) => {
   return (
     <ThemeProvider theme={theme}>
       <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <FailedTransferModal
-          handleClose={handleClose}
-          transfer={mockTransfer}
-        />
+        <FailedTransferModal handleClose={handleClose} transfer={transfer} />
       </LocalizationProvider>
     </ThemeProvider>
   );
 };
+
+const historyNote = 'Only the last year of transfer history is shown.';
 
 describe('FailedTransferModal', () => {
   it('renders the modal', () => {
@@ -135,6 +136,20 @@ describe('FailedTransferModal', () => {
 
     const button = getAllByRole('button', { name: 'Close' });
     expect(button[1]).toBeInTheDocument();
+  });
+
+  it('explains that only the last year of history is shown when the transfer started before the window', () => {
+    const { getByText } = render(
+      <TestComponent transfer={{ ...mockTransfer, historyTruncated: true }} />,
+    );
+
+    expect(getByText(historyNote)).toBeInTheDocument();
+  });
+
+  it('omits the history note when the whole transfer fits inside the window', () => {
+    const { queryByText } = render(<TestComponent />);
+
+    expect(queryByText(historyNote)).not.toBeInTheDocument();
   });
 
   it('renders the correct number of transfer rows', () => {

@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon';
 import { Transactions } from 'src/components/HrTools/SavingsFundTransfer/mockData';
+import { monthsUntilOccurrenceOnOrAfter } from './monthsUntilOccurrenceOnOrAfter';
 
 // index is the position of the summarized transfer in the filtered array
 // seenMonths is a set of months that have been seen for the recurring transfer
@@ -13,7 +14,13 @@ interface Summary {
 // Transfer history contains multiple transactions for recurring transfers.
 // This hook summarizes those recurring transfers into a single transaction with the total amount.
 // It also identifies any missed transfers and includes them as separate transactions with a failed status.
-export function filteredTransfers(transfers: Transactions[]) {
+//
+// historyStart is the start of the window the page requested the transfers for. Months before it
+// have no rows even when they ran, so the missed-month scan must not begin before it (MPDX-10044).
+export function filteredTransfers(
+  transfers: Transactions[],
+  historyStart: DateTime,
+) {
   const filtered: Transactions[] = [];
   const upcoming: Transactions[] = [];
   const summary = new Map<string, Summary>();
@@ -57,11 +64,13 @@ export function filteredTransfers(transfers: Transactions[]) {
     }
   }
 
+  const currentDate = DateTime.local().startOf('day');
+  const windowStart = historyStart.startOf('day');
+
   for (const [, item] of summary) {
     const { index, seenMonths, transactions } = item;
     const transferRow = filtered[index];
 
-    const currentDate = DateTime.local().startOf('day');
     const recurring = transferRow.recurringTransfer;
     const start = recurring?.recurringStart.startOf('day');
     const recurringEnd = recurring?.recurringEnd?.startOf('day') ?? null;
@@ -79,19 +88,24 @@ export function filteredTransfers(transfers: Transactions[]) {
       end = DateTime.min(end, lastTransactedAt);
     }
 
-    if (!start) {
+    // An invalid DateTime compares false against everything, which would keep the scan
+    // below from ever failing its `current <= end` check, so bail out before it starts.
+    if (!start?.isValid || !end.isValid || !windowStart.isValid) {
       continue;
     }
 
     transferRow.missingMonths = [];
+    transferRow.historyTruncated = start < windowStart;
 
-    let current = start;
+    // Add whole months to the start so an end-of-month day does not drift once clamped.
+    let months = monthsUntilOccurrenceOnOrAfter(start, windowStart);
+    let current = start.plus({ months });
     while (current <= end) {
       const key = `${current.year}-${current.month}`;
       if (!seenMonths.has(key)) {
         transferRow.missingMonths.push(current);
       }
-      current = current.plus({ months: 1 });
+      current = start.plus({ months: ++months });
     }
 
     transferRow.failedCount = transferRow.missingMonths.length;
