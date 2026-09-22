@@ -153,15 +153,23 @@ describe('Dashboard', () => {
           }>
             mocks={{
               GetUser: { user: { usStaffGroup: UsStaffGroupEnum.NewStaff } },
-              // Keeps the confirm-user-group modal closed, which would otherwise
-              // hide the rest of the page from role queries.
+              // Answered by key: the verified user group keeps the confirm modal
+              // closed, and the card's acknowledgement is deliberately unset.
               UserOption: {
-                userOption: { key: 'user_type_verified', value: 'true' },
+                userOption: ((_root: unknown, args: { key: string }) =>
+                  args.key === 'user_type_verified'
+                    ? { key: args.key, value: 'true' }
+                    : null) as unknown as NonNullable<
+                  UserOptionQuery['userOption']
+                >,
               },
               NewStaffGoalReady: {
                 newStaffGoalCalculation: {
                   id: 'goal-1',
-                  updatedAt: '2026-09-02T16:42:00Z',
+                  calculations: {
+                    monthlyGoal: 4602.66,
+                    specialNeedsTotal: 2500,
+                  },
                   newStaffCohortAttendee: null,
                 },
               },

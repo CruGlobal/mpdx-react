@@ -15,12 +15,41 @@ import {
   useUserOptionQuery,
 } from 'src/hooks/UserPreference.generated';
 import { useIneligibleByGroup } from 'src/hooks/useIneligibleByGroup';
+import { useReportsDisabled } from 'src/hooks/useReportsDisabled';
 import {
   NewStaffGoalReadyQuery,
   useNewStaffGoalReadyQuery,
 } from './NewStaffGoalReadyCard.generated';
 
 type SentGoal = NonNullable<NewStaffGoalReadyQuery['newStaffGoalCalculation']>;
+
+/** The figures a staff member acknowledged; the same two the update email keys off. */
+interface AcknowledgedFigures {
+  monthlyGoal: number;
+  specialNeedsTotal: number;
+}
+
+const parseAcknowledged = (
+  value: string | null | undefined,
+): AcknowledgedFigures | null => {
+  if (!value) {
+    return null;
+  }
+  try {
+    const parsed: unknown = JSON.parse(value);
+    if (
+      typeof parsed === 'object' &&
+      parsed !== null &&
+      typeof (parsed as AcknowledgedFigures).monthlyGoal === 'number' &&
+      typeof (parsed as AcknowledgedFigures).specialNeedsTotal === 'number'
+    ) {
+      return parsed as AcknowledgedFigures;
+    }
+  } catch {
+    // An unreadable value counts as never acknowledged.
+  }
+  return null;
+};
 
 interface NewStaffGoalReadyCardProps {
   accountListId: string;
@@ -34,10 +63,12 @@ export const NewStaffGoalReadyCard: React.FC<NewStaffGoalReadyCardProps> = ({
   accountListId,
 }) => {
   const { inNsGoalCalcIneligibleGroup } = useIneligibleByGroup();
-  // Ineligible until the user loads, so staff who cannot have a goal never fetch one.
+  const { reportsDisabled } = useReportsDisabled();
+  // Same gate as the HR Tools menu entry, so the card never points at a page the user cannot open.
   const { data } = useNewStaffGoalReadyQuery({
     variables: { accountListId },
     skip:
+      reportsDisabled ||
       process.env.DISABLE_NS_GOAL_CALCULATOR === 'true' ||
       inNsGoalCalcIneligibleGroup,
   });
@@ -61,38 +92,39 @@ interface SentGoalCardProps {
 
 const SentGoalCard: React.FC<SentGoalCardProps> = ({ accountListId, goal }) => {
   const { t } = useTranslation();
-  // Read the option from the query directly; useUserPreference applies it a frame late and flashes the card.
   const optionKey = `new_staff_goal_acknowledged_${goal.id}`;
-  const { data, loading } = useUserOptionQuery({
-    variables: { key: optionKey },
-  });
+  // Read the option from the query directly; useUserPreference applies it a frame late and flashes the card.
+  const { data } = useUserOptionQuery({ variables: { key: optionKey } });
   const [updateUserOption] = useUpdateUserOptionMutation();
   // Hide immediately on dismiss rather than waiting for the option round trip.
   const [dismissed, setDismissed] = useState(false);
 
-  // A value that is not a timestamp is treated as never acknowledged.
-  const acknowledgedTime = new Date(data?.userOption?.value ?? '').getTime();
-  const acknowledged = !Number.isNaN(acknowledgedTime);
+  const figures: AcknowledgedFigures = {
+    monthlyGoal: goal.calculations.monthlyGoal,
+    specialNeedsTotal: goal.calculations.specialNeedsTotal,
+  };
+  const acknowledged = parseAcknowledged(data?.userOption?.value);
   const acknowledgedCurrentGoal =
-    acknowledged && acknowledgedTime >= new Date(goal.updatedAt).getTime();
-  if (loading || dismissed || acknowledgedCurrentGoal) {
+    acknowledged?.monthlyGoal === figures.monthlyGoal &&
+    acknowledged?.specialNeedsTotal === figures.specialNeedsTotal;
+  // No data yet covers first load and a failed lookup; a refetch keeps data, so the card does not flash.
+  if (!data || dismissed || acknowledgedCurrentGoal) {
     return null;
   }
 
-  const updated = acknowledged;
+  const updated = acknowledged !== null;
   const acknowledge = () => {
     setDismissed(true);
+    const value = JSON.stringify(figures);
     updateUserOption({
-      variables: { key: optionKey, value: goal.updatedAt },
+      variables: { key: optionKey, value },
       optimisticResponse: {
         createOrUpdateUserOption: {
-          option: {
-            __typename: 'Option',
-            key: optionKey,
-            value: goal.updatedAt,
-          },
+          option: { __typename: 'Option', key: optionKey, value },
         },
       },
+      // A failed save must not leave the card hidden while nothing was stored.
+      onError: () => setDismissed(false),
     });
   };
 
