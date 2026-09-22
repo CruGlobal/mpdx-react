@@ -29,6 +29,17 @@ interface AcknowledgedFigures {
   specialNeedsTotal: number;
 }
 
+const isFigures = (value: unknown): value is AcknowledgedFigures => {
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+  const { monthlyGoal, specialNeedsTotal } =
+    value as Partial<AcknowledgedFigures>;
+  return (
+    typeof monthlyGoal === 'number' && typeof specialNeedsTotal === 'number'
+  );
+};
+
 const parseAcknowledged = (
   value: string | null | undefined,
 ): AcknowledgedFigures | null => {
@@ -37,19 +48,17 @@ const parseAcknowledged = (
   }
   try {
     const parsed: unknown = JSON.parse(value);
-    if (
-      typeof parsed === 'object' &&
-      parsed !== null &&
-      typeof (parsed as AcknowledgedFigures).monthlyGoal === 'number' &&
-      typeof (parsed as AcknowledgedFigures).specialNeedsTotal === 'number'
-    ) {
-      return parsed as AcknowledgedFigures;
-    }
+    return isFigures(parsed) ? parsed : null;
   } catch {
     // An unreadable value counts as never acknowledged.
+    return null;
   }
-  return null;
 };
+
+const sameFigures = (a: AcknowledgedFigures | null, b: AcknowledgedFigures) =>
+  a !== null &&
+  a.monthlyGoal === b.monthlyGoal &&
+  a.specialNeedsTotal === b.specialNeedsTotal;
 
 interface NewStaffGoalReadyCardProps {
   accountListId: string;
@@ -104,11 +113,9 @@ const SentGoalCard: React.FC<SentGoalCardProps> = ({ accountListId, goal }) => {
     specialNeedsTotal: goal.calculations.specialNeedsTotal,
   };
   const acknowledged = parseAcknowledged(data?.userOption?.value);
-  const acknowledgedCurrentGoal =
-    acknowledged?.monthlyGoal === figures.monthlyGoal &&
-    acknowledged?.specialNeedsTotal === figures.specialNeedsTotal;
   // No data yet covers first load and a failed lookup; a refetch keeps data, so the card does not flash.
-  if (!data || dismissed || acknowledgedCurrentGoal) {
+  const hidden = !data || dismissed || sameFigures(acknowledged, figures);
+  if (hidden) {
     return null;
   }
 
