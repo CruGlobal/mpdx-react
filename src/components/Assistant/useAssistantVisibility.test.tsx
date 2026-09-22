@@ -1,4 +1,5 @@
 import { renderHook } from '@testing-library/react-hooks';
+import { useSession } from 'next-auth/react';
 import { mockSession } from '__tests__/util/mockSession';
 import { useAssistantVisibility } from './useAssistantVisibility';
 
@@ -38,6 +39,18 @@ describe('useAssistantVisibility', () => {
 
   it('is hidden for a non-developer', () => {
     mockSession({ developer: false });
+
+    const { result } = renderHook(() => useAssistantVisibility());
+
+    expect(result.current).toBe(false);
+  });
+
+  it('is hidden when there is no session', () => {
+    (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
+      data: null,
+      status: 'unauthenticated',
+      update: () => Promise.resolve(null),
+    });
 
     const { result } = renderHook(() => useAssistantVisibility());
 
