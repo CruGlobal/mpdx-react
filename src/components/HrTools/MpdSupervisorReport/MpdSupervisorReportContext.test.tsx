@@ -2,9 +2,9 @@ import React from 'react';
 import { act, render, waitFor } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { MpdAssignmentCategoryGroupEnum } from 'src/graphql/types.generated';
 import {
   ALL_TEAMS,
-  MpdSupervisorReportEmploymentTypeEnum,
   MpdSupervisorReportQuickFilterEnum,
 } from './Filters/mpdSupervisorReportFilters';
 import { ManagedStaffQuery } from './ManagedStaff.generated';
@@ -36,8 +36,8 @@ interface ConsumerResult {
   setSearch: (v: string) => void;
   team: string;
   setTeam: (v: string) => void;
-  employmentType: MpdSupervisorReportEmploymentTypeEnum;
-  setEmploymentType: (v: MpdSupervisorReportEmploymentTypeEnum) => void;
+  employmentType: MpdAssignmentCategoryGroupEnum | null;
+  setEmploymentType: (v: MpdAssignmentCategoryGroupEnum | null) => void;
   activeQuickFilter: MpdSupervisorReportQuickFilterEnum;
   setActiveQuickFilter: (v: MpdSupervisorReportQuickFilterEnum) => void;
   loadMore: () => void;
@@ -130,11 +130,10 @@ describe('MpdSupervisorReportContext', () => {
     expect(getByTestId('team').textContent).toBe(ALL_TEAMS);
   });
 
-  it('starts with employmentType=all', () => {
+  it('starts with no employmentType', () => {
     const { getByTestId } = renderConsumer();
-    expect(getByTestId('employmentType').textContent).toBe(
-      MpdSupervisorReportEmploymentTypeEnum.All,
-    );
+    expect(getByTestId('employmentType').textContent).toBe('');
+    expect(consumerResult.employmentType).toBeNull();
   });
 
   it('starts with activeQuickFilter=allPeople', () => {
@@ -163,13 +162,22 @@ describe('MpdSupervisorReportContext', () => {
   it('setEmploymentType updates the employmentType value', () => {
     const { getByTestId } = renderConsumer();
     act(() => {
-      consumerResult.setEmploymentType(
-        MpdSupervisorReportEmploymentTypeEnum.FullTime,
-      );
+      consumerResult.setEmploymentType(MpdAssignmentCategoryGroupEnum.FullTime);
     });
     expect(getByTestId('employmentType').textContent).toBe(
-      MpdSupervisorReportEmploymentTypeEnum.FullTime,
+      MpdAssignmentCategoryGroupEnum.FullTime,
     );
+  });
+
+  it('setEmploymentType clears the employmentType value', () => {
+    const { getByTestId } = renderConsumer();
+    act(() => {
+      consumerResult.setEmploymentType(MpdAssignmentCategoryGroupEnum.FullTime);
+    });
+    act(() => {
+      consumerResult.setEmploymentType(null);
+    });
+    expect(getByTestId('employmentType').textContent).toBe('');
   });
 
   it('setActiveQuickFilter updates the activeQuickFilter value', () => {
@@ -205,6 +213,29 @@ describe('managed staff query variables', () => {
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
         teamIds: ['team-1'],
+      }),
+    );
+  });
+
+  it('sends a null assignmentCategoryGroup until an employment type is chosen', async () => {
+    renderConsumer();
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        assignmentCategoryGroup: null,
+      }),
+    );
+  });
+
+  it('sends the chosen employment type as assignmentCategoryGroup', async () => {
+    renderConsumer();
+    act(() => {
+      consumerResult.setEmploymentType(MpdAssignmentCategoryGroupEnum.PartTime);
+    });
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        assignmentCategoryGroup: MpdAssignmentCategoryGroupEnum.PartTime,
       }),
     );
   });

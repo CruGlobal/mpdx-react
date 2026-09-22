@@ -8,11 +8,10 @@ import React, {
   useState,
 } from 'react';
 import { ApolloError } from '@apollo/client';
+import { MpdAssignmentCategoryGroupEnum } from 'src/graphql/types.generated';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
 import {
   ALL_TEAMS,
-  ALL_TYPES,
-  MpdSupervisorReportEmploymentTypeEnum,
   MpdSupervisorReportQuickFilterEnum,
 } from './Filters/mpdSupervisorReportFilters';
 import { useManagedStaffQuery } from './ManagedStaff.generated';
@@ -40,8 +39,8 @@ export interface MpdSupervisorReportContextValue {
   setSearch: (v: string) => void;
   team: string;
   setTeam: (v: string) => void;
-  employmentType: MpdSupervisorReportEmploymentTypeEnum;
-  setEmploymentType: (v: MpdSupervisorReportEmploymentTypeEnum) => void;
+  employmentType: MpdAssignmentCategoryGroupEnum | null;
+  setEmploymentType: (v: MpdAssignmentCategoryGroupEnum | null) => void;
   activeQuickFilter: MpdSupervisorReportQuickFilterEnum;
   setActiveQuickFilter: (v: MpdSupervisorReportQuickFilterEnum) => void;
   selectedTabKey: StaffDetailTabEnum;
@@ -88,7 +87,7 @@ export const MpdSupervisorReportProvider: React.FC<{
   const [search, setSearch] = useState('');
   const [team, setTeam] = useState<string>(ALL_TEAMS);
   const [employmentType, setEmploymentType] =
-    useState<MpdSupervisorReportEmploymentTypeEnum>(ALL_TYPES);
+    useState<MpdAssignmentCategoryGroupEnum | null>(null);
   const [activeQuickFilter, setActiveQuickFilter] =
     useState<MpdSupervisorReportQuickFilterEnum>(
       MpdSupervisorReportQuickFilterEnum.AllPeople,
@@ -99,12 +98,12 @@ export const MpdSupervisorReportProvider: React.FC<{
 
   const debouncedSearch = useDebouncedValue(search, searchDebounceMs);
 
-  // TODO(MPDX-9987): Add employment type filter once the API supports it
   const { data, loading, error, fetchMore, refetch } = useManagedStaffQuery({
     variables: {
       first: pageSize,
       name: debouncedSearch.trim() || null,
       teamIds: team === ALL_TEAMS ? null : [team],
+      assignmentCategoryGroup: employmentType,
       // Send the flag only when its chip is active; false would filter on it.
       negativeLastMonth:
         activeQuickFilter ===

@@ -22,6 +22,7 @@ import {
   QuarterChipData,
   buildQuarterChips,
   getInitials,
+  getLocalizedAssignmentCategoryGroup,
   getQuarterLabel,
   healthColor,
   healthLabel,
@@ -75,7 +76,13 @@ interface StaffMemberProps {
 
 export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
   const { t } = useTranslation();
-  const { firstName: name, lastName, staffAccountId, teams } = data;
+  const {
+    firstName: name,
+    lastName,
+    staffAccountId,
+    teams,
+    assignmentCategoryGroup,
+  } = data;
 
   const names = useMemo(() => {
     if (!name || !lastName) {
@@ -124,7 +131,10 @@ export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
                 <StaffInfo
                   names={names}
                   staffAccountID={staffAccountId}
-                  userPersonType={pendingField}
+                  userPersonType={getLocalizedAssignmentCategoryGroup(
+                    t,
+                    assignmentCategoryGroup,
+                  )}
                   team={team}
                 />
               </Box>
