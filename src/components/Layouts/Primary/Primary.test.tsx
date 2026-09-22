@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import matchMediaMock from '__tests__/util/matchMediaMock';
+import { AssistantProvider } from 'src/components/Assistant/AssistantProvider';
 import { SetupProvider } from 'src/components/Setup/SetupProvider';
 import theme from '../../../theme';
 import { getNotificationsMocks } from './TopBar/Items/NotificationMenu/NotificationMenu.mock';
@@ -27,9 +28,11 @@ describe('Primary', () => {
         <TestWrapper mocks={mocks}>
           <TestRouter router={router}>
             <SetupProvider>
-              <Primary>
-                <div data-testid="PrimaryTestChildren"></div>
-              </Primary>
+              <AssistantProvider>
+                <Primary>
+                  <div data-testid="PrimaryTestChildren"></div>
+                </Primary>
+              </AssistantProvider>
             </SetupProvider>
           </TestRouter>
         </TestWrapper>

@@ -9,6 +9,7 @@ import {
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { SnackbarProvider } from 'notistack';
+import { AssistantProvider } from 'src/components/Assistant/AssistantProvider';
 import TestRouter from './TestRouter';
 
 export type OnErrorMock = (error: string) => void;
@@ -48,7 +49,7 @@ const TestWrapper = ({
             addTypename={false}
             link={link}
           >
-            {children}
+            <AssistantProvider>{children}</AssistantProvider>
           </MockedProvider>
         </SnackbarProvider>
       </LocalizationProvider>
