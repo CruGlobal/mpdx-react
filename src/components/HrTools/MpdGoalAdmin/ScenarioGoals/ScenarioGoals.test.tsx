@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
@@ -19,6 +19,7 @@ import {
   NewStaffQuestionnaireMaritalStatusEnum,
 } from 'src/graphql/types.generated';
 import theme from 'src/theme';
+import { searchDebounceMs } from '../MpdGoalAdminContext';
 import { ScenarioGoals } from './ScenarioGoals';
 import {
   CreateNewStaffScenarioGoalMutation,
@@ -159,6 +160,13 @@ const renderScenarioGoals = (mocks: ApolloErgonoMockMap = {}) =>
 beforeEach(() => {
   jest.clearAllMocks();
 });
+
+afterEach(() => {
+  jest.useRealTimers();
+});
+
+const settleSearch = () =>
+  act(() => jest.advanceTimersByTime(searchDebounceMs));
 
 describe('ScenarioGoals', () => {
   it('shows a loading indicator until the query resolves', async () => {
@@ -304,6 +312,7 @@ describe('ScenarioGoals', () => {
   });
 
   it('sends the debounced search term to the query', async () => {
+    jest.useFakeTimers();
     const { findByRole, getByRole, queryByRole } = renderScenarioGoals({
       NewStaffScenarioGoals: {
         newStaffScenarioGoals: (_root: unknown, args: { search?: string }) =>
@@ -321,14 +330,13 @@ describe('ScenarioGoals', () => {
 
     await findByRole('link', { name: 'John Doe' });
     userEvent.type(getByRole('textbox', { name: 'Search' }), 'john');
+    settleSearch();
 
     // The API does the matching, so the searched result set replaces the full one.
-    await waitFor(
-      () =>
-        expect(
-          queryByRole('link', { name: 'Untitled scenario' }),
-        ).not.toBeInTheDocument(),
-      { timeout: 3000 },
+    await waitFor(() =>
+      expect(
+        queryByRole('link', { name: 'Untitled scenario' }),
+      ).not.toBeInTheDocument(),
     );
     expect(mutationSpy).toHaveGraphqlOperation('NewStaffScenarioGoals', {
       search: 'john',
@@ -337,6 +345,66 @@ describe('ScenarioGoals', () => {
     expect(mutationSpy).not.toHaveGraphqlOperation('NewStaffScenarioGoals', {
       search: 'j',
     });
+  });
+
+  it('treats a whitespace-only search as no search', async () => {
+    jest.useFakeTimers();
+    const { findByRole, getByRole } = renderScenarioGoals();
+
+    await findByRole('link', { name: 'John Doe' });
+    userEvent.type(getByRole('textbox', { name: 'Search' }), '   ');
+    settleSearch();
+
+    expect(getByRole('link', { name: 'John Doe' })).toBeInTheDocument();
+    expect(
+      getByRole('link', { name: 'Untitled scenario' }),
+    ).toBeInTheDocument();
+    expect(mutationSpy).toHaveGraphqlOperation('NewStaffScenarioGoals', {
+      search: null,
+    });
+    const searchTerms = mutationSpy.mock.calls
+      .filter(
+        ([{ operation }]) =>
+          operation.operationName === 'NewStaffScenarioGoals',
+      )
+      .map(([{ operation }]) => operation.variables.search);
+    expect(searchTerms.every((term) => term === null)).toBe(true);
+  });
+
+  it('disables row actions until the typed search settles', async () => {
+    jest.useFakeTimers();
+    const { findByRole, getByRole, queryByRole } = renderScenarioGoals({
+      NewStaffScenarioGoals: {
+        newStaffScenarioGoals: (_root: unknown, args: { search?: string }) =>
+          args.search
+            ? {
+                nodes: scenarioGoalsMock.newStaffScenarioGoals?.nodes?.slice(
+                  0,
+                  1,
+                ),
+                pageInfo: { endCursor: null, hasNextPage: false },
+              }
+            : scenarioGoalsMock.newStaffScenarioGoals,
+      },
+    });
+
+    await findByRole('link', { name: 'John Doe' });
+    const deleteButton = getByRole('button', { name: 'Delete John Doe' });
+    expect(deleteButton).toBeEnabled();
+
+    userEvent.type(getByRole('textbox', { name: 'Search' }), 'john');
+    // The rows on screen may not match the pending search, so acting on them is blocked.
+    expect(deleteButton).toBeDisabled();
+    expect(getByRole('button', { name: 'Email John Doe' })).toBeDisabled();
+
+    settleSearch();
+    await waitFor(() =>
+      expect(
+        queryByRole('link', { name: 'Untitled scenario' }),
+      ).not.toBeInTheDocument(),
+    );
+    expect(getByRole('button', { name: 'Delete John Doe' })).toBeEnabled();
+    expect(getByRole('button', { name: 'Email John Doe' })).toBeEnabled();
   });
 
   it('sorts by name A to Z, then Z to A, from the Name header', async () => {
@@ -386,7 +454,36 @@ describe('ScenarioGoals', () => {
     expect(queryByRole('link', { name: 'Sorted 5' })).not.toBeInTheDocument();
   });
 
+  it('returns to the first page when the search changes', async () => {
+    jest.useFakeTimers();
+    const foundNodes = manyScenarioGoalsMock.newStaffScenarioGoals?.nodes?.map(
+      (node) => ({ ...node, firstName: 'Found' }),
+    );
+    const { findByRole, getByRole, queryByRole } = renderScenarioGoals({
+      NewStaffScenarioGoals: {
+        newStaffScenarioGoals: (_root: unknown, args: { search?: string }) =>
+          args.search
+            ? {
+                nodes: foundNodes,
+                pageInfo: { endCursor: null, hasNextPage: false },
+              }
+            : manyScenarioGoalsMock.newStaffScenarioGoals,
+      },
+    });
+
+    await findByRole('link', { name: 'Person 0' });
+    userEvent.click(getByRole('button', { name: 'Go to next page' }));
+    expect(await findByRole('link', { name: 'Person 5' })).toBeInTheDocument();
+
+    userEvent.type(getByRole('textbox', { name: 'Search' }), 'found');
+    settleSearch();
+
+    expect(await findByRole('link', { name: 'Found 0' })).toBeInTheDocument();
+    expect(queryByRole('link', { name: 'Found 5' })).not.toBeInTheDocument();
+  });
+
   it('shows a no-matches message when a search returns nothing', async () => {
+    jest.useFakeTimers();
     const { findByRole, findByText, getByRole, queryByText } =
       renderScenarioGoals({
         NewStaffScenarioGoals: {
@@ -402,11 +499,10 @@ describe('ScenarioGoals', () => {
 
     await findByRole('link', { name: 'John Doe' });
     userEvent.type(getByRole('textbox', { name: 'Search' }), 'zzz');
+    settleSearch();
 
     expect(
-      await findByText('No scenario goals match your search.', undefined, {
-        timeout: 3000,
-      }),
+      await findByText('No scenario goals match your search.'),
     ).toBeInTheDocument();
     expect(
       queryByText('No scenario goals yet. Create one to get started.'),

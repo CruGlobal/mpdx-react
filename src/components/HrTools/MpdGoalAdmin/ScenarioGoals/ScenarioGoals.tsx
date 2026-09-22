@@ -82,12 +82,14 @@ export const ScenarioGoals: React.FC = () => {
   const [nameSort, setNameSort] = useState<NameSort | null>(null);
 
   const debouncedSearch = useDebouncedValue(search, searchDebounceMs).trim();
+  const searchPending = search.trim() !== debouncedSearch;
   const nameSortDirection =
     nameSort === NewStaffGoalCalculationSortEnum.LastNameDesc ? 'desc' : 'asc';
 
+  // Only the debounced search needs an effect; the sort resets the page on click.
   useEffect(() => {
     setPage(0);
-  }, [debouncedSearch, nameSort]);
+  }, [debouncedSearch]);
 
   const { data, previousData, error, fetchMore } =
     useNewStaffScenarioGoalsQuery({
@@ -217,7 +219,10 @@ export const ScenarioGoals: React.FC = () => {
                   <TableSortLabel
                     active={nameSort !== null}
                     direction={nameSortDirection}
-                    onClick={() => setNameSort(nextNameSort(nameSort))}
+                    onClick={() => {
+                      setNameSort(nextNameSort(nameSort));
+                      setPage(0);
+                    }}
                   >
                     {t('Name')}
                   </TableSortLabel>
@@ -269,7 +274,7 @@ export const ScenarioGoals: React.FC = () => {
                         <IconButton
                           size="small"
                           aria-label={t('Email {{name}}', { name })}
-                          disabled={Boolean(sendBlockedReason)}
+                          disabled={Boolean(sendBlockedReason) || searchPending}
                           onClick={() => requestSend(row)}
                         >
                           <MailOutlineIcon fontSize="small" />
@@ -278,6 +283,7 @@ export const ScenarioGoals: React.FC = () => {
                       <IconButton
                         size="small"
                         aria-label={t('Delete {{name}}', { name })}
+                        disabled={searchPending}
                         onClick={() => {
                           setDeleteTarget(row);
                           setDeleteOpen(true);
@@ -320,7 +326,7 @@ export const ScenarioGoals: React.FC = () => {
           <CircularProgress aria-label={t('Loading scenario goals')} />
         </Box>
       ) : (
-        <Box sx={{ textAlign: 'center', mt: 4 }}>
+        <Box role="status" sx={{ textAlign: 'center', mt: 4 }}>
           <Typography color="text.secondary">
             {debouncedSearch
               ? t('No scenario goals match your search.')
