@@ -1,5 +1,7 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNewStaffQuestionnaireCompletedQuery } from './NewStaffQuestionnaireCompleted.generated';
+import { useAccountListId } from './useAccountListId';
 import { useDeveloperBypass } from './useDeveloperBypass';
 import { useIneligibleByGroup } from './useIneligibleByGroup';
 import { NavItems } from './useReportNavItems';
@@ -24,6 +26,16 @@ export function useHrToolsNavItems(): {
   const developerBypass = useDeveloperBypass();
   // Partner Reminders is live in production; every other HR Tool is still disabled
   const { reportsDisabled } = useReportsDisabled();
+  const accountListId = useAccountListId();
+  const nsGoalCalcDisabled = process.env.DISABLE_NS_GOAL_CALCULATOR === 'true';
+
+  const { data: questionnaireData } = useNewStaffQuestionnaireCompletedQuery({
+    variables: { accountListId },
+    skip: nsGoalCalcDisabled || inNsGoalCalcIneligibleGroup,
+  });
+  // Stays false until the API confirms completion so the menu doesn't jump while loading
+  const questionnaireCompleted =
+    questionnaireData?.newStaffQuestionnaire?.completed === true;
 
   const items = useMemo(() => {
     if (userLoading) {
@@ -45,17 +57,16 @@ export function useHrToolsNavItems(): {
         id: 'nsGoalCalculator',
         title: t('New Staff Goal Calculator'),
         hideItem:
-          reportsDisabled ||
-          process.env.DISABLE_NS_GOAL_CALCULATOR === 'true' ||
-          inNsGoalCalcIneligibleGroup,
+          reportsDisabled || nsGoalCalcDisabled || inNsGoalCalcIneligibleGroup,
       },
       {
         id: 'nsoMpdQuestionnaire',
         title: t('NSO MPD Questionnaire'),
         hideItem:
           reportsDisabled ||
-          process.env.DISABLE_NS_GOAL_CALCULATOR === 'true' ||
-          inNsGoalCalcIneligibleGroup,
+          nsGoalCalcDisabled ||
+          inNsGoalCalcIneligibleGroup ||
+          questionnaireCompleted,
       },
       {
         id: 'goalCalculator',
@@ -110,6 +121,8 @@ export function useHrToolsNavItems(): {
     hasNoStaffAccount,
     developerBypass,
     reportsDisabled,
+    nsGoalCalcDisabled,
+    questionnaireCompleted,
   ]);
 
   return { items, loading: userLoading };
