@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -12,6 +12,14 @@ import { CreateAssistantTokenMutation } from './CreateAssistantToken.generated';
 import { mintedToken } from './assistantToken.mock';
 import { frame, mockJsonResponse, mockStreamResponse } from './sse.mock';
 
+const mutationSpy = jest.fn();
+
+// Lets the mint that starts when the chat mounts land inside act before the test moves on
+const waitForMint = async (count = 1) => {
+  await waitFor(() => expect(mutationSpy).toHaveBeenCalledTimes(count));
+  await act(() => new Promise((resolve) => setTimeout(resolve, 0)));
+};
+
 const OpenButton: React.FC = () => {
   const { openAssistant } = useAssistantContext();
   return <button onClick={openAssistant}>Open</button>;
@@ -21,6 +29,7 @@ const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <GqlMockedProvider<{ CreateAssistantToken: CreateAssistantTokenMutation }>
       mocks={{ CreateAssistantToken: mintedToken('minted-token') }}
+      onCall={mutationSpy}
     >
       <TestRouter>
         <AssistantProvider>
@@ -52,7 +61,7 @@ describe('AssistantDrawer', () => {
     expect(queryByRole('dialog')).not.toBeInTheDocument();
   });
 
-  it('shows the header, placeholder, and input when open', () => {
+  it('shows the header, placeholder, and input when open', async () => {
     const { getByRole, getByText } = render(<TestComponent />);
 
     userEvent.click(getByRole('button', { name: 'Open' }));
@@ -60,6 +69,7 @@ describe('AssistantDrawer', () => {
     expect(getByRole('dialog', { name: 'Assistant' })).toBeInTheDocument();
     expect(getByText('Ask a question to get started.')).toBeInTheDocument();
     expect(getByRole('textbox', { name: 'Ask the assistant' })).toBeEnabled();
+    await waitForMint();
   });
 
   it('keeps the conversation when closed and reopened', async () => {
@@ -91,6 +101,7 @@ describe('AssistantDrawer', () => {
     userEvent.click(getByRole('button', { name: 'Open' }));
     expect(await findByText('Hello back')).toBeInTheDocument();
     expect(getByRole('dialog')).toHaveTextContent('What is new?');
+    await waitForMint(2);
     fetchSpy.mockRestore();
   });
 
