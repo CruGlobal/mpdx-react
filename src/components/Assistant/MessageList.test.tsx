@@ -18,6 +18,29 @@ const message = (overrides: Partial<AssistantMessage>): AssistantMessage => ({
 describe('MessageList', () => {
   const onNavigate = jest.fn();
 
+  it('renders the log region and an empty state before any message', () => {
+    const { getByRole, getByText } = render(
+      <MessageList messages={[]} streaming={false} onNavigate={onNavigate} />,
+    );
+
+    expect(getByRole('log', { name: 'Conversation' })).toBeInTheDocument();
+    expect(getByText('Ask a question to get started.')).toBeInTheDocument();
+  });
+
+  it('hides the empty state once there are messages', () => {
+    const { queryByText } = render(
+      <MessageList
+        messages={[message({ role: 'user', content: 'Hi' })]}
+        streaming={false}
+        onNavigate={onNavigate}
+      />,
+    );
+
+    expect(
+      queryByText('Ask a question to get started.'),
+    ).not.toBeInTheDocument();
+  });
+
   it('renders user and assistant messages', () => {
     const { getByText, getByRole } = render(
       <MessageList

@@ -24,13 +24,6 @@ const MessageArea = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
 }));
 
-const EmptyState = styled(Box)({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  height: '100%',
-});
-
 const Footer = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
@@ -114,19 +107,11 @@ export const AssistantChat: React.FC = () => {
   return (
     <>
       <MessageArea>
-        {messages.length ? (
-          <MessageList
-            messages={messages}
-            streaming={streaming}
-            onNavigate={onNavigate}
-          />
-        ) : (
-          <EmptyState>
-            <Typography color="text.secondary" align="center">
-              {t('Ask a question to get started.')}
-            </Typography>
-          </EmptyState>
-        )}
+        <MessageList
+          messages={messages}
+          streaming={streaming}
+          onNavigate={onNavigate}
+        />
       </MessageArea>
       <Divider />
       <Footer>

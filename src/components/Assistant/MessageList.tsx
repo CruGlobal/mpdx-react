@@ -14,6 +14,13 @@ const List = styled('ul')({
   padding: 0,
 });
 
+const EmptyState = styled(Box)({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '100%',
+});
+
 const Item = styled('li', {
   shouldForwardProp: (prop) => prop !== 'sender',
 })<{ sender: MessageRole }>(({ theme, sender }) => ({
@@ -134,21 +141,31 @@ export const MessageList: React.FC<MessageListProps> = ({
     endRef.current?.scrollIntoView({ block: 'end' });
   }, [messages]);
 
+  // The log stays mounted while empty so screen readers announce the first reply
   return (
-    <List
-      role="log"
-      aria-live="polite"
-      aria-busy={streaming}
-      aria-label={t('Conversation')}
-    >
-      {messages.map((message) => (
-        <MessageItem
-          key={message.id}
-          message={message}
-          onNavigate={onNavigate}
-        />
-      ))}
-      <div ref={endRef} />
-    </List>
+    <>
+      <List
+        role="log"
+        aria-live="polite"
+        aria-busy={streaming}
+        aria-label={t('Conversation')}
+      >
+        {messages.map((message) => (
+          <MessageItem
+            key={message.id}
+            message={message}
+            onNavigate={onNavigate}
+          />
+        ))}
+        <div ref={endRef} />
+      </List>
+      {messages.length === 0 && (
+        <EmptyState>
+          <Typography color="text.secondary" align="center">
+            {t('Ask a question to get started.')}
+          </Typography>
+        </EmptyState>
+      )}
+    </>
   );
 };

@@ -62,6 +62,7 @@ describe('AssistantChat', () => {
   it('focuses the input and disables Send until there is text', () => {
     const { getByRole } = render(<TestComponent />);
 
+    expect(getByRole('log', { name: 'Conversation' })).toBeInTheDocument();
     const input = getByRole('textbox', { name: 'Ask the assistant' });
     expect(input).toHaveFocus();
     expect(getByRole('button', { name: 'Send' })).toBeDisabled();
