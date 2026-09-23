@@ -137,6 +137,48 @@ describe('MessageList', () => {
     ).toBeInTheDocument();
   });
 
+  it.each([
+    [
+      'unavailable' as const,
+      'The assistant is busy right now. Please try again in a moment.',
+    ],
+    [
+      'rateLimited' as const,
+      'Please wait a moment before sending another message.',
+    ],
+  ])('shows the %s error line', (errorReason, text) => {
+    const { getByText, queryByText } = render(
+      <MessageList
+        messages={[message({ status: 'error', errorReason })]}
+        streaming={false}
+      />,
+    );
+
+    expect(getByText(text)).toBeInTheDocument();
+    expect(
+      queryByText('Sorry, something went wrong. Please try again.'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows a system line without a speaker label', () => {
+    const { getByRole, queryByText } = render(
+      <MessageList
+        messages={[
+          message({
+            role: 'system',
+            content: 'Started a new conversation for this account list.',
+          }),
+        ]}
+        streaming={false}
+      />,
+    );
+
+    expect(getByRole('log', { name: 'Conversation' })).toHaveTextContent(
+      'Started a new conversation for this account list.',
+    );
+    expect(queryByText('Assistant')).not.toBeInTheDocument();
+  });
+
   it('shows a stopped line when a reply was stopped before any text', () => {
     const { getByText } = render(
       <MessageList

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { act, renderHook } from '@testing-library/react-hooks';
 import TestRouter from '__tests__/util/TestRouter';
 import { mockSession } from '__tests__/util/mockSession';
@@ -14,17 +14,36 @@ import { useAssistantStream } from './useAssistantStream';
 
 const assistantUrl = 'https://assistant.test';
 
-const Wrapper: React.FC<{ children?: React.ReactNode }> = ({ children }) => (
-  <TestRouter router={{ asPath: '/accountLists/account-list-1/contacts' }}>
-    <AssistantProvider>{children}</AssistantProvider>
-  </TestRouter>
-);
+interface RenderStreamOptions {
+  asPath?: string;
+  refreshToken?: () => Promise<string | null>;
+}
 
-const renderStream = () =>
-  renderHook(
-    () => ({ stream: useAssistantStream(), context: useAssistantContext() }),
+const renderStream = ({
+  asPath = '/accountLists/account-list-1/contacts',
+  refreshToken = () => Promise.resolve(null),
+}: RenderStreamOptions = {}) => {
+  const Wrapper: React.FC<{ children?: React.ReactNode }> = ({ children }) => (
+    <TestRouter router={{ asPath }}>
+      <AssistantProvider>{children}</AssistantProvider>
+    </TestRouter>
+  );
+  return renderHook(
+    () => {
+      const [accountListId, setAccountListId] = useState('account-list-1');
+      return {
+        stream: useAssistantStream({
+          accountListId,
+          token: 'minted-token',
+          refreshToken,
+        }),
+        context: useAssistantContext(),
+        setAccountListId,
+      };
+    },
     { wrapper: Wrapper },
   );
+};
 
 const card = {
   kind: 'navigation' as const,
@@ -53,7 +72,7 @@ describe('useAssistantStream', () => {
   beforeEach(() => {
     process.env.ASSISTANT_URL = assistantUrl;
     process.env.DEVELOPMENT_ENV = 'true';
-    mockSession({ apiToken: 'token-123', developer: true });
+    mockSession({ developer: true });
     fetchSpy = jest.spyOn(global, 'fetch');
   });
 
@@ -76,7 +95,9 @@ describe('useAssistantStream', () => {
       `${assistantUrl}/conversations`,
       expect.objectContaining({
         method: 'POST',
-        headers: expect.objectContaining({ Authorization: 'Bearer token-123' }),
+        headers: expect.objectContaining({
+          Authorization: 'Bearer minted-token',
+        }),
         body: JSON.stringify({ account_list_id: 'account-list-1' }),
       }),
     );
@@ -86,7 +107,7 @@ describe('useAssistantStream', () => {
       expect.objectContaining({
         method: 'POST',
         headers: expect.objectContaining({
-          Authorization: 'Bearer token-123',
+          Authorization: 'Bearer minted-token',
           Accept: 'text/event-stream',
         }),
         body: JSON.stringify({
@@ -495,10 +516,306 @@ describe('useAssistantStream', () => {
     process.env.ASSISTANT_URL = '';
     const { result } = renderStream();
 
-    expect(result.current.stream.configured).toBe(false);
     await act(() => result.current.stream.sendMessage('Hi'));
 
     expect(fetchSpy).not.toHaveBeenCalled();
     expect(result.current.context.messages).toHaveLength(0);
+  });
+  describe('rejected tokens', () => {
+    it('refreshes the token once and retries the request with it', async () => {
+      const refreshToken = jest.fn().mockResolvedValue('fresh-token');
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({}, { ok: false, status: 401 }))
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+      const { result } = renderStream({ refreshToken });
+
+      await act(() => result.current.stream.sendMessage('Hi'));
+
+      expect(refreshToken).toHaveBeenCalledTimes(1);
+      expect(
+        fetchSpy.mock.calls.map(([url, init]) => [
+          url,
+          init.headers.Authorization,
+        ]),
+      ).toEqual([
+        [`${assistantUrl}/conversations`, 'Bearer minted-token'],
+        [`${assistantUrl}/conversations`, 'Bearer fresh-token'],
+        [
+          `${assistantUrl}/conversations/conversation-1/stream`,
+          'Bearer fresh-token',
+        ],
+      ]);
+      expect(result.current.context.messages[1].status).toBe('complete');
+    });
+
+    it('releases the rejected response before retrying', async () => {
+      const refreshToken = jest.fn().mockResolvedValue('fresh-token');
+      const rejectedBody = new ReadableStream() as NonNullable<
+        Response['body']
+      >;
+      const cancel = jest.spyOn(rejectedBody, 'cancel');
+      fetchSpy
+        .mockResolvedValueOnce(
+          mockJsonResponse({}, { ok: false, status: 401, body: rejectedBody }),
+        )
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+      const { result } = renderStream({ refreshToken });
+
+      await act(() => result.current.stream.sendMessage('Hi'));
+
+      expect(cancel).toHaveBeenCalledTimes(1);
+      expect(result.current.context.messages[1].status).toBe('complete');
+    });
+
+    it('gives up after one retry', async () => {
+      const refreshToken = jest.fn().mockResolvedValue('fresh-token');
+      fetchSpy.mockResolvedValue(
+        mockJsonResponse({}, { ok: false, status: 401 }),
+      );
+      const { result } = renderStream({ refreshToken });
+
+      await act(() => result.current.stream.sendMessage('Hi'));
+
+      expect(refreshToken).toHaveBeenCalledTimes(1);
+      expect(fetchSpy).toHaveBeenCalledTimes(2);
+      expect(result.current.context.messages[1].status).toBe('error');
+    });
+
+    it('does not retry when the token cannot be refreshed', async () => {
+      const refreshToken = jest.fn().mockResolvedValue(null);
+      fetchSpy.mockResolvedValue(
+        mockJsonResponse({}, { ok: false, status: 401 }),
+      );
+      const { result } = renderStream({ refreshToken });
+
+      await act(() => result.current.stream.sendMessage('Hi'));
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(result.current.context.messages[1].status).toBe('error');
+    });
+  });
+
+  it('marks the reply as unavailable when the verifier is down', async () => {
+    fetchSpy.mockResolvedValueOnce(
+      mockJsonResponse(
+        { error: 'verifier_unavailable' },
+        { ok: false, status: 503 },
+      ),
+    );
+    const { result } = renderStream();
+
+    await act(() => result.current.stream.sendMessage('Hi'));
+
+    expect(result.current.context.messages[1]).toMatchObject({
+      status: 'error',
+      errorReason: 'unavailable',
+    });
+  });
+
+  it('treats any other 503 as a plain failure', async () => {
+    fetchSpy.mockResolvedValueOnce(
+      mockJsonResponse({ error: 'maintenance' }, { ok: false, status: 503 }),
+    );
+    const { result } = renderStream();
+
+    await act(() => result.current.stream.sendMessage('Hi'));
+
+    expect(result.current.context.messages[1]).toMatchObject({
+      status: 'error',
+      errorReason: undefined,
+    });
+  });
+
+  describe('rate limits', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    const rateLimited = (retryAfter?: string) =>
+      mockJsonResponse(
+        {},
+        {
+          ok: false,
+          status: 429,
+          headers: new Headers(retryAfter ? { 'Retry-After': retryAfter } : {}),
+        },
+      );
+
+    it('blocks sending until Retry-After passes', async () => {
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(rateLimited('30'));
+      const { result } = renderStream();
+
+      await act(() => result.current.stream.sendMessage('Hi'));
+
+      expect(result.current.stream.rateLimited).toBe(true);
+      expect(result.current.context.messages[1]).toMatchObject({
+        status: 'error',
+        errorReason: 'rateLimited',
+      });
+
+      await act(() => result.current.stream.sendMessage('Again'));
+      expect(fetchSpy).toHaveBeenCalledTimes(2);
+
+      act(() => jest.advanceTimersByTime(29000));
+      expect(result.current.stream.rateLimited).toBe(true);
+
+      act(() => jest.advanceTimersByTime(1000));
+      expect(result.current.stream.rateLimited).toBe(false);
+    });
+
+    it('reads Retry-After as an HTTP date', async () => {
+      const retryAt = new Date(Date.now() + 20000).toUTCString();
+      fetchSpy.mockResolvedValueOnce(rateLimited(retryAt));
+      const { result } = renderStream();
+
+      await act(() => result.current.stream.sendMessage('Hi'));
+      expect(result.current.stream.rateLimited).toBe(true);
+
+      act(() => jest.advanceTimersByTime(20000));
+      expect(result.current.stream.rateLimited).toBe(false);
+    });
+
+    it.each(['3600', new Date(Date.now() + 60 * 60 * 1000).toUTCString()])(
+      'waits no longer than five minutes for Retry-After %p',
+      async (retryAfter) => {
+        fetchSpy.mockResolvedValueOnce(rateLimited(retryAfter));
+        const { result } = renderStream();
+
+        await act(() => result.current.stream.sendMessage('Hi'));
+
+        act(() => jest.advanceTimersByTime(5 * 60 * 1000 - 1));
+        expect(result.current.stream.rateLimited).toBe(true);
+        act(() => jest.advanceTimersByTime(1));
+        expect(result.current.stream.rateLimited).toBe(false);
+      },
+    );
+
+    it('waits a short default without Retry-After', async () => {
+      fetchSpy.mockResolvedValueOnce(rateLimited());
+      const { result } = renderStream();
+
+      await act(() => result.current.stream.sendMessage('Hi'));
+      expect(result.current.stream.rateLimited).toBe(true);
+
+      act(() => jest.advanceTimersByTime(10000));
+      expect(result.current.stream.rateLimited).toBe(false);
+    });
+  });
+
+  describe('account list switch', () => {
+    it('starts a new conversation with a notice right away', async () => {
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+      const { result } = renderStream();
+      await act(() => result.current.stream.sendMessage('Hi'));
+
+      act(() => result.current.setAccountListId('account-list-2'));
+
+      expect(result.current.context.messages).toEqual([
+        expect.objectContaining({
+          role: 'system',
+          content: 'Started a new conversation for this account list.',
+        }),
+      ]);
+      expect(result.current.context.conversation).toBeNull();
+      expect(result.current.context.accountListId).toBe('account-list-2');
+    });
+
+    it('creates the next conversation for the new account list', async () => {
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames))
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-2' }))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+      const { result } = renderStream();
+      await act(() => result.current.stream.sendMessage('Hi'));
+
+      act(() => result.current.setAccountListId('account-list-2'));
+      await act(() => result.current.stream.sendMessage('Hi again'));
+
+      expect(fetchSpy).toHaveBeenNthCalledWith(
+        3,
+        `${assistantUrl}/conversations`,
+        expect.objectContaining({
+          body: JSON.stringify({ account_list_id: 'account-list-2' }),
+        }),
+      );
+      expect(result.current.context.conversation).toEqual({
+        id: 'conversation-2',
+        accountListId: 'account-list-2',
+      });
+      expect(result.current.context.messages).toHaveLength(3);
+    });
+
+    it('stops a reply that is still streaming', async () => {
+      const stream = controlledStream();
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(mockStreamResponse([], { body: stream.body }));
+      const { result, waitFor } = renderStream();
+
+      let sending: Promise<void> = Promise.resolve();
+      act(() => {
+        sending = result.current.stream.sendMessage('Hi');
+      });
+      await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(2));
+
+      act(() => result.current.setAccountListId('account-list-2'));
+      stream.close();
+      await act(() => sending);
+
+      expect(fetchSpy.mock.calls[1][1].signal.aborted).toBe(true);
+      expect(result.current.context.messages).toHaveLength(1);
+      expect(result.current.context.conversation).toBeNull();
+      expect(result.current.stream.streaming).toBe(false);
+    });
+
+    it('adds no notice when there was nothing to reset', () => {
+      const { result } = renderStream();
+
+      act(() => result.current.setAccountListId('account-list-2'));
+
+      expect(result.current.context.messages).toEqual([]);
+      expect(result.current.context.accountListId).toBe('account-list-2');
+    });
+  });
+
+  describe('coaching routes', () => {
+    it('runs help-only and keeps the coached account out of the page context', async () => {
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+      const { result } = renderStream({
+        asPath: '/accountLists/account-list-1/coaching/coached-list-9',
+      });
+
+      expect(result.current.stream.helpOnly).toBe(true);
+      await act(() => result.current.stream.sendMessage('Hi'));
+
+      const body = fetchSpy.mock.calls[1][1].body;
+      expect(body).not.toContain('coached-list-9');
+      expect(JSON.parse(body).page).toEqual({
+        path: '/accountLists/account-list-1/coaching',
+        help_only: true,
+      });
+    });
+
+    it.each([
+      '/accountLists/account-list-1/contacts',
+      '/accountLists/account-list-1/coachingReport',
+    ])('is not help-only on %s', (asPath) => {
+      const { result } = renderStream({ asPath });
+
+      expect(result.current.stream.helpOnly).toBe(false);
+    });
   });
 });

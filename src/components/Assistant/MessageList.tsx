@@ -8,7 +8,7 @@ import { AssistantMarkdown } from './AssistantMarkdown';
 import { MessageCard } from './cards/MessageCard';
 import { NavigationVisibilityProvider } from './navigation/NavigationVisibilityContext';
 import { toSafeHttpUrl } from './safeUrl';
-import { AssistantMessage, MessageRole } from './types';
+import { AssistantErrorReason, AssistantMessage, MessageRole } from './types';
 
 const List = styled('ul')({
   listStyle: 'none',
@@ -27,7 +27,12 @@ const Item = styled('li', {
   shouldForwardProp: (prop) => prop !== 'sender',
 })<{ sender: MessageRole }>(({ theme, sender }) => ({
   display: 'flex',
-  justifyContent: sender === 'user' ? 'flex-end' : 'flex-start',
+  justifyContent:
+    sender === 'user'
+      ? 'flex-end'
+      : sender === 'system'
+        ? 'center'
+        : 'flex-start',
   marginBottom: theme.spacing(1.5),
 }));
 
@@ -52,14 +57,39 @@ interface MessageItemProps {
   message: AssistantMessage;
 }
 
+const useErrorText = (reason: AssistantErrorReason | undefined): string => {
+  const { t } = useTranslation();
+  switch (reason) {
+    case 'unavailable':
+      return t(
+        'The assistant is busy right now. Please try again in a moment.',
+      );
+    case 'rateLimited':
+      return t('Please wait a moment before sending another message.');
+    default:
+      return t('Sorry, something went wrong. Please try again.');
+  }
+};
+
 const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
   const { t } = useTranslation();
   const { role, content, cards, citations, status, working } = message;
+  const errorText = useErrorText(message.errorReason);
   const waiting = status === 'streaming' && !content && !working;
   const safeCitations = citations.flatMap((citation) => {
     const url = toSafeHttpUrl(citation.url);
     return url ? [{ title: citation.title, url }] : [];
   });
+
+  if (role === 'system') {
+    return (
+      <Item sender={role}>
+        <Typography variant="caption" color="text.secondary" align="center">
+          {content}
+        </Typography>
+      </Item>
+    );
+  }
 
   return (
     <Item sender={role}>
@@ -99,7 +129,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
         )}
         {status === 'error' && (
           <Typography variant="body2" color="error" mt={content ? 1 : 0}>
-            {t('Sorry, something went wrong. Please try again.')}
+            {errorText}
           </Typography>
         )}
         {safeCitations.length > 0 && (

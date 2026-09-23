@@ -1,4 +1,9 @@
-import { AssistantCard, AssistantCitation, AssistantMessage } from './types';
+import {
+  AssistantCard,
+  AssistantCitation,
+  AssistantErrorReason,
+  AssistantMessage,
+} from './types';
 
 export interface ConversationBinding {
   id: string;
@@ -8,6 +13,8 @@ export interface ConversationBinding {
 export interface AssistantState {
   messages: AssistantMessage[];
   conversation: ConversationBinding | null;
+  // The account list the transcript belongs to
+  accountListId: string | null;
 }
 
 export type AssistantAction =
@@ -17,14 +24,19 @@ export type AssistantAction =
   | { type: 'setWorking'; id: string; working: boolean }
   | { type: 'completeMessage'; id: string; citations: AssistantCitation[] }
   | { type: 'stopMessage'; id: string }
-  | { type: 'failMessage'; id: string }
+  | { type: 'failMessage'; id: string; reason?: AssistantErrorReason }
   | { type: 'setConversation'; conversation: ConversationBinding }
   | { type: 'clearConversation' }
-  | { type: 'resetConversation' };
+  | {
+      type: 'bindAccountList';
+      accountListId: string;
+      notice: AssistantMessage;
+    };
 
 export const initialAssistantState: AssistantState = {
   messages: [],
   conversation: null,
+  accountListId: null,
 };
 
 const updateMessage = (
@@ -77,13 +89,28 @@ export const assistantReducer = (
       return updateMessage(state, action.id, (message) => ({
         ...message,
         status: 'error',
+        errorReason: action.reason,
         working: false,
       }));
     case 'setConversation':
       return { ...state, conversation: action.conversation };
     case 'clearConversation':
       return { ...state, conversation: null };
-    case 'resetConversation':
-      return initialAssistantState;
+    case 'bindAccountList':
+      if (state.accountListId === action.accountListId) {
+        return state;
+      }
+      if (
+        state.accountListId === null ||
+        (!state.conversation &&
+          state.messages.every((message) => message.role === 'system'))
+      ) {
+        return { ...state, accountListId: action.accountListId };
+      }
+      return {
+        messages: [action.notice],
+        conversation: null,
+        accountListId: action.accountListId,
+      };
   }
 };

@@ -65,9 +65,11 @@ export type AssistantEvent =
     })
   | (BaseEvent & { type: 'generation_error'; error?: string });
 
-export type MessageRole = 'user' | 'assistant';
+export type MessageRole = 'user' | 'assistant' | 'system';
 
 export type MessageStatus = 'streaming' | 'complete' | 'stopped' | 'error';
+
+export type AssistantErrorReason = 'unavailable' | 'rateLimited';
 
 export interface AssistantMessage {
   id: string;
@@ -76,5 +78,6 @@ export interface AssistantMessage {
   cards: AssistantCard[];
   citations: AssistantCitation[];
   status: MessageStatus;
+  errorReason?: AssistantErrorReason;
   working: boolean;
 }
