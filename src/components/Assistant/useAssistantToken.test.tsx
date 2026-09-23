@@ -201,6 +201,15 @@ describe('useAssistantToken', () => {
     expect(mintCount()).toBe(0);
   });
 
+  it('stays idle without an Apollo client', () => {
+    const { result } = renderHook(() => useAssistantToken('account-list-1'));
+
+    expect(result.current).toMatchObject({
+      token: null,
+      state: { status: 'idle' },
+    });
+  });
+
   it.each([
     'The assistant is not turned on',
     'No assistant features are turned on',
