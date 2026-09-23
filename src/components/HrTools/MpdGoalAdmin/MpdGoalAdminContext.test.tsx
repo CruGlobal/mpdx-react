@@ -551,6 +551,59 @@ describe('MpdGoalAdminContext', () => {
       ]);
     });
 
+    it('clears the selection when every cohort a coordinator can see empties', async () => {
+      const { result } = renderHook(
+        () => ({ context: useMpdGoalAdmin(), client: useApolloClient() }),
+        { wrapper: makeWrapper({ user: coordinatorUserMock }) },
+      );
+      await waitFor(() =>
+        expect(result.current.context.selectedCohortId).toBe('fall-nso-2026'),
+      );
+
+      act(() => {
+        ['fall-nso-2026', 'spring-nso-2027'].forEach((id) =>
+          result.current.client.cache.modify({
+            id: `NewStaffCohort:${id}`,
+            fields: { trainingSize: () => 0 },
+          }),
+        );
+      });
+
+      await waitFor(() =>
+        expect(result.current.context.selectedCohortId).toBe(''),
+      );
+      expect(result.current.context.noVisibleCohorts).toBe(true);
+    });
+
+    it('never reports no visible cohorts while still loading', async () => {
+      const renders: Array<{ loading: boolean; noVisibleCohorts: boolean }> =
+        [];
+      const { result } = renderHook(
+        () => {
+          const context = useMpdGoalAdmin();
+          renders.push({
+            loading: context.loading,
+            noVisibleCohorts: context.noVisibleCohorts,
+          });
+          return context;
+        },
+        {
+          wrapper: makeWrapper({
+            user: coordinatorUserMock,
+            cohorts: onlyEmptyCohortsMock,
+          }),
+        },
+      );
+
+      await waitFor(() => expect(result.current.noVisibleCohorts).toBe(true));
+      expect(renders[0]).toEqual({ loading: true, noVisibleCohorts: false });
+      expect(
+        renders.filter(
+          ({ loading, noVisibleCohorts }) => loading && noVisibleCohorts,
+        ),
+      ).toHaveLength(0);
+    });
+
     it('reports no visible cohorts when a coordinator has none with their staff', async () => {
       const { result } = renderContext({
         user: coordinatorUserMock,

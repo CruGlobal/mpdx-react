@@ -163,7 +163,14 @@ export const MpdGoalAdminProvider: React.FC<{
   // A `cohortId` in the URL wins over the first-cohort default, so returning
   // from Goal Settings lands on the cohort the goal was opened from.
   useEffect(() => {
-    if (!cohorts.length || cohorts.some(({ id }) => id === selectedCohortId)) {
+    if (cohorts.some(({ id }) => id === selectedCohortId)) {
+      return;
+    }
+    // A coordinator's last visible cohort can empty out, so drop the stale id instead of querying a hidden cohort.
+    if (!cohorts.length) {
+      if (selectedCohortId) {
+        selectCohort('');
+      }
       return;
     }
     const urlCohortId = getQueryParam(router.query, 'cohortId');
@@ -342,7 +349,9 @@ export const MpdGoalAdminProvider: React.FC<{
         cohortsLoading ||
         (!userData && userLoading) ||
         (selectedCohortId ? attendeesLoading : cohorts.length > 0),
-      error: cohortsError ?? userError ?? attendeesError,
+      // Once the user is cached, a failed background refetch must not blank a working page.
+      error:
+        cohortsError ?? (userData ? undefined : userError) ?? attendeesError,
       selectedRowIds,
       selectedRows,
       toggleRow,
