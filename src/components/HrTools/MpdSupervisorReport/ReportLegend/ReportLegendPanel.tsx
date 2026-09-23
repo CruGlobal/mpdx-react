@@ -1,16 +1,16 @@
-import React, { useId, useState } from 'react';
-import Info from '@mui/icons-material/Info';
+import React from 'react';
+import CloseIcon from '@mui/icons-material/Close';
 import {
   Box,
   Divider,
   IconButton,
-  Popover,
   Table,
   TableBody,
   TableCell,
   TableRow,
   Typography,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
@@ -20,6 +20,7 @@ import {
   quickFilterDescription,
   quickFilterLabel,
 } from '../Filters/mpdSupervisorReportFilters';
+import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
 import { QuarterChip } from '../StaffMemberRow/QuarterChip';
 import { YearMonth, getQuarterMonthRange } from '../helpers';
 import {
@@ -27,6 +28,20 @@ import {
   healthStatusOrder,
   newStaffSalaryCopy,
 } from './legendCopy';
+
+// Same shell as the goal calculators' right "Details" panel
+const PanelHeader = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  padding: theme.spacing(1, 1, 1, 2),
+  borderBottom: `1px solid ${theme.palette.mpdxGrayLight.main}`,
+}));
+
+const PanelContent = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(2),
+  overflowY: 'auto',
+}));
 
 interface SectionProps {
   title: string;
@@ -67,12 +82,12 @@ const sampleAmounts: Record<MpdHealthStatusEnum, number | null> = {
   [MpdHealthStatusEnum.Gray]: null,
 };
 
-export const ReportLegendPopover: React.FC = () => {
+/** The "How this report works" legend, shown in the report's right panel. */
+export const ReportLegendPanel: React.FC = () => {
   const { t } = useTranslation();
   const { formatCurrency } = useFormatters();
   const locale = useLocale();
-  const titleId = useId();
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const { closeLegend } = useMpdSupervisorReport();
 
   const colorExplanations: Record<MpdHealthStatusEnum, string> = {
     [MpdHealthStatusEnum.Green]: t(
@@ -113,34 +128,24 @@ export const ReportLegendPopover: React.FC = () => {
   const newStaff = newStaffSalaryCopy(t);
 
   return (
-    <>
-      <IconButton
-        size="small"
-        aria-label={t('How this report works')}
-        onClick={(event) => setAnchorEl(event.currentTarget)}
-      >
-        <Info fontSize="small" sx={{ color: 'mpdxGrayDark.main' }} />
-      </IconButton>
-      <Popover
-        open={Boolean(anchorEl)}
-        anchorEl={anchorEl}
-        onClose={() => setAnchorEl(null)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-        aria-labelledby={titleId}
-        slotProps={{
-          paper: {
-            sx: {
-              p: 2,
-              maxWidth: 'min(520px, calc(100vw - 32px))',
-              maxHeight: '75vh',
-              overflowY: 'auto',
-            },
-          },
-        }}
-      >
-        <Typography variant="h6" id={titleId}>
+    <Box
+      component="section"
+      aria-labelledby="report-legend-title"
+      sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+    >
+      <PanelHeader>
+        <Typography variant="h6" id="report-legend-title">
           {t('How this report works')}
         </Typography>
+        <IconButton
+          size="small"
+          onClick={closeLegend}
+          aria-label={t('Close Panel')}
+        >
+          <CloseIcon fontSize="small" />
+        </IconButton>
+      </PanelHeader>
+      <PanelContent>
         <Typography variant="body2" color="text.secondary">
           {t(
             "Each chip is a staff member's average monthly payroll for a fiscal quarter, graded against two benchmarks: their Monthly Gross Salary and their New Staff Monthly Salary.",
@@ -259,7 +264,7 @@ export const ReportLegendPopover: React.FC = () => {
             )}
           </Typography>
         </Section>
-      </Popover>
-    </>
+      </PanelContent>
+    </Box>
   );
 };

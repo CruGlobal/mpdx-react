@@ -2,26 +2,56 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import { ReportLegendPopover } from './ReportLegendPopover';
+import {
+  MpdSupervisorReportProvider,
+  useMpdSupervisorReport,
+} from '../MpdSupervisorReportContext';
+import { managedStaffMember } from '../mpdSupervisorReportMocks';
+import { ReportLegendButton } from './ReportLegendButton';
+import { ReportLegendPanel } from './ReportLegendPanel';
 
-const renderLegend = () =>
+// Mirrors the page: the (i) button opens the legend in the right panel, and a
+// staff member and the legend never share it.
+const Harness: React.FC = () => {
+  const { legendOpen, isOpen, openMember } = useMpdSupervisorReport();
+  return (
+    <>
+      <ReportLegendButton />
+      <button onClick={() => openMember(managedStaffMember())}>
+        Open member
+      </button>
+      <span data-testid="member-open">{String(isOpen)}</span>
+      {legendOpen && <ReportLegendPanel />}
+    </>
+  );
+};
+
+const renderHarness = () =>
   render(
-    <ThemeProvider theme={theme}>
-      <ReportLegendPopover />
-    </ThemeProvider>,
+    <TestRouter>
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider>
+          <MpdSupervisorReportProvider>
+            <Harness />
+          </MpdSupervisorReportProvider>
+        </GqlMockedProvider>
+      </ThemeProvider>
+    </TestRouter>,
   );
 
 const openLegend = async () => {
-  const utils = renderLegend();
+  const utils = renderHarness();
   userEvent.click(utils.getByRole('button', { name: 'How this report works' }));
   await utils.findByRole('heading', { name: 'How this report works' });
   return utils;
 };
 
-describe('ReportLegendPopover', () => {
-  it('renders the How this report works button', () => {
-    const { getByRole, queryByRole } = renderLegend();
+describe('ReportLegendPanel', () => {
+  it('is closed until the How this report works button is clicked', () => {
+    const { getByRole, queryByRole } = renderHarness();
 
     expect(
       getByRole('button', { name: 'How this report works' }),
@@ -99,15 +129,32 @@ describe('ReportLegendPopover', () => {
     expect(getByRole('row', { name: 'FQ4 June – August' })).toBeInTheDocument();
   });
 
-  it('closes on Escape', async () => {
-    const { queryByRole } = await openLegend();
+  it('closes from its Close Panel button', async () => {
+    const { getByRole, queryByRole } = await openLegend();
 
-    userEvent.keyboard('{Escape}');
+    userEvent.click(getByRole('button', { name: 'Close Panel' }));
 
     await waitFor(() =>
       expect(
         queryByRole('heading', { name: 'How this report works' }),
       ).not.toBeInTheDocument(),
     );
+  });
+
+  it('gives way to a staff member and closes them when reopened', async () => {
+    const { getByRole, getByTestId, queryByRole, findByRole } =
+      await openLegend();
+
+    userEvent.click(getByRole('button', { name: 'Open member' }));
+    await waitFor(() =>
+      expect(
+        queryByRole('heading', { name: 'How this report works' }),
+      ).not.toBeInTheDocument(),
+    );
+    expect(getByTestId('member-open')).toHaveTextContent('true');
+
+    userEvent.click(getByRole('button', { name: 'How this report works' }));
+    await findByRole('heading', { name: 'How this report works' });
+    expect(getByTestId('member-open')).toHaveTextContent('false');
   });
 });

@@ -238,11 +238,10 @@ describe('MpdSupervisorReport', () => {
   it('renders the How this report works button in the header', async () => {
     const { findByRole } = renderReport();
 
-    userEvent.click(
+    // Opening the legend is covered by ReportLegendPanel.test.tsx
+    expect(
       await findByRole('button', { name: 'How this report works' }),
-    );
-
-    expect(await findByRole('heading', { name: 'Colors' })).toBeInTheDocument();
+    ).toBeInTheDocument();
   });
 
   it('explains a fiscal quarter header on hover', async () => {

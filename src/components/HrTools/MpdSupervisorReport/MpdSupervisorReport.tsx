@@ -27,7 +27,7 @@ import { monthYearFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { Panel, useMpdSupervisorReport } from './MpdSupervisorReportContext';
 import { HealthColorKey } from './ReportLegend/HealthColorKey';
-import { ReportLegendPopover } from './ReportLegend/ReportLegendPopover';
+import { ReportLegendButton } from './ReportLegend/ReportLegendButton';
 import { StaffMember } from './StaffMemberRow/StaffMember';
 import {
   ManagedStaffMember,
@@ -164,7 +164,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
           <TitleBox>
             <Box display="flex" alignItems="center" gap={0.5}>
               <Typography variant="h5">{title}</Typography>
-              <ReportLegendPopover />
+              <ReportLegendButton />
             </Box>
             <Typography
               variant="body2"
