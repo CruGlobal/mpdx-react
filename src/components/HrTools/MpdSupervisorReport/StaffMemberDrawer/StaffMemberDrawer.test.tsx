@@ -164,6 +164,21 @@ describe('StaffMemberDrawer', () => {
     expect(getByText('$2,500.00')).toBeInTheDocument();
   });
 
+  it('explains how the New Staff Monthly Salary is calculated', async () => {
+    const { findByRole, getByTestId } = renderDrawer();
+    openMember(managedStaffMember());
+
+    userEvent.hover(getByTestId('NewStaffSalaryInfo'));
+
+    const tooltip = await findByRole('tooltip');
+    expect(tooltip).toHaveTextContent(
+      'The monthly salary a new staff member in the same situation would receive',
+    );
+    expect(tooltip).toHaveTextContent(
+      'See "How this report works" for details.',
+    );
+  });
+
   it('renders a zero benchmark as currency rather than a dash', () => {
     const { getAllByText } = renderDrawer();
     openMember(

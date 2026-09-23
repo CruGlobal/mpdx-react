@@ -1,13 +1,23 @@
 import React from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { Alert, Avatar, Box, IconButton, Tab, Typography } from '@mui/material';
+import {
+  Alert,
+  Avatar,
+  Box,
+  IconButton,
+  Tab,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { InfoTooltipIcon } from 'src/components/HrTools/Shared/InfoTooltipIcon';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import theme from 'src/theme';
 import { GeographicLocationSelect } from '../GeographicLocationSelect/GeographicLocationSelect';
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
+import { newStaffSalaryTooltip } from '../ReportLegend/legendCopy';
 import { DynamicMPGA, preloadMPGA } from '../StaffDetailsTabs/MPGA/DynamicMPGA';
 import {
   DynamicMonthlySummary,
@@ -33,15 +43,24 @@ import {
 interface DetailRowProps {
   label: string;
   value: string;
+  /** Rendered inline after the label, e.g. an info tooltip icon */
+  labelAdornment?: React.ReactNode;
 }
 
-const DetailRow: React.FC<DetailRowProps> = ({ label, value }) => (
+const DetailRow: React.FC<DetailRowProps> = ({
+  label,
+  value,
+  labelAdornment,
+}) => (
   <Box
     sx={{ display: 'flex', flexDirection: 'column', gap: 0.25, minWidth: 140 }}
   >
-    <Typography variant="caption" color="text.secondary">
-      {label}
-    </Typography>
+    <Box display="flex" alignItems="center" gap={0.5}>
+      <Typography variant="caption" color="text.secondary">
+        {label}
+      </Typography>
+      {labelAdornment}
+    </Box>
     <Typography variant="body2">{value}</Typography>
   </Box>
 );
@@ -180,6 +199,15 @@ export const StaffMemberDrawer: React.FC = () => {
           <StaffInfo>
             <DetailRow
               label={t('New Staff Monthly Salary')}
+              labelAdornment={
+                <Tooltip title={newStaffSalaryTooltip(t)}>
+                  <InfoTooltipIcon
+                    data-testid="NewStaffSalaryInfo"
+                    tabIndex={0}
+                    aria-label={t('How New Staff Monthly Salary is calculated')}
+                  />
+                </Tooltip>
+              }
               value={
                 newStaffMonthlySalary !== null
                   ? formatCurrency(newStaffMonthlySalary)
