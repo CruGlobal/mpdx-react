@@ -13,6 +13,7 @@ import { currencyFormat } from 'src/lib/intlFormat';
 import { ReportType } from '../Helpers/StaffReportEnum';
 import { Transaction } from '../Helpers/filterTransactions';
 import { formatTransactionDate } from '../Helpers/formatDate';
+import { getPendingLabel } from '../Helpers/pendingLabel';
 
 export interface PrintTablesProps {
   transactions: Transaction[];
@@ -51,15 +52,19 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
         <TableBody>
           {transactions.length ? (
             <>
-              {transactions.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell>{formatTransactionDate(row, locale)}</TableCell>
-                  <TableCell>
-                    {row.description || row.displayCategory}
-                  </TableCell>
-                  <TableCell>{formatAmount(row.amount)}</TableCell>
-                </TableRow>
-              ))}
+              {transactions.map((row) => {
+                const pendingLabel = getPendingLabel(row, t);
+                return (
+                  <TableRow key={row.id}>
+                    <TableCell>{formatTransactionDate(row, locale)}</TableCell>
+                    <TableCell>
+                      {row.description || row.displayCategory}
+                      {pendingLabel && ` (${pendingLabel})`}
+                    </TableCell>
+                    <TableCell>{formatAmount(row.amount)}</TableCell>
+                  </TableRow>
+                );
+              })}
               <TableRow>
                 <TableCell>
                   <strong>{t('Total')}</strong>

@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { InfoOutlined } from '@mui/icons-material';
 import {
   Box,
+  Chip,
   CircularProgress,
   IconButton,
   Tooltip,
@@ -9,6 +10,7 @@ import {
 } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import { DataGrid, GridColDef, GridSortModel } from '@mui/x-data-grid';
+import { TFunction } from 'i18next';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
@@ -22,6 +24,7 @@ import {
   isGroupedTransaction,
 } from '../Helpers/filterTransactions';
 import { formatAggregatedDate } from '../Helpers/formatDate';
+import { getPendingLabel } from '../Helpers/pendingLabel';
 
 const DEFAULT_PAGE_SIZE = 25;
 
@@ -78,11 +81,13 @@ export interface StaffReportRow {
   isGrouped: boolean;
   period: AggregationPeriod;
   groupedTransaction?: GroupedTransaction;
+  pendingLabel: string | null;
 }
 
 export const createStaffReportRow = (
   transaction: Transaction | GroupedTransaction,
   index: number,
+  t: TFunction,
 ): StaffReportRow => {
   const isGrouped = isGroupedTransaction(transaction);
   return {
@@ -94,6 +99,7 @@ export const createStaffReportRow = (
     isGrouped,
     period: isGrouped ? transaction.period : AggregationPeriod.None,
     groupedTransaction: isGrouped ? transaction : undefined,
+    pendingLabel: getPendingLabel(transaction, t),
   };
 };
 
@@ -144,18 +150,31 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
   };
 
   const staffReportRows = useMemo(() => {
-    return transactions.map((data, index) => createStaffReportRow(data, index));
-  }, [transactions]);
+    return transactions.map((data, index) =>
+      createStaffReportRow(data, index, t),
+    );
+  }, [transactions, t]);
 
   const date: RenderCell = ({ row }) =>
     formatAggregatedDate(row.date, row.period, locale);
 
   const description: RenderCell = ({ row }) => (
-    <Tooltip title={row.description}>
-      <Typography variant="body2" noWrap>
-        {row.description}
-      </Typography>
-    </Tooltip>
+    <Box display="flex" alignItems="center" gap={1} minWidth={0}>
+      <Tooltip title={row.description}>
+        <Typography variant="body2" noWrap>
+          {row.description}
+        </Typography>
+      </Tooltip>
+      {row.pendingLabel && (
+        <Chip
+          label={row.pendingLabel}
+          size="small"
+          color="warning"
+          variant="outlined"
+          sx={{ flexShrink: 0 }}
+        />
+      )}
+    </Box>
   );
 
   const amount: RenderCell = ({ row }) => {
