@@ -76,6 +76,11 @@ export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
     [monthlySummary, locale],
   );
 
+  const tableRows = useMemo(
+    () => [...monthlySummary].reverse(),
+    [monthlySummary],
+  );
+
   const showChart = view === MonthlySummaryView.Chart;
   const hasData = monthlySummary.length > 0;
 
@@ -136,14 +141,14 @@ export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
               </TableRow>
             </TableHead>
             <TableBody>
-              {monthlySummary.length === 0 ? (
+              {tableRows.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} align="center">
                     {t('No data available.')}
                   </TableCell>
                 </TableRow>
               ) : (
-                monthlySummary.map((summary, index) => {
+                tableRows.map((summary, index) => {
                   const date = DateTime.fromISO(summary.month ?? '');
                   const { contributions, expenses, net, endBalance } = summary;
 
