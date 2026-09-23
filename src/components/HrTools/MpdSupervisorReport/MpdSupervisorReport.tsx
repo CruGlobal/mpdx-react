@@ -26,6 +26,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { monthYearFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { Panel, useMpdSupervisorReport } from './MpdSupervisorReportContext';
+import { ReportLegendPopover } from './ReportLegend/ReportLegendPopover';
 import { StaffMember } from './StaffMemberRow/StaffMember';
 import {
   ManagedStaffMember,
@@ -159,7 +160,10 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
             />
           </NavListButton>
           <TitleBox>
-            <Typography variant="h5">{title}</Typography>
+            <Box display="flex" alignItems="center" gap={0.5}>
+              <Typography variant="h5">{title}</Typography>
+              <ReportLegendPopover />
+            </Box>
             <Typography
               variant="body2"
               color="text.secondary"

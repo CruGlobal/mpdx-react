@@ -212,6 +212,18 @@ describe('MpdSupervisorReport', () => {
     expect(getByText('FQ3 26')).toBeInTheDocument();
   });
 
+  it('renders the How this report works button in the header', async () => {
+    const { findByRole } = renderReport();
+
+    userEvent.click(
+      await findByRole('button', { name: 'How this report works' }),
+    );
+
+    expect(
+      await findByRole('heading', { name: 'Colours' }),
+    ).toBeInTheDocument();
+  });
+
   it('explains a fiscal quarter header on hover', async () => {
     const { findByText, findByRole } = renderReport();
 
