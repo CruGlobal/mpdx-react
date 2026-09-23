@@ -46,7 +46,7 @@ describe('buildContactsListHref', () => {
     ).toEqual({ stoppedGivingRange: { min: '2025-01-01', max: '2025-12-31' } });
   });
 
-  it('ends a stopped_giving range no later than a month ago', () => {
+  it('cuts stopped_giving last_month off a month ago, so mid-month it covers only half of last month', () => {
     expect(
       filtersOf(build({ preset: 'stopped_giving', range: 'last_month' })),
     ).toEqual({ stoppedGivingRange: { min: '2026-02-01', max: '2026-02-15' } });
