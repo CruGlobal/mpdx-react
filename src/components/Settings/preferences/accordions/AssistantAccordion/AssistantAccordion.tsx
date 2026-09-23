@@ -37,6 +37,7 @@ type SwitchAttributes = Partial<
 interface Capability {
   field: CapabilityField;
   label: string;
+  unlocks: string;
   modelSees: string;
   comingLater: boolean;
 }
@@ -132,6 +133,9 @@ export const AssistantAccordion: React.FC<AssistantAccordionProps> = ({
     {
       field: 'helpEnabled',
       label: t('Help me use {{appName}}', { appName }),
+      unlocks: t(
+        'It answers how-to questions, links you to the right page or a filtered list, and explains terms.',
+      ),
       modelSees: t(
         'What the model sees: help articles and a map of the app. No account data.',
       ),
@@ -140,6 +144,9 @@ export const AssistantAccordion: React.FC<AssistantAccordionProps> = ({
     {
       field: 'accountSummaryEnabled',
       label: t('Summarize my account'),
+      unlocks: t(
+        'It shows your totals, how close you are to your goal, and the income you can expect.',
+      ),
       modelSees: t(
         'What the model sees: account totals, such as gifts received and progress toward your goal.',
       ),
@@ -148,6 +155,9 @@ export const AssistantAccordion: React.FC<AssistantAccordionProps> = ({
     {
       field: 'partnersEnabled',
       label: t('Talk about my partners'),
+      unlocks: t(
+        'It tells you who stopped giving and who is behind, and sums up your contacts.',
+      ),
       modelSees: t(
         'What the model sees: gift amounts, dates, and statuses for each partner, with names swapped for placeholders.',
       ),
@@ -156,6 +166,9 @@ export const AssistantAccordion: React.FC<AssistantAccordionProps> = ({
     {
       field: 'partnerDetailsEnabled',
       label: t('Show partner details on request'),
+      unlocks: t(
+        'It shows contact cards and links to contact pages when you ask.',
+      ),
       modelSees: t(
         'What the model sees: nothing extra. Contact cards go straight to you.',
       ),
@@ -164,6 +177,7 @@ export const AssistantAccordion: React.FC<AssistantAccordionProps> = ({
     {
       field: 'suggestEnabled',
       label: t('Suggest next steps'),
+      unlocks: t('It suggests tasks and status changes for you to confirm.'),
       modelSees: t(
         'What the model sees: nothing extra. You confirm every suggestion before anything changes.',
       ),
@@ -172,6 +186,9 @@ export const AssistantAccordion: React.FC<AssistantAccordionProps> = ({
     {
       field: 'prayerLettersEnabled',
       label: t('Help write my prayer letters'),
+      unlocks: t(
+        'It helps you draft prayer letters in your own voice, using your Assistant profile.',
+      ),
       modelSees: t(
         'What the model sees: your Assistant profile as you wrote it, plus recent activity with names swapped for placeholders.',
       ),
@@ -180,6 +197,9 @@ export const AssistantAccordion: React.FC<AssistantAccordionProps> = ({
     {
       field: 'historyEnabled',
       label: t('Keep my conversation history'),
+      unlocks: t(
+        'It saves your conversations so you can come back to them later.',
+      ),
       modelSees: t(
         'What the model sees: nothing extra. When this is off, your conversations are not saved.',
       ),
@@ -219,18 +239,22 @@ export const AssistantAccordion: React.FC<AssistantAccordionProps> = ({
           onChange={(checked) => save({ launcherHidden: checked })}
         />
         <Divider />
-        {capabilities.map(({ field, label, modelSees, comingLater }) => (
-          <SettingSwitch
-            key={field}
-            label={label}
-            helperTexts={
-              comingLater ? [modelSees, t('Coming later.')] : [modelSees]
-            }
-            checked={settings[field]}
-            disabled={!settings.enabled || comingLater}
-            onChange={(checked) => save({ [field]: checked })}
-          />
-        ))}
+        {capabilities.map(
+          ({ field, label, unlocks, modelSees, comingLater }) => (
+            <SettingSwitch
+              key={field}
+              label={label}
+              helperTexts={
+                comingLater
+                  ? [unlocks, modelSees, t('Coming later.')]
+                  : [unlocks, modelSees]
+              }
+              checked={settings[field]}
+              disabled={!settings.enabled || comingLater}
+              onChange={(checked) => save({ [field]: checked })}
+            />
+          ),
+        )}
       </Stack>
       <AssistantFirstRunDialog
         open={firstRunOpen}

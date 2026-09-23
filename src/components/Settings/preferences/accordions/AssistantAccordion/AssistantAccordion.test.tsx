@@ -116,11 +116,48 @@ describe('AssistantAccordion', () => {
     expect(getAllByText(/^What the model sees:/)).toHaveLength(7);
   });
 
-  it('describes what the model sees for each switch', () => {
+  it('describes what the switch unlocks and what the model sees', () => {
     const { getByLabelText } = render(<TestComponent />);
 
     expect(getByLabelText('Help me use MPDX')).toHaveAccessibleDescription(
-      'What the model sees: help articles and a map of the app. No account data.',
+      'It answers how-to questions, links you to the right page or a filtered list, and explains terms. What the model sees: help articles and a map of the app. No account data.',
+    );
+  });
+
+  it.each([
+    [
+      'Help me use MPDX',
+      'It answers how-to questions, links you to the right page or a filtered list, and explains terms.',
+    ],
+    [
+      'Summarize my account',
+      'It shows your totals, how close you are to your goal, and the income you can expect.',
+    ],
+    [
+      'Talk about my partners',
+      'It tells you who stopped giving and who is behind, and sums up your contacts.',
+    ],
+    [
+      'Show partner details on request',
+      'It shows contact cards and links to contact pages when you ask.',
+    ],
+    [
+      'Suggest next steps',
+      'It suggests tasks and status changes for you to confirm.',
+    ],
+    [
+      'Help write my prayer letters',
+      'It helps you draft prayer letters in your own voice, using your Assistant profile.',
+    ],
+    [
+      'Keep my conversation history',
+      'It saves your conversations so you can come back to them later.',
+    ],
+  ])('says what %s unlocks', (label, unlocks) => {
+    const { getByLabelText } = render(<TestComponent />);
+
+    expect(getByLabelText(label)).toHaveAccessibleDescription(
+      expect.stringContaining(unlocks),
     );
   });
 
