@@ -19,6 +19,7 @@ import NavMenu from './NavMenu';
 const accountListId = 'test121';
 interface TestComponentProps {
   router?: Partial<NextRouter>;
+  onCall?: jest.Mock;
   mocks?: ApolloErgonoMockMap &
     DeepPartial<{
       GetToolNotifications: GetToolNotificationsQuery;
@@ -29,7 +30,11 @@ interface TestComponentProps {
     }>;
 }
 
-const TestComponent: React.FC<TestComponentProps> = ({ router, mocks }) => (
+const TestComponent: React.FC<TestComponentProps> = ({
+  router,
+  mocks,
+  onCall,
+}) => (
   <ThemeProvider theme={theme}>
     <TestRouter
       router={{
@@ -38,7 +43,7 @@ const TestComponent: React.FC<TestComponentProps> = ({ router, mocks }) => (
         ...router,
       }}
     >
-      <GqlMockedProvider mocks={mocks}>
+      <GqlMockedProvider mocks={mocks} onCall={onCall}>
         <NavMenu />
       </GqlMockedProvider>
     </TestRouter>
@@ -237,6 +242,7 @@ describe('NavMenu', () => {
   });
 
   it('does not show coaching link if there are no coaching accounts', async () => {
+    const mutationSpy = jest.fn();
     const { queryByRole } = render(
       <TestComponent
         mocks={{
@@ -246,13 +252,15 @@ describe('NavMenu', () => {
             },
           },
         }}
+        onCall={mutationSpy}
       />,
     );
     await waitFor(() =>
-      expect(
-        queryByRole('menuitem', { hidden: true, name: 'Coaching' }),
-      ).not.toBeInTheDocument(),
+      expect(mutationSpy).toHaveGraphqlOperation('CoachingListCount'),
     );
+    expect(
+      queryByRole('menuitem', { hidden: true, name: 'Coaching' }),
+    ).not.toBeInTheDocument();
   });
 
   it('test current tool id hook', () => {

@@ -24,13 +24,16 @@ interface TestComponentProps {
   coachingCount?: number;
 }
 
+const coachingListCountResult = jest.fn();
+
 const coachingListCountMock = (totalCount: number): MockedResponse => {
   const data: CoachingListCountQuery = {
     coachingAccountLists: { totalCount },
   };
+  coachingListCountResult.mockReturnValue({ data });
   return {
     request: { query: CoachingListCountDocument },
-    result: { data },
+    result: coachingListCountResult,
   };
 };
 
@@ -90,8 +93,7 @@ describe('NavBar', () => {
     );
 
     await findByRole('link', { name: 'Dashboard' });
-    await waitFor(() =>
-      expect(queryByRole('link', { name: 'Coaching' })).not.toBeInTheDocument(),
-    );
+    await waitFor(() => expect(coachingListCountResult).toHaveBeenCalled());
+    expect(queryByRole('link', { name: 'Coaching' })).not.toBeInTheDocument();
   });
 });
