@@ -12,6 +12,9 @@ export const SETTINGS_PATHS: Record<SettingsTab, string | null> = {
   hr_tools: null,
 };
 
+export const isSettingsTabWithoutPage = (tab: unknown): boolean =>
+  isOneOf(tab, SETTINGS_TABS) && SETTINGS_PATHS[tab] === null;
+
 export const buildSettingsHref: NavigationBuilder = (params, { basePath }) => {
   if (!hasOnlyKeys(params, ['tab']) || !isOneOf(params.tab, SETTINGS_TABS)) {
     return null;

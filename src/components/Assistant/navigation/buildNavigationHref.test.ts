@@ -79,6 +79,18 @@ describe('buildNavigationHref', () => {
     expect(debugSpy.mock.calls[0][0]).toContain(`type=${type}`);
   });
 
+  it('logs no page rather than invalid params for the HR Tools tab', () => {
+    expect(
+      buildNavigationHref(
+        { type: 'settings', params: { tab: 'hr_tools' } },
+        accountListId,
+      ),
+    ).toBeNull();
+    expect(debugSpy).toHaveBeenCalledWith(
+      'Assistant navigation intent dropped type=settings reason=no page',
+    );
+  });
+
   it('returns null without an account list', () => {
     expect(buildNavigationHref({ type: 'dashboard' }, null)).toBeNull();
     expect(debugSpy).toHaveBeenCalledTimes(1);

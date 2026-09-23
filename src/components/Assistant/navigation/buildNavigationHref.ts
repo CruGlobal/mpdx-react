@@ -14,7 +14,7 @@ import {
 } from './intents';
 import { Params, hasOnlyKeys, isOneOf, isPlainObject } from './params';
 import { REPORT_SEGMENTS, buildReportHref } from './reportHref';
-import { buildSettingsHref } from './settingsHref';
+import { buildSettingsHref, isSettingsTabWithoutPage } from './settingsHref';
 import { buildTasksHref } from './tasksHref';
 import { buildToolsImportHref } from './toolsImportHref';
 import { NavigationBuilder } from './types';
@@ -113,6 +113,9 @@ export const buildNavigationHref = (
   );
   if (hiddenReason) {
     return drop(type, hiddenReason);
+  }
+  if (type === 'settings' && isSettingsTabWithoutPage(params.tab)) {
+    return drop(type, 'no page');
   }
 
   const href = BUILDERS[type](params, {
