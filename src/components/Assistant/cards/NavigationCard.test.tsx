@@ -11,6 +11,8 @@ const mockUseNavigationVisibility = useNavigationVisibility as jest.MockedFn<
   typeof useNavigationVisibility
 >;
 
+const reportSegments = new Set(['coaching', 'donations']);
+
 interface TestComponentProps {
   intent: NavigationIntent;
   accountListId?: string;
@@ -31,6 +33,7 @@ describe('NavigationCard', () => {
   beforeEach(() => {
     mockUseNavigationVisibility.mockReturnValue({
       visibility: DEFAULT_VISIBILITY,
+      reportSegments,
       isLoading: false,
     });
     debugSpy = jest.spyOn(console, 'debug').mockImplementation(() => {});
@@ -68,6 +71,7 @@ describe('NavigationCard', () => {
   it('shows plain text for an intent the user cannot see', () => {
     mockUseNavigationVisibility.mockReturnValue({
       visibility: { ...DEFAULT_VISIBILITY, coaching: false },
+      reportSegments,
       isLoading: false,
     });
     const { getByText, queryByRole } = render(
@@ -78,9 +82,21 @@ describe('NavigationCard', () => {
     expect(queryByRole('link')).not.toBeInTheDocument();
   });
 
+  it('shows plain text for a report the nav does not list', () => {
+    const { getByText, queryByRole } = render(
+      <TestComponent
+        intent={{ type: 'report', params: { name: 'financial_accounts' } }}
+      />,
+    );
+
+    expect(getByText('Open it')).toBeInTheDocument();
+    expect(queryByRole('link')).not.toBeInTheDocument();
+  });
+
   it('shows plain text without logging while visibility loads', () => {
     mockUseNavigationVisibility.mockReturnValue({
       visibility: { ...DEFAULT_VISIBILITY, coaching: false },
+      reportSegments,
       isLoading: true,
     });
     const intent = { type: 'coaching', params: {} };
@@ -94,6 +110,7 @@ describe('NavigationCard', () => {
 
     mockUseNavigationVisibility.mockReturnValue({
       visibility: DEFAULT_VISIBILITY,
+      reportSegments,
       isLoading: false,
     });
     rerender(<TestComponent intent={intent} />);
@@ -107,6 +124,7 @@ describe('NavigationCard', () => {
   it('logs a hidden intent once loading finishes', () => {
     mockUseNavigationVisibility.mockReturnValue({
       visibility: { ...DEFAULT_VISIBILITY, coaching: false },
+      reportSegments,
       isLoading: true,
     });
     const intent = { type: 'coaching', params: {} };
@@ -114,6 +132,7 @@ describe('NavigationCard', () => {
 
     mockUseNavigationVisibility.mockReturnValue({
       visibility: { ...DEFAULT_VISIBILITY, coaching: false },
+      reportSegments,
       isLoading: false,
     });
     rerender(<TestComponent intent={intent} />);

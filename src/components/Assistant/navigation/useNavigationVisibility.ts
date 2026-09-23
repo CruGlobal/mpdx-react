@@ -8,8 +8,9 @@ import { useReportNavItems } from 'src/hooks/useReportNavItems';
 import { useReportsDisabled } from 'src/hooks/useReportsDisabled';
 import { NavigationVisibility } from './intents';
 
-interface NavigationVisibilityResult {
+export interface NavigationVisibilityResult {
   visibility: NavigationVisibility;
+  reportSegments: ReadonlySet<string>;
   isLoading: boolean;
 }
 
@@ -32,6 +33,10 @@ export const useNavigationVisibility = (): NavigationVisibilityResult => {
     (!userData || canSeeHrTools) && !hrToolsLoading && hrToolsItems.length > 0;
   const coaching = !!coachingData?.coachingAccountLists.totalCount;
   const staffFeatures = reportItems.some((item) => item.id === 'staffExpense');
+  const reportSegments = useMemo(
+    () => new Set(reportItems.map((item) => item.id)),
+    [reportItems],
+  );
 
   const isLoading =
     userLoading || hrToolsLoading || reportsDisabledLoading || coachingLoading;
@@ -44,8 +49,9 @@ export const useNavigationVisibility = (): NavigationVisibilityResult => {
         reports: true,
         staff_features: staffFeatures,
       },
+      reportSegments,
       isLoading,
     }),
-    [hrTools, coaching, staffFeatures, isLoading],
+    [hrTools, coaching, staffFeatures, reportSegments, isLoading],
   );
 };

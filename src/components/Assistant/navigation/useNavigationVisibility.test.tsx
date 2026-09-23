@@ -6,6 +6,7 @@ import { LoadCoachingListQuery } from 'src/components/Coaching/LoadCoachingList.
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
 import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
+import { buildNavigationHref } from './buildNavigationHref';
 import { useNavigationVisibility } from './useNavigationVisibility';
 
 interface Mocks {
@@ -21,6 +22,13 @@ const staffUser = {
   staffAccountId: 'staff-account-1',
 };
 
+const globalStaffUser = {
+  userType: UserTypeEnum.GlobalStaff,
+  usStaffGroup: null,
+  spouseUsStaffGroup: null,
+  staffAccountId: null,
+};
+
 const nonCruUser = {
   userType: UserTypeEnum.NonCru,
   usStaffGroup: null,
@@ -29,7 +37,7 @@ const nonCruUser = {
 };
 
 const makeWrapper = (
-  user: typeof staffUser | typeof nonCruUser,
+  user: typeof staffUser | typeof globalStaffUser | typeof nonCruUser,
   coachingCount: number,
 ) => {
   const Wrapper = ({ children }: { children: React.ReactElement }) => (
@@ -72,6 +80,7 @@ describe('useNavigationVisibility', () => {
           reports: true,
           staff_features: true,
         },
+        reportSegments: expect.any(Set),
         isLoading: false,
       }),
     );
@@ -89,6 +98,7 @@ describe('useNavigationVisibility', () => {
         reports: true,
         staff_features: false,
       },
+      reportSegments: expect.any(Set),
       isLoading: true,
     });
     await waitFor(() => expect(result.current.isLoading).toBe(false));
@@ -107,6 +117,7 @@ describe('useNavigationVisibility', () => {
           reports: true,
           staff_features: false,
         },
+        reportSegments: expect.any(Set),
         isLoading: false,
       }),
     );
@@ -126,8 +137,38 @@ describe('useNavigationVisibility', () => {
           reports: true,
           staff_features: false,
         },
+        reportSegments: expect.any(Set),
         isLoading: false,
       }),
     );
   });
+
+  it.each([
+    ['a US staff user', staffUser, null],
+    [
+      'a global staff user',
+      globalStaffUser,
+      '/accountLists/account-list-1/reports/financialAccounts',
+    ],
+  ])(
+    'gives %s the Responsibility Centers link only when the nav lists it',
+    async (_, user, href) => {
+      const debugSpy = jest
+        .spyOn(console, 'debug')
+        .mockImplementation(() => {});
+      const { result } = renderHook(() => useNavigationVisibility(), {
+        wrapper: makeWrapper(user, 0),
+      });
+
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+      expect(
+        buildNavigationHref(
+          { type: 'report', params: { name: 'financial_accounts' } },
+          'account-list-1',
+          result.current,
+        ),
+      ).toBe(href);
+      debugSpy.mockRestore();
+    },
+  );
 });
