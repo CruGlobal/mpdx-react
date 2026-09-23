@@ -13,7 +13,7 @@ import {
 } from '../MpdSupervisorReportContext';
 import { managedStaffTeamsMock } from '../mpdSupervisorReportMocks';
 import { MpdSupervisorReportFilterPanel } from './MpdSupervisorReportFilterPanel';
-import { ALL_TEAMS } from './mpdSupervisorReportFilters';
+import { ALL_DEPARTMENTS, ALL_TEAMS } from './mpdSupervisorReportFilters';
 
 const onClose = jest.fn();
 
@@ -103,10 +103,12 @@ describe('MpdSupervisorReportFilterPanel', () => {
 
 // Consumer component to verify context-driven state changes
 const FilterContextConsumer: React.FC = () => {
-  const { team, employmentType, activeQuickFilter } = useMpdSupervisorReport();
+  const { team, department, employmentType, activeQuickFilter } =
+    useMpdSupervisorReport();
   return (
     <div>
       <span data-testid="team">{team}</span>
+      <span data-testid="department">{department}</span>
       <span data-testid="employmentType">{employmentType}</span>
       <span data-testid="activeQuickFilter">{activeQuickFilter}</span>
     </div>
@@ -176,31 +178,119 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
       expect(getByLabelText('Team')).toHaveAttribute('aria-disabled', 'true');
     });
 
-    it('puts the selected team id in context', async () => {
+    it('puts the selected team name in context', async () => {
       const { getByRole, getByTestId } = await openTeamSelect();
 
       userEvent.click(getByRole('option', { name: 'Solution Delivery Team' }));
 
-      expect(getByTestId('team').textContent).toBe('team-1');
+      expect(getByTestId('team').textContent).toBe('Solution Delivery Team');
     });
 
-    it('sorts the team options by name', async () => {
+    it('lists every team name, sorted, including one with no department', async () => {
       const { getAllByRole } = await openTeamSelect();
 
       const names = getAllByRole('option').map((option) => option.textContent);
       expect(names).toEqual([
         'All teams',
+        'Central Team',
         'Solution Delivery Team',
-        'User Interaction Team',
+        'Unassigned',
+      ]);
+    });
+  });
+
+  describe('Department select', () => {
+    const openDepartmentSelect = async () => {
+      const view = renderWithConsumer();
+      const select = view.getByLabelText('Department');
+      await waitFor(() =>
+        expect(select).not.toHaveAttribute('aria-disabled', 'true'),
+      );
+      userEvent.click(select);
+      await view.findByRole('option', { name: 'US Technology' });
+      return view;
+    };
+
+    // Waits out the teams query, then picks a team so the narrowing can be read.
+    const chooseTeam = async (name: string) => {
+      const view = renderWithConsumer();
+      const select = view.getByLabelText('Team');
+      await waitFor(() =>
+        expect(select).not.toHaveAttribute('aria-disabled', 'true'),
+      );
+      userEvent.click(select);
+      userEvent.click(await view.findByRole('option', { name }));
+      return view;
+    };
+
+    it('is disabled until the teams arrive', () => {
+      const { getByLabelText } = renderWithConsumer();
+      expect(getByLabelText('Department')).toHaveAttribute(
+        'aria-disabled',
+        'true',
+      );
+    });
+
+    it('lists each department once, sorted, across every team', async () => {
+      const { getAllByRole } = await openDepartmentSelect();
+
+      const names = getAllByRole('option').map((option) => option.textContent);
+      expect(names).toEqual([
+        'All departments',
+        'Cru Military',
+        'US Technology',
       ]);
     });
 
-    it('omits a team that has no id', async () => {
-      const { queryByRole } = await openTeamSelect();
+    it('puts the selected department in context', async () => {
+      const { getByRole, getByTestId } = await openDepartmentSelect();
 
-      expect(
-        queryByRole('option', { name: 'Unassigned' }),
-      ).not.toBeInTheDocument();
+      userEvent.click(getByRole('option', { name: 'Cru Military' }));
+
+      expect(getByTestId('department').textContent).toBe('Cru Military');
+    });
+
+    it('narrows the team options to the teams in the chosen department', async () => {
+      const { getByRole, getByLabelText, getAllByRole } =
+        await openDepartmentSelect();
+
+      userEvent.click(getByRole('option', { name: 'Cru Military' }));
+      userEvent.click(getByLabelText('Team'));
+
+      const names = getAllByRole('option').map((option) => option.textContent);
+      expect(names).toEqual(['All teams', 'Central Team']);
+    });
+
+    it('narrows the department options to those holding the chosen team', async () => {
+      const { getByLabelText, getAllByRole } = await chooseTeam(
+        'Solution Delivery Team',
+      );
+
+      userEvent.click(getByLabelText('Department'));
+
+      const names = getAllByRole('option').map((option) => option.textContent);
+      expect(names).toEqual(['All departments', 'US Technology']);
+    });
+
+    it('keeps both filters when a team and a department are chosen together', async () => {
+      const { getByRole, getByLabelText, getByTestId } =
+        await chooseTeam('Central Team');
+
+      userEvent.click(getByLabelText('Department'));
+      userEvent.click(getByRole('option', { name: 'Cru Military' }));
+
+      expect(getByTestId('team').textContent).toBe('Central Team');
+      expect(getByTestId('department').textContent).toBe('Cru Military');
+    });
+
+    it('disables itself when the chosen team carries no department', async () => {
+      const { getByLabelText, getByTestId } = await chooseTeam('Unassigned');
+
+      expect(getByTestId('department').textContent).toBe(ALL_DEPARTMENTS);
+      expect(getByLabelText('Department')).toHaveAttribute(
+        'aria-disabled',
+        'true',
+      );
     });
   });
 

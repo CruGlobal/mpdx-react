@@ -30,4 +30,5 @@ export const quickFilterLabel = (
 };
 
 export const ALL_TEAMS = 'all';
+export const ALL_DEPARTMENTS = 'all';
 export const ALL_TYPES = 'all';

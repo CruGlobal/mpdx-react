@@ -11,6 +11,7 @@ import { ApolloError } from '@apollo/client';
 import { MpdAssignmentCategoryGroupEnum } from 'src/graphql/types.generated';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
 import {
+  ALL_DEPARTMENTS,
   ALL_TEAMS,
   MpdSupervisorReportQuickFilterEnum,
 } from './Filters/mpdSupervisorReportFilters';
@@ -39,6 +40,8 @@ export interface MpdSupervisorReportContextValue {
   setSearch: (v: string) => void;
   team: string;
   setTeam: (v: string) => void;
+  department: string;
+  setDepartment: (v: string) => void;
   employmentType: MpdAssignmentCategoryGroupEnum | null;
   setEmploymentType: (v: MpdAssignmentCategoryGroupEnum | null) => void;
   activeQuickFilter: MpdSupervisorReportQuickFilterEnum;
@@ -86,6 +89,7 @@ export const MpdSupervisorReportProvider: React.FC<{
   >(undefined);
   const [search, setSearch] = useState('');
   const [team, setTeam] = useState<string>(ALL_TEAMS);
+  const [department, setDepartment] = useState<string>(ALL_DEPARTMENTS);
   const [employmentType, setEmploymentType] =
     useState<MpdAssignmentCategoryGroupEnum | null>(null);
   const [activeQuickFilter, setActiveQuickFilter] =
@@ -102,7 +106,8 @@ export const MpdSupervisorReportProvider: React.FC<{
     variables: {
       first: pageSize,
       name: debouncedSearch.trim() || null,
-      teamIds: team === ALL_TEAMS ? null : [team],
+      teamNames: team === ALL_TEAMS ? null : [team],
+      departments: department === ALL_DEPARTMENTS ? null : [department],
       assignmentCategoryGroup: employmentType,
       // Send the flag only when its chip is active; false would filter on it.
       negativeLastMonth:
@@ -172,6 +177,8 @@ export const MpdSupervisorReportProvider: React.FC<{
       setSearch,
       team,
       setTeam,
+      department,
+      setDepartment,
       employmentType,
       setEmploymentType,
       activeQuickFilter,
@@ -191,6 +198,7 @@ export const MpdSupervisorReportProvider: React.FC<{
       selectedMember,
       search,
       team,
+      department,
       employmentType,
       activeQuickFilter,
       selectedTabKey,

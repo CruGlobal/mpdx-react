@@ -36,6 +36,8 @@ interface ConsumerResult {
   setSearch: (v: string) => void;
   team: string;
   setTeam: (v: string) => void;
+  department: string;
+  setDepartment: (v: string) => void;
   employmentType: MpdAssignmentCategoryGroupEnum | null;
   setEmploymentType: (v: MpdAssignmentCategoryGroupEnum | null) => void;
   activeQuickFilter: MpdSupervisorReportQuickFilterEnum;
@@ -194,25 +196,54 @@ describe('MpdSupervisorReportContext', () => {
 });
 
 describe('managed staff query variables', () => {
-  it('omits teamIds until a team is chosen', async () => {
+  it('omits teamNames and departments until a filter is chosen', async () => {
     renderConsumer();
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
-        teamIds: null,
+        teamNames: null,
+        departments: null,
       }),
     );
   });
 
-  it('sends the chosen team as teamIds', async () => {
+  it('sends the chosen team as teamNames', async () => {
     renderConsumer();
     act(() => {
-      consumerResult.setTeam('team-1');
+      consumerResult.setTeam('Central Team');
     });
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
-        teamIds: ['team-1'],
+        teamNames: ['Central Team'],
+      }),
+    );
+  });
+
+  it('sends the chosen department as departments', async () => {
+    renderConsumer();
+    act(() => {
+      consumerResult.setDepartment('Cru Military');
+    });
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        departments: ['Cru Military'],
+      }),
+    );
+  });
+
+  it('sends both when a team and a department are chosen', async () => {
+    renderConsumer();
+    act(() => {
+      consumerResult.setTeam('Central Team');
+      consumerResult.setDepartment('Cru Military');
+    });
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        teamNames: ['Central Team'],
+        departments: ['Cru Military'],
       }),
     );
   });
@@ -312,7 +343,7 @@ describe('loadMore', () => {
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
-        teamIds: null,
+        teamNames: null,
       }),
     );
     act(() => {

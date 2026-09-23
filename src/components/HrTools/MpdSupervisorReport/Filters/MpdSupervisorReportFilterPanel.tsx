@@ -15,6 +15,7 @@ import { useManagedStaffTeamsQuery } from '../ManagedStaffTeams.generated';
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
 import { getLocalizedAssignmentCategoryGroup } from '../helpers';
 import {
+  ALL_DEPARTMENTS,
   ALL_TEAMS,
   ALL_TYPES,
   MpdSupervisorReportQuickFilterEnum,
@@ -35,18 +36,41 @@ export const MpdSupervisorReportFilterPanel: React.FC<
     setActiveQuickFilter,
     team,
     setTeam,
+    department,
+    setDepartment,
     employmentType,
     setEmploymentType,
   } = useMpdSupervisorReport();
 
   const { data: teamsData } = useManagedStaffTeamsQuery();
 
+  const allTeams = useMemo(
+    () => teamsData?.managedStaffTeams ?? [],
+    [teamsData],
+  );
+
   const teamOptions = useMemo(
     () =>
-      (teamsData?.managedStaffTeams ?? [])
-        .flatMap(({ id, name }) => (id ? [{ id, name }] : []))
-        .sort((a, b) => a.name.localeCompare(b.name)),
-    [teamsData],
+      allTeams
+        .filter(
+          ({ departments }) =>
+            department === ALL_DEPARTMENTS || departments.includes(department),
+        )
+        .map(({ name }) => name)
+        .sort((a, b) => a.localeCompare(b)),
+    [allTeams, department],
+  );
+
+  const departmentOptions = useMemo(
+    () =>
+      [
+        ...new Set(
+          allTeams
+            .filter(({ name }) => team === ALL_TEAMS || name === team)
+            .flatMap(({ departments }) => departments),
+        ),
+      ].sort((a, b) => a.localeCompare(b)),
+    [allTeams, team],
   );
 
   const handleQuickFilter = (filterId: MpdSupervisorReportQuickFilterEnum) => {
@@ -55,6 +79,12 @@ export const MpdSupervisorReportFilterPanel: React.FC<
 
   const handleSetTeam = (event: React.ChangeEvent<{ value: unknown }>) => {
     setTeam(event.target.value as string);
+  };
+
+  const handleSetDepartment = (
+    event: React.ChangeEvent<{ value: unknown }>,
+  ) => {
+    setDepartment(event.target.value as string);
   };
 
   const handleSetEmploymentType = (
@@ -118,8 +148,26 @@ export const MpdSupervisorReportFilterPanel: React.FC<
           disabled={!teamOptions.length}
         >
           <MenuItem value={ALL_TEAMS}>{t('All teams')}</MenuItem>
-          {teamOptions.map(({ id, name }) => (
-            <MenuItem key={id} value={id}>
+          {teamOptions.map((name) => (
+            <MenuItem key={name} value={name}>
+              {name}
+            </MenuItem>
+          ))}
+        </TextField>
+
+        <TextField
+          select
+          fullWidth
+          value={department}
+          onChange={handleSetDepartment}
+          size="small"
+          label={t('Department')}
+          // Still loading, the query failed, or no team carries a department.
+          disabled={!departmentOptions.length}
+        >
+          <MenuItem value={ALL_DEPARTMENTS}>{t('All departments')}</MenuItem>
+          {departmentOptions.map((name) => (
+            <MenuItem key={name} value={name}>
               {name}
             </MenuItem>
           ))}
