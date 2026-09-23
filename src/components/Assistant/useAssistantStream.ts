@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAssistantContext } from './AssistantProvider';
 import { AssistantAction } from './assistantReducer';
 import { readAssistantEvents } from './sse';
@@ -29,7 +30,7 @@ const createMessage = (
   content,
   cards: [],
   citations: [],
-  status: role === 'user' ? 'complete' : 'streaming',
+  status: role === 'assistant' ? 'streaming' : 'complete',
   working: false,
 });
 
@@ -160,8 +161,10 @@ export const useAssistantStream = ({
   token,
   refreshToken,
 }: UseAssistantStreamOptions): UseAssistantStreamResult => {
+  const { t } = useTranslation();
   const {
     conversation,
+    accountListId: transcriptAccountListId,
     streaming,
     dispatch,
     beginStream,
@@ -174,6 +177,24 @@ export const useAssistantStream = ({
   const rateLimitTimer = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => () => clearTimeout(rateLimitTimer.current), []);
+
+  // A conversation belongs to one account list, so switching lists starts a new one right away
+  useEffect(() => {
+    if (!accountListId || accountListId === transcriptAccountListId) {
+      return;
+    }
+    if (transcriptAccountListId) {
+      stopStream();
+    }
+    dispatch({
+      type: 'bindAccountList',
+      accountListId,
+      notice: createMessage(
+        'system',
+        t('Started a new conversation for this account list.'),
+      ),
+    });
+  }, [accountListId, transcriptAccountListId, dispatch, stopStream, t]);
 
   const blockUntilRetryAfter = useCallback((response: Response) => {
     clearTimeout(rateLimitTimer.current);
@@ -198,11 +219,6 @@ export const useAssistantStream = ({
 
       const controller = new AbortController();
       beginStream(controller);
-
-      // A conversation is bound to one account list, so switching lists starts over
-      if (conversation && conversation.accountListId !== accountListId) {
-        dispatch({ type: 'resetConversation' });
-      }
       dispatch({ type: 'addMessage', message: createMessage('user', content) });
       const reply = createMessage('assistant', '');
       dispatch({ type: 'addMessage', message: reply });
@@ -264,10 +280,12 @@ export const useAssistantStream = ({
             throw new Error('Creating a conversation returned no id');
           }
           conversationId = id;
-          dispatch({
-            type: 'setConversation',
-            conversation: { id, accountListId },
-          });
+          if (!controller.signal.aborted) {
+            dispatch({
+              type: 'setConversation',
+              conversation: { id, accountListId },
+            });
+          }
         }
 
         const response = await request(

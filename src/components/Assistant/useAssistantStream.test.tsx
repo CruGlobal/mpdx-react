@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { act, renderHook } from '@testing-library/react-hooks';
 import TestRouter from '__tests__/util/TestRouter';
 import { mockSession } from '__tests__/util/mockSession';
@@ -28,14 +28,18 @@ const renderStream = ({
   refreshToken = () => Promise.resolve(null),
 }: RenderStreamOptions = {}) =>
   renderHook(
-    () => ({
-      stream: useAssistantStream({
-        accountListId: 'account-list-1',
-        token: 'minted-token',
-        refreshToken,
-      }),
-      context: useAssistantContext(),
-    }),
+    () => {
+      const [accountListId, setAccountListId] = useState('account-list-1');
+      return {
+        stream: useAssistantStream({
+          accountListId,
+          token: 'minted-token',
+          refreshToken,
+        }),
+        context: useAssistantContext(),
+        setAccountListId,
+      };
+    },
     { wrapper: Wrapper },
   );
 
@@ -667,6 +671,85 @@ describe('useAssistantStream', () => {
 
       act(() => jest.advanceTimersByTime(10000));
       expect(result.current.stream.rateLimited).toBe(false);
+    });
+  });
+
+  describe('account list switch', () => {
+    it('starts a new conversation with a notice right away', async () => {
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+      const { result } = renderStream();
+      await act(() => result.current.stream.sendMessage('Hi'));
+
+      act(() => result.current.setAccountListId('account-list-2'));
+
+      expect(result.current.context.messages).toEqual([
+        expect.objectContaining({
+          role: 'system',
+          content: 'Started a new conversation for this account list.',
+        }),
+      ]);
+      expect(result.current.context.conversation).toBeNull();
+      expect(result.current.context.accountListId).toBe('account-list-2');
+    });
+
+    it('creates the next conversation for the new account list', async () => {
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames))
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-2' }))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+      const { result } = renderStream();
+      await act(() => result.current.stream.sendMessage('Hi'));
+
+      act(() => result.current.setAccountListId('account-list-2'));
+      await act(() => result.current.stream.sendMessage('Hi again'));
+
+      expect(fetchSpy).toHaveBeenNthCalledWith(
+        3,
+        `${assistantUrl}/conversations`,
+        expect.objectContaining({
+          body: JSON.stringify({ account_list_id: 'account-list-2' }),
+        }),
+      );
+      expect(result.current.context.conversation).toEqual({
+        id: 'conversation-2',
+        accountListId: 'account-list-2',
+      });
+      expect(result.current.context.messages).toHaveLength(3);
+    });
+
+    it('stops a reply that is still streaming', async () => {
+      const stream = controlledStream();
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(mockStreamResponse([], { body: stream.body }));
+      const { result, waitFor } = renderStream();
+
+      let sending: Promise<void> = Promise.resolve();
+      act(() => {
+        sending = result.current.stream.sendMessage('Hi');
+      });
+      await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(2));
+
+      act(() => result.current.setAccountListId('account-list-2'));
+      stream.close();
+      await act(() => sending);
+
+      expect(fetchSpy.mock.calls[1][1].signal.aborted).toBe(true);
+      expect(result.current.context.messages).toHaveLength(1);
+      expect(result.current.context.conversation).toBeNull();
+      expect(result.current.stream.streaming).toBe(false);
+    });
+
+    it('adds no notice when there was nothing to reset', () => {
+      const { result } = renderStream();
+
+      act(() => result.current.setAccountListId('account-list-2'));
+
+      expect(result.current.context.messages).toEqual([]);
+      expect(result.current.context.accountListId).toBe('account-list-2');
     });
   });
 });

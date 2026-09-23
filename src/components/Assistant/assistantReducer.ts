@@ -13,6 +13,8 @@ export interface ConversationBinding {
 export interface AssistantState {
   messages: AssistantMessage[];
   conversation: ConversationBinding | null;
+  // The account list the transcript belongs to
+  accountListId: string | null;
 }
 
 export type AssistantAction =
@@ -25,11 +27,16 @@ export type AssistantAction =
   | { type: 'failMessage'; id: string; reason?: AssistantErrorReason }
   | { type: 'setConversation'; conversation: ConversationBinding }
   | { type: 'clearConversation' }
-  | { type: 'resetConversation' };
+  | {
+      type: 'bindAccountList';
+      accountListId: string;
+      notice: AssistantMessage;
+    };
 
 export const initialAssistantState: AssistantState = {
   messages: [],
   conversation: null,
+  accountListId: null,
 };
 
 const updateMessage = (
@@ -89,7 +96,20 @@ export const assistantReducer = (
       return { ...state, conversation: action.conversation };
     case 'clearConversation':
       return { ...state, conversation: null };
-    case 'resetConversation':
-      return initialAssistantState;
+    case 'bindAccountList':
+      if (state.accountListId === action.accountListId) {
+        return state;
+      }
+      if (
+        state.accountListId === null ||
+        (state.messages.length === 0 && !state.conversation)
+      ) {
+        return { ...state, accountListId: action.accountListId };
+      }
+      return {
+        messages: [action.notice],
+        conversation: null,
+        accountListId: action.accountListId,
+      };
   }
 };

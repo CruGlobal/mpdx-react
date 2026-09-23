@@ -375,4 +375,29 @@ describe('AssistantChat', () => {
     act(() => jest.advanceTimersByTime(30000));
     expect(getByRole('button', { name: 'Send' })).toBeEnabled();
   });
+
+  it('starts a new conversation when the account list changes', async () => {
+    fetchSpy
+      .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+      .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+    const { getByRole, findByText, queryByText, rerender } = render(
+      <TestComponent />,
+    );
+    await typeMessage(getByRole, 'How many contacts?');
+    userEvent.click(getByRole('button', { name: 'Send' }));
+    expect(await findByText('You have 12 contacts.')).toBeInTheDocument();
+
+    rerender(<TestComponent accountListId="account-list-2" />);
+
+    expect(getByRole('log', { name: 'Conversation' })).toHaveTextContent(
+      'Started a new conversation for this account list.',
+    );
+    expect(queryByText('How many contacts?')).not.toBeInTheDocument();
+    expect(queryByText('You have 12 contacts.')).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('CreateAssistantToken', {
+        accountListId: 'account-list-2',
+      }),
+    );
+  });
 });

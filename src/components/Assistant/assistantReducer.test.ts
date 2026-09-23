@@ -24,6 +24,16 @@ const other: AssistantMessage = {
 const state: AssistantState = {
   messages: [reply, other],
   conversation: { id: 'conversation-1', accountListId: 'account-list-1' },
+  accountListId: 'account-list-1',
+};
+
+const notice: AssistantMessage = {
+  ...reply,
+  id: 'notice-1',
+  role: 'system',
+  content: 'Started a new conversation for this account list.',
+  status: 'complete',
+  working: false,
 };
 
 describe('assistantReducer', () => {
@@ -140,9 +150,42 @@ describe('assistantReducer', () => {
     expect(next.messages).toBe(state.messages);
   });
 
-  it('resets the conversation and the transcript', () => {
-    const next = assistantReducer(state, { type: 'resetConversation' });
+  describe('bindAccountList', () => {
+    it('binds an empty transcript without a notice', () => {
+      const next = assistantReducer(initialAssistantState, {
+        type: 'bindAccountList',
+        accountListId: 'account-list-1',
+        notice,
+      });
 
-    expect(next).toEqual(initialAssistantState);
+      expect(next).toEqual({
+        ...initialAssistantState,
+        accountListId: 'account-list-1',
+      });
+    });
+
+    it('keeps the transcript for the same account list', () => {
+      const next = assistantReducer(state, {
+        type: 'bindAccountList',
+        accountListId: 'account-list-1',
+        notice,
+      });
+
+      expect(next).toBe(state);
+    });
+
+    it('starts over with a notice for another account list', () => {
+      const next = assistantReducer(state, {
+        type: 'bindAccountList',
+        accountListId: 'account-list-2',
+        notice,
+      });
+
+      expect(next).toEqual({
+        messages: [notice],
+        conversation: null,
+        accountListId: 'account-list-2',
+      });
+    });
   });
 });
