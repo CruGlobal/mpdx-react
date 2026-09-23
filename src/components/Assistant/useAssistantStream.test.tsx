@@ -549,6 +549,26 @@ describe('useAssistantStream', () => {
       expect(result.current.context.messages[1].status).toBe('complete');
     });
 
+    it('releases the rejected response before retrying', async () => {
+      const refreshToken = jest.fn().mockResolvedValue('fresh-token');
+      const rejectedBody = new ReadableStream() as NonNullable<
+        Response['body']
+      >;
+      const cancel = jest.spyOn(rejectedBody, 'cancel');
+      fetchSpy
+        .mockResolvedValueOnce(
+          mockJsonResponse({}, { ok: false, status: 401, body: rejectedBody }),
+        )
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+      const { result } = renderStream({ refreshToken });
+
+      await act(() => result.current.stream.sendMessage('Hi'));
+
+      expect(cancel).toHaveBeenCalledTimes(1);
+      expect(result.current.context.messages[1].status).toBe('complete');
+    });
+
     it('gives up after one retry', async () => {
       const refreshToken = jest.fn().mockResolvedValue('fresh-token');
       fetchSpy.mockResolvedValue(

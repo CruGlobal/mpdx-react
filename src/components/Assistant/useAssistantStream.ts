@@ -261,6 +261,8 @@ export const useAssistantStream = ({
           return response;
         }
         bearer = refreshed;
+        // Frees the rejected response's connection before the retry opens another
+        response.body?.cancel().catch(() => undefined);
         return send();
       };
       const fail = async (response: Response): Promise<never> => {
