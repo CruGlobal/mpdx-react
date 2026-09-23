@@ -17,8 +17,10 @@ import {
 import {
   attendeesMock,
   cohortsMock,
+  coordinatorUserMock,
   goalsAdminUserMock,
   noCohortsMock,
+  onlyEmptyCohortsMock,
 } from './mpdGoalAdminMocks';
 
 type Mocks = {
@@ -147,6 +149,23 @@ describe('MpdGoalAdmin', () => {
     const trainingSelect = getByRole('combobox', { name: 'Training' });
     expect(trainingSelect).toBeInTheDocument();
     expect(trainingSelect).toHaveAttribute('aria-disabled', 'true');
+  });
+
+  it("replaces the selector and table when no cohort holds a coordinator's staff", async () => {
+    const { findByText, queryByRole } = renderMain({
+      GetUser: coordinatorUserMock,
+      NewStaffCohorts: onlyEmptyCohortsMock,
+    });
+
+    expect(
+      await findByText(
+        'None of the current training cohorts include staff in your ministry.',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      queryByRole('combobox', { name: 'Training' }),
+    ).not.toBeInTheDocument();
+    expect(queryByRole('table')).not.toBeInTheDocument();
   });
 
   // The tab lives in the URL so Goal Settings can link back to the right one.

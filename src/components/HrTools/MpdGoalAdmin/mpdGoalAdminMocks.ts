@@ -126,6 +126,33 @@ export const noCohortsMock: NewStaffCohortsQuery = {
   },
 };
 
+/** An empty cohort listed first, so a coordinator's default proves it was skipped. */
+export const withEmptyCohortMock: NewStaffCohortsQuery = {
+  newStaffCohorts: {
+    nodes: [
+      {
+        ...cohortsMock.newStaffCohorts.nodes[1],
+        id: 'winter-nso-2026',
+        name: 'Winter NSO 2026',
+        trainingSize: 0,
+      },
+      ...cohortsMock.newStaffCohorts.nodes,
+    ],
+    pageInfo: { endCursor: null, hasNextPage: false },
+  },
+};
+
+/** Cohorts exist, but none holds anyone this coordinator can see. */
+export const onlyEmptyCohortsMock: NewStaffCohortsQuery = {
+  newStaffCohorts: {
+    nodes: cohortsMock.newStaffCohorts.nodes.map((node) => ({
+      ...node,
+      trainingSize: 0,
+    })),
+    pageInfo: { endCursor: null, hasNextPage: false },
+  },
+};
+
 type AttendeeNode =
   NewStaffCohortAttendeesQuery['newStaffCohort']['attendees']['nodes'][number];
 
