@@ -516,7 +516,6 @@ describe('useAssistantStream', () => {
     process.env.ASSISTANT_URL = '';
     const { result } = renderStream();
 
-    expect(result.current.stream.configured).toBe(false);
     await act(() => result.current.stream.sendMessage('Hi'));
 
     expect(fetchSpy).not.toHaveBeenCalled();

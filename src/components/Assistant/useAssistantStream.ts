@@ -168,7 +168,6 @@ export interface UseAssistantStreamResult {
   sendMessage: (content: string) => Promise<void>;
   stop: () => void;
   streaming: boolean;
-  configured: boolean;
   helpOnly: boolean;
   rateLimited: boolean;
 }
@@ -399,7 +398,6 @@ export const useAssistantStream = ({
     sendMessage,
     stop: stopStream,
     streaming,
-    configured: Boolean(assistantUrl),
     helpOnly,
     rateLimited,
   };
