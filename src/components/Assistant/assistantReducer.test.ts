@@ -174,6 +174,22 @@ describe('assistantReducer', () => {
       expect(next).toBe(state);
     });
 
+    it('does not repeat the notice when the transcript holds only system lines', () => {
+      const noticeOnly: AssistantState = {
+        messages: [notice],
+        conversation: null,
+        accountListId: 'account-list-2',
+      };
+
+      const next = assistantReducer(noticeOnly, {
+        type: 'bindAccountList',
+        accountListId: 'account-list-3',
+        notice: { ...notice, id: 'notice-2' },
+      });
+
+      expect(next).toEqual({ ...noticeOnly, accountListId: 'account-list-3' });
+    });
+
     it('starts over with a notice for another account list', () => {
       const next = assistantReducer(state, {
         type: 'bindAccountList',

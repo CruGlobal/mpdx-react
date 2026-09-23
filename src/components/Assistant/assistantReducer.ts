@@ -102,7 +102,8 @@ export const assistantReducer = (
       }
       if (
         state.accountListId === null ||
-        (state.messages.length === 0 && !state.conversation)
+        (!state.conversation &&
+          state.messages.every((message) => message.role === 'system'))
       ) {
         return { ...state, accountListId: action.accountListId };
       }
