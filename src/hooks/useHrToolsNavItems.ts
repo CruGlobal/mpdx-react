@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNewStaffQuestionnaireCompletedQuery } from './NewStaffQuestionnaireCompleted.generated';
+import { useNewStaffQuestionnaireStatusQuery } from './NewStaffQuestionnaireStatus.generated';
 import { useAccountListId } from './useAccountListId';
 import { useDeveloperBypass } from './useDeveloperBypass';
 import { useIneligibleByGroup } from './useIneligibleByGroup';
@@ -20,6 +20,7 @@ export function useHrToolsNavItems(): {
     inNsGoalCalcIneligibleGroup,
     inPdsGoalCalcIneligibleGroup,
     inMpdSupervisorIneligibleGroup,
+    canViewNewStaffCohorts,
     hasNoStaffAccount,
     userLoading,
   } = useIneligibleByGroup();
@@ -27,15 +28,22 @@ export function useHrToolsNavItems(): {
   // Partner Reminders is live in production; every other HR Tool is still disabled
   const { reportsDisabled } = useReportsDisabled();
   const accountListId = useAccountListId();
-  const nsGoalCalcDisabled = process.env.DISABLE_NS_GOAL_CALCULATOR === 'true';
 
-  const { data: questionnaireData } = useNewStaffQuestionnaireCompletedQuery({
+  // Only new staff are ever offered the questionnaire, so nobody else pays for this query.
+  const {
+    data: questionnaireData,
+    loading: questionnaireLoading,
+    error: questionnaireError,
+  } = useNewStaffQuestionnaireStatusQuery({
     variables: { accountListId },
-    skip: nsGoalCalcDisabled || inNsGoalCalcIneligibleGroup,
+    skip: userLoading || inNsGoalCalcIneligibleGroup,
   });
-  // Stays false until the API confirms completion so the menu doesn't jump while loading
-  const questionnaireCompleted =
-    questionnaireData?.newStaffQuestionnaire?.completed === true;
+  const questionnaire = questionnaireData?.newStaffQuestionnaire;
+  const hasQuestionnaireToFillIn = !!questionnaire && !questionnaire.completed;
+  // A failed query must not hide the path to paperwork new staff still owe
+  const hideQuestionnaire = questionnaireError
+    ? false
+    : questionnaireLoading || !hasQuestionnaireToFillIn;
 
   const items = useMemo(() => {
     if (userLoading) {
@@ -57,16 +65,18 @@ export function useHrToolsNavItems(): {
         id: 'nsGoalCalculator',
         title: t('New Staff Goal Calculator'),
         hideItem:
-          reportsDisabled || nsGoalCalcDisabled || inNsGoalCalcIneligibleGroup,
+          reportsDisabled ||
+          process.env.DISABLE_NS_GOAL_CALCULATOR === 'true' ||
+          inNsGoalCalcIneligibleGroup,
       },
       {
         id: 'nsoMpdQuestionnaire',
         title: t('NSO MPD Questionnaire'),
         hideItem:
           reportsDisabled ||
-          nsGoalCalcDisabled ||
+          process.env.DISABLE_NS_GOAL_CALCULATOR === 'true' ||
           inNsGoalCalcIneligibleGroup ||
-          questionnaireCompleted,
+          hideQuestionnaire,
       },
       {
         id: 'goalCalculator',
@@ -79,7 +89,7 @@ export function useHrToolsNavItems(): {
         hideItem:
           reportsDisabled ||
           process.env.DISABLE_MPD_GOAL_ADMIN === 'true' ||
-          inMpdGoalCalcIneligibleGroup,
+          !canViewNewStaffCohorts,
       },
       {
         id: 'mhaCalculator',
@@ -117,12 +127,12 @@ export function useHrToolsNavItems(): {
     inNsGoalCalcIneligibleGroup,
     inPdsGoalCalcIneligibleGroup,
     inMpdSupervisorIneligibleGroup,
+    canViewNewStaffCohorts,
+    hideQuestionnaire,
     userLoading,
     hasNoStaffAccount,
     developerBypass,
     reportsDisabled,
-    nsGoalCalcDisabled,
-    questionnaireCompleted,
   ]);
 
   return { items, loading: userLoading };

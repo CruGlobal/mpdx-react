@@ -10,12 +10,13 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { MpdAssignmentCategoryGroupEnum } from 'src/graphql/types.generated';
 import { useManagedStaffTeamsQuery } from '../ManagedStaffTeams.generated';
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
+import { getLocalizedAssignmentCategoryGroup } from '../helpers';
 import {
   ALL_TEAMS,
   ALL_TYPES,
-  MpdSupervisorReportEmploymentTypeEnum,
   MpdSupervisorReportQuickFilterEnum,
   quickFilterIds,
   quickFilterLabel,
@@ -59,8 +60,9 @@ export const MpdSupervisorReportFilterPanel: React.FC<
   const handleSetEmploymentType = (
     event: React.ChangeEvent<{ value: unknown }>,
   ) => {
+    const value = event.target.value as string;
     setEmploymentType(
-      event.target.value as MpdSupervisorReportEmploymentTypeEnum,
+      value === ALL_TYPES ? null : (value as MpdAssignmentCategoryGroupEnum),
     );
   };
 
@@ -126,18 +128,17 @@ export const MpdSupervisorReportFilterPanel: React.FC<
         <TextField
           select
           fullWidth
-          value={employmentType}
+          value={employmentType ?? ALL_TYPES}
           onChange={handleSetEmploymentType}
           size="small"
           label={t('Employment type')}
         >
           <MenuItem value={ALL_TYPES}>{t('All types')}</MenuItem>
-          <MenuItem value={MpdSupervisorReportEmploymentTypeEnum.FullTime}>
-            {t('Full time')}
-          </MenuItem>
-          <MenuItem value={MpdSupervisorReportEmploymentTypeEnum.PartTime}>
-            {t('Part time')}
-          </MenuItem>
+          {Object.values(MpdAssignmentCategoryGroupEnum).map((group) => (
+            <MenuItem key={group} value={group}>
+              {getLocalizedAssignmentCategoryGroup(t, group)}
+            </MenuItem>
+          ))}
         </TextField>
       </Stack>
     </Box>

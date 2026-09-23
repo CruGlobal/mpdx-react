@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { MpdAssignmentCategoryGroupEnum } from 'src/graphql/types.generated';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
 import { UpdateStaffGeographicLocationMutation } from '../GeographicLocationSelect/UpdateStaffGeographicLocation.generated';
@@ -125,6 +126,32 @@ describe('StaffMemberDrawer', () => {
     openMember(memberWithoutSpouse);
     expect(getByText('Alice Jones')).toBeInTheDocument();
     expect(queryByText(/Spouse:/)).not.toBeInTheDocument();
+  });
+
+  it('renders the mapped employment type', () => {
+    const { getByText } = renderDrawer();
+    openMember(memberWithSpouse);
+    expect(getByText('Employment Type')).toBeInTheDocument();
+    expect(getByText('Full time')).toBeInTheDocument();
+  });
+
+  it('maps a part time assignment category to its own label', () => {
+    const { getByText, queryByText } = renderDrawer();
+    openMember(
+      managedStaffMember({
+        assignmentCategoryGroup: MpdAssignmentCategoryGroupEnum.PartTime,
+      }),
+    );
+    expect(getByText('Part time')).toBeInTheDocument();
+    expect(queryByText('Full time')).not.toBeInTheDocument();
+  });
+
+  it('renders a placeholder when the member has no assignment category', () => {
+    const { getByText, queryByText } = renderDrawer();
+    openMember(managedStaffMember({ assignmentCategoryGroup: null }));
+    expect(queryByText('Full time')).not.toBeInTheDocument();
+    expect(queryByText('Part time')).not.toBeInTheDocument();
+    expect(getByText('—')).toBeInTheDocument();
   });
 
   it('renders the benchmark labels and amounts', () => {

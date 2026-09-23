@@ -1,4 +1,4 @@
-query NewStaffQuestionnaireCompleted($accountListId: ID!) {
+query NewStaffQuestionnaireStatus($accountListId: ID!) {
   newStaffQuestionnaire(accountListId: $accountListId) {
     id
     completed
