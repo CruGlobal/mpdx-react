@@ -29,7 +29,10 @@ describe('NavigationCard', () => {
   let debugSpy: jest.SpyInstance;
 
   beforeEach(() => {
-    mockUseNavigationVisibility.mockReturnValue(DEFAULT_VISIBILITY);
+    mockUseNavigationVisibility.mockReturnValue({
+      visibility: DEFAULT_VISIBILITY,
+      isLoading: false,
+    });
     debugSpy = jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
 
@@ -64,8 +67,8 @@ describe('NavigationCard', () => {
 
   it('shows plain text for an intent the user cannot see', () => {
     mockUseNavigationVisibility.mockReturnValue({
-      ...DEFAULT_VISIBILITY,
-      coaching: false,
+      visibility: { ...DEFAULT_VISIBILITY, coaching: false },
+      isLoading: false,
     });
     const { getByText, queryByRole } = render(
       <TestComponent intent={{ type: 'coaching', params: {} }} />,
@@ -73,6 +76,52 @@ describe('NavigationCard', () => {
 
     expect(getByText('Open it')).toBeInTheDocument();
     expect(queryByRole('link')).not.toBeInTheDocument();
+  });
+
+  it('shows plain text without logging while visibility loads', () => {
+    mockUseNavigationVisibility.mockReturnValue({
+      visibility: { ...DEFAULT_VISIBILITY, coaching: false },
+      isLoading: true,
+    });
+    const intent = { type: 'coaching', params: {} };
+    const { getByText, queryByRole, rerender } = render(
+      <TestComponent intent={intent} />,
+    );
+
+    expect(getByText('Open it')).toBeInTheDocument();
+    expect(queryByRole('link')).not.toBeInTheDocument();
+    expect(debugSpy).not.toHaveBeenCalled();
+
+    mockUseNavigationVisibility.mockReturnValue({
+      visibility: DEFAULT_VISIBILITY,
+      isLoading: false,
+    });
+    rerender(<TestComponent intent={intent} />);
+
+    expect(getByText('Open it').closest('a')).toHaveAttribute(
+      'href',
+      '/accountLists/account-list-1/coaching',
+    );
+  });
+
+  it('logs a hidden intent once loading finishes', () => {
+    mockUseNavigationVisibility.mockReturnValue({
+      visibility: { ...DEFAULT_VISIBILITY, coaching: false },
+      isLoading: true,
+    });
+    const intent = { type: 'coaching', params: {} };
+    const { rerender } = render(<TestComponent intent={intent} />);
+
+    mockUseNavigationVisibility.mockReturnValue({
+      visibility: { ...DEFAULT_VISIBILITY, coaching: false },
+      isLoading: false,
+    });
+    rerender(<TestComponent intent={intent} />);
+
+    expect(debugSpy).toHaveBeenCalledTimes(1);
+    expect(debugSpy).toHaveBeenCalledWith(
+      'Assistant navigation intent dropped type=coaching reason=coaching hidden',
+    );
   });
 
   it('shows plain text outside an account list', () => {

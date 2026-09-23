@@ -66,12 +66,32 @@ describe('useNavigationVisibility', () => {
 
     await waitFor(() =>
       expect(result.current).toEqual({
-        hr_tools: true,
-        coaching: true,
-        reports: true,
-        staff_features: true,
+        visibility: {
+          hr_tools: true,
+          coaching: true,
+          reports: true,
+          staff_features: true,
+        },
+        isLoading: false,
       }),
     );
+  });
+
+  it('reports loading and hides the gated links until the data arrives', async () => {
+    const { result } = renderHook(() => useNavigationVisibility(), {
+      wrapper: makeWrapper(staffUser, 2),
+    });
+
+    expect(result.current).toEqual({
+      visibility: {
+        hr_tools: false,
+        coaching: false,
+        reports: true,
+        staff_features: false,
+      },
+      isLoading: true,
+    });
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
   });
 
   it('hides HR Tools, coaching, and staff reports from a non-Cru user who coaches no one', async () => {
@@ -81,10 +101,13 @@ describe('useNavigationVisibility', () => {
 
     await waitFor(() =>
       expect(result.current).toEqual({
-        hr_tools: false,
-        coaching: false,
-        reports: true,
-        staff_features: false,
+        visibility: {
+          hr_tools: false,
+          coaching: false,
+          reports: true,
+          staff_features: false,
+        },
+        isLoading: false,
       }),
     );
   });
@@ -97,10 +120,13 @@ describe('useNavigationVisibility', () => {
 
     await waitFor(() =>
       expect(result.current).toEqual({
-        hr_tools: true,
-        coaching: true,
-        reports: true,
-        staff_features: false,
+        visibility: {
+          hr_tools: true,
+          coaching: true,
+          reports: true,
+          staff_features: false,
+        },
+        isLoading: false,
       }),
     );
   });

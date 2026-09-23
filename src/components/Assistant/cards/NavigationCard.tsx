@@ -18,10 +18,14 @@ const NavigationLabel: React.FC<{ label: string }> = ({ label }) => (
 const NavigationLink: React.FC<
   NavigationCardProps & { accountListId: string }
 > = ({ card, accountListId }) => {
-  const visibility = useNavigationVisibility();
+  const { visibility, isLoading } = useNavigationVisibility();
+  // Building while loading would log a drop for a link that may appear once the data arrives
   const href = useMemo(
-    () => buildNavigationHref(card.intent, accountListId, visibility),
-    [card.intent, accountListId, visibility],
+    () =>
+      isLoading
+        ? null
+        : buildNavigationHref(card.intent, accountListId, visibility),
+    [card.intent, accountListId, visibility, isLoading],
   );
 
   if (!href) {
