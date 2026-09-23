@@ -4,7 +4,12 @@ import { useOptionalAccountListId } from 'src/hooks/useAccountListId';
 import { useAssistantContext } from './AssistantProvider';
 import { AssistantAction } from './assistantReducer';
 import { readAssistantEvents } from './sse';
-import { AssistantEvent, AssistantMessage } from './types';
+import {
+  AssistantCard,
+  AssistantCitation,
+  AssistantEvent,
+  AssistantMessage,
+} from './types';
 import { useAssistantToken } from './useAssistantToken';
 
 let nextMessageId = 0;
@@ -23,21 +28,75 @@ const createMessage = (
   working: false,
 });
 
+const isObject = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+const isString = (value: unknown): value is string => typeof value === 'string';
+
+const isCard = (card: unknown): card is AssistantCard => {
+  if (!isObject(card)) {
+    return false;
+  }
+  switch (card.kind) {
+    case 'navigation':
+      return (
+        isObject(card.intent) &&
+        isString(card.intent.type) &&
+        isObject(card.intent.params) &&
+        isString(card.label)
+      );
+    case 'handoff':
+      return (
+        isString(card.summary) &&
+        isObject(card.contact_form) &&
+        isString(card.contact_form.name) &&
+        isString(card.contact_form.email) &&
+        isString(card.contact_form.url)
+      );
+    case 'figures':
+      return Array.isArray(card.items);
+    case 'contact':
+      return card.contact_id !== undefined && card.contact_id !== null;
+    case 'proposed_action':
+      return isObject(card.action);
+    default:
+      return false;
+  }
+};
+
+const toCitations = (citations: unknown): AssistantCitation[] =>
+  Array.isArray(citations) &&
+  citations.every(
+    (citation) =>
+      isObject(citation) && isString(citation.title) && isString(citation.url),
+  )
+    ? citations
+    : [];
+
+// Returns undefined for a known event whose shape is wrong, and null for events that change nothing
 const toAction = (
   id: string,
   event: AssistantEvent,
-): AssistantAction | null => {
+): AssistantAction | null | undefined => {
   switch (event.type) {
     case 'chunk':
-      return { type: 'appendChunk', id, delta: event.delta };
+      return isString(event.delta)
+        ? { type: 'appendChunk', id, delta: event.delta }
+        : undefined;
     case 'card':
-      return { type: 'addCard', id, card: event.card };
+      return isCard(event.card)
+        ? { type: 'addCard', id, card: event.card }
+        : undefined;
     case 'tool_start':
       return { type: 'setWorking', id, working: true };
     case 'tool_end':
       return { type: 'setWorking', id, working: false };
     case 'generation_complete':
-      return { type: 'completeMessage', id, citations: event.citations ?? [] };
+      return {
+        type: 'completeMessage',
+        id,
+        citations: toCitations(event.citations),
+      };
     case 'generation_error':
       return { type: 'failMessage', id };
     default:
@@ -131,6 +190,7 @@ export const useAssistantStream = (): UseAssistantStreamResult => {
         }
 
         let finished = false;
+        let loggedMalformed = false;
         for await (const event of readAssistantEvents(response.body)) {
           if (controller.signal.aborted) {
             break;
@@ -138,6 +198,10 @@ export const useAssistantStream = (): UseAssistantStreamResult => {
           const action = toAction(reply.id, event);
           if (action) {
             dispatch(action);
+          } else if (action === undefined && !loggedMalformed) {
+            loggedMalformed = true;
+            // eslint-disable-next-line no-console
+            console.debug('Dropped a malformed assistant event', event.type);
           }
           if (
             event.type === 'generation_complete' ||

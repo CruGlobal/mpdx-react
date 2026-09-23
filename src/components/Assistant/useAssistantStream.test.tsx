@@ -333,6 +333,91 @@ describe('useAssistantStream', () => {
     });
   });
 
+  describe('malformed events', () => {
+    let debugSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      debugSpy = jest.spyOn(console, 'debug').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      debugSpy.mockRestore();
+    });
+
+    const streamRaw = async (events: unknown[]) => {
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(
+          mockStreamResponse(
+            events.map((event) => `data: ${JSON.stringify(event)}\n\n`),
+          ),
+        );
+      const { result } = renderStream();
+      await act(() => result.current.stream.sendMessage('Hi'));
+      return result.current.context.messages[1];
+    };
+
+    it('drops a chunk without a string delta', async () => {
+      const reply = await streamRaw([
+        { type: 'chunk', message_id: 'm1' },
+        { type: 'chunk', message_id: 'm1', delta: 42 },
+        { type: 'generation_complete', message_id: 'm1' },
+      ]);
+
+      expect(reply).toMatchObject({ content: '', status: 'complete' });
+      expect(debugSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('drops a handoff card without a contact form', async () => {
+      const reply = await streamRaw([
+        {
+          type: 'card',
+          message_id: 'm1',
+          card: { kind: 'handoff', summary: 'Talk to support' },
+        },
+        { type: 'card', message_id: 'm1', card },
+        { type: 'generation_complete', message_id: 'm1' },
+      ]);
+
+      expect(reply.cards).toEqual([card]);
+      expect(reply.status).toBe('complete');
+    });
+
+    it.each([
+      { kind: 'navigation', intent: { type: 'contacts' }, label: 'Open' },
+      { kind: 'navigation', intent: { type: 'contacts', params: {} } },
+      {
+        kind: 'handoff',
+        summary: 'Talk',
+        contact_form: { name: 'A', email: 'a@b.c' },
+      },
+      { kind: 'figures', items: 'many' },
+      { kind: 'contact' },
+      { kind: 'proposed_action' },
+      { kind: 'mystery' },
+      null,
+    ])('drops a malformed card %p', async (badCard) => {
+      const reply = await streamRaw([
+        { type: 'card', message_id: 'm1', card: badCard },
+        { type: 'generation_complete', message_id: 'm1' },
+      ]);
+
+      expect(reply.cards).toEqual([]);
+    });
+
+    it.each(['not an array', [{ title: 'Missing url' }], [null]])(
+      'defaults malformed citations %p to none',
+      async (citations) => {
+        const reply = await streamRaw([
+          { type: 'chunk', message_id: 'm1', delta: 'Done' },
+          { type: 'generation_complete', message_id: 'm1', citations },
+        ]);
+
+        expect(reply).toMatchObject({ citations: [], status: 'complete' });
+      },
+    );
+  });
+
   it('does nothing when the assistant is not configured', async () => {
     process.env.ASSISTANT_URL = '';
     const { result } = renderStream();
