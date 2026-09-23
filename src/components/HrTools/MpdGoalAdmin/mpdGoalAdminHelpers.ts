@@ -15,6 +15,9 @@ import {
 
 export const DEFAULT_ROWS_PER_PAGE = 5;
 
+/** Matches the debounce the contacts search uses, so typing isn't a query per keystroke. */
+export const searchDebounceMs = 500;
+
 export enum MpdGoalAdminTabEnum {
   ActiveGoals = 'active-goals',
   ScenarioGoals = 'scenario-goals',

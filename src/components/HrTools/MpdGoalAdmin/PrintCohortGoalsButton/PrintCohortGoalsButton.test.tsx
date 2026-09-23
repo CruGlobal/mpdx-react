@@ -7,17 +7,14 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import {
-  MpdGoalAdminProvider,
-  searchDebounceMs,
-  useMpdGoalAdmin,
-} from '../MpdGoalAdminContext';
+import { MpdGoalAdminProvider, useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import {
   NewStaffCohortAttendeesQuery,
   NewStaffCohortsQuery,
   PrintNewStaffCohortGoalsMutation,
   UpdateNewStaffCohortMutation,
 } from '../NewStaffCohorts.generated';
+import { searchDebounceMs } from '../mpdGoalAdminHelpers';
 import {
   attendeesMock,
   cohortsMock,
