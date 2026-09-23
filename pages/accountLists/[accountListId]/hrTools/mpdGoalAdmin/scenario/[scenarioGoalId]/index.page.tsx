@@ -32,7 +32,9 @@ export const NsScenarioGoalPage: React.FC = () => {
         <title>{`${appName} | ${t('New Staff Goal Calculator')}`}</title>
       </Head>
       {scenarioGoalId ? (
-        <UserTypeAccess requireUserGroups={RequiredUserGroupEnum.MpdGoalCalc}>
+        <UserTypeAccess
+          requireUserGroups={RequiredUserGroupEnum.NewStaffCohorts}
+        >
           <GoalSettingsView
             scenarioGoalId={scenarioGoalId}
             returnUrl={mpdGoalAdminUrl(

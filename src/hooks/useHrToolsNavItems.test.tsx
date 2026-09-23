@@ -1,9 +1,13 @@
 import { ReactElement } from 'react';
+import { waitFor } from '@testing-library/dom';
 import { renderHook } from '@testing-library/react-hooks';
+import { DeepPartial } from 'ts-essentials';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { mockSession } from '__tests__/util/mockSession';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
+import { NewStaffQuestionnaireStatusQuery } from './NewStaffQuestionnaireStatus.generated';
 import { UserOptionQuery } from './UserPreference.generated';
 import { useHrToolsNavItems } from './useHrToolsNavItems';
 
@@ -13,6 +17,7 @@ const ineligibleUser = {
   usStaffGroup: UsStaffGroupEnum.PartTimeFieldStaff,
   spouseUsStaffGroup: UsStaffGroupEnum.PartTimeFieldStaff,
   staffAccountId: null,
+  canViewNewStaffCohorts: false,
 };
 
 // A Senior Staff user with a staff account, eligible for the MPD Goal tools
@@ -21,42 +26,49 @@ const mpdGoalEligibleUser = {
   usStaffGroup: UsStaffGroupEnum.SeniorStaff,
   spouseUsStaffGroup: UsStaffGroupEnum.SeniorStaff,
   staffAccountId: 'staff-account-1',
+  canViewNewStaffCohorts: true,
 };
 
-const Wrapper = ({ children }: { children: ReactElement }) => (
-  <GqlMockedProvider<{ GetUser: GetUserQuery }>
-    mocks={{ GetUser: { user: ineligibleUser } }}
-  >
-    {children}
-  </GqlMockedProvider>
-);
+// A New Staff user, the only group offered the NSO MPD Questionnaire
+const newStaffUser = {
+  userType: UserTypeEnum.UsStaff,
+  usStaffGroup: UsStaffGroupEnum.NewStaff,
+  spouseUsStaffGroup: UsStaffGroupEnum.NewStaff,
+  staffAccountId: 'staff-account-1',
+  canViewNewStaffCohorts: false,
+};
 
-const MpdGoalEligibleWrapper = ({ children }: { children: ReactElement }) => (
-  <GqlMockedProvider<{ GetUser: GetUserQuery; UserOption: UserOptionQuery }>
-    mocks={{
-      GetUser: { user: mpdGoalEligibleUser },
-      UserOption: { userOption: { key: 'user_type_verified', value: 'true' } },
-    }}
-  >
-    {children}
-  </GqlMockedProvider>
-);
+type Mocks = {
+  GetUser: GetUserQuery;
+  UserOption: UserOptionQuery;
+  NewStaffQuestionnaireStatus: NewStaffQuestionnaireStatusQuery;
+};
+
+const verifiedUserOption = {
+  userOption: { key: 'user_type_verified', value: 'true' },
+};
+
+const makeWrapper = (mocks: DeepPartial<Mocks>) => {
+  const MocksWrapper = ({ children }: { children: ReactElement }) => (
+    <TestRouter>
+      <GqlMockedProvider<Mocks> mocks={mocks}>{children}</GqlMockedProvider>
+    </TestRouter>
+  );
+  return MocksWrapper;
+};
+
+const Wrapper = makeWrapper({ GetUser: { user: ineligibleUser } });
+
+const MpdGoalEligibleWrapper = makeWrapper({
+  GetUser: { user: mpdGoalEligibleUser },
+  UserOption: verifiedUserOption,
+});
 
 // A user who supervises staff, eligible for the MPD Supervisor Report
-const SupervisorEligibleWrapper = ({
-  children,
-}: {
-  children: ReactElement;
-}) => (
-  <GqlMockedProvider<{ GetUser: GetUserQuery; UserOption: UserOptionQuery }>
-    mocks={{
-      GetUser: { user: { ...mpdGoalEligibleUser, supervisesStaff: true } },
-      UserOption: { userOption: { key: 'user_type_verified', value: 'true' } },
-    }}
-  >
-    {children}
-  </GqlMockedProvider>
-);
+const SupervisorEligibleWrapper = makeWrapper({
+  GetUser: { user: { ...mpdGoalEligibleUser, supervisesStaff: true } },
+  UserOption: verifiedUserOption,
+});
 
 describe('useHrToolsNavItems', () => {
   afterEach(() => {
@@ -236,6 +248,116 @@ describe('useHrToolsNavItems', () => {
 
       expect(await renderItemIds(SupervisorEligibleWrapper)).not.toContain(
         'mpdSupervisorReport',
+      );
+    });
+  });
+
+  describe('mpdGoalAdmin', () => {
+    const renderWithUser = (user: typeof mpdGoalEligibleUser) =>
+      renderHook(() => useHrToolsNavItems(), {
+        wrapper: makeWrapper({
+          GetUser: { user },
+          UserOption: verifiedUserOption,
+        }),
+      });
+
+    beforeEach(() => {
+      mockSession({ developer: false });
+    });
+
+    it('is hidden from a Senior Staff user without goals-team or coordinator access', async () => {
+      const { result, waitForNextUpdate } = renderWithUser({
+        ...mpdGoalEligibleUser,
+        canViewNewStaffCohorts: false,
+      });
+      await waitForNextUpdate();
+
+      const ids = result.current.items.map((item) => item.id);
+      expect(ids).not.toContain('mpdGoalAdmin');
+      // The tools that really are group-gated are untouched
+      expect(ids).toContain('goalCalculator');
+    });
+
+    it('is shown to a coordinator whose own group is ineligible for the MPD Goal tools', async () => {
+      const { result, waitForNextUpdate } = renderWithUser({
+        ...newStaffUser,
+        canViewNewStaffCohorts: true,
+      });
+      await waitForNextUpdate();
+
+      const ids = result.current.items.map((item) => item.id);
+      expect(ids).toContain('mpdGoalAdmin');
+      expect(ids).not.toContain('goalCalculator');
+    });
+  });
+
+  describe('nsoMpdQuestionnaire', () => {
+    const renderWithQuestionnaire = (
+      newStaffQuestionnaire: NewStaffQuestionnaireStatusQuery['newStaffQuestionnaire'],
+    ) =>
+      renderHook(() => useHrToolsNavItems(), {
+        wrapper: makeWrapper({
+          GetUser: { user: newStaffUser },
+          UserOption: verifiedUserOption,
+          NewStaffQuestionnaireStatus: { newStaffQuestionnaire },
+        }),
+      });
+
+    beforeEach(() => {
+      mockSession({ developer: false });
+    });
+
+    it('is shown to new staff who still have one to fill in', async () => {
+      const { result, waitForNextUpdate } = renderWithQuestionnaire({
+        id: 'questionnaire-1',
+        completed: false,
+      });
+      await waitForNextUpdate();
+
+      expect(result.current.items.map((item) => item.id)).toContain(
+        'nsoMpdQuestionnaire',
+      );
+    });
+
+    it('is hidden once new staff have completed it', async () => {
+      const { result, waitForNextUpdate } = renderWithQuestionnaire({
+        id: 'questionnaire-1',
+        completed: true,
+      });
+      await waitForNextUpdate();
+
+      const ids = result.current.items.map((item) => item.id);
+      expect(ids).not.toContain('nsoMpdQuestionnaire');
+      // The sibling New Staff tool, gated only by group, stays visible
+      expect(ids).toContain('nsGoalCalculator');
+    });
+
+    it('is hidden when new staff have no questionnaire at all', async () => {
+      const { result, waitForNextUpdate } = renderWithQuestionnaire(null);
+      await waitForNextUpdate();
+
+      expect(result.current.items.map((item) => item.id)).not.toContain(
+        'nsoMpdQuestionnaire',
+      );
+    });
+
+    it('stays visible for new staff when the status query fails', async () => {
+      const { result } = renderHook(() => useHrToolsNavItems(), {
+        wrapper: makeWrapper({
+          GetUser: { user: newStaffUser },
+          UserOption: verifiedUserOption,
+          NewStaffQuestionnaireStatus: {
+            newStaffQuestionnaire: () => {
+              throw new Error('Not authorized');
+            },
+          },
+        } as unknown as DeepPartial<Mocks>),
+      });
+
+      await waitFor(() =>
+        expect(result.current.items.map((item) => item.id)).toContain(
+          'nsoMpdQuestionnaire',
+        ),
       );
     });
   });

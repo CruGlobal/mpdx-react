@@ -62,7 +62,9 @@ export const MpdGoalAdminPage: React.FC = () => {
         )}`}</title>
       </Head>
       {accountListId ? (
-        <UserTypeAccess requireUserGroups={RequiredUserGroupEnum.MpdGoalCalc}>
+        <UserTypeAccess
+          requireUserGroups={RequiredUserGroupEnum.NewStaffCohorts}
+        >
           <ReportPageWrapper>
             <MpdGoalAdminProvider>
               <MpdGoalAdminContent />

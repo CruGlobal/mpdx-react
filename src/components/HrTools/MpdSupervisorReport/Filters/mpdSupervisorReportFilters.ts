@@ -52,5 +52,4 @@ export const quickFilterDescription = (
   }
 };
 
-export const ALL_TEAMS = 'all';
 export const ALL_TYPES = 'all';
