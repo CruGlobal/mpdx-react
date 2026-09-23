@@ -1,6 +1,5 @@
 import React from 'react';
 import CloseIcon from '@mui/icons-material/Close';
-import ErrorOutline from '@mui/icons-material/ErrorOutline';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import {
   Alert,
@@ -35,9 +34,11 @@ import {
 import { StaffDetailTabEnum } from '../StaffDetailsTabs/StaffDetailTab';
 import { preloadStaffExpenseReport } from '../StaffDetailsTabs/StaffExpenseReport/DynamicStaffExpenseReport';
 import { StaffTabStaffExpenseReport } from '../StaffDetailsTabs/StaffExpenseReport/StaffExpenseReport';
+import { GrossSalaryMarker } from '../StaffMemberRow/GrossSalaryMarker';
 import {
   getInitials,
   getLocalizedAssignmentCategoryGroup,
+  grossSalaryWarning,
   pendingField,
 } from '../helpers';
 
@@ -146,22 +147,7 @@ export const StaffMemberDrawer: React.FC = () => {
   const monthlyGrossSalary = quarterlyHealth?.monthlyGrossSalary ?? null;
   const missingBenchmark =
     monthlyGrossSalary === null || newStaffMonthlySalary === null;
-  // Even a fully paid salary cannot reach the New Staff benchmark (MPDX-10069)
-  const grossWarning =
-    typeof monthlyGrossSalary === 'number' &&
-    typeof newStaffMonthlySalary === 'number' &&
-    monthlyGrossSalary < newStaffMonthlySalary
-      ? t(
-          "Monthly Gross Salary ({{gross}}) is {{shortfall}} below the New Staff Monthly Salary ({{newStaff}}). Even at full salary, this staff member's payroll cannot reach the New Staff benchmark.",
-          {
-            gross: formatCurrency(monthlyGrossSalary),
-            newStaff: formatCurrency(newStaffMonthlySalary),
-            shortfall: formatCurrency(
-              newStaffMonthlySalary - monthlyGrossSalary,
-            ),
-          },
-        )
-      : null;
+  const grossWarning = grossSalaryWarning(t, formatCurrency, selectedMember);
 
   return (
     <Box
@@ -248,17 +234,7 @@ export const StaffMemberDrawer: React.FC = () => {
               label={t('Monthly Gross Salary')}
               valueColor={grossWarning ? 'error.main' : undefined}
               valueAdornment={
-                grossWarning && (
-                  <Tooltip title={grossWarning}>
-                    <ErrorOutline
-                      fontSize="small"
-                      color="error"
-                      tabIndex={0}
-                      titleAccess={grossWarning}
-                      aria-label={grossWarning}
-                    />
-                  </Tooltip>
-                )
+                grossWarning && <GrossSalaryMarker warning={grossWarning} />
               }
               value={
                 monthlyGrossSalary !== null

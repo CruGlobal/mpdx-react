@@ -22,10 +22,12 @@ import {
   getInitials,
   getLocalizedAssignmentCategoryGroup,
   getQuarterLabel,
+  grossSalaryWarning,
   healthLabel,
   pendingField,
   quarterAmountLabel,
 } from '../helpers';
+import { GrossSalaryMarker } from './GrossSalaryMarker';
 import { QuarterChip } from './QuarterChip';
 
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -58,6 +60,7 @@ interface StaffMemberProps {
 
 export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
   const { t } = useTranslation();
+  const { formatCurrency } = useFormatters();
   const {
     firstName: name,
     lastName,
@@ -65,6 +68,7 @@ export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
     teams,
     assignmentCategoryGroup,
   } = data;
+  const grossWarning = grossSalaryWarning(t, formatCurrency, data);
 
   const names = useMemo(() => {
     if (!name || !lastName) {
@@ -118,6 +122,7 @@ export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
                     assignmentCategoryGroup,
                   )}
                   team={team}
+                  grossWarning={grossWarning}
                 />
               </Box>
             </Box>
@@ -182,17 +187,25 @@ interface StaffInfoProps {
   staffAccountID: string;
   userPersonType: string;
   team: string;
+  /** Set when Monthly Gross Salary is below New Staff Monthly Salary */
+  grossWarning: string | null;
 }
 const StaffInfoBase: React.FC<StaffInfoProps> = ({
   names,
   staffAccountID,
   userPersonType,
   team,
+  grossWarning,
 }) => {
   return (
     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-        <Typography variant="h6">{names}</Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography variant="h6">{names}</Typography>
+          {grossWarning && (
+            <GrossSalaryMarker warning={grossWarning} focusable={false} />
+          )}
+        </Box>
         <Typography
           variant="body2"
           sx={{ color: 'text.secondary' }}

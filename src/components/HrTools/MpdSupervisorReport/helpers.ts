@@ -14,6 +14,32 @@ export type ManagedStaffMember =
 export const pendingField = '—';
 
 /**
+ * The MPDX-10069 warning for a staff member whose Monthly Gross Salary is
+ * below their New Staff Monthly Salary, or null when it is not (or a benchmark
+ * is missing). Shared by the staff row and the drawer so both say the same.
+ */
+export const grossSalaryWarning = (
+  t: TFunction,
+  formatCurrency: (amount: number) => string,
+  member: Pick<ManagedStaffMember, 'newStaffMonthlySalary' | 'quarterlyHealth'>,
+): string | null => {
+  const gross = member.quarterlyHealth?.monthlyGrossSalary ?? null;
+  const newStaff = member.newStaffMonthlySalary ?? null;
+  if (gross === null || newStaff === null || gross >= newStaff) {
+    return null;
+  }
+  // Even a fully paid salary cannot reach the New Staff benchmark
+  return t(
+    "Monthly Gross Salary ({{gross}}) is {{shortfall}} below the New Staff Monthly Salary ({{newStaff}}). Even at full salary, this staff member's payroll cannot reach the New Staff benchmark.",
+    {
+      gross: formatCurrency(gross),
+      newStaff: formatCurrency(newStaff),
+      shortfall: formatCurrency(newStaff - gross),
+    },
+  );
+};
+
+/**
  * Build avatar initials from a person's first and last name.
  * Returns the uppercased first letter of each (e.g. "Jane Doe" -> "JD").
  */
