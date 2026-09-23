@@ -15,7 +15,7 @@ import {
   Transfers,
   mockData,
 } from '../mockData';
-import { TransfersTable } from './TransfersTable';
+import { CreateTransferRows, TransfersTable } from './TransfersTable';
 
 const mutationSpy = jest.fn();
 const handleOpenMock = jest.fn();
@@ -369,6 +369,17 @@ describe('TransferHistoryTable', () => {
 
       expect(await findByText('Oct 15, 2019')).toBeInTheDocument();
       expect(nextPaymentCell(container)).toBe('');
+    });
+  });
+
+  describe('CreateTransferRows', () => {
+    it('carries the truncated-history flag through to the row the failed modal reads', () => {
+      const row = CreateTransferRows({
+        ...mockHistory[0],
+        historyTruncated: true,
+      });
+
+      expect(row.historyTruncated).toBe(true);
     });
   });
 });

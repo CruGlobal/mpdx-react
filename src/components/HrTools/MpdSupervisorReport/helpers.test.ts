@@ -1,6 +1,7 @@
 import { TFunction } from 'i18next';
 import {
   CompletedQuarterPayroll,
+  MpdAssignmentCategoryGroupEnum,
   MpdHealthStatusEnum,
   StartingQuarterPayroll,
 } from 'src/graphql/types.generated';
@@ -8,9 +9,11 @@ import theme from 'src/theme';
 import {
   buildQuarterChips,
   getInitials,
+  getLocalizedAssignmentCategoryGroup,
   getQuarterLabel,
   healthColor,
   healthLabel,
+  pendingField,
   quarterAmountLabel,
 } from './helpers';
 
@@ -87,6 +90,24 @@ describe('healthLabel', () => {
     [MpdHealthStatusEnum.Gray, 'no data'],
   ])('maps %s to "%s"', (health, expected) => {
     expect(healthLabel(t, health)).toBe(expected);
+  });
+});
+
+describe('getLocalizedAssignmentCategoryGroup', () => {
+  it.each([
+    [MpdAssignmentCategoryGroupEnum.FullTime, 'Full time'],
+    [MpdAssignmentCategoryGroupEnum.PartTime, 'Part time'],
+  ])('maps %s to "%s"', (group, expected) => {
+    expect(getLocalizedAssignmentCategoryGroup(t, group)).toBe(expected);
+  });
+
+  it('falls back to the placeholder for a group the client enum does not know', () => {
+    expect(
+      getLocalizedAssignmentCategoryGroup(
+        t,
+        'ON_CALL' as MpdAssignmentCategoryGroupEnum,
+      ),
+    ).toBe(pendingField);
   });
 });
 

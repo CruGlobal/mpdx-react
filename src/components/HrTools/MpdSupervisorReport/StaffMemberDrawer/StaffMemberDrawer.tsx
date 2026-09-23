@@ -24,7 +24,11 @@ import {
 import { StaffDetailTabEnum } from '../StaffDetailsTabs/StaffDetailTab';
 import { preloadStaffExpenseReport } from '../StaffDetailsTabs/StaffExpenseReport/DynamicStaffExpenseReport';
 import { StaffTabStaffExpenseReport } from '../StaffDetailsTabs/StaffExpenseReport/StaffExpenseReport';
-import { getInitials, pendingField } from '../helpers';
+import {
+  getInitials,
+  getLocalizedAssignmentCategoryGroup,
+  pendingField,
+} from '../helpers';
 
 interface DetailRowProps {
   label: string;
@@ -103,6 +107,7 @@ export const StaffMemberDrawer: React.FC = () => {
     teams,
     newStaffMonthlySalary,
     quarterlyHealth,
+    assignmentCategoryGroup,
   } = selectedMember;
   const initials = getInitials(firstName, lastName);
   const fullName = `${firstName} ${lastName}`;
@@ -137,7 +142,13 @@ export const StaffMemberDrawer: React.FC = () => {
       <StaffInfo>
         <DetailRow label={t('Person Number')} value={personNumber} />
         <DetailRow label={t('Staff Account Number')} value={staffAccountId} />
-        <DetailRow label={t('Employment Type')} value={pendingField} />
+        <DetailRow
+          label={t('Employment Type')}
+          value={getLocalizedAssignmentCategoryGroup(
+            t,
+            assignmentCategoryGroup,
+          )}
+        />
         <DetailRow label={t('Team')} value={team} />
       </StaffInfo>
 
@@ -260,7 +271,10 @@ export const StaffMemberDrawer: React.FC = () => {
           <DynamicPayroll staffAccountId={staffAccountId} />
         </TabPanel>
         <TabPanel value={StaffDetailTabEnum.MPGAReport}>
-          <DynamicMPGA staffAccountId={staffAccountId} />
+          <DynamicMPGA
+            staffAccountId={staffAccountId}
+            personNumber={personNumber}
+          />
         </TabPanel>
         <TabPanel value={StaffDetailTabEnum.StaffExpenseReport}>
           <StaffTabStaffExpenseReport

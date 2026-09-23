@@ -4,6 +4,7 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { MpdAssignmentCategoryGroupEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { ManagedStaffTeamsQuery } from '../ManagedStaffTeams.generated';
 import {
@@ -12,10 +13,7 @@ import {
 } from '../MpdSupervisorReportContext';
 import { managedStaffTeamsMock } from '../mpdSupervisorReportMocks';
 import { MpdSupervisorReportFilterPanel } from './MpdSupervisorReportFilterPanel';
-import {
-  ALL_TEAMS,
-  MpdSupervisorReportEmploymentTypeEnum,
-} from './mpdSupervisorReportFilters';
+import { ALL_TEAMS } from './mpdSupervisorReportFilters';
 
 const onClose = jest.fn();
 
@@ -131,9 +129,7 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
   it('starts with default filter values in context', () => {
     const { getByTestId } = renderWithConsumer();
     expect(getByTestId('team').textContent).toBe(ALL_TEAMS);
-    expect(getByTestId('employmentType').textContent).toBe(
-      MpdSupervisorReportEmploymentTypeEnum.All,
-    );
+    expect(getByTestId('employmentType').textContent).toBe('');
     expect(getByTestId('activeQuickFilter').textContent).toBe('allPeople');
   });
 
@@ -208,17 +204,36 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
     });
   });
 
+  it('shows All types while no employment type is chosen', () => {
+    const { getByLabelText } = renderWithConsumer();
+    expect(getByLabelText('Employment type')).toHaveTextContent('All types');
+  });
+
   it('selecting an Employment type option updates employmentType in context', async () => {
     const { getByLabelText, getByRole, getByTestId } = renderWithConsumer();
-    expect(getByTestId('employmentType').textContent).toBe(
-      MpdSupervisorReportEmploymentTypeEnum.All,
-    );
+    expect(getByTestId('employmentType').textContent).toBe('');
 
     userEvent.click(getByLabelText('Employment type'));
     userEvent.click(getByRole('option', { name: 'Part time' }));
 
     expect(getByTestId('employmentType').textContent).toBe(
-      MpdSupervisorReportEmploymentTypeEnum.PartTime,
+      MpdAssignmentCategoryGroupEnum.PartTime,
     );
+  });
+
+  it('selecting All types clears employmentType in context', async () => {
+    const { getByLabelText, getByRole, getByTestId } = renderWithConsumer();
+    const select = getByLabelText('Employment type');
+
+    userEvent.click(select);
+    userEvent.click(getByRole('option', { name: 'Part time' }));
+    expect(getByTestId('employmentType').textContent).toBe(
+      MpdAssignmentCategoryGroupEnum.PartTime,
+    );
+
+    userEvent.click(select);
+    userEvent.click(getByRole('option', { name: 'All types' }));
+
+    expect(getByTestId('employmentType').textContent).toBe('');
   });
 });

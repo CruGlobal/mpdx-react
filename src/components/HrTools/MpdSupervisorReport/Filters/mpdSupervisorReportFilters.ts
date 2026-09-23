@@ -29,11 +29,5 @@ export const quickFilterLabel = (
   }
 };
 
-export enum MpdSupervisorReportEmploymentTypeEnum {
-  All = 'all',
-  FullTime = 'Full time',
-  PartTime = 'Part time',
-}
-
 export const ALL_TEAMS = 'all';
-export const ALL_TYPES = MpdSupervisorReportEmploymentTypeEnum.All;
+export const ALL_TYPES = 'all';
