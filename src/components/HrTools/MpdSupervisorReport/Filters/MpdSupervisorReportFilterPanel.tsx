@@ -7,6 +7,7 @@ import {
   MenuItem,
   Stack,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
@@ -18,6 +19,7 @@ import {
   ALL_TEAMS,
   ALL_TYPES,
   MpdSupervisorReportQuickFilterEnum,
+  quickFilterDescription,
   quickFilterIds,
   quickFilterLabel,
 } from './mpdSupervisorReportFilters';
@@ -89,22 +91,33 @@ export const MpdSupervisorReportFilterPanel: React.FC<
 
       <Stack spacing={2} sx={{ p: 2 }}>
         <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
-          {quickFilterIds.map((filterId) => (
-            <Chip
-              key={filterId}
-              label={quickFilterLabel(t, filterId)}
-              variant={activeQuickFilter === filterId ? 'filled' : 'outlined'}
-              sx={{
-                backgroundColor:
-                  activeQuickFilter === filterId ? 'primary.main' : 'default',
-                color:
-                  activeQuickFilter === filterId
-                    ? 'primary.contrastText'
-                    : 'default',
-              }}
-              onClick={() => handleQuickFilter(filterId)}
-            />
-          ))}
+          {quickFilterIds.map((filterId) => {
+            const chip = (
+              <Chip
+                key={filterId}
+                label={quickFilterLabel(t, filterId)}
+                variant={activeQuickFilter === filterId ? 'filled' : 'outlined'}
+                sx={{
+                  backgroundColor:
+                    activeQuickFilter === filterId ? 'primary.main' : 'default',
+                  color:
+                    activeQuickFilter === filterId
+                      ? 'primary.contrastText'
+                      : 'default',
+                }}
+                onClick={() => handleQuickFilter(filterId)}
+              />
+            );
+            const description = quickFilterDescription(t, filterId);
+            // describeChild keeps the chip's label as its accessible name
+            return description ? (
+              <Tooltip key={filterId} title={description} describeChild>
+                {chip}
+              </Tooltip>
+            ) : (
+              chip
+            );
+          })}
         </Stack>
 
         <TextField

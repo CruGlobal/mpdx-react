@@ -64,6 +64,36 @@ describe('MpdSupervisorReportFilterPanel', () => {
     ).toBeInTheDocument();
   });
 
+  it('explains the Negative last month filter', async () => {
+    const { getByRole, findByRole } = renderFilterPanel();
+
+    userEvent.hover(getByRole('button', { name: 'Negative last month' }));
+
+    expect(await findByRole('tooltip')).toHaveTextContent(
+      'Staff whose payroll last month was below their New Staff Monthly Salary.',
+    );
+  });
+
+  it('explains the Negative last 3+ months filter', async () => {
+    const { getByRole, findByRole } = renderFilterPanel();
+
+    userEvent.hover(getByRole('button', { name: 'Negative last 3+ months' }));
+
+    expect(await findByRole('tooltip')).toHaveTextContent(
+      'Staff whose payroll was below their New Staff Monthly Salary in each of the last three complete months.',
+    );
+  });
+
+  it('does not show a tooltip for the All people filter', async () => {
+    const { getByRole, queryByRole } = renderFilterPanel();
+
+    userEvent.hover(getByRole('button', { name: 'All people' }));
+
+    // Tooltips open after a short enter delay
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    expect(queryByRole('tooltip')).not.toBeInTheDocument();
+  });
+
   it('clicking a quick-filter chip toggles active state', async () => {
     const { getByRole } = renderFilterPanel();
     // 'All people' chip is active by default (filled variant)
