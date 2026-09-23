@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import TestRouter from '__tests__/util/TestRouter';
 import { mockSession } from '__tests__/util/mockSession';
 import theme from 'src/theme';
 import { AssistantProvider, useAssistantContext } from './AssistantProvider';
@@ -14,10 +15,12 @@ const OpenButton: React.FC = () => {
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
-    <AssistantProvider>
-      <OpenButton />
-      <DynamicAssistantDrawer />
-    </AssistantProvider>
+    <TestRouter>
+      <AssistantProvider>
+        <OpenButton />
+        <DynamicAssistantDrawer />
+      </AssistantProvider>
+    </TestRouter>
   </ThemeProvider>
 );
 

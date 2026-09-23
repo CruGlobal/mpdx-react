@@ -1,15 +1,9 @@
 import React from 'react';
 import CloseIcon from '@mui/icons-material/Close';
-import {
-  Box,
-  Divider,
-  Drawer,
-  IconButton,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box, Divider, Drawer, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { AssistantChat } from './AssistantChat';
 import { useAssistantContext } from './AssistantProvider';
 import { useAssistantVisibility } from './useAssistantVisibility';
 
@@ -30,19 +24,6 @@ const Header = styled(Box)(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'space-between',
   padding: theme.spacing(1, 1, 1, 2),
-}));
-
-const MessageArea = styled(Box)(({ theme }) => ({
-  flexGrow: 1,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  overflowY: 'auto',
-  padding: theme.spacing(2),
-}));
-
-const Footer = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(1, 2, 2),
 }));
 
 export const AssistantDrawer: React.FC = () => {
@@ -76,23 +57,7 @@ export const AssistantDrawer: React.FC = () => {
           </IconButton>
         </Header>
         <Divider />
-        <MessageArea>
-          <Typography color="text.secondary" align="center">
-            {t('Ask a question to get started.')}
-          </Typography>
-        </MessageArea>
-        <Divider />
-        <Footer>
-          <TextField
-            fullWidth
-            disabled
-            size="small"
-            placeholder={t('Ask the assistant')}
-          />
-          <Typography variant="caption" color="text.secondary">
-            {t('The assistant is coming soon.')}
-          </Typography>
-        </Footer>
+        <AssistantChat />
       </DrawerContent>
     </Drawer>
   );

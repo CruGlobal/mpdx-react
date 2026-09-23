@@ -2,10 +2,12 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import TestRouter from '__tests__/util/TestRouter';
 import { mockSession } from '__tests__/util/mockSession';
 import theme from 'src/theme';
 import { AssistantDrawer } from './AssistantDrawer';
 import { AssistantProvider, useAssistantContext } from './AssistantProvider';
+import { frame, mockJsonResponse, mockStreamResponse } from './sse.mock';
 
 const OpenButton: React.FC = () => {
   const { openAssistant } = useAssistantContext();
@@ -14,10 +16,12 @@ const OpenButton: React.FC = () => {
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
-    <AssistantProvider>
-      <OpenButton />
-      <AssistantDrawer />
-    </AssistantProvider>
+    <TestRouter>
+      <AssistantProvider>
+        <OpenButton />
+        <AssistantDrawer />
+      </AssistantProvider>
+    </TestRouter>
   </ThemeProvider>
 );
 
@@ -25,12 +29,14 @@ describe('AssistantDrawer', () => {
   beforeEach(() => {
     process.env.DEVELOPMENT_ENV = 'true';
     process.env.DISABLE_ASSISTANT = 'false';
+    process.env.ASSISTANT_URL = 'https://assistant.test';
     mockSession({ developer: true, impersonating: false });
   });
 
   afterEach(() => {
     process.env.DEVELOPMENT_ENV = 'false';
     process.env.DISABLE_ASSISTANT = 'false';
+    process.env.ASSISTANT_URL = '';
   });
 
   it('is closed by default', () => {
@@ -39,17 +45,43 @@ describe('AssistantDrawer', () => {
     expect(queryByRole('dialog')).not.toBeInTheDocument();
   });
 
-  it('shows the header, placeholder, disabled input, and footer when open', () => {
-    const { getByRole, getByText, getByPlaceholderText } = render(
-      <TestComponent />,
-    );
+  it('shows the header, placeholder, and input when open', () => {
+    const { getByRole, getByText } = render(<TestComponent />);
 
     userEvent.click(getByRole('button', { name: 'Open' }));
 
     expect(getByRole('dialog', { name: 'Assistant' })).toBeInTheDocument();
     expect(getByText('Ask a question to get started.')).toBeInTheDocument();
-    expect(getByPlaceholderText('Ask the assistant')).toBeDisabled();
-    expect(getByText('The assistant is coming soon.')).toBeInTheDocument();
+    expect(getByRole('textbox', { name: 'Ask the assistant' })).toBeEnabled();
+  });
+
+  it('keeps the conversation when closed and reopened', async () => {
+    const fetchSpy = jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+      .mockResolvedValueOnce(
+        mockStreamResponse([
+          frame({ type: 'chunk', message_id: 'm1', delta: 'Hello back' }),
+          frame({ type: 'generation_complete', message_id: 'm1' }),
+        ]),
+      );
+    const { getByRole, findByText, queryByRole } = render(<TestComponent />);
+
+    userEvent.click(getByRole('button', { name: 'Open' }));
+    userEvent.type(
+      getByRole('textbox', { name: 'Ask the assistant' }),
+      'What is new?',
+    );
+    userEvent.click(getByRole('button', { name: 'Send' }));
+    expect(await findByText('Hello back')).toBeInTheDocument();
+
+    userEvent.click(getByRole('button', { name: 'Close Assistant' }));
+    await waitFor(() => expect(queryByRole('dialog')).not.toBeInTheDocument());
+
+    userEvent.click(getByRole('button', { name: 'Open' }));
+    expect(await findByText('Hello back')).toBeInTheDocument();
+    expect(getByRole('dialog')).toHaveTextContent('What is new?');
+    fetchSpy.mockRestore();
   });
 
   it('closes when the close button is clicked', async () => {
