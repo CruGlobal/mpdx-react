@@ -65,7 +65,7 @@ export const useAssistantStream = (): UseAssistantStreamResult => {
   const token = useAssistantToken();
   const accountListId = useOptionalAccountListId();
   const { asPath } = useRouter();
-  const assistantUrl = process.env.ASSISTANT_URL;
+  const assistantUrl = process.env.ASSISTANT_URL?.replace(/\/+$/, '');
 
   const sendMessage = useCallback(
     async (content: string) => {

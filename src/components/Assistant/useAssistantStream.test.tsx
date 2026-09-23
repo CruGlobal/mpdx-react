@@ -112,6 +112,21 @@ describe('useAssistantStream', () => {
     expect(result.current.stream.streaming).toBe(false);
   });
 
+  it('ignores a trailing slash on the assistant url', async () => {
+    process.env.ASSISTANT_URL = `${assistantUrl}/`;
+    fetchSpy
+      .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+      .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+    const { result } = renderStream();
+
+    await act(() => result.current.stream.sendMessage('Hi'));
+
+    expect(fetchSpy.mock.calls.map(([url]) => url)).toEqual([
+      `${assistantUrl}/conversations`,
+      `${assistantUrl}/conversations/conversation-1/stream`,
+    ]);
+  });
+
   it('reuses the conversation for the next message', async () => {
     fetchSpy
       .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
