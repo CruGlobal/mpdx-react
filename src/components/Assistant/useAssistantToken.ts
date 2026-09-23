@@ -107,7 +107,11 @@ export const useAssistantToken = (
           if (!isCurrent()) {
             return null;
           }
-          const expiresAt = new Date(minted.expiresAt).getTime();
+          const parsed = new Date(minted.expiresAt).getTime();
+          // An unreadable expiry gets the shortest lifetime the refresh floor allows
+          const expiresAt = Number.isFinite(parsed)
+            ? parsed
+            : Date.now() + REFRESH_LEAD_MS + MIN_REFRESH_DELAY_MS;
           update({ status: 'ready', token: minted.token, expiresAt });
           timer.current = setTimeout(
             () => mint(),

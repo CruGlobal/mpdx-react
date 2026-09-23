@@ -128,6 +128,22 @@ describe('useAssistantToken', () => {
     expect(mintCount()).toBe(5);
   });
 
+  it('refreshes at the 30 second floor when the expiry is malformed', async () => {
+    jest.useFakeTimers();
+    const { result, mintCount, fireMint } = renderToken([
+      { token: 'minted-token-1', expiresAt: 'not a date' },
+      { token: 'minted-token-2' },
+    ]);
+    await waitFor(() => expect(result.current.token).toBe('minted-token-1'));
+
+    act(() => jest.advanceTimersByTime(seconds(29)));
+    expect(mintCount()).toBe(1);
+
+    await fireMint(seconds(1));
+    expect(mintCount()).toBe(2);
+    expect(result.current.token).toBe('minted-token-2');
+  });
+
   it('stops refreshing after unmount', async () => {
     jest.useFakeTimers();
     const { result, unmount, mintCount } = renderToken();
