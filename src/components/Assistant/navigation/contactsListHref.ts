@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon';
 import {
+  ContactFilterPledgeReceivedEnum,
   ContactFilterSetInput,
   ContactFilterStatusEnum,
   DateRangeInput,
@@ -80,7 +81,7 @@ const applyPreset = (
     if (!hasOnlyKeys(params, [])) {
       return false;
     }
-    // Matches the dashboard's Late Commitments link: at least N days late, not the Late By bands
+    // Matches the dashboard's Late Commitments link: received pledges at least N days late, not the Late By bands
     filters.lateAt = {
       min: '1970-01-01',
       max: now.minus({ days: LATE_BY_DAYS[name] }).toISODate(),
@@ -172,6 +173,7 @@ export const buildContactsListHref: NavigationBuilder = (
       return null;
     }
     filters.status = [financial];
+    filters.pledgeReceived = ContactFilterPledgeReceivedEnum.Received;
   }
 
   const path = `${basePath}/contacts`;

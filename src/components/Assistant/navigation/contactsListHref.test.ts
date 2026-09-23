@@ -24,11 +24,12 @@ describe('buildContactsListHref', () => {
     ['late_by_60', '2026-01-14'],
     ['late_by_90', '2025-12-15'],
   ])(
-    'maps %s to financial partners at least that many days late',
+    'maps %s to financial partners with a received pledge at least that many days late',
     (preset, max) => {
       expect(filtersOf(build({ preset }))).toEqual({
         lateAt: { min: '1970-01-01', max },
         status: ['PARTNER_FINANCIAL'],
+        pledgeReceived: 'RECEIVED',
       });
     },
   );
@@ -117,6 +118,7 @@ describe('buildContactsListHref', () => {
     ).toEqual({
       lateAt: { min: '1970-01-01', max: '2025-12-15' },
       status: ['PARTNER_FINANCIAL'],
+      pledgeReceived: 'RECEIVED',
       pledgeFrequency: ['1.0'],
     });
   });
@@ -148,6 +150,7 @@ describe('buildContactsListHref', () => {
       expect(filtersOf(build(...presets))).toEqual({
         lateAt: { min: '1970-01-01', max: '2026-02-13' },
         status: ['PARTNER_FINANCIAL'],
+        pledgeReceived: 'RECEIVED',
       });
     },
   );
