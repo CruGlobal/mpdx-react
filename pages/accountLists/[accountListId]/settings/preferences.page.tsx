@@ -4,6 +4,7 @@ import { Box, Button, Skeleton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
+import { useAssistantAccess } from 'src/components/Assistant/useAssistantVisibility';
 import { useGetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
 import {
   useCanUserExportDataQuery,
@@ -12,6 +13,7 @@ import {
 import { useGetPersonalPreferencesQuery } from 'src/components/Settings/preferences/GetPersonalPreferences.generated';
 import { SetupBanner } from 'src/components/Settings/preferences/SetupBanner';
 import { AccountNameAccordion } from 'src/components/Settings/preferences/accordions/AccountNameAccordion/AccountNameAccordion';
+import { AssistantAccordion } from 'src/components/Settings/preferences/accordions/AssistantAccordion/AssistantAccordion';
 import { CurrencyAccordion } from 'src/components/Settings/preferences/accordions/CurrencyAccordion/CurrencyAccordion';
 import { DefaultAccountAccordion } from 'src/components/Settings/preferences/accordions/DefaultAccountAccordion/DefaultAccountAccordion';
 import { EarlyAdopterAccordion } from 'src/components/Settings/preferences/accordions/EarlyAdopterAccordion/EarlyAdopterAccordion';
@@ -54,6 +56,7 @@ const Preferences: React.FC = () => {
   const { reportsDisabled } = useReportsDisabled();
   const developerBypass = useDeveloperBypass();
   const hideGeographicLocation = reportsDisabled && !developerBypass;
+  const { settings: assistantSettings } = useAssistantAccess();
 
   const setupAccordions = [
     PreferenceAccordion.Locale,
@@ -233,6 +236,16 @@ const Preferences: React.FC = () => {
           </>
         )}
       </AccordionGroup>
+      {assistantSettings && (
+        <AccordionGroup title={t('Assistant')}>
+          <AssistantAccordion
+            handleAccordionChange={setExpandedAccordion}
+            expandedAccordion={expandedAccordion}
+            settings={assistantSettings}
+            disabled={onSetupTour}
+          />
+        </AccordionGroup>
+      )}
       <AccordionGroup title={t('Account Preferences')}>
         {accountPreferencesLoading && (
           <>
