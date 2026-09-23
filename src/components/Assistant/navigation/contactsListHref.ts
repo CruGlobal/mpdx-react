@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon';
 import {
   ContactFilterSetInput,
+  ContactFilterStatusEnum,
   DateRangeInput,
 } from 'src/graphql/types.generated';
 import { getDateRange } from './dateRanges';
@@ -30,11 +31,10 @@ import { NavigationBuilder } from './types';
 
 type LatePreset = (typeof LATE_PRESETS)[number];
 
-// The Late By options in the contacts filter panel
-const LATE_BY_FILTER_VALUES: Record<LatePreset, string> = {
-  late_by_30: '30_60',
-  late_by_60: '60_90',
-  late_by_90: '90',
+const LATE_BY_DAYS: Record<LatePreset, number> = {
+  late_by_30: 30,
+  late_by_60: 60,
+  late_by_90: 90,
 };
 
 // These always end inside the last month, which the API rejects for stopped giving
@@ -80,7 +80,11 @@ const applyPreset = (
     if (!hasOnlyKeys(params, [])) {
       return false;
     }
-    filters.pledgeLateBy = LATE_BY_FILTER_VALUES[name];
+    // Matches the dashboard's Late Commitments link: at least N days late, not the Late By bands
+    filters.lateAt = {
+      min: '1970-01-01',
+      max: now.minus({ days: LATE_BY_DAYS[name] }).toISODate(),
+    };
     return true;
   }
 
@@ -160,6 +164,14 @@ export const buildContactsListHref: NavigationBuilder = (
     if (!applyPreset(filters, name, presetParams, now)) {
       return null;
     }
+  }
+
+  if (Array.from(seen).some(isLatePreset)) {
+    const financial = ContactFilterStatusEnum.PartnerFinancial;
+    if (filters.status && !filters.status.includes(financial)) {
+      return null;
+    }
+    filters.status = [financial];
   }
 
   const path = `${basePath}/contacts`;

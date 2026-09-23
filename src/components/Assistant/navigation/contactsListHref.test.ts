@@ -20,12 +20,18 @@ describe('buildContactsListHref', () => {
   });
 
   it.each([
-    ['late_by_30', '30_60'],
-    ['late_by_60', '60_90'],
-    ['late_by_90', '90'],
-  ])('maps %s to the Late By filter', (preset, pledgeLateBy) => {
-    expect(filtersOf(build({ preset }))).toEqual({ pledgeLateBy });
-  });
+    ['late_by_30', '2026-02-13'],
+    ['late_by_60', '2026-01-14'],
+    ['late_by_90', '2025-12-15'],
+  ])(
+    'maps %s to financial partners at least that many days late',
+    (preset, max) => {
+      expect(filtersOf(build({ preset }))).toEqual({
+        lateAt: { min: '1970-01-01', max },
+        status: ['PARTNER_FINANCIAL'],
+      });
+    },
+  );
 
   it('maps stopped_giving without a range to the past year up to a month ago', () => {
     expect(filtersOf(build({ preset: 'stopped_giving' }))).toEqual({
@@ -105,10 +111,54 @@ describe('buildContactsListHref', () => {
       filtersOf(
         build(
           { preset: 'late_by_90' },
-          { preset: 'status_in', values: ['Partner - Financial'] },
+          { preset: 'pledge_frequency_in', values: ['Monthly'] },
         ),
       ),
-    ).toEqual({ pledgeLateBy: '90', status: ['PARTNER_FINANCIAL'] });
+    ).toEqual({
+      lateAt: { min: '1970-01-01', max: '2025-12-15' },
+      status: ['PARTNER_FINANCIAL'],
+      pledgeFrequency: ['1.0'],
+    });
+  });
+
+  it.each([
+    [
+      'before',
+      [
+        { preset: 'late_by_30' },
+        {
+          preset: 'status_in',
+          values: ['Partner - Special', 'Partner - Financial'],
+        },
+      ],
+    ],
+    [
+      'after',
+      [
+        {
+          preset: 'status_in',
+          values: ['Partner - Special', 'Partner - Financial'],
+        },
+        { preset: 'late_by_30' },
+      ],
+    ],
+  ])(
+    'narrows status_in %s a late preset to financial partners',
+    (_, presets) => {
+      expect(filtersOf(build(...presets))).toEqual({
+        lateAt: { min: '1970-01-01', max: '2026-02-13' },
+        status: ['PARTNER_FINANCIAL'],
+      });
+    },
+  );
+
+  it('returns null for a late preset with a status_in that excludes financial partners', () => {
+    expect(
+      build(
+        { preset: 'late_by_60' },
+        { preset: 'status_in', values: ['Partner - Special'] },
+      ),
+    ).toBeNull();
   });
 
   it.each([
