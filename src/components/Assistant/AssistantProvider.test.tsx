@@ -1,4 +1,5 @@
 import { act, renderHook } from '@testing-library/react-hooks';
+import { mockSession } from '__tests__/util/mockSession';
 import { AssistantProvider, useAssistantContext } from './AssistantProvider';
 
 describe('AssistantProvider', () => {
@@ -20,5 +21,59 @@ describe('AssistantProvider', () => {
     expect(result.current.open).toBe(true);
     act(() => result.current.closeAssistant());
     expect(result.current.open).toBe(false);
+  });
+
+  it('keeps messages across closing and reopening', () => {
+    const { result } = renderHook(() => useAssistantContext(), {
+      wrapper: AssistantProvider,
+    });
+    const message = {
+      id: 'message-1',
+      role: 'user' as const,
+      content: 'Hi',
+      cards: [],
+      citations: [],
+      status: 'complete' as const,
+      working: false,
+    };
+
+    act(() => result.current.openAssistant());
+    act(() => result.current.dispatch({ type: 'addMessage', message }));
+    act(() => result.current.closeAssistant());
+    act(() => result.current.openAssistant());
+
+    expect(result.current.messages).toEqual([message]);
+  });
+
+  it('tracks streaming and aborts on stop', () => {
+    const { result } = renderHook(() => useAssistantContext(), {
+      wrapper: AssistantProvider,
+    });
+    const controller = new AbortController();
+
+    act(() => result.current.beginStream(controller));
+    expect(result.current.streaming).toBe(true);
+
+    act(() => result.current.stopStream());
+    expect(controller.signal.aborted).toBe(true);
+
+    act(() => result.current.endStream());
+    expect(result.current.streaming).toBe(false);
+  });
+
+  it('aborts the stream when the assistant becomes hidden', () => {
+    process.env.DEVELOPMENT_ENV = 'true';
+    mockSession({ developer: true, impersonating: false });
+    const { result, rerender } = renderHook(() => useAssistantContext(), {
+      wrapper: AssistantProvider,
+    });
+    const controller = new AbortController();
+    act(() => result.current.beginStream(controller));
+
+    mockSession({ developer: true, impersonating: true });
+    rerender();
+
+    expect(controller.signal.aborted).toBe(true);
+    process.env.DEVELOPMENT_ENV = 'false';
   });
 });
