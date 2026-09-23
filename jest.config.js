@@ -112,11 +112,18 @@ const esmPackages = [
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
 module.exports = async () => {
   const config = await createJestConfig(customJestConfig)();
-  return {
-    ...config,
-    // Extend the next/jest allow list instead of replacing it so its own packages still transform
-    transformIgnorePatterns: config.transformIgnorePatterns.map((pattern) =>
-      pattern.replace('(?!(', `(?!(${esmPackages.join('|')}|`),
-    ),
-  };
+  // Extend the next/jest allow list instead of replacing it so its own packages still transform
+  const transformIgnorePatterns = config.transformIgnorePatterns.map(
+    (pattern) => pattern.replace('(?!(', `(?!(${esmPackages.join('|')}|`),
+  );
+  if (
+    transformIgnorePatterns.every(
+      (pattern, index) => pattern === config.transformIgnorePatterns[index],
+    )
+  ) {
+    throw new Error(
+      'next/jest changed its transformIgnorePatterns, so jest.config.js can no longer add the ESM packages',
+    );
+  }
+  return { ...config, transformIgnorePatterns };
 };
