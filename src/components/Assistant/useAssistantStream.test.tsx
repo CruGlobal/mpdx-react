@@ -14,20 +14,21 @@ import { useAssistantStream } from './useAssistantStream';
 
 const assistantUrl = 'https://assistant.test';
 
-const Wrapper: React.FC<{ children?: React.ReactNode }> = ({ children }) => (
-  <TestRouter router={{ asPath: '/accountLists/account-list-1/contacts' }}>
-    <AssistantProvider>{children}</AssistantProvider>
-  </TestRouter>
-);
-
 interface RenderStreamOptions {
+  asPath?: string;
   refreshToken?: () => Promise<string | null>;
 }
 
 const renderStream = ({
+  asPath = '/accountLists/account-list-1/contacts',
   refreshToken = () => Promise.resolve(null),
-}: RenderStreamOptions = {}) =>
-  renderHook(
+}: RenderStreamOptions = {}) => {
+  const Wrapper: React.FC<{ children?: React.ReactNode }> = ({ children }) => (
+    <TestRouter router={{ asPath }}>
+      <AssistantProvider>{children}</AssistantProvider>
+    </TestRouter>
+  );
+  return renderHook(
     () => {
       const [accountListId, setAccountListId] = useState('account-list-1');
       return {
@@ -42,6 +43,7 @@ const renderStream = ({
     },
     { wrapper: Wrapper },
   );
+};
 
 const card = {
   kind: 'navigation' as const,
@@ -750,6 +752,36 @@ describe('useAssistantStream', () => {
 
       expect(result.current.context.messages).toEqual([]);
       expect(result.current.context.accountListId).toBe('account-list-2');
+    });
+  });
+
+  describe('coaching routes', () => {
+    it('runs help-only and keeps the coached account out of the page context', async () => {
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+      const { result } = renderStream({
+        asPath: '/accountLists/account-list-1/coaching/coached-list-9',
+      });
+
+      expect(result.current.stream.helpOnly).toBe(true);
+      await act(() => result.current.stream.sendMessage('Hi'));
+
+      const body = fetchSpy.mock.calls[1][1].body;
+      expect(body).not.toContain('coached-list-9');
+      expect(JSON.parse(body).page).toEqual({
+        path: '/accountLists/account-list-1/coaching',
+        help_only: true,
+      });
+    });
+
+    it.each([
+      '/accountLists/account-list-1/contacts',
+      '/accountLists/account-list-1/coachingReport',
+    ])('is not help-only on %s', (asPath) => {
+      const { result } = renderStream({ asPath });
+
+      expect(result.current.stream.helpOnly).toBe(false);
     });
   });
 });

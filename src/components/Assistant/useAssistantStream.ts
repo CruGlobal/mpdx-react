@@ -15,6 +15,11 @@ import { AssistantToken } from './useAssistantToken';
 
 const DEFAULT_RETRY_AFTER_MS = 10 * 1000;
 
+const coachingPathPattern = /^\/accountLists\/[^/?#]+\/coaching(?:[/?#]|$)/;
+
+export const isCoachingPath = (path: string): boolean =>
+  coachingPathPattern.test(path);
+
 export const getAssistantUrl = (): string | undefined =>
   process.env.ASSISTANT_URL?.replace(/\/+$/, '') || undefined;
 
@@ -153,6 +158,7 @@ export interface UseAssistantStreamResult {
   stop: () => void;
   streaming: boolean;
   configured: boolean;
+  helpOnly: boolean;
   rateLimited: boolean;
 }
 
@@ -173,6 +179,7 @@ export const useAssistantStream = ({
   } = useAssistantContext();
   const { asPath } = useRouter();
   const assistantUrl = getAssistantUrl();
+  const helpOnly = isCoachingPath(asPath);
   const [rateLimited, setRateLimited] = useState(false);
   const rateLimitTimer = useRef<ReturnType<typeof setTimeout>>();
 
@@ -288,6 +295,10 @@ export const useAssistantStream = ({
           }
         }
 
+        // Help-only mode keeps the coached account out of the page context
+        const page = helpOnly
+          ? { path: `/accountLists/${accountListId}/coaching`, help_only: true }
+          : { path: asPath };
         const response = await request(
           `${assistantUrl}/conversations/${encodeURIComponent(conversationId)}/stream`,
           {
@@ -296,7 +307,7 @@ export const useAssistantStream = ({
               'Content-Type': 'application/json',
               Accept: 'text/event-stream',
             },
-            body: JSON.stringify({ content, page: { path: asPath } }),
+            body: JSON.stringify({ content, page }),
           },
         );
         if (response.status === 404 || response.status === 410) {
@@ -364,6 +375,7 @@ export const useAssistantStream = ({
       streaming,
       rateLimited,
       conversation,
+      helpOnly,
       asPath,
       dispatch,
       beginStream,
@@ -377,6 +389,7 @@ export const useAssistantStream = ({
     stop: stopStream,
     streaming,
     configured: Boolean(assistantUrl),
+    helpOnly,
     rateLimited,
   };
 };

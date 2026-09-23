@@ -109,11 +109,8 @@ export const AssistantChat: React.FC = () => {
     status: tokenStatus,
     refreshToken,
   } = useAssistantToken(configured ? accountListId : null);
-  const { sendMessage, stop, streaming, rateLimited } = useAssistantStream({
-    accountListId,
-    token,
-    refreshToken,
-  });
+  const { sendMessage, stop, streaming, helpOnly, rateLimited } =
+    useAssistantStream({ accountListId, token, refreshToken });
   const [draft, setDraft] = useState('');
   const canSend =
     Boolean(draft.trim()) && tokenStatus === 'ready' && !rateLimited;
@@ -199,6 +196,13 @@ export const AssistantChat: React.FC = () => {
         {configured && !accountListId && (
           <Typography variant="caption" color="text.secondary">
             {t('Open an account list to chat with the assistant.')}
+          </Typography>
+        )}
+        {configured && helpOnly && (
+          <Typography variant="caption" color="text.secondary">
+            {t(
+              'Partner data is not available while viewing a coaching account.',
+            )}
           </Typography>
         )}
         <HelpDeskLink />

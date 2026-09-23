@@ -21,18 +21,20 @@ const mutationSpy = jest.fn();
 
 interface TestComponentProps {
   accountListId?: string;
+  page?: string;
   refusal?: string;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   accountListId = 'account-list-1',
+  page = 'contacts',
   refusal,
 }) => {
   const chat = (
     <TestRouter
       router={{
         query: accountListId ? { accountListId } : {},
-        asPath: `/accountLists/${accountListId}/contacts`,
+        asPath: `/accountLists/${accountListId}/${page}`,
       }}
     >
       <AssistantProvider>
@@ -397,6 +399,28 @@ describe('AssistantChat', () => {
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('CreateAssistantToken', {
         accountListId: 'account-list-2',
+      }),
+    );
+  });
+
+  it('explains help-only mode on coaching routes', () => {
+    const { getByText } = render(
+      <TestComponent page="coaching/coached-list-9" />,
+    );
+
+    expect(
+      getByText(
+        'Partner data is not available while viewing a coaching account.',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('mints for the account list in the URL on coaching routes', async () => {
+    render(<TestComponent page="coaching/coached-list-9" />);
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('CreateAssistantToken', {
+        accountListId: 'account-list-1',
       }),
     );
   });
