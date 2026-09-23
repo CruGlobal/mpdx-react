@@ -1,7 +1,7 @@
 import { useUserOptionQuery } from './UserPreference.generated';
 
 export function useReportsDisabled() {
-  const { data } = useUserOptionQuery({
+  const { data, loading } = useUserOptionQuery({
     variables: { key: 'user_type_verified' },
   });
   const userGroupVerified = data?.userOption?.value;
@@ -10,5 +10,5 @@ export function useReportsDisabled() {
     process.env.DISABLE_NEW_REPORTS === 'true' ||
     (!!data && userGroupVerified !== 'true');
 
-  return { reportsDisabled };
+  return { reportsDisabled, loading };
 }
