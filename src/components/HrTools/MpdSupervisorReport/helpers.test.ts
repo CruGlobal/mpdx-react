@@ -11,6 +11,7 @@ import {
   getInitials,
   getLocalizedAssignmentCategoryGroup,
   getQuarterLabel,
+  getQuarterMonthRange,
   healthColor,
   healthLabel,
   pendingField,
@@ -79,6 +80,36 @@ describe('getQuarterLabel', () => {
   it('formats a fiscal year and quarter', () => {
     expect(getQuarterLabel(2025, 4)).toBe('FQ4 25');
     expect(getQuarterLabel(2026, 1)).toBe('FQ1 26');
+  });
+});
+
+describe('getQuarterMonthRange', () => {
+  it('starts Q1 in September of the previous calendar year', () => {
+    expect(getQuarterMonthRange(2026, 1)).toEqual({
+      start: { year: 2025, month: 9 },
+      end: { year: 2025, month: 11 },
+    });
+  });
+
+  it('rolls Q2 over from December into the fiscal year', () => {
+    expect(getQuarterMonthRange(2026, 2)).toEqual({
+      start: { year: 2025, month: 12 },
+      end: { year: 2026, month: 2 },
+    });
+  });
+
+  it('covers March to May for Q3', () => {
+    expect(getQuarterMonthRange(2026, 3)).toEqual({
+      start: { year: 2026, month: 3 },
+      end: { year: 2026, month: 5 },
+    });
+  });
+
+  it('covers June to August for Q4', () => {
+    expect(getQuarterMonthRange(2026, 4)).toEqual({
+      start: { year: 2026, month: 6 },
+      end: { year: 2026, month: 8 },
+    });
   });
 });
 

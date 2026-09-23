@@ -57,6 +57,32 @@ export const healthColor = (
 export const getQuarterLabel = (fiscalYear: number, quarter: number): string =>
   `FQ${quarter} ${fiscalYear.toString().slice(-2)}`;
 
+export interface YearMonth {
+  year: number;
+  /** 1-based calendar month */
+  month: number;
+}
+
+/**
+ * First and last calendar month of a Cru fiscal quarter. The fiscal year runs
+ * September–August and is named for the calendar year in which it ends.
+ */
+export const getQuarterMonthRange = (
+  fiscalYear: number,
+  quarter: number,
+): { start: YearMonth; end: YearMonth } => {
+  // 0-based month index counted from January of the previous calendar year; Q1 starts in September
+  const startMonthIndex = 8 + (quarter - 1) * 3;
+  const toYearMonth = (index: number): YearMonth => ({
+    year: fiscalYear - 1 + Math.floor(index / 12),
+    month: (index % 12) + 1,
+  });
+  return {
+    start: toYearMonth(startMonthIndex),
+    end: toYearMonth(startMonthIndex + 2),
+  };
+};
+
 /**
  * Map a quarter's MPD-health status to its screen-reader/chip label.
  */
