@@ -1,0 +1,7 @@
+mutation CreateAssistantToken($accountListId: ID!) {
+  createAssistantToken(input: { accountListId: $accountListId }) {
+    token
+    expiresAt
+    scopes
+  }
+}
