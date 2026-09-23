@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { act, render, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { mockSession } from '__tests__/util/mockSession';
@@ -103,6 +103,17 @@ describe('AssistantChat', () => {
     userEvent.type(input, '{enter}');
     expect(await findByText('You have 12 contacts.')).toBeInTheDocument();
     expect(fetchSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not send when Enter confirms an IME composition', () => {
+    const { getByRole } = render(<TestComponent />);
+
+    const input = getByRole('textbox', { name: 'Ask the assistant' });
+    userEvent.type(input, 'nihon');
+    fireEvent.keyDown(input, { key: 'Enter', isComposing: true });
+
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(input).toHaveValue('nihon');
   });
 
   it('shows Stop while streaming and stops the reply', async () => {
