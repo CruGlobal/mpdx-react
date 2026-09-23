@@ -20,6 +20,8 @@ import {
 import { AssistantToken } from './useAssistantToken';
 
 const DEFAULT_RETRY_AFTER_MS = 10 * 1000;
+// A bad or hostile header should not lock the composer for longer than this
+const MAX_RETRY_AFTER_MS = 5 * 60 * 1000;
 
 const coachingPathPattern = /^\/accountLists\/[^/?#]+\/coaching(?:[/?#]|$)/;
 
@@ -122,7 +124,7 @@ const toAction = (
 };
 
 // Retry-After is either a number of seconds or an HTTP date
-const retryAfterMs = (header: string | null | undefined): number => {
+const parseRetryAfterMs = (header: string | null | undefined): number => {
   if (header?.trim()) {
     const seconds = Number(header);
     if (Number.isFinite(seconds)) {
@@ -135,6 +137,9 @@ const retryAfterMs = (header: string | null | undefined): number => {
   }
   return DEFAULT_RETRY_AFTER_MS;
 };
+
+const retryAfterMs = (header: string | null | undefined): number =>
+  Math.min(parseRetryAfterMs(header), MAX_RETRY_AFTER_MS);
 
 class AssistantResponseError extends Error {
   constructor(

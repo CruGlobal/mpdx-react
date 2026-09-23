@@ -664,6 +664,21 @@ describe('useAssistantStream', () => {
       expect(result.current.stream.rateLimited).toBe(false);
     });
 
+    it.each(['3600', new Date(Date.now() + 60 * 60 * 1000).toUTCString()])(
+      'waits no longer than five minutes for Retry-After %p',
+      async (retryAfter) => {
+        fetchSpy.mockResolvedValueOnce(rateLimited(retryAfter));
+        const { result } = renderStream();
+
+        await act(() => result.current.stream.sendMessage('Hi'));
+
+        act(() => jest.advanceTimersByTime(5 * 60 * 1000 - 1));
+        expect(result.current.stream.rateLimited).toBe(true);
+        act(() => jest.advanceTimersByTime(1));
+        expect(result.current.stream.rateLimited).toBe(false);
+      },
+    );
+
     it('waits a short default without Retry-After', async () => {
       fetchSpy.mockResolvedValueOnce(rateLimited());
       const { result } = renderStream();
