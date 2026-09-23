@@ -226,8 +226,11 @@ describe('MpdSupervisorReport', () => {
 
   it('explains a fiscal quarter header on hover', async () => {
     const { findByText, findByRole } = renderReport();
+    const header = await findByText('FQ1 26');
+    // The tooltip describes the header rather than replacing its label
+    expect(header).not.toHaveAttribute('aria-label');
 
-    userEvent.hover(await findByText('FQ1 26'));
+    userEvent.hover(header);
 
     expect(await findByRole('tooltip')).toHaveTextContent(
       'Fiscal quarter 1, FY26: Sep 2025 – Nov 2025',

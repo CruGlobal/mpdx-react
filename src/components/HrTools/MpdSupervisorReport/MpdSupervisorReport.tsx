@@ -199,7 +199,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
         <QuartersContainer>
           {quarterHeaders.map(({ label, tooltip }) => (
             <Quarter key={label}>
-              <Tooltip title={tooltip} arrow>
+              <Tooltip title={tooltip} arrow describeChild>
                 <Typography
                   variant="body2"
                   fontWeight={'bold'}
