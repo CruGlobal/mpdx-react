@@ -20,12 +20,19 @@ const Wrapper: React.FC<{ children?: React.ReactNode }> = ({ children }) => (
   </TestRouter>
 );
 
-const renderStream = () =>
+interface RenderStreamOptions {
+  refreshToken?: () => Promise<string | null>;
+}
+
+const renderStream = ({
+  refreshToken = () => Promise.resolve(null),
+}: RenderStreamOptions = {}) =>
   renderHook(
     () => ({
       stream: useAssistantStream({
         accountListId: 'account-list-1',
         token: 'minted-token',
+        refreshToken,
       }),
       context: useAssistantContext(),
     }),
@@ -508,5 +515,60 @@ describe('useAssistantStream', () => {
 
     expect(fetchSpy).not.toHaveBeenCalled();
     expect(result.current.context.messages).toHaveLength(0);
+  });
+  describe('rejected tokens', () => {
+    it('refreshes the token once and retries the request with it', async () => {
+      const refreshToken = jest.fn().mockResolvedValue('fresh-token');
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({}, { ok: false, status: 401 }))
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+      const { result } = renderStream({ refreshToken });
+
+      await act(() => result.current.stream.sendMessage('Hi'));
+
+      expect(refreshToken).toHaveBeenCalledTimes(1);
+      expect(
+        fetchSpy.mock.calls.map(([url, init]) => [
+          url,
+          init.headers.Authorization,
+        ]),
+      ).toEqual([
+        [`${assistantUrl}/conversations`, 'Bearer minted-token'],
+        [`${assistantUrl}/conversations`, 'Bearer fresh-token'],
+        [
+          `${assistantUrl}/conversations/conversation-1/stream`,
+          'Bearer fresh-token',
+        ],
+      ]);
+      expect(result.current.context.messages[1].status).toBe('complete');
+    });
+
+    it('gives up after one retry', async () => {
+      const refreshToken = jest.fn().mockResolvedValue('fresh-token');
+      fetchSpy.mockResolvedValue(
+        mockJsonResponse({}, { ok: false, status: 401 }),
+      );
+      const { result } = renderStream({ refreshToken });
+
+      await act(() => result.current.stream.sendMessage('Hi'));
+
+      expect(refreshToken).toHaveBeenCalledTimes(1);
+      expect(fetchSpy).toHaveBeenCalledTimes(2);
+      expect(result.current.context.messages[1].status).toBe('error');
+    });
+
+    it('does not retry when the token cannot be refreshed', async () => {
+      const refreshToken = jest.fn().mockResolvedValue(null);
+      fetchSpy.mockResolvedValue(
+        mockJsonResponse({}, { ok: false, status: 401 }),
+      );
+      const { result } = renderStream({ refreshToken });
+
+      await act(() => result.current.stream.sendMessage('Hi'));
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(result.current.context.messages[1].status).toBe('error');
+    });
   });
 });

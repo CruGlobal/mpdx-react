@@ -104,12 +104,15 @@ export const AssistantChat: React.FC = () => {
   const { messages } = useAssistantContext();
   const accountListId = useOptionalAccountListId();
   const configured = Boolean(getAssistantUrl());
-  const { token, status: tokenStatus } = useAssistantToken(
-    configured ? accountListId : null,
-  );
+  const {
+    token,
+    status: tokenStatus,
+    refreshToken,
+  } = useAssistantToken(configured ? accountListId : null);
   const { sendMessage, stop, streaming } = useAssistantStream({
     accountListId,
     token,
+    refreshToken,
   });
   const [draft, setDraft] = useState('');
   const canSend = Boolean(draft.trim()) && tokenStatus === 'ready';

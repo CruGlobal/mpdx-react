@@ -107,7 +107,7 @@ const toAction = (
 };
 
 export interface UseAssistantStreamOptions
-  extends Pick<AssistantToken, 'token'> {
+  extends Pick<AssistantToken, 'token' | 'refreshToken'> {
   accountListId: string | null;
 }
 
@@ -121,6 +121,7 @@ export interface UseAssistantStreamResult {
 export const useAssistantStream = ({
   accountListId,
   token,
+  refreshToken,
 }: UseAssistantStreamOptions): UseAssistantStreamResult => {
   const {
     conversation,
@@ -140,10 +141,6 @@ export const useAssistantStream = ({
       }
 
       const controller = new AbortController();
-      const headers = {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      };
       beginStream(controller);
 
       // A conversation is bound to one account list, so switching lists starts over
@@ -154,17 +151,40 @@ export const useAssistantStream = ({
       const reply = createMessage('assistant', '');
       dispatch({ type: 'addMessage', message: reply });
 
+      let bearer = token;
+      // A rejected token gets one fresh mint and one retry per request
+      const request = async (
+        url: string,
+        init: RequestInit & { headers: Record<string, string> },
+      ): Promise<Response> => {
+        const send = () =>
+          fetch(url, {
+            ...init,
+            headers: { ...init.headers, Authorization: `Bearer ${bearer}` },
+            signal: controller.signal,
+          });
+        const response = await send();
+        if (response.status !== 401) {
+          return response;
+        }
+        const refreshed = await refreshToken();
+        if (!refreshed || controller.signal.aborted) {
+          return response;
+        }
+        bearer = refreshed;
+        return send();
+      };
+
       try {
         let conversationId =
           conversation?.accountListId === accountListId
             ? conversation.id
             : null;
         if (!conversationId) {
-          const response = await fetch(`${assistantUrl}/conversations`, {
+          const response = await request(`${assistantUrl}/conversations`, {
             method: 'POST',
-            headers,
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ account_list_id: accountListId }),
-            signal: controller.signal,
           });
           if (!response.ok) {
             throw new Error(
@@ -183,13 +203,15 @@ export const useAssistantStream = ({
           });
         }
 
-        const response = await fetch(
+        const response = await request(
           `${assistantUrl}/conversations/${encodeURIComponent(conversationId)}/stream`,
           {
             method: 'POST',
-            headers: { ...headers, Accept: 'text/event-stream' },
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'text/event-stream',
+            },
             body: JSON.stringify({ content, page: { path: asPath } }),
-            signal: controller.signal,
           },
         );
         if (response.status === 404 || response.status === 410) {
@@ -242,6 +264,7 @@ export const useAssistantStream = ({
     [
       assistantUrl,
       token,
+      refreshToken,
       accountListId,
       streaming,
       conversation,
