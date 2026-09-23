@@ -41,9 +41,7 @@ const ActiveGoalsContent: React.FC = () => {
   const { t } = useTranslation();
   const { selectedCohortId, filteredRows, loading, error } = useMpdGoalAdmin();
 
-  // Role scoping can leave a user with no cohorts at all, so the auto-select in
-  // MpdGoalAdminContext has nothing to pick. Both the toolbar and the table act
-  // on a cohort, so neither means anything until one is selected.
+  // Only an admin with zero cohorts lands here; the toolbar and table need one.
   if (!error && !loading && !selectedCohortId) {
     return (
       <NullStateBox role="status" data-testid="no-training-selected">
@@ -93,7 +91,7 @@ export const MpdGoalAdmin: React.FC<MpdGoalAdminProps> = ({
   onNavListToggle,
 }) => {
   const { t } = useTranslation();
-  const { activeTab, setActiveTab } = useMpdGoalAdmin();
+  const { activeTab, setActiveTab, noVisibleCohorts } = useMpdGoalAdmin();
 
   return (
     <>
@@ -133,8 +131,25 @@ export const MpdGoalAdmin: React.FC<MpdGoalAdminProps> = ({
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
               {t('Manage goals for staff who are in a training group')}
             </Typography>
-            <CohortBar />
-            <ActiveGoalsContent />
+            {/* An empty cohort dropdown reads as broken, so hide it too. */}
+            {noVisibleCohorts ? (
+              <NullStateBox role="status" data-testid="no-visible-cohorts">
+                <Icon path={mdiAccountGroup} size={1.5} />
+                <Typography variant="h5">
+                  {t('No Trainings Available')}
+                </Typography>
+                <Typography>
+                  {t(
+                    'None of the current training cohorts include staff in your ministry.',
+                  )}
+                </Typography>
+              </NullStateBox>
+            ) : (
+              <>
+                <CohortBar />
+                <ActiveGoalsContent />
+              </>
+            )}
           </>
         ) : (
           <ScenarioGoals />
