@@ -7,8 +7,8 @@ import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
-import { LoadCoachingListQuery } from 'src/components/Coaching/LoadCoachingList.generated';
 import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
+import { CoachingListCountQuery } from 'src/components/Layouts/Primary/CoachingListCount.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
 import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
@@ -22,7 +22,7 @@ interface TestComponentProps {
   mocks?: ApolloErgonoMockMap &
     DeepPartial<{
       GetToolNotifications: GetToolNotificationsQuery;
-      LoadCoachingList: LoadCoachingListQuery;
+      CoachingListCount: CoachingListCountQuery;
       GetUser: GetUserQuery;
       Hcm: HcmQuery;
       UserOption: UserOptionQuery;
@@ -46,7 +46,7 @@ const TestComponent: React.FC<TestComponentProps> = ({ router, mocks }) => (
 );
 
 const defaultMocks = {
-  LoadCoachingList: {
+  CoachingListCount: {
     coachingAccountLists: {
       totalCount: 1,
     },
@@ -240,10 +240,9 @@ describe('NavMenu', () => {
     const { queryByRole } = render(
       <TestComponent
         mocks={{
-          LoadCoachingList: {
+          CoachingListCount: {
             coachingAccountLists: {
               totalCount: 0,
-              nodes: [],
             },
           },
         }}

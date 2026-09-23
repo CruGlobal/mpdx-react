@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import React, { useMemo, useState } from 'react';
 import { Grid, ListItemText, MenuItem } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
-import { useLoadCoachingListQuery } from 'src/components/Coaching/LoadCoachingList.generated';
+import { useCoachingListCountQuery } from 'src/components/Layouts/Primary/CoachingListCount.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useNavPages } from 'src/hooks/useNavPages';
 import theme from 'src/theme';
@@ -92,7 +92,7 @@ const NavMenu: React.FC = () => {
   const { data, loading } = useGetToolNotificationsQuery({
     variables: { accountListId },
   });
-  const { data: coachingData } = useLoadCoachingListQuery();
+  const { data: coachingData } = useCoachingListCountQuery();
 
   const coachingAccounts = coachingData?.coachingAccountLists;
 

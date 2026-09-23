@@ -1,10 +1,14 @@
 import React from 'react';
-import { MockedProvider } from '@apollo/client/testing';
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import { TestSetupProvider } from 'src/components/Setup/SetupProvider';
 import theme from 'src/theme';
+import {
+  CoachingListCountDocument,
+  CoachingListCountQuery,
+} from '../CoachingListCount.generated';
 import { getTopBarMultipleMock } from '../TopBar/TopBar.mock';
 import { NavBar } from './NavBar';
 
@@ -17,15 +21,30 @@ const router = {
 interface TestComponentProps {
   openMobile?: boolean;
   onSetupTour?: boolean;
+  coachingCount?: number;
 }
+
+const coachingListCountMock = (totalCount: number): MockedResponse => {
+  const data: CoachingListCountQuery = {
+    coachingAccountLists: { totalCount },
+  };
+  return {
+    request: { query: CoachingListCountDocument },
+    result: { data },
+  };
+};
 
 const TestComponent: React.FC<TestComponentProps> = ({
   openMobile = false,
   onSetupTour,
+  coachingCount = 0,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
-      <MockedProvider mocks={mocks} addTypename={false}>
+      <MockedProvider
+        mocks={[...mocks, coachingListCountMock(coachingCount)]}
+        addTypename={false}
+      >
         <TestSetupProvider onSetupTour={onSetupTour}>
           <NavBar onMobileClose={onMobileClose} openMobile={openMobile} />
         </TestSetupProvider>
@@ -55,5 +74,24 @@ describe('NavBar', () => {
     const { queryByRole } = render(<TestComponent openMobile onSetupTour />);
 
     expect(queryByRole('link', { name: 'Dashboard' })).not.toBeInTheDocument();
+  });
+
+  it('shows the Coaching link when the user coaches account lists', async () => {
+    const { findByRole } = render(
+      <TestComponent openMobile coachingCount={2} />,
+    );
+
+    expect(await findByRole('link', { name: 'Coaching' })).toBeInTheDocument();
+  });
+
+  it('hides the Coaching link when the user coaches no account lists', async () => {
+    const { findByRole, queryByRole } = render(
+      <TestComponent openMobile coachingCount={0} />,
+    );
+
+    await findByRole('link', { name: 'Dashboard' });
+    await waitFor(() =>
+      expect(queryByRole('link', { name: 'Coaching' })).not.toBeInTheDocument(),
+    );
   });
 });
