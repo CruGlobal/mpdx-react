@@ -1,0 +1,149 @@
+import { testContext } from './buildContext.mock';
+import { buildContactsListHref } from './contactsListHref';
+
+const filtersOf = (href: string | null) => {
+  expect(href).not.toBeNull();
+  const url = new URL(href ?? '', 'https://mpdx.test');
+  expect(url.pathname).toBe('/accountLists/account-list-1/contacts');
+  return JSON.parse(url.searchParams.get('filters') ?? 'null');
+};
+
+const build = (...presets: unknown[]) =>
+  buildContactsListHref({ presets }, testContext);
+
+describe('buildContactsListHref', () => {
+  it('links to all contacts without presets', () => {
+    expect(buildContactsListHref({}, testContext)).toBe(
+      '/accountLists/account-list-1/contacts',
+    );
+    expect(build()).toBe('/accountLists/account-list-1/contacts');
+  });
+
+  it.each([
+    ['late_by_30', '30_60'],
+    ['late_by_60', '60_90'],
+    ['late_by_90', '90'],
+  ])('maps %s to the Late By filter', (preset, pledgeLateBy) => {
+    expect(filtersOf(build({ preset }))).toEqual({ pledgeLateBy });
+  });
+
+  it('maps stopped_giving without a range to the past year up to a month ago', () => {
+    expect(filtersOf(build({ preset: 'stopped_giving' }))).toEqual({
+      stoppedGivingRange: { min: '2025-03-15', max: '2026-02-15' },
+    });
+  });
+
+  it('maps stopped_giving with a range', () => {
+    expect(
+      filtersOf(build({ preset: 'stopped_giving', range: 'last_year' })),
+    ).toEqual({ stoppedGivingRange: { min: '2025-01-01', max: '2025-12-31' } });
+  });
+
+  it('ends a stopped_giving range no later than a month ago', () => {
+    expect(
+      filtersOf(build({ preset: 'stopped_giving', range: 'last_month' })),
+    ).toEqual({ stoppedGivingRange: { min: '2026-02-01', max: '2026-02-15' } });
+  });
+
+  it.each(['last_30_days', 'this_month'])(
+    'returns null for stopped_giving in %s, which the API cannot filter',
+    (range) => {
+      expect(build({ preset: 'stopped_giving', range })).toBeNull();
+    },
+  );
+
+  it('maps status labels to the status filter', () => {
+    expect(
+      filtersOf(
+        build({
+          preset: 'status_in',
+          values: [
+            'Partner - Financial',
+            'New Connection',
+            'Expired Connection',
+          ],
+        }),
+      ),
+    ).toEqual({
+      status: ['PARTNER_FINANCIAL', 'NEVER_CONTACTED', 'EXPIRED_REFERRAL'],
+    });
+  });
+
+  it.each([
+    [['Physical'], 'PHYSICAL_ONLY'],
+    [['Email'], 'EMAIL_ONLY'],
+    [['Both'], 'BOTH'],
+    [['None'], 'NONE'],
+    [['Both', 'Physical'], 'PHYSICAL'],
+    [['Email', 'Both'], 'EMAIL'],
+    [['Physical', 'Email', 'Both'], 'ALL'],
+  ])('maps newsletter %j to %s', (values, newsletter) => {
+    expect(filtersOf(build({ preset: 'newsletter_in', values }))).toEqual({
+      newsletter,
+    });
+  });
+
+  it('returns null for a newsletter set the filter cannot express', () => {
+    expect(
+      build({ preset: 'newsletter_in', values: ['Physical', 'Email'] }),
+    ).toBeNull();
+  });
+
+  it('maps pledge frequency labels to the filter values', () => {
+    expect(
+      filtersOf(
+        build({
+          preset: 'pledge_frequency_in',
+          values: ['Monthly', 'Weekly', 'Monthly'],
+        }),
+      ),
+    ).toEqual({ pledgeFrequency: ['1.0', '0.23076923076923'] });
+  });
+
+  it('combines presets', () => {
+    expect(
+      filtersOf(
+        build(
+          { preset: 'late_by_90' },
+          { preset: 'status_in', values: ['Partner - Financial'] },
+        ),
+      ),
+    ).toEqual({ pledgeLateBy: '90', status: ['PARTNER_FINANCIAL'] });
+  });
+
+  it.each([
+    ['presets that are not a list', { presets: 'late_by_30' }],
+    ['an unknown param', { presets: [], sort: 'name' }],
+  ])('returns null for %s', (_, params) => {
+    expect(buildContactsListHref(params, testContext)).toBeNull();
+  });
+
+  it.each([
+    ['a preset that is not an object', 'late_by_30'],
+    ['an unknown preset', { preset: 'late_by_120' }],
+    ['a param on a late preset', { preset: 'late_by_30', days: 30 }],
+    ['an unknown range', { preset: 'stopped_giving', range: 'forever' }],
+    ['an unknown status', { preset: 'status_in', values: ['Donor'] }],
+    ['an empty values list', { preset: 'status_in', values: [] }],
+    [
+      'values that are not a list',
+      { preset: 'status_in', values: 'Unresponsive' },
+    ],
+    [
+      'an unknown frequency',
+      { preset: 'pledge_frequency_in', values: ['Daily'] },
+    ],
+    ['an unknown newsletter', { preset: 'newsletter_in', values: ['Fax'] }],
+  ])('returns null for %s', (_, preset) => {
+    expect(build(preset)).toBeNull();
+  });
+
+  it('returns null for a repeated preset or two late presets', () => {
+    expect(
+      build({ preset: 'late_by_30' }, { preset: 'late_by_30' }),
+    ).toBeNull();
+    expect(
+      build({ preset: 'late_by_30' }, { preset: 'late_by_90' }),
+    ).toBeNull();
+  });
+});
