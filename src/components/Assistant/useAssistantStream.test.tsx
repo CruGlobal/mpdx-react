@@ -478,6 +478,17 @@ describe('useAssistantStream', () => {
         expect(reply).toMatchObject({ citations: [], status: 'complete' });
       },
     );
+
+    it('ignores an unknown event type without logging it', async () => {
+      const reply = await streamRaw([
+        { type: 'chunk', message_id: 'm1', delta: 'Hi' },
+        { type: 'something_new', message_id: 'm1', delta: 'ignored' },
+        { type: 'generation_complete', message_id: 'm1' },
+      ]);
+
+      expect(reply).toMatchObject({ content: 'Hi', status: 'complete' });
+      expect(debugSpy).not.toHaveBeenCalled();
+    });
   });
 
   it('does nothing when the assistant is not configured', async () => {
