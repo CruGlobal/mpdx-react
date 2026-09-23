@@ -1,0 +1,34 @@
+fragment AssistantSettingsFields on AssistantSettings {
+  id
+  enabled
+  launcherHidden
+  helpEnabled
+  accountSummaryEnabled
+  partnersEnabled
+  partnerDetailsEnabled
+  suggestEnabled
+  prayerLettersEnabled
+  historyEnabled
+  profileReviewedAt
+  ministryRole
+  family
+  petsHobbies
+  personality
+  voiceNotes
+  sampleLetter
+  neverMention
+}
+
+query AssistantSettings {
+  assistantSettings {
+    ...AssistantSettingsFields
+  }
+}
+
+mutation UpdateAssistantSettings($attributes: AssistantSettingsUpdateInput!) {
+  updateAssistantSettings(input: { attributes: $attributes }) {
+    assistantSettings {
+      ...AssistantSettingsFields
+    }
+  }
+}
