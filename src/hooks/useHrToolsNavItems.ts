@@ -1,5 +1,7 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNewStaffQuestionnaireStatusQuery } from './NewStaffQuestionnaireStatus.generated';
+import { useAccountListId } from './useAccountListId';
 import { useDeveloperBypass } from './useDeveloperBypass';
 import { useIneligibleByGroup } from './useIneligibleByGroup';
 import { NavItems } from './useReportNavItems';
@@ -18,12 +20,30 @@ export function useHrToolsNavItems(): {
     inNsGoalCalcIneligibleGroup,
     inPdsGoalCalcIneligibleGroup,
     inMpdSupervisorIneligibleGroup,
+    canViewNewStaffCohorts,
     hasNoStaffAccount,
     userLoading,
   } = useIneligibleByGroup();
   const developerBypass = useDeveloperBypass();
   // Partner Reminders is live in production; every other HR Tool is still disabled
   const { reportsDisabled } = useReportsDisabled();
+  const accountListId = useAccountListId();
+
+  // Only new staff are ever offered the questionnaire, so nobody else pays for this query.
+  const {
+    data: questionnaireData,
+    loading: questionnaireLoading,
+    error: questionnaireError,
+  } = useNewStaffQuestionnaireStatusQuery({
+    variables: { accountListId },
+    skip: userLoading || inNsGoalCalcIneligibleGroup,
+  });
+  const questionnaire = questionnaireData?.newStaffQuestionnaire;
+  const hasQuestionnaireToFillIn = !!questionnaire && !questionnaire.completed;
+  // A failed query must not hide the path to paperwork new staff still owe
+  const hideQuestionnaire = questionnaireError
+    ? false
+    : questionnaireLoading || !hasQuestionnaireToFillIn;
 
   const items = useMemo(() => {
     if (userLoading) {
@@ -55,7 +75,8 @@ export function useHrToolsNavItems(): {
         hideItem:
           reportsDisabled ||
           process.env.DISABLE_NS_GOAL_CALCULATOR === 'true' ||
-          inNsGoalCalcIneligibleGroup,
+          inNsGoalCalcIneligibleGroup ||
+          hideQuestionnaire,
       },
       {
         id: 'goalCalculator',
@@ -68,7 +89,7 @@ export function useHrToolsNavItems(): {
         hideItem:
           reportsDisabled ||
           process.env.DISABLE_MPD_GOAL_ADMIN === 'true' ||
-          inMpdGoalCalcIneligibleGroup,
+          !canViewNewStaffCohorts,
       },
       {
         id: 'mhaCalculator',
@@ -106,6 +127,8 @@ export function useHrToolsNavItems(): {
     inNsGoalCalcIneligibleGroup,
     inPdsGoalCalcIneligibleGroup,
     inMpdSupervisorIneligibleGroup,
+    canViewNewStaffCohorts,
+    hideQuestionnaire,
     userLoading,
     hasNoStaffAccount,
     developerBypass,
