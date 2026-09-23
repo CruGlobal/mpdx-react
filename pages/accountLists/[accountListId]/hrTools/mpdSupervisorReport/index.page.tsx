@@ -24,6 +24,7 @@ import {
   UserTypeAccess,
 } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
+import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { getAppName } from 'src/lib/getAppName';
 
 const MpdSupervisorReportContent: React.FC = () => {
@@ -75,13 +76,17 @@ const MpdSupervisorReportContent: React.FC = () => {
 export const MpdSupervisorReportPage: React.FC = () => {
   const { t } = useTranslation();
   const appName = getAppName();
+  const { developer } = useRequiredSession();
 
   return (
     <>
       <Head>
         <title>{`${appName} | ${t('HR Tools | MPD Supervisor Report')}`}</title>
       </Head>
-      <UserTypeAccess requireUserGroups={RequiredUserGroupEnum.MpdSupervisor}>
+      <UserTypeAccess
+        requireUserGroups={RequiredUserGroupEnum.MpdSupervisor}
+        alwaysAllow={developer}
+      >
         <ReportPageWrapper>
           <MpdSupervisorReportProvider>
             <MpdSupervisorReportContent />
