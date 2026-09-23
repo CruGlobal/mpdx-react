@@ -3,6 +3,7 @@ import { Box, CircularProgress, Link, Stack, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { visuallyHidden } from '@mui/utils';
 import { useTranslation } from 'react-i18next';
+import { AssistantErrorBoundary } from './AssistantErrorBoundary';
 import { AssistantMarkdown } from './AssistantMarkdown';
 import { MessageCard } from './cards/MessageCard';
 import { toSafeHttpUrl } from './safeUrl';
@@ -156,11 +157,9 @@ export const MessageList: React.FC<MessageListProps> = ({
         aria-label={t('Conversation')}
       >
         {messages.map((message) => (
-          <MessageItem
-            key={message.id}
-            message={message}
-            onNavigate={onNavigate}
-          />
+          <AssistantErrorBoundary key={message.id}>
+            <MessageItem message={message} onNavigate={onNavigate} />
+          </AssistantErrorBoundary>
         ))}
         <div ref={endRef} />
       </List>

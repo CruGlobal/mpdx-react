@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MessageList } from './MessageList';
-import { AssistantMessage } from './types';
+import { AssistantCard, AssistantMessage } from './types';
 
 const message = (overrides: Partial<AssistantMessage>): AssistantMessage => ({
   id: 'message-1',
@@ -149,6 +149,26 @@ describe('MessageList', () => {
 
     expect(getByText('Partial')).toBeInTheDocument();
     expect(queryByText('Stopped.')).not.toBeInTheDocument();
+  });
+
+  it('shows a fallback for a reply that fails to render and keeps the rest', () => {
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const { getByText } = render(
+      <MessageList
+        messages={[
+          message({ id: '1', role: 'user', content: 'Hi' }),
+          message({ id: '2', cards: [null as unknown as AssistantCard] }),
+        ]}
+        streaming={false}
+        onNavigate={onNavigate}
+      />,
+    );
+
+    expect(
+      getByText('Something went wrong showing this reply.'),
+    ).toBeInTheDocument();
+    expect(getByText('Hi')).toBeInTheDocument();
+    errorSpy.mockRestore();
   });
 
   it('passes navigation to cards', () => {
