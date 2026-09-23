@@ -210,6 +210,20 @@ describe('useAssistantStream', () => {
     expect(result.current.context.conversation).toBeNull();
   });
 
+  it.each([{}, { id: 42 }, null])(
+    'marks the reply as failed when the create response has no string id (%p)',
+    async (body) => {
+      fetchSpy.mockResolvedValueOnce(mockJsonResponse(body));
+      const { result } = renderStream();
+
+      await act(() => result.current.stream.sendMessage('Hi'));
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(result.current.context.messages[1].status).toBe('error');
+      expect(result.current.context.conversation).toBeNull();
+    },
+  );
+
   it('marks the reply as failed when the stream is not ok', async () => {
     fetchSpy
       .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))

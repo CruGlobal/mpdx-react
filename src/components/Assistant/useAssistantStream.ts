@@ -105,7 +105,11 @@ export const useAssistantStream = (): UseAssistantStreamResult => {
               `Creating a conversation failed: ${response.status}`,
             );
           }
-          const { id } = (await response.json()) as { id: string };
+          const data = (await response.json()) as { id?: unknown } | null;
+          const id = data?.id;
+          if (typeof id !== 'string' || !id) {
+            throw new Error('Creating a conversation returned no id');
+          }
           conversationId = id;
           dispatch({
             type: 'setConversation',
