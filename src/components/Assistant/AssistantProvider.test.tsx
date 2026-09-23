@@ -1,6 +1,11 @@
 import { act, renderHook } from '@testing-library/react-hooks';
-import { mockSession } from '__tests__/util/mockSession';
 import { AssistantProvider, useAssistantContext } from './AssistantProvider';
+import { useAssistantVisibility } from './useAssistantVisibility';
+
+jest.mock('./useAssistantVisibility');
+const mockUseAssistantVisibility = useAssistantVisibility as jest.MockedFn<
+  typeof useAssistantVisibility
+>;
 
 describe('AssistantProvider', () => {
   it('throws when used outside of the provider', () => {
@@ -62,18 +67,16 @@ describe('AssistantProvider', () => {
   });
 
   it('aborts the stream when the assistant becomes hidden', () => {
-    process.env.DEVELOPMENT_ENV = 'true';
-    mockSession({ developer: true, impersonating: false });
+    mockUseAssistantVisibility.mockReturnValue(true);
     const { result, rerender } = renderHook(() => useAssistantContext(), {
       wrapper: AssistantProvider,
     });
     const controller = new AbortController();
     act(() => result.current.beginStream(controller));
 
-    mockSession({ developer: true, impersonating: true });
+    mockUseAssistantVisibility.mockReturnValue(false);
     rerender();
 
     expect(controller.signal.aborted).toBe(true);
-    process.env.DEVELOPMENT_ENV = 'false';
   });
 });

@@ -1,24 +1,66 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { mockSession } from '__tests__/util/mockSession';
 import theme from 'src/theme';
 import { AssistantDrawer } from './AssistantDrawer';
 import { AssistantLauncher } from './AssistantLauncher';
 import { AssistantProvider } from './AssistantProvider';
+import {
+  AssistantSettingsFieldsFragment,
+  AssistantSettingsQuery,
+  UpdateAssistantSettingsMutation,
+} from './AssistantSettings.generated';
+import { assistantSettingsMock } from './AssistantSettings.mock';
 
-const TestComponent: React.FC = () => (
+const mutationSpy = jest.fn();
+
+interface TestComponentProps {
+  settings?: Partial<AssistantSettingsFieldsFragment>;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({ settings = {} }) => (
   <ThemeProvider theme={theme}>
-    <TestRouter>
-      <AssistantProvider>
-        <AssistantLauncher />
-        <AssistantDrawer />
-      </AssistantProvider>
-    </TestRouter>
+    <SnackbarProvider>
+      <TestRouter>
+        <GqlMockedProvider<{
+          AssistantSettings: AssistantSettingsQuery;
+          UpdateAssistantSettings: UpdateAssistantSettingsMutation;
+        }>
+          mocks={{
+            AssistantSettings: {
+              assistantSettings: assistantSettingsMock(settings),
+            },
+            UpdateAssistantSettings: {
+              updateAssistantSettings: {
+                assistantSettings: assistantSettingsMock({
+                  ...settings,
+                  enabled: true,
+                  helpEnabled: true,
+                }),
+              },
+            },
+          }}
+          onCall={mutationSpy}
+        >
+          <AssistantProvider>
+            <AssistantLauncher />
+            <AssistantDrawer />
+          </AssistantProvider>
+        </GqlMockedProvider>
+      </TestRouter>
+    </SnackbarProvider>
   </ThemeProvider>
 );
+
+const launcherName = { name: 'Open Assistant' };
+
+// Lets the settings query resolve before asserting that nothing rendered
+const settle = () => new Promise((resolve) => setTimeout(resolve, 50));
 
 describe('AssistantLauncher', () => {
   beforeEach(() => {
@@ -32,48 +74,80 @@ describe('AssistantLauncher', () => {
     process.env.DISABLE_ASSISTANT = 'false';
   });
 
-  it('renders for a developer', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('opens the drawer when the user has opted in', async () => {
+    const { findByRole, getByRole } = render(
+      <TestComponent settings={{ enabled: true }} />,
+    );
 
-    expect(getByRole('button', { name: 'Open Assistant' })).toBeInTheDocument();
+    userEvent.click(await findByRole('button', launcherName));
+
+    expect(getByRole('dialog', { name: 'Assistant' })).toBeInTheDocument();
   });
 
-  it('is hidden when DISABLE_ASSISTANT is on', () => {
+  it('opens the first-run explanation instead of the drawer before opt-in', async () => {
+    const { findByRole, queryByRole } = render(<TestComponent />);
+
+    userEvent.click(await findByRole('button', launcherName));
+
+    expect(
+      await findByRole('dialog', { name: 'Meet the Assistant' }),
+    ).toBeInTheDocument();
+    expect(
+      queryByRole('dialog', { name: 'Assistant' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('opens the drawer after the user turns it on', async () => {
+    const { findByRole } = render(<TestComponent />);
+
+    userEvent.click(await findByRole('button', launcherName));
+    userEvent.click(await findByRole('button', { name: 'Turn it on' }));
+
+    expect(
+      await findByRole('dialog', { name: 'Assistant' }),
+    ).toBeInTheDocument();
+  });
+
+  it('is hidden when the user hid the launcher', async () => {
+    const { queryByRole } = render(
+      <TestComponent settings={{ enabled: true, launcherHidden: true }} />,
+    );
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('AssistantSettings'),
+    );
+    await settle();
+    expect(queryByRole('button', launcherName)).not.toBeInTheDocument();
+  });
+
+  it('is hidden when DISABLE_ASSISTANT is on', async () => {
     process.env.DISABLE_ASSISTANT = 'true';
 
-    const { queryByRole } = render(<TestComponent />);
+    const { queryByRole } = render(
+      <TestComponent settings={{ enabled: true }} />,
+    );
 
-    expect(
-      queryByRole('button', { name: 'Open Assistant' }),
-    ).not.toBeInTheDocument();
+    await settle();
+    expect(queryByRole('button', launcherName)).not.toBeInTheDocument();
   });
 
-  it('is hidden when impersonating', () => {
+  it('is hidden when impersonating', async () => {
     mockSession({ developer: true, impersonating: true });
 
-    const { queryByRole } = render(<TestComponent />);
+    const { queryByRole } = render(
+      <TestComponent settings={{ enabled: true }} />,
+    );
 
-    expect(
-      queryByRole('button', { name: 'Open Assistant' }),
-    ).not.toBeInTheDocument();
+    await settle();
+    expect(queryByRole('button', launcherName)).not.toBeInTheDocument();
   });
 
-  it('is hidden for a non-developer', () => {
+  it('is hidden from non-developers while the rollout gate is on', async () => {
     mockSession({ developer: false });
 
     const { queryByRole } = render(<TestComponent />);
 
-    expect(
-      queryByRole('button', { name: 'Open Assistant' }),
-    ).not.toBeInTheDocument();
-  });
-
-  it('opens the drawer when clicked', () => {
-    const { getByRole, queryByRole } = render(<TestComponent />);
-
-    expect(queryByRole('dialog')).not.toBeInTheDocument();
-    userEvent.click(getByRole('button', { name: 'Open Assistant' }));
-
-    expect(getByRole('dialog', { name: 'Assistant' })).toBeInTheDocument();
+    await settle();
+    expect(queryByRole('button', launcherName)).not.toBeInTheDocument();
   });
 });

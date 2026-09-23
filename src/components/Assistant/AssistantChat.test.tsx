@@ -21,6 +21,13 @@ import {
   mockJsonResponse,
   mockStreamResponse,
 } from './sse.mock';
+import { useAssistantVisibility } from './useAssistantVisibility';
+
+// Keeps the settings query off the mint link so every operation MintSequenceProvider sees is a mint
+jest.mock('./useAssistantVisibility');
+const mockUseAssistantVisibility = useAssistantVisibility as jest.MockedFn<
+  typeof useAssistantVisibility
+>;
 
 jest.mock('./MessageList', () => {
   const actual = jest.requireActual('./MessageList');
@@ -118,6 +125,7 @@ describe('AssistantChat', () => {
     process.env.ASSISTANT_URL = 'https://assistant.test';
     process.env.HELPJUICE_ORIGIN = 'https://domain.helpjuice.com';
     process.env.DEVELOPMENT_ENV = 'true';
+    mockUseAssistantVisibility.mockReturnValue(true);
     mockSession({
       apiToken: 'session-token',
       developer: true,
