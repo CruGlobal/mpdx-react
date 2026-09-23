@@ -108,7 +108,11 @@ export const MpdGoalAdminProvider: React.FC<{
     },
     [router],
   );
-  const { data: userData, loading: userLoading } = useGetUserQuery();
+  const {
+    data: userData,
+    loading: userLoading,
+    error: userError,
+  } = useGetUserQuery();
   const isGoalsAdmin = !!userData?.user.mpdSupervisorAdmin;
   const [selectedCohortId, setSelectedCohortId] = useState<string>('');
   const [search, setSearch] = useState('');
@@ -132,7 +136,7 @@ export const MpdGoalAdminProvider: React.FC<{
   // empty cohort is a dead end; admins keep it to enter costs before arrivals.
   const cohorts = useMemo(() => {
     // Held back until the role is known, so an admin never auto-selects from the filtered list.
-    if (userLoading) {
+    if (!userData) {
       return [];
     }
     const allCohorts =
@@ -142,7 +146,7 @@ export const MpdGoalAdminProvider: React.FC<{
     return isGoalsAdmin
       ? allCohorts
       : allCohorts.filter(({ trainingSize }) => trainingSize > 0);
-  }, [cohortsData, locale, userLoading, isGoalsAdmin]);
+  }, [cohortsData, locale, userData, isGoalsAdmin]);
 
   // Stale ids from another cohort would mislead the count and bulk actions.
   const selectCohort = useCallback(
@@ -305,9 +309,10 @@ export const MpdGoalAdminProvider: React.FC<{
     [cohorts, selectedCohortId],
   );
 
+  // A failed user load leaves the role unknown, so it must not read as a coordinator.
   const noVisibleCohorts =
+    !!userData &&
     !isGoalsAdmin &&
-    !userLoading &&
     !cohortsLoading &&
     !cohortsError &&
     !cohorts.length;
@@ -335,9 +340,9 @@ export const MpdGoalAdminProvider: React.FC<{
       // Skipped without a selection, so zero cohorts must not spin forever.
       loading:
         cohortsLoading ||
-        userLoading ||
+        (!userData && userLoading) ||
         (selectedCohortId ? attendeesLoading : cohorts.length > 0),
-      error: cohortsError ?? attendeesError,
+      error: cohortsError ?? userError ?? attendeesError,
       selectedRowIds,
       selectedRows,
       toggleRow,
@@ -364,9 +369,11 @@ export const MpdGoalAdminProvider: React.FC<{
       searchPending,
       filteredRows,
       cohortsLoading,
+      userData,
       userLoading,
       attendeesLoading,
       cohortsError,
+      userError,
       attendeesError,
       selectedRowIds,
       selectedRows,

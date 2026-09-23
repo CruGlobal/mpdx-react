@@ -39,7 +39,7 @@ const mutationSpy = jest.fn();
 
 const makeWrapper = (
   mocks: {
-    cohorts?: NewStaffCohortsQuery;
+    cohorts?: DeepPartialMock<NewStaffCohortsQuery>;
     attendees?:
       | NewStaffCohortAttendeesQuery
       | ((operation: Operation) => NewStaffCohortAttendeesQuery);
@@ -546,6 +546,37 @@ describe('MpdGoalAdminContext', () => {
       );
       expect(result.current.cohorts).toHaveLength(3);
       expect(result.current.noVisibleCohorts).toBe(false);
+    });
+
+    it('does not report no visible cohorts when the cohorts query fails', async () => {
+      const { result } = renderContext({
+        user: coordinatorUserMock,
+        cohorts: {
+          newStaffCohorts: () => {
+            throw new Error('Not authorized');
+          },
+        } as unknown as DeepPartialMock<NewStaffCohortsQuery>,
+      });
+
+      await waitFor(() => expect(result.current.error).toBeDefined());
+      expect(result.current.noVisibleCohorts).toBe(false);
+    });
+
+    it('treats a failed user load as an unknown role and reports its error', async () => {
+      const { result } = renderContext({
+        user: {
+          user: () => {
+            throw new Error('User failed');
+          },
+        } as unknown as DeepPartialMock<GetUserQuery>,
+      });
+
+      await waitFor(() =>
+        expect(result.current.error?.message).toContain('User failed'),
+      );
+      await waitFor(() => expect(result.current.loading).toBe(false));
+      expect(result.current.noVisibleCohorts).toBe(false);
+      expect(result.current.cohorts).toHaveLength(0);
     });
   });
 });
