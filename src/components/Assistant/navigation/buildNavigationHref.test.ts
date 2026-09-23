@@ -31,6 +31,13 @@ describe('buildNavigationHref', () => {
     );
   });
 
+  it('treats null params as empty, like the server', () => {
+    expect(
+      buildNavigationHref({ type: 'dashboard', params: null }, accountListId),
+    ).toBe('/accountLists/account-list-1');
+    expect(debugSpy).not.toHaveBeenCalled();
+  });
+
   it('passes the current time to date-based builders', () => {
     expect(
       buildNavigationHref(

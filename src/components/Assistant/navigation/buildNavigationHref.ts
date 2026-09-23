@@ -79,7 +79,8 @@ export const buildNavigationHref = (
   if (!isPlainObject(intent) || !hasOnlyKeys(intent, ['type', 'params'])) {
     return drop('unknown', 'not an intent');
   }
-  const { type, params = {} } = intent;
+  const type = intent.type;
+  const params = intent.params ?? {};
   if (!isOneOf(type, NAVIGATION_INTENT_TYPES)) {
     return drop('unknown', 'unknown type');
   }
