@@ -59,12 +59,18 @@ const makeWrapper = (
 };
 
 describe('useNavigationVisibility', () => {
+  const originalDisableNewReports = process.env.DISABLE_NEW_REPORTS;
+
   beforeEach(() => {
     mockSession({ developer: false });
   });
 
   afterEach(() => {
-    process.env.DISABLE_NEW_REPORTS = 'false';
+    if (originalDisableNewReports === undefined) {
+      delete process.env.DISABLE_NEW_REPORTS;
+    } else {
+      process.env.DISABLE_NEW_REPORTS = originalDisableNewReports;
+    }
   });
 
   it('shows everything a verified US staff coach can see', async () => {
