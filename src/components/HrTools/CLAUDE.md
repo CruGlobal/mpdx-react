@@ -185,13 +185,20 @@ has a distinct `Complete` mutation, and the request forms autosave a draft but
   from the HCM query returning a second record (the spouse).
 - **MpdGoalAdmin** — no longer a mock. It runs `NewStaffCohorts.graphql`
   (`NewStaffCohorts`, `NewStaffCohortAttendees`, `UpdateNewStaffCohort`) and
-  `ScenarioGoals/ScenarioGoals.graphql`. `newStaffCohorts` is **team-wide, not
-  per-user** — the page is gated on `RequiredUserGroupEnum.MpdGoalCalc`, so an
-  empty cohort list means no cohorts exist at all, not that this user has none.
-  `MpdGoalAdminContext` **auto-selects the first cohort** whenever the list is
-  non-empty, so "no cohort selected" is only reachable with zero cohorts; tests
-  that pick a cohort themselves must first wait for that auto-select to settle
-  (wait on `selectedCohortId`, not on `cohorts.length`) or it will overwrite them.
+  `ScenarioGoals/ScenarioGoals.graphql`. `trainingSize` only counts attendees
+  the caller can see, so for coordinators (not `mpdSupervisorAdmin`) the context
+  **drops cohorts with `trainingSize` 0**, and a coordinator can get an empty
+  list while cohorts exist. The list is held empty until GetUser data exists, so
+  an admin never auto-selects from the filtered list; a failed GetUser surfaces
+  as the context `error` and does not count as coordinator.
+  `MpdGoalAdminContext` **auto-selects the first cohort** of the filtered list,
+  and a URL `cohortId` naming a hidden cohort falls back to the first remaining
+  one. `noVisibleCohorts` (coordinator, loaded, no error, empty list) makes
+  `MpdGoalAdmin.tsx` replace both CohortBar and the table with the "No Trainings
+  Available" null state; "No Training Selected" is only reached by an admin with
+  zero cohorts. Tests that pick a cohort themselves must first wait for the
+  auto-select to settle (wait on `selectedCohortId`, not on `cohorts.length`) or
+  it will overwrite them.
   **Print All renders server-side**: the button calls
   `printNewStaffCohortGoals`, then fetches the returned single-use `downloadUrl`
   with the Authorization header and saves the blob.
