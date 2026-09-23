@@ -10,10 +10,7 @@ import React, {
 import { ApolloError } from '@apollo/client';
 import { MpdAssignmentCategoryGroupEnum } from 'src/graphql/types.generated';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
-import {
-  ALL_TEAMS,
-  MpdSupervisorReportQuickFilterEnum,
-} from './Filters/mpdSupervisorReportFilters';
+import { MpdSupervisorReportQuickFilterEnum } from './Filters/mpdSupervisorReportFilters';
 import { useManagedStaffQuery } from './ManagedStaff.generated';
 import { StaffDetailTabEnum } from './StaffDetailsTabs/StaffDetailTab';
 import { ManagedStaffMember } from './helpers';
@@ -37,8 +34,10 @@ export interface MpdSupervisorReportContextValue {
   closePanel: () => void;
   search: string;
   setSearch: (v: string) => void;
-  team: string;
-  setTeam: (v: string) => void;
+  team: string | null;
+  setTeam: (v: string | null) => void;
+  department: string | null;
+  setDepartment: (v: string | null) => void;
   employmentType: MpdAssignmentCategoryGroupEnum | null;
   setEmploymentType: (v: MpdAssignmentCategoryGroupEnum | null) => void;
   activeQuickFilter: MpdSupervisorReportQuickFilterEnum;
@@ -85,7 +84,8 @@ export const MpdSupervisorReportProvider: React.FC<{
     ManagedStaffMember | undefined
   >(undefined);
   const [search, setSearch] = useState('');
-  const [team, setTeam] = useState<string>(ALL_TEAMS);
+  const [team, setTeam] = useState<string | null>(null);
+  const [department, setDepartment] = useState<string | null>(null);
   const [employmentType, setEmploymentType] =
     useState<MpdAssignmentCategoryGroupEnum | null>(null);
   const [activeQuickFilter, setActiveQuickFilter] =
@@ -102,7 +102,8 @@ export const MpdSupervisorReportProvider: React.FC<{
     variables: {
       first: pageSize,
       name: debouncedSearch.trim() || null,
-      teamIds: team === ALL_TEAMS ? null : [team],
+      teamNames: team ? [team] : null,
+      departments: department ? [department] : null,
       assignmentCategoryGroup: employmentType,
       // Send the flag only when its chip is active; false would filter on it.
       negativeLastMonth:
@@ -172,6 +173,8 @@ export const MpdSupervisorReportProvider: React.FC<{
       setSearch,
       team,
       setTeam,
+      department,
+      setDepartment,
       employmentType,
       setEmploymentType,
       activeQuickFilter,
@@ -191,6 +194,7 @@ export const MpdSupervisorReportProvider: React.FC<{
       selectedMember,
       search,
       team,
+      department,
       employmentType,
       activeQuickFilter,
       selectedTabKey,
