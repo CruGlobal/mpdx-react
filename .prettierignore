@@ -24,3 +24,6 @@ yarn-error.log*
 
 # Generated translation files
 /public/locales/
+
+# Vendored verbatim from mpdx-assistant
+/src/components/Assistant/knowledge/

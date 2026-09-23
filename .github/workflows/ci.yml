@@ -86,6 +86,8 @@ jobs:
           max_attempts: 2
       - name: 💨 ESLint
         run: yarn lint:ci
+      - name: 🗺️ Route map check
+        run: yarn check:route-map
 
   typescript:
     runs-on: ubuntu-latest
