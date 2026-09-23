@@ -1,8 +1,15 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import TestRouter from '__tests__/util/TestRouter';
 import { HandoffCardData } from '../types';
 import { HandoffCard } from './HandoffCard';
+
+const TestComponent: React.FC<{ card: HandoffCardData }> = ({ card }) => (
+  <TestRouter router={{ asPath: '/accountLists/1/contacts' }}>
+    <HandoffCard card={card} />
+  </TestRouter>
+);
 
 const card: HandoffCardData = {
   kind: 'handoff',
@@ -19,17 +26,16 @@ describe('HandoffCard', () => {
 
   beforeEach(() => {
     Object.assign(navigator, { clipboard: { writeText } });
-    location.href = 'https://example.com/accountLists/1';
   });
 
   it('shows the summary', () => {
-    const { getByText } = render(<HandoffCard card={card} />);
+    const { getByText } = render(<TestComponent card={card} />);
 
     expect(getByText(card.summary)).toBeInTheDocument();
   });
 
   it('copies the summary', async () => {
-    const { getByRole, getByText } = render(<HandoffCard card={card} />);
+    const { getByRole, getByText } = render(<TestComponent card={card} />);
 
     userEvent.click(getByRole('button', { name: 'Copy summary' }));
 
@@ -40,7 +46,7 @@ describe('HandoffCard', () => {
   it('shows a fallback when copying fails', async () => {
     writeText.mockRejectedValueOnce(new Error('Clipboard blocked'));
     const { getByRole, findByText, queryByText } = render(
-      <HandoffCard card={card} />,
+      <TestComponent card={card} />,
     );
 
     userEvent.click(getByRole('button', { name: 'Copy summary' }));
@@ -49,8 +55,8 @@ describe('HandoffCard', () => {
     expect(queryByText('Copied')).not.toBeInTheDocument();
   });
 
-  it('links to the contact form with the name, email, and page url', () => {
-    const { getByRole } = render(<HandoffCard card={card} />);
+  it('links to the contact form with the name, email, and current route', () => {
+    const { getByRole } = render(<TestComponent card={card} />);
 
     const link = getByRole('link', { name: 'Contact the help desk' });
     expect(link).toHaveAttribute('target', '_blank');
@@ -59,13 +65,13 @@ describe('HandoffCard', () => {
     expect(url.searchParams.get('mpdxName')).toBe('First Last');
     expect(url.searchParams.get('mpdxEmail')).toBe('first.last@cru.org');
     expect(url.searchParams.get('mpdxUrl')).toBe(
-      'https://example.com/accountLists/1',
+      'http://localhost/accountLists/1/contacts',
     );
   });
 
   it('hides the link when the contact form url is not http', () => {
     const { queryByRole } = render(
-      <HandoffCard
+      <TestComponent
         card={{
           ...card,
           contact_form: { ...card.contact_form, url: 'javascript:alert(1)' },

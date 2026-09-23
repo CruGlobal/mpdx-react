@@ -13,10 +13,10 @@ import { styled } from '@mui/material/styles';
 import { useSession } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
 import { buildHelpjuiceContactUrl } from 'src/components/Helpjuice/contactUrl';
-import { useLocation } from 'src/components/Helpjuice/useLocation';
 import { useAssistantContext } from './AssistantProvider';
 import { MessageList } from './MessageList';
 import { useAssistantStream } from './useAssistantStream';
+import { useCurrentPageUrl } from './useCurrentPageUrl';
 
 const MessageArea = styled(Box)(({ theme }) => ({
   flexGrow: 1,
@@ -40,7 +40,7 @@ const Composer = styled('form')(({ theme }) => ({
 const HelpDeskLink: React.FC = () => {
   const { t } = useTranslation();
   const { data: session } = useSession();
-  const href = useLocation();
+  const href = useCurrentPageUrl();
 
   if (!process.env.HELPJUICE_ORIGIN) {
     return null;

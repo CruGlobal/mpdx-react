@@ -12,9 +12,9 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { buildHelpjuiceContactUrl } from 'src/components/Helpjuice/contactUrl';
-import { useLocation } from 'src/components/Helpjuice/useLocation';
 import { toSafeHttpUrl } from '../safeUrl';
 import { HandoffCardData } from '../types';
+import { useCurrentPageUrl } from '../useCurrentPageUrl';
 
 interface HandoffCardProps {
   card: HandoffCardData;
@@ -22,7 +22,7 @@ interface HandoffCardProps {
 
 export const HandoffCard: React.FC<HandoffCardProps> = ({ card }) => {
   const { t } = useTranslation();
-  const href = useLocation();
+  const href = useCurrentPageUrl();
   const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'failed'>(
     'idle',
   );
