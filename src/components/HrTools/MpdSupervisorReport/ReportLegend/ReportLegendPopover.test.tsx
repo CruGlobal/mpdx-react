@@ -32,42 +32,50 @@ describe('ReportLegendPopover', () => {
   it('shows every section when opened', async () => {
     const { getByRole } = await openLegend();
 
-    ['Colors', 'Numbers', 'New Staff goal', 'Fiscal quarters'].forEach((name) =>
+    [
+      'Colors',
+      'Numbers',
+      'Filters',
+      'New Staff Monthly Salary (the goal)',
+      'Fiscal quarters',
+    ].forEach((name) =>
       expect(getByRole('heading', { name })).toBeInTheDocument(),
     );
   });
 
-  it('explains each chip color', async () => {
-    const { getByText } = await openLegend();
+  it('explains each chip color beside a sample chip', async () => {
+    const { getByText, getAllByText } = await openLegend();
 
     ['On track', 'Needs attention', 'At risk', 'No data'].forEach((label) =>
       expect(getByText(label)).toBeInTheDocument(),
     );
+    // Sample chips use the row chip's amount formatting
+    expect(getByText('$4,250.00')).toBeInTheDocument();
+    expect(getAllByText('-').length).toBeGreaterThan(0);
   });
 
   it('matches the API grading order for red and green', async () => {
     const { getByText } = await openLegend();
 
     // Green is checked first, so red needs payroll below both benchmarks
+    expect(getByText(/Payroll was below both benchmarks/)).toBeInTheDocument();
     expect(
-      getByText(
-        /below both their Monthly Gross Salary and their New Staff Monthly Salary/,
-      ),
-    ).toBeInTheDocument();
-    expect(
-      getByText(
-        /can be green even though its months are counted as negative months/,
-      ),
+      getByText(/can show green quarters yet still have negative months/),
     ).toBeInTheDocument();
   });
 
-  it('defines a negative month', async () => {
+  it('defines the negative month filters', async () => {
     const { getByText } = await openLegend();
 
+    expect(getByText('Negative last month')).toBeInTheDocument();
     expect(
       getByText(
-        'A complete month in which payroll was below the New Staff Monthly Salary. The current month is not counted.',
+        'Staff whose payroll last month was below their New Staff Monthly Salary.',
       ),
+    ).toBeInTheDocument();
+    expect(getByText('Negative last 3+ months')).toBeInTheDocument();
+    expect(
+      getByText('The current month is never counted.'),
     ).toBeInTheDocument();
   });
 
@@ -82,9 +90,13 @@ describe('ReportLegendPopover', () => {
   });
 
   it('explains the fiscal quarters', async () => {
-    const { getByText } = await openLegend();
+    const { getByText, getByRole } = await openLegend();
 
     expect(getByText(/FQ1 26 is September–November 2025/)).toBeInTheDocument();
+    expect(
+      getByRole('row', { name: 'FQ1 September – November' }),
+    ).toBeInTheDocument();
+    expect(getByRole('row', { name: 'FQ4 June – August' })).toBeInTheDocument();
   });
 
   it('closes on Escape', async () => {

@@ -264,8 +264,8 @@ describe('StaffMemberDrawer', () => {
 
   describe('Monthly Gross Salary below the New Staff Monthly Salary', () => {
     const grossWarning =
-      /Monthly Gross Salary \(\$2,000\.00\) is below the New Staff Monthly Salary \(\$2,500\.00\)/;
-    const anyGrossWarning = /is below the New Staff Monthly Salary/;
+      /Monthly Gross Salary \(\$2,000\.00\) is \$500\.00 below the New Staff Monthly Salary \(\$2,500\.00\)/;
+    const anyGrossWarning = /below the New Staff Monthly Salary/;
 
     const memberWithGross = (
       monthlyGrossSalary: number | null,
@@ -329,7 +329,7 @@ describe('StaffMemberDrawer', () => {
 
       expect(
         await findByLabelText(
-          /Monthly Gross Salary \(\$2,800\.00\) is below the New Staff Monthly Salary \(\$3,000\.00\)/,
+          /Monthly Gross Salary \(\$2,800\.00\) is \$200\.00 below the New Staff Monthly Salary \(\$3,000\.00\)/,
         ),
       ).toBeInTheDocument();
     });

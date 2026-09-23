@@ -26,6 +26,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { monthYearFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { Panel, useMpdSupervisorReport } from './MpdSupervisorReportContext';
+import { HealthColorKey } from './ReportLegend/HealthColorKey';
 import { ReportLegendPopover } from './ReportLegend/ReportLegendPopover';
 import { StaffMember } from './StaffMemberRow/StaffMember';
 import {
@@ -198,6 +199,11 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
 
       <StyledContainer maxWidth={false}>
         <QuartersContainer>
+          {quarterHeaders.length > 0 && (
+            <HealthColorKey
+              sx={{ mr: 'auto', display: { xs: 'none', md: 'flex' } }}
+            />
+          )}
           {quarterHeaders.map(({ label, tooltip }) => (
             <Quarter key={label}>
               <Tooltip title={tooltip} arrow describeChild>
@@ -207,6 +213,11 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
                   tabIndex={0}
                   sx={{
                     width: '80px',
+                    // Signal that the header has a definition on hover
+                    textDecoration: 'underline dotted',
+                    textDecorationColor: 'text.disabled',
+                    textUnderlineOffset: '3px',
+                    cursor: 'help',
                   }}
                   textAlign={'center'}
                 >

@@ -212,6 +212,21 @@ describe('MpdSupervisorReport', () => {
     expect(getByText('FQ3 26')).toBeInTheDocument();
   });
 
+  it('shows the chip color key beside the quarter columns', async () => {
+    const { findByText, getByRole, queryByRole } = renderReport();
+    // The key only makes sense once there are chips to decode
+    expect(
+      queryByRole('list', { name: 'Chip colors' }),
+    ).not.toBeInTheDocument();
+    await findByText('John Smith');
+
+    const key = getByRole('list', { name: 'Chip colors' });
+    expect(key).toHaveTextContent('On track');
+    expect(key).toHaveTextContent('Needs attention');
+    expect(key).toHaveTextContent('At risk');
+    expect(key).toHaveTextContent('No data');
+  });
+
   it('renders the How this report works button in the header', async () => {
     const { findByRole } = renderReport();
 

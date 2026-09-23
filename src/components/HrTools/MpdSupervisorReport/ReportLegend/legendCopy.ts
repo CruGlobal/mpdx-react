@@ -1,4 +1,31 @@
 import { TFunction } from 'i18next';
+import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
+
+/** Chip statuses in the order the legend and colour key list them. */
+export const healthStatusOrder: MpdHealthStatusEnum[] = [
+  MpdHealthStatusEnum.Green,
+  MpdHealthStatusEnum.Yellow,
+  MpdHealthStatusEnum.Red,
+  MpdHealthStatusEnum.Gray,
+];
+
+/** Display label for a chip status (the sentence-case form of healthLabel). */
+export const healthStatusLabel = (
+  t: TFunction,
+  health: MpdHealthStatusEnum,
+): string => {
+  switch (health) {
+    case MpdHealthStatusEnum.Green:
+      return t('On track');
+    case MpdHealthStatusEnum.Yellow:
+      return t('Needs attention');
+    case MpdHealthStatusEnum.Red:
+      return t('At risk');
+    case MpdHealthStatusEnum.Gray:
+    default:
+      return t('No data');
+  }
+};
 
 /**
  * How the report's New Staff Monthly Salary is calculated, shared by the

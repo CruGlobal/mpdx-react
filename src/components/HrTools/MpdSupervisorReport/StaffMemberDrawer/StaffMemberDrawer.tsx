@@ -152,10 +152,13 @@ export const StaffMemberDrawer: React.FC = () => {
     typeof newStaffMonthlySalary === 'number' &&
     monthlyGrossSalary < newStaffMonthlySalary
       ? t(
-          "Monthly Gross Salary ({{gross}}) is below the New Staff Monthly Salary ({{newStaff}}). Even at full salary, this staff member's payroll cannot reach the New Staff benchmark.",
+          "Monthly Gross Salary ({{gross}}) is {{shortfall}} below the New Staff Monthly Salary ({{newStaff}}). Even at full salary, this staff member's payroll cannot reach the New Staff benchmark.",
           {
             gross: formatCurrency(monthlyGrossSalary),
             newStaff: formatCurrency(newStaffMonthlySalary),
+            shortfall: formatCurrency(
+              newStaffMonthlySalary - monthlyGrossSalary,
+            ),
           },
         )
       : null;

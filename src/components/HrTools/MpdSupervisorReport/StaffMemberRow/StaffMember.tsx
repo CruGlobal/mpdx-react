@@ -4,7 +4,6 @@ import {
   Box,
   Card,
   CardActionArea,
-  Chip,
   Grid,
   Stack,
   SxProps,
@@ -15,7 +14,6 @@ import { styled } from '@mui/material/styles';
 import { visuallyHidden } from '@mui/utils';
 import { useTranslation } from 'react-i18next';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
-import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import {
   ManagedStaffMember,
@@ -24,11 +22,11 @@ import {
   getInitials,
   getLocalizedAssignmentCategoryGroup,
   getQuarterLabel,
-  healthColor,
   healthLabel,
   pendingField,
   quarterAmountLabel,
 } from '../helpers';
+import { QuarterChip } from './QuarterChip';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   marginBottom: theme.spacing(1),
@@ -52,22 +50,6 @@ const GridQuarter = styled(Grid)(({ theme }) => ({
   flexWrap: 'wrap',
   justifyContent: 'flex-end',
 }));
-
-const QuarterChip = styled(Chip, {
-  shouldForwardProp: (prop) => prop !== 'health',
-})<{ health: MpdHealthStatusEnum }>(({ health }) => {
-  const { bg, color } = healthColor(theme, health);
-  return {
-    height: 22,
-    fontWeight: 600,
-    backgroundColor: bg,
-    color: color,
-    minWidth: '80px',
-    '& .MuiChip-label': {
-      paddingInline: theme.spacing(1),
-    },
-  };
-});
 
 interface StaffMemberProps {
   data: ManagedStaffMember;
