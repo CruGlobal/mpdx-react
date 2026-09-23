@@ -24,7 +24,7 @@ const NavigationLink: React.FC<
     () =>
       isLoading
         ? null
-        : buildNavigationHref(card.intent, accountListId, visibility),
+        : buildNavigationHref(card.intent, accountListId, { visibility }),
     [card.intent, accountListId, visibility, isLoading],
   );
 

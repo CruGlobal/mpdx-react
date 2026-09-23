@@ -9,10 +9,11 @@ import {
   NAVIGATION_INTENT_TYPES,
   NavigationIntentType,
   NavigationVisibility,
+  REPORT_NAMES,
   STAFF_REPORT_NAMES,
 } from './intents';
 import { Params, hasOnlyKeys, isOneOf, isPlainObject } from './params';
-import { buildReportHref } from './reportHref';
+import { REPORT_SEGMENTS, buildReportHref } from './reportHref';
 import { buildSettingsHref } from './settingsHref';
 import { buildTasksHref } from './tasksHref';
 import { buildToolsImportHref } from './toolsImportHref';
@@ -30,10 +31,17 @@ const BUILDERS: Record<NavigationIntentType, NavigationBuilder> = {
   coaching: buildCoachingHref,
 };
 
+export interface NavigationAccess {
+  visibility?: Partial<NavigationVisibility>;
+  // The report segments the nav lists; every report is allowed when absent
+  reportSegments?: ReadonlySet<string>;
+}
+
 const getHiddenReason = (
   type: NavigationIntentType,
   params: Params,
   visibility: NavigationVisibility,
+  reportSegments: ReadonlySet<string> | undefined,
 ): string | null => {
   switch (type) {
     case 'coaching':
@@ -50,6 +58,13 @@ const getHiddenReason = (
         isOneOf(params.name, STAFF_REPORT_NAMES)
       ) {
         return 'staff_features hidden';
+      }
+      if (
+        reportSegments &&
+        isOneOf(params.name, REPORT_NAMES) &&
+        !reportSegments.has(REPORT_SEGMENTS[params.name])
+      ) {
+        return 'report hidden';
       }
       return null;
     case 'settings':
@@ -73,7 +88,7 @@ const drop = (type: string, reason: string): null => {
 export const buildNavigationHref = (
   intent: unknown,
   accountListId: string | null | undefined,
-  visibility: Partial<NavigationVisibility> = DEFAULT_VISIBILITY,
+  { visibility, reportSegments }: NavigationAccess = {},
   now: DateTime = DateTime.local(),
 ): string | null => {
   if (!isPlainObject(intent) || !hasOnlyKeys(intent, ['type', 'params'])) {
@@ -90,10 +105,12 @@ export const buildNavigationHref = (
   if (!accountListId) {
     return drop(type, 'no account list');
   }
-  const hiddenReason = getHiddenReason(type, params, {
-    ...DEFAULT_VISIBILITY,
-    ...visibility,
-  });
+  const hiddenReason = getHiddenReason(
+    type,
+    params,
+    { ...DEFAULT_VISIBILITY, ...visibility },
+    reportSegments,
+  );
   if (hiddenReason) {
     return drop(type, hiddenReason);
   }

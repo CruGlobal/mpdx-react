@@ -108,7 +108,9 @@ describe('buildNavigationHref', () => {
       ],
       [{ hr_tools: false }, { type: 'settings', params: { tab: 'hr_tools' } }],
     ])('suppresses the intent when %j', (visibility, intent) => {
-      expect(buildNavigationHref(intent, accountListId, visibility)).toBeNull();
+      expect(
+        buildNavigationHref(intent, accountListId, { visibility }),
+      ).toBeNull();
       expect(debugSpy.mock.calls[0][0]).toContain('hidden');
     });
 
@@ -125,8 +127,31 @@ describe('buildNavigationHref', () => {
       [{ reports: false }, { type: 'coaching', params: {} }],
     ])('keeps unrelated intents when %j', (visibility, intent) => {
       expect(
-        buildNavigationHref(intent, accountListId, visibility),
+        buildNavigationHref(intent, accountListId, { visibility }),
       ).not.toBeNull();
+    });
+
+    it('suppresses a report the nav does not list', () => {
+      expect(
+        buildNavigationHref(
+          { type: 'report', params: { name: 'financial_accounts' } },
+          accountListId,
+          { reportSegments: new Set(['donations']) },
+        ),
+      ).toBeNull();
+      expect(debugSpy).toHaveBeenCalledWith(
+        'Assistant navigation intent dropped type=report reason=report hidden',
+      );
+    });
+
+    it('keeps a report the nav lists', () => {
+      expect(
+        buildNavigationHref(
+          { type: 'report', params: { name: 'financial_accounts' } },
+          accountListId,
+          { reportSegments: new Set(['financialAccounts']) },
+        ),
+      ).toBe('/accountLists/account-list-1/reports/financialAccounts');
     });
 
     it('shows everything by default', () => {
