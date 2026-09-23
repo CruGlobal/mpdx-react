@@ -101,8 +101,12 @@ const NotTurnedOn: React.FC<NotTurnedOnProps> = ({ accountListId }) => {
 // Mounts only while the drawer is open, so session, route, and Apollo hooks stay out of the provider
 export const AssistantChat: React.FC = () => {
   const { t } = useTranslation();
-  const { messages } = useAssistantContext();
+  const { messages, accountListId: transcriptAccountListId } =
+    useAssistantContext();
   const accountListId = useOptionalAccountListId();
+  // Until the transcript rebinds, it still holds another account list's conversation
+  const visibleMessages =
+    accountListId && transcriptAccountListId !== accountListId ? [] : messages;
   const configured = Boolean(getAssistantUrl());
   const {
     token,
@@ -149,7 +153,7 @@ export const AssistantChat: React.FC = () => {
   return (
     <>
       <MessageArea>
-        <MessageList messages={messages} streaming={streaming} />
+        <MessageList messages={visibleMessages} streaming={streaming} />
       </MessageArea>
       <Divider />
       <Footer>

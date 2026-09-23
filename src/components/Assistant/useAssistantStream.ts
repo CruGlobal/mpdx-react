@@ -1,5 +1,11 @@
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAssistantContext } from './AssistantProvider';
 import { AssistantAction } from './assistantReducer';
@@ -185,8 +191,8 @@ export const useAssistantStream = ({
 
   useEffect(() => () => clearTimeout(rateLimitTimer.current), []);
 
-  // A conversation belongs to one account list, so switching lists starts a new one right away
-  useEffect(() => {
+  // Before paint, so switching lists starts a new conversation without the old one ever showing
+  useLayoutEffect(() => {
     if (!accountListId || accountListId === transcriptAccountListId) {
       return;
     }

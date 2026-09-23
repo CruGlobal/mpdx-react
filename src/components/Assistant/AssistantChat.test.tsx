@@ -9,6 +9,7 @@ import theme from 'src/theme';
 import { AssistantChat } from './AssistantChat';
 import { AssistantProvider } from './AssistantProvider';
 import { CreateAssistantTokenMutation } from './CreateAssistantToken.generated';
+import { MessageList } from './MessageList';
 import { RefusedMintProvider, mintedToken } from './assistantToken.mock';
 import {
   controlledStream,
@@ -17,7 +18,20 @@ import {
   mockStreamResponse,
 } from './sse.mock';
 
+jest.mock('./MessageList', () => {
+  const actual = jest.requireActual('./MessageList');
+  return { MessageList: jest.fn(actual.MessageList) };
+});
+
 const mutationSpy = jest.fn();
+
+// Every message the transcript rendered since the given MessageList call
+const renderedContentSince = (callIndex: number): string[] =>
+  (MessageList as jest.Mock).mock.calls
+    .slice(callIndex)
+    .flatMap(([{ messages }]) =>
+      messages.map(({ content }: { content: string }) => content),
+    );
 
 interface TestComponentProps {
   accountListId?: string;
@@ -396,6 +410,28 @@ describe('AssistantChat', () => {
     );
     expect(queryByText('How many contacts?')).not.toBeInTheDocument();
     expect(queryByText('You have 12 contacts.')).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('CreateAssistantToken', {
+        accountListId: 'account-list-2',
+      }),
+    );
+  });
+
+  it('never renders the old account list messages after a switch', async () => {
+    fetchSpy
+      .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+      .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+    const { getByRole, findByText, rerender } = render(<TestComponent />);
+    await typeMessage(getByRole, 'How many contacts?');
+    userEvent.click(getByRole('button', { name: 'Send' }));
+    expect(await findByText('You have 12 contacts.')).toBeInTheDocument();
+    const callsBeforeSwitch = (MessageList as jest.Mock).mock.calls.length;
+
+    rerender(<TestComponent accountListId="account-list-2" />);
+
+    const rendered = renderedContentSince(callsBeforeSwitch);
+    expect(rendered).not.toContain('How many contacts?');
+    expect(rendered).not.toContain('You have 12 contacts.');
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('CreateAssistantToken', {
         accountListId: 'account-list-2',
