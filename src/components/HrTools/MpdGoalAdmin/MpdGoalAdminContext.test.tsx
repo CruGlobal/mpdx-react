@@ -1,5 +1,5 @@
 import React from 'react';
-import { Operation } from '@apollo/client';
+import { Operation, useApolloClient } from '@apollo/client';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import {
@@ -524,6 +524,31 @@ describe('MpdGoalAdminContext', () => {
       await waitFor(() =>
         expect(result.current.selectedCohortId).toBe('fall-nso-2026'),
       );
+    });
+
+    it('moves a coordinator off the selected cohort once it empties', async () => {
+      const { result } = renderHook(
+        () => ({ context: useMpdGoalAdmin(), client: useApolloClient() }),
+        { wrapper: makeWrapper({ user: coordinatorUserMock }) },
+      );
+      await waitFor(() =>
+        expect(result.current.context.selectedCohortId).toBe('fall-nso-2026'),
+      );
+
+      // Stands in for a refetch after its attendees are reassigned away.
+      act(() => {
+        result.current.client.cache.modify({
+          id: 'NewStaffCohort:fall-nso-2026',
+          fields: { trainingSize: () => 0 },
+        });
+      });
+
+      await waitFor(() =>
+        expect(result.current.context.selectedCohortId).toBe('spring-nso-2027'),
+      );
+      expect(result.current.context.cohorts.map(({ id }) => id)).toEqual([
+        'spring-nso-2027',
+      ]);
     });
 
     it('reports no visible cohorts when a coordinator has none with their staff', async () => {
