@@ -147,19 +147,18 @@ export const StaffMemberDrawer: React.FC = () => {
   const missingBenchmark =
     monthlyGrossSalary === null || newStaffMonthlySalary === null;
   // Even a fully paid salary cannot reach the New Staff benchmark (MPDX-10069)
-  const grossBelowNewStaff =
-    monthlyGrossSalary !== null &&
-    newStaffMonthlySalary !== null &&
-    monthlyGrossSalary < newStaffMonthlySalary;
-  const grossWarning = grossBelowNewStaff
-    ? t(
-        "Monthly Gross Salary ({{gross}}) is below the New Staff Monthly Salary ({{newStaff}}). Even at full salary, this staff member's payroll cannot reach the New Staff benchmark.",
-        {
-          gross: formatCurrency(monthlyGrossSalary),
-          newStaff: formatCurrency(newStaffMonthlySalary),
-        },
-      )
-    : null;
+  const grossWarning =
+    typeof monthlyGrossSalary === 'number' &&
+    typeof newStaffMonthlySalary === 'number' &&
+    monthlyGrossSalary < newStaffMonthlySalary
+      ? t(
+          "Monthly Gross Salary ({{gross}}) is below the New Staff Monthly Salary ({{newStaff}}). Even at full salary, this staff member's payroll cannot reach the New Staff benchmark.",
+          {
+            gross: formatCurrency(monthlyGrossSalary),
+            newStaff: formatCurrency(newStaffMonthlySalary),
+          },
+        )
+      : null;
 
   return (
     <Box
