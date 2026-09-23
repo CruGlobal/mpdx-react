@@ -1,8 +1,15 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import TestRouter from '__tests__/util/TestRouter';
 import { MessageList } from './MessageList';
-import { AssistantCard, AssistantMessage } from './types';
+import { DEFAULT_VISIBILITY } from './navigation/intents';
+import { useNavigationVisibility } from './navigation/useNavigationVisibility';
+import { AssistantCard, AssistantMessage, NavigationIntent } from './types';
+
+jest.mock('./navigation/useNavigationVisibility');
+const mockUseNavigationVisibility = useNavigationVisibility as jest.MockedFn<
+  typeof useNavigationVisibility
+>;
 
 const message = (overrides: Partial<AssistantMessage>): AssistantMessage => ({
   id: 'message-1',
@@ -15,12 +22,25 @@ const message = (overrides: Partial<AssistantMessage>): AssistantMessage => ({
   ...overrides,
 });
 
+const navigationMessage = (
+  id: string,
+  intent: NavigationIntent,
+  label: string,
+): AssistantMessage =>
+  message({ id, cards: [{ kind: 'navigation', intent, label }] });
+
 describe('MessageList', () => {
-  const onNavigate = jest.fn();
+  beforeEach(() => {
+    mockUseNavigationVisibility.mockReturnValue({
+      visibility: DEFAULT_VISIBILITY,
+      reportSegments: new Set(),
+      isLoading: false,
+    });
+  });
 
   it('renders the log region and an empty state before any message', () => {
     const { getByRole, getByText } = render(
-      <MessageList messages={[]} streaming={false} onNavigate={onNavigate} />,
+      <MessageList messages={[]} streaming={false} />,
     );
 
     expect(getByRole('log', { name: 'Conversation' })).toBeInTheDocument();
@@ -32,7 +52,6 @@ describe('MessageList', () => {
       <MessageList
         messages={[message({ role: 'user', content: 'Hi' })]}
         streaming={false}
-        onNavigate={onNavigate}
       />,
     );
 
@@ -49,7 +68,6 @@ describe('MessageList', () => {
           message({ id: '2', content: 'You have **12** contacts.' }),
         ]}
         streaming={false}
-        onNavigate={onNavigate}
       />,
     );
 
@@ -63,11 +81,7 @@ describe('MessageList', () => {
 
   it('marks the transcript busy while streaming', () => {
     const { getByRole } = render(
-      <MessageList
-        messages={[message({ status: 'streaming' })]}
-        streaming
-        onNavigate={onNavigate}
-      />,
+      <MessageList messages={[message({ status: 'streaming' })]} streaming />,
     );
 
     expect(getByRole('log')).toHaveAttribute('aria-busy', 'true');
@@ -81,7 +95,6 @@ describe('MessageList', () => {
       <MessageList
         messages={[message({ status: 'streaming', working: true })]}
         streaming
-        onNavigate={onNavigate}
       />,
     );
 
@@ -101,7 +114,6 @@ describe('MessageList', () => {
           }),
         ]}
         streaming={false}
-        onNavigate={onNavigate}
       />,
     );
 
@@ -117,7 +129,6 @@ describe('MessageList', () => {
       <MessageList
         messages={[message({ status: 'error' })]}
         streaming={false}
-        onNavigate={onNavigate}
       />,
     );
 
@@ -131,7 +142,6 @@ describe('MessageList', () => {
       <MessageList
         messages={[message({ status: 'stopped' })]}
         streaming={false}
-        onNavigate={onNavigate}
       />,
     );
 
@@ -143,7 +153,6 @@ describe('MessageList', () => {
       <MessageList
         messages={[message({ status: 'stopped', content: 'Partial' })]}
         streaming={false}
-        onNavigate={onNavigate}
       />,
     );
 
@@ -160,7 +169,6 @@ describe('MessageList', () => {
           message({ id: '2', cards: [null as unknown as AssistantCard] }),
         ]}
         streaming={false}
-        onNavigate={onNavigate}
       />,
     );
 
@@ -171,22 +179,63 @@ describe('MessageList', () => {
     errorSpy.mockRestore();
   });
 
-  it('passes navigation to cards', () => {
-    const intent = { type: 'contacts', params: {} };
+  it('looks up visibility once for every navigation card in the list', () => {
+    const messages = [
+      navigationMessage(
+        '1',
+        { type: 'dashboard', params: {} },
+        'Open the Dashboard',
+      ),
+      navigationMessage('2', { type: 'tasks', params: {} }, 'Open Tasks'),
+    ];
     const { getByRole } = render(
-      <MessageList
-        messages={[
-          message({
-            cards: [{ kind: 'navigation', intent, label: 'Open contacts' }],
-          }),
-        ]}
-        streaming={false}
-        onNavigate={onNavigate}
-      />,
+      <TestRouter>
+        <MessageList messages={messages} streaming={false} />
+      </TestRouter>,
     );
 
-    userEvent.click(getByRole('button', { name: 'Open contacts' }));
+    expect(getByRole('link', { name: 'Open the Dashboard' })).toHaveAttribute(
+      'href',
+      '/accountLists/account-list-1',
+    );
+    expect(getByRole('link', { name: 'Open Tasks' })).toHaveAttribute(
+      'href',
+      '/accountLists/account-list-1/tasks',
+    );
+    expect(mockUseNavigationVisibility).toHaveBeenCalledTimes(1);
+  });
 
-    expect(onNavigate).toHaveBeenCalledWith(intent);
+  it('skips the visibility lookup without a navigation card', () => {
+    render(
+      <TestRouter>
+        <MessageList
+          messages={[message({ content: 'Hi' })]}
+          streaming={false}
+        />
+      </TestRouter>,
+    );
+
+    expect(mockUseNavigationVisibility).not.toHaveBeenCalled();
+  });
+
+  it('shows navigation cards as plain text outside an account list', () => {
+    const { getByText, queryByRole } = render(
+      <TestRouter router={{ query: {} }}>
+        <MessageList
+          messages={[
+            navigationMessage(
+              '1',
+              { type: 'dashboard', params: {} },
+              'Open the Dashboard',
+            ),
+          ]}
+          streaming={false}
+        />
+      </TestRouter>,
+    );
+
+    expect(getByText('Open the Dashboard')).toBeInTheDocument();
+    expect(queryByRole('link')).not.toBeInTheDocument();
+    expect(mockUseNavigationVisibility).not.toHaveBeenCalled();
   });
 });

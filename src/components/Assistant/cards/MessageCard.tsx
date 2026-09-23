@@ -1,5 +1,5 @@
 import React from 'react';
-import { AssistantCard, NavigationIntent } from '../types';
+import { AssistantCard } from '../types';
 import { ContactCard } from './ContactCard';
 import { FiguresCard } from './FiguresCard';
 import { HandoffCard } from './HandoffCard';
@@ -8,16 +8,12 @@ import { ProposedActionCard } from './ProposedActionCard';
 
 interface MessageCardProps {
   card: AssistantCard;
-  onNavigate: (intent: NavigationIntent) => void;
 }
 
-export const MessageCard: React.FC<MessageCardProps> = ({
-  card,
-  onNavigate,
-}) => {
+export const MessageCard: React.FC<MessageCardProps> = ({ card }) => {
   switch (card.kind) {
     case 'navigation':
-      return <NavigationCard card={card} onNavigate={onNavigate} />;
+      return <NavigationCard card={card} />;
     case 'handoff':
       return <HandoffCard card={card} />;
     case 'figures':

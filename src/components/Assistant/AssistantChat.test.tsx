@@ -22,7 +22,12 @@ const TestComponent: React.FC<TestComponentProps> = ({
   accountListId = 'account-list-1',
 }) => (
   <ThemeProvider theme={theme}>
-    <TestRouter router={{ query: accountListId ? { accountListId } : {} }}>
+    <TestRouter
+      router={{
+        query: accountListId ? { accountListId } : {},
+        asPath: `/accountLists/${accountListId}/contacts`,
+      }}
+    >
       <AssistantProvider>
         <AssistantChat />
       </AssistantProvider>
@@ -49,7 +54,6 @@ describe('AssistantChat', () => {
       email: 'first.last@cru.org',
     });
     fetchSpy = jest.spyOn(global, 'fetch');
-    location.href = 'https://example.com/accountLists/account-list-1';
   });
 
   afterEach(() => {
@@ -212,7 +216,7 @@ describe('AssistantChat', () => {
     ).toBeInTheDocument();
   });
 
-  it('links to the help desk contact form', () => {
+  it('links to the help desk contact form with the current route', () => {
     const { getByRole } = render(<TestComponent />);
 
     const link = getByRole('link', { name: 'Contact the help desk' });
@@ -224,7 +228,7 @@ describe('AssistantChat', () => {
     expect(url.searchParams.get('mpdxName')).toBe('First Last');
     expect(url.searchParams.get('mpdxEmail')).toBe('first.last@cru.org');
     expect(url.searchParams.get('mpdxUrl')).toBe(
-      'https://example.com/accountLists/account-list-1',
+      'http://localhost/accountLists/account-list-1/contacts',
     );
   });
 

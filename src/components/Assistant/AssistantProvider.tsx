@@ -15,7 +15,6 @@ import {
   assistantReducer,
   initialAssistantState,
 } from './assistantReducer';
-import { NavigationIntent } from './types';
 import { useAssistantVisibility } from './useAssistantVisibility';
 
 export interface AssistantContextValue extends AssistantState {
@@ -27,7 +26,6 @@ export interface AssistantContextValue extends AssistantState {
   beginStream: (controller: AbortController) => void;
   endStream: () => void;
   stopStream: () => void;
-  onNavigate: (intent: NavigationIntent) => void;
 }
 
 const AssistantContext = createContext<AssistantContextValue | null>(null);
@@ -77,12 +75,6 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
     }
   }, [visible, stopStream]);
 
-  // WEB-004 replaces this with the real route builders
-  const onNavigate = useCallback((intent: NavigationIntent) => {
-    // eslint-disable-next-line no-console
-    console.info('Assistant navigation is not implemented yet', intent);
-  }, []);
-
   const value = useMemo(
     () => ({
       ...state,
@@ -94,7 +86,6 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
       beginStream,
       endStream,
       stopStream,
-      onNavigate,
     }),
     [
       state,
@@ -105,7 +96,6 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
       beginStream,
       endStream,
       stopStream,
-      onNavigate,
     ],
   );
 
