@@ -26,23 +26,39 @@ describe('ReportLegendPopover', () => {
     expect(
       getByRole('button', { name: 'How this report works' }),
     ).toBeInTheDocument();
-    expect(queryByRole('heading', { name: 'Colours' })).not.toBeInTheDocument();
+    expect(queryByRole('heading', { name: 'Colors' })).not.toBeInTheDocument();
   });
 
   it('shows every section when opened', async () => {
     const { getByRole } = await openLegend();
 
-    ['Colours', 'Numbers', 'New Staff goal', 'Fiscal quarters'].forEach(
-      (name) => expect(getByRole('heading', { name })).toBeInTheDocument(),
+    ['Colors', 'Numbers', 'New Staff goal', 'Fiscal quarters'].forEach((name) =>
+      expect(getByRole('heading', { name })).toBeInTheDocument(),
     );
   });
 
-  it('explains each chip colour', async () => {
+  it('explains each chip color', async () => {
     const { getByText } = await openLegend();
 
     ['On track', 'Needs attention', 'At risk', 'No data'].forEach((label) =>
       expect(getByText(label)).toBeInTheDocument(),
     );
+  });
+
+  it('matches the API grading order for red and green', async () => {
+    const { getByText } = await openLegend();
+
+    // Green is checked first, so red needs payroll below both benchmarks
+    expect(
+      getByText(
+        /below both their Monthly Gross Salary and their New Staff Monthly Salary/,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      getByText(
+        /can be green even though its months are counted as negative months/,
+      ),
+    ).toBeInTheDocument();
   });
 
   it('defines a negative month', async () => {

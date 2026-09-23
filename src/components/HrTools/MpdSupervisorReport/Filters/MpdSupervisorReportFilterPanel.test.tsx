@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -84,14 +84,28 @@ describe('MpdSupervisorReportFilterPanel', () => {
     );
   });
 
-  it('does not show a tooltip for the All people filter', async () => {
-    const { getByRole, queryByRole } = renderFilterPanel();
+  it('does not show a tooltip for the All people filter', () => {
+    jest.useFakeTimers();
+    try {
+      const { getByRole, queryByRole } = renderFilterPanel();
 
-    userEvent.hover(getByRole('button', { name: 'All people' }));
+      // Run well past the tooltip enter delay
+      userEvent.hover(getByRole('button', { name: 'All people' }));
+      act(() => {
+        jest.advanceTimersByTime(1000);
+      });
+      expect(queryByRole('tooltip')).not.toBeInTheDocument();
 
-    // Tooltips open after a short enter delay
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    expect(queryByRole('tooltip')).not.toBeInTheDocument();
+      // The same wait does open a described chip's tooltip
+      userEvent.unhover(getByRole('button', { name: 'All people' }));
+      userEvent.hover(getByRole('button', { name: 'Negative last month' }));
+      act(() => {
+        jest.advanceTimersByTime(1000);
+      });
+      expect(queryByRole('tooltip')).toBeInTheDocument();
+    } finally {
+      jest.useRealTimers();
+    }
   });
 
   it('clicking a quick-filter chip toggles active state', async () => {

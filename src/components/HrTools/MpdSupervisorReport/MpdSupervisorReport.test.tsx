@@ -219,9 +219,7 @@ describe('MpdSupervisorReport', () => {
       await findByRole('button', { name: 'How this report works' }),
     );
 
-    expect(
-      await findByRole('heading', { name: 'Colours' }),
-    ).toBeInTheDocument();
+    expect(await findByRole('heading', { name: 'Colors' })).toBeInTheDocument();
   });
 
   it('explains a fiscal quarter header on hover', async () => {
@@ -248,15 +246,18 @@ describe('MpdSupervisorReport', () => {
           ? this === document.activeElement
           : matches.call(this, selector);
       });
-    const { findByText, findByRole } = renderReport();
-    const header = await findByText('FQ4 25');
+    try {
+      const { findByText, findByRole } = renderReport();
+      const header = await findByText('FQ4 25');
 
-    act(() => header.focus());
+      act(() => header.focus());
 
-    expect(await findByRole('tooltip')).toHaveTextContent(
-      'Fiscal quarter 4, FY25: Jun 2025 – Aug 2025',
-    );
-    matchesSpy.mockRestore();
+      expect(await findByRole('tooltip')).toHaveTextContent(
+        'Fiscal quarter 4, FY25: Jun 2025 – Aug 2025',
+      );
+    } finally {
+      matchesSpy.mockRestore();
+    }
   });
 
   it('marks the starting quarter header as partial', async () => {

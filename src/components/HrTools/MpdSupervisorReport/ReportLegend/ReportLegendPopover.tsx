@@ -21,7 +21,7 @@ export const ReportLegendPopover: React.FC = () => {
   const titleId = useId();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-  const colours = [
+  const colors = [
     {
       status: MpdHealthStatusEnum.Green,
       label: t('On track'),
@@ -40,7 +40,7 @@ export const ReportLegendPopover: React.FC = () => {
       status: MpdHealthStatusEnum.Red,
       label: t('At risk'),
       explanation: t(
-        'Average monthly payroll was below their New Staff Monthly Salary.',
+        'Average monthly payroll was below both their Monthly Gross Salary and their New Staff Monthly Salary.',
       ),
     },
     {
@@ -121,13 +121,13 @@ export const ReportLegendPopover: React.FC = () => {
           {t('How this report works')}
         </Typography>
 
-        <SectionHeading>{t('Colours')}</SectionHeading>
+        <SectionHeading>{t('Colors')}</SectionHeading>
         <Typography variant="body2">
           {t(
             "Each quarter is graded by comparing the staff member's average monthly payroll for that quarter with two benchmarks: their Monthly Gross Salary and their New Staff Monthly Salary.",
           )}
         </Typography>
-        {colours.map(({ status, label, explanation }) => {
+        {colors.map(({ status, label, explanation }) => {
           const { bg, color } = healthColor(theme, status);
           return (
             <Box
@@ -154,6 +154,11 @@ export const ReportLegendPopover: React.FC = () => {
             </Box>
           );
         })}
+        <Typography variant="body2" sx={{ mt: 1 }}>
+          {t(
+            "Green is checked first. If a staff member's Monthly Gross Salary is below their New Staff Monthly Salary, a quarter paid at their Monthly Gross Salary can be green even though its months are counted as negative months.",
+          )}
+        </Typography>
 
         <SectionHeading>{t('Numbers')}</SectionHeading>
         <Box component="dl" sx={{ m: 0 }}>

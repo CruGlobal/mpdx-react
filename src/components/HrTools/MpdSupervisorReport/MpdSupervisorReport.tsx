@@ -125,9 +125,10 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
               return {
                 label: getQuarterLabel(fiscalYear, quarter),
                 tooltip: partial
-                  ? `${range} ${t(
-                      'Partial quarter: payroll started during this quarter.',
-                    )}`
+                  ? t(
+                      '{{range}} Partial quarter: payroll started during this quarter.',
+                      { range },
+                    )
                   : range,
               };
             },

@@ -165,10 +165,14 @@ describe('StaffMemberDrawer', () => {
   });
 
   it('explains how the New Staff Monthly Salary is calculated', async () => {
-    const { findByRole, getByTestId } = renderDrawer();
+    const { findByRole, getByRole } = renderDrawer();
     openMember(managedStaffMember());
 
-    userEvent.hover(getByTestId('NewStaffSalaryInfo'));
+    const icon = getByRole('img', {
+      name: 'How New Staff Monthly Salary is calculated',
+    });
+    expect(icon).not.toHaveAttribute('aria-hidden');
+    userEvent.hover(icon);
 
     const tooltip = await findByRole('tooltip');
     expect(tooltip).toHaveTextContent(
@@ -176,6 +180,12 @@ describe('StaffMemberDrawer', () => {
     );
     expect(tooltip).toHaveTextContent(
       'See "How this report works" for details.',
+    );
+    // The explanation is announced as the icon's description
+    expect(icon).toHaveAccessibleDescription(
+      expect.stringContaining(
+        'The monthly salary a new staff member in the same situation would receive',
+      ),
     );
   });
 

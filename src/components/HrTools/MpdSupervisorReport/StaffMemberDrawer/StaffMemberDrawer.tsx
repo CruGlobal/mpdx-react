@@ -224,11 +224,14 @@ export const StaffMemberDrawer: React.FC = () => {
             <DetailRow
               label={t('New Staff Monthly Salary')}
               labelAdornment={
-                <Tooltip title={newStaffSalaryTooltip(t)}>
+                // describeChild announces the explanation as the icon's
+                // description while titleAccess stays its accessible name
+                <Tooltip title={newStaffSalaryTooltip(t)} describeChild>
                   <InfoTooltipIcon
-                    data-testid="NewStaffSalaryInfo"
                     tabIndex={0}
-                    aria-label={t('How New Staff Monthly Salary is calculated')}
+                    titleAccess={t(
+                      'How New Staff Monthly Salary is calculated',
+                    )}
                   />
                 </Tooltip>
               }
