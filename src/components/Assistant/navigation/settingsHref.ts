@@ -3,7 +3,7 @@ import { hasOnlyKeys, isOneOf } from './params';
 import { NavigationBuilder } from './types';
 
 // HR Tools has no landing page, only the individual tools, so it cannot be linked yet
-export const SETTINGS_PATHS: Record<SettingsTab, string | null> = {
+const SETTINGS_PATHS: Record<SettingsTab, string | null> = {
   preferences: '/settings/preferences',
   notifications: '/settings/notifications',
   connect_services: '/settings/integrations',
