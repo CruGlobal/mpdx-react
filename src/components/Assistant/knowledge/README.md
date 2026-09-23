@@ -1,0 +1,1 @@
+Copied from mpdx-assistant `knowledge/mpdx-app-map.md`; refresh it by copying that file over `mpdx-app-map.md` here (for example `cp ../mpdx-assistant/knowledge/mpdx-app-map.md src/components/Assistant/knowledge/` from the mpdx-react root), then run `yarn check:route-map`.
