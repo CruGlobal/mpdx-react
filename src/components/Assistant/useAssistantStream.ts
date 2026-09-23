@@ -1,6 +1,5 @@
 import { useRouter } from 'next/router';
 import { useCallback } from 'react';
-import { useOptionalAccountListId } from 'src/hooks/useAccountListId';
 import { useAssistantContext } from './AssistantProvider';
 import { AssistantAction } from './assistantReducer';
 import { readAssistantEvents } from './sse';
@@ -10,7 +9,10 @@ import {
   AssistantEvent,
   AssistantMessage,
 } from './types';
-import { useAssistantToken } from './useAssistantToken';
+import { AssistantToken } from './useAssistantToken';
+
+export const getAssistantUrl = (): string | undefined =>
+  process.env.ASSISTANT_URL?.replace(/\/+$/, '') || undefined;
 
 let nextMessageId = 0;
 const createMessageId = (): string => `local-${++nextMessageId}`;
@@ -104,15 +106,22 @@ const toAction = (
   }
 };
 
+export interface UseAssistantStreamOptions
+  extends Pick<AssistantToken, 'token'> {
+  accountListId: string | null;
+}
+
 export interface UseAssistantStreamResult {
   sendMessage: (content: string) => Promise<void>;
   stop: () => void;
   streaming: boolean;
   configured: boolean;
-  accountListId: string | null;
 }
 
-export const useAssistantStream = (): UseAssistantStreamResult => {
+export const useAssistantStream = ({
+  accountListId,
+  token,
+}: UseAssistantStreamOptions): UseAssistantStreamResult => {
   const {
     conversation,
     streaming,
@@ -121,10 +130,8 @@ export const useAssistantStream = (): UseAssistantStreamResult => {
     endStream,
     stopStream,
   } = useAssistantContext();
-  const token = useAssistantToken();
-  const accountListId = useOptionalAccountListId();
   const { asPath } = useRouter();
-  const assistantUrl = process.env.ASSISTANT_URL?.replace(/\/+$/, '');
+  const assistantUrl = getAssistantUrl();
 
   const sendMessage = useCallback(
     async (content: string) => {
@@ -250,6 +257,5 @@ export const useAssistantStream = (): UseAssistantStreamResult => {
     stop: stopStream,
     streaming,
     configured: Boolean(assistantUrl),
-    accountListId,
   };
 };

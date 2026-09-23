@@ -3,10 +3,13 @@ import { ThemeProvider } from '@mui/material/styles';
 import { act, fireEvent, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { mockSession } from '__tests__/util/mockSession';
 import theme from 'src/theme';
 import { AssistantChat } from './AssistantChat';
 import { AssistantProvider } from './AssistantProvider';
+import { CreateAssistantTokenMutation } from './CreateAssistantToken.generated';
+import { RefusedMintProvider, mintedToken } from './assistantToken.mock';
 import {
   controlledStream,
   frame,
@@ -14,14 +17,18 @@ import {
   mockStreamResponse,
 } from './sse.mock';
 
+const mutationSpy = jest.fn();
+
 interface TestComponentProps {
   accountListId?: string;
+  refusal?: string;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   accountListId = 'account-list-1',
-}) => (
-  <ThemeProvider theme={theme}>
+  refusal,
+}) => {
+  const chat = (
     <TestRouter
       router={{
         query: accountListId ? { accountListId } : {},
@@ -32,8 +39,40 @@ const TestComponent: React.FC<TestComponentProps> = ({
         <AssistantChat />
       </AssistantProvider>
     </TestRouter>
-  </ThemeProvider>
-);
+  );
+
+  return (
+    <ThemeProvider theme={theme}>
+      {refusal ? (
+        <RefusedMintProvider message={refusal} accountListId={accountListId}>
+          {chat}
+        </RefusedMintProvider>
+      ) : (
+        <GqlMockedProvider<{
+          CreateAssistantToken: CreateAssistantTokenMutation;
+        }>
+          mocks={{ CreateAssistantToken: mintedToken('minted-token') }}
+          onCall={mutationSpy}
+        >
+          {chat}
+        </GqlMockedProvider>
+      )}
+    </ThemeProvider>
+  );
+};
+
+// The mint is async, so Send only enables once the token arrives
+const typeMessage = async (
+  getByRole: ReturnType<typeof render>['getByRole'],
+  text: string,
+) => {
+  const input = getByRole('textbox', { name: 'Ask the assistant' });
+  userEvent.type(input, text);
+  await waitFor(() =>
+    expect(getByRole('button', { name: 'Send' })).toBeEnabled(),
+  );
+  return input;
+};
 
 const replyFrames = [
   frame({ type: 'chunk', message_id: 'm1', delta: 'You have 12 contacts.' }),
@@ -48,7 +87,7 @@ describe('AssistantChat', () => {
     process.env.HELPJUICE_ORIGIN = 'https://domain.helpjuice.com';
     process.env.DEVELOPMENT_ENV = 'true';
     mockSession({
-      apiToken: 'token-123',
+      apiToken: 'session-token',
       developer: true,
       name: 'First Last',
       email: 'first.last@cru.org',
@@ -63,7 +102,7 @@ describe('AssistantChat', () => {
     process.env.DEVELOPMENT_ENV = 'false';
   });
 
-  it('focuses the input and disables Send until there is text', () => {
+  it('focuses the input and disables Send until there is text', async () => {
     const { getByRole } = render(<TestComponent />);
 
     expect(getByRole('log', { name: 'Conversation' })).toBeInTheDocument();
@@ -71,8 +110,27 @@ describe('AssistantChat', () => {
     expect(input).toHaveFocus();
     expect(getByRole('button', { name: 'Send' })).toBeDisabled();
 
-    userEvent.type(input, 'Hi');
-    expect(getByRole('button', { name: 'Send' })).toBeEnabled();
+    await typeMessage(getByRole, 'Hi');
+    expect(mutationSpy).toHaveGraphqlOperation('CreateAssistantToken', {
+      accountListId: 'account-list-1',
+    });
+  });
+
+  it('sends only the minted token to the assistant', async () => {
+    fetchSpy
+      .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+      .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+    const { getByRole, findByText } = render(<TestComponent />);
+
+    await typeMessage(getByRole, 'Hi');
+    userEvent.click(getByRole('button', { name: 'Send' }));
+    expect(await findByText('You have 12 contacts.')).toBeInTheDocument();
+
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
+    fetchSpy.mock.calls.forEach(([, init]) => {
+      expect(init.headers.Authorization).toBe('Bearer minted-token');
+    });
+    expect(JSON.stringify(fetchSpy.mock.calls)).not.toContain('session-token');
   });
 
   it('sends a message and shows the reply', async () => {
@@ -81,8 +139,7 @@ describe('AssistantChat', () => {
       .mockResolvedValueOnce(mockStreamResponse(replyFrames));
     const { getByRole, findByText, getByText } = render(<TestComponent />);
 
-    const input = getByRole('textbox', { name: 'Ask the assistant' });
-    userEvent.type(input, 'How many contacts?');
+    const input = await typeMessage(getByRole, 'How many contacts?');
     userEvent.click(getByRole('button', { name: 'Send' }));
 
     expect(getByText('How many contacts?')).toBeInTheDocument();
@@ -99,8 +156,10 @@ describe('AssistantChat', () => {
       .mockResolvedValueOnce(mockStreamResponse(replyFrames));
     const { getByRole, findByText } = render(<TestComponent />);
 
-    const input = getByRole('textbox', { name: 'Ask the assistant' });
-    userEvent.type(input, 'Line one{shift}{enter}{/shift}Line two');
+    const input = await typeMessage(
+      getByRole,
+      'Line one{shift}{enter}{/shift}Line two',
+    );
     expect(fetchSpy).not.toHaveBeenCalled();
     expect(input).toHaveValue('Line one\nLine two');
 
@@ -127,7 +186,7 @@ describe('AssistantChat', () => {
       .mockResolvedValueOnce(mockStreamResponse([], { body: stream.body }));
     const { getByRole, findByText, findByRole } = render(<TestComponent />);
 
-    userEvent.type(getByRole('textbox', { name: 'Ask the assistant' }), 'Hi');
+    await typeMessage(getByRole, 'Hi');
     userEvent.click(getByRole('button', { name: 'Send' }));
     stream.push(
       frame({ type: 'chunk', message_id: 'm1', delta: 'Partial answer' }),
@@ -150,7 +209,7 @@ describe('AssistantChat', () => {
       .mockResolvedValueOnce(mockStreamResponse([], { body: stream.body }));
     const { getByRole, findByText } = render(<TestComponent />);
 
-    userEvent.type(getByRole('textbox', { name: 'Ask the assistant' }), 'Hi');
+    await typeMessage(getByRole, 'Hi');
     userEvent.click(getByRole('button', { name: 'Send' }));
     await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(2));
     userEvent.click(getByRole('button', { name: 'Stop' }));
@@ -166,8 +225,7 @@ describe('AssistantChat', () => {
       .mockResolvedValueOnce(mockStreamResponse([], { body: stream.body }));
     const { getByRole, findByText, findByRole } = render(<TestComponent />);
 
-    const input = getByRole('textbox', { name: 'Ask the assistant' });
-    userEvent.type(input, 'Hi');
+    const input = await typeMessage(getByRole, 'Hi');
     userEvent.click(getByRole('button', { name: 'Send' }));
     expect(input).toHaveFocus();
 
@@ -190,7 +248,7 @@ describe('AssistantChat', () => {
     );
     const { getByRole, findByText, queryByText } = render(<TestComponent />);
 
-    userEvent.type(getByRole('textbox', { name: 'Ask the assistant' }), 'Hi');
+    await typeMessage(getByRole, 'Hi');
     userEvent.click(getByRole('button', { name: 'Send' }));
 
     expect(
@@ -239,5 +297,35 @@ describe('AssistantChat', () => {
     expect(
       queryByRole('link', { name: 'Contact the help desk' }),
     ).not.toBeInTheDocument();
+  });
+  it('points to Preferences when the assistant is not turned on', async () => {
+    const { findByText, getByRole, queryByRole } = render(
+      <TestComponent refusal="The assistant is not turned on" />,
+    );
+
+    expect(
+      await findByText(/The assistant is not turned on\./),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('link', {
+        name: 'Turn it on in the Assistant tab of Preferences.',
+      }),
+    ).toHaveAttribute(
+      'href',
+      '/accountLists/account-list-1/settings/preferences',
+    );
+    expect(queryByRole('textbox')).not.toBeInTheDocument();
+  });
+
+  it('shows the friendly error when the mint is refused under impersonation', async () => {
+    const { findByText, queryByRole } = render(
+      <TestComponent refusal="Not available while impersonating" />,
+    );
+
+    expect(
+      await findByText('Sorry, something went wrong. Please try again.'),
+    ).toBeInTheDocument();
+    expect(queryByRole('textbox')).not.toBeInTheDocument();
+    expect(fetchSpy).not.toHaveBeenCalled();
   });
 });

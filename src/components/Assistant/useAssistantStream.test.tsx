@@ -22,7 +22,13 @@ const Wrapper: React.FC<{ children?: React.ReactNode }> = ({ children }) => (
 
 const renderStream = () =>
   renderHook(
-    () => ({ stream: useAssistantStream(), context: useAssistantContext() }),
+    () => ({
+      stream: useAssistantStream({
+        accountListId: 'account-list-1',
+        token: 'minted-token',
+      }),
+      context: useAssistantContext(),
+    }),
     { wrapper: Wrapper },
   );
 
@@ -53,7 +59,7 @@ describe('useAssistantStream', () => {
   beforeEach(() => {
     process.env.ASSISTANT_URL = assistantUrl;
     process.env.DEVELOPMENT_ENV = 'true';
-    mockSession({ apiToken: 'token-123', developer: true });
+    mockSession({ developer: true });
     fetchSpy = jest.spyOn(global, 'fetch');
   });
 
@@ -76,7 +82,9 @@ describe('useAssistantStream', () => {
       `${assistantUrl}/conversations`,
       expect.objectContaining({
         method: 'POST',
-        headers: expect.objectContaining({ Authorization: 'Bearer token-123' }),
+        headers: expect.objectContaining({
+          Authorization: 'Bearer minted-token',
+        }),
         body: JSON.stringify({ account_list_id: 'account-list-1' }),
       }),
     );
@@ -86,7 +94,7 @@ describe('useAssistantStream', () => {
       expect.objectContaining({
         method: 'POST',
         headers: expect.objectContaining({
-          Authorization: 'Bearer token-123',
+          Authorization: 'Bearer minted-token',
           Accept: 'text/event-stream',
         }),
         body: JSON.stringify({

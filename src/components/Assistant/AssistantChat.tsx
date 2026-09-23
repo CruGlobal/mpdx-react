@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import React, {
   FormEvent,
   KeyboardEvent,
@@ -8,14 +9,23 @@ import React, {
 import SendIcon from '@mui/icons-material/Send';
 import StopIcon from '@mui/icons-material/Stop';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
-import { Box, Button, Divider, TextField, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Divider,
+  Link,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useSession } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
 import { buildHelpjuiceContactUrl } from 'src/components/Helpjuice/contactUrl';
+import { useOptionalAccountListId } from 'src/hooks/useAccountListId';
 import { useAssistantContext } from './AssistantProvider';
 import { MessageList } from './MessageList';
-import { useAssistantStream } from './useAssistantStream';
+import { getAssistantUrl, useAssistantStream } from './useAssistantStream';
+import { useAssistantToken } from './useAssistantToken';
 import { useCurrentPageUrl } from './useCurrentPageUrl';
 
 const MessageArea = styled(Box)(({ theme }) => ({
@@ -68,14 +78,41 @@ const HelpDeskLink: React.FC = () => {
   );
 };
 
-// Mounts only while the drawer is open, so session and route hooks stay out of the provider
+interface NotTurnedOnProps {
+  accountListId: string;
+}
+
+const NotTurnedOn: React.FC<NotTurnedOnProps> = ({ accountListId }) => {
+  const { t } = useTranslation();
+
+  return (
+    <Typography variant="body2" color="text.secondary">
+      {t('The assistant is not turned on.')}{' '}
+      <Link
+        component={NextLink}
+        href={`/accountLists/${accountListId}/settings/preferences`}
+      >
+        {t('Turn it on in the Assistant tab of Preferences.')}
+      </Link>
+    </Typography>
+  );
+};
+
+// Mounts only while the drawer is open, so session, route, and Apollo hooks stay out of the provider
 export const AssistantChat: React.FC = () => {
   const { t } = useTranslation();
   const { messages } = useAssistantContext();
-  const { sendMessage, stop, streaming, configured, accountListId } =
-    useAssistantStream();
+  const accountListId = useOptionalAccountListId();
+  const configured = Boolean(getAssistantUrl());
+  const { token, status: tokenStatus } = useAssistantToken(
+    configured ? accountListId : null,
+  );
+  const { sendMessage, stop, streaming } = useAssistantStream({
+    accountListId,
+    token,
+  });
   const [draft, setDraft] = useState('');
-  const canSend = Boolean(draft.trim()) && Boolean(accountListId);
+  const canSend = Boolean(draft.trim()) && tokenStatus === 'ready';
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const wasStreaming = useRef(streaming);
 
@@ -115,7 +152,17 @@ export const AssistantChat: React.FC = () => {
       </MessageArea>
       <Divider />
       <Footer>
-        {configured ? (
+        {!configured ? (
+          <Typography variant="body2" color="text.secondary">
+            {t('The assistant is not configured.')}
+          </Typography>
+        ) : tokenStatus === 'notTurnedOn' && accountListId ? (
+          <NotTurnedOn accountListId={accountListId} />
+        ) : tokenStatus === 'error' ? (
+          <Typography variant="body2" color="error">
+            {t('Sorry, something went wrong. Please try again.')}
+          </Typography>
+        ) : (
           <Composer onSubmit={handleSubmit}>
             <TextField
               fullWidth
@@ -144,10 +191,6 @@ export const AssistantChat: React.FC = () => {
               {streaming ? t('Stop') : t('Send')}
             </Button>
           </Composer>
-        ) : (
-          <Typography variant="body2" color="text.secondary">
-            {t('The assistant is not configured.')}
-          </Typography>
         )}
         {configured && !accountListId && (
           <Typography variant="caption" color="text.secondary">

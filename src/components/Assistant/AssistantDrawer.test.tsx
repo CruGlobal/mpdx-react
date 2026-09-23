@@ -3,10 +3,13 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { mockSession } from '__tests__/util/mockSession';
 import theme from 'src/theme';
 import { AssistantDrawer } from './AssistantDrawer';
 import { AssistantProvider, useAssistantContext } from './AssistantProvider';
+import { CreateAssistantTokenMutation } from './CreateAssistantToken.generated';
+import { mintedToken } from './assistantToken.mock';
 import { frame, mockJsonResponse, mockStreamResponse } from './sse.mock';
 
 const OpenButton: React.FC = () => {
@@ -16,12 +19,16 @@ const OpenButton: React.FC = () => {
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
-    <TestRouter>
-      <AssistantProvider>
-        <OpenButton />
-        <AssistantDrawer />
-      </AssistantProvider>
-    </TestRouter>
+    <GqlMockedProvider<{ CreateAssistantToken: CreateAssistantTokenMutation }>
+      mocks={{ CreateAssistantToken: mintedToken('minted-token') }}
+    >
+      <TestRouter>
+        <AssistantProvider>
+          <OpenButton />
+          <AssistantDrawer />
+        </AssistantProvider>
+      </TestRouter>
+    </GqlMockedProvider>
   </ThemeProvider>
 );
 
@@ -71,6 +78,9 @@ describe('AssistantDrawer', () => {
     userEvent.type(
       getByRole('textbox', { name: 'Ask the assistant' }),
       'What is new?',
+    );
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Send' })).toBeEnabled(),
     );
     userEvent.click(getByRole('button', { name: 'Send' }));
     expect(await findByText('Hello back')).toBeInTheDocument();
