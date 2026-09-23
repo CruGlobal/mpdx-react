@@ -1,20 +1,18 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor, within } from '@testing-library/react';
+import { act, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AssistantSettingsFieldsFragment } from 'src/components/Assistant/AssistantSettings.generated';
 import { assistantSettingsMock } from 'src/components/Assistant/AssistantSettings.mock';
+import { CreateAssistantTokenMutation } from 'src/components/Assistant/CreateAssistantToken.generated';
+import { mintedToken } from 'src/components/Assistant/assistantToken.mock';
 import { mockJsonResponse } from 'src/components/Assistant/sse.mock';
 import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import theme from 'src/theme';
 import { AssistantAccordion } from './AssistantAccordion';
-
-jest.mock('src/components/Assistant/useAssistantToken', () => ({
-  useAssistantToken: () => 'assistant-token',
-}));
 
 const mockEnqueue = jest.fn();
 jest.mock('notistack', () => ({
@@ -45,7 +43,12 @@ const TestComponent: React.FC<TestComponentProps> = ({
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
       <TestRouter>
-        <GqlMockedProvider onCall={mutationSpy}>
+        <GqlMockedProvider<{
+          CreateAssistantToken: CreateAssistantTokenMutation;
+        }>
+          mocks={{ CreateAssistantToken: mintedToken('assistant-token') }}
+          onCall={mutationSpy}
+        >
           <AssistantAccordion
             handleAccordionChange={handleAccordionChange}
             expandedAccordion={expandedAccordion}
@@ -213,6 +216,21 @@ describe('AssistantAccordion', () => {
           attributes: { enabled: false },
         }),
       );
+    });
+
+    it('mints a token for the account list only once the dialog opens', async () => {
+      const { getByLabelText, findByRole } = render(<TestComponent />);
+
+      expect(mutationSpy).not.toHaveGraphqlOperation('CreateAssistantToken');
+      userEvent.click(getByLabelText('Turn on the Assistant'));
+      await findByRole('dialog', { name: 'Turn off the Assistant?' });
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('CreateAssistantToken', {
+          accountListId: 'account-list-1',
+        }),
+      );
+      await act(() => new Promise((resolve) => setTimeout(resolve, 0)));
     });
 
     it('does nothing when cancelled', async () => {

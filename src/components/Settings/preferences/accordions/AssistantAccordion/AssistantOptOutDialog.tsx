@@ -14,8 +14,46 @@ import {
   DeletedConversationCounts,
   deleteAssistantConversations,
 } from 'src/components/Assistant/deleteAssistantConversations';
-import { useAssistantToken } from 'src/components/Assistant/useAssistantToken';
+import {
+  AssistantTokenState,
+  useAssistantToken,
+} from 'src/components/Assistant/useAssistantToken';
 import Modal from 'src/components/Shared/Modal/Modal';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { getAppName } from 'src/lib/getAppName';
+
+interface CannotDeleteProps {
+  tokenState: AssistantTokenState;
+  onRetry: () => void;
+}
+
+const CannotDelete: React.FC<CannotDeleteProps> = ({ tokenState, onRetry }) => {
+  const { t } = useTranslation();
+  const appName = getAppName();
+  const canRetry = tokenState.status === 'failed' && tokenState.retryable;
+
+  return (
+    <>
+      <DialogContentText>
+        {t(
+          'Your conversations could not be deleted right now, so the Assistant is still on.',
+        )}
+      </DialogContentText>
+      {canRetry ? (
+        <Button onClick={onRetry}>{t('Try again')}</Button>
+      ) : (
+        <DialogContentText>
+          {tokenState.status === 'refusing' &&
+          tokenState.reason === 'notTurnedOn'
+            ? t('Turn on "Help me use {{appName}}" first, then try again.', {
+                appName,
+              })
+            : t('Please try again later.')}
+        </DialogContentText>
+      )}
+    </>
+  );
+};
 
 interface AssistantOptOutDialogProps {
   open: boolean;
@@ -28,7 +66,14 @@ export const AssistantOptOutDialog: React.FC<AssistantOptOutDialogProps> = ({
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const token = useAssistantToken();
+  const accountListId = useAccountListId();
+  // Mints only while open, since deleting needs a token and the rest of Preferences does not
+  const {
+    state: tokenState,
+    token,
+    refreshToken,
+    retry,
+  } = useAssistantToken(open ? accountListId : null);
   const [updateAssistantSettings] = useUpdateAssistantSettingsMutation();
   const [deleting, setDeleting] = useState(false);
   const [deleted, setDeleted] = useState<DeletedConversationCounts | null>(
@@ -46,11 +91,13 @@ export const AssistantOptOutDialog: React.FC<AssistantOptOutDialogProps> = ({
   const turnOff = async () => {
     setDeleting(true);
     try {
-      if (!token) {
-        throw new Error('No assistant token');
+      // Waits for a mint still in flight; a refusal or failure leaves the Assistant on and shows why
+      const currentToken = token ?? (await refreshToken());
+      if (!currentToken) {
+        return;
       }
-      // Delete first so a failed deletion leaves the Assistant on and the user can retry
-      const counts = await deleteAssistantConversations(token);
+      // Delete first so nothing is left behind once the Assistant is off
+      const counts = await deleteAssistantConversations(currentToken);
       setDeleted(counts);
       await updateAssistantSettings({
         variables: { attributes: { enabled: false } },
@@ -66,6 +113,9 @@ export const AssistantOptOutDialog: React.FC<AssistantOptOutDialogProps> = ({
       setDeleting(false);
     }
   };
+
+  const cannotDelete =
+    tokenState.status === 'refusing' || tokenState.status === 'failed';
 
   return (
     <Modal
@@ -91,6 +141,8 @@ export const AssistantOptOutDialog: React.FC<AssistantOptOutDialogProps> = ({
               })}
             </DialogContentText>
           </>
+        ) : cannotDelete ? (
+          <CannotDelete tokenState={tokenState} onRetry={retry} />
         ) : (
           <DialogContentText>
             {t(
@@ -110,7 +162,7 @@ export const AssistantOptOutDialog: React.FC<AssistantOptOutDialogProps> = ({
             <Button
               color="error"
               variant="contained"
-              disabled={deleting}
+              disabled={deleting || cannotDelete}
               onClick={turnOff}
             >
               {t('Turn off and delete')}
