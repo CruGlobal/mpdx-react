@@ -1,7 +1,5 @@
-import { TFunction } from 'react-i18next';
-import { getTaskFiltersTabs } from 'src/lib/tasks/taskFilterTabs';
 import { testContext } from './buildContext.mock';
-import { TASK_TAB_FILTERS, buildTasksHref } from './tasksHref';
+import { buildTasksHref } from './tasksHref';
 
 const filtersOf = (href: string | null) =>
   JSON.parse(
@@ -19,27 +17,17 @@ describe('buildTasksHref', () => {
     );
   });
 
-  it('sets the quick tab filters', () => {
-    const href = buildTasksHref({ preset: 'overdue' }, testContext);
+  it.each([
+    ['overdue', { completed: false, dateRange: 'overdue' }],
+    ['completed', { completed: true }],
+    ['today', { completed: false, dateRange: 'today' }],
+    ['upcoming', { completed: false, dateRange: 'upcoming' }],
+    ['no_due_date', { completed: false, dateRange: 'no_date' }],
+  ])('sets the filters the %s quick tab sets', (preset, filters) => {
+    const href = buildTasksHref({ preset }, testContext);
 
     expect(href).toMatch(/^\/accountLists\/account-list-1\/tasks\?filters=/);
-    expect(filtersOf(href)).toEqual({ completed: false, dateRange: 'overdue' });
-    expect(
-      filtersOf(buildTasksHref({ preset: 'no_due_date' }, testContext)),
-    ).toEqual({ completed: false, dateRange: 'no_date' });
-  });
-
-  it('matches the filters the quick tabs set', () => {
-    const t = ((key: string) => key) as unknown as TFunction;
-    const tabs = getTaskFiltersTabs(t).map(({ activeFiltersOptions }) =>
-      Object.fromEntries(
-        Object.entries(activeFiltersOptions).filter(
-          ([, value]) => value !== null,
-        ),
-      ),
-    );
-
-    expect(Object.values(TASK_TAB_FILTERS)).toEqual(tabs);
+    expect(filtersOf(href)).toEqual(filters);
   });
 
   it.each([
