@@ -57,13 +57,13 @@ export const managedStaffMember = (
   overrides: Partial<ManagedStaffMember> = {},
 ): ManagedStaffMember => ({ ...baseMember, ...overrides });
 
-export const managedStaffTeamsMock = (): ManagedStaffTeamsQuery => ({
-  managedStaffTeams: [
+export const managedStaffTeamsMock = (
+  managedStaffTeams: ManagedStaffTeamsQuery['managedStaffTeams'] = [
     { name: 'Central Team', departments: ['Cru Military', 'US Technology'] },
     { name: 'Solution Delivery Team', departments: ['US Technology'] },
     { name: 'Unassigned', departments: [] },
   ],
-});
+): ManagedStaffTeamsQuery => ({ managedStaffTeams });
 
 export const managedStaffMock = (
   nodes: ManagedStaffMember[] = [managedStaffMember()],

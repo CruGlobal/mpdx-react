@@ -13,15 +13,17 @@ import {
 } from '../MpdSupervisorReportContext';
 import { managedStaffTeamsMock } from '../mpdSupervisorReportMocks';
 import { MpdSupervisorReportFilterPanel } from './MpdSupervisorReportFilterPanel';
-import { ALL_DEPARTMENTS, ALL_TEAMS } from './mpdSupervisorReportFilters';
 
 const onClose = jest.fn();
 
-const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+const Wrapper: React.FC<{
+  children: React.ReactNode;
+  teams?: ManagedStaffTeamsQuery['managedStaffTeams'];
+}> = ({ children, teams }) => (
   <TestRouter>
     <ThemeProvider theme={theme}>
       <GqlMockedProvider<{ ManagedStaffTeams: ManagedStaffTeamsQuery }>
-        mocks={{ ManagedStaffTeams: managedStaffTeamsMock() }}
+        mocks={{ ManagedStaffTeams: managedStaffTeamsMock(teams) }}
       >
         <MpdSupervisorReportProvider>{children}</MpdSupervisorReportProvider>
       </GqlMockedProvider>
@@ -130,7 +132,8 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
 
   it('starts with default filter values in context', () => {
     const { getByTestId } = renderWithConsumer();
-    expect(getByTestId('team').textContent).toBe(ALL_TEAMS);
+    expect(getByTestId('team').textContent).toBe('');
+    expect(getByTestId('department').textContent).toBe('');
     expect(getByTestId('employmentType').textContent).toBe('');
     expect(getByTestId('activeQuickFilter').textContent).toBe('allPeople');
   });
@@ -160,22 +163,28 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
     expect(getByTestId('activeQuickFilter').textContent).toBe('allPeople');
   });
 
-  describe('Team select', () => {
-    // Renders, waits out the teams query, then opens the select.
+  describe('Team autocomplete', () => {
+    // Renders, waits out the teams query, then opens the option list.
     const openTeamSelect = async () => {
       const view = renderWithConsumer();
-      const select = view.getByLabelText('Team');
-      await waitFor(() =>
-        expect(select).not.toHaveAttribute('aria-disabled', 'true'),
-      );
-      userEvent.click(select);
+      const combobox = view.getByRole('combobox', { name: 'Team' });
+      await waitFor(() => expect(combobox).not.toBeDisabled());
+      userEvent.click(combobox);
       await view.findByRole('option', { name: 'Solution Delivery Team' });
       return view;
     };
 
     it('is disabled until the teams arrive', () => {
-      const { getByLabelText } = renderWithConsumer();
-      expect(getByLabelText('Team')).toHaveAttribute('aria-disabled', 'true');
+      const { getByRole } = renderWithConsumer();
+      expect(getByRole('combobox', { name: 'Team' })).toBeDisabled();
+    });
+
+    it('offers All teams as the placeholder while nothing is chosen', () => {
+      const { getByRole } = renderWithConsumer();
+      expect(getByRole('combobox', { name: 'Team' })).toHaveAttribute(
+        'placeholder',
+        'All teams',
+      );
     });
 
     it('puts the selected team name in context', async () => {
@@ -191,22 +200,40 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
 
       const names = getAllByRole('option').map((option) => option.textContent);
       expect(names).toEqual([
-        'All teams',
         'Central Team',
         'Solution Delivery Team',
         'Unassigned',
       ]);
     });
+
+    it('narrows the list to what the supervisor types', async () => {
+      const { getByRole, findAllByRole } = await openTeamSelect();
+
+      userEvent.type(getByRole('combobox', { name: 'Team' }), 'central');
+
+      const names = (await findAllByRole('option')).map(
+        (option) => option.textContent,
+      );
+      expect(names).toEqual(['Central Team']);
+    });
+
+    it('clearing it drops the team filter', async () => {
+      const { getByRole, getByTitle, getByTestId } = await openTeamSelect();
+      userEvent.click(getByRole('option', { name: 'Central Team' }));
+      expect(getByTestId('team').textContent).toBe('Central Team');
+
+      userEvent.click(getByTitle('Clear'));
+
+      expect(getByTestId('team').textContent).toBe('');
+    });
   });
 
-  describe('Department select', () => {
+  describe('Department autocomplete', () => {
     const openDepartmentSelect = async () => {
       const view = renderWithConsumer();
-      const select = view.getByLabelText('Department');
-      await waitFor(() =>
-        expect(select).not.toHaveAttribute('aria-disabled', 'true'),
-      );
-      userEvent.click(select);
+      const combobox = view.getByRole('combobox', { name: 'Department' });
+      await waitFor(() => expect(combobox).not.toBeDisabled());
+      userEvent.click(combobox);
       await view.findByRole('option', { name: 'US Technology' });
       return view;
     };
@@ -214,20 +241,23 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
     // Waits out the teams query, then picks a team so the narrowing can be read.
     const chooseTeam = async (name: string) => {
       const view = renderWithConsumer();
-      const select = view.getByLabelText('Team');
-      await waitFor(() =>
-        expect(select).not.toHaveAttribute('aria-disabled', 'true'),
-      );
-      userEvent.click(select);
+      const combobox = view.getByRole('combobox', { name: 'Team' });
+      await waitFor(() => expect(combobox).not.toBeDisabled());
+      userEvent.click(combobox);
       userEvent.click(await view.findByRole('option', { name }));
       return view;
     };
 
     it('is disabled until the teams arrive', () => {
-      const { getByLabelText } = renderWithConsumer();
-      expect(getByLabelText('Department')).toHaveAttribute(
-        'aria-disabled',
-        'true',
+      const { getByRole } = renderWithConsumer();
+      expect(getByRole('combobox', { name: 'Department' })).toBeDisabled();
+    });
+
+    it('offers All departments as the placeholder while nothing is chosen', () => {
+      const { getByRole } = renderWithConsumer();
+      expect(getByRole('combobox', { name: 'Department' })).toHaveAttribute(
+        'placeholder',
+        'All departments',
       );
     });
 
@@ -235,11 +265,28 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
       const { getAllByRole } = await openDepartmentSelect();
 
       const names = getAllByRole('option').map((option) => option.textContent);
-      expect(names).toEqual([
-        'All departments',
-        'Cru Military',
-        'US Technology',
-      ]);
+      expect(names).toEqual(['Cru Military', 'US Technology']);
+    });
+
+    it('orders numbered departments correctly', async () => {
+      const { getByRole, getAllByRole, findByRole } = render(
+        <Wrapper
+          teams={[
+            { name: 'Central Team', departments: ['Cohort 10', 'Cohort 2'] },
+            { name: 'Delivery Team', departments: ['Cohort 1'] },
+          ]}
+        >
+          <MpdSupervisorReportFilterPanel onClose={onClose} />
+          <FilterContextConsumer />
+        </Wrapper>,
+      );
+      const combobox = getByRole('combobox', { name: 'Department' });
+      await waitFor(() => expect(combobox).not.toBeDisabled());
+      userEvent.click(combobox);
+      await findByRole('option', { name: 'Cohort 1' });
+
+      const names = getAllByRole('option').map((option) => option.textContent);
+      expect(names).toEqual(['Cohort 1', 'Cohort 2', 'Cohort 10']);
     });
 
     it('puts the selected department in context', async () => {
@@ -251,32 +298,30 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
     });
 
     it('narrows the team options to the teams in the chosen department', async () => {
-      const { getByRole, getByLabelText, getAllByRole } =
-        await openDepartmentSelect();
+      const { getByRole, getAllByRole } = await openDepartmentSelect();
 
       userEvent.click(getByRole('option', { name: 'Cru Military' }));
-      userEvent.click(getByLabelText('Team'));
+      userEvent.click(getByRole('combobox', { name: 'Team' }));
 
       const names = getAllByRole('option').map((option) => option.textContent);
-      expect(names).toEqual(['All teams', 'Central Team']);
+      expect(names).toEqual(['Central Team']);
     });
 
     it('narrows the department options to those holding the chosen team', async () => {
-      const { getByLabelText, getAllByRole } = await chooseTeam(
+      const { getByRole, getAllByRole } = await chooseTeam(
         'Solution Delivery Team',
       );
 
-      userEvent.click(getByLabelText('Department'));
+      userEvent.click(getByRole('combobox', { name: 'Department' }));
 
       const names = getAllByRole('option').map((option) => option.textContent);
-      expect(names).toEqual(['All departments', 'US Technology']);
+      expect(names).toEqual(['US Technology']);
     });
 
     it('keeps both filters when a team and a department are chosen together', async () => {
-      const { getByRole, getByLabelText, getByTestId } =
-        await chooseTeam('Central Team');
+      const { getByRole, getByTestId } = await chooseTeam('Central Team');
 
-      userEvent.click(getByLabelText('Department'));
+      userEvent.click(getByRole('combobox', { name: 'Department' }));
       userEvent.click(getByRole('option', { name: 'Cru Military' }));
 
       expect(getByTestId('team').textContent).toBe('Central Team');
@@ -284,13 +329,10 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
     });
 
     it('disables itself when the chosen team carries no department', async () => {
-      const { getByLabelText, getByTestId } = await chooseTeam('Unassigned');
+      const { getByRole, getByTestId } = await chooseTeam('Unassigned');
 
-      expect(getByTestId('department').textContent).toBe(ALL_DEPARTMENTS);
-      expect(getByLabelText('Department')).toHaveAttribute(
-        'aria-disabled',
-        'true',
-      );
+      expect(getByTestId('department').textContent).toBe('');
+      expect(getByRole('combobox', { name: 'Department' })).toBeDisabled();
     });
   });
 

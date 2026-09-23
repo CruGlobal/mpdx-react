@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import {
+  Autocomplete,
   Box,
   Chip,
   IconButton,
@@ -15,13 +16,40 @@ import { useManagedStaffTeamsQuery } from '../ManagedStaffTeams.generated';
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
 import { getLocalizedAssignmentCategoryGroup } from '../helpers';
 import {
-  ALL_DEPARTMENTS,
-  ALL_TEAMS,
   ALL_TYPES,
   MpdSupervisorReportQuickFilterEnum,
   quickFilterIds,
   quickFilterLabel,
 } from './mpdSupervisorReportFilters';
+
+interface FilterAutocompleteProps {
+  label: string;
+  placeholder: string;
+  value: string | null;
+  onChange: (value: string | null) => void;
+  options: string[];
+}
+
+const FilterAutocomplete: React.FC<FilterAutocompleteProps> = ({
+  label,
+  placeholder,
+  value,
+  onChange,
+  options,
+}) => (
+  <Autocomplete
+    fullWidth
+    autoHighlight
+    size="small"
+    value={value}
+    onChange={(_, newValue) => onChange(newValue)}
+    options={options}
+    disabled={!options.length}
+    renderInput={(params) => (
+      <TextField {...params} label={label} placeholder={placeholder} />
+    )}
+  />
+);
 
 interface MpdSupervisorReportFilterPanelProps {
   onClose: () => void;
@@ -53,11 +81,10 @@ export const MpdSupervisorReportFilterPanel: React.FC<
     () =>
       allTeams
         .filter(
-          ({ departments }) =>
-            department === ALL_DEPARTMENTS || departments.includes(department),
+          ({ departments }) => !department || departments.includes(department),
         )
         .map(({ name }) => name)
-        .sort((a, b) => a.localeCompare(b)),
+        .sort((a, b) => a.localeCompare(b, undefined, { numeric: true })),
     [allTeams, department],
   );
 
@@ -66,25 +93,15 @@ export const MpdSupervisorReportFilterPanel: React.FC<
       [
         ...new Set(
           allTeams
-            .filter(({ name }) => team === ALL_TEAMS || name === team)
+            .filter(({ name }) => !team || name === team)
             .flatMap(({ departments }) => departments),
         ),
-      ].sort((a, b) => a.localeCompare(b)),
+      ].sort((a, b) => a.localeCompare(b, undefined, { numeric: true })),
     [allTeams, team],
   );
 
   const handleQuickFilter = (filterId: MpdSupervisorReportQuickFilterEnum) => {
     setActiveQuickFilter(filterId);
-  };
-
-  const handleSetTeam = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setTeam(event.target.value as string);
-  };
-
-  const handleSetDepartment = (
-    event: React.ChangeEvent<{ value: unknown }>,
-  ) => {
-    setDepartment(event.target.value as string);
   };
 
   const handleSetEmploymentType = (
@@ -137,41 +154,21 @@ export const MpdSupervisorReportFilterPanel: React.FC<
           ))}
         </Stack>
 
-        <TextField
-          select
-          fullWidth
-          value={team}
-          onChange={handleSetTeam}
-          size="small"
+        <FilterAutocomplete
           label={t('Team')}
-          // Still loading, or the query failed; either way there is nothing to pick.
-          disabled={!teamOptions.length}
-        >
-          <MenuItem value={ALL_TEAMS}>{t('All teams')}</MenuItem>
-          {teamOptions.map((name) => (
-            <MenuItem key={name} value={name}>
-              {name}
-            </MenuItem>
-          ))}
-        </TextField>
+          placeholder={t('All teams')}
+          value={team}
+          onChange={setTeam}
+          options={teamOptions}
+        />
 
-        <TextField
-          select
-          fullWidth
-          value={department}
-          onChange={handleSetDepartment}
-          size="small"
+        <FilterAutocomplete
           label={t('Department')}
-          // Still loading, the query failed, or no team carries a department.
-          disabled={!departmentOptions.length}
-        >
-          <MenuItem value={ALL_DEPARTMENTS}>{t('All departments')}</MenuItem>
-          {departmentOptions.map((name) => (
-            <MenuItem key={name} value={name}>
-              {name}
-            </MenuItem>
-          ))}
-        </TextField>
+          placeholder={t('All departments')}
+          value={department}
+          onChange={setDepartment}
+          options={departmentOptions}
+        />
 
         <TextField
           select

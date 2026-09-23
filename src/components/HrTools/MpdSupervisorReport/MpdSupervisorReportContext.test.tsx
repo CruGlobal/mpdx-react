@@ -3,10 +3,7 @@ import { act, render, waitFor } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { MpdAssignmentCategoryGroupEnum } from 'src/graphql/types.generated';
-import {
-  ALL_TEAMS,
-  MpdSupervisorReportQuickFilterEnum,
-} from './Filters/mpdSupervisorReportFilters';
+import { MpdSupervisorReportQuickFilterEnum } from './Filters/mpdSupervisorReportFilters';
 import { ManagedStaffQuery } from './ManagedStaff.generated';
 import {
   MpdSupervisorReportProvider,
@@ -34,10 +31,10 @@ interface ConsumerResult {
   closePanel: () => void;
   search: string;
   setSearch: (v: string) => void;
-  team: string;
-  setTeam: (v: string) => void;
-  department: string;
-  setDepartment: (v: string) => void;
+  team: string | null;
+  setTeam: (v: string | null) => void;
+  department: string | null;
+  setDepartment: (v: string | null) => void;
   employmentType: MpdAssignmentCategoryGroupEnum | null;
   setEmploymentType: (v: MpdAssignmentCategoryGroupEnum | null) => void;
   activeQuickFilter: MpdSupervisorReportQuickFilterEnum;
@@ -58,6 +55,7 @@ const Consumer: React.FC = () => {
       </span>
       <span data-testid="search">{ctx.search}</span>
       <span data-testid="team">{ctx.team}</span>
+      <span data-testid="department">{ctx.department}</span>
       <span data-testid="employmentType">{ctx.employmentType}</span>
       <span data-testid="activeQuickFilter">{ctx.activeQuickFilter}</span>
     </div>
@@ -127,9 +125,10 @@ describe('MpdSupervisorReportContext', () => {
     expect(getByTestId('search').textContent).toBe('');
   });
 
-  it('starts with team=all', () => {
+  it('starts with no team or department', () => {
     const { getByTestId } = renderConsumer();
-    expect(getByTestId('team').textContent).toBe(ALL_TEAMS);
+    expect(getByTestId('team').textContent).toBe('');
+    expect(getByTestId('department').textContent).toBe('');
   });
 
   it('starts with no employmentType', () => {
@@ -156,9 +155,17 @@ describe('MpdSupervisorReportContext', () => {
   it('setTeam updates the team value', () => {
     const { getByTestId } = renderConsumer();
     act(() => {
-      consumerResult.setTeam('team-1');
+      consumerResult.setTeam('Central Team');
     });
-    expect(getByTestId('team').textContent).toBe('team-1');
+    expect(getByTestId('team').textContent).toBe('Central Team');
+  });
+
+  it('setDepartment updates the department value', () => {
+    const { getByTestId } = renderConsumer();
+    act(() => {
+      consumerResult.setDepartment('Cru Military');
+    });
+    expect(getByTestId('department').textContent).toBe('Cru Military');
   });
 
   it('setEmploymentType updates the employmentType value', () => {
