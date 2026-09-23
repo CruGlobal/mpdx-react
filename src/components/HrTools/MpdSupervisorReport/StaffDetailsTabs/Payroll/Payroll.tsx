@@ -32,11 +32,10 @@ export const StaffTabPayroll: React.FC<StaffTabPayrollProps> = ({
   const { data, loading, error } = useMonthlyPayrollHistoryQuery({
     variables: { staffAccountId },
   });
-  const payrollHistory = data?.monthlyPayrollHistory ?? [];
 
   const tableRows = useMemo(
-    () => [...payrollHistory].reverse(),
-    [payrollHistory],
+    () => [...(data?.monthlyPayrollHistory ?? [])].reverse(),
+    [data?.monthlyPayrollHistory],
   );
 
   if (loading) {
@@ -76,7 +75,7 @@ export const StaffTabPayroll: React.FC<StaffTabPayrollProps> = ({
                 const date = DateTime.fromISO(payroll.month ?? '');
 
                 return (
-                  <TableRow key={index}>
+                  <TableRow key={payroll.month ?? index}>
                     <TableCell>
                       {date.isValid
                         ? monthYearFormat(date.month, date.year, locale)

@@ -160,7 +160,7 @@ export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
                         : theme.palette.success.main;
 
                   return (
-                    <TableRow key={index}>
+                    <TableRow key={summary.month ?? index}>
                       <TableCell>
                         {date.isValid
                           ? monthYearFormat(date.month, date.year, locale)
