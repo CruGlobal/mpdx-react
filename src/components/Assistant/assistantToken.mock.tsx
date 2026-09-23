@@ -1,7 +1,12 @@
-import React from 'react';
-import { MockedProvider } from '@apollo/client/testing';
+import React, { useState } from 'react';
+import {
+  ApolloClient,
+  ApolloLink,
+  ApolloProvider,
+  InMemoryCache,
+  Observable,
+} from '@apollo/client';
 import { GraphQLError } from 'graphql';
-import { CreateAssistantTokenDocument } from './CreateAssistantToken.generated';
 
 export const mintedToken = (token: string, expiresInMs = 15 * 60 * 1000) => ({
   createAssistantToken: {
@@ -11,40 +16,56 @@ export const mintedToken = (token: string, expiresInMs = 15 * 60 * 1000) => ({
   },
 });
 
-interface RefusedMintProviderProps {
-  message: string;
-  accountListId?: string;
-  onMint?: () => void;
+export type MintOutcome =
+  | { token: string; expiresInMs?: number; expiresAt?: string }
+  | { refusal: string }
+  | { networkError: true };
+
+interface MintSequenceProviderProps {
+  outcomes: MintOutcome[];
+  onMint?: (variables: Record<string, unknown>) => void;
   children?: React.ReactNode;
 }
 
-// Returns mpdx_api's refusal as a GraphQL error so Apollo wraps it the way it does in the app
-export const RefusedMintProvider: React.FC<RefusedMintProviderProps> = ({
-  message,
-  accountListId = 'account-list-1',
+// Answers each mint with the next outcome, repeating the last, and returns a refusal as mpdx_api's GraphQL error
+export const MintSequenceProvider: React.FC<MintSequenceProviderProps> = ({
+  outcomes,
   onMint,
   children,
 }) => {
-  const refusal = {
-    request: {
-      query: CreateAssistantTokenDocument,
-      variables: { accountListId },
-    },
-    result: () => {
-      onMint?.();
-      return {
-        errors: [
-          new GraphQLError(message, {
-            extensions: { code: 'AUTHORIZATION_ERROR' },
+  const [client] = useState(() => {
+    const queue = [...outcomes];
+    return new ApolloClient({
+      cache: new InMemoryCache(),
+      link: new ApolloLink(
+        (operation) =>
+          new Observable((observer) => {
+            onMint?.(operation.variables);
+            const outcome = queue.length > 1 ? queue.shift() : queue[0];
+            if (!outcome || 'networkError' in outcome) {
+              observer.error(new Error('Failed to fetch'));
+              return;
+            }
+            if ('refusal' in outcome) {
+              observer.next({
+                errors: [
+                  new GraphQLError(outcome.refusal, {
+                    extensions: { code: 'AUTHORIZATION_ERROR' },
+                  }),
+                ],
+              });
+            } else {
+              const minted = mintedToken(outcome.token, outcome.expiresInMs);
+              if (outcome.expiresAt !== undefined) {
+                minted.createAssistantToken.expiresAt = outcome.expiresAt;
+              }
+              observer.next({ data: minted });
+            }
+            observer.complete();
           }),
-        ],
-      };
-    },
-  };
+      ),
+    });
+  });
 
-  return (
-    <MockedProvider mocks={[refusal, refusal, refusal]}>
-      {children}
-    </MockedProvider>
-  );
+  return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };

@@ -9,6 +9,7 @@ import {
 const REFRESH_LEAD_MS = 60 * 1000;
 // Keeps a skewed client clock from turning refreshes into a tight loop
 const MIN_REFRESH_DELAY_MS = 30 * 1000;
+const REFRESH_RETRY_DELAYS_MS = [5 * 1000, 15 * 1000, 60 * 1000];
 
 // mpdx_api refuses these with the same AUTHORIZATION_ERROR code as impersonation, so only the message tells them apart
 const NOT_TURNED_ON_MESSAGES = new Set([
@@ -16,108 +17,169 @@ const NOT_TURNED_ON_MESSAGES = new Set([
   'No assistant features are turned on',
 ]);
 
-export type AssistantTokenStatus =
-  | 'idle'
-  | 'loading'
-  | 'ready'
-  | 'notTurnedOn'
-  | 'error';
+export type AssistantTokenRefusal = 'notTurnedOn' | 'notAllowed';
+
+export type AssistantTokenState =
+  | { status: 'idle' }
+  | { status: 'minting' }
+  | { status: 'ready'; token: string; expiresAt: number }
+  | { status: 'refusing'; reason: AssistantTokenRefusal }
+  | { status: 'failed'; retryable: boolean };
 
 export interface AssistantToken {
+  state: AssistantTokenState;
   token: string | null;
-  status: AssistantTokenStatus;
   refreshToken: () => Promise<string | null>;
+  retry: () => void;
 }
 
-const isNotTurnedOn = (error: unknown): boolean =>
-  error instanceof ApolloError &&
-  error.graphQLErrors.some(
-    (graphQLError) =>
-      graphQLError.extensions?.code === 'AUTHORIZATION_ERROR' &&
-      NOT_TURNED_ON_MESSAGES.has(graphQLError.message),
-  );
+const refusalReason = (error: unknown): AssistantTokenRefusal | null => {
+  const refusal =
+    error instanceof ApolloError
+      ? error.graphQLErrors.find(
+          (graphQLError) =>
+            graphQLError.extensions?.code === 'AUTHORIZATION_ERROR',
+        )
+      : undefined;
+  if (!refusal) {
+    return null;
+  }
+  return NOT_TURNED_ON_MESSAGES.has(refusal.message)
+    ? 'notTurnedOn'
+    : 'notAllowed';
+};
+
+// A server that answered with an error will answer the same way again
+const isRetryable = (error: unknown): boolean =>
+  !(error instanceof ApolloError && error.graphQLErrors.length > 0);
 
 // Reads the Apollo context directly because the drawer can open on /404 and /500, which have no Apollo provider
 export const useAssistantToken = (
   accountListId: string | null,
 ): AssistantToken => {
   const { client } = useContext(getApolloContext());
-  const [token, setToken] = useState<string | null>(null);
-  const [status, setStatus] = useState<AssistantTokenStatus>('idle');
+  const [state, setState] = useState<AssistantTokenState>({ status: 'idle' });
+  const stateRef = useRef(state);
   const pending = useRef<Promise<string | null> | null>(null);
-  const refreshTimer = useRef<ReturnType<typeof setTimeout>>();
+  const timer = useRef<ReturnType<typeof setTimeout>>();
   const generation = useRef(0);
-  const failed = useRef(false);
 
-  const refreshToken = useCallback((): Promise<string | null> => {
-    // A refused or failed mint waits for the drawer to reopen or the account list to change
-    if (!client || !accountListId || failed.current) {
-      return Promise.resolve(null);
-    }
-    if (pending.current) {
-      return pending.current;
-    }
+  const update = useCallback((next: AssistantTokenState) => {
+    stateRef.current = next;
+    setState(next);
+  }, []);
 
-    const mintGeneration = generation.current;
-    const isCurrent = () => generation.current === mintGeneration;
-    clearTimeout(refreshTimer.current);
+  const mint = useCallback(
+    (retryAttempt = 0): Promise<string | null> => {
+      const { status } = stateRef.current;
+      // A refusal or failed first mint waits for Try again, a reopen, or another account list
+      if (
+        !client ||
+        !accountListId ||
+        status === 'refusing' ||
+        status === 'failed'
+      ) {
+        return Promise.resolve(null);
+      }
+      if (pending.current) {
+        return pending.current;
+      }
 
-    const request = client
-      .mutate<
-        CreateAssistantTokenMutation,
-        CreateAssistantTokenMutationVariables
-      >({
-        mutation: CreateAssistantTokenDocument,
-        variables: { accountListId },
-        fetchPolicy: 'no-cache',
-        context: { suppressErrors: true },
-      })
-      .then(({ data }) => {
-        const minted = data?.createAssistantToken;
-        if (!minted) {
-          throw new Error('The assistant token mutation returned no token');
-        }
-        if (!isCurrent()) {
+      const mintGeneration = generation.current;
+      const isCurrent = () => generation.current === mintGeneration;
+      clearTimeout(timer.current);
+
+      const request = client
+        .mutate<
+          CreateAssistantTokenMutation,
+          CreateAssistantTokenMutationVariables
+        >({
+          mutation: CreateAssistantTokenDocument,
+          variables: { accountListId },
+          fetchPolicy: 'no-cache',
+          context: { suppressErrors: true },
+        })
+        .then(({ data }) => {
+          const minted = data?.createAssistantToken;
+          if (!minted) {
+            throw new Error('The assistant token mutation returned no token');
+          }
+          if (!isCurrent()) {
+            return null;
+          }
+          const expiresAt = new Date(minted.expiresAt).getTime();
+          update({ status: 'ready', token: minted.token, expiresAt });
+          timer.current = setTimeout(
+            () => mint(),
+            Math.max(
+              expiresAt - Date.now() - REFRESH_LEAD_MS,
+              MIN_REFRESH_DELAY_MS,
+            ),
+          );
+          return minted.token;
+        })
+        .catch((error: unknown) => {
+          if (!isCurrent()) {
+            return null;
+          }
+          const reason = refusalReason(error);
+          const held = stateRef.current;
+          const remaining =
+            held.status === 'ready' ? held.expiresAt - Date.now() : 0;
+          if (reason) {
+            update({ status: 'refusing', reason });
+          } else if (remaining > 0) {
+            // A failed refresh keeps the token it holds and tries again until that token expires
+            const delay =
+              REFRESH_RETRY_DELAYS_MS[
+                Math.min(retryAttempt, REFRESH_RETRY_DELAYS_MS.length - 1)
+              ];
+            timer.current = setTimeout(
+              () => mint(retryAttempt + 1),
+              Math.min(delay, remaining),
+            );
+          } else {
+            update({ status: 'failed', retryable: isRetryable(error) });
+          }
           return null;
-        }
-        setToken(minted.token);
-        setStatus('ready');
-        const delay = Math.max(
-          new Date(minted.expiresAt).getTime() - Date.now() - REFRESH_LEAD_MS,
-          MIN_REFRESH_DELAY_MS,
-        );
-        refreshTimer.current = setTimeout(refreshToken, delay);
-        return minted.token;
-      })
-      .catch((error: unknown) => {
-        if (isCurrent()) {
-          failed.current = true;
-          setToken(null);
-          setStatus(isNotTurnedOn(error) ? 'notTurnedOn' : 'error');
-        }
-        return null;
-      })
-      .finally(() => {
-        if (pending.current === request) {
-          pending.current = null;
-        }
-      });
-    pending.current = request;
-    return request;
-  }, [client, accountListId]);
+        })
+        .finally(() => {
+          if (pending.current === request) {
+            pending.current = null;
+          }
+        });
+      pending.current = request;
+      return request;
+    },
+    [client, accountListId, update],
+  );
+
+  const refreshToken = useCallback(() => mint(), [mint]);
+
+  const retry = useCallback(() => {
+    if (stateRef.current.status === 'failed') {
+      update({ status: 'minting' });
+      mint();
+    }
+  }, [mint, update]);
 
   useEffect(() => {
-    setToken(null);
-    setStatus(client && accountListId ? 'loading' : 'idle');
-    refreshToken();
+    update(
+      client && accountListId ? { status: 'minting' } : { status: 'idle' },
+    );
+    mint();
 
     return () => {
       generation.current += 1;
       pending.current = null;
-      failed.current = false;
-      clearTimeout(refreshTimer.current);
+      clearTimeout(timer.current);
     };
-  }, [client, accountListId, refreshToken]);
+  }, [client, accountListId, mint, update]);
 
-  return { token, status, refreshToken };
+  return {
+    state,
+    token: state.status === 'ready' ? state.token : null,
+    refreshToken,
+    retry,
+  };
 };

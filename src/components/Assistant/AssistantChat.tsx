@@ -98,6 +98,27 @@ const NotTurnedOn: React.FC<NotTurnedOnProps> = ({ accountListId }) => {
   );
 };
 
+interface MintFailedProps {
+  onRetry?: () => void;
+}
+
+const MintFailed: React.FC<MintFailedProps> = ({ onRetry }) => {
+  const { t } = useTranslation();
+
+  return (
+    <Box display="flex" alignItems="center" gap={1}>
+      <Typography variant="body2" color="error">
+        {t('Sorry, something went wrong. Please try again.')}
+      </Typography>
+      {onRetry && (
+        <Button size="small" onClick={onRetry}>
+          {t('Try again')}
+        </Button>
+      )}
+    </Box>
+  );
+};
+
 // Mounts only while the drawer is open, so session, route, and Apollo hooks stay out of the provider
 export const AssistantChat: React.FC = () => {
   const { t } = useTranslation();
@@ -109,15 +130,20 @@ export const AssistantChat: React.FC = () => {
     accountListId && transcriptAccountListId !== accountListId ? [] : messages;
   const configured = Boolean(getAssistantUrl());
   const {
+    state: tokenState,
     token,
-    status: tokenStatus,
     refreshToken,
+    retry,
   } = useAssistantToken(configured ? accountListId : null);
   const { sendMessage, stop, streaming, helpOnly, rateLimited } =
     useAssistantStream({ accountListId, token, refreshToken });
   const [draft, setDraft] = useState('');
   const canSend =
-    Boolean(draft.trim()) && tokenStatus === 'ready' && !rateLimited;
+    Boolean(draft.trim()) && tokenState.status === 'ready' && !rateLimited;
+  // A reply in flight keeps its Stop button whatever happens to the token meanwhile
+  const deadEnd =
+    !streaming &&
+    (tokenState.status === 'refusing' || tokenState.status === 'failed');
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const wasStreaming = useRef(streaming);
 
@@ -161,12 +187,19 @@ export const AssistantChat: React.FC = () => {
           <Typography variant="body2" color="text.secondary">
             {t('The assistant is not configured.')}
           </Typography>
-        ) : tokenStatus === 'notTurnedOn' && accountListId ? (
+        ) : deadEnd &&
+          tokenState.status === 'refusing' &&
+          tokenState.reason === 'notTurnedOn' &&
+          accountListId ? (
           <NotTurnedOn accountListId={accountListId} />
-        ) : tokenStatus === 'error' ? (
-          <Typography variant="body2" color="error">
-            {t('Sorry, something went wrong. Please try again.')}
-          </Typography>
+        ) : deadEnd ? (
+          <MintFailed
+            onRetry={
+              tokenState.status === 'failed' && tokenState.retryable
+                ? retry
+                : undefined
+            }
+          />
         ) : (
           <Composer onSubmit={handleSubmit}>
             <TextField

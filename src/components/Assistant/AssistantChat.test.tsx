@@ -10,7 +10,11 @@ import { AssistantChat } from './AssistantChat';
 import { AssistantProvider } from './AssistantProvider';
 import { CreateAssistantTokenMutation } from './CreateAssistantToken.generated';
 import { MessageList } from './MessageList';
-import { RefusedMintProvider, mintedToken } from './assistantToken.mock';
+import {
+  MintOutcome,
+  MintSequenceProvider,
+  mintedToken,
+} from './assistantToken.mock';
 import {
   controlledStream,
   frame,
@@ -24,6 +28,7 @@ jest.mock('./MessageList', () => {
 });
 
 const mutationSpy = jest.fn();
+const onMint = jest.fn();
 
 // Every message the transcript rendered since the given MessageList call
 const renderedContentSince = (callIndex: number): string[] =>
@@ -36,13 +41,13 @@ const renderedContentSince = (callIndex: number): string[] =>
 interface TestComponentProps {
   accountListId?: string;
   page?: string;
-  refusal?: string;
+  mints?: MintOutcome[];
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   accountListId = 'account-list-1',
   page = 'contacts',
-  refusal,
+  mints,
 }) => {
   const chat = (
     <TestRouter
@@ -59,10 +64,10 @@ const TestComponent: React.FC<TestComponentProps> = ({
 
   return (
     <ThemeProvider theme={theme}>
-      {refusal ? (
-        <RefusedMintProvider message={refusal} accountListId={accountListId}>
+      {mints ? (
+        <MintSequenceProvider outcomes={mints} onMint={onMint}>
           {chat}
-        </RefusedMintProvider>
+        </MintSequenceProvider>
       ) : (
         <GqlMockedProvider<{
           CreateAssistantToken: CreateAssistantTokenMutation;
@@ -89,6 +94,9 @@ const typeMessage = async (
   );
   return input;
 };
+
+const seconds = (count: number) => count * 1000;
+const minutes = (count: number) => count * 60 * 1000;
 
 const replyFrames = [
   frame({ type: 'chunk', message_id: 'm1', delta: 'You have 12 contacts.' }),
@@ -317,7 +325,7 @@ describe('AssistantChat', () => {
   });
   it('points to Preferences when the assistant is not turned on', async () => {
     const { findByText, getByRole, queryByRole } = render(
-      <TestComponent refusal="The assistant is not turned on" />,
+      <TestComponent mints={[{ refusal: 'The assistant is not turned on' }]} />,
     );
 
     expect(
@@ -336,14 +344,105 @@ describe('AssistantChat', () => {
 
   it('shows the friendly error when the mint is refused under impersonation', async () => {
     const { findByText, queryByRole } = render(
-      <TestComponent refusal="Not available while impersonating" />,
+      <TestComponent
+        mints={[{ refusal: 'Not available while impersonating' }]}
+      />,
     );
 
     expect(
       await findByText('Sorry, something went wrong. Please try again.'),
     ).toBeInTheDocument();
     expect(queryByRole('textbox')).not.toBeInTheDocument();
+    expect(
+      queryByRole('button', { name: 'Try again' }),
+    ).not.toBeInTheDocument();
     expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it('offers Try again when the first mint fails and mints again', async () => {
+    const { findByRole, getByRole, queryByRole, getByText } = render(
+      <TestComponent
+        mints={[{ networkError: true }, { token: 'minted-token' }]}
+      />,
+    );
+
+    userEvent.click(await findByRole('button', { name: 'Try again' }));
+
+    expect(
+      queryByRole('button', { name: 'Try again' }),
+    ).not.toBeInTheDocument();
+    await typeMessage(getByRole, 'Hi');
+    expect(onMint).toHaveBeenCalledTimes(2);
+    expect(() =>
+      getByText('Sorry, something went wrong. Please try again.'),
+    ).toThrow();
+  });
+
+  it('keeps the chat working while a failed background refresh retries', async () => {
+    jest.useFakeTimers();
+    fetchSpy
+      .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+      .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+    const { getByRole, findByText, queryByText } = render(
+      <TestComponent
+        mints={[
+          { token: 'minted-token-1', expiresInMs: minutes(2) },
+          { networkError: true },
+          { token: 'minted-token-2' },
+        ]}
+      />,
+    );
+    await typeMessage(getByRole, 'Hi');
+
+    await act(async () => {
+      jest.advanceTimersByTime(minutes(1));
+    });
+    expect(onMint).toHaveBeenCalledTimes(2);
+    expect(getByRole('button', { name: 'Send' })).toBeEnabled();
+    expect(
+      queryByText('Sorry, something went wrong. Please try again.'),
+    ).not.toBeInTheDocument();
+
+    await act(async () => {
+      jest.advanceTimersByTime(seconds(5));
+    });
+    expect(onMint).toHaveBeenCalledTimes(3);
+    userEvent.click(getByRole('button', { name: 'Send' }));
+    expect(await findByText('You have 12 contacts.')).toBeInTheDocument();
+    expect(fetchSpy.mock.calls[0][1].headers.Authorization).toBe(
+      'Bearer minted-token-2',
+    );
+  });
+
+  it('keeps Stop while streaming when a refresh is refused mid-reply', async () => {
+    jest.useFakeTimers();
+    const stream = controlledStream();
+    fetchSpy
+      .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+      .mockResolvedValueOnce(mockStreamResponse([], { body: stream.body }));
+    const { getByRole, findByRole, findByText } = render(
+      <TestComponent
+        mints={[
+          { token: 'minted-token', expiresInMs: minutes(2) },
+          { refusal: 'Not available while impersonating' },
+        ]}
+      />,
+    );
+    await typeMessage(getByRole, 'Hi');
+    userEvent.click(getByRole('button', { name: 'Send' }));
+    expect(await findByRole('button', { name: 'Stop' })).toBeInTheDocument();
+
+    await act(async () => {
+      jest.advanceTimersByTime(minutes(1));
+    });
+    expect(onMint).toHaveBeenCalledTimes(2);
+    expect(getByRole('button', { name: 'Stop' })).toBeInTheDocument();
+
+    stream.push(frame({ type: 'generation_complete', message_id: 'm1' }));
+    stream.close();
+    expect(
+      await findByText('Sorry, something went wrong. Please try again.'),
+    ).toBeInTheDocument();
   });
 
   it('asks the user to try again in a moment when the verifier is down', async () => {
