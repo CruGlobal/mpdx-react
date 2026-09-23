@@ -42,12 +42,14 @@ interface TestComponentProps {
   accountListId?: string;
   page?: string;
   mints?: MintOutcome[];
+  open?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   accountListId = 'account-list-1',
   page = 'contacts',
   mints,
+  open = true,
 }) => {
   const chat = (
     <TestRouter
@@ -56,9 +58,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
         asPath: `/accountLists/${accountListId}/${page}`,
       }}
     >
-      <AssistantProvider>
-        <AssistantChat />
-      </AssistantProvider>
+      <AssistantProvider>{open && <AssistantChat />}</AssistantProvider>
     </TestRouter>
   );
 
@@ -529,6 +529,33 @@ describe('AssistantChat', () => {
     rerender(<TestComponent accountListId="account-list-2" />);
 
     const rendered = renderedContentSince(callsBeforeSwitch);
+    expect(rendered).not.toContain('How many contacts?');
+    expect(rendered).not.toContain('You have 12 contacts.');
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('CreateAssistantToken', {
+        accountListId: 'account-list-2',
+      }),
+    );
+  });
+
+  it('starts a new conversation when the account list changed while the drawer was closed', async () => {
+    fetchSpy
+      .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+      .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+    const { getByRole, findByText, rerender } = render(<TestComponent />);
+    await typeMessage(getByRole, 'How many contacts?');
+    userEvent.click(getByRole('button', { name: 'Send' }));
+    expect(await findByText('You have 12 contacts.')).toBeInTheDocument();
+
+    rerender(<TestComponent open={false} />);
+    rerender(<TestComponent open={false} accountListId="account-list-2" />);
+    const callsBeforeReopen = (MessageList as jest.Mock).mock.calls.length;
+    rerender(<TestComponent accountListId="account-list-2" />);
+
+    expect(getByRole('log', { name: 'Conversation' })).toHaveTextContent(
+      'Started a new conversation for this account list.',
+    );
+    const rendered = renderedContentSince(callsBeforeReopen);
     expect(rendered).not.toContain('How many contacts?');
     expect(rendered).not.toContain('You have 12 contacts.');
     await waitFor(() =>
