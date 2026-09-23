@@ -207,6 +207,24 @@ describe('useAssistantStream', () => {
     );
   });
 
+  it('marks the reply as failed when the stream closes before it finishes', async () => {
+    fetchSpy
+      .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+      .mockResolvedValueOnce(
+        mockStreamResponse([
+          frame({ type: 'chunk', message_id: 'm1', delta: 'Partial' }),
+        ]),
+      );
+    const { result } = renderStream();
+
+    await act(() => result.current.stream.sendMessage('Hi'));
+
+    expect(result.current.context.messages[1]).toMatchObject({
+      content: 'Partial',
+      status: 'error',
+    });
+  });
+
   it('marks the reply as failed when creating the conversation is not ok', async () => {
     fetchSpy.mockResolvedValueOnce(
       mockJsonResponse({ error: 'Forbidden' }, { ok: false, status: 403 }),

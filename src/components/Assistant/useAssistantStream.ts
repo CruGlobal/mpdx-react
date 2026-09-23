@@ -218,7 +218,7 @@ export const useAssistantStream = (): UseAssistantStreamResult => {
           dispatch(
             controller.signal.aborted
               ? { type: 'stopMessage', id: reply.id }
-              : { type: 'completeMessage', id: reply.id, citations: [] },
+              : { type: 'failMessage', id: reply.id },
           );
         }
       } catch {
