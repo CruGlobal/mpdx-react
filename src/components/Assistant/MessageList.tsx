@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { AssistantErrorBoundary } from './AssistantErrorBoundary';
 import { AssistantMarkdown } from './AssistantMarkdown';
 import { MessageCard } from './cards/MessageCard';
+import { NavigationVisibilityProvider } from './navigation/NavigationVisibilityContext';
 import { toSafeHttpUrl } from './safeUrl';
 import { AssistantMessage, MessageRole } from './types';
 
@@ -139,6 +140,9 @@ export const MessageList: React.FC<MessageListProps> = ({
 }) => {
   const { t } = useTranslation();
   const endRef = useRef<HTMLDivElement>(null);
+  const hasNavigationCard = messages.some((message) =>
+    message.cards.some((card) => card?.kind === 'navigation'),
+  );
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: 'end' });
@@ -153,11 +157,13 @@ export const MessageList: React.FC<MessageListProps> = ({
         aria-busy={streaming}
         aria-label={t('Conversation')}
       >
-        {messages.map((message) => (
-          <AssistantErrorBoundary key={message.id}>
-            <MessageItem message={message} />
-          </AssistantErrorBoundary>
-        ))}
+        <NavigationVisibilityProvider enabled={hasNavigationCard}>
+          {messages.map((message) => (
+            <AssistantErrorBoundary key={message.id}>
+              <MessageItem message={message} />
+            </AssistantErrorBoundary>
+          ))}
+        </NavigationVisibilityProvider>
         <div ref={endRef} />
       </List>
       {messages.length === 0 && (

@@ -2,7 +2,14 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import { MessageList } from './MessageList';
-import { AssistantCard, AssistantMessage } from './types';
+import { DEFAULT_VISIBILITY } from './navigation/intents';
+import { useNavigationVisibility } from './navigation/useNavigationVisibility';
+import { AssistantCard, AssistantMessage, NavigationIntent } from './types';
+
+jest.mock('./navigation/useNavigationVisibility');
+const mockUseNavigationVisibility = useNavigationVisibility as jest.MockedFn<
+  typeof useNavigationVisibility
+>;
 
 const message = (overrides: Partial<AssistantMessage>): AssistantMessage => ({
   id: 'message-1',
@@ -15,7 +22,22 @@ const message = (overrides: Partial<AssistantMessage>): AssistantMessage => ({
   ...overrides,
 });
 
+const navigationMessage = (
+  id: string,
+  intent: NavigationIntent,
+  label: string,
+): AssistantMessage =>
+  message({ id, cards: [{ kind: 'navigation', intent, label }] });
+
 describe('MessageList', () => {
+  beforeEach(() => {
+    mockUseNavigationVisibility.mockReturnValue({
+      visibility: DEFAULT_VISIBILITY,
+      reportSegments: new Set(),
+      isLoading: false,
+    });
+  });
+
   it('renders the log region and an empty state before any message', () => {
     const { getByRole, getByText } = render(
       <MessageList messages={[]} streaming={false} />,
@@ -157,20 +179,55 @@ describe('MessageList', () => {
     errorSpy.mockRestore();
   });
 
-  it('renders navigation cards', () => {
-    const { getByText } = render(
+  it('looks up visibility once for every navigation card in the list', () => {
+    const messages = [
+      navigationMessage(
+        '1',
+        { type: 'dashboard', params: {} },
+        'Open the Dashboard',
+      ),
+      navigationMessage('2', { type: 'tasks', params: {} }, 'Open Tasks'),
+    ];
+    const { getByRole } = render(
+      <TestRouter>
+        <MessageList messages={messages} streaming={false} />
+      </TestRouter>,
+    );
+
+    expect(getByRole('link', { name: 'Open the Dashboard' })).toHaveAttribute(
+      'href',
+      '/accountLists/account-list-1',
+    );
+    expect(getByRole('link', { name: 'Open Tasks' })).toHaveAttribute(
+      'href',
+      '/accountLists/account-list-1/tasks',
+    );
+    expect(mockUseNavigationVisibility).toHaveBeenCalledTimes(1);
+  });
+
+  it('skips the visibility lookup without a navigation card', () => {
+    render(
+      <TestRouter>
+        <MessageList
+          messages={[message({ content: 'Hi' })]}
+          streaming={false}
+        />
+      </TestRouter>,
+    );
+
+    expect(mockUseNavigationVisibility).not.toHaveBeenCalled();
+  });
+
+  it('shows navigation cards as plain text outside an account list', () => {
+    const { getByText, queryByRole } = render(
       <TestRouter router={{ query: {} }}>
         <MessageList
           messages={[
-            message({
-              cards: [
-                {
-                  kind: 'navigation',
-                  intent: { type: 'dashboard', params: {} },
-                  label: 'Open the Dashboard',
-                },
-              ],
-            }),
+            navigationMessage(
+              '1',
+              { type: 'dashboard', params: {} },
+              'Open the Dashboard',
+            ),
           ]}
           streaming={false}
         />
@@ -178,5 +235,7 @@ describe('MessageList', () => {
     );
 
     expect(getByText('Open the Dashboard')).toBeInTheDocument();
+    expect(queryByRole('link')).not.toBeInTheDocument();
+    expect(mockUseNavigationVisibility).not.toHaveBeenCalled();
   });
 });

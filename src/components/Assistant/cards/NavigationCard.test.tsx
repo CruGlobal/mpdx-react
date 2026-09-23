@@ -1,29 +1,40 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
+import { NavigationVisibilityContext } from '../navigation/NavigationVisibilityContext';
 import { DEFAULT_VISIBILITY } from '../navigation/intents';
-import { useNavigationVisibility } from '../navigation/useNavigationVisibility';
+import { NavigationVisibilityResult } from '../navigation/useNavigationVisibility';
 import { NavigationIntent } from '../types';
 import { NavigationCard } from './NavigationCard';
 
-jest.mock('../navigation/useNavigationVisibility');
-const mockUseNavigationVisibility = useNavigationVisibility as jest.MockedFn<
-  typeof useNavigationVisibility
->;
-
 const reportSegments = new Set(['coaching', 'donations']);
+
+const loaded: NavigationVisibilityResult = {
+  visibility: DEFAULT_VISIBILITY,
+  reportSegments,
+  isLoading: false,
+};
+
+const coachingHidden: NavigationVisibilityResult = {
+  ...loaded,
+  visibility: { ...DEFAULT_VISIBILITY, coaching: false },
+};
 
 interface TestComponentProps {
   intent: NavigationIntent;
   accountListId?: string;
+  navigation?: NavigationVisibilityResult | null;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   intent,
   accountListId = 'account-list-1',
+  navigation = loaded,
 }) => (
   <TestRouter router={{ query: accountListId ? { accountListId } : {} }}>
-    <NavigationCard card={{ kind: 'navigation', intent, label: 'Open it' }} />
+    <NavigationVisibilityContext.Provider value={navigation}>
+      <NavigationCard card={{ kind: 'navigation', intent, label: 'Open it' }} />
+    </NavigationVisibilityContext.Provider>
   </TestRouter>
 );
 
@@ -31,11 +42,6 @@ describe('NavigationCard', () => {
   let debugSpy: jest.SpyInstance;
 
   beforeEach(() => {
-    mockUseNavigationVisibility.mockReturnValue({
-      visibility: DEFAULT_VISIBILITY,
-      reportSegments,
-      isLoading: false,
-    });
     debugSpy = jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
 
@@ -69,13 +75,11 @@ describe('NavigationCard', () => {
   });
 
   it('shows plain text for an intent the user cannot see', () => {
-    mockUseNavigationVisibility.mockReturnValue({
-      visibility: { ...DEFAULT_VISIBILITY, coaching: false },
-      reportSegments,
-      isLoading: false,
-    });
     const { getByText, queryByRole } = render(
-      <TestComponent intent={{ type: 'coaching', params: {} }} />,
+      <TestComponent
+        intent={{ type: 'coaching', params: {} }}
+        navigation={coachingHidden}
+      />,
     );
 
     expect(getByText('Open it')).toBeInTheDocument();
@@ -93,49 +97,40 @@ describe('NavigationCard', () => {
     expect(queryByRole('link')).not.toBeInTheDocument();
   });
 
-  it('shows plain text without logging while visibility loads', () => {
-    mockUseNavigationVisibility.mockReturnValue({
-      visibility: { ...DEFAULT_VISIBILITY, coaching: false },
-      reportSegments,
-      isLoading: true,
-    });
-    const intent = { type: 'coaching', params: {} };
-    const { getByText, queryByRole, rerender } = render(
-      <TestComponent intent={intent} />,
-    );
+  it.each([
+    ['still loading', { ...coachingHidden, isLoading: true }],
+    ['not looked up yet', null],
+  ])(
+    'shows plain text without logging while visibility is %s',
+    (_, navigation) => {
+      const intent = { type: 'coaching', params: {} };
+      const { getByText, queryByRole, rerender } = render(
+        <TestComponent intent={intent} navigation={navigation} />,
+      );
 
-    expect(getByText('Open it')).toBeInTheDocument();
-    expect(queryByRole('link')).not.toBeInTheDocument();
-    expect(debugSpy).not.toHaveBeenCalled();
+      expect(getByText('Open it')).toBeInTheDocument();
+      expect(queryByRole('link')).not.toBeInTheDocument();
+      expect(debugSpy).not.toHaveBeenCalled();
 
-    mockUseNavigationVisibility.mockReturnValue({
-      visibility: DEFAULT_VISIBILITY,
-      reportSegments,
-      isLoading: false,
-    });
-    rerender(<TestComponent intent={intent} />);
+      rerender(<TestComponent intent={intent} navigation={loaded} />);
 
-    expect(getByText('Open it').closest('a')).toHaveAttribute(
-      'href',
-      '/accountLists/account-list-1/coaching',
-    );
-  });
+      expect(getByText('Open it').closest('a')).toHaveAttribute(
+        'href',
+        '/accountLists/account-list-1/coaching',
+      );
+    },
+  );
 
   it('logs a hidden intent once loading finishes', () => {
-    mockUseNavigationVisibility.mockReturnValue({
-      visibility: { ...DEFAULT_VISIBILITY, coaching: false },
-      reportSegments,
-      isLoading: true,
-    });
     const intent = { type: 'coaching', params: {} };
-    const { rerender } = render(<TestComponent intent={intent} />);
+    const { rerender } = render(
+      <TestComponent
+        intent={intent}
+        navigation={{ ...coachingHidden, isLoading: true }}
+      />,
+    );
 
-    mockUseNavigationVisibility.mockReturnValue({
-      visibility: { ...DEFAULT_VISIBILITY, coaching: false },
-      reportSegments,
-      isLoading: false,
-    });
-    rerender(<TestComponent intent={intent} />);
+    rerender(<TestComponent intent={intent} navigation={coachingHidden} />);
 
     expect(debugSpy).toHaveBeenCalledTimes(1);
     expect(debugSpy).toHaveBeenCalledWith(
@@ -143,7 +138,7 @@ describe('NavigationCard', () => {
     );
   });
 
-  it('shows plain text outside an account list', () => {
+  it('shows plain text without logging outside an account list', () => {
     const { getByText, queryByRole } = render(
       <TestComponent
         intent={{ type: 'dashboard', params: {} }}
@@ -153,6 +148,6 @@ describe('NavigationCard', () => {
 
     expect(getByText('Open it')).toBeInTheDocument();
     expect(queryByRole('link')).not.toBeInTheDocument();
-    expect(mockUseNavigationVisibility).not.toHaveBeenCalled();
+    expect(debugSpy).not.toHaveBeenCalled();
   });
 });
