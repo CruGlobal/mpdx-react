@@ -1,5 +1,6 @@
 import { TFunction } from 'i18next';
 import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
+import { healthLabel } from '../helpers';
 
 /** Chip statuses in the order the legend and colour key list them. */
 export const healthStatusOrder: MpdHealthStatusEnum[] = [
@@ -9,22 +10,16 @@ export const healthStatusOrder: MpdHealthStatusEnum[] = [
   MpdHealthStatusEnum.Gray,
 ];
 
-/** Display label for a chip status (the sentence-case form of healthLabel). */
+/**
+ * Sentence-case form of healthLabel for standalone display (legend, colour
+ * key). Derived rather than re-mapped so each status has one translation key.
+ */
 export const healthStatusLabel = (
   t: TFunction,
   health: MpdHealthStatusEnum,
 ): string => {
-  switch (health) {
-    case MpdHealthStatusEnum.Green:
-      return t('On track');
-    case MpdHealthStatusEnum.Yellow:
-      return t('Needs attention');
-    case MpdHealthStatusEnum.Red:
-      return t('At risk');
-    case MpdHealthStatusEnum.Gray:
-    default:
-      return t('No data');
-  }
+  const label = healthLabel(t, health);
+  return label.charAt(0).toLocaleUpperCase() + label.slice(1);
 };
 
 /**

@@ -196,21 +196,21 @@ describe('buildQuarterChips', () => {
     },
   ];
 
-  it('returns completed quarters as-is when there is no starting quarter', () => {
+  it('returns completed quarters newest first when there is no starting quarter', () => {
     expect(
       buildQuarterChips({ monthlyGrossSalary: 0, completedQuarters }),
     ).toEqual([
-      {
-        fiscalYear: 2025,
-        quarter: 4,
-        status: MpdHealthStatusEnum.Yellow,
-        averagePayroll: 4013.42,
-      },
       {
         fiscalYear: 2026,
         quarter: 1,
         status: MpdHealthStatusEnum.Green,
         averagePayroll: 4548.05,
+      },
+      {
+        fiscalYear: 2025,
+        quarter: 4,
+        status: MpdHealthStatusEnum.Yellow,
+        averagePayroll: 4013.42,
       },
     ]);
   });
@@ -236,7 +236,7 @@ describe('buildQuarterChips', () => {
     });
   });
 
-  it('sorts the starting quarter into chronological order even when it falls in the middle', () => {
+  it('sorts the starting quarter into newest-first order even when it falls in the middle', () => {
     const startingQuarter: StartingQuarterPayroll = {
       fiscalYear: 2025,
       quarter: 3,
@@ -251,6 +251,6 @@ describe('buildQuarterChips', () => {
 
     expect(
       chips.map(({ fiscalYear, quarter }) => `${fiscalYear}-${quarter}`),
-    ).toEqual(['2025-3', '2025-4', '2026-1']);
+    ).toEqual(['2026-1', '2025-4', '2025-3']);
   });
 });

@@ -91,7 +91,16 @@ export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
   return (
     <StyledCard>
       <CardActionArea
-        aria-label={t('View details for {{name}}', { name: names })}
+        // The marker inside is not focusable, so the row's own name carries
+        // the gross salary warning for keyboard and screen-reader users.
+        aria-label={
+          grossWarning
+            ? t('View details for {{name}}. {{warning}}', {
+                name: names,
+                warning: grossWarning,
+              })
+            : t('View details for {{name}}', { name: names })
+        }
         onClick={onClick}
         sx={{
           paddingInline: theme.spacing(4),

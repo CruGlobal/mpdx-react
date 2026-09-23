@@ -14,12 +14,14 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
+import { useLocale } from 'src/hooks/useLocale';
 import {
   MpdSupervisorReportQuickFilterEnum,
   quickFilterDescription,
   quickFilterLabel,
 } from '../Filters/mpdSupervisorReportFilters';
 import { QuarterChip } from '../StaffMemberRow/QuarterChip';
+import { YearMonth, getQuarterMonthRange } from '../helpers';
 import {
   healthStatusLabel,
   healthStatusOrder,
@@ -68,6 +70,7 @@ const sampleAmounts: Record<MpdHealthStatusEnum, number | null> = {
 export const ReportLegendPopover: React.FC = () => {
   const { t } = useTranslation();
   const { formatCurrency } = useFormatters();
+  const locale = useLocale();
   const titleId = useId();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
@@ -84,12 +87,23 @@ export const ReportLegendPopover: React.FC = () => {
     ),
   };
 
-  const fiscalQuarters = [
-    { quarter: 1, months: t('September – November') },
-    { quarter: 2, months: t('December – February') },
-    { quarter: 3, months: t('March – May') },
-    { quarter: 4, months: t('June – August') },
-  ];
+  // Derived from the same helper as the column-header tooltips, so the legend
+  // and the headers can't disagree about the fiscal calendar. The year only
+  // picks month names, so any year will do.
+  const monthName = ({ year, month }: YearMonth) =>
+    new Intl.DateTimeFormat(locale, { month: 'long' }).format(
+      new Date(year, month - 1, 1),
+    );
+  const fiscalQuarters = [1, 2, 3, 4].map((quarter) => {
+    const { start, end } = getQuarterMonthRange(2026, quarter);
+    return {
+      quarter,
+      months: t('{{startMonth}} – {{endMonth}}', {
+        startMonth: monthName(start),
+        endMonth: monthName(end),
+      }),
+    };
+  });
 
   const filters = [
     MpdSupervisorReportQuickFilterEnum.NegativeLastMonth,
@@ -241,7 +255,7 @@ export const ReportLegendPopover: React.FC = () => {
           </Table>
           <Typography variant="body2">
             {t(
-              'The report shows the last four completed quarters; the current quarter appears once it ends.',
+              'The report shows the last four completed quarters, newest first; the current quarter appears once it ends.',
             )}
           </Typography>
         </Section>

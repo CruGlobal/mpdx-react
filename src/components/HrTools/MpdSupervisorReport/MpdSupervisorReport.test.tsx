@@ -212,6 +212,14 @@ describe('MpdSupervisorReport', () => {
     expect(getByText('FQ3 26')).toBeInTheDocument();
   });
 
+  it('orders the quarter columns newest first', async () => {
+    const { findByText, getAllByText } = renderReport();
+    await findByText('John Smith');
+
+    const headers = getAllByText(/^FQ\d \d\d$/).map((el) => el.textContent);
+    expect(headers).toEqual(['FQ3 26', 'FQ2 26', 'FQ1 26', 'FQ4 25']);
+  });
+
   it('shows the chip color key beside the quarter columns', async () => {
     const { findByText, getByRole, queryByRole } = renderReport();
     // The key only makes sense once there are chips to decode

@@ -116,7 +116,7 @@ describe('StaffMember', () => {
       /Monthly Gross Salary \(\$2,000\.00\) is \$500\.00 below the New Staff Monthly Salary \(\$2,500\.00\)/;
 
     it('flags a Monthly Gross Salary below the New Staff Monthly Salary', async () => {
-      const { getByLabelText, findByRole } = renderRow(
+      const { getByRole, findByRole } = renderRow(
         jest.fn(),
         managedStaffMember({
           newStaffMonthlySalary: 2500,
@@ -124,11 +124,23 @@ describe('StaffMember', () => {
         }),
       );
 
-      const marker = getByLabelText(warning);
+      const marker = getByRole('img', { name: warning });
       // The row is already a button, so the marker is not a second tab stop
       expect(marker).not.toHaveAttribute('tabindex');
       userEvent.hover(marker);
       expect(await findByRole('tooltip')).toHaveTextContent(warning);
+    });
+
+    it('announces the warning in the row button name for keyboard users', () => {
+      const { getByRole } = renderRow(
+        jest.fn(),
+        managedStaffMember({
+          newStaffMonthlySalary: 2500,
+          quarterlyHealth: { monthlyGrossSalary: 2000, completedQuarters: [] },
+        }),
+      );
+
+      expect(getByRole('button')).toHaveAccessibleName(warning);
     });
 
     it('shows no marker when the gross salary meets the benchmark', () => {

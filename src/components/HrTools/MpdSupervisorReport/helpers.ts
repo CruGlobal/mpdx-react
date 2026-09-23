@@ -189,7 +189,8 @@ export const buildQuarterChips = ({
           },
         ]
       : []),
-  ].sort((a, b) => a.fiscalYear - b.fiscalYear || a.quarter - b.quarter);
+    // Newest quarter first, so the most recent health is what the eye lands on
+  ].sort((a, b) => b.fiscalYear - a.fiscalYear || b.quarter - a.quarter);
 
 export const getLocalizedAssignmentCategoryGroup = (
   t: TFunction,
