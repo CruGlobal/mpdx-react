@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { getHousingKind } from 'src/components/Reports/Shared/HousingAllowance/housingAllowance';
+import { MinistersHousingIneligibilityReasonEnum } from 'src/graphql/types.generated';
 
 const StyledTable = styled(Table)(({ theme }) => ({
   tableLayout: 'fixed',
@@ -40,10 +41,12 @@ interface EligibilityStatusTableProps {
   userEligible: boolean;
   userCountry?: string | null;
   userMhiEligibility?: boolean;
+  userIneligibilityReasonCode?: MinistersHousingIneligibilityReasonEnum | null;
   spousePreferredName?: string;
   spouseEligible?: boolean;
   spouseCountry?: string | null;
   spouseMhiEligibility?: boolean;
+  spouseIneligibilityReasonCode?: MinistersHousingIneligibilityReasonEnum | null;
   compact?: boolean;
 }
 
@@ -51,14 +54,44 @@ const getIneligibilityReason = (
   t: (key: string) => string,
   eligible: boolean,
   country: string | null,
+  reasonCode: MinistersHousingIneligibilityReasonEnum | null,
 ): string => {
   if (eligible) {
     return t('Completed the required IBS courses');
   }
-  if (getHousingKind(country) === 'MHI') {
-    return t('Must complete an MHI form instead');
-  }
-  return t('Has not completed the required IBS courses');
+  const reasonCopy: Record<MinistersHousingIneligibilityReasonEnum, string> = {
+    [MinistersHousingIneligibilityReasonEnum.PersonType]: t(
+      'Staff type is not eligible for MHA',
+    ),
+    [MinistersHousingIneligibilityReasonEnum.SupportType]: t(
+      'Support type must be Supported RMO',
+    ),
+    [MinistersHousingIneligibilityReasonEnum.AssignmentStatus]: t(
+      'Assignment status must be payroll eligible',
+    ),
+    [MinistersHousingIneligibilityReasonEnum.ItalyMhi]: t(
+      'Must complete an MHI form instead',
+    ),
+    [MinistersHousingIneligibilityReasonEnum.NoIbsCertification]: t(
+      'Has not completed the required IBS courses',
+    ),
+    [MinistersHousingIneligibilityReasonEnum.InvalidIbsCertification]: t(
+      'IBS certification type is not valid for MHA',
+    ),
+    [MinistersHousingIneligibilityReasonEnum.IbsCertificationExpired]: t(
+      'IBS certification is more than 10 years old',
+    ),
+    [MinistersHousingIneligibilityReasonEnum.MissingIbsCertificationDate]: t(
+      'IBS certification date is missing from your records',
+    ),
+  };
+  // Fall back to the country-based guess when the API predates the reason code
+  // (null) or sends a code newer than this client (missing from the record)
+  const fallbackCode =
+    getHousingKind(country) === 'MHI'
+      ? MinistersHousingIneligibilityReasonEnum.ItalyMhi
+      : MinistersHousingIneligibilityReasonEnum.NoIbsCertification;
+  return reasonCopy[reasonCode ?? fallbackCode] ?? reasonCopy[fallbackCode];
 };
 
 const getMhiReason = (
@@ -79,10 +112,12 @@ export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
   userEligible,
   userCountry,
   userMhiEligibility,
+  userIneligibilityReasonCode,
   spousePreferredName,
   spouseEligible,
   spouseCountry,
   spouseMhiEligibility,
+  spouseIneligibilityReasonCode,
   compact = false,
 }) => {
   const { t } = useTranslation();
@@ -123,7 +158,12 @@ export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
           <TableRow>
             <TableCell>{showMhiRows ? t('MHA Reason') : t('Reason')}</TableCell>
             <TableCell>
-              {getIneligibilityReason(t, userEligible, userCountry ?? null)}
+              {getIneligibilityReason(
+                t,
+                userEligible,
+                userCountry ?? null,
+                userIneligibilityReasonCode ?? null,
+              )}
             </TableCell>
             {hasSpouse && (
               <TableCell>
@@ -131,6 +171,7 @@ export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
                   t,
                   spouseEligible ?? false,
                   spouseCountry ?? null,
+                  spouseIneligibilityReasonCode ?? null,
                 )}
               </TableCell>
             )}

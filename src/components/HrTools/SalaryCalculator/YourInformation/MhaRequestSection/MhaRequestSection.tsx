@@ -66,6 +66,8 @@ export const MhaRequestSection: React.FC = () => {
     spouseKind,
     userMhiEligibility,
     spouseMhiEligibility,
+    userIneligibilityReasonCode,
+    spouseIneligibilityReasonCode,
     anyIneligible,
     hasSpouse,
   } = useMhaRequestData();
@@ -121,10 +123,14 @@ export const MhaRequestSection: React.FC = () => {
             userEligible={userEligible}
             userCountry={userCountry}
             userMhiEligibility={userMhiEligibility}
+            userIneligibilityReasonCode={userIneligibilityReasonCode}
             spousePreferredName={hasSpouse ? spousePreferredName : undefined}
             spouseEligible={hasSpouse ? spouseEligible : undefined}
             spouseCountry={hasSpouse ? spouseCountry : undefined}
             spouseMhiEligibility={hasSpouse ? spouseMhiEligibility : undefined}
+            spouseIneligibilityReasonCode={
+              hasSpouse ? spouseIneligibilityReasonCode : undefined
+            }
             compact
           />
         )}

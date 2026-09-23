@@ -173,6 +173,14 @@ export const MinisterHousingAllowanceReport = () => {
                             ? getMhiEligibility(spouseHcmData)
                             : undefined
                         }
+                        userIneligibilityReasonCode={
+                          userHcmData?.mhaEit.ineligibilityReasonCode
+                        }
+                        spouseIneligibilityReasonCode={
+                          isMarried
+                            ? spouseHcmData?.mhaEit.ineligibilityReasonCode
+                            : undefined
+                        }
                       />
                     </Box>
                   </>

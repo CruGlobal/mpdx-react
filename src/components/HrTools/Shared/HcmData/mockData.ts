@@ -1,3 +1,4 @@
+import { MinistersHousingIneligibilityReasonEnum } from 'src/graphql/types.generated';
 import { HcmQuery } from './Hcm.generated';
 
 const johnDoe: HcmQuery['hcm'][number]['staffInfo'] = {
@@ -38,6 +39,7 @@ const noMhaAndNoException: HcmQuery['hcm'][number] = {
   },
   mhaEit: {
     mhaEligibility: true,
+    ineligibilityReasonCode: null,
   },
   mhiEit: {
     mhiEligibility: false,
@@ -65,6 +67,8 @@ const ineligibleAndNoException: HcmQuery['hcm'][number] = {
   ...noMhaAndNoException,
   mhaEit: {
     mhaEligibility: false,
+    ineligibilityReasonCode:
+      MinistersHousingIneligibilityReasonEnum.NoIbsCertification,
   },
 };
 
@@ -81,7 +85,10 @@ const mhaAndNoException: HcmQuery['hcm'][number] = {
 const italianMhiEligible: HcmQuery['hcm'][number] = {
   ...noMhaAndNoException,
   staffInfo: { ...johnDoe, country: 'IT' },
-  mhaEit: { mhaEligibility: false },
+  mhaEit: {
+    mhaEligibility: false,
+    ineligibilityReasonCode: MinistersHousingIneligibilityReasonEnum.ItalyMhi,
+  },
   mhiEit: { mhiEligibility: true },
 };
 

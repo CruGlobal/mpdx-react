@@ -40,6 +40,7 @@ query Hcm($effectiveDate: ISO8601Date, $personNumber: String) {
     }
     mhaEit {
       mhaEligibility
+      ineligibilityReasonCode
     }
     mhiEit {
       mhiEligibility

@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react';
+import { MinistersHousingIneligibilityReasonEnum } from 'src/graphql/types.generated';
 import {
   SalaryCalculatorTestWrapper,
   SalaryCalculatorTestWrapperProps,
@@ -131,7 +132,11 @@ describe('MhaRequestSection', () => {
   describe('MHI labeling for Italian users', () => {
     const italianUser = {
       staffInfo: { country: 'IT' },
-      mhaEit: { mhaEligibility: false },
+      mhaEit: {
+        mhaEligibility: false,
+        ineligibilityReasonCode:
+          MinistersHousingIneligibilityReasonEnum.ItalyMhi,
+      },
       mhiEit: { mhiEligibility: true },
     };
 
