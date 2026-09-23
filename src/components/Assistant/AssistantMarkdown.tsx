@@ -3,6 +3,7 @@ import { Box, Link } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Markdown, { Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { toSafeHttpUrl } from './safeUrl';
 
 const MarkdownBody = styled(Box)(({ theme }) => ({
   fontSize: theme.typography.body2.fontSize,
@@ -38,11 +39,16 @@ const MarkdownBody = styled(Box)(({ theme }) => ({
 }));
 
 const components: Components = {
-  a: ({ href, children }) => (
-    <Link href={href} target="_blank" rel="noopener noreferrer">
-      {children}
-    </Link>
-  ),
+  a: ({ href, children }) => {
+    const safeHref = href ? toSafeHttpUrl(href) : null;
+    return safeHref ? (
+      <Link href={safeHref} target="_blank" rel="noopener noreferrer">
+        {children}
+      </Link>
+    ) : (
+      <span>{children}</span>
+    );
+  },
 };
 
 interface AssistantMarkdownProps {

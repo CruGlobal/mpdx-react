@@ -37,13 +37,37 @@ describe('AssistantMarkdown', () => {
   });
 
   it('drops javascript links', () => {
-    const { getByText } = render(
+    const { getByText, queryByRole } = render(
       <AssistantMarkdown>{'[Click](javascript:alert(1))'}</AssistantMarkdown>,
     );
 
-    expect(getByText('Click').closest('a')).not.toHaveAttribute(
+    expect(getByText('Click')).toBeInTheDocument();
+    expect(queryByRole('link')).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ['protocol-relative', '//evil.test/x'],
+    ['relative', '/accountLists/1/contacts'],
+    ['mailto', 'mailto:someone@cru.org'],
+  ])('renders a %s link as plain text', (_kind, href) => {
+    const { getByText, queryByRole } = render(
+      <AssistantMarkdown>{`[Go](${href})`}</AssistantMarkdown>,
+    );
+
+    expect(getByText('Go')).toBeInTheDocument();
+    expect(queryByRole('link')).not.toBeInTheDocument();
+  });
+
+  it('keeps a valid https link', () => {
+    const { getByRole } = render(
+      <AssistantMarkdown>
+        {'[Docs](https://help.test/a?b=1)'}
+      </AssistantMarkdown>,
+    );
+
+    expect(getByRole('link', { name: 'Docs' })).toHaveAttribute(
       'href',
-      expect.stringContaining('javascript'),
+      'https://help.test/a?b=1',
     );
   });
 
