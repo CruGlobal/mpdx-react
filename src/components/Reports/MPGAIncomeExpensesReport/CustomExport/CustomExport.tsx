@@ -11,20 +11,35 @@ const round = (value: number, locale: string) =>
     useGrouping: false,
   }).format(value);
 
+interface CreateTableOptions {
+  monthCount?: number;
+  isBalance?: boolean;
+}
+
 export const createTable = (
   csvHeader: string[],
   data: DataFields[],
   locale: string,
+  { monthCount, isBalance = false }: CreateTableOptions = {},
 ) => {
   const csvData = data.map((item) => {
-    const monthlyData = item.monthly.map((monthlyAmount) =>
-      monthlyAmount === 0 ? '-' : round(monthlyAmount, locale),
-    );
+    const length = monthCount ?? item.monthly.length;
+    const monthlyData = Array.from({ length }, (_, index) => {
+      const monthlyAmount = item.monthly[index];
+      if (monthlyAmount === undefined) {
+        return '-';
+      }
+      if (monthlyAmount === 0) {
+        return isBalance ? round(0, locale) : '-';
+      }
+      return round(monthlyAmount, locale);
+    });
+
     return [
       item.description,
       ...monthlyData,
       round(item.average, locale),
-      round(item.total, locale),
+      ...(isBalance ? [] : [round(item.total, locale)]),
     ];
   });
 
@@ -37,11 +52,14 @@ export const exportToCsv = (
   months: string[],
   locale: string,
 ) => {
-  const title =
-    reportType === ReportTypeEnum.Income
-      ? 'MPGA Income Monthly Report'
-      : 'MPGA Expenses Monthly Report';
+  const title = {
+    [ReportTypeEnum.Income]: 'MPGA Income Monthly Report',
+    [ReportTypeEnum.Expenses]: 'MPGA Expenses Monthly Report',
+    [ReportTypeEnum.Balance]: 'MPGA Balance Monthly Report',
+  }[reportType];
   const last12Months = months.map((month) => month.split(' ')[0]);
+
+  const isBalance = reportType === ReportTypeEnum.Balance;
 
   const monthlyTotals = data.reduce<number[]>((totals, item) => {
     item.monthly.forEach((value, index) => {
@@ -53,19 +71,29 @@ export const exportToCsv = (
   const overallAverage = data.reduce((sum, item) => sum + item.average, 0);
   const overallTotal = data.reduce((sum, item) => sum + item.total, 0);
 
-  const dataWithTotal: DataFields[] = [
-    ...data,
-    {
-      id: crypto.randomUUID(),
-      description: 'Overall Total',
-      monthly: monthlyTotals,
-      average: overallAverage,
-      total: overallTotal,
-    },
-  ];
+  const dataWithTotal: DataFields[] = isBalance
+    ? data
+    : [
+        ...data,
+        {
+          id: crypto.randomUUID(),
+          description: 'Overall Total',
+          monthly: monthlyTotals,
+          average: overallAverage,
+          total: overallTotal,
+        },
+      ];
 
-  const csvHeader = ['Description', ...last12Months, 'Average', 'Total'];
-  const csvData = createTable(csvHeader, dataWithTotal, locale);
+  const csvHeader = [
+    'Description',
+    ...last12Months,
+    'Average',
+    ...(isBalance ? [] : ['Total']),
+  ];
+  const csvData = createTable(csvHeader, dataWithTotal, locale, {
+    monthCount: months.length,
+    isBalance,
+  });
 
   const csvBlob = buildURI(csvData, true);
 

@@ -19,7 +19,7 @@ import { pendingField } from '../../helpers';
 import { useMonthlyPayrollHistoryQuery } from './MonthlyPayrollHistory.generated';
 
 interface StaffTabPayrollProps {
-  staffAccountId: string | null;
+  staffAccountId: string;
 }
 
 export const StaffTabPayroll: React.FC<StaffTabPayrollProps> = ({
@@ -30,8 +30,7 @@ export const StaffTabPayroll: React.FC<StaffTabPayrollProps> = ({
   const { formatCurrency, formatPercentage } = useFormatters();
 
   const { data, loading, error } = useMonthlyPayrollHistoryQuery({
-    variables: { staffAccountId: staffAccountId ?? '' },
-    skip: !staffAccountId,
+    variables: { staffAccountId },
   });
   const payrollHistory = data?.monthlyPayrollHistory ?? [];
 

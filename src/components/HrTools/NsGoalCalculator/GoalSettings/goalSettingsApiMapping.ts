@@ -8,6 +8,7 @@
  * which UI-only fields are NOT sent to the API.
  */
 import {
+  MpdGoalBenefitsConstantPlanEnum,
   NewStaffGoalCalculationAttributesInput,
   NewStaffQuestionnaireMaritalStatusEnum,
 } from 'src/graphql/types.generated';
@@ -77,8 +78,7 @@ export const calculationToFormValues = (
   ),
   otherExpenses: toNumberInput(calc.otherExpenses),
 
-  benefitsPlan: calc.benefitsPlan ?? '',
-  reimbursableExpenses: toNumberInput(calc.reimbursableExpenses),
+  benefitsPlan: calc.benefitsPlan ?? MpdGoalBenefitsConstantPlanEnum.Select,
   healthcareDependentsCount: toNumberInput(calc.healthcareDependentsCount),
 
   ministryLocation: calc.ministryLocation ?? '',
@@ -173,7 +173,6 @@ export const formValuesToAttributes = (
 
     // Healthcare
     benefitsPlan: values.benefitsPlan || null,
-    reimbursableExpenses: toNumberOrNull(values.reimbursableExpenses),
     healthcareDependentsCount: toNumberOrNull(values.healthcareDependentsCount),
 
     // Ministry (spouse variants have no API field — dropped)

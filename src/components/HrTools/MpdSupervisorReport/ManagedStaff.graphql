@@ -3,6 +3,7 @@ query ManagedStaff(
   $after: String
   $name: String
   $teamIds: [String!]
+  $assignmentCategoryGroup: MpdAssignmentCategoryGroupEnum
   $negativeLastMonth: Boolean
   $negativeThreeMonths: Boolean
 ) {
@@ -11,6 +12,7 @@ query ManagedStaff(
     after: $after
     name: $name
     teamIds: $teamIds
+    assignmentCategoryGroup: $assignmentCategoryGroup
     negativeLastMonth: $negativeLastMonth
     negativeThreeMonths: $negativeThreeMonths
   ) {
@@ -23,6 +25,8 @@ query ManagedStaff(
       personNumber
       spousePersonNumber
       spouseStaffAccountId
+      geographicLocation
+      assignmentCategoryGroup
       teams {
         employee {
           id

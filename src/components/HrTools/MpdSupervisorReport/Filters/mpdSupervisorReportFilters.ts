@@ -22,18 +22,12 @@ export const quickFilterLabel = (
     case MpdSupervisorReportQuickFilterEnum.NegativeLastMonth:
       return t('Negative last month');
     case MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative:
-      return t('3+ months negative');
+      return t('Negative last 3+ months');
     case MpdSupervisorReportQuickFilterEnum.AllPeople:
     default:
       return t('All people');
   }
 };
 
-export enum MpdSupervisorReportEmploymentTypeEnum {
-  All = 'all',
-  FullTime = 'Full time',
-  PartTime = 'Part time',
-}
-
 export const ALL_TEAMS = 'all';
-export const ALL_TYPES = MpdSupervisorReportEmploymentTypeEnum.All;
+export const ALL_TYPES = 'all';

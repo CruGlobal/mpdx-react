@@ -39,7 +39,7 @@ const emptyHistory: QuarterlyPayrollHistory = {
 };
 
 interface StaffTabQuarterlyProps {
-  staffAccountId: string | null;
+  staffAccountId: string;
 }
 
 export const StaffTabQuarterly: React.FC<StaffTabQuarterlyProps> = ({
@@ -50,9 +50,7 @@ export const StaffTabQuarterly: React.FC<StaffTabQuarterlyProps> = ({
   const { formatCurrency } = useFormatters();
 
   // The query defaults to the 24-month range, which is the eight quarters this
-  // tab shows. No skip: without a staff account the API still returns those
-  // quarters, zeroed and gray, so the window renders with N/A amounts rather
-  // than nothing.
+  // tab shows.
   const { data, loading, error } = useQuarterlyPayrollHistoryQuery({
     variables: { staffAccountId },
   });
@@ -73,10 +71,7 @@ export const StaffTabQuarterly: React.FC<StaffTabQuarterlyProps> = ({
         {t('Average monthly payroll per fiscal quarter · last 8 quarters')}
       </Typography>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 2 }}>
-        <QuarterChips
-          quarterHistory={quarterHistory}
-          hasStaffAccount={!!staffAccountId}
-        />
+        <QuarterChips quarterHistory={quarterHistory} />
         {startingQuarter && (
           <>
             <Typography sx={{ mt: 4 }}>
@@ -117,7 +112,6 @@ export const StaffTabQuarterly: React.FC<StaffTabQuarterlyProps> = ({
                         <TableCell>
                           {quarterAmountLabel({
                             t,
-                            hasStaffAccount: !!staffAccountId,
                             status: month.status,
                             averagePayroll: month.payroll,
                             formatCurrency,
@@ -155,13 +149,9 @@ export const StaffTabQuarterly: React.FC<StaffTabQuarterlyProps> = ({
 
 interface QuarterChipsProps {
   quarterHistory: QuarterlyPayrollHistory;
-  hasStaffAccount: boolean;
 }
 
-const QuarterChips: React.FC<QuarterChipsProps> = ({
-  quarterHistory,
-  hasStaffAccount,
-}) => {
+const QuarterChips: React.FC<QuarterChipsProps> = ({ quarterHistory }) => {
   const { t } = useTranslation();
   const { formatCurrency } = useFormatters();
 
@@ -178,7 +168,6 @@ const QuarterChips: React.FC<QuarterChipsProps> = ({
         const isStarting = averagePayroll === null;
         const payrollLabel = quarterAmountLabel({
           t,
-          hasStaffAccount,
           status,
           averagePayroll,
           formatCurrency,

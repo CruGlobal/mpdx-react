@@ -69,7 +69,6 @@ export interface GoalSettingsFormValues {
 
   // --- 3. Healthcare Information (shared) ---
   benefitsPlan: MpdGoalBenefitsConstantPlanEnum | '';
-  reimbursableExpenses: number | '';
   healthcareDependentsCount: number | '';
 
   // --- 4. Ministry Information (shared) ---

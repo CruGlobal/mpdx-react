@@ -1,0 +1,12 @@
+id: no-fire-event
+language: Tsx
+severity: warning
+message: Use @testing-library/user-event instead of fireEvent.
+note: >-
+  fireEvent dispatches a single synthetic event; userEvent dispatches the full
+  sequence a real user produces (pointerdown/focus/keydown/...). This repo uses
+  userEvent everywhere. See .claude/review/rules/testing.md.
+files:
+  - '**/*.test.tsx'
+rule:
+  pattern: fireEvent.$METHOD($$$ARGS)

@@ -25,7 +25,7 @@ const mockPayrollHistory: PayrollHistory = [
 
 interface TestComponentProps {
   payrollHistory?: PayrollHistory;
-  staffAccountId?: string | null;
+  staffAccountId?: string;
   mocks?: ApolloErgonoMockMap;
 }
 
@@ -96,15 +96,6 @@ describe('StaffTabPayroll', () => {
 
   it('renders an empty-state row when payroll history is empty', async () => {
     const { findByRole } = render(<TestComponent payrollHistory={[]} />);
-
-    expect(await findByRole('table')).toHaveTableStructure({
-      columnHeaders,
-      cells: ['No data available.'],
-    });
-  });
-
-  it('renders the empty state when there is no staff account', async () => {
-    const { findByRole } = render(<TestComponent staffAccountId={null} />);
 
     expect(await findByRole('table')).toHaveTableStructure({
       columnHeaders,

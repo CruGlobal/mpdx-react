@@ -32,9 +32,10 @@ describe('PrintOnlyReport', () => {
       getByRole('heading', { name: 'Monthly Summary' }),
     ).toBeInTheDocument();
 
-    expect(await findAllByRole('table')).toHaveLength(2);
+    expect(await findAllByRole('table')).toHaveLength(3);
     expect(getByRole('cell', { name: 'Donation' })).toBeInTheDocument();
     expect(getByRole('cell', { name: 'Assessment' })).toBeInTheDocument();
+    expect(getByRole('cell', { name: 'Ending Balance' })).toBeInTheDocument();
   });
 
   it('displays the tables that should be showing', async () => {
@@ -44,12 +45,15 @@ describe('PrintOnlyReport', () => {
       </MPGAIncomeExpensesReportTestWrapper>,
     );
 
-    expect(await findAllByRole('table')).toHaveLength(2);
+    expect(await findAllByRole('table')).toHaveLength(3);
     expect(
       getByText(/no income data available in the last 12 months/i),
     ).toBeInTheDocument();
     expect(
       getByText(/no expenses data available in the last 12 months/i),
+    ).toBeInTheDocument();
+    expect(
+      getByText(/no balance data available in the last 12 months/i),
     ).toBeInTheDocument();
   });
 });

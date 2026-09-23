@@ -1,12 +1,12 @@
 import NextLink from 'next/link';
 import React from 'react';
 import OpenInNew from '@mui/icons-material/OpenInNew';
-import { Box, Link, Typography } from '@mui/material';
+import { Box, Link } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 
 export interface ViewReportLinkProps {
-  staffAccountId: string | null;
+  staffAccountId: string;
   reportLink: 'mpgaIncomeExpenses' | 'staffExpense';
   reportName: string;
   personNumber?: string;
@@ -20,14 +20,6 @@ export const ViewReportLink: React.FC<ViewReportLinkProps> = ({
 }) => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-
-  if (!staffAccountId) {
-    return (
-      <Typography>
-        {t('No staff account number is available for this staff member.')}
-      </Typography>
-    );
-  }
 
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

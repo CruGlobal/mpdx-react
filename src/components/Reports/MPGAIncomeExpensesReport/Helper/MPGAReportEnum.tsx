@@ -6,6 +6,7 @@ import {
 export enum ReportTypeEnum {
   Income = 'income',
   Expenses = 'expenses',
+  Balance = 'balance',
 }
 
 export enum FundTypes {
@@ -16,6 +17,8 @@ interface Transaction {
   transactedAt: string;
   description?: string | null;
   amount: number;
+  /** Null when SAA has no employee for the transaction's EMPLID. */
+  personNumber?: string | null;
 }
 
 interface BreakdownByMonth {

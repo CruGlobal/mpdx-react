@@ -1,0 +1,35 @@
+diff --git a/src/lib/apollo/link.ts b/src/lib/apollo/link.ts
+--- a/src/lib/apollo/link.ts
++++ b/src/lib/apollo/link.ts
+@@ -5,6 +5,12 @@
+ 
+ const nativeFields = new Set(rootFields);
+ 
++const batchOptions = {
++  batchMax: 25,
++  batchDebounce: true,
++  batchInterval: 20,
++};
++
+ const nativeHttpLink = createHttpLink({
+   uri: process.env.API_URL,
+   headers: {
+@@ -15,16 +21,12 @@
+ const batchNativeHttpLink = new BatchHttpLink({
+   uri: process.env.API_URL,
+   headers: {
+     'Content-Type': 'application/vnd.api+json',
+   },
+-  batchMax: 25,
+-  batchDebounce: true,
+-  batchInterval: 20,
++  ...batchOptions,
+ });
+ 
+ const restProxyHttpLink = new BatchHttpLink({
+   uri: `/api/graphql-rest`,
+-  batchMax: 25,
+-  batchDebounce: true,
+-  batchInterval: 20,
++  ...batchOptions,
+ });

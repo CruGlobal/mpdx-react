@@ -37,16 +37,16 @@ describe('StaffMember', () => {
   it('renders the staff account, employment type, and team line', () => {
     const { getByTestId } = renderRow();
     expect(getByTestId('person-numbers')).toHaveTextContent(
-      '1000000001 · — · FamilyLife',
+      '1000000001 · Full time · FamilyLife',
     );
   });
 
-  it('dashes the staff account when the API has none', () => {
+  it('renders a placeholder when the member has no assignment category', () => {
     const { getByTestId } = renderRow(
       jest.fn(),
-      managedStaffMember({ staffAccountId: null }),
+      managedStaffMember({ assignmentCategoryGroup: null }),
     );
-    expect(getByTestId('person-numbers')).toHaveTextContent('— · —');
+    expect(getByTestId('person-numbers')).toHaveTextContent('1000000001 · — ·');
   });
 
   it('joins the names when a member is on several teams', () => {

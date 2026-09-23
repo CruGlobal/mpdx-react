@@ -2,6 +2,7 @@ import { gqlMock } from '__tests__/util/graphqlMocking';
 import {
   GoalCalculationAge,
   GoalCalculationRole,
+  MpdGoalBenefitsConstantPlanEnum,
   NewStaffGoalCalculationSalaryOverCapEnum,
   NewStaffQuestionnaireMaritalStatusEnum,
 } from 'src/graphql/types.generated';
@@ -33,6 +34,7 @@ const baseCalculation = gqlMock<NewStaffGoalCalculationFieldsFragment>(
       spouseEmailAddress: 'jane@cru.org',
       maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Married,
       spouseJoining: true,
+      benefitsPlan: MpdGoalBenefitsConstantPlanEnum.Minimum,
       age: GoalCalculationAge.ThirtyToThirtyFour,
       spouseAge: GoalCalculationAge.OverForty,
       annualRequestedSalary: 41000,
@@ -157,6 +159,25 @@ describe('calculationToFormValues', () => {
       expect(values.contribution403bPercentage).toBe('');
       expect(values.spouseContribution403bPercentage).toBe('');
     });
+  });
+});
+
+describe('Benefits Plan Default (Select)', () => {
+  const noBenefitsPlan = {
+    ...baseCalculation,
+    benefitsPlan: null,
+  };
+
+  it('defaults to the Select plan when no plan is selected', () => {
+    const values = calculationToFormValues(noBenefitsPlan);
+
+    expect(values.benefitsPlan).toBe(MpdGoalBenefitsConstantPlanEnum.Select);
+  });
+
+  it('passes the selected benefits enum through unchanged', () => {
+    const values = calculationToFormValues(baseCalculation);
+
+    expect(values.benefitsPlan).toBe(MpdGoalBenefitsConstantPlanEnum.Minimum);
   });
 });
 

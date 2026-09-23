@@ -215,8 +215,10 @@ export const TransferModal: React.FC<TransferModalProps> = ({
     } = values;
 
     const convertedTransferDate =
-      transferDate && transferDate.isValid ? (transferDate.toISO() ?? '') : '';
-    const convertedEndDate = endDate?.toISO() ?? null;
+      transferDate && transferDate.isValid
+        ? (transferDate.toISODate() ?? '')
+        : '';
+    const convertedEndDate = endDate?.toISODate() ?? null;
 
     const successMessage =
       type === TransferTypeEnum.New

@@ -1,8 +1,18 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
 import { NsoMpdQuestionnaireTestWrapper } from '../NsoMpdQuestionnaireTestWrapper';
 import { StaffInformation } from './StaffInformation';
+
+const recordFieldLabels = [
+  'Staff Status',
+  'Family Status',
+  'Age',
+  'Tenure',
+  'Address',
+  'Cell Phone Number',
+];
 
 describe('StaffInformation', () => {
   it("shows the staff member's information from the questionnaire", async () => {
@@ -55,7 +65,7 @@ describe('StaffInformation', () => {
     expect(
       await findByRole('textbox', { name: 'Tenure' }),
     ).toHaveAccessibleDescription(
-      "If this doesn't seem correct, please talk to your MPD coordinator about updating this.",
+      'Talk to your MPD coordinator to update this.',
     );
   });
 
@@ -76,7 +86,7 @@ describe('StaffInformation', () => {
 
     const phone = getByRole('textbox', { name: 'Cell Phone Number' });
     expect(phone).toHaveValue('(305) 000-1111');
-    expect(phone).toHaveAttribute('readonly');
+    expect(phone).toBeDisabled();
 
     userEvent.click(getByRole('button', { name: 'View Jane' }));
 
@@ -101,6 +111,25 @@ describe('StaffInformation', () => {
     );
   });
 
+  it('hides the spouse toggle and shows SOSA for a sosa staff member', async () => {
+    const { findByRole, getByRole, queryByRole } = render(
+      <NsoMpdQuestionnaireTestWrapper
+        newStaffQuestionnaire={{
+          maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Sosa,
+          spouseFirstName: null,
+        }}
+      >
+        <StaffInformation />
+      </NsoMpdQuestionnaireTestWrapper>,
+    );
+
+    expect(
+      await findByRole('heading', { name: 'John Doe' }),
+    ).toBeInTheDocument();
+    expect(queryByRole('button', { name: /View/ })).not.toBeInTheDocument();
+    expect(getByRole('textbox', { name: 'Family Status' })).toHaveValue('SOSA');
+  });
+
   it('shows a "Not on record" placeholder for an empty field', async () => {
     const { findByRole } = render(
       <NsoMpdQuestionnaireTestWrapper
@@ -113,5 +142,24 @@ describe('StaffInformation', () => {
     const phone = await findByRole('textbox', { name: 'Cell Phone Number' });
     expect(phone).toHaveValue('');
     expect(phone).toHaveAttribute('placeholder', 'Not on record');
+  });
+
+  it('disables every on-record field so none of them look editable', async () => {
+    const { findByRole, getByRole } = render(
+      <NsoMpdQuestionnaireTestWrapper>
+        <StaffInformation />
+      </NsoMpdQuestionnaireTestWrapper>,
+    );
+
+    await findByRole('heading', { name: 'John Doe' });
+
+    const expectDisabled = (name: string) =>
+      expect(getByRole('textbox', { name })).toBeDisabled();
+
+    recordFieldLabels.forEach(expectDisabled);
+
+    // The fields re-render inside the spouse toggle, so the greying has to survive it.
+    userEvent.click(getByRole('button', { name: 'View Jane' }));
+    recordFieldLabels.forEach(expectDisabled);
   });
 });

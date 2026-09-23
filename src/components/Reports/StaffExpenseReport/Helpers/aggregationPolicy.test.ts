@@ -163,16 +163,22 @@ describe('aggregationPolicy', () => {
     ).toEqual({ period: AggregationPeriod.None });
   });
 
+  it('itemizes out of pocket expenses', () => {
+    expect(
+      getAggregationPolicy(StaffExpensesSubCategoryEnum.OutOfPocket),
+    ).toEqual({ period: AggregationPeriod.None });
+  });
+
   it('rounds ministry reimbursement monthly as the nearest thing to by expense report', () => {
     expect(
       getAggregationPolicy(StaffExpensesSubCategoryEnum.MinistryReimbursement),
     ).toEqual({ period: AggregationPeriod.Month });
   });
 
-  it('assigns a policy to every subcategory the schema defines', () => {
+  it('resolves a policy for every subcategory the schema defines', () => {
     const subCategories = Object.values(StaffExpensesSubCategoryEnum);
 
-    expect(subCategories).toHaveLength(70);
+    expect(subCategories).toHaveLength(71);
     subCategories.forEach((subCategory) => {
       expect(getAggregationPolicy(subCategory).period).toEqual(
         expect.any(String),

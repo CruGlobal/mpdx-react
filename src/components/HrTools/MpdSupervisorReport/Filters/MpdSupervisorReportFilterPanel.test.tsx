@@ -4,6 +4,7 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { MpdAssignmentCategoryGroupEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { ManagedStaffTeamsQuery } from '../ManagedStaffTeams.generated';
 import {
@@ -12,10 +13,7 @@ import {
 } from '../MpdSupervisorReportContext';
 import { managedStaffTeamsMock } from '../mpdSupervisorReportMocks';
 import { MpdSupervisorReportFilterPanel } from './MpdSupervisorReportFilterPanel';
-import {
-  ALL_TEAMS,
-  MpdSupervisorReportEmploymentTypeEnum,
-} from './mpdSupervisorReportFilters';
+import { ALL_TEAMS } from './mpdSupervisorReportFilters';
 
 const onClose = jest.fn();
 
@@ -62,7 +60,7 @@ describe('MpdSupervisorReportFilterPanel', () => {
       getByRole('button', { name: 'Negative last month' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('button', { name: '3+ months negative' }),
+      getByRole('button', { name: 'Negative last 3+ months' }),
     ).toBeInTheDocument();
   });
 
@@ -71,13 +69,13 @@ describe('MpdSupervisorReportFilterPanel', () => {
     // 'All people' chip is active by default (filled variant)
     const allPeopleChip = getByRole('button', { name: 'All people' });
     const threeMonthsChip = getByRole('button', {
-      name: '3+ months negative',
+      name: 'Negative last 3+ months',
     });
 
-    // Click 3+ months negative to make it active
+    // Click the 3+ months chip to make it active
     userEvent.click(threeMonthsChip);
 
-    // After click, '3+ months negative' should be filled (active)
+    // After click, 'Negative last 3+ months' should be filled (active)
     // We can't easily check MUI variant in RTL, so we check re-render with a consumer
     // that reads context. Instead we verify the chip is still rendered and clickable.
     expect(threeMonthsChip).toBeInTheDocument();
@@ -131,16 +129,14 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
   it('starts with default filter values in context', () => {
     const { getByTestId } = renderWithConsumer();
     expect(getByTestId('team').textContent).toBe(ALL_TEAMS);
-    expect(getByTestId('employmentType').textContent).toBe(
-      MpdSupervisorReportEmploymentTypeEnum.All,
-    );
+    expect(getByTestId('employmentType').textContent).toBe('');
     expect(getByTestId('activeQuickFilter').textContent).toBe('allPeople');
   });
 
   it('clicking a quick-filter chip updates activeQuickFilter in context', async () => {
     const { getByRole, getByTestId } = renderWithConsumer();
     const threeMonthsChip = getByRole('button', {
-      name: '3+ months negative',
+      name: 'Negative last 3+ months',
     });
     userEvent.click(threeMonthsChip);
     expect(getByTestId('activeQuickFilter').textContent).toBe(
@@ -151,8 +147,8 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
   it('clicking All people chip sets activeQuickFilter back to allPeople', async () => {
     const { getByRole, getByTestId } = renderWithConsumer();
 
-    // First switch to 3+ months negative
-    userEvent.click(getByRole('button', { name: '3+ months negative' }));
+    // First switch to negative last 3+ months
+    userEvent.click(getByRole('button', { name: 'Negative last 3+ months' }));
     expect(getByTestId('activeQuickFilter').textContent).toBe(
       'threeMonthsNegative',
     );
@@ -208,17 +204,36 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
     });
   });
 
+  it('shows All types while no employment type is chosen', () => {
+    const { getByLabelText } = renderWithConsumer();
+    expect(getByLabelText('Employment type')).toHaveTextContent('All types');
+  });
+
   it('selecting an Employment type option updates employmentType in context', async () => {
     const { getByLabelText, getByRole, getByTestId } = renderWithConsumer();
-    expect(getByTestId('employmentType').textContent).toBe(
-      MpdSupervisorReportEmploymentTypeEnum.All,
-    );
+    expect(getByTestId('employmentType').textContent).toBe('');
 
     userEvent.click(getByLabelText('Employment type'));
     userEvent.click(getByRole('option', { name: 'Part time' }));
 
     expect(getByTestId('employmentType').textContent).toBe(
-      MpdSupervisorReportEmploymentTypeEnum.PartTime,
+      MpdAssignmentCategoryGroupEnum.PartTime,
     );
+  });
+
+  it('selecting All types clears employmentType in context', async () => {
+    const { getByLabelText, getByRole, getByTestId } = renderWithConsumer();
+    const select = getByLabelText('Employment type');
+
+    userEvent.click(select);
+    userEvent.click(getByRole('option', { name: 'Part time' }));
+    expect(getByTestId('employmentType').textContent).toBe(
+      MpdAssignmentCategoryGroupEnum.PartTime,
+    );
+
+    userEvent.click(select);
+    userEvent.click(getByRole('option', { name: 'All types' }));
+
+    expect(getByTestId('employmentType').textContent).toBe('');
   });
 });

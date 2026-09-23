@@ -1,6 +1,7 @@
 import React from 'react';
-import { FormControlLabel, Radio, RadioGroup } from '@mui/material';
+import { RadioGroup } from '@mui/material';
 import * as yup from 'yup';
+import { DescribedRadioOption } from 'src/components/HrTools/Shared/DescribedRadioOption';
 import { LabeledField } from './LabeledField';
 import {
   QuestionnaireField,
@@ -10,6 +11,8 @@ import {
 export interface RadioOption {
   value: string;
   label: string;
+  /** Shown under the label in muted text to clarify what the option means. */
+  description?: string;
 }
 
 interface RadioQuestionProps {
@@ -38,23 +41,20 @@ export const RadioQuestion: React.FC<RadioQuestionProps> = ({
     saveOnChange: true,
   });
 
+  const hasDescriptions = options.some((option) => option.description);
+
   return (
     <LabeledField label={label} required error={error} helperText={helperText}>
       {(aria) => (
         <RadioGroup
           row={row}
-          sx={{ paddingInline: 2 }}
+          sx={{ paddingInline: 2, gap: hasDescriptions ? 2 : 0 }}
           aria-required
           {...aria}
           {...fieldProps}
         >
           {options.map((option) => (
-            <FormControlLabel
-              key={option.value}
-              value={option.value}
-              control={<Radio />}
-              label={option.label}
-            />
+            <DescribedRadioOption key={option.value} {...option} />
           ))}
         </RadioGroup>
       )}

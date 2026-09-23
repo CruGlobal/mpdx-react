@@ -1,11 +1,13 @@
 import React from 'react';
-import { act, render } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { MpdAssignmentCategoryGroupEnum } from 'src/graphql/types.generated';
 import {
   ALL_TEAMS,
-  MpdSupervisorReportEmploymentTypeEnum,
   MpdSupervisorReportQuickFilterEnum,
 } from './Filters/mpdSupervisorReportFilters';
+import { ManagedStaffQuery } from './ManagedStaff.generated';
 import {
   MpdSupervisorReportProvider,
   Panel,
@@ -13,23 +15,32 @@ import {
 } from './MpdSupervisorReportContext';
 import { StaffDetailTabEnum } from './StaffDetailsTabs/StaffDetailTab';
 import { ManagedStaffMember } from './helpers';
-import { managedStaffMember } from './mpdSupervisorReportMocks';
+import {
+  managedStaffMember,
+  managedStaffMock,
+} from './mpdSupervisorReportMocks';
 
+const mutationSpy = jest.fn();
 const sampleMember = managedStaffMember();
 
 interface ConsumerResult {
   isOpen: boolean;
   selectedMember: ManagedStaffMember | undefined;
   openMember: (member: ManagedStaffMember) => void;
+  updateSelectedMember: (
+    personNumber: string,
+    patch: Partial<ManagedStaffMember>,
+  ) => void;
   closePanel: () => void;
   search: string;
   setSearch: (v: string) => void;
   team: string;
   setTeam: (v: string) => void;
-  employmentType: MpdSupervisorReportEmploymentTypeEnum;
-  setEmploymentType: (v: MpdSupervisorReportEmploymentTypeEnum) => void;
+  employmentType: MpdAssignmentCategoryGroupEnum | null;
+  setEmploymentType: (v: MpdAssignmentCategoryGroupEnum | null) => void;
   activeQuickFilter: MpdSupervisorReportQuickFilterEnum;
   setActiveQuickFilter: (v: MpdSupervisorReportQuickFilterEnum) => void;
+  loadMore: () => void;
 }
 
 let consumerResult: ConsumerResult;
@@ -51,14 +62,23 @@ const Consumer: React.FC = () => {
   );
 };
 
-const renderConsumer = () =>
+const renderInProvider = (
+  children: React.ReactNode,
+  router: React.ComponentProps<typeof TestRouter>['router'] = {},
+  managedStaff: ManagedStaffQuery = managedStaffMock([sampleMember]),
+) =>
   render(
-    <TestRouter>
-      <MpdSupervisorReportProvider>
-        <Consumer />
-      </MpdSupervisorReportProvider>
+    <TestRouter router={router}>
+      <GqlMockedProvider<{ ManagedStaff: ManagedStaffQuery }>
+        mocks={{ ManagedStaff: managedStaff }}
+        onCall={mutationSpy}
+      >
+        <MpdSupervisorReportProvider>{children}</MpdSupervisorReportProvider>
+      </GqlMockedProvider>
     </TestRouter>,
   );
+
+const renderConsumer = () => renderInProvider(<Consumer />);
 
 describe('MpdSupervisorReportContext', () => {
   it('starts with isOpen false and no selected member', () => {
@@ -110,11 +130,10 @@ describe('MpdSupervisorReportContext', () => {
     expect(getByTestId('team').textContent).toBe(ALL_TEAMS);
   });
 
-  it('starts with employmentType=all', () => {
+  it('starts with no employmentType', () => {
     const { getByTestId } = renderConsumer();
-    expect(getByTestId('employmentType').textContent).toBe(
-      MpdSupervisorReportEmploymentTypeEnum.All,
-    );
+    expect(getByTestId('employmentType').textContent).toBe('');
+    expect(consumerResult.employmentType).toBeNull();
   });
 
   it('starts with activeQuickFilter=allPeople', () => {
@@ -143,13 +162,22 @@ describe('MpdSupervisorReportContext', () => {
   it('setEmploymentType updates the employmentType value', () => {
     const { getByTestId } = renderConsumer();
     act(() => {
-      consumerResult.setEmploymentType(
-        MpdSupervisorReportEmploymentTypeEnum.FullTime,
-      );
+      consumerResult.setEmploymentType(MpdAssignmentCategoryGroupEnum.FullTime);
     });
     expect(getByTestId('employmentType').textContent).toBe(
-      MpdSupervisorReportEmploymentTypeEnum.FullTime,
+      MpdAssignmentCategoryGroupEnum.FullTime,
     );
+  });
+
+  it('setEmploymentType clears the employmentType value', () => {
+    const { getByTestId } = renderConsumer();
+    act(() => {
+      consumerResult.setEmploymentType(MpdAssignmentCategoryGroupEnum.FullTime);
+    });
+    act(() => {
+      consumerResult.setEmploymentType(null);
+    });
+    expect(getByTestId('employmentType').textContent).toBe('');
   });
 
   it('setActiveQuickFilter updates the activeQuickFilter value', () => {
@@ -162,6 +190,173 @@ describe('MpdSupervisorReportContext', () => {
     expect(getByTestId('activeQuickFilter').textContent).toBe(
       MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative,
     );
+  });
+});
+
+describe('managed staff query variables', () => {
+  it('omits teamIds until a team is chosen', async () => {
+    renderConsumer();
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        teamIds: null,
+      }),
+    );
+  });
+
+  it('sends the chosen team as teamIds', async () => {
+    renderConsumer();
+    act(() => {
+      consumerResult.setTeam('team-1');
+    });
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        teamIds: ['team-1'],
+      }),
+    );
+  });
+
+  it('sends a null assignmentCategoryGroup until an employment type is chosen', async () => {
+    renderConsumer();
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        assignmentCategoryGroup: null,
+      }),
+    );
+  });
+
+  it('sends the chosen employment type as assignmentCategoryGroup', async () => {
+    renderConsumer();
+    act(() => {
+      consumerResult.setEmploymentType(MpdAssignmentCategoryGroupEnum.PartTime);
+    });
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        assignmentCategoryGroup: MpdAssignmentCategoryGroupEnum.PartTime,
+      }),
+    );
+  });
+
+  it('omits both health flags while All people is selected', async () => {
+    renderConsumer();
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        negativeLastMonth: null,
+        negativeThreeMonths: null,
+      }),
+    );
+  });
+
+  it('sends negativeLastMonth for the negative last month filter', async () => {
+    renderConsumer();
+    act(() => {
+      consumerResult.setActiveQuickFilter(
+        MpdSupervisorReportQuickFilterEnum.NegativeLastMonth,
+      );
+    });
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        negativeLastMonth: true,
+        negativeThreeMonths: null,
+      }),
+    );
+  });
+
+  it('sends negativeThreeMonths for the three months negative filter', async () => {
+    renderConsumer();
+    act(() => {
+      consumerResult.setActiveQuickFilter(
+        MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative,
+      );
+    });
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        negativeLastMonth: null,
+        negativeThreeMonths: true,
+      }),
+    );
+  });
+});
+
+describe('loadMore', () => {
+  const withNextPage: ManagedStaffQuery = {
+    managedStaff: {
+      nodes: [sampleMember],
+      pageInfo: { endCursor: 'cursor-1', hasNextPage: true },
+      totalCount: 2,
+    },
+  };
+
+  it('fetches the next page when asked before the first page arrives', async () => {
+    renderInProvider(<Consumer />, {}, withNextPage);
+
+    act(() => {
+      consumerResult.loadMore();
+    });
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        after: 'cursor-1',
+      }),
+    );
+  });
+
+  it('does not fetch when there is no next page', async () => {
+    renderInProvider(<Consumer />);
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        teamIds: null,
+      }),
+    );
+    act(() => {
+      consumerResult.loadMore();
+    });
+
+    await waitFor(() =>
+      expect(mutationSpy).not.toHaveGraphqlOperation('ManagedStaff', {
+        after: '1',
+      }),
+    );
+  });
+});
+
+describe('updateSelectedMember', () => {
+  it('patches the open member', () => {
+    const { getByTestId } = renderConsumer();
+    act(() => {
+      consumerResult.openMember(sampleMember);
+    });
+    act(() => {
+      consumerResult.updateSelectedMember('10000001', { lastName: 'Patched' });
+    });
+    expect(getByTestId('memberName').textContent).toBe('Patched');
+  });
+
+  it('ignores a patch for another staff member', () => {
+    const { getByTestId } = renderConsumer();
+    act(() => {
+      consumerResult.openMember(sampleMember);
+    });
+    act(() => {
+      consumerResult.updateSelectedMember('99999999', { lastName: 'Patched' });
+    });
+    expect(getByTestId('memberName').textContent).toBe('Smith');
+  });
+
+  it('does nothing when the panel is closed', () => {
+    const { getByTestId } = renderConsumer();
+    act(() => {
+      consumerResult.updateSelectedMember('10000001', { lastName: 'Patched' });
+    });
+    expect(getByTestId('isOpen').textContent).toBe('false');
+    expect(getByTestId('memberName').textContent).toBe('none');
   });
 });
 
@@ -178,13 +373,7 @@ const TabConsumer: React.FC = () => {
 };
 
 const renderWithTab = (tab?: string) =>
-  render(
-    <TestRouter router={{ query: tab ? { tab } : {} }}>
-      <MpdSupervisorReportProvider>
-        <TabConsumer />
-      </MpdSupervisorReportProvider>
-    </TestRouter>,
-  );
+  renderInProvider(<TabConsumer />, { query: tab ? { tab } : {} });
 
 describe('MpdSupervisorReportContext — selectedTabKey from URL', () => {
   it('defaults to MonthlySummary when no ?tab= is present', () => {
@@ -207,13 +396,9 @@ describe('MpdSupervisorReportContext — selectedTabKey from URL', () => {
   });
 
   it('uses the first value when ?tab= is an array', () => {
-    const { getByTestId } = render(
-      <TestRouter router={{ query: { tab: ['Payroll', 'Quarterly'] } }}>
-        <MpdSupervisorReportProvider>
-          <TabConsumer />
-        </MpdSupervisorReportProvider>
-      </TestRouter>,
-    );
+    const { getByTestId } = renderInProvider(<TabConsumer />, {
+      query: { tab: ['Payroll', 'Quarterly'] },
+    });
     expect(getByTestId('tab').textContent).toBe(StaffDetailTabEnum.Payroll);
   });
 });
@@ -233,13 +418,9 @@ const TabSwitcher: React.FC = () => {
 describe('MpdSupervisorReportContext — selectedTabKey to URL', () => {
   it('syncs the selected tab back to the URL on change', async () => {
     const replaceState = jest.spyOn(window.history, 'replaceState');
-    const { getByTestId } = render(
-      <TestRouter router={{ query: { accountListId: 'account-list-1' } }}>
-        <MpdSupervisorReportProvider>
-          <TabSwitcher />
-        </MpdSupervisorReportProvider>
-      </TestRouter>,
-    );
+    const { getByTestId } = renderInProvider(<TabSwitcher />, {
+      query: { accountListId: 'account-list-1' },
+    });
 
     await act(async () => {
       getByTestId('tab').click();
@@ -255,15 +436,11 @@ describe('MpdSupervisorReportContext — selectedTabKey to URL', () => {
   it('does not route through Next when syncing the tab', async () => {
     const replace = jest.fn();
     const push = jest.fn();
-    const { getByTestId } = render(
-      <TestRouter
-        router={{ query: { accountListId: 'account-list-1' }, replace, push }}
-      >
-        <MpdSupervisorReportProvider>
-          <TabSwitcher />
-        </MpdSupervisorReportProvider>
-      </TestRouter>,
-    );
+    const { getByTestId } = renderInProvider(<TabSwitcher />, {
+      query: { accountListId: 'account-list-1' },
+      replace,
+      push,
+    });
 
     await act(async () => {
       getByTestId('tab').click();

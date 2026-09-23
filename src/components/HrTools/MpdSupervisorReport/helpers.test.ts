@@ -1,6 +1,7 @@
 import { TFunction } from 'i18next';
 import {
   CompletedQuarterPayroll,
+  MpdAssignmentCategoryGroupEnum,
   MpdHealthStatusEnum,
   StartingQuarterPayroll,
 } from 'src/graphql/types.generated';
@@ -8,9 +9,11 @@ import theme from 'src/theme';
 import {
   buildQuarterChips,
   getInitials,
+  getLocalizedAssignmentCategoryGroup,
   getQuarterLabel,
   healthColor,
   healthLabel,
+  pendingField,
   quarterAmountLabel,
 } from './helpers';
 
@@ -90,12 +93,29 @@ describe('healthLabel', () => {
   });
 });
 
+describe('getLocalizedAssignmentCategoryGroup', () => {
+  it.each([
+    [MpdAssignmentCategoryGroupEnum.FullTime, 'Full time'],
+    [MpdAssignmentCategoryGroupEnum.PartTime, 'Part time'],
+  ])('maps %s to "%s"', (group, expected) => {
+    expect(getLocalizedAssignmentCategoryGroup(t, group)).toBe(expected);
+  });
+
+  it('falls back to the placeholder for a group the client enum does not know', () => {
+    expect(
+      getLocalizedAssignmentCategoryGroup(
+        t,
+        'ON_CALL' as MpdAssignmentCategoryGroupEnum,
+      ),
+    ).toBe(pendingField);
+  });
+});
+
 describe('quarterAmountLabel', () => {
   const formatCurrency = (value: number) => `$${value.toFixed(2)}`;
   const label = (args: Partial<Parameters<typeof quarterAmountLabel>[0]>) =>
     quarterAmountLabel({
       t,
-      hasStaffAccount: true,
       status: MpdHealthStatusEnum.Green,
       averagePayroll: 4013.42,
       formatCurrency,
@@ -104,10 +124,6 @@ describe('quarterAmountLabel', () => {
 
   it('formats the amount when the quarter has payroll data', () => {
     expect(label({})).toBe('$4013.42');
-  });
-
-  it('reads N/A when there is no staff account to look payroll up in', () => {
-    expect(label({ hasStaffAccount: false })).toBe('N/A');
   });
 
   it('reads Partial when the quarter reports no average', () => {
@@ -120,8 +136,10 @@ describe('quarterAmountLabel', () => {
     );
   });
 
-  it('prefers N/A over Partial when both apply', () => {
-    expect(label({ hasStaffAccount: false, averagePayroll: null })).toBe('N/A');
+  it('shows the amount for a gray quarter that has real payroll', () => {
+    expect(
+      label({ averagePayroll: 3200, status: MpdHealthStatusEnum.Gray }),
+    ).toBe('$3200.00');
   });
 
   it('prefers Partial over the gray dash when both apply', () => {

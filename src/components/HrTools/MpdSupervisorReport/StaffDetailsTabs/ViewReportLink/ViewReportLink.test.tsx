@@ -11,7 +11,7 @@ const accountListId = 'account-list-1';
 const router = { query: { accountListId }, isReady: true };
 
 const renderViewReportLink = (
-  staffAccountId: string | null,
+  staffAccountId: string,
   personNumber?: string,
   reportLink: ViewReportLinkProps['reportLink'] = 'staffExpense',
   reportName = 'Staff Expense',
@@ -54,14 +54,5 @@ describe('ViewReportLink', () => {
       'href',
       `/accountLists/${accountListId}/reports/staffExpense?staffAccountId=${staffAccountId}&personNumber=${personNumber}`,
     );
-  });
-
-  it('explains the missing link when the staff member has no staff account', () => {
-    const { getByText, queryByRole } = renderViewReportLink(null);
-
-    expect(
-      getByText('No staff account number is available for this staff member.'),
-    ).toBeInTheDocument();
-    expect(queryByRole('link')).not.toBeInTheDocument();
   });
 });

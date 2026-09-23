@@ -38,7 +38,6 @@ const emptyValues: GoalSettingsFormValues = {
   creditCardDebtMonthlyPayment: '',
   otherExpenses: '',
   benefitsPlan: '',
-  reimbursableExpenses: '',
   healthcareDependentsCount: '',
   ministryLocation: '',
   ministryName: '',

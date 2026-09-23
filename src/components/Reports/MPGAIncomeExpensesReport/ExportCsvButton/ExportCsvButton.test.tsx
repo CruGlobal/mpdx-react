@@ -4,8 +4,13 @@ import userEvent from '@testing-library/user-event';
 import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import { exportToCsv } from '../CustomExport/CustomExport';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
+import {
+  ContextType,
+  MPGAIncomeExpensesContext,
+} from '../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { MPGAIncomeExpensesReportTestWrapper } from '../MPGAIncomeExpensesReportTestWrapper';
 import { MpgaTransactionsQuery } from '../MPGATransactions.generated';
+import { mockData, months } from '../mockData';
 import { ExportCsvButton } from './ExportCsvButton';
 
 const mutationSpy = jest.fn();
@@ -74,6 +79,27 @@ describe('ExportCsvButton', () => {
     );
   });
 
+  it('exports the balance CSV when Balance is selected', async () => {
+    const { getByRole, findByRole } = render(<TestComponent />);
+
+    userEvent.click(getByRole('button', { name: 'Export CSV' }));
+
+    const balance = await findByRole('menuitem', { name: 'Balance Report' });
+    await waitFor(() =>
+      expect(balance).not.toHaveAttribute('aria-disabled', 'true'),
+    );
+    userEvent.click(balance);
+
+    expect(exportToCsv).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({ description: 'Ending Balance' }),
+      ]),
+      ReportTypeEnum.Balance,
+      expect.any(Array),
+      'en-US',
+    );
+  });
+
   it('exports the expenses CSV when Expenses is selected', async () => {
     const { getByRole, findByRole } = render(<TestComponent />);
 
@@ -107,6 +133,7 @@ describe('ExportCsvButton', () => {
             id: 'fund-1',
             fundType: 'Primary',
             total: 5000,
+            startBalance: 0,
             categories: [
               {
                 category: StaffExpenseCategoryEnum.Donation,
@@ -151,11 +178,47 @@ describe('ExportCsvButton', () => {
     expect(exportToCsv).not.toHaveBeenCalled();
   });
 
+  it('disables all exports while the report is still loading', async () => {
+    // Rows can exist before the household has answered, and an export taken then would show a
+    // couple's salary as one row. Only the finished report is exportable.
+    const loadingContext = {
+      allData: mockData,
+      dataLoading: true,
+      monthLabels: months,
+      startBalance: null,
+    } as unknown as ContextType;
+
+    const { getByRole, findByRole } = render(
+      <MPGAIncomeExpensesContext.Provider value={loadingContext}>
+        <ExportCsvButton />
+      </MPGAIncomeExpensesContext.Provider>,
+    );
+
+    userEvent.click(getByRole('button', { name: 'Export CSV' }));
+
+    expect(
+      await findByRole('menuitem', { name: 'Income Report' }),
+    ).toHaveAttribute('aria-disabled', 'true');
+    expect(getByRole('menuitem', { name: 'Expenses Report' })).toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
+    expect(getByRole('menuitem', { name: 'Balance Report' })).toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
+  });
+
   it('closes the menu after an export is selected', async () => {
     const { findByRole, queryByRole } = render(<TestComponent />);
 
     userEvent.click(await findByRole('button', { name: 'Export CSV' }));
-    userEvent.click(await findByRole('menuitem', { name: 'Income Report' }));
+
+    const income = await findByRole('menuitem', { name: 'Income Report' });
+    await waitFor(() =>
+      expect(income).not.toHaveAttribute('aria-disabled', 'true'),
+    );
+    userEvent.click(income);
 
     await waitFor(() =>
       expect(

@@ -3,11 +3,14 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
+import { SnackbarProvider } from 'notistack';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
 import { MpdSupervisorReportFilterPanel } from './Filters/MpdSupervisorReportFilterPanel';
+import { UpdateStaffGeographicLocationMutation } from './GeographicLocationSelect/UpdateStaffGeographicLocation.generated';
 import { ManagedStaffQuery } from './ManagedStaff.generated';
 import { ManagedStaffTeamsQuery } from './ManagedStaffTeams.generated';
 import { MpdSupervisorReport } from './MpdSupervisorReport';
@@ -25,6 +28,23 @@ import {
 const onNavListToggle = jest.fn();
 const onFilterListToggle = jest.fn();
 const mutationSpy = jest.fn();
+
+const geographicConstants = {
+  constant: {
+    mpdGoalBenefitsConstants: [{ id: 'benefits-1' }],
+    mpdGoalGeographicConstants: [
+      { location: 'None', percentageMultiplier: 0 },
+      { location: 'Orlando, FL', percentageMultiplier: 0.06 },
+      { location: 'New York, NY', percentageMultiplier: 0.12 },
+    ],
+    mpdGoalMiscConstants: [],
+  },
+};
+
+const managedStaffOperations = () =>
+  mutationSpy.mock.calls
+    .map(([{ operation }]) => operation)
+    .filter(({ operationName }) => operationName === 'ManagedStaff');
 
 const staff = [
   managedStaffMember(),
@@ -54,36 +74,47 @@ const renderReport = ({
   render(
     <TestRouter>
       <ThemeProvider theme={theme}>
-        <VirtuosoMockContext.Provider
-          value={{ viewportHeight: 800, itemHeight: 80 }}
-        >
-          <GqlMockedProvider<{
-            ManagedStaff: ManagedStaffQuery;
-            ManagedStaffTeams: ManagedStaffTeamsQuery;
-          }>
-            mocks={
-              {
-                ManagedStaff: managedStaff,
-                ManagedStaffTeams: managedStaffTeamsMock(),
-                ...mocks,
-              } as ApolloErgonoMockMap
-            }
-            onCall={mutationSpy}
+        <SnackbarProvider>
+          <VirtuosoMockContext.Provider
+            value={{ viewportHeight: 800, itemHeight: 80 }}
           >
-            <MpdSupervisorReportProvider>
-              <MpdSupervisorReport
-                panelOpen={panelOpen}
-                onNavListToggle={onNavListToggle}
-                onFilterListToggle={onFilterListToggle}
-                title="MPD Supervisor Report"
-              />
-              {withFilters && (
-                <MpdSupervisorReportFilterPanel onClose={jest.fn()} />
-              )}
-              <StaffMemberDrawer />
-            </MpdSupervisorReportProvider>
-          </GqlMockedProvider>
-        </VirtuosoMockContext.Provider>
+            <GqlMockedProvider<{
+              ManagedStaff: ManagedStaffQuery;
+              ManagedStaffTeams: ManagedStaffTeamsQuery;
+              GoalCalculatorConstants: GoalCalculatorConstantsQuery;
+              UpdateStaffGeographicLocation: UpdateStaffGeographicLocationMutation;
+            }>
+              mocks={
+                {
+                  ManagedStaff: managedStaff,
+                  ManagedStaffTeams: managedStaffTeamsMock(),
+                  GoalCalculatorConstants: geographicConstants,
+                  UpdateStaffGeographicLocation: {
+                    updateManagedStaffGeographicLocation: {
+                      geographicLocation: 'New York, NY',
+                      newStaffMonthlySalary: 3000,
+                    },
+                  },
+                  ...mocks,
+                } as ApolloErgonoMockMap
+              }
+              onCall={mutationSpy}
+            >
+              <MpdSupervisorReportProvider>
+                <MpdSupervisorReport
+                  panelOpen={panelOpen}
+                  onNavListToggle={onNavListToggle}
+                  onFilterListToggle={onFilterListToggle}
+                  title="MPD Supervisor Report"
+                />
+                {withFilters && (
+                  <MpdSupervisorReportFilterPanel onClose={jest.fn()} />
+                )}
+                <StaffMemberDrawer />
+              </MpdSupervisorReportProvider>
+            </GqlMockedProvider>
+          </VirtuosoMockContext.Provider>
+        </SnackbarProvider>
       </ThemeProvider>
     </TestRouter>,
   );
@@ -132,51 +163,33 @@ describe('MpdSupervisorReport', () => {
     );
   });
 
-  it('omits teamIds until a team is chosen', async () => {
-    const { findByText } = renderReport();
+  it('refetches the roster with the active filter after a location is saved', async () => {
+    const { findByText, findByRole, getByRole } = renderReport();
     await findByText('John Smith');
 
-    expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
-      teamIds: null,
-    });
-  });
-
-  it('omits both health flags while All people is selected', async () => {
-    const { findByText } = renderReport({ withFilters: true });
-    await findByText('John Smith');
-
-    expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
-      negativeLastMonth: null,
-      negativeThreeMonths: null,
-    });
-  });
-
-  it('sends negativeLastMonth when that chip is clicked', async () => {
-    const { findByText, getByRole } = renderReport({ withFilters: true });
-    await findByText('John Smith');
-
-    userEvent.click(getByRole('button', { name: 'Negative last month' }));
-
+    userEvent.type(getByRole('textbox', { name: 'Search name' }), 'Smith');
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
-        negativeLastMonth: true,
-        negativeThreeMonths: null,
+        name: 'Smith',
       }),
     );
-  });
+    const callsBeforeSave = managedStaffOperations().length;
 
-  it('sends negativeThreeMonths when that chip is clicked', async () => {
-    const { findByText, getByRole } = renderReport({ withFilters: true });
-    await findByText('John Smith');
-
-    userEvent.click(getByRole('button', { name: '3+ months negative' }));
+    userEvent.click(await findByText('John Smith'));
+    const location = await findByRole('combobox', {
+      name: 'Geographic Location',
+    });
+    await waitFor(() => expect(location).not.toBeDisabled());
+    userEvent.type(location, 'New York');
+    userEvent.click(await findByRole('option', { name: 'New York, NY (12%)' }));
+    userEvent.click(getByRole('button', { name: 'Save' }));
 
     await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
-        negativeLastMonth: null,
-        negativeThreeMonths: true,
-      }),
+      expect(managedStaffOperations().length).toBeGreaterThan(callsBeforeSave),
     );
+    expect(managedStaffOperations().at(-1)?.variables).toMatchObject({
+      name: 'Smith',
+    });
   });
 
   it('shows the empty state when the query returns no staff', async () => {

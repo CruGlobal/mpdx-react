@@ -19,9 +19,9 @@ describe('getHasSpouse', () => {
     );
   });
 
-  it('returns true for a sosa staff member', () => {
+  it('returns false for a sosa staff member whose spouse is not joining', () => {
     expect(getHasSpouse(NewStaffQuestionnaireMaritalStatusEnum.Sosa)).toBe(
-      true,
+      false,
     );
   });
 });

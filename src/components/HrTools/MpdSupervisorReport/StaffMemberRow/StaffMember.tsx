@@ -22,6 +22,7 @@ import {
   QuarterChipData,
   buildQuarterChips,
   getInitials,
+  getLocalizedAssignmentCategoryGroup,
   getQuarterLabel,
   healthColor,
   healthLabel,
@@ -75,7 +76,13 @@ interface StaffMemberProps {
 
 export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
   const { t } = useTranslation();
-  const { firstName: name, lastName, staffAccountId, teams } = data;
+  const {
+    firstName: name,
+    lastName,
+    staffAccountId,
+    teams,
+    assignmentCategoryGroup,
+  } = data;
 
   const names = useMemo(() => {
     if (!name || !lastName) {
@@ -123,18 +130,18 @@ export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
               >
                 <StaffInfo
                   names={names}
-                  staffAccountID={staffAccountId ?? pendingField}
-                  userPersonType={pendingField}
+                  staffAccountID={staffAccountId}
+                  userPersonType={getLocalizedAssignmentCategoryGroup(
+                    t,
+                    assignmentCategoryGroup,
+                  )}
                   team={team}
                 />
               </Box>
             </Box>
           </GridItem>
           <GridQuarter size={6}>
-            <FiscalYearQuarters
-              quarters={quarters}
-              hasStaffAccount={!!staffAccountId}
-            />
+            <FiscalYearQuarters quarters={quarters} />
           </GridQuarter>
         </Grid>
       </CardActionArea>
@@ -144,11 +151,9 @@ export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
 
 interface FiscalYearQuartersProps {
   quarters: QuarterChipData[];
-  hasStaffAccount: boolean;
 }
 const FiscalYearQuartersBase: React.FC<FiscalYearQuartersProps> = ({
   quarters,
-  hasStaffAccount,
 }) => {
   const { t } = useTranslation();
   const { formatCurrency } = useFormatters();
@@ -159,7 +164,6 @@ const FiscalYearQuartersBase: React.FC<FiscalYearQuartersProps> = ({
         const label = getQuarterLabel(fiscalYear, quarter);
         const amount = quarterAmountLabel({
           t,
-          hasStaffAccount,
           status,
           averagePayroll,
           formatCurrency,

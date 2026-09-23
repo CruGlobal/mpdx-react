@@ -1,0 +1,21 @@
+diff --git a/pages/api/Schema/donations/datahandler.ts b/pages/api/Schema/donations/datahandler.ts
+--- a/pages/api/Schema/donations/datahandler.ts
++++ b/pages/api/Schema/donations/datahandler.ts
+@@ -21,11 +21,12 @@
+ export const getDesignationDisplayNames = (
+   data: DonationReponseData[],
+   included: DonationReponseIncluded[],
+ ): DesignationWithDisplayName[] => {
+   return data.map((donation) => ({
+     id: donation.id,
+-    displayName: included.find(
+-      (designation) =>
+-        donation.relationships.designation_account.data.id === designation.id,
+-    )?.attributes.display_name,
++    displayName: included.find((designationAccount) => {
++      const designationAccountId =
++        donation.relationships.designation_account.data.id;
++      return designationAccountId === designationAccount.id;
++    })?.attributes.display_name,
+   }));
+ };

@@ -163,10 +163,15 @@ Three patterns — know which one a form uses before adding a field:
   are dropped. Adding a field here means updating that mapping, not just the form.
 - **Explicit modal CRUD** — SavingsFundTransfer persists through its transfer
   modals + mutations, not autosave.
+- **One-off mutation on an explicit Save** — MpdSupervisorReport's
+  `GeographicLocationSelect` is the only instance: a supervisor picks a location
+  for someone else and presses Save, which runs
+  `updateManagedStaffGeographicLocation`. Deliberately not autosave — the record
+  belongs to another person, so a stray dropdown change must not write.
 
-MpdSupervisorReport persists nothing. Note the finalize step is separate from
-persistence: NSO autosaves each field but has a distinct `Complete` mutation, and
-the request forms autosave a draft but `Submit` through the wizard's `SubmitModal`.
+Note the finalize step is separate from persistence: NSO autosaves each field but
+has a distinct `Complete` mutation, and the request forms autosave a draft but
+`Submit` through the wizard's `SubmitModal`.
 
 ## Per-form domain gotchas
 

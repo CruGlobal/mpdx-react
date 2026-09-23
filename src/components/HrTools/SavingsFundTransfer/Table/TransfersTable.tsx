@@ -52,6 +52,7 @@ export const CreateTransferRows = (history: Transfers): Transfers => ({
   baseAmount: history.baseAmount,
   summarizedTransfers: history.summarizedTransfers ?? null,
   missingMonths: history.missingMonths ?? null,
+  historyTruncated: history.historyTruncated ?? false,
 });
 
 const createToolbar = (history: Transfers[], type: TableTypeEnum) => {
@@ -151,7 +152,7 @@ export const TransfersTable: React.FC<TransfersTableProps> = ({
         : t('Failed to add end date');
     try {
       if (calendarRow) {
-        const recurringEnd: string | null = date ? date.toISO() : null;
+        const recurringEnd: string | null = date ? date.toISODate() : null;
         await updateRecurringTransfer({
           variables: {
             id: calendarRow.recurringId ?? '',

@@ -10,12 +10,9 @@ import {
   DialogContent,
   DialogTitle,
 } from '@mui/material';
-import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { ApprovalProcess } from 'src/components/HrTools/AdditionalSalaryRequest/SubmitModalAccordions/ApprovalProcess/ApprovalProcess';
 import { TotalSalaryRequested } from 'src/components/HrTools/AdditionalSalaryRequest/SubmitModalAccordions/TotalSalaryRequested/TotalSalaryRequested';
-import { useLocale } from 'src/hooks/useLocale';
-import { dateFormatShort } from 'src/lib/intlFormat';
 import { getModalText } from './getModalText';
 
 interface SubmitModalProps {
@@ -28,7 +25,6 @@ interface SubmitModalProps {
   isCancel?: boolean;
   isDiscard?: boolean;
   isDiscardEdit?: boolean;
-  deadlineDate?: string;
   actionRequired?: boolean;
   additionalApproval?: boolean;
   splitAsr?: boolean;
@@ -47,7 +43,6 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
   isCancel,
   isDiscard,
   isDiscardEdit,
-  deadlineDate,
   actionRequired,
   additionalApproval,
   splitAsr,
@@ -56,12 +51,6 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
   geographicLocation,
 }) => {
   const { t } = useTranslation();
-  const locale = useLocale();
-
-  // TODO: Not sure what text to display if date is null
-  const formattedDeadlineDate = deadlineDate
-    ? dateFormatShort(DateTime.fromISO(deadlineDate), locale)
-    : null;
 
   const {
     title: defaultTitle,
@@ -76,7 +65,6 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
     isDiscard: isDiscard ?? false,
     isDiscardEdit: isDiscardEdit ?? false,
     actionRequired: actionRequired ?? false,
-    formattedDeadlineDate,
   });
 
   const title = overrideTitle ?? defaultTitle;

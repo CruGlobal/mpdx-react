@@ -48,6 +48,19 @@ const singleMock = {
   },
 };
 
+/** A scenario goal with everything the API needs before it will email the worksheet. */
+const sendableScenarioMock = {
+  newStaffGoalCalculation: {
+    ...defaultGoalCalculation,
+    // A scenario goal is fetched by its own id, so the record carries it.
+    id: 'scenario-1',
+    lastName: 'Doe',
+    emailAddress: 'john@example.com',
+    spouseEmailAddress: null,
+    geographicLocation: 'Orlando',
+  },
+};
+
 const mutationSpy = jest.fn();
 const push = jest.fn();
 
@@ -105,6 +118,15 @@ describe('GoalSettingsForm', () => {
     expect(
       getByRole('heading', { name: 'Exemptions & Exceptions' }),
     ).toBeInTheDocument();
+  });
+
+  it('does not offer the scenario-only Email Worksheet action on a real goal', async () => {
+    const { findByRole, queryByRole } = render(<TestComponent />);
+
+    await findByRole('button', { name: 'Save & Share' });
+    expect(
+      queryByRole('button', { name: 'Email Worksheet' }),
+    ).not.toBeInTheDocument();
   });
 
   it('renders Cancel and Save & Share actions', async () => {
@@ -510,6 +532,9 @@ describe('GoalSettingsForm', () => {
         goalCalculationMock={{
           newStaffGoalCalculation: {
             ...defaultMock.newStaffGoalCalculation,
+            // Age still blocks the save; the null benefits plan does not,
+            // because it defaults to Select.
+            age: null,
             benefitsPlan: null,
           },
         }}
@@ -525,10 +550,12 @@ describe('GoalSettingsForm', () => {
     // asserting translated copy.
     const summary = await findByRole('status');
     expect(summary).toHaveTextContent(/\d+ field still needs a value/);
-    expect(summary).toHaveTextContent('Benefits Plan is required');
+    expect(summary).toHaveTextContent('Age is required');
+    // The unset benefits plan defaulted to Select, so it is not missing.
+    expect(summary).not.toHaveTextContent('Benefits Plan is required');
     // Deduplicated, so a married household does not list the same rule twice.
     expect(summary).not.toHaveTextContent('Age is requiredAge is required');
-    expect(getByRole('combobox', { name: 'Benefits Selection' })).toBeInvalid();
+    expect(getByRole('combobox', { name: 'Benefits Selection' })).toBeValid();
     expect(mutationSpy).not.toHaveGraphqlOperation(
       'UpdateNewStaffGoalCalculation',
     );
@@ -542,7 +569,7 @@ describe('GoalSettingsForm', () => {
         goalCalculationMock={{
           newStaffGoalCalculation: {
             ...defaultMock.newStaffGoalCalculation,
-            benefitsPlan: null,
+            age: null,
           },
         }}
       />,
@@ -658,7 +685,7 @@ describe('GoalSettingsForm', () => {
           goalCalculationMock={{
             newStaffGoalCalculation: {
               ...completeMock.newStaffGoalCalculation,
-              benefitsPlan: null,
+              age: null,
             },
           }}
         />,
@@ -666,6 +693,23 @@ describe('GoalSettingsForm', () => {
 
       expect(await findByText('Incomplete')).toBeInTheDocument();
       expect(queryByText('Complete')).not.toBeInTheDocument();
+    });
+
+    it('keeps the Complete chip when the benefits plan is unset', async () => {
+      // A null plan defaults to Select, so it can never block completion.
+      const { findByText, queryByText } = render(
+        <TestComponent
+          goalCalculationMock={{
+            newStaffGoalCalculation: {
+              ...completeMock.newStaffGoalCalculation,
+              benefitsPlan: null,
+            },
+          }}
+        />,
+      );
+
+      expect(await findByText('Complete')).toBeInTheDocument();
+      expect(queryByText('Incomplete')).not.toBeInTheDocument();
     });
 
     it('shows an Incomplete chip when the spouse required fields are missing', async () => {
@@ -861,6 +905,47 @@ describe('GoalSettingsForm', () => {
           },
         ),
       );
+    });
+
+    it('emails the worksheet for the scenario goal being viewed', async () => {
+      const { findByRole, findByText, getByRole, getByText } = render(
+        <ScenarioTestComponent goalCalculationMock={sendableScenarioMock} />,
+      );
+
+      userEvent.click(await findByRole('button', { name: 'Email Worksheet' }));
+
+      expect(
+        getByText(
+          'Email the support goals worksheet for John Doe to john@example.com? This cannot be undone.',
+        ),
+      ).toBeInTheDocument();
+
+      userEvent.click(getByRole('button', { name: 'Send Worksheet' }));
+
+      expect(
+        await findByText('Support goals worksheet sent to john@example.com.'),
+      ).toBeInTheDocument();
+      expect(mutationSpy).toHaveGraphqlOperation('SendNewStaffScenarioGoal', {
+        id: 'scenario-1',
+      });
+    });
+
+    it('will not email a worksheet that does not match the unsaved edits', async () => {
+      const { findByRole, findByText, getByRole } = render(
+        <ScenarioTestComponent goalCalculationMock={sendableScenarioMock} />,
+      );
+
+      const firstName = await findByRole('textbox', { name: 'First Name' });
+      userEvent.clear(firstName);
+      userEvent.type(firstName, 'Johnny');
+
+      const emailButton = getByRole('button', { name: 'Email Worksheet' });
+      await waitFor(() => expect(emailButton).toBeDisabled());
+
+      userEvent.hover(emailButton.parentElement as HTMLElement);
+      expect(
+        await findByText('Save your changes before emailing the worksheet.'),
+      ).toBeInTheDocument();
     });
 
     it('returns to the scenario goals table once the save succeeds', async () => {

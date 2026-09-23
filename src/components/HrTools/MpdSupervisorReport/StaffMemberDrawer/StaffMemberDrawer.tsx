@@ -1,10 +1,12 @@
 import React from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { Avatar, Box, IconButton, Tab, Typography } from '@mui/material';
+import { Alert, Avatar, Box, IconButton, Tab, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import theme from 'src/theme';
+import { GeographicLocationSelect } from '../GeographicLocationSelect/GeographicLocationSelect';
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
 import { DynamicMPGA, preloadMPGA } from '../StaffDetailsTabs/MPGA/DynamicMPGA';
 import {
@@ -22,7 +24,11 @@ import {
 import { StaffDetailTabEnum } from '../StaffDetailsTabs/StaffDetailTab';
 import { preloadStaffExpenseReport } from '../StaffDetailsTabs/StaffExpenseReport/DynamicStaffExpenseReport';
 import { StaffTabStaffExpenseReport } from '../StaffDetailsTabs/StaffExpenseReport/StaffExpenseReport';
-import { getInitials, pendingField } from '../helpers';
+import {
+  getInitials,
+  getLocalizedAssignmentCategoryGroup,
+  pendingField,
+} from '../helpers';
 
 interface DetailRowProps {
   label: string;
@@ -74,11 +80,14 @@ const ContactTab = styled(Tab)(({}) => ({
 
 export const StaffMemberDrawer: React.FC = () => {
   const { t } = useTranslation();
+  const { formatCurrency } = useFormatters();
   const {
     selectedMember,
+    updateSelectedMember,
     closePanel,
     selectedTabKey,
     handleTabChange: handleChange,
+    refetchStaff,
   } = useMpdSupervisorReport();
 
   if (!selectedMember) {
@@ -92,14 +101,21 @@ export const StaffMemberDrawer: React.FC = () => {
     spouseLastName,
     personNumber,
     staffAccountId,
+    geographicLocation,
     spousePersonNumber,
     spouseStaffAccountId,
     teams,
+    newStaffMonthlySalary,
+    quarterlyHealth,
+    assignmentCategoryGroup,
   } = selectedMember;
   const initials = getInitials(firstName, lastName);
   const fullName = `${firstName} ${lastName}`;
   const team =
     teams.employee.map(({ name }) => name).join(', ') || pendingField;
+  const monthlyGrossSalary = quarterlyHealth?.monthlyGrossSalary ?? null;
+  const missingBenchmark =
+    monthlyGrossSalary === null || newStaffMonthlySalary === null;
 
   return (
     <Box
@@ -125,11 +141,14 @@ export const StaffMemberDrawer: React.FC = () => {
       </Box>
       <StaffInfo>
         <DetailRow label={t('Person Number')} value={personNumber} />
+        <DetailRow label={t('Staff Account Number')} value={staffAccountId} />
         <DetailRow
-          label={t('Staff Account Number')}
-          value={staffAccountId ?? pendingField}
+          label={t('Employment Type')}
+          value={getLocalizedAssignmentCategoryGroup(
+            t,
+            assignmentCategoryGroup,
+          )}
         />
-        <DetailRow label={t('Employment Type')} value={pendingField} />
         <DetailRow label={t('Team')} value={team} />
       </StaffInfo>
 
@@ -152,6 +171,64 @@ export const StaffMemberDrawer: React.FC = () => {
           />
         </StaffInfo>
       )}
+
+      <StaffInfo>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <Typography variant="subtitle2" fontWeight="bold">
+            {t('MPD Health Benchmark:')}
+          </Typography>
+          <StaffInfo>
+            <DetailRow
+              label={t('New Staff Monthly Salary')}
+              value={
+                newStaffMonthlySalary !== null
+                  ? formatCurrency(newStaffMonthlySalary)
+                  : pendingField
+              }
+            />
+            <DetailRow
+              label={t('Monthly Gross Salary')}
+              value={
+                monthlyGrossSalary !== null
+                  ? formatCurrency(monthlyGrossSalary)
+                  : pendingField
+              }
+            />
+          </StaffInfo>
+          {missingBenchmark && (
+            <Alert severity="error" sx={{ width: 0, minWidth: '100%' }}>
+              {t('MPD health cannot be graded without both benchmarks.')}
+            </Alert>
+          )}
+        </Box>
+
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 1,
+            flex: 1,
+            minWidth: 260,
+          }}
+        >
+          <Typography variant="subtitle2" fontWeight="bold">
+            {t('Geographic Multiplier:')}
+          </Typography>
+          <GeographicLocationSelect
+            key={personNumber}
+            firstName={firstName}
+            personNumber={personNumber}
+            geographicLocation={geographicLocation}
+            onSaved={(geographicLocation, newStaffMonthlySalary) => {
+              updateSelectedMember(personNumber, {
+                geographicLocation,
+                newStaffMonthlySalary,
+              });
+              refetchStaff();
+            }}
+          />
+        </Box>
+      </StaffInfo>
 
       <TabContext value={selectedTabKey}>
         <ContactTabsWrapper>
@@ -185,20 +262,23 @@ export const StaffMemberDrawer: React.FC = () => {
         </ContactTabsWrapper>
 
         <TabPanel value={StaffDetailTabEnum.MonthlySummary}>
-          <DynamicMonthlySummary staffAccountId={staffAccountId ?? null} />
+          <DynamicMonthlySummary staffAccountId={staffAccountId} />
         </TabPanel>
         <TabPanel value={StaffDetailTabEnum.Quarterly}>
-          <DynamicQuarterly staffAccountId={staffAccountId ?? null} />
+          <DynamicQuarterly staffAccountId={staffAccountId} />
         </TabPanel>
         <TabPanel value={StaffDetailTabEnum.Payroll}>
-          <DynamicPayroll staffAccountId={staffAccountId ?? null} />
+          <DynamicPayroll staffAccountId={staffAccountId} />
         </TabPanel>
         <TabPanel value={StaffDetailTabEnum.MPGAReport}>
-          <DynamicMPGA staffAccountId={staffAccountId ?? null} />
+          <DynamicMPGA
+            staffAccountId={staffAccountId}
+            personNumber={personNumber}
+          />
         </TabPanel>
         <TabPanel value={StaffDetailTabEnum.StaffExpenseReport}>
           <StaffTabStaffExpenseReport
-            staffAccountId={staffAccountId ?? null}
+            staffAccountId={staffAccountId}
             personNumber={personNumber}
           />
         </TabPanel>

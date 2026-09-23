@@ -1,6 +1,7 @@
 import { Theme } from '@mui/material';
 import { TFunction } from 'i18next';
 import {
+  MpdAssignmentCategoryGroupEnum,
   MpdHealthStatusEnum,
   QuarterlyPayrollHistory,
 } from 'src/graphql/types.generated';
@@ -9,7 +10,7 @@ import { ManagedStaffQuery } from './ManagedStaff.generated';
 export type ManagedStaffMember =
   ManagedStaffQuery['managedStaff']['nodes'][number];
 
-/** Stands in for fields `managedStaff` cannot supply yet. */
+/** Rendered in place of a value `managedStaff` returned as null or empty. */
 export const pendingField = '—';
 
 /**
@@ -78,9 +79,6 @@ export const healthLabel = (
 
 interface QuarterAmountArgs {
   t: TFunction;
-  /** Payroll is keyed on the staff account; without one there was nothing to
-   *  look up, which is a different fact from looking and finding nothing. */
-  hasStaffAccount: boolean;
   status: MpdHealthStatusEnum;
   averagePayroll: number | null;
   /** `formatCurrency` from `useFormatters`, which helpers can't call itself. */
@@ -88,23 +86,19 @@ interface QuarterAmountArgs {
 }
 
 /**
- * Only the last branch is a real amount — the other three are distinct kinds of
- * absence, and none of them is a real $0.00.
+ * Only the last branch is a real amount — the other two are distinct kinds of
+ * absence, and neither is a real $0.00.
  */
 export const quarterAmountLabel = ({
   t,
-  hasStaffAccount,
   status,
   averagePayroll,
   formatCurrency,
 }: QuarterAmountArgs): string => {
-  if (!hasStaffAccount) {
-    return t('N/A');
-  }
   if (averagePayroll === null) {
     return t('Partial');
   }
-  if (status === MpdHealthStatusEnum.Gray) {
+  if (status === MpdHealthStatusEnum.Gray && !averagePayroll) {
     return '-';
   }
   return formatCurrency(averagePayroll);
@@ -144,3 +138,17 @@ export const buildQuarterChips = ({
         ]
       : []),
   ].sort((a, b) => a.fiscalYear - b.fiscalYear || a.quarter - b.quarter);
+
+export const getLocalizedAssignmentCategoryGroup = (
+  t: TFunction,
+  group: MpdAssignmentCategoryGroupEnum | null | undefined,
+): string => {
+  switch (group) {
+    case MpdAssignmentCategoryGroupEnum.FullTime:
+      return t('Full time');
+    case MpdAssignmentCategoryGroupEnum.PartTime:
+      return t('Part time');
+    default:
+      return pendingField;
+  }
+};

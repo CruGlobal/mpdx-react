@@ -5,20 +5,34 @@ import { CsvExportMenu } from '../../Shared/CsvExportMenu/CsvExportMenu';
 import { exportToCsv } from '../CustomExport/CustomExport';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { useMPGAIncomeExpenses } from '../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
+import { useBalanceTableData } from '../Tables/useBalanceTableData';
 
 export const ExportCsvButton: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { allData: data, monthLabels } = useMPGAIncomeExpenses();
+  const { allData: data, dataLoading, monthLabels } = useMPGAIncomeExpenses();
+  const balanceData = useBalanceTableData();
 
   return (
     <CsvExportMenu
       label={t('Export CSV')}
       items={[
         {
+          label: t('Balance Report'),
+          disabled: !balanceData.length,
+          onClick: () =>
+            exportToCsv(
+              balanceData,
+              ReportTypeEnum.Balance,
+              monthLabels,
+              locale,
+            ),
+        },
+        {
           label: t('Income Report'),
-          disabled: !data.income.length,
+          // Rows can exist before the household answers, so only the finished report is exportable.
+          disabled: dataLoading || !data.income.length,
           onClick: () =>
             exportToCsv(
               data.income,
@@ -29,7 +43,7 @@ export const ExportCsvButton: React.FC = () => {
         },
         {
           label: t('Expenses Report'),
-          disabled: !data.expenses.length,
+          disabled: dataLoading || !data.expenses.length,
           onClick: () =>
             exportToCsv(
               data.expenses,
