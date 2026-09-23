@@ -1,7 +1,8 @@
 import '@testing-library/jest-dom/extend-expect';
 import 'isomorphic-fetch';
 import { webcrypto } from 'node:crypto';
-import { TextEncoder } from 'node:util';
+import { ReadableStream } from 'node:stream/web';
+import { TextDecoder, TextEncoder } from 'node:util';
 import { Settings } from 'luxon';
 import { type useSession } from 'next-auth/react';
 import { session } from '__tests__/fixtures/session';
@@ -51,6 +52,15 @@ Object.defineProperty(window, 'crypto', {
 
 Object.defineProperty(global, 'TextEncoder', {
   value: TextEncoder,
+});
+
+// jsdom omits TextDecoder and ReadableStream, which the assistant uses to read server-sent events
+Object.defineProperty(global, 'TextDecoder', {
+  value: TextDecoder,
+});
+
+Object.defineProperty(global, 'ReadableStream', {
+  value: ReadableStream,
 });
 
 window.document.createRange = (): Range =>
