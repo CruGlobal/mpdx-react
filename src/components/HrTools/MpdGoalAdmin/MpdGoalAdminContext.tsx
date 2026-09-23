@@ -49,6 +49,8 @@ export interface MpdGoalAdminContextValue {
   selectedCohortId: string;
   setSelectedCohortId: (id: string) => void;
   selectedCohort: Cohort | undefined;
+  /** True when a coordinator has no cohort holding any of their staff, so there is nothing to pick. */
+  noVisibleCohorts: boolean;
   /** The MPD Goals team, who alone may act on the whole cohort; a coordinator only reads it.
    * False until the user lands, so nothing gated on it flashes into view first. */
   isGoalsAdmin: boolean;
@@ -106,7 +108,7 @@ export const MpdGoalAdminProvider: React.FC<{
     },
     [router],
   );
-  const { data: userData } = useGetUserQuery();
+  const { data: userData, loading: userLoading } = useGetUserQuery();
   const isGoalsAdmin = !!userData?.user.mpdSupervisorAdmin;
   const [selectedCohortId, setSelectedCohortId] = useState<string>('');
   const [search, setSearch] = useState('');
@@ -126,13 +128,21 @@ export const MpdGoalAdminProvider: React.FC<{
     pageInfo: cohortsData?.newStaffCohorts.pageInfo,
   });
 
-  const cohorts = useMemo(
-    () =>
+  // trainingSize only counts attendees the caller can see, so a coordinator's
+  // empty cohort is a dead end; admins keep it to enter costs before arrivals.
+  const cohorts = useMemo(() => {
+    // Held back until the role is known, so an admin never auto-selects from the filtered list.
+    if (userLoading) {
+      return [];
+    }
+    const allCohorts =
       cohortsData?.newStaffCohorts.nodes.map((node) =>
         cohortNodeToCohort(node, locale),
-      ) ?? [],
-    [cohortsData, locale],
-  );
+      ) ?? [];
+    return isGoalsAdmin
+      ? allCohorts
+      : allCohorts.filter(({ trainingSize }) => trainingSize > 0);
+  }, [cohortsData, locale, userLoading, isGoalsAdmin]);
 
   // Stale ids from another cohort would mislead the count and bulk actions.
   const selectCohort = useCallback(
@@ -295,6 +305,13 @@ export const MpdGoalAdminProvider: React.FC<{
     [cohorts, selectedCohortId],
   );
 
+  const noVisibleCohorts =
+    !isGoalsAdmin &&
+    !userLoading &&
+    !cohortsLoading &&
+    !cohortsError &&
+    !cohorts.length;
+
   // A row hidden by search keeps its id but must not count as selected.
   const selectedRows = useMemo(
     () => filteredRows.filter((row) => selectedRowIds.has(row.id)),
@@ -309,6 +326,7 @@ export const MpdGoalAdminProvider: React.FC<{
       selectedCohortId,
       setSelectedCohortId: selectCohort,
       selectedCohort,
+      noVisibleCohorts,
       isGoalsAdmin,
       search,
       setSearch,
@@ -317,6 +335,7 @@ export const MpdGoalAdminProvider: React.FC<{
       // Skipped without a selection, so zero cohorts must not spin forever.
       loading:
         cohortsLoading ||
+        userLoading ||
         (selectedCohortId ? attendeesLoading : cohorts.length > 0),
       error: cohortsError ?? attendeesError,
       selectedRowIds,
@@ -339,11 +358,13 @@ export const MpdGoalAdminProvider: React.FC<{
       selectedCohortId,
       selectCohort,
       selectedCohort,
+      noVisibleCohorts,
       isGoalsAdmin,
       search,
       searchPending,
       filteredRows,
       cohortsLoading,
+      userLoading,
       attendeesLoading,
       cohortsError,
       attendeesError,

@@ -29,8 +29,10 @@ import {
   goalsAdminUserMock,
   noAssignableCoachesMock,
   noCohortsMock,
+  onlyEmptyCohortsMock,
   runAndSentMock,
   trainingCosts,
+  withEmptyCohortMock,
 } from './mpdGoalAdminMocks';
 
 const mutationSpy = jest.fn();
@@ -45,6 +47,7 @@ const makeWrapper = (
     coaches?: NewStaffCohortAssignableCoachesQuery;
     assignCoach?: AssignCoachToNewStaffCohortAttendeeMutation;
     user?: DeepPartialMock<GetUserQuery>;
+    query?: Record<string, string>;
   } = {},
 ): React.FC<{ children: React.ReactNode }> =>
   function Wrapper({ children }) {
@@ -71,7 +74,7 @@ const makeWrapper = (
         }}
         onCall={mutationSpy}
       >
-        <TestRouter>
+        <TestRouter router={mocks.query && { query: mocks.query }}>
           <MpdGoalAdminProvider>{children}</MpdGoalAdminProvider>
         </TestRouter>
       </GqlMockedProvider>
@@ -492,5 +495,57 @@ describe('MpdGoalAdminContext', () => {
       expect(result.current.selectedCohort?.id).toBe('fall-nso-2026'),
     );
     expect(result.current.isGoalsAdmin).toBe(false);
+  });
+
+  describe('cohorts without visible attendees', () => {
+    it('hides them from a coordinator and defaults to the first remaining one', async () => {
+      const { result } = renderContext({
+        user: coordinatorUserMock,
+        cohorts: withEmptyCohortMock,
+      });
+
+      await waitFor(() =>
+        expect(result.current.selectedCohortId).toBe('fall-nso-2026'),
+      );
+      expect(result.current.cohorts.map(({ id }) => id)).toEqual([
+        'fall-nso-2026',
+        'spring-nso-2027',
+      ]);
+      expect(result.current.noVisibleCohorts).toBe(false);
+    });
+
+    it('falls back to the first remaining cohort when the URL names a hidden one', async () => {
+      const { result } = renderContext({
+        user: coordinatorUserMock,
+        cohorts: withEmptyCohortMock,
+        query: { cohortId: 'winter-nso-2026' },
+      });
+
+      await waitFor(() =>
+        expect(result.current.selectedCohortId).toBe('fall-nso-2026'),
+      );
+    });
+
+    it('reports no visible cohorts when a coordinator has none with their staff', async () => {
+      const { result } = renderContext({
+        user: coordinatorUserMock,
+        cohorts: onlyEmptyCohortsMock,
+      });
+
+      await waitFor(() => expect(result.current.noVisibleCohorts).toBe(true));
+      expect(result.current.cohorts).toHaveLength(0);
+      expect(result.current.selectedCohortId).toBe('');
+      expect(result.current.loading).toBe(false);
+    });
+
+    it('keeps every cohort for an admin, who enters costs before attendees arrive', async () => {
+      const { result } = renderContext({ cohorts: withEmptyCohortMock });
+
+      await waitFor(() =>
+        expect(result.current.selectedCohortId).toBe('winter-nso-2026'),
+      );
+      expect(result.current.cohorts).toHaveLength(3);
+      expect(result.current.noVisibleCohorts).toBe(false);
+    });
   });
 });
