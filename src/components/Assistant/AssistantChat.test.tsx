@@ -82,6 +82,14 @@ const TestComponent: React.FC<TestComponentProps> = ({
   );
 };
 
+// Lets the mint that starts on mount land inside act before the test ends
+const waitForMint = async () => {
+  await waitFor(() =>
+    expect(mutationSpy).toHaveGraphqlOperation('CreateAssistantToken'),
+  );
+  await act(() => new Promise((resolve) => setTimeout(resolve, 0)));
+};
+
 // The mint is async, so Send only enables once the token arrives
 const typeMessage = async (
   getByRole: ReturnType<typeof render>['getByRole'],
@@ -193,11 +201,10 @@ describe('AssistantChat', () => {
     expect(fetchSpy).toHaveBeenCalledTimes(2);
   });
 
-  it('does not send when Enter confirms an IME composition', () => {
+  it('does not send when Enter confirms an IME composition', async () => {
     const { getByRole } = render(<TestComponent />);
 
-    const input = getByRole('textbox', { name: 'Ask the assistant' });
-    userEvent.type(input, 'nihon');
+    const input = await typeMessage(getByRole, 'nihon');
     fireEvent.keyDown(input, { key: 'Enter', isComposing: true });
 
     expect(fetchSpy).not.toHaveBeenCalled();
@@ -299,8 +306,9 @@ describe('AssistantChat', () => {
     ).toBeInTheDocument();
   });
 
-  it('links to the help desk contact form with the current route', () => {
+  it('links to the help desk contact form with the current route', async () => {
     const { getByRole } = render(<TestComponent />);
+    await waitForMint();
 
     const link = getByRole('link', { name: 'Contact the help desk' });
     expect(link).toHaveAttribute('target', '_blank');
@@ -315,14 +323,16 @@ describe('AssistantChat', () => {
     );
   });
 
-  it('hides the help desk link when Helpjuice is not configured', () => {
+  it('hides the help desk link when Helpjuice is not configured', async () => {
     process.env.HELPJUICE_ORIGIN = '';
     const { queryByRole } = render(<TestComponent />);
+    await waitForMint();
 
     expect(
       queryByRole('link', { name: 'Contact the help desk' }),
     ).not.toBeInTheDocument();
   });
+
   it('points to Preferences when the assistant is not turned on', async () => {
     const { findByText, getByRole, queryByRole } = render(
       <TestComponent mints={[{ refusal: 'The assistant is not turned on' }]} />,
@@ -565,10 +575,11 @@ describe('AssistantChat', () => {
     );
   });
 
-  it('explains help-only mode on coaching routes', () => {
+  it('explains help-only mode on coaching routes', async () => {
     const { getByText } = render(
       <TestComponent page="coaching/coached-list-9" />,
     );
+    await waitForMint();
 
     expect(
       getByText(
