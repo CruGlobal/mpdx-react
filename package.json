@@ -13,6 +13,7 @@
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
     "lint:ci": "eslint '*/**/*.{js,ts,tsx}'",
     "lint:ts": "tsc",
+    "check:route-map": "tsx scripts/check-route-map.ts",
     "test": "jest --silent",
     "test:log": "jest",
     "test:watch": "jest --watch",

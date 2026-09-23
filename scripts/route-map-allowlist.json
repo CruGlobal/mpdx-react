@@ -1,0 +1,26 @@
+[
+  {
+    "route": "/404",
+    "reason": "error page, the map mentions it in prose instead of the route table"
+  },
+  {
+    "route": "/500",
+    "reason": "error page, the map mentions it in prose instead of the route table"
+  },
+  {
+    "route": "/accountLists/{accountListId}/contacts/flows",
+    "reason": "map row has no page (served by the contacts/[[...contactId]] catch-all)"
+  },
+  {
+    "route": "/accountLists/{accountListId}/contacts/flows/{contactId}",
+    "reason": "map row has no page (served by the contacts/[[...contactId]] catch-all)"
+  },
+  {
+    "route": "/accountLists/{accountListId}/contacts/map",
+    "reason": "map row has no page (served by the contacts/[[...contactId]] catch-all)"
+  },
+  {
+    "route": "/accountLists/{accountListId}/contacts/map/{contactId}",
+    "reason": "map row has no page (served by the contacts/[[...contactId]] catch-all)"
+  }
+]
