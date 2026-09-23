@@ -571,4 +571,102 @@ describe('useAssistantStream', () => {
       expect(result.current.context.messages[1].status).toBe('error');
     });
   });
+
+  it('marks the reply as unavailable when the verifier is down', async () => {
+    fetchSpy.mockResolvedValueOnce(
+      mockJsonResponse(
+        { error: 'verifier_unavailable' },
+        { ok: false, status: 503 },
+      ),
+    );
+    const { result } = renderStream();
+
+    await act(() => result.current.stream.sendMessage('Hi'));
+
+    expect(result.current.context.messages[1]).toMatchObject({
+      status: 'error',
+      errorReason: 'unavailable',
+    });
+  });
+
+  it('treats any other 503 as a plain failure', async () => {
+    fetchSpy.mockResolvedValueOnce(
+      mockJsonResponse({ error: 'maintenance' }, { ok: false, status: 503 }),
+    );
+    const { result } = renderStream();
+
+    await act(() => result.current.stream.sendMessage('Hi'));
+
+    expect(result.current.context.messages[1]).toMatchObject({
+      status: 'error',
+      errorReason: undefined,
+    });
+  });
+
+  describe('rate limits', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    const rateLimited = (retryAfter?: string) =>
+      mockJsonResponse(
+        {},
+        {
+          ok: false,
+          status: 429,
+          headers: new Headers(retryAfter ? { 'Retry-After': retryAfter } : {}),
+        },
+      );
+
+    it('blocks sending until Retry-After passes', async () => {
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(rateLimited('30'));
+      const { result } = renderStream();
+
+      await act(() => result.current.stream.sendMessage('Hi'));
+
+      expect(result.current.stream.rateLimited).toBe(true);
+      expect(result.current.context.messages[1]).toMatchObject({
+        status: 'error',
+        errorReason: 'rateLimited',
+      });
+
+      await act(() => result.current.stream.sendMessage('Again'));
+      expect(fetchSpy).toHaveBeenCalledTimes(2);
+
+      act(() => jest.advanceTimersByTime(29000));
+      expect(result.current.stream.rateLimited).toBe(true);
+
+      act(() => jest.advanceTimersByTime(1000));
+      expect(result.current.stream.rateLimited).toBe(false);
+    });
+
+    it('reads Retry-After as an HTTP date', async () => {
+      const retryAt = new Date(Date.now() + 20000).toUTCString();
+      fetchSpy.mockResolvedValueOnce(rateLimited(retryAt));
+      const { result } = renderStream();
+
+      await act(() => result.current.stream.sendMessage('Hi'));
+      expect(result.current.stream.rateLimited).toBe(true);
+
+      act(() => jest.advanceTimersByTime(20000));
+      expect(result.current.stream.rateLimited).toBe(false);
+    });
+
+    it('waits a short default without Retry-After', async () => {
+      fetchSpy.mockResolvedValueOnce(rateLimited());
+      const { result } = renderStream();
+
+      await act(() => result.current.stream.sendMessage('Hi'));
+      expect(result.current.stream.rateLimited).toBe(true);
+
+      act(() => jest.advanceTimersByTime(10000));
+      expect(result.current.stream.rateLimited).toBe(false);
+    });
+  });
 });

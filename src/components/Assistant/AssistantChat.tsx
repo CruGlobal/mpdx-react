@@ -109,13 +109,14 @@ export const AssistantChat: React.FC = () => {
     status: tokenStatus,
     refreshToken,
   } = useAssistantToken(configured ? accountListId : null);
-  const { sendMessage, stop, streaming } = useAssistantStream({
+  const { sendMessage, stop, streaming, rateLimited } = useAssistantStream({
     accountListId,
     token,
     refreshToken,
   });
   const [draft, setDraft] = useState('');
-  const canSend = Boolean(draft.trim()) && tokenStatus === 'ready';
+  const canSend =
+    Boolean(draft.trim()) && tokenStatus === 'ready' && !rateLimited;
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const wasStreaming = useRef(streaming);
 

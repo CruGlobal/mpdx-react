@@ -1,4 +1,9 @@
-import { AssistantCard, AssistantCitation, AssistantMessage } from './types';
+import {
+  AssistantCard,
+  AssistantCitation,
+  AssistantErrorReason,
+  AssistantMessage,
+} from './types';
 
 export interface ConversationBinding {
   id: string;
@@ -17,7 +22,7 @@ export type AssistantAction =
   | { type: 'setWorking'; id: string; working: boolean }
   | { type: 'completeMessage'; id: string; citations: AssistantCitation[] }
   | { type: 'stopMessage'; id: string }
-  | { type: 'failMessage'; id: string }
+  | { type: 'failMessage'; id: string; reason?: AssistantErrorReason }
   | { type: 'setConversation'; conversation: ConversationBinding }
   | { type: 'clearConversation' }
   | { type: 'resetConversation' };
@@ -77,6 +82,7 @@ export const assistantReducer = (
       return updateMessage(state, action.id, (message) => ({
         ...message,
         status: 'error',
+        errorReason: action.reason,
         working: false,
       }));
     case 'setConversation':

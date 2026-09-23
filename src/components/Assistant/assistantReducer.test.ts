@@ -109,6 +109,19 @@ describe('assistantReducer', () => {
     });
   });
 
+  it('records why a message failed', () => {
+    const next = assistantReducer(state, {
+      type: 'failMessage',
+      id: 'reply-1',
+      reason: 'unavailable',
+    });
+
+    expect(next.messages[0]).toMatchObject({
+      status: 'error',
+      errorReason: 'unavailable',
+    });
+  });
+
   it('sets the conversation', () => {
     const conversation = { id: 'conversation-2', accountListId: 'list-2' };
     const next = assistantReducer(state, {

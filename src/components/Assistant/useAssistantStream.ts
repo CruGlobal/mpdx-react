@@ -1,15 +1,18 @@
 import { useRouter } from 'next/router';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAssistantContext } from './AssistantProvider';
 import { AssistantAction } from './assistantReducer';
 import { readAssistantEvents } from './sse';
 import {
   AssistantCard,
   AssistantCitation,
+  AssistantErrorReason,
   AssistantEvent,
   AssistantMessage,
 } from './types';
 import { AssistantToken } from './useAssistantToken';
+
+const DEFAULT_RETRY_AFTER_MS = 10 * 1000;
 
 export const getAssistantUrl = (): string | undefined =>
   process.env.ASSISTANT_URL?.replace(/\/+$/, '') || undefined;
@@ -106,6 +109,39 @@ const toAction = (
   }
 };
 
+// Retry-After is either a number of seconds or an HTTP date
+const retryAfterMs = (header: string | null | undefined): number => {
+  if (header?.trim()) {
+    const seconds = Number(header);
+    if (Number.isFinite(seconds)) {
+      return Math.max(seconds, 0) * 1000;
+    }
+    const date = Date.parse(header);
+    if (!Number.isNaN(date)) {
+      return Math.max(date - Date.now(), 0);
+    }
+  }
+  return DEFAULT_RETRY_AFTER_MS;
+};
+
+class AssistantResponseError extends Error {
+  constructor(
+    status: number,
+    readonly reason?: AssistantErrorReason,
+  ) {
+    super(`The assistant answered ${status}`);
+  }
+}
+
+const readErrorCode = async (response: Response): Promise<unknown> => {
+  try {
+    const body = (await response.json()) as { error?: unknown } | null;
+    return body?.error;
+  } catch {
+    return undefined;
+  }
+};
+
 export interface UseAssistantStreamOptions
   extends Pick<AssistantToken, 'token' | 'refreshToken'> {
   accountListId: string | null;
@@ -116,6 +152,7 @@ export interface UseAssistantStreamResult {
   stop: () => void;
   streaming: boolean;
   configured: boolean;
+  rateLimited: boolean;
 }
 
 export const useAssistantStream = ({
@@ -133,10 +170,29 @@ export const useAssistantStream = ({
   } = useAssistantContext();
   const { asPath } = useRouter();
   const assistantUrl = getAssistantUrl();
+  const [rateLimited, setRateLimited] = useState(false);
+  const rateLimitTimer = useRef<ReturnType<typeof setTimeout>>();
+
+  useEffect(() => () => clearTimeout(rateLimitTimer.current), []);
+
+  const blockUntilRetryAfter = useCallback((response: Response) => {
+    clearTimeout(rateLimitTimer.current);
+    setRateLimited(true);
+    rateLimitTimer.current = setTimeout(
+      () => setRateLimited(false),
+      retryAfterMs(response.headers?.get('Retry-After')),
+    );
+  }, []);
 
   const sendMessage = useCallback(
     async (content: string) => {
-      if (!assistantUrl || !token || !accountListId || streaming) {
+      if (
+        !assistantUrl ||
+        !token ||
+        !accountListId ||
+        streaming ||
+        rateLimited
+      ) {
         return;
       }
 
@@ -174,6 +230,19 @@ export const useAssistantStream = ({
         bearer = refreshed;
         return send();
       };
+      const fail = async (response: Response): Promise<never> => {
+        if (response.status === 429) {
+          blockUntilRetryAfter(response);
+          throw new AssistantResponseError(response.status, 'rateLimited');
+        }
+        if (
+          response.status === 503 &&
+          (await readErrorCode(response)) === 'verifier_unavailable'
+        ) {
+          throw new AssistantResponseError(response.status, 'unavailable');
+        }
+        throw new AssistantResponseError(response.status);
+      };
 
       try {
         let conversationId =
@@ -187,9 +256,7 @@ export const useAssistantStream = ({
             body: JSON.stringify({ account_list_id: accountListId }),
           });
           if (!response.ok) {
-            throw new Error(
-              `Creating a conversation failed: ${response.status}`,
-            );
+            await fail(response);
           }
           const data = (await response.json()) as { id?: unknown } | null;
           const id = data?.id;
@@ -218,8 +285,11 @@ export const useAssistantStream = ({
           // The server lost this conversation, so the next message starts a new one
           dispatch({ type: 'clearConversation' });
         }
-        if (!response.ok || !response.body) {
-          throw new Error(`Streaming failed: ${response.status}`);
+        if (!response.ok) {
+          await fail(response);
+        }
+        if (!response.body) {
+          throw new Error('Streaming returned no body');
         }
 
         let finished = false;
@@ -250,12 +320,19 @@ export const useAssistantStream = ({
               : { type: 'failMessage', id: reply.id },
           );
         }
-      } catch {
+      } catch (error) {
         // A stopped reply keeps what arrived; anything else becomes a friendly error in the transcript
         dispatch(
           controller.signal.aborted
             ? { type: 'stopMessage', id: reply.id }
-            : { type: 'failMessage', id: reply.id },
+            : {
+                type: 'failMessage',
+                id: reply.id,
+                reason:
+                  error instanceof AssistantResponseError
+                    ? error.reason
+                    : undefined,
+              },
         );
       } finally {
         endStream();
@@ -267,11 +344,13 @@ export const useAssistantStream = ({
       refreshToken,
       accountListId,
       streaming,
+      rateLimited,
       conversation,
       asPath,
       dispatch,
       beginStream,
       endStream,
+      blockUntilRetryAfter,
     ],
   );
 
@@ -280,5 +359,6 @@ export const useAssistantStream = ({
     stop: stopStream,
     streaming,
     configured: Boolean(assistantUrl),
+    rateLimited,
   };
 };

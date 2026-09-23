@@ -96,6 +96,7 @@ describe('AssistantChat', () => {
   });
 
   afterEach(() => {
+    jest.useRealTimers();
     fetchSpy.mockRestore();
     process.env.ASSISTANT_URL = '';
     process.env.HELPJUICE_ORIGIN = '';
@@ -327,5 +328,51 @@ describe('AssistantChat', () => {
     ).toBeInTheDocument();
     expect(queryByRole('textbox')).not.toBeInTheDocument();
     expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it('asks the user to try again in a moment when the verifier is down', async () => {
+    fetchSpy.mockResolvedValueOnce(
+      mockJsonResponse(
+        { error: 'verifier_unavailable' },
+        { ok: false, status: 503 },
+      ),
+    );
+    const { getByRole, findByText } = render(<TestComponent />);
+
+    await typeMessage(getByRole, 'Hi');
+    userEvent.click(getByRole('button', { name: 'Send' }));
+
+    expect(
+      await findByText(
+        'The assistant is busy right now. Please try again in a moment.',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('disables Send until Retry-After passes', async () => {
+    jest.useFakeTimers();
+    fetchSpy.mockResolvedValueOnce(
+      mockJsonResponse(
+        {},
+        {
+          ok: false,
+          status: 429,
+          headers: new Headers({ 'Retry-After': '30' }),
+        },
+      ),
+    );
+    const { getByRole, findByText } = render(<TestComponent />);
+
+    await typeMessage(getByRole, 'Hi');
+    userEvent.click(getByRole('button', { name: 'Send' }));
+    expect(
+      await findByText('Please wait a moment before sending another message.'),
+    ).toBeInTheDocument();
+
+    userEvent.type(getByRole('textbox', { name: 'Ask the assistant' }), 'Hi');
+    expect(getByRole('button', { name: 'Send' })).toBeDisabled();
+
+    act(() => jest.advanceTimersByTime(30000));
+    expect(getByRole('button', { name: 'Send' })).toBeEnabled();
   });
 });
