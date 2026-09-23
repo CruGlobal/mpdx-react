@@ -1,5 +1,6 @@
 import React from 'react';
 import CloseIcon from '@mui/icons-material/Close';
+import ErrorOutline from '@mui/icons-material/ErrorOutline';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import {
   Alert,
@@ -45,12 +46,17 @@ interface DetailRowProps {
   value: string;
   /** Rendered inline after the label, e.g. an info tooltip icon */
   labelAdornment?: React.ReactNode;
+  /** Rendered inline after the value, e.g. a warning marker */
+  valueAdornment?: React.ReactNode;
+  valueColor?: string;
 }
 
 const DetailRow: React.FC<DetailRowProps> = ({
   label,
   value,
   labelAdornment,
+  valueAdornment,
+  valueColor,
 }) => (
   <Box
     sx={{ display: 'flex', flexDirection: 'column', gap: 0.25, minWidth: 140 }}
@@ -61,7 +67,12 @@ const DetailRow: React.FC<DetailRowProps> = ({
       </Typography>
       {labelAdornment}
     </Box>
-    <Typography variant="body2">{value}</Typography>
+    <Box display="flex" alignItems="center" gap={0.5}>
+      <Typography variant="body2" color={valueColor}>
+        {value}
+      </Typography>
+      {valueAdornment}
+    </Box>
   </Box>
 );
 
@@ -135,6 +146,20 @@ export const StaffMemberDrawer: React.FC = () => {
   const monthlyGrossSalary = quarterlyHealth?.monthlyGrossSalary ?? null;
   const missingBenchmark =
     monthlyGrossSalary === null || newStaffMonthlySalary === null;
+  // Even a fully paid salary cannot reach the New Staff benchmark (MPDX-10069)
+  const grossBelowNewStaff =
+    monthlyGrossSalary !== null &&
+    newStaffMonthlySalary !== null &&
+    monthlyGrossSalary < newStaffMonthlySalary;
+  const grossWarning = grossBelowNewStaff
+    ? t(
+        "Monthly Gross Salary ({{gross}}) is below the New Staff Monthly Salary ({{newStaff}}). Even at full salary, this staff member's payroll cannot reach the New Staff benchmark.",
+        {
+          gross: formatCurrency(monthlyGrossSalary),
+          newStaff: formatCurrency(newStaffMonthlySalary),
+        },
+      )
+    : null;
 
   return (
     <Box
@@ -216,6 +241,20 @@ export const StaffMemberDrawer: React.FC = () => {
             />
             <DetailRow
               label={t('Monthly Gross Salary')}
+              valueColor={grossWarning ? 'error.main' : undefined}
+              valueAdornment={
+                grossWarning && (
+                  <Tooltip title={grossWarning}>
+                    <ErrorOutline
+                      fontSize="small"
+                      color="error"
+                      tabIndex={0}
+                      titleAccess={grossWarning}
+                      aria-label={grossWarning}
+                    />
+                  </Tooltip>
+                )
+              }
               value={
                 monthlyGrossSalary !== null
                   ? formatCurrency(monthlyGrossSalary)
