@@ -23,7 +23,9 @@ interface HandoffCardProps {
 export const HandoffCard: React.FC<HandoffCardProps> = ({ card }) => {
   const { t } = useTranslation();
   const href = useLocation();
-  const [copied, setCopied] = useState(false);
+  const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'failed'>(
+    'idle',
+  );
 
   const formUrl = toSafeHttpUrl(card.contact_form.url);
   const contactUrl =
@@ -36,8 +38,12 @@ export const HandoffCard: React.FC<HandoffCardProps> = ({ card }) => {
     });
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(card.summary);
-    setCopied(true);
+    try {
+      await navigator.clipboard.writeText(card.summary);
+      setCopyStatus('copied');
+    } catch {
+      setCopyStatus('failed');
+    }
   };
 
   return (
@@ -63,7 +69,9 @@ export const HandoffCard: React.FC<HandoffCardProps> = ({ card }) => {
             {t('Contact the help desk')}
           </Button>
         )}
-        <Tooltip title={copied ? t('Copied') : t('Copy summary')}>
+        <Tooltip
+          title={copyStatus === 'copied' ? t('Copied') : t('Copy summary')}
+        >
           <IconButton
             size="small"
             aria-label={t('Copy summary')}
@@ -72,9 +80,9 @@ export const HandoffCard: React.FC<HandoffCardProps> = ({ card }) => {
             <ContentCopyIcon fontSize="small" />
           </IconButton>
         </Tooltip>
-        {copied && (
+        {copyStatus !== 'idle' && (
           <Typography variant="caption" color="text.secondary" role="status">
-            {t('Copied')}
+            {copyStatus === 'copied' ? t('Copied') : t('Copy failed')}
           </Typography>
         )}
       </CardActions>

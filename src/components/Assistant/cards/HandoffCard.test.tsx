@@ -37,6 +37,18 @@ describe('HandoffCard', () => {
     await waitFor(() => expect(getByText('Copied')).toBeInTheDocument());
   });
 
+  it('shows a fallback when copying fails', async () => {
+    writeText.mockRejectedValueOnce(new Error('Clipboard blocked'));
+    const { getByRole, findByText, queryByText } = render(
+      <HandoffCard card={card} />,
+    );
+
+    userEvent.click(getByRole('button', { name: 'Copy summary' }));
+
+    expect(await findByText('Copy failed')).toBeInTheDocument();
+    expect(queryByText('Copied')).not.toBeInTheDocument();
+  });
+
   it('links to the contact form with the name, email, and page url', () => {
     const { getByRole } = render(<HandoffCard card={card} />);
 
