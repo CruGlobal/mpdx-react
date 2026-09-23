@@ -177,7 +177,7 @@ export const useAssistantStream = (): UseAssistantStreamResult => {
         }
 
         const response = await fetch(
-          `${assistantUrl}/conversations/${conversationId}/stream`,
+          `${assistantUrl}/conversations/${encodeURIComponent(conversationId)}/stream`,
           {
             method: 'POST',
             headers: { ...headers, Accept: 'text/event-stream' },

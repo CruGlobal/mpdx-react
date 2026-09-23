@@ -127,6 +127,19 @@ describe('useAssistantStream', () => {
     ]);
   });
 
+  it('encodes the conversation id in the stream url', async () => {
+    fetchSpy
+      .mockResolvedValueOnce(mockJsonResponse({ id: 'a/b?c' }))
+      .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+    const { result } = renderStream();
+
+    await act(() => result.current.stream.sendMessage('Hi'));
+
+    expect(fetchSpy.mock.calls[1][0]).toBe(
+      `${assistantUrl}/conversations/a%2Fb%3Fc/stream`,
+    );
+  });
+
   it('reuses the conversation for the next message', async () => {
     fetchSpy
       .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
