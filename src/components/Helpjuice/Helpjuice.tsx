@@ -3,6 +3,7 @@ import { getApolloContext } from '@apollo/client';
 import { useSession } from 'next-auth/react';
 import { useUserPreference } from 'src/hooks/useUserPreference';
 import { DismissableBeacon } from './DismissableBeacon';
+import { buildHelpjuiceContactUrl } from './contactUrl';
 import { useLocation } from './useLocation';
 
 /**
@@ -84,13 +85,12 @@ export const Helpjuice: React.FC = () => {
     // Helpjuice page will extract this data from the URL and use it to pre-populate the contact form.
     const contactLink = document.getElementById('helpjuice-contact-link');
     if (contactLink instanceof HTMLAnchorElement) {
-      const url = new URL(`${process.env.HELPJUICE_ORIGIN}/contact-us`);
-      if (session) {
-        url.searchParams.set('mpdxName', session.user.name);
-        url.searchParams.set('mpdxEmail', session.user.email);
-      }
-      url.searchParams.set('mpdxUrl', window.location.href);
-      contactLink.href = url.toString();
+      contactLink.href = buildHelpjuiceContactUrl({
+        contactUrl: `${process.env.HELPJUICE_ORIGIN}/contact-us`,
+        name: session?.user.name,
+        email: session?.user.email,
+        href: window.location.href,
+      });
       contactLink.target = '_blank';
     }
 

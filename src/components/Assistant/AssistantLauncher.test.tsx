@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import TestRouter from '__tests__/util/TestRouter';
 import { mockSession } from '__tests__/util/mockSession';
 import theme from 'src/theme';
 import { AssistantDrawer } from './AssistantDrawer';
@@ -10,10 +11,12 @@ import { AssistantProvider } from './AssistantProvider';
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
-    <AssistantProvider>
-      <AssistantLauncher />
-      <AssistantDrawer />
-    </AssistantProvider>
+    <TestRouter>
+      <AssistantProvider>
+        <AssistantLauncher />
+        <AssistantDrawer />
+      </AssistantProvider>
+    </TestRouter>
   </ThemeProvider>
 );
 
