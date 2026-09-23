@@ -1,4 +1,10 @@
-import React, { FormEvent, KeyboardEvent, useState } from 'react';
+import React, {
+  FormEvent,
+  KeyboardEvent,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import SendIcon from '@mui/icons-material/Send';
 import StopIcon from '@mui/icons-material/Stop';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
@@ -77,6 +83,15 @@ export const AssistantChat: React.FC = () => {
     useAssistantStream();
   const [draft, setDraft] = useState('');
   const canSend = Boolean(draft.trim()) && Boolean(accountListId);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const wasStreaming = useRef(streaming);
+
+  useEffect(() => {
+    if (wasStreaming.current && !streaming) {
+      inputRef.current?.focus();
+    }
+    wasStreaming.current = streaming;
+  }, [streaming]);
 
   const handleSubmit = (event?: FormEvent) => {
     event?.preventDefault();
@@ -86,6 +101,7 @@ export const AssistantChat: React.FC = () => {
     const content = draft.trim();
     setDraft('');
     sendMessage(content);
+    inputRef.current?.focus();
   };
 
   const handleKeyDown = (event: KeyboardEvent) => {
@@ -123,6 +139,7 @@ export const AssistantChat: React.FC = () => {
               maxRows={4}
               size="small"
               value={draft}
+              inputRef={inputRef}
               disabled={!accountListId}
               placeholder={t('Ask the assistant')}
               onChange={(event) => setDraft(event.target.value)}

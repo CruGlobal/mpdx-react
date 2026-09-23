@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { mockSession } from '__tests__/util/mockSession';
@@ -125,6 +125,31 @@ describe('AssistantChat', () => {
     const sendButton = await findByRole('button', { name: 'Send' });
     expect(sendButton).toBe(stopButton);
     expect(fetchSpy.mock.calls[1][1].signal.aborted).toBe(true);
+  });
+
+  it('returns focus to the input after sending and after the reply finishes', async () => {
+    const stream = controlledStream();
+    fetchSpy
+      .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+      .mockResolvedValueOnce(mockStreamResponse([], { body: stream.body }));
+    const { getByRole, findByText, findByRole } = render(<TestComponent />);
+
+    const input = getByRole('textbox', { name: 'Ask the assistant' });
+    userEvent.type(input, 'Hi');
+    userEvent.click(getByRole('button', { name: 'Send' }));
+    expect(input).toHaveFocus();
+
+    stream.push(frame({ type: 'chunk', message_id: 'm1', delta: 'Hello' }));
+    expect(await findByText('Hello')).toBeInTheDocument();
+    act(() => getByRole('button', { name: 'Stop' }).focus());
+    expect(input).not.toHaveFocus();
+
+    stream.push(
+      frame({ type: 'generation_complete', message_id: 'm1', citations: [] }),
+    );
+    stream.close();
+    await findByRole('button', { name: 'Send' });
+    await waitFor(() => expect(input).toHaveFocus());
   });
 
   it('shows a friendly message when the server fails', async () => {
