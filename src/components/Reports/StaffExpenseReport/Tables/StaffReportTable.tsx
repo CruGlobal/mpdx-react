@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react';
 import { InfoOutlined } from '@mui/icons-material';
 import {
   Box,
-  Chip,
   CircularProgress,
   IconButton,
   Tooltip,
@@ -25,6 +24,7 @@ import {
 } from '../Helpers/filterTransactions';
 import { formatAggregatedDate } from '../Helpers/formatDate';
 import { getPendingLabel } from '../Helpers/pendingLabel';
+import { PendingChip } from '../styledComponents/PendingChip';
 
 const DEFAULT_PAGE_SIZE = 25;
 
@@ -165,15 +165,7 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
           {row.description}
         </Typography>
       </Tooltip>
-      {row.pendingLabel && (
-        <Chip
-          label={row.pendingLabel}
-          size="small"
-          color="warning"
-          variant="outlined"
-          sx={{ flexShrink: 0 }}
-        />
-      )}
+      {row.pendingLabel && <PendingChip label={row.pendingLabel} />}
     </Box>
   );
 

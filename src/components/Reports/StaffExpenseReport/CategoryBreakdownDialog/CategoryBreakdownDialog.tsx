@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import {
   Box,
-  Chip,
   Table,
   TableBody,
   TableCell,
@@ -18,6 +17,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { DialogSkeleton } from '../../Shared/DialogSkeleton/DialogSkeleton';
 import { Transaction } from '../Helpers/filterTransactions';
+import { PendingChip } from '../styledComponents/PendingChip';
 
 export interface CategoryBreakdownDialogProps {
   isOpen: boolean;
@@ -77,12 +77,7 @@ export const CategoryBreakdownDialog: React.FC<
                   <Box display="flex" alignItems="center" gap={1}>
                     {transaction.description}
                     {transaction.isPending && (
-                      <Chip
-                        label={t('Pending')}
-                        size="small"
-                        color="warning"
-                        variant="outlined"
-                      />
+                      <PendingChip label={t('Pending')} />
                     )}
                   </Box>
                 </TableCell>
