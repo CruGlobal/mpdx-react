@@ -218,7 +218,7 @@ export const useAssistantStream = ({
     setRateLimited(true);
     rateLimitTimer.current = setTimeout(
       () => setRateLimited(false),
-      retryAfterMs(response.headers?.get('Retry-After')),
+      retryAfterMs(response.headers.get('Retry-After')),
     );
   }, []);
 

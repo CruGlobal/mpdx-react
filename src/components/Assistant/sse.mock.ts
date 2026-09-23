@@ -26,6 +26,7 @@ export const mockStreamResponse = (
   ({
     ok: true,
     status: 200,
+    headers: new Headers(),
     body: streamFromChunks(chunks),
     json: () => Promise.resolve({}),
     ...init,
@@ -38,6 +39,7 @@ export const mockJsonResponse = (
   ({
     ok: true,
     status: 200,
+    headers: new Headers(),
     body: null,
     json: () => Promise.resolve(data),
     ...init,
