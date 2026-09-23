@@ -126,6 +126,31 @@ describe('MessageList', () => {
     ).toBeInTheDocument();
   });
 
+  it('shows a stopped line when a reply was stopped before any text', () => {
+    const { getByText } = render(
+      <MessageList
+        messages={[message({ status: 'stopped' })]}
+        streaming={false}
+        onNavigate={onNavigate}
+      />,
+    );
+
+    expect(getByText('Stopped.')).toBeInTheDocument();
+  });
+
+  it('keeps partial text without the stopped line', () => {
+    const { getByText, queryByText } = render(
+      <MessageList
+        messages={[message({ status: 'stopped', content: 'Partial' })]}
+        streaming={false}
+        onNavigate={onNavigate}
+      />,
+    );
+
+    expect(getByText('Partial')).toBeInTheDocument();
+    expect(queryByText('Stopped.')).not.toBeInTheDocument();
+  });
+
   it('passes navigation to cards', () => {
     const intent = { type: 'contacts', params: {} };
     const { getByRole } = render(

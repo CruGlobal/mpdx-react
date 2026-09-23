@@ -91,6 +91,11 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, onNavigate }) => {
             ))}
           </Stack>
         )}
+        {status === 'stopped' && !content && (
+          <Typography variant="body2" color="text.secondary">
+            {t('Stopped.')}
+          </Typography>
+        )}
         {status === 'error' && (
           <Typography variant="body2" color="error" mt={content ? 1 : 0}>
             {t('Sorry, something went wrong. Please try again.')}

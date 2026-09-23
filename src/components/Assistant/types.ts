@@ -67,7 +67,7 @@ export type AssistantEvent =
 
 export type MessageRole = 'user' | 'assistant';
 
-export type MessageStatus = 'streaming' | 'complete' | 'error';
+export type MessageStatus = 'streaming' | 'complete' | 'stopped' | 'error';
 
 export interface AssistantMessage {
   id: string;

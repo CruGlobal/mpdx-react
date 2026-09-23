@@ -143,13 +143,17 @@ export const useAssistantStream = (): UseAssistantStreamResult => {
           }
         }
         if (!finished) {
-          dispatch({ type: 'completeMessage', id: reply.id, citations: [] });
+          dispatch(
+            controller.signal.aborted
+              ? { type: 'stopMessage', id: reply.id }
+              : { type: 'completeMessage', id: reply.id, citations: [] },
+          );
         }
       } catch {
         // A stopped reply keeps what arrived; anything else becomes a friendly error in the transcript
         dispatch(
           controller.signal.aborted
-            ? { type: 'completeMessage', id: reply.id, citations: [] }
+            ? { type: 'stopMessage', id: reply.id }
             : { type: 'failMessage', id: reply.id },
         );
       } finally {

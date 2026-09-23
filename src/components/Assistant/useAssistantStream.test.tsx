@@ -246,7 +246,7 @@ describe('useAssistantStream', () => {
     expect(fetchSpy.mock.calls[1][1].signal.aborted).toBe(true);
     expect(result.current.context.messages[1]).toMatchObject({
       content: 'Part',
-      status: 'complete',
+      status: 'stopped',
     });
     expect(result.current.stream.streaming).toBe(false);
   });
@@ -277,7 +277,30 @@ describe('useAssistantStream', () => {
 
     expect(result.current.context.messages[1]).toMatchObject({
       content: 'Part',
-      status: 'complete',
+      status: 'stopped',
+    });
+  });
+
+  it('marks the reply as stopped when stopped before any text arrives', async () => {
+    const stream = controlledStream();
+    fetchSpy
+      .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+      .mockResolvedValueOnce(mockStreamResponse([], { body: stream.body }));
+    const { result, waitFor } = renderStream();
+
+    let sending: Promise<void> = Promise.resolve();
+    act(() => {
+      sending = result.current.stream.sendMessage('Hi');
+    });
+    await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(2));
+
+    act(() => result.current.stream.stop());
+    stream.close();
+    await act(() => sending);
+
+    expect(result.current.context.messages[1]).toMatchObject({
+      content: '',
+      status: 'stopped',
     });
   });
 

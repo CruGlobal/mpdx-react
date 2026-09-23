@@ -16,6 +16,7 @@ export type AssistantAction =
   | { type: 'addCard'; id: string; card: AssistantCard }
   | { type: 'setWorking'; id: string; working: boolean }
   | { type: 'completeMessage'; id: string; citations: AssistantCitation[] }
+  | { type: 'stopMessage'; id: string }
   | { type: 'failMessage'; id: string }
   | { type: 'setConversation'; conversation: ConversationBinding }
   | { type: 'resetConversation' };
@@ -64,6 +65,12 @@ export const assistantReducer = (
         status: 'complete',
         working: false,
         citations: action.citations,
+      }));
+    case 'stopMessage':
+      return updateMessage(state, action.id, (message) => ({
+        ...message,
+        status: 'stopped',
+        working: false,
       }));
     case 'failMessage':
       return updateMessage(state, action.id, (message) => ({

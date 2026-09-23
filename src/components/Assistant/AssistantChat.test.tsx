@@ -128,6 +128,22 @@ describe('AssistantChat', () => {
     expect(fetchSpy.mock.calls[1][1].signal.aborted).toBe(true);
   });
 
+  it('shows Stopped when stopped before any text arrives', async () => {
+    const stream = controlledStream();
+    fetchSpy
+      .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+      .mockResolvedValueOnce(mockStreamResponse([], { body: stream.body }));
+    const { getByRole, findByText } = render(<TestComponent />);
+
+    userEvent.type(getByRole('textbox', { name: 'Ask the assistant' }), 'Hi');
+    userEvent.click(getByRole('button', { name: 'Send' }));
+    await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(2));
+    userEvent.click(getByRole('button', { name: 'Stop' }));
+    stream.close();
+
+    expect(await findByText('Stopped.')).toBeInTheDocument();
+  });
+
   it('returns focus to the input after sending and after the reply finishes', async () => {
     const stream = controlledStream();
     fetchSpy
