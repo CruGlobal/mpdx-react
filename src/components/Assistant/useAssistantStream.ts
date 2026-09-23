@@ -185,6 +185,10 @@ export const useAssistantStream = (): UseAssistantStreamResult => {
             signal: controller.signal,
           },
         );
+        if (response.status === 404 || response.status === 410) {
+          // The server lost this conversation, so the next message starts a new one
+          dispatch({ type: 'clearConversation' });
+        }
         if (!response.ok || !response.body) {
           throw new Error(`Streaming failed: ${response.status}`);
         }

@@ -238,6 +238,37 @@ describe('useAssistantStream', () => {
     expect(result.current.stream.streaming).toBe(false);
   });
 
+  it.each([404, 410])(
+    'starts a new conversation after the stream answers %i',
+    async (status) => {
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames))
+        .mockResolvedValueOnce(mockStreamResponse([], { ok: false, status }))
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-2' }))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+      const { result } = renderStream();
+
+      await act(() => result.current.stream.sendMessage('First'));
+      await act(() => result.current.stream.sendMessage('Second'));
+
+      expect(result.current.context.messages).toHaveLength(4);
+      expect(result.current.context.messages[3].status).toBe('error');
+      expect(result.current.context.conversation).toBeNull();
+
+      await act(() => result.current.stream.sendMessage('Third'));
+
+      expect(fetchSpy.mock.calls.map(([url]) => url)).toEqual([
+        `${assistantUrl}/conversations`,
+        `${assistantUrl}/conversations/conversation-1/stream`,
+        `${assistantUrl}/conversations/conversation-1/stream`,
+        `${assistantUrl}/conversations`,
+        `${assistantUrl}/conversations/conversation-2/stream`,
+      ]);
+      expect(result.current.context.messages[5].status).toBe('complete');
+    },
+  );
+
   it('marks the reply as failed on a network error', async () => {
     fetchSpy.mockRejectedValueOnce(new TypeError('Failed to fetch'));
     const { result } = renderStream();

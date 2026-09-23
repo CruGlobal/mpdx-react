@@ -19,6 +19,7 @@ export type AssistantAction =
   | { type: 'stopMessage'; id: string }
   | { type: 'failMessage'; id: string }
   | { type: 'setConversation'; conversation: ConversationBinding }
+  | { type: 'clearConversation' }
   | { type: 'resetConversation' };
 
 export const initialAssistantState: AssistantState = {
@@ -80,6 +81,8 @@ export const assistantReducer = (
       }));
     case 'setConversation':
       return { ...state, conversation: action.conversation };
+    case 'clearConversation':
+      return { ...state, conversation: null };
     case 'resetConversation':
       return initialAssistantState;
   }
