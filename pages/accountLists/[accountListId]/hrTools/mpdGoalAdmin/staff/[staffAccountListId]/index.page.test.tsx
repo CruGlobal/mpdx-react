@@ -12,7 +12,6 @@ import { NewStaffGoalCalculationQuery } from 'src/components/HrTools/NsGoalCalcu
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   NewStaffQuestionnaireMaritalStatusEnum,
-  UsStaffGroupEnum,
   UserTypeEnum,
 } from 'src/graphql/types.generated';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
@@ -32,14 +31,14 @@ const push = jest.fn();
 const mutationSpy = jest.fn();
 
 interface TestComponentProps {
-  /** Senior Staff is the group the MPD goal tools are open to. */
-  usStaffGroup?: UsStaffGroupEnum;
+  /** The MPD Goals team and MPD coordinators are the only ones let in. */
+  canViewNewStaffCohorts?: boolean;
   /** Empty stands in for a router that has not resolved the path yet. */
   staffAccountListId?: string;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
-  usStaffGroup = UsStaffGroupEnum.SeniorStaff,
+  canViewNewStaffCohorts = true,
   staffAccountListId = 'staff-account-list-1',
 }) => (
   <TestRouter
@@ -62,7 +61,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
             GetUser: {
               user: {
                 userType: UserTypeEnum.UsStaff,
-                usStaffGroup,
+                canViewNewStaffCohorts,
                 staffAccountId: 'staff-account-1',
               },
             },
@@ -140,9 +139,9 @@ describe('Staff Details page', () => {
     expect(queryByRole('navigation')).not.toBeInTheDocument();
   });
 
-  it("denies a user outside the admin table's group", async () => {
+  it('denies a user without goals-team or coordinator access', async () => {
     const { findByRole } = render(
-      <TestComponent usStaffGroup={UsStaffGroupEnum.NewStaff} />,
+      <TestComponent canViewNewStaffCohorts={false} />,
     );
 
     expect(
