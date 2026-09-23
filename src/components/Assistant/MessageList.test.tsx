@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import TestRouter from '__tests__/util/TestRouter';
 import { MessageList } from './MessageList';
 import { AssistantCard, AssistantMessage } from './types';
 
@@ -16,11 +16,9 @@ const message = (overrides: Partial<AssistantMessage>): AssistantMessage => ({
 });
 
 describe('MessageList', () => {
-  const onNavigate = jest.fn();
-
   it('renders the log region and an empty state before any message', () => {
     const { getByRole, getByText } = render(
-      <MessageList messages={[]} streaming={false} onNavigate={onNavigate} />,
+      <MessageList messages={[]} streaming={false} />,
     );
 
     expect(getByRole('log', { name: 'Conversation' })).toBeInTheDocument();
@@ -32,7 +30,6 @@ describe('MessageList', () => {
       <MessageList
         messages={[message({ role: 'user', content: 'Hi' })]}
         streaming={false}
-        onNavigate={onNavigate}
       />,
     );
 
@@ -49,7 +46,6 @@ describe('MessageList', () => {
           message({ id: '2', content: 'You have **12** contacts.' }),
         ]}
         streaming={false}
-        onNavigate={onNavigate}
       />,
     );
 
@@ -63,11 +59,7 @@ describe('MessageList', () => {
 
   it('marks the transcript busy while streaming', () => {
     const { getByRole } = render(
-      <MessageList
-        messages={[message({ status: 'streaming' })]}
-        streaming
-        onNavigate={onNavigate}
-      />,
+      <MessageList messages={[message({ status: 'streaming' })]} streaming />,
     );
 
     expect(getByRole('log')).toHaveAttribute('aria-busy', 'true');
@@ -81,7 +73,6 @@ describe('MessageList', () => {
       <MessageList
         messages={[message({ status: 'streaming', working: true })]}
         streaming
-        onNavigate={onNavigate}
       />,
     );
 
@@ -101,7 +92,6 @@ describe('MessageList', () => {
           }),
         ]}
         streaming={false}
-        onNavigate={onNavigate}
       />,
     );
 
@@ -117,7 +107,6 @@ describe('MessageList', () => {
       <MessageList
         messages={[message({ status: 'error' })]}
         streaming={false}
-        onNavigate={onNavigate}
       />,
     );
 
@@ -131,7 +120,6 @@ describe('MessageList', () => {
       <MessageList
         messages={[message({ status: 'stopped' })]}
         streaming={false}
-        onNavigate={onNavigate}
       />,
     );
 
@@ -143,7 +131,6 @@ describe('MessageList', () => {
       <MessageList
         messages={[message({ status: 'stopped', content: 'Partial' })]}
         streaming={false}
-        onNavigate={onNavigate}
       />,
     );
 
@@ -160,7 +147,6 @@ describe('MessageList', () => {
           message({ id: '2', cards: [null as unknown as AssistantCard] }),
         ]}
         streaming={false}
-        onNavigate={onNavigate}
       />,
     );
 
@@ -171,22 +157,26 @@ describe('MessageList', () => {
     errorSpy.mockRestore();
   });
 
-  it('passes navigation to cards', () => {
-    const intent = { type: 'contacts', params: {} };
-    const { getByRole } = render(
-      <MessageList
-        messages={[
-          message({
-            cards: [{ kind: 'navigation', intent, label: 'Open contacts' }],
-          }),
-        ]}
-        streaming={false}
-        onNavigate={onNavigate}
-      />,
+  it('renders navigation cards', () => {
+    const { getByText } = render(
+      <TestRouter router={{ query: {} }}>
+        <MessageList
+          messages={[
+            message({
+              cards: [
+                {
+                  kind: 'navigation',
+                  intent: { type: 'dashboard', params: {} },
+                  label: 'Open the Dashboard',
+                },
+              ],
+            }),
+          ]}
+          streaming={false}
+        />
+      </TestRouter>,
     );
 
-    userEvent.click(getByRole('button', { name: 'Open contacts' }));
-
-    expect(onNavigate).toHaveBeenCalledWith(intent);
+    expect(getByText('Open the Dashboard')).toBeInTheDocument();
   });
 });

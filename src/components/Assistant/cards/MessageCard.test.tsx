@@ -3,8 +3,6 @@ import { render } from '@testing-library/react';
 import { MessageCard } from './MessageCard';
 
 describe('MessageCard', () => {
-  const onNavigate = jest.fn();
-
   it('renders the figures placeholder', () => {
     const { getByText } = render(
       <MessageCard
@@ -12,7 +10,6 @@ describe('MessageCard', () => {
           kind: 'figures',
           items: [{ label: 'Monthly support', value: 1200, unit: 'USD' }],
         }}
-        onNavigate={onNavigate}
       />,
     );
 
@@ -21,10 +18,7 @@ describe('MessageCard', () => {
 
   it('renders the contact placeholder', () => {
     const { getByText } = render(
-      <MessageCard
-        card={{ kind: 'contact', contact_id: 'contact-1' }}
-        onNavigate={onNavigate}
-      />,
+      <MessageCard card={{ kind: 'contact', contact_id: 'contact-1' }} />,
     );
 
     expect(getByText('Contact: contact-1')).toBeInTheDocument();
@@ -37,7 +31,6 @@ describe('MessageCard', () => {
           kind: 'proposed_action',
           action: { type: 'log_task', params: { subject: 'Call' } },
         }}
-        onNavigate={onNavigate}
       />,
     );
 
@@ -47,10 +40,7 @@ describe('MessageCard', () => {
 
   it('renders nothing for an unknown kind', () => {
     const { container } = render(
-      <MessageCard
-        card={{ kind: 'unknown' } as never}
-        onNavigate={onNavigate}
-      />,
+      <MessageCard card={{ kind: 'unknown' } as never} />,
     );
 
     expect(container).toBeEmptyDOMElement();

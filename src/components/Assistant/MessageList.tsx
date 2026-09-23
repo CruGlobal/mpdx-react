@@ -7,7 +7,7 @@ import { AssistantErrorBoundary } from './AssistantErrorBoundary';
 import { AssistantMarkdown } from './AssistantMarkdown';
 import { MessageCard } from './cards/MessageCard';
 import { toSafeHttpUrl } from './safeUrl';
-import { AssistantMessage, MessageRole, NavigationIntent } from './types';
+import { AssistantMessage, MessageRole } from './types';
 
 const List = styled('ul')({
   listStyle: 'none',
@@ -49,10 +49,9 @@ const Bubble = styled(Box, {
 
 interface MessageItemProps {
   message: AssistantMessage;
-  onNavigate: (intent: NavigationIntent) => void;
 }
 
-const MessageItem: React.FC<MessageItemProps> = ({ message, onNavigate }) => {
+const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
   const { t } = useTranslation();
   const { role, content, cards, citations, status, working } = message;
   const waiting = status === 'streaming' && !content && !working;
@@ -88,7 +87,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, onNavigate }) => {
         {cards.length > 0 && (
           <Stack spacing={1} mt={1} alignItems="flex-start">
             {cards.map((card, index) => (
-              <MessageCard key={index} card={card} onNavigate={onNavigate} />
+              <MessageCard key={index} card={card} />
             ))}
           </Stack>
         )}
@@ -132,13 +131,11 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, onNavigate }) => {
 interface MessageListProps {
   messages: AssistantMessage[];
   streaming: boolean;
-  onNavigate: (intent: NavigationIntent) => void;
 }
 
 export const MessageList: React.FC<MessageListProps> = ({
   messages,
   streaming,
-  onNavigate,
 }) => {
   const { t } = useTranslation();
   const endRef = useRef<HTMLDivElement>(null);
@@ -158,7 +155,7 @@ export const MessageList: React.FC<MessageListProps> = ({
       >
         {messages.map((message) => (
           <AssistantErrorBoundary key={message.id}>
-            <MessageItem message={message} onNavigate={onNavigate} />
+            <MessageItem message={message} />
           </AssistantErrorBoundary>
         ))}
         <div ref={endRef} />

@@ -1,21 +1,90 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import TestRouter from '__tests__/util/TestRouter';
+import { DEFAULT_VISIBILITY } from '../navigation/intents';
+import { useNavigationVisibility } from '../navigation/useNavigationVisibility';
+import { NavigationIntent } from '../types';
 import { NavigationCard } from './NavigationCard';
 
+jest.mock('../navigation/useNavigationVisibility');
+const mockUseNavigationVisibility = useNavigationVisibility as jest.MockedFn<
+  typeof useNavigationVisibility
+>;
+
+interface TestComponentProps {
+  intent: NavigationIntent;
+  accountListId?: string;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({
+  intent,
+  accountListId = 'account-list-1',
+}) => (
+  <TestRouter router={{ query: accountListId ? { accountListId } : {} }}>
+    <NavigationCard card={{ kind: 'navigation', intent, label: 'Open it' }} />
+  </TestRouter>
+);
+
 describe('NavigationCard', () => {
-  it('calls onNavigate with the intent when clicked', () => {
-    const onNavigate = jest.fn();
-    const intent = { type: 'contact', params: { contactId: 'contact-1' } };
+  let debugSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    mockUseNavigationVisibility.mockReturnValue(DEFAULT_VISIBILITY);
+    debugSpy = jest.spyOn(console, 'debug').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    debugSpy.mockRestore();
+  });
+
+  it('links to the built href for a valid intent', () => {
     const { getByRole } = render(
-      <NavigationCard
-        card={{ kind: 'navigation', intent, label: 'Open John Doe' }}
-        onNavigate={onNavigate}
+      <TestComponent
+        intent={{ type: 'settings', params: { tab: 'connect_services' } }}
       />,
     );
 
-    userEvent.click(getByRole('button', { name: 'Open John Doe' }));
+    expect(getByRole('link', { name: 'Open it' })).toHaveAttribute(
+      'href',
+      '/accountLists/account-list-1/settings/integrations',
+    );
+  });
 
-    expect(onNavigate).toHaveBeenCalledWith(intent);
+  it('shows plain text and logs once for an invalid intent', () => {
+    const intent = { type: 'url', params: {} };
+    const { getByText, queryByRole, rerender } = render(
+      <TestComponent intent={intent} />,
+    );
+    rerender(<TestComponent intent={intent} />);
+
+    expect(getByText('Open it')).toBeInTheDocument();
+    expect(queryByRole('link')).not.toBeInTheDocument();
+    expect(debugSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows plain text for an intent the user cannot see', () => {
+    mockUseNavigationVisibility.mockReturnValue({
+      ...DEFAULT_VISIBILITY,
+      coaching: false,
+    });
+    const { getByText, queryByRole } = render(
+      <TestComponent intent={{ type: 'coaching', params: {} }} />,
+    );
+
+    expect(getByText('Open it')).toBeInTheDocument();
+    expect(queryByRole('link')).not.toBeInTheDocument();
+  });
+
+  it('shows plain text outside an account list', () => {
+    const { getByText, queryByRole } = render(
+      <TestComponent
+        intent={{ type: 'dashboard', params: {} }}
+        accountListId=""
+      />,
+    );
+
+    expect(getByText('Open it')).toBeInTheDocument();
+    expect(queryByRole('link')).not.toBeInTheDocument();
+    expect(mockUseNavigationVisibility).not.toHaveBeenCalled();
   });
 });

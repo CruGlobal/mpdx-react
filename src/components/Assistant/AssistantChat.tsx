@@ -71,7 +71,7 @@ const HelpDeskLink: React.FC = () => {
 // Mounts only while the drawer is open, so session and route hooks stay out of the provider
 export const AssistantChat: React.FC = () => {
   const { t } = useTranslation();
-  const { messages, onNavigate } = useAssistantContext();
+  const { messages } = useAssistantContext();
   const { sendMessage, stop, streaming, configured, accountListId } =
     useAssistantStream();
   const [draft, setDraft] = useState('');
@@ -111,11 +111,7 @@ export const AssistantChat: React.FC = () => {
   return (
     <>
       <MessageArea>
-        <MessageList
-          messages={messages}
-          streaming={streaming}
-          onNavigate={onNavigate}
-        />
+        <MessageList messages={messages} streaming={streaming} />
       </MessageArea>
       <Divider />
       <Footer>
