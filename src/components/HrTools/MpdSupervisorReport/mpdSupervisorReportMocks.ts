@@ -1,4 +1,7 @@
-import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
+import {
+  MpdAssignmentCategoryGroupEnum,
+  MpdHealthStatusEnum,
+} from 'src/graphql/types.generated';
 import { ManagedStaffQuery } from './ManagedStaff.generated';
 import { ManagedStaffTeamsQuery } from './ManagedStaffTeams.generated';
 import { ManagedStaffMember } from './helpers';
@@ -14,6 +17,7 @@ const baseMember: ManagedStaffMember = {
   spouseStaffAccountId: '1000000002',
   newStaffMonthlySalary: 2500,
   geographicLocation: 'Orlando, FL',
+  assignmentCategoryGroup: MpdAssignmentCategoryGroupEnum.FullTime,
   teams: {
     employee: [{ id: 'team-1', name: 'Campus', department: 'US Campus' }],
     spouse: [],

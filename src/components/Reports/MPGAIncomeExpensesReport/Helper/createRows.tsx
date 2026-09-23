@@ -12,7 +12,7 @@ export const populateCardTableRows = (
   openBreakdownModal: (breakdown: BreakdownTarget) => void,
 ) => {
   const description: RenderCell = ({ row }) => {
-    const { category, transactions } = row;
+    const { category, person, transactions } = row;
     return (
       <Box display="flex" alignItems="center" width="100%">
         <Tooltip title={row.description}>
@@ -26,7 +26,9 @@ export const populateCardTableRows = (
               size="small"
               sx={{ ml: 'auto', flexShrink: 0 }}
               aria-label={t('View breakdown')}
-              onClick={() => openBreakdownModal({ category, transactions })}
+              onClick={() =>
+                openBreakdownModal({ category, person, transactions })
+              }
             >
               <InfoOutlined fontSize="small" />
             </IconButton>

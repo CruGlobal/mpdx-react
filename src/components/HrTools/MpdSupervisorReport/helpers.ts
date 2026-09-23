@@ -1,6 +1,7 @@
 import { Theme } from '@mui/material';
 import { TFunction } from 'i18next';
 import {
+  MpdAssignmentCategoryGroupEnum,
   MpdHealthStatusEnum,
   QuarterlyPayrollHistory,
 } from 'src/graphql/types.generated';
@@ -9,7 +10,7 @@ import { ManagedStaffQuery } from './ManagedStaff.generated';
 export type ManagedStaffMember =
   ManagedStaffQuery['managedStaff']['nodes'][number];
 
-/** Stands in for fields `managedStaff` cannot supply yet. */
+/** Rendered in place of a value `managedStaff` returned as null or empty. */
 export const pendingField = '—';
 
 /**
@@ -137,3 +138,17 @@ export const buildQuarterChips = ({
         ]
       : []),
   ].sort((a, b) => a.fiscalYear - b.fiscalYear || a.quarter - b.quarter);
+
+export const getLocalizedAssignmentCategoryGroup = (
+  t: TFunction,
+  group: MpdAssignmentCategoryGroupEnum | null | undefined,
+): string => {
+  switch (group) {
+    case MpdAssignmentCategoryGroupEnum.FullTime:
+      return t('Full time');
+    case MpdAssignmentCategoryGroupEnum.PartTime:
+      return t('Part time');
+    default:
+      return pendingField;
+  }
+};

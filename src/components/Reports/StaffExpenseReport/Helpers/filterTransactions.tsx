@@ -6,6 +6,7 @@ import {
   StaffExpenseCategoryEnum,
   StaffExpensesSubCategoryEnum,
 } from 'src/graphql/types.generated';
+import { HouseholdMember } from '../../Shared/Helpers/household';
 import {
   getLocalizedCategory,
   getLocalizedSubCategory,
@@ -34,12 +35,6 @@ export interface Transaction {
   personNumber?: string | null;
   /** Dated after today, so it has not happened yet. */
   isPending?: boolean;
-}
-
-/** A person sharing the account, in HCM's order: the staff member reading the report, then their spouse. */
-export interface HouseholdMember {
-  personNumber: string;
-  name: string;
 }
 
 export interface GroupedTransaction extends Transaction {

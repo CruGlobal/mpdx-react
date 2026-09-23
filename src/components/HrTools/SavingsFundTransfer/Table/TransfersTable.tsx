@@ -52,6 +52,7 @@ export const CreateTransferRows = (history: Transfers): Transfers => ({
   baseAmount: history.baseAmount,
   summarizedTransfers: history.summarizedTransfers ?? null,
   missingMonths: history.missingMonths ?? null,
+  historyTruncated: history.historyTruncated ?? false,
 });
 
 const createToolbar = (history: Transfers[], type: TableTypeEnum) => {

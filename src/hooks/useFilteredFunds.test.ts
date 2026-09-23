@@ -1,15 +1,21 @@
 import { renderHook } from '@testing-library/react';
+import { TFunction } from 'i18next';
 import {
   Categories,
   Funds,
 } from 'src/components/Reports/MPGAIncomeExpensesReport/Helper/MPGAReportEnum';
+import { HouseholdMember } from 'src/components/Reports/Shared/Helpers/household';
 import {
   StaffExpenseCategoryEnum,
   StaffExpensesSubCategoryEnum,
 } from 'src/graphql/types.generated';
 import { useFilteredFunds } from './useFilteredFunds';
 
-const t = jest.fn((key) => key);
+// Interpolates like i18next so per-person labels read the way they will on screen.
+const t = ((key: string, options?: Record<string, string>) =>
+  options
+    ? key.replace(/{{(\w+)}}/g, (_match, name: string) => options[name])
+    : key) as TFunction;
 const selectedCategories = [
   StaffExpenseCategoryEnum.Salary,
   StaffExpenseCategoryEnum.HealthcareReimbursement,
@@ -18,7 +24,8 @@ const selectedCategories = [
 const renderUseFilteredFunds = (
   funds: Funds[],
   selected: string[] | null = null,
-) => renderHook(() => useFilteredFunds(funds, selected, t));
+  household: HouseholdMember[] = [],
+) => renderHook(() => useFilteredFunds(funds, selected, t, household));
 
 const months = (totals: number[]) =>
   totals.map((total, index) => ({
@@ -503,6 +510,351 @@ describe('useFilteredFunds', () => {
       expect(result.current.incomeData.map((row) => row.id)).toEqual([
         '1-HEALTHCARE_REIMBURSEMENT',
         '1-SALARY-income',
+      ]);
+    });
+  });
+
+  describe('salary per person', () => {
+    const reader = { personNumber: '000000111', name: 'Alex' };
+    const spouse = { personNumber: '000000222', name: 'Jordan' };
+
+    const payroll = (
+      amount: number,
+      personNumber: string | null,
+      transactedAt = '2024-01-15T00:00:00Z',
+    ) => ({
+      transactedAt,
+      description: 'Payroll',
+      amount,
+      personNumber,
+    });
+
+    const salaryFund = (
+      monthly: { total: number; transactions: ReturnType<typeof payroll>[] }[],
+    ): Funds[] => [
+      {
+        id: '1',
+        fundType: 'Primary',
+        total: sum(monthly.map((month) => month.total)),
+        categories: [
+          {
+            category: StaffExpenseCategoryEnum.Salary,
+            total: sum(monthly.map((month) => month.total)),
+            averagePerMonth: 0,
+            breakdownByMonth: months(monthly.map((month) => month.total)),
+            subcategories: [
+              {
+                subCategory: StaffExpensesSubCategoryEnum.RegularPay,
+                total: sum(monthly.map((month) => month.total)),
+                averagePerMonth: 0,
+                breakdownByMonth: monthly.map((month, index) => ({
+                  month: `2024-${String(index + 1).padStart(2, '0')}-01`,
+                  ...month,
+                })),
+              },
+            ],
+          },
+        ],
+      },
+    ];
+
+    it("splits a couple's salary into one row per person, reader first", () => {
+      const funds = salaryFund([
+        {
+          total: 300,
+          transactions: [
+            payroll(100, spouse.personNumber),
+            payroll(200, reader.personNumber),
+          ],
+        },
+        {
+          total: 250,
+          transactions: [
+            payroll(150, reader.personNumber),
+            payroll(100, spouse.personNumber),
+          ],
+        },
+      ]);
+
+      const { result } = renderUseFilteredFunds(funds, null, [reader, spouse]);
+
+      expect(
+        result.current.incomeData.map(
+          ({ id, description, monthly, total }) => ({
+            id,
+            description,
+            monthly,
+            total,
+          }),
+        ),
+      ).toEqual([
+        {
+          id: '1-SALARY-000000111-income',
+          description: 'Salary (Alex)',
+          monthly: [200, 150],
+          total: 350,
+        },
+        {
+          id: '1-SALARY-000000222-income',
+          description: 'Salary (Jordan)',
+          monthly: [100, 100],
+          total: 200,
+        },
+      ]);
+      expect(result.current.expenseData).toEqual([]);
+    });
+
+    it('names the person on each split row so the breakdown can too', () => {
+      const funds = salaryFund([
+        {
+          total: 300,
+          transactions: [
+            payroll(100, spouse.personNumber),
+            payroll(200, reader.personNumber),
+          ],
+        },
+      ]);
+
+      const { result } = renderUseFilteredFunds(funds, null, [reader, spouse]);
+
+      expect(result.current.incomeData.map((row) => row.person)).toEqual([
+        'Alex',
+        'Jordan',
+      ]);
+    });
+
+    it("names nobody on a single staff member's row", () => {
+      const funds = salaryFund([
+        { total: 300, transactions: [payroll(300, reader.personNumber)] },
+      ]);
+
+      const { result } = renderUseFilteredFunds(funds, null, [reader, spouse]);
+
+      expect(result.current.incomeData[0].person).toBeUndefined();
+    });
+
+    it("lists only that person's transactions in each row's breakdown", () => {
+      const funds = salaryFund([
+        {
+          total: 300,
+          transactions: [
+            payroll(100, spouse.personNumber),
+            payroll(200, reader.personNumber),
+          ],
+        },
+      ]);
+
+      const { result } = renderUseFilteredFunds(funds, null, [reader, spouse]);
+
+      expect(
+        result.current.incomeData.map((row) =>
+          (row.transactions ?? []).map((entry) => entry.amount),
+        ),
+      ).toEqual([[200], [100]]);
+    });
+
+    it('credits payroll SAA could not attribute to the reader', () => {
+      const funds = salaryFund([
+        {
+          total: 300,
+          transactions: [payroll(100, spouse.personNumber), payroll(200, null)],
+        },
+      ]);
+
+      const { result } = renderUseFilteredFunds(funds, null, [reader, spouse]);
+
+      expect(
+        result.current.incomeData.map(({ description, monthly }) => ({
+          description,
+          monthly,
+        })),
+      ).toEqual([
+        { description: 'Salary (Alex)', monthly: [200] },
+        { description: 'Salary (Jordan)', monthly: [100] },
+      ]);
+    });
+
+    it('treats a blank person number like a missing one', () => {
+      const funds = salaryFund([
+        {
+          total: 300,
+          transactions: [payroll(100, spouse.personNumber), payroll(200, '')],
+        },
+      ]);
+
+      const { result } = renderUseFilteredFunds(funds, null, [reader, spouse]);
+
+      expect(
+        result.current.incomeData.map(({ description, monthly }) => ({
+          description,
+          monthly,
+        })),
+      ).toEqual([
+        { description: 'Salary (Alex)', monthly: [200] },
+        { description: 'Salary (Jordan)', monthly: [100] },
+      ]);
+    });
+
+    it('sums each person from their own transactions when the month total disagrees', () => {
+      const funds = salaryFund([
+        {
+          total: 300,
+          transactions: [
+            payroll(100, spouse.personNumber),
+            payroll(150, reader.personNumber),
+          ],
+        },
+      ]);
+
+      const { result } = renderUseFilteredFunds(funds, null, [reader, spouse]);
+
+      expect(result.current.incomeData.map((row) => row.monthly)).toEqual([
+        [150],
+        [100],
+      ]);
+    });
+
+    it('shows no row for a person the month did not pay', () => {
+      // The API's month total can round differently from its transactions. The reader was not
+      // paid this month, so a rounding gap must not become a phantom row of theirs.
+      const funds = salaryFund([
+        { total: 299.99, transactions: [payroll(300, spouse.personNumber)] },
+      ]);
+
+      const { result } = renderUseFilteredFunds(funds, null, [reader, spouse]);
+
+      expect(
+        result.current.incomeData.map(({ description, monthly }) => ({
+          description,
+          monthly,
+        })),
+      ).toEqual([{ description: 'Salary (Jordan)', monthly: [300] }]);
+      expect(result.current.expenseData).toEqual([]);
+    });
+
+    it('keeps a single staff member on one plain Salary row', () => {
+      const funds = salaryFund([
+        {
+          total: 300,
+          transactions: [payroll(100, reader.personNumber), payroll(200, null)],
+        },
+      ]);
+
+      const { result } = renderUseFilteredFunds(funds, null, [reader, spouse]);
+
+      expect(
+        result.current.incomeData.map(({ id, description, monthly }) => ({
+          id,
+          description,
+          monthly,
+        })),
+      ).toEqual([
+        { id: '1-SALARY-income', description: 'Salary', monthly: [300] },
+      ]);
+    });
+
+    it('reports the month total for a staff member nobody else shares payroll with', () => {
+      // No second person in HCM or in the payroll, so the row reads exactly as it did before
+      // splitting existed: the API's month total, not a sum of transactions.
+      const funds = salaryFund([
+        {
+          total: 300,
+          transactions: [payroll(150, reader.personNumber), payroll(100, null)],
+        },
+        { total: 200, transactions: [] },
+      ]);
+
+      const { result } = renderUseFilteredFunds(funds, null, [reader]);
+
+      expect(
+        result.current.incomeData.map(({ id, description, monthly }) => ({
+          id,
+          description,
+          monthly,
+        })),
+      ).toEqual([
+        { id: '1-SALARY-income', description: 'Salary', monthly: [300, 200] },
+      ]);
+    });
+
+    it('labels a person HCM does not list as Spouse', () => {
+      const funds = salaryFund([
+        {
+          total: 300,
+          transactions: [
+            payroll(100, '000000999'),
+            payroll(200, reader.personNumber),
+          ],
+        },
+      ]);
+
+      const { result } = renderUseFilteredFunds(funds, null, [reader]);
+
+      expect(result.current.incomeData.map((row) => row.description)).toEqual([
+        'Salary (Alex)',
+        'Salary (Spouse)',
+      ]);
+    });
+
+    it('does not split salary without a household', () => {
+      const funds = salaryFund([
+        {
+          total: 300,
+          transactions: [
+            payroll(100, spouse.personNumber),
+            payroll(200, reader.personNumber),
+          ],
+        },
+      ]);
+
+      const { result } = renderUseFilteredFunds(funds, null, []);
+
+      expect(
+        result.current.incomeData.map(({ id, description }) => ({
+          id,
+          description,
+        })),
+      ).toEqual([{ id: '1-SALARY-income', description: 'Salary' }]);
+    });
+
+    it('leaves non-salary categories as one household row', () => {
+      const funds: Funds[] = [
+        {
+          id: '1',
+          fundType: 'Primary',
+          total: -300,
+          categories: [
+            {
+              category: StaffExpenseCategoryEnum.Benefits,
+              total: -300,
+              averagePerMonth: -300,
+              breakdownByMonth: months([-300]),
+              subcategories: [
+                {
+                  subCategory: StaffExpensesSubCategoryEnum.LifeInsurance,
+                  total: -300,
+                  averagePerMonth: -300,
+                  breakdownByMonth: [
+                    {
+                      month: '2024-01-01',
+                      total: -300,
+                      transactions: [
+                        payroll(-100, spouse.personNumber),
+                        payroll(-200, reader.personNumber),
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ];
+
+      const { result } = renderUseFilteredFunds(funds, null, [reader, spouse]);
+
+      expect(result.current.expenseData.map((row) => row.description)).toEqual([
+        'Benefits',
       ]);
     });
   });
