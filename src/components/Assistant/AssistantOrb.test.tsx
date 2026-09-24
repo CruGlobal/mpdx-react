@@ -170,9 +170,16 @@ describe('AssistantOrb', () => {
     const css = [...document.querySelectorAll('style')]
       .map((style) => style.textContent)
       .join('');
-    expect(css).toMatch(
-      /@media \(prefers-reduced-motion: no-preference\)\{[^{}]*\[data-animating="true"\]\{[^}]*animation:[^;]* 3s /,
+    const breathing = css.match(
+      /@media \(prefers-reduced-motion: no-preference\)\{[^{}]*\[data-animating="true"\]\{[^}]*?animation:(\S+) 4s /,
     );
+    expect(breathing).not.toBeNull();
+    const frames =
+      css.match(
+        new RegExp(`@keyframes ${breathing?.[1]}\\{(.*?\\})\\}`),
+      )?.[1] ?? '';
+    expect(frames).toMatch(/scale\(1\.02\)/);
+    expect(frames).not.toMatch(/brightness|filter/);
 
     userEvent.keyboard('{esc}');
     await waitFor(() =>

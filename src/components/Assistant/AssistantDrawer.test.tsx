@@ -394,13 +394,25 @@ describe('AssistantDrawer', () => {
           .map((style) => style.textContent)
           .join('');
         expect(css).toMatch(/transform-origin:bottom right/);
-        expect(css).toMatch(
-          /\[data-genie="in"\]\{[^}]*animation:[^;]* 320ms [^;]*;/,
-        );
-        expect(css).toMatch(
-          /\[data-genie="out"\]\{[^}]*animation:[^;]* 240ms [^;]*;/,
-        );
-        expect(css).toMatch(/scale\(0\.1, ?0\.16\)/);
+        const rule = (state: string) =>
+          css.match(
+            new RegExp(
+              `\\[data-genie="${state}"\\]\\{[^}]*?animation:(\\S+) ([^;]*);`,
+            ),
+          );
+        const frames = (name: string) =>
+          css.match(new RegExp(`@keyframes ${name}\\{(.*?\\})\\}`))?.[1] ?? '';
+        const [, openName, openTiming] = rule('in') ?? [];
+        const [, closeName, closeTiming] = rule('out') ?? [];
+        expect(openTiming).toMatch(/^220ms ease-out/);
+        expect(closeTiming).toMatch(/^180ms ease-in/);
+        [frames(openName), frames(closeName)].forEach((keyframes) => {
+          expect(keyframes).toMatch(/scale\(0\.6, ?0\.63\)/);
+          expect(keyframes).not.toMatch(/skew/);
+          // Opacity runs across the whole animation with no stop in between
+          expect(keyframes).not.toMatch(/\d+%\{opacity/);
+          expect(keyframes).toMatch(/opacity:0/);
+        });
       });
 
       it('only fades under reduced motion', async () => {

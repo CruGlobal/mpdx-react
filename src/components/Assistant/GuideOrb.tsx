@@ -13,15 +13,15 @@ const orbBackground = [
 const orbGlow = '0 0 14px 3px rgba(0, 192, 216, 0.45)';
 
 const breathe = keyframes({
-  '0%, 100%': { transform: 'scale(1)', filter: 'brightness(1)' },
-  '50%': { transform: 'scale(1.04)', filter: 'brightness(1.12)' },
+  '0%, 100%': { transform: 'scale(1)' },
+  '50%': { transform: 'scale(1.02)' },
 });
 
 // Only an open Guide moves, so a closed launcher never pulls the eye
 const breathing = {
   '@media (prefers-reduced-motion: no-preference)': {
     '&[data-animating="true"]': {
-      animation: `${breathe} 3s ease-in-out infinite`,
+      animation: `${breathe} 4s ease-in-out infinite`,
     },
   },
 };
