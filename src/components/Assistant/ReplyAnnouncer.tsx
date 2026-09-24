@@ -54,11 +54,11 @@ export const ReplyAnnouncer: React.FC<ReplyAnnouncerProps> = ({ messages }) => {
   const errorText = useErrorText(reply?.errorReason);
   const [announcement, setAnnouncement] = useState('');
   // Starts past whatever is already on screen so reopening the drawer stays quiet
-  const progress = useRef({
-    id: reply?.id,
-    spoken: reply?.content.length ?? 0,
-    done: reply?.status !== 'streaming',
-  });
+  const progress = useRef(
+    reply?.status === 'streaming'
+      ? { id: reply.id, spoken: lastSentenceEnd(reply.content, 0), done: false }
+      : { id: reply?.id, spoken: reply?.content.length ?? 0, done: true },
+  );
 
   useEffect(() => {
     if (!reply) {

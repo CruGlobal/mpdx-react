@@ -366,6 +366,27 @@ describe('MessageList', () => {
       },
     );
 
+    it('starts at the last sentence end when mounted mid-reply', () => {
+      const streamingReply = (content: string) => [
+        message({ id: 'reply', status: 'streaming', content }),
+      ];
+      const { getByTestId, rerender } = render(
+        <MessageList
+          messages={streamingReply('First one. Second is')}
+          streaming
+        />,
+      );
+      expect(announcer(getByTestId)).toBeEmptyDOMElement();
+
+      rerender(
+        <MessageList
+          messages={streamingReply('First one. Second is done. Third')}
+          streaming
+        />,
+      );
+      expect(announcer(getByTestId).textContent).toBe('Second is done.');
+    });
+
   });
 
   it('keeps only list items directly inside the transcript list, even for a broken reply', () => {
