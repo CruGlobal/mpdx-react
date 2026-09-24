@@ -702,6 +702,28 @@ describe('AssistantChat', () => {
       ).not.toBeInTheDocument();
     });
 
+    it('stays away when a conversation is restored on reopen', async () => {
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+      const { getByRole, findByText, queryByRole, queryByText, rerender } =
+        render(<TestComponent />);
+      await typeMessage(getByRole, 'Hi');
+      userEvent.click(getByRole('button', { name: 'Send' }));
+      await findByText('You have 12 contacts.', inTranscript);
+
+      rerender(<TestComponent open={false} />);
+      rerender(<TestComponent />);
+
+      expect(
+        await findByText('You have 12 contacts.', inTranscript),
+      ).toBeInTheDocument();
+      expect(queryByText(/I'm your MPDX Guide/)).not.toBeInTheDocument();
+      expect(
+        queryByRole('group', { name: 'Suggested questions' }),
+      ).not.toBeInTheDocument();
+    });
+
     it('keeps the starter questions disabled until the Guide is connected', async () => {
       const { getByRole } = render(
         <TestComponent mints={[{ networkError: true }]} />,
@@ -886,7 +908,7 @@ describe('AssistantChat', () => {
     });
   });
 
-  it('disables Send until Retry-After passes', async () => {
+  it('disables Send and hides the starter questions until Retry-After passes', async () => {
     jest.useFakeTimers();
     fetchSpy.mockResolvedValueOnce(
       mockJsonResponse(
@@ -898,7 +920,7 @@ describe('AssistantChat', () => {
         },
       ),
     );
-    const { getByRole, findByText } = render(<TestComponent />);
+    const { getByRole, findByText, queryByRole } = render(<TestComponent />);
 
     await typeMessage(getByRole, 'Hi');
     userEvent.click(getByRole('button', { name: 'Send' }));
@@ -911,6 +933,9 @@ describe('AssistantChat', () => {
 
     userEvent.type(getByRole('textbox', { name: 'Ask the Guide' }), 'Hi');
     expect(getByRole('button', { name: 'Send' })).toBeDisabled();
+    expect(
+      queryByRole('group', { name: 'Suggested questions' }),
+    ).not.toBeInTheDocument();
 
     act(() => jest.advanceTimersByTime(30000));
     expect(getByRole('button', { name: 'Send' })).toBeEnabled();
