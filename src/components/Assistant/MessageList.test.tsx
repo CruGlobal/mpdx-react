@@ -313,6 +313,59 @@ describe('MessageList', () => {
       );
       expect(announcer(getByTestId)).toHaveTextContent('Stopped.');
     });
+
+    it.each([
+      [
+        'a navigation card',
+        {
+          kind: 'navigation',
+          intent: { type: 'dashboard', params: {} },
+          label: 'Open the Dashboard',
+        },
+        'The assistant added a card. Open the Dashboard',
+      ],
+      [
+        'a hand-off card',
+        {
+          kind: 'handoff',
+          summary: 'The user cannot find their gifts.',
+          contact_form: {
+            name: 'First Last',
+            email: 'first.last@cru.org',
+            url: 'https://help.test/contact',
+          },
+        },
+        'The assistant added a card. Summary for the help desk',
+      ],
+      [
+        'a card without a title',
+        { kind: 'figures', items: [{ label: 'Gifts', value: 3 }] },
+        'The assistant added a card.',
+      ],
+    ] as Array<[string, AssistantCard, string]>)(
+      'announces a reply that is only %s',
+      (_, card, text) => {
+        const { getByTestId, rerender } = render(
+          <TestRouter>
+            <MessageList
+              messages={[message({ id: 'reply', status: 'streaming' })]}
+              streaming
+            />
+          </TestRouter>,
+        );
+
+        rerender(
+          <TestRouter>
+            <MessageList
+              messages={[message({ id: 'reply', cards: [card] })]}
+              streaming={false}
+            />
+          </TestRouter>,
+        );
+        expect(announcer(getByTestId).textContent).toBe(text);
+      },
+    );
+
   });
 
   it('keeps only list items directly inside the transcript list, even for a broken reply', () => {

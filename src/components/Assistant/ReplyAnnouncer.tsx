@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { visuallyHidden } from '@mui/utils';
-import { useTranslation } from 'react-i18next';
-import { AssistantMessage } from './types';
+import { TFunction, useTranslation } from 'react-i18next';
+import { AssistantCard, AssistantMessage } from './types';
 import { useErrorText } from './useErrorText';
 
 const sentenceEnd = /[.!?:](?=\s)|\n/g;
@@ -20,6 +20,17 @@ const toSpokenText = (markdown: string): string =>
     .replace(/[*`#]/g, '')
     .replace(/\s+/g, ' ')
     .trim();
+
+const cardTitle = (card: AssistantCard, t: TFunction): string | null => {
+  switch (card.kind) {
+    case 'navigation':
+      return card.label;
+    case 'handoff':
+      return t('Summary for the help desk');
+    default:
+      return null;
+  }
+};
 
 const latestReply = (
   messages: AssistantMessage[],
@@ -67,6 +78,12 @@ export const ReplyAnnouncer: React.FC<ReplyAnnouncerProps> = ({ messages }) => {
       ? reply.content.length
       : lastSentenceEnd(reply.content, current.spoken);
     const parts = [toSpokenText(reply.content.slice(current.spoken, end))];
+    if (finished && !reply.content && reply.cards.length > 0) {
+      parts.push(
+        t('The assistant added a card.'),
+        ...reply.cards.flatMap((card) => cardTitle(card, t) ?? []),
+      );
+    }
     if (reply.status === 'error') {
       parts.push(errorText);
     } else if (reply.status === 'stopped' && !reply.content) {
