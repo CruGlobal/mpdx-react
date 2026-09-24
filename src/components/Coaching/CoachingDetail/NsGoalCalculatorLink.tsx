@@ -3,6 +3,8 @@ import React from 'react';
 import { Link } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useImpersonatorRole } from 'src/hooks/useImpersonatorRole';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import { useNewStaffGoalExistsQuery } from './NsGoalCalculatorLink.generated';
 
 interface NsGoalCalculatorLinkProps {
@@ -13,21 +15,25 @@ interface NsGoalCalculatorLinkProps {
 /**
  * Link to the coached New Staff Goal Calculator. Rendered only when the New
  * Staff Goal Calculator feature is enabled (`DISABLE_NS_GOAL_CALCULATOR` is not
- * set) and the coached staff has a new staff goal calculation.
+ * set), the impersonator's role (if impersonating) may use the calculator, and
+ * the coached staff has a new staff goal calculation.
  */
 export const NsGoalCalculatorLink: React.FC<NsGoalCalculatorLinkProps> = ({
   coachingId,
 }) => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const disabled = process.env.DISABLE_NS_GOAL_CALCULATOR === 'true';
+  const { blocked } = useImpersonatorRole();
+  const hidden =
+    process.env.DISABLE_NS_GOAL_CALCULATOR === 'true' ||
+    blocked(ImpersonationArea.NsGoalCalculator);
 
   const { data } = useNewStaffGoalExistsQuery({
     variables: { accountListId: coachingId },
-    skip: disabled,
+    skip: hidden,
   });
 
-  if (disabled || !data?.newStaffGoalCalculation) {
+  if (hidden || !data?.newStaffGoalCalculation) {
     return null;
   }
 
