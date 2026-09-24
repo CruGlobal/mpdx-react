@@ -458,7 +458,7 @@ describe('Preferences page', () => {
   describe('Assistant tab', () => {
     afterEach(() => {
       process.env.DEVELOPMENT_ENV = 'false';
-      mockSession({ developer: false });
+      mockSession({ developer: false, impersonating: false });
     });
 
     it('shows the Assistant tab to a user who may use the assistant', async () => {
@@ -485,6 +485,28 @@ describe('Preferences page', () => {
       expect(
         await findByRole('button', { name: 'Home Country' }),
       ).toBeVisible();
+      expect(
+        queryByRole('heading', { name: 'Assistant' }),
+      ).not.toBeInTheDocument();
+      expect(mutationSpy).not.toHaveGraphqlOperation('AssistantSettings');
+    });
+
+    it('hides the Assistant tab while impersonating', async () => {
+      process.env.DEVELOPMENT_ENV = 'true';
+      mockSession({ developer: true, impersonating: true });
+
+      const { findByRole, queryByRole } = render(
+        <MocksProviders canUserExportData={false}>
+          <Preferences />
+        </MocksProviders>,
+      );
+
+      expect(
+        await findByRole('button', { name: 'Home Country' }),
+      ).toBeVisible();
+      expect(
+        queryByRole('button', { name: 'Assistant On' }),
+      ).not.toBeInTheDocument();
       expect(
         queryByRole('heading', { name: 'Assistant' }),
       ).not.toBeInTheDocument();
