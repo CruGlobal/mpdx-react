@@ -10,11 +10,13 @@ import {
   filterRequiredFromError,
   useMpdSupervisorReport,
 } from '../MpdSupervisorReportContext';
-import { healthStatusOrder } from '../ReportLegend/legendCopy';
+import {
+  healthStatusLabel,
+  healthStatusOrder,
+} from '../ReportLegend/legendCopy';
 import {
   TeamSummaryRow,
   healthColor,
-  healthLabel,
   mergeSpouseRows,
   summarizeTeams,
 } from '../helpers';
@@ -85,9 +87,9 @@ const TeamCard: React.FC<TeamCardProps> = ({ team, selected, onToggle }) => {
                 }}
               >
                 {/* `total`, not `count`: the status word never changes with the number */}
-                {t('{{total}} {{status}}', {
+                {t('{{status}} ({{total}})', {
+                  status: healthStatusLabel(t, status),
                   total: team.counts[status],
-                  status: healthLabel(t, status),
                 })}
               </Typography>
             );
@@ -129,7 +131,7 @@ const TeamCard: React.FC<TeamCardProps> = ({ team, selected, onToggle }) => {
  */
 export const TeamSummary: React.FC = () => {
   const { t } = useTranslation();
-  const { queryVariables, team, setTeam, filterRequired } =
+  const { queryVariables, team, department, setTeam, filterRequired } =
     useMpdSupervisorReport();
   const {
     data: teamsData,
@@ -141,11 +143,20 @@ export const TeamSummary: React.FC = () => {
   // Identical to the roster query while no team is selected, so Apollo serves
   // it from the same cache entry; with a team selected it is the one extra
   // request that keeps the other teams' counts whole.
-  const { data, error, loading, fetchMore } = useManagedStaffQuery({
+  const {
+    data: latestData,
+    previousData,
+    error,
+    loading,
+    fetchMore,
+  } = useManagedStaffQuery({
     context: { suppressErrorCodes: ['FILTER_REQUIRED'] },
     variables: { ...queryVariables, teamNames: null },
     skip: teamCount < 2 || !!filterRequired,
   });
+  // Keep the last cards on screen, dimmed, while a new filter loads instead
+  // of blinking them out and back in
+  const data = latestData ?? previousData;
   const pageInfo = data?.managedStaff.pageInfo;
   // Every page must be in before the counts mean anything. A page that fails
   // just hides the strip; the list's own alert reports the failure.
@@ -161,9 +172,25 @@ export const TeamSummary: React.FC = () => {
     }
   }, [pageInfo?.hasNextPage, pageInfo?.endCursor, pageError, fetchMore]);
   const loadingPages = !!pageInfo?.hasNextPage;
+  // With a department selected, only that department's teams: the API reads
+  // team + department as "a team matching both", so a card for a team from
+  // another department would filter to nobody.
+  const teamsInDepartment = useMemo(() => {
+    if (!department) {
+      return null;
+    }
+    return new Set(
+      teamsData?.managedStaffTeams
+        .filter(({ departments }) => departments.includes(department))
+        .map(({ name }) => name),
+    );
+  }, [teamsData, department]);
   const summary = useMemo(
-    () => summarizeTeams(mergeSpouseRows(data?.managedStaff.nodes ?? [])),
-    [data],
+    () =>
+      summarizeTeams(mergeSpouseRows(data?.managedStaff.nodes ?? [])).filter(
+        ({ name }) => !teamsInDepartment || teamsInDepartment.has(name),
+      ),
+    [data, teamsInDepartment],
   );
 
   if (teamsError && !teamsData) {
@@ -195,8 +222,8 @@ export const TeamSummary: React.FC = () => {
     teamCount < 2 ||
     filterRequired ||
     filterRequiredFromError(error) ||
-    loading ||
-    loadingPages ||
+    (loading && !previousData) ||
+    (loadingPages && !previousData) ||
     pageError ||
     summary.length === 0
   ) {
@@ -204,7 +231,16 @@ export const TeamSummary: React.FC = () => {
   }
 
   return (
-    <Box component="section" aria-label={t('Teams')} sx={{ mb: 2 }}>
+    <Box
+      component="section"
+      aria-label={t('Teams')}
+      aria-busy={loading || loadingPages}
+      sx={{
+        mb: 2,
+        opacity: loading || loadingPages ? 0.6 : 1,
+        transition: 'opacity 150ms',
+      }}
+    >
       <Typography
         variant="overline"
         component="h2"

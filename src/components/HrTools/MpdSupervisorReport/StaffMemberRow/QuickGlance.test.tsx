@@ -117,19 +117,18 @@ describe('QuickGlance', () => {
       expect(glance).toHaveTextContent('SpouseJane Smith');
     });
 
-    it('shows the per-person HR fields for each spouse', () => {
-      const { getByTestId } = renderGlance(pair);
+    it('shows the per-person HR fields on a line per spouse', () => {
+      const { getByTestId, getByText } = renderGlance(pair);
       const glance = getByTestId('quick-glance');
-      expect(glance).toHaveTextContent('TenureJohn: 6 years · Jane: 3 years');
+      expect(glance).toHaveTextContent('TenureJohn: 6 yearsJane: 3 years');
+      expect(glance).toHaveTextContent('Healthcare dependentsJohn: 2Jane: 0');
       expect(glance).toHaveTextContent(
-        'Healthcare dependentsJohn: 2 · Jane: 0',
+        'Support typeJohn: Supported RMOJane: Designation',
       );
-      expect(glance).toHaveTextContent(
-        'Support typeJohn: Supported RMO · Jane: Designation',
-      );
-      expect(glance).toHaveTextContent(
-        'SECAJohn: Subject to SECA · Jane: Exempt',
-      );
+      expect(glance).toHaveTextContent('SECAJohn: Subject to SECAJane: Exempt');
+      // Each person's value is its own line
+      expect(getByText('John: 6 years').tagName).toBe('SPAN');
+      expect(getByText('Jane: 3 years').tagName).toBe('SPAN');
     });
   });
 });

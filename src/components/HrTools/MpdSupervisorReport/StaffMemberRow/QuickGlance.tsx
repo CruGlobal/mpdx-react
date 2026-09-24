@@ -28,6 +28,7 @@ const Detail: React.FC<DetailProps> = ({ label, value, valueColor }) => (
     <Typography
       variant="body2"
       color={valueColor}
+      component="div"
       sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
     >
       {value}
@@ -60,14 +61,24 @@ export const QuickGlance: React.FC<QuickGlanceProps> = ({ row }) => {
   const startingQuarter = quarterlyHealth?.startingQuarter;
   const spouseName = getRowSpouseName(row);
 
-  // Per-person HR fields: one value, or one per spouse for a merged row
+  // Per-person HR fields: one value, or one line per spouse for a merged row
   const perPerson = (
     format: (member: ManagedStaffMember) => string | number | null | undefined,
-  ): string => {
+  ): React.ReactNode => {
     const show = (member: ManagedStaffMember) => format(member) ?? pendingField;
-    return partner
-      ? `${row.firstName}: ${show(row)} · ${partner.firstName}: ${show(partner)}`
-      : String(show(row));
+    if (!partner) {
+      return String(show(row));
+    }
+    return (
+      <Box component="span" sx={{ display: 'flex', flexDirection: 'column' }}>
+        <span>
+          {row.firstName}: {show(row)}
+        </span>
+        <span>
+          {partner.firstName}: {show(partner)}
+        </span>
+      </Box>
+    );
   };
   const years = ({ tenure }: ManagedStaffMember) =>
     tenure !== null && tenure !== undefined

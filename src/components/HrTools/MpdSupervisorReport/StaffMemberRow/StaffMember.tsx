@@ -31,7 +31,6 @@ import {
   getRowTeamNames,
   grossSalaryWarning,
   healthLabel,
-  pendingField,
   quarterAmountLabel,
 } from '../helpers';
 import { GrossSalaryMarker } from './GrossSalaryMarker';
@@ -94,10 +93,8 @@ export const StaffMember: React.FC<StaffMemberProps> = ({
   );
 
   // A member can be on several teams; a merged pair shows both spouses' teams.
-  const team = useMemo(
-    () => getRowTeamNames(data).join(', ') || pendingField,
-    [data],
-  );
+  // No team means no segment at all rather than a placeholder.
+  const team = useMemo(() => getRowTeamNames(data).join(', '), [data]);
   // A merged row already carries both names; any other spouse is named here
   const spouse = partner ? null : getRowSpouseName(data);
 
@@ -292,8 +289,7 @@ const StaffInfoBase: React.FC<StaffInfoProps> = ({
           {staffAccountID}
           {' · '}
           {userPersonType}
-          {' · '}
-          {team}
+          {team && ` · ${team}`}
           {spouse && ` · ${t('Spouse: {{name}}', { name: spouse })}`}
         </Typography>
       </Box>

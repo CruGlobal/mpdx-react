@@ -381,8 +381,9 @@ describe('MpdSupervisorReport', () => {
 
     expect(await findByText('John & Jane Smith')).toBeInTheDocument();
     expect(queryByText('Jane Smith')).not.toBeInTheDocument();
+    // The couple shares a row, so the header says so
     expect(
-      await findByText('Showing 2 of 2 · sorted by MPD health'),
+      await findByText('Showing 2 of 2 in one row · sorted by MPD health'),
     ).toBeInTheDocument();
   });
 

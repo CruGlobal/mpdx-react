@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor, within } from '@testing-library/react';
+import { act, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import TestRouter from '__tests__/util/TestRouter';
@@ -9,7 +9,10 @@ import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { ManagedStaffQuery } from '../ManagedStaff.generated';
 import { ManagedStaffTeamsQuery } from '../ManagedStaffTeams.generated';
-import { MpdSupervisorReportProvider } from '../MpdSupervisorReportContext';
+import {
+  MpdSupervisorReportProvider,
+  useMpdSupervisorReport,
+} from '../MpdSupervisorReportContext';
 import {
   managedStaffMember,
   managedStaffMock,
@@ -74,6 +77,15 @@ const twoTeams: ManagedStaffTeamsQuery['managedStaffTeams'] = [
   { name: 'City', departments: ['US City'] },
 ];
 
+let setDepartmentFn: (value: string | null) => void;
+let setSearchFn: (value: string) => void;
+const Controls: React.FC = () => {
+  const { setDepartment, setSearch } = useMpdSupervisorReport();
+  setDepartmentFn = setDepartment;
+  setSearchFn = setSearch;
+  return null;
+};
+
 const renderSummary = (
   teams: ManagedStaffTeamsQuery['managedStaffTeams'] = twoTeams,
   mocks: ApolloErgonoMockMap = {},
@@ -99,6 +111,7 @@ const renderSummary = (
           onCall={mutationSpy}
         >
           <MpdSupervisorReportProvider>
+            <Controls />
             <TeamSummary />
           </MpdSupervisorReportProvider>
         </GqlMockedProvider>
@@ -129,12 +142,12 @@ describe('TeamSummary', () => {
     expect(cards).toHaveLength(2);
     expect(cards[0]).toHaveTextContent('Campus');
     expect(cards[0]).toHaveTextContent('1 staff');
-    expect(cards[0]).toHaveTextContent('1 at risk');
+    expect(cards[0]).toHaveTextContent('At risk (1)');
     expect(cards[1]).toHaveTextContent('City');
     expect(cards[1]).toHaveTextContent('2 staff');
-    expect(cards[1]).toHaveTextContent('1 needs attention');
-    expect(cards[1]).toHaveTextContent('1 on track');
-    expect(cards[1]).not.toHaveTextContent('at risk');
+    expect(cards[1]).toHaveTextContent('Needs attention (1)');
+    expect(cards[1]).toHaveTextContent('On track (1)');
+    expect(cards[1]).not.toHaveTextContent('At risk');
   });
 
   it('toggles the team filter from a card', async () => {
@@ -233,5 +246,44 @@ describe('TeamSummary', () => {
       'Could not load your teams: Teams unavailable',
     );
     expect(queryByRole('region', { name: 'Teams' })).not.toBeInTheDocument();
+  });
+
+  it('only lists teams in the selected department, since the API reads team + department as one team', async () => {
+    const { findByRole, queryByRole } = renderSummary();
+    await findByRole('region', { name: 'Teams' });
+
+    act(() => {
+      setDepartmentFn('US City');
+    });
+
+    await waitFor(() =>
+      expect(queryByRole('button', { name: /Campus/ })).not.toBeInTheDocument(),
+    );
+    expect(await findByRole('button', { name: /City/ })).toBeInTheDocument();
+  });
+
+  it('keeps the cards on screen, marked busy, while a new filter loads', async () => {
+    const { findByRole, getByRole } = renderSummary();
+    await findByRole('region', { name: 'Teams' });
+
+    act(() => {
+      setSearchFn('Anton');
+    });
+
+    // Never unmounted: the region is still there straight after the change
+    const region = getByRole('region', { name: 'Teams' });
+    expect(region).toBeInTheDocument();
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        name: 'Anton',
+        teamNames: null,
+      }),
+    );
+    await waitFor(() =>
+      expect(getByRole('region', { name: 'Teams' })).toHaveAttribute(
+        'aria-busy',
+        'false',
+      ),
+    );
   });
 });

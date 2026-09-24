@@ -189,10 +189,25 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
                 color="text.secondary"
                 sx={{ display: { xs: 'none', md: 'block' } }}
               >
-                {t('Showing {{count}} of {{total}} · sorted by MPD health', {
-                  count: loadedCount,
-                  total: totalCount,
-                })}
+                {loadedCount === staffMembers.length
+                  ? t('Showing {{count}} of {{total}} · sorted by MPD health', {
+                      count: loadedCount,
+                      total: totalCount,
+                    })
+                  : // A couple shares a row, so say how many rows hold the people
+                    staffMembers.length === 1
+                    ? t(
+                        'Showing {{count}} of {{total}} in one row · sorted by MPD health',
+                        { count: loadedCount, total: totalCount },
+                      )
+                    : t(
+                        'Showing {{count}} of {{total}} in {{rows}} rows · sorted by MPD health',
+                        {
+                          count: loadedCount,
+                          total: totalCount,
+                          rows: staffMembers.length,
+                        },
+                      )}
               </Typography>
             )}
           </TitleBox>

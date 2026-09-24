@@ -179,6 +179,19 @@ describe('StaffMember', () => {
     expect(getByTestId('person-numbers')).toHaveTextContent('1000000001 · — ·');
   });
 
+  it('drops the team segment entirely when the member is on no team', () => {
+    const { getByTestId } = renderRow(
+      jest.fn(),
+      managedStaffMember({
+        teams: { employee: [], spouse: [] },
+        spouseFirstName: null,
+      }),
+    );
+    expect(getByTestId('person-numbers')).toHaveTextContent(
+      /^1000000001 · Full time$/,
+    );
+  });
+
   it('joins the names when a member is on several teams', () => {
     const { getByTestId } = renderRow(
       jest.fn(),
