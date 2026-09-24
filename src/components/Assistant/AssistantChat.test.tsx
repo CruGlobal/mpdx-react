@@ -202,6 +202,37 @@ describe('AssistantChat', () => {
     });
   });
 
+  it('shows a pill input and a round arrow Send button that becomes Stop', async () => {
+    const stream = controlledStream();
+    fetchSpy
+      .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+      .mockResolvedValueOnce(mockStreamResponse([], { body: stream.body }));
+    const { getByRole } = render(<TestComponent />);
+    const input = getByRole('textbox', { name: 'Ask the Guide' });
+
+    expect(input).toHaveAttribute(
+      'placeholder',
+      'Ask how to do something in MPDX',
+    );
+    expect(input.closest('.MuiOutlinedInput-root')).toHaveStyle({
+      borderRadius: '24px',
+    });
+    const send = getByRole('button', { name: 'Send' });
+    expect(send).toHaveStyle({ borderRadius: '50%' });
+    expect(send.querySelector('[data-testid="ArrowForwardIcon"]')).toBeTruthy();
+
+    await typeMessage(getByRole, 'Hi');
+    userEvent.click(send);
+    await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(2));
+    const stop = getByRole('button', { name: 'Stop' });
+    expect(stop).toBe(send);
+    expect(stop.querySelector('[data-testid="StopIcon"]')).toBeTruthy();
+    stream.close();
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Send' })).toBeInTheDocument(),
+    );
+  });
+
   it('sends only the minted token to the assistant', async () => {
     fetchSpy
       .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))

@@ -6,13 +6,14 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import SendIcon from '@mui/icons-material/Send';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import StopIcon from '@mui/icons-material/Stop';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import {
   Box,
   Button,
   Divider,
+  IconButton,
   Link,
   TextField,
   Typography,
@@ -52,6 +53,22 @@ const Composer = styled('form')(({ theme }) => ({
   display: 'flex',
   alignItems: 'flex-end',
   gap: theme.spacing(1),
+}));
+
+const RoundButton = styled(IconButton)(({ theme }) => ({
+  flexShrink: 0,
+  width: 44,
+  height: 44,
+  borderRadius: '50%',
+  backgroundColor: theme.palette.primary.main,
+  color: theme.palette.primary.contrastText,
+  '&:hover': {
+    backgroundColor: theme.palette.primary.dark,
+  },
+  '&.Mui-disabled': {
+    backgroundColor: theme.palette.action.disabledBackground,
+    color: theme.palette.action.disabled,
+  },
 }));
 
 const HelpDeskLink: React.FC = () => {
@@ -272,23 +289,32 @@ export const AssistantChat: React.FC<AssistantChatProps> = ({
                 value={draft}
                 inputRef={inputRef}
                 disabled={!accountListId}
-                placeholder={t('Ask the Guide')}
+                placeholder={t('Ask how to do something in {{appName}}', {
+                  appName: getAppName(),
+                })}
                 onChange={(event) => setDraft(event.target.value)}
                 onKeyDown={handleKeyDown}
                 slotProps={{
+                  input: {
+                    sx: {
+                      borderRadius: '24px',
+                      px: 2,
+                      py: 1.25,
+                      backgroundColor: 'action.hover',
+                    },
+                  },
                   htmlInput: { 'aria-label': t('Ask the Guide') },
                 }}
               />
               {/* One button that swaps between Send and Stop so keyboard focus survives the swap */}
-              <Button
-                variant="contained"
+              <RoundButton
                 type={streaming ? 'button' : 'submit'}
                 onClick={streaming ? stop : undefined}
                 disabled={!streaming && !canSend}
-                startIcon={streaming ? <StopIcon /> : <SendIcon />}
+                aria-label={streaming ? t('Stop') : t('Send')}
               >
-                {streaming ? t('Stop') : t('Send')}
-              </Button>
+                {streaming ? <StopIcon /> : <ArrowForwardIcon />}
+              </RoundButton>
             </Composer>
           </>
         )}
