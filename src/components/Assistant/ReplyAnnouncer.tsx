@@ -21,6 +21,17 @@ const toSpokenText = (markdown: string): string =>
     .replace(/\s+/g, ' ')
     .trim();
 
+const latestReply = (
+  messages: AssistantMessage[],
+): AssistantMessage | undefined => {
+  for (let index = messages.length - 1; index >= 0; index--) {
+    if (messages[index].role === 'assistant') {
+      return messages[index];
+    }
+  }
+  return undefined;
+};
+
 interface ReplyAnnouncerProps {
   messages: AssistantMessage[];
 }
@@ -28,7 +39,7 @@ interface ReplyAnnouncerProps {
 // Speaks each finished sentence once instead of letting the log reread the whole reply on every chunk
 export const ReplyAnnouncer: React.FC<ReplyAnnouncerProps> = ({ messages }) => {
   const { t } = useTranslation();
-  const reply = messages.findLast((message) => message.role === 'assistant');
+  const reply = latestReply(messages);
   const errorText = useErrorText(reply?.errorReason);
   const [announcement, setAnnouncement] = useState('');
   // Starts past whatever is already on screen so reopening the drawer stays quiet
