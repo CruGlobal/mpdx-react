@@ -15,6 +15,7 @@ import { visuallyHidden } from '@mui/utils';
 import { useTranslation } from 'react-i18next';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import theme from 'src/theme';
+import { RowDensityEnum } from '../MpdSupervisorReportContext';
 import {
   ManagedStaffMember,
   QuarterChipData,
@@ -30,8 +31,10 @@ import {
 import { GrossSalaryMarker } from './GrossSalaryMarker';
 import { QuarterChip } from './QuarterChip';
 
-const StyledCard = styled(Card)(({ theme }) => ({
-  marginBottom: theme.spacing(1),
+const StyledCard = styled(Card, {
+  shouldForwardProp: (prop) => prop !== 'compact',
+})<{ compact: boolean }>(({ theme, compact }) => ({
+  marginBottom: theme.spacing(compact ? 0.5 : 1),
   boxShadow: theme.shadows[1],
   border: '1px solid',
   borderColor: theme.palette.divider,
@@ -55,11 +58,18 @@ const GridQuarter = styled(Grid)(({ theme }) => ({
 
 interface StaffMemberProps {
   data: ManagedStaffMember;
+  /** Compact drops the avatar and puts the name and details on one line */
+  density?: RowDensityEnum;
   onClick?: () => void;
 }
 
-export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
+export const StaffMember: React.FC<StaffMemberProps> = ({
+  data,
+  density = RowDensityEnum.Comfortable,
+  onClick,
+}) => {
   const { t } = useTranslation();
+  const compact = density === RowDensityEnum.Compact;
   const { formatCurrency } = useFormatters();
   const {
     firstName: name,
@@ -89,7 +99,7 @@ export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
   );
 
   return (
-    <StyledCard>
+    <StyledCard compact={compact}>
       <CardActionArea
         // The marker inside is not focusable, so the row's own name carries
         // the gross salary warning for keyboard and screen-reader users.
@@ -104,18 +114,20 @@ export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
         onClick={onClick}
         sx={{
           paddingInline: theme.spacing(4),
-          paddingTop: theme.spacing(1),
-          paddingBottom: theme.spacing(1),
+          paddingTop: theme.spacing(compact ? 0.5 : 1),
+          paddingBottom: theme.spacing(compact ? 0.5 : 1),
         }}
       >
         <Grid container>
           <GridItem size={6}>
-            <Avatar
-              sx={{ bgcolor: 'mpdxGrayLight.main', color: 'text.primary' }}
-            >
-              {getInitials(name, lastName)}
-            </Avatar>
-            <Box sx={{ flexGrow: 1, minWidth: 200, ml: 1 }}>
+            {!compact && (
+              <Avatar
+                sx={{ bgcolor: 'mpdxGrayLight.main', color: 'text.primary' }}
+              >
+                {getInitials(name, lastName)}
+              </Avatar>
+            )}
+            <Box sx={{ flexGrow: 1, minWidth: 200, ml: compact ? 0 : 1 }}>
               <Box
                 sx={{
                   display: 'flex',
@@ -132,6 +144,7 @@ export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
                   )}
                   team={team}
                   grossWarning={grossWarning}
+                  compact={compact}
                 />
               </Box>
             </Box>
@@ -189,7 +202,8 @@ const FiscalYearQuartersBase: React.FC<FiscalYearQuartersProps> = ({
     </Stack>
   );
 };
-const FiscalYearQuarters = React.memo(FiscalYearQuartersBase);
+/** The four quarter chips; also shown in the drawer header, which covers the row. */
+export const FiscalYearQuarters = React.memo(FiscalYearQuartersBase);
 
 interface StaffInfoProps {
   names: string;
@@ -198,6 +212,8 @@ interface StaffInfoProps {
   team: string;
   /** Set when Monthly Gross Salary is below New Staff Monthly Salary */
   grossWarning: string | null;
+  /** Puts the details on the same line as the name */
+  compact?: boolean;
 }
 const StaffInfoBase: React.FC<StaffInfoProps> = ({
   names,
@@ -205,12 +221,26 @@ const StaffInfoBase: React.FC<StaffInfoProps> = ({
   userPersonType,
   team,
   grossWarning,
+  compact = false,
 }) => {
   return (
     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: compact ? 'row' : 'column',
+          alignItems: compact ? 'baseline' : 'stretch',
+          flexWrap: 'wrap',
+          columnGap: compact ? 1.5 : 0,
+        }}
+      >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Typography variant="h6">{names}</Typography>
+          <Typography
+            variant={compact ? 'body1' : 'h6'}
+            fontWeight={compact ? 600 : undefined}
+          >
+            {names}
+          </Typography>
           {grossWarning && (
             <GrossSalaryMarker warning={grossWarning} focusable={false} />
           )}

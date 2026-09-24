@@ -10,6 +10,7 @@ import React, {
 import { ApolloError } from '@apollo/client';
 import { MpdAssignmentCategoryGroupEnum } from 'src/graphql/types.generated';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
+import { useLocalStorage } from 'src/hooks/useLocalStorage';
 import { MpdSupervisorReportQuickFilterEnum } from './Filters/mpdSupervisorReportFilters';
 import { useManagedStaffQuery } from './ManagedStaff.generated';
 import { StaffDetailTabEnum } from './StaffDetailsTabs/StaffDetailTab';
@@ -22,6 +23,14 @@ export enum Panel {
 
 const searchDebounceMs = 500;
 const pageSize = 25;
+
+/** How much room each staff row takes; a per-browser preference. */
+export enum RowDensityEnum {
+  Comfortable = 'comfortable',
+  Compact = 'compact',
+}
+
+export const rowDensityStorageKey = 'mpdSupervisorReport.rowDensity';
 
 /**
  * The API refuses to grade more than its row cap in one report and answers
@@ -77,6 +86,8 @@ export interface MpdSupervisorReportContextValue {
   activeFilterCount: number;
   /** Resets the search and every panel filter */
   clearFilters: () => void;
+  rowDensity: RowDensityEnum;
+  setRowDensity: (v: RowDensityEnum) => void;
   selectedTabKey: StaffDetailTabEnum;
   setSelectedTabKey: React.Dispatch<React.SetStateAction<StaffDetailTabEnum>>;
   handleTabChange: (
@@ -134,6 +145,14 @@ export const MpdSupervisorReportProvider: React.FC<{
   const [selectedTabKey, setSelectedTabKey] = useState<StaffDetailTabEnum>(() =>
     parseTabFromQuery(query?.tab),
   );
+  const [storedDensity, setRowDensity] = useLocalStorage<RowDensityEnum>(
+    rowDensityStorageKey,
+    RowDensityEnum.Comfortable,
+  );
+  // A value from an older build (or a hand edit) falls back to the default
+  const rowDensity = Object.values(RowDensityEnum).includes(storedDensity)
+    ? storedDensity
+    : RowDensityEnum.Comfortable;
 
   const debouncedSearch = useDebouncedValue(search, searchDebounceMs);
 
@@ -251,6 +270,8 @@ export const MpdSupervisorReportProvider: React.FC<{
       setActiveQuickFilter,
       activeFilterCount,
       clearFilters,
+      rowDensity,
+      setRowDensity,
       selectedTabKey,
       setSelectedTabKey,
       handleTabChange,
@@ -273,6 +294,8 @@ export const MpdSupervisorReportProvider: React.FC<{
       activeQuickFilter,
       activeFilterCount,
       clearFilters,
+      rowDensity,
+      setRowDensity,
       selectedTabKey,
       handleTabChange,
       data,

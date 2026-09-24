@@ -12,7 +12,9 @@ import {
   FilterRequired,
   MpdSupervisorReportProvider,
   Panel,
+  RowDensityEnum,
   filterRequiredFromError,
+  rowDensityStorageKey,
   useMpdSupervisorReport,
 } from './MpdSupervisorReportContext';
 import { StaffDetailTabEnum } from './StaffDetailsTabs/StaffDetailTab';
@@ -51,6 +53,8 @@ interface ConsumerResult {
   clearFilters: () => void;
   filterRequired: FilterRequired | null;
   staffError: ApolloError | undefined;
+  rowDensity: RowDensityEnum;
+  setRowDensity: (v: RowDensityEnum) => void;
   loadMore: () => void;
 }
 
@@ -279,6 +283,32 @@ describe('MpdSupervisorReportContext', () => {
     expect(getByTestId('activeQuickFilter').textContent).toBe(
       MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative,
     );
+  });
+
+  describe('row density', () => {
+    afterEach(() => {
+      window.localStorage.clear();
+    });
+
+    it('defaults to comfortable rows and persists a change', () => {
+      renderConsumer();
+      expect(consumerResult.rowDensity).toBe(RowDensityEnum.Comfortable);
+
+      act(() => {
+        consumerResult.setRowDensity(RowDensityEnum.Compact);
+      });
+
+      expect(consumerResult.rowDensity).toBe(RowDensityEnum.Compact);
+      expect(window.localStorage.getItem(rowDensityStorageKey)).toBe(
+        '"compact"',
+      );
+    });
+
+    it('ignores a stored density it does not recognise', () => {
+      window.localStorage.setItem(rowDensityStorageKey, '"dense"');
+      renderConsumer();
+      expect(consumerResult.rowDensity).toBe(RowDensityEnum.Comfortable);
+    });
   });
 
   it('counts the panel filters but not the search', () => {

@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
+import { RowDensityEnum } from '../MpdSupervisorReportContext';
 import { ManagedStaffMember } from '../helpers';
 import { managedStaffMember } from '../mpdSupervisorReportMocks';
 import { StaffMember } from './StaffMember';
@@ -32,6 +33,26 @@ describe('StaffMember', () => {
   it('renders the staff member name as "{firstName} {lastName}"', () => {
     const { getByText } = renderRow();
     expect(getByText('Brooke Butler')).toBeInTheDocument();
+  });
+
+  it('shows avatar initials in the comfortable layout', () => {
+    const { getByText } = renderRow();
+    expect(getByText('BB')).toBeInTheDocument();
+  });
+
+  it('drops the avatar in the compact layout but keeps the accessible name', () => {
+    const { queryByText, getByRole, getByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <StaffMember data={member} density={RowDensityEnum.Compact} />
+      </ThemeProvider>,
+    );
+    expect(queryByText('BB')).not.toBeInTheDocument();
+    expect(
+      getByRole('button', { name: 'View details for Brooke Butler' }),
+    ).toBeInTheDocument();
+    expect(getByTestId('person-numbers')).toHaveTextContent(
+      '1000000001 · Full time · FamilyLife',
+    );
   });
 
   it('renders the staff account, employment type, and team line', () => {

@@ -2,7 +2,9 @@ import React, { useMemo } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import {
   Alert,
+  Badge,
   Box,
+  Button,
   Container,
   InputAdornment,
   TextField,
@@ -25,9 +27,13 @@ import { NavFilterIcon } from 'src/components/Shared/styledComponents/NavFilterI
 import { useLocale } from 'src/hooks/useLocale';
 import { monthYearFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
+import { AppliedFilters } from './ListStates/AppliedFilters';
+import { EmptyStaffState } from './ListStates/EmptyStaffState';
+import { FilterRequiredState } from './ListStates/FilterRequiredState';
 import { Panel, useMpdSupervisorReport } from './MpdSupervisorReportContext';
 import { HealthColorKey } from './ReportLegend/HealthColorKey';
 import { ReportLegendButton } from './ReportLegend/ReportLegendButton';
+import { RowDensityToggle } from './RowDensityToggle/RowDensityToggle';
 import { StaffMember } from './StaffMemberRow/StaffMember';
 import {
   ManagedStaffMember,
@@ -101,8 +107,12 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
     totalCount,
     staffLoading,
     staffError,
+    filterRequired,
     hasNextPage,
     loadMore,
+    refetchStaff,
+    activeFilterCount,
+    rowDensity,
   } = useMpdSupervisorReport();
 
   // Every row covers the same four quarters, so the first one labels the header.
@@ -155,28 +165,33 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
           <NavListButton
             panelOpen={panelOpen === Panel.Filters}
             onClick={onFilterListToggle}
+            // The badge count would otherwise join the icon's title in the name
+            aria-label={getHeaderTitleAccess(HeaderTypeEnum.Filters, t)}
           >
-            <NavFilterIcon
-              titleAccess={getHeaderTitleAccess(HeaderTypeEnum.Filters, t)}
-              data-testid="FilterIcon"
-            />
+            {/* Keeps the applied filters countable while the panel is closed */}
+            <Badge badgeContent={activeFilterCount} color="primary">
+              <NavFilterIcon data-testid="FilterIcon" />
+            </Badge>
           </NavListButton>
           <TitleBox>
             <Box display="flex" alignItems="center" gap={0.5}>
               <Typography variant="h5">{title}</Typography>
               <ReportLegendButton />
             </Box>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{ display: { xs: 'none', md: 'block' } }}
-            >
-              {t('Showing {{count}} of {{total}} · sorted by MPD health', {
-                count: staffMembers.length,
-                total: totalCount,
-              })}
-            </Typography>
+            {!filterRequired && (
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ display: { xs: 'none', md: 'block' } }}
+              >
+                {t('Showing {{count}} of {{total}} · sorted by MPD health', {
+                  count: staffMembers.length,
+                  total: totalCount,
+                })}
+              </Typography>
+            )}
           </TitleBox>
+          <RowDensityToggle />
           <TextField
             value={search}
             onChange={(event) => setSearch(event.target.value)}
@@ -198,6 +213,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
       </StickyHeader>
 
       <StyledContainer maxWidth={false}>
+        <AppliedFilters />
         <QuartersContainer>
           {quarterHeaders.length > 0 && (
             <HealthColorKey
@@ -229,8 +245,25 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
         </QuartersContainer>
 
         <Box sx={{ flex: 1, minHeight: 0 }}>
-          {staffError && !staffMembers.length ? (
-            <Alert severity="error">{staffError.message}</Alert>
+          {filterRequired ? (
+            <FilterRequiredState
+              filterRequired={filterRequired}
+              // The toggle would close an already-open panel
+              onOpenFilters={
+                panelOpen === Panel.Filters ? undefined : onFilterListToggle
+              }
+            />
+          ) : staffError && !staffMembers.length ? (
+            <Alert
+              severity="error"
+              action={
+                <Button color="inherit" size="small" onClick={refetchStaff}>
+                  {t('Retry')}
+                </Button>
+              }
+            >
+              {staffError.message}
+            </Alert>
           ) : (
             <InfiniteList
               loading={staffLoading}
@@ -241,6 +274,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
                 <StaffMember
                   key={item.personNumber}
                   data={item}
+                  density={rowDensity}
                   onClick={() => openMember(item)}
                 />
               )}
@@ -249,13 +283,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
                   loadMore();
                 }
               }}
-              EmptyPlaceholder={
-                <Box sx={{ textAlign: 'center', mt: 4 }}>
-                  <Typography color="text.secondary">
-                    {t('No staff members found')}
-                  </Typography>
-                </Box>
-              }
+              EmptyPlaceholder={<EmptyStaffState />}
             />
           )}
         </Box>
