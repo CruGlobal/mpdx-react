@@ -96,17 +96,17 @@ describe('AssistantAccordion', () => {
       <TestComponent expandedAccordion={null} />,
     );
 
-    expect(getByText('Assistant')).toBeInTheDocument();
+    expect(getByText('MPDX Guide')).toBeInTheDocument();
     expect(getByText('On')).toBeInTheDocument();
-    expect(queryByLabelText('Turn on the Assistant')).not.toBeInTheDocument();
+    expect(queryByLabelText('Turn on the Guide')).not.toBeInTheDocument();
   });
 
   it('renders every switch with its initial state after opt-in', () => {
     const { getByLabelText, getAllByText } = render(<TestComponent />);
 
-    expect(getByLabelText('Turn on the Assistant')).toBeChecked();
-    expect(getByLabelText('Hide the Assistant button')).not.toBeChecked();
-    expect(getByLabelText('Hide the Assistant button')).toBeEnabled();
+    expect(getByLabelText('Turn on the Guide')).toBeChecked();
+    expect(getByLabelText('Hide the Guide button')).not.toBeChecked();
+    expect(getByLabelText('Hide the Guide button')).toBeEnabled();
 
     expect(getByLabelText('Help me use MPDX')).toBeChecked();
     expect(getByLabelText('Help me use MPDX')).toBeEnabled();
@@ -159,7 +159,7 @@ describe('AssistantAccordion', () => {
     ],
     [
       'Help write my prayer letters',
-      'It helps you draft prayer letters in your own voice, using your Assistant profile.',
+      'It helps you draft prayer letters in your own voice, using your Guide profile.',
     ],
     [
       'Keep my conversation history',
@@ -176,8 +176,8 @@ describe('AssistantAccordion', () => {
   it('disables the capability switches until the assistant is on', () => {
     const { getByLabelText } = render(<TestComponent settings={{}} />);
 
-    expect(getByLabelText('Turn on the Assistant')).not.toBeChecked();
-    expect(getByLabelText('Hide the Assistant button')).toBeEnabled();
+    expect(getByLabelText('Turn on the Guide')).not.toBeChecked();
+    expect(getByLabelText('Hide the Guide button')).toBeEnabled();
     expect(getByLabelText('Help me use MPDX')).toBeDisabled();
     expect(getByLabelText('Keep my conversation history')).toBeDisabled();
   });
@@ -207,8 +207,8 @@ describe('AssistantAccordion', () => {
       <TestComponent settings={{ launcherHidden: true }} />,
     );
 
-    expect(getByLabelText('Hide the Assistant button')).toBeChecked();
-    userEvent.click(getByLabelText('Hide the Assistant button'));
+    expect(getByLabelText('Hide the Guide button')).toBeChecked();
+    userEvent.click(getByLabelText('Hide the Guide button'));
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('UpdateAssistantSettings', {
@@ -222,8 +222,8 @@ describe('AssistantAccordion', () => {
       <TestComponent settings={{}} />,
     );
 
-    userEvent.click(getByLabelText('Turn on the Assistant'));
-    const dialog = await findByRole('dialog', { name: 'Meet the Assistant' });
+    userEvent.click(getByLabelText('Turn on the Guide'));
+    const dialog = await findByRole('dialog', { name: 'Meet your MPDX Guide' });
     userEvent.click(within(dialog).getByRole('button', { name: 'Turn it on' }));
 
     await waitFor(() =>
@@ -242,9 +242,9 @@ describe('AssistantAccordion', () => {
         <TestComponent />,
       );
 
-      userEvent.click(getByLabelText('Turn on the Assistant'));
+      userEvent.click(getByLabelText('Turn on the Guide'));
       const dialog = await findByRole('dialog', {
-        name: 'Turn off the Assistant?',
+        name: 'Turn off the Guide?',
       });
       expect(mutationSpy).not.toHaveGraphqlOperation('UpdateAssistantSettings');
       userEvent.click(
@@ -281,9 +281,9 @@ describe('AssistantAccordion', () => {
         />,
       );
 
-      userEvent.click(getByLabelText('Turn on the Assistant'));
+      userEvent.click(getByLabelText('Turn on the Guide'));
       const dialog = await findByRole('dialog', {
-        name: 'Turn off the Assistant?',
+        name: 'Turn off the Guide?',
       });
       userEvent.click(
         within(dialog).getByRole('button', { name: 'Turn off and delete' }),
@@ -291,7 +291,7 @@ describe('AssistantAccordion', () => {
 
       expect(
         await findByText(
-          'Your conversations were deleted, but the Assistant could not be turned off yet.',
+          'Your conversations were deleted, but the Guide could not be turned off yet.',
         ),
       ).toBeInTheDocument();
       expect(queryByText('Conversations deleted: 3')).not.toBeInTheDocument();
@@ -322,9 +322,9 @@ describe('AssistantAccordion', () => {
         />,
       );
 
-      userEvent.click(getByLabelText('Turn on the Assistant'));
+      userEvent.click(getByLabelText('Turn on the Guide'));
       const dialog = await findByRole('dialog', {
-        name: 'Turn off the Assistant?',
+        name: 'Turn off the Guide?',
       });
       userEvent.click(
         within(dialog).getByRole('button', { name: 'Turn off and delete' }),
@@ -343,8 +343,8 @@ describe('AssistantAccordion', () => {
       const { getByLabelText, findByRole } = render(<TestComponent />);
 
       expect(mutationSpy).not.toHaveGraphqlOperation('CreateAssistantToken');
-      userEvent.click(getByLabelText('Turn on the Assistant'));
-      await findByRole('dialog', { name: 'Turn off the Assistant?' });
+      userEvent.click(getByLabelText('Turn on the Guide'));
+      await findByRole('dialog', { name: 'Turn off the Guide?' });
 
       await waitFor(() =>
         expect(mutationSpy).toHaveGraphqlOperation('CreateAssistantToken', {
@@ -359,15 +359,15 @@ describe('AssistantAccordion', () => {
         <TestComponent />,
       );
 
-      userEvent.click(getByLabelText('Turn on the Assistant'));
+      userEvent.click(getByLabelText('Turn on the Guide'));
       const dialog = await findByRole('dialog', {
-        name: 'Turn off the Assistant?',
+        name: 'Turn off the Guide?',
       });
       userEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }));
 
       await waitFor(() =>
         expect(
-          queryByRole('dialog', { name: 'Turn off the Assistant?' }),
+          queryByRole('dialog', { name: 'Turn off the Guide?' }),
         ).not.toBeInTheDocument(),
       );
       expect(fetchSpy).not.toHaveBeenCalled();
@@ -380,9 +380,9 @@ describe('AssistantAccordion', () => {
       );
       const { getByLabelText, findByRole } = render(<TestComponent />);
 
-      userEvent.click(getByLabelText('Turn on the Assistant'));
+      userEvent.click(getByLabelText('Turn on the Guide'));
       const dialog = await findByRole('dialog', {
-        name: 'Turn off the Assistant?',
+        name: 'Turn off the Guide?',
       });
       userEvent.click(
         within(dialog).getByRole('button', { name: 'Turn off and delete' }),
@@ -390,7 +390,7 @@ describe('AssistantAccordion', () => {
 
       await waitFor(() =>
         expect(mockEnqueue).toHaveBeenCalledWith(
-          'Turning off the Assistant failed. Please try again.',
+          'Turning off the Guide failed. Please try again.',
           { variant: 'error' },
         ),
       );

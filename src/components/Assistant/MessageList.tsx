@@ -85,7 +85,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
     <Item sender={role}>
       <Bubble sender={role}>
         <span style={visuallyHidden}>
-          {role === 'user' ? t('You') : t('Assistant')}
+          {role === 'user' ? t('You') : t('Guide')}
         </span>
         {role === 'user' ? (
           <Typography variant="body2" whiteSpace="pre-wrap">
@@ -95,7 +95,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
           <AssistantMarkdown>{content}</AssistantMarkdown>
         )}
         {waiting && (
-          <CircularProgress size={16} aria-label={t('Assistant is thinking')} />
+          <CircularProgress size={16} aria-label={t('The Guide is thinking')} />
         )}
         {working && (
           <Stack direction="row" spacing={1} alignItems="center" mt={1}>

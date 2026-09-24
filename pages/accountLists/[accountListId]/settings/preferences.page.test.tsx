@@ -471,8 +471,8 @@ describe('Preferences page', () => {
         </MocksProviders>,
       );
 
-      userEvent.click(await findByRole('button', { name: 'Assistant On' }));
-      expect(getByLabelText('Turn on the Assistant')).toBeChecked();
+      userEvent.click(await findByRole('button', { name: 'MPDX Guide On' }));
+      expect(getByLabelText('Turn on the Guide')).toBeChecked();
     });
 
     it('hides the Assistant tab while the rollout excludes the user', async () => {
@@ -486,7 +486,7 @@ describe('Preferences page', () => {
         await findByRole('button', { name: 'Home Country' }),
       ).toBeVisible();
       expect(
-        queryByRole('heading', { name: 'Assistant' }),
+        queryByRole('heading', { name: 'MPDX Guide' }),
       ).not.toBeInTheDocument();
       expect(mutationSpy).not.toHaveGraphqlOperation('AssistantSettings');
     });
@@ -505,10 +505,10 @@ describe('Preferences page', () => {
         await findByRole('button', { name: 'Home Country' }),
       ).toBeVisible();
       expect(
-        queryByRole('button', { name: 'Assistant On' }),
+        queryByRole('button', { name: 'MPDX Guide On' }),
       ).not.toBeInTheDocument();
       expect(
-        queryByRole('heading', { name: 'Assistant' }),
+        queryByRole('heading', { name: 'MPDX Guide' }),
       ).not.toBeInTheDocument();
       expect(mutationSpy).not.toHaveGraphqlOperation('AssistantSettings');
     });

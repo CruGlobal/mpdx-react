@@ -102,7 +102,7 @@ const typeMessage = async (
   getByRole: ReturnType<typeof render>['getByRole'],
   text: string,
 ) => {
-  const input = getByRole('textbox', { name: 'Ask the assistant' });
+  const input = getByRole('textbox', { name: 'Ask the Guide' });
   userEvent.type(input, text);
   await waitFor(() =>
     expect(getByRole('button', { name: 'Send' })).toBeEnabled(),
@@ -113,7 +113,7 @@ const typeMessage = async (
 // The reply announcer repeats reply text, so match only what the transcript shows
 const inTranscript = { selector: 'p' };
 
-const offNotice = 'The assistant is off right now. Please try again later.';
+const offNotice = 'The Guide is off right now. Please try again later.';
 
 const seconds = (count: number) => count * 1000;
 const minutes = (count: number) => count * 60 * 1000;
@@ -152,7 +152,7 @@ describe('AssistantChat', () => {
     const { getByRole } = render(<TestComponent />);
 
     expect(getByRole('log', { name: 'Conversation' })).toBeInTheDocument();
-    const input = getByRole('textbox', { name: 'Ask the assistant' });
+    const input = getByRole('textbox', { name: 'Ask the Guide' });
     expect(input).toHaveFocus();
     expect(getByRole('button', { name: 'Send' })).toBeDisabled();
 
@@ -377,16 +377,16 @@ describe('AssistantChat', () => {
     process.env.ASSISTANT_URL = '';
     const { getByText, queryByRole } = render(<TestComponent />);
 
-    expect(getByText('The assistant is not configured.')).toBeInTheDocument();
+    expect(getByText('The Guide is not configured.')).toBeInTheDocument();
     expect(queryByRole('textbox')).not.toBeInTheDocument();
   });
 
   it('disables the input without an account list', () => {
     const { getByRole, getByText } = render(<TestComponent accountListId="" />);
 
-    expect(getByRole('textbox', { name: 'Ask the assistant' })).toBeDisabled();
+    expect(getByRole('textbox', { name: 'Ask the Guide' })).toBeDisabled();
     expect(
-      getByText('Open an account list to chat with the assistant.'),
+      getByText('Open an account list to chat with the Guide.'),
     ).toBeInTheDocument();
   });
 
@@ -423,11 +423,11 @@ describe('AssistantChat', () => {
     );
 
     expect(
-      await findByText(/The assistant is not turned on\./),
+      await findByText(/The Guide is not turned on\./),
     ).toBeInTheDocument();
     expect(
       getByRole('link', {
-        name: 'Turn it on in the Assistant tab of Preferences.',
+        name: 'Turn it on in the MPDX Guide tab of Preferences.',
       }),
     ).toHaveAttribute(
       'href',
@@ -558,7 +558,7 @@ describe('AssistantChat', () => {
 
     expect(
       await findByText(
-        'The assistant is busy right now. Please try again in a moment.',
+        'The Guide is busy right now. Please try again in a moment.',
         inTranscript,
       ),
     ).toBeInTheDocument();
@@ -589,7 +589,7 @@ describe('AssistantChat', () => {
         queryByText('Sorry, something went wrong. Please try again.'),
       ).not.toBeInTheDocument();
       expect(
-        getByRole('textbox', { name: 'Ask the assistant' }),
+        getByRole('textbox', { name: 'Ask the Guide' }),
       ).toBeInTheDocument();
 
       act(() => jest.advanceTimersByTime(minutes(10)));
@@ -657,7 +657,7 @@ describe('AssistantChat', () => {
       expect(queryByText(offNotice)).not.toBeInTheDocument();
       expect(queryByText('Hi')).toBeInTheDocument();
       expect(
-        getByRole('textbox', { name: 'Ask the assistant' }),
+        getByRole('textbox', { name: 'Ask the Guide' }),
       ).toBeInTheDocument();
       await waitForMint();
       expect(fetchSpy).toHaveBeenCalledTimes(1);
@@ -705,7 +705,7 @@ describe('AssistantChat', () => {
       ),
     ).toBeInTheDocument();
 
-    userEvent.type(getByRole('textbox', { name: 'Ask the assistant' }), 'Hi');
+    userEvent.type(getByRole('textbox', { name: 'Ask the Guide' }), 'Hi');
     expect(getByRole('button', { name: 'Send' })).toBeDisabled();
 
     act(() => jest.advanceTimersByTime(30000));

@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { getAppName } from 'src/lib/getAppName';
 import { AssistantChat } from './AssistantChat';
 import { useAssistantContext } from './AssistantProvider';
 import { useAssistantVisibility } from './useAssistantVisibility';
@@ -32,6 +33,7 @@ const Header = styled(Box)(({ theme }) => ({
 
 export const AssistantDrawer: React.FC = () => {
   const { t } = useTranslation();
+  const appName = getAppName();
   const visible = useAssistantVisibility();
   const { open, closeAssistant, launcherRef } = useAssistantContext();
   const theme = useTheme();
@@ -78,10 +80,10 @@ export const AssistantDrawer: React.FC = () => {
       <DrawerContent>
         <Header>
           <Typography id={titleId} variant="h6" component="h2">
-            {t('Assistant')}
+            {t('{{appName}} Guide', { appName })}
           </Typography>
           <IconButton
-            aria-label={t('Close Assistant')}
+            aria-label={t('Close {{appName}} Guide', { appName })}
             onClick={closeAssistant}
           >
             <CloseIcon />

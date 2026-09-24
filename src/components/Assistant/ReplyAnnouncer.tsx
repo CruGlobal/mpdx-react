@@ -108,7 +108,7 @@ export const ReplyAnnouncer: React.FC<ReplyAnnouncerProps> = ({ messages }) => {
     const parts = [toSpokenText(reply.content.slice(current.spoken, end))];
     if (finished && !reply.content && reply.cards.length > 0) {
       parts.push(
-        t('The assistant added a card.'),
+        t('The Guide added a card.'),
         ...reply.cards.flatMap((card) => cardTitle(card, t) ?? []),
       );
     }

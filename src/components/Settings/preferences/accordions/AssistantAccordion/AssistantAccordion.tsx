@@ -186,10 +186,10 @@ export const AssistantAccordion: React.FC<AssistantAccordionProps> = ({
       field: 'prayerLettersEnabled',
       label: t('Help write my prayer letters'),
       unlocks: t(
-        'It helps you draft prayer letters in your own voice, using your Assistant profile.',
+        'It helps you draft prayer letters in your own voice, using your Guide profile.',
       ),
       modelSees: t(
-        'What the model sees: your Assistant profile as you wrote it, plus recent activity with names swapped for placeholders.',
+        'What the model sees: your Guide profile as you wrote it, plus recent activity with names swapped for placeholders.',
       ),
       comingLater: true,
     },
@@ -211,14 +211,14 @@ export const AssistantAccordion: React.FC<AssistantAccordionProps> = ({
       accordion={PreferenceAccordion.Assistant}
       onAccordionChange={handleAccordionChange}
       expandedAccordion={expandedAccordion}
-      label={t('Assistant')}
+      label={t('{{appName}} Guide', { appName })}
       value={settings.enabled ? t('On') : t('Off')}
       fullWidth
       disabled={disabled}
     >
       <Stack spacing={2}>
         <SettingSwitch
-          label={t('Turn on the Assistant')}
+          label={t('Turn on the Guide')}
           helperTexts={[
             t(
               'Turning it off deletes your conversations right away. You can turn it back on at any time.',
@@ -228,10 +228,10 @@ export const AssistantAccordion: React.FC<AssistantAccordionProps> = ({
           onChange={handleEnabledChange}
         />
         <SettingSwitch
-          label={t('Hide the Assistant button')}
+          label={t('Hide the Guide button')}
           helperTexts={[
             t(
-              'Hides the Assistant button in the top bar. This is the only place to bring it back.',
+              'Hides the Guide buttons in the top bar and the corner of the page. This is the only place to bring them back.',
             ),
           ]}
           checked={settings.launcherHidden}

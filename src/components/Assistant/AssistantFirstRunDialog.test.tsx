@@ -33,7 +33,7 @@ describe('AssistantFirstRunDialog', () => {
   it('explains the assistant and links to the help center', () => {
     const { getByRole } = render(<TestComponent />);
 
-    const dialog = getByRole('dialog', { name: 'Meet the Assistant' });
+    const dialog = getByRole('dialog', { name: 'Meet your MPDX Guide' });
     expect(dialog).toHaveTextContent('It is an AI, so it can be wrong.');
     expect(dialog).toHaveTextContent(
       'What you type and what it answers are kept in a permanent audit log.',
@@ -46,6 +46,22 @@ describe('AssistantFirstRunDialog', () => {
     const helpLink = getByRole('link', { name: 'Visit the help center' });
     expect(helpLink).toHaveAttribute('href', 'https://help.test');
     expect(helpLink).toHaveAttribute('rel', 'noopener noreferrer');
+  });
+
+  it('names the Guide after the app for other organizations', () => {
+    const appName = process.env.APP_NAME;
+    process.env.APP_NAME = 'TntConnect';
+    try {
+      const { getByRole } = render(<TestComponent />);
+
+      expect(
+        getByRole('dialog', { name: 'Meet your TntConnect Guide' }),
+      ).toHaveTextContent(
+        'The Guide answers questions about using TntConnect and links you to the right page.',
+      );
+    } finally {
+      process.env.APP_NAME = appName;
+    }
   });
 
   it('turns the assistant on', async () => {
@@ -65,7 +81,7 @@ describe('AssistantFirstRunDialog', () => {
   it('hides the launcher', async () => {
     const { getByRole } = render(<TestComponent />);
 
-    userEvent.click(getByRole('button', { name: 'Hide the Assistant button' }));
+    userEvent.click(getByRole('button', { name: 'Hide the Guide button' }));
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('UpdateAssistantSettings', {

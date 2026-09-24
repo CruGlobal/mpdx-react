@@ -57,7 +57,7 @@ const TestComponent: React.FC<TestComponentProps> = ({ settings = {} }) => (
   </ThemeProvider>
 );
 
-const launcherName = { name: 'Open Assistant' };
+const launcherName = { name: 'Open MPDX Guide' };
 
 const activeElement = () => document.activeElement as HTMLElement;
 
@@ -83,7 +83,7 @@ describe('AssistantLauncher', () => {
 
     userEvent.click(await findByRole('button', launcherName));
 
-    expect(getByRole('dialog', { name: 'Assistant' })).toBeInTheDocument();
+    expect(getByRole('dialog', { name: 'MPDX Guide' })).toBeInTheDocument();
   });
 
   it('opens the first-run explanation instead of the drawer before opt-in', async () => {
@@ -92,10 +92,10 @@ describe('AssistantLauncher', () => {
     userEvent.click(await findByRole('button', launcherName));
 
     expect(
-      await findByRole('dialog', { name: 'Meet the Assistant' }),
+      await findByRole('dialog', { name: 'Meet your MPDX Guide' }),
     ).toBeInTheDocument();
     expect(
-      queryByRole('dialog', { name: 'Assistant' }),
+      queryByRole('dialog', { name: 'MPDX Guide' }),
     ).not.toBeInTheDocument();
   });
 
@@ -106,7 +106,7 @@ describe('AssistantLauncher', () => {
     userEvent.click(await findByRole('button', { name: 'Turn it on' }));
 
     expect(
-      await findByRole('dialog', { name: 'Assistant' }),
+      await findByRole('dialog', { name: 'MPDX Guide' }),
     ).toBeInTheDocument();
   });
 
@@ -117,13 +117,13 @@ describe('AssistantLauncher', () => {
     const launcher = await findByRole('button', launcherName);
 
     userEvent.click(launcher);
-    const drawer = getByRole('dialog', { name: 'Assistant' });
+    const drawer = getByRole('dialog', { name: 'MPDX Guide' });
     await waitFor(() => expect(drawer).toContainElement(activeElement()));
 
     userEvent.keyboard('{esc}');
     await waitFor(() =>
       expect(
-        queryByRole('dialog', { name: 'Assistant' }),
+        queryByRole('dialog', { name: 'MPDX Guide' }),
       ).not.toBeInTheDocument(),
     );
     expect(launcher).toHaveFocus();
@@ -135,7 +135,7 @@ describe('AssistantLauncher', () => {
     );
 
     userEvent.click(await findByRole('button', launcherName));
-    const drawer = getByRole('dialog', { name: 'Assistant' });
+    const drawer = getByRole('dialog', { name: 'MPDX Guide' });
     for (let press = 0; press < 4; press++) {
       userEvent.tab();
       await waitFor(() => expect(drawer).toContainElement(activeElement()));
@@ -152,17 +152,17 @@ describe('AssistantLauncher', () => {
 
     userEvent.click(launcher);
     userEvent.click(await findByRole('button', { name: 'Turn it on' }));
-    await findByRole('dialog', { name: 'Assistant' });
+    await findByRole('dialog', { name: 'MPDX Guide' });
     await waitFor(() =>
       expect(
-        queryByRole('dialog', { name: 'Meet the Assistant' }),
+        queryByRole('dialog', { name: 'Meet your MPDX Guide' }),
       ).not.toBeInTheDocument(),
     );
 
-    userEvent.click(getByRole('button', { name: 'Close Assistant' }));
+    userEvent.click(getByRole('button', { name: 'Close MPDX Guide' }));
     await waitFor(() =>
       expect(
-        queryByRole('dialog', { name: 'Assistant' }),
+        queryByRole('dialog', { name: 'MPDX Guide' }),
       ).not.toBeInTheDocument(),
     );
     expect(launcher).toHaveFocus();

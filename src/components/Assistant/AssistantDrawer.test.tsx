@@ -116,9 +116,9 @@ describe('AssistantDrawer', () => {
 
     userEvent.click(getByRole('button', { name: 'Open' }));
 
-    expect(getByRole('dialog', { name: 'Assistant' })).toBeInTheDocument();
+    expect(getByRole('dialog', { name: 'MPDX Guide' })).toBeInTheDocument();
     expect(getByText('Ask a question to get started.')).toBeInTheDocument();
-    expect(getByRole('textbox', { name: 'Ask the assistant' })).toBeEnabled();
+    expect(getByRole('textbox', { name: 'Ask the Guide' })).toBeEnabled();
     await waitForMint();
   });
 
@@ -128,7 +128,7 @@ describe('AssistantDrawer', () => {
     userEvent.click(getByRole('button', { name: 'Open' }));
 
     await waitFor(() =>
-      expect(getByRole('textbox', { name: 'Ask the assistant' })).toHaveFocus(),
+      expect(getByRole('textbox', { name: 'Ask the Guide' })).toHaveFocus(),
     );
     await waitForMint();
   });
@@ -147,7 +147,7 @@ describe('AssistantDrawer', () => {
 
     userEvent.click(getByRole('button', { name: 'Open' }));
     userEvent.type(
-      getByRole('textbox', { name: 'Ask the assistant' }),
+      getByRole('textbox', { name: 'Ask the Guide' }),
       'What is new?',
     );
     await waitFor(() =>
@@ -158,7 +158,7 @@ describe('AssistantDrawer', () => {
       await findByText('Hello back', { selector: 'p' }),
     ).toBeInTheDocument();
 
-    userEvent.click(getByRole('button', { name: 'Close Assistant' }));
+    userEvent.click(getByRole('button', { name: 'Close MPDX Guide' }));
     await waitFor(() => expect(queryByRole('dialog')).not.toBeInTheDocument());
 
     userEvent.click(getByRole('button', { name: 'Open' }));
@@ -174,7 +174,7 @@ describe('AssistantDrawer', () => {
     const { getByRole, queryByRole } = render(<TestComponent />);
 
     userEvent.click(getByRole('button', { name: 'Open' }));
-    userEvent.click(getByRole('button', { name: 'Close Assistant' }));
+    userEvent.click(getByRole('button', { name: 'Close MPDX Guide' }));
 
     await waitFor(() => expect(queryByRole('dialog')).not.toBeInTheDocument());
   });
@@ -209,7 +209,7 @@ describe('AssistantDrawer', () => {
       const utils = render(<TestComponent />);
       userEvent.click(utils.getByRole('button', { name: 'Open' }));
       userEvent.type(
-        utils.getByRole('textbox', { name: 'Ask the assistant' }),
+        utils.getByRole('textbox', { name: 'Ask the Guide' }),
         'Where are my gifts?',
       );
       await waitFor(() =>
@@ -224,7 +224,7 @@ describe('AssistantDrawer', () => {
       ).toBeInTheDocument();
       await waitFor(() =>
         expect(
-          utils.getByRole('textbox', { name: 'Ask the assistant' }),
+          utils.getByRole('textbox', { name: 'Ask the Guide' }),
         ).toHaveFocus(),
       );
       return utils;
@@ -232,11 +232,11 @@ describe('AssistantDrawer', () => {
 
     it('exposes named landmarks, headings, lists, and controls', async () => {
       const { getByRole, getAllByRole } = await renderTranscript();
-      const drawer = getByRole('dialog', { name: 'Assistant' });
+      const drawer = getByRole('dialog', { name: 'MPDX Guide' });
 
       expect(drawer).toHaveAttribute('aria-modal', 'true');
       expect(
-        getByRole('heading', { level: 2, name: 'Assistant' }),
+        getByRole('heading', { level: 2, name: 'MPDX Guide' }),
       ).toBeInTheDocument();
       expect(
         getByRole('heading', { level: 3, name: 'Summary for the help desk' }),
@@ -340,7 +340,7 @@ describe('AssistantDrawer', () => {
 
         expect(beacon).not.toBeVisible();
 
-        userEvent.click(getByRole('button', { name: 'Close Assistant' }));
+        userEvent.click(getByRole('button', { name: 'Close MPDX Guide' }));
         await waitFor(() =>
           expect(queryByRole('dialog')).not.toBeInTheDocument(),
         );
@@ -385,7 +385,7 @@ describe('AssistantDrawer', () => {
         expect(addSpy).toHaveBeenCalledWith('resize', expect.any(Function));
         expect(addSpy).toHaveBeenCalledWith('scroll', expect.any(Function));
 
-        userEvent.click(getByRole('button', { name: 'Close Assistant' }));
+        userEvent.click(getByRole('button', { name: 'Close MPDX Guide' }));
         await waitFor(() =>
           expect(queryByRole('dialog')).not.toBeInTheDocument(),
         );

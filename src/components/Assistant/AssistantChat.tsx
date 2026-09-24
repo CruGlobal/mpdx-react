@@ -23,6 +23,7 @@ import { useSession } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
 import { buildHelpjuiceContactUrl } from 'src/components/Helpjuice/contactUrl';
 import { useOptionalAccountListId } from 'src/hooks/useAccountListId';
+import { getAppName } from 'src/lib/getAppName';
 import { useAssistantContext } from './AssistantProvider';
 import { MessageList } from './MessageList';
 import { getAssistantUrl, useAssistantStream } from './useAssistantStream';
@@ -90,12 +91,14 @@ const NotTurnedOn: React.FC<NotTurnedOnProps> = ({ accountListId }) => {
 
   return (
     <Typography variant="body2" color="text.secondary">
-      {t('The assistant is not turned on.')}{' '}
+      {t('The Guide is not turned on.')}{' '}
       <Link
         component={NextLink}
         href={`/accountLists/${accountListId}/settings/preferences`}
       >
-        {t('Turn it on in the Assistant tab of Preferences.')}
+        {t('Turn it on in the {{appName}} Guide tab of Preferences.', {
+          appName: getAppName(),
+        })}
       </Link>
     </Typography>
   );
@@ -198,12 +201,12 @@ export const AssistantChat: React.FC = () => {
       <Footer>
         {configured && !deadEnd && assistantDisabled && (
           <Typography variant="body2" color="text.secondary" role="status">
-            {t('The assistant is off right now. Please try again later.')}
+            {t('The Guide is off right now. Please try again later.')}
           </Typography>
         )}
         {!configured ? (
           <Typography variant="body2" color="text.secondary">
-            {t('The assistant is not configured.')}
+            {t('The Guide is not configured.')}
           </Typography>
         ) : deadEnd &&
           tokenState.status === 'refusing' &&
@@ -229,11 +232,11 @@ export const AssistantChat: React.FC = () => {
               value={draft}
               inputRef={inputRef}
               disabled={!accountListId}
-              placeholder={t('Ask the assistant')}
+              placeholder={t('Ask the Guide')}
               onChange={(event) => setDraft(event.target.value)}
               onKeyDown={handleKeyDown}
               slotProps={{
-                htmlInput: { 'aria-label': t('Ask the assistant') },
+                htmlInput: { 'aria-label': t('Ask the Guide') },
               }}
             />
             {/* One button that swaps between Send and Stop so keyboard focus survives the swap */}
@@ -250,7 +253,7 @@ export const AssistantChat: React.FC = () => {
         )}
         {configured && !accountListId && (
           <Typography variant="caption" color="text.secondary">
-            {t('Open an account list to chat with the assistant.')}
+            {t('Open an account list to chat with the Guide.')}
           </Typography>
         )}
         {configured && helpOnly && (

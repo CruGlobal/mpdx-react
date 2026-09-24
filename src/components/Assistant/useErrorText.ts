@@ -7,9 +7,7 @@ export const useErrorText = (
   const { t } = useTranslation();
   switch (reason) {
     case 'unavailable':
-      return t(
-        'The assistant is busy right now. Please try again in a moment.',
-      );
+      return t('The Guide is busy right now. Please try again in a moment.');
     case 'rateLimited':
       return t('Please wait a moment before sending another message.');
     default:

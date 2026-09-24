@@ -43,7 +43,7 @@ describe('DynamicAssistantDrawer', () => {
     userEvent.click(getByRole('button', { name: 'Open' }));
 
     expect(
-      await findByRole('dialog', { name: 'Assistant' }),
+      await findByRole('dialog', { name: 'MPDX Guide' }),
     ).toBeInTheDocument();
     await waitFor(() =>
       expect(queryByRole('progressbar')).not.toBeInTheDocument(),

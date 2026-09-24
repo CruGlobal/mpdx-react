@@ -90,7 +90,7 @@ describe('TopBar', () => {
     const { findByRole } = render(<TestComponent />);
 
     expect(
-      await findByRole('button', { name: 'Open Assistant' }),
+      await findByRole('button', { name: 'Open MPDX Guide' }),
     ).toBeInTheDocument();
   });
 });

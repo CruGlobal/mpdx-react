@@ -73,6 +73,8 @@ describe('MessageList', () => {
 
     expect(getByText('How many **contacts**?')).toBeInTheDocument();
     expect(getByText('12').tagName).toBe('STRONG');
+    expect(getByText('You')).toBeInTheDocument();
+    expect(getByText('Guide')).toBeInTheDocument();
     expect(getByRole('log', { name: 'Conversation' })).toHaveAttribute(
       'aria-busy',
       'false',
@@ -86,7 +88,7 @@ describe('MessageList', () => {
 
     expect(getByRole('log')).toHaveAttribute('aria-busy', 'true');
     expect(
-      getByRole('progressbar', { name: 'Assistant is thinking' }),
+      getByRole('progressbar', { name: 'The Guide is thinking' }),
     ).toBeInTheDocument();
   });
 
@@ -140,7 +142,7 @@ describe('MessageList', () => {
   it.each([
     [
       'unavailable' as const,
-      'The assistant is busy right now. Please try again in a moment.',
+      'The Guide is busy right now. Please try again in a moment.',
     ],
     [
       'rateLimited' as const,
@@ -176,7 +178,7 @@ describe('MessageList', () => {
     expect(getByRole('log', { name: 'Conversation' })).toHaveTextContent(
       'Started a new conversation for this account list.',
     );
-    expect(queryByText('Assistant')).not.toBeInTheDocument();
+    expect(queryByText('Guide')).not.toBeInTheDocument();
   });
 
   it('shows a stopped line when a reply was stopped before any text', () => {
@@ -293,7 +295,7 @@ describe('MessageList', () => {
         />,
       );
       expect(announcer(getByTestId)).toHaveTextContent(
-        'The assistant is busy right now. Please try again in a moment.',
+        'The Guide is busy right now. Please try again in a moment.',
       );
     });
 
@@ -343,7 +345,7 @@ describe('MessageList', () => {
           intent: { type: 'dashboard', params: {} },
           label: 'Open the Dashboard',
         },
-        'The assistant added a card. Open the Dashboard',
+        'The Guide added a card. Open the Dashboard',
       ],
       [
         'a hand-off card',
@@ -356,12 +358,12 @@ describe('MessageList', () => {
             url: 'https://help.test/contact',
           },
         },
-        'The assistant added a card. Summary for the help desk',
+        'The Guide added a card. Summary for the help desk',
       ],
       [
         'a card without a title',
         { kind: 'figures', items: [{ label: 'Gifts', value: 3 }] },
-        'The assistant added a card.',
+        'The Guide added a card.',
       ],
     ] as Array<[string, AssistantCard, string]>)(
       'announces a reply that is only %s',
