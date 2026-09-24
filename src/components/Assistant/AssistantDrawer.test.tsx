@@ -369,6 +369,30 @@ describe('AssistantDrawer', () => {
         expect(drawer.style.height).toBe('360px');
         expect(drawer.style.top).toBe('40px');
       });
+
+      it('stops following the visible viewport once the drawer closes', async () => {
+        const viewport = Object.assign(new EventTarget(), {
+          height: 700,
+          offsetTop: 0,
+        });
+        const addSpy = jest.spyOn(viewport, 'addEventListener');
+        const removeSpy = jest.spyOn(viewport, 'removeEventListener');
+        Object.defineProperty(window, 'visualViewport', {
+          value: viewport,
+          configurable: true,
+        });
+        const { getByRole, queryByRole } = await openDrawer();
+        expect(addSpy).toHaveBeenCalledWith('resize', expect.any(Function));
+        expect(addSpy).toHaveBeenCalledWith('scroll', expect.any(Function));
+
+        userEvent.click(getByRole('button', { name: 'Close Assistant' }));
+        await waitFor(() =>
+          expect(queryByRole('dialog')).not.toBeInTheDocument(),
+        );
+        addSpy.mock.calls.forEach(([type, listener]) =>
+          expect(removeSpy).toHaveBeenCalledWith(type, listener),
+        );
+      });
     });
   });
 });
