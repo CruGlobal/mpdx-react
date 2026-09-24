@@ -612,6 +612,7 @@ describe('useAssistantStream', () => {
       status: 'error',
       errorReason: 'unavailable',
     });
+    expect(result.current.stream.assistantDisabled).toBe(false);
   });
 
   it('treats any other 503 as a plain failure', async () => {
@@ -625,6 +626,70 @@ describe('useAssistantStream', () => {
     expect(result.current.context.messages[1]).toMatchObject({
       status: 'error',
       errorReason: undefined,
+    });
+  });
+
+  describe('when the assistant is switched off', () => {
+    const switchedOff = () =>
+      mockJsonResponse(
+        { error: 'assistant_disabled' },
+        { ok: false, status: 503 },
+      );
+
+    it('keeps the question, drops the pending reply, and does not retry', async () => {
+      fetchSpy.mockResolvedValueOnce(switchedOff());
+      const { result } = renderStream();
+
+      await act(() => result.current.stream.sendMessage('Hi'));
+
+      expect(result.current.stream.assistantDisabled).toBe(true);
+      expect(result.current.context.messages).toEqual([
+        expect.objectContaining({ role: 'user', content: 'Hi' }),
+      ]);
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('handles the switch on the stream request too', async () => {
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(switchedOff());
+      const { result } = renderStream();
+
+      await act(() => result.current.stream.sendMessage('Hi'));
+
+      expect(result.current.stream.assistantDisabled).toBe(true);
+      expect(result.current.context.messages).toHaveLength(1);
+      expect(fetchSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('stays off while the service is still switched off', async () => {
+      fetchSpy.mockResolvedValueOnce(switchedOff());
+      const { result } = renderStream();
+
+      await act(() => result.current.stream.sendMessage('Hi'));
+      fetchSpy.mockResolvedValueOnce(switchedOff());
+      await act(() => result.current.stream.sendMessage('Again'));
+
+      expect(result.current.stream.assistantDisabled).toBe(true);
+      expect(fetchSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('turns back on once the service answers normally', async () => {
+      fetchSpy.mockResolvedValueOnce(switchedOff());
+      const { result } = renderStream();
+
+      await act(() => result.current.stream.sendMessage('Hi'));
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+      await act(() => result.current.stream.sendMessage('Again'));
+
+      expect(result.current.stream.assistantDisabled).toBe(false);
+      expect(result.current.context.messages[2]).toMatchObject({
+        role: 'assistant',
+        content: 'Hello world',
+        status: 'complete',
+      });
     });
   });
 
