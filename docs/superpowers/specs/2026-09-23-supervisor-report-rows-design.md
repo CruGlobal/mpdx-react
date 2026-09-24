@@ -59,9 +59,12 @@ summary and spouse merge below therefore operate on the complete result set.
 
 **Decision.** `mergeSpouseRows(nodes)` (pure, in `helpers.ts`) returns
 `StaffRow[]`, where `StaffRow = ManagedStaffMember & { partner?: ManagedStaffMember }`.
-A row whose `spousePersonNumber` matches another row's `personNumber` absorbs
-that row as `partner`, keeping the earlier position (the health sort is identical
-for both, since they share a staff account). Teams are the union of both lists.
+Two rows pair when either names the other as spouse, or when they share a
+staff account: HCM does not always carry the spouse link (the Capos on the dev
+account share an account with no link either way), and a joint staff account
+only ever belongs to a couple. The later row is absorbed as `partner`, keeping
+the earlier position (the health sort is identical for both). Each spouse keeps
+their own team list; the row displays the union.
 
 - Name: `getRowName(row)` gives "Anton & Artjola Capo" when the last names match,
   otherwise "Anton Capo & Artjola Smith". Avatar initials use both first names.

@@ -28,6 +28,7 @@ const quarter = (status: MpdHealthStatusEnum) => ({
 const campusRed = managedStaffMember({
   firstName: 'Anton',
   personNumber: '1',
+  staffAccountId: 'a1',
   spousePersonNumber: null,
   teams: {
     employee: [{ id: 'campus', name: 'Campus', department: 'US Campus' }],
@@ -41,6 +42,7 @@ const campusRed = managedStaffMember({
 const cityGreen = managedStaffMember({
   firstName: 'Brooke',
   personNumber: '2',
+  staffAccountId: 'a2',
   spousePersonNumber: null,
   teams: {
     employee: [{ id: 'city', name: 'City', department: 'US City' }],
@@ -54,6 +56,7 @@ const cityGreen = managedStaffMember({
 const cityYellow = managedStaffMember({
   firstName: 'Carla',
   personNumber: '3',
+  staffAccountId: 'a3',
   spousePersonNumber: null,
   teams: {
     employee: [{ id: 'city', name: 'City', department: 'US City' }],

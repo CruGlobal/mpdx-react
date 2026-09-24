@@ -217,8 +217,11 @@ export type StaffRow = ManagedStaffMember & { partner?: ManagedStaffMember };
 /**
  * Fold each spouse pair present in the list into one row, keeping the earlier
  * position (spouses share a staff account, so their health sorts identically).
- * Each spouse keeps their own team list; `getRowTeamNames` unions them for
- * display. A spouse who is not in the list leaves the row untouched.
+ * Two rows pair when either one names the other as spouse, or when they share
+ * a staff account — HCM does not always carry the spouse link, but a joint
+ * staff account only ever belongs to a couple. Each spouse keeps their own
+ * team list; `getRowTeamNames` unions them for display. A spouse who is not
+ * in the list leaves the row untouched.
  */
 export const mergeSpouseRows = (nodes: ManagedStaffMember[]): StaffRow[] => {
   const byPersonNumber = new Map(
@@ -226,15 +229,25 @@ export const mergeSpouseRows = (nodes: ManagedStaffMember[]): StaffRow[] => {
   );
   const absorbed = new Set<string>();
   const rows: StaffRow[] = [];
+  const isPartner = (node: ManagedStaffMember, other: ManagedStaffMember) =>
+    other.personNumber !== node.personNumber &&
+    !absorbed.has(other.personNumber) &&
+    (node.spousePersonNumber === other.personNumber ||
+      other.spousePersonNumber === node.personNumber ||
+      other.staffAccountId === node.staffAccountId);
   for (const node of nodes) {
     if (absorbed.has(node.personNumber)) {
       continue;
     }
-    const partner = node.spousePersonNumber
+    const linked = node.spousePersonNumber
       ? byPersonNumber.get(node.spousePersonNumber)
       : undefined;
-    // Only a mutual pair merges, so a stale spouse link cannot swallow a row
-    if (partner && partner.spousePersonNumber === node.personNumber) {
+    const partner =
+      linked && isPartner(node, linked)
+        ? linked
+        : nodes.find((other) => isPartner(node, other));
+    if (partner) {
+      absorbed.add(node.personNumber);
       absorbed.add(partner.personNumber);
       rows.push({ ...node, partner });
     } else {

@@ -313,6 +313,7 @@ const alice = managedStaffMember({
   firstName: 'Alice',
   lastName: 'Jones',
   personNumber: '3',
+  staffAccountId: '1000000003',
   spousePersonNumber: '99',
   spouseFirstName: 'Bob',
   spouseLastName: 'Jones',
@@ -332,9 +333,47 @@ describe('mergeSpouseRows', () => {
     expect(rows[0].partner).toBeUndefined();
   });
 
-  it('only merges a mutual pair', () => {
-    const stale = managedStaffMember({ ...jane, spousePersonNumber: '42' });
-    expect(mergeSpouseRows([john, stale])).toHaveLength(2);
+  it('merges when only one spouse carries the link', () => {
+    const unlinked = managedStaffMember({ ...jane, spousePersonNumber: null });
+    const rows = mergeSpouseRows([john, unlinked]);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].partner?.personNumber).toBe('2');
+  });
+
+  it('merges two people who share a staff account without a spouse link', () => {
+    const anton = managedStaffMember({
+      firstName: 'Anton',
+      lastName: 'Capo',
+      personNumber: '7',
+      staffAccountId: 'joint',
+      spousePersonNumber: null,
+      spouseFirstName: null,
+    });
+    const artjola = managedStaffMember({
+      firstName: 'Artjola',
+      lastName: 'Capo',
+      personNumber: '8',
+      staffAccountId: 'joint',
+      spousePersonNumber: null,
+      spouseFirstName: null,
+    });
+    const rows = mergeSpouseRows([anton, artjola, alice]);
+    expect(rows.map(getRowName)).toEqual([
+      'Anton & Artjola Capo',
+      'Alice Jones',
+    ]);
+  });
+
+  it('never absorbs the same person twice', () => {
+    const third = managedStaffMember({
+      firstName: 'Jim',
+      personNumber: '9',
+      staffAccountId: john.staffAccountId,
+      spousePersonNumber: null,
+    });
+    const rows = mergeSpouseRows([john, jane, third]);
+    expect(rows).toHaveLength(2);
+    expect(rows[1].partner).toBeUndefined();
   });
 
   it('unions the team names for display', () => {
@@ -451,7 +490,11 @@ describe('summarizeTeams', () => {
         teams: { employee: [team('Alpha')], spouse: [] },
       }),
       withQuarters(
-        { personNumber: '2', teams: { employee: [team('Beta')], spouse: [] } },
+        {
+          personNumber: '2',
+          staffAccountId: 'a2',
+          teams: { employee: [team('Beta')], spouse: [] },
+        },
         [quarter(2026, 3, MpdHealthStatusEnum.Yellow)],
       ),
       red({
