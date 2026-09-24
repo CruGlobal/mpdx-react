@@ -59,15 +59,16 @@ describe('buildContactsListHref', () => {
     },
   );
 
-  it('maps status labels to the status filter', () => {
+  it('passes statuses through to the status filter', () => {
     expect(
       filtersOf(
         build({
           preset: 'status_in',
           values: [
-            'Partner - Financial',
-            'New Connection',
-            'Expired Connection',
+            'PARTNER_FINANCIAL',
+            'NEVER_CONTACTED',
+            'EXPIRED_REFERRAL',
+            'PARTNER_FINANCIAL',
           ],
         }),
       ),
@@ -130,7 +131,7 @@ describe('buildContactsListHref', () => {
         { preset: 'late_by_30' },
         {
           preset: 'status_in',
-          values: ['Partner - Special', 'Partner - Financial'],
+          values: ['PARTNER_SPECIAL', 'PARTNER_FINANCIAL'],
         },
       ],
     ],
@@ -139,7 +140,7 @@ describe('buildContactsListHref', () => {
       [
         {
           preset: 'status_in',
-          values: ['Partner - Special', 'Partner - Financial'],
+          values: ['PARTNER_SPECIAL', 'PARTNER_FINANCIAL'],
         },
         { preset: 'late_by_30' },
       ],
@@ -159,7 +160,7 @@ describe('buildContactsListHref', () => {
     expect(
       build(
         { preset: 'late_by_60' },
-        { preset: 'status_in', values: ['Partner - Special'] },
+        { preset: 'status_in', values: ['PARTNER_SPECIAL'] },
       ),
     ).toBeNull();
   });
@@ -176,11 +177,16 @@ describe('buildContactsListHref', () => {
     ['an unknown preset', { preset: 'late_by_120' }],
     ['a param on a late preset', { preset: 'late_by_30', days: 30 }],
     ['an unknown range', { preset: 'stopped_giving', range: 'forever' }],
-    ['an unknown status', { preset: 'status_in', values: ['Donor'] }],
+    ['an unknown status', { preset: 'status_in', values: ['DONOR'] }],
+    [
+      'a status label',
+      { preset: 'status_in', values: ['Partner - Financial'] },
+    ],
+    ['a filter-only status', { preset: 'status_in', values: ['HIDDEN'] }],
     ['an empty values list', { preset: 'status_in', values: [] }],
     [
       'values that are not a list',
-      { preset: 'status_in', values: 'Unresponsive' },
+      { preset: 'status_in', values: 'UNRESPONSIVE' },
     ],
     [
       'an unknown frequency',

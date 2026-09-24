@@ -1,28 +1,5 @@
-import {
-  ContactFilterNewsletterEnum,
-  ContactFilterStatusEnum,
-} from 'src/graphql/types.generated';
-import { NewsletterValue, PledgeFrequency, Status } from './intents';
-
-// CON-001 will replace these display-label to API-name maps with the generated labels dump
-
-export const STATUS_FILTER_VALUES: Record<Status, ContactFilterStatusEnum> = {
-  'New Connection': ContactFilterStatusEnum.NeverContacted,
-  'Ask in Future': ContactFilterStatusEnum.AskInFuture,
-  'Research Contact Info': ContactFilterStatusEnum.ResearchContactInfo,
-  'Cultivate Relationship': ContactFilterStatusEnum.CultivateRelationship,
-  'Initiate for Appointment': ContactFilterStatusEnum.ContactForAppointment,
-  'Appointment Scheduled': ContactFilterStatusEnum.AppointmentScheduled,
-  'Follow Up for Decision': ContactFilterStatusEnum.CallForDecision,
-  'Partner - Financial': ContactFilterStatusEnum.PartnerFinancial,
-  'Partner - Special': ContactFilterStatusEnum.PartnerSpecial,
-  'Partner - Pray': ContactFilterStatusEnum.PartnerPray,
-  'Not Interested': ContactFilterStatusEnum.NotInterested,
-  Unresponsive: ContactFilterStatusEnum.Unresponsive,
-  'Never Ask': ContactFilterStatusEnum.NeverAsk,
-  'Research Abandoned': ContactFilterStatusEnum.ResearchAbandoned,
-  'Expired Connection': ContactFilterStatusEnum.ExpiredReferral,
-};
+import { ContactFilterNewsletterEnum } from 'src/graphql/types.generated';
+import { NewsletterValue, PledgeFrequency } from './intents';
 
 export const PLEDGE_FREQUENCY_FILTER_VALUES: Record<PledgeFrequency, string> = {
   Weekly: '0.23076923076923',

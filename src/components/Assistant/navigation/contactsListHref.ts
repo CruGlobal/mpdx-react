@@ -8,7 +8,6 @@ import {
 import { getDateRange } from './dateRanges';
 import {
   PLEDGE_FREQUENCY_FILTER_VALUES,
-  STATUS_FILTER_VALUES,
   getNewsletterFilterValue,
 } from './filterValues';
 import {
@@ -110,9 +109,7 @@ const applyPreset = (
       if (!isListOf(values, STATUSES)) {
         return false;
       }
-      filters.status = unique(values).map(
-        (value) => STATUS_FILTER_VALUES[value],
-      );
+      filters.status = unique(values);
       return true;
     case 'newsletter_in': {
       if (!isListOf(values, NEWSLETTER_VALUES)) {

@@ -1,3 +1,5 @@
+import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
+
 // Mirrors NavigationIntent in mpdx-assistant app/services/navigation_intent.rb; keep the two in step
 
 export const NAVIGATION_INTENT_TYPES = [
@@ -27,21 +29,21 @@ export type FilterPreset = (typeof FILTER_PRESETS)[number];
 export const LATE_PRESETS = ['late_by_30', 'late_by_60', 'late_by_90'] as const;
 
 export const STATUSES = [
-  'New Connection',
-  'Ask in Future',
-  'Research Contact Info',
-  'Cultivate Relationship',
-  'Initiate for Appointment',
-  'Appointment Scheduled',
-  'Follow Up for Decision',
-  'Partner - Financial',
-  'Partner - Special',
-  'Partner - Pray',
-  'Not Interested',
-  'Unresponsive',
-  'Never Ask',
-  'Research Abandoned',
-  'Expired Connection',
+  ContactFilterStatusEnum.NeverContacted,
+  ContactFilterStatusEnum.AskInFuture,
+  ContactFilterStatusEnum.ResearchContactInfo,
+  ContactFilterStatusEnum.CultivateRelationship,
+  ContactFilterStatusEnum.ContactForAppointment,
+  ContactFilterStatusEnum.AppointmentScheduled,
+  ContactFilterStatusEnum.CallForDecision,
+  ContactFilterStatusEnum.PartnerFinancial,
+  ContactFilterStatusEnum.PartnerSpecial,
+  ContactFilterStatusEnum.PartnerPray,
+  ContactFilterStatusEnum.NotInterested,
+  ContactFilterStatusEnum.Unresponsive,
+  ContactFilterStatusEnum.NeverAsk,
+  ContactFilterStatusEnum.ResearchAbandoned,
+  ContactFilterStatusEnum.ExpiredReferral,
 ] as const;
 export type Status = (typeof STATUSES)[number];
 
