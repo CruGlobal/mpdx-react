@@ -41,7 +41,9 @@ describe('ScreenOnlyReport', () => {
 
     expect(await findByText('No Income data available')).toBeInTheDocument();
     expect(getByText('No Expenses data available')).toBeInTheDocument();
-    expect(getByText('No Balance data available')).toBeInTheDocument();
+    expect(
+      getByText('No Primary Account Balance data available'),
+    ).toBeInTheDocument();
     expect(queryAllByRole('grid')).toHaveLength(0);
   });
 });
