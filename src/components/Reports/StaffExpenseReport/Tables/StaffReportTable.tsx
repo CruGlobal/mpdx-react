@@ -161,7 +161,7 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
   const description: RenderCell = ({ row }) => (
     <Box display="flex" alignItems="center" gap={1} minWidth={0}>
       <Tooltip title={row.description}>
-        <Typography variant="body2" noWrap>
+        <Typography variant="body2" noWrap minWidth={0}>
           {row.description}
         </Typography>
       </Tooltip>
