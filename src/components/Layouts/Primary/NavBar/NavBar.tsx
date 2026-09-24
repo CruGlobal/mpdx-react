@@ -3,7 +3,7 @@ import React, { ReactElement, useEffect } from 'react';
 import type { FC } from 'react';
 import { Box, Drawer, List, Theme, useMediaQuery } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
-import { useLoadCoachingListQuery } from 'src/components/Coaching/LoadCoachingList.generated';
+import { useCoachingListCountQuery } from 'src/components/Layouts/Primary/CoachingListCount.generated';
 import { useSetupContext } from 'src/components/Setup/SetupProvider';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { NavPage, useNavPages } from '../../../../hooks/useNavPages';
@@ -98,7 +98,7 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
   const accountListId = useAccountListId();
   const { pathname } = useRouter();
   const { onSetupTour } = useSetupContext();
-  const { data } = useLoadCoachingListQuery();
+  const { data } = useCoachingListCountQuery();
 
   const isCoaching = !!data?.coachingAccountLists.totalCount;
 

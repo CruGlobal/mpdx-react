@@ -1,10 +1,15 @@
 import React from 'react';
-import { MockedProvider } from '@apollo/client/testing';
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
+import { GraphQLError } from 'graphql';
 import TestRouter from '__tests__/util/TestRouter';
 import { TestSetupProvider } from 'src/components/Setup/SetupProvider';
 import theme from 'src/theme';
+import {
+  CoachingListCountDocument,
+  CoachingListCountQuery,
+} from '../CoachingListCount.generated';
 import { getTopBarMultipleMock } from '../TopBar/TopBar.mock';
 import { NavBar } from './NavBar';
 
@@ -17,15 +22,40 @@ const router = {
 interface TestComponentProps {
   openMobile?: boolean;
   onSetupTour?: boolean;
+  coachingCount?: number;
+  coachingFails?: boolean;
 }
+
+const coachingListCountResult = jest.fn();
+
+const coachingListCountMock = (
+  totalCount: number,
+  fails = false,
+): MockedResponse => {
+  const data: CoachingListCountQuery = {
+    coachingAccountLists: { totalCount },
+  };
+  coachingListCountResult.mockReturnValue(
+    fails ? { errors: [new GraphQLError('Coaching count failed')] } : { data },
+  );
+  return {
+    request: { query: CoachingListCountDocument },
+    result: coachingListCountResult,
+  };
+};
 
 const TestComponent: React.FC<TestComponentProps> = ({
   openMobile = false,
   onSetupTour,
+  coachingCount = 0,
+  coachingFails = false,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
-      <MockedProvider mocks={mocks} addTypename={false}>
+      <MockedProvider
+        mocks={[...mocks, coachingListCountMock(coachingCount, coachingFails)]}
+        addTypename={false}
+      >
         <TestSetupProvider onSetupTour={onSetupTour}>
           <NavBar onMobileClose={onMobileClose} openMobile={openMobile} />
         </TestSetupProvider>
@@ -55,5 +85,33 @@ describe('NavBar', () => {
     const { queryByRole } = render(<TestComponent openMobile onSetupTour />);
 
     expect(queryByRole('link', { name: 'Dashboard' })).not.toBeInTheDocument();
+  });
+
+  it('shows the Coaching link when the user coaches account lists', async () => {
+    const { findByRole } = render(
+      <TestComponent openMobile coachingCount={2} />,
+    );
+
+    expect(await findByRole('link', { name: 'Coaching' })).toBeInTheDocument();
+  });
+
+  it('hides the Coaching link when the user coaches no account lists', async () => {
+    const { findByRole, queryByRole } = render(
+      <TestComponent openMobile coachingCount={0} />,
+    );
+
+    await findByRole('link', { name: 'Dashboard' });
+    await waitFor(() => expect(coachingListCountResult).toHaveBeenCalled());
+    expect(queryByRole('link', { name: 'Coaching' })).not.toBeInTheDocument();
+  });
+
+  it('hides the Coaching link and keeps the nav when the coaching count fails', async () => {
+    const { findByRole, queryByRole } = render(
+      <TestComponent openMobile coachingFails />,
+    );
+
+    await waitFor(() => expect(coachingListCountResult).toHaveBeenCalled());
+    expect(await findByRole('link', { name: 'Dashboard' })).toBeInTheDocument();
+    expect(queryByRole('link', { name: 'Coaching' })).not.toBeInTheDocument();
   });
 });
