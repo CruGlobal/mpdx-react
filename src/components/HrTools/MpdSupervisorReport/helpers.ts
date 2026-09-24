@@ -3,7 +3,9 @@ import { TFunction } from 'i18next';
 import {
   MpdAssignmentCategoryGroupEnum,
   MpdHealthStatusEnum,
+  PeopleGroupSupportTypeEnum,
   QuarterlyPayrollHistory,
+  SecaStatusEnum,
 } from 'src/graphql/types.generated';
 import { ManagedStaffQuery } from './ManagedStaff.generated';
 
@@ -201,6 +203,177 @@ export const getLocalizedAssignmentCategoryGroup = (
       return t('Full time');
     case MpdAssignmentCategoryGroupEnum.PartTime:
       return t('Part time');
+    default:
+      return pendingField;
+  }
+};
+
+/**
+ * A list row. When both spouses are in the results the second one is folded
+ * into the first as `partner`, so the pair takes one row.
+ */
+export type StaffRow = ManagedStaffMember & { partner?: ManagedStaffMember };
+
+/**
+ * Fold each spouse pair present in the list into one row, keeping the earlier
+ * position (spouses share a staff account, so their health sorts identically).
+ * Each spouse keeps their own team list; `getRowTeamNames` unions them for
+ * display. A spouse who is not in the list leaves the row untouched.
+ */
+export const mergeSpouseRows = (nodes: ManagedStaffMember[]): StaffRow[] => {
+  const byPersonNumber = new Map(
+    nodes.map((node) => [node.personNumber, node]),
+  );
+  const absorbed = new Set<string>();
+  const rows: StaffRow[] = [];
+  for (const node of nodes) {
+    if (absorbed.has(node.personNumber)) {
+      continue;
+    }
+    const partner = node.spousePersonNumber
+      ? byPersonNumber.get(node.spousePersonNumber)
+      : undefined;
+    // Only a mutual pair merges, so a stale spouse link cannot swallow a row
+    if (partner && partner.spousePersonNumber === node.personNumber) {
+      absorbed.add(partner.personNumber);
+      rows.push({ ...node, partner });
+    } else {
+      rows.push(node);
+    }
+  }
+  return rows;
+};
+
+/** The row's team names: the member's teams plus a merged partner's, deduplicated. */
+export const getRowTeamNames = ({ teams, partner }: StaffRow): string[] => [
+  ...new Set([
+    ...teams.employee.map(({ name }) => name),
+    ...(partner?.teams.employee.map(({ name }) => name) ?? []),
+  ]),
+];
+
+/** "Anton & Artjola Capo", or both full names when the last names differ. */
+export const getRowName = ({
+  firstName,
+  lastName,
+  partner,
+}: StaffRow): string => {
+  if (!partner) {
+    return `${firstName} ${lastName}`;
+  }
+  return partner.lastName === lastName
+    ? `${firstName} & ${partner.firstName} ${lastName}`
+    : `${firstName} ${lastName} & ${partner.firstName} ${partner.lastName}`;
+};
+
+/** Both first initials for a pair; the usual first + last initials otherwise. */
+export const getRowInitials = ({
+  firstName,
+  lastName,
+  partner,
+}: StaffRow): string =>
+  partner
+    ? getInitials(firstName, partner.firstName)
+    : getInitials(firstName, lastName);
+
+/** People in the rows, counting a merged pair as two. */
+export const countPeople = (rows: StaffRow[]): number =>
+  rows.reduce((total, row) => total + (row.partner ? 2 : 1), 0);
+
+/** Status of the newest completed quarter; Gray when none has completed. */
+export const latestQuarterStatus = ({
+  quarterlyHealth,
+}: Pick<ManagedStaffMember, 'quarterlyHealth'>): MpdHealthStatusEnum => {
+  const [latest] = [...(quarterlyHealth?.completedQuarters ?? [])].sort(
+    (a, b) => b.fiscalYear - a.fiscalYear || b.quarter - a.quarter,
+  );
+  return latest?.status ?? MpdHealthStatusEnum.Gray;
+};
+
+export interface TeamSummaryRow {
+  name: string;
+  staffCount: number;
+  counts: Record<MpdHealthStatusEnum, number>;
+}
+
+const emptyCounts = (): Record<MpdHealthStatusEnum, number> => ({
+  [MpdHealthStatusEnum.Red]: 0,
+  [MpdHealthStatusEnum.Yellow]: 0,
+  [MpdHealthStatusEnum.Green]: 0,
+  [MpdHealthStatusEnum.Gray]: 0,
+});
+
+/**
+ * How each team in the rows is doing: people per latest-quarter status. A
+ * person on several teams counts toward each; a merged partner counts on their
+ * own teams. Worst teams first: most at risk, then most needing attention.
+ */
+export const summarizeTeams = (rows: StaffRow[]): TeamSummaryRow[] => {
+  const teams = new Map<string, TeamSummaryRow>();
+  const add = (member: ManagedStaffMember, teamNames: string[]) => {
+    const status = latestQuarterStatus(member);
+    for (const name of new Set(teamNames)) {
+      const team = teams.get(name) ?? {
+        name,
+        staffCount: 0,
+        counts: emptyCounts(),
+      };
+      team.staffCount += 1;
+      team.counts[status] += 1;
+      teams.set(name, team);
+    }
+  };
+  for (const row of rows) {
+    const { partner, ...member } = row;
+    add(
+      member,
+      member.teams.employee.map(({ name }) => name),
+    );
+    if (partner) {
+      add(
+        partner,
+        partner.teams.employee.map(({ name }) => name),
+      );
+    }
+  }
+  return [...teams.values()].sort(
+    (a, b) =>
+      b.counts[MpdHealthStatusEnum.Red] - a.counts[MpdHealthStatusEnum.Red] ||
+      b.counts[MpdHealthStatusEnum.Yellow] -
+        a.counts[MpdHealthStatusEnum.Yellow] ||
+      a.name.localeCompare(b.name),
+  );
+};
+
+export const getLocalizedSupportType = (
+  t: TFunction,
+  value: PeopleGroupSupportTypeEnum | null | undefined,
+): string => {
+  switch (value) {
+    case PeopleGroupSupportTypeEnum.SupportedRmo:
+      return t('Supported RMO');
+    case PeopleGroupSupportTypeEnum.SupportedNonRmo:
+      return t('Supported non-RMO');
+    case PeopleGroupSupportTypeEnum.Designation:
+      return t('Designation');
+    case PeopleGroupSupportTypeEnum.None:
+      return t('Not supported');
+    default:
+      return pendingField;
+  }
+};
+
+export const getLocalizedSecaStatus = (
+  t: TFunction,
+  value: SecaStatusEnum | null | undefined,
+): string => {
+  switch (value) {
+    case SecaStatusEnum.Seca:
+      return t('Pays SECA');
+    case SecaStatusEnum.Fica:
+      return t('Pays FICA');
+    case SecaStatusEnum.Optout:
+      return t('Exempt from SECA');
     default:
       return pendingField;
   }
