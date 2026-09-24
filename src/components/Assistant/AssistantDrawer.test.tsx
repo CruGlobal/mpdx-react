@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import matchMediaMock from '__tests__/util/matchMediaMock';
+import { widgetHTML } from 'src/components/Helpjuice/widget.mock';
 import theme from 'src/theme';
 import { AssistantDrawer } from './AssistantDrawer';
 import { AssistantProvider, useAssistantContext } from './AssistantProvider';
@@ -329,6 +330,23 @@ describe('AssistantDrawer', () => {
           overflowY: 'auto',
           minHeight: '0',
         });
+      });
+
+      it('hides the help beacon while open and restores it on close', async () => {
+        document.body.insertAdjacentHTML('beforeend', widgetHTML);
+        const beacon = document.getElementById('helpjuice-widget');
+        beacon?.style.setProperty('display', 'block');
+        const { getByRole, queryByRole } = await openDrawer();
+
+        expect(beacon).not.toBeVisible();
+
+        userEvent.click(getByRole('button', { name: 'Close Assistant' }));
+        await waitFor(() =>
+          expect(queryByRole('dialog')).not.toBeInTheDocument(),
+        );
+        expect(beacon).toBeVisible();
+        expect(beacon?.style.display).toBe('block');
+        document.querySelector('.hj-swifty')?.remove();
       });
 
       it('follows the visible viewport so the composer stays above the on-screen keyboard', async () => {
