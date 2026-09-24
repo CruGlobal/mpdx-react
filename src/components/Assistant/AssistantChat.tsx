@@ -135,8 +135,14 @@ export const AssistantChat: React.FC = () => {
     refreshToken,
     retry,
   } = useAssistantToken(configured ? accountListId : null);
-  const { sendMessage, stop, streaming, helpOnly, rateLimited } =
-    useAssistantStream({ accountListId, token, refreshToken });
+  const {
+    sendMessage,
+    stop,
+    streaming,
+    helpOnly,
+    rateLimited,
+    assistantDisabled,
+  } = useAssistantStream({ accountListId, token, refreshToken });
   const [draft, setDraft] = useState('');
   const canSend =
     Boolean(draft.trim()) && tokenState.status === 'ready' && !rateLimited;
@@ -183,6 +189,11 @@ export const AssistantChat: React.FC = () => {
       </MessageArea>
       <Divider />
       <Footer>
+        {configured && !deadEnd && assistantDisabled && (
+          <Typography variant="body2" color="text.secondary" role="status">
+            {t('The assistant is off right now. Please try again later.')}
+          </Typography>
+        )}
         {!configured ? (
           <Typography variant="body2" color="text.secondary">
             {t('The assistant is not configured.')}

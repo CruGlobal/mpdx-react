@@ -110,6 +110,8 @@ const typeMessage = async (
   return input;
 };
 
+const offNotice = 'The assistant is off right now. Please try again later.';
+
 const seconds = (count: number) => count * 1000;
 const minutes = (count: number) => count * 60 * 1000;
 
@@ -470,7 +472,7 @@ describe('AssistantChat', () => {
         { ok: false, status: 503 },
       ),
     );
-    const { getByRole, findByText } = render(<TestComponent />);
+    const { getByRole, findByText, queryByText } = render(<TestComponent />);
 
     await typeMessage(getByRole, 'Hi');
     userEvent.click(getByRole('button', { name: 'Send' }));
@@ -480,6 +482,115 @@ describe('AssistantChat', () => {
         'The assistant is busy right now. Please try again in a moment.',
       ),
     ).toBeInTheDocument();
+    expect(queryByText(offNotice)).not.toBeInTheDocument();
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+  });
+
+  describe('when the assistant is switched off', () => {
+    const switchedOff = () =>
+      mockJsonResponse(
+        { error: 'assistant_disabled' },
+        { ok: false, status: 503 },
+      );
+
+    it('shows a calm notice without an error and never retries on its own', async () => {
+      jest.useFakeTimers();
+      fetchSpy.mockResolvedValueOnce(switchedOff());
+      const { getByRole, getByText, findByRole, queryByText } = render(
+        <TestComponent />,
+      );
+
+      await typeMessage(getByRole, 'Hi');
+      userEvent.click(getByRole('button', { name: 'Send' }));
+
+      expect(await findByRole('status')).toHaveTextContent(offNotice);
+      expect(getByText('Hi')).toBeInTheDocument();
+      expect(
+        queryByText('Sorry, something went wrong. Please try again.'),
+      ).not.toBeInTheDocument();
+      expect(
+        getByRole('textbox', { name: 'Ask the assistant' }),
+      ).toBeInTheDocument();
+
+      act(() => jest.advanceTimersByTime(minutes(10)));
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(queryByText(offNotice)).toBeInTheDocument();
+    });
+
+    it('keeps the earlier transcript', async () => {
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames))
+        .mockResolvedValueOnce(switchedOff());
+      const { getByRole, findByText, getByText } = render(<TestComponent />);
+
+      await typeMessage(getByRole, 'How many contacts?');
+      userEvent.click(getByRole('button', { name: 'Send' }));
+      expect(await findByText('You have 12 contacts.')).toBeInTheDocument();
+      await typeMessage(getByRole, 'And gifts?');
+      userEvent.click(getByRole('button', { name: 'Send' }));
+
+      expect(await findByText(offNotice)).toBeInTheDocument();
+      expect(getByText('How many contacts?')).toBeInTheDocument();
+      expect(getByText('You have 12 contacts.')).toBeInTheDocument();
+      expect(getByText('And gifts?')).toBeInTheDocument();
+    });
+
+    it('clears the notice once a send gets a normal answer', async () => {
+      fetchSpy
+        .mockResolvedValueOnce(switchedOff())
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+      const { getByRole, findByText, queryByText } = render(<TestComponent />);
+
+      await typeMessage(getByRole, 'Hi');
+      userEvent.click(getByRole('button', { name: 'Send' }));
+      expect(await findByText(offNotice)).toBeInTheDocument();
+
+      await typeMessage(getByRole, 'How many contacts?');
+      userEvent.click(getByRole('button', { name: 'Send' }));
+
+      expect(await findByText('You have 12 contacts.')).toBeInTheDocument();
+      expect(queryByText(offNotice)).not.toBeInTheDocument();
+      expect(fetchSpy).toHaveBeenCalledTimes(3);
+    });
+
+    it('clears the notice when the drawer is reopened', async () => {
+      fetchSpy.mockResolvedValueOnce(switchedOff());
+      const { getByRole, findByText, queryByText, rerender } = render(
+        <TestComponent />,
+      );
+
+      await typeMessage(getByRole, 'Hi');
+      userEvent.click(getByRole('button', { name: 'Send' }));
+      expect(await findByText(offNotice)).toBeInTheDocument();
+
+      rerender(<TestComponent open={false} />);
+      rerender(<TestComponent />);
+
+      expect(queryByText(offNotice)).not.toBeInTheDocument();
+      expect(queryByText('Hi')).toBeInTheDocument();
+      expect(
+        getByRole('textbox', { name: 'Ask the assistant' }),
+      ).toBeInTheDocument();
+      await waitForMint();
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('treats any other 503 as a plain failure', async () => {
+      fetchSpy.mockResolvedValueOnce(
+        mockJsonResponse({ error: 'maintenance' }, { ok: false, status: 503 }),
+      );
+      const { getByRole, findByText, queryByText } = render(<TestComponent />);
+
+      await typeMessage(getByRole, 'Hi');
+      userEvent.click(getByRole('button', { name: 'Send' }));
+
+      expect(
+        await findByText('Sorry, something went wrong. Please try again.'),
+      ).toBeInTheDocument();
+      expect(queryByText(offNotice)).not.toBeInTheDocument();
+    });
   });
 
   it('disables Send until Retry-After passes', async () => {
