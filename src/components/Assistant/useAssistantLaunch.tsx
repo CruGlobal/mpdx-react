@@ -8,6 +8,7 @@ import {
 
 export interface AssistantLaunch {
   launcher: AssistantLauncherState;
+  open: boolean;
   launch: (returnFocusTo: HTMLButtonElement | null) => void;
   firstRunDialog: React.ReactElement;
 }
@@ -15,12 +16,16 @@ export interface AssistantLaunch {
 // Shared by the top bar button and the orb so both open the Guide the same way
 export const useAssistantLaunch = (): AssistantLaunch => {
   const { launcher } = useAssistantAccess();
-  const { open, openAssistant, launcherRef } = useAssistantContext();
+  const { open, openAssistant, closeAssistant, launcherRef } =
+    useAssistantContext();
   const [firstRunOpen, setFirstRunOpen] = useState(false);
 
+  // A launcher toggles, closing through the same path as the close button
   const launch = (returnFocusTo: HTMLButtonElement | null) => {
     launcherRef.current = returnFocusTo;
-    if (launcher === 'enabled') {
+    if (open) {
+      closeAssistant();
+    } else if (launcher === 'enabled') {
       openAssistant();
     } else {
       setFirstRunOpen(true);
@@ -45,5 +50,5 @@ export const useAssistantLaunch = (): AssistantLaunch => {
     />
   );
 
-  return { launcher, launch, firstRunDialog };
+  return { launcher, open, launch, firstRunDialog };
 };

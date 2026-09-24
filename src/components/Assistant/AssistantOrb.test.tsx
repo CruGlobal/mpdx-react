@@ -170,9 +170,16 @@ describe('AssistantOrb', () => {
     const css = [...document.querySelectorAll('style')]
       .map((style) => style.textContent)
       .join('');
-    expect(css).toMatch(
-      /@media \(prefers-reduced-motion: no-preference\)\{[^{}]*\[data-animating="true"\]\{[^}]*animation:[^;]* 3s /,
+    const breathing = css.match(
+      /@media \(prefers-reduced-motion: no-preference\)\{[^{}]*\[data-animating="true"\]\{[^}]*?animation:(\S+) 4s /,
     );
+    expect(breathing).not.toBeNull();
+    const frames =
+      css.match(
+        new RegExp(`@keyframes ${breathing?.[1]}\\{(.*?\\})\\}`),
+      )?.[1] ?? '';
+    expect(frames).toMatch(/scale\(1\.02\)/);
+    expect(frames).not.toMatch(/brightness|filter/);
 
     userEvent.keyboard('{esc}');
     await waitFor(() =>
@@ -181,6 +188,27 @@ describe('AssistantOrb', () => {
       ).not.toBeInTheDocument(),
     );
     expect(circleOf(orb)).not.toHaveAttribute('data-animating');
+  });
+
+  it('toggles the Guide closed when clicked while open', async () => {
+    const { findAllByRole, getByRole, queryByRole } = render(
+      <TestComponent settings={{ enabled: true }} />,
+    );
+    const orb = await findOrb(findAllByRole);
+    expect(orb).toHaveAttribute('aria-expanded', 'false');
+
+    userEvent.click(orb);
+    const card = getByRole('dialog', { name: 'MPDX Guide' });
+    expect(orb).toHaveAccessibleName('Close MPDX Guide');
+    expect(orb).toHaveAttribute('aria-expanded', 'true');
+
+    userEvent.click(orb);
+    expect(card).toHaveAttribute('data-genie', 'out');
+    await waitFor(() => expect(queryByRole('dialog')).not.toBeInTheDocument());
+    expect(orb).toHaveFocus();
+    expect(orb).toHaveAccessibleName('Open MPDX Guide');
+    expect(orb).toHaveAttribute('aria-expanded', 'false');
+    expect(orb).toHaveTextContent('MPDX Guide');
   });
 
   it('opens the first-run explanation before opt-in', async () => {
@@ -250,7 +278,11 @@ describe('AssistantOrb', () => {
     userEvent.click(await findOrb(findAllByRole));
     expect(beacon).not.toBeVisible();
 
-    userEvent.click(getByRole('button', { name: 'Close MPDX Guide' }));
+    userEvent.click(
+      within(getByRole('dialog')).getByRole('button', {
+        name: 'Close MPDX Guide',
+      }),
+    );
     await waitFor(() => expect(queryByRole('dialog')).not.toBeInTheDocument());
     expect(beacon).toBeVisible();
     expect(beacon?.style.getPropertyValue('margin-right')).toBe('72px');

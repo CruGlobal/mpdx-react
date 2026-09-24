@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
@@ -87,6 +87,30 @@ describe('AssistantLauncher', () => {
     expect(getByRole('dialog', { name: 'MPDX Guide' })).toBeInTheDocument();
   });
 
+  it('toggles the Guide and says which way it will go', async () => {
+    const { findByRole, getByRole, queryByRole } = render(
+      <TestComponent settings={{ enabled: true }} />,
+    );
+    const launcher = await findByRole('button', launcherName);
+    expect(launcher).toHaveAttribute('aria-expanded', 'false');
+
+    userEvent.click(launcher);
+    const card = getByRole('dialog', { name: 'MPDX Guide' });
+    expect(launcher).toHaveAccessibleName('Close MPDX Guide');
+    expect(launcher).toHaveAttribute('aria-expanded', 'true');
+
+    userEvent.click(launcher);
+    expect(card).toHaveAttribute('data-genie', 'out');
+    await waitFor(() =>
+      expect(
+        queryByRole('dialog', { name: 'MPDX Guide' }),
+      ).not.toBeInTheDocument(),
+    );
+    expect(launcher).toHaveFocus();
+    expect(launcher).toHaveAccessibleName('Open MPDX Guide');
+    expect(launcher).toHaveAttribute('aria-expanded', 'false');
+  });
+
   it('opens the first-run explanation instead of the drawer before opt-in', async () => {
     const { findByRole, queryByRole } = render(<TestComponent />);
 
@@ -149,7 +173,7 @@ describe('AssistantLauncher', () => {
   });
 
   it('returns focus to the launcher after the first-run dialog opens the drawer', async () => {
-    const { findByRole, getByRole, queryByRole } = render(<TestComponent />);
+    const { findByRole, queryByRole } = render(<TestComponent />);
     const launcher = await findByRole('button', launcherName);
 
     userEvent.click(launcher);
@@ -162,7 +186,9 @@ describe('AssistantLauncher', () => {
     );
     await waitFor(() => expect(card).toContainElement(activeElement()));
 
-    userEvent.click(getByRole('button', { name: 'Close MPDX Guide' }));
+    userEvent.click(
+      within(card).getByRole('button', { name: 'Close MPDX Guide' }),
+    );
     await waitFor(() =>
       expect(
         queryByRole('dialog', { name: 'MPDX Guide' }),

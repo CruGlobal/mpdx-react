@@ -18,20 +18,20 @@ const DrawerContent = styled(Box)({
   height: '100%',
 });
 
-const genieOpenMs = 320;
-const genieCloseMs = 240;
-const genieStart = 'scale(0.1, 0.16) skewX(-6deg)';
+const genieOpenMs = 220;
+const genieCloseMs = 180;
+const genieStart = 'scale(0.6, 0.63)';
+const fadeOpenMs = 320;
+const fadeCloseMs = 240;
 
 const genieIn = keyframes({
-  '0%': { opacity: 0, transform: genieStart },
-  '33%': { opacity: 1 },
-  '100%': { opacity: 1, transform: 'none' },
+  from: { opacity: 0, transform: genieStart },
+  to: { opacity: 1, transform: 'none' },
 });
 
 const genieOut = keyframes({
-  '0%': { opacity: 1, transform: 'none' },
-  '67%': { opacity: 1 },
-  '100%': { opacity: 0, transform: genieStart },
+  from: { opacity: 1, transform: 'none' },
+  to: { opacity: 0, transform: genieStart },
 });
 
 const fadeIn = keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });
@@ -46,18 +46,18 @@ const Card = styled(Paper)(({ theme }) => ({
   outline: 'none',
   transformOrigin: 'bottom right',
   '&[data-genie="in"]': {
-    animation: `${genieIn} ${genieOpenMs}ms cubic-bezier(0.2, 0.9, 0.3, 1) both`,
+    animation: `${genieIn} ${genieOpenMs}ms ease-out both`,
   },
   '&[data-genie="out"]': {
-    animation: `${genieOut} ${genieCloseMs}ms cubic-bezier(0.5, 0, 0.9, 0.4) both`,
+    animation: `${genieOut} ${genieCloseMs}ms ease-in both`,
     pointerEvents: 'none',
   },
   '@media (prefers-reduced-motion: reduce)': {
     '&[data-genie="in"]': {
-      animation: `${fadeIn} ${genieOpenMs}ms ease-out both`,
+      animation: `${fadeIn} ${fadeOpenMs}ms ease-out both`,
     },
     '&[data-genie="out"]': {
-      animation: `${fadeOut} ${genieCloseMs}ms ease-in both`,
+      animation: `${fadeOut} ${fadeCloseMs}ms ease-in both`,
     },
   },
 }));
@@ -88,7 +88,11 @@ export const AssistantDrawer: React.FC = () => {
     noSsr: true,
   });
   const viewport = useVisualViewport(open && fullScreen);
-  const cardMounted = useClosingDelay(open, genieCloseMs);
+  // Waits for the longer of the two closing animations so neither is cut short
+  const cardMounted = useClosingDelay(
+    open,
+    Math.max(genieCloseMs, fadeCloseMs),
+  );
   const wasMounted = useRef(cardMounted);
   const cardRef = useRef<HTMLDivElement>(null);
 
