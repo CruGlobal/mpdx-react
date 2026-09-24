@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import {
   Box,
@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { getAppName } from 'src/lib/getAppName';
 import { AssistantChat } from './AssistantChat';
 import { useAssistantContext } from './AssistantProvider';
+import { useHelpjuiceBeaconStyle } from './helpjuiceBeacon';
 import { useAssistantVisibility } from './useAssistantVisibility';
 import { useVisualViewport } from './useVisualViewport';
 
@@ -41,16 +42,7 @@ export const AssistantDrawer: React.FC = () => {
   const viewport = useVisualViewport(open && fullScreen);
 
   // The Helpjuice beacon sits in the corner the drawer covers, so it would overlap the chat
-  useEffect(() => {
-    const beacon = document.getElementById('helpjuice-widget');
-    if (!open || !beacon) {
-      return;
-    }
-    const display = beacon.style.getPropertyValue('display');
-    const priority = beacon.style.getPropertyPriority('display');
-    beacon.style.setProperty('display', 'none', 'important');
-    return () => beacon.style.setProperty('display', display, priority);
-  }, [open]);
+  useHelpjuiceBeaconStyle(open, 'display', 'none');
 
   if (!visible) {
     return null;

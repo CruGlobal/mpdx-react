@@ -21,7 +21,8 @@ export interface AssistantContextValue extends AssistantState {
   open: boolean;
   openAssistant: () => void;
   closeAssistant: () => void;
-  launcherRef: React.RefObject<HTMLButtonElement>;
+  // Whichever launcher opened the Guide, so closing it returns focus there
+  launcherRef: React.MutableRefObject<HTMLButtonElement | null>;
   streaming: boolean;
   dispatch: React.Dispatch<AssistantAction>;
   beginStream: (controller: AbortController) => void;
@@ -52,7 +53,7 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
   const [open, setOpen] = useState(false);
   const openAssistant = useCallback(() => setOpen(true), []);
   const closeAssistant = useCallback(() => setOpen(false), []);
-  const launcherRef = useRef<HTMLButtonElement>(null);
+  const launcherRef = useRef<HTMLButtonElement | null>(null);
 
   const [state, dispatch] = useReducer(assistantReducer, initialAssistantState);
   const [streaming, setStreaming] = useState(false);

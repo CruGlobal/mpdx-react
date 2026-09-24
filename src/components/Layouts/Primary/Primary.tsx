@@ -1,7 +1,9 @@
 import React, { ReactElement, ReactNode, useState } from 'react';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { AssistantOrb } from 'src/components/Assistant/AssistantOrb';
 import { NavBar } from 'src/components/Layouts/Primary/NavBar/NavBar';
+import { useSetupContext } from 'src/components/Setup/SetupProvider';
 import { useOptionalAccountListId } from 'src/hooks/useAccountListId';
 import TopBar from './TopBar/TopBar';
 
@@ -30,6 +32,7 @@ interface Props {
 
 const Primary = ({ children }: Props): ReactElement => {
   const accountListId = useOptionalAccountListId();
+  const { onSetupTour } = useSetupContext();
   const [isMobileNavOpen, setMobileNavOpen] = useState<boolean>(false);
 
   return (
@@ -47,6 +50,7 @@ const Primary = ({ children }: Props): ReactElement => {
       <ContentContainer>
         <Content>{children}</Content>
       </ContentContainer>
+      {accountListId && !onSetupTour && <AssistantOrb />}
     </RootContainer>
   );
 };
