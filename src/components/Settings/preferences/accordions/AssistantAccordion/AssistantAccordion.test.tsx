@@ -125,7 +125,14 @@ describe('AssistantAccordion', () => {
     const { getByLabelText } = render(<TestComponent />);
 
     expect(getByLabelText('Help me use MPDX')).toHaveAccessibleDescription(
-      'It answers how-to questions, links you to the right page or a filtered list, and explains terms. What the model sees: help articles and a map of the app. No account data.',
+      'It answers how-to questions, links you to the right page or a filtered list, and explains terms. What the model sees: help articles, a map of the app, and which page you are on. No account data.',
+    );
+    expect(
+      getByLabelText('Keep my conversation history'),
+    ).toHaveAccessibleDescription(
+      expect.stringContaining(
+        'When this is off, you cannot come back to your conversations, but the permanent audit log still keeps them.',
+      ),
     );
   });
 
