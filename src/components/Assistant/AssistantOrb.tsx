@@ -4,7 +4,6 @@ import { ButtonBase, IconButton, useMediaQuery } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { getAppName } from 'src/lib/getAppName';
-import { useAssistantContext } from './AssistantProvider';
 import { GuideOrb, launcherOrbShadow, orbInset, orbSize } from './GuideOrb';
 import { useGuideOrbRight } from './guideOrbClearance';
 import { useHelpjuiceBeaconStyle } from './helpjuiceBeacon';
@@ -79,8 +78,7 @@ export const AssistantOrb: React.FC = () => {
   const appName = getAppName();
   const theme = useTheme();
   const phone = useMediaQuery(theme.breakpoints.down('sm'));
-  const { launcher, launch, firstRunDialog } = useAssistantLaunch();
-  const { open } = useAssistantContext();
+  const { launcher, open, launch, firstRunDialog } = useAssistantLaunch();
   const orbRef = useRef<HTMLButtonElement>(null);
   const nudgeId = useId();
   const right = useGuideOrbRight(orbInset);
@@ -94,7 +92,7 @@ export const AssistantOrb: React.FC = () => {
     return null;
   }
 
-  const openGuide = () => {
+  const toggleGuide = () => {
     nudge.dismiss();
     launch(orbRef.current);
   };
@@ -112,9 +110,14 @@ export const AssistantOrb: React.FC = () => {
       )}
       <Launcher
         ref={orbRef}
-        aria-label={t('Open {{appName}} Guide', { appName })}
+        aria-label={
+          open
+            ? t('Close {{appName}} Guide', { appName })
+            : t('Open {{appName}} Guide', { appName })
+        }
+        aria-expanded={open}
         aria-describedby={!open && nudge.show ? nudgeId : undefined}
-        onClick={openGuide}
+        onClick={toggleGuide}
       >
         {!open && (
           <Pill className="GuideOrb-pill" nudge={nudge.show}>

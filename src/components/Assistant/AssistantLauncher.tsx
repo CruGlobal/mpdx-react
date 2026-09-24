@@ -8,7 +8,7 @@ import { useAssistantLaunch } from './useAssistantLaunch';
 export const AssistantLauncher: React.FC = () => {
   const { t } = useTranslation();
   const appName = getAppName();
-  const { launcher, launch, firstRunDialog } = useAssistantLaunch();
+  const { launcher, open, launch, firstRunDialog } = useAssistantLaunch();
 
   if (launcher === 'hidden') {
     return null;
@@ -18,7 +18,12 @@ export const AssistantLauncher: React.FC = () => {
     <>
       <IconButton
         color="inherit"
-        aria-label={t('Open {{appName}} Guide', { appName })}
+        aria-label={
+          open
+            ? t('Close {{appName}} Guide', { appName })
+            : t('Open {{appName}} Guide', { appName })
+        }
+        aria-expanded={open}
         onClick={(event) => launch(event.currentTarget)}
       >
         <AutoAwesomeIcon />
