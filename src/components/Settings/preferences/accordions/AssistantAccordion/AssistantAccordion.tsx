@@ -128,7 +128,6 @@ export const AssistantAccordion: React.FC<AssistantAccordionProps> = ({
     }
   };
 
-  // Pending CON-004 review
   const capabilities: Capability[] = [
     {
       field: 'helpEnabled',
@@ -137,7 +136,7 @@ export const AssistantAccordion: React.FC<AssistantAccordionProps> = ({
         'It answers how-to questions, links you to the right page or a filtered list, and explains terms.',
       ),
       modelSees: t(
-        'What the model sees: help articles and a map of the app. No account data.',
+        'What the model sees: help articles, a map of the app, and which page you are on. No account data.',
       ),
       comingLater: false,
     },
@@ -201,7 +200,7 @@ export const AssistantAccordion: React.FC<AssistantAccordionProps> = ({
         'It saves your conversations so you can come back to them later.',
       ),
       modelSees: t(
-        'What the model sees: nothing extra. When this is off, your conversations are not saved.',
+        'What the model sees: nothing extra. When this is off, you cannot come back to your conversations, but the permanent audit log still keeps them.',
       ),
       comingLater: false,
     },

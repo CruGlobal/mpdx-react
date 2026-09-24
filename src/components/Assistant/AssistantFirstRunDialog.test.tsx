@@ -35,7 +35,10 @@ describe('AssistantFirstRunDialog', () => {
 
     const dialog = getByRole('dialog', { name: 'Meet the Assistant' });
     expect(dialog).toHaveTextContent('It is an AI, so it can be wrong.');
-    expect(dialog).toHaveTextContent('permanent audit log');
+    expect(dialog).toHaveTextContent(
+      'What you type and what it answers are kept in a permanent audit log.',
+    );
+    expect(dialog).toHaveTextContent('it never sees your notes');
     expect(dialog).toHaveTextContent(
       'help articles it links to are in English',
     );

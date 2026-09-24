@@ -49,21 +49,20 @@ export const AssistantFirstRunDialog: React.FC<
     }
   };
 
-  // Pending CON-004 review
   const points = [
     t(
       'The Assistant answers questions about using {{appName}} and links you to the right page.',
       { appName },
     ),
     t(
-      'It can see help articles and the page you are on. It cannot see your contacts, gifts, or notes.',
+      'It can see help articles and which page you are on. It cannot see your contacts or gifts unless you turn that on in Preferences, and it never sees your notes.',
     ),
     t(
       'It never changes your data on its own. Anything it suggests is yours to do or skip.',
     ),
     t('It is an AI, so it can be wrong. Check anything important.'),
     t(
-      'What you type is kept in a permanent audit log. Turning the Assistant off deletes your conversations, but not that log.',
+      'What you type and what it answers are kept in a permanent audit log. Turning the Assistant off deletes your conversations, but not that log.',
     ),
     t(
       'It answers in your language, but the help articles it links to are in English.',
