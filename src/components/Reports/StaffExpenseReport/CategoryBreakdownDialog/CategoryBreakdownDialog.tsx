@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import {
+  Box,
   Table,
   TableBody,
   TableCell,
@@ -16,6 +17,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { DialogSkeleton } from '../../Shared/DialogSkeleton/DialogSkeleton';
 import { Transaction } from '../Helpers/filterTransactions';
+import { PendingChip } from '../styledComponents/PendingChip';
 
 export interface CategoryBreakdownDialogProps {
   isOpen: boolean;
@@ -71,7 +73,14 @@ export const CategoryBreakdownDialog: React.FC<
                     locale,
                   )}
                 </TableCell>
-                <TableCell>{transaction.description}</TableCell>
+                <TableCell>
+                  <Box display="flex" alignItems="center" gap={1}>
+                    {transaction.description}
+                    {transaction.isPending && (
+                      <PendingChip label={t('Pending')} />
+                    )}
+                  </Box>
+                </TableCell>
                 <TableCell>{transaction.displayCategory}</TableCell>
                 <TableCell align="right">
                   {currencyFormat(Math.abs(transaction.amount), 'USD', locale)}
