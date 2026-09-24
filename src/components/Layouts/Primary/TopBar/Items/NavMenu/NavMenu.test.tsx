@@ -7,8 +7,8 @@ import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
-import { LoadCoachingListQuery } from 'src/components/Coaching/LoadCoachingList.generated';
 import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
+import { CoachingListCountQuery } from 'src/components/Layouts/Primary/CoachingListCount.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
 import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
@@ -19,17 +19,22 @@ import NavMenu from './NavMenu';
 const accountListId = 'test121';
 interface TestComponentProps {
   router?: Partial<NextRouter>;
+  onCall?: jest.Mock;
   mocks?: ApolloErgonoMockMap &
     DeepPartial<{
       GetToolNotifications: GetToolNotificationsQuery;
-      LoadCoachingList: LoadCoachingListQuery;
+      CoachingListCount: CoachingListCountQuery;
       GetUser: GetUserQuery;
       Hcm: HcmQuery;
       UserOption: UserOptionQuery;
     }>;
 }
 
-const TestComponent: React.FC<TestComponentProps> = ({ router, mocks }) => (
+const TestComponent: React.FC<TestComponentProps> = ({
+  router,
+  mocks,
+  onCall,
+}) => (
   <ThemeProvider theme={theme}>
     <TestRouter
       router={{
@@ -38,38 +43,40 @@ const TestComponent: React.FC<TestComponentProps> = ({ router, mocks }) => (
         ...router,
       }}
     >
-      <GqlMockedProvider mocks={mocks}>
+      <GqlMockedProvider mocks={mocks} onCall={onCall}>
         <NavMenu />
       </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>
 );
 
+const coachingMocks = (totalCount: number) => ({
+  CoachingListCount: { coachingAccountLists: { totalCount } },
+});
+
+const toolNotifications = (totalCount: number, mergeContacts = totalCount) => ({
+  fixCommitmentInfo: { totalCount },
+  fixMailingAddresses: { totalCount },
+  fixSendNewsletter: { totalCount },
+  fixEmailAddresses: { totalCount },
+  fixPhoneNumbers: { totalCount },
+  mergeContacts: { totalCount: mergeContacts },
+  mergePeople: { totalCount },
+});
+
+const expectMenuItems = (
+  getByRole: ReturnType<typeof render>['getByRole'],
+  names: string[],
+) =>
+  names.forEach((name) =>
+    expect(getByRole('menuitem', { name })).toBeInTheDocument(),
+  );
+
 const defaultMocks = {
-  LoadCoachingList: {
-    coachingAccountLists: {
-      totalCount: 1,
-    },
-  },
-  GetUser: {
-    user: {
-      userType: UserTypeEnum.UsStaff,
-    },
-  },
-  GetToolNotifications: {
-    fixCommitmentInfo: { totalCount: 0 },
-    fixMailingAddresses: { totalCount: 0 },
-    fixSendNewsletter: { totalCount: 0 },
-    fixEmailAddresses: { totalCount: 0 },
-    fixPhoneNumbers: { totalCount: 0 },
-    mergeContacts: { totalCount: 0 },
-    mergePeople: { totalCount: 0 },
-  },
-  UserOption: {
-    userOption: {
-      value: 'true',
-    },
-  },
+  ...coachingMocks(1),
+  GetUser: { user: { userType: UserTypeEnum.UsStaff } },
+  GetToolNotifications: toolNotifications(0),
+  UserOption: { userOption: { value: 'true' } },
 };
 
 describe('NavMenu', () => {
@@ -80,10 +87,12 @@ describe('NavMenu', () => {
     expect(
       await findByRole('menuitem', { name: 'HR Tools' }),
     ).toBeInTheDocument();
-    expect(getByRole('menuitem', { name: 'Dashboard' })).toBeInTheDocument();
-    expect(getByRole('menuitem', { name: 'Contacts' })).toBeInTheDocument();
-    expect(getByRole('menuitem', { name: 'Reports' })).toBeInTheDocument();
-    expect(getByRole('menuitem', { name: 'MPDX Tools' })).toBeInTheDocument();
+    expectMenuItems(getByRole, [
+      'Dashboard',
+      'Contacts',
+      'Reports',
+      'MPDX Tools',
+    ]);
     expect(
       await findByRole('menuitem', { name: 'Coaching' }),
     ).toBeInTheDocument();
@@ -95,31 +104,19 @@ describe('NavMenu', () => {
     );
     await findByRole('menuitem', { name: 'Reports' });
     userEvent.click(getByTestId('ReportMenuToggle'));
-    expect(getByRole('menuitem', { name: 'Donations' })).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { name: '14 Month Partner Report' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { name: '14 Month Salary Report' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { name: 'Staff Expense Report' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { name: 'Income/Expense Analysis' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { name: 'Designation Accounts' }),
-    ).toBeInTheDocument();
+    expectMenuItems(getByRole, [
+      'Donations',
+      '14 Month Partner Report',
+      '14 Month Salary Report',
+      'Staff Expense Report',
+      'Income/Expense Analysis',
+      'Designation Accounts',
+      'Expected Monthly Total',
+      'Partner Giving Analysis',
+    ]);
     expect(
       queryByRole('menuitem', { name: 'Responsibility Centers' }),
     ).not.toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { name: 'Expected Monthly Total' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { name: 'Partner Giving Analysis' }),
-    ).toBeInTheDocument();
   });
 
   it('renders HR Tools submenu items', async () => {
@@ -137,29 +134,19 @@ describe('NavMenu', () => {
         }}
       />,
     );
-    await findByRole('menuitem', { name: 'HR Tools' });
+    expect(
+      await findByRole('menuitem', { name: 'HR Tools' }),
+    ).toBeInTheDocument();
     userEvent.click(getByTestId('HrToolsMenuToggle'));
-    expect(
-      getByRole('menuitem', { name: 'Salary Calculation Form' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { name: 'Savings Fund Transfer' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { name: 'MPD Goal Calculator' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { name: 'MHA Calculation Tool' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { name: 'Additional Salary Request' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { name: 'Ministry Partner Reminders' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { name: 'MPD Supervisor Report' }),
-    ).toBeInTheDocument();
+    expectMenuItems(getByRole, [
+      'Salary Calculation Form',
+      'Savings Fund Transfer',
+      'MPD Goal Calculator',
+      'MHA Calculation Tool',
+      'Additional Salary Request',
+      'Ministry Partner Reminders',
+      'MPD Supervisor Report',
+    ]);
   });
 
   it('renders MPDX Tools submenu items', async () => {
@@ -168,35 +155,19 @@ describe('NavMenu', () => {
     );
     await findByRole('menuitem', { name: 'MPDX Tools' });
     userEvent.click(getByTestId('ToolsMenuToggle'));
-    expect(getByRole('menuitem', { name: 'Appeals' })).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { name: 'Fix Commitment Info' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { name: 'Fix Mailing Addresses' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { name: 'Fix Send Newsletter' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { name: 'Merge Contacts' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { name: 'Fix Email Addresses' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { name: 'Fix Phone Numbers' }),
-    ).toBeInTheDocument();
-    expect(getByRole('menuitem', { name: 'Merge People' })).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { name: 'Import from Google' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { name: 'Import from TntConnect' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { name: 'Import from CSV' }),
-    ).toBeInTheDocument();
+    expectMenuItems(getByRole, [
+      'Appeals',
+      'Fix Commitment Info',
+      'Fix Mailing Addresses',
+      'Fix Send Newsletter',
+      'Merge Contacts',
+      'Fix Email Addresses',
+      'Fix Phone Numbers',
+      'Merge People',
+      'Import from Google',
+      'Import from TntConnect',
+      'Import from CSV',
+    ]);
     expect(getByTestId('appeals-false')).toBeInTheDocument();
   });
 
@@ -236,24 +207,24 @@ describe('NavMenu', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('shows coaching link if there are coaching accounts', async () => {
+    const { findByRole } = render(<TestComponent mocks={coachingMocks(3)} />);
+    expect(
+      await findByRole('menuitem', { hidden: true, name: 'Coaching' }),
+    ).toBeInTheDocument();
+  });
+
   it('does not show coaching link if there are no coaching accounts', async () => {
+    const mutationSpy = jest.fn();
     const { queryByRole } = render(
-      <TestComponent
-        mocks={{
-          LoadCoachingList: {
-            coachingAccountLists: {
-              totalCount: 0,
-              nodes: [],
-            },
-          },
-        }}
-      />,
+      <TestComponent mocks={coachingMocks(0)} onCall={mutationSpy} />,
     );
     await waitFor(() =>
-      expect(
-        queryByRole('menuitem', { hidden: true, name: 'Coaching' }),
-      ).not.toBeInTheDocument(),
+      expect(mutationSpy).toHaveGraphqlOperation('CoachingListCount'),
     );
+    expect(
+      queryByRole('menuitem', { hidden: true, name: 'Coaching' }),
+    ).not.toBeInTheDocument();
   });
 
   it('test current tool id hook', () => {
@@ -271,19 +242,7 @@ describe('NavMenu', () => {
 
   it('test notifications = 0', async () => {
     const { queryByTestId, getByTestId } = render(
-      <TestComponent
-        mocks={{
-          GetToolNotifications: {
-            fixCommitmentInfo: { totalCount: 0 },
-            fixMailingAddresses: { totalCount: 0 },
-            fixSendNewsletter: { totalCount: 0 },
-            fixEmailAddresses: { totalCount: 0 },
-            fixPhoneNumbers: { totalCount: 0 },
-            mergeContacts: { totalCount: 0 },
-            mergePeople: { totalCount: 0 },
-          },
-        }}
-      />,
+      <TestComponent mocks={{ GetToolNotifications: toolNotifications(0) }} />,
     );
 
     await waitFor(() =>
@@ -301,19 +260,7 @@ describe('NavMenu', () => {
 
   it('test notifications > 0', async () => {
     const { getByTestId } = render(
-      <TestComponent
-        mocks={{
-          GetToolNotifications: {
-            fixCommitmentInfo: { totalCount: 1 },
-            fixMailingAddresses: { totalCount: 1 },
-            fixSendNewsletter: { totalCount: 1 },
-            fixEmailAddresses: { totalCount: 1 },
-            fixPhoneNumbers: { totalCount: 1 },
-            mergeContacts: { totalCount: 1 },
-            mergePeople: { totalCount: 1 },
-          },
-        }}
-      />,
+      <TestComponent mocks={{ GetToolNotifications: toolNotifications(1) }} />,
     );
 
     await waitFor(() =>
@@ -333,17 +280,7 @@ describe('NavMenu', () => {
   it('test notifications > 99', async () => {
     const { getByTestId } = render(
       <TestComponent
-        mocks={{
-          GetToolNotifications: {
-            fixCommitmentInfo: { totalCount: 30 },
-            fixMailingAddresses: { totalCount: 30 },
-            fixSendNewsletter: { totalCount: 30 },
-            fixEmailAddresses: { totalCount: 30 },
-            fixPhoneNumbers: { totalCount: 30 },
-            mergeContacts: { totalCount: 130 },
-            mergePeople: { totalCount: 30 },
-          },
-        }}
+        mocks={{ GetToolNotifications: toolNotifications(30, 130) }}
       />,
     );
 
