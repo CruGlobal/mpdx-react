@@ -7,7 +7,10 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { MpdAssignmentCategoryGroupEnum } from 'src/graphql/types.generated';
 import { MpdSupervisorReportQuickFilterEnum } from './Filters/mpdSupervisorReportFilters';
-import { ManagedStaffQuery } from './ManagedStaff.generated';
+import {
+  ManagedStaffQuery,
+  ManagedStaffQueryVariables,
+} from './ManagedStaff.generated';
 import {
   FilterRequired,
   MpdSupervisorReportProvider,
@@ -18,7 +21,7 @@ import {
   useMpdSupervisorReport,
 } from './MpdSupervisorReportContext';
 import { StaffDetailTabEnum } from './StaffDetailsTabs/StaffDetailTab';
-import { ManagedStaffMember } from './helpers';
+import { ManagedStaffMember, StaffRow } from './helpers';
 import {
   managedStaffMember,
   managedStaffMock,
@@ -54,7 +57,12 @@ interface ConsumerResult {
   filterRequired: FilterRequired | null;
   staffError: ApolloError | undefined;
   loadMoreError: ApolloError | undefined;
-  staffMembers: ManagedStaffMember[];
+  staffMembers: StaffRow[];
+  loadedCount: number;
+  staffComplete: boolean;
+  queryVariables: ManagedStaffQueryVariables;
+  expandedRows: ReadonlySet<string>;
+  toggleRow: (personNumber: string) => void;
   rowDensity: RowDensityEnum;
   setRowDensity: (v: RowDensityEnum) => void;
   loadMore: () => void;
@@ -357,6 +365,87 @@ describe('MpdSupervisorReportContext', () => {
   });
 });
 
+describe('rows', () => {
+  const john = managedStaffMember({
+    personNumber: '1',
+    spousePersonNumber: '2',
+  });
+  const jane = managedStaffMember({
+    firstName: 'Jane',
+    personNumber: '2',
+    spousePersonNumber: '1',
+  });
+
+  it('asks for the whole result in one page of 100', async () => {
+    renderConsumer();
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        first: 100,
+      }),
+    );
+  });
+
+  it('merges a spouse pair into one row and counts both people', async () => {
+    renderInProvider(<Consumer />, {}, managedStaffMock([john, jane]));
+
+    await waitFor(() => expect(consumerResult.staffMembers).toHaveLength(1));
+    expect(consumerResult.staffMembers[0].partner?.personNumber).toBe('2');
+    expect(consumerResult.loadedCount).toBe(2);
+  });
+
+  it('loads every page by itself and reports when the result is complete', async () => {
+    const page1 = managedStaffMock([john]);
+    page1.managedStaff.pageInfo = { endCursor: 'cursor-1', hasNextPage: true };
+    const page2 = managedStaffMock([
+      managedStaffMember({
+        firstName: 'Zoe',
+        personNumber: '9',
+        staffAccountId: 'z',
+      }),
+    ]);
+    renderConsumer({
+      ManagedStaff: {
+        managedStaff: (_root: unknown, args: { after?: string | null }) =>
+          args.after ? page2.managedStaff : page1.managedStaff,
+      },
+    });
+
+    await waitFor(() => expect(consumerResult.staffComplete).toBe(true));
+    expect(
+      consumerResult.staffMembers.map(({ firstName }) => firstName),
+    ).toEqual(['John', 'Zoe']);
+  });
+
+  it('exposes the variables the roster query runs with', async () => {
+    renderConsumer();
+    act(() => {
+      consumerResult.setTeam('Central Team');
+    });
+    await waitFor(() =>
+      expect(consumerResult.queryVariables).toMatchObject({
+        first: 100,
+        teamNames: ['Central Team'],
+      }),
+    );
+  });
+
+  it('toggles a row open and closed', () => {
+    renderConsumer();
+    expect(consumerResult.expandedRows.has('1')).toBe(false);
+
+    act(() => {
+      consumerResult.toggleRow('1');
+    });
+    expect(consumerResult.expandedRows.has('1')).toBe(true);
+
+    act(() => {
+      consumerResult.toggleRow('1');
+    });
+    expect(consumerResult.expandedRows.has('1')).toBe(false);
+  });
+});
+
 describe('managed staff query variables', () => {
   it('exposes the FILTER_REQUIRED guard instead of an error', async () => {
     renderConsumer(filterGuard(false));
@@ -423,43 +512,34 @@ describe('managed staff query variables', () => {
           operation.variables.after === 'cursor-1',
       );
 
-    it('keeps the loaded rows and exposes the failure', async () => {
+    it('asks for the rest of the result by itself, keeps the loaded rows and exposes the failure', async () => {
       renderConsumer(failingSecondPage);
-      await waitFor(() => expect(consumerResult.staffMembers).toHaveLength(1));
-
-      act(() => {
-        consumerResult.loadMore();
-      });
 
       await waitFor(() =>
         expect(consumerResult.loadMoreError?.message).toBe('Page failed'),
       );
       expect(consumerResult.staffMembers).toHaveLength(1);
       expect(consumerResult.staffError).toBeUndefined();
+      expect(consumerResult.staffComplete).toBe(false);
+      // A failed page is not retried in a loop
+      await act(() => new Promise((resolve) => setTimeout(resolve, 50)));
+      expect(pageRequests()).toHaveLength(1);
     });
 
-    it('retries the same cursor and clears the failure while it retries', async () => {
+    it('retries the same cursor when asked', async () => {
       renderConsumer(failingSecondPage);
-      await waitFor(() => expect(consumerResult.staffMembers).toHaveLength(1));
-      act(() => {
-        consumerResult.loadMore();
-      });
       await waitFor(() => expect(consumerResult.loadMoreError).toBeDefined());
-      expect(pageRequests()).toHaveLength(1);
+      const before = pageRequests().length;
 
       act(() => {
         consumerResult.loadMore();
       });
 
-      await waitFor(() => expect(pageRequests()).toHaveLength(2));
+      await waitFor(() => expect(pageRequests().length).toBe(before + 1));
     });
 
     it('forgets the failure when the filters change', async () => {
       renderConsumer(failingSecondPage);
-      await waitFor(() => expect(consumerResult.staffMembers).toHaveLength(1));
-      act(() => {
-        consumerResult.loadMore();
-      });
       await waitFor(() => expect(consumerResult.loadMoreError).toBeDefined());
 
       act(() => {

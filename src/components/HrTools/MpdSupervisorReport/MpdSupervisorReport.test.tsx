@@ -19,7 +19,6 @@ import { MpdSupervisorReport } from './MpdSupervisorReport';
 import {
   MpdSupervisorReportProvider,
   Panel,
-  useMpdSupervisorReport,
 } from './MpdSupervisorReportContext';
 import { StaffMemberDrawer } from './StaffMemberDrawer/StaffMemberDrawer';
 import {
@@ -31,15 +30,6 @@ import {
 const onNavListToggle = jest.fn();
 const onFilterListToggle = jest.fn();
 const mutationSpy = jest.fn();
-
-// Virtuoso's endReached is not reliable in jsdom, so a test asks for the next
-// page through the context directly.
-let loadMoreFn: () => void;
-const LoadMoreTrigger: React.FC = () => {
-  const { loadMore } = useMpdSupervisorReport();
-  loadMoreFn = loadMore;
-  return null;
-};
 
 const geographicConstants = {
   constant: {
@@ -134,7 +124,6 @@ const renderReport = ({
                   <MpdSupervisorReportFilterPanel onClose={jest.fn()} />
                 )}
                 <StaffMemberDrawer />
-                <LoadMoreTrigger />
               </MpdSupervisorReportProvider>
             </GqlMockedProvider>
           </VirtuosoMockContext.Provider>
@@ -359,10 +348,7 @@ describe('MpdSupervisorReport', () => {
         ({ variables }) => variables.after === 'cursor-1',
       );
 
-    act(() => {
-      loadMoreFn();
-    });
-
+    // The context asks for the rest of the result by itself
     const alert = await findByRole('alert');
     expect(alert).toHaveTextContent('Could not load more staff: Page failed');
     expect(getByText('John Smith')).toBeInTheDocument();
@@ -377,6 +363,65 @@ describe('MpdSupervisorReport', () => {
     await waitFor(() =>
       expect(pageRequests().length).toBeGreaterThan(requestsBeforeRetry),
     );
+  });
+
+  it('counts people, not rows, when a spouse pair is merged', async () => {
+    const john = managedStaffMember({
+      personNumber: '1',
+      spousePersonNumber: '2',
+    });
+    const jane = managedStaffMember({
+      firstName: 'Jane',
+      personNumber: '2',
+      spousePersonNumber: '1',
+    });
+    const { findByText, queryByText } = renderReport({
+      managedStaff: managedStaffMock([john, jane]),
+    });
+
+    expect(await findByText('John & Jane Smith')).toBeInTheDocument();
+    expect(queryByText('Jane Smith')).not.toBeInTheDocument();
+    // The couple shares a row, so the header says so
+    expect(
+      await findByText('Showing 2 of 2 in one row · sorted by MPD health'),
+    ).toBeInTheDocument();
+  });
+
+  it('opens and closes a quick glance from the row chevron', async () => {
+    const { findByRole, getByRole, queryByTestId, getByTestId } =
+      renderReport();
+    const chevron = await findByRole('button', {
+      name: 'Show details for John Smith',
+    });
+    expect(queryByTestId('quick-glance')).not.toBeInTheDocument();
+
+    userEvent.click(chevron);
+
+    expect(getByTestId('quick-glance')).toHaveTextContent('Tenure');
+    userEvent.click(
+      getByRole('button', { name: 'Hide details for John Smith' }),
+    );
+    await waitFor(() =>
+      expect(queryByTestId('quick-glance')).not.toBeInTheDocument(),
+    );
+  });
+
+  it('hides the team summary while the filter guard is showing', async () => {
+    const { findByRole, queryByRole } = renderReport({
+      mocks: filterGuard(false),
+    });
+    await findByRole('heading', { name: /too many to list at once/ });
+
+    expect(queryByRole('region', { name: 'Teams' })).not.toBeInTheDocument();
+  });
+
+  it('shows the team summary for a supervisor with several teams', async () => {
+    const { findByRole } = renderReport();
+
+    const region = await findByRole('region', { name: 'Teams' });
+    expect(
+      within(region).getByRole('button', { name: /Campus/ }),
+    ).toHaveTextContent('2 staff');
   });
 
   it('switches the rows to the compact layout', async () => {

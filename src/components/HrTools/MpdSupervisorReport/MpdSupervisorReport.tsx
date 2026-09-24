@@ -35,8 +35,9 @@ import { HealthColorKey } from './ReportLegend/HealthColorKey';
 import { ReportLegendButton } from './ReportLegend/ReportLegendButton';
 import { RowDensityToggle } from './RowDensityToggle/RowDensityToggle';
 import { StaffMember } from './StaffMemberRow/StaffMember';
+import { TeamSummary } from './TeamSummary/TeamSummary';
 import {
-  ManagedStaffMember,
+  StaffRow,
   buildQuarterChips,
   getQuarterLabel,
   getQuarterMonthRange,
@@ -114,6 +115,9 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
     refetchStaff,
     activeFilterCount,
     rowDensity,
+    loadedCount,
+    expandedRows,
+    toggleRow,
   } = useMpdSupervisorReport();
 
   // Every row covers the same four quarters, so the first one labels the header.
@@ -185,10 +189,25 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
                 color="text.secondary"
                 sx={{ display: { xs: 'none', md: 'block' } }}
               >
-                {t('Showing {{count}} of {{total}} · sorted by MPD health', {
-                  count: staffMembers.length,
-                  total: totalCount,
-                })}
+                {loadedCount === staffMembers.length
+                  ? t('Showing {{count}} of {{total}} · sorted by MPD health', {
+                      count: loadedCount,
+                      total: totalCount,
+                    })
+                  : // A couple shares a row, so say how many rows hold the people
+                    staffMembers.length === 1
+                    ? t(
+                        'Showing {{count}} of {{total}} in one row · sorted by MPD health',
+                        { count: loadedCount, total: totalCount },
+                      )
+                    : t(
+                        'Showing {{count}} of {{total}} in {{rows}} rows · sorted by MPD health',
+                        {
+                          count: loadedCount,
+                          total: totalCount,
+                          rows: staffMembers.length,
+                        },
+                      )}
               </Typography>
             )}
           </TitleBox>
@@ -215,6 +234,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
 
       <StyledContainer maxWidth={false}>
         <AppliedFilters />
+        <TeamSummary />
         <QuartersContainer>
           {quarterHeaders.length > 0 && (
             <HealthColorKey
@@ -296,11 +316,13 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
               data={staffMembers}
               disableHover
               style={{ height: '100%' }}
-              itemContent={(_index, item: ManagedStaffMember) => (
+              itemContent={(_index, item: StaffRow) => (
                 <StaffMember
                   key={item.personNumber}
                   data={item}
                   density={rowDensity}
+                  expanded={expandedRows.has(item.personNumber)}
+                  onToggleExpand={() => toggleRow(item.personNumber)}
                   onClick={() => openMember(item)}
                 />
               )}

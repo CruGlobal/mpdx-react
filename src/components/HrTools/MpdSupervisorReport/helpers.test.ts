@@ -3,20 +3,31 @@ import {
   CompletedQuarterPayroll,
   MpdAssignmentCategoryGroupEnum,
   MpdHealthStatusEnum,
+  PeopleGroupSupportTypeEnum,
   StartingQuarterPayroll,
 } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import {
   buildQuarterChips,
+  countPeople,
   getInitials,
   getLocalizedAssignmentCategoryGroup,
+  getLocalizedSupportType,
   getQuarterLabel,
   getQuarterMonthRange,
+  getRowInitials,
+  getRowName,
+  getRowSpouseName,
+  getRowTeamNames,
   healthColor,
   healthLabel,
+  latestQuarterStatus,
+  mergeSpouseRows,
   pendingField,
   quarterAmountLabel,
+  summarizeTeams,
 } from './helpers';
+import { managedStaffMember } from './mpdSupervisorReportMocks';
 
 const t = ((key: string) => key) as unknown as TFunction;
 
@@ -252,5 +263,309 @@ describe('buildQuarterChips', () => {
     expect(
       chips.map(({ fiscalYear, quarter }) => `${fiscalYear}-${quarter}`),
     ).toEqual(['2026-1', '2025-4', '2025-3']);
+  });
+});
+
+const team = (name: string) => ({
+  id: name.toLowerCase(),
+  name,
+  department: 'US Campus',
+});
+const quarter = (
+  fiscalYear: number,
+  q: number,
+  status: MpdHealthStatusEnum,
+) => ({
+  fiscalYear,
+  quarter: q,
+  averagePayroll: 1000,
+  status,
+});
+const withQuarters = (
+  overrides: Parameters<typeof managedStaffMember>[0],
+  quarters: ReturnType<typeof quarter>[],
+) =>
+  managedStaffMember({
+    ...overrides,
+    quarterlyHealth: { monthlyGrossSalary: 4500, completedQuarters: quarters },
+  });
+
+const john = managedStaffMember({
+  firstName: 'John',
+  lastName: 'Smith',
+  personNumber: '1',
+  spousePersonNumber: '2',
+  spouseFirstName: 'Jane',
+  spouseLastName: 'Smith',
+  teams: { employee: [team('Campus')], spouse: [team('Campus'), team('City')] },
+});
+const jane = managedStaffMember({
+  firstName: 'Jane',
+  lastName: 'Smith',
+  personNumber: '2',
+  spousePersonNumber: '1',
+  spouseFirstName: 'John',
+  spouseLastName: 'Smith',
+  teams: { employee: [team('Campus'), team('City')], spouse: [team('Campus')] },
+});
+const alice = managedStaffMember({
+  firstName: 'Alice',
+  lastName: 'Jones',
+  personNumber: '3',
+  staffAccountId: '1000000003',
+  spousePersonNumber: '99',
+  spouseFirstName: 'Bob',
+  spouseLastName: 'Jones',
+  teams: { employee: [team('City')], spouse: [] },
+});
+
+describe('mergeSpouseRows', () => {
+  it('folds a spouse pair into one row in the first position', () => {
+    const rows = mergeSpouseRows([alice, john, jane]);
+    expect(rows.map(({ personNumber }) => personNumber)).toEqual(['3', '1']);
+    expect(rows[1].partner?.personNumber).toBe('2');
+  });
+
+  it('leaves a row alone when the spouse is not in the list', () => {
+    const rows = mergeSpouseRows([alice]);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].partner).toBeUndefined();
+  });
+
+  it('keeps HCM-linked spouses apart when they hold separate staff accounts', () => {
+    // Each has their own health figures, so each keeps their own row
+    const separate = managedStaffMember({ ...jane, staffAccountId: 'other' });
+    const rows = mergeSpouseRows([john, separate]);
+    expect(rows).toHaveLength(2);
+    expect(rows[0].partner).toBeUndefined();
+    expect(getRowSpouseName(rows[0])).toBe('Jane Smith');
+  });
+
+  it('merges two people who share a staff account without a spouse link', () => {
+    const anton = managedStaffMember({
+      firstName: 'Anton',
+      lastName: 'Capo',
+      personNumber: '7',
+      staffAccountId: 'joint',
+      spousePersonNumber: null,
+      spouseFirstName: null,
+    });
+    const artjola = managedStaffMember({
+      firstName: 'Artjola',
+      lastName: 'Capo',
+      personNumber: '8',
+      staffAccountId: 'joint',
+      spousePersonNumber: null,
+      spouseFirstName: null,
+    });
+    const rows = mergeSpouseRows([anton, artjola, alice]);
+    expect(rows.map(getRowName)).toEqual([
+      'Anton & Artjola Capo',
+      'Alice Jones',
+    ]);
+  });
+
+  it('never absorbs the same person twice', () => {
+    const third = managedStaffMember({
+      firstName: 'Jim',
+      personNumber: '9',
+      staffAccountId: john.staffAccountId,
+      spousePersonNumber: null,
+    });
+    const rows = mergeSpouseRows([john, jane, third]);
+    expect(rows).toHaveLength(2);
+    expect(rows[1].partner).toBeUndefined();
+  });
+
+  it('unions the team names for display', () => {
+    const [row] = mergeSpouseRows([john, jane]);
+    expect(getRowTeamNames(row)).toEqual(['Campus', 'City']);
+  });
+});
+
+describe('getRowName', () => {
+  it('joins both first names before a shared last name', () => {
+    expect(getRowName({ ...john, partner: jane })).toBe('John & Jane Smith');
+  });
+
+  it('uses both full names when the last names differ', () => {
+    expect(getRowName({ ...john, partner: { ...jane, lastName: 'Doe' } })).toBe(
+      'John Smith & Jane Doe',
+    );
+  });
+
+  it('is the full name for a single member', () => {
+    expect(getRowName(alice)).toBe('Alice Jones');
+  });
+});
+
+describe('getRowInitials', () => {
+  it('uses both first initials for a pair', () => {
+    expect(getRowInitials({ ...john, partner: jane })).toBe('JJ');
+  });
+
+  it('uses first and last initials for a single member', () => {
+    expect(getRowInitials(alice)).toBe('AJ');
+  });
+});
+
+describe('countPeople', () => {
+  it('counts a merged pair as two people', () => {
+    expect(countPeople([{ ...john, partner: jane }, alice])).toBe(3);
+  });
+});
+
+describe('latestQuarterStatus', () => {
+  it('takes the newest completed quarter', () => {
+    const member = withQuarters({}, [
+      quarter(2026, 1, MpdHealthStatusEnum.Green),
+      quarter(2026, 3, MpdHealthStatusEnum.Red),
+      quarter(2025, 4, MpdHealthStatusEnum.Yellow),
+    ]);
+    expect(latestQuarterStatus(member)).toBe(MpdHealthStatusEnum.Red);
+  });
+
+  it('is no data without a completed quarter', () => {
+    expect(latestQuarterStatus(withQuarters({}, []))).toBe(
+      MpdHealthStatusEnum.Gray,
+    );
+  });
+});
+
+describe('summarizeTeams', () => {
+  const red = (overrides: Parameters<typeof managedStaffMember>[0]) =>
+    withQuarters(overrides, [quarter(2026, 3, MpdHealthStatusEnum.Red)]);
+  const green = (overrides: Parameters<typeof managedStaffMember>[0]) =>
+    withQuarters(overrides, [quarter(2026, 3, MpdHealthStatusEnum.Green)]);
+
+  it('counts people per latest-quarter status on each of their teams', () => {
+    const rows = mergeSpouseRows([
+      red({
+        personNumber: '1',
+        teams: { employee: [team('Campus'), team('City')], spouse: [] },
+      }),
+      green({
+        personNumber: '2',
+        teams: { employee: [team('City')], spouse: [] },
+      }),
+    ]);
+    expect(summarizeTeams(rows)).toEqual([
+      {
+        name: 'Campus',
+        staffCount: 1,
+        counts: { RED: 1, YELLOW: 0, GREEN: 0, GRAY: 0 },
+      },
+      {
+        name: 'City',
+        staffCount: 2,
+        counts: { RED: 1, YELLOW: 0, GREEN: 1, GRAY: 0 },
+      },
+    ]);
+  });
+
+  it('counts each spouse of a merged pair on their own teams', () => {
+    const rows = mergeSpouseRows([green(john), green(jane)]);
+    expect(rows).toHaveLength(1);
+    const summary = summarizeTeams(rows);
+    expect(summary.find(({ name }) => name === 'Campus')?.staffCount).toBe(2);
+    expect(summary.find(({ name }) => name === 'City')?.staffCount).toBe(1);
+  });
+
+  it('treats a member with no completed quarter as no data', () => {
+    const rows = [
+      withQuarters({ teams: { employee: [team('Campus')], spouse: [] } }, []),
+    ];
+    expect(summarizeTeams(rows)[0].counts.GRAY).toBe(1);
+  });
+
+  it('skips a member on no team', () => {
+    expect(
+      summarizeTeams([green({ teams: { employee: [], spouse: [] } })]),
+    ).toEqual([]);
+  });
+
+  it('breaks a tie on counts alphabetically', () => {
+    const rows = [
+      green({
+        personNumber: '1',
+        staffAccountId: 'a1',
+        teams: { employee: [team('Zeta')], spouse: [] },
+      }),
+      green({
+        personNumber: '2',
+        staffAccountId: 'a2',
+        teams: { employee: [team('Alpha')], spouse: [] },
+      }),
+    ];
+    expect(summarizeTeams(rows).map(({ name }) => name)).toEqual([
+      'Alpha',
+      'Zeta',
+    ]);
+  });
+
+  it('sorts the teams needing the most attention first', () => {
+    const rows = [
+      green({
+        personNumber: '1',
+        teams: { employee: [team('Alpha')], spouse: [] },
+      }),
+      withQuarters(
+        {
+          personNumber: '2',
+          staffAccountId: 'a2',
+          teams: { employee: [team('Beta')], spouse: [] },
+        },
+        [quarter(2026, 3, MpdHealthStatusEnum.Yellow)],
+      ),
+      red({
+        personNumber: '3',
+        teams: { employee: [team('Gamma')], spouse: [] },
+      }),
+    ];
+    expect(summarizeTeams(rows).map(({ name }) => name)).toEqual([
+      'Gamma',
+      'Beta',
+      'Alpha',
+    ]);
+  });
+});
+
+describe('getLocalizedSupportType', () => {
+  it('labels each support type and falls back to the placeholder', () => {
+    expect(
+      getLocalizedSupportType(t, PeopleGroupSupportTypeEnum.SupportedRmo),
+    ).toBe('Supported RMO');
+    expect(
+      getLocalizedSupportType(t, PeopleGroupSupportTypeEnum.SupportedNonRmo),
+    ).toBe('Supported non-RMO');
+    expect(
+      getLocalizedSupportType(t, PeopleGroupSupportTypeEnum.Designation),
+    ).toBe('Designation');
+    expect(getLocalizedSupportType(t, PeopleGroupSupportTypeEnum.None)).toBe(
+      'Not supported',
+    );
+    expect(getLocalizedSupportType(t, null)).toBe(pendingField);
+  });
+});
+
+describe('getRowSpouseName', () => {
+  it('names the merged partner', () => {
+    expect(getRowSpouseName({ ...john, partner: jane })).toBe('Jane Smith');
+  });
+
+  it('names an HCM-linked spouse who is not in the list', () => {
+    expect(getRowSpouseName(alice)).toBe('Bob Jones');
+  });
+
+  it("falls back to the member's last name when the spouse's is missing", () => {
+    expect(
+      getRowSpouseName(managedStaffMember({ ...alice, spouseLastName: null })),
+    ).toBe('Bob Jones');
+  });
+
+  it('is null without a spouse', () => {
+    expect(
+      getRowSpouseName(managedStaffMember({ ...alice, spouseFirstName: null })),
+    ).toBeNull();
   });
 });
