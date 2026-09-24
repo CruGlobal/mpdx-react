@@ -3,8 +3,10 @@ import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { mockSession } from '__tests__/util/mockSession';
 import { enforceAdminConsole } from 'pages/api/utils/pagePropsHelpers';
 import { AdminAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
+import { ImpersonatorRole } from 'src/lib/impersonationAccess';
 import theme from 'src/theme';
 import Admin, { getServerSideProps } from './admin.page';
 
@@ -36,6 +38,10 @@ const Components: React.FC<ComponentsProps> = ({ selectedTab }) => (
 );
 
 describe('Admin', () => {
+  beforeEach(() => {
+    mockSession({ admin: true });
+  });
+
   it('should keep impersonate user accordion close', async () => {
     const { getAllByText } = render(<Components />);
     await waitFor(() => {
@@ -51,6 +57,30 @@ describe('Admin', () => {
     await waitFor(() => {
       expect(getAllByText('Impersonate User').length).toEqual(1);
       expect(getAllByText('Reset Account').length).toEqual(3);
+    });
+  });
+
+  describe('role holders', () => {
+    it('shows only the impersonate user accordion to a non-admin role holder', async () => {
+      mockSession({
+        admin: false,
+        impersonationRole: ImpersonatorRole.MpdLeader,
+      });
+      const { findAllByText, queryByText } = render(<Components />);
+
+      expect(await findAllByText('Impersonate User')).toHaveLength(3);
+      expect(queryByText('Reset Account')).not.toBeInTheDocument();
+    });
+
+    it('shows both accordions to an admin', async () => {
+      mockSession({
+        admin: true,
+        impersonationRole: ImpersonatorRole.MpdLeader,
+      });
+      const { findAllByText, getAllByText } = render(<Components />);
+
+      expect(await findAllByText('Impersonate User')).toHaveLength(3);
+      expect(getAllByText('Reset Account')).toHaveLength(1);
     });
   });
 });
