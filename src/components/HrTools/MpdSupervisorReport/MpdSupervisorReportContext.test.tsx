@@ -18,7 +18,7 @@ import {
   useMpdSupervisorReport,
 } from './MpdSupervisorReportContext';
 import { StaffDetailTabEnum } from './StaffDetailsTabs/StaffDetailTab';
-import { ManagedStaffMember } from './helpers';
+import { ManagedStaffMember, StaffRow } from './helpers';
 import {
   managedStaffMember,
   managedStaffMock,
@@ -54,7 +54,10 @@ interface ConsumerResult {
   filterRequired: FilterRequired | null;
   staffError: ApolloError | undefined;
   loadMoreError: ApolloError | undefined;
-  staffMembers: ManagedStaffMember[];
+  staffMembers: StaffRow[];
+  loadedCount: number;
+  expandedRows: ReadonlySet<string>;
+  toggleRow: (personNumber: string) => void;
   rowDensity: RowDensityEnum;
   setRowDensity: (v: RowDensityEnum) => void;
   loadMore: () => void;
@@ -354,6 +357,51 @@ describe('MpdSupervisorReportContext', () => {
       MpdSupervisorReportQuickFilterEnum.AllPeople,
     );
     expect(consumerResult.activeFilterCount).toBe(0);
+  });
+});
+
+describe('rows', () => {
+  const john = managedStaffMember({
+    personNumber: '1',
+    spousePersonNumber: '2',
+  });
+  const jane = managedStaffMember({
+    firstName: 'Jane',
+    personNumber: '2',
+    spousePersonNumber: '1',
+  });
+
+  it('asks for the whole result in one page of 100', async () => {
+    renderConsumer();
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        first: 100,
+      }),
+    );
+  });
+
+  it('merges a spouse pair into one row and counts both people', async () => {
+    renderInProvider(<Consumer />, {}, managedStaffMock([john, jane]));
+
+    await waitFor(() => expect(consumerResult.staffMembers).toHaveLength(1));
+    expect(consumerResult.staffMembers[0].partner?.personNumber).toBe('2');
+    expect(consumerResult.loadedCount).toBe(2);
+  });
+
+  it('toggles a row open and closed', () => {
+    renderConsumer();
+    expect(consumerResult.expandedRows.has('1')).toBe(false);
+
+    act(() => {
+      consumerResult.toggleRow('1');
+    });
+    expect(consumerResult.expandedRows.has('1')).toBe(true);
+
+    act(() => {
+      consumerResult.toggleRow('1');
+    });
+    expect(consumerResult.expandedRows.has('1')).toBe(false);
   });
 });
 

@@ -14,7 +14,12 @@ import { useLocalStorage } from 'src/hooks/useLocalStorage';
 import { MpdSupervisorReportQuickFilterEnum } from './Filters/mpdSupervisorReportFilters';
 import { useManagedStaffQuery } from './ManagedStaff.generated';
 import { StaffDetailTabEnum } from './StaffDetailsTabs/StaffDetailTab';
-import { ManagedStaffMember } from './helpers';
+import {
+  ManagedStaffMember,
+  StaffRow,
+  countPeople,
+  mergeSpouseRows,
+} from './helpers';
 
 export enum Panel {
   Navigation = 'Navigation',
@@ -22,7 +27,10 @@ export enum Panel {
 }
 
 const searchDebounceMs = 500;
-const pageSize = 25;
+// The API grades every matching person before GraphQL paginates in memory and
+// refuses more than 100, so one page of 100 costs nothing extra and holds the
+// whole result. The team summary and spouse merge rely on that completeness.
+const pageSize = 100;
 
 /** How much room each staff row takes; a per-browser preference. */
 export enum RowDensityEnum {
@@ -95,8 +103,15 @@ export interface MpdSupervisorReportContextValue {
     newKey: StaffDetailTabEnum,
   ) => void;
 
+  /** Rows whose quick-glance strip is open, by person number */
+  expandedRows: ReadonlySet<string>;
+  toggleRow: (personNumber: string) => void;
+
   // Managed staff query
-  staffMembers: ManagedStaffMember[];
+  /** One row per person, or per spouse pair when both are in the results */
+  staffMembers: StaffRow[];
+  /** People loaded, counting a merged pair as two */
+  loadedCount: number;
   totalCount: number;
   staffLoading: boolean;
   /** Query failures other than the FILTER_REQUIRED guard */
@@ -240,6 +255,24 @@ export const MpdSupervisorReportProvider: React.FC<{
     setActiveQuickFilter(MpdSupervisorReportQuickFilterEnum.AllPeople);
   }, []);
 
+  const [expandedRows, setExpandedRows] = useState<ReadonlySet<string>>(
+    () => new Set(),
+  );
+  const toggleRow = useCallback((personNumber: string) => {
+    setExpandedRows((prev) => {
+      const next = new Set(prev);
+      if (!next.delete(personNumber)) {
+        next.add(personNumber);
+      }
+      return next;
+    });
+  }, []);
+
+  const staffMembers = useMemo(
+    () => mergeSpouseRows(data?.managedStaff.nodes ?? []),
+    [data],
+  );
+
   const handleTabChange = useCallback(
     (_event: React.SyntheticEvent, newKey: StaffDetailTabEnum) => {
       setSelectedTabKey(newKey);
@@ -294,7 +327,10 @@ export const MpdSupervisorReportProvider: React.FC<{
       selectedTabKey,
       setSelectedTabKey,
       handleTabChange,
-      staffMembers: data?.managedStaff.nodes ?? [],
+      expandedRows,
+      toggleRow,
+      staffMembers,
+      loadedCount: countPeople(staffMembers),
       totalCount: data?.managedStaff.totalCount ?? 0,
       staffLoading: loading,
       staffError: filterRequired ? undefined : error,
@@ -318,6 +354,9 @@ export const MpdSupervisorReportProvider: React.FC<{
       setRowDensity,
       selectedTabKey,
       handleTabChange,
+      expandedRows,
+      toggleRow,
+      staffMembers,
       data,
       loading,
       error,
