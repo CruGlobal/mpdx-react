@@ -150,6 +150,12 @@ class AssistantResponseError extends Error {
   }
 }
 
+class AssistantDisabledError extends Error {
+  constructor() {
+    super('The assistant is switched off');
+  }
+}
+
 const readErrorCode = async (response: Response): Promise<unknown> => {
   try {
     const body = (await response.json()) as { error?: unknown } | null;
@@ -170,6 +176,7 @@ export interface UseAssistantStreamResult {
   streaming: boolean;
   helpOnly: boolean;
   rateLimited: boolean;
+  assistantDisabled: boolean;
 }
 
 export const useAssistantStream = ({
@@ -192,6 +199,8 @@ export const useAssistantStream = ({
   const helpOnly = isCoachingPath(asPath);
   const locale = i18n.language;
   const [rateLimited, setRateLimited] = useState(false);
+  // Lives in the chat, so reopening the drawer clears it without a request
+  const [assistantDisabled, setAssistantDisabled] = useState(false);
   const rateLimitTimer = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => () => clearTimeout(rateLimitTimer.current), []);
@@ -254,6 +263,9 @@ export const useAssistantStream = ({
             signal: controller.signal,
           });
         const response = await send();
+        if (response.ok) {
+          setAssistantDisabled(false);
+        }
         if (response.status !== 401) {
           return response;
         }
@@ -271,11 +283,15 @@ export const useAssistantStream = ({
           blockUntilRetryAfter(response);
           throw new AssistantResponseError(response.status, 'rateLimited');
         }
-        if (
-          response.status === 503 &&
-          (await readErrorCode(response)) === 'verifier_unavailable'
-        ) {
-          throw new AssistantResponseError(response.status, 'unavailable');
+        if (response.status === 503) {
+          const code = await readErrorCode(response);
+          if (code === 'verifier_unavailable') {
+            throw new AssistantResponseError(response.status, 'unavailable');
+          }
+          if (code === 'assistant_disabled') {
+            setAssistantDisabled(true);
+            throw new AssistantDisabledError();
+          }
         }
         throw new AssistantResponseError(response.status);
       };
@@ -367,6 +383,11 @@ export const useAssistantStream = ({
           );
         }
       } catch (error) {
+        if (error instanceof AssistantDisabledError) {
+          // The drawer's notice explains it, so an empty error reply would only repeat it
+          dispatch({ type: 'removeMessage', id: reply.id });
+          return;
+        }
         // A stopped reply keeps what arrived; anything else becomes a friendly error in the transcript
         dispatch(
           controller.signal.aborted
@@ -408,5 +429,6 @@ export const useAssistantStream = ({
     streaming,
     helpOnly,
     rateLimited,
+    assistantDisabled,
   };
 };

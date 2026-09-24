@@ -25,6 +25,7 @@ export type AssistantAction =
   | { type: 'completeMessage'; id: string; citations: AssistantCitation[] }
   | { type: 'stopMessage'; id: string }
   | { type: 'failMessage'; id: string; reason?: AssistantErrorReason }
+  | { type: 'removeMessage'; id: string }
   | { type: 'setConversation'; conversation: ConversationBinding }
   | { type: 'clearConversation' }
   | {
@@ -92,6 +93,11 @@ export const assistantReducer = (
         errorReason: action.reason,
         working: false,
       }));
+    case 'removeMessage':
+      return {
+        ...state,
+        messages: state.messages.filter((message) => message.id !== action.id),
+      };
     case 'setConversation':
       return { ...state, conversation: action.conversation };
     case 'clearConversation':
