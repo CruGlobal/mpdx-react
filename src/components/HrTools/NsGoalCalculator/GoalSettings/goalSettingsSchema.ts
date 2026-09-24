@@ -56,7 +56,7 @@ const requiredWhenMarried = <Schema extends yup.AnySchema>(
 
 export const getGoalSettingsSchema = (t: TFunction) =>
   yup.object({
-    // The fields a goal cannot be calculated without. Required so Save & Share
+    // The fields a goal cannot be calculated without. Required so Save
     // can name what is still missing instead of only greying itself out.
     // Drives the spouse rules below; unset would skip them silently.
     maritalStatus: yup.string().required(required(t('Marital Status'), t)),
