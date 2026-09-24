@@ -324,7 +324,14 @@ describe('AssistantDrawer', () => {
         style.right,
         style.bottom,
         style.borderRadius,
-      ]).toEqual(['400px', '640px', '80vh', '24px', '96px', '16px']);
+      ]).toEqual([
+        '400px',
+        '640px',
+        'min(80vh, calc(100vh - 120px))',
+        '24px',
+        '96px',
+        '16px',
+      ]);
     });
 
     describe('on desktop', () => {

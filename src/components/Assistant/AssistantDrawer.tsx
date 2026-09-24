@@ -143,7 +143,7 @@ export const AssistantDrawer: React.FC = () => {
         style={{
           width: 400,
           height: 640,
-          maxHeight: '80vh',
+          maxHeight: 'min(80vh, calc(100vh - 120px))',
           right: orbInset,
           bottom: orbInset + orbSize + cardGap,
           borderRadius: 16,
