@@ -177,7 +177,7 @@ export const useAssistantStream = ({
   token,
   refreshToken,
 }: UseAssistantStreamOptions): UseAssistantStreamResult => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const {
     conversation,
     accountListId: transcriptAccountListId,
@@ -190,6 +190,7 @@ export const useAssistantStream = ({
   const { asPath } = useRouter();
   const assistantUrl = getAssistantUrl();
   const helpOnly = isCoachingPath(asPath);
+  const locale = i18n.language;
   const [rateLimited, setRateLimited] = useState(false);
   const rateLimitTimer = useRef<ReturnType<typeof setTimeout>>();
 
@@ -309,8 +310,12 @@ export const useAssistantStream = ({
 
         // Help-only mode keeps the coached account out of the page context
         const page = helpOnly
-          ? { path: `/accountLists/${accountListId}/coaching`, help_only: true }
-          : { path: asPath };
+          ? {
+              path: `/accountLists/${accountListId}/coaching`,
+              help_only: true,
+              locale,
+            }
+          : { path: asPath, locale };
         const response = await request(
           `${assistantUrl}/conversations/${encodeURIComponent(conversationId)}/stream`,
           {
@@ -389,6 +394,7 @@ export const useAssistantStream = ({
       conversation,
       helpOnly,
       asPath,
+      locale,
       dispatch,
       beginStream,
       endStream,
