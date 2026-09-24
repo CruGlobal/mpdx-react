@@ -9,7 +9,7 @@ import { useAssistantAccess } from './useAssistantVisibility';
 export const AssistantLauncher: React.FC = () => {
   const { t } = useTranslation();
   const { launcher } = useAssistantAccess();
-  const { openAssistant } = useAssistantContext();
+  const { openAssistant, launcherRef } = useAssistantContext();
   const [firstRunOpen, setFirstRunOpen] = useState(false);
 
   if (launcher === 'hidden') {
@@ -19,6 +19,7 @@ export const AssistantLauncher: React.FC = () => {
   return (
     <>
       <IconButton
+        ref={launcherRef}
         color="inherit"
         aria-label={t('Open Assistant')}
         onClick={

@@ -29,7 +29,7 @@ const Header = styled(Box)(({ theme }) => ({
 export const AssistantDrawer: React.FC = () => {
   const { t } = useTranslation();
   const visible = useAssistantVisibility();
-  const { open, closeAssistant } = useAssistantContext();
+  const { open, closeAssistant, launcherRef } = useAssistantContext();
 
   if (!visible) {
     return null;
@@ -40,8 +40,11 @@ export const AssistantDrawer: React.FC = () => {
       anchor="right"
       open={open}
       onClose={closeAssistant}
+      // The first-run dialog opens the drawer, so MUI would restore focus to that dialog's removed button
+      ModalProps={{ disableRestoreFocus: true }}
       slotProps={{
         paper: { 'aria-labelledby': titleId },
+        transition: { onExited: () => launcherRef.current?.focus() },
       }}
     >
       <DrawerContent>

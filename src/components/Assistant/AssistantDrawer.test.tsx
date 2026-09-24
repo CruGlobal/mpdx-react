@@ -73,6 +73,17 @@ describe('AssistantDrawer', () => {
     await waitForMint();
   });
 
+  it('moves focus to the composer when opened', async () => {
+    const { getByRole } = render(<TestComponent />);
+
+    userEvent.click(getByRole('button', { name: 'Open' }));
+
+    await waitFor(() =>
+      expect(getByRole('textbox', { name: 'Ask the assistant' })).toHaveFocus(),
+    );
+    await waitForMint();
+  });
+
   it('keeps the conversation when closed and reopened', async () => {
     const fetchSpy = jest
       .spyOn(global, 'fetch')
