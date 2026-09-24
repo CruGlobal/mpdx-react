@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import React, { ReactElement, useState } from 'react';
+import { Alert } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { enforceAdminConsole } from 'pages/api/utils/pagePropsHelpers';
 import { ImpersonateUserAccordion } from 'src/components/Settings/Admin/ImpersonateUser/ImpersonateUserAccordion';
@@ -14,7 +15,7 @@ export const suggestedArticles = 'HS_SETTINGS_SERVICES_SUGGESTIONS';
 const Admin = (): ReactElement => {
   const { t } = useTranslation();
   const { query } = useRouter();
-  const { admin } = useRequiredSession();
+  const { admin, impersonating } = useRequiredSession();
   const [expandedAccordion, setExpandedAccordion] =
     useState<AdminAccordion | null>(
       typeof query.selectedTab === 'string'
@@ -29,10 +30,16 @@ const Admin = (): ReactElement => {
       selectedMenuId="admin"
     >
       <AccordionGroup title="">
-        <ImpersonateUserAccordion
-          handleAccordionChange={setExpandedAccordion}
-          expandedAccordion={expandedAccordion}
-        />
+        {impersonating ? (
+          <Alert severity="info">
+            {t('Stop impersonating before starting another impersonation.')}
+          </Alert>
+        ) : (
+          <ImpersonateUserAccordion
+            handleAccordionChange={setExpandedAccordion}
+            expandedAccordion={expandedAccordion}
+          />
+        )}
 
         {admin && (
           <ResetAccountAccordion

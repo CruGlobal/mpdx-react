@@ -86,6 +86,22 @@ describe('Admin', () => {
 });
 
 describe('getServerSideProps', () => {
+  it('replaces the impersonate form with a notice while already impersonating', async () => {
+    mockSession({
+      admin: true,
+      impersonating: true,
+      impersonatorRole: ImpersonatorRole.Developer,
+    });
+    const { queryByText, findByText } = render(<Components />);
+
+    expect(
+      await findByText(
+        'Stop impersonating before starting another impersonation.',
+      ),
+    ).toBeInTheDocument();
+    expect(queryByText('Impersonate User')).not.toBeInTheDocument();
+  });
+
   it('uses enforceAdminConsole', () => {
     expect(getServerSideProps).toBe(enforceAdminConsole);
   });
