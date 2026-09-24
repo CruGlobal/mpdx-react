@@ -19,7 +19,7 @@ export const ExportCsvButton: React.FC = () => {
       label={t('Export CSV')}
       items={[
         {
-          label: t('Balance Report'),
+          label: t('Primary Account Balance Report'),
           disabled: !balanceData.length,
           onClick: () =>
             exportToCsv(
