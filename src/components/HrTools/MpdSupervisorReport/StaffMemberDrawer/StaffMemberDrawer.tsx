@@ -35,7 +35,9 @@ import { StaffDetailTabEnum } from '../StaffDetailsTabs/StaffDetailTab';
 import { preloadStaffExpenseReport } from '../StaffDetailsTabs/StaffExpenseReport/DynamicStaffExpenseReport';
 import { StaffTabStaffExpenseReport } from '../StaffDetailsTabs/StaffExpenseReport/StaffExpenseReport';
 import { GrossSalaryMarker } from '../StaffMemberRow/GrossSalaryMarker';
+import { FiscalYearQuarters } from '../StaffMemberRow/StaffMember';
 import {
+  buildQuarterChips,
   getInitials,
   getLocalizedAssignmentCategoryGroup,
   grossSalaryWarning,
@@ -160,13 +162,19 @@ export const StaffMemberDrawer: React.FC = () => {
         width: '100%',
       })}
     >
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+      <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
         <Avatar sx={{ bgcolor: 'mpdxGrayLight.main', color: 'text.primary' }}>
           {initials}
         </Avatar>
-        <Typography variant="h6" id="right-panel-header" sx={{ flex: 1 }}>
-          {fullName}
-        </Typography>
+        <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <Typography variant="h6" id="right-panel-header">
+            {fullName}
+          </Typography>
+          {/* The drawer covers the row's chips, so the health context follows the person in */}
+          {quarterlyHealth && (
+            <FiscalYearQuarters quarters={buildQuarterChips(quarterlyHealth)} />
+          )}
+        </Box>
         <IconButton aria-label={t('Close')} onClick={closePanel} size="small">
           <CloseIcon />
         </IconButton>

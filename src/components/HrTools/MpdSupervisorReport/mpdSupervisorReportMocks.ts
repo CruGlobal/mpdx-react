@@ -1,6 +1,8 @@
 import {
   MpdAssignmentCategoryGroupEnum,
   MpdHealthStatusEnum,
+  PeopleGroupSupportTypeEnum,
+  SecaStatusEnum,
 } from 'src/graphql/types.generated';
 import { ManagedStaffQuery } from './ManagedStaff.generated';
 import { ManagedStaffTeamsQuery } from './ManagedStaffTeams.generated';
@@ -18,6 +20,10 @@ const baseMember: ManagedStaffMember = {
   newStaffMonthlySalary: 2500,
   geographicLocation: 'Orlando, FL',
   assignmentCategoryGroup: MpdAssignmentCategoryGroupEnum.FullTime,
+  tenure: 6,
+  healthcareDependentsCount: 2,
+  peopleGroupSupportType: PeopleGroupSupportTypeEnum.SupportedRmo,
+  secaStatus: SecaStatusEnum.Seca,
   teams: {
     employee: [{ id: 'team-1', name: 'Campus', department: 'US Campus' }],
     spouse: [],

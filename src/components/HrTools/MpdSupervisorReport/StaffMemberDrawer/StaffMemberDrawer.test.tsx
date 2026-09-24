@@ -113,6 +113,15 @@ describe('StaffMemberDrawer', () => {
     expect(getByText('1000000001')).toBeInTheDocument();
   });
 
+  it('keeps the quarter chips in view in the drawer header', () => {
+    const { getByText } = renderDrawer();
+    openMember(memberWithSpouse);
+    expect(getByText('FQ3 26, on track')).toBeInTheDocument();
+    expect(getByText('FQ2 26, at risk')).toBeInTheDocument();
+    // FQ2's average is the only $2,200.00 in the drawer
+    expect(getByText('$2,200.00')).toBeInTheDocument();
+  });
+
   it('renders the spouse name and identifiers', () => {
     const { getByText } = renderDrawer();
     openMember(memberWithSpouse);
@@ -159,7 +168,8 @@ describe('StaffMemberDrawer', () => {
     openMember(memberWithSpouse);
     expect(getByText('MPD Health Benchmark:')).toBeInTheDocument();
     expect(getByText('Monthly Gross Salary')).toBeInTheDocument();
-    expect(getByText('$4,500.00')).toBeInTheDocument();
+    // The header's quarter chips can show the same amount, so match the detail
+    expect(getByText('$4,500.00', { selector: 'p' })).toBeInTheDocument();
     expect(getByText('New Staff Monthly Salary')).toBeInTheDocument();
     expect(getByText('$2,500.00')).toBeInTheDocument();
   });
@@ -215,7 +225,7 @@ describe('StaffMemberDrawer', () => {
     const { getByText, queryByText } = renderDrawer();
     openMember(managedStaffMember({ newStaffMonthlySalary: null }));
     expect(queryByText('$2,500.00')).not.toBeInTheDocument();
-    expect(getByText('$4,500.00')).toBeInTheDocument();
+    expect(getByText('$4,500.00', { selector: 'p' })).toBeInTheDocument();
   });
 
   it('warns that health cannot be graded without the gross salary', () => {
