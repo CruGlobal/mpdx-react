@@ -171,6 +171,7 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
         })),
         pathname: '/accountLists/[accountListId]/settings/preferences',
         showInPanel: true,
+        hideTab: blocked(ImpersonationArea.Settings),
       },
     ];
 

@@ -239,4 +239,74 @@ describe('useNavPages', () => {
       expect(ids).toContain('tasks-page');
     });
   });
+
+  describe('Settings while impersonating', () => {
+    const renderPages = async () => {
+      const { result, waitForNextUpdate } = renderHook(
+        () => useNavPages(false),
+        { wrapper: makeWrapper(UserTypeEnum.UsStaff) },
+      );
+      await waitForNextUpdate();
+      return result.current;
+    };
+
+    const settingsSearchTitles = [
+      'Preferences',
+      'Preferences - Notifications',
+      'Preferences - Connect Services',
+      'Preferences - Manage Accounts',
+      'Preferences - Manage Coaches',
+    ];
+
+    it.each([ImpersonatorRole.MpdLeader, ImpersonatorRole.HrLeader])(
+      'hides the settings entries from a %s impersonator',
+      async (impersonatorRole) => {
+        mockSession({ impersonating: true, impersonatorRole });
+
+        const { searchDialogPages, panelPages } = await renderPages();
+
+        const searchTitles = searchDialogPages.map((page) => page.title);
+        settingsSearchTitles.forEach((title) =>
+          expect(searchTitles).not.toContain(title),
+        );
+        expect(panelPages).toEqual([]);
+      },
+    );
+
+    it('hides the settings entries from an impersonator with no known role', async () => {
+      mockSession({ impersonating: true, impersonatorRole: undefined });
+
+      const { searchDialogPages, panelPages } = await renderPages();
+
+      const searchTitles = searchDialogPages.map((page) => page.title);
+      expect(searchTitles).not.toContain('Preferences');
+      expect(panelPages).toEqual([]);
+    });
+
+    it.each([ImpersonatorRole.HelpdeskAdmin, ImpersonatorRole.Developer])(
+      'shows the settings entries to a %s impersonator',
+      async (impersonatorRole) => {
+        mockSession({ impersonating: true, impersonatorRole });
+
+        const { searchDialogPages, panelPages } = await renderPages();
+
+        const searchTitles = searchDialogPages.map((page) => page.title);
+        settingsSearchTitles.forEach((title) =>
+          expect(searchTitles).toContain(title),
+        );
+        expect(panelPages.map((page) => page.title)).toEqual(['Preferences']);
+      },
+    );
+
+    it('shows the settings entries when not impersonating', async () => {
+      mockSession({ impersonating: false });
+
+      const { searchDialogPages, panelPages } = await renderPages();
+
+      expect(searchDialogPages.map((page) => page.title)).toContain(
+        'Preferences',
+      );
+      expect(panelPages.map((page) => page.title)).toEqual(['Preferences']);
+    });
+  });
 });
