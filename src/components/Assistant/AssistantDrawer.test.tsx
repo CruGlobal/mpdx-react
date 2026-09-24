@@ -4,13 +4,18 @@ import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { mockSession } from '__tests__/util/mockSession';
 import theme from 'src/theme';
 import { AssistantDrawer } from './AssistantDrawer';
 import { AssistantProvider, useAssistantContext } from './AssistantProvider';
 import { CreateAssistantTokenMutation } from './CreateAssistantToken.generated';
 import { mintedToken } from './assistantToken.mock';
 import { frame, mockJsonResponse, mockStreamResponse } from './sse.mock';
+import { useAssistantVisibility } from './useAssistantVisibility';
+
+jest.mock('./useAssistantVisibility');
+const mockUseAssistantVisibility = useAssistantVisibility as jest.MockedFn<
+  typeof useAssistantVisibility
+>;
 
 const mutationSpy = jest.fn();
 
@@ -43,15 +48,11 @@ const TestComponent: React.FC = () => (
 
 describe('AssistantDrawer', () => {
   beforeEach(() => {
-    process.env.DEVELOPMENT_ENV = 'true';
-    process.env.DISABLE_ASSISTANT = 'false';
     process.env.ASSISTANT_URL = 'https://assistant.test';
-    mockSession({ developer: true, impersonating: false });
+    mockUseAssistantVisibility.mockReturnValue(true);
   });
 
   afterEach(() => {
-    process.env.DEVELOPMENT_ENV = 'false';
-    process.env.DISABLE_ASSISTANT = 'false';
     process.env.ASSISTANT_URL = '';
   });
 
@@ -115,7 +116,7 @@ describe('AssistantDrawer', () => {
   });
 
   it('does not render when the assistant is hidden', () => {
-    process.env.DISABLE_ASSISTANT = 'true';
+    mockUseAssistantVisibility.mockReturnValue(false);
 
     const { getByRole, queryByRole } = render(<TestComponent />);
 

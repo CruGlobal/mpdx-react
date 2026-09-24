@@ -30,6 +30,7 @@ export enum OrganizationAccordion {
 
 export enum PreferenceAccordion {
   AccountName = 'AccountName',
+  Assistant = 'Assistant',
   Currency = 'Currency',
   DefaultAccount = 'DefaultAccount',
   EarlyAdopter = 'EarlyAdopter',

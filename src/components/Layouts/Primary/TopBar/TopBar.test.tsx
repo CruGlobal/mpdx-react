@@ -6,6 +6,7 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { mockSession } from '__tests__/util/mockSession';
 import { AssistantProvider } from 'src/components/Assistant/AssistantProvider';
+import { getAssistantSettingsMock } from 'src/components/Assistant/AssistantSettings.mock';
 import { TestSetupProvider } from 'src/components/Setup/SetupProvider';
 import theme from '../../../../theme';
 import { getNotificationsMocks } from './Items/NotificationMenu/NotificationMenu.mock';
@@ -42,7 +43,11 @@ const TestComponent: React.FC<TestComponentProps> = ({ onSetupTour }) => (
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
         <MockedProvider
-          mocks={[getTopBarMultipleMock(), ...getNotificationsMocks()]}
+          mocks={[
+            getTopBarMultipleMock(),
+            ...getNotificationsMocks(),
+            getAssistantSettingsMock({ enabled: true }),
+          ]}
           addTypename={false}
         >
           <TestSetupProvider onSetupTour={onSetupTour}>
@@ -78,12 +83,14 @@ describe('TopBar', () => {
     expect(queryByText('Dashboard')).not.toBeInTheDocument();
   });
 
-  it('shows the assistant launcher for a developer in a development env', () => {
+  it('shows the assistant launcher for a developer in a development env', async () => {
     process.env.DEVELOPMENT_ENV = 'true';
     mockSession({ developer: true });
 
-    const { getByRole } = render(<TestComponent />);
+    const { findByRole } = render(<TestComponent />);
 
-    expect(getByRole('button', { name: 'Open Assistant' })).toBeInTheDocument();
+    expect(
+      await findByRole('button', { name: 'Open Assistant' }),
+    ).toBeInTheDocument();
   });
 });

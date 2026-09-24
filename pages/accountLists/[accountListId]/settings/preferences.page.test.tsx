@@ -7,6 +7,8 @@ import { session } from '__tests__/fixtures/session';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { mockSession } from '__tests__/util/mockSession';
+import { AssistantSettingsQuery } from 'src/components/Assistant/AssistantSettings.generated';
+import { assistantSettingsMock } from 'src/components/Assistant/AssistantSettings.mock';
 import { MailchimpAccountQuery } from 'src/components/Settings/integrations/Mailchimp/MailchimpAccount.generated';
 import { GetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
 import { PrayerlettersAccountQuery } from 'src/components/Settings/integrations/Prayerletters/PrayerlettersAccount.generated';
@@ -66,6 +68,7 @@ const MocksProviders: React.FC<MocksProvidersProps> = ({
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
       <GqlMockedProvider<{
+        AssistantSettings: AssistantSettingsQuery;
         GetUsersOrganizationsAccounts: GetUsersOrganizationsAccountsQuery;
         MailchimpAccount: MailchimpAccountQuery;
         PrayerlettersAccount: PrayerlettersAccountQuery;
@@ -76,6 +79,12 @@ const MocksProviders: React.FC<MocksProvidersProps> = ({
         UserOption: UserOptionQuery;
       }>
         mocks={{
+          AssistantSettings: {
+            assistantSettings: assistantSettingsMock({
+              enabled: true,
+              helpEnabled: true,
+            }),
+          },
           GetAccountPreferences: {
             user: {
               id: '1',
@@ -443,6 +452,65 @@ describe('Preferences page', () => {
       expect(
         queryByRole('button', { name: geographicLocationName }),
       ).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Assistant tab', () => {
+    afterEach(() => {
+      process.env.DEVELOPMENT_ENV = 'false';
+      mockSession({ developer: false, impersonating: false });
+    });
+
+    it('shows the Assistant tab to a user who may use the assistant', async () => {
+      process.env.DEVELOPMENT_ENV = 'true';
+      mockSession({ developer: true });
+
+      const { findByRole, getByLabelText } = render(
+        <MocksProviders canUserExportData={false}>
+          <Preferences />
+        </MocksProviders>,
+      );
+
+      userEvent.click(await findByRole('button', { name: 'Assistant On' }));
+      expect(getByLabelText('Turn on the Assistant')).toBeChecked();
+    });
+
+    it('hides the Assistant tab while the rollout excludes the user', async () => {
+      const { findByRole, queryByRole } = render(
+        <MocksProviders canUserExportData={false}>
+          <Preferences />
+        </MocksProviders>,
+      );
+
+      expect(
+        await findByRole('button', { name: 'Home Country' }),
+      ).toBeVisible();
+      expect(
+        queryByRole('heading', { name: 'Assistant' }),
+      ).not.toBeInTheDocument();
+      expect(mutationSpy).not.toHaveGraphqlOperation('AssistantSettings');
+    });
+
+    it('hides the Assistant tab while impersonating', async () => {
+      process.env.DEVELOPMENT_ENV = 'true';
+      mockSession({ developer: true, impersonating: true });
+
+      const { findByRole, queryByRole } = render(
+        <MocksProviders canUserExportData={false}>
+          <Preferences />
+        </MocksProviders>,
+      );
+
+      expect(
+        await findByRole('button', { name: 'Home Country' }),
+      ).toBeVisible();
+      expect(
+        queryByRole('button', { name: 'Assistant On' }),
+      ).not.toBeInTheDocument();
+      expect(
+        queryByRole('heading', { name: 'Assistant' }),
+      ).not.toBeInTheDocument();
+      expect(mutationSpy).not.toHaveGraphqlOperation('AssistantSettings');
     });
   });
 });

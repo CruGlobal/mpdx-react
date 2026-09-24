@@ -3,10 +3,15 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
-import { mockSession } from '__tests__/util/mockSession';
 import theme from 'src/theme';
 import { AssistantProvider, useAssistantContext } from './AssistantProvider';
 import { DynamicAssistantDrawer } from './DynamicAssistantDrawer';
+import { useAssistantVisibility } from './useAssistantVisibility';
+
+jest.mock('./useAssistantVisibility');
+const mockUseAssistantVisibility = useAssistantVisibility as jest.MockedFn<
+  typeof useAssistantVisibility
+>;
 
 const OpenButton: React.FC = () => {
   const { openAssistant } = useAssistantContext();
@@ -26,14 +31,7 @@ const TestComponent: React.FC = () => (
 
 describe('DynamicAssistantDrawer', () => {
   beforeEach(() => {
-    process.env.DEVELOPMENT_ENV = 'true';
-    process.env.DISABLE_ASSISTANT = 'false';
-    mockSession({ developer: true, impersonating: false });
-  });
-
-  afterEach(() => {
-    process.env.DEVELOPMENT_ENV = 'false';
-    process.env.DISABLE_ASSISTANT = 'false';
+    mockUseAssistantVisibility.mockReturnValue(true);
   });
 
   it('renders nothing until the assistant is opened', async () => {
