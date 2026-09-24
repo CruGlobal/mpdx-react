@@ -293,10 +293,10 @@ export const FilterRequiredState: React.FC<FilterRequiredStateProps> = ({
       <FilterListIcon sx={{ fontSize: 40, color: 'text.disabled' }} />
       <Typography variant="h6" component="h2" sx={{ mt: 1 }}>
         {filtered
-          ? t('{{count}} staff match — still too many to list at once.', {
+          ? t('{{total}} staff match — still too many to list at once.', {
               count,
             })
-          : t('You supervise {{count}} staff — too many to list at once.', {
+          : t('You supervise {{total}} staff — too many to list at once.', {
               count,
             })}
       </Typography>

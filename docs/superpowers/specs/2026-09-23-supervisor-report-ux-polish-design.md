@@ -36,10 +36,10 @@ same sentence in red. The header still says "Showing 0 of 0".
   (filter icon, title, one sentence, and an **Open filters** button when the
   filter panel is closed). Copy is localized in the client rather than echoing
   the API sentence:
-  - unfiltered: "You supervise {{count}} staff — too many to list at once." /
+  - unfiltered: "You supervise {{total}} staff — too many to list at once." /
     "Search by name, or pick a team, department, employment type or one of the
     negative-month filters."
-  - filtered: "{{count}} staff match — still too many to list at once." /
+  - filtered: "{{total}} staff match — still too many to list at once." /
     "Add another filter or search by name to narrow the list."
 - The header count line is hidden while `filterRequired` is set.
 
