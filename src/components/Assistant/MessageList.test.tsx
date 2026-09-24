@@ -202,6 +202,119 @@ describe('MessageList', () => {
     expect(queryByText('Stopped.')).not.toBeInTheDocument();
   });
 
+  describe('reply announcer', () => {
+    const announcer = (getByTestId: ReturnType<typeof render>['getByTestId']) =>
+      getByTestId('ReplyAnnouncer');
+
+    it('keeps the transcript itself quiet so replies are not reread', () => {
+      const { getByRole } = render(
+        <MessageList messages={[]} streaming={false} />,
+      );
+
+      expect(getByRole('log', { name: 'Conversation' })).toHaveAttribute(
+        'aria-live',
+        'off',
+      );
+    });
+
+    it('does not announce a reply that was already on screen', () => {
+      const { getByTestId } = render(
+        <MessageList
+          messages={[message({ content: 'An earlier answer.' })]}
+          streaming={false}
+        />,
+      );
+
+      expect(announcer(getByTestId)).toHaveAttribute('aria-live', 'polite');
+      expect(announcer(getByTestId)).toBeEmptyDOMElement();
+    });
+
+    it('announces finished sentences and then the rest when the reply completes', () => {
+      const streamingReply = (content: string) =>
+        message({ id: 'reply', status: 'streaming', content });
+      const { getByTestId, rerender } = render(
+        <MessageList messages={[]} streaming />,
+      );
+
+      rerender(
+        <MessageList
+          messages={[streamingReply('You have **12** contacts. The')]}
+          streaming
+        />,
+      );
+      expect(announcer(getByTestId)).toHaveTextContent(
+        /^You have 12 contacts\.$/,
+      );
+
+      rerender(
+        <MessageList
+          messages={[streamingReply('You have **12** contacts. The biggest')]}
+          streaming
+        />,
+      );
+      expect(announcer(getByTestId)).toHaveTextContent(
+        /^You have 12 contacts\.$/,
+      );
+
+      rerender(
+        <MessageList
+          messages={[
+            message({
+              id: 'reply',
+              content: 'You have **12** contacts. The biggest gift was $50',
+            }),
+          ]}
+          streaming={false}
+        />,
+      );
+      expect(announcer(getByTestId)).toHaveTextContent(
+        /^The biggest gift was \$50$/,
+      );
+    });
+
+    it('announces the error line when a reply fails', () => {
+      const { getByTestId, rerender } = render(
+        <MessageList
+          messages={[message({ id: 'reply', status: 'streaming' })]}
+          streaming
+        />,
+      );
+
+      rerender(
+        <MessageList
+          messages={[
+            message({
+              id: 'reply',
+              status: 'error',
+              errorReason: 'unavailable',
+            }),
+          ]}
+          streaming={false}
+        />,
+      );
+      expect(announcer(getByTestId)).toHaveTextContent(
+        'The assistant is busy right now. Please try again in a moment.',
+      );
+    });
+
+    it('announces a reply stopped before any text', () => {
+      const { getByTestId, rerender } = render(
+        <MessageList
+          messages={[message({ id: 'reply', status: 'streaming' })]}
+          streaming
+        />,
+      );
+
+      rerender(
+        <MessageList
+          messages={[message({ id: 'reply', status: 'stopped' })]}
+          streaming={false}
+        />,
+      );
+      expect(announcer(getByTestId)).toHaveTextContent('Stopped.');
+    });
+  });
+
   it('shows a fallback for a reply that fails to render and keeps the rest', () => {
     const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     const { getByText } = render(

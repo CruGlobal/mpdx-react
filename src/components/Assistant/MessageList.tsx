@@ -5,10 +5,12 @@ import { visuallyHidden } from '@mui/utils';
 import { useTranslation } from 'react-i18next';
 import { AssistantErrorBoundary } from './AssistantErrorBoundary';
 import { AssistantMarkdown } from './AssistantMarkdown';
+import { ReplyAnnouncer } from './ReplyAnnouncer';
 import { MessageCard } from './cards/MessageCard';
 import { NavigationVisibilityProvider } from './navigation/NavigationVisibilityContext';
 import { toSafeHttpUrl } from './safeUrl';
-import { AssistantErrorReason, AssistantMessage, MessageRole } from './types';
+import { AssistantMessage, MessageRole } from './types';
+import { useErrorText } from './useErrorText';
 
 const List = styled('ul')({
   listStyle: 'none',
@@ -56,20 +58,6 @@ const Bubble = styled(Box, {
 interface MessageItemProps {
   message: AssistantMessage;
 }
-
-const useErrorText = (reason: AssistantErrorReason | undefined): string => {
-  const { t } = useTranslation();
-  switch (reason) {
-    case 'unavailable':
-      return t(
-        'The assistant is busy right now. Please try again in a moment.',
-      );
-    case 'rateLimited':
-      return t('Please wait a moment before sending another message.');
-    default:
-      return t('Sorry, something went wrong. Please try again.');
-  }
-};
 
 const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
   const { t } = useTranslation();
@@ -178,12 +166,11 @@ export const MessageList: React.FC<MessageListProps> = ({
     endRef.current?.scrollIntoView({ block: 'end' });
   }, [messages]);
 
-  // The log stays mounted while empty so screen readers announce the first reply
   return (
     <>
       <List
         role="log"
-        aria-live="polite"
+        aria-live="off"
         aria-busy={streaming}
         aria-label={t('Conversation')}
       >
@@ -196,6 +183,7 @@ export const MessageList: React.FC<MessageListProps> = ({
         </NavigationVisibilityProvider>
         <div ref={endRef} />
       </List>
+      <ReplyAnnouncer messages={messages} />
       {messages.length === 0 && (
         <EmptyState>
           <Typography color="text.secondary" align="center">

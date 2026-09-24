@@ -94,13 +94,17 @@ describe('AssistantDrawer', () => {
       expect(getByRole('button', { name: 'Send' })).toBeEnabled(),
     );
     userEvent.click(getByRole('button', { name: 'Send' }));
-    expect(await findByText('Hello back')).toBeInTheDocument();
+    expect(
+      await findByText('Hello back', { selector: 'p' }),
+    ).toBeInTheDocument();
 
     userEvent.click(getByRole('button', { name: 'Close Assistant' }));
     await waitFor(() => expect(queryByRole('dialog')).not.toBeInTheDocument());
 
     userEvent.click(getByRole('button', { name: 'Open' }));
-    expect(await findByText('Hello back')).toBeInTheDocument();
+    expect(
+      await findByText('Hello back', { selector: 'p' }),
+    ).toBeInTheDocument();
     expect(getByRole('dialog')).toHaveTextContent('What is new?');
     await waitForMint(2);
     fetchSpy.mockRestore();

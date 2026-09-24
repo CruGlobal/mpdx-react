@@ -110,6 +110,9 @@ const typeMessage = async (
   return input;
 };
 
+// The reply announcer repeats reply text, so match only what the transcript shows
+const inTranscript = { selector: 'p' };
+
 const offNotice = 'The assistant is off right now. Please try again later.';
 
 const seconds = (count: number) => count * 1000;
@@ -167,7 +170,9 @@ describe('AssistantChat', () => {
 
     await typeMessage(getByRole, 'Hi');
     userEvent.click(getByRole('button', { name: 'Send' }));
-    expect(await findByText('You have 12 contacts.')).toBeInTheDocument();
+    expect(
+      await findByText('You have 12 contacts.', inTranscript),
+    ).toBeInTheDocument();
 
     expect(fetchSpy).toHaveBeenCalledTimes(2);
     fetchSpy.mock.calls.forEach(([, init]) => {
@@ -187,7 +192,9 @@ describe('AssistantChat', () => {
 
     expect(getByText('How many contacts?')).toBeInTheDocument();
     expect(input).toHaveValue('');
-    expect(await findByText('You have 12 contacts.')).toBeInTheDocument();
+    expect(
+      await findByText('You have 12 contacts.', inTranscript),
+    ).toBeInTheDocument();
     await waitFor(() =>
       expect(getByRole('button', { name: 'Send' })).toBeInTheDocument(),
     );
@@ -207,7 +214,9 @@ describe('AssistantChat', () => {
     expect(input).toHaveValue('Line one\nLine two');
 
     userEvent.type(input, '{enter}');
-    expect(await findByText('You have 12 contacts.')).toBeInTheDocument();
+    expect(
+      await findByText('You have 12 contacts.', inTranscript),
+    ).toBeInTheDocument();
     expect(fetchSpy).toHaveBeenCalledTimes(2);
   });
 
@@ -244,6 +253,39 @@ describe('AssistantChat', () => {
     expect(fetchSpy.mock.calls[1][1].signal.aborted).toBe(true);
   });
 
+  it('announces the streamed reply a sentence at a time', async () => {
+    const stream = controlledStream();
+    fetchSpy
+      .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+      .mockResolvedValueOnce(mockStreamResponse([], { body: stream.body }));
+    const { getByRole, getByTestId, findByText } = render(<TestComponent />);
+    const announcer = getByTestId('ReplyAnnouncer');
+
+    await typeMessage(getByRole, 'Hi');
+    userEvent.click(getByRole('button', { name: 'Send' }));
+    stream.push(
+      frame({
+        type: 'chunk',
+        message_id: 'm1',
+        delta: 'You have 12 contacts. ',
+      }),
+    );
+    await waitFor(() =>
+      expect(announcer).toHaveTextContent(/^You have 12 contacts\.$/),
+    );
+
+    stream.push(frame({ type: 'chunk', message_id: 'm1', delta: 'Two are' }));
+    expect(await findByText(/Two are/)).toBeInTheDocument();
+    expect(announcer).toHaveTextContent(/^You have 12 contacts\.$/);
+
+    stream.push(frame({ type: 'chunk', message_id: 'm1', delta: ' new' }));
+    stream.push(
+      frame({ type: 'generation_complete', message_id: 'm1', citations: [] }),
+    );
+    stream.close();
+    await waitFor(() => expect(announcer).toHaveTextContent(/^Two are new$/));
+  });
+
   it('shows Stopped when stopped before any text arrives', async () => {
     const stream = controlledStream();
     fetchSpy
@@ -257,7 +299,7 @@ describe('AssistantChat', () => {
     userEvent.click(getByRole('button', { name: 'Stop' }));
     stream.close();
 
-    expect(await findByText('Stopped.')).toBeInTheDocument();
+    expect(await findByText('Stopped.', inTranscript)).toBeInTheDocument();
   });
 
   it('returns focus to the input after sending and after the reply finishes', async () => {
@@ -294,7 +336,10 @@ describe('AssistantChat', () => {
     userEvent.click(getByRole('button', { name: 'Send' }));
 
     expect(
-      await findByText('Sorry, something went wrong. Please try again.'),
+      await findByText(
+        'Sorry, something went wrong. Please try again.',
+        inTranscript,
+      ),
     ).toBeInTheDocument();
     expect(queryByText(/boom|500/)).not.toBeInTheDocument();
   });
@@ -428,7 +473,9 @@ describe('AssistantChat', () => {
     });
     expect(onMint).toHaveBeenCalledTimes(3);
     userEvent.click(getByRole('button', { name: 'Send' }));
-    expect(await findByText('You have 12 contacts.')).toBeInTheDocument();
+    expect(
+      await findByText('You have 12 contacts.', inTranscript),
+    ).toBeInTheDocument();
     expect(fetchSpy.mock.calls[0][1].headers.Authorization).toBe(
       'Bearer minted-token-2',
     );
@@ -461,7 +508,10 @@ describe('AssistantChat', () => {
     stream.push(frame({ type: 'generation_complete', message_id: 'm1' }));
     stream.close();
     expect(
-      await findByText('Sorry, something went wrong. Please try again.'),
+      await findByText(
+        'Sorry, something went wrong. Please try again.',
+        inTranscript,
+      ),
     ).toBeInTheDocument();
   });
 
@@ -480,6 +530,7 @@ describe('AssistantChat', () => {
     expect(
       await findByText(
         'The assistant is busy right now. Please try again in a moment.',
+        inTranscript,
       ),
     ).toBeInTheDocument();
     expect(queryByText(offNotice)).not.toBeInTheDocument();
@@ -526,13 +577,17 @@ describe('AssistantChat', () => {
 
       await typeMessage(getByRole, 'How many contacts?');
       userEvent.click(getByRole('button', { name: 'Send' }));
-      expect(await findByText('You have 12 contacts.')).toBeInTheDocument();
+      expect(
+        await findByText('You have 12 contacts.', inTranscript),
+      ).toBeInTheDocument();
       await typeMessage(getByRole, 'And gifts?');
       userEvent.click(getByRole('button', { name: 'Send' }));
 
       expect(await findByText(offNotice)).toBeInTheDocument();
       expect(getByText('How many contacts?')).toBeInTheDocument();
-      expect(getByText('You have 12 contacts.')).toBeInTheDocument();
+      expect(
+        getByText('You have 12 contacts.', inTranscript),
+      ).toBeInTheDocument();
       expect(getByText('And gifts?')).toBeInTheDocument();
     });
 
@@ -550,7 +605,9 @@ describe('AssistantChat', () => {
       await typeMessage(getByRole, 'How many contacts?');
       userEvent.click(getByRole('button', { name: 'Send' }));
 
-      expect(await findByText('You have 12 contacts.')).toBeInTheDocument();
+      expect(
+        await findByText('You have 12 contacts.', inTranscript),
+      ).toBeInTheDocument();
       expect(queryByText(offNotice)).not.toBeInTheDocument();
       expect(fetchSpy).toHaveBeenCalledTimes(3);
     });
@@ -587,7 +644,10 @@ describe('AssistantChat', () => {
       userEvent.click(getByRole('button', { name: 'Send' }));
 
       expect(
-        await findByText('Sorry, something went wrong. Please try again.'),
+        await findByText(
+          'Sorry, something went wrong. Please try again.',
+          inTranscript,
+        ),
       ).toBeInTheDocument();
       expect(queryByText(offNotice)).not.toBeInTheDocument();
     });
@@ -610,7 +670,10 @@ describe('AssistantChat', () => {
     await typeMessage(getByRole, 'Hi');
     userEvent.click(getByRole('button', { name: 'Send' }));
     expect(
-      await findByText('Please wait a moment before sending another message.'),
+      await findByText(
+        'Please wait a moment before sending another message.',
+        inTranscript,
+      ),
     ).toBeInTheDocument();
 
     userEvent.type(getByRole('textbox', { name: 'Ask the assistant' }), 'Hi');
@@ -629,7 +692,9 @@ describe('AssistantChat', () => {
     );
     await typeMessage(getByRole, 'How many contacts?');
     userEvent.click(getByRole('button', { name: 'Send' }));
-    expect(await findByText('You have 12 contacts.')).toBeInTheDocument();
+    expect(
+      await findByText('You have 12 contacts.', inTranscript),
+    ).toBeInTheDocument();
 
     rerender(<TestComponent accountListId="account-list-2" />);
 
@@ -637,7 +702,9 @@ describe('AssistantChat', () => {
       'Started a new conversation for this account list.',
     );
     expect(queryByText('How many contacts?')).not.toBeInTheDocument();
-    expect(queryByText('You have 12 contacts.')).not.toBeInTheDocument();
+    expect(
+      queryByText('You have 12 contacts.', inTranscript),
+    ).not.toBeInTheDocument();
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('CreateAssistantToken', {
         accountListId: 'account-list-2',
@@ -652,7 +719,9 @@ describe('AssistantChat', () => {
     const { getByRole, findByText, rerender } = render(<TestComponent />);
     await typeMessage(getByRole, 'How many contacts?');
     userEvent.click(getByRole('button', { name: 'Send' }));
-    expect(await findByText('You have 12 contacts.')).toBeInTheDocument();
+    expect(
+      await findByText('You have 12 contacts.', inTranscript),
+    ).toBeInTheDocument();
     const callsBeforeSwitch = (MessageList as jest.Mock).mock.calls.length;
 
     rerender(<TestComponent accountListId="account-list-2" />);
@@ -674,7 +743,9 @@ describe('AssistantChat', () => {
     const { getByRole, findByText, rerender } = render(<TestComponent />);
     await typeMessage(getByRole, 'How many contacts?');
     userEvent.click(getByRole('button', { name: 'Send' }));
-    expect(await findByText('You have 12 contacts.')).toBeInTheDocument();
+    expect(
+      await findByText('You have 12 contacts.', inTranscript),
+    ).toBeInTheDocument();
 
     rerender(<TestComponent open={false} />);
     rerender(<TestComponent open={false} accountListId="account-list-2" />);
