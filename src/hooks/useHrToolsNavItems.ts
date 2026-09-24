@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ImpersonatorRole } from 'src/lib/impersonationAccess';
+import { hrToolArea } from 'src/lib/impersonationAccess';
 import { useNewStaffQuestionnaireStatusQuery } from './NewStaffQuestionnaireStatus.generated';
 import { useAccountListId } from './useAccountListId';
 import { useDeveloperBypass } from './useDeveloperBypass';
+import { useImpersonatorRole } from './useImpersonatorRole';
 import { useIneligibleByGroup } from './useIneligibleByGroup';
 import { NavItems } from './useReportNavItems';
 import { useReportsDisabled } from './useReportsDisabled';
-import { useRequiredSession } from './useRequiredSession';
 
 export function useHrToolsNavItems(): {
   items: NavItems[];
@@ -29,12 +29,9 @@ export function useHrToolsNavItems(): {
   const developerBypass = useDeveloperBypass();
   // Partner Reminders is live in production; every other HR Tool is still disabled
   const { reportsDisabled } = useReportsDisabled();
-  const { impersonating, impersonatorRole } = useRequiredSession();
-  // Non-developer impersonators must never see the supervisor report (MPDX-10066).
   // Applied outside the developerBypass filter because session.developer reflects
-  // the impersonated user, not the impersonator.
-  const blockedImpersonation =
-    !!impersonating && impersonatorRole !== ImpersonatorRole.Developer;
+  // the impersonated user, not the impersonator (MPDX-9771).
+  const { blocked } = useImpersonatorRole();
 
   const accountListId = useAccountListId();
 
@@ -128,9 +125,10 @@ export function useHrToolsNavItems(): {
       },
     ]
       .filter((item) => developerBypass || !item.hideItem)
-      .filter(
-        (item) => !(item.id === 'mpdSupervisorReport' && blockedImpersonation),
-      );
+      .filter((item) => {
+        const area = hrToolArea(item.id);
+        return !area || !blocked(area);
+      });
   }, [
     t,
     inAsrIneligibleGroup,
@@ -146,7 +144,7 @@ export function useHrToolsNavItems(): {
     hasNoStaffAccount,
     developerBypass,
     reportsDisabled,
-    blockedImpersonation,
+    blocked,
   ]);
 
   return { items, loading: userLoading };

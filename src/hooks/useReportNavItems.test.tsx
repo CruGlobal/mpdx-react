@@ -4,6 +4,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { mockSession } from '__tests__/util/mockSession';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
+import { ImpersonatorRole } from 'src/lib/impersonationAccess';
 import { UserOptionQuery } from './UserPreference.generated';
 import { useReportNavItems } from './useReportNavItems';
 
@@ -28,6 +29,8 @@ const Wrapper = ({ children }: { children: ReactElement }) => (
 
 describe('useReportNavItems', () => {
   afterEach(() => {
+    // mockSession uses mockReturnValue, which clearMocks does not reset
+    mockSession({});
     process.env.DEVELOPMENT_ENV = 'false';
   });
 
@@ -122,5 +125,71 @@ describe('useReportNavItems', () => {
     expect(ids).not.toContain('mpgaIncomeExpenses');
 
     expect(ids).toContain('financialAccounts');
+  });
+
+  describe('expense reports while impersonating', () => {
+    const renderItemIds = async () => {
+      const { result, waitForNextUpdate } = renderHook(
+        () => useReportNavItems(),
+        { wrapper: Wrapper },
+      );
+      await waitForNextUpdate();
+      return result.current.map((item) => item.id);
+    };
+
+    it.each([
+      ImpersonatorRole.HelpdeskAdmin,
+      ImpersonatorRole.MpdLeader,
+      ImpersonatorRole.HrLeader,
+    ])(
+      'hides the Staff Expense Report and Income/Expense Analysis from a %s impersonator',
+      async (impersonatorRole) => {
+        mockSession({ impersonating: true, impersonatorRole });
+
+        const ids = await renderItemIds();
+
+        expect(ids).not.toContain('staffExpense');
+        expect(ids).not.toContain('mpgaIncomeExpenses');
+        // Other reports are untouched
+        expect(ids).toContain('donations');
+      },
+    );
+
+    it('shows the expense reports to a developer impersonator', async () => {
+      mockSession({
+        impersonating: true,
+        impersonatorRole: ImpersonatorRole.Developer,
+      });
+
+      const ids = await renderItemIds();
+
+      expect(ids).toContain('staffExpense');
+      expect(ids).toContain('mpgaIncomeExpenses');
+    });
+
+    it('shows the expense reports when not impersonating', async () => {
+      mockSession({ impersonating: false });
+
+      const ids = await renderItemIds();
+
+      expect(ids).toContain('staffExpense');
+      expect(ids).toContain('mpgaIncomeExpenses');
+    });
+
+    it('keeps the expense reports hidden from a non-developer impersonator even with the developer bypass', async () => {
+      process.env.DEVELOPMENT_ENV = 'true';
+      mockSession({
+        developer: true,
+        impersonating: true,
+        impersonatorRole: ImpersonatorRole.HelpdeskAdmin,
+      });
+
+      const ids = await renderItemIds();
+
+      // The bypass still shows the other gated items
+      expect(ids).toContain('financialAccounts');
+      expect(ids).not.toContain('staffExpense');
+      expect(ids).not.toContain('mpgaIncomeExpenses');
+    });
   });
 });

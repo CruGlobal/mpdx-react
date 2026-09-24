@@ -2,6 +2,7 @@ import { ReactElement } from 'react';
 import { waitFor } from '@testing-library/dom';
 import { renderHook } from '@testing-library/react-hooks';
 import { DeepPartial } from 'ts-essentials';
+import { session } from '__tests__/fixtures/session';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { mockSession } from '__tests__/util/mockSession';
@@ -191,7 +192,21 @@ describe('useHrToolsNavItems', () => {
     expect(result.current.items[0].id).toBe('partnerReminders');
   });
 
-  describe('MPD Supervisor Report while impersonating', () => {
+  describe('while impersonating', () => {
+    const allToolIds = [
+      'salaryCalculator',
+      'staffSavingFund',
+      'nsGoalCalculator',
+      'nsoMpdQuestionnaire',
+      'goalCalculator',
+      'mpdGoalAdmin',
+      'mhaCalculator',
+      'additionalSalaryRequest',
+      'pdsGoalCalculator',
+      'partnerReminders',
+      'mpdSupervisorReport',
+    ];
+
     const renderItemIds = async (
       wrapper: ({ children }: { children: ReactElement }) => ReactElement,
     ) => {
@@ -203,56 +218,87 @@ describe('useHrToolsNavItems', () => {
       return result.current.items.map((item) => item.id);
     };
 
-    it('hides the MPD Supervisor Report from a non-developer impersonator', async () => {
-      mockSession({ impersonating: true, impersonatorRole: undefined });
+    // Every tool is otherwise visible, so only the impersonator role filters the list
+    const renderWithBypass = (
+      user: Partial<typeof session.user>,
+    ): Promise<string[]> => {
+      process.env.DEVELOPMENT_ENV = 'true';
+      mockSession({ developer: true, impersonating: true, ...user });
+      return renderItemIds(Wrapper);
+    };
+
+    it('shows every tool to a developer impersonator', async () => {
+      expect(
+        await renderWithBypass({
+          impersonatorRole: ImpersonatorRole.Developer,
+        }),
+      ).toEqual(allToolIds);
+    });
+
+    it('shows the MPD tools, and nothing else, to an mpd_leader impersonator', async () => {
+      expect(
+        await renderWithBypass({
+          impersonatorRole: ImpersonatorRole.MpdLeader,
+        }),
+      ).toEqual([
+        'nsGoalCalculator',
+        'nsoMpdQuestionnaire',
+        'mpdGoalAdmin',
+        'pdsGoalCalculator',
+        'partnerReminders',
+      ]);
+    });
+
+    it('shows the HR tools, and nothing else, to an hr_leader impersonator', async () => {
+      expect(
+        await renderWithBypass({ impersonatorRole: ImpersonatorRole.HrLeader }),
+      ).toEqual([
+        'salaryCalculator',
+        'staffSavingFund',
+        'mhaCalculator',
+        'additionalSalaryRequest',
+      ]);
+    });
+
+    it('shows no tools to a helpdesk_admin impersonator', async () => {
+      expect(
+        await renderWithBypass({
+          impersonatorRole: ImpersonatorRole.HelpdeskAdmin,
+        }),
+      ).toEqual([]);
+    });
+
+    it('shows no tools to an impersonator with no known role', async () => {
+      expect(await renderWithBypass({ impersonatorRole: undefined })).toEqual(
+        [],
+      );
+    });
+
+    it('shows every tool when not impersonating', async () => {
+      expect(
+        await renderWithBypass({
+          impersonating: false,
+          impersonatorRole: undefined,
+        }),
+      ).toEqual(allToolIds);
+    });
+
+    it('still applies eligibility on top of the role', async () => {
+      mockSession({
+        impersonating: true,
+        impersonatorRole: ImpersonatorRole.MpdLeader,
+      });
 
       const ids = await renderItemIds(SupervisorEligibleWrapper);
 
+      // Allowed by role and eligible
+      expect(ids).toContain('mpdGoalAdmin');
+      expect(ids).toContain('partnerReminders');
+      // Allowed by role but a Senior Staff user is not eligible
+      expect(ids).not.toContain('nsGoalCalculator');
+      // Eligible but not allowed by role
+      expect(ids).not.toContain('goalCalculator');
       expect(ids).not.toContain('mpdSupervisorReport');
-      // Only the supervisor report is removed
-      expect(ids).toContain('goalCalculator');
-    });
-
-    it('shows the MPD Supervisor Report to a developer impersonator', async () => {
-      mockSession({
-        impersonating: true,
-        impersonatorRole: ImpersonatorRole.Developer,
-      });
-
-      expect(await renderItemIds(SupervisorEligibleWrapper)).toContain(
-        'mpdSupervisorReport',
-      );
-    });
-
-    it('shows the MPD Supervisor Report when not impersonating', async () => {
-      mockSession({ impersonating: false });
-
-      expect(await renderItemIds(SupervisorEligibleWrapper)).toContain(
-        'mpdSupervisorReport',
-      );
-    });
-
-    it('keeps the report hidden from a non-developer impersonator even with the developer bypass', async () => {
-      process.env.DEVELOPMENT_ENV = 'true';
-      mockSession({
-        developer: true,
-        impersonating: true,
-        impersonatorRole: undefined,
-      });
-
-      const ids = await renderItemIds(Wrapper);
-
-      // The bypass still shows the other ineligible items
-      expect(ids).toContain('salaryCalculator');
-      expect(ids).not.toContain('mpdSupervisorReport');
-    });
-
-    it('treats a missing impersonatorRole as non-developer', async () => {
-      mockSession({ impersonating: true, impersonatorRole: undefined });
-
-      expect(await renderItemIds(SupervisorEligibleWrapper)).not.toContain(
-        'mpdSupervisorReport',
-      );
     });
   });
 

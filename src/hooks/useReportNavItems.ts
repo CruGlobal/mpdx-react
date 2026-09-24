@@ -2,7 +2,9 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import { useDeveloperBypass } from './useDeveloperBypass';
+import { useImpersonatorRole } from './useImpersonatorRole';
 import { useReportsDisabled } from './useReportsDisabled';
 
 export type NavItems = {
@@ -12,11 +14,20 @@ export type NavItems = {
   hideItem?: boolean;
 };
 
+// Reports whose visibility while impersonating depends on the impersonator's role
+const reportAreas: Record<string, ImpersonationArea | undefined> = {
+  staffExpense: ImpersonationArea.StaffExpenseReport,
+  mpgaIncomeExpenses: ImpersonationArea.MpgaIncomeExpenses,
+};
+
 export function useReportNavItems(): NavItems[] {
   const { t } = useTranslation();
   const { data } = useGetUserQuery();
   const { reportsDisabled } = useReportsDisabled();
   const developerBypass = useDeveloperBypass();
+  // Applied outside the developerBypass filter because session.developer reflects
+  // the impersonated user, not the impersonator (MPDX-9771).
+  const { blocked } = useImpersonatorRole();
 
   const userType = data?.user.userType;
   const usStaff = userType === UserTypeEnum.UsStaff;
@@ -81,7 +92,13 @@ export function useReportNavItems(): NavItems[] {
   ];
 
   return useMemo(
-    () => reportNavItems.filter((item) => developerBypass || !item.hideItem),
+    () =>
+      reportNavItems
+        .filter((item) => developerBypass || !item.hideItem)
+        .filter((item) => {
+          const area = reportAreas[item.id];
+          return !area || !blocked(area);
+        }),
     [
       t,
       usStaff,
@@ -90,6 +107,7 @@ export function useReportNavItems(): NavItems[] {
       reportsDisabled,
       hasNoStaffAccount,
       developerBypass,
+      blocked,
     ],
   );
 }

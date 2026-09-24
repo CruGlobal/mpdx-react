@@ -5,6 +5,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { mockSession } from '__tests__/util/mockSession';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
+import { ImpersonatorRole } from 'src/lib/impersonationAccess';
 import { UserOptionQuery } from './UserPreference.generated';
 import { useNavPages } from './useNavPages';
 
@@ -69,6 +70,8 @@ const ReportsDisabledWrapper = ({ children }: { children: ReactElement }) => (
 
 describe('useNavPages', () => {
   afterEach(() => {
+    // mockSession uses mockReturnValue, which clearMocks does not reset
+    mockSession({});
     process.env.DEVELOPMENT_ENV = 'false';
   });
 
@@ -171,5 +174,69 @@ describe('useNavPages', () => {
     expect(hrToolsPage?.items?.map((item) => item.id)).toEqual([
       'partnerReminders',
     ]);
+  });
+
+  describe('Contacts and Tasks while impersonating', () => {
+    const renderNavPageIds = async () => {
+      const { result, waitForNextUpdate } = renderHook(
+        () => useNavPages(false),
+        { wrapper: makeWrapper(UserTypeEnum.UsStaff) },
+      );
+      await waitForNextUpdate();
+      return result.current;
+    };
+
+    it.each([ImpersonatorRole.MpdLeader, ImpersonatorRole.HrLeader])(
+      'hides the Contacts and Tasks tabs from a %s impersonator',
+      async (impersonatorRole) => {
+        mockSession({ impersonating: true, impersonatorRole });
+
+        const { navPages, searchDialogPages } = await renderNavPageIds();
+
+        const ids = navPages.map((page) => page.id);
+        expect(ids).not.toContain('contacts-page');
+        expect(ids).not.toContain('tasks-page');
+        // The dashboard and reports stay
+        expect(ids).toContain('dashboard-page');
+        expect(ids).toContain('reports-page');
+        // The search dialog follows the same filter
+        const searchTitles = searchDialogPages.map((page) => page.title);
+        expect(searchTitles).not.toContain('Contacts');
+        expect(searchTitles).not.toContain('Tasks');
+      },
+    );
+
+    it.each([ImpersonatorRole.HelpdeskAdmin, ImpersonatorRole.Developer])(
+      'shows the Contacts and Tasks tabs to a %s impersonator',
+      async (impersonatorRole) => {
+        mockSession({ impersonating: true, impersonatorRole });
+
+        const { navPages } = await renderNavPageIds();
+
+        const ids = navPages.map((page) => page.id);
+        expect(ids).toContain('contacts-page');
+        expect(ids).toContain('tasks-page');
+      },
+    );
+
+    it('hides the Contacts and Tasks tabs from an impersonator with no known role', async () => {
+      mockSession({ impersonating: true, impersonatorRole: undefined });
+
+      const { navPages } = await renderNavPageIds();
+
+      const ids = navPages.map((page) => page.id);
+      expect(ids).not.toContain('contacts-page');
+      expect(ids).not.toContain('tasks-page');
+    });
+
+    it('shows the Contacts and Tasks tabs when not impersonating', async () => {
+      mockSession({ impersonating: false });
+
+      const { navPages } = await renderNavPageIds();
+
+      const ids = navPages.map((page) => page.id);
+      expect(ids).toContain('contacts-page');
+      expect(ids).toContain('tasks-page');
+    });
   });
 });

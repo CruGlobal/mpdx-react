@@ -5,8 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import { useDeveloperBypass } from './useDeveloperBypass';
 import { useHrToolsNavItems } from './useHrToolsNavItems';
+import { useImpersonatorRole } from './useImpersonatorRole';
 import { useReportNavItems } from './useReportNavItems';
 import { useSettingsNavItems } from './useSettingsNavItems';
 import { useToolsNavItems } from './useToolsNavItems';
@@ -64,6 +66,7 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
   const toolsItems = useToolsNavItems();
   const settingsItems = useSettingsNavItems();
   const { items: hrToolsItems, loading: hrToolsLoading } = useHrToolsNavItems();
+  const { blocked } = useImpersonatorRole();
 
   const allNavPages = useMemo<NavPage[]>(() => {
     const navPages: NavPage[] = [
@@ -84,6 +87,7 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
         showInNav: true,
         isDropdown: false,
         showInSearchDialog: true,
+        hideTab: blocked(ImpersonationArea.Contacts),
       },
       {
         id: 'tasks-page',
@@ -94,6 +98,7 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
         showInNav: true,
         isDropdown: false,
         showInSearchDialog: true,
+        hideTab: blocked(ImpersonationArea.Tasks),
       },
       {
         id: 'reports-page',
@@ -193,6 +198,7 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
     hrToolsLoading,
     canSeeHrTools,
     data,
+    blocked,
   ]);
 
   const navPages = useMemo(
