@@ -59,15 +59,16 @@ describe('buildContactsListHref', () => {
     },
   );
 
-  it('maps status labels to the status filter', () => {
+  it('passes statuses through to the status filter', () => {
     expect(
       filtersOf(
         build({
           preset: 'status_in',
           values: [
-            'Partner - Financial',
-            'New Connection',
-            'Expired Connection',
+            'PARTNER_FINANCIAL',
+            'NEVER_CONTACTED',
+            'EXPIRED_REFERRAL',
+            'PARTNER_FINANCIAL',
           ],
         }),
       ),
@@ -77,31 +78,37 @@ describe('buildContactsListHref', () => {
   });
 
   it.each([
-    [['Physical'], 'PHYSICAL_ONLY'],
-    [['Email'], 'EMAIL_ONLY'],
-    [['Both'], 'BOTH'],
-    [['None'], 'NONE'],
-    [['Both', 'Physical'], 'PHYSICAL'],
-    [['Email', 'Both'], 'EMAIL'],
-    [['Physical', 'Email', 'Both'], 'ALL'],
+    [['PHYSICAL'], 'PHYSICAL_ONLY'],
+    [['EMAIL'], 'EMAIL_ONLY'],
+    [['BOTH'], 'BOTH'],
+    [['NONE'], 'NONE'],
+    [['BOTH', 'PHYSICAL'], 'PHYSICAL'],
+    [['EMAIL', 'BOTH'], 'EMAIL'],
+    [['PHYSICAL', 'EMAIL', 'BOTH'], 'ALL'],
+    [['PHYSICAL', 'PHYSICAL'], 'PHYSICAL_ONLY'],
   ])('maps newsletter %j to %s', (values, newsletter) => {
     expect(filtersOf(build({ preset: 'newsletter_in', values }))).toEqual({
       newsletter,
     });
   });
 
-  it('returns null for a newsletter set the filter cannot express', () => {
-    expect(
-      build({ preset: 'newsletter_in', values: ['Physical', 'Email'] }),
-    ).toBeNull();
-  });
+  it.each([
+    [['PHYSICAL', 'EMAIL']],
+    [['NONE', 'PHYSICAL']],
+    [['PHYSICAL', 'EMAIL', 'BOTH', 'NONE']],
+  ])(
+    'returns null for newsletter %j, which the filter cannot express',
+    (values) => {
+      expect(build({ preset: 'newsletter_in', values })).toBeNull();
+    },
+  );
 
-  it('maps pledge frequency labels to the filter values', () => {
+  it('maps pledge frequencies to the filter values', () => {
     expect(
       filtersOf(
         build({
           preset: 'pledge_frequency_in',
-          values: ['Monthly', 'Weekly', 'Monthly'],
+          values: ['MONTHLY', 'WEEKLY', 'MONTHLY'],
         }),
       ),
     ).toEqual({ pledgeFrequency: ['1.0', '0.23076923076923'] });
@@ -112,7 +119,7 @@ describe('buildContactsListHref', () => {
       filtersOf(
         build(
           { preset: 'late_by_90' },
-          { preset: 'pledge_frequency_in', values: ['Monthly'] },
+          { preset: 'pledge_frequency_in', values: ['MONTHLY'] },
         ),
       ),
     ).toEqual({
@@ -130,7 +137,7 @@ describe('buildContactsListHref', () => {
         { preset: 'late_by_30' },
         {
           preset: 'status_in',
-          values: ['Partner - Special', 'Partner - Financial'],
+          values: ['PARTNER_SPECIAL', 'PARTNER_FINANCIAL'],
         },
       ],
     ],
@@ -139,7 +146,7 @@ describe('buildContactsListHref', () => {
       [
         {
           preset: 'status_in',
-          values: ['Partner - Special', 'Partner - Financial'],
+          values: ['PARTNER_SPECIAL', 'PARTNER_FINANCIAL'],
         },
         { preset: 'late_by_30' },
       ],
@@ -159,7 +166,7 @@ describe('buildContactsListHref', () => {
     expect(
       build(
         { preset: 'late_by_60' },
-        { preset: 'status_in', values: ['Partner - Special'] },
+        { preset: 'status_in', values: ['PARTNER_SPECIAL'] },
       ),
     ).toBeNull();
   });
@@ -176,17 +183,27 @@ describe('buildContactsListHref', () => {
     ['an unknown preset', { preset: 'late_by_120' }],
     ['a param on a late preset', { preset: 'late_by_30', days: 30 }],
     ['an unknown range', { preset: 'stopped_giving', range: 'forever' }],
-    ['an unknown status', { preset: 'status_in', values: ['Donor'] }],
+    ['an unknown status', { preset: 'status_in', values: ['DONOR'] }],
+    [
+      'a status label',
+      { preset: 'status_in', values: ['Partner - Financial'] },
+    ],
+    ['a filter-only status', { preset: 'status_in', values: ['HIDDEN'] }],
     ['an empty values list', { preset: 'status_in', values: [] }],
     [
       'values that are not a list',
-      { preset: 'status_in', values: 'Unresponsive' },
+      { preset: 'status_in', values: 'UNRESPONSIVE' },
     ],
     [
       'an unknown frequency',
-      { preset: 'pledge_frequency_in', values: ['Daily'] },
+      { preset: 'pledge_frequency_in', values: ['DAILY'] },
     ],
-    ['an unknown newsletter', { preset: 'newsletter_in', values: ['Fax'] }],
+    [
+      'a frequency label',
+      { preset: 'pledge_frequency_in', values: ['Monthly'] },
+    ],
+    ['an unknown newsletter', { preset: 'newsletter_in', values: ['FAX'] }],
+    ['a newsletter label', { preset: 'newsletter_in', values: ['Physical'] }],
   ])('returns null for %s', (_, preset) => {
     expect(build(preset)).toBeNull();
   });
