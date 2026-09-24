@@ -3,15 +3,19 @@ import { MockedProvider } from '@apollo/client/testing';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import matchMediaMock from '__tests__/util/matchMediaMock';
 import {
   afterTestResizeObserver,
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
 import { GetDashboardQuery } from 'pages/accountLists/GetDashboard.generated';
-import { UserTypeEnum } from 'src/graphql/types.generated';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
+import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
+import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
 import useTaskModal from '../../hooks/useTaskModal';
 import theme from '../../theme';
+import { NewStaffGoalReadyQuery } from './NewStaffGoalReadyCard/NewStaffGoalReadyCard.generated';
 import {
   GetThisWeekDefaultMocks,
   getUserOptionMock,
@@ -136,6 +140,56 @@ describe('Dashboard', () => {
 
   afterEach(() => {
     afterTestResizeObserver();
+  });
+
+  it('prompts new staff whose MPD goal has been sent', async () => {
+    const { findByRole } = render(
+      <ThemeProvider theme={theme}>
+        <SnackbarProvider>
+          <GqlMockedProvider<{
+            GetUser: GetUserQuery;
+            NewStaffGoalReady: NewStaffGoalReadyQuery;
+            UserOption: UserOptionQuery;
+          }>
+            mocks={{
+              GetUser: { user: { usStaffGroup: UsStaffGroupEnum.NewStaff } },
+              // Answered by key: the verified user group keeps the confirm modal
+              // closed, and the card's acknowledgement is deliberately unset.
+              UserOption: {
+                userOption: ((_root: unknown, args: { key: string }) =>
+                  args.key === 'user_type_verified'
+                    ? { key: args.key, value: 'true' }
+                    : null) as unknown as NonNullable<
+                  UserOptionQuery['userOption']
+                >,
+              },
+              NewStaffGoalReady: {
+                newStaffGoalCalculation: {
+                  id: 'goal-1',
+                  calculations: {
+                    monthlyGoal: 4602.66,
+                    specialNeedsTotal: 2500,
+                  },
+                  newStaffCohortAttendee: null,
+                },
+              },
+            }}
+          >
+            <Dashboard accountListId="abc" data={data} />
+          </GqlMockedProvider>
+        </SnackbarProvider>
+      </ThemeProvider>,
+    );
+
+    // Three chained requests (user, goal, acknowledgement) feed the card, so
+    // allow longer than the default wait.
+    expect(
+      await findByRole(
+        'heading',
+        { name: 'Your MPD goal is ready' },
+        { timeout: 5000 },
+      ),
+    ).toBeInTheDocument();
   });
 
   it('default', async () => {
