@@ -40,6 +40,115 @@ describe('StaffMember', () => {
     expect(getByText('BB')).toBeInTheDocument();
   });
 
+  it('names a spouse who is not merged into the row', () => {
+    const { getByTestId } = renderRow();
+    expect(getByTestId('person-numbers')).toHaveTextContent(
+      'Spouse: Jane Smith',
+    );
+  });
+
+  it('omits the spouse line when there is no spouse', () => {
+    const { getByTestId } = renderRow(
+      jest.fn(),
+      managedStaffMember({ ...member, spouseFirstName: null }),
+    );
+    expect(getByTestId('person-numbers')).not.toHaveTextContent('Spouse:');
+  });
+
+  describe('a merged spouse pair', () => {
+    const partner = managedStaffMember({
+      firstName: 'Ben',
+      lastName: 'Butler',
+      personNumber: '10000002',
+      spousePersonNumber: member.personNumber,
+      teams: {
+        employee: [{ id: 'team-2', name: 'City', department: 'US City' }],
+        spouse: [],
+      },
+    });
+    const pair = { ...member, partner };
+
+    it('shows both first names, both initials and both teams', () => {
+      const { getByText, getByTestId } = renderRow(jest.fn(), pair);
+      expect(getByText('Brooke & Ben Butler')).toBeInTheDocument();
+      expect(getByText('BB')).toBeInTheDocument();
+      expect(getByTestId('person-numbers')).toHaveTextContent(
+        'FamilyLife, City',
+      );
+      expect(getByTestId('person-numbers')).not.toHaveTextContent('Spouse:');
+    });
+
+    it('opens the drawer under the combined name', () => {
+      const { getByRole } = renderRow(jest.fn(), pair);
+      expect(
+        getByRole('button', { name: 'View details for Brooke & Ben Butler' }),
+      ).toBeInTheDocument();
+    });
+  });
+
+  describe('quick glance', () => {
+    it('renders no chevron without a toggle handler', () => {
+      const { queryByRole } = renderRow();
+      expect(queryByRole('button', { name: /details for/ })).toHaveAttribute(
+        'aria-label',
+        'View details for Brooke Butler',
+      );
+      expect(
+        queryByRole('button', { name: 'Show details for Brooke Butler' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('toggles from the chevron without opening the drawer', () => {
+      const onClick = jest.fn();
+      const onToggleExpand = jest.fn();
+      const { getByRole } = render(
+        <ThemeProvider theme={theme}>
+          <StaffMember
+            data={member}
+            onClick={onClick}
+            onToggleExpand={onToggleExpand}
+          />
+        </ThemeProvider>,
+      );
+      const chevron = getByRole('button', {
+        name: 'Show details for Brooke Butler',
+      });
+      expect(chevron).toHaveAttribute('aria-expanded', 'false');
+
+      userEvent.click(chevron);
+
+      expect(onToggleExpand).toHaveBeenCalledTimes(1);
+      expect(onClick).not.toHaveBeenCalled();
+    });
+
+    it('shows the extra details when expanded, in either density', () => {
+      const { getByRole, getByTestId, getByText } = render(
+        <ThemeProvider theme={theme}>
+          <StaffMember
+            data={member}
+            density={RowDensityEnum.Compact}
+            expanded
+            onToggleExpand={jest.fn()}
+          />
+        </ThemeProvider>,
+      );
+      expect(
+        getByRole('button', { name: 'Hide details for Brooke Butler' }),
+      ).toHaveAttribute('aria-expanded', 'true');
+      const glance = getByTestId('quick-glance');
+      expect(glance).toHaveTextContent('Person number10000001');
+      expect(glance).toHaveTextContent('DepartmentUS FamilyLife');
+      expect(glance).toHaveTextContent('Geographic locationOrlando, FL');
+      expect(glance).toHaveTextContent('New Staff Monthly Salary$2,500.00');
+      expect(glance).toHaveTextContent('Monthly Gross Salary$4,500.00');
+      expect(glance).toHaveTextContent('Tenure6 years');
+      expect(glance).toHaveTextContent('Healthcare dependents2');
+      expect(glance).toHaveTextContent('Support typeSupported RMO');
+      expect(glance).toHaveTextContent('SECAPays SECA');
+      expect(getByText('Jane Smith')).toBeInTheDocument();
+    });
+  });
+
   it('drops the avatar in the compact layout but keeps the accessible name', () => {
     const { queryByText, getByRole, getByTestId } = render(
       <ThemeProvider theme={theme}>

@@ -1,10 +1,13 @@
 import React, { useMemo } from 'react';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Avatar,
   Box,
   Card,
   CardActionArea,
+  Collapse,
   Grid,
+  IconButton,
   Stack,
   SxProps,
   Theme,
@@ -17,12 +20,14 @@ import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import theme from 'src/theme';
 import { RowDensityEnum } from '../MpdSupervisorReportContext';
 import {
-  ManagedStaffMember,
   QuarterChipData,
+  StaffRow,
   buildQuarterChips,
-  getInitials,
   getLocalizedAssignmentCategoryGroup,
   getQuarterLabel,
+  getRowInitials,
+  getRowName,
+  getRowTeamNames,
   grossSalaryWarning,
   healthLabel,
   pendingField,
@@ -30,6 +35,7 @@ import {
 } from '../helpers';
 import { GrossSalaryMarker } from './GrossSalaryMarker';
 import { QuarterChip } from './QuarterChip';
+import { QuickGlance } from './QuickGlance';
 
 const StyledCard = styled(Card, {
   shouldForwardProp: (prop) => prop !== 'compact',
@@ -57,103 +63,135 @@ const GridQuarter = styled(Grid)(({ theme }) => ({
 }));
 
 interface StaffMemberProps {
-  data: ManagedStaffMember;
+  data: StaffRow;
   /** Compact drops the avatar and puts the name and details on one line */
   density?: RowDensityEnum;
+  /** Whether the quick-glance strip is open; the chevron only renders with onToggleExpand */
+  expanded?: boolean;
+  onToggleExpand?: () => void;
   onClick?: () => void;
 }
 
 export const StaffMember: React.FC<StaffMemberProps> = ({
   data,
   density = RowDensityEnum.Comfortable,
+  expanded = false,
+  onToggleExpand,
   onClick,
 }) => {
   const { t } = useTranslation();
   const compact = density === RowDensityEnum.Compact;
   const { formatCurrency } = useFormatters();
-  const {
-    firstName: name,
-    lastName,
-    staffAccountId,
-    teams,
-    assignmentCategoryGroup,
-  } = data;
+  const { staffAccountId, assignmentCategoryGroup, partner, spouseFirstName } =
+    data;
   const grossWarning = grossSalaryWarning(t, formatCurrency, data);
 
-  const names = useMemo(() => {
-    if (!name || !lastName) {
-      return '';
-    }
-    return `${name} ${lastName}`;
-  }, [name, lastName]);
+  const names = getRowName(data);
 
   const quarters = useMemo(
     () => buildQuarterChips(data.quarterlyHealth),
     [data.quarterlyHealth],
   );
 
-  // A member can be on several teams; the API has no employment type at all.
+  // A member can be on several teams; a merged pair shows both spouses' teams.
   const team = useMemo(
-    () => teams.employee.map(({ name }) => name).join(', ') || pendingField,
-    [teams],
+    () => getRowTeamNames(data).join(', ') || pendingField,
+    [data],
   );
+  // A spouse who is not in the list still gets named on the row
+  const spouse =
+    !partner && spouseFirstName
+      ? `${spouseFirstName} ${data.spouseLastName ?? data.lastName}`
+      : null;
 
   return (
     <StyledCard compact={compact}>
-      <CardActionArea
-        // The marker inside is not focusable, so the row's own name carries
-        // the gross salary warning for keyboard and screen-reader users.
-        aria-label={
-          grossWarning
-            ? t('View details for {{name}}. {{warning}}', {
-                name: names,
-                warning: grossWarning,
-              })
-            : t('View details for {{name}}', { name: names })
-        }
-        onClick={onClick}
-        sx={{
-          paddingInline: theme.spacing(4),
-          paddingTop: theme.spacing(compact ? 0.5 : 1),
-          paddingBottom: theme.spacing(compact ? 0.5 : 1),
-        }}
-      >
-        <Grid container>
-          <GridItem size={6}>
-            {!compact && (
-              <Avatar
-                sx={{ bgcolor: 'mpdxGrayLight.main', color: 'text.primary' }}
-              >
-                {getInitials(name, lastName)}
-              </Avatar>
-            )}
-            <Box sx={{ flexGrow: 1, minWidth: 200, ml: compact ? 0 : 1 }}>
-              <Box
+      <Box sx={{ display: 'flex', alignItems: 'stretch' }}>
+        {onToggleExpand && (
+          <Box sx={{ display: 'flex', alignItems: 'center', pl: 1 }}>
+            <IconButton
+              size="small"
+              onClick={onToggleExpand}
+              aria-expanded={expanded}
+              aria-label={
+                expanded
+                  ? t('Hide details for {{name}}', { name: names })
+                  : t('Show details for {{name}}', { name: names })
+              }
+            >
+              <ExpandMoreIcon
+                fontSize="small"
                 sx={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  flexWrap: 'wrap',
+                  transition: 'transform 150ms',
+                  transform: expanded ? 'rotate(180deg)' : 'none',
                 }}
-              >
-                <StaffInfo
-                  names={names}
-                  staffAccountID={staffAccountId}
-                  userPersonType={getLocalizedAssignmentCategoryGroup(
-                    t,
-                    assignmentCategoryGroup,
-                  )}
-                  team={team}
-                  grossWarning={grossWarning}
-                  compact={compact}
-                />
+              />
+            </IconButton>
+          </Box>
+        )}
+        <CardActionArea
+          // The marker inside is not focusable, so the row's own name carries
+          // the gross salary warning for keyboard and screen-reader users.
+          aria-label={
+            grossWarning
+              ? t('View details for {{name}}. {{warning}}', {
+                  name: names,
+                  warning: grossWarning,
+                })
+              : t('View details for {{name}}', { name: names })
+          }
+          onClick={onClick}
+          sx={{
+            flex: 1,
+            paddingInline: theme.spacing(onToggleExpand ? 2 : 4),
+            paddingRight: theme.spacing(4),
+            paddingTop: theme.spacing(compact ? 0.5 : 1),
+            paddingBottom: theme.spacing(compact ? 0.5 : 1),
+          }}
+        >
+          <Grid container>
+            <GridItem size={6}>
+              {!compact && (
+                <Avatar
+                  sx={{ bgcolor: 'mpdxGrayLight.main', color: 'text.primary' }}
+                >
+                  {getRowInitials(data)}
+                </Avatar>
+              )}
+              <Box sx={{ flexGrow: 1, minWidth: 200, ml: compact ? 0 : 1 }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                  }}
+                >
+                  <StaffInfo
+                    names={names}
+                    staffAccountID={staffAccountId}
+                    userPersonType={getLocalizedAssignmentCategoryGroup(
+                      t,
+                      assignmentCategoryGroup,
+                    )}
+                    team={team}
+                    spouse={spouse}
+                    grossWarning={grossWarning}
+                    compact={compact}
+                  />
+                </Box>
               </Box>
-            </Box>
-          </GridItem>
-          <GridQuarter size={6}>
-            <FiscalYearQuarters quarters={quarters} />
-          </GridQuarter>
-        </Grid>
-      </CardActionArea>
+            </GridItem>
+            <GridQuarter size={6}>
+              <FiscalYearQuarters quarters={quarters} />
+            </GridQuarter>
+          </Grid>
+        </CardActionArea>
+      </Box>
+      {onToggleExpand && (
+        <Collapse in={expanded} unmountOnExit>
+          <QuickGlance row={data} />
+        </Collapse>
+      )}
     </StyledCard>
   );
 };
@@ -210,6 +248,8 @@ interface StaffInfoProps {
   staffAccountID: string;
   userPersonType: string;
   team: string;
+  /** The spouse's name when they are not merged into this row */
+  spouse?: string | null;
   /** Set when Monthly Gross Salary is below New Staff Monthly Salary */
   grossWarning: string | null;
   /** Puts the details on the same line as the name */
@@ -220,9 +260,11 @@ const StaffInfoBase: React.FC<StaffInfoProps> = ({
   staffAccountID,
   userPersonType,
   team,
+  spouse,
   grossWarning,
   compact = false,
 }) => {
+  const { t } = useTranslation();
   return (
     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
       <Box
@@ -255,6 +297,7 @@ const StaffInfoBase: React.FC<StaffInfoProps> = ({
           {userPersonType}
           {' · '}
           {team}
+          {spouse && ` · ${t('Spouse: {{name}}', { name: spouse })}`}
         </Typography>
       </Box>
     </Box>

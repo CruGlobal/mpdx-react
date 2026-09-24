@@ -35,8 +35,9 @@ import { HealthColorKey } from './ReportLegend/HealthColorKey';
 import { ReportLegendButton } from './ReportLegend/ReportLegendButton';
 import { RowDensityToggle } from './RowDensityToggle/RowDensityToggle';
 import { StaffMember } from './StaffMemberRow/StaffMember';
+import { TeamSummary } from './TeamSummary/TeamSummary';
 import {
-  ManagedStaffMember,
+  StaffRow,
   buildQuarterChips,
   getQuarterLabel,
   getQuarterMonthRange,
@@ -114,6 +115,9 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
     refetchStaff,
     activeFilterCount,
     rowDensity,
+    loadedCount,
+    expandedRows,
+    toggleRow,
   } = useMpdSupervisorReport();
 
   // Every row covers the same four quarters, so the first one labels the header.
@@ -186,7 +190,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
                 sx={{ display: { xs: 'none', md: 'block' } }}
               >
                 {t('Showing {{count}} of {{total}} · sorted by MPD health', {
-                  count: staffMembers.length,
+                  count: loadedCount,
                   total: totalCount,
                 })}
               </Typography>
@@ -215,6 +219,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
 
       <StyledContainer maxWidth={false}>
         <AppliedFilters />
+        <TeamSummary />
         <QuartersContainer>
           {quarterHeaders.length > 0 && (
             <HealthColorKey
@@ -296,11 +301,13 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
               data={staffMembers}
               disableHover
               style={{ height: '100%' }}
-              itemContent={(_index, item: ManagedStaffMember) => (
+              itemContent={(_index, item: StaffRow) => (
                 <StaffMember
                   key={item.personNumber}
                   data={item}
                   density={rowDensity}
+                  expanded={expandedRows.has(item.personNumber)}
+                  onToggleExpand={() => toggleRow(item.personNumber)}
                   onClick={() => openMember(item)}
                 />
               )}
