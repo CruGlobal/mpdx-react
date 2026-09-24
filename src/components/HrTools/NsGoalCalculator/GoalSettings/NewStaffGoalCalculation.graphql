@@ -114,6 +114,7 @@ fragment NewStaffGoalCalculationFields on NewStaffGoalCalculation {
   # Null for scenario goals and outside the MPD Goals team, so the staff wizard shares this safely.
   newStaffCohortAttendee {
     id
+    goalSentAt
     newStaffCohortId
     cohortName
     coordinators
