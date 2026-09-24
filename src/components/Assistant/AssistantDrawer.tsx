@@ -41,7 +41,7 @@ export const AssistantDrawer: React.FC = () => {
       open={open}
       onClose={closeAssistant}
       slotProps={{
-        paper: { role: 'dialog', 'aria-labelledby': titleId },
+        paper: { 'aria-labelledby': titleId },
       }}
     >
       <DrawerContent>
