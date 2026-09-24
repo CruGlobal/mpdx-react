@@ -53,6 +53,8 @@ interface ConsumerResult {
   clearFilters: () => void;
   filterRequired: FilterRequired | null;
   staffError: ApolloError | undefined;
+  loadMoreError: ApolloError | undefined;
+  staffMembers: ManagedStaffMember[];
   rowDensity: RowDensityEnum;
   setRowDensity: (v: RowDensityEnum) => void;
   loadMore: () => void;
@@ -383,7 +385,7 @@ describe('managed staff query variables', () => {
     expect(consumerResult.filterRequired).toBeNull();
   });
 
-  it('asks the client not to toast query errors', async () => {
+  it('asks the client not to toast only the filter guard', async () => {
     renderConsumer();
 
     await waitFor(() =>
@@ -392,7 +394,80 @@ describe('managed staff query variables', () => {
     const call = mutationSpy.mock.calls.find(
       ([{ operation }]) => operation.operationName === 'ManagedStaff',
     );
-    expect(call?.[0].operation.getContext().suppressErrors).toBe(true);
+    const context = call?.[0].operation.getContext();
+    expect(context.suppressErrorCodes).toEqual(['FILTER_REQUIRED']);
+    expect(context.suppressErrors).toBeUndefined();
+  });
+
+  describe('a failed load-more page', () => {
+    const firstPage = managedStaffMock([sampleMember]);
+    firstPage.managedStaff.pageInfo = {
+      endCursor: 'cursor-1',
+      hasNextPage: true,
+    };
+    // The first page loads; every page after a cursor fails
+    const failingSecondPage: ApolloErgonoMockMap = {
+      ManagedStaff: {
+        managedStaff: (_root: unknown, args: { after?: string | null }) => {
+          if (args.after) {
+            throw new Error('Page failed');
+          }
+          return firstPage.managedStaff;
+        },
+      },
+    };
+    const pageRequests = () =>
+      mutationSpy.mock.calls.filter(
+        ([{ operation }]) =>
+          operation.operationName === 'ManagedStaff' &&
+          operation.variables.after === 'cursor-1',
+      );
+
+    it('keeps the loaded rows and exposes the failure', async () => {
+      renderConsumer(failingSecondPage);
+      await waitFor(() => expect(consumerResult.staffMembers).toHaveLength(1));
+
+      act(() => {
+        consumerResult.loadMore();
+      });
+
+      await waitFor(() =>
+        expect(consumerResult.loadMoreError?.message).toBe('Page failed'),
+      );
+      expect(consumerResult.staffMembers).toHaveLength(1);
+      expect(consumerResult.staffError).toBeUndefined();
+    });
+
+    it('retries the same cursor and clears the failure while it retries', async () => {
+      renderConsumer(failingSecondPage);
+      await waitFor(() => expect(consumerResult.staffMembers).toHaveLength(1));
+      act(() => {
+        consumerResult.loadMore();
+      });
+      await waitFor(() => expect(consumerResult.loadMoreError).toBeDefined());
+      expect(pageRequests()).toHaveLength(1);
+
+      act(() => {
+        consumerResult.loadMore();
+      });
+
+      await waitFor(() => expect(pageRequests()).toHaveLength(2));
+    });
+
+    it('forgets the failure when the filters change', async () => {
+      renderConsumer(failingSecondPage);
+      await waitFor(() => expect(consumerResult.staffMembers).toHaveLength(1));
+      act(() => {
+        consumerResult.loadMore();
+      });
+      await waitFor(() => expect(consumerResult.loadMoreError).toBeDefined());
+
+      act(() => {
+        consumerResult.setTeam('Central Team');
+      });
+
+      await waitFor(() => expect(consumerResult.loadMoreError).toBeUndefined());
+    });
   });
 
   it('omits teamNames and departments until a filter is chosen', async () => {

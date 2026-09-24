@@ -27,11 +27,15 @@ same sentence in red. The header still says "Showing 0 of 0".
 
 - `MpdSupervisorReportContext` exposes `filterRequired: { count, filtered } | null`
   derived from the query error, and excludes that error from `staffError`.
-- The `ManagedStaff` query sets Apollo context `suppressErrors: true`. The
-  report already renders its own error state, so the toast was redundant for
-  every error, not only this one. Trade-off: the global link also skips its
-  Datadog report for this query; the in-page alert with Retry (finding 4) is the
-  user-facing recovery.
+- The `ManagedStaff` query sets Apollo context
+  `suppressErrorCodes: ['FILTER_REQUIRED']`, a new per-code opt-out honored by
+  the global error link (`src/lib/apollo/suppressErrors.ts`). Only the guard
+  skips the toast and the Datadog report; every other failure still toasts and
+  is reported. (The agent review rejected a blanket `suppressErrors: true` here
+  because it would have hidden real failures from monitoring.)
+- A rejected `fetchMore` never sets the hook's `error`, so the context catches
+  it into `loadMoreError`, keeps the rows already loaded, and the report shows
+  an inline "Could not load more staff" alert with **Retry** above the list.
 - When `filterRequired` is set, the main area renders a centered guidance state
   (filter icon, title, one sentence, and an **Open filters** button when the
   filter panel is closed). Copy is localized in the client rather than echoing

@@ -88,18 +88,18 @@ export const AppliedFilters: React.FC = () => {
     >
       {chips.map(({ key, label, onDelete }) => (
         <li key={key}>
+          {/*
+           * The chip itself is the one "Remove" button: onClick makes it a
+           * focusable button that Enter, Space and a click activate, onDelete
+           * adds Backspace/Delete, and the × stays a decorative hint.
+           */}
           <Chip
             label={label}
             size="small"
+            aria-label={t('Remove {{label}}', { label })}
+            onClick={onDelete}
             onDelete={onDelete}
-            // SvgIcon hides itself from assistive tech unless told otherwise
-            deleteIcon={
-              <CloseIcon
-                role="button"
-                aria-hidden={false}
-                aria-label={t('Remove {{label}}', { label })}
-              />
-            }
+            deleteIcon={<CloseIcon />}
           />
         </li>
       ))}

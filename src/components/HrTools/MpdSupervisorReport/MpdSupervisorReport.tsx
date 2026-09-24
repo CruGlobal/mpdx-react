@@ -108,6 +108,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
     staffLoading,
     staffError,
     filterRequired,
+    loadMoreError,
     hasNextPage,
     loadMore,
     refetchStaff,
@@ -243,6 +244,31 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
             </Quarter>
           ))}
         </QuartersContainer>
+
+        {/* A page or refresh that failed after rows were shown; the rows stay */}
+        {staffMembers.length > 0 && (loadMoreError || staffError) && (
+          <Alert
+            severity="error"
+            sx={{ mb: 1 }}
+            action={
+              <Button
+                color="inherit"
+                size="small"
+                onClick={loadMoreError ? loadMore : refetchStaff}
+              >
+                {t('Retry')}
+              </Button>
+            }
+          >
+            {loadMoreError
+              ? t('Could not load more staff: {{message}}', {
+                  message: loadMoreError.message,
+                })
+              : t('Could not refresh the staff list: {{message}}', {
+                  message: staffError?.message,
+                })}
+          </Alert>
+        )}
 
         <Box sx={{ flex: 1, minHeight: 0 }}>
           {filterRequired ? (

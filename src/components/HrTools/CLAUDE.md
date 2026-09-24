@@ -199,6 +199,16 @@ has a distinct `Complete` mutation, and the request forms autosave a draft but
   result set means a click mid-search would otherwise send the ids the preceding
   search returned. Mutation failures toast through the global Apollo error link;
   only the blob fetch needs its own message.
+- **MpdSupervisorReport** — `managedStaff` refuses to grade more than its row
+  cap and answers with a `FILTER_REQUIRED` GraphQL error (`count`, `filtered`
+  in `extensions`). The context turns it into `filterRequired` guidance and
+  the query sets `context: { suppressErrorCodes: ['FILTER_REQUIRED'] }` so only
+  that code skips the global toast. **Rule for the whole tree:** suppress
+  specific codes with `suppressErrorCodes`, and only when the component renders
+  that error itself; a blanket `suppressErrors: true` also drops the Datadog
+  report for every error on the operation, so a real failure goes unseen.
+  A rejected `fetchMore` never sets the hook's `error`, so the context catches
+  it into `loadMoreError` and the report shows an inline Retry above the rows.
 - **NsoMpdQuestionnaire** — **no create/upsert exists.** The record is created by
   the OneApp import; the frontend only Updates/Completes, keyed by
   `accountListId` (not a questionnaire id). A null query → render

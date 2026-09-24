@@ -19,6 +19,7 @@ import { MpdSupervisorReport } from './MpdSupervisorReport';
 import {
   MpdSupervisorReportProvider,
   Panel,
+  useMpdSupervisorReport,
 } from './MpdSupervisorReportContext';
 import { StaffMemberDrawer } from './StaffMemberDrawer/StaffMemberDrawer';
 import {
@@ -30,6 +31,15 @@ import {
 const onNavListToggle = jest.fn();
 const onFilterListToggle = jest.fn();
 const mutationSpy = jest.fn();
+
+// Virtuoso's endReached is not reliable in jsdom, so a test asks for the next
+// page through the context directly.
+let loadMoreFn: () => void;
+const LoadMoreTrigger: React.FC = () => {
+  const { loadMore } = useMpdSupervisorReport();
+  loadMoreFn = loadMore;
+  return null;
+};
 
 const geographicConstants = {
   constant: {
@@ -124,6 +134,7 @@ const renderReport = ({
                   <MpdSupervisorReportFilterPanel onClose={jest.fn()} />
                 )}
                 <StaffMemberDrawer />
+                <LoadMoreTrigger />
               </MpdSupervisorReportProvider>
             </GqlMockedProvider>
           </VirtuosoMockContext.Provider>
@@ -238,11 +249,29 @@ describe('MpdSupervisorReport', () => {
       const chips = getByRole('list', { name: 'Applied filters' });
       expect(chips).toHaveTextContent('Negative last month');
 
+      // The chip itself is the remove button, so it is one keyboard stop
       userEvent.click(
         within(chips).getByRole('button', {
           name: 'Remove Negative last month',
         }),
       );
+      expect(
+        queryByRole('list', { name: 'Applied filters' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('removes a chip from the keyboard', async () => {
+      const { findByText, getByRole, queryByRole } = renderReport({
+        withFilters: true,
+      });
+      await findByText('John Smith');
+      userEvent.click(getByRole('button', { name: 'Negative last month' }));
+      const chip = within(
+        getByRole('list', { name: 'Applied filters' }),
+      ).getByRole('button', { name: 'Remove Negative last month' });
+
+      userEvent.type(chip, '{del}');
+
       expect(
         queryByRole('list', { name: 'Applied filters' }),
       ).not.toBeInTheDocument();
@@ -304,6 +333,50 @@ describe('MpdSupervisorReport', () => {
       userEvent.click(getByRole('button', { name: 'Clear filters' }));
       expect(await findByText('No staff members found')).toBeInTheDocument();
     });
+  });
+
+  it('keeps the rows and offers Retry when a later page fails', async () => {
+    const firstPage = managedStaffMock(staff);
+    firstPage.managedStaff.pageInfo = {
+      endCursor: 'cursor-1',
+      hasNextPage: true,
+    };
+    const { findByText, findByRole, getByText, getByRole } = renderReport({
+      mocks: {
+        ManagedStaff: {
+          managedStaff: (_root: unknown, args: { after?: string | null }) => {
+            if (args.after) {
+              throw new Error('Page failed');
+            }
+            return firstPage.managedStaff;
+          },
+        },
+      },
+    });
+    await findByText('John Smith');
+    const pageRequests = () =>
+      managedStaffOperations().filter(
+        ({ variables }) => variables.after === 'cursor-1',
+      );
+
+    act(() => {
+      loadMoreFn();
+    });
+
+    const alert = await findByRole('alert');
+    expect(alert).toHaveTextContent('Could not load more staff: Page failed');
+    expect(getByText('John Smith')).toBeInTheDocument();
+    // The mocked list can also reach its end on a re-render; let any such
+    // request finish so Apollo does not deduplicate the retry against it
+    await act(() => new Promise((resolve) => setTimeout(resolve, 100)));
+    const requestsBeforeRetry = pageRequests().length;
+    expect(requestsBeforeRetry).toBeGreaterThanOrEqual(1);
+
+    userEvent.click(getByRole('button', { name: 'Retry' }));
+
+    await waitFor(() =>
+      expect(pageRequests().length).toBeGreaterThan(requestsBeforeRetry),
+    );
   });
 
   it('switches the rows to the compact layout', async () => {

@@ -103,6 +103,8 @@ export interface MpdSupervisorReportContextValue {
   staffError: ApolloError | undefined;
   /** Set when the API asks for a narrower filter before it will list staff */
   filterRequired: FilterRequired | null;
+  /** A failed load-more page; the rows already loaded are kept. Retry with loadMore. */
+  loadMoreError: ApolloError | undefined;
   hasNextPage: boolean;
   loadMore: () => void;
   refetchStaff: () => void;
@@ -157,9 +159,10 @@ export const MpdSupervisorReportProvider: React.FC<{
   const debouncedSearch = useDebouncedValue(search, searchDebounceMs);
 
   const { data, loading, error, fetchMore, refetch } = useManagedStaffQuery({
-    // The report renders its own error state, and the FILTER_REQUIRED guard is
-    // guidance rather than a failure, so the global error toast is redundant.
-    context: { suppressErrors: true },
+    // The FILTER_REQUIRED guard is guidance the report renders itself, not a
+    // failure, so only it skips the global toast; real errors still toast and
+    // reach monitoring.
+    context: { suppressErrorCodes: ['FILTER_REQUIRED'] },
     variables: {
       first: pageSize,
       name: debouncedSearch.trim() || null,
@@ -178,7 +181,16 @@ export const MpdSupervisorReportProvider: React.FC<{
 
   const pageInfo = data?.managedStaff.pageInfo;
   const [wantsNextPage, setWantsNextPage] = useState(false);
+  const [loadMoreError, setLoadMoreError] = useState<ApolloError | undefined>(
+    undefined,
+  );
   const loadMore = useCallback(() => setWantsNextPage(true), []);
+
+  // A new filter or search starts a fresh first page, so a stale page failure
+  // must not linger over it.
+  useEffect(() => {
+    setLoadMoreError(undefined);
+  }, [debouncedSearch, team, department, employmentType, activeQuickFilter]);
 
   useEffect(() => {
     if (!wantsNextPage || loading) {
@@ -189,7 +201,14 @@ export const MpdSupervisorReportProvider: React.FC<{
       return;
     }
     setWantsNextPage(false);
-    fetchMore({ variables: { after: pageInfo.endCursor } });
+    setLoadMoreError(undefined);
+    // A rejected fetchMore never reaches the hook's `error`, and the rows
+    // already loaded stay on screen, so the failure is kept here for the
+    // report to show. The cache is untouched, so a retry asks for the same
+    // cursor again.
+    fetchMore({ variables: { after: pageInfo.endCursor } }).catch(
+      (fetchError: ApolloError) => setLoadMoreError(fetchError),
+    );
   }, [
     wantsNextPage,
     loading,
@@ -280,6 +299,7 @@ export const MpdSupervisorReportProvider: React.FC<{
       staffLoading: loading,
       staffError: filterRequired ? undefined : error,
       filterRequired,
+      loadMoreError,
       hasNextPage: pageInfo?.hasNextPage ?? false,
       loadMore,
       refetchStaff,
@@ -302,6 +322,7 @@ export const MpdSupervisorReportProvider: React.FC<{
       loading,
       error,
       filterRequired,
+      loadMoreError,
       pageInfo?.hasNextPage,
       loadMore,
       refetchStaff,
