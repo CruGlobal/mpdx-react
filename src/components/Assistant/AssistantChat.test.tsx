@@ -286,6 +286,35 @@ describe('AssistantChat', () => {
     await waitFor(() => expect(announcer).toHaveTextContent(/^Two are new$/));
   });
 
+  it('announces when Send turns into Stop and back', async () => {
+    const stream = controlledStream();
+    fetchSpy
+      .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+      .mockResolvedValueOnce(mockStreamResponse([], { body: stream.body }));
+    const { getByRole, getByTestId } = render(<TestComponent />);
+    const announcer = getByTestId('ComposerAnnouncer');
+    expect(announcer).toHaveAttribute('aria-live', 'polite');
+    expect(announcer).toBeEmptyDOMElement();
+
+    await typeMessage(getByRole, 'Hi');
+    userEvent.click(getByRole('button', { name: 'Send' }));
+    await waitFor(() =>
+      expect(announcer).toHaveTextContent(
+        'The Send button is now a Stop button.',
+      ),
+    );
+
+    stream.push(
+      frame({ type: 'generation_complete', message_id: 'm1', citations: [] }),
+    );
+    stream.close();
+    await waitFor(() =>
+      expect(announcer).toHaveTextContent(
+        'The Stop button is now a Send button.',
+      ),
+    );
+  });
+
   it('shows Stopped when stopped before any text arrives', async () => {
     const stream = controlledStream();
     fetchSpy
