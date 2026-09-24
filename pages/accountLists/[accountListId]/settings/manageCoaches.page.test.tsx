@@ -3,8 +3,13 @@ import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  expectedGuardOutcomes,
+  impersonationGuardOutcomes,
+} from '__tests__/util/impersonationGuard';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import theme from 'src/theme';
-import ManageCoaching from './manageCoaches.page';
+import ManageCoaching, { getServerSideProps } from './manageCoaches.page';
 
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -35,5 +40,13 @@ describe('ManageCoaching', () => {
     await waitFor(() => {
       expect(getAllByText('Manage Account Coaching Access').length).toEqual(2);
     });
+  });
+});
+
+describe('getServerSideProps', () => {
+  it('guards server-side props by impersonator role', async () => {
+    expect(await impersonationGuardOutcomes(getServerSideProps)).toEqual(
+      expectedGuardOutcomes(ImpersonationArea.Settings),
+    );
   });
 });

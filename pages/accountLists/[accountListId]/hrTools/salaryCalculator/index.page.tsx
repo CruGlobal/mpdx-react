@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
+import { blockImpersonation } from 'pages/api/utils/pagePropsHelpers';
 import { NewSalaryCalculatorLanding } from 'src/components/HrTools/SalaryCalculator/Landing/NewSalaryCalculationLanding/NewSalaryCalculatorLanding';
 import { PendingSalaryCalculationLanding } from 'src/components/HrTools/SalaryCalculator/Landing/PendingSalaryCalculationLanding/PendingSalaryCalculationLanding';
 import { useLandingData } from 'src/components/HrTools/SalaryCalculator/Landing/useLandingData';
@@ -19,6 +19,7 @@ import {
   UserTypeAccess,
 } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { getAppName } from 'src/lib/getAppName';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 
 const SalaryCalculatorPage: React.FC = () => {
   const appName = getAppName();
@@ -73,6 +74,8 @@ const SalaryCalculatorPage: React.FC = () => {
   );
 };
 
-export const getServerSideProps = blockImpersonatingNonDevelopers;
+export const getServerSideProps = blockImpersonation(
+  ImpersonationArea.SalaryCalculator,
+);
 
 export default SalaryCalculatorPage;

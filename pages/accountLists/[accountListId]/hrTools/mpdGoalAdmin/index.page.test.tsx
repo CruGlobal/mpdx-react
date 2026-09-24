@@ -1,15 +1,11 @@
 import { GetServerSidePropsContext } from 'next';
-import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
+import { getSession } from 'next-auth/react';
+import {
+  expectedGuardOutcomes,
+  impersonationGuardOutcomes,
+} from '__tests__/util/impersonationGuard';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import { getServerSideProps } from './index.page';
-
-jest.mock('pages/api/utils/pagePropsHelpers', () => ({
-  blockImpersonatingNonDevelopers: jest.fn(),
-}));
-
-const mockBlockImpersonatingNonDevelopers =
-  blockImpersonatingNonDevelopers as jest.MockedFunction<
-    typeof blockImpersonatingNonDevelopers
-  >;
 
 const context = {} as GetServerSidePropsContext;
 
@@ -27,19 +23,14 @@ describe('MpdGoalAdmin getServerSideProps', () => {
     const result = await getServerSideProps(context);
 
     expect(result).toEqual({ notFound: true });
-    expect(mockBlockImpersonatingNonDevelopers).not.toHaveBeenCalled();
+    expect(getSession).not.toHaveBeenCalled();
   });
 
-  it('delegates to blockImpersonatingNonDevelopers when the flag is unset', async () => {
+  it('guards by impersonator role when the flag is unset', async () => {
     delete process.env.DISABLE_MPD_GOAL_ADMIN;
-    const expected = { props: { session: {} } };
-    mockBlockImpersonatingNonDevelopers.mockResolvedValue(
-      expected as Awaited<ReturnType<typeof blockImpersonatingNonDevelopers>>,
+
+    expect(await impersonationGuardOutcomes(getServerSideProps)).toEqual(
+      expectedGuardOutcomes(ImpersonationArea.MpdGoalAdmin),
     );
-
-    const result = await getServerSideProps(context);
-
-    expect(mockBlockImpersonatingNonDevelopers).toHaveBeenCalledWith(context);
-    expect(result).toBe(expected);
   });
 });

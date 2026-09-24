@@ -3,10 +3,15 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  expectedGuardOutcomes,
+  impersonationGuardOutcomes,
+} from '__tests__/util/impersonationGuard';
 import { OrganizationInvitesQuery } from 'src/components/Settings/Organization/ManageOrganizationAccess/ManageOrganizationAccess.generated';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import theme from 'src/theme';
 import { OrganizationsQuery } from './organizations.generated';
-import Organizations from './organizations.page';
+import Organizations, { getServerSideProps } from './organizations.page';
 
 const mockEnqueue = jest.fn();
 
@@ -79,5 +84,13 @@ describe('Organizations page', () => {
     userEvent.click(getByRole('combobox', { name: 'Organization' }));
     userEvent.click(getByRole('option', { name: 'Organization 2' }));
     expect(getByText('Manage Organization 2')).toBeInTheDocument();
+  });
+});
+
+describe('getServerSideProps', () => {
+  it('guards server-side props by impersonator role', async () => {
+    expect(await impersonationGuardOutcomes(getServerSideProps)).toEqual(
+      expectedGuardOutcomes(ImpersonationArea.ManageOrganizations),
+    );
   });
 });

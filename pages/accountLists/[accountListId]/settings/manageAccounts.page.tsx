@@ -1,12 +1,13 @@
 import { useRouter } from 'next/router';
 import React, { ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
+import { blockImpersonation } from 'pages/api/utils/pagePropsHelpers';
 import { ManageAccountAccessAccordion } from 'src/components/Settings/Accounts/ManageAccountAccess/ManageAccountAccessAccordion';
 import { MergeAccountsAccordion } from 'src/components/Settings/Accounts/MergeAccounts/MergeAccountsAccordion';
 import { MergeSpouseAccountsAccordion } from 'src/components/Settings/Accounts/MergeSpouseAccounts/MergeSpouseAccountsAccordion';
 import { AccountAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import { SettingsWrapper } from './Wrapper';
 
 export const suggestedArticles = 'HS_SETTINGS_SERVICES_SUGGESTIONS';
@@ -47,6 +48,8 @@ const ManageAccounts = (): ReactElement => {
   );
 };
 
-export const getServerSideProps = ensureSessionAndAccountList;
+export const getServerSideProps = blockImpersonation(
+  ImpersonationArea.Settings,
+);
 
 export default ManageAccounts;

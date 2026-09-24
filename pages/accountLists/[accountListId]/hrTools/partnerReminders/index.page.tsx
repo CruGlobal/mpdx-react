@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
+import { blockImpersonation } from 'pages/api/utils/pagePropsHelpers';
 import { PartnerRemindersReport } from 'src/components/HrTools/MinistryPartnerReminders/PartnerRemindersReport';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import {
@@ -12,6 +12,7 @@ import {
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { getAppName } from 'src/lib/getAppName';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 
 const PartnerRemindersReportPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -60,5 +61,7 @@ const PartnerRemindersReportPage: React.FC = () => {
   );
 };
 
-export const getServerSideProps = blockImpersonatingNonDevelopers;
+export const getServerSideProps = blockImpersonation(
+  ImpersonationArea.PartnerReminders,
+);
 export default PartnerRemindersReportPage;

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Button, Skeleton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
+import { blockImpersonation } from 'pages/api/utils/pagePropsHelpers';
 import { useGetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
 import {
   useCanUserExportDataQuery,
@@ -37,6 +37,7 @@ import { useReportsDisabled } from 'src/hooks/useReportsDisabled';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { useUserPreference } from 'src/hooks/useUserPreference';
 import { getCountries } from 'src/lib/data/countries';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import { SettingsWrapper } from './Wrapper';
 
 const AccordionLoading = styled(Skeleton)(() => ({
@@ -377,6 +378,8 @@ const Preferences: React.FC = () => {
   );
 };
 
-export const getServerSideProps = ensureSessionAndAccountList;
+export const getServerSideProps = blockImpersonation(
+  ImpersonationArea.Settings,
+);
 
 export default Preferences;

@@ -3,7 +3,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
+import { blockImpersonation } from 'pages/api/utils/pagePropsHelpers';
 import {
   MpdGoalAdminTabEnum,
   mpdGoalAdminUrl,
@@ -16,6 +16,7 @@ import {
 } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import { getQueryParam } from 'src/lib/queryParam';
 
 /**
@@ -64,7 +65,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (process.env.DISABLE_MPD_GOAL_ADMIN === 'true') {
     return { notFound: true };
   }
-  return blockImpersonatingNonDevelopers(context);
+  return blockImpersonation(ImpersonationArea.MpdGoalAdmin)(context);
 };
 
 export default NsStaffDetailsPage;

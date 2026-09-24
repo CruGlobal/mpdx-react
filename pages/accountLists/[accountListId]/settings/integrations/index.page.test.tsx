@@ -4,12 +4,17 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  expectedGuardOutcomes,
+  impersonationGuardOutcomes,
+} from '__tests__/util/impersonationGuard';
 import { MailchimpAccountQuery } from 'src/components/Settings/integrations/Mailchimp/MailchimpAccount.generated';
 import { GetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
 import { PrayerlettersAccountQuery } from 'src/components/Settings/integrations/Prayerletters/PrayerlettersAccount.generated';
 import { TestSetupProvider } from 'src/components/Setup/SetupProvider';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import theme from 'src/theme';
-import Integrations from './index.page';
+import Integrations, { getServerSideProps } from './index.page';
 
 const accountListId = 'account-list-1';
 
@@ -153,5 +158,13 @@ describe('Connect Services page', () => {
         );
       });
     });
+  });
+});
+
+describe('getServerSideProps', () => {
+  it('guards server-side props by impersonator role', async () => {
+    expect(await impersonationGuardOutcomes(getServerSideProps)).toEqual(
+      expectedGuardOutcomes(ImpersonationArea.Settings),
+    );
   });
 });

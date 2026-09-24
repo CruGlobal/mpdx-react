@@ -1,9 +1,13 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
+import {
+  expectedGuardOutcomes,
+  impersonationGuardOutcomes,
+} from '__tests__/util/impersonationGuard';
 import { LandingTestWrapper } from 'src/components/HrTools/SalaryCalculator/Landing/NewSalaryCalculationLanding/LandingTestWrapper';
 import { SalaryCalculatorTestWrapper } from 'src/components/HrTools/SalaryCalculator/SalaryCalculatorTestWrapper';
 import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import SalaryCalculatorPage, { getServerSideProps } from './index.page';
 
 interface TestComponentProps {
@@ -28,8 +32,10 @@ describe('SalaryCalculatorPage', () => {
     ).toHaveLength(2);
   });
 
-  it('uses blockImpersonatingNonDevelopers for server-side props', () => {
-    expect(getServerSideProps).toBe(blockImpersonatingNonDevelopers);
+  it('guards server-side props by impersonator role', async () => {
+    expect(await impersonationGuardOutcomes(getServerSideProps)).toEqual(
+      expectedGuardOutcomes(ImpersonationArea.SalaryCalculator),
+    );
   });
 
   describe('conditional rendering', () => {

@@ -2,7 +2,7 @@ import Head from 'next/head';
 import React, { useState } from 'react';
 import { FormikProvider } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
+import { blockImpersonation } from 'pages/api/utils/pagePropsHelpers';
 import { AdditionalSalaryRequest } from 'src/components/HrTools/AdditionalSalaryRequest/AdditionalSalaryRequest';
 import { InProgressDisplay } from 'src/components/HrTools/AdditionalSalaryRequest/MainPages/InProgress/InProgressDisplay';
 import { IneligiblePage } from 'src/components/HrTools/AdditionalSalaryRequest/MainPages/IneligiblePage';
@@ -32,6 +32,7 @@ import {
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
 import { AsrStatusEnum } from 'src/graphql/types.generated';
 import { getAppName } from 'src/lib/getAppName';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 
 const FormikRequestPage: React.FC = () => {
   const formik = useAdditionalSalaryRequestForm();
@@ -170,6 +171,8 @@ const AdditionalSalaryRequestPage: React.FC = () => {
   );
 };
 
-export const getServerSideProps = blockImpersonatingNonDevelopers;
+export const getServerSideProps = blockImpersonation(
+  ImpersonationArea.AdditionalSalaryRequest,
+);
 
 export default AdditionalSalaryRequestPage;

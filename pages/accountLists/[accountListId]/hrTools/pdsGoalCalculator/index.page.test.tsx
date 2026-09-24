@@ -1,13 +1,17 @@
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  expectedGuardOutcomes,
+  impersonationGuardOutcomes,
+} from '__tests__/util/impersonationGuard';
 import { render } from '__tests__/util/testingLibraryReactMock';
-import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   PeopleGroupSupportTypeEnum,
   UserTypeEnum,
 } from 'src/graphql/types.generated';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import PdsGoalCalculatorPage, { getServerSideProps } from './index.page';
 
 interface ComponentsProps {
@@ -41,8 +45,10 @@ const Components: React.FC<ComponentsProps> = ({
 );
 
 describe('PdsGoalCalculator page', () => {
-  it('uses blockImpersonatingNonDevelopers for server-side props', () => {
-    expect(getServerSideProps).toBe(blockImpersonatingNonDevelopers);
+  it('guards server-side props by impersonator role', async () => {
+    expect(await impersonationGuardOutcomes(getServerSideProps)).toEqual(
+      expectedGuardOutcomes(ImpersonationArea.PdsGoalCalculator),
+    );
   });
 
   it('should show limited access for a non-Cru user', async () => {

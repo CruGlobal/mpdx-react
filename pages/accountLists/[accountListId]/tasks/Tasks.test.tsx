@@ -5,12 +5,17 @@ import userEvent from '@testing-library/user-event';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  expectedGuardOutcomes,
+  impersonationGuardOutcomes,
+} from '__tests__/util/impersonationGuard';
 import { GetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { dispatch } from 'src/lib/analytics';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import theme from 'src/theme';
 import { TasksQuery } from './Tasks.generated';
-import Tasks from './[[...contactId]].page';
+import Tasks, { getServerSideProps } from './[[...contactId]].page';
 
 const accountListId = 'account-list-1';
 
@@ -231,5 +236,13 @@ describe('tasks page', () => {
         variant: 'success',
       });
     });
+  });
+});
+
+describe('getServerSideProps', () => {
+  it('guards server-side props by impersonator role', async () => {
+    expect(await impersonationGuardOutcomes(getServerSideProps)).toEqual(
+      expectedGuardOutcomes(ImpersonationArea.Tasks),
+    );
   });
 });

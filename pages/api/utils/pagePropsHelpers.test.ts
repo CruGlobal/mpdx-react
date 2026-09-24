@@ -3,11 +3,14 @@ import { getSession } from 'next-auth/react';
 import { session } from '__tests__/fixtures/session';
 import { RedirectReason } from 'pages/api/auth/redirectReasonEnum';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
-import { ImpersonatorRole } from 'src/lib/impersonationAccess';
 import {
-  blockImpersonatingNonDevelopers,
+  ImpersonationArea,
+  ImpersonatorRole,
+} from 'src/lib/impersonationAccess';
+import {
+  blockImpersonation,
   dashboardRedirect,
-  enforceAdmin,
+  enforceAdminConsole,
   ensureSessionAndAccountList,
   loginRedirect,
   makeGetServerSideProps,
@@ -52,26 +55,80 @@ describe('pagePropsHelpers', () => {
     });
   });
 
-  describe('enforceAdmin', () => {
-    it('does not return a redirect if the user is an admin', async () => {
-      (getSession as jest.Mock).mockResolvedValue({
-        user: { apiToken: 'token', admin: true },
-      });
+  describe('enforceAdminConsole', () => {
+    it('redirects to the login page if the user is not logged in', async () => {
+      (getSession as jest.Mock).mockResolvedValue(null);
 
-      await expect(enforceAdmin(context)).resolves.not.toMatchObject({
-        redirect: {},
+      await expect(enforceAdminConsole(context)).resolves.toMatchObject({
+        redirect: {
+          destination: '/login?redirect=%2Fpage%3Fparam%3Dvalue',
+        },
       });
     });
 
-    it('returns a redirect if the user is not an admin', async () => {
+    it('returns the session props if the user is an admin', async () => {
+      const user = { apiToken: 'token', admin: true };
+      (getSession as jest.Mock).mockResolvedValue({ user });
+
+      await expect(enforceAdminConsole(context)).resolves.toMatchObject({
+        props: { session: { user } },
+      });
+    });
+
+    it('returns the session props if the user holds an impersonation role but is not an admin', async () => {
+      const user = {
+        apiToken: 'token',
+        admin: false,
+        impersonationRole: ImpersonatorRole.MpdLeader,
+      };
+      (getSession as jest.Mock).mockResolvedValue({ user });
+
+      await expect(enforceAdminConsole(context)).resolves.toMatchObject({
+        props: { session: { user } },
+      });
+    });
+
+    it('redirects with the unauthorized reason if the user is neither an admin nor a role holder', async () => {
       (getSession as jest.Mock).mockResolvedValue({
-        user: { apiToken: 'token', admin: false },
+        user: { apiToken: 'token', admin: false, impersonationRole: null },
       });
 
-      await expect(enforceAdmin(context)).resolves.toMatchObject({
+      await expect(enforceAdminConsole(context)).resolves.toMatchObject({
         redirect: {
           destination: '/accountLists/account-list-1?redirect=unauthorized',
         },
+      });
+    });
+
+    it('redirects with the impersonation blocked reason when impersonating as a helpdesk admin', async () => {
+      (getSession as jest.Mock).mockResolvedValue({
+        user: {
+          apiToken: 'token',
+          admin: true,
+          impersonating: true,
+          impersonatorRole: ImpersonatorRole.HelpdeskAdmin,
+        },
+      });
+
+      await expect(enforceAdminConsole(context)).resolves.toMatchObject({
+        redirect: {
+          destination:
+            '/accountLists/account-list-1?redirect=impersonation-blocked',
+        },
+      });
+    });
+
+    it('returns the session props when impersonating as a developer', async () => {
+      const user = {
+        apiToken: 'token',
+        admin: true,
+        impersonating: true,
+        impersonatorRole: ImpersonatorRole.Developer,
+      };
+      (getSession as jest.Mock).mockResolvedValue({ user });
+
+      await expect(enforceAdminConsole(context)).resolves.toMatchObject({
+        props: { session: { user } },
       });
     });
   });
@@ -146,57 +203,99 @@ describe('pagePropsHelpers', () => {
     });
   });
 
-  describe('blockImpersonatingNonDevelopers', () => {
-    it('redirects to home page if impersonating and not a developer', async () => {
-      const user = {
-        apiToken: 'token',
-        impersonating: true,
-        impersonatorRole: undefined,
-      };
-      (getSession as jest.Mock).mockResolvedValue({ user });
+  describe('blockImpersonation', () => {
+    const blockedRedirect = {
+      redirect: {
+        destination:
+          '/accountLists/account-list-1?redirect=impersonation-blocked',
+        permanent: false,
+      },
+    };
+
+    it('redirects to the login page if the user is not logged in', async () => {
+      (getSession as jest.Mock).mockResolvedValue(null);
 
       await expect(
-        blockImpersonatingNonDevelopers(context),
+        blockImpersonation(ImpersonationArea.Contacts)(context),
       ).resolves.toMatchObject({
         redirect: {
-          destination:
-            '/accountLists/account-list-1?redirect=impersonation-blocked',
-          permanent: false,
+          destination: '/login?redirect=%2Fpage%3Fparam%3Dvalue',
         },
       });
     });
 
-    it('allows access if user is not impersonating', async () => {
+    it.each([
+      [ImpersonationArea.Contacts, ImpersonatorRole.MpdLeader, true],
+      [ImpersonationArea.Contacts, ImpersonatorRole.HrLeader, true],
+      [ImpersonationArea.Contacts, ImpersonatorRole.HelpdeskAdmin, false],
+      [ImpersonationArea.Tasks, ImpersonatorRole.HelpdeskAdmin, false],
+      [ImpersonationArea.Settings, ImpersonatorRole.HelpdeskAdmin, false],
+      [ImpersonationArea.AdminConsole, ImpersonatorRole.HelpdeskAdmin, true],
+      [ImpersonationArea.SalaryCalculator, ImpersonatorRole.HrLeader, false],
+      [ImpersonationArea.SalaryCalculator, ImpersonatorRole.MpdLeader, true],
+      [ImpersonationArea.NsGoalCalculator, ImpersonatorRole.MpdLeader, false],
+      [ImpersonationArea.NsGoalCalculator, ImpersonatorRole.HrLeader, true],
+      [
+        ImpersonationArea.MpdSupervisorReport,
+        ImpersonatorRole.HelpdeskAdmin,
+        true,
+      ],
+      [ImpersonationArea.StaffExpenseReport, ImpersonatorRole.Developer, false],
+      [
+        ImpersonationArea.MpdSupervisorReport,
+        ImpersonatorRole.Developer,
+        false,
+      ],
+      [ImpersonationArea.Contacts, undefined, true],
+      [ImpersonationArea.SalaryCalculator, undefined, true],
+    ])(
+      'area %s with impersonator role %s: blocked=%s',
+      async (area, impersonatorRole, expectBlocked) => {
+        const user = {
+          apiToken: 'token',
+          impersonating: true,
+          impersonatorRole,
+        };
+        (getSession as jest.Mock).mockResolvedValue({ user });
+
+        await expect(blockImpersonation(area)(context)).resolves.toEqual(
+          expectBlocked ? blockedRedirect : { props: { session: { user } } },
+        );
+      },
+    );
+
+    it('allows access to every area if the user is not impersonating', async () => {
       const user = {
         apiToken: 'token',
         impersonating: false,
       };
       (getSession as jest.Mock).mockResolvedValue({ user });
 
-      await expect(
-        blockImpersonatingNonDevelopers(context),
-      ).resolves.toMatchObject({
-        props: {
-          session: { user },
-        },
-      });
+      for (const area of Object.values(ImpersonationArea)) {
+        await expect(blockImpersonation(area)(context)).resolves.toMatchObject({
+          props: {
+            session: { user },
+          },
+        });
+      }
     });
 
-    it('allows access if user is impersonating and is a developer', async () => {
-      const user = {
-        apiToken: 'token',
-        impersonating: true,
-        impersonatorRole: ImpersonatorRole.Developer,
-      };
-      (getSession as jest.Mock).mockResolvedValue({
-        user,
+    it('redirects to the default account list if the URL contains "_"', async () => {
+      const user = { apiToken: 'token', impersonating: false };
+      (getSession as jest.Mock).mockResolvedValue({ user });
+      (makeSsrClient as jest.Mock).mockReturnValue({
+        query: jest.fn().mockResolvedValueOnce({
+          data: { user: { defaultAccountList: 'defaultAccountList' } },
+        }),
       });
 
       await expect(
-        blockImpersonatingNonDevelopers(context),
+        blockImpersonation(ImpersonationArea.Contacts)({
+          resolvedUrl: '/accountLists/_/contacts',
+        } as unknown as GetServerSidePropsContext),
       ).resolves.toMatchObject({
-        props: {
-          session: { user },
+        redirect: {
+          destination: '/accountLists/defaultAccountList/contacts',
         },
       });
     });

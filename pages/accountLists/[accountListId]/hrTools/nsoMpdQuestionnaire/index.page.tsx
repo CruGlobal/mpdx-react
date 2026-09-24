@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
+import { blockImpersonation } from 'pages/api/utils/pagePropsHelpers';
 import { NsoMpdQuestionnaire } from 'src/components/HrTools/NsoMpdQuestionnaire/NsoMpdQuestionnaire';
 import {
   NsoMpdQuestionnaireProvider,
@@ -26,6 +26,7 @@ import {
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 
 interface NsoMpdQuestionnaireContentProps {
   isNavListOpen: boolean;
@@ -113,6 +114,8 @@ export const NsoMpdQuestionnairePage: React.FC = () => {
   );
 };
 
-export const getServerSideProps = blockImpersonatingNonDevelopers;
+export const getServerSideProps = blockImpersonation(
+  ImpersonationArea.NsoMpdQuestionnaire,
+);
 
 export default NsoMpdQuestionnairePage;

@@ -3,14 +3,18 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  expectedGuardOutcomes,
+  impersonationGuardOutcomes,
+} from '__tests__/util/impersonationGuard';
 import { render } from '__tests__/util/testingLibraryReactMock';
 import {
   afterTestResizeObserver,
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
-import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import theme from 'src/theme';
 import PartnerRemindersReportPage, { getServerSideProps } from './index.page';
 
@@ -98,7 +102,9 @@ describe('Partner Reminders Report Page', () => {
     ).toBeInTheDocument();
   });
 
-  it('uses blockImpersonatingNonDevelopers for server-side props', () => {
-    expect(getServerSideProps).toBe(blockImpersonatingNonDevelopers);
+  it('guards server-side props by impersonator role', async () => {
+    expect(await impersonationGuardOutcomes(getServerSideProps)).toEqual(
+      expectedGuardOutcomes(ImpersonationArea.PartnerReminders),
+    );
   });
 });

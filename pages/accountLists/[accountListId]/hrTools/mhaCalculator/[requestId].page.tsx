@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
+import { blockImpersonation } from 'pages/api/utils/pagePropsHelpers';
 import { RequestPage } from 'src/components/HrTools/MinisterHousingAllowance/RequestPage/RequestPage';
 import {
   MinisterHousingAllowanceProvider,
@@ -26,6 +26,7 @@ import {
   RequiredUserGroupEnum,
   UserTypeAccess,
 } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 
 const RequestPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -129,5 +130,7 @@ const HousingAllowanceRequestPage: React.FC = () => {
   );
 };
 
-export const getServerSideProps = blockImpersonatingNonDevelopers;
+export const getServerSideProps = blockImpersonation(
+  ImpersonationArea.MhaCalculator,
+);
 export default HousingAllowanceRequestPage;

@@ -8,7 +8,10 @@ import { Session } from 'next-auth';
 import { getSession } from 'next-auth/react';
 import { RedirectReason } from 'pages/api/auth/redirectReasonEnum';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
-import { ImpersonatorRole } from 'src/lib/impersonationAccess';
+import {
+  ImpersonationArea,
+  canAccessWhileImpersonating,
+} from 'src/lib/impersonationAccess';
 import {
   GetDefaultAccountDocument,
   GetDefaultAccountQuery,
@@ -42,11 +45,51 @@ export const dashboardRedirect = (
   },
 });
 
-/* Block non-developers who are impersonating, allow everyone else
- * Use case: Pages that regular users can access on their own account,
- * but should be restricted when admins impersonate (e.g., staff expense data)
+/**
+ * Guard a page by the impersonator's role. Users on their own account are
+ * always allowed; while impersonating, the impersonator's role must be allowed
+ * to use the area (see `src/lib/impersonationAccess.ts`), otherwise the user is
+ * redirected to the dashboard.
+ *
+ * Usage: `export const getServerSideProps = blockImpersonation(ImpersonationArea.Contacts);`
  */
-export const blockImpersonatingNonDevelopers: GetServerSideProps<
+export const blockImpersonation =
+  (area: ImpersonationArea): GetServerSideProps<PagePropsWithSession> =>
+  async (context) => {
+    const session = await getSession(context);
+
+    if (!session?.user.apiToken) {
+      return loginRedirect(context);
+    }
+
+    if (
+      session.user.impersonating &&
+      !canAccessWhileImpersonating(session.user.impersonatorRole, area)
+    ) {
+      return dashboardRedirect(context, RedirectReason.ImpersonationBlocked);
+    }
+
+    const underscoreRedirect = await handleUnderscoreAccountListRedirect(
+      session,
+      context.resolvedUrl,
+    );
+    if (underscoreRedirect) {
+      return underscoreRedirect;
+    }
+
+    return {
+      props: {
+        session,
+      },
+    };
+  };
+
+/**
+ * Guard the Admin Console. Admins and users who hold an impersonation role (so
+ * they can start impersonating) may reach it; while impersonating, only
+ * impersonators whose role allows the Admin Console may.
+ */
+export const enforceAdminConsole: GetServerSideProps<
   PagePropsWithSession
 > = async (context) => {
   const session = await getSession(context);
@@ -55,41 +98,18 @@ export const blockImpersonatingNonDevelopers: GetServerSideProps<
     return loginRedirect(context);
   }
 
-  // Check if the impersonator is a developer
+  if (!session.user.admin && !session.user.impersonationRole) {
+    return dashboardRedirect(context, RedirectReason.Unauthorized);
+  }
+
   if (
     session.user.impersonating &&
-    session.user.impersonatorRole !== ImpersonatorRole.Developer
+    !canAccessWhileImpersonating(
+      session.user.impersonatorRole,
+      ImpersonationArea.AdminConsole,
+    )
   ) {
     return dashboardRedirect(context, RedirectReason.ImpersonationBlocked);
-  }
-
-  const underscoreRedirect = await handleUnderscoreAccountListRedirect(
-    session,
-    context.resolvedUrl,
-  );
-  if (underscoreRedirect) {
-    return underscoreRedirect;
-  }
-
-  return {
-    props: {
-      session,
-    },
-  };
-};
-
-// Redirect back to the dashboard if the user isn't an admin
-export const enforceAdmin: GetServerSideProps<PagePropsWithSession> = async (
-  context,
-) => {
-  const session = await getSession(context);
-
-  if (!session?.user.apiToken) {
-    return loginRedirect(context);
-  }
-
-  if (!session.user.admin) {
-    return dashboardRedirect(context, RedirectReason.Unauthorized);
   }
 
   const underscoreRedirect = await handleUnderscoreAccountListRedirect(

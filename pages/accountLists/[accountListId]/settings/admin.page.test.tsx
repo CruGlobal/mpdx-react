@@ -3,9 +3,10 @@ import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { enforceAdminConsole } from 'pages/api/utils/pagePropsHelpers';
 import { AdminAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import theme from 'src/theme';
-import Admin from './admin.page';
+import Admin, { getServerSideProps } from './admin.page';
 
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -51,5 +52,11 @@ describe('Admin', () => {
       expect(getAllByText('Impersonate User').length).toEqual(1);
       expect(getAllByText('Reset Account').length).toEqual(3);
     });
+  });
+});
+
+describe('getServerSideProps', () => {
+  it('uses enforceAdminConsole', () => {
+    expect(getServerSideProps).toBe(enforceAdminConsole);
   });
 });

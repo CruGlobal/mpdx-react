@@ -9,10 +9,11 @@ import {
 } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTranslation } from 'react-i18next';
-import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
+import { blockImpersonation } from 'pages/api/utils/pagePropsHelpers';
 import { Contacts } from 'src/components/Settings/Organization/Contacts/Contacts';
 import { OrganizationAutocomplete } from 'src/components/Shared/Autocomplete/OrganizationAutocomplete/OrganizationAutocomplete';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import { SettingsWrapper } from '../Wrapper';
 import {
   SettingsOrganizationFragment,
@@ -111,6 +112,8 @@ const OrganizationsContacts = (): ReactElement => {
   );
 };
 
-export const getServerSideProps = ensureSessionAndAccountList;
+export const getServerSideProps = blockImpersonation(
+  ImpersonationArea.ManageOrganizations,
+);
 
 export default OrganizationsContacts;

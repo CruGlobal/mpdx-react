@@ -2,7 +2,7 @@ import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
+import { blockImpersonation } from 'pages/api/utils/pagePropsHelpers';
 import { MpdGoalAdmin } from 'src/components/HrTools/MpdGoalAdmin/MpdGoalAdmin';
 import { MpdGoalAdminProvider } from 'src/components/HrTools/MpdGoalAdmin/MpdGoalAdminContext';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
@@ -19,6 +19,7 @@ import {
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 
 const MpdGoalAdminContent: React.FC = () => {
   const [navListOpen, setNavListOpen] = useState(false);
@@ -84,7 +85,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (process.env.DISABLE_MPD_GOAL_ADMIN === 'true') {
     return { notFound: true };
   }
-  return blockImpersonatingNonDevelopers(context);
+  return blockImpersonation(ImpersonationArea.MpdGoalAdmin)(context);
 };
 
 export default MpdGoalAdminPage;

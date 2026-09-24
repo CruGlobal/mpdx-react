@@ -1,13 +1,17 @@
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  expectedGuardOutcomes,
+  impersonationGuardOutcomes,
+} from '__tests__/util/impersonationGuard';
 import { render } from '__tests__/util/testingLibraryReactMock';
-import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { MinisterHousingAllowanceProvider } from 'src/components/HrTools/MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
 import { PageEnum } from 'src/components/HrTools/Shared/CalculationReports/Shared/sharedTypes';
 import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import {
   HousingAllowanceRequestPageContent,
   getServerSideProps,
@@ -50,8 +54,10 @@ const Components = () => (
 );
 
 describe('HousingAllowanceRequest page', () => {
-  it('uses blockImpersonatingNonDevelopers for server-side props', () => {
-    expect(getServerSideProps).toBe(blockImpersonatingNonDevelopers);
+  it('guards server-side props by impersonator role', async () => {
+    expect(await impersonationGuardOutcomes(getServerSideProps)).toEqual(
+      expectedGuardOutcomes(ImpersonationArea.MhaCalculator),
+    );
   });
 
   it('should show limited access if user does not have access to page', async () => {

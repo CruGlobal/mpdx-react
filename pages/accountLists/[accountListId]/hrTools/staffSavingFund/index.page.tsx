@@ -1,9 +1,10 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
+import { blockImpersonation } from 'pages/api/utils/pagePropsHelpers';
 import IntroPage from 'src/components/HrTools/SavingsFundTransfer/IntroPage/IntroPage';
 import { StaffSavingFundProvider } from 'src/components/HrTools/StaffSavingFund/StaffSavingFundContext';
 import { StaffSavingFundLayout } from 'src/components/HrTools/StaffSavingFund/StaffSavingFundLayout';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 
 export const StaffSavingFundPage: React.FC = () => {
   const { t } = useTranslation();
@@ -19,5 +20,7 @@ export const StaffSavingFundPage: React.FC = () => {
   );
 };
 
-export const getServerSideProps = blockImpersonatingNonDevelopers;
+export const getServerSideProps = blockImpersonation(
+  ImpersonationArea.StaffSavingFund,
+);
 export default StaffSavingFundPage;

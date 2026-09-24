@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
+import { blockImpersonation } from 'pages/api/utils/pagePropsHelpers';
 import { GoalsList } from 'src/components/HrTools/GoalCalculator/GoalsList/GoalsList';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
@@ -21,6 +21,7 @@ import {
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 
 export const GoalCalculatorPage: React.FC = () => {
   const { t } = useTranslation();
@@ -75,5 +76,7 @@ export const GoalCalculatorPage: React.FC = () => {
   );
 };
 
-export const getServerSideProps = blockImpersonatingNonDevelopers;
+export const getServerSideProps = blockImpersonation(
+  ImpersonationArea.GoalCalculator,
+);
 export default GoalCalculatorPage;

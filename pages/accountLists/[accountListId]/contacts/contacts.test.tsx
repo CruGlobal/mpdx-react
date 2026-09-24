@@ -4,6 +4,10 @@ import { render, waitFor } from '@testing-library/react';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  expectedGuardOutcomes,
+  impersonationGuardOutcomes,
+} from '__tests__/util/impersonationGuard';
 import { ListHeaderCheckBoxState } from 'src/components/Shared/Header/ListHeader';
 import {
   PledgeFrequencyEnum,
@@ -11,9 +15,10 @@ import {
   StatusEnum,
 } from 'src/graphql/types.generated';
 import { useMassSelection } from 'src/hooks/useMassSelection';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import theme from 'src/theme';
 import { ContactsQuery } from './Contacts.generated';
-import Contacts from './[[...contactId]].page';
+import Contacts, { getServerSideProps } from './[[...contactId]].page';
 
 const accountListId = 'account-list-1';
 
@@ -122,4 +127,12 @@ it('should render contact link correctly', async () => {
     'href',
     '/accountLists/account-list-1/contacts/1',
   );
+});
+
+describe('getServerSideProps', () => {
+  it('guards server-side props by impersonator role', async () => {
+    expect(await impersonationGuardOutcomes(getServerSideProps)).toEqual(
+      expectedGuardOutcomes(ImpersonationArea.Contacts),
+    );
+  });
 });

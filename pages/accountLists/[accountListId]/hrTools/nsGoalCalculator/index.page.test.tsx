@@ -1,10 +1,14 @@
 import { ThemeProvider } from '@mui/material/styles';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  expectedGuardOutcomes,
+  impersonationGuardOutcomes,
+} from '__tests__/util/impersonationGuard';
 import { render } from '__tests__/util/testingLibraryReactMock';
-import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import theme from 'src/theme';
 import { NsGoalCalculatorPage, getServerSideProps } from './index.page';
 
@@ -33,8 +37,10 @@ const TestComponent: React.FC<TestComponentProps> = ({
 );
 
 describe('NsGoalCalculator page', () => {
-  it('uses blockImpersonatingNonDevelopers for server-side props', () => {
-    expect(getServerSideProps).toBe(blockImpersonatingNonDevelopers);
+  it('guards server-side props by impersonator role', async () => {
+    expect(await impersonationGuardOutcomes(getServerSideProps)).toEqual(
+      expectedGuardOutcomes(ImpersonationArea.NsGoalCalculator),
+    );
   });
 
   it('renders the calculator when the user is eligible (New Staff)', async () => {

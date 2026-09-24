@@ -3,9 +3,16 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  expectedGuardOutcomes,
+  impersonationGuardOutcomes,
+} from '__tests__/util/impersonationGuard';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import theme from 'src/theme';
 import { OrganizationsQuery } from '../organizations.generated';
-import AccountListsOrganizations from './accountLists.page';
+import AccountListsOrganizations, {
+  getServerSideProps,
+} from './accountLists.page';
 
 jest.useFakeTimers();
 
@@ -113,6 +120,14 @@ describe('AccountListsOrganizations', () => {
           search: 'T',
         },
       },
+    );
+  });
+});
+
+describe('getServerSideProps', () => {
+  it('guards server-side props by impersonator role', async () => {
+    expect(await impersonationGuardOutcomes(getServerSideProps)).toEqual(
+      expectedGuardOutcomes(ImpersonationArea.ManageOrganizations),
     );
   });
 });

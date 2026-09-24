@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
+import { blockImpersonation } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { StaffExpenseReport } from 'src/components/Reports/StaffExpenseReport/StaffExpenseReport';
 import {
@@ -16,6 +16,7 @@ import {
   UserTypeAccess,
 } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { getAppName } from 'src/lib/getAppName';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import { getQueryParam } from 'src/lib/queryParam';
 
 const StaffExpenseReportPageWrapper = styled(Box)(({ theme }) => ({
@@ -78,5 +79,7 @@ export const StaffExpenseReportPage: React.FC = () => {
   );
 };
 
-export const getServerSideProps = blockImpersonatingNonDevelopers;
+export const getServerSideProps = blockImpersonation(
+  ImpersonationArea.StaffExpenseReport,
+);
 export default StaffExpenseReportPage;

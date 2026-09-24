@@ -4,7 +4,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { Box, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
+import { blockImpersonation } from 'pages/api/utils/pagePropsHelpers';
 import { GoalCalculator } from 'src/components/HrTools/GoalCalculator/GoalCalculator';
 import { getGoalLastUpdated } from 'src/components/HrTools/GoalCalculator/SavingStatusHelpers/helpers';
 import {
@@ -30,6 +30,7 @@ import {
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 
 const RightPanelHeader = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -159,6 +160,8 @@ export const GoalCalculatorPage: React.FC = () => {
   );
 };
 
-export const getServerSideProps = blockImpersonatingNonDevelopers;
+export const getServerSideProps = blockImpersonation(
+  ImpersonationArea.GoalCalculator,
+);
 
 export default GoalCalculatorPage;

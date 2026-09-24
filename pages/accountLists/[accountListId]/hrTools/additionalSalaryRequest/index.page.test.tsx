@@ -3,15 +3,19 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  expectedGuardOutcomes,
+  impersonationGuardOutcomes,
+} from '__tests__/util/impersonationGuard';
 import { render } from '__tests__/util/testingLibraryReactMock';
 import {
   afterTestResizeObserver,
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
-import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import theme from 'src/theme';
 import AdditionalSalaryRequestPage, { getServerSideProps } from './index.page';
 
@@ -64,8 +68,10 @@ describe('AdditionalSalaryRequest page', () => {
     afterTestResizeObserver();
   });
 
-  it('uses blockImpersonatingNonDevelopers for server-side props', () => {
-    expect(getServerSideProps).toBe(blockImpersonatingNonDevelopers);
+  it('guards server-side props by impersonator role', async () => {
+    expect(await impersonationGuardOutcomes(getServerSideProps)).toEqual(
+      expectedGuardOutcomes(ImpersonationArea.AdditionalSalaryRequest),
+    );
   });
 
   it('renders page', async () => {

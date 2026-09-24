@@ -6,6 +6,10 @@ import userEvent from '@testing-library/user-event';
 import { session } from '__tests__/fixtures/session';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  expectedGuardOutcomes,
+  impersonationGuardOutcomes,
+} from '__tests__/util/impersonationGuard';
 import { mockSession } from '__tests__/util/mockSession';
 import { MailchimpAccountQuery } from 'src/components/Settings/integrations/Mailchimp/MailchimpAccount.generated';
 import { GetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
@@ -18,8 +22,9 @@ import { GetPersonalPreferencesQuery } from 'src/components/Settings/preferences
 import { GetProfileInfoQuery } from 'src/components/Settings/preferences/GetProfileInfo.generated';
 import { TestSetupProvider } from 'src/components/Setup/SetupProvider';
 import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import theme from 'src/theme';
-import Preferences from './preferences.page';
+import Preferences, { getServerSideProps } from './preferences.page';
 
 const accountListId = 'account-list-1';
 const geographicLocationName = /^Geographic Location/;
@@ -444,5 +449,13 @@ describe('Preferences page', () => {
         queryByRole('button', { name: geographicLocationName }),
       ).not.toBeInTheDocument();
     });
+  });
+});
+
+describe('getServerSideProps', () => {
+  it('guards server-side props by impersonator role', async () => {
+    expect(await impersonationGuardOutcomes(getServerSideProps)).toEqual(
+      expectedGuardOutcomes(ImpersonationArea.Settings),
+    );
   });
 });

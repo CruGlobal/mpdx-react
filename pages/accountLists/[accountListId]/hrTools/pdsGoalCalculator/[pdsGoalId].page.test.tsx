@@ -3,11 +3,15 @@ import { ThemeProvider } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  expectedGuardOutcomes,
+  impersonationGuardOutcomes,
+} from '__tests__/util/impersonationGuard';
 import { render } from '__tests__/util/testingLibraryReactMock';
-import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { PdsGoalCalculationQuery } from 'src/components/HrTools/PdsGoalCalculator/GoalsList/PdsGoalCalculations.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import theme from 'src/theme';
 import { PdsGoalCalculatorPage, getServerSideProps } from './[pdsGoalId].page';
 
@@ -48,8 +52,10 @@ const AccessComponents: React.FC<AccessComponentsProps> = ({
 );
 
 describe('[pdsGoalId] page', () => {
-  it('uses blockImpersonatingNonDevelopers for server-side props', () => {
-    expect(getServerSideProps).toBe(blockImpersonatingNonDevelopers);
+  it('guards server-side props by impersonator role', async () => {
+    expect(await impersonationGuardOutcomes(getServerSideProps)).toEqual(
+      expectedGuardOutcomes(ImpersonationArea.PdsGoalCalculator),
+    );
   });
 
   it('should show limited access for a non-Cru user', async () => {

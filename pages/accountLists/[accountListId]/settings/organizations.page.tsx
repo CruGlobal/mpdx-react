@@ -2,13 +2,14 @@ import { useRouter } from 'next/router';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { Box, Skeleton } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
+import { blockImpersonation } from 'pages/api/utils/pagePropsHelpers';
 import { ImpersonateUserAccordion } from 'src/components/Settings/Organization/ImpersonateUser/ImpersonateUserAccordion';
 import { ManageOrganizationAccessAccordion } from 'src/components/Settings/Organization/ManageOrganizationAccess/ManageOrganizationAccessAccordion';
 import { OrganizationAutocomplete } from 'src/components/Shared/Autocomplete/OrganizationAutocomplete/OrganizationAutocomplete';
 import { OrganizationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
 import { Organizations as OrganizationsType } from 'src/graphql/types.generated';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import { SettingsWrapper } from './Wrapper';
 import { useOrganizationsQuery } from './organizations.generated';
 import { HeaderAndDropdown } from './styledComponents/HeaderAndDropdown';
@@ -111,6 +112,8 @@ const Organizations = (): ReactElement => {
   );
 };
 
-export const getServerSideProps = ensureSessionAndAccountList;
+export const getServerSideProps = blockImpersonation(
+  ImpersonationArea.ManageOrganizations,
+);
 
 export default Organizations;

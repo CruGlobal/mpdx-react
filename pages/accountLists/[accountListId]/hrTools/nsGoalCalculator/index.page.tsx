@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
+import { blockImpersonation } from 'pages/api/utils/pagePropsHelpers';
 import { NsGoalCalculator } from 'src/components/HrTools/NsGoalCalculator/NsGoalCalculator';
 import { NsGoalCalculatorProvider } from 'src/components/HrTools/NsGoalCalculator/Shared/NsGoalCalculatorContext';
 import { NsGoalCalculatorLayout } from 'src/components/HrTools/NsGoalCalculator/Shared/NsGoalCalculatorLayout';
@@ -23,6 +23,7 @@ import {
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 
 interface NsGoalCalculatorContentProps {
   isNavListOpen: boolean;
@@ -99,6 +100,8 @@ export const NsGoalCalculatorPage: React.FC = () => {
   );
 };
 
-export const getServerSideProps = blockImpersonatingNonDevelopers;
+export const getServerSideProps = blockImpersonation(
+  ImpersonationArea.NsGoalCalculator,
+);
 
 export default NsGoalCalculatorPage;

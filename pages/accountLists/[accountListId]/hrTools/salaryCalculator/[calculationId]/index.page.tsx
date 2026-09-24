@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
+import { blockImpersonation } from 'pages/api/utils/pagePropsHelpers';
 import { SalaryCalculator } from 'src/components/HrTools/SalaryCalculator/SalaryCalculator';
 import {
   SalaryCalculatorProvider,
@@ -22,6 +22,7 @@ import {
   UserTypeAccess,
 } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { getAppName } from 'src/lib/getAppName';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 
 const SalaryCalculatorSavingStatus: React.FC = () => {
   const { calculation, isMutating, loading } = useSalaryCalculator();
@@ -91,6 +92,8 @@ const SalaryCalculatorEditInnerPage: React.FC = () => {
   );
 };
 
-export const getServerSideProps = blockImpersonatingNonDevelopers;
+export const getServerSideProps = blockImpersonation(
+  ImpersonationArea.SalaryCalculator,
+);
 
 export default SalaryCalculatorEditPage;

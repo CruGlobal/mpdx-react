@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
+import { blockImpersonation } from 'pages/api/utils/pagePropsHelpers';
 import { ChalklineAccordion } from 'src/components/Settings/integrations/Chalkline/ChalklineAccordion';
 import { GoogleAccordion } from 'src/components/Settings/integrations/Google/GoogleAccordion';
 import { MailchimpAccordion } from 'src/components/Settings/integrations/Mailchimp/MailchimpAccordion';
@@ -17,6 +17,7 @@ import { StickyBox } from 'src/components/Shared/Header/styledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useUserPreference } from 'src/hooks/useUserPreference';
 import { getAppName } from 'src/lib/getAppName';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import { SettingsWrapper } from '../Wrapper';
 
 const Integrations: React.FC = () => {
@@ -122,6 +123,8 @@ const Integrations: React.FC = () => {
   );
 };
 
-export const getServerSideProps = ensureSessionAndAccountList;
+export const getServerSideProps = blockImpersonation(
+  ImpersonationArea.Settings,
+);
 
 export default Integrations;

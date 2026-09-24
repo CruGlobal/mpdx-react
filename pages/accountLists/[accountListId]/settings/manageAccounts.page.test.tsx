@@ -3,9 +3,14 @@ import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  expectedGuardOutcomes,
+  impersonationGuardOutcomes,
+} from '__tests__/util/impersonationGuard';
 import { AccountAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import theme from 'src/theme';
-import ManageAccounts from './manageAccounts.page';
+import ManageAccounts, { getServerSideProps } from './manageAccounts.page';
 
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -52,5 +57,13 @@ describe('ManageAccounts', () => {
       expect(getAllByText('Manage Account Access').length).toEqual(1);
       expect(getAllByText('Merge Your Accounts').length).toEqual(2);
     });
+  });
+});
+
+describe('getServerSideProps', () => {
+  it('guards server-side props by impersonator role', async () => {
+    expect(await impersonationGuardOutcomes(getServerSideProps)).toEqual(
+      expectedGuardOutcomes(ImpersonationArea.Settings),
+    );
   });
 });

@@ -75,7 +75,7 @@ non-group gate the same way: a standalone check inside `UserTypeAccess` applies
 to all ~20 pages that wrap it and skips `developerBypass`.
 
 ⚠️ **MinistryPartnerReminders** has no `UserTypeAccess` page guard — nav
-visibility + `blockImpersonatingNonDevelopers` only. Direct-URL access isn't
+visibility + `blockImpersonation(area)` only. Direct-URL access isn't
 blocked at the page level, but that's UX-only: read data is authorized
 server-side (`ministryPartnerReminders` scopes to the user's own account lists).
 MpdSupervisorReport now has the page guard, but it is still UX-only for the same

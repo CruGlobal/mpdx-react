@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
+import { blockImpersonation } from 'pages/api/utils/pagePropsHelpers';
 import {
   ContactsContext,
   ContactsType,
@@ -17,6 +17,7 @@ import {
   headerHeight,
 } from 'src/components/Shared/Header/ListHeader';
 import { getAppName } from 'src/lib/getAppName';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import { ContactsWrapper } from './ContactsWrapper';
 
 const Contacts: React.FC = () => {
@@ -66,4 +67,6 @@ const ContactsPage: React.FC = () => (
 
 export default ContactsPage;
 
-export const getServerSideProps = ensureSessionAndAccountList;
+export const getServerSideProps = blockImpersonation(
+  ImpersonationArea.Contacts,
+);

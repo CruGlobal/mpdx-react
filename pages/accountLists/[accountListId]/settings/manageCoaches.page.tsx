@@ -1,10 +1,11 @@
 import { useRouter } from 'next/router';
 import React, { ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
+import { blockImpersonation } from 'pages/api/utils/pagePropsHelpers';
 import { ManageCoachesAccessAccordion } from 'src/components/Settings/Coaches/ManageCoachesAccess/ManageCoachesAccessAccordion';
 import { CoachAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import { SettingsWrapper } from './Wrapper';
 
 const ManageCoaching = (): ReactElement => {
@@ -33,6 +34,8 @@ const ManageCoaching = (): ReactElement => {
   );
 };
 
-export const getServerSideProps = ensureSessionAndAccountList;
+export const getServerSideProps = blockImpersonation(
+  ImpersonationArea.Settings,
+);
 
 export default ManageCoaching;

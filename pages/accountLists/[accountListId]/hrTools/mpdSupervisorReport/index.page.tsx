@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
+import { blockImpersonation } from 'pages/api/utils/pagePropsHelpers';
 // The filter panel renders immediately on load (it defaults to open), so it
 // must not be lazy-loaded — a dynamic import shows a spinner on the client
 // while the server renders the real panel, causing a hydration mismatch.
@@ -27,6 +27,7 @@ import {
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { getAppName } from 'src/lib/getAppName';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 
 const MpdSupervisorReportContent: React.FC = () => {
   const { t } = useTranslation();
@@ -106,6 +107,8 @@ export const MpdSupervisorReportPage: React.FC = () => {
   );
 };
 
-export const getServerSideProps = blockImpersonatingNonDevelopers;
+export const getServerSideProps = blockImpersonation(
+  ImpersonationArea.MpdSupervisorReport,
+);
 
 export default MpdSupervisorReportPage;

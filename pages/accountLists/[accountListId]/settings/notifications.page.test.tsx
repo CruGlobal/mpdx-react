@@ -5,13 +5,18 @@ import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import {
+  expectedGuardOutcomes,
+  impersonationGuardOutcomes,
+} from '__tests__/util/impersonationGuard';
+import {
   NotificationTypesQuery,
   NotificationsPreferencesQuery,
 } from 'src/components/Settings/notifications/Notifications.generated';
 import { notificationSettingsMocks } from 'src/components/Settings/notifications/notificationSettingsMocks';
 import { TestSetupProvider } from 'src/components/Setup/SetupProvider';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import theme from 'src/theme';
-import Notifications from './notifications.page';
+import Notifications, { getServerSideProps } from './notifications.page';
 
 const accountListId = 'account-list-1';
 
@@ -149,5 +154,13 @@ describe('Notifications page', () => {
         );
       });
     });
+  });
+});
+
+describe('getServerSideProps', () => {
+  it('guards server-side props by impersonator role', async () => {
+    expect(await impersonationGuardOutcomes(getServerSideProps)).toEqual(
+      expectedGuardOutcomes(ImpersonationArea.Settings),
+    );
   });
 });
