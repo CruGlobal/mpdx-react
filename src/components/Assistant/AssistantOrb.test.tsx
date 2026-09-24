@@ -73,7 +73,7 @@ const findOrb = async (
   findAllByRole: ReturnType<typeof render>['findAllByRole'],
 ) => (await findAllByRole('button', orbName))[1];
 
-const settle = () => new Promise((resolve) => setTimeout(resolve, 50));
+const settle = () => new Promise<void>((resolve) => setTimeout(resolve, 50));
 
 describe('AssistantOrb', () => {
   beforeEach(() => {
