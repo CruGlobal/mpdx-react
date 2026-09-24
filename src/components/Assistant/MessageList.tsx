@@ -42,6 +42,8 @@ const Bubble = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'sender',
 })<{ sender: MessageRole }>(({ theme, sender }) => ({
   maxWidth: '90%',
+  minWidth: 0,
+  overflowWrap: 'anywhere',
   padding: theme.spacing(1, 1.5),
   borderRadius: theme.spacing(2),
   ...(sender === 'user'

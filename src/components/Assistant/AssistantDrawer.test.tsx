@@ -4,6 +4,7 @@ import { act, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import matchMediaMock from '__tests__/util/matchMediaMock';
 import theme from 'src/theme';
 import { AssistantDrawer } from './AssistantDrawer';
 import { AssistantProvider, useAssistantContext } from './AssistantProvider';
@@ -289,6 +290,67 @@ describe('AssistantDrawer', () => {
         'The user cannot find their gifts.',
       );
       await waitForMint();
+    });
+  });
+
+  describe('layout', () => {
+    const openDrawer = async () => {
+      const utils = render(<TestComponent />);
+      userEvent.click(utils.getByRole('button', { name: 'Open' }));
+      await waitForMint();
+      return utils;
+    };
+
+    afterEach(() => {
+      Object.defineProperty(window, 'visualViewport', {
+        value: undefined,
+        configurable: true,
+      });
+    });
+
+    it('stays a 400px side panel on a wide screen', async () => {
+      matchMediaMock({ width: '1024px' });
+      const { getByRole } = await openDrawer();
+
+      expect(getByRole('dialog')).toHaveStyle({ width: '400px' });
+    });
+
+    describe('at 375px', () => {
+      beforeEach(() => {
+        matchMediaMock({ width: '375px' });
+      });
+
+      it('fills the screen and scrolls long cards inside the message area', async () => {
+        const { getByRole } = await openDrawer();
+        const drawer = getByRole('dialog');
+
+        await waitFor(() => expect(drawer).toHaveStyle({ width: '100vw' }));
+        expect(getByRole('log').parentElement).toHaveStyle({
+          overflowY: 'auto',
+          minHeight: '0',
+        });
+      });
+
+      it('follows the visible viewport so the composer stays above the on-screen keyboard', async () => {
+        const viewport = Object.assign(new EventTarget(), {
+          height: 700,
+          offsetTop: 0,
+        });
+        Object.defineProperty(window, 'visualViewport', {
+          value: viewport,
+          configurable: true,
+        });
+        const { getByRole } = await openDrawer();
+        const drawer = getByRole('dialog');
+        await waitFor(() => expect(drawer.style.height).toBe('700px'));
+
+        act(() => {
+          Object.assign(viewport, { height: 360, offsetTop: 40 });
+          viewport.dispatchEvent(new Event('resize'));
+        });
+        expect(drawer.style.height).toBe('360px');
+        expect(drawer.style.top).toBe('40px');
+      });
     });
   });
 });

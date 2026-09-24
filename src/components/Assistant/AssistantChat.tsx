@@ -31,11 +31,13 @@ import { useCurrentPageUrl } from './useCurrentPageUrl';
 
 const MessageArea = styled(Box)(({ theme }) => ({
   flexGrow: 1,
+  minHeight: 0,
   overflowY: 'auto',
   padding: theme.spacing(2),
 }));
 
 const Footer = styled(Box)(({ theme }) => ({
+  flexShrink: 0,
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(1),
