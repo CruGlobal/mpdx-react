@@ -2,6 +2,7 @@ import React from 'react';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
+import { GraphQLError } from 'graphql';
 import TestRouter from '__tests__/util/TestRouter';
 import { TestSetupProvider } from 'src/components/Setup/SetupProvider';
 import theme from 'src/theme';
@@ -22,15 +23,21 @@ interface TestComponentProps {
   openMobile?: boolean;
   onSetupTour?: boolean;
   coachingCount?: number;
+  coachingFails?: boolean;
 }
 
 const coachingListCountResult = jest.fn();
 
-const coachingListCountMock = (totalCount: number): MockedResponse => {
+const coachingListCountMock = (
+  totalCount: number,
+  fails = false,
+): MockedResponse => {
   const data: CoachingListCountQuery = {
     coachingAccountLists: { totalCount },
   };
-  coachingListCountResult.mockReturnValue({ data });
+  coachingListCountResult.mockReturnValue(
+    fails ? { errors: [new GraphQLError('Coaching count failed')] } : { data },
+  );
   return {
     request: { query: CoachingListCountDocument },
     result: coachingListCountResult,
@@ -41,11 +48,12 @@ const TestComponent: React.FC<TestComponentProps> = ({
   openMobile = false,
   onSetupTour,
   coachingCount = 0,
+  coachingFails = false,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
       <MockedProvider
-        mocks={[...mocks, coachingListCountMock(coachingCount)]}
+        mocks={[...mocks, coachingListCountMock(coachingCount, coachingFails)]}
         addTypename={false}
       >
         <TestSetupProvider onSetupTour={onSetupTour}>
@@ -94,6 +102,16 @@ describe('NavBar', () => {
 
     await findByRole('link', { name: 'Dashboard' });
     await waitFor(() => expect(coachingListCountResult).toHaveBeenCalled());
+    expect(queryByRole('link', { name: 'Coaching' })).not.toBeInTheDocument();
+  });
+
+  it('hides the Coaching link and keeps the nav when the coaching count fails', async () => {
+    const { findByRole, queryByRole } = render(
+      <TestComponent openMobile coachingFails />,
+    );
+
+    await waitFor(() => expect(coachingListCountResult).toHaveBeenCalled());
+    expect(await findByRole('link', { name: 'Dashboard' })).toBeInTheDocument();
     expect(queryByRole('link', { name: 'Coaching' })).not.toBeInTheDocument();
   });
 });
