@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { act, render, waitFor } from '@testing-library/react';
+import { act, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -9,6 +9,8 @@ import { AssistantDrawer } from './AssistantDrawer';
 import { AssistantProvider, useAssistantContext } from './AssistantProvider';
 import { CreateAssistantTokenMutation } from './CreateAssistantToken.generated';
 import { mintedToken } from './assistantToken.mock';
+import { DEFAULT_VISIBILITY } from './navigation/intents';
+import { useNavigationVisibility } from './navigation/useNavigationVisibility';
 import { frame, mockJsonResponse, mockStreamResponse } from './sse.mock';
 import { useAssistantVisibility } from './useAssistantVisibility';
 
@@ -17,7 +19,47 @@ const mockUseAssistantVisibility = useAssistantVisibility as jest.MockedFn<
   typeof useAssistantVisibility
 >;
 
+jest.mock('./navigation/useNavigationVisibility');
+const mockUseNavigationVisibility = useNavigationVisibility as jest.MockedFn<
+  typeof useNavigationVisibility
+>;
+
 const mutationSpy = jest.fn();
+
+const transcriptFrames = [
+  frame({
+    type: 'chunk',
+    message_id: 'm1',
+    delta: 'Your gifts are on the Dashboard. ',
+  }),
+  frame({
+    type: 'card',
+    message_id: 'm1',
+    card: {
+      kind: 'navigation',
+      intent: { type: 'dashboard', params: {} },
+      label: 'Open the Dashboard',
+    },
+  }),
+  frame({
+    type: 'card',
+    message_id: 'm1',
+    card: {
+      kind: 'handoff',
+      summary: 'The user cannot find their gifts.',
+      contact_form: {
+        name: 'First Last',
+        email: 'first.last@cru.org',
+        url: 'https://domain.helpjuice.com/contact-us',
+      },
+    },
+  }),
+  frame({
+    type: 'generation_complete',
+    message_id: 'm1',
+    citations: [{ title: 'Finding gifts', url: 'https://help.test/gifts' }],
+  }),
+];
 
 // Lets the mint that starts when the chat mounts land inside act before the test moves on
 const waitForMint = async (count = 1) => {
@@ -50,6 +92,11 @@ describe('AssistantDrawer', () => {
   beforeEach(() => {
     process.env.ASSISTANT_URL = 'https://assistant.test';
     mockUseAssistantVisibility.mockReturnValue(true);
+    mockUseNavigationVisibility.mockReturnValue({
+      visibility: DEFAULT_VISIBILITY,
+      reportSegments: new Set(),
+      isLoading: false,
+    });
   });
 
   afterEach(() => {
@@ -138,5 +185,110 @@ describe('AssistantDrawer', () => {
     userEvent.click(getByRole('button', { name: 'Open' }));
 
     expect(queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  describe('with a transcript of text, cards, and a citation', () => {
+    const writeText = jest.fn().mockResolvedValue(undefined);
+    let fetchSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      Object.assign(navigator, { clipboard: { writeText } });
+      fetchSpy = jest
+        .spyOn(global, 'fetch')
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(mockStreamResponse(transcriptFrames));
+    });
+
+    afterEach(() => {
+      fetchSpy.mockRestore();
+    });
+
+    const renderTranscript = async () => {
+      const utils = render(<TestComponent />);
+      userEvent.click(utils.getByRole('button', { name: 'Open' }));
+      userEvent.type(
+        utils.getByRole('textbox', { name: 'Ask the assistant' }),
+        'Where are my gifts?',
+      );
+      await waitFor(() =>
+        expect(utils.getByRole('button', { name: 'Send' })).toBeEnabled(),
+      );
+      userEvent.click(utils.getByRole('button', { name: 'Send' }));
+      expect(
+        await utils.findByRole('link', { name: 'Finding gifts' }),
+      ).toBeInTheDocument();
+      expect(
+        await utils.findByRole('link', { name: 'Open the Dashboard' }),
+      ).toBeInTheDocument();
+      await waitFor(() =>
+        expect(
+          utils.getByRole('textbox', { name: 'Ask the assistant' }),
+        ).toHaveFocus(),
+      );
+      return utils;
+    };
+
+    it('exposes named landmarks, headings, lists, and controls', async () => {
+      const { getByRole, getAllByRole } = await renderTranscript();
+      const drawer = getByRole('dialog', { name: 'Assistant' });
+
+      expect(drawer).toHaveAttribute('aria-modal', 'true');
+      expect(
+        getByRole('heading', { level: 2, name: 'Assistant' }),
+      ).toBeInTheDocument();
+      expect(
+        getByRole('heading', { level: 3, name: 'Summary for the help desk' }),
+      ).toBeInTheDocument();
+
+      const log = getByRole('log', { name: 'Conversation' });
+      const transcript = within(log).getAllByRole('list')[0];
+      expect(within(transcript).getAllByRole('listitem')[0]).toHaveTextContent(
+        'Where are my gifts?',
+      );
+
+      [...getAllByRole('button'), ...getAllByRole('link')].forEach((control) =>
+        expect(control).toHaveAccessibleName(),
+      );
+      const ids = [...document.querySelectorAll('[id]')].map(
+        (element) => element.id,
+      );
+      expect(new Set(ids).size).toBe(ids.length);
+      await waitForMint();
+    });
+
+    it('reaches every card, citation, and hand-off control by keyboard with a visible focus state', async () => {
+      const { getByRole } = await renderTranscript();
+      const citation = getByRole('link', { name: 'Finding gifts' });
+      const buttons = [
+        getByRole('link', { name: 'Open the Dashboard' }),
+        getByRole('link', { name: 'Contact the help desk' }),
+        getByRole('button', { name: 'Copy summary' }),
+      ];
+
+      const reached = new Set<Element | null>();
+      for (let press = 0; press < 10; press++) {
+        userEvent.tab();
+        reached.add(document.activeElement);
+      }
+      [...buttons, citation].forEach((target) =>
+        expect(reached).toContain(target),
+      );
+
+      // jsdom cannot match :focus-visible, so check that nothing strips the default focus styles
+      buttons.forEach((button) =>
+        expect(
+          button.querySelector('.MuiTouchRipple-root'),
+        ).toBeInTheDocument(),
+      );
+      expect(getComputedStyle(citation).outlineStyle).not.toBe('none');
+      expect(getComputedStyle(citation).outlineWidth).not.toBe('0');
+
+      act(() => buttons[2].focus());
+      userEvent.keyboard('{enter}');
+      expect(writeText).toHaveBeenCalledWith(
+        'The user cannot find their gifts.',
+      );
+      await waitForMint();
+    });
   });
 });
