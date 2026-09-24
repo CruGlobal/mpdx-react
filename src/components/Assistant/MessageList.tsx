@@ -25,7 +25,7 @@ const EmptyState = styled(Box)({
   height: '100%',
 });
 
-const Item = styled('li', {
+const Item = styled('div', {
   shouldForwardProp: (prop) => prop !== 'sender',
 })<{ sender: MessageRole }>(({ theme, sender }) => ({
   display: 'flex',
@@ -168,21 +168,25 @@ export const MessageList: React.FC<MessageListProps> = ({
 
   return (
     <>
-      <List
+      <Box
         role="log"
         aria-live="off"
         aria-busy={streaming}
         aria-label={t('Conversation')}
       >
-        <NavigationVisibilityProvider enabled={hasNavigationCard}>
-          {messages.map((message) => (
-            <AssistantErrorBoundary key={message.id}>
-              <MessageItem message={message} />
-            </AssistantErrorBoundary>
-          ))}
-        </NavigationVisibilityProvider>
+        <List>
+          <NavigationVisibilityProvider enabled={hasNavigationCard}>
+            {messages.map((message) => (
+              <li key={message.id}>
+                <AssistantErrorBoundary>
+                  <MessageItem message={message} />
+                </AssistantErrorBoundary>
+              </li>
+            ))}
+          </NavigationVisibilityProvider>
+        </List>
         <div ref={endRef} />
-      </List>
+      </Box>
       <ReplyAnnouncer messages={messages} />
       {messages.length === 0 && (
         <EmptyState>

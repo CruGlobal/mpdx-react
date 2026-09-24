@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, within } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import { MessageList } from './MessageList';
 import { DEFAULT_VISIBILITY } from './navigation/intents';
@@ -313,6 +313,30 @@ describe('MessageList', () => {
       );
       expect(announcer(getByTestId)).toHaveTextContent('Stopped.');
     });
+  });
+
+  it('keeps only list items directly inside the transcript list, even for a broken reply', () => {
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const { getByRole } = render(
+      <MessageList
+        messages={[
+          message({ id: '1', role: 'user', content: 'Hi' }),
+          message({ id: '2', cards: [null as unknown as AssistantCard] }),
+          message({ id: '3', role: 'system', content: 'Started over.' }),
+        ]}
+        streaming={false}
+      />,
+    );
+
+    const list = within(
+      getByRole('log', { name: 'Conversation' }),
+    ).getAllByRole('list')[0];
+    expect([...list.children].map((child) => child.tagName)).toEqual([
+      'LI',
+      'LI',
+      'LI',
+    ]);
+    errorSpy.mockRestore();
   });
 
   it('shows a fallback for a reply that fails to render and keeps the rest', () => {
