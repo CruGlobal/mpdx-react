@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { AssistantFirstRunDialog } from './AssistantFirstRunDialog';
 import { useAssistantContext } from './AssistantProvider';
 import {
@@ -15,7 +15,7 @@ export interface AssistantLaunch {
 // Shared by the top bar button and the orb so both open the Guide the same way
 export const useAssistantLaunch = (): AssistantLaunch => {
   const { launcher } = useAssistantAccess();
-  const { openAssistant, launcherRef } = useAssistantContext();
+  const { open, openAssistant, launcherRef } = useAssistantContext();
   const [firstRunOpen, setFirstRunOpen] = useState(false);
 
   const launch = (returnFocusTo: HTMLButtonElement | null) => {
@@ -26,6 +26,16 @@ export const useAssistantLaunch = (): AssistantLaunch => {
       setFirstRunOpen(true);
     }
   };
+
+  const wasFirstRunOpen = useRef(firstRunOpen);
+
+  // The shared Modal never restores focus, so a cancelled first run hands it back to the launcher
+  useEffect(() => {
+    if (wasFirstRunOpen.current && !firstRunOpen && !open) {
+      launcherRef.current?.focus();
+    }
+    wasFirstRunOpen.current = firstRunOpen;
+  }, [firstRunOpen, open, launcherRef]);
 
   const firstRunDialog = (
     <AssistantFirstRunDialog

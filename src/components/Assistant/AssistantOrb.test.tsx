@@ -331,6 +331,23 @@ describe('AssistantOrb', () => {
       ).toBeInTheDocument();
     });
 
+    it('returns focus to the orb when the first-run explanation it opened is closed', async () => {
+      const { findAllByRole, findByText, findByRole, queryByRole } = render(
+        <TestComponent />,
+      );
+      const orb = await findOrb(findAllByRole);
+
+      userEvent.click(await findByText(nudgeText));
+      const dialog = await findByRole('dialog', {
+        name: 'Meet your MPDX Guide',
+      });
+      userEvent.keyboard('{esc}');
+      await waitFor(() => expect(dialog).not.toBeInTheDocument());
+
+      await waitFor(() => expect(orb).toHaveFocus());
+      expect(queryByRole('dialog')).not.toBeInTheDocument();
+    });
+
     it('goes away when dismissed', async () => {
       const { findByRole, queryByText, getAllByRole } = render(
         <TestComponent settings={{ enabled: true }} />,
