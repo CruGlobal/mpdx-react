@@ -26,7 +26,9 @@ import { useOptionalAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';
 import { AssistantHeader, GuideStatus } from './AssistantHeader';
 import { useAssistantContext } from './AssistantProvider';
+import { GuideGreeting } from './GuideGreeting';
 import { MessageList } from './MessageList';
+import { StarterQuestions } from './StarterQuestions';
 import { getAssistantUrl, useAssistantStream } from './useAssistantStream';
 import { useAssistantToken } from './useAssistantToken';
 import { useCurrentPageUrl } from './useCurrentPageUrl';
@@ -159,8 +161,11 @@ export const AssistantChat: React.FC<AssistantChatProps> = ({
     assistantDisabled,
   } = useAssistantStream({ accountListId, token, refreshToken });
   const [draft, setDraft] = useState('');
-  const canSend =
-    Boolean(draft.trim()) && tokenState.status === 'ready' && !rateLimited;
+  const ready = tokenState.status === 'ready' && !rateLimited;
+  const canSend = Boolean(draft.trim()) && ready;
+  const beforeFirstMessage = visibleMessages.every(
+    (message) => message.role === 'system',
+  );
   // A reply in flight keeps its Stop button whatever happens to the token meanwhile
   const deadEnd =
     !streaming &&
@@ -200,6 +205,13 @@ export const AssistantChat: React.FC<AssistantChatProps> = ({
     inputRef.current?.focus();
   };
 
+  const sendStarter = (question: string) => {
+    if (!streaming && ready) {
+      sendMessage(question);
+      inputRef.current?.focus();
+    }
+  };
+
   const handleKeyDown = (event: KeyboardEvent) => {
     if (
       event.key === 'Enter' &&
@@ -216,6 +228,7 @@ export const AssistantChat: React.FC<AssistantChatProps> = ({
       <AssistantHeader titleId={titleId} status={status} onClose={onClose} />
       <MessageArea>
         <MessageList messages={visibleMessages} streaming={streaming} />
+        {beforeFirstMessage && <GuideGreeting />}
       </MessageArea>
       <Divider />
       <Footer>
@@ -242,34 +255,42 @@ export const AssistantChat: React.FC<AssistantChatProps> = ({
             }
           />
         ) : (
-          <Composer onSubmit={handleSubmit}>
-            <TextField
-              fullWidth
-              multiline
-              autoFocus
-              maxRows={4}
-              size="small"
-              value={draft}
-              inputRef={inputRef}
-              disabled={!accountListId}
-              placeholder={t('Ask the Guide')}
-              onChange={(event) => setDraft(event.target.value)}
-              onKeyDown={handleKeyDown}
-              slotProps={{
-                htmlInput: { 'aria-label': t('Ask the Guide') },
-              }}
-            />
-            {/* One button that swaps between Send and Stop so keyboard focus survives the swap */}
-            <Button
-              variant="contained"
-              type={streaming ? 'button' : 'submit'}
-              onClick={streaming ? stop : undefined}
-              disabled={!streaming && !canSend}
-              startIcon={streaming ? <StopIcon /> : <SendIcon />}
-            >
-              {streaming ? t('Stop') : t('Send')}
-            </Button>
-          </Composer>
+          <>
+            {beforeFirstMessage && (
+              <StarterQuestions
+                disabled={streaming || !ready || !accountListId}
+                onPick={sendStarter}
+              />
+            )}
+            <Composer onSubmit={handleSubmit}>
+              <TextField
+                fullWidth
+                multiline
+                autoFocus
+                maxRows={4}
+                size="small"
+                value={draft}
+                inputRef={inputRef}
+                disabled={!accountListId}
+                placeholder={t('Ask the Guide')}
+                onChange={(event) => setDraft(event.target.value)}
+                onKeyDown={handleKeyDown}
+                slotProps={{
+                  htmlInput: { 'aria-label': t('Ask the Guide') },
+                }}
+              />
+              {/* One button that swaps between Send and Stop so keyboard focus survives the swap */}
+              <Button
+                variant="contained"
+                type={streaming ? 'button' : 'submit'}
+                onClick={streaming ? stop : undefined}
+                disabled={!streaming && !canSend}
+                startIcon={streaming ? <StopIcon /> : <SendIcon />}
+              >
+                {streaming ? t('Stop') : t('Send')}
+              </Button>
+            </Composer>
+          </>
         )}
         {configured && !accountListId && (
           <Typography variant="caption" color="text.secondary">

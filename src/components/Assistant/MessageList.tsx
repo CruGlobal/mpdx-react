@@ -18,13 +18,6 @@ const List = styled('ul')({
   padding: 0,
 });
 
-const EmptyState = styled(Box)({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  height: '100%',
-});
-
 const Item = styled('div', {
   shouldForwardProp: (prop) => prop !== 'sender',
 })<{ sender: MessageRole }>(({ theme, sender }) => ({
@@ -190,13 +183,6 @@ export const MessageList: React.FC<MessageListProps> = ({
         <div ref={endRef} />
       </Box>
       <ReplyAnnouncer messages={messages} />
-      {messages.length === 0 && (
-        <EmptyState>
-          <Typography color="text.secondary" align="center">
-            {t('Ask a question to get started.')}
-          </Typography>
-        </EmptyState>
-      )}
     </>
   );
 };

@@ -1,10 +1,18 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { act, fireEvent, render, waitFor } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { mockSession } from '__tests__/util/mockSession';
+import { GetUserDocument } from 'src/components/User/GetUser.generated';
+import { createCache } from 'src/lib/apollo/cache';
 import theme from 'src/theme';
 import { AssistantChat } from './AssistantChat';
 import { AssistantProvider } from './AssistantProvider';
@@ -51,13 +59,41 @@ interface TestComponentProps {
   page?: string;
   mints?: MintOutcome[];
   open?: boolean;
+  firstName?: string;
 }
+
+// The Guide reads the name the app already loaded, so tests put it in the cache
+const cacheWithUser = (firstName: string) => {
+  const cache = createCache();
+  cache.writeQuery({
+    query: GetUserDocument,
+    data: {
+      user: {
+        __typename: 'User',
+        id: 'user-1',
+        firstName,
+        lastName: 'Last',
+        avatar: '',
+        preferences: null,
+        staffAccountId: null,
+        primaryDesignation: null,
+        userType: null,
+        usStaffGroup: null,
+        spouseUsStaffGroup: null,
+        supervisesStaff: false,
+        mpdSupervisorAdmin: false,
+      },
+    },
+  });
+  return cache;
+};
 
 const TestComponent: React.FC<TestComponentProps> = ({
   accountListId = 'account-list-1',
   page = 'contacts',
   mints,
   open = true,
+  firstName,
 }) => {
   const chat = (
     <TestRouter
@@ -84,6 +120,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
         }>
           mocks={{ CreateAssistantToken: mintedToken('minted-token') }}
           onCall={mutationSpy}
+          cache={firstName ? cacheWithUser(firstName) : undefined}
         >
           {chat}
         </GqlMockedProvider>
@@ -567,6 +604,77 @@ describe('AssistantChat', () => {
     ).toBeInTheDocument();
     expect(queryByText(offNotice)).not.toBeInTheDocument();
     expect(fetchSpy).toHaveBeenCalledTimes(1);
+  });
+
+  describe('before the first message', () => {
+    const greeting =
+      "I'm your MPDX Guide. Ask me how to do anything on this site, or pick a question below to get started.";
+    const starters = [
+      'How do I add a task?',
+      'How do I add a contact?',
+      'What is a commitment?',
+      'How do I log a gift?',
+    ];
+
+    it('greets the user by first name and offers starter questions', async () => {
+      const { findByText, getByRole } = render(
+        <TestComponent firstName="Pedra" />,
+      );
+
+      expect(await findByText(`Hi Pedra, ${greeting}`)).toBeInTheDocument();
+      const group = getByRole('group', { name: 'Suggested questions' });
+      expect(
+        within(group)
+          .getAllByRole('button')
+          .map((chip) => chip.textContent),
+      ).toEqual(starters);
+      await waitForMint();
+    });
+
+    it('says hi there when the name is not known', async () => {
+      const { getByText } = render(<TestComponent />);
+
+      expect(getByText(`Hi there, ${greeting}`)).toBeInTheDocument();
+      await waitForMint();
+    });
+
+    it('sends a starter question as the user message and then clears the greeting', async () => {
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+      const { getByRole, findByText, queryByText, queryByRole } = render(
+        <TestComponent />,
+      );
+      const chip = getByRole('button', { name: 'What is a commitment?' });
+      await waitFor(() => expect(chip).toBeEnabled());
+
+      userEvent.click(chip);
+
+      expect(
+        await findByText('You have 12 contacts.', inTranscript),
+      ).toBeInTheDocument();
+      expect(JSON.parse(fetchSpy.mock.calls[1][1].body)).toMatchObject({
+        content: 'What is a commitment?',
+      });
+      expect(getByRole('log', { name: 'Conversation' })).toHaveTextContent(
+        'What is a commitment?',
+      );
+      expect(queryByText(`Hi there, ${greeting}`)).not.toBeInTheDocument();
+      expect(
+        queryByRole('group', { name: 'Suggested questions' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('keeps the starter questions disabled until the Guide is connected', async () => {
+      const { getByRole } = render(
+        <TestComponent mints={[{ networkError: true }]} />,
+      );
+
+      expect(
+        getByRole('button', { name: 'How do I add a task?' }),
+      ).toBeDisabled();
+      await waitFor(() => expect(onMint).toHaveBeenCalled());
+    });
   });
 
   describe('header', () => {
