@@ -1,6 +1,8 @@
 import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
 import { render, within } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
+import theme from 'src/theme';
 import { MessageList } from './MessageList';
 import { DEFAULT_VISIBILITY } from './navigation/intents';
 import { useNavigationVisibility } from './navigation/useNavigationVisibility';
@@ -44,6 +46,46 @@ describe('MessageList', () => {
     );
 
     expect(getByRole('log', { name: 'Conversation' })).toBeInTheDocument();
+  });
+
+  it('sets replies in the same type as the user bubble', () => {
+    const { getByText } = render(
+      <ThemeProvider theme={theme}>
+        <MessageList
+          messages={[
+            message({ id: '1', role: 'user', content: 'How do I log a gift?' }),
+            message({
+              id: '2',
+              content:
+                'Open the contact.\n\n- Press **Add Gift**\n- Use `Save`\n\n### Next\n\n```\nsave()\n```',
+            }),
+          ]}
+          streaming={false}
+        />
+      </ThemeProvider>,
+    );
+    const family = (value: string | undefined) => value?.replace(/,\s*/g, ',');
+    const font = (element: Element) => {
+      const style = getComputedStyle(element);
+      return [family(style.fontFamily), style.fontSize, style.lineHeight];
+    };
+    const userFont = font(getByText('How do I log a gift?'));
+    const body2 = theme.typography.body2;
+
+    expect(userFont).toEqual([
+      family(body2.fontFamily),
+      body2.fontSize,
+      String(body2.lineHeight),
+    ]);
+    expect(font(getByText('Open the contact.'))).toEqual(userFont);
+    expect(font(getByText('Press').closest('li') as Element)).toEqual(userFont);
+    const code = getByText('Save');
+    expect(getComputedStyle(code).fontSize).toBe(body2.fontSize);
+    expect(getComputedStyle(code).fontFamily).toMatch(/monospace/);
+    expect(getComputedStyle(getByText('save()')).fontSize).toBe(body2.fontSize);
+    const heading = getComputedStyle(getByText('Next'));
+    expect(family(heading.fontFamily)).toBe(family(body2.fontFamily));
+    expect(heading.fontSize).toBe(theme.typography.subtitle1.fontSize);
   });
 
   it('renders user and assistant messages', () => {
