@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { keyframes } from '@emotion/react';
 import { Box, Drawer, Paper, useMediaQuery } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import { AssistantChat } from './AssistantChat';
@@ -17,13 +18,65 @@ const DrawerContent = styled(Box)({
   height: '100%',
 });
 
+const genieOpenMs = 320;
+const genieCloseMs = 240;
+const genieStart = 'scale(0.1, 0.16) skewX(-6deg)';
+
+const genieIn = keyframes({
+  '0%': { opacity: 0, transform: genieStart },
+  '33%': { opacity: 1 },
+  '100%': { opacity: 1, transform: 'none' },
+});
+
+const genieOut = keyframes({
+  '0%': { opacity: 1, transform: 'none' },
+  '67%': { opacity: 1 },
+  '100%': { opacity: 0, transform: genieStart },
+});
+
+const fadeIn = keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });
+const fadeOut = keyframes({ from: { opacity: 1 }, to: { opacity: 0 } });
+
+// The card grows out of the orb below its bottom right corner, like the macOS Dock minimize
 const Card = styled(Paper)(({ theme }) => ({
   position: 'fixed',
   zIndex: theme.zIndex.drawer,
   display: 'flex',
   flexDirection: 'column',
   outline: 'none',
+  transformOrigin: 'bottom right',
+  '&[data-genie="in"]': {
+    animation: `${genieIn} ${genieOpenMs}ms cubic-bezier(0.2, 0.9, 0.3, 1) both`,
+  },
+  '&[data-genie="out"]': {
+    animation: `${genieOut} ${genieCloseMs}ms cubic-bezier(0.5, 0, 0.9, 0.4) both`,
+    pointerEvents: 'none',
+  },
+  '@media (prefers-reduced-motion: reduce)': {
+    '&[data-genie="in"]': {
+      animation: `${fadeIn} ${genieOpenMs}ms ease-out both`,
+    },
+    '&[data-genie="out"]': {
+      animation: `${fadeOut} ${genieCloseMs}ms ease-in both`,
+    },
+  },
 }));
+
+// Keeps the card mounted while it plays its closing animation
+const useClosingDelay = (open: boolean, ms: number): boolean => {
+  const [mounted, setMounted] = useState(open);
+
+  useEffect(() => {
+    if (open) {
+      setMounted(true);
+      return;
+    }
+    const timer = setTimeout(() => setMounted(false), ms);
+    return () => clearTimeout(timer);
+  }, [open, ms]);
+
+  return open || mounted;
+};
 
 // Like a chat widget, the desktop card leaves the page usable, while phones get a full-screen modal
 export const AssistantDrawer: React.FC = () => {
@@ -35,7 +88,8 @@ export const AssistantDrawer: React.FC = () => {
     noSsr: true,
   });
   const viewport = useVisualViewport(open && fullScreen);
-  const wasOpen = useRef(open);
+  const cardMounted = useClosingDelay(open, genieCloseMs);
+  const wasMounted = useRef(cardMounted);
   const cardRef = useRef<HTMLDivElement>(null);
 
   // The Helpjuice beacon sits in the corner the drawer covers, so it would overlap the chat
@@ -51,14 +105,14 @@ export const AssistantDrawer: React.FC = () => {
 
   // Focus inside the card is lost when it unmounts, so it goes back to the launcher that opened it
   useEffect(() => {
-    if (wasOpen.current && !open && !fullScreen) {
+    if (wasMounted.current && !cardMounted && !fullScreen) {
       const active = document.activeElement;
       if (!active || active === document.body) {
         launcherRef.current?.focus();
       }
     }
-    wasOpen.current = open;
-  }, [open, fullScreen, launcherRef]);
+    wasMounted.current = cardMounted;
+  }, [cardMounted, fullScreen, launcherRef]);
 
   if (!visible) {
     return null;
@@ -71,12 +125,13 @@ export const AssistantDrawer: React.FC = () => {
   );
 
   if (!fullScreen) {
-    return open ? (
+    return cardMounted ? (
       <Card
         ref={cardRef}
         tabIndex={-1}
         role="dialog"
         aria-modal={false}
+        data-genie={open ? 'in' : 'out'}
         aria-labelledby={titleId}
         elevation={8}
         onKeyDown={(event) => {

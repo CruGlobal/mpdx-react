@@ -372,6 +372,53 @@ describe('AssistantDrawer', () => {
         ).toBe(true);
       });
 
+      it('grows out of the orb on open and shrinks back into it on close', async () => {
+        const { getByRole, queryByRole } = await openDrawer();
+        const card = getByRole('dialog');
+        expect(card).toHaveAttribute('data-genie', 'in');
+
+        userEvent.click(getByRole('button', { name: 'Close MPDX Guide' }));
+        expect(card).toHaveAttribute('data-genie', 'out');
+        await waitFor(() =>
+          expect(queryByRole('dialog')).not.toBeInTheDocument(),
+        );
+
+        const css = [...document.querySelectorAll('style')]
+          .map((style) => style.textContent)
+          .join('');
+        expect(css).toMatch(/transform-origin:bottom right/);
+        expect(css).toMatch(
+          /\[data-genie="in"\]\{[^}]*animation:[^;]* 320ms [^;]*;/,
+        );
+        expect(css).toMatch(
+          /\[data-genie="out"\]\{[^}]*animation:[^;]* 240ms [^;]*;/,
+        );
+        expect(css).toMatch(/scale\(0\.1, ?0\.16\)/);
+      });
+
+      it('only fades under reduced motion', async () => {
+        await openDrawer();
+
+        const css = [...document.querySelectorAll('style')]
+          .map((style) => style.textContent)
+          .join('');
+        const reduced = css.match(
+          /@media \(prefers-reduced-motion: reduce\)\{(.*?\}\})/,
+        )?.[1];
+        expect(reduced).toMatch(/\[data-genie="in"\]\{[^}]*animation:/);
+        expect(reduced).toMatch(/\[data-genie="out"\]\{[^}]*animation:/);
+        const fadeNames = [...(reduced ?? '').matchAll(/animation:(\S+)/g)].map(
+          ([, name]) => name,
+        );
+        fadeNames.forEach((name) => {
+          const frames = css.match(
+            new RegExp(`@keyframes ${name}\\{(.*?\\})\\}`),
+          )?.[1];
+          expect(frames).toMatch(/opacity/);
+          expect(frames).not.toMatch(/scale/);
+        });
+      });
+
       it('closes on Escape from inside', async () => {
         const { getByRole, queryByRole } = render(<TestComponent />);
         userEvent.click(getByRole('button', { name: 'Open' }));
