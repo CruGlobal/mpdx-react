@@ -192,7 +192,9 @@ export const AssistantChat: React.FC<AssistantChatProps> = ({
     ? 'off'
     : tokenState.status === 'ready'
       ? 'ready'
-      : tokenState.status === 'minting'
+      : tokenState.status === 'minting' ||
+          // The first render is idle until the mint starts, which would flash Off right now
+          (tokenState.status === 'idle' && configured && accountListId)
         ? 'connecting'
         : tokenState.status === 'failed'
           ? 'failed'

@@ -15,6 +15,7 @@ import { GetUserDocument } from 'src/components/User/GetUser.generated';
 import { createCache } from 'src/lib/apollo/cache';
 import theme from 'src/theme';
 import { AssistantChat } from './AssistantChat';
+import { AssistantHeader } from './AssistantHeader';
 import { AssistantProvider } from './AssistantProvider';
 import { CreateAssistantTokenMutation } from './CreateAssistantToken.generated';
 import { MessageList } from './MessageList';
@@ -36,6 +37,11 @@ jest.mock('./useAssistantVisibility');
 const mockUseAssistantVisibility = useAssistantVisibility as jest.MockedFn<
   typeof useAssistantVisibility
 >;
+
+jest.mock('./AssistantHeader', () => {
+  const actual = jest.requireActual('./AssistantHeader');
+  return { ...actual, AssistantHeader: jest.fn(actual.AssistantHeader) };
+});
 
 jest.mock('./MessageList', () => {
   const actual = jest.requireActual('./MessageList');
@@ -725,6 +731,18 @@ describe('AssistantChat', () => {
 
       expect(getByText('Connecting')).toBeInTheDocument();
       expect(await findByText('Here to show you around')).toBeInTheDocument();
+    });
+
+    it('never flashes Off right now while the first token is on its way', async () => {
+      (AssistantHeader as jest.Mock).mockClear();
+      const { findByText } = render(<TestComponent />);
+
+      expect(await findByText('Here to show you around')).toBeInTheDocument();
+      const statuses = (AssistantHeader as jest.Mock).mock.calls.map(
+        ([{ status }]) => status,
+      );
+      expect(statuses[0]).toBe('connecting');
+      expect(statuses).not.toContain('off');
     });
 
     it('says it could not connect when the mint fails', async () => {
