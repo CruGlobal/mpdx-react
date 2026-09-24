@@ -84,7 +84,11 @@ export const AssistantFirstRunDialog: React.FC<
         {helpCenterUrl && (
           <DialogContentText>
             {t('Rather look it up yourself?')}{' '}
-            <Link href={helpCenterUrl} target="_blank" rel="noopener">
+            <Link
+              href={helpCenterUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               {t('Visit the help center')}
             </Link>
           </DialogContentText>

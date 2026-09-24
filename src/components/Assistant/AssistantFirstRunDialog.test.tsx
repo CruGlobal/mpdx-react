@@ -40,9 +40,9 @@ describe('AssistantFirstRunDialog', () => {
       'help articles it links to are in English',
     );
     expect(dialog).toHaveTextContent('It never changes your data on its own.');
-    expect(
-      getByRole('link', { name: 'Visit the help center' }),
-    ).toHaveAttribute('href', 'https://help.test');
+    const helpLink = getByRole('link', { name: 'Visit the help center' });
+    expect(helpLink).toHaveAttribute('href', 'https://help.test');
+    expect(helpLink).toHaveAttribute('rel', 'noopener noreferrer');
   });
 
   it('turns the assistant on', async () => {
