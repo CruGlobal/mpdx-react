@@ -47,7 +47,7 @@ export const STATUSES = [
 ] as const;
 export type Status = (typeof STATUSES)[number];
 
-export const NEWSLETTER_VALUES = ['Physical', 'Email', 'Both', 'None'] as const;
+export const NEWSLETTER_VALUES = ['PHYSICAL', 'EMAIL', 'BOTH', 'NONE'] as const;
 export type NewsletterValue = (typeof NEWSLETTER_VALUES)[number];
 
 export const PLEDGE_FREQUENCIES = [

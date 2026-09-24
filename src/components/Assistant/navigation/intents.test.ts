@@ -1,4 +1,9 @@
-import { FILTER_PRESETS, NAVIGATION_INTENT_TYPES, STATUSES } from './intents';
+import {
+  FILTER_PRESETS,
+  NAVIGATION_INTENT_TYPES,
+  NEWSLETTER_VALUES,
+  STATUSES,
+} from './intents';
 
 // These lists must equal TYPES, PRESETS and the value keys in mpdx-assistant app/services/navigation_intent.rb
 describe('navigation intent vocabulary', () => {
@@ -46,5 +51,9 @@ describe('navigation intent vocabulary', () => {
       'RESEARCH_ABANDONED',
       'EXPIRED_REFERRAL',
     ]);
+  });
+
+  it('has the four newsletter values as API enum values', () => {
+    expect(NEWSLETTER_VALUES).toEqual(['PHYSICAL', 'EMAIL', 'BOTH', 'NONE']);
   });
 });

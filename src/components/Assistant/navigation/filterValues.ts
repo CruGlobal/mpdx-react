@@ -13,17 +13,17 @@ export const PLEDGE_FREQUENCY_FILTER_VALUES: Record<PledgeFrequency, string> = {
   'Every 2 Years': '24.0',
 };
 
-// The newsletter filter takes one option, so only the sets it offers can be expressed
+// The filter takes one option and its PHYSICAL means physical or both, so only these sets can be expressed
 const NEWSLETTER_FILTER_OPTIONS: Array<
   [NewsletterValue[], ContactFilterNewsletterEnum]
 > = [
-  [['Physical'], ContactFilterNewsletterEnum.PhysicalOnly],
-  [['Email'], ContactFilterNewsletterEnum.EmailOnly],
-  [['Both'], ContactFilterNewsletterEnum.Both],
-  [['None'], ContactFilterNewsletterEnum.None],
-  [['Physical', 'Both'], ContactFilterNewsletterEnum.Physical],
-  [['Email', 'Both'], ContactFilterNewsletterEnum.Email],
-  [['Physical', 'Email', 'Both'], ContactFilterNewsletterEnum.All],
+  [['PHYSICAL'], ContactFilterNewsletterEnum.PhysicalOnly],
+  [['EMAIL'], ContactFilterNewsletterEnum.EmailOnly],
+  [['BOTH'], ContactFilterNewsletterEnum.Both],
+  [['NONE'], ContactFilterNewsletterEnum.None],
+  [['PHYSICAL', 'BOTH'], ContactFilterNewsletterEnum.Physical],
+  [['EMAIL', 'BOTH'], ContactFilterNewsletterEnum.Email],
+  [['PHYSICAL', 'EMAIL', 'BOTH'], ContactFilterNewsletterEnum.All],
 ];
 
 export const getNewsletterFilterValue = (

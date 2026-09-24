@@ -78,24 +78,30 @@ describe('buildContactsListHref', () => {
   });
 
   it.each([
-    [['Physical'], 'PHYSICAL_ONLY'],
-    [['Email'], 'EMAIL_ONLY'],
-    [['Both'], 'BOTH'],
-    [['None'], 'NONE'],
-    [['Both', 'Physical'], 'PHYSICAL'],
-    [['Email', 'Both'], 'EMAIL'],
-    [['Physical', 'Email', 'Both'], 'ALL'],
+    [['PHYSICAL'], 'PHYSICAL_ONLY'],
+    [['EMAIL'], 'EMAIL_ONLY'],
+    [['BOTH'], 'BOTH'],
+    [['NONE'], 'NONE'],
+    [['BOTH', 'PHYSICAL'], 'PHYSICAL'],
+    [['EMAIL', 'BOTH'], 'EMAIL'],
+    [['PHYSICAL', 'EMAIL', 'BOTH'], 'ALL'],
+    [['PHYSICAL', 'PHYSICAL'], 'PHYSICAL_ONLY'],
   ])('maps newsletter %j to %s', (values, newsletter) => {
     expect(filtersOf(build({ preset: 'newsletter_in', values }))).toEqual({
       newsletter,
     });
   });
 
-  it('returns null for a newsletter set the filter cannot express', () => {
-    expect(
-      build({ preset: 'newsletter_in', values: ['Physical', 'Email'] }),
-    ).toBeNull();
-  });
+  it.each([
+    [['PHYSICAL', 'EMAIL']],
+    [['NONE', 'PHYSICAL']],
+    [['PHYSICAL', 'EMAIL', 'BOTH', 'NONE']],
+  ])(
+    'returns null for newsletter %j, which the filter cannot express',
+    (values) => {
+      expect(build({ preset: 'newsletter_in', values })).toBeNull();
+    },
+  );
 
   it('maps pledge frequency labels to the filter values', () => {
     expect(
@@ -192,7 +198,8 @@ describe('buildContactsListHref', () => {
       'an unknown frequency',
       { preset: 'pledge_frequency_in', values: ['Daily'] },
     ],
-    ['an unknown newsletter', { preset: 'newsletter_in', values: ['Fax'] }],
+    ['an unknown newsletter', { preset: 'newsletter_in', values: ['FAX'] }],
+    ['a newsletter label', { preset: 'newsletter_in', values: ['Physical'] }],
   ])('returns null for %s', (_, preset) => {
     expect(build(preset)).toBeNull();
   });
