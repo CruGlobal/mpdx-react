@@ -59,6 +59,8 @@ const TestComponent: React.FC<TestComponentProps> = ({ settings = {} }) => (
 
 const launcherName = { name: 'Open Assistant' };
 
+const activeElement = () => document.activeElement as HTMLElement;
+
 // Lets the settings query resolve before asserting that nothing rendered
 const settle = () => new Promise((resolve) => setTimeout(resolve, 50));
 
@@ -106,6 +108,64 @@ describe('AssistantLauncher', () => {
     expect(
       await findByRole('dialog', { name: 'Assistant' }),
     ).toBeInTheDocument();
+  });
+
+  it('moves focus into the drawer and back to the launcher when Escape closes it', async () => {
+    const { findByRole, getByRole, queryByRole } = render(
+      <TestComponent settings={{ enabled: true }} />,
+    );
+    const launcher = await findByRole('button', launcherName);
+
+    userEvent.click(launcher);
+    const drawer = getByRole('dialog', { name: 'Assistant' });
+    await waitFor(() => expect(drawer).toContainElement(activeElement()));
+
+    userEvent.keyboard('{esc}');
+    await waitFor(() =>
+      expect(
+        queryByRole('dialog', { name: 'Assistant' }),
+      ).not.toBeInTheDocument(),
+    );
+    expect(launcher).toHaveFocus();
+  });
+
+  it('keeps Tab focus inside the open drawer', async () => {
+    const { findByRole, getByRole } = render(
+      <TestComponent settings={{ enabled: true }} />,
+    );
+
+    userEvent.click(await findByRole('button', launcherName));
+    const drawer = getByRole('dialog', { name: 'Assistant' });
+    for (let press = 0; press < 4; press++) {
+      userEvent.tab();
+      await waitFor(() => expect(drawer).toContainElement(activeElement()));
+    }
+    for (let press = 0; press < 4; press++) {
+      userEvent.tab({ shift: true });
+      await waitFor(() => expect(drawer).toContainElement(activeElement()));
+    }
+  });
+
+  it('returns focus to the launcher after the first-run dialog opens the drawer', async () => {
+    const { findByRole, getByRole, queryByRole } = render(<TestComponent />);
+    const launcher = await findByRole('button', launcherName);
+
+    userEvent.click(launcher);
+    userEvent.click(await findByRole('button', { name: 'Turn it on' }));
+    await findByRole('dialog', { name: 'Assistant' });
+    await waitFor(() =>
+      expect(
+        queryByRole('dialog', { name: 'Meet the Assistant' }),
+      ).not.toBeInTheDocument(),
+    );
+
+    userEvent.click(getByRole('button', { name: 'Close Assistant' }));
+    await waitFor(() =>
+      expect(
+        queryByRole('dialog', { name: 'Assistant' }),
+      ).not.toBeInTheDocument(),
+    );
+    expect(launcher).toHaveFocus();
   });
 
   it('is hidden when the user hid the launcher', async () => {

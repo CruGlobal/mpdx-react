@@ -5,10 +5,12 @@ import { visuallyHidden } from '@mui/utils';
 import { useTranslation } from 'react-i18next';
 import { AssistantErrorBoundary } from './AssistantErrorBoundary';
 import { AssistantMarkdown } from './AssistantMarkdown';
+import { ReplyAnnouncer } from './ReplyAnnouncer';
 import { MessageCard } from './cards/MessageCard';
 import { NavigationVisibilityProvider } from './navigation/NavigationVisibilityContext';
 import { toSafeHttpUrl } from './safeUrl';
-import { AssistantErrorReason, AssistantMessage, MessageRole } from './types';
+import { AssistantMessage, MessageRole } from './types';
+import { useErrorText } from './useErrorText';
 
 const List = styled('ul')({
   listStyle: 'none',
@@ -23,7 +25,7 @@ const EmptyState = styled(Box)({
   height: '100%',
 });
 
-const Item = styled('li', {
+const Item = styled('div', {
   shouldForwardProp: (prop) => prop !== 'sender',
 })<{ sender: MessageRole }>(({ theme, sender }) => ({
   display: 'flex',
@@ -40,6 +42,8 @@ const Bubble = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'sender',
 })<{ sender: MessageRole }>(({ theme, sender }) => ({
   maxWidth: '90%',
+  minWidth: 0,
+  overflowWrap: 'anywhere',
   padding: theme.spacing(1, 1.5),
   borderRadius: theme.spacing(2),
   ...(sender === 'user'
@@ -56,20 +60,6 @@ const Bubble = styled(Box, {
 interface MessageItemProps {
   message: AssistantMessage;
 }
-
-const useErrorText = (reason: AssistantErrorReason | undefined): string => {
-  const { t } = useTranslation();
-  switch (reason) {
-    case 'unavailable':
-      return t(
-        'The assistant is busy right now. Please try again in a moment.',
-      );
-    case 'rateLimited':
-      return t('Please wait a moment before sending another message.');
-    default:
-      return t('Sorry, something went wrong. Please try again.');
-  }
-};
 
 const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
   const { t } = useTranslation();
@@ -109,7 +99,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
         )}
         {working && (
           <Stack direction="row" spacing={1} alignItems="center" mt={1}>
-            <CircularProgress size={14} />
+            <CircularProgress size={14} aria-hidden />
             <Typography variant="caption" color="text.secondary">
               {t('Working')}
             </Typography>
@@ -178,24 +168,28 @@ export const MessageList: React.FC<MessageListProps> = ({
     endRef.current?.scrollIntoView({ block: 'end' });
   }, [messages]);
 
-  // The log stays mounted while empty so screen readers announce the first reply
   return (
     <>
-      <List
+      <Box
         role="log"
-        aria-live="polite"
+        aria-live="off"
         aria-busy={streaming}
         aria-label={t('Conversation')}
       >
-        <NavigationVisibilityProvider enabled={hasNavigationCard}>
-          {messages.map((message) => (
-            <AssistantErrorBoundary key={message.id}>
-              <MessageItem message={message} />
-            </AssistantErrorBoundary>
-          ))}
-        </NavigationVisibilityProvider>
+        <List>
+          <NavigationVisibilityProvider enabled={hasNavigationCard}>
+            {messages.map((message) => (
+              <li key={message.id}>
+                <AssistantErrorBoundary>
+                  <MessageItem message={message} />
+                </AssistantErrorBoundary>
+              </li>
+            ))}
+          </NavigationVisibilityProvider>
+        </List>
         <div ref={endRef} />
-      </List>
+      </Box>
+      <ReplyAnnouncer messages={messages} />
       {messages.length === 0 && (
         <EmptyState>
           <Typography color="text.secondary" align="center">

@@ -18,6 +18,7 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { visuallyHidden } from '@mui/utils';
 import { useSession } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
 import { buildHelpjuiceContactUrl } from 'src/components/Helpjuice/contactUrl';
@@ -30,11 +31,13 @@ import { useCurrentPageUrl } from './useCurrentPageUrl';
 
 const MessageArea = styled(Box)(({ theme }) => ({
   flexGrow: 1,
+  minHeight: 0,
   overflowY: 'auto',
   padding: theme.spacing(2),
 }));
 
 const Footer = styled(Box)(({ theme }) => ({
+  flexShrink: 0,
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(1),
@@ -152,13 +155,17 @@ export const AssistantChat: React.FC = () => {
     (tokenState.status === 'refusing' || tokenState.status === 'failed');
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const wasStreaming = useRef(streaming);
+  const [buttonAnnouncement, setButtonAnnouncement] = useState('');
 
   useEffect(() => {
     if (wasStreaming.current && !streaming) {
       inputRef.current?.focus();
+      setButtonAnnouncement(t('The Stop button is now a Send button.'));
+    } else if (!wasStreaming.current && streaming) {
+      setButtonAnnouncement(t('The Send button is now a Stop button.'));
     }
     wasStreaming.current = streaming;
-  }, [streaming]);
+  }, [streaming, t]);
 
   const handleSubmit = (event?: FormEvent) => {
     event?.preventDefault();
@@ -254,6 +261,14 @@ export const AssistantChat: React.FC = () => {
           </Typography>
         )}
         <HelpDeskLink />
+        <div
+          aria-live="polite"
+          aria-atomic="true"
+          style={visuallyHidden}
+          data-testid="ComposerAnnouncer"
+        >
+          {buttonAnnouncement}
+        </div>
       </Footer>
     </>
   );

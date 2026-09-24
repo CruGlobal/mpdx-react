@@ -21,6 +21,7 @@ export interface AssistantContextValue extends AssistantState {
   open: boolean;
   openAssistant: () => void;
   closeAssistant: () => void;
+  launcherRef: React.RefObject<HTMLButtonElement>;
   streaming: boolean;
   dispatch: React.Dispatch<AssistantAction>;
   beginStream: (controller: AbortController) => void;
@@ -51,6 +52,7 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
   const [open, setOpen] = useState(false);
   const openAssistant = useCallback(() => setOpen(true), []);
   const closeAssistant = useCallback(() => setOpen(false), []);
+  const launcherRef = useRef<HTMLButtonElement>(null);
 
   const [state, dispatch] = useReducer(assistantReducer, initialAssistantState);
   const [streaming, setStreaming] = useState(false);
@@ -81,6 +83,7 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
       open,
       openAssistant,
       closeAssistant,
+      launcherRef,
       streaming,
       dispatch,
       beginStream,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, within } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import { MessageList } from './MessageList';
 import { DEFAULT_VISIBILITY } from './navigation/intents';
@@ -200,6 +200,277 @@ describe('MessageList', () => {
 
     expect(getByText('Partial')).toBeInTheDocument();
     expect(queryByText('Stopped.')).not.toBeInTheDocument();
+  });
+
+  describe('reply announcer', () => {
+    const announcer = (getByTestId: ReturnType<typeof render>['getByTestId']) =>
+      getByTestId('ReplyAnnouncer');
+
+    it('keeps the transcript itself quiet so replies are not reread', () => {
+      const { getByRole } = render(
+        <MessageList messages={[]} streaming={false} />,
+      );
+
+      expect(getByRole('log', { name: 'Conversation' })).toHaveAttribute(
+        'aria-live',
+        'off',
+      );
+    });
+
+    it('does not announce a reply that was already on screen', () => {
+      const { getByTestId } = render(
+        <MessageList
+          messages={[message({ content: 'An earlier answer.' })]}
+          streaming={false}
+        />,
+      );
+
+      expect(announcer(getByTestId)).toHaveAttribute('aria-live', 'polite');
+      expect(announcer(getByTestId)).toBeEmptyDOMElement();
+    });
+
+    it('announces finished sentences and then the rest when the reply completes', () => {
+      const streamingReply = (content: string) =>
+        message({ id: 'reply', status: 'streaming', content });
+      const { getByTestId, rerender } = render(
+        <MessageList messages={[]} streaming />,
+      );
+
+      rerender(
+        <MessageList
+          messages={[streamingReply('You have **12** contacts. The')]}
+          streaming
+        />,
+      );
+      expect(announcer(getByTestId)).toHaveTextContent(
+        /^You have 12 contacts\.$/,
+      );
+
+      rerender(
+        <MessageList
+          messages={[streamingReply('You have **12** contacts. The biggest')]}
+          streaming
+        />,
+      );
+      expect(announcer(getByTestId)).toHaveTextContent(
+        /^You have 12 contacts\.$/,
+      );
+
+      rerender(
+        <MessageList
+          messages={[
+            message({
+              id: 'reply',
+              content: 'You have **12** contacts. The biggest gift was $50',
+            }),
+          ]}
+          streaming={false}
+        />,
+      );
+      expect(announcer(getByTestId)).toHaveTextContent(
+        /^The biggest gift was \$50$/,
+      );
+    });
+
+    it('announces the error line when a reply fails', () => {
+      const { getByTestId, rerender } = render(
+        <MessageList
+          messages={[message({ id: 'reply', status: 'streaming' })]}
+          streaming
+        />,
+      );
+
+      rerender(
+        <MessageList
+          messages={[
+            message({
+              id: 'reply',
+              status: 'error',
+              errorReason: 'unavailable',
+            }),
+          ]}
+          streaming={false}
+        />,
+      );
+      expect(announcer(getByTestId)).toHaveTextContent(
+        'The assistant is busy right now. Please try again in a moment.',
+      );
+    });
+
+    it('announces a reply stopped before any text', () => {
+      const { getByTestId, rerender } = render(
+        <MessageList
+          messages={[message({ id: 'reply', status: 'streaming' })]}
+          streaming
+        />,
+      );
+
+      rerender(
+        <MessageList
+          messages={[message({ id: 'reply', status: 'stopped' })]}
+          streaming={false}
+        />,
+      );
+      expect(announcer(getByTestId)).toHaveTextContent('Stopped.');
+    });
+
+    const streamThen = (chunks: string[]) => {
+      const { getByTestId, rerender } = render(
+        <TestRouter>
+          <MessageList messages={[]} streaming />
+        </TestRouter>,
+      );
+      return chunks.map((content) => {
+        rerender(
+          <TestRouter>
+            <MessageList
+              messages={[
+                message({ id: 'reply', status: 'streaming', content }),
+              ]}
+              streaming
+            />
+          </TestRouter>,
+        );
+        return announcer(getByTestId).textContent;
+      });
+    };
+
+    it.each([
+      [
+        'a navigation card',
+        {
+          kind: 'navigation',
+          intent: { type: 'dashboard', params: {} },
+          label: 'Open the Dashboard',
+        },
+        'The assistant added a card. Open the Dashboard',
+      ],
+      [
+        'a hand-off card',
+        {
+          kind: 'handoff',
+          summary: 'The user cannot find their gifts.',
+          contact_form: {
+            name: 'First Last',
+            email: 'first.last@cru.org',
+            url: 'https://help.test/contact',
+          },
+        },
+        'The assistant added a card. Summary for the help desk',
+      ],
+      [
+        'a card without a title',
+        { kind: 'figures', items: [{ label: 'Gifts', value: 3 }] },
+        'The assistant added a card.',
+      ],
+    ] as Array<[string, AssistantCard, string]>)(
+      'announces a reply that is only %s',
+      (_, card, text) => {
+        const { getByTestId, rerender } = render(
+          <TestRouter>
+            <MessageList
+              messages={[message({ id: 'reply', status: 'streaming' })]}
+              streaming
+            />
+          </TestRouter>,
+        );
+
+        rerender(
+          <TestRouter>
+            <MessageList
+              messages={[message({ id: 'reply', cards: [card] })]}
+              streaming={false}
+            />
+          </TestRouter>,
+        );
+        expect(announcer(getByTestId).textContent).toBe(text);
+      },
+    );
+
+    it('starts at the last sentence end when mounted mid-reply', () => {
+      const streamingReply = (content: string) => [
+        message({ id: 'reply', status: 'streaming', content }),
+      ];
+      const { getByTestId, rerender } = render(
+        <MessageList
+          messages={streamingReply('First one. Second is')}
+          streaming
+        />,
+      );
+      expect(announcer(getByTestId)).toBeEmptyDOMElement();
+
+      rerender(
+        <MessageList
+          messages={streamingReply('First one. Second is done. Third')}
+          streaming
+        />,
+      );
+      expect(announcer(getByTestId).textContent).toBe('Second is done.');
+    });
+
+    it.each([
+      [
+        'list markers',
+        ['1. Open Contacts', '1. Open Contacts\n2. Pick'],
+        ['', '1. Open Contacts'],
+      ],
+      [
+        'abbreviations',
+        [
+          'Use a filter, e.g. the status',
+          'Use a filter, e.g. the status filter. Then',
+        ],
+        ['', 'Use a filter, e.g. the status filter.'],
+      ],
+      [
+        'an open link bracket',
+        [
+          'Read [the guide. It helps',
+          'Read [the guide. It helps](https://help.test/guide) a lot. Then',
+        ],
+        ['', 'Read the guide. It helps a lot.'],
+      ],
+    ])('does not end a sentence at %s', (_, chunks, spoken) => {
+      expect(streamThen(chunks)).toEqual(spoken);
+    });
+  });
+
+  it('keeps only list items directly inside the transcript list, even for a broken reply', () => {
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const { getByRole } = render(
+      <MessageList
+        messages={[
+          message({ id: '1', role: 'user', content: 'Hi' }),
+          message({ id: '2', cards: [null as unknown as AssistantCard] }),
+          message({ id: '3', role: 'system', content: 'Started over.' }),
+        ]}
+        streaming={false}
+      />,
+    );
+
+    const list = within(
+      getByRole('log', { name: 'Conversation' }),
+    ).getAllByRole('list')[0];
+    expect([...list.children].map((child) => child.tagName)).toEqual([
+      'LI',
+      'LI',
+      'LI',
+    ]);
+    errorSpy.mockRestore();
+  });
+
+  it('hides the working spinner from screen readers because the Working label already says it', () => {
+    const { getByText, queryByRole } = render(
+      <MessageList
+        messages={[
+          message({ status: 'streaming', content: 'Hi', working: true }),
+        ]}
+        streaming
+      />,
+    );
+
+    expect(getByText('Working')).toBeInTheDocument();
+    expect(queryByRole('progressbar')).not.toBeInTheDocument();
   });
 
   it('shows a fallback for a reply that fails to render and keeps the rest', () => {
