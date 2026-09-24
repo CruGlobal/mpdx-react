@@ -339,6 +339,20 @@ describe('MessageList', () => {
     errorSpy.mockRestore();
   });
 
+  it('hides the working spinner from screen readers because the Working label already says it', () => {
+    const { getByText, queryByRole } = render(
+      <MessageList
+        messages={[
+          message({ status: 'streaming', content: 'Hi', working: true }),
+        ]}
+        streaming
+      />,
+    );
+
+    expect(getByText('Working')).toBeInTheDocument();
+    expect(queryByRole('progressbar')).not.toBeInTheDocument();
+  });
+
   it('shows a fallback for a reply that fails to render and keeps the rest', () => {
     const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     const { getByText } = render(

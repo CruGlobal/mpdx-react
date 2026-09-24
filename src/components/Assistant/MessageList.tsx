@@ -97,7 +97,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
         )}
         {working && (
           <Stack direction="row" spacing={1} alignItems="center" mt={1}>
-            <CircularProgress size={14} />
+            <CircularProgress size={14} aria-hidden />
             <Typography variant="caption" color="text.secondary">
               {t('Working')}
             </Typography>
