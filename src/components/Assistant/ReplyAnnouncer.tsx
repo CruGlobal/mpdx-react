@@ -4,12 +4,40 @@ import { TFunction, useTranslation } from 'react-i18next';
 import { AssistantCard, AssistantMessage } from './types';
 import { useErrorText } from './useErrorText';
 
-const sentenceEnd = /[.!?:](?=\s)|\n/g;
+const listMarker = /^[ \t]*\d+\.$/;
+const abbreviation = /(?:^|[\s(])(?:e\.g|i\.e|vs|mr|mrs|ms|dr)\.$/i;
 
+// Scans from the start each time so link brackets opened in earlier chunks are still tracked
 const lastSentenceEnd = (text: string, from: number): number => {
   let end = from;
-  for (const match of text.slice(from).matchAll(sentenceEnd)) {
-    end = from + match.index + match[0].length;
+  let lineStart = 0;
+  let inLinkText = false;
+  let inLinkUrl = false;
+
+  for (let index = 0; index < text.length; index++) {
+    const char = text[index];
+    if (inLinkUrl) {
+      inLinkUrl = char !== ')';
+    } else if (char === '[') {
+      inLinkText = true;
+    } else if (inLinkText) {
+      if (char === ']') {
+        inLinkText = false;
+        inLinkUrl = text[index + 1] === '(';
+      }
+    } else if (char === '\n') {
+      lineStart = index + 1;
+      end = Math.max(end, index + 1);
+    } else if (
+      /[.!?:]/.test(char) &&
+      /\s/.test(text[index + 1] ?? '') &&
+      index >= from
+    ) {
+      const line = text.slice(lineStart, index + 1);
+      if (!listMarker.test(line) && !abbreviation.test(line)) {
+        end = index + 1;
+      }
+    }
   }
   return end;
 };

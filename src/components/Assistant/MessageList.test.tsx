@@ -314,6 +314,27 @@ describe('MessageList', () => {
       expect(announcer(getByTestId)).toHaveTextContent('Stopped.');
     });
 
+    const streamThen = (chunks: string[]) => {
+      const { getByTestId, rerender } = render(
+        <TestRouter>
+          <MessageList messages={[]} streaming />
+        </TestRouter>,
+      );
+      return chunks.map((content) => {
+        rerender(
+          <TestRouter>
+            <MessageList
+              messages={[
+                message({ id: 'reply', status: 'streaming', content }),
+              ]}
+              streaming
+            />
+          </TestRouter>,
+        );
+        return announcer(getByTestId).textContent;
+      });
+    };
+
     it.each([
       [
         'a navigation card',
@@ -387,6 +408,31 @@ describe('MessageList', () => {
       expect(announcer(getByTestId).textContent).toBe('Second is done.');
     });
 
+    it.each([
+      [
+        'list markers',
+        ['1. Open Contacts', '1. Open Contacts\n2. Pick'],
+        ['', '1. Open Contacts'],
+      ],
+      [
+        'abbreviations',
+        [
+          'Use a filter, e.g. the status',
+          'Use a filter, e.g. the status filter. Then',
+        ],
+        ['', 'Use a filter, e.g. the status filter.'],
+      ],
+      [
+        'an open link bracket',
+        [
+          'Read [the guide. It helps',
+          'Read [the guide. It helps](https://help.test/guide) a lot. Then',
+        ],
+        ['', 'Read the guide. It helps a lot.'],
+      ],
+    ])('does not end a sentence at %s', (_, chunks, spoken) => {
+      expect(streamThen(chunks)).toEqual(spoken);
+    });
   });
 
   it('keeps only list items directly inside the transcript list, even for a broken reply', () => {
