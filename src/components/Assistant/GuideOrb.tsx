@@ -12,13 +12,19 @@ const orbBackground = [
 
 const orbGlow = '0 0 14px 3px rgba(0, 192, 216, 0.45)';
 
-const pulse = keyframes({
-  '0%, 100%': { boxShadow: `${orbGlow}, 0 4px 12px rgba(0, 0, 0, 0.25)` },
-  '50%': {
-    boxShadow:
-      '0 0 22px 7px rgba(0, 192, 216, 0.6), 0 4px 12px rgba(0, 0, 0, 0.25)',
-  },
+const breathe = keyframes({
+  '0%, 100%': { transform: 'scale(1)', filter: 'brightness(1)' },
+  '50%': { transform: 'scale(1.04)', filter: 'brightness(1.12)' },
 });
+
+// Only an open Guide moves, so a closed launcher never pulls the eye
+const breathing = {
+  '@media (prefers-reduced-motion: no-preference)': {
+    '&[data-animating="true"]': {
+      animation: `${breathe} 3s ease-in-out infinite`,
+    },
+  },
+};
 
 export const GuideOrb = styled('span', {
   shouldForwardProp: (prop) => prop !== 'size',
@@ -30,6 +36,7 @@ export const GuideOrb = styled('span', {
   borderRadius: '50%',
   background: orbBackground,
   boxShadow: orbGlow,
+  ...breathing,
 }));
 
 export const orbButtonStyles = {
@@ -38,7 +45,5 @@ export const orbButtonStyles = {
   borderRadius: '50%',
   background: orbBackground,
   boxShadow: `${orbGlow}, 0 4px 12px rgba(0, 0, 0, 0.25)`,
-  '@media (prefers-reduced-motion: no-preference)': {
-    animation: `${pulse} 3s ease-in-out infinite`,
-  },
+  ...breathing,
 };

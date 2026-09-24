@@ -4,6 +4,7 @@ import { ButtonBase, IconButton, Paper, useMediaQuery } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { getAppName } from 'src/lib/getAppName';
+import { useAssistantContext } from './AssistantProvider';
 import { orbButtonStyles, orbInset, orbSize } from './GuideOrb';
 import { useHelpjuiceBeaconStyle } from './helpjuiceBeacon';
 import { useAssistantLaunch } from './useAssistantLaunch';
@@ -69,6 +70,7 @@ export const AssistantOrb: React.FC = () => {
   const theme = useTheme();
   const phone = useMediaQuery(theme.breakpoints.down('sm'));
   const { launcher, launch, firstRunDialog } = useAssistantLaunch();
+  const { open } = useAssistantContext();
   const orbRef = useRef<HTMLButtonElement>(null);
   const visible = launcher !== 'hidden';
   const nudge = useGuideNudge(visible && !phone);
@@ -104,6 +106,7 @@ export const AssistantOrb: React.FC = () => {
       )}
       <OrbButton
         ref={orbRef}
+        data-animating={open || undefined}
         centerRipple
         aria-label={t('Open {{appName}} Guide', { appName })}
         onClick={openGuide}

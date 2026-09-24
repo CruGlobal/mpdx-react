@@ -123,6 +123,35 @@ describe('AssistantOrb', () => {
     expect(orb).toHaveFocus();
   });
 
+  it('keeps the orbs still while closed and breathes gently only while open', async () => {
+    const { findAllByRole, getByRole, queryByRole } = render(
+      <TestComponent settings={{ enabled: true }} />,
+    );
+    const orb = await findOrb(findAllByRole);
+    expect(orb).not.toHaveAttribute('data-animating');
+    expect(getComputedStyle(orb).animationName).toBe('');
+
+    userEvent.click(orb);
+    const dialog = getByRole('dialog', { name: 'MPDX Guide' });
+    expect(orb).toHaveAttribute('data-animating', 'true');
+    expect(dialog.querySelector('[data-animating="true"]')).toBeInTheDocument();
+    // The motion lives only behind the reduced motion guard
+    const css = [...document.querySelectorAll('style')]
+      .map((style) => style.textContent)
+      .join('');
+    expect(css).toMatch(
+      /@media \(prefers-reduced-motion: no-preference\)\{[^{}]*\[data-animating="true"\]\{[^}]*animation:[^;]* 3s /,
+    );
+
+    userEvent.keyboard('{esc}');
+    await waitFor(() =>
+      expect(
+        queryByRole('dialog', { name: 'MPDX Guide' }),
+      ).not.toBeInTheDocument(),
+    );
+    expect(orb).not.toHaveAttribute('data-animating');
+  });
+
   it('opens the first-run explanation before opt-in', async () => {
     const { findAllByRole, findByRole } = render(<TestComponent />);
 
