@@ -132,6 +132,16 @@ describe('assistantReducer', () => {
     });
   });
 
+  it('removes only the matching message', () => {
+    const next = assistantReducer(state, {
+      type: 'removeMessage',
+      id: 'reply-1',
+    });
+
+    expect(next.messages).toEqual([other]);
+    expect(next.conversation).toBe(state.conversation);
+  });
+
   it('sets the conversation', () => {
     const conversation = { id: 'conversation-2', accountListId: 'list-2' };
     const next = assistantReducer(state, {
