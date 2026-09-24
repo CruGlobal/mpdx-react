@@ -29,6 +29,15 @@ describe('deleteAssistantConversations', () => {
     );
   });
 
+  it('throws without calling the app host when the assistant URL is not set', async () => {
+    process.env.ASSISTANT_URL = '';
+
+    await expect(deleteAssistantConversations('token-1')).rejects.toThrow(
+      'The assistant URL is not set',
+    );
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
   it('throws when the service refuses', async () => {
     fetchSpy.mockResolvedValueOnce(
       mockJsonResponse({}, { ok: false, status: 401 }),

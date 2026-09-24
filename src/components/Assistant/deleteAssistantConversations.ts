@@ -7,6 +7,9 @@ export const deleteAssistantConversations = async (
   token: string,
 ): Promise<DeletedConversationCounts> => {
   const assistantUrl = process.env.ASSISTANT_URL?.replace(/\/+$/, '');
+  if (!assistantUrl) {
+    throw new Error('The assistant URL is not set');
+  }
   const response = await fetch(`${assistantUrl}/conversations`, {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${token}` },
