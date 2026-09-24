@@ -1,16 +1,17 @@
 import { ContactFilterNewsletterEnum } from 'src/graphql/types.generated';
 import { NewsletterValue, PledgeFrequency } from './intents';
 
+// The contact filter takes the frequency as a number of months, the key in mpdx-assistant knowledge/labels/en.json
 export const PLEDGE_FREQUENCY_FILTER_VALUES: Record<PledgeFrequency, string> = {
-  Weekly: '0.23076923076923',
-  'Every 2 Weeks': '0.46153846153846',
-  Monthly: '1.0',
-  'Every 2 Months': '2.0',
-  Quarterly: '3.0',
-  'Every 4 Months': '4.0',
-  'Every 6 Months': '6.0',
-  Annual: '12.0',
-  'Every 2 Years': '24.0',
+  WEEKLY: '0.23076923076923',
+  EVERY_2_WEEKS: '0.46153846153846',
+  MONTHLY: '1.0',
+  EVERY_2_MONTHS: '2.0',
+  QUARTERLY: '3.0',
+  EVERY_4_MONTHS: '4.0',
+  EVERY_6_MONTHS: '6.0',
+  ANNUAL: '12.0',
+  EVERY_2_YEARS: '24.0',
 };
 
 // The filter takes one option and its PHYSICAL means physical or both, so only these sets can be expressed

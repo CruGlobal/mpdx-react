@@ -51,15 +51,15 @@ export const NEWSLETTER_VALUES = ['PHYSICAL', 'EMAIL', 'BOTH', 'NONE'] as const;
 export type NewsletterValue = (typeof NEWSLETTER_VALUES)[number];
 
 export const PLEDGE_FREQUENCIES = [
-  'Weekly',
-  'Every 2 Weeks',
-  'Monthly',
-  'Every 2 Months',
-  'Quarterly',
-  'Every 4 Months',
-  'Every 6 Months',
-  'Annual',
-  'Every 2 Years',
+  'WEEKLY',
+  'EVERY_2_WEEKS',
+  'MONTHLY',
+  'EVERY_2_MONTHS',
+  'QUARTERLY',
+  'EVERY_4_MONTHS',
+  'EVERY_6_MONTHS',
+  'ANNUAL',
+  'EVERY_2_YEARS',
 ] as const;
 export type PledgeFrequency = (typeof PLEDGE_FREQUENCIES)[number];
 

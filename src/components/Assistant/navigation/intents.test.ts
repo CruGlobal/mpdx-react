@@ -2,6 +2,7 @@ import {
   FILTER_PRESETS,
   NAVIGATION_INTENT_TYPES,
   NEWSLETTER_VALUES,
+  PLEDGE_FREQUENCIES,
   STATUSES,
 } from './intents';
 
@@ -55,5 +56,19 @@ describe('navigation intent vocabulary', () => {
 
   it('has the four newsletter values as API enum values', () => {
     expect(NEWSLETTER_VALUES).toEqual(['PHYSICAL', 'EMAIL', 'BOTH', 'NONE']);
+  });
+
+  it('has the nine pledge frequencies as API enum values', () => {
+    expect(PLEDGE_FREQUENCIES).toEqual([
+      'WEEKLY',
+      'EVERY_2_WEEKS',
+      'MONTHLY',
+      'EVERY_2_MONTHS',
+      'QUARTERLY',
+      'EVERY_4_MONTHS',
+      'EVERY_6_MONTHS',
+      'ANNUAL',
+      'EVERY_2_YEARS',
+    ]);
   });
 });

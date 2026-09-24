@@ -103,12 +103,12 @@ describe('buildContactsListHref', () => {
     },
   );
 
-  it('maps pledge frequency labels to the filter values', () => {
+  it('maps pledge frequencies to the filter values', () => {
     expect(
       filtersOf(
         build({
           preset: 'pledge_frequency_in',
-          values: ['Monthly', 'Weekly', 'Monthly'],
+          values: ['MONTHLY', 'WEEKLY', 'MONTHLY'],
         }),
       ),
     ).toEqual({ pledgeFrequency: ['1.0', '0.23076923076923'] });
@@ -119,7 +119,7 @@ describe('buildContactsListHref', () => {
       filtersOf(
         build(
           { preset: 'late_by_90' },
-          { preset: 'pledge_frequency_in', values: ['Monthly'] },
+          { preset: 'pledge_frequency_in', values: ['MONTHLY'] },
         ),
       ),
     ).toEqual({
@@ -196,7 +196,11 @@ describe('buildContactsListHref', () => {
     ],
     [
       'an unknown frequency',
-      { preset: 'pledge_frequency_in', values: ['Daily'] },
+      { preset: 'pledge_frequency_in', values: ['DAILY'] },
+    ],
+    [
+      'a frequency label',
+      { preset: 'pledge_frequency_in', values: ['Monthly'] },
     ],
     ['an unknown newsletter', { preset: 'newsletter_in', values: ['FAX'] }],
     ['a newsletter label', { preset: 'newsletter_in', values: ['Physical'] }],
