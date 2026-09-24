@@ -9,6 +9,7 @@ import { GetDesignationAccountsQuery } from 'src/components/EditDonationModal/Ed
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
 import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
+import { ImpersonatorRole } from 'src/lib/impersonationAccess';
 import theme from 'src/theme';
 import { MultiPageMenu, NavTypeEnum } from './MultiPageMenu';
 import { ManageOrganizationsAccessQuery } from './MultiPageMenu.generated';
@@ -505,6 +506,184 @@ describe('MultiPageMenu', () => {
     await waitFor(() => {
       expect(getByText('Manage Organizations')).toBeInTheDocument();
       expect(getByText('Admin Console')).toBeInTheDocument();
+    });
+  });
+
+  describe('Settings while impersonating', () => {
+    afterEach(() => {
+      // mockSession replaces the useSession implementation, so restore the default session for later tests
+      mockSession({});
+    });
+
+    const renderSettingsMenu = (
+      organizationsAccessMock: ManageOrganizationsAccessQuery,
+    ) =>
+      render(
+        <ThemeProvider theme={theme}>
+          <TestRouter router={router}>
+            <GqlMockedProvider<{
+              ManageOrganizationsAccess: ManageOrganizationsAccessQuery;
+            }>
+              mocks={{
+                ManageOrganizationsAccess: organizationsAccessMock,
+              }}
+            >
+              <MultiPageMenu
+                selectedId={selected}
+                isOpen={true}
+                onClose={() => {}}
+                designationAccounts={[]}
+                setDesignationAccounts={jest.fn()}
+                navType={NavTypeEnum.Settings}
+              />
+            </GqlMockedProvider>
+          </TestRouter>
+        </ThemeProvider>,
+      );
+
+    it('hides the admin entries but keeps the basic settings for a helpdesk_admin impersonator', async () => {
+      mockSession({
+        impersonating: true,
+        impersonatorRole: ImpersonatorRole.HelpdeskAdmin,
+        admin: true,
+        developer: true,
+      });
+
+      const { findByText, getByText, queryByText } = renderSettingsMenu(
+        hasOrganizationsAccessMock,
+      );
+
+      expect(await findByText('Preferences')).toBeInTheDocument();
+      expect(getByText('Notifications')).toBeInTheDocument();
+      expect(getByText('Connect Services')).toBeInTheDocument();
+      expect(getByText('Manage Accounts')).toBeInTheDocument();
+      expect(getByText('Manage Coaches')).toBeInTheDocument();
+      expect(queryByText('Admin Console')).not.toBeInTheDocument();
+      expect(queryByText('Manage Organizations')).not.toBeInTheDocument();
+      expect(queryByText('Backend Admin')).not.toBeInTheDocument();
+      expect(queryByText('Sidekiq')).not.toBeInTheDocument();
+    });
+
+    it.each([ImpersonatorRole.HrLeader, ImpersonatorRole.MpdLeader, undefined])(
+      'hides every settings entry for a %s impersonator',
+      async (role) => {
+        mockSession({
+          impersonating: true,
+          impersonatorRole: role,
+          admin: true,
+          developer: true,
+        });
+
+        const { queryByText, queryAllByRole } = renderSettingsMenu(
+          hasOrganizationsAccessMock,
+        );
+
+        await waitFor(() =>
+          expect(queryByText('Preferences')).not.toBeInTheDocument(),
+        );
+        expect(queryByText('Notifications')).not.toBeInTheDocument();
+        expect(queryByText('Admin Console')).not.toBeInTheDocument();
+        expect(queryByText('Manage Organizations')).not.toBeInTheDocument();
+        expect(queryByText('Backend Admin')).not.toBeInTheDocument();
+        expect(queryByText('Sidekiq')).not.toBeInTheDocument();
+        expect(queryAllByRole('link')).toHaveLength(0);
+      },
+    );
+
+    it('shows every settings entry for a developer impersonator', async () => {
+      mockSession({
+        impersonating: true,
+        impersonatorRole: ImpersonatorRole.Developer,
+        admin: true,
+        developer: true,
+      });
+
+      const { findByText, getByText } = renderSettingsMenu(
+        hasOrganizationsAccessMock,
+      );
+
+      expect(await findByText('Preferences')).toBeInTheDocument();
+      expect(getByText('Admin Console')).toBeInTheDocument();
+      expect(getByText('Manage Organizations')).toBeInTheDocument();
+      expect(getByText('Backend Admin')).toBeInTheDocument();
+      expect(getByText('Sidekiq')).toBeInTheDocument();
+    });
+
+    it('shows the Admin Console to a role holder who is not an admin when not impersonating', async () => {
+      mockSession({
+        impersonating: false,
+        impersonationRole: ImpersonatorRole.MpdLeader,
+        admin: false,
+        developer: false,
+      });
+
+      const { findByText, getByText, queryByText } = renderSettingsMenu(
+        noOrganizationsAccessMock,
+      );
+
+      expect(await findByText('Admin Console')).toBeInTheDocument();
+      expect(getByText('Preferences')).toBeInTheDocument();
+      expect(queryByText('Manage Organizations')).not.toBeInTheDocument();
+      expect(queryByText('Backend Admin')).not.toBeInTheDocument();
+      expect(queryByText('Sidekiq')).not.toBeInTheDocument();
+    });
+
+    it('hides the Admin Console from a plain user when not impersonating', async () => {
+      mockSession({
+        impersonating: false,
+        impersonationRole: null,
+        admin: false,
+        developer: false,
+      });
+
+      const { findByText, queryByText } = renderSettingsMenu(
+        noOrganizationsAccessMock,
+      );
+
+      expect(await findByText('Preferences')).toBeInTheDocument();
+      expect(queryByText('Admin Console')).not.toBeInTheDocument();
+    });
+
+    it('still shows the reports menu to an mpd_leader impersonator', async () => {
+      mockSession({
+        impersonating: true,
+        impersonatorRole: ImpersonatorRole.MpdLeader,
+        admin: false,
+        developer: false,
+      });
+
+      const { findByText, getByText } = render(
+        <ThemeProvider theme={theme}>
+          <TestRouter router={router}>
+            <GqlMockedProvider<{
+              GetUser: GetUserQuery;
+              UserOption: UserOptionQuery;
+            }>
+              mocks={{
+                GetUser: {
+                  user: { userType: UserTypeEnum.UsStaff },
+                },
+                UserOption: {
+                  userOption: {
+                    value: 'true',
+                  },
+                },
+              }}
+            >
+              <MultiPageMenu
+                selectedId={selected}
+                isOpen={true}
+                onClose={() => {}}
+                navType={NavTypeEnum.Reports}
+              />
+            </GqlMockedProvider>
+          </TestRouter>
+        </ThemeProvider>,
+      );
+
+      expect(await findByText('Donations')).toBeInTheDocument();
+      expect(getByText('14 Month Partner Report')).toBeInTheDocument();
+      expect(getByText('Coaching')).toBeInTheDocument();
     });
   });
 

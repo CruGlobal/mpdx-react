@@ -10,6 +10,8 @@ import TestWrapper from '__tests__/util/TestWrapper';
 import { mockSession } from '__tests__/util/mockSession';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import { TestSetupProvider } from 'src/components/Setup/SetupProvider';
+import { ImpersonationRoleEnum } from 'src/graphql/types.generated';
+import { ImpersonatorRole } from 'src/lib/impersonationAccess';
 import theme from '../../../../../../theme';
 import {
   getTopBarMock,
@@ -267,6 +269,108 @@ describe('ProfileMenu while Impersonating', () => {
     await waitFor(() =>
       expect(window.location.href).toEqual('/api/stop-impersonating'),
     );
+  });
+});
+describe('ProfileMenu by impersonator role', () => {
+  beforeEach(() => {
+    process.env.OAUTH_URL = 'https://auth.mpdx.org';
+  });
+
+  const openMenu = async (mocks?: MockedResponse[]) => {
+    const view = render(<TestComponent mocks={mocks} />);
+    expect(await view.findByText(/John Smith/)).toBeInTheDocument();
+    userEvent.click(view.getByTestId('profileMenuButton'));
+    return view;
+  };
+
+  it('hides the admin links but keeps the basic settings for a helpdesk_admin impersonator', async () => {
+    mockSession({
+      impersonating: true,
+      impersonatorRole: ImpersonatorRole.HelpdeskAdmin,
+    });
+
+    const { getByText, queryByText } = await openMenu();
+
+    expect(getByText('Preferences')).toBeInTheDocument();
+    expect(getByText('Notifications')).toBeInTheDocument();
+    expect(getByText('Connect Services')).toBeInTheDocument();
+    expect(getByText('Manage Accounts')).toBeInTheDocument();
+    expect(getByText('Manage Coaches')).toBeInTheDocument();
+    expect(queryByText('Manage Organizations')).not.toBeInTheDocument();
+    expect(queryByText('Admin Console')).not.toBeInTheDocument();
+    expect(queryByText('Backend Admin')).not.toBeInTheDocument();
+    expect(queryByText('Sidekiq')).not.toBeInTheDocument();
+  });
+
+  it.each([ImpersonatorRole.HrLeader, ImpersonatorRole.MpdLeader, undefined])(
+    'hides every settings link for a %s impersonator',
+    async (role) => {
+      mockSession({ impersonating: true, impersonatorRole: role });
+
+      const { getByText, queryByText } = await openMenu();
+
+      expect(queryByText('Preferences')).not.toBeInTheDocument();
+      expect(queryByText('Notifications')).not.toBeInTheDocument();
+      expect(queryByText('Connect Services')).not.toBeInTheDocument();
+      expect(queryByText('Manage Accounts')).not.toBeInTheDocument();
+      expect(queryByText('Manage Coaches')).not.toBeInTheDocument();
+      expect(queryByText('Manage Organizations')).not.toBeInTheDocument();
+      expect(queryByText('Admin Console')).not.toBeInTheDocument();
+      expect(queryByText('Backend Admin')).not.toBeInTheDocument();
+      expect(queryByText('Sidekiq')).not.toBeInTheDocument();
+      expect(getByText('Stop Impersonating')).toBeInTheDocument();
+    },
+  );
+
+  it('shows every link for a developer impersonator', async () => {
+    mockSession({
+      impersonating: true,
+      impersonatorRole: ImpersonatorRole.Developer,
+    });
+
+    const { getByText } = await openMenu();
+
+    expect(getByText('Preferences')).toBeInTheDocument();
+    expect(getByText('Manage Organizations')).toBeInTheDocument();
+    expect(getByText('Admin Console')).toBeInTheDocument();
+    expect(getByText('Backend Admin')).toBeInTheDocument();
+    expect(getByText('Sidekiq')).toBeInTheDocument();
+  });
+
+  it('shows the Admin Console to a role holder who is not an admin when not impersonating', async () => {
+    mockSession({ impersonating: false, admin: false, developer: false });
+
+    const { getByText, queryByText } = await openMenu([
+      getTopBarMock({
+        admin: false,
+        developer: false,
+        impersonationRole: ImpersonationRoleEnum.MpdLeader,
+        administrativeOrganizations: { nodes: [] },
+      }),
+    ]);
+
+    expect(getByText('Preferences')).toBeInTheDocument();
+    expect(getByText('Admin Console')).toBeInTheDocument();
+    expect(queryByText('Manage Organizations')).not.toBeInTheDocument();
+    expect(queryByText('Backend Admin')).not.toBeInTheDocument();
+    expect(queryByText('Sidekiq')).not.toBeInTheDocument();
+  });
+
+  it('hides the Admin Console from a plain user when not impersonating', async () => {
+    mockSession({ impersonating: false, admin: false, developer: false });
+
+    const { getByText, queryByText } = await openMenu([
+      getTopBarMock({
+        admin: false,
+        developer: false,
+        impersonationRole: null,
+        administrativeOrganizations: { nodes: [] },
+      }),
+    ]);
+
+    expect(getByText('Preferences')).toBeInTheDocument();
+    expect(queryByText('Admin Console')).not.toBeInTheDocument();
+    expect(queryByText('Manage Organizations')).not.toBeInTheDocument();
   });
 });
 //eslint-disable-next-line jest/no-commented-out-tests

@@ -1,11 +1,15 @@
 import React from 'react';
+import { MockedResponse } from '@apollo/client/testing';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { signOut } from 'next-auth/react';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
+import { mockSession } from '__tests__/util/mockSession';
 import { TestSetupProvider } from 'src/components/Setup/SetupProvider';
+import { ImpersonationRoleEnum } from 'src/graphql/types.generated';
+import { ImpersonatorRole } from 'src/lib/impersonationAccess';
 import theme from 'src/theme';
 import { getTopBarMock } from '../../../TopBar/TopBar.mock';
 import { ProfileMenuPanel } from './ProfileMenuPanel';
@@ -19,11 +23,15 @@ const router = {
 
 interface TestComponentProps {
   onSetupTour?: boolean;
+  mocks?: MockedResponse[];
 }
 
-const TestComponent: React.FC<TestComponentProps> = ({ onSetupTour }) => (
+const TestComponent: React.FC<TestComponentProps> = ({
+  onSetupTour,
+  mocks = [getTopBarMock()],
+}) => (
   <ThemeProvider theme={theme}>
-    <TestWrapper mocks={[getTopBarMock()]}>
+    <TestWrapper mocks={mocks}>
       <TestRouter router={router}>
         <TestSetupProvider onSetupTour={onSetupTour}>
           <ProfileMenuPanel />
@@ -97,5 +105,105 @@ describe('ProfileMenuPanelForNavBar', () => {
     userEvent.click(getByTestId('accountListButton-1'));
     expect(getByRole('button', { name: 'Sign Out' })).toBeInTheDocument();
     expect(queryByText('Preferences')).not.toBeInTheDocument();
+  });
+});
+
+describe('ProfileMenuPanel by impersonator role', () => {
+  beforeAll(() => {
+    process.env.OAUTH_URL = 'https://auth.mpdx.org';
+  });
+
+  it('hides the admin links but keeps Preferences for a helpdesk_admin impersonator', async () => {
+    mockSession({
+      impersonating: true,
+      impersonatorRole: ImpersonatorRole.HelpdeskAdmin,
+    });
+
+    const { findByTestId, getByText, queryByText } = render(<TestComponent />);
+
+    // The account list selector renders once the top bar data has arrived
+    expect(await findByTestId('accountListSelectorButton')).toBeInTheDocument();
+    expect(getByText('Preferences')).toBeInTheDocument();
+    expect(queryByText('Manage Organizations')).not.toBeInTheDocument();
+    expect(queryByText('Admin Console')).not.toBeInTheDocument();
+    expect(queryByText('Backend Admin')).not.toBeInTheDocument();
+    expect(queryByText('Sidekiq')).not.toBeInTheDocument();
+  });
+
+  it.each([ImpersonatorRole.HrLeader, ImpersonatorRole.MpdLeader, undefined])(
+    'hides every settings link for a %s impersonator',
+    async (role) => {
+      mockSession({ impersonating: true, impersonatorRole: role });
+
+      const { findByTestId, queryByText } = render(<TestComponent />);
+
+      expect(
+        await findByTestId('accountListSelectorButton'),
+      ).toBeInTheDocument();
+      expect(queryByText('Preferences')).not.toBeInTheDocument();
+      expect(queryByText('Manage Organizations')).not.toBeInTheDocument();
+      expect(queryByText('Admin Console')).not.toBeInTheDocument();
+      expect(queryByText('Backend Admin')).not.toBeInTheDocument();
+      expect(queryByText('Sidekiq')).not.toBeInTheDocument();
+    },
+  );
+
+  it('shows every link for a developer impersonator', async () => {
+    mockSession({
+      impersonating: true,
+      impersonatorRole: ImpersonatorRole.Developer,
+    });
+
+    const { findByText, getByText } = render(<TestComponent />);
+
+    expect(await findByText('Admin Console')).toBeInTheDocument();
+    expect(getByText('Preferences')).toBeInTheDocument();
+    expect(getByText('Manage Organizations')).toBeInTheDocument();
+    expect(getByText('Backend Admin')).toBeInTheDocument();
+    expect(getByText('Sidekiq')).toBeInTheDocument();
+  });
+
+  it('shows the Admin Console to a role holder who is not an admin when not impersonating', async () => {
+    mockSession({ impersonating: false, admin: false, developer: false });
+
+    const { findByText, getByText, queryByText } = render(
+      <TestComponent
+        mocks={[
+          getTopBarMock({
+            admin: false,
+            developer: false,
+            impersonationRole: ImpersonationRoleEnum.HrLeader,
+            administrativeOrganizations: { nodes: [] },
+          }),
+        ]}
+      />,
+    );
+
+    expect(await findByText('Admin Console')).toBeInTheDocument();
+    expect(getByText('Preferences')).toBeInTheDocument();
+    expect(queryByText('Manage Organizations')).not.toBeInTheDocument();
+    expect(queryByText('Backend Admin')).not.toBeInTheDocument();
+    expect(queryByText('Sidekiq')).not.toBeInTheDocument();
+  });
+
+  it('hides the Admin Console from a plain user when not impersonating', async () => {
+    mockSession({ impersonating: false, admin: false, developer: false });
+
+    const { findByText, queryByText } = render(
+      <TestComponent
+        mocks={[
+          getTopBarMock({
+            admin: false,
+            developer: false,
+            impersonationRole: null,
+            administrativeOrganizations: { nodes: [] },
+          }),
+        ]}
+      />,
+    );
+
+    expect(await findByText('Preferences')).toBeInTheDocument();
+    expect(queryByText('Admin Console')).not.toBeInTheDocument();
+    expect(queryByText('Manage Organizations')).not.toBeInTheDocument();
   });
 });

@@ -59,7 +59,8 @@ export function useSettingsNavItems(): NavItems[] {
     {
       id: 'admin',
       title: t('Admin Console'),
-      grantedAccess: ['admin', 'developer'],
+      // 'impersonator' lets users who hold an impersonation role (but are not admins) reach the console to start impersonating
+      grantedAccess: ['admin', 'developer', 'impersonator'],
     },
     {
       id: '/auth/user/admin',

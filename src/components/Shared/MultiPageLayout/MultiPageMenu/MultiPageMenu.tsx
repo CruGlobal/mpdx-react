@@ -20,6 +20,10 @@ import { useHrToolsNavItems } from 'src/hooks/useHrToolsNavItems';
 import { useReportNavItems } from 'src/hooks/useReportNavItems';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { NavItems, useSettingsNavItems } from 'src/hooks/useSettingsNavItems';
+import {
+  canAccessWhileImpersonating,
+  settingsItemArea,
+} from 'src/lib/impersonationAccess';
 import { Item } from './Item/Item';
 import { useManageOrganizationsAccessQuery } from './MultiPageMenu.generated';
 
@@ -63,13 +67,27 @@ type ShowMenuItemProps = {
   item: NavItems;
   user: Session['user'];
   hasOrganizationsAccess: boolean;
+  navType: NavTypeEnum;
 };
 
 const showMenuItem = ({
   item,
   user,
   hasOrganizationsAccess,
+  navType,
 }: ShowMenuItemProps): boolean => {
+  // While impersonating, the impersonator's role decides which settings pages are reachable.
+  // Report and HR tool items are already filtered by their own hooks.
+  if (
+    navType === NavTypeEnum.Settings &&
+    user.impersonating &&
+    !canAccessWhileImpersonating(
+      user.impersonatorRole,
+      settingsItemArea(item.id),
+    )
+  ) {
+    return false;
+  }
   if (item?.grantedAccess?.length) {
     if (hasOrganizationsAccess && item.id.startsWith('organizations')) {
       return true;
@@ -78,6 +96,12 @@ const showMenuItem = ({
       return true;
     }
     if (item.grantedAccess.indexOf('developer') !== -1 && user.developer) {
+      return true;
+    }
+    if (
+      item.grantedAccess.indexOf('impersonator') !== -1 &&
+      user.impersonationRole
+    ) {
       return true;
     }
   } else {
@@ -175,7 +199,9 @@ export const MultiPageMenu: React.FC<Props & BoxProps> = ({
                   />
                 )}
               {navItems.map((item) => {
-                if (!showMenuItem({ item, user, hasOrganizationsAccess })) {
+                if (
+                  !showMenuItem({ item, user, hasOrganizationsAccess, navType })
+                ) {
                   return null;
                 }
                 return (

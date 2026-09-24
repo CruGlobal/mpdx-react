@@ -1,7 +1,9 @@
 import { MockedResponse } from '@apollo/client/testing';
 import { GetTopBarDocument, GetTopBarQuery } from './GetTopBar.generated';
 
-export const getTopBarMock = (): MockedResponse => {
+export const getTopBarMock = (
+  user: Partial<GetTopBarQuery['user']> = {},
+): MockedResponse => {
   const data: GetTopBarQuery = {
     accountLists: {
       nodes: [{ id: '1', name: 'Staff Account' }],
@@ -13,10 +15,12 @@ export const getTopBarMock = (): MockedResponse => {
       avatar: '',
       admin: true,
       developer: true,
+      impersonationRole: null,
       keyAccounts: [{ id: '1', email: 'john.smith@gmail.com' }],
       administrativeOrganizations: {
         nodes: [{ id: '1' }],
       },
+      ...user,
     },
   };
   return {
@@ -44,6 +48,7 @@ export const getTopBarMockWithMultipleAccountLists = (): MockedResponse => {
       admin: true,
       avatar: 'test',
       developer: true,
+      impersonationRole: null,
       keyAccounts: [{ id: '1', email: 'john.smith@gmail.com' }],
       administrativeOrganizations: {
         nodes: [{ id: '1' }],
@@ -75,6 +80,7 @@ export const getTopBarMultipleMock = (): MockedResponse => {
       avatar: '',
       admin: false,
       developer: false,
+      impersonationRole: null,
       keyAccounts: [{ id: '1', email: 'john.smith@gmail.com' }],
       administrativeOrganizations: {
         nodes: [],
@@ -102,6 +108,7 @@ export const getTopBarNoAccountListMock = (): MockedResponse => {
       avatar: '',
       admin: false,
       developer: false,
+      impersonationRole: null,
       keyAccounts: [{ id: '5', email: 'john.smith@gmail.com' }],
       administrativeOrganizations: {
         nodes: [],

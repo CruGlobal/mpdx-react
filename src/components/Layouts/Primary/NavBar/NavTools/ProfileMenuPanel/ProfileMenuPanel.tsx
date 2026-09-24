@@ -15,8 +15,10 @@ import {
   TermsOfUseLink,
 } from 'src/components/Shared/Links/Links';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useImpersonatorRole } from 'src/hooks/useImpersonatorRole';
 import { useNavPages } from 'src/hooks/useNavPages';
 import { clearDatadogUser } from 'src/lib/dataDog';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import theme from 'src/theme';
 import { useGetTopBarQuery } from '../../../TopBar/GetTopBar.generated';
 import { LeafListItem, Title } from '../../StyledComponents';
@@ -57,6 +59,7 @@ export const ProfileMenuPanel: React.FC = () => {
   const { push, pathname } = useRouter();
   const client = useApolloClient();
   const { onSetupTour } = useSetupContext();
+  const { blocked } = useImpersonatorRole();
   const [accountsDrawerOpen, setAccountsDrawerOpen] = useState<boolean>(false);
 
   const toggleAccountsDrawer = (): void => {
@@ -152,37 +155,42 @@ export const ProfileMenuPanel: React.FC = () => {
               </StyledButton>
             </LeafListItem>
           ))}
-          {(data?.user?.admin ||
-            !!data?.user?.administrativeOrganizations?.nodes?.length) && (
-            <LeafListItem disableGutters>
-              <StyledButton
-                LinkComponent={NextLink}
-                href={`/accountLists/${accountListId}/settings/organizations`}
-              >
-                <Title>{t('Manage Organizations')}</Title>
-              </StyledButton>
-            </LeafListItem>
-          )}
-          {(data?.user?.admin || data?.user?.developer) && (
-            <LeafListItem disableGutters>
-              <StyledButton
-                LinkComponent={NextLink}
-                href={`/accountLists/${accountListId}/settings/admin`}
-              >
-                <Title>{t('Admin Console')}</Title>
-              </StyledButton>
-            </LeafListItem>
-          )}
-          {data?.user?.developer && (
-            <LeafListItem disableGutters>
-              <OauthLink path="/auth/user/admin">
-                <StyledButton>
-                  <Title>{t('Backend Admin')}</Title>
+          {!blocked(ImpersonationArea.ManageOrganizations) &&
+            (data?.user?.admin ||
+              !!data?.user?.administrativeOrganizations?.nodes?.length) && (
+              <LeafListItem disableGutters>
+                <StyledButton
+                  LinkComponent={NextLink}
+                  href={`/accountLists/${accountListId}/settings/organizations`}
+                >
+                  <Title>{t('Manage Organizations')}</Title>
                 </StyledButton>
-              </OauthLink>
-            </LeafListItem>
-          )}
-          {data?.user?.developer && (
+              </LeafListItem>
+            )}
+          {!blocked(ImpersonationArea.AdminConsole) &&
+            (data?.user?.admin ||
+              data?.user?.developer ||
+              !!data?.user?.impersonationRole) && (
+              <LeafListItem disableGutters>
+                <StyledButton
+                  LinkComponent={NextLink}
+                  href={`/accountLists/${accountListId}/settings/admin`}
+                >
+                  <Title>{t('Admin Console')}</Title>
+                </StyledButton>
+              </LeafListItem>
+            )}
+          {!blocked(ImpersonationArea.BackendAdmin) &&
+            data?.user?.developer && (
+              <LeafListItem disableGutters>
+                <OauthLink path="/auth/user/admin">
+                  <StyledButton>
+                    <Title>{t('Backend Admin')}</Title>
+                  </StyledButton>
+                </OauthLink>
+              </LeafListItem>
+            )}
+          {!blocked(ImpersonationArea.Sidekiq) && data?.user?.developer && (
             <LeafListItem disableGutters>
               <OauthLink path="/auth/user/sidekiq">
                 <StyledButton>

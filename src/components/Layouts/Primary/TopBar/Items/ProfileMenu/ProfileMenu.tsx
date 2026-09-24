@@ -29,8 +29,10 @@ import {
 } from 'src/components/Shared/Links/Links';
 import { AccountList } from 'src/graphql/types.generated';
 import { useOptionalAccountListId } from 'src/hooks/useAccountListId';
+import { useImpersonatorRole } from 'src/hooks/useImpersonatorRole';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { clearDatadogUser } from 'src/lib/dataDog';
+import { ImpersonationArea } from 'src/lib/impersonationAccess';
 import theme from 'src/theme';
 import { useGetTopBarQuery } from '../../GetTopBar.generated';
 import ProfileName from './ProfileName';
@@ -130,6 +132,7 @@ const ProfileMenu = (): ReactElement => {
   const { t } = useTranslation();
   const router = useRouter();
   const session = useRequiredSession();
+  const { blocked } = useImpersonatorRole();
   const client = useApolloClient();
   const { enqueueSnackbar } = useSnackbar();
   const { contactId: _, ...queryWithoutContactId } = router.query;
@@ -306,80 +309,95 @@ const ProfileMenu = (): ReactElement => {
           <div>
             <Divider />
 
-            <MenuItem
-              component={NextLink}
-              href={`/accountLists/${accountListId}/settings/preferences`}
-              shallow
-              onClick={handleProfileMenuClose}
-            >
-              <ListItemText primary={t('Preferences')} />
-            </MenuItem>
-
-            <MenuItem
-              component={NextLink}
-              href={`/accountLists/${accountListId}/settings/notifications`}
-              shallow
-              onClick={handleProfileMenuClose}
-            >
-              <ListItemText primary={t('Notifications')} />
-            </MenuItem>
-
-            <MenuItem
-              component={NextLink}
-              href={`/accountLists/${accountListId}/settings/integrations`}
-              shallow
-              onClick={handleProfileMenuClose}
-            >
-              <ListItemText primary={t('Connect Services')} />
-            </MenuItem>
-
-            <MenuItem
-              component={NextLink}
-              href={`/accountLists/${accountListId}/settings/manageAccounts`}
-              shallow
-              onClick={handleProfileMenuClose}
-            >
-              <ListItemText primary={t('Manage Accounts')} />
-            </MenuItem>
-
-            <MenuItem
-              component={NextLink}
-              href={`/accountLists/${accountListId}/settings/manageCoaches`}
-              shallow
-              onClick={handleProfileMenuClose}
-            >
-              <ListItemText primary={t('Manage Coaches')} />
-            </MenuItem>
-
-            {(data?.user?.admin ||
-              !!data?.user?.administrativeOrganizations?.nodes?.length) && (
+            {!blocked(ImpersonationArea.Settings) && (
               <MenuItem
                 component={NextLink}
-                href={`/accountLists/${accountListId}/settings/organizations`}
+                href={`/accountLists/${accountListId}/settings/preferences`}
+                shallow
                 onClick={handleProfileMenuClose}
               >
-                <ListItemText primary={t('Manage Organizations')} />
+                <ListItemText primary={t('Preferences')} />
               </MenuItem>
             )}
-            {(data?.user?.admin || data?.user?.developer) && (
+
+            {!blocked(ImpersonationArea.Settings) && (
               <MenuItem
                 component={NextLink}
-                href={`/accountLists/${accountListId}/settings/admin`}
+                href={`/accountLists/${accountListId}/settings/notifications`}
+                shallow
                 onClick={handleProfileMenuClose}
               >
-                <ListItemText primary={t('Admin Console')} />
+                <ListItemText primary={t('Notifications')} />
               </MenuItem>
             )}
-            {data?.user?.developer && (
+
+            {!blocked(ImpersonationArea.Settings) && (
               <MenuItem
-                component={OauthLink}
-                path="/auth/user/admin"
+                component={NextLink}
+                href={`/accountLists/${accountListId}/settings/integrations`}
+                shallow
                 onClick={handleProfileMenuClose}
               >
-                <ListItemText primary={t('Backend Admin')} />
+                <ListItemText primary={t('Connect Services')} />
               </MenuItem>
             )}
-            {data?.user?.developer && (
+
+            {!blocked(ImpersonationArea.Settings) && (
+              <MenuItem
+                component={NextLink}
+                href={`/accountLists/${accountListId}/settings/manageAccounts`}
+                shallow
+                onClick={handleProfileMenuClose}
+              >
+                <ListItemText primary={t('Manage Accounts')} />
+              </MenuItem>
+            )}
+
+            {!blocked(ImpersonationArea.Settings) && (
+              <MenuItem
+                component={NextLink}
+                href={`/accountLists/${accountListId}/settings/manageCoaches`}
+                shallow
+                onClick={handleProfileMenuClose}
+              >
+                <ListItemText primary={t('Manage Coaches')} />
+              </MenuItem>
+            )}
+
+            {!blocked(ImpersonationArea.ManageOrganizations) &&
+              (data?.user?.admin ||
+                !!data?.user?.administrativeOrganizations?.nodes?.length) && (
+                <MenuItem
+                  component={NextLink}
+                  href={`/accountLists/${accountListId}/settings/organizations`}
+                  onClick={handleProfileMenuClose}
+                >
+                  <ListItemText primary={t('Manage Organizations')} />
+                </MenuItem>
+              )}
+            {!blocked(ImpersonationArea.AdminConsole) &&
+              (data?.user?.admin ||
+                data?.user?.developer ||
+                !!data?.user?.impersonationRole) && (
+                <MenuItem
+                  component={NextLink}
+                  href={`/accountLists/${accountListId}/settings/admin`}
+                  onClick={handleProfileMenuClose}
+                >
+                  <ListItemText primary={t('Admin Console')} />
+                </MenuItem>
+              )}
+            {!blocked(ImpersonationArea.BackendAdmin) &&
+              data?.user?.developer && (
+                <MenuItem
+                  component={OauthLink}
+                  path="/auth/user/admin"
+                  onClick={handleProfileMenuClose}
+                >
+                  <ListItemText primary={t('Backend Admin')} />
+                </MenuItem>
+              )}
+            {!blocked(ImpersonationArea.Sidekiq) && data?.user?.developer && (
               <MenuItem
                 component={OauthLink}
                 path="/auth/user/sidekiq"
