@@ -309,11 +309,19 @@ describe('AssistantDrawer', () => {
       });
     });
 
-    it('stays a 400px side panel on a wide screen', async () => {
+    it('floats as a 400px rounded card above the orb on a wide screen', async () => {
       matchMediaMock({ width: '1024px' });
       const { getByRole } = await openDrawer();
 
-      expect(getByRole('dialog')).toHaveStyle({ width: '400px' });
+      const { style } = getByRole('dialog');
+      expect([
+        style.width,
+        style.height,
+        style.maxHeight,
+        style.right,
+        style.bottom,
+        style.borderRadius,
+      ]).toEqual(['400px', '640px', '80vh', '24px', '96px', '16px']);
     });
 
     describe('at 375px', () => {

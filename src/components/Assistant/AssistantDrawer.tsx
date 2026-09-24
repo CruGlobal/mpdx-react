@@ -3,11 +3,13 @@ import { Box, Drawer, useMediaQuery } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import { AssistantChat } from './AssistantChat';
 import { useAssistantContext } from './AssistantProvider';
+import { orbInset, orbSize } from './GuideOrb';
 import { useHelpjuiceBeaconStyle } from './helpjuiceBeacon';
 import { useAssistantVisibility } from './useAssistantVisibility';
 import { useVisualViewport } from './useVisualViewport';
 
 const titleId = 'assistant-drawer-title';
+const cardGap = 16;
 
 const DrawerContent = styled(Box)({
   display: 'flex',
@@ -45,8 +47,19 @@ export const AssistantDrawer: React.FC = () => {
                 height: viewport ? `${viewport.height}px` : '100dvh',
                 top: viewport?.offsetTop ?? 0,
               }
-            : { width: 400 },
+            : {
+                width: 400,
+                height: 640,
+                maxHeight: '80vh',
+                top: 'auto',
+                right: orbInset,
+                bottom: orbInset + orbSize + cardGap,
+                borderRadius: 16,
+                overflow: 'hidden',
+              },
         },
+        // The card floats over the page, so dimming everything behind it would feel heavy
+        backdrop: { invisible: !fullScreen },
         transition: { onExited: () => launcherRef.current?.focus() },
       }}
     >
