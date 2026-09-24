@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -98,43 +98,58 @@ const mockData = {
 interface TestComponentProps {
   staffAccountId?: string;
   staffName?: string;
+  failReportCalls?: number;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   staffAccountId,
   staffName,
-}) => (
-  <ThemeProvider theme={theme}>
-    <TestRouter>
-      <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <GqlMockedProvider<{
-          StaffAccount: StaffAccountQuery;
-          MPGATransactions: MpgaTransactionsQuery;
-          ReportsStaffExpenses: ReportsStaffExpensesQuery;
-        }>
-          mocks={{
-            ...mockData,
-            MPGATransactions: {
-              reportsStaffExpenses: {
-                ...mockData.MPGATransactions.reportsStaffExpenses,
-                ...(staffName && { name: staffName }),
+  failReportCalls = 0,
+}) => {
+  const reportCalls = useRef(0);
+  const reportsStaffExpenses = {
+    ...mockData.MPGATransactions.reportsStaffExpenses,
+    ...(staffName && { name: staffName }),
+  };
+  const failingReport = (() => {
+    if (reportCalls.current++ < failReportCalls) {
+      throw new Error('SAA is unavailable');
+    }
+    return reportsStaffExpenses;
+  }) as unknown as MpgaTransactionsQuery['reportsStaffExpenses'];
+
+  return (
+    <ThemeProvider theme={theme}>
+      <TestRouter>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <GqlMockedProvider<{
+            StaffAccount: StaffAccountQuery;
+            MPGATransactions: MpgaTransactionsQuery;
+            ReportsStaffExpenses: ReportsStaffExpensesQuery;
+          }>
+            mocks={{
+              ...mockData,
+              MPGATransactions: {
+                reportsStaffExpenses: failReportCalls
+                  ? failingReport
+                  : reportsStaffExpenses,
               },
-            },
-          }}
-          onCall={mutationSpy}
-        >
-          <MPGAIncomeExpensesReportProvider staffAccountId={staffAccountId}>
-            <MPGAIncomeExpensesReport
-              onNavListToggle={onNavListToggle}
-              isNavListOpen={true}
-              title={title}
-            />
-          </MPGAIncomeExpensesReportProvider>
-        </GqlMockedProvider>
-      </LocalizationProvider>
-    </TestRouter>
-  </ThemeProvider>
-);
+            }}
+            onCall={mutationSpy}
+          >
+            <MPGAIncomeExpensesReportProvider staffAccountId={staffAccountId}>
+              <MPGAIncomeExpensesReport
+                onNavListToggle={onNavListToggle}
+                isNavListOpen={true}
+                title={title}
+              />
+            </MPGAIncomeExpensesReportProvider>
+          </GqlMockedProvider>
+        </LocalizationProvider>
+      </TestRouter>
+    </ThemeProvider>
+  );
+};
 
 // Role+name lookups walk every node of a page holding several data grids and
 // cost seconds each, so match the cell text directly instead.
@@ -168,6 +183,78 @@ describe('MPGAIncomeExpensesReport', () => {
     ).toBeInTheDocument();
 
     expect(await findByText('Test Account')).toBeInTheDocument();
+  });
+
+  describe('when the report fails to load', () => {
+    it('shows a friendly error instead of the empty report', async () => {
+      const { findByRole, queryByText } = render(
+        <TestComponent failReportCalls={Infinity} />,
+      );
+
+      const alert = await findByRole('alert');
+      expect(alert).toHaveTextContent(
+        'The Income & Expenses report could not be loaded. Please try again later.',
+      );
+      // The raw error is left to the global error snackbar.
+      expect(alert).not.toHaveTextContent('SAA is unavailable');
+      expect(queryByText('No Income data available')).not.toBeInTheDocument();
+      expect(queryByText('No Expenses data available')).not.toBeInTheDocument();
+    });
+
+    it('disables Export CSV and Print', async () => {
+      const { findByRole, getByRole } = render(
+        <TestComponent failReportCalls={Infinity} />,
+      );
+
+      await findByRole('alert');
+      expect(getByRole('button', { name: 'Export CSV' })).toBeDisabled();
+      expect(getByRole('button', { name: 'Print' })).toBeDisabled();
+    });
+
+    it('loads the report when Try Again is clicked', async () => {
+      const { findByRole, findByText, queryByRole } = render(
+        <TestComponent failReportCalls={1} />,
+      );
+
+      const alert = await findByRole('alert');
+      userEvent.click(within(alert).getByRole('button', { name: 'Try Again' }));
+
+      expect(await findByText('Benefits', inGridCell)).toBeVisible();
+      expect(queryByRole('alert')).not.toBeInTheDocument();
+    }, 30000);
+
+    it('loads the report when a different date range is chosen', async () => {
+      const { findByRole, findByText, getByRole, queryByRole } = render(
+        <TestComponent failReportCalls={1} />,
+      );
+
+      await findByRole('alert');
+      userEvent.click(getByRole('button', { name: 'Report Settings' }));
+      userEvent.click(
+        await findByRole('combobox', { name: 'Select Date Range' }),
+      );
+      userEvent.click(getByRole('option', { name: 'Year to Date' }));
+      const applyButton = await findByRole('button', { name: 'Apply Filters' });
+      await waitFor(() => expect(applyButton).not.toBeDisabled());
+      userEvent.click(applyButton);
+
+      expect(
+        await findByText('Benefits', inGridCell, { timeout: 5000 }),
+      ).toBeVisible();
+      expect(queryByRole('alert')).not.toBeInTheDocument();
+    }, 30000);
+
+    it('hides the empty account info in supervisor view', async () => {
+      const { findByRole, queryByTestId } = render(
+        <TestComponent
+          staffAccountId={staffAccountId}
+          failReportCalls={Infinity}
+        />,
+      );
+
+      await findByRole('alert');
+      expect(queryByTestId('account-info')).not.toBeInTheDocument();
+    });
   });
 
   describe('supervisor view', () => {
