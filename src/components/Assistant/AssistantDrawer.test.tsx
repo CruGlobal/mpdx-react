@@ -74,6 +74,8 @@ const OpenButton: React.FC = () => {
   return <button onClick={openAssistant}>Open</button>;
 };
 
+const pageClick = jest.fn();
+
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <GqlMockedProvider<{ CreateAssistantToken: CreateAssistantTokenMutation }>
@@ -83,6 +85,7 @@ const TestComponent: React.FC = () => (
       <TestRouter>
         <AssistantProvider>
           <OpenButton />
+          <button onClick={pageClick}>Page action</button>
           <AssistantDrawer />
         </AssistantProvider>
       </TestRouter>
@@ -234,7 +237,7 @@ describe('AssistantDrawer', () => {
       const { getByRole, getAllByRole } = await renderTranscript();
       const drawer = getByRole('dialog', { name: 'MPDX Guide' });
 
-      expect(drawer).toHaveAttribute('aria-modal', 'true');
+      expect(drawer).toHaveAttribute('aria-modal', 'false');
       expect(
         getByRole('heading', { level: 2, name: 'MPDX Guide' }),
       ).toBeInTheDocument();
@@ -324,6 +327,67 @@ describe('AssistantDrawer', () => {
       ]).toEqual(['400px', '640px', '80vh', '24px', '96px', '16px']);
     });
 
+    describe('on desktop', () => {
+      beforeEach(() => {
+        matchMediaMock({ width: '1024px' });
+      });
+
+      it('leaves the page scrollable with no backdrop', async () => {
+        const { getByRole } = await openDrawer();
+
+        expect(getByRole('dialog')).toHaveAttribute('aria-modal', 'false');
+        expect(getByRole('dialog')).toHaveAttribute(
+          'aria-labelledby',
+          'assistant-drawer-title',
+        );
+        expect(document.body.style.overflow).toBe('');
+        expect(document.body.style.paddingRight).toBe('');
+        expect(document.querySelector('.MuiBackdrop-root')).toBeNull();
+        expect(document.querySelector('.MuiModal-root')).toBeNull();
+      });
+
+      it('lets clicks reach the page and stays open', async () => {
+        pageClick.mockClear();
+        const { getByRole } = await openDrawer();
+
+        userEvent.click(getByRole('button', { name: 'Page action' }));
+
+        expect(pageClick).toHaveBeenCalledTimes(1);
+        expect(getByRole('dialog')).toBeInTheDocument();
+      });
+
+      it('lets Tab move out of the card', async () => {
+        const { getByRole } = await openDrawer();
+        const card = getByRole('dialog');
+
+        const reached = new Set<Element | null>();
+        for (let press = 0; press < 12; press++) {
+          userEvent.tab();
+          reached.add(document.activeElement);
+        }
+        expect(
+          [...reached].some(
+            (element) => element !== document.body && !card.contains(element),
+          ),
+        ).toBe(true);
+      });
+
+      it('closes on Escape from inside', async () => {
+        const { getByRole, queryByRole } = render(<TestComponent />);
+        userEvent.click(getByRole('button', { name: 'Open' }));
+        await waitFor(() =>
+          expect(getByRole('textbox', { name: 'Ask the Guide' })).toHaveFocus(),
+        );
+        await waitForMint();
+
+        userEvent.keyboard('{esc}');
+
+        await waitFor(() =>
+          expect(queryByRole('dialog')).not.toBeInTheDocument(),
+        );
+      });
+    });
+
     describe('at 375px', () => {
       beforeEach(() => {
         matchMediaMock({ width: '375px' });
@@ -338,6 +402,14 @@ describe('AssistantDrawer', () => {
           overflowY: 'auto',
           minHeight: '0',
         });
+      });
+
+      it('stays a modal that locks the page behind it', async () => {
+        const { getByRole } = await openDrawer();
+
+        expect(getByRole('dialog')).toHaveAttribute('aria-modal', 'true');
+        expect(document.querySelector('.MuiBackdrop-root')).not.toBeNull();
+        expect(document.body.style.overflow).toBe('hidden');
       });
 
       it('hides the help beacon while open and restores it on close', async () => {

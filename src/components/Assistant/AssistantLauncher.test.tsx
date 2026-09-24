@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import matchMediaMock from '__tests__/util/matchMediaMock';
 import { mockSession } from '__tests__/util/mockSession';
 import theme from 'src/theme';
 import { AssistantDrawer } from './AssistantDrawer';
@@ -129,7 +130,8 @@ describe('AssistantLauncher', () => {
     expect(launcher).toHaveFocus();
   });
 
-  it('keeps Tab focus inside the open drawer', async () => {
+  it('keeps Tab focus inside the full-screen drawer on a phone', async () => {
+    matchMediaMock({ width: '375px' });
     const { findByRole, getByRole } = render(
       <TestComponent settings={{ enabled: true }} />,
     );
@@ -152,12 +154,13 @@ describe('AssistantLauncher', () => {
 
     userEvent.click(launcher);
     userEvent.click(await findByRole('button', { name: 'Turn it on' }));
-    await findByRole('dialog', { name: 'MPDX Guide' });
+    const card = await findByRole('dialog', { name: 'MPDX Guide' });
     await waitFor(() =>
       expect(
         queryByRole('dialog', { name: 'Meet your MPDX Guide' }),
       ).not.toBeInTheDocument(),
     );
+    await waitFor(() => expect(card).toContainElement(activeElement()));
 
     userEvent.click(getByRole('button', { name: 'Close MPDX Guide' }));
     await waitFor(() =>
