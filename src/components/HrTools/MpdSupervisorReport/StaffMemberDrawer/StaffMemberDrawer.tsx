@@ -1,13 +1,23 @@
 import React from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { Alert, Avatar, Box, IconButton, Tab, Typography } from '@mui/material';
+import {
+  Alert,
+  Avatar,
+  Box,
+  IconButton,
+  Tab,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { InfoTooltipIcon } from 'src/components/HrTools/Shared/InfoTooltipIcon';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import theme from 'src/theme';
 import { GeographicLocationSelect } from '../GeographicLocationSelect/GeographicLocationSelect';
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
+import { newStaffSalaryTooltip } from '../ReportLegend/legendCopy';
 import { DynamicMPGA, preloadMPGA } from '../StaffDetailsTabs/MPGA/DynamicMPGA';
 import {
   DynamicMonthlySummary,
@@ -24,25 +34,46 @@ import {
 import { StaffDetailTabEnum } from '../StaffDetailsTabs/StaffDetailTab';
 import { preloadStaffExpenseReport } from '../StaffDetailsTabs/StaffExpenseReport/DynamicStaffExpenseReport';
 import { StaffTabStaffExpenseReport } from '../StaffDetailsTabs/StaffExpenseReport/StaffExpenseReport';
+import { GrossSalaryMarker } from '../StaffMemberRow/GrossSalaryMarker';
 import {
   getInitials,
   getLocalizedAssignmentCategoryGroup,
+  grossSalaryWarning,
   pendingField,
 } from '../helpers';
 
 interface DetailRowProps {
   label: string;
   value: string;
+  /** Rendered inline after the label, e.g. an info tooltip icon */
+  labelAdornment?: React.ReactNode;
+  /** Rendered inline after the value, e.g. a warning marker */
+  valueAdornment?: React.ReactNode;
+  valueColor?: string;
 }
 
-const DetailRow: React.FC<DetailRowProps> = ({ label, value }) => (
+const DetailRow: React.FC<DetailRowProps> = ({
+  label,
+  value,
+  labelAdornment,
+  valueAdornment,
+  valueColor,
+}) => (
   <Box
     sx={{ display: 'flex', flexDirection: 'column', gap: 0.25, minWidth: 140 }}
   >
-    <Typography variant="caption" color="text.secondary">
-      {label}
-    </Typography>
-    <Typography variant="body2">{value}</Typography>
+    <Box display="flex" alignItems="center" gap={0.5}>
+      <Typography variant="caption" color="text.secondary">
+        {label}
+      </Typography>
+      {labelAdornment}
+    </Box>
+    <Box display="flex" alignItems="center" gap={0.5}>
+      <Typography variant="body2" color={valueColor}>
+        {value}
+      </Typography>
+      {valueAdornment}
+    </Box>
   </Box>
 );
 
@@ -116,6 +147,7 @@ export const StaffMemberDrawer: React.FC = () => {
   const monthlyGrossSalary = quarterlyHealth?.monthlyGrossSalary ?? null;
   const missingBenchmark =
     monthlyGrossSalary === null || newStaffMonthlySalary === null;
+  const grossWarning = grossSalaryWarning(t, formatCurrency, selectedMember);
 
   return (
     <Box
@@ -180,6 +212,18 @@ export const StaffMemberDrawer: React.FC = () => {
           <StaffInfo>
             <DetailRow
               label={t('New Staff Monthly Salary')}
+              labelAdornment={
+                // describeChild announces the explanation as the icon's
+                // description while titleAccess stays its accessible name
+                <Tooltip title={newStaffSalaryTooltip(t)} describeChild>
+                  <InfoTooltipIcon
+                    tabIndex={0}
+                    titleAccess={t(
+                      'How New Staff Monthly Salary is calculated',
+                    )}
+                  />
+                </Tooltip>
+              }
               value={
                 newStaffMonthlySalary !== null
                   ? formatCurrency(newStaffMonthlySalary)
@@ -188,6 +232,10 @@ export const StaffMemberDrawer: React.FC = () => {
             />
             <DetailRow
               label={t('Monthly Gross Salary')}
+              valueColor={grossWarning ? 'error.main' : undefined}
+              valueAdornment={
+                grossWarning && <GrossSalaryMarker warning={grossWarning} />
+              }
               value={
                 monthlyGrossSalary !== null
                   ? formatCurrency(monthlyGrossSalary)
