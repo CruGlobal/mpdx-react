@@ -63,6 +63,13 @@ export const impersonate = async (
       status = 401;
       throw new Error('Unauthorized');
     }
+    // An impersonation session must never start another one: the JWT describes the impersonated
+    // user, so its developer flag and role would be theirs, not the real impersonator's. The API
+    // refuses chained tokens too; this keeps the frontend from even asking.
+    if (jwt.impersonating) {
+      status = 403;
+      throw new Error('Cannot impersonate while already impersonating');
+    }
 
     const { apiToken, userID, developer } = jwt;
 

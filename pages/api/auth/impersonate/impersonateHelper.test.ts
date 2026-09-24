@@ -58,6 +58,25 @@ describe('impersonate', () => {
     expect(cookies.join('; ')).not.toContain('isImpersonatorDeveloper');
   });
 
+  it('refuses to start an impersonation from a session that is already impersonating', async () => {
+    mockedGetToken.mockResolvedValue({
+      apiToken: 'impersonated-token',
+      userID: 'impersonator-1',
+      developer: true,
+      impersonating: true,
+    } as never);
+    global.fetch = jest.fn();
+
+    const { status, cookies } = await impersonate(
+      req,
+      ImpersonationTypeEnum.USER,
+    );
+
+    expect(status).toBe(403);
+    expect(global.fetch).not.toHaveBeenCalled();
+    expect(cookies).toEqual([]);
+  });
+
   it('falls back to developer when the API omits the role and the impersonator is a developer', async () => {
     mockedGetToken.mockResolvedValue({
       apiToken: 'impersonator-token',
