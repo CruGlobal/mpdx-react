@@ -164,6 +164,31 @@ describe('StaffMemberDrawer', () => {
     expect(getByText('$2,500.00')).toBeInTheDocument();
   });
 
+  it('explains how the New Staff Monthly Salary is calculated', async () => {
+    const { findByRole, getByRole } = renderDrawer();
+    openMember(managedStaffMember());
+
+    const icon = getByRole('img', {
+      name: 'How New Staff Monthly Salary is calculated',
+    });
+    expect(icon).not.toHaveAttribute('aria-hidden');
+    userEvent.hover(icon);
+
+    const tooltip = await findByRole('tooltip');
+    expect(tooltip).toHaveTextContent(
+      'The monthly salary a new staff member in the same situation would receive',
+    );
+    expect(tooltip).toHaveTextContent(
+      'See "How this report works" for details.',
+    );
+    // The explanation is announced as the icon's description
+    expect(icon).toHaveAccessibleDescription(
+      expect.stringContaining(
+        'The monthly salary a new staff member in the same situation would receive',
+      ),
+    );
+  });
+
   it('renders a zero benchmark as currency rather than a dash', () => {
     const { getAllByText } = renderDrawer();
     openMember(
@@ -235,6 +260,79 @@ describe('StaffMemberDrawer', () => {
 
     await waitFor(() => expect(getByText('$3,000.00')).toBeInTheDocument());
     expect(queryByText('$2,500.00')).not.toBeInTheDocument();
+  });
+
+  describe('Monthly Gross Salary below the New Staff Monthly Salary', () => {
+    const grossWarning =
+      /Monthly Gross Salary \(\$2,000\.00\) is \$500\.00 below the New Staff Monthly Salary \(\$2,500\.00\)/;
+    const anyGrossWarning = /below the New Staff Monthly Salary/;
+
+    const memberWithGross = (
+      monthlyGrossSalary: number | null,
+      newStaffMonthlySalary = 2500,
+    ) =>
+      managedStaffMember({
+        newStaffMonthlySalary,
+        quarterlyHealth: { monthlyGrossSalary, completedQuarters: [] },
+      });
+
+    it('flags a Monthly Gross Salary below the New Staff Monthly Salary', async () => {
+      const { findByRole, getByLabelText, getByText } = renderDrawer();
+      openMember(memberWithGross(2000));
+
+      const marker = getByLabelText(grossWarning);
+      userEvent.hover(marker);
+
+      expect(await findByRole('tooltip')).toHaveTextContent(grossWarning);
+      expect(getByText('$2,000.00')).toHaveStyle({
+        color: theme.palette.error.main,
+      });
+    });
+
+    it('does not flag the default benchmarks', () => {
+      const { queryByLabelText } = renderDrawer();
+      openMember(managedStaffMember());
+
+      expect(queryByLabelText(anyGrossWarning)).not.toBeInTheDocument();
+    });
+
+    it('does not flag equal benchmarks', () => {
+      const { queryByLabelText } = renderDrawer();
+      openMember(memberWithGross(2500));
+
+      expect(queryByLabelText(anyGrossWarning)).not.toBeInTheDocument();
+    });
+
+    it('does not flag a missing gross salary and shows the benchmark alert', () => {
+      const { getByText, queryByLabelText } = renderDrawer();
+      openMember(memberWithGross(null));
+
+      expect(queryByLabelText(anyGrossWarning)).not.toBeInTheDocument();
+      expect(getByText(benchmarkWarning)).toBeInTheDocument();
+    });
+
+    it('updates the flag after the geographic location changes New Staff salary', async () => {
+      const { findByRole, findByLabelText, getByRole, queryByLabelText } =
+        renderDrawer();
+      openMember(memberWithGross(2800));
+      expect(queryByLabelText(anyGrossWarning)).not.toBeInTheDocument();
+
+      const input = await findByRole('combobox', {
+        name: 'Geographic Location',
+      });
+      await waitFor(() => expect(input).not.toBeDisabled());
+      userEvent.type(input, 'New York');
+      userEvent.click(
+        await findByRole('option', { name: 'New York, NY (12%)' }),
+      );
+      userEvent.click(getByRole('button', { name: 'Save' }));
+
+      expect(
+        await findByLabelText(
+          /Monthly Gross Salary \(\$2,800\.00\) is \$200\.00 below the New Staff Monthly Salary \(\$3,000\.00\)/,
+        ),
+      ).toBeInTheDocument();
+    });
   });
 
   it('renders all five detail tabs', () => {
