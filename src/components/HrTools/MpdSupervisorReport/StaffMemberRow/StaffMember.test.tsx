@@ -144,7 +144,7 @@ describe('StaffMember', () => {
       expect(glance).toHaveTextContent('Tenure6 years');
       expect(glance).toHaveTextContent('Healthcare dependents2');
       expect(glance).toHaveTextContent('Support typeSupported RMO');
-      expect(glance).toHaveTextContent('SECAPays SECA');
+      expect(glance).toHaveTextContent('SECASubject to SECA');
       expect(getByText('Jane Smith')).toBeInTheDocument();
     });
   });

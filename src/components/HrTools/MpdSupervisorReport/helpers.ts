@@ -5,7 +5,6 @@ import {
   MpdHealthStatusEnum,
   PeopleGroupSupportTypeEnum,
   QuarterlyPayrollHistory,
-  SecaStatusEnum,
 } from 'src/graphql/types.generated';
 import { ManagedStaffQuery } from './ManagedStaff.generated';
 
@@ -215,46 +214,51 @@ export const getLocalizedAssignmentCategoryGroup = (
 export type StaffRow = ManagedStaffMember & { partner?: ManagedStaffMember };
 
 /**
- * Fold each spouse pair present in the list into one row, keeping the earlier
- * position (spouses share a staff account, so their health sorts identically).
- * Two rows pair when either one names the other as spouse, or when they share
- * a staff account — HCM does not always carry the spouse link, but a joint
- * staff account only ever belongs to a couple. Each spouse keeps their own
- * team list; `getRowTeamNames` unions them for display. A spouse who is not
- * in the list leaves the row untouched.
+ * Fold each couple present in the list into one row, keeping the earlier
+ * position. Two rows pair only when they share a staff account: the API
+ * builds every health figure from the staff account, so such a pair carries
+ * identical benchmarks and quarters, and a joint account only ever belongs to
+ * a couple (HCM does not always carry the spouse link). Spouses who hold
+ * separate staff accounts have their own health each, so they stay on their
+ * own rows and name each other via `getRowSpouseName`.
  */
 export const mergeSpouseRows = (nodes: ManagedStaffMember[]): StaffRow[] => {
-  const byPersonNumber = new Map(
-    nodes.map((node) => [node.personNumber, node]),
-  );
-  const absorbed = new Set<string>();
+  const paired = new Set<string>();
   const rows: StaffRow[] = [];
-  const isPartner = (node: ManagedStaffMember, other: ManagedStaffMember) =>
-    other.personNumber !== node.personNumber &&
-    !absorbed.has(other.personNumber) &&
-    (node.spousePersonNumber === other.personNumber ||
-      other.spousePersonNumber === node.personNumber ||
-      other.staffAccountId === node.staffAccountId);
   for (const node of nodes) {
-    if (absorbed.has(node.personNumber)) {
+    if (paired.has(node.personNumber)) {
       continue;
     }
-    const linked = node.spousePersonNumber
-      ? byPersonNumber.get(node.spousePersonNumber)
-      : undefined;
-    const partner =
-      linked && isPartner(node, linked)
-        ? linked
-        : nodes.find((other) => isPartner(node, other));
+    const partner = nodes.find(
+      (other) =>
+        other.personNumber !== node.personNumber &&
+        !paired.has(other.personNumber) &&
+        other.staffAccountId === node.staffAccountId,
+    );
     if (partner) {
-      absorbed.add(node.personNumber);
-      absorbed.add(partner.personNumber);
+      paired.add(node.personNumber);
+      paired.add(partner.personNumber);
       rows.push({ ...node, partner });
     } else {
       rows.push(node);
     }
   }
   return rows;
+};
+
+/** The spouse's full name: the merged partner, the HCM-linked spouse, or null. */
+export const getRowSpouseName = ({
+  partner,
+  spouseFirstName,
+  spouseLastName,
+  lastName,
+}: StaffRow): string | null => {
+  if (partner) {
+    return `${partner.firstName} ${partner.lastName}`;
+  }
+  return spouseFirstName
+    ? `${spouseFirstName} ${spouseLastName ?? lastName}`
+    : null;
 };
 
 /** The row's team names: the member's teams plus a merged partner's, deduplicated. */
@@ -371,22 +375,6 @@ export const getLocalizedSupportType = (
       return t('Designation');
     case PeopleGroupSupportTypeEnum.None:
       return t('Not supported');
-    default:
-      return pendingField;
-  }
-};
-
-export const getLocalizedSecaStatus = (
-  t: TFunction,
-  value: SecaStatusEnum | null | undefined,
-): string => {
-  switch (value) {
-    case SecaStatusEnum.Seca:
-      return t('Pays SECA');
-    case SecaStatusEnum.Fica:
-      return t('Pays FICA');
-    case SecaStatusEnum.Optout:
-      return t('Exempt from SECA');
     default:
       return pendingField;
   }

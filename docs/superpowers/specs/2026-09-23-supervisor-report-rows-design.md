@@ -28,9 +28,11 @@ memory. The report refuses more than `MAX_ROWS = 100` people. So requesting
 `first: 100` costs the server nothing extra and guarantees that any successful
 result is complete in one page.
 
-**Decision.** `pageSize` becomes 100 (documented as matching the API cap). The
-load-more path stays for safety but `hasNextPage` is false in practice. The team
-summary and spouse merge below therefore operate on the complete result set.
+**Decision.** `pageSize` becomes 100. The agent review found that the schema's
+`default_max_page_size 50` silently clamps this until mpdx_api PR #3650 adds
+`max_page_size MAX_ROWS` to the query, so the context also loads any remaining
+pages by itself (`staffComplete` says when every page is in), and the team
+summary waits for every page before showing a count. Either deploy order is safe.
 
 ## 1. Team summary
 
@@ -44,6 +46,11 @@ summary and spouse merge below therefore operate on the complete result set.
   status from each person's **latest completed quarter**: at risk (Red), needs
   attention (Yellow), on track (Green), no data (Gray or no completed quarter).
   Teams sort worst first: most at risk, then most needs attention, then name.
+- The summary runs the roster query with every filter except the team filter,
+  so the other teams' counts stay whole while one team is selected (with no
+  team selected it is the same query, served from the same cache entry). It
+  waits for every page, hides itself if that unfiltered set trips the row cap,
+  and shows an inline error with Retry if the teams list cannot load.
 - `TeamSummary` renders a row of compact cards under the applied-filter chips:
   team name, "{{count}} staff", coloured count chips using the existing
   `healthColor` scheme (zero counts omitted), and a thin stacked bar of the
@@ -59,12 +66,14 @@ summary and spouse merge below therefore operate on the complete result set.
 
 **Decision.** `mergeSpouseRows(nodes)` (pure, in `helpers.ts`) returns
 `StaffRow[]`, where `StaffRow = ManagedStaffMember & { partner?: ManagedStaffMember }`.
-Two rows pair when either names the other as spouse, or when they share a
-staff account: HCM does not always carry the spouse link (the Capos on the dev
-account share an account with no link either way), and a joint staff account
-only ever belongs to a couple. The later row is absorbed as `partner`, keeping
-the earlier position (the health sort is identical for both). Each spouse keeps
-their own team list; the row displays the union.
+Two rows pair only when they share a staff account. The API builds every
+health figure from the staff account, so such a pair carries identical
+benchmarks and quarters, and a joint account only ever belongs to a couple (HCM
+does not always carry the spouse link: the Capos on the dev account share an
+account with no link either way). Spouses who hold separate staff accounts have
+their own health each, so they keep their own rows and name each other via the
+"Spouse:" line. The later row is absorbed as `partner`, keeping the earlier
+position. Each spouse keeps their own team list; the row displays the union.
 
 - Name: `getRowName(row)` gives "Anton & Artjola Capo" when the last names match,
   otherwise "Anton Capo & Artjola Smith". Avatar initials use both first names.
@@ -89,6 +98,9 @@ touch and clash with the row being a button that opens the drawer.
   Monthly Salary, Monthly Gross Salary (red with the existing warning marker
   when below the benchmark), tenure, healthcare dependents, support type, SECA
   status, and a "Payroll started {{quarter}}" note for a starting quarter.
+  SECA labels reuse `HrTools/Shared/getLocalizedTaxStatus` (moved there from
+  the salary calculator) so one enum keeps one wording. For a merged couple the
+  per-person HR fields (tenure, dependents, support type, SECA) name each spouse.
 - Expanded state lives in the context as a set of person numbers, so
   virtualisation cannot lose it.
 - `ManagedStaff.graphql` adds `tenure`, `healthcareDependentsCount`,

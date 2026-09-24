@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
@@ -68,11 +69,14 @@ const cityYellow = managedStaffMember({
   },
 });
 
+const twoTeams: ManagedStaffTeamsQuery['managedStaffTeams'] = [
+  { name: 'Campus', departments: ['US Campus'] },
+  { name: 'City', departments: ['US City'] },
+];
+
 const renderSummary = (
-  teams: ManagedStaffTeamsQuery['managedStaffTeams'] = [
-    { name: 'Campus', departments: ['US Campus'] },
-    { name: 'City', departments: ['US City'] },
-  ],
+  teams: ManagedStaffTeamsQuery['managedStaffTeams'] = twoTeams,
+  mocks: ApolloErgonoMockMap = {},
 ) =>
   render(
     <TestRouter>
@@ -81,10 +85,17 @@ const renderSummary = (
           ManagedStaff: ManagedStaffQuery;
           ManagedStaffTeams: ManagedStaffTeamsQuery;
         }>
-          mocks={{
-            ManagedStaff: managedStaffMock([campusRed, cityGreen, cityYellow]),
-            ManagedStaffTeams: managedStaffTeamsMock(teams),
-          }}
+          mocks={
+            {
+              ManagedStaff: managedStaffMock([
+                campusRed,
+                cityGreen,
+                cityYellow,
+              ]),
+              ManagedStaffTeams: managedStaffTeamsMock(teams),
+              ...mocks,
+            } as ApolloErgonoMockMap
+          }
           onCall={mutationSpy}
         >
           <MpdSupervisorReportProvider>
@@ -150,5 +161,77 @@ describe('TeamSummary', () => {
     expect(
       await findByRole('button', { name: /Campus/, pressed: false }),
     ).toBeInTheDocument();
+  });
+
+  it('waits for every page before showing any counts', async () => {
+    const page1 = managedStaffMock([campusRed]);
+    page1.managedStaff.pageInfo = { endCursor: 'cursor-1', hasNextPage: true };
+    const page2 = managedStaffMock([cityGreen, cityYellow]);
+    const { findByRole } = renderSummary(twoTeams, {
+      ManagedStaff: {
+        managedStaff: (_root: unknown, args: { after?: string | null }) =>
+          args.after ? page2.managedStaff : page1.managedStaff,
+      },
+    });
+
+    const region = await findByRole('region', { name: 'Teams' });
+    // Both pages are in: City only exists on the second page
+    expect(
+      within(region).getByRole('button', { name: /City/ }),
+    ).toHaveTextContent('2 staff');
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        after: 'cursor-1',
+      }),
+    );
+  });
+
+  it('summarises every team even while one is selected', async () => {
+    const { findByRole } = renderSummary();
+    const region = await findByRole('region', { name: 'Teams' });
+
+    userEvent.click(within(region).getByRole('button', { name: /Campus/ }));
+
+    const pressed = await findByRole('button', {
+      name: /Campus/,
+      pressed: true,
+    });
+    expect(pressed).toBeInTheDocument();
+    // The summary query never carries the team filter
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        teamNames: ['Campus'],
+      }),
+    );
+    const summaryCalls = mutationSpy.mock.calls.filter(
+      ([{ operation }]) =>
+        operation.operationName === 'ManagedStaff' &&
+        operation.variables.teamNames === null,
+    );
+    expect(summaryCalls.length).toBeGreaterThan(0);
+    expect(
+      within(await findByRole('region', { name: 'Teams' })).getByRole(
+        'button',
+        {
+          name: /City/,
+        },
+      ),
+    ).toHaveTextContent('2 staff');
+  });
+
+  it('says so when the teams cannot be loaded', async () => {
+    const { findByRole, queryByRole } = renderSummary(twoTeams, {
+      ManagedStaffTeams: {
+        managedStaffTeams: () => {
+          throw new Error('Teams unavailable');
+        },
+      },
+    });
+
+    const alert = await findByRole('alert');
+    expect(alert).toHaveTextContent(
+      'Could not load your teams: Teams unavailable',
+    );
+    expect(queryByRole('region', { name: 'Teams' })).not.toBeInTheDocument();
   });
 });

@@ -1,15 +1,21 @@
-import React, { useMemo } from 'react';
-import { Box, ButtonBase, Typography } from '@mui/material';
+import React, { useEffect, useMemo, useState } from 'react';
+import { ApolloError } from '@apollo/client';
+import { Alert, Box, ButtonBase, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
+import { useManagedStaffQuery } from '../ManagedStaff.generated';
 import { useManagedStaffTeamsQuery } from '../ManagedStaffTeams.generated';
-import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
+import {
+  filterRequiredFromError,
+  useMpdSupervisorReport,
+} from '../MpdSupervisorReportContext';
 import { healthStatusOrder } from '../ReportLegend/legendCopy';
 import {
   TeamSummaryRow,
   healthColor,
   healthLabel,
+  mergeSpouseRows,
   summarizeTeams,
 } from '../helpers';
 
@@ -78,8 +84,9 @@ const TeamCard: React.FC<TeamCardProps> = ({ team, selected, onToggle }) => {
                   lineHeight: 1.8,
                 }}
               >
-                {t('{{count}} {{status}}', {
-                  count: team.counts[status],
+                {/* `total`, not `count`: the status word never changes with the number */}
+                {t('{{total}} {{status}}', {
+                  total: team.counts[status],
                   status: healthLabel(t, status),
                 })}
               </Typography>
@@ -116,18 +123,83 @@ const TeamCard: React.FC<TeamCardProps> = ({ team, selected, onToggle }) => {
 };
 
 /**
- * How each team in the results is doing, for supervisors with several teams.
- * Each card is a toggle for that team's filter.
+ * How each team is doing, for supervisors with several teams. The cards come
+ * from the report's other filters but never its team filter, so every team
+ * stays comparable while one is selected; a card toggles that team's filter.
  */
 export const TeamSummary: React.FC = () => {
   const { t } = useTranslation();
-  const { staffMembers, team, setTeam, filterRequired } =
+  const { queryVariables, team, setTeam, filterRequired } =
     useMpdSupervisorReport();
-  const { data } = useManagedStaffTeamsQuery();
-  const teamCount = data?.managedStaffTeams.length ?? 0;
-  const summary = useMemo(() => summarizeTeams(staffMembers), [staffMembers]);
+  const {
+    data: teamsData,
+    error: teamsError,
+    refetch: refetchTeams,
+  } = useManagedStaffTeamsQuery();
+  const teamCount = teamsData?.managedStaffTeams.length ?? 0;
 
-  if (teamCount < 2 || filterRequired || summary.length === 0) {
+  // Identical to the roster query while no team is selected, so Apollo serves
+  // it from the same cache entry; with a team selected it is the one extra
+  // request that keeps the other teams' counts whole.
+  const { data, error, loading, fetchMore } = useManagedStaffQuery({
+    context: { suppressErrorCodes: ['FILTER_REQUIRED'] },
+    variables: { ...queryVariables, teamNames: null },
+    skip: teamCount < 2 || !!filterRequired,
+  });
+  const pageInfo = data?.managedStaff.pageInfo;
+  // Every page must be in before the counts mean anything. A page that fails
+  // just hides the strip; the list's own alert reports the failure.
+  const [pageError, setPageError] = useState<ApolloError | undefined>();
+  useEffect(() => {
+    setPageError(undefined);
+  }, [queryVariables]);
+  useEffect(() => {
+    if (pageInfo?.hasNextPage && pageInfo.endCursor && !pageError) {
+      fetchMore({ variables: { after: pageInfo.endCursor } }).catch(
+        (fetchError: ApolloError) => setPageError(fetchError),
+      );
+    }
+  }, [pageInfo?.hasNextPage, pageInfo?.endCursor, pageError, fetchMore]);
+  const loadingPages = !!pageInfo?.hasNextPage;
+  const summary = useMemo(
+    () => summarizeTeams(mergeSpouseRows(data?.managedStaff.nodes ?? [])),
+    [data],
+  );
+
+  if (teamsError && !teamsData) {
+    return (
+      <Alert
+        severity="error"
+        sx={{ mb: 2 }}
+        action={
+          <ButtonBase
+            onClick={() => {
+              refetchTeams().catch(() => undefined);
+            }}
+            sx={{ px: 1, fontWeight: 600 }}
+          >
+            {t('Retry')}
+          </ButtonBase>
+        }
+      >
+        {t('Could not load your teams: {{message}}', {
+          message: teamsError.message,
+        })}
+      </Alert>
+    );
+  }
+
+  // The unfiltered reach can trip the row cap while the team-filtered list
+  // fits; there is nothing to summarise then.
+  if (
+    teamCount < 2 ||
+    filterRequired ||
+    filterRequiredFromError(error) ||
+    loading ||
+    loadingPages ||
+    pageError ||
+    summary.length === 0
+  ) {
     return null;
   }
 

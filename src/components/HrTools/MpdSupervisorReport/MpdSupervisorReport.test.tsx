@@ -19,7 +19,6 @@ import { MpdSupervisorReport } from './MpdSupervisorReport';
 import {
   MpdSupervisorReportProvider,
   Panel,
-  useMpdSupervisorReport,
 } from './MpdSupervisorReportContext';
 import { StaffMemberDrawer } from './StaffMemberDrawer/StaffMemberDrawer';
 import {
@@ -31,15 +30,6 @@ import {
 const onNavListToggle = jest.fn();
 const onFilterListToggle = jest.fn();
 const mutationSpy = jest.fn();
-
-// Virtuoso's endReached is not reliable in jsdom, so a test asks for the next
-// page through the context directly.
-let loadMoreFn: () => void;
-const LoadMoreTrigger: React.FC = () => {
-  const { loadMore } = useMpdSupervisorReport();
-  loadMoreFn = loadMore;
-  return null;
-};
 
 const geographicConstants = {
   constant: {
@@ -134,7 +124,6 @@ const renderReport = ({
                   <MpdSupervisorReportFilterPanel onClose={jest.fn()} />
                 )}
                 <StaffMemberDrawer />
-                <LoadMoreTrigger />
               </MpdSupervisorReportProvider>
             </GqlMockedProvider>
           </VirtuosoMockContext.Provider>
@@ -359,10 +348,7 @@ describe('MpdSupervisorReport', () => {
         ({ variables }) => variables.after === 'cursor-1',
       );
 
-    act(() => {
-      loadMoreFn();
-    });
-
+    // The context asks for the rest of the result by itself
     const alert = await findByRole('alert');
     expect(alert).toHaveTextContent('Could not load more staff: Page failed');
     expect(getByText('John Smith')).toBeInTheDocument();

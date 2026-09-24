@@ -1,12 +1,14 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { getLocalizedTaxStatus } from 'src/components/HrTools/Shared/getLocalizedTaxStatus';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import {
+  ManagedStaffMember,
   StaffRow,
-  getLocalizedSecaStatus,
   getLocalizedSupportType,
   getQuarterLabel,
+  getRowSpouseName,
   grossSalaryWarning,
   pendingField,
 } from '../helpers';
@@ -37,7 +39,11 @@ interface QuickGlanceProps {
   row: StaffRow;
 }
 
-/** The extra details a row shows when expanded, without opening the drawer. */
+/**
+ * The extra details a row shows when expanded, without opening the drawer.
+ * A merged couple shares every health figure (both rows come from one staff
+ * account), but the HR fields are per person, so those name each spouse.
+ */
 export const QuickGlance: React.FC<QuickGlanceProps> = ({ row }) => {
   const { t } = useTranslation();
   const { formatCurrency } = useFormatters();
@@ -52,10 +58,20 @@ export const QuickGlance: React.FC<QuickGlanceProps> = ({ row }) => {
     ),
   ];
   const startingQuarter = quarterlyHealth?.startingQuarter;
-  const spouseName = partner
-    ? `${partner.firstName} ${partner.lastName}`
-    : row.spouseFirstName
-      ? `${row.spouseFirstName} ${row.spouseLastName ?? row.lastName}`
+  const spouseName = getRowSpouseName(row);
+
+  // Per-person HR fields: one value, or one per spouse for a merged row
+  const perPerson = (
+    format: (member: ManagedStaffMember) => string | number | null | undefined,
+  ): string => {
+    const show = (member: ManagedStaffMember) => format(member) ?? pendingField;
+    return partner
+      ? `${row.firstName}: ${show(row)} · ${partner.firstName}: ${show(partner)}`
+      : String(show(row));
+  };
+  const years = ({ tenure }: ManagedStaffMember) =>
+    tenure !== null && tenure !== undefined
+      ? t('{{count}} years', { count: tenure })
       : null;
 
   return (
@@ -99,6 +115,7 @@ export const QuickGlance: React.FC<QuickGlanceProps> = ({ row }) => {
       />
       <Detail
         label={t('Monthly Gross Salary')}
+        // Same treatment as the drawer: red value plus the warning marker
         valueColor={grossWarning ? 'error.main' : undefined}
         value={
           <>
@@ -107,25 +124,26 @@ export const QuickGlance: React.FC<QuickGlanceProps> = ({ row }) => {
           </>
         }
       />
-      <Detail
-        label={t('Tenure')}
-        value={
-          row.tenure !== null && row.tenure !== undefined
-            ? t('{{count}} years', { count: row.tenure })
-            : pendingField
-        }
-      />
+      <Detail label={t('Tenure')} value={perPerson(years)} />
       <Detail
         label={t('Healthcare dependents')}
-        value={row.healthcareDependentsCount ?? pendingField}
+        value={perPerson(
+          ({ healthcareDependentsCount }) => healthcareDependentsCount,
+        )}
       />
       <Detail
         label={t('Support type')}
-        value={getLocalizedSupportType(t, row.peopleGroupSupportType)}
+        value={perPerson(({ peopleGroupSupportType }) =>
+          peopleGroupSupportType
+            ? getLocalizedSupportType(t, peopleGroupSupportType)
+            : null,
+        )}
       />
       <Detail
         label={t('SECA')}
-        value={getLocalizedSecaStatus(t, row.secaStatus)}
+        value={perPerson(({ secaStatus }) =>
+          getLocalizedTaxStatus(secaStatus, t),
+        )}
       />
       {spouseName && <Detail label={t('Spouse')} value={spouseName} />}
       {startingQuarter && (

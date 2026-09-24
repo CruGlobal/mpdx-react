@@ -12,7 +12,10 @@ import { MpdAssignmentCategoryGroupEnum } from 'src/graphql/types.generated';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
 import { useLocalStorage } from 'src/hooks/useLocalStorage';
 import { MpdSupervisorReportQuickFilterEnum } from './Filters/mpdSupervisorReportFilters';
-import { useManagedStaffQuery } from './ManagedStaff.generated';
+import {
+  ManagedStaffQueryVariables,
+  useManagedStaffQuery,
+} from './ManagedStaff.generated';
 import { StaffDetailTabEnum } from './StaffDetailsTabs/StaffDetailTab';
 import {
   ManagedStaffMember,
@@ -28,8 +31,9 @@ export enum Panel {
 
 const searchDebounceMs = 500;
 // The API grades every matching person before GraphQL paginates in memory and
-// refuses more than 100, so one page of 100 costs nothing extra and holds the
-// whole result. The team summary and spouse merge rely on that completeness.
+// refuses more than 100, so asking for 100 costs nothing extra. Until the API
+// raises its page cap for this query (mpdx_api MPDX-10066) the server clamps
+// a page to 50, so the context also loads any further pages by itself.
 const pageSize = 100;
 
 /** How much room each staff row takes; a per-browser preference. */
@@ -120,6 +124,10 @@ export interface MpdSupervisorReportContextValue {
   filterRequired: FilterRequired | null;
   /** A failed load-more page; the rows already loaded are kept. Retry with loadMore. */
   loadMoreError: ApolloError | undefined;
+  /** The variables the roster query runs with, for queries that mirror it */
+  queryVariables: ManagedStaffQueryVariables;
+  /** Every page of the current result has arrived */
+  staffComplete: boolean;
   hasNextPage: boolean;
   loadMore: () => void;
   refetchStaff: () => void;
@@ -173,12 +181,8 @@ export const MpdSupervisorReportProvider: React.FC<{
 
   const debouncedSearch = useDebouncedValue(search, searchDebounceMs);
 
-  const { data, loading, error, fetchMore, refetch } = useManagedStaffQuery({
-    // The FILTER_REQUIRED guard is guidance the report renders itself, not a
-    // failure, so only it skips the global toast; real errors still toast and
-    // reach monitoring.
-    context: { suppressErrorCodes: ['FILTER_REQUIRED'] },
-    variables: {
+  const queryVariables = useMemo<ManagedStaffQueryVariables>(
+    () => ({
       first: pageSize,
       name: debouncedSearch.trim() || null,
       teamNames: team ? [team] : null,
@@ -191,7 +195,16 @@ export const MpdSupervisorReportProvider: React.FC<{
       negativeThreeMonths:
         activeQuickFilter ===
           MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative || null,
-    },
+    }),
+    [debouncedSearch, team, department, employmentType, activeQuickFilter],
+  );
+
+  const { data, loading, error, fetchMore, refetch } = useManagedStaffQuery({
+    // The FILTER_REQUIRED guard is guidance the report renders itself, not a
+    // failure, so only it skips the global toast; real errors still toast and
+    // reach monitoring.
+    context: { suppressErrorCodes: ['FILTER_REQUIRED'] },
+    variables: queryVariables,
   });
 
   const pageInfo = data?.managedStaff.pageInfo;
@@ -206,6 +219,15 @@ export const MpdSupervisorReportProvider: React.FC<{
   useEffect(() => {
     setLoadMoreError(undefined);
   }, [debouncedSearch, team, department, employmentType, activeQuickFilter]);
+
+  // The spouse merge and team summary need the whole result, so the rest of
+  // it is fetched without waiting for the list to be scrolled. A failed page
+  // is left for the inline Retry rather than retried in a loop.
+  useEffect(() => {
+    if (pageInfo?.hasNextPage && !loading && !loadMoreError) {
+      setWantsNextPage(true);
+    }
+  }, [pageInfo?.hasNextPage, pageInfo?.endCursor, loading, loadMoreError]);
 
   useEffect(() => {
     if (!wantsNextPage || loading) {
@@ -336,6 +358,8 @@ export const MpdSupervisorReportProvider: React.FC<{
       staffError: filterRequired ? undefined : error,
       filterRequired,
       loadMoreError,
+      queryVariables,
+      staffComplete: !!data && !loading && !pageInfo?.hasNextPage,
       hasNextPage: pageInfo?.hasNextPage ?? false,
       loadMore,
       refetchStaff,
@@ -362,6 +386,7 @@ export const MpdSupervisorReportProvider: React.FC<{
       error,
       filterRequired,
       loadMoreError,
+      queryVariables,
       pageInfo?.hasNextPage,
       loadMore,
       refetchStaff,

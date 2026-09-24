@@ -27,6 +27,7 @@ import {
   getQuarterLabel,
   getRowInitials,
   getRowName,
+  getRowSpouseName,
   getRowTeamNames,
   grossSalaryWarning,
   healthLabel,
@@ -82,8 +83,7 @@ export const StaffMember: React.FC<StaffMemberProps> = ({
   const { t } = useTranslation();
   const compact = density === RowDensityEnum.Compact;
   const { formatCurrency } = useFormatters();
-  const { staffAccountId, assignmentCategoryGroup, partner, spouseFirstName } =
-    data;
+  const { staffAccountId, assignmentCategoryGroup, partner } = data;
   const grossWarning = grossSalaryWarning(t, formatCurrency, data);
 
   const names = getRowName(data);
@@ -98,11 +98,8 @@ export const StaffMember: React.FC<StaffMemberProps> = ({
     () => getRowTeamNames(data).join(', ') || pendingField,
     [data],
   );
-  // A spouse who is not in the list still gets named on the row
-  const spouse =
-    !partner && spouseFirstName
-      ? `${spouseFirstName} ${data.spouseLastName ?? data.lastName}`
-      : null;
+  // A merged row already carries both names; any other spouse is named here
+  const spouse = partner ? null : getRowSpouseName(data);
 
   return (
     <StyledCard compact={compact}>

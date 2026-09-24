@@ -4,7 +4,6 @@ import {
   MpdAssignmentCategoryGroupEnum,
   MpdHealthStatusEnum,
   PeopleGroupSupportTypeEnum,
-  SecaStatusEnum,
   StartingQuarterPayroll,
 } from 'src/graphql/types.generated';
 import theme from 'src/theme';
@@ -13,12 +12,12 @@ import {
   countPeople,
   getInitials,
   getLocalizedAssignmentCategoryGroup,
-  getLocalizedSecaStatus,
   getLocalizedSupportType,
   getQuarterLabel,
   getQuarterMonthRange,
   getRowInitials,
   getRowName,
+  getRowSpouseName,
   getRowTeamNames,
   healthColor,
   healthLabel,
@@ -333,11 +332,13 @@ describe('mergeSpouseRows', () => {
     expect(rows[0].partner).toBeUndefined();
   });
 
-  it('merges when only one spouse carries the link', () => {
-    const unlinked = managedStaffMember({ ...jane, spousePersonNumber: null });
-    const rows = mergeSpouseRows([john, unlinked]);
-    expect(rows).toHaveLength(1);
-    expect(rows[0].partner?.personNumber).toBe('2');
+  it('keeps HCM-linked spouses apart when they hold separate staff accounts', () => {
+    // Each has their own health figures, so each keeps their own row
+    const separate = managedStaffMember({ ...jane, staffAccountId: 'other' });
+    const rows = mergeSpouseRows([john, separate]);
+    expect(rows).toHaveLength(2);
+    expect(rows[0].partner).toBeUndefined();
+    expect(getRowSpouseName(rows[0])).toBe('Jane Smith');
   });
 
   it('merges two people who share a staff account without a spouse link', () => {
@@ -483,6 +484,25 @@ describe('summarizeTeams', () => {
     ).toEqual([]);
   });
 
+  it('breaks a tie on counts alphabetically', () => {
+    const rows = [
+      green({
+        personNumber: '1',
+        staffAccountId: 'a1',
+        teams: { employee: [team('Zeta')], spouse: [] },
+      }),
+      green({
+        personNumber: '2',
+        staffAccountId: 'a2',
+        teams: { employee: [team('Alpha')], spouse: [] },
+      }),
+    ];
+    expect(summarizeTeams(rows).map(({ name }) => name)).toEqual([
+      'Alpha',
+      'Zeta',
+    ]);
+  });
+
   it('sorts the teams needing the most attention first', () => {
     const rows = [
       green({
@@ -528,13 +548,24 @@ describe('getLocalizedSupportType', () => {
   });
 });
 
-describe('getLocalizedSecaStatus', () => {
-  it('labels each SECA status and falls back to the placeholder', () => {
-    expect(getLocalizedSecaStatus(t, SecaStatusEnum.Seca)).toBe('Pays SECA');
-    expect(getLocalizedSecaStatus(t, SecaStatusEnum.Fica)).toBe('Pays FICA');
-    expect(getLocalizedSecaStatus(t, SecaStatusEnum.Optout)).toBe(
-      'Exempt from SECA',
-    );
-    expect(getLocalizedSecaStatus(t, undefined)).toBe(pendingField);
+describe('getRowSpouseName', () => {
+  it('names the merged partner', () => {
+    expect(getRowSpouseName({ ...john, partner: jane })).toBe('Jane Smith');
+  });
+
+  it('names an HCM-linked spouse who is not in the list', () => {
+    expect(getRowSpouseName(alice)).toBe('Bob Jones');
+  });
+
+  it("falls back to the member's last name when the spouse's is missing", () => {
+    expect(
+      getRowSpouseName(managedStaffMember({ ...alice, spouseLastName: null })),
+    ).toBe('Bob Jones');
+  });
+
+  it('is null without a spouse', () => {
+    expect(
+      getRowSpouseName(managedStaffMember({ ...alice, spouseFirstName: null })),
+    ).toBeNull();
   });
 });
