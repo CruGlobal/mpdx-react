@@ -1,13 +1,18 @@
 import React from 'react';
+import { ApolloError } from '@apollo/client';
 import { act, render, waitFor } from '@testing-library/react';
+import { GraphQLError } from 'graphql';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { MpdAssignmentCategoryGroupEnum } from 'src/graphql/types.generated';
 import { MpdSupervisorReportQuickFilterEnum } from './Filters/mpdSupervisorReportFilters';
 import { ManagedStaffQuery } from './ManagedStaff.generated';
 import {
+  FilterRequired,
   MpdSupervisorReportProvider,
   Panel,
+  filterRequiredFromError,
   useMpdSupervisorReport,
 } from './MpdSupervisorReportContext';
 import { StaffDetailTabEnum } from './StaffDetailsTabs/StaffDetailTab';
@@ -42,6 +47,10 @@ interface ConsumerResult {
   setEmploymentType: (v: MpdAssignmentCategoryGroupEnum | null) => void;
   activeQuickFilter: MpdSupervisorReportQuickFilterEnum;
   setActiveQuickFilter: (v: MpdSupervisorReportQuickFilterEnum) => void;
+  activeFilterCount: number;
+  clearFilters: () => void;
+  filterRequired: FilterRequired | null;
+  staffError: ApolloError | undefined;
   loadMore: () => void;
 }
 
@@ -70,11 +79,13 @@ const renderInProvider = (
   children: React.ReactNode,
   router: React.ComponentProps<typeof TestRouter>['router'] = {},
   managedStaff: ManagedStaffQuery = managedStaffMock([sampleMember]),
+  /** Overrides the default mocks, e.g. to make the query throw. */
+  mocks: ApolloErgonoMockMap = {},
 ) =>
   render(
     <TestRouter router={router}>
       <GqlMockedProvider<{ ManagedStaff: ManagedStaffQuery }>
-        mocks={{ ManagedStaff: managedStaff }}
+        mocks={{ ManagedStaff: managedStaff, ...mocks } as ApolloErgonoMockMap}
         onCall={mutationSpy}
       >
         <MpdSupervisorReportProvider>{children}</MpdSupervisorReportProvider>
@@ -82,7 +93,44 @@ const renderInProvider = (
     </TestRouter>,
   );
 
-const renderConsumer = () => renderInProvider(<Consumer />);
+const renderConsumer = (mocks: ApolloErgonoMockMap = {}) =>
+  renderInProvider(<Consumer />, {}, undefined, mocks);
+
+const filterGuard = (filtered: boolean): ApolloErgonoMockMap => ({
+  ManagedStaff: {
+    managedStaff: () => {
+      throw new GraphQLError('228 staff are in reach', {
+        extensions: { code: 'FILTER_REQUIRED', count: 228, filtered },
+      });
+    },
+  },
+});
+
+describe('filterRequiredFromError', () => {
+  const guard = (extensions: Record<string, unknown>) =>
+    new ApolloError({
+      graphQLErrors: [new GraphQLError('too many', { extensions })],
+    });
+
+  it('parses count and filtered from a FILTER_REQUIRED error', () => {
+    expect(
+      filterRequiredFromError(
+        guard({ code: 'FILTER_REQUIRED', count: 228, filtered: true }),
+      ),
+    ).toEqual({ count: 228, filtered: true });
+  });
+
+  it('falls back to 0 / unfiltered when the extensions are malformed', () => {
+    expect(filterRequiredFromError(guard({ code: 'FILTER_REQUIRED' }))).toEqual(
+      { count: 0, filtered: false },
+    );
+  });
+
+  it('ignores other errors', () => {
+    expect(filterRequiredFromError(guard({ code: 'NOT_FOUND' }))).toBeNull();
+    expect(filterRequiredFromError(undefined)).toBeNull();
+  });
+});
 
 describe('MpdSupervisorReportContext', () => {
   it('starts with isOpen false and no selected member', () => {
@@ -232,9 +280,91 @@ describe('MpdSupervisorReportContext', () => {
       MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative,
     );
   });
+
+  it('counts the panel filters but not the search', () => {
+    renderConsumer();
+    expect(consumerResult.activeFilterCount).toBe(0);
+
+    act(() => {
+      consumerResult.setSearch('Jo');
+      consumerResult.setTeam('Central Team');
+      consumerResult.setDepartment('Cru Military');
+      consumerResult.setEmploymentType(MpdAssignmentCategoryGroupEnum.FullTime);
+      consumerResult.setActiveQuickFilter(
+        MpdSupervisorReportQuickFilterEnum.NegativeLastMonth,
+      );
+    });
+
+    expect(consumerResult.activeFilterCount).toBe(4);
+  });
+
+  it('clearFilters resets the search and every panel filter', () => {
+    const { getByTestId } = renderConsumer();
+    act(() => {
+      consumerResult.setSearch('Jo');
+      consumerResult.setTeam('Central Team');
+      consumerResult.setDepartment('Cru Military');
+      consumerResult.setEmploymentType(MpdAssignmentCategoryGroupEnum.FullTime);
+      consumerResult.setActiveQuickFilter(
+        MpdSupervisorReportQuickFilterEnum.NegativeLastMonth,
+      );
+    });
+
+    act(() => {
+      consumerResult.clearFilters();
+    });
+
+    expect(getByTestId('search').textContent).toBe('');
+    expect(getByTestId('team').textContent).toBe('');
+    expect(getByTestId('department').textContent).toBe('');
+    expect(getByTestId('employmentType').textContent).toBe('');
+    expect(getByTestId('activeQuickFilter').textContent).toBe(
+      MpdSupervisorReportQuickFilterEnum.AllPeople,
+    );
+    expect(consumerResult.activeFilterCount).toBe(0);
+  });
 });
 
 describe('managed staff query variables', () => {
+  it('exposes the FILTER_REQUIRED guard instead of an error', async () => {
+    renderConsumer(filterGuard(false));
+
+    await waitFor(() =>
+      expect(consumerResult.filterRequired).toEqual({
+        count: 228,
+        filtered: false,
+      }),
+    );
+    expect(consumerResult.staffError).toBeUndefined();
+  });
+
+  it('reports other query failures as staffError', async () => {
+    renderConsumer({
+      ManagedStaff: {
+        managedStaff: () => {
+          throw new Error('Not authorized');
+        },
+      },
+    });
+
+    await waitFor(() =>
+      expect(consumerResult.staffError?.message).toBe('Not authorized'),
+    );
+    expect(consumerResult.filterRequired).toBeNull();
+  });
+
+  it('asks the client not to toast query errors', async () => {
+    renderConsumer();
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {}),
+    );
+    const call = mutationSpy.mock.calls.find(
+      ([{ operation }]) => operation.operationName === 'ManagedStaff',
+    );
+    expect(call?.[0].operation.getContext().suppressErrors).toBe(true);
+  });
+
   it('omits teamNames and departments until a filter is chosen', async () => {
     renderConsumer();
 

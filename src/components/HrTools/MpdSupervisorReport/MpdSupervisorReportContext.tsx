@@ -23,6 +23,33 @@ export enum Panel {
 const searchDebounceMs = 500;
 const pageSize = 25;
 
+/**
+ * The API refuses to grade more than its row cap in one report and answers
+ * with a FILTER_REQUIRED error carrying how many staff matched and whether
+ * any filter was already applied. It is guidance, not a failure.
+ */
+export interface FilterRequired {
+  count: number;
+  /** Whether the caller had already narrowed the report */
+  filtered: boolean;
+}
+
+export const filterRequiredFromError = (
+  error: ApolloError | undefined,
+): FilterRequired | null => {
+  const graphQLError = error?.graphQLErrors.find(
+    ({ extensions }) => extensions?.code === 'FILTER_REQUIRED',
+  );
+  if (!graphQLError) {
+    return null;
+  }
+  const { count, filtered } = graphQLError.extensions ?? {};
+  return {
+    count: typeof count === 'number' ? count : 0,
+    filtered: filtered === true,
+  };
+};
+
 export interface MpdSupervisorReportContextValue {
   selectedMember: ManagedStaffMember | undefined;
   isOpen: boolean;
@@ -46,6 +73,10 @@ export interface MpdSupervisorReportContextValue {
   setEmploymentType: (v: MpdAssignmentCategoryGroupEnum | null) => void;
   activeQuickFilter: MpdSupervisorReportQuickFilterEnum;
   setActiveQuickFilter: (v: MpdSupervisorReportQuickFilterEnum) => void;
+  /** How many panel filters narrow the report; the search box is not counted */
+  activeFilterCount: number;
+  /** Resets the search and every panel filter */
+  clearFilters: () => void;
   selectedTabKey: StaffDetailTabEnum;
   setSelectedTabKey: React.Dispatch<React.SetStateAction<StaffDetailTabEnum>>;
   handleTabChange: (
@@ -57,7 +88,10 @@ export interface MpdSupervisorReportContextValue {
   staffMembers: ManagedStaffMember[];
   totalCount: number;
   staffLoading: boolean;
+  /** Query failures other than the FILTER_REQUIRED guard */
   staffError: ApolloError | undefined;
+  /** Set when the API asks for a narrower filter before it will list staff */
+  filterRequired: FilterRequired | null;
   hasNextPage: boolean;
   loadMore: () => void;
   refetchStaff: () => void;
@@ -104,6 +138,9 @@ export const MpdSupervisorReportProvider: React.FC<{
   const debouncedSearch = useDebouncedValue(search, searchDebounceMs);
 
   const { data, loading, error, fetchMore, refetch } = useManagedStaffQuery({
+    // The report renders its own error state, and the FILTER_REQUIRED guard is
+    // guidance rather than a failure, so the global error toast is redundant.
+    context: { suppressErrors: true },
     variables: {
       first: pageSize,
       name: debouncedSearch.trim() || null,
@@ -146,6 +183,24 @@ export const MpdSupervisorReportProvider: React.FC<{
     // Apollo rejects a failed refetch, but the hook's own error state reports it.
     refetch().catch(() => undefined);
   }, [refetch]);
+
+  const filterRequired = useMemo(() => filterRequiredFromError(error), [error]);
+
+  const activeFilterCount =
+    (team ? 1 : 0) +
+    (department ? 1 : 0) +
+    (employmentType ? 1 : 0) +
+    (activeQuickFilter === MpdSupervisorReportQuickFilterEnum.AllPeople
+      ? 0
+      : 1);
+
+  const clearFilters = useCallback(() => {
+    setSearch('');
+    setTeam(null);
+    setDepartment(null);
+    setEmploymentType(null);
+    setActiveQuickFilter(MpdSupervisorReportQuickFilterEnum.AllPeople);
+  }, []);
 
   const handleTabChange = useCallback(
     (_event: React.SyntheticEvent, newKey: StaffDetailTabEnum) => {
@@ -194,13 +249,16 @@ export const MpdSupervisorReportProvider: React.FC<{
       setEmploymentType,
       activeQuickFilter,
       setActiveQuickFilter,
+      activeFilterCount,
+      clearFilters,
       selectedTabKey,
       setSelectedTabKey,
       handleTabChange,
       staffMembers: data?.managedStaff.nodes ?? [],
       totalCount: data?.managedStaff.totalCount ?? 0,
       staffLoading: loading,
-      staffError: error,
+      staffError: filterRequired ? undefined : error,
+      filterRequired,
       hasNextPage: pageInfo?.hasNextPage ?? false,
       loadMore,
       refetchStaff,
@@ -213,11 +271,14 @@ export const MpdSupervisorReportProvider: React.FC<{
       department,
       employmentType,
       activeQuickFilter,
+      activeFilterCount,
+      clearFilters,
       selectedTabKey,
       handleTabChange,
       data,
       loading,
       error,
+      filterRequired,
       pageInfo?.hasNextPage,
       loadMore,
       refetchStaff,
