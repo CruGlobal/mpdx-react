@@ -18,13 +18,6 @@ const List = styled('ul')({
   padding: 0,
 });
 
-const EmptyState = styled(Box)({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  height: '100%',
-});
-
 const Item = styled('div', {
   shouldForwardProp: (prop) => prop !== 'sender',
 })<{ sender: MessageRole }>(({ theme, sender }) => ({
@@ -85,7 +78,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
     <Item sender={role}>
       <Bubble sender={role}>
         <span style={visuallyHidden}>
-          {role === 'user' ? t('You') : t('Assistant')}
+          {role === 'user' ? t('You') : t('Guide')}
         </span>
         {role === 'user' ? (
           <Typography variant="body2" whiteSpace="pre-wrap">
@@ -95,7 +88,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
           <AssistantMarkdown>{content}</AssistantMarkdown>
         )}
         {waiting && (
-          <CircularProgress size={16} aria-label={t('Assistant is thinking')} />
+          <CircularProgress size={16} aria-label={t('The Guide is thinking')} />
         )}
         {working && (
           <Stack direction="row" spacing={1} alignItems="center" mt={1}>
@@ -190,13 +183,6 @@ export const MessageList: React.FC<MessageListProps> = ({
         <div ref={endRef} />
       </Box>
       <ReplyAnnouncer messages={messages} />
-      {messages.length === 0 && (
-        <EmptyState>
-          <Typography color="text.secondary" align="center">
-            {t('Ask a question to get started.')}
-          </Typography>
-        </EmptyState>
-      )}
     </>
   );
 };

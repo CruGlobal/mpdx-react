@@ -6,13 +6,14 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import SendIcon from '@mui/icons-material/Send';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import StopIcon from '@mui/icons-material/Stop';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import {
   Box,
   Button,
   Divider,
+  IconButton,
   Link,
   TextField,
   Typography,
@@ -23,8 +24,12 @@ import { useSession } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
 import { buildHelpjuiceContactUrl } from 'src/components/Helpjuice/contactUrl';
 import { useOptionalAccountListId } from 'src/hooks/useAccountListId';
+import { getAppName } from 'src/lib/getAppName';
+import { AssistantHeader, GuideStatus } from './AssistantHeader';
 import { useAssistantContext } from './AssistantProvider';
+import { GuideGreeting } from './GuideGreeting';
 import { MessageList } from './MessageList';
+import { StarterQuestions } from './StarterQuestions';
 import { getAssistantUrl, useAssistantStream } from './useAssistantStream';
 import { useAssistantToken } from './useAssistantToken';
 import { useCurrentPageUrl } from './useCurrentPageUrl';
@@ -48,6 +53,22 @@ const Composer = styled('form')(({ theme }) => ({
   display: 'flex',
   alignItems: 'flex-end',
   gap: theme.spacing(1),
+}));
+
+const RoundButton = styled(IconButton)(({ theme }) => ({
+  flexShrink: 0,
+  width: 44,
+  height: 44,
+  borderRadius: '50%',
+  backgroundColor: theme.palette.primary.main,
+  color: theme.palette.primary.contrastText,
+  '&:hover': {
+    backgroundColor: theme.palette.primary.dark,
+  },
+  '&.Mui-disabled': {
+    backgroundColor: theme.palette.action.disabledBackground,
+    color: theme.palette.action.disabled,
+  },
 }));
 
 const HelpDeskLink: React.FC = () => {
@@ -90,12 +111,14 @@ const NotTurnedOn: React.FC<NotTurnedOnProps> = ({ accountListId }) => {
 
   return (
     <Typography variant="body2" color="text.secondary">
-      {t('The assistant is not turned on.')}{' '}
+      {t('The Guide is not turned on.')}{' '}
       <Link
         component={NextLink}
         href={`/accountLists/${accountListId}/settings/preferences`}
       >
-        {t('Turn it on in the Assistant tab of Preferences.')}
+        {t('Turn it on in the {{appName}} Guide tab of Preferences.', {
+          appName: getAppName(),
+        })}
       </Link>
     </Typography>
   );
@@ -122,8 +145,16 @@ const MintFailed: React.FC<MintFailedProps> = ({ onRetry }) => {
   );
 };
 
+interface AssistantChatProps {
+  titleId: string;
+  onClose: () => void;
+}
+
 // Mounts only while the drawer is open, so session, route, and Apollo hooks stay out of the provider
-export const AssistantChat: React.FC = () => {
+export const AssistantChat: React.FC<AssistantChatProps> = ({
+  titleId,
+  onClose,
+}) => {
   const { t } = useTranslation();
   const { messages, accountListId: transcriptAccountListId } =
     useAssistantContext();
@@ -147,12 +178,27 @@ export const AssistantChat: React.FC = () => {
     assistantDisabled,
   } = useAssistantStream({ accountListId, token, refreshToken });
   const [draft, setDraft] = useState('');
-  const canSend =
-    Boolean(draft.trim()) && tokenState.status === 'ready' && !rateLimited;
+  const ready = tokenState.status === 'ready' && !rateLimited;
+  const canSend = Boolean(draft.trim()) && ready;
+  const beforeFirstMessage = visibleMessages.every(
+    (message) => message.role === 'system',
+  );
   // A reply in flight keeps its Stop button whatever happens to the token meanwhile
   const deadEnd =
     !streaming &&
     (tokenState.status === 'refusing' || tokenState.status === 'failed');
+  const killSwitchNotice = configured && !deadEnd && assistantDisabled;
+  const status: GuideStatus = killSwitchNotice
+    ? 'off'
+    : tokenState.status === 'ready'
+      ? 'ready'
+      : tokenState.status === 'minting' ||
+          // The first render is idle until the mint starts, which would flash Off right now
+          (tokenState.status === 'idle' && configured && accountListId)
+        ? 'connecting'
+        : tokenState.status === 'failed'
+          ? 'failed'
+          : 'off';
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const wasStreaming = useRef(streaming);
   const [buttonAnnouncement, setButtonAnnouncement] = useState('');
@@ -178,6 +224,13 @@ export const AssistantChat: React.FC = () => {
     inputRef.current?.focus();
   };
 
+  const sendStarter = (question: string) => {
+    if (!streaming && ready) {
+      sendMessage(question);
+      inputRef.current?.focus();
+    }
+  };
+
   const handleKeyDown = (event: KeyboardEvent) => {
     if (
       event.key === 'Enter' &&
@@ -191,19 +244,21 @@ export const AssistantChat: React.FC = () => {
 
   return (
     <>
+      <AssistantHeader titleId={titleId} status={status} onClose={onClose} />
       <MessageArea>
         <MessageList messages={visibleMessages} streaming={streaming} />
+        {beforeFirstMessage && <GuideGreeting />}
       </MessageArea>
       <Divider />
       <Footer>
-        {configured && !deadEnd && assistantDisabled && (
+        {killSwitchNotice && (
           <Typography variant="body2" color="text.secondary" role="status">
-            {t('The assistant is off right now. Please try again later.')}
+            {t('The Guide is off right now. Please try again later.')}
           </Typography>
         )}
         {!configured ? (
           <Typography variant="body2" color="text.secondary">
-            {t('The assistant is not configured.')}
+            {t('The Guide is not configured.')}
           </Typography>
         ) : deadEnd &&
           tokenState.status === 'refusing' &&
@@ -219,38 +274,55 @@ export const AssistantChat: React.FC = () => {
             }
           />
         ) : (
-          <Composer onSubmit={handleSubmit}>
-            <TextField
-              fullWidth
-              multiline
-              autoFocus
-              maxRows={4}
-              size="small"
-              value={draft}
-              inputRef={inputRef}
-              disabled={!accountListId}
-              placeholder={t('Ask the assistant')}
-              onChange={(event) => setDraft(event.target.value)}
-              onKeyDown={handleKeyDown}
-              slotProps={{
-                htmlInput: { 'aria-label': t('Ask the assistant') },
-              }}
-            />
-            {/* One button that swaps between Send and Stop so keyboard focus survives the swap */}
-            <Button
-              variant="contained"
-              type={streaming ? 'button' : 'submit'}
-              onClick={streaming ? stop : undefined}
-              disabled={!streaming && !canSend}
-              startIcon={streaming ? <StopIcon /> : <SendIcon />}
-            >
-              {streaming ? t('Stop') : t('Send')}
-            </Button>
-          </Composer>
+          <>
+            {beforeFirstMessage && (
+              <StarterQuestions
+                disabled={streaming || !ready || !accountListId}
+                onPick={sendStarter}
+              />
+            )}
+            <Composer onSubmit={handleSubmit}>
+              <TextField
+                fullWidth
+                multiline
+                autoFocus
+                maxRows={4}
+                size="small"
+                value={draft}
+                inputRef={inputRef}
+                disabled={!accountListId}
+                placeholder={t('Ask how to do something in {{appName}}', {
+                  appName: getAppName(),
+                })}
+                onChange={(event) => setDraft(event.target.value)}
+                onKeyDown={handleKeyDown}
+                slotProps={{
+                  input: {
+                    sx: {
+                      borderRadius: '24px',
+                      px: 2,
+                      py: 1.25,
+                      backgroundColor: 'action.hover',
+                    },
+                  },
+                  htmlInput: { 'aria-label': t('Ask the Guide') },
+                }}
+              />
+              {/* One button that swaps between Send and Stop so keyboard focus survives the swap */}
+              <RoundButton
+                type={streaming ? 'button' : 'submit'}
+                onClick={streaming ? stop : undefined}
+                disabled={!streaming && !canSend}
+                aria-label={streaming ? t('Stop') : t('Send')}
+              >
+                {streaming ? <StopIcon /> : <ArrowForwardIcon />}
+              </RoundButton>
+            </Composer>
+          </>
         )}
         {configured && !accountListId && (
           <Typography variant="caption" color="text.secondary">
-            {t('Open an account list to chat with the assistant.')}
+            {t('Open an account list to chat with the Guide.')}
           </Typography>
         )}
         {configured && helpOnly && (

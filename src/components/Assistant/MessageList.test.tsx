@@ -1,6 +1,8 @@
 import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
 import { render, within } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
+import theme from 'src/theme';
 import { MessageList } from './MessageList';
 import { DEFAULT_VISIBILITY } from './navigation/intents';
 import { useNavigationVisibility } from './navigation/useNavigationVisibility';
@@ -38,26 +40,52 @@ describe('MessageList', () => {
     });
   });
 
-  it('renders the log region and an empty state before any message', () => {
-    const { getByRole, getByText } = render(
+  it('renders the log region before any message', () => {
+    const { getByRole } = render(
       <MessageList messages={[]} streaming={false} />,
     );
 
     expect(getByRole('log', { name: 'Conversation' })).toBeInTheDocument();
-    expect(getByText('Ask a question to get started.')).toBeInTheDocument();
   });
 
-  it('hides the empty state once there are messages', () => {
-    const { queryByText } = render(
-      <MessageList
-        messages={[message({ role: 'user', content: 'Hi' })]}
-        streaming={false}
-      />,
+  it('sets replies in the same type as the user bubble', () => {
+    const { getByText } = render(
+      <ThemeProvider theme={theme}>
+        <MessageList
+          messages={[
+            message({ id: '1', role: 'user', content: 'How do I log a gift?' }),
+            message({
+              id: '2',
+              content:
+                'Open the contact.\n\n- Press **Add Gift**\n- Use `Save`\n\n### Next\n\n```\nsave()\n```',
+            }),
+          ]}
+          streaming={false}
+        />
+      </ThemeProvider>,
     );
+    const family = (value: string | undefined) => value?.replace(/,\s*/g, ',');
+    const font = (element: Element) => {
+      const style = getComputedStyle(element);
+      return [family(style.fontFamily), style.fontSize, style.lineHeight];
+    };
+    const userFont = font(getByText('How do I log a gift?'));
+    const body2 = theme.typography.body2;
 
-    expect(
-      queryByText('Ask a question to get started.'),
-    ).not.toBeInTheDocument();
+    expect(userFont).toEqual([
+      family(body2.fontFamily),
+      body2.fontSize,
+      String(body2.lineHeight),
+    ]);
+    expect(font(getByText('Open the contact.'))).toEqual(userFont);
+    expect(font(getByText('Press').closest('li') as Element)).toEqual(userFont);
+    const code = getByText('Save');
+    expect(getComputedStyle(code).fontSize).toBe(body2.fontSize);
+    expect(getComputedStyle(code).fontFamily).toMatch(/monospace/);
+    expect(getComputedStyle(getByText('save()')).fontSize).toBe(body2.fontSize);
+    const heading = getComputedStyle(getByText('Next'));
+    expect(family(heading.fontFamily)).toBe(family(body2.fontFamily));
+    expect(heading.fontSize).toBe(theme.typography.subtitle1.fontSize);
   });
 
   it('renders user and assistant messages', () => {
@@ -73,6 +101,8 @@ describe('MessageList', () => {
 
     expect(getByText('How many **contacts**?')).toBeInTheDocument();
     expect(getByText('12').tagName).toBe('STRONG');
+    expect(getByText('You')).toBeInTheDocument();
+    expect(getByText('Guide')).toBeInTheDocument();
     expect(getByRole('log', { name: 'Conversation' })).toHaveAttribute(
       'aria-busy',
       'false',
@@ -86,7 +116,7 @@ describe('MessageList', () => {
 
     expect(getByRole('log')).toHaveAttribute('aria-busy', 'true');
     expect(
-      getByRole('progressbar', { name: 'Assistant is thinking' }),
+      getByRole('progressbar', { name: 'The Guide is thinking' }),
     ).toBeInTheDocument();
   });
 
@@ -140,7 +170,7 @@ describe('MessageList', () => {
   it.each([
     [
       'unavailable' as const,
-      'The assistant is busy right now. Please try again in a moment.',
+      'The Guide is busy right now. Please try again in a moment.',
     ],
     [
       'rateLimited' as const,
@@ -176,7 +206,7 @@ describe('MessageList', () => {
     expect(getByRole('log', { name: 'Conversation' })).toHaveTextContent(
       'Started a new conversation for this account list.',
     );
-    expect(queryByText('Assistant')).not.toBeInTheDocument();
+    expect(queryByText('Guide')).not.toBeInTheDocument();
   });
 
   it('shows a stopped line when a reply was stopped before any text', () => {
@@ -293,7 +323,7 @@ describe('MessageList', () => {
         />,
       );
       expect(announcer(getByTestId)).toHaveTextContent(
-        'The assistant is busy right now. Please try again in a moment.',
+        'The Guide is busy right now. Please try again in a moment.',
       );
     });
 
@@ -343,7 +373,7 @@ describe('MessageList', () => {
           intent: { type: 'dashboard', params: {} },
           label: 'Open the Dashboard',
         },
-        'The assistant added a card. Open the Dashboard',
+        'The Guide added a card. Open the Dashboard',
       ],
       [
         'a hand-off card',
@@ -356,12 +386,12 @@ describe('MessageList', () => {
             url: 'https://help.test/contact',
           },
         },
-        'The assistant added a card. Summary for the help desk',
+        'The Guide added a card. Summary for the help desk',
       ],
       [
         'a card without a title',
         { kind: 'figures', items: [{ label: 'Gifts', value: 3 }] },
-        'The assistant added a card.',
+        'The Guide added a card.',
       ],
     ] as Array<[string, AssistantCard, string]>)(
       'announces a reply that is only %s',

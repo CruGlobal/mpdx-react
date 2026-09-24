@@ -39,6 +39,7 @@ import { useReportsDisabled } from 'src/hooks/useReportsDisabled';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { useUserPreference } from 'src/hooks/useUserPreference';
 import { getCountries } from 'src/lib/data/countries';
+import { getAppName } from 'src/lib/getAppName';
 import { SettingsWrapper } from './Wrapper';
 
 const AccordionLoading = styled(Skeleton)(() => ({
@@ -237,7 +238,9 @@ const Preferences: React.FC = () => {
         )}
       </AccordionGroup>
       {assistantSettings && (
-        <AccordionGroup title={t('Assistant')}>
+        <AccordionGroup
+          title={t('{{appName}} Guide', { appName: getAppName() })}
+        >
           <AssistantAccordion
             handleAccordionChange={setExpandedAccordion}
             expandedAccordion={expandedAccordion}

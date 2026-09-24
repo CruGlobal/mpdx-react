@@ -51,7 +51,7 @@ export const AssistantFirstRunDialog: React.FC<
 
   const points = [
     t(
-      'The Assistant answers questions about using {{appName}} and links you to the right page.',
+      'The Guide answers questions about using {{appName}} and links you to the right page.',
       { appName },
     ),
     t(
@@ -62,7 +62,7 @@ export const AssistantFirstRunDialog: React.FC<
     ),
     t('It is an AI, so it can be wrong. Check anything important.'),
     t(
-      'What you type and what it answers are kept in a permanent audit log. Turning the Assistant off deletes your conversations, but not that log.',
+      'What you type and what it answers are kept in a permanent audit log. Turning the Guide off deletes your conversations, but not that log.',
     ),
     t(
       'It answers in your language, but the help articles it links to are in English.',
@@ -71,7 +71,11 @@ export const AssistantFirstRunDialog: React.FC<
   ];
 
   return (
-    <Modal isOpen={open} title={t('Meet the Assistant')} handleClose={onClose}>
+    <Modal
+      isOpen={open}
+      title={t('Meet your {{appName}} Guide', { appName })}
+      handleClose={onClose}
+    >
       <DialogContent dividers>
         <List dense disablePadding>
           {points.map((point) => (
@@ -99,7 +103,7 @@ export const AssistantFirstRunDialog: React.FC<
           disabled={saving}
           onClick={() => save({ launcherHidden: true })}
         >
-          {t('Hide the Assistant button')}
+          {t('Hide the Guide button')}
         </Button>
         <Button
           variant="contained"

@@ -10,6 +10,7 @@ import {
   useJsApiLoader,
 } from '@react-google-maps/api';
 import { useTranslation } from 'react-i18next';
+import { useGuideOrbClearance } from 'src/components/Assistant/guideOrbClearance';
 import { useContactPanel } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { StatusEnum } from 'src/graphql/types.generated';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
@@ -65,6 +66,9 @@ export const ContactsMap: React.FC = ({}) => {
     googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || '',
     libraries: useRef(['places' as const]).current,
   });
+
+  // The Guide orb sits in the same corner as the Google zoom buttons
+  useGuideOrbClearance(72);
 
   useEffect(() => {
     // Add styles to Helpjuice beacon to move left of Google zoom buttons.

@@ -36,7 +36,7 @@ const CannotDelete: React.FC<CannotDeleteProps> = ({ tokenState, onRetry }) => {
     <>
       <DialogContentText>
         {t(
-          'Your conversations could not be deleted right now, so the Assistant is still on.',
+          'Your conversations could not be deleted right now, so the Guide is still on.',
         )}
       </DialogContentText>
       {canRetry ? (
@@ -116,12 +116,9 @@ export const AssistantOptOutDialog: React.FC<AssistantOptOutDialogProps> = ({
       setDeleted(await deleteAssistantConversations(currentToken));
       await saveTurnedOff();
     } catch {
-      enqueueSnackbar(
-        t('Turning off the Assistant failed. Please try again.'),
-        {
-          variant: 'error',
-        },
-      );
+      enqueueSnackbar(t('Turning off the Guide failed. Please try again.'), {
+        variant: 'error',
+      });
     } finally {
       setDeleting(false);
     }
@@ -139,7 +136,7 @@ export const AssistantOptOutDialog: React.FC<AssistantOptOutDialogProps> = ({
   return (
     <Modal
       isOpen={open}
-      title={t('Turn off the Assistant?')}
+      title={t('Turn off the Guide?')}
       handleClose={handleClose}
     >
       <DialogContent dividers>
@@ -150,7 +147,7 @@ export const AssistantOptOutDialog: React.FC<AssistantOptOutDialogProps> = ({
         ) : deleted && saveFailed ? (
           <DialogContentText>
             {t(
-              'Your conversations were deleted, but the Assistant could not be turned off yet.',
+              'Your conversations were deleted, but the Guide could not be turned off yet.',
             )}
           </DialogContentText>
         ) : deleted && turnedOff ? (
@@ -171,7 +168,7 @@ export const AssistantOptOutDialog: React.FC<AssistantOptOutDialogProps> = ({
         ) : (
           <DialogContentText>
             {t(
-              'This deletes all of your Assistant conversations right away. The permanent audit log is not deleted. You can turn the Assistant back on later.',
+              'This deletes all of your Guide conversations right away. The permanent audit log is not deleted. You can turn the Guide back on later.',
             )}
           </DialogContentText>
         )}

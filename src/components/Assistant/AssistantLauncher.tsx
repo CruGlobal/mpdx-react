@@ -1,16 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { IconButton } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { AssistantFirstRunDialog } from './AssistantFirstRunDialog';
-import { useAssistantContext } from './AssistantProvider';
-import { useAssistantAccess } from './useAssistantVisibility';
+import { getAppName } from 'src/lib/getAppName';
+import { useAssistantLaunch } from './useAssistantLaunch';
 
 export const AssistantLauncher: React.FC = () => {
   const { t } = useTranslation();
-  const { launcher } = useAssistantAccess();
-  const { openAssistant, launcherRef } = useAssistantContext();
-  const [firstRunOpen, setFirstRunOpen] = useState(false);
+  const appName = getAppName();
+  const { launcher, launch, firstRunDialog } = useAssistantLaunch();
 
   if (launcher === 'hidden') {
     return null;
@@ -19,20 +17,13 @@ export const AssistantLauncher: React.FC = () => {
   return (
     <>
       <IconButton
-        ref={launcherRef}
         color="inherit"
-        aria-label={t('Open Assistant')}
-        onClick={
-          launcher === 'enabled' ? openAssistant : () => setFirstRunOpen(true)
-        }
+        aria-label={t('Open {{appName}} Guide', { appName })}
+        onClick={(event) => launch(event.currentTarget)}
       >
         <AutoAwesomeIcon />
       </IconButton>
-      <AssistantFirstRunDialog
-        open={firstRunOpen}
-        onClose={() => setFirstRunOpen(false)}
-        onEnabled={openAssistant}
-      />
+      {firstRunDialog}
     </>
   );
 };

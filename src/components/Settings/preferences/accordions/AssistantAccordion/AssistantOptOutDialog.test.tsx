@@ -30,7 +30,7 @@ const TestComponent: React.FC<TestComponentProps> = ({ mints }) => (
 );
 
 const cannotDelete =
-  'Your conversations could not be deleted right now, so the Assistant is still on.';
+  'Your conversations could not be deleted right now, so the Guide is still on.';
 
 describe('AssistantOptOutDialog', () => {
   let fetchSpy: jest.SpyInstance;
