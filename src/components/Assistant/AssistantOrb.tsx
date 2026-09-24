@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { getAppName } from 'src/lib/getAppName';
 import { useAssistantContext } from './AssistantProvider';
 import { GuideOrb, launcherOrbShadow, orbInset, orbSize } from './GuideOrb';
+import { useGuideOrbRight } from './guideOrbClearance';
 import { useHelpjuiceBeaconStyle } from './helpjuiceBeacon';
 import { useAssistantLaunch } from './useAssistantLaunch';
 import { useGuideNudge } from './useGuideNudge';
@@ -82,6 +83,7 @@ export const AssistantOrb: React.FC = () => {
   const { open } = useAssistantContext();
   const orbRef = useRef<HTMLButtonElement>(null);
   const nudgeId = useId();
+  const right = useGuideOrbRight(orbInset);
   const visible = launcher !== 'hidden';
   const nudge = useGuideNudge(visible && !phone);
 
@@ -98,7 +100,7 @@ export const AssistantOrb: React.FC = () => {
   };
 
   return (
-    <Corner>
+    <Corner style={{ right }}>
       {!open && nudge.show && (
         <DismissButton
           size="small"

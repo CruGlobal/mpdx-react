@@ -19,17 +19,25 @@ import {
   UpdateAssistantSettingsMutation,
 } from './AssistantSettings.generated';
 import { assistantSettingsMock } from './AssistantSettings.mock';
+import { useGuideOrbClearance } from './guideOrbClearance';
 
 const mutationSpy = jest.fn();
 
 interface TestComponentProps {
   settings?: Partial<AssistantSettingsFieldsFragment>;
   showOrb?: boolean;
+  mapPage?: boolean;
 }
+
+const MapPage: React.FC = () => {
+  useGuideOrbClearance(72);
+  return null;
+};
 
 const TestComponent: React.FC<TestComponentProps> = ({
   settings = {},
   showOrb = true,
+  mapPage = false,
 }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
@@ -57,6 +65,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
           <AssistantProvider>
             <AssistantLauncher />
             {showOrb && <AssistantOrb />}
+            {mapPage && <MapPage />}
             <AssistantDrawer />
           </AssistantProvider>
         </GqlMockedProvider>
@@ -109,6 +118,18 @@ describe('AssistantOrb', () => {
       height: '56px',
       borderRadius: '50%',
     });
+  });
+
+  it('moves left of the map zoom controls on a page that asks for room', async () => {
+    const { findAllByRole, rerender } = render(
+      <TestComponent settings={{ enabled: true }} mapPage />,
+    );
+    const orb = await findOrb(findAllByRole);
+
+    expect(orb.parentElement).toHaveStyle({ right: '72px', bottom: '24px' });
+
+    rerender(<TestComponent settings={{ enabled: true }} />);
+    expect(orb.parentElement).toHaveStyle({ right: '24px' });
   });
 
   it('opens the same panel as the top bar button and returns focus to the orb', async () => {
