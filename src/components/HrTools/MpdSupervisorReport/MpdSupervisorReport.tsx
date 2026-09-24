@@ -6,6 +6,7 @@ import {
   Container,
   InputAdornment,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -21,13 +22,18 @@ import {
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { getHeaderTitleAccess } from 'src/components/Shared/MultiPageLayout/helpers';
 import { NavFilterIcon } from 'src/components/Shared/styledComponents/NavFilterIcon';
+import { useLocale } from 'src/hooks/useLocale';
+import { monthYearFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { Panel, useMpdSupervisorReport } from './MpdSupervisorReportContext';
+import { HealthColorKey } from './ReportLegend/HealthColorKey';
+import { ReportLegendButton } from './ReportLegend/ReportLegendButton';
 import { StaffMember } from './StaffMemberRow/StaffMember';
 import {
   ManagedStaffMember,
   buildQuarterChips,
   getQuarterLabel,
+  getQuarterMonthRange,
 } from './helpers';
 
 const StyledContainer = styled(Container)(({ theme }) => ({
@@ -86,6 +92,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
   title,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
   const {
     openMember,
     search,
@@ -99,14 +106,36 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
   } = useMpdSupervisorReport();
 
   // Every row covers the same four quarters, so the first one labels the header.
-  const quarterLabels = useMemo(
+  const quarterHeaders = useMemo(
     () =>
       staffMembers.length
         ? buildQuarterChips(staffMembers[0].quarterlyHealth).map(
-            ({ fiscalYear, quarter }) => getQuarterLabel(fiscalYear, quarter),
+            ({ fiscalYear, quarter, averagePayroll }) => {
+              const { start, end } = getQuarterMonthRange(fiscalYear, quarter);
+              const range = t(
+                'Fiscal quarter {{quarter}}, FY{{year}}: {{start}} – {{end}}',
+                {
+                  quarter,
+                  year: String(fiscalYear).slice(-2),
+                  start: monthYearFormat(start.month, start.year, locale),
+                  end: monthYearFormat(end.month, end.year, locale),
+                },
+              );
+              // buildQuarterChips marks the starting quarter with a null average
+              const partial = averagePayroll === null;
+              return {
+                label: getQuarterLabel(fiscalYear, quarter),
+                tooltip: partial
+                  ? t(
+                      '{{range}} Partial quarter: payroll started during this quarter.',
+                      { range },
+                    )
+                  : range,
+              };
+            },
           )
         : [],
-    [staffMembers],
+    [staffMembers, t, locale],
   );
 
   return (
@@ -133,7 +162,10 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
             />
           </NavListButton>
           <TitleBox>
-            <Typography variant="h5">{title}</Typography>
+            <Box display="flex" alignItems="center" gap={0.5}>
+              <Typography variant="h5">{title}</Typography>
+              <ReportLegendButton />
+            </Box>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -167,18 +199,31 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
 
       <StyledContainer maxWidth={false}>
         <QuartersContainer>
-          {quarterLabels.map((label) => (
+          {quarterHeaders.length > 0 && (
+            <HealthColorKey
+              sx={{ mr: 'auto', display: { xs: 'none', md: 'flex' } }}
+            />
+          )}
+          {quarterHeaders.map(({ label, tooltip }) => (
             <Quarter key={label}>
-              <Typography
-                variant="body2"
-                fontWeight={'bold'}
-                sx={{
-                  width: '80px',
-                }}
-                textAlign={'center'}
-              >
-                {label}
-              </Typography>
+              <Tooltip title={tooltip} arrow describeChild>
+                <Typography
+                  variant="body2"
+                  fontWeight={'bold'}
+                  tabIndex={0}
+                  sx={{
+                    width: '80px',
+                    // Signal that the header has a definition on hover
+                    textDecoration: 'underline dotted',
+                    textDecorationColor: 'text.disabled',
+                    textUnderlineOffset: '3px',
+                    cursor: 'help',
+                  }}
+                  textAlign={'center'}
+                >
+                  {label}
+                </Typography>
+              </Tooltip>
             </Quarter>
           ))}
         </QuartersContainer>

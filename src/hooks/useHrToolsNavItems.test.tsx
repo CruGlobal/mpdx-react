@@ -64,8 +64,16 @@ const MpdGoalEligibleWrapper = makeWrapper({
   UserOption: verifiedUserOption,
 });
 
+// A user who supervises staff, eligible for the MPD Supervisor Report
+const SupervisorEligibleWrapper = makeWrapper({
+  GetUser: { user: { ...mpdGoalEligibleUser, supervisesStaff: true } },
+  UserOption: verifiedUserOption,
+});
+
 describe('useHrToolsNavItems', () => {
   afterEach(() => {
+    // mockSession uses mockReturnValue, which clearMocks does not reset
+    mockSession({});
     process.env.DEVELOPMENT_ENV = 'false';
     process.env.DISABLE_MPD_GOAL_ADMIN = 'false';
     process.env.DISABLE_NEW_REPORTS = 'false';
@@ -180,6 +188,68 @@ describe('useHrToolsNavItems', () => {
 
     expect(result.current.items).toHaveLength(1);
     expect(result.current.items[0].id).toBe('partnerReminders');
+  });
+
+  describe('MPD Supervisor Report while impersonating', () => {
+    const renderItemIds = async (
+      wrapper: ({ children }: { children: ReactElement }) => ReactElement,
+    ) => {
+      const { result, waitForNextUpdate } = renderHook(
+        () => useHrToolsNavItems(),
+        { wrapper },
+      );
+      await waitForNextUpdate();
+      return result.current.items.map((item) => item.id);
+    };
+
+    it('hides the MPD Supervisor Report from a non-developer impersonator', async () => {
+      mockSession({ impersonating: true, isImpersonatorDeveloper: false });
+
+      const ids = await renderItemIds(SupervisorEligibleWrapper);
+
+      expect(ids).not.toContain('mpdSupervisorReport');
+      // Only the supervisor report is removed
+      expect(ids).toContain('goalCalculator');
+    });
+
+    it('shows the MPD Supervisor Report to a developer impersonator', async () => {
+      mockSession({ impersonating: true, isImpersonatorDeveloper: true });
+
+      expect(await renderItemIds(SupervisorEligibleWrapper)).toContain(
+        'mpdSupervisorReport',
+      );
+    });
+
+    it('shows the MPD Supervisor Report when not impersonating', async () => {
+      mockSession({ impersonating: false });
+
+      expect(await renderItemIds(SupervisorEligibleWrapper)).toContain(
+        'mpdSupervisorReport',
+      );
+    });
+
+    it('keeps the report hidden from a non-developer impersonator even with the developer bypass', async () => {
+      process.env.DEVELOPMENT_ENV = 'true';
+      mockSession({
+        developer: true,
+        impersonating: true,
+        isImpersonatorDeveloper: false,
+      });
+
+      const ids = await renderItemIds(Wrapper);
+
+      // The bypass still shows the other ineligible items
+      expect(ids).toContain('salaryCalculator');
+      expect(ids).not.toContain('mpdSupervisorReport');
+    });
+
+    it('treats a missing isImpersonatorDeveloper as non-developer', async () => {
+      mockSession({ impersonating: true, isImpersonatorDeveloper: undefined });
+
+      expect(await renderItemIds(SupervisorEligibleWrapper)).not.toContain(
+        'mpdSupervisorReport',
+      );
+    });
   });
 
   describe('mpdGoalAdmin', () => {

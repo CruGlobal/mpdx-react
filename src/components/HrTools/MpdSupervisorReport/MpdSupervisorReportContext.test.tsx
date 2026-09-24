@@ -29,6 +29,9 @@ interface ConsumerResult {
     patch: Partial<ManagedStaffMember>,
   ) => void;
   closePanel: () => void;
+  legendOpen: boolean;
+  openLegend: () => void;
+  closeLegend: () => void;
   search: string;
   setSearch: (v: string) => void;
   team: string | null;
@@ -50,6 +53,7 @@ const Consumer: React.FC = () => {
   return (
     <div>
       <span data-testid="isOpen">{String(ctx.isOpen)}</span>
+      <span data-testid="legendOpen">{String(ctx.legendOpen)}</span>
       <span data-testid="memberName">
         {ctx.selectedMember?.lastName ?? 'none'}
       </span>
@@ -107,6 +111,34 @@ describe('MpdSupervisorReportContext', () => {
     });
     expect(getByTestId('isOpen').textContent).toBe('false');
     expect(getByTestId('memberName').textContent).toBe('none');
+  });
+
+  it('keeps the legend and the selected member mutually exclusive', () => {
+    const { getByTestId } = renderConsumer();
+    expect(getByTestId('legendOpen').textContent).toBe('false');
+
+    act(() => {
+      consumerResult.openMember(sampleMember);
+    });
+    act(() => {
+      consumerResult.openLegend();
+    });
+    expect(getByTestId('legendOpen').textContent).toBe('true');
+    expect(getByTestId('isOpen').textContent).toBe('false');
+
+    act(() => {
+      consumerResult.openMember(sampleMember);
+    });
+    expect(getByTestId('legendOpen').textContent).toBe('false');
+    expect(getByTestId('isOpen').textContent).toBe('true');
+
+    act(() => {
+      consumerResult.openLegend();
+    });
+    act(() => {
+      consumerResult.closeLegend();
+    });
+    expect(getByTestId('legendOpen').textContent).toBe('false');
   });
 
   it('throws an error when used outside the provider', () => {

@@ -32,6 +32,10 @@ export interface MpdSupervisorReportContextValue {
     patch: Partial<ManagedStaffMember>,
   ) => void;
   closePanel: () => void;
+  /** The "How this report works" legend in the right panel */
+  legendOpen: boolean;
+  openLegend: () => void;
+  closeLegend: () => void;
   search: string;
   setSearch: (v: string) => void;
   team: string | null;
@@ -83,6 +87,7 @@ export const MpdSupervisorReportProvider: React.FC<{
   const [selectedMember, setSelectedMember] = useState<
     ManagedStaffMember | undefined
   >(undefined);
+  const [legendOpen, setLegendOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [team, setTeam] = useState<string | null>(null);
   const [department, setDepartment] = useState<string | null>(null);
@@ -159,7 +164,17 @@ export const MpdSupervisorReportProvider: React.FC<{
     () => ({
       selectedMember,
       isOpen: selectedMember !== undefined,
-      openMember: (member: ManagedStaffMember) => setSelectedMember(member),
+      // The right panel shows one thing at a time: a staff member or the legend
+      openMember: (member: ManagedStaffMember) => {
+        setLegendOpen(false);
+        setSelectedMember(member);
+      },
+      legendOpen,
+      openLegend: () => {
+        setSelectedMember(undefined);
+        setLegendOpen(true);
+      },
+      closeLegend: () => setLegendOpen(false),
       updateSelectedMember: (
         personNumber: string,
         patch: Partial<ManagedStaffMember>,
@@ -192,6 +207,7 @@ export const MpdSupervisorReportProvider: React.FC<{
     }),
     [
       selectedMember,
+      legendOpen,
       search,
       team,
       department,

@@ -1,12 +1,13 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
 import { MpdSupervisorReportFilterPanel } from './Filters/MpdSupervisorReportFilterPanel';
@@ -209,6 +210,105 @@ describe('MpdSupervisorReport', () => {
 
     expect(getByText('FQ4 25')).toBeInTheDocument();
     expect(getByText('FQ3 26')).toBeInTheDocument();
+  });
+
+  it('orders the quarter columns newest first', async () => {
+    const { findByText, getAllByText } = renderReport();
+    await findByText('John Smith');
+
+    const headers = getAllByText(/^FQ\d \d\d$/).map((el) => el.textContent);
+    expect(headers).toEqual(['FQ3 26', 'FQ2 26', 'FQ1 26', 'FQ4 25']);
+  });
+
+  it('shows the chip color key beside the quarter columns', async () => {
+    const { findByText, getByRole, queryByRole } = renderReport();
+    // The key only makes sense once there are chips to decode
+    expect(
+      queryByRole('list', { name: 'Chip colors' }),
+    ).not.toBeInTheDocument();
+    await findByText('John Smith');
+
+    const key = getByRole('list', { name: 'Chip colors' });
+    expect(key).toHaveTextContent('On track');
+    expect(key).toHaveTextContent('Needs attention');
+    expect(key).toHaveTextContent('At risk');
+    expect(key).toHaveTextContent('No data');
+  });
+
+  it('renders the How this report works button in the header', async () => {
+    const { findByRole } = renderReport();
+
+    // Opening the legend is covered by ReportLegendPanel.test.tsx
+    expect(
+      await findByRole('button', { name: 'How this report works' }),
+    ).toBeInTheDocument();
+  });
+
+  it('explains a fiscal quarter header on hover', async () => {
+    const { findByText, findByRole } = renderReport();
+    const header = await findByText('FQ1 26');
+    // The tooltip describes the header rather than replacing its label
+    expect(header).not.toHaveAttribute('aria-label');
+
+    userEvent.hover(header);
+
+    expect(await findByRole('tooltip')).toHaveTextContent(
+      'Fiscal quarter 1, FY26: Sep 2025 – Nov 2025',
+    );
+  });
+
+  it('explains a fiscal quarter header on keyboard focus', async () => {
+    // jsdom has no :focus-visible, so MUI's Tooltip would never open on focus.
+    // Treat the focused element as focus-visible, as a browser does for keyboard focus.
+    const matches = Element.prototype.matches;
+    const matchesSpy = jest
+      .spyOn(Element.prototype, 'matches')
+      .mockImplementation(function (this: Element, selector: string) {
+        return selector === ':focus-visible'
+          ? this === document.activeElement
+          : matches.call(this, selector);
+      });
+    try {
+      const { findByText, findByRole } = renderReport();
+      const header = await findByText('FQ4 25');
+
+      act(() => header.focus());
+
+      expect(await findByRole('tooltip')).toHaveTextContent(
+        'Fiscal quarter 4, FY25: Jun 2025 – Aug 2025',
+      );
+    } finally {
+      matchesSpy.mockRestore();
+    }
+  });
+
+  it('marks the starting quarter header as partial', async () => {
+    const baseHealth = managedStaffMember().quarterlyHealth;
+    const newStaff = managedStaffMember({
+      quarterlyHealth: {
+        ...baseHealth,
+        startingQuarter: {
+          fiscalYear: 2025,
+          quarter: 3,
+          months: [
+            {
+              month: '2025-05',
+              payroll: 3000,
+              status: MpdHealthStatusEnum.Green,
+            },
+          ],
+        },
+      },
+    });
+    const { findByText, findByRole } = renderReport({
+      managedStaff: managedStaffMock([newStaff]),
+    });
+
+    userEvent.hover(await findByText('FQ3 25'));
+
+    expect(await findByRole('tooltip')).toHaveTextContent(
+      'Fiscal quarter 3, FY25: Mar 2025 – May 2025 Partial quarter: payroll started during this quarter.',
+    );
   });
 
   // The card and the drawer both display the same name, so the drawer is

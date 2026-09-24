@@ -6,6 +6,7 @@ import { useDeveloperBypass } from './useDeveloperBypass';
 import { useIneligibleByGroup } from './useIneligibleByGroup';
 import { NavItems } from './useReportNavItems';
 import { useReportsDisabled } from './useReportsDisabled';
+import { useRequiredSession } from './useRequiredSession';
 
 export function useHrToolsNavItems(): {
   items: NavItems[];
@@ -27,6 +28,12 @@ export function useHrToolsNavItems(): {
   const developerBypass = useDeveloperBypass();
   // Partner Reminders is live in production; every other HR Tool is still disabled
   const { reportsDisabled } = useReportsDisabled();
+  const { impersonating, isImpersonatorDeveloper } = useRequiredSession();
+  // Non-developer impersonators must never see the supervisor report (MPDX-10066).
+  // Applied outside the developerBypass filter because session.developer reflects
+  // the impersonated user, not the impersonator.
+  const blockedImpersonation = !!impersonating && !isImpersonatorDeveloper;
+
   const accountListId = useAccountListId();
 
   // Only new staff are ever offered the questionnaire, so nobody else pays for this query.
@@ -117,7 +124,11 @@ export function useHrToolsNavItems(): {
         title: t('MPD Supervisor Report'),
         hideItem: reportsDisabled || inMpdSupervisorIneligibleGroup,
       },
-    ].filter((item) => developerBypass || !item.hideItem);
+    ]
+      .filter((item) => developerBypass || !item.hideItem)
+      .filter(
+        (item) => !(item.id === 'mpdSupervisorReport' && blockedImpersonation),
+      );
   }, [
     t,
     inAsrIneligibleGroup,
@@ -133,6 +144,7 @@ export function useHrToolsNavItems(): {
     hasNoStaffAccount,
     developerBypass,
     reportsDisabled,
+    blockedImpersonation,
   ]);
 
   return { items, loading: userLoading };

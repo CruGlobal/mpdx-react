@@ -4,7 +4,6 @@ import {
   Box,
   Card,
   CardActionArea,
-  Chip,
   Grid,
   Stack,
   SxProps,
@@ -15,7 +14,6 @@ import { styled } from '@mui/material/styles';
 import { visuallyHidden } from '@mui/utils';
 import { useTranslation } from 'react-i18next';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
-import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import {
   ManagedStaffMember,
@@ -24,11 +22,13 @@ import {
   getInitials,
   getLocalizedAssignmentCategoryGroup,
   getQuarterLabel,
-  healthColor,
+  grossSalaryWarning,
   healthLabel,
   pendingField,
   quarterAmountLabel,
 } from '../helpers';
+import { GrossSalaryMarker } from './GrossSalaryMarker';
+import { QuarterChip } from './QuarterChip';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   marginBottom: theme.spacing(1),
@@ -53,22 +53,6 @@ const GridQuarter = styled(Grid)(({ theme }) => ({
   justifyContent: 'flex-end',
 }));
 
-const QuarterChip = styled(Chip, {
-  shouldForwardProp: (prop) => prop !== 'health',
-})<{ health: MpdHealthStatusEnum }>(({ health }) => {
-  const { bg, color } = healthColor(theme, health);
-  return {
-    height: 22,
-    fontWeight: 600,
-    backgroundColor: bg,
-    color: color,
-    minWidth: '80px',
-    '& .MuiChip-label': {
-      paddingInline: theme.spacing(1),
-    },
-  };
-});
-
 interface StaffMemberProps {
   data: ManagedStaffMember;
   onClick?: () => void;
@@ -76,6 +60,7 @@ interface StaffMemberProps {
 
 export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
   const { t } = useTranslation();
+  const { formatCurrency } = useFormatters();
   const {
     firstName: name,
     lastName,
@@ -83,6 +68,7 @@ export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
     teams,
     assignmentCategoryGroup,
   } = data;
+  const grossWarning = grossSalaryWarning(t, formatCurrency, data);
 
   const names = useMemo(() => {
     if (!name || !lastName) {
@@ -105,7 +91,16 @@ export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
   return (
     <StyledCard>
       <CardActionArea
-        aria-label={t('View details for {{name}}', { name: names })}
+        // The marker inside is not focusable, so the row's own name carries
+        // the gross salary warning for keyboard and screen-reader users.
+        aria-label={
+          grossWarning
+            ? t('View details for {{name}}. {{warning}}', {
+                name: names,
+                warning: grossWarning,
+              })
+            : t('View details for {{name}}', { name: names })
+        }
         onClick={onClick}
         sx={{
           paddingInline: theme.spacing(4),
@@ -136,6 +131,7 @@ export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
                     assignmentCategoryGroup,
                   )}
                   team={team}
+                  grossWarning={grossWarning}
                 />
               </Box>
             </Box>
@@ -200,17 +196,25 @@ interface StaffInfoProps {
   staffAccountID: string;
   userPersonType: string;
   team: string;
+  /** Set when Monthly Gross Salary is below New Staff Monthly Salary */
+  grossWarning: string | null;
 }
 const StaffInfoBase: React.FC<StaffInfoProps> = ({
   names,
   staffAccountID,
   userPersonType,
   team,
+  grossWarning,
 }) => {
   return (
     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-        <Typography variant="h6">{names}</Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography variant="h6">{names}</Typography>
+          {grossWarning && (
+            <GrossSalaryMarker warning={grossWarning} focusable={false} />
+          )}
+        </Box>
         <Typography
           variant="body2"
           sx={{ color: 'text.secondary' }}

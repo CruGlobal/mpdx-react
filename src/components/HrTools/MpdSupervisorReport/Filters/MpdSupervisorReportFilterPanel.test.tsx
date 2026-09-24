@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -64,6 +64,50 @@ describe('MpdSupervisorReportFilterPanel', () => {
     expect(
       getByRole('button', { name: 'Negative last 3+ months' }),
     ).toBeInTheDocument();
+  });
+
+  it('explains the Negative last month filter', async () => {
+    const { getByRole, findByRole } = renderFilterPanel();
+
+    userEvent.hover(getByRole('button', { name: 'Negative last month' }));
+
+    expect(await findByRole('tooltip')).toHaveTextContent(
+      'Staff whose payroll last month was below their New Staff Monthly Salary.',
+    );
+  });
+
+  it('explains the Negative last 3+ months filter', async () => {
+    const { getByRole, findByRole } = renderFilterPanel();
+
+    userEvent.hover(getByRole('button', { name: 'Negative last 3+ months' }));
+
+    expect(await findByRole('tooltip')).toHaveTextContent(
+      'Staff whose payroll was below their New Staff Monthly Salary in each of the last three complete months.',
+    );
+  });
+
+  it('does not show a tooltip for the All people filter', () => {
+    jest.useFakeTimers();
+    try {
+      const { getByRole, queryByRole } = renderFilterPanel();
+
+      // Run well past the tooltip enter delay
+      userEvent.hover(getByRole('button', { name: 'All people' }));
+      act(() => {
+        jest.advanceTimersByTime(1000);
+      });
+      expect(queryByRole('tooltip')).not.toBeInTheDocument();
+
+      // The same wait does open a described chip's tooltip
+      userEvent.unhover(getByRole('button', { name: 'All people' }));
+      userEvent.hover(getByRole('button', { name: 'Negative last month' }));
+      act(() => {
+        jest.advanceTimersByTime(1000);
+      });
+      expect(queryByRole('tooltip')).toBeInTheDocument();
+    } finally {
+      jest.useRealTimers();
+    }
   });
 
   it('clicking a quick-filter chip toggles active state', async () => {

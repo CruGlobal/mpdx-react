@@ -111,6 +111,59 @@ describe('StaffMember', () => {
     expect(getByText('FQ4 25, no data')).toBeInTheDocument();
   });
 
+  describe('gross salary marker', () => {
+    const warning =
+      /Monthly Gross Salary \(\$2,000\.00\) is \$500\.00 below the New Staff Monthly Salary \(\$2,500\.00\)/;
+
+    it('flags a Monthly Gross Salary below the New Staff Monthly Salary', async () => {
+      const { getByRole, findByRole } = renderRow(
+        jest.fn(),
+        managedStaffMember({
+          newStaffMonthlySalary: 2500,
+          quarterlyHealth: { monthlyGrossSalary: 2000, completedQuarters: [] },
+        }),
+      );
+
+      const marker = getByRole('img', { name: warning });
+      // The row is already a button, so the marker is not a second tab stop
+      expect(marker).not.toHaveAttribute('tabindex');
+      userEvent.hover(marker);
+      expect(await findByRole('tooltip')).toHaveTextContent(warning);
+    });
+
+    it('announces the warning in the row button name for keyboard users', () => {
+      const { getByRole } = renderRow(
+        jest.fn(),
+        managedStaffMember({
+          newStaffMonthlySalary: 2500,
+          quarterlyHealth: { monthlyGrossSalary: 2000, completedQuarters: [] },
+        }),
+      );
+
+      expect(getByRole('button')).toHaveAccessibleName(warning);
+    });
+
+    it('shows no marker when the gross salary meets the benchmark', () => {
+      const { queryByLabelText } = renderRow();
+      expect(
+        queryByLabelText(/below the New Staff Monthly Salary/),
+      ).not.toBeInTheDocument();
+    });
+
+    it('shows no marker when a benchmark is missing', () => {
+      const { queryByLabelText } = renderRow(
+        jest.fn(),
+        managedStaffMember({
+          newStaffMonthlySalary: null,
+          quarterlyHealth: { monthlyGrossSalary: 2000, completedQuarters: [] },
+        }),
+      );
+      expect(
+        queryByLabelText(/below the New Staff Monthly Salary/),
+      ).not.toBeInTheDocument();
+    });
+  });
+
   it('exposes an accessible button with a descriptive label', () => {
     const { getByRole } = renderRow();
     expect(
