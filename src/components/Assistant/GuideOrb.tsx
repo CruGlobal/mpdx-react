@@ -27,7 +27,7 @@ const breathing = {
 };
 
 export const GuideOrb = styled('span', {
-  shouldForwardProp: (prop) => prop !== 'size',
+  shouldForwardProp: (prop) => prop !== 'size' && prop !== 'sx',
 })<{ size: number }>(({ size }) => ({
   display: 'inline-block',
   flexShrink: 0,

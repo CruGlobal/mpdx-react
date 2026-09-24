@@ -118,6 +118,10 @@ describe('AssistantOrb', () => {
       height: '56px',
       borderRadius: '50%',
     });
+    expect(circleOf(orb)).not.toHaveAttribute('sx');
+    expect(getComputedStyle(circleOf(orb)).boxShadow).toMatch(
+      /rgba\(0, 0, 0, 0\.25\)/,
+    );
   });
 
   it('moves left of the map zoom controls on a page that asks for room', async () => {
