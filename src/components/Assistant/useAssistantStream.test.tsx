@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { act, renderHook } from '@testing-library/react-hooks';
 import TestRouter from '__tests__/util/TestRouter';
 import { mockSession } from '__tests__/util/mockSession';
+import i18n from 'src/lib/i18n';
 import { AssistantProvider, useAssistantContext } from './AssistantProvider';
 import {
   controlledStream,
@@ -112,7 +113,10 @@ describe('useAssistantStream', () => {
         }),
         body: JSON.stringify({
           content: 'Hi there',
-          page: { path: '/accountLists/account-list-1/contacts' },
+          page: {
+            path: '/accountLists/account-list-1/contacts',
+            locale: i18n.language,
+          },
         }),
       }),
     );
@@ -806,6 +810,7 @@ describe('useAssistantStream', () => {
       expect(JSON.parse(body).page).toEqual({
         path: '/accountLists/account-list-1/coaching',
         help_only: true,
+        locale: i18n.language,
       });
     });
 
@@ -816,6 +821,63 @@ describe('useAssistantStream', () => {
       const { result } = renderStream({ asPath });
 
       expect(result.current.stream.helpOnly).toBe(false);
+    });
+  });
+
+  describe('locale', () => {
+    let originalLanguage: string;
+    const changeLanguage = (language: string) =>
+      act(async () => {
+        await i18n.changeLanguage(language);
+      });
+
+    beforeEach(() => {
+      originalLanguage = i18n.language;
+      ['de', 'fr', 'fr-FR'].forEach((language) =>
+        i18n.addResourceBundle(language, 'translation', {}),
+      );
+    });
+
+    afterEach(async () => {
+      await changeLanguage(originalLanguage);
+    });
+
+    it('sends the current language as the page locale', async () => {
+      await changeLanguage('de');
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+      const { result } = renderStream();
+
+      await act(() => result.current.stream.sendMessage('Hi'));
+
+      expect(JSON.parse(fetchSpy.mock.calls[1][1].body).page).toEqual({
+        path: '/accountLists/account-list-1/contacts',
+        locale: 'de',
+      });
+    });
+
+    it('sends a changed language on the next message in the same conversation', async () => {
+      await changeLanguage('de');
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+      const { result } = renderStream();
+
+      await act(() => result.current.stream.sendMessage('First'));
+      await changeLanguage('fr-FR');
+      await act(() => result.current.stream.sendMessage('Second'));
+
+      expect(fetchSpy.mock.calls.map(([url]) => url)).toEqual([
+        `${assistantUrl}/conversations`,
+        `${assistantUrl}/conversations/conversation-1/stream`,
+        `${assistantUrl}/conversations/conversation-1/stream`,
+      ]);
+      expect(JSON.parse(fetchSpy.mock.calls[2][1].body).page).toEqual({
+        path: '/accountLists/account-list-1/contacts',
+        locale: 'fr-FR',
+      });
     });
   });
 });
