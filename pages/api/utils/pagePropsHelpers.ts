@@ -8,6 +8,7 @@ import { Session } from 'next-auth';
 import { getSession } from 'next-auth/react';
 import { RedirectReason } from 'pages/api/auth/redirectReasonEnum';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
+import { ImpersonatorRole } from 'src/lib/impersonationAccess';
 import {
   GetDefaultAccountDocument,
   GetDefaultAccountQuery,
@@ -55,7 +56,10 @@ export const blockImpersonatingNonDevelopers: GetServerSideProps<
   }
 
   // Check if the impersonator is a developer
-  if (session.user.impersonating && !session.user.isImpersonatorDeveloper) {
+  if (
+    session.user.impersonating &&
+    session.user.impersonatorRole !== ImpersonatorRole.Developer
+  ) {
     return dashboardRedirect(context, RedirectReason.ImpersonationBlocked);
   }
 

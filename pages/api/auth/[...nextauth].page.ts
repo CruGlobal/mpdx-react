@@ -9,6 +9,10 @@ import {
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenuItems.generated';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
 import {
+  ImpersonatorRole,
+  isImpersonatorRole,
+} from 'src/lib/impersonationAccess';
+import {
   ApiOauthSignInDocument,
   ApiOauthSignInMutation,
   ApiOauthSignInMutationVariables,
@@ -31,7 +35,10 @@ declare module 'next-auth' {
       userID: string;
       impersonating?: boolean;
       impersonatorApiToken?: string;
-      isImpersonatorDeveloper?: boolean;
+      /** The impersonator's own role while impersonating */
+      impersonatorRole?: ImpersonatorRole;
+      /** The current user's own impersonation role, if they hold one */
+      impersonationRole?: ImpersonatorRole | null;
     };
   }
 
@@ -40,7 +47,7 @@ declare module 'next-auth' {
     userID?: string;
     impersonating?: boolean;
     impersonatorApiToken?: string;
-    isImpersonatorDeveloper?: boolean;
+    impersonatorRole?: ImpersonatorRole;
   }
 }
 
@@ -52,7 +59,8 @@ declare module 'next-auth/jwt' {
     userID?: string;
     impersonating?: boolean;
     impersonatorApiToken?: string;
-    isImpersonatorDeveloper?: boolean;
+    impersonatorRole?: ImpersonatorRole;
+    impersonationRole?: ImpersonatorRole | null;
   }
 }
 
@@ -177,7 +185,7 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
           user.userID = userInfo.userID;
           user.impersonating = userInfo.impersonating;
           user.impersonatorApiToken = userInfo.impersonatorApiToken;
-          user.isImpersonatorDeveloper = userInfo.isImpersonatorDeveloper;
+          user.impersonatorRole = userInfo.impersonatorRole;
 
           if (cookies) {
             res.setHeader('Set-Cookie', cookies);
@@ -237,6 +245,9 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
             query: GetUserAccessDocument,
           });
 
+          // The GraphQL enum is upper case (HELPDESK_ADMIN); the session uses the API's snake_case names
+          const impersonationRole = data.user.impersonationRole?.toLowerCase();
+
           return {
             ...token,
             admin: data.user.admin,
@@ -245,7 +256,10 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
             userID: user.userID,
             impersonating: user.impersonating,
             impersonatorApiToken: user.impersonatorApiToken,
-            isImpersonatorDeveloper: user.isImpersonatorDeveloper,
+            impersonatorRole: user.impersonatorRole,
+            impersonationRole: isImpersonatorRole(impersonationRole)
+              ? impersonationRole
+              : null,
           };
         } else {
           return token;
@@ -258,7 +272,8 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
           apiToken,
           userID,
           impersonating,
-          isImpersonatorDeveloper,
+          impersonatorRole,
+          impersonationRole,
         } = token;
 
         // Check the expiration of the API token JWT without verifying its signature
@@ -276,7 +291,8 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
             apiToken,
             userID,
             impersonating,
-            isImpersonatorDeveloper,
+            impersonatorRole,
+            impersonationRole,
           },
         };
       },

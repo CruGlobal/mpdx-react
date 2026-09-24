@@ -1,6 +1,10 @@
 import { createHmac, timingSafeEqual } from 'crypto';
 import { DateTime } from 'luxon';
 import { extractCookie } from 'src/lib/extractCookie';
+import {
+  ImpersonatorRole,
+  isImpersonatorRole,
+} from 'src/lib/impersonationAccess';
 import { expireCookieDefaultInfo } from '../utils/cookies';
 
 interface User {
@@ -8,7 +12,7 @@ interface User {
   userID?: string;
   impersonating?: boolean;
   impersonatorApiToken?: string;
-  isImpersonatorDeveloper?: boolean;
+  impersonatorRole?: ImpersonatorRole;
 }
 interface SetUserInfoReturn {
   user: User;
@@ -34,16 +38,16 @@ export const setUserInfo = (
   user.impersonating = !!impersonateJWT;
   user.impersonatorApiToken = impersonateJWT ? token || access_token : '';
 
-  const isImpersonatorDeveloperSigned = extractCookie(
+  const impersonatorRoleSigned = extractCookie(
     reqCookies,
-    'mpdx-handoff.isImpersonatorDeveloper',
+    'mpdx-handoff.impersonatorRole',
   );
 
-  if (impersonateJWT && isImpersonatorDeveloperSigned) {
-    const unsignedDeveloperValue = verifySignedValue(
-      isImpersonatorDeveloperSigned,
-    );
-    user.isImpersonatorDeveloper = unsignedDeveloperValue === 'true';
+  if (impersonateJWT && impersonatorRoleSigned) {
+    const impersonatorRole = verifySignedValue(impersonatorRoleSigned);
+    if (isImpersonatorRole(impersonatorRole)) {
+      user.impersonatorRole = impersonatorRole;
+    }
   }
 
   const cookies: string[] = [];
@@ -55,10 +59,8 @@ export const setUserInfo = (
       `mpdx-handoff.accountConflictUserId=; ${expireCookieDefaultInfo}`,
     );
   }
-  if (isImpersonatorDeveloperSigned) {
-    cookies.push(
-      `mpdx-handoff.isImpersonatorDeveloper=; ${expireCookieDefaultInfo}`,
-    );
+  if (impersonatorRoleSigned) {
+    cookies.push(`mpdx-handoff.impersonatorRole=; ${expireCookieDefaultInfo}`);
   }
   if (token) {
     cookies.push(`mpdx-handoff.token=; ${expireCookieDefaultInfo}`);
@@ -69,8 +71,11 @@ export const setUserInfo = (
   };
 };
 
-/* Sign a boolean with an expiration time */
-export function signValue(input: boolean, expiresInSeconds = 300): string {
+/* Sign a string or boolean with an expiration time */
+export function signValue(
+  input: string | boolean,
+  expiresInSeconds = 300,
+): string {
   const value = input.toString();
   const signatureExpiresAt = Math.floor(Date.now() / 1000) + expiresInSeconds;
   const payload = `${value}.${signatureExpiresAt}`;

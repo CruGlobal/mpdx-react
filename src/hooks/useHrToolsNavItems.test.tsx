@@ -7,6 +7,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { mockSession } from '__tests__/util/mockSession';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
+import { ImpersonatorRole } from 'src/lib/impersonationAccess';
 import { NewStaffQuestionnaireStatusQuery } from './NewStaffQuestionnaireStatus.generated';
 import { UserOptionQuery } from './UserPreference.generated';
 import { useHrToolsNavItems } from './useHrToolsNavItems';
@@ -203,7 +204,7 @@ describe('useHrToolsNavItems', () => {
     };
 
     it('hides the MPD Supervisor Report from a non-developer impersonator', async () => {
-      mockSession({ impersonating: true, isImpersonatorDeveloper: false });
+      mockSession({ impersonating: true, impersonatorRole: undefined });
 
       const ids = await renderItemIds(SupervisorEligibleWrapper);
 
@@ -213,7 +214,10 @@ describe('useHrToolsNavItems', () => {
     });
 
     it('shows the MPD Supervisor Report to a developer impersonator', async () => {
-      mockSession({ impersonating: true, isImpersonatorDeveloper: true });
+      mockSession({
+        impersonating: true,
+        impersonatorRole: ImpersonatorRole.Developer,
+      });
 
       expect(await renderItemIds(SupervisorEligibleWrapper)).toContain(
         'mpdSupervisorReport',
@@ -233,7 +237,7 @@ describe('useHrToolsNavItems', () => {
       mockSession({
         developer: true,
         impersonating: true,
-        isImpersonatorDeveloper: false,
+        impersonatorRole: undefined,
       });
 
       const ids = await renderItemIds(Wrapper);
@@ -243,8 +247,8 @@ describe('useHrToolsNavItems', () => {
       expect(ids).not.toContain('mpdSupervisorReport');
     });
 
-    it('treats a missing isImpersonatorDeveloper as non-developer', async () => {
-      mockSession({ impersonating: true, isImpersonatorDeveloper: undefined });
+    it('treats a missing impersonatorRole as non-developer', async () => {
+      mockSession({ impersonating: true, impersonatorRole: undefined });
 
       expect(await renderItemIds(SupervisorEligibleWrapper)).not.toContain(
         'mpdSupervisorReport',

@@ -1,6 +1,10 @@
 import { NextApiRequest } from 'next';
 import { getToken } from 'next-auth/jwt';
 import { getErrorMessage } from 'src/lib/error';
+import {
+  ImpersonatorRole,
+  isImpersonatorRole,
+} from 'src/lib/impersonationAccess';
 import { cookieDefaultInfo } from '../../utils/cookies';
 import { signValue } from '../helpers';
 
@@ -27,6 +31,7 @@ type FetchTokenForOrganizationType = {
     attributes: {
       created_at: string;
       json_web_token: string;
+      impersonation_role?: string;
       updated_at: string;
       updated_in_db_at: string;
     };
@@ -60,9 +65,6 @@ export const impersonate = async (
     }
 
     const { apiToken, userID, developer } = jwt;
-
-    const isDeveloper = developer === true;
-    const signedDeveloperStatus = signValue(isDeveloper);
 
     if (typeof user !== 'string') {
       status = 400;
@@ -102,6 +104,13 @@ export const impersonate = async (
     const fetchRes = (await fetchToken.json()) as FetchTokenForOrganizationType;
 
     const impersonate = fetchRes?.data?.attributes?.json_web_token;
+    // Prefer the role the API reports; an older API that omits it can only vouch for developers
+    const role = fetchRes?.data?.attributes?.impersonation_role;
+    const impersonatorRole = isImpersonatorRole(role)
+      ? role
+      : developer === true
+        ? ImpersonatorRole.Developer
+        : undefined;
 
     if (fetchToken.status !== 200) {
       errors = fetchRes.errors;
@@ -118,10 +127,14 @@ export const impersonate = async (
     const cookies = [
       `mpdx-handoff.accountConflictUserId=${userID}; ${cookieDefaultInfo}`,
       `mpdx-handoff.impersonate=${impersonate}; ${cookieDefaultInfo}`,
-      `mpdx-handoff.isImpersonatorDeveloper=${signedDeveloperStatus}; ${cookieDefaultInfo}`,
       `mpdx-handoff.redirect-url=/; ${cookieDefaultInfo}`,
       `mpdx-handoff.token=${apiToken}; ${cookieDefaultInfo}`,
     ];
+    if (impersonatorRole) {
+      cookies.push(
+        `mpdx-handoff.impersonatorRole=${signValue(impersonatorRole)}; ${cookieDefaultInfo}`,
+      );
+    }
     return {
       status: fetchToken.status,
       errors,

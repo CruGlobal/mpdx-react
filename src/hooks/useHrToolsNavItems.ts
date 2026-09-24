@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ImpersonatorRole } from 'src/lib/impersonationAccess';
 import { useNewStaffQuestionnaireStatusQuery } from './NewStaffQuestionnaireStatus.generated';
 import { useAccountListId } from './useAccountListId';
 import { useDeveloperBypass } from './useDeveloperBypass';
@@ -28,11 +29,12 @@ export function useHrToolsNavItems(): {
   const developerBypass = useDeveloperBypass();
   // Partner Reminders is live in production; every other HR Tool is still disabled
   const { reportsDisabled } = useReportsDisabled();
-  const { impersonating, isImpersonatorDeveloper } = useRequiredSession();
+  const { impersonating, impersonatorRole } = useRequiredSession();
   // Non-developer impersonators must never see the supervisor report (MPDX-10066).
   // Applied outside the developerBypass filter because session.developer reflects
   // the impersonated user, not the impersonator.
-  const blockedImpersonation = !!impersonating && !isImpersonatorDeveloper;
+  const blockedImpersonation =
+    !!impersonating && impersonatorRole !== ImpersonatorRole.Developer;
 
   const accountListId = useAccountListId();
 

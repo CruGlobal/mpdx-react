@@ -1,4 +1,9 @@
-import { isJwtExpired, signValue, verifySignedValue } from './helpers';
+import {
+  isJwtExpired,
+  setUserInfo,
+  signValue,
+  verifySignedValue,
+} from './helpers';
 
 describe('isJwtExpired', () => {
   it('returns true for expired JWTs', () => {
@@ -37,6 +42,10 @@ describe('signValue and verifySignedValue', () => {
     expect(verifySignedValue(signedFalse)).toBe('false');
   });
 
+  it('signs and verifies a string value correctly', () => {
+    expect(verifySignedValue(signValue('mpd_leader', 100))).toBe('mpd_leader');
+  });
+
   it('returns null for expired signed values', async () => {
     const signedValue = signValue(true, -1);
 
@@ -50,5 +59,69 @@ describe('signValue and verifySignedValue', () => {
     const tamperedSignedValue = `false.${parts[1]}.${parts[2]}`;
 
     expect(verifySignedValue(tamperedSignedValue)).toBeNull();
+  });
+});
+
+describe('setUserInfo', () => {
+  const impersonateCookies = (impersonatorRoleCookie: string) =>
+    `mpdx-handoff.impersonate=impersonate-token; mpdx-handoff.token=impersonator-token; mpdx-handoff.impersonatorRole=${impersonatorRoleCookie}`;
+
+  it('returns the verified impersonator role and expires the cookie', () => {
+    const { user, cookies } = setUserInfo(
+      'access-token',
+      'user-1',
+      impersonateCookies(signValue('mpd_leader')),
+    );
+
+    expect(user).toMatchObject({
+      apiToken: 'impersonate-token',
+      impersonating: true,
+      impersonatorApiToken: 'impersonator-token',
+      impersonatorRole: 'mpd_leader',
+    });
+    expect(cookies).toContain(
+      'mpdx-handoff.impersonatorRole=; HttpOnly; Secure; path=/; Max-Age=0',
+    );
+  });
+
+  it('drops an impersonator role with a bad signature', () => {
+    const [value, expiresAt] = signValue('developer').split('.');
+
+    const { user } = setUserInfo(
+      'access-token',
+      'user-1',
+      impersonateCookies(`${value}.${expiresAt}.bogus-signature`),
+    );
+
+    expect(user.impersonating).toBe(true);
+    expect(user.impersonatorRole).toBeUndefined();
+  });
+
+  it('drops a signed value that is not a known role', () => {
+    const { user } = setUserInfo(
+      'access-token',
+      'user-1',
+      impersonateCookies(signValue('bogus')),
+    );
+
+    expect(user.impersonatorRole).toBeUndefined();
+  });
+
+  it('ignores the impersonator role cookie when not impersonating', () => {
+    const { user, cookies } = setUserInfo(
+      'access-token',
+      'user-1',
+      `mpdx-handoff.impersonatorRole=${signValue('developer')}`,
+    );
+
+    expect(user).toMatchObject({
+      apiToken: 'access-token',
+      userID: 'user-1',
+      impersonating: false,
+    });
+    expect(user.impersonatorRole).toBeUndefined();
+    expect(cookies).toContain(
+      'mpdx-handoff.impersonatorRole=; HttpOnly; Secure; path=/; Max-Age=0',
+    );
   });
 });
