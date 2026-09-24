@@ -34,11 +34,13 @@ const optedIn = { enabled: true, helpEnabled: true };
 interface TestComponentProps {
   settings?: Partial<AssistantSettingsFieldsFragment>;
   expandedAccordion?: PreferenceAccordion | null;
+  mocks?: Record<string, unknown>;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   settings = optedIn,
   expandedAccordion = PreferenceAccordion.Assistant,
+  mocks = {},
 }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
@@ -46,7 +48,10 @@ const TestComponent: React.FC<TestComponentProps> = ({
         <GqlMockedProvider<{
           CreateAssistantToken: CreateAssistantTokenMutation;
         }>
-          mocks={{ CreateAssistantToken: mintedToken('assistant-token') }}
+          mocks={{
+            CreateAssistantToken: mintedToken('assistant-token'),
+            ...mocks,
+          }}
           onCall={mutationSpy}
         >
           <AssistantAccordion
@@ -253,6 +258,78 @@ describe('AssistantAccordion', () => {
           attributes: { enabled: false },
         }),
       );
+    });
+
+    it('says the conversations are gone but the assistant is still on when the save fails', async () => {
+      fetchSpy.mockResolvedValueOnce(
+        mockJsonResponse({ deleted_conversations: 3, deleted_messages: 42 }),
+      );
+      const { getByLabelText, findByRole, findByText, queryByText } = render(
+        <TestComponent
+          mocks={{
+            UpdateAssistantSettings: () => {
+              throw new Error('Server Error');
+            },
+          }}
+        />,
+      );
+
+      userEvent.click(getByLabelText('Turn on the Assistant'));
+      const dialog = await findByRole('dialog', {
+        name: 'Turn off the Assistant?',
+      });
+      userEvent.click(
+        within(dialog).getByRole('button', { name: 'Turn off and delete' }),
+      );
+
+      expect(
+        await findByText(
+          'Your conversations were deleted, but the Assistant could not be turned off yet.',
+        ),
+      ).toBeInTheDocument();
+      expect(queryByText('Conversations deleted: 3')).not.toBeInTheDocument();
+      expect(
+        within(dialog).queryByRole('button', { name: 'Done' }),
+      ).not.toBeInTheDocument();
+      expect(
+        within(dialog).getByRole('button', { name: 'Try again' }),
+      ).toBeInTheDocument();
+    });
+
+    it('retries only the save, never the delete, after the save fails', async () => {
+      fetchSpy.mockResolvedValueOnce(
+        mockJsonResponse({ deleted_conversations: 3, deleted_messages: 42 }),
+      );
+      let saves = 0;
+      const { getByLabelText, findByRole, findByText } = render(
+        <TestComponent
+          mocks={{
+            UpdateAssistantSettings: () => {
+              saves += 1;
+              if (saves === 1) {
+                throw new Error('Server Error');
+              }
+              return {};
+            },
+          }}
+        />,
+      );
+
+      userEvent.click(getByLabelText('Turn on the Assistant'));
+      const dialog = await findByRole('dialog', {
+        name: 'Turn off the Assistant?',
+      });
+      userEvent.click(
+        within(dialog).getByRole('button', { name: 'Turn off and delete' }),
+      );
+      userEvent.click(
+        await within(dialog).findByRole('button', { name: 'Try again' }),
+      );
+
+      expect(await findByText('Conversations deleted: 3')).toBeInTheDocument();
+      expect(await findByText('Messages deleted: 42')).toBeInTheDocument();
+      expect(saves).toBe(2);
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
     });
 
     it('mints a token for the account list only once the dialog opens', async () => {

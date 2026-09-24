@@ -79,13 +79,29 @@ export const AssistantOptOutDialog: React.FC<AssistantOptOutDialogProps> = ({
   const [deleted, setDeleted] = useState<DeletedConversationCounts | null>(
     null,
   );
+  const [turnedOff, setTurnedOff] = useState(false);
+  const [saveFailed, setSaveFailed] = useState(false);
 
   const handleClose = () => {
     if (deleting) {
       return;
     }
     setDeleted(null);
+    setTurnedOff(false);
+    setSaveFailed(false);
     onClose();
+  };
+
+  const saveTurnedOff = async () => {
+    setSaveFailed(false);
+    try {
+      await updateAssistantSettings({
+        variables: { attributes: { enabled: false } },
+      });
+      setTurnedOff(true);
+    } catch {
+      setSaveFailed(true);
+    }
   };
 
   const turnOff = async () => {
@@ -97,11 +113,8 @@ export const AssistantOptOutDialog: React.FC<AssistantOptOutDialogProps> = ({
         return;
       }
       // Delete first so nothing is left behind once the Assistant is off
-      const counts = await deleteAssistantConversations(currentToken);
-      setDeleted(counts);
-      await updateAssistantSettings({
-        variables: { attributes: { enabled: false } },
-      });
+      setDeleted(await deleteAssistantConversations(currentToken));
+      await saveTurnedOff();
     } catch {
       enqueueSnackbar(
         t('Turning off the Assistant failed. Please try again.'),
@@ -112,6 +125,12 @@ export const AssistantOptOutDialog: React.FC<AssistantOptOutDialogProps> = ({
     } finally {
       setDeleting(false);
     }
+  };
+
+  const retrySave = async () => {
+    setDeleting(true);
+    await saveTurnedOff();
+    setDeleting(false);
   };
 
   const cannotDelete =
@@ -128,7 +147,13 @@ export const AssistantOptOutDialog: React.FC<AssistantOptOutDialogProps> = ({
           <Box textAlign="center">
             <CircularProgress aria-label={t('Deleting')} />
           </Box>
-        ) : deleted ? (
+        ) : deleted && saveFailed ? (
+          <DialogContentText>
+            {t(
+              'Your conversations were deleted, but the Assistant could not be turned off yet.',
+            )}
+          </DialogContentText>
+        ) : deleted && turnedOff ? (
           <>
             <DialogContentText>
               {t('Conversations deleted: {{conversations}}', {
@@ -152,8 +177,17 @@ export const AssistantOptOutDialog: React.FC<AssistantOptOutDialogProps> = ({
         )}
       </DialogContent>
       <DialogActions>
-        {deleted ? (
+        {deleted && turnedOff ? (
           <Button onClick={handleClose}>{t('Done')}</Button>
+        ) : deleted ? (
+          <>
+            <Button color="inherit" disabled={deleting} onClick={handleClose}>
+              {t('Cancel')}
+            </Button>
+            <Button variant="contained" disabled={deleting} onClick={retrySave}>
+              {t('Try again')}
+            </Button>
+          </>
         ) : (
           <>
             <Button color="inherit" disabled={deleting} onClick={handleClose}>
