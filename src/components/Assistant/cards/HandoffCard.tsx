@@ -49,7 +49,7 @@ export const HandoffCard: React.FC<HandoffCardProps> = ({ card }) => {
   return (
     <Card variant="outlined">
       <CardContent sx={{ pb: 0 }}>
-        <Typography variant="subtitle2" gutterBottom>
+        <Typography variant="subtitle2" component="h3" gutterBottom>
           {t('Summary for the help desk')}
         </Typography>
         <Typography variant="body2" whiteSpace="pre-wrap">

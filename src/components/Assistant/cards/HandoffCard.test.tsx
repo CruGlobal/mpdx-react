@@ -28,9 +28,12 @@ describe('HandoffCard', () => {
     Object.assign(navigator, { clipboard: { writeText } });
   });
 
-  it('shows the summary', () => {
-    const { getByText } = render(<TestComponent card={card} />);
+  it('shows the summary under a level 3 heading', () => {
+    const { getByRole, getByText } = render(<TestComponent card={card} />);
 
+    expect(
+      getByRole('heading', { level: 3, name: 'Summary for the help desk' }),
+    ).toBeInTheDocument();
     expect(getByText(card.summary)).toBeInTheDocument();
   });
 
