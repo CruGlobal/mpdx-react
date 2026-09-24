@@ -36,6 +36,7 @@ jest.mock('./MessageList', () => {
 
 const mutationSpy = jest.fn();
 const onMint = jest.fn();
+const onClose = jest.fn();
 
 // Every message the transcript rendered since the given MessageList call
 const renderedContentSince = (callIndex: number): string[] =>
@@ -65,7 +66,9 @@ const TestComponent: React.FC<TestComponentProps> = ({
         asPath: `/accountLists/${accountListId}/${page}`,
       }}
     >
-      <AssistantProvider>{open && <AssistantChat />}</AssistantProvider>
+      <AssistantProvider>
+        {open && <AssistantChat titleId="guide-title" onClose={onClose} />}
+      </AssistantProvider>
     </TestRouter>
   );
 
@@ -564,6 +567,50 @@ describe('AssistantChat', () => {
     ).toBeInTheDocument();
     expect(queryByText(offNotice)).not.toBeInTheDocument();
     expect(fetchSpy).toHaveBeenCalledTimes(1);
+  });
+
+  describe('header', () => {
+    it('names the Guide in a level 2 heading and closes from the X', async () => {
+      const { getByRole } = render(<TestComponent />);
+
+      expect(
+        getByRole('heading', { level: 2, name: 'MPDX Guide' }),
+      ).toHaveAttribute('id', 'guide-title');
+      userEvent.click(getByRole('button', { name: 'Close MPDX Guide' }));
+      expect(onClose).toHaveBeenCalled();
+      await waitForMint();
+    });
+
+    it('says Connecting while the token mints and then that it is ready', async () => {
+      const { getByText, findByText } = render(<TestComponent />);
+
+      expect(getByText('Connecting')).toBeInTheDocument();
+      expect(await findByText('Here to show you around')).toBeInTheDocument();
+    });
+
+    it('says it could not connect when the mint fails', async () => {
+      const { findByText } = render(
+        <TestComponent mints={[{ networkError: true }]} />,
+      );
+
+      expect(await findByText('Could not connect')).toBeInTheDocument();
+    });
+
+    it('says it is off right now under the kill switch', async () => {
+      fetchSpy.mockResolvedValueOnce(
+        mockJsonResponse(
+          { error: 'assistant_disabled' },
+          { ok: false, status: 503 },
+        ),
+      );
+      const { getByRole, findByText, queryByText } = render(<TestComponent />);
+
+      await typeMessage(getByRole, 'Hi');
+      userEvent.click(getByRole('button', { name: 'Send' }));
+
+      expect(await findByText('Off right now')).toBeInTheDocument();
+      expect(queryByText('Here to show you around')).not.toBeInTheDocument();
+    });
   });
 
   describe('when the assistant is switched off', () => {

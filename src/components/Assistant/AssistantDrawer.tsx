@@ -1,16 +1,6 @@
 import React from 'react';
-import CloseIcon from '@mui/icons-material/Close';
-import {
-  Box,
-  Divider,
-  Drawer,
-  IconButton,
-  Typography,
-  useMediaQuery,
-} from '@mui/material';
+import { Box, Drawer, useMediaQuery } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
-import { useTranslation } from 'react-i18next';
-import { getAppName } from 'src/lib/getAppName';
 import { AssistantChat } from './AssistantChat';
 import { useAssistantContext } from './AssistantProvider';
 import { useHelpjuiceBeaconStyle } from './helpjuiceBeacon';
@@ -25,16 +15,7 @@ const DrawerContent = styled(Box)({
   height: '100%',
 });
 
-const Header = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  padding: theme.spacing(1, 1, 1, 2),
-}));
-
 export const AssistantDrawer: React.FC = () => {
-  const { t } = useTranslation();
-  const appName = getAppName();
   const visible = useAssistantVisibility();
   const { open, closeAssistant, launcherRef } = useAssistantContext();
   const theme = useTheme();
@@ -70,19 +51,7 @@ export const AssistantDrawer: React.FC = () => {
       }}
     >
       <DrawerContent>
-        <Header>
-          <Typography id={titleId} variant="h6" component="h2">
-            {t('{{appName}} Guide', { appName })}
-          </Typography>
-          <IconButton
-            aria-label={t('Close {{appName}} Guide', { appName })}
-            onClick={closeAssistant}
-          >
-            <CloseIcon />
-          </IconButton>
-        </Header>
-        <Divider />
-        <AssistantChat />
+        <AssistantChat titleId={titleId} onClose={closeAssistant} />
       </DrawerContent>
     </Drawer>
   );

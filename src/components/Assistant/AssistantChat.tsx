@@ -24,6 +24,7 @@ import { useTranslation } from 'react-i18next';
 import { buildHelpjuiceContactUrl } from 'src/components/Helpjuice/contactUrl';
 import { useOptionalAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';
+import { AssistantHeader, GuideStatus } from './AssistantHeader';
 import { useAssistantContext } from './AssistantProvider';
 import { MessageList } from './MessageList';
 import { getAssistantUrl, useAssistantStream } from './useAssistantStream';
@@ -125,8 +126,16 @@ const MintFailed: React.FC<MintFailedProps> = ({ onRetry }) => {
   );
 };
 
+interface AssistantChatProps {
+  titleId: string;
+  onClose: () => void;
+}
+
 // Mounts only while the drawer is open, so session, route, and Apollo hooks stay out of the provider
-export const AssistantChat: React.FC = () => {
+export const AssistantChat: React.FC<AssistantChatProps> = ({
+  titleId,
+  onClose,
+}) => {
   const { t } = useTranslation();
   const { messages, accountListId: transcriptAccountListId } =
     useAssistantContext();
@@ -156,6 +165,16 @@ export const AssistantChat: React.FC = () => {
   const deadEnd =
     !streaming &&
     (tokenState.status === 'refusing' || tokenState.status === 'failed');
+  const killSwitchNotice = configured && !deadEnd && assistantDisabled;
+  const status: GuideStatus = killSwitchNotice
+    ? 'off'
+    : tokenState.status === 'ready'
+      ? 'ready'
+      : tokenState.status === 'minting'
+        ? 'connecting'
+        : tokenState.status === 'failed'
+          ? 'failed'
+          : 'off';
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const wasStreaming = useRef(streaming);
   const [buttonAnnouncement, setButtonAnnouncement] = useState('');
@@ -194,12 +213,13 @@ export const AssistantChat: React.FC = () => {
 
   return (
     <>
+      <AssistantHeader titleId={titleId} status={status} onClose={onClose} />
       <MessageArea>
         <MessageList messages={visibleMessages} streaming={streaming} />
       </MessageArea>
       <Divider />
       <Footer>
-        {configured && !deadEnd && assistantDisabled && (
+        {killSwitchNotice && (
           <Typography variant="body2" color="text.secondary" role="status">
             {t('The Guide is off right now. Please try again later.')}
           </Typography>
