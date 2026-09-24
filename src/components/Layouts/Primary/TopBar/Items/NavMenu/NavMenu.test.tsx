@@ -241,6 +241,23 @@ describe('NavMenu', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('shows coaching link if there are coaching accounts', async () => {
+    const { findByRole } = render(
+      <TestComponent
+        mocks={{
+          CoachingListCount: {
+            coachingAccountLists: {
+              totalCount: 3,
+            },
+          },
+        }}
+      />,
+    );
+    expect(
+      await findByRole('menuitem', { hidden: true, name: 'Coaching' }),
+    ).toBeInTheDocument();
+  });
+
   it('does not show coaching link if there are no coaching accounts', async () => {
     const mutationSpy = jest.fn();
     const { queryByRole } = render(

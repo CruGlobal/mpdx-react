@@ -94,7 +94,7 @@ const NavMenu: React.FC = () => {
   });
   const { data: coachingData } = useCoachingListCountQuery();
 
-  const coachingAccounts = coachingData?.coachingAccountLists;
+  const isCoaching = !!coachingData?.coachingAccountLists?.totalCount;
 
   const toolData: { [key: string]: { totalCount: number } } = {
     [ToolName.FixCommitmentInfo]: data?.[ToolName.FixCommitmentInfo] ?? {
@@ -159,7 +159,6 @@ const NavMenu: React.FC = () => {
   };
   const { pathname } = useRouter();
 
-  const isCoaching = !!coachingAccounts?.totalCount;
   const { navPages } = useNavPages(isCoaching);
   const reports = navPages.find((page) => page.id === 'reports-page');
   const hrTools = navPages.find((page) => page.id === 'hr-tools-page');
