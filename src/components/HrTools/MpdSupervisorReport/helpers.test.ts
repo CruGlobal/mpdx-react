@@ -11,6 +11,7 @@ import {
   getInitials,
   getLocalizedAssignmentCategoryGroup,
   getQuarterLabel,
+  getQuarterMonthRange,
   healthColor,
   healthLabel,
   pendingField,
@@ -79,6 +80,36 @@ describe('getQuarterLabel', () => {
   it('formats a fiscal year and quarter', () => {
     expect(getQuarterLabel(2025, 4)).toBe('FQ4 25');
     expect(getQuarterLabel(2026, 1)).toBe('FQ1 26');
+  });
+});
+
+describe('getQuarterMonthRange', () => {
+  it('starts Q1 in September of the previous calendar year', () => {
+    expect(getQuarterMonthRange(2026, 1)).toEqual({
+      start: { year: 2025, month: 9 },
+      end: { year: 2025, month: 11 },
+    });
+  });
+
+  it('rolls Q2 over from December into the fiscal year', () => {
+    expect(getQuarterMonthRange(2026, 2)).toEqual({
+      start: { year: 2025, month: 12 },
+      end: { year: 2026, month: 2 },
+    });
+  });
+
+  it('covers March to May for Q3', () => {
+    expect(getQuarterMonthRange(2026, 3)).toEqual({
+      start: { year: 2026, month: 3 },
+      end: { year: 2026, month: 5 },
+    });
+  });
+
+  it('covers June to August for Q4', () => {
+    expect(getQuarterMonthRange(2026, 4)).toEqual({
+      start: { year: 2026, month: 6 },
+      end: { year: 2026, month: 8 },
+    });
   });
 });
 
@@ -165,21 +196,21 @@ describe('buildQuarterChips', () => {
     },
   ];
 
-  it('returns completed quarters as-is when there is no starting quarter', () => {
+  it('returns completed quarters newest first when there is no starting quarter', () => {
     expect(
       buildQuarterChips({ monthlyGrossSalary: 0, completedQuarters }),
     ).toEqual([
-      {
-        fiscalYear: 2025,
-        quarter: 4,
-        status: MpdHealthStatusEnum.Yellow,
-        averagePayroll: 4013.42,
-      },
       {
         fiscalYear: 2026,
         quarter: 1,
         status: MpdHealthStatusEnum.Green,
         averagePayroll: 4548.05,
+      },
+      {
+        fiscalYear: 2025,
+        quarter: 4,
+        status: MpdHealthStatusEnum.Yellow,
+        averagePayroll: 4013.42,
       },
     ]);
   });
@@ -205,7 +236,7 @@ describe('buildQuarterChips', () => {
     });
   });
 
-  it('sorts the starting quarter into chronological order even when it falls in the middle', () => {
+  it('sorts the starting quarter into newest-first order even when it falls in the middle', () => {
     const startingQuarter: StartingQuarterPayroll = {
       fiscalYear: 2025,
       quarter: 3,
@@ -220,6 +251,6 @@ describe('buildQuarterChips', () => {
 
     expect(
       chips.map(({ fiscalYear, quarter }) => `${fiscalYear}-${quarter}`),
-    ).toEqual(['2025-3', '2025-4', '2026-1']);
+    ).toEqual(['2026-1', '2025-4', '2025-3']);
   });
 });

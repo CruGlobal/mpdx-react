@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -13,15 +13,17 @@ import {
 } from '../MpdSupervisorReportContext';
 import { managedStaffTeamsMock } from '../mpdSupervisorReportMocks';
 import { MpdSupervisorReportFilterPanel } from './MpdSupervisorReportFilterPanel';
-import { ALL_TEAMS } from './mpdSupervisorReportFilters';
 
 const onClose = jest.fn();
 
-const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+const Wrapper: React.FC<{
+  children: React.ReactNode;
+  teams?: ManagedStaffTeamsQuery['managedStaffTeams'];
+}> = ({ children, teams }) => (
   <TestRouter>
     <ThemeProvider theme={theme}>
       <GqlMockedProvider<{ ManagedStaffTeams: ManagedStaffTeamsQuery }>
-        mocks={{ ManagedStaffTeams: managedStaffTeamsMock() }}
+        mocks={{ ManagedStaffTeams: managedStaffTeamsMock(teams) }}
       >
         <MpdSupervisorReportProvider>{children}</MpdSupervisorReportProvider>
       </GqlMockedProvider>
@@ -64,6 +66,50 @@ describe('MpdSupervisorReportFilterPanel', () => {
     ).toBeInTheDocument();
   });
 
+  it('explains the Negative last month filter', async () => {
+    const { getByRole, findByRole } = renderFilterPanel();
+
+    userEvent.hover(getByRole('button', { name: 'Negative last month' }));
+
+    expect(await findByRole('tooltip')).toHaveTextContent(
+      'Staff whose payroll last month was below their New Staff Monthly Salary.',
+    );
+  });
+
+  it('explains the Negative last 3+ months filter', async () => {
+    const { getByRole, findByRole } = renderFilterPanel();
+
+    userEvent.hover(getByRole('button', { name: 'Negative last 3+ months' }));
+
+    expect(await findByRole('tooltip')).toHaveTextContent(
+      'Staff whose payroll was below their New Staff Monthly Salary in each of the last three complete months.',
+    );
+  });
+
+  it('does not show a tooltip for the All people filter', () => {
+    jest.useFakeTimers();
+    try {
+      const { getByRole, queryByRole } = renderFilterPanel();
+
+      // Run well past the tooltip enter delay
+      userEvent.hover(getByRole('button', { name: 'All people' }));
+      act(() => {
+        jest.advanceTimersByTime(1000);
+      });
+      expect(queryByRole('tooltip')).not.toBeInTheDocument();
+
+      // The same wait does open a described chip's tooltip
+      userEvent.unhover(getByRole('button', { name: 'All people' }));
+      userEvent.hover(getByRole('button', { name: 'Negative last month' }));
+      act(() => {
+        jest.advanceTimersByTime(1000);
+      });
+      expect(queryByRole('tooltip')).toBeInTheDocument();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
   it('clicking a quick-filter chip toggles active state', async () => {
     const { getByRole } = renderFilterPanel();
     // 'All people' chip is active by default (filled variant)
@@ -103,10 +149,12 @@ describe('MpdSupervisorReportFilterPanel', () => {
 
 // Consumer component to verify context-driven state changes
 const FilterContextConsumer: React.FC = () => {
-  const { team, employmentType, activeQuickFilter } = useMpdSupervisorReport();
+  const { team, department, employmentType, activeQuickFilter } =
+    useMpdSupervisorReport();
   return (
     <div>
       <span data-testid="team">{team}</span>
+      <span data-testid="department">{department}</span>
       <span data-testid="employmentType">{employmentType}</span>
       <span data-testid="activeQuickFilter">{activeQuickFilter}</span>
     </div>
@@ -128,7 +176,8 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
 
   it('starts with default filter values in context', () => {
     const { getByTestId } = renderWithConsumer();
-    expect(getByTestId('team').textContent).toBe(ALL_TEAMS);
+    expect(getByTestId('team').textContent).toBe('');
+    expect(getByTestId('department').textContent).toBe('');
     expect(getByTestId('employmentType').textContent).toBe('');
     expect(getByTestId('activeQuickFilter').textContent).toBe('allPeople');
   });
@@ -158,49 +207,176 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
     expect(getByTestId('activeQuickFilter').textContent).toBe('allPeople');
   });
 
-  describe('Team select', () => {
-    // Renders, waits out the teams query, then opens the select.
+  describe('Team autocomplete', () => {
+    // Renders, waits out the teams query, then opens the option list.
     const openTeamSelect = async () => {
       const view = renderWithConsumer();
-      const select = view.getByLabelText('Team');
-      await waitFor(() =>
-        expect(select).not.toHaveAttribute('aria-disabled', 'true'),
-      );
-      userEvent.click(select);
+      const combobox = view.getByRole('combobox', { name: 'Team' });
+      await waitFor(() => expect(combobox).not.toBeDisabled());
+      userEvent.click(combobox);
       await view.findByRole('option', { name: 'Solution Delivery Team' });
       return view;
     };
 
     it('is disabled until the teams arrive', () => {
-      const { getByLabelText } = renderWithConsumer();
-      expect(getByLabelText('Team')).toHaveAttribute('aria-disabled', 'true');
+      const { getByRole } = renderWithConsumer();
+      expect(getByRole('combobox', { name: 'Team' })).toBeDisabled();
     });
 
-    it('puts the selected team id in context', async () => {
+    it('offers All teams as the placeholder while nothing is chosen', () => {
+      const { getByRole } = renderWithConsumer();
+      expect(getByRole('combobox', { name: 'Team' })).toHaveAttribute(
+        'placeholder',
+        'All teams',
+      );
+    });
+
+    it('puts the selected team name in context', async () => {
       const { getByRole, getByTestId } = await openTeamSelect();
 
       userEvent.click(getByRole('option', { name: 'Solution Delivery Team' }));
 
-      expect(getByTestId('team').textContent).toBe('team-1');
+      expect(getByTestId('team').textContent).toBe('Solution Delivery Team');
     });
 
-    it('sorts the team options by name', async () => {
+    it('lists every team name, sorted, including one with no department', async () => {
       const { getAllByRole } = await openTeamSelect();
 
       const names = getAllByRole('option').map((option) => option.textContent);
       expect(names).toEqual([
-        'All teams',
+        'Central Team',
         'Solution Delivery Team',
-        'User Interaction Team',
+        'Unassigned',
       ]);
     });
 
-    it('omits a team that has no id', async () => {
-      const { queryByRole } = await openTeamSelect();
+    it('narrows the list to what the supervisor types', async () => {
+      const { getByRole, findAllByRole } = await openTeamSelect();
 
-      expect(
-        queryByRole('option', { name: 'Unassigned' }),
-      ).not.toBeInTheDocument();
+      userEvent.type(getByRole('combobox', { name: 'Team' }), 'central');
+
+      const names = (await findAllByRole('option')).map(
+        (option) => option.textContent,
+      );
+      expect(names).toEqual(['Central Team']);
+    });
+
+    it('clearing it drops the team filter', async () => {
+      const { getByRole, getByTitle, getByTestId } = await openTeamSelect();
+      userEvent.click(getByRole('option', { name: 'Central Team' }));
+      expect(getByTestId('team').textContent).toBe('Central Team');
+
+      userEvent.click(getByTitle('Clear'));
+
+      expect(getByTestId('team').textContent).toBe('');
+    });
+  });
+
+  describe('Department autocomplete', () => {
+    const openDepartmentSelect = async () => {
+      const view = renderWithConsumer();
+      const combobox = view.getByRole('combobox', { name: 'Department' });
+      await waitFor(() => expect(combobox).not.toBeDisabled());
+      userEvent.click(combobox);
+      await view.findByRole('option', { name: 'US Technology' });
+      return view;
+    };
+
+    // Waits out the teams query, then picks a team so the narrowing can be read.
+    const chooseTeam = async (name: string) => {
+      const view = renderWithConsumer();
+      const combobox = view.getByRole('combobox', { name: 'Team' });
+      await waitFor(() => expect(combobox).not.toBeDisabled());
+      userEvent.click(combobox);
+      userEvent.click(await view.findByRole('option', { name }));
+      return view;
+    };
+
+    it('is disabled until the teams arrive', () => {
+      const { getByRole } = renderWithConsumer();
+      expect(getByRole('combobox', { name: 'Department' })).toBeDisabled();
+    });
+
+    it('offers All departments as the placeholder while nothing is chosen', () => {
+      const { getByRole } = renderWithConsumer();
+      expect(getByRole('combobox', { name: 'Department' })).toHaveAttribute(
+        'placeholder',
+        'All departments',
+      );
+    });
+
+    it('lists each department once, sorted, across every team', async () => {
+      const { getAllByRole } = await openDepartmentSelect();
+
+      const names = getAllByRole('option').map((option) => option.textContent);
+      expect(names).toEqual(['Cru Military', 'US Technology']);
+    });
+
+    it('orders numbered departments correctly', async () => {
+      const { getByRole, getAllByRole, findByRole } = render(
+        <Wrapper
+          teams={[
+            { name: 'Central Team', departments: ['Cohort 10', 'Cohort 2'] },
+            { name: 'Delivery Team', departments: ['Cohort 1'] },
+          ]}
+        >
+          <MpdSupervisorReportFilterPanel onClose={onClose} />
+          <FilterContextConsumer />
+        </Wrapper>,
+      );
+      const combobox = getByRole('combobox', { name: 'Department' });
+      await waitFor(() => expect(combobox).not.toBeDisabled());
+      userEvent.click(combobox);
+      await findByRole('option', { name: 'Cohort 1' });
+
+      const names = getAllByRole('option').map((option) => option.textContent);
+      expect(names).toEqual(['Cohort 1', 'Cohort 2', 'Cohort 10']);
+    });
+
+    it('puts the selected department in context', async () => {
+      const { getByRole, getByTestId } = await openDepartmentSelect();
+
+      userEvent.click(getByRole('option', { name: 'Cru Military' }));
+
+      expect(getByTestId('department').textContent).toBe('Cru Military');
+    });
+
+    it('narrows the team options to the teams in the chosen department', async () => {
+      const { getByRole, getAllByRole } = await openDepartmentSelect();
+
+      userEvent.click(getByRole('option', { name: 'Cru Military' }));
+      userEvent.click(getByRole('combobox', { name: 'Team' }));
+
+      const names = getAllByRole('option').map((option) => option.textContent);
+      expect(names).toEqual(['Central Team']);
+    });
+
+    it('narrows the department options to those holding the chosen team', async () => {
+      const { getByRole, getAllByRole } = await chooseTeam(
+        'Solution Delivery Team',
+      );
+
+      userEvent.click(getByRole('combobox', { name: 'Department' }));
+
+      const names = getAllByRole('option').map((option) => option.textContent);
+      expect(names).toEqual(['US Technology']);
+    });
+
+    it('keeps both filters when a team and a department are chosen together', async () => {
+      const { getByRole, getByTestId } = await chooseTeam('Central Team');
+
+      userEvent.click(getByRole('combobox', { name: 'Department' }));
+      userEvent.click(getByRole('option', { name: 'Cru Military' }));
+
+      expect(getByTestId('team').textContent).toBe('Central Team');
+      expect(getByTestId('department').textContent).toBe('Cru Military');
+    });
+
+    it('disables itself when the chosen team carries no department', async () => {
+      const { getByRole, getByTestId } = await chooseTeam('Unassigned');
+
+      expect(getByTestId('department').textContent).toBe('');
+      expect(getByRole('combobox', { name: 'Department' })).toBeDisabled();
     });
   });
 

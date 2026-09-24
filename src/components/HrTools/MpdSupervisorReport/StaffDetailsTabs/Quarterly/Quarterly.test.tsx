@@ -100,7 +100,7 @@ describe('StaffTabQuarterly', () => {
     expect(getByText('$4,548.05')).toBeInTheDocument();
   });
 
-  it('inserts the starting quarter in chronological order, labeled as partial', async () => {
+  it('inserts the starting quarter in newest-first order, labeled as partial', async () => {
     const { findByText, getAllByText } = renderQuarterly({
       monthlyGrossSalary: 4510.6,
       startingQuarter,
