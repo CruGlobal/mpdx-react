@@ -39,11 +39,4 @@ export const GuideOrb = styled('span', {
   ...breathing,
 }));
 
-export const orbButtonStyles = {
-  width: orbSize,
-  height: orbSize,
-  borderRadius: '50%',
-  background: orbBackground,
-  boxShadow: `${orbGlow}, 0 4px 12px rgba(0, 0, 0, 0.25)`,
-  ...breathing,
-};
+export const launcherOrbShadow = `${orbGlow}, 0 4px 12px rgba(0, 0, 0, 0.25)`;

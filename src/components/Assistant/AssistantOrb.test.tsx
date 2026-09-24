@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { act, render, waitFor } from '@testing-library/react';
+import { act, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
@@ -66,7 +66,10 @@ const TestComponent: React.FC<TestComponentProps> = ({
 );
 
 const orbName = { name: 'Open MPDX Guide' };
-const nudgeName = { name: 'Need a hand with MPDX?' };
+const nudgeText = 'Need a hand with MPDX?';
+
+const circleOf = (orb: HTMLElement) =>
+  orb.querySelector('[data-guide-orb]') as HTMLElement;
 
 // The top bar button renders first, so the orb is the second button with the same name
 const findOrb = async (
@@ -95,10 +98,13 @@ describe('AssistantOrb', () => {
       <TestComponent settings={{ enabled: true }} />,
     );
 
-    expect(await findOrb(findAllByRole)).toHaveStyle({
+    const orb = await findOrb(findAllByRole);
+    expect(orb.parentElement).toHaveStyle({
       position: 'fixed',
       right: '24px',
       bottom: '24px',
+    });
+    expect(circleOf(orb)).toHaveStyle({
       width: '56px',
       height: '56px',
       borderRadius: '50%',
@@ -128,12 +134,12 @@ describe('AssistantOrb', () => {
       <TestComponent settings={{ enabled: true }} />,
     );
     const orb = await findOrb(findAllByRole);
-    expect(orb).not.toHaveAttribute('data-animating');
-    expect(getComputedStyle(orb).animationName).toBe('');
+    expect(circleOf(orb)).not.toHaveAttribute('data-animating');
+    expect(getComputedStyle(circleOf(orb)).animationName).toBe('');
 
     userEvent.click(orb);
     const dialog = getByRole('dialog', { name: 'MPDX Guide' });
-    expect(orb).toHaveAttribute('data-animating', 'true');
+    expect(circleOf(orb)).toHaveAttribute('data-animating', 'true');
     expect(dialog.querySelector('[data-animating="true"]')).toBeInTheDocument();
     // The motion lives only behind the reduced motion guard
     const css = [...document.querySelectorAll('style')]
@@ -149,7 +155,7 @@ describe('AssistantOrb', () => {
         queryByRole('dialog', { name: 'MPDX Guide' }),
       ).not.toBeInTheDocument(),
     );
-    expect(orb).not.toHaveAttribute('data-animating');
+    expect(circleOf(orb)).not.toHaveAttribute('data-animating');
   });
 
   it('opens the first-run explanation before opt-in', async () => {
@@ -183,13 +189,13 @@ describe('AssistantOrb', () => {
     ],
   ])('is hidden when %s', async (_, settings, arrange) => {
     arrange();
-    const { queryAllByRole } = render(
+    const { queryAllByRole, queryAllByText } = render(
       <TestComponent settings={{ enabled: true, ...settings }} />,
     );
 
     await settle();
     expect(queryAllByRole('button', orbName)).toHaveLength(0);
-    expect(queryAllByRole('button', nudgeName)).toHaveLength(0);
+    expect(queryAllByText(nudgeText)).toHaveLength(0);
   });
 
   it('moves the help beacon left while it shows and puts it back when it goes', async () => {
@@ -225,22 +231,79 @@ describe('AssistantOrb', () => {
     expect(beacon?.style.getPropertyValue('margin-right')).toBe('72px');
   });
 
+  describe('label', () => {
+    it('names the orb with a pill that hides while the Guide is open', async () => {
+      localStorage.setItem('mpdx-guide-opened', 'true');
+      const { findAllByRole, queryByRole } = render(
+        <TestComponent settings={{ enabled: true }} />,
+      );
+      const orb = await findOrb(findAllByRole);
+
+      expect(orb).toHaveTextContent('MPDX Guide');
+      expect(
+        within(orb.parentElement as HTMLElement).getAllByRole('button'),
+      ).toHaveLength(1);
+
+      userEvent.click(orb);
+      expect(orb).not.toHaveTextContent('MPDX Guide');
+
+      userEvent.keyboard('{esc}');
+      await waitFor(() =>
+        expect(queryByRole('dialog')).not.toBeInTheDocument(),
+      );
+      expect(orb).toHaveTextContent('MPDX Guide');
+    });
+
+    it('lets the nudge take its place and then hands it back', async () => {
+      const { findAllByRole, findByText, getByRole } = render(
+        <TestComponent settings={{ enabled: true }} />,
+      );
+      const orb = await findOrb(findAllByRole);
+
+      expect(await findByText(nudgeText)).toBeInTheDocument();
+      expect(orb).toHaveTextContent(nudgeText);
+      expect(orb).not.toHaveTextContent(/^MPDX Guide$/);
+      expect(orb).toHaveAccessibleDescription(nudgeText);
+
+      userEvent.click(getByRole('button', { name: 'Dismiss' }));
+      expect(orb).toHaveTextContent('MPDX Guide');
+      expect(orb).not.toHaveTextContent(nudgeText);
+    });
+
+    it('uses the app name for other organizations', async () => {
+      const appName = process.env.APP_NAME;
+      process.env.APP_NAME = 'TntConnect';
+      localStorage.setItem('mpdx-guide-opened', 'true');
+      try {
+        const { findAllByRole } = render(
+          <TestComponent settings={{ enabled: true }} />,
+        );
+        const [, orb] = await findAllByRole('button', {
+          name: 'Open TntConnect Guide',
+        });
+        expect(orb).toHaveTextContent('TntConnect Guide');
+      } finally {
+        process.env.APP_NAME = appName;
+      }
+    });
+  });
+
   describe('nudge', () => {
     it('offers help beside the orb and opens the Guide when clicked', async () => {
-      const { findByRole, getByRole, queryByRole } = render(
+      const { findByText, getByRole, queryByText } = render(
         <TestComponent settings={{ enabled: true }} />,
       );
 
-      userEvent.click(await findByRole('button', nudgeName));
+      userEvent.click(await findByText(nudgeText));
 
       expect(getByRole('dialog', { name: 'MPDX Guide' })).toBeInTheDocument();
-      expect(queryByRole('button', nudgeName)).not.toBeInTheDocument();
+      expect(queryByText(nudgeText)).not.toBeInTheDocument();
     });
 
     it('opens the first-run explanation before opt-in', async () => {
-      const { findByRole } = render(<TestComponent />);
+      const { findByRole, findByText } = render(<TestComponent />);
 
-      userEvent.click(await findByRole('button', nudgeName));
+      userEvent.click(await findByText(nudgeText));
 
       expect(
         await findByRole('dialog', { name: 'Meet your MPDX Guide' }),
@@ -248,26 +311,26 @@ describe('AssistantOrb', () => {
     });
 
     it('goes away when dismissed', async () => {
-      const { findByRole, queryByRole, getAllByRole } = render(
+      const { findByRole, queryByText, getAllByRole } = render(
         <TestComponent settings={{ enabled: true }} />,
       );
 
       userEvent.click(await findByRole('button', { name: 'Dismiss' }));
 
-      expect(queryByRole('button', nudgeName)).not.toBeInTheDocument();
+      expect(queryByText(nudgeText)).not.toBeInTheDocument();
       expect(getAllByRole('button', orbName)).toHaveLength(2);
     });
 
     it('shows only once per browser session', async () => {
       const first = render(<TestComponent settings={{ enabled: true }} />);
-      expect(await first.findByRole('button', nudgeName)).toBeInTheDocument();
+      expect(await first.findByText(nudgeText)).toBeInTheDocument();
       first.unmount();
 
-      const { findAllByRole, queryByRole } = render(
+      const { findAllByRole, queryByText } = render(
         <TestComponent settings={{ enabled: true }} />,
       );
       await findOrb(findAllByRole);
-      expect(queryByRole('button', nudgeName)).not.toBeInTheDocument();
+      expect(queryByText(nudgeText)).not.toBeInTheDocument();
     });
 
     it('never shows again once the Guide has been opened', async () => {
@@ -276,11 +339,11 @@ describe('AssistantOrb', () => {
       first.unmount();
       sessionStorage.clear();
 
-      const { findAllByRole, queryByRole } = render(
+      const { findAllByRole, queryByText } = render(
         <TestComponent settings={{ enabled: true }} />,
       );
       await findOrb(findAllByRole);
-      expect(queryByRole('button', nudgeName)).not.toBeInTheDocument();
+      expect(queryByText(nudgeText)).not.toBeInTheDocument();
     });
 
     it('still works when browser storage is blocked', async () => {
@@ -295,17 +358,17 @@ describe('AssistantOrb', () => {
           throw new Error('blocked');
         });
       try {
-        const { findByRole, getAllByRole, queryByRole } = render(
+        const { findByText, getAllByRole, queryByRole, queryByText } = render(
           <TestComponent settings={{ enabled: true }} />,
         );
 
-        expect(await findByRole('button', nudgeName)).toBeInTheDocument();
+        expect(await findByText(nudgeText)).toBeInTheDocument();
         userEvent.click(getAllByRole('button', orbName)[1]);
         userEvent.keyboard('{esc}');
         await waitFor(() =>
           expect(queryByRole('dialog')).not.toBeInTheDocument(),
         );
-        expect(queryByRole('button', nudgeName)).not.toBeInTheDocument();
+        expect(queryByText(nudgeText)).not.toBeInTheDocument();
       } finally {
         getItem.mockRestore();
         setItem.mockRestore();
@@ -314,13 +377,13 @@ describe('AssistantOrb', () => {
 
     it('is left out on phones', async () => {
       matchMediaMock({ width: '375px' });
-      const { findAllByRole, queryByRole } = render(
+      const { findAllByRole, queryByText } = render(
         <TestComponent settings={{ enabled: true }} />,
       );
 
       await findOrb(findAllByRole);
       await act(settle);
-      expect(queryByRole('button', nudgeName)).not.toBeInTheDocument();
+      expect(queryByText(nudgeText)).not.toBeInTheDocument();
     });
   });
 });
