@@ -31,15 +31,6 @@ export const isCoachingPath = (path: string): boolean =>
 export const getAssistantUrl = (): string | undefined =>
   process.env.ASSISTANT_URL?.replace(/\/+$/, '') || undefined;
 
-// Mirrors the server, where a failed or empty reply does not use up the first-turn disclosure
-const hasReplied = (messages: AssistantMessage[]): boolean =>
-  messages.some(
-    (message) =>
-      message.role === 'assistant' &&
-      message.status !== 'error' &&
-      message.content !== '',
-  );
-
 const HISTORY_TURNS = 8;
 const HISTORY_TURN_LENGTH = 4000;
 
@@ -279,7 +270,6 @@ export const useAssistantStream = ({
         return;
       }
 
-      const firstTurn = !hasReplied(messages);
       const history = recentTurns(messages);
       const controller = new AbortController();
       beginStream(controller);
@@ -379,7 +369,8 @@ export const useAssistantStream = ({
             },
             body: JSON.stringify({
               content,
-              first_turn: firstTurn,
+              // The drawer always shows the disclaimer itself, so the server never prepends it
+              first_turn: false,
               ...(isEphemeralConversation(conversationId) && { history }),
               page,
             }),
