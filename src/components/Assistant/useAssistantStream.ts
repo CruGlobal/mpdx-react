@@ -31,6 +31,15 @@ export const isCoachingPath = (path: string): boolean =>
 export const getAssistantUrl = (): string | undefined =>
   process.env.ASSISTANT_URL?.replace(/\/+$/, '') || undefined;
 
+// Mirrors the server, where a failed or empty reply does not use up the first-turn disclosure
+const hasReplied = (messages: AssistantMessage[]): boolean =>
+  messages.some(
+    (message) =>
+      message.role === 'assistant' &&
+      message.status !== 'error' &&
+      message.content !== '',
+  );
+
 let nextMessageId = 0;
 const createMessageId = (): string => `local-${++nextMessageId}`;
 
@@ -187,6 +196,7 @@ export const useAssistantStream = ({
   const { t, i18n } = useTranslation();
   const {
     conversation,
+    messages,
     accountListId: transcriptAccountListId,
     streaming,
     dispatch,
@@ -244,6 +254,7 @@ export const useAssistantStream = ({
         return;
       }
 
+      const firstTurn = !hasReplied(messages);
       const controller = new AbortController();
       beginStream(controller);
       dispatch({ type: 'addMessage', message: createMessage('user', content) });
@@ -340,7 +351,7 @@ export const useAssistantStream = ({
               'Content-Type': 'application/json',
               Accept: 'text/event-stream',
             },
-            body: JSON.stringify({ content, page }),
+            body: JSON.stringify({ content, first_turn: firstTurn, page }),
           },
         );
         if (response.status === 404 || response.status === 410) {
@@ -413,6 +424,7 @@ export const useAssistantStream = ({
       streaming,
       rateLimited,
       conversation,
+      messages,
       helpOnly,
       asPath,
       locale,
