@@ -130,8 +130,13 @@ attrition) are computed independently in generic (`calculateTotals.ts`), PDS
 (`calculations/`), and again on the server for NS — with different step ordering.
 Changing the math in one place does **not** update the others. Treat these three
 as a set: when you touch goal arithmetic, check whether the other copies need the
-same change. NS captures a user-selected `calculationsYear`; the client
-constants themselves are not year-versioned.
+same change.
+
+**Constants are year-versioned.** Every goal carries a `calculationsYear` (NS
+user-selected, GoalCalculator user-selected within its range, PDS locked to the
+creation year). Pass it to `useGoalCalculatorConstants(year, { skip })` so a
+goal keeps its own year's rates; calling the hook with no year loads the
+current year, which is only right for brand new goals.
 
 Non-obvious per-calculator rules:
 

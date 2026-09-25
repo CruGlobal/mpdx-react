@@ -3117,6 +3117,7 @@
     "This email address and phone number will be used to contact you regarding this request. Changing these will not change your permanent record.": "This email address and phone number will be used to contact you regarding this request. Changing these will not change your permanent record.",
     "This field is not a valid phone number": "This field is not a valid phone number",
     "This file should be a TntConnect DataSync file (.tntdatasync or .tntmpd) from your organization, not your local TntConnect database file (.mpddb).": "This file should be a TntConnect DataSync file (.tntdatasync or .tntmpd) from your organization, not your local TntConnect database file (.mpddb).",
+    "This goal uses {{year}} rates. To use {{currentYear}} rates, create a new goal.": "This goal uses {{year}} rates. To use {{currentYear}} rates, create a new goal.",
     "This import should only fill blank fields in current contacts and/or add new contacts.": "This import should only fill blank fields in current contacts and/or add new contacts.",
     "This import should override all fields in current contacts (contact info, notes) and add new contacts.": "This import should override all fields in current contacts (contact info, notes) and add new contacts.",
     "This is a reasonable amount by which the monthly rental of your home would increase if it were furnished.": "This is a reasonable amount by which the monthly rental of your home would increase if it were furnished.",

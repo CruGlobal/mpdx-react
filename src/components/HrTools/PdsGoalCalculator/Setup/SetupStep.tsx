@@ -79,7 +79,10 @@ export const SetupStep: React.FC = () => {
       }),
     [t],
   );
-  const { goalGeographicConstantMap } = useGoalCalculatorConstants();
+  const { goalGeographicConstantMap } = useGoalCalculatorConstants(
+    calculation?.calculationsYear,
+    { skip: !calculation },
+  );
   const saveField = useSaveField();
   const locale = useLocale();
 

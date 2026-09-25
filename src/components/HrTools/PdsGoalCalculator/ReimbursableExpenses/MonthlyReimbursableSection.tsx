@@ -14,7 +14,10 @@ export const MonthlyReimbursableSection: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
   const { calculation } = usePdsGoalCalculator();
-  const { goalMiscConstants } = useGoalCalculatorConstants();
+  const { goalMiscConstants } = useGoalCalculatorConstants(
+    calculation?.calculationsYear,
+    { skip: !calculation },
+  );
   const phoneMax = goalMiscConstants.REIMBURSEMENTS_WITH_MAXIMUM?.PHONE?.fee;
   const internetMax =
     goalMiscConstants.REIMBURSEMENTS_WITH_MAXIMUM?.INTERNET?.fee;
