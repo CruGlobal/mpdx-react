@@ -8,10 +8,11 @@ import { AssistantMarkdown } from './AssistantMarkdown';
 import { ReplyAnnouncer } from './ReplyAnnouncer';
 import { ThinkingDots } from './ThinkingDots';
 import { MessageCard } from './cards/MessageCard';
+import { useHandoffContactUrl } from './cards/useHandoffContactUrl';
 import { isThinking } from './isThinking';
 import { NavigationVisibilityProvider } from './navigation/NavigationVisibilityContext';
 import { toSafeHttpUrl } from './safeUrl';
-import { AssistantMessage, MessageRole } from './types';
+import { AssistantMessage, HandoffCardData, MessageRole } from './types';
 import { useErrorText } from './useErrorText';
 
 const List = styled('ul')({
@@ -52,6 +53,15 @@ const Bubble = styled(Box, {
       }),
 }));
 
+const HelpDeskMarkdown: React.FC<{
+  card: HandoffCardData;
+  children: string;
+}> = ({ card, children }) => (
+  <AssistantMarkdown helpDeskUrl={useHandoffContactUrl(card)}>
+    {children}
+  </AssistantMarkdown>
+);
+
 interface MessageItemProps {
   message: AssistantMessage;
 }
@@ -60,6 +70,9 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
   const { t } = useTranslation();
   const { role, content, cards, citations, status, working } = message;
   const errorText = useErrorText(message.errorReason);
+  const handoff = cards.find(
+    (card): card is HandoffCardData => card?.kind === 'handoff',
+  );
   const safeCitations = citations.flatMap((citation) => {
     const url = toSafeHttpUrl(citation.url);
     return url ? [{ title: citation.title, url }] : [];
@@ -85,6 +98,8 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
           <Typography variant="body2" whiteSpace="pre-wrap">
             {content}
           </Typography>
+        ) : handoff ? (
+          <HelpDeskMarkdown card={handoff}>{content}</HelpDeskMarkdown>
         ) : (
           <AssistantMarkdown>{content}</AssistantMarkdown>
         )}
