@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
 import { merge, mergeWith } from 'lodash';
+import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
@@ -179,6 +180,9 @@ export const PdsGoalCalculatorTestWrapper = <
   onCall,
   router,
 }: PdsGoalCalculatorTestWrapperProps<TExtraMocks>): React.ReactElement => {
+  // Read at render time so it matches the mocked Luxon clock from test setup
+  const currentYearMock = { calculationsYear: DateTime.local().year };
+
   return (
     <ThemeProvider theme={theme}>
       <TestRouter
@@ -210,6 +214,11 @@ export const PdsGoalCalculatorTestWrapper = <
                   designationSupportCalculations: merge(
                     {},
                     calculationsDefault,
+                    {
+                      nodes: calculationsDefault.nodes.map(
+                        () => currentYearMock,
+                      ),
+                    },
                     calculationsMock,
                   ),
                 },
@@ -217,6 +226,7 @@ export const PdsGoalCalculatorTestWrapper = <
                   designationSupportCalculation: merge(
                     {},
                     calculationDefault,
+                    currentYearMock,
                     calculationMock,
                   ),
                 },

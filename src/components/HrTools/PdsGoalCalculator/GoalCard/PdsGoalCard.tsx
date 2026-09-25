@@ -1,5 +1,6 @@
 import React from 'react';
-import { Chip } from '@mui/material';
+import { Chip, Stack, Tooltip } from '@mui/material';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { GoalCard } from 'src/components/Reports/Shared/GoalCard/GoalCard';
 import { DesignationSupportFormType } from 'src/graphql/types.generated';
@@ -36,6 +37,7 @@ export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal }) => {
     ) : (
       <Chip label={t('Default')} size="small" />
     );
+  const isPastYear = goal.calculationsYear !== DateTime.local().year;
 
   const handleDelete = async () => {
     await deletePdsGoalCalculation({
@@ -56,7 +58,21 @@ export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal }) => {
       updatedAt={goal.updatedAt}
       viewHref={`/accountLists/${accountListId}/hrTools/pdsGoalCalculator/${goal.id}`}
       onDelete={handleDelete}
-      badge={formTypeBadge}
+      badge={
+        <Stack direction="row" spacing={1}>
+          {formTypeBadge}
+          {/* Explains why an old goal's total differs from a new goal's */}
+          {isPastYear && (
+            <Tooltip title={t('Calculation Year')}>
+              <Chip
+                label={String(goal.calculationsYear)}
+                size="small"
+                variant="outlined"
+              />
+            </Tooltip>
+          )}
+        </Stack>
+      }
     />
   );
 };

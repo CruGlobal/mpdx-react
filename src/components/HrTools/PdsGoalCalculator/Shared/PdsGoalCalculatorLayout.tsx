@@ -1,4 +1,6 @@
 import React from 'react';
+import { Alert } from '@mui/material';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useAutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -29,6 +31,10 @@ export const PdsGoalCalculatorLayout: React.FC<
     percentComplete,
     calculationLoading,
   } = usePdsGoalCalculator();
+
+  const currentYear = DateTime.local().year;
+  const calculationsYear = calculation?.calculationsYear;
+  const isPastYear = !!calculationsYear && calculationsYear !== currentYear;
 
   const setupComplete = isSetupComplete(calculation);
   const { allValid } = useAutosaveForm();
@@ -62,7 +68,19 @@ export const PdsGoalCalculatorLayout: React.FC<
       sidebarTitle={currentStep.title}
       isSidebarOpen={isDrawerOpen}
       sidebarAriaLabel={t('{{step}} Sections', { step: currentStep.title })}
-      mainContent={mainContent}
+      mainContent={
+        <>
+          {isPastYear && (
+            <Alert severity="info" sx={{ mb: 2 }}>
+              {t(
+                'This goal uses {{year}} rates. To use {{currentYear}} rates, create a new goal.',
+                { year: calculationsYear, currentYear },
+              )}
+            </Alert>
+          )}
+          {mainContent}
+        </>
+      }
       backHref={`/accountLists/${accountListId}/hrTools/pdsGoalCalculator`}
       backTitle={t('Go Back')}
     />

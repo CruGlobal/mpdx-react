@@ -43,8 +43,12 @@ export const usePdsSummaryData = (
   calculation: PdsGoalCalculationFieldsFragment | undefined,
   hcmUser: HcmUserQuery['hcm'][number] | undefined,
 ): UsePdsSummaryDataResult => {
+  // Use the goal's locked calculations year so that old goals keep the rates
+  // they were created with
   const { goalMiscConstants, goalGeographicConstantMap, loading, error } =
-    useGoalCalculatorConstants();
+    useGoalCalculatorConstants(calculation?.calculationsYear, {
+      skip: !calculation,
+    });
 
   const data = useMemo(() => {
     if (!calculation) {
