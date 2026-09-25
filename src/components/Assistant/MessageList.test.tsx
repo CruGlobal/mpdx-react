@@ -115,9 +115,23 @@ describe('MessageList', () => {
     );
 
     expect(getByRole('log')).toHaveAttribute('aria-busy', 'true');
-    expect(
-      getByRole('progressbar', { name: 'The Guide is thinking' }),
-    ).toBeInTheDocument();
+  });
+
+  it('shows thinking dots, hidden from screen readers, until something arrives', () => {
+    const { getByTestId, queryByTestId, rerender } = render(
+      <MessageList messages={[message({ status: 'streaming' })]} streaming />,
+    );
+
+    expect(getByTestId('GuideThinking')).toHaveAttribute('aria-hidden', 'true');
+    expect(getByTestId('GuideThinking').children).toHaveLength(3);
+
+    rerender(
+      <MessageList
+        messages={[message({ status: 'streaming', content: 'Hi' })]}
+        streaming
+      />,
+    );
+    expect(queryByTestId('GuideThinking')).not.toBeInTheDocument();
   });
 
   it('shows the working indicator', () => {

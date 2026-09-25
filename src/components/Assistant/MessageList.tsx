@@ -6,7 +6,9 @@ import { useTranslation } from 'react-i18next';
 import { AssistantErrorBoundary } from './AssistantErrorBoundary';
 import { AssistantMarkdown } from './AssistantMarkdown';
 import { ReplyAnnouncer } from './ReplyAnnouncer';
+import { ThinkingDots } from './ThinkingDots';
 import { MessageCard } from './cards/MessageCard';
+import { isThinking } from './isThinking';
 import { NavigationVisibilityProvider } from './navigation/NavigationVisibilityContext';
 import { toSafeHttpUrl } from './safeUrl';
 import { AssistantMessage, MessageRole } from './types';
@@ -58,7 +60,6 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
   const { t } = useTranslation();
   const { role, content, cards, citations, status, working } = message;
   const errorText = useErrorText(message.errorReason);
-  const waiting = status === 'streaming' && !content && !working;
   const safeCitations = citations.flatMap((citation) => {
     const url = toSafeHttpUrl(citation.url);
     return url ? [{ title: citation.title, url }] : [];
@@ -87,9 +88,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
         ) : (
           <AssistantMarkdown>{content}</AssistantMarkdown>
         )}
-        {waiting && (
-          <CircularProgress size={16} aria-label={t('The Guide is thinking')} />
-        )}
+        {isThinking(message) && <ThinkingDots />}
         {working && (
           <Stack direction="row" spacing={1} alignItems="center" mt={1}>
             <CircularProgress size={14} aria-hidden />

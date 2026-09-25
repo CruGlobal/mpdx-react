@@ -392,6 +392,110 @@ describe('AssistantChat', () => {
     );
   });
 
+  describe('thinking indicator', () => {
+    const startReply = async () => {
+      const stream = controlledStream();
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(mockStreamResponse([], { body: stream.body }));
+      const utils = render(<TestComponent />);
+      const announcer = utils.getByTestId('ReplyAnnouncer');
+      const announced: string[] = [];
+      new MutationObserver(() =>
+        announced.push(announcer.textContent ?? ''),
+      ).observe(announcer, {
+        childList: true,
+        characterData: true,
+        subtree: true,
+      });
+      await typeMessage(utils.getByRole, 'Hi');
+      userEvent.click(utils.getByRole('button', { name: 'Send' }));
+      return { ...utils, stream, announcer, announced };
+    };
+
+    it('shows through generation_start, goes on the first chunk, and is announced once', async () => {
+      const {
+        getByTestId,
+        queryByTestId,
+        findByText,
+        stream,
+        announcer,
+        announced,
+      } = await startReply();
+
+      expect(getByTestId('GuideThinking')).toBeInTheDocument();
+      await waitFor(() =>
+        expect(announcer).toHaveTextContent('The Guide is thinking'),
+      );
+      stream.push(frame({ type: 'generation_start', message_id: 'm1' }));
+      await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(2));
+      expect(getByTestId('GuideThinking')).toBeInTheDocument();
+
+      stream.push(frame({ type: 'chunk', message_id: 'm1', delta: 'Hello. ' }));
+      expect(await findByText('Hello.', inTranscript)).toBeInTheDocument();
+      expect(queryByTestId('GuideThinking')).not.toBeInTheDocument();
+      stream.push(
+        frame({ type: 'generation_complete', message_id: 'm1', citations: [] }),
+      );
+      stream.close();
+      await waitFor(() => expect(announcer).toHaveTextContent('Hello.'));
+
+      expect(
+        announced.filter((text) => text === 'The Guide is thinking'),
+      ).toHaveLength(1);
+    });
+
+    it('goes when a card arrives first', async () => {
+      const { getByTestId, queryByTestId, stream } = await startReply();
+      expect(getByTestId('GuideThinking')).toBeInTheDocument();
+
+      stream.push(
+        frame({
+          type: 'card',
+          message_id: 'm1',
+          card: {
+            kind: 'navigation',
+            intent: { type: 'contacts_list', params: {} },
+            label: 'Open contacts',
+          },
+        }),
+      );
+
+      await waitFor(() =>
+        expect(queryByTestId('GuideThinking')).not.toBeInTheDocument(),
+      );
+      stream.close();
+    });
+
+    it('goes on generation_error', async () => {
+      const { getByTestId, queryByTestId, stream } = await startReply();
+      expect(getByTestId('GuideThinking')).toBeInTheDocument();
+
+      stream.push(
+        frame({ type: 'generation_error', message_id: 'm1', error: 'x' }),
+      );
+      stream.close();
+
+      await waitFor(() =>
+        expect(queryByTestId('GuideThinking')).not.toBeInTheDocument(),
+      );
+    });
+
+    it('goes on Stop', async () => {
+      const { getByRole, getByTestId, queryByTestId, stream } =
+        await startReply();
+      await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(2));
+      expect(getByTestId('GuideThinking')).toBeInTheDocument();
+
+      userEvent.click(getByRole('button', { name: 'Stop' }));
+      stream.close();
+
+      await waitFor(() =>
+        expect(queryByTestId('GuideThinking')).not.toBeInTheDocument(),
+      );
+    });
+  });
+
   it('shows Stopped when stopped before any text arrives', async () => {
     const stream = controlledStream();
     fetchSpy

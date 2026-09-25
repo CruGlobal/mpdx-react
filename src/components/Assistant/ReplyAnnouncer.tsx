@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { visuallyHidden } from '@mui/utils';
 import { TFunction, useTranslation } from 'react-i18next';
+import { isThinking } from './isThinking';
 import { AssistantCard, AssistantMessage } from './types';
 import { useErrorText } from './useErrorText';
 
@@ -95,6 +96,9 @@ export const ReplyAnnouncer: React.FC<ReplyAnnouncerProps> = ({ messages }) => {
     }
     if (progress.current.id !== reply.id) {
       progress.current = { id: reply.id, spoken: 0, done: false };
+      if (isThinking(reply)) {
+        setAnnouncement(t('The Guide is thinking'));
+      }
     }
     const current = progress.current;
     if (current.done) {
