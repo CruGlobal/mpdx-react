@@ -2,6 +2,7 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
+import { mockSession } from '__tests__/util/mockSession';
 import { HandoffCardData } from '../types';
 import { HandoffCard } from './HandoffCard';
 
@@ -68,6 +69,26 @@ describe('HandoffCard', () => {
     expect(url.searchParams.get('mpdxName')).toBe('First Last');
     expect(url.searchParams.get('mpdxEmail')).toBe('first.last@cru.org');
     expect(url.searchParams.get('mpdxUrl')).toBe('/accountLists/1/contacts');
+  });
+
+  it('fills a blank name and email from the signed-in user', () => {
+    mockSession({ name: 'Session User', email: 'session.user@cru.org' });
+    const { getByRole } = render(
+      <TestComponent
+        card={{
+          ...card,
+          contact_form: { ...card.contact_form, name: '', email: '' },
+        }}
+      />,
+    );
+
+    const url = new URL(
+      getByRole('link', { name: 'Contact the help desk' }).getAttribute(
+        'href',
+      ) ?? '',
+    );
+    expect(url.searchParams.get('mpdxName')).toBe('Session User');
+    expect(url.searchParams.get('mpdxEmail')).toBe('session.user@cru.org');
   });
 
   it('hides the link when the contact form url is not http', () => {
