@@ -47,12 +47,14 @@ const CloseButton = styled(IconButton)({
 interface AssistantHeaderProps {
   titleId: string;
   status: GuideStatus;
+  thinking?: boolean;
   onClose: () => void;
 }
 
 export const AssistantHeader: React.FC<AssistantHeaderProps> = ({
   titleId,
   status,
+  thinking = false,
   onClose,
 }) => {
   const { t } = useTranslation();
@@ -66,7 +68,13 @@ export const AssistantHeader: React.FC<AssistantHeaderProps> = ({
 
   return (
     <Header>
-      <GuideOrb size={48} data-animating aria-hidden />
+      <GuideOrb
+        size={48}
+        data-animating
+        data-thinking={thinking}
+        data-testid="GuideHeaderOrb"
+        aria-hidden
+      />
       <Box minWidth={0}>
         <Typography id={titleId} variant="h6" component="h2" lineHeight={1.3}>
           {t('{{appName}} Guide', { appName })}

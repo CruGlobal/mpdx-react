@@ -445,6 +445,21 @@ describe('AssistantChat', () => {
       ).toHaveLength(1);
     });
 
+    it('makes the header orb think only while the dots show', async () => {
+      const { getByTestId, findByText, stream } = await startReply();
+      const orb = getByTestId('GuideHeaderOrb');
+
+      expect(getByTestId('GuideThinking')).toBeInTheDocument();
+      expect(orb).toHaveAttribute('data-thinking', 'true');
+      expect(orb).toHaveAttribute('data-animating', 'true');
+
+      stream.push(frame({ type: 'chunk', message_id: 'm1', delta: 'Hello' }));
+      expect(await findByText('Hello', inTranscript)).toBeInTheDocument();
+      expect(orb).toHaveAttribute('data-thinking', 'false');
+      expect(orb).toHaveAttribute('data-animating', 'true');
+      stream.close();
+    });
+
     it('goes when a card arrives first', async () => {
       const { getByTestId, queryByTestId, stream } = await startReply();
       expect(getByTestId('GuideThinking')).toBeInTheDocument();
@@ -479,6 +494,10 @@ describe('AssistantChat', () => {
       await waitFor(() =>
         expect(queryByTestId('GuideThinking')).not.toBeInTheDocument(),
       );
+      expect(getByTestId('GuideHeaderOrb')).toHaveAttribute(
+        'data-thinking',
+        'false',
+      );
     });
 
     it('goes on Stop', async () => {
@@ -492,6 +511,10 @@ describe('AssistantChat', () => {
 
       await waitFor(() =>
         expect(queryByTestId('GuideThinking')).not.toBeInTheDocument(),
+      );
+      expect(getByTestId('GuideHeaderOrb')).toHaveAttribute(
+        'data-thinking',
+        'false',
       );
     });
   });

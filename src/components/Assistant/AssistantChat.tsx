@@ -30,6 +30,7 @@ import { useAssistantContext } from './AssistantProvider';
 import { GuideGreeting } from './GuideGreeting';
 import { MessageList } from './MessageList';
 import { StarterQuestions } from './StarterQuestions';
+import { isThinking } from './isThinking';
 import { getAssistantUrl, useAssistantStream } from './useAssistantStream';
 import { useAssistantToken } from './useAssistantToken';
 import { useCurrentPageUrl } from './useCurrentPageUrl';
@@ -244,7 +245,12 @@ export const AssistantChat: React.FC<AssistantChatProps> = ({
 
   return (
     <>
-      <AssistantHeader titleId={titleId} status={status} onClose={onClose} />
+      <AssistantHeader
+        titleId={titleId}
+        status={status}
+        thinking={visibleMessages.some(isThinking)}
+        onClose={onClose}
+      />
       <MessageArea>
         <MessageList messages={visibleMessages} streaming={streaming} />
         {beforeFirstMessage && <GuideGreeting />}
