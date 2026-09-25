@@ -74,6 +74,52 @@ describe('PdsGoalCalculatorLayout', () => {
     });
   });
 
+  // The test setup pins the current date to 2020
+  describe('calculations year note', () => {
+    it('shows the year when the goal is from a past year', async () => {
+      const mutationSpy = jest.fn();
+      const { findByText } = render(
+        <PdsGoalCalculatorTestWrapper
+          calculationMock={{ calculationsYear: 2019 }}
+          onCall={mutationSpy}
+        >
+          <PdsGoalCalculatorLayout
+            sectionListPanel={<div>Section List</div>}
+            mainContent={<div>Main Content</div>}
+          />
+        </PdsGoalCalculatorTestWrapper>,
+      );
+
+      expect(
+        await findByText(
+          'This goal uses 2019 rates. To use 2020 rates, create a new goal.',
+        ),
+      ).toBeInTheDocument();
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('GoalCalculatorConstants', {
+          year: 2019,
+        }),
+      );
+    });
+
+    it('hides the note when the goal is from the current year', async () => {
+      const { findByRole, queryByText } = render(
+        <PdsGoalCalculatorTestWrapper
+          calculationMock={{ calculationsYear: 2020 }}
+        >
+          <PdsGoalCalculatorLayout
+            sectionListPanel={<div>Section List</div>}
+            mainContent={<div>Main Content</div>}
+          />
+        </PdsGoalCalculatorTestWrapper>,
+      );
+
+      // The progress indicator only gets its final label once the goal loads
+      await findByRole('progressbar', { name: 'Form Progress' });
+      expect(queryByText(/This goal uses/)).not.toBeInTheDocument();
+    });
+  });
+
   it('shows an indeterminate progress indicator while calculation is loading', async () => {
     const { findByRole } = render(
       <PdsGoalCalculatorTestWrapper>

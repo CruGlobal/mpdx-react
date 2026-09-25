@@ -16,15 +16,18 @@ const mutationSpy = jest.fn();
 
 interface TestComponentProps {
   ministryInternet?: number;
+  calculationsYear?: number;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   ministryInternet = 30,
+  calculationsYear,
 }) => (
   <PdsGoalCalculatorTestWrapper
     onCall={mutationSpy}
     calculationMock={{
       id: 'goal-1',
+      calculationsYear,
       ministryCellPhone: 35,
       ministryInternet,
       mpdNewsletter: 25,
@@ -52,6 +55,24 @@ const TestComponent: React.FC<TestComponentProps> = ({
 );
 
 describe('MonthlyReimbursableSection', () => {
+  it("loads the maximums for the goal's calculations year", async () => {
+    const { findByRole } = render(<TestComponent calculationsYear={2019} />);
+
+    await findByRole('gridcell', {
+      name: /Ministry Cell Phone \(max \$35\/mo\)/,
+    });
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('GoalCalculatorConstants', {
+        year: 2019,
+      }),
+    );
+    // The provider also loads the goal's year, so check that nothing loads
+    // the current year's constants instead
+    expect(mutationSpy).not.toHaveGraphqlOperation('GoalCalculatorConstants', {
+      year: null,
+    });
+  });
+
   it('renders the description text below the heading', async () => {
     const { findByText } = render(<TestComponent />);
 

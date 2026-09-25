@@ -44,7 +44,9 @@ export const usePdsSummaryData = (
   hcmUser: HcmUserQuery['hcm'][number] | undefined,
 ): UsePdsSummaryDataResult => {
   const { goalMiscConstants, goalGeographicConstantMap, loading, error } =
-    useGoalCalculatorConstants();
+    useGoalCalculatorConstants(calculation?.calculationsYear, {
+      skip: !calculation,
+    });
 
   const data = useMemo(() => {
     if (!calculation) {
