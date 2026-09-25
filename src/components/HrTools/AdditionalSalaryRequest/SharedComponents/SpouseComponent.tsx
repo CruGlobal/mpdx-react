@@ -25,14 +25,14 @@ export const SpouseComponent: React.FC = () => {
     requestData?.latestAdditionalSalaryRequest?.calculations;
   const spouseCalculations =
     requestData?.latestAdditionalSalaryRequest?.spouseCalculations;
-  const { currentSalaryCap, staffAccountBalance } =
+  const { currentSalaryCap, grossAnnualSalary, ytdAsrAmount } =
     isSpouse && userCalculations
       ? userCalculations
       : spouseCalculations
         ? spouseCalculations
         : {};
-  const spouseIndividualCap =
-    (currentSalaryCap ?? 0) - (staffAccountBalance ?? 0);
+  const projectedIncome = (grossAnnualSalary ?? 0) + (ytdAsrAmount ?? 0);
+  const remainingCap = Math.max(0, (currentSalaryCap ?? 0) - projectedIncome);
 
   return (
     <Box>
@@ -56,7 +56,7 @@ export const SpouseComponent: React.FC = () => {
 
       <Typography variant="caption" color="text.secondary">
         {t('Up to their remaining allowable salary of {{amount}}', {
-          amount: currencyFormat(spouseIndividualCap, currency, locale),
+          amount: currencyFormat(remainingCap, currency, locale),
         })}
       </Typography>
     </Box>
