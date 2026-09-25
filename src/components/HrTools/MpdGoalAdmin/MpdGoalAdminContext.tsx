@@ -49,6 +49,8 @@ export interface MpdGoalAdminContextValue {
   selectedCohortId: string;
   setSelectedCohortId: (id: string) => void;
   selectedCohort: Cohort | undefined;
+  /** True when a coordinator has no cohort holding any of their staff, so there is nothing to pick. */
+  noVisibleCohorts: boolean;
   /** The MPD Goals team, who alone may act on the whole cohort; a coordinator only reads it.
    * False until the user lands, so nothing gated on it flashes into view first. */
   isGoalsAdmin: boolean;
@@ -106,7 +108,11 @@ export const MpdGoalAdminProvider: React.FC<{
     },
     [router],
   );
-  const { data: userData } = useGetUserQuery();
+  const {
+    data: userData,
+    loading: userLoading,
+    error: userError,
+  } = useGetUserQuery();
   const isGoalsAdmin = !!userData?.user.mpdSupervisorAdmin;
   const [selectedCohortId, setSelectedCohortId] = useState<string>('');
   const [search, setSearch] = useState('');
@@ -126,13 +132,21 @@ export const MpdGoalAdminProvider: React.FC<{
     pageInfo: cohortsData?.newStaffCohorts.pageInfo,
   });
 
-  const cohorts = useMemo(
-    () =>
+  // trainingSize only counts attendees the caller can see, so a coordinator's
+  // empty cohort is a dead end; admins keep it to enter costs before arrivals.
+  const cohorts = useMemo(() => {
+    // Held back until the role is known, so an admin never auto-selects from the filtered list.
+    if (!userData) {
+      return [];
+    }
+    const allCohorts =
       cohortsData?.newStaffCohorts.nodes.map((node) =>
         cohortNodeToCohort(node, locale),
-      ) ?? [],
-    [cohortsData, locale],
-  );
+      ) ?? [];
+    return isGoalsAdmin
+      ? allCohorts
+      : allCohorts.filter(({ trainingSize }) => trainingSize > 0);
+  }, [cohortsData, locale, userData, isGoalsAdmin]);
 
   // Stale ids from another cohort would mislead the count and bulk actions.
   const selectCohort = useCallback(
@@ -149,7 +163,14 @@ export const MpdGoalAdminProvider: React.FC<{
   // A `cohortId` in the URL wins over the first-cohort default, so returning
   // from Goal Settings lands on the cohort the goal was opened from.
   useEffect(() => {
-    if (!cohorts.length || cohorts.some(({ id }) => id === selectedCohortId)) {
+    if (cohorts.some(({ id }) => id === selectedCohortId)) {
+      return;
+    }
+    // A coordinator's last visible cohort can empty out, so drop the stale id instead of querying a hidden cohort.
+    if (!cohorts.length) {
+      if (selectedCohortId) {
+        selectCohort('');
+      }
       return;
     }
     const urlCohortId = getQueryParam(router.query, 'cohortId');
@@ -295,6 +316,14 @@ export const MpdGoalAdminProvider: React.FC<{
     [cohorts, selectedCohortId],
   );
 
+  // A failed user load leaves the role unknown, so it must not read as a coordinator.
+  const noVisibleCohorts =
+    !!userData &&
+    !isGoalsAdmin &&
+    !cohortsLoading &&
+    !cohortsError &&
+    !cohorts.length;
+
   // A row hidden by search keeps its id but must not count as selected.
   const selectedRows = useMemo(
     () => filteredRows.filter((row) => selectedRowIds.has(row.id)),
@@ -309,6 +338,7 @@ export const MpdGoalAdminProvider: React.FC<{
       selectedCohortId,
       setSelectedCohortId: selectCohort,
       selectedCohort,
+      noVisibleCohorts,
       isGoalsAdmin,
       search,
       setSearch,
@@ -317,8 +347,11 @@ export const MpdGoalAdminProvider: React.FC<{
       // Skipped without a selection, so zero cohorts must not spin forever.
       loading:
         cohortsLoading ||
+        (!userData && userLoading) ||
         (selectedCohortId ? attendeesLoading : cohorts.length > 0),
-      error: cohortsError ?? attendeesError,
+      // Once the user is cached, a failed background refetch must not blank a working page.
+      error:
+        cohortsError ?? (userData ? undefined : userError) ?? attendeesError,
       selectedRowIds,
       selectedRows,
       toggleRow,
@@ -339,13 +372,17 @@ export const MpdGoalAdminProvider: React.FC<{
       selectedCohortId,
       selectCohort,
       selectedCohort,
+      noVisibleCohorts,
       isGoalsAdmin,
       search,
       searchPending,
       filteredRows,
       cohortsLoading,
+      userData,
+      userLoading,
       attendeesLoading,
       cohortsError,
+      userError,
       attendeesError,
       selectedRowIds,
       selectedRows,
