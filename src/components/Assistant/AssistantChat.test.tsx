@@ -652,6 +652,7 @@ describe('AssistantChat', () => {
       expect(url.searchParams.get('mpdxUrl')).toBe(
         '/accountLists/account-list-1/contacts',
       );
+      expect(url.searchParams.has('mpdxSummary')).toBe(false);
     });
   });
 
@@ -699,7 +700,9 @@ describe('AssistantChat', () => {
             }),
           ]),
         );
-      const { getByRole, findAllByRole } = render(<TestComponent />);
+      const { getByRole, getByTestId, findAllByRole } = render(
+        <TestComponent />,
+      );
       await typeMessage(getByRole, 'Can I talk to a person?');
       userEvent.click(getByRole('button', { name: 'Send' }));
 
@@ -715,6 +718,14 @@ describe('AssistantChat', () => {
           'https://desk.example.org/contact-us',
         ]),
       );
+      const summaryOf = (link: HTMLElement) =>
+        new URL(link.getAttribute('href') ?? '').searchParams.get(
+          'mpdxSummary',
+        );
+      expect(
+        summaryOf(getByRole('link', { name: 'Contact the help desk' })),
+      ).toBe('I asked: How do I sync.');
+      expect(summaryOf(footerLink(getByTestId))).toBeNull();
     });
   });
 
@@ -953,6 +964,7 @@ describe('AssistantChat', () => {
       expect(url.searchParams.get('mpdxUrl')).toBe(
         '/accountLists/account-list-1/contacts',
       );
+      expect(url.searchParams.has('mpdxSummary')).toBe(false);
     });
 
     it('drops the help desk banner once a message exists', async () => {

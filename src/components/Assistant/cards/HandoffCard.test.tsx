@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { mockSession } from '__tests__/util/mockSession';
@@ -26,6 +26,7 @@ describe('HandoffCard', () => {
   const writeText = jest.fn().mockResolvedValue(undefined);
 
   beforeEach(() => {
+    writeText.mockClear();
     Object.assign(navigator, { clipboard: { writeText } });
   });
 
@@ -38,25 +39,89 @@ describe('HandoffCard', () => {
     expect(getByText(card.summary)).toBeInTheDocument();
   });
 
-  it('copies the summary', async () => {
-    const { getByRole, getByText } = render(<TestComponent card={card} />);
+  describe('copy summary', () => {
+    const failedCopy =
+      'Could not copy. The summary is selected so you can copy it.';
 
-    userEvent.click(getByRole('button', { name: 'Copy summary' }));
+    afterEach(() => {
+      jest.useRealTimers();
+      window.getSelection()?.removeAllRanges();
+    });
 
-    expect(writeText).toHaveBeenCalledWith(card.summary);
-    await waitFor(() => expect(getByText('Copied')).toBeInTheDocument());
+    it('copies the summary and says Copied for a few seconds', async () => {
+      jest.useFakeTimers();
+      const { getByRole, findByRole } = render(<TestComponent card={card} />);
+
+      userEvent.click(getByRole('button', { name: 'Copy summary' }));
+
+      expect(writeText).toHaveBeenCalledWith(card.summary);
+      expect(
+        await findByRole('button', { name: 'Copied' }),
+      ).toBeInTheDocument();
+      expect(getByRole('status')).toHaveTextContent(/^Copied$/);
+
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
+
+      expect(getByRole('button', { name: 'Copy summary' })).toBeInTheDocument();
+      expect(getByRole('status')).toBeEmptyDOMElement();
+    });
+
+    it('copies from the keyboard', async () => {
+      const { getByRole, findByRole } = render(<TestComponent card={card} />);
+      const button = getByRole('button', { name: 'Copy summary' });
+
+      for (
+        let press = 0;
+        press < 5 && document.activeElement !== button;
+        press++
+      ) {
+        userEvent.tab();
+      }
+      expect(button).toHaveFocus();
+      userEvent.keyboard('{Enter}');
+
+      expect(writeText).toHaveBeenCalledWith(card.summary);
+      expect(
+        await findByRole('button', { name: 'Copied' }),
+      ).toBeInTheDocument();
+    });
+
+    it('selects the summary when the clipboard refuses', async () => {
+      writeText.mockRejectedValueOnce(new Error('Clipboard blocked'));
+      const { getByRole, queryByRole } = render(<TestComponent card={card} />);
+
+      userEvent.click(getByRole('button', { name: 'Copy summary' }));
+
+      await waitFor(() =>
+        expect(getByRole('status')).toHaveTextContent(failedCopy),
+      );
+      expect(window.getSelection()?.toString()).toBe(card.summary);
+      expect(queryByRole('button', { name: 'Copied' })).not.toBeInTheDocument();
+    });
+
+    it('selects the summary when there is no clipboard', async () => {
+      Object.assign(navigator, { clipboard: undefined });
+      const { getByRole } = render(<TestComponent card={card} />);
+
+      userEvent.click(getByRole('button', { name: 'Copy summary' }));
+
+      await waitFor(() =>
+        expect(getByRole('status')).toHaveTextContent(failedCopy),
+      );
+      expect(window.getSelection()?.toString()).toBe(card.summary);
+    });
   });
 
-  it('shows a fallback when copying fails', async () => {
-    writeText.mockRejectedValueOnce(new Error('Clipboard blocked'));
-    const { getByRole, findByText, queryByText } = render(
-      <TestComponent card={card} />,
-    );
+  it('tells the user where to paste the summary', () => {
+    const { getByText } = render(<TestComponent card={card} />);
 
-    userEvent.click(getByRole('button', { name: 'Copy summary' }));
-
-    expect(await findByText('Copy failed')).toBeInTheDocument();
-    expect(queryByText('Copied')).not.toBeInTheDocument();
+    expect(
+      getByText(
+        'Paste the summary into the description box on the help desk form.',
+      ),
+    ).toBeInTheDocument();
   });
 
   it('links to the contact form with the name, email, and current route', () => {
@@ -69,6 +134,7 @@ describe('HandoffCard', () => {
     expect(url.searchParams.get('mpdxName')).toBe('First Last');
     expect(url.searchParams.get('mpdxEmail')).toBe('first.last@cru.org');
     expect(url.searchParams.get('mpdxUrl')).toBe('/accountLists/1/contacts');
+    expect(url.searchParams.get('mpdxSummary')).toBe(card.summary);
   });
 
   it('fills a blank name and email from the signed-in user', () => {
