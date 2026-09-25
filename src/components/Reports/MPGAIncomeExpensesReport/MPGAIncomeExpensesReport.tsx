@@ -1,7 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import PrintIcon from '@mui/icons-material/Print';
 import {
+  Alert,
   Box,
+  Button,
   Container,
   Divider,
   GlobalStyles,
@@ -65,6 +67,8 @@ export const MPGAIncomeExpensesReport: React.FC<
     isSupervisorView,
     staffAccountId,
     dataLoading,
+    reportError,
+    refetchReport,
   } = useMPGAIncomeExpenses();
 
   const defaultFilters: Filters = useMemo(
@@ -159,6 +163,7 @@ export const MPGAIncomeExpensesReport: React.FC<
                     </SvgIcon>
                   }
                   onClick={handlePrint}
+                  disabled={Boolean(reportError)}
                 >
                   {t('Print')}
                 </StyledPrintButton>
@@ -167,16 +172,39 @@ export const MPGAIncomeExpensesReport: React.FC<
             {isAccountInfoLoading ? (
               <AccountInfoBoxSkeleton />
             ) : (
-              <AccountInfoBox name={accountName} />
+              // A supervisor's staff name comes from the failed report, so there is no name to show
+              !(isSupervisorView && reportError) && (
+                <AccountInfoBox name={accountName} />
+              )
             )}
           </Container>
         </Box>
-        <SimpleScreenOnly>
-          <ScreenOnlyReport />
-        </SimpleScreenOnly>
-        <PrintOnly>
-          <PrintOnlyReport />
-        </PrintOnly>
+        {reportError ? (
+          // The global Apollo error link already shows the error details in a snackbar
+          <Container sx={{ mt: 2 }}>
+            <Alert
+              severity="error"
+              action={
+                <Button color="inherit" size="small" onClick={refetchReport}>
+                  {t('Try Again')}
+                </Button>
+              }
+            >
+              {t(
+                'The Income & Expenses report could not be loaded. Please try again later.',
+              )}
+            </Alert>
+          </Container>
+        ) : (
+          <>
+            <SimpleScreenOnly>
+              <ScreenOnlyReport />
+            </SimpleScreenOnly>
+            <PrintOnly>
+              <PrintOnlyReport />
+            </PrintOnly>
+          </>
+        )}
       </Box>
       {isSettingsOpen && (
         <SettingsDialog
