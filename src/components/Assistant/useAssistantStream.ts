@@ -40,6 +40,31 @@ const hasReplied = (messages: AssistantMessage[]): boolean =>
       message.content !== '',
   );
 
+const HISTORY_TURNS = 8;
+const HISTORY_TURN_LENGTH = 4000;
+
+interface HistoryTurn {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+// A history-off conversation is stored nowhere, so the server only knows the turns the drawer sends
+const recentTurns = (messages: AssistantMessage[]): HistoryTurn[] =>
+  messages
+    .filter(
+      (message): message is AssistantMessage & HistoryTurn =>
+        (message.role === 'user' || message.role === 'assistant') &&
+        (message.status === 'complete' || message.status === 'stopped') &&
+        message.content !== '',
+    )
+    .slice(-HISTORY_TURNS)
+    .map((message) => ({
+      role: message.role,
+      content: message.content.slice(0, HISTORY_TURN_LENGTH),
+    }));
+
+const isEphemeralConversation = (id: string): boolean => id.startsWith('eph_');
+
 let nextMessageId = 0;
 const createMessageId = (): string => `local-${++nextMessageId}`;
 
@@ -255,6 +280,7 @@ export const useAssistantStream = ({
       }
 
       const firstTurn = !hasReplied(messages);
+      const history = recentTurns(messages);
       const controller = new AbortController();
       beginStream(controller);
       dispatch({ type: 'addMessage', message: createMessage('user', content) });
@@ -351,7 +377,12 @@ export const useAssistantStream = ({
               'Content-Type': 'application/json',
               Accept: 'text/event-stream',
             },
-            body: JSON.stringify({ content, first_turn: firstTurn, page }),
+            body: JSON.stringify({
+              content,
+              first_turn: firstTurn,
+              ...(isEphemeralConversation(conversationId) && { history }),
+              page,
+            }),
           },
         );
         if (response.status === 404 || response.status === 410) {

@@ -245,6 +245,159 @@ describe('useAssistantStream', () => {
     });
   });
 
+  describe('history', () => {
+    const histories = () =>
+      fetchSpy.mock.calls
+        .filter(([url]) => String(url).endsWith('/stream'))
+        .map(([, init]) => JSON.parse(init.body).history);
+
+    const reply = (id: string, ...events: Array<Record<string, unknown>>) =>
+      mockStreamResponse([
+        frame({ type: 'generation_start', message_id: id }),
+        ...events.map((event) =>
+          frame({ message_id: id, ...event } as Parameters<typeof frame>[0]),
+        ),
+      ]);
+
+    it('sends the earlier text turns, oldest first, when history is off', async () => {
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'eph_1' }))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+      const { result } = renderStream();
+
+      await act(() => result.current.stream.sendMessage('First'));
+      await act(() => result.current.stream.sendMessage('Second'));
+
+      expect(histories()).toEqual([
+        [],
+        [
+          { role: 'user', content: 'First' },
+          { role: 'assistant', content: 'Hello world' },
+        ],
+      ]);
+    });
+
+    it('sends nothing extra for a stored conversation', async () => {
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+      const { result } = renderStream();
+
+      await act(() => result.current.stream.sendMessage('First'));
+      await act(() => result.current.stream.sendMessage('Second'));
+
+      expect(histories()).toEqual([undefined, undefined]);
+    });
+
+    it('keeps the last 8 turns, each trimmed to 4,000 characters', async () => {
+      const long = 'x'.repeat(5000);
+      fetchSpy.mockResolvedValueOnce(mockJsonResponse({ id: 'eph_1' }));
+      for (let i = 0; i < 6; i++) {
+        fetchSpy.mockResolvedValueOnce(
+          reply(
+            `m${i}`,
+            { type: 'chunk', delta: `a${i} ${long}` },
+            { type: 'generation_complete' },
+          ),
+        );
+      }
+      const { result } = renderStream();
+
+      for (let i = 0; i < 6; i++) {
+        await act(() => result.current.stream.sendMessage(`q${i}`));
+      }
+
+      const last = histories()[5];
+      expect(
+        last.map(({ role, content }: { role: string; content: string }) => [
+          role,
+          content.split(' ')[0],
+        ]),
+      ).toEqual([
+        ['user', 'q1'],
+        ['assistant', 'a1'],
+        ['user', 'q2'],
+        ['assistant', 'a2'],
+        ['user', 'q3'],
+        ['assistant', 'a3'],
+        ['user', 'q4'],
+        ['assistant', 'a4'],
+      ]);
+      expect(
+        last
+          .filter(({ role }: { role: string }) => role === 'assistant')
+          .every(({ content }: { content: string }) => content.length === 4000),
+      ).toBe(true);
+    });
+
+    it('leaves out errors, empty replies, cards, and system lines', async () => {
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'eph_1' }))
+        .mockResolvedValueOnce(
+          reply(
+            'm1',
+            { type: 'chunk', delta: 'Partial' },
+            { type: 'generation_error', error: 'x' },
+          ),
+        )
+        .mockResolvedValueOnce(
+          reply('m2', { type: 'card', card }, { type: 'generation_complete' }),
+        )
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+      const { result } = renderStream();
+
+      await act(() => result.current.stream.sendMessage('First'));
+      await act(() => result.current.stream.sendMessage('Second'));
+      await act(() => result.current.stream.sendMessage('Third'));
+      act(() =>
+        result.current.context.dispatch({
+          type: 'addMessage',
+          message: {
+            id: 'notice-1',
+            role: 'system',
+            content: 'A notice',
+            cards: [],
+            citations: [],
+            status: 'complete',
+            working: false,
+          },
+        }),
+      );
+      await act(() => result.current.stream.sendMessage('Fourth'));
+
+      expect(histories()[3]).toEqual([
+        { role: 'user', content: 'First' },
+        { role: 'user', content: 'Second' },
+        { role: 'user', content: 'Third' },
+        { role: 'assistant', content: 'Hello world' },
+      ]);
+    });
+
+    it('leaves out the thinking placeholder and the message being sent', async () => {
+      const stream = controlledStream();
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'eph_1' }))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames))
+        .mockResolvedValueOnce(mockStreamResponse([], { body: stream.body }));
+      const { result, waitFor } = renderStream();
+
+      await act(() => result.current.stream.sendMessage('First'));
+      act(() => {
+        result.current.stream.sendMessage('Second');
+      });
+      await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(3));
+
+      expect(histories()[1]).toEqual([
+        { role: 'user', content: 'First' },
+        { role: 'assistant', content: 'Hello world' },
+      ]);
+      stream.close();
+    });
+  });
+
   it('shows the working indicator between tool events', async () => {
     const stream = controlledStream();
     fetchSpy
