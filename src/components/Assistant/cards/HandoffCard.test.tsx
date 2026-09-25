@@ -67,9 +67,7 @@ describe('HandoffCard', () => {
     expect(url.origin + url.pathname).toBe(card.contact_form.url);
     expect(url.searchParams.get('mpdxName')).toBe('First Last');
     expect(url.searchParams.get('mpdxEmail')).toBe('first.last@cru.org');
-    expect(url.searchParams.get('mpdxUrl')).toBe(
-      'http://localhost/accountLists/1/contacts',
-    );
+    expect(url.searchParams.get('mpdxUrl')).toBe('/accountLists/1/contacts');
   });
 
   it('hides the link when the contact form url is not http', () => {

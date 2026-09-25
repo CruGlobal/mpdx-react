@@ -607,7 +607,7 @@ describe('AssistantChat', () => {
     expect(url.searchParams.get('mpdxName')).toBe('First Last');
     expect(url.searchParams.get('mpdxEmail')).toBe('first.last@cru.org');
     expect(url.searchParams.get('mpdxUrl')).toBe(
-      'http://localhost/accountLists/account-list-1/contacts',
+      '/accountLists/account-list-1/contacts',
     );
   });
 
