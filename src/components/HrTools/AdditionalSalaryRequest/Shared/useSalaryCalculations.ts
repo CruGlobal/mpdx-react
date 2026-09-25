@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { ElectionType403bEnum } from 'src/graphql/types.generated';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
+import { getRemainingCap } from './Helper/getRemainingCap';
 import { getNonBackpayTotal, getTotal } from './Helper/getTotal';
 
 // Tolerance for considering someone "at cap" — small rounding differences
@@ -160,10 +161,11 @@ export const useSalaryCalculations = ({
       ? {
           requestedAnnualSalary: spouseRequestedAnnualSalary,
           individualCap: spouseIndividualCap,
-          remainingCap: Math.max(
-            0,
-            spouseIndividualCap - spouseRequestedAnnualSalary,
-          ),
+          remainingCap: getRemainingCap({
+            currentSalaryCap: spouseIndividualCap,
+            grossAnnualSalary: spouseGrossAnnualSalary,
+            ytdAsrAmount: spouseTotalThisYear,
+          }),
         }
       : null;
 
