@@ -34,7 +34,9 @@ describe('AssistantFirstRunDialog', () => {
     const { getByRole } = render(<TestComponent />);
 
     const dialog = getByRole('dialog', { name: 'Meet your MPDX Guide' });
-    expect(dialog).toHaveTextContent('It is an AI, so it can be wrong.');
+    expect(dialog).toHaveTextContent(
+      "It is an AI, so it can be wrong. Check anything important, and check any figures in MPDX's reports before acting on them.",
+    );
     expect(dialog).toHaveTextContent(
       'What you type and what it answers are kept in a permanent audit log.',
     );
