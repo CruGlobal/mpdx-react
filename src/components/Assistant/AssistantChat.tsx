@@ -8,7 +8,6 @@ import React, {
 } from 'react';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import StopIcon from '@mui/icons-material/Stop';
-import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import {
   Box,
   Button,
@@ -88,16 +87,12 @@ const latestHandoffFormUrl = (messages: AssistantMessage[]): string | null => {
   return urls.at(-1) ?? null;
 };
 
-interface HelpDeskLinkProps {
-  messages: AssistantMessage[];
-}
-
-const HelpDeskLink: React.FC<HelpDeskLinkProps> = ({ messages }) => {
-  const { t } = useTranslation();
+// The footer and the empty state share one way to the help desk, the same form a hand-off card opens
+const useHelpDeskUrl = (messages: AssistantMessage[]): string => {
   const { data: session } = useSession();
   const href = useCurrentPageUrl();
 
-  const contactUrl = buildHelpjuiceContactUrl({
+  return buildHelpjuiceContactUrl({
     contactUrl: process.env.HELPJUICE_ORIGIN
       ? `${process.env.HELPJUICE_ORIGIN}/contact-us`
       : (latestHandoffFormUrl(messages) ?? DEFAULT_HELP_DESK_CONTACT_URL),
@@ -105,19 +100,22 @@ const HelpDeskLink: React.FC<HelpDeskLinkProps> = ({ messages }) => {
     email: session?.user.email,
     href,
   });
+};
+
+interface DisclaimerProps {
+  helpDeskUrl: string;
+}
+
+const Disclaimer: React.FC<DisclaimerProps> = ({ helpDeskUrl }) => {
+  const { t } = useTranslation();
 
   return (
-    <Button
-      component="a"
-      href={contactUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      size="small"
-      startIcon={<SupportAgentIcon />}
-      sx={{ alignSelf: 'flex-start' }}
-    >
-      {t('Contact the help desk')}
-    </Button>
+    <Typography variant="caption" color="text.secondary" textAlign="center">
+      {t('The Guide can make mistakes. Check important details.')}{' '}
+      <Link href={helpDeskUrl} target="_blank" rel="noopener noreferrer">
+        {t('Help desk')}
+      </Link>
+    </Typography>
   );
 };
 
@@ -218,6 +216,7 @@ export const AssistantChat: React.FC<AssistantChatProps> = ({
         : tokenState.status === 'failed'
           ? 'failed'
           : 'off';
+  const helpDeskUrl = useHelpDeskUrl(visibleMessages);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const wasStreaming = useRef(streaming);
   const [buttonAnnouncement, setButtonAnnouncement] = useState('');
@@ -356,7 +355,7 @@ export const AssistantChat: React.FC<AssistantChatProps> = ({
             )}
           </Typography>
         )}
-        <HelpDeskLink messages={visibleMessages} />
+        <Disclaimer helpDeskUrl={helpDeskUrl} />
         <div
           aria-live="polite"
           aria-atomic="true"

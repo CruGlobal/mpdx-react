@@ -601,21 +601,51 @@ describe('AssistantChat', () => {
     ).toBeInTheDocument();
   });
 
-  it('links to the help desk contact form with the current route', async () => {
-    const { getByRole } = render(<TestComponent />);
-    await waitForMint();
+  describe('footer', () => {
+    const disclaimer = 'The Guide can make mistakes. Check important details.';
 
-    const link = getByRole('link', { name: 'Contact the help desk' });
-    expect(link).toHaveAttribute('target', '_blank');
-    const url = new URL(link.getAttribute('href') ?? '');
-    expect(url.origin + url.pathname).toBe(
-      'https://domain.helpjuice.com/contact-us',
-    );
-    expect(url.searchParams.get('mpdxName')).toBe('First Last');
-    expect(url.searchParams.get('mpdxEmail')).toBe('first.last@cru.org');
-    expect(url.searchParams.get('mpdxUrl')).toBe(
-      '/accountLists/account-list-1/contacts',
-    );
+    it('always shows the short disclaimer with a help desk link', async () => {
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+      const { getByRole, getByText, findByText } = render(<TestComponent />);
+      expect(getByText(disclaimer)).toBeInTheDocument();
+      expect(getByRole('link', { name: 'Help desk' })).toBeInTheDocument();
+
+      await typeMessage(getByRole, 'Hi');
+      userEvent.click(getByRole('button', { name: 'Send' }));
+      await findByText('You have 12 contacts.', inTranscript);
+
+      expect(getByText(disclaimer)).toBeInTheDocument();
+      expect(getByRole('link', { name: 'Help desk' })).toBeInTheDocument();
+    });
+
+    it('keeps the disclaimer and link when the Guide cannot connect', async () => {
+      const { findByText, getByText, getByRole } = render(
+        <TestComponent mints={[{ networkError: true }]} />,
+      );
+
+      expect(await findByText('Could not connect')).toBeInTheDocument();
+      expect(getByText(disclaimer)).toBeInTheDocument();
+      expect(getByRole('link', { name: 'Help desk' })).toBeInTheDocument();
+    });
+
+    it('links to the help desk contact form with the current route', async () => {
+      const { getByRole } = render(<TestComponent />);
+      await waitForMint();
+
+      const link = getByRole('link', { name: 'Help desk' });
+      expect(link).toHaveAttribute('target', '_blank');
+      const url = new URL(link.getAttribute('href') ?? '');
+      expect(url.origin + url.pathname).toBe(
+        'https://domain.helpjuice.com/contact-us',
+      );
+      expect(url.searchParams.get('mpdxName')).toBe('First Last');
+      expect(url.searchParams.get('mpdxEmail')).toBe('first.last@cru.org');
+      expect(url.searchParams.get('mpdxUrl')).toBe(
+        '/accountLists/account-list-1/contacts',
+      );
+    });
   });
 
   describe('when Helpjuice is not configured', () => {
@@ -632,7 +662,7 @@ describe('AssistantChat', () => {
       const { getByRole } = render(<TestComponent />);
       await waitForMint();
 
-      expect(formOf(getByRole('link', { name: 'Contact the help desk' }))).toBe(
+      expect(formOf(getByRole('link', { name: 'Help desk' }))).toBe(
         'https://www.helpducks.org/contact-us',
       );
     });
@@ -668,9 +698,11 @@ describe('AssistantChat', () => {
 
       await waitFor(async () =>
         expect(
-          (await findAllByRole('link', { name: 'Contact the help desk' })).map(
-            formOf,
-          ),
+          (
+            await findAllByRole('link', {
+              name: /^(Contact the help desk|Help desk)$/,
+            })
+          ).map(formOf),
         ).toEqual([
           'https://desk.example.org/contact-us',
           'https://desk.example.org/contact-us',
