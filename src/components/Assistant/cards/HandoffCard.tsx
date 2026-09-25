@@ -11,10 +11,8 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { buildHelpjuiceContactUrl } from 'src/components/Helpjuice/contactUrl';
-import { toSafeHttpUrl } from '../safeUrl';
 import { HandoffCardData } from '../types';
-import { useCurrentPageUrl } from '../useCurrentPageUrl';
+import { useHandoffContactUrl } from './useHandoffContactUrl';
 
 interface HandoffCardProps {
   card: HandoffCardData;
@@ -22,20 +20,11 @@ interface HandoffCardProps {
 
 export const HandoffCard: React.FC<HandoffCardProps> = ({ card }) => {
   const { t } = useTranslation();
-  const href = useCurrentPageUrl();
   const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'failed'>(
     'idle',
   );
 
-  const formUrl = toSafeHttpUrl(card.contact_form.url);
-  const contactUrl =
-    formUrl &&
-    buildHelpjuiceContactUrl({
-      contactUrl: formUrl,
-      name: card.contact_form.name,
-      email: card.contact_form.email,
-      href,
-    });
+  const contactUrl = useHandoffContactUrl(card);
 
   const handleCopy = async () => {
     try {

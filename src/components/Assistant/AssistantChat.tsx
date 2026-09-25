@@ -22,7 +22,10 @@ import { styled } from '@mui/material/styles';
 import { visuallyHidden } from '@mui/utils';
 import { useSession } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
-import { buildHelpjuiceContactUrl } from 'src/components/Helpjuice/contactUrl';
+import {
+  DEFAULT_HELP_DESK_CONTACT_URL,
+  buildHelpjuiceContactUrl,
+} from 'src/components/Helpjuice/contactUrl';
 import { useOptionalAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';
 import { AssistantHeader, GuideStatus } from './AssistantHeader';
@@ -30,6 +33,9 @@ import { useAssistantContext } from './AssistantProvider';
 import { GuideGreeting } from './GuideGreeting';
 import { MessageList } from './MessageList';
 import { StarterQuestions } from './StarterQuestions';
+import { isThinking } from './isThinking';
+import { toSafeHttpUrl } from './safeUrl';
+import { AssistantMessage } from './types';
 import { getAssistantUrl, useAssistantStream } from './useAssistantStream';
 import { useAssistantToken } from './useAssistantToken';
 import { useCurrentPageUrl } from './useCurrentPageUrl';
@@ -71,17 +77,30 @@ const RoundButton = styled(IconButton)(({ theme }) => ({
   },
 }));
 
-const HelpDeskLink: React.FC = () => {
+const latestHandoffFormUrl = (messages: AssistantMessage[]): string | null => {
+  const urls = messages.flatMap(({ cards }) =>
+    cards.flatMap((card) =>
+      card?.kind === 'handoff'
+        ? (toSafeHttpUrl(card.contact_form.url) ?? [])
+        : [],
+    ),
+  );
+  return urls.at(-1) ?? null;
+};
+
+interface HelpDeskLinkProps {
+  messages: AssistantMessage[];
+}
+
+const HelpDeskLink: React.FC<HelpDeskLinkProps> = ({ messages }) => {
   const { t } = useTranslation();
   const { data: session } = useSession();
   const href = useCurrentPageUrl();
 
-  if (!process.env.HELPJUICE_ORIGIN) {
-    return null;
-  }
-
   const contactUrl = buildHelpjuiceContactUrl({
-    contactUrl: `${process.env.HELPJUICE_ORIGIN}/contact-us`,
+    contactUrl: process.env.HELPJUICE_ORIGIN
+      ? `${process.env.HELPJUICE_ORIGIN}/contact-us`
+      : (latestHandoffFormUrl(messages) ?? DEFAULT_HELP_DESK_CONTACT_URL),
     name: session?.user.name,
     email: session?.user.email,
     href,
@@ -244,7 +263,12 @@ export const AssistantChat: React.FC<AssistantChatProps> = ({
 
   return (
     <>
-      <AssistantHeader titleId={titleId} status={status} onClose={onClose} />
+      <AssistantHeader
+        titleId={titleId}
+        status={status}
+        thinking={visibleMessages.some(isThinking)}
+        onClose={onClose}
+      />
       <MessageArea>
         <MessageList messages={visibleMessages} streaming={streaming} />
         {beforeFirstMessage && <GuideGreeting />}
@@ -332,7 +356,7 @@ export const AssistantChat: React.FC<AssistantChatProps> = ({
             )}
           </Typography>
         )}
-        <HelpDeskLink />
+        <HelpDeskLink messages={visibleMessages} />
         <div
           aria-live="polite"
           aria-atomic="true"

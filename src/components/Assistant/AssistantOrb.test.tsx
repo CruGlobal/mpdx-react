@@ -180,6 +180,14 @@ describe('AssistantOrb', () => {
       )?.[1] ?? '';
     expect(frames).toMatch(/scale\(1\.02\)/);
     expect(frames).not.toMatch(/brightness|filter/);
+    expect(circleOf(orb)).not.toHaveAttribute('data-thinking');
+    const thinking = css.match(
+      /@media \(prefers-reduced-motion: no-preference\)\{[^@]*\[data-thinking="true"\]\{[^}]*?animation:(\S+) 1\.2s /,
+    );
+    expect(thinking).not.toBeNull();
+    expect(
+      css.match(new RegExp(`@keyframes ${thinking?.[1]}\\{(.*?\\})\\}`))?.[1],
+    ).toMatch(/scale\(1\.04\)/);
 
     userEvent.keyboard('{esc}');
     await waitFor(() =>

@@ -54,6 +54,43 @@ const MarkdownBody = styled(Box)(({ theme }) => {
   };
 });
 
+interface MarkdownNode {
+  type: string;
+  value?: string;
+  url?: string;
+  children?: MarkdownNode[];
+}
+
+const helpDeskPattern = /\b(?:MPDX\s+)?help\s?desk\b/gi;
+const unlinkable = new Set(['link', 'linkReference', 'inlineCode', 'code']);
+
+const linkText = (value: string, url: string): MarkdownNode[] =>
+  value
+    .split(new RegExp(`(${helpDeskPattern.source})`, 'gi'))
+    .filter(Boolean)
+    .map((part) =>
+      new RegExp(`^${helpDeskPattern.source}$`, 'i').test(part)
+        ? { type: 'link', url, children: [{ type: 'text', value: part }] }
+        : { type: 'text', value: part },
+    );
+
+const linkHelpDesk = (node: MarkdownNode, url: string): void => {
+  if (!node.children || unlinkable.has(node.type)) {
+    return;
+  }
+  node.children = node.children.flatMap((child) => {
+    if (child.type === 'text' && child.value) {
+      return linkText(child.value, url);
+    }
+    linkHelpDesk(child, url);
+    return [child];
+  });
+};
+
+// A remark plugin, so mentions inside links and code stay as they are
+const remarkHelpDeskLinks = (url: string) => () => (tree: MarkdownNode) =>
+  linkHelpDesk(tree, url);
+
 const components: Components = {
   a: ({ href, children }) => {
     const safeHref = href ? toSafeHttpUrl(href) : null;
@@ -69,15 +106,22 @@ const components: Components = {
 
 interface AssistantMarkdownProps {
   children: string;
+  // Turns mentions of the help desk into links when the reply carries a hand-off card
+  helpDeskUrl?: string | null;
 }
 
 // Raw HTML is never parsed without rehype-raw; images are dropped so an answer cannot load remote URLs
 export const AssistantMarkdown: React.FC<AssistantMarkdownProps> = ({
   children,
+  helpDeskUrl,
 }) => (
   <MarkdownBody>
     <Markdown
-      remarkPlugins={[remarkGfm]}
+      remarkPlugins={
+        helpDeskUrl
+          ? [remarkGfm, remarkHelpDeskLinks(helpDeskUrl)]
+          : [remarkGfm]
+      }
       components={components}
       disallowedElements={['img']}
     >

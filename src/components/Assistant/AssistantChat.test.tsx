@@ -392,6 +392,133 @@ describe('AssistantChat', () => {
     );
   });
 
+  describe('thinking indicator', () => {
+    const startReply = async () => {
+      const stream = controlledStream();
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(mockStreamResponse([], { body: stream.body }));
+      const utils = render(<TestComponent />);
+      const announcer = utils.getByTestId('ReplyAnnouncer');
+      const announced: string[] = [];
+      new MutationObserver(() =>
+        announced.push(announcer.textContent ?? ''),
+      ).observe(announcer, {
+        childList: true,
+        characterData: true,
+        subtree: true,
+      });
+      await typeMessage(utils.getByRole, 'Hi');
+      userEvent.click(utils.getByRole('button', { name: 'Send' }));
+      return { ...utils, stream, announcer, announced };
+    };
+
+    it('shows through generation_start, goes on the first chunk, and is announced once', async () => {
+      const {
+        getByTestId,
+        queryByTestId,
+        findByText,
+        stream,
+        announcer,
+        announced,
+      } = await startReply();
+
+      expect(getByTestId('GuideThinking')).toBeInTheDocument();
+      await waitFor(() =>
+        expect(announcer).toHaveTextContent('The Guide is thinking'),
+      );
+      stream.push(frame({ type: 'generation_start', message_id: 'm1' }));
+      await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(2));
+      expect(getByTestId('GuideThinking')).toBeInTheDocument();
+
+      stream.push(frame({ type: 'chunk', message_id: 'm1', delta: 'Hello. ' }));
+      expect(await findByText('Hello.', inTranscript)).toBeInTheDocument();
+      expect(queryByTestId('GuideThinking')).not.toBeInTheDocument();
+      stream.push(
+        frame({ type: 'generation_complete', message_id: 'm1', citations: [] }),
+      );
+      stream.close();
+      await waitFor(() => expect(announcer).toHaveTextContent('Hello.'));
+
+      expect(
+        announced.filter((text) => text === 'The Guide is thinking'),
+      ).toHaveLength(1);
+    });
+
+    it('makes the header orb think only while the dots show', async () => {
+      const { getByTestId, findByText, stream } = await startReply();
+      const orb = getByTestId('GuideHeaderOrb');
+
+      expect(getByTestId('GuideThinking')).toBeInTheDocument();
+      expect(orb).toHaveAttribute('data-thinking', 'true');
+      expect(orb).toHaveAttribute('data-animating', 'true');
+
+      stream.push(frame({ type: 'chunk', message_id: 'm1', delta: 'Hello' }));
+      expect(await findByText('Hello', inTranscript)).toBeInTheDocument();
+      expect(orb).toHaveAttribute('data-thinking', 'false');
+      expect(orb).toHaveAttribute('data-animating', 'true');
+      stream.close();
+    });
+
+    it('goes when a card arrives first', async () => {
+      const { getByTestId, queryByTestId, stream } = await startReply();
+      expect(getByTestId('GuideThinking')).toBeInTheDocument();
+
+      stream.push(
+        frame({
+          type: 'card',
+          message_id: 'm1',
+          card: {
+            kind: 'navigation',
+            intent: { type: 'contacts_list', params: {} },
+            label: 'Open contacts',
+          },
+        }),
+      );
+
+      await waitFor(() =>
+        expect(queryByTestId('GuideThinking')).not.toBeInTheDocument(),
+      );
+      stream.close();
+    });
+
+    it('goes on generation_error', async () => {
+      const { getByTestId, queryByTestId, stream } = await startReply();
+      expect(getByTestId('GuideThinking')).toBeInTheDocument();
+
+      stream.push(
+        frame({ type: 'generation_error', message_id: 'm1', error: 'x' }),
+      );
+      stream.close();
+
+      await waitFor(() =>
+        expect(queryByTestId('GuideThinking')).not.toBeInTheDocument(),
+      );
+      expect(getByTestId('GuideHeaderOrb')).toHaveAttribute(
+        'data-thinking',
+        'false',
+      );
+    });
+
+    it('goes on Stop', async () => {
+      const { getByRole, getByTestId, queryByTestId, stream } =
+        await startReply();
+      await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(2));
+      expect(getByTestId('GuideThinking')).toBeInTheDocument();
+
+      userEvent.click(getByRole('button', { name: 'Stop' }));
+      stream.close();
+
+      await waitFor(() =>
+        expect(queryByTestId('GuideThinking')).not.toBeInTheDocument(),
+      );
+      expect(getByTestId('GuideHeaderOrb')).toHaveAttribute(
+        'data-thinking',
+        'false',
+      );
+    });
+  });
+
   it('shows Stopped when stopped before any text arrives', async () => {
     const stream = controlledStream();
     fetchSpy
@@ -480,18 +607,69 @@ describe('AssistantChat', () => {
     expect(url.searchParams.get('mpdxName')).toBe('First Last');
     expect(url.searchParams.get('mpdxEmail')).toBe('first.last@cru.org');
     expect(url.searchParams.get('mpdxUrl')).toBe(
-      'http://localhost/accountLists/account-list-1/contacts',
+      '/accountLists/account-list-1/contacts',
     );
   });
 
-  it('hides the help desk link when Helpjuice is not configured', async () => {
-    process.env.HELPJUICE_ORIGIN = '';
-    const { queryByRole } = render(<TestComponent />);
-    await waitForMint();
+  describe('when Helpjuice is not configured', () => {
+    const formOf = (link: HTMLElement) => {
+      const url = new URL(link.getAttribute('href') ?? '');
+      return url.origin + url.pathname;
+    };
 
-    expect(
-      queryByRole('link', { name: 'Contact the help desk' }),
-    ).not.toBeInTheDocument();
+    beforeEach(() => {
+      process.env.HELPJUICE_ORIGIN = '';
+    });
+
+    it('still links the footer to the default help desk form', async () => {
+      const { getByRole } = render(<TestComponent />);
+      await waitForMint();
+
+      expect(formOf(getByRole('link', { name: 'Contact the help desk' }))).toBe(
+        'https://www.helpducks.org/contact-us',
+      );
+    });
+
+    it("links the footer to the latest hand-off card's form", async () => {
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(
+          mockStreamResponse([
+            frame({
+              type: 'card',
+              message_id: 'm1',
+              card: {
+                kind: 'handoff',
+                summary: 'I asked: How do I sync.',
+                contact_form: {
+                  name: '',
+                  email: '',
+                  url: 'https://desk.example.org/contact-us',
+                },
+              },
+            }),
+            frame({
+              type: 'generation_complete',
+              message_id: 'm1',
+              citations: [],
+            }),
+          ]),
+        );
+      const { getByRole, findAllByRole } = render(<TestComponent />);
+      await typeMessage(getByRole, 'Can I talk to a person?');
+      userEvent.click(getByRole('button', { name: 'Send' }));
+
+      await waitFor(async () =>
+        expect(
+          (await findAllByRole('link', { name: 'Contact the help desk' })).map(
+            formOf,
+          ),
+        ).toEqual([
+          'https://desk.example.org/contact-us',
+          'https://desk.example.org/contact-us',
+        ]),
+      );
+    });
   });
 
   it('points to Preferences when the assistant is not turned on', async () => {

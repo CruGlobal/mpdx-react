@@ -113,6 +113,7 @@ describe('useAssistantStream', () => {
         }),
         body: JSON.stringify({
           content: 'Hi there',
+          first_turn: true,
           page: {
             path: '/accountLists/account-list-1/contacts',
             locale: i18n.language,
@@ -181,6 +182,67 @@ describe('useAssistantStream', () => {
       expect.anything(),
     );
     expect(result.current.context.messages).toHaveLength(4);
+  });
+
+  describe('first turn', () => {
+    const firstTurns = () =>
+      fetchSpy.mock.calls
+        .filter(([url]) => String(url).endsWith('/stream'))
+        .map(([, init]) => JSON.parse(init.body).first_turn);
+
+    it('is true only until the transcript has a reply', async () => {
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'eph_1' }))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+      const { result } = renderStream();
+
+      await act(() => result.current.stream.sendMessage('First'));
+      await act(() => result.current.stream.sendMessage('Second'));
+
+      expect(firstTurns()).toEqual([true, false]);
+    });
+
+    it('stays true after a first reply that failed or showed nothing', async () => {
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(
+          mockStreamResponse([
+            frame({ type: 'generation_start', message_id: 'm1' }),
+            frame({ type: 'chunk', message_id: 'm1', delta: 'Partial' }),
+            frame({ type: 'generation_error', message_id: 'm1', error: 'x' }),
+          ]),
+        )
+        .mockResolvedValueOnce(
+          mockStreamResponse([
+            frame({ type: 'generation_start', message_id: 'm2' }),
+            frame({ type: 'generation_complete', message_id: 'm2' }),
+          ]),
+        )
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+      const { result } = renderStream();
+
+      await act(() => result.current.stream.sendMessage('First'));
+      await act(() => result.current.stream.sendMessage('Second'));
+      await act(() => result.current.stream.sendMessage('Third'));
+
+      expect(firstTurns()).toEqual([true, true, true]);
+    });
+
+    it('is true again after an account list switch', async () => {
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames))
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-2' }))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+      const { result } = renderStream();
+
+      await act(() => result.current.stream.sendMessage('Hi'));
+      act(() => result.current.setAccountListId('account-list-2'));
+      await act(() => result.current.stream.sendMessage('Hi again'));
+
+      expect(firstTurns()).toEqual([true, true]);
+    });
   });
 
   it('shows the working indicator between tool events', async () => {

@@ -115,9 +115,76 @@ describe('MessageList', () => {
     );
 
     expect(getByRole('log')).toHaveAttribute('aria-busy', 'true');
-    expect(
-      getByRole('progressbar', { name: 'The Guide is thinking' }),
-    ).toBeInTheDocument();
+  });
+
+  it('shows thinking dots, hidden from screen readers, until something arrives', () => {
+    const { getByTestId, queryByTestId, rerender } = render(
+      <MessageList messages={[message({ status: 'streaming' })]} streaming />,
+    );
+
+    expect(getByTestId('GuideThinking')).toHaveAttribute('aria-hidden', 'true');
+    expect(getByTestId('GuideThinking').children).toHaveLength(3);
+
+    rerender(
+      <MessageList
+        messages={[message({ status: 'streaming', content: 'Hi' })]}
+        streaming
+      />,
+    );
+    expect(queryByTestId('GuideThinking')).not.toBeInTheDocument();
+  });
+
+  describe('help desk in the reply text', () => {
+    const handoff: AssistantCard = {
+      kind: 'handoff',
+      summary: 'I asked: How do I sync.',
+      contact_form: {
+        name: '',
+        email: '',
+        url: 'https://domain.helpjuice.com/contact-us',
+      },
+    };
+
+    it("links each mention to the hand-off card's contact form", () => {
+      const { getByRole, getAllByRole } = render(
+        <TestRouter router={{ asPath: '/accountLists/1/contacts' }}>
+          <MessageList
+            messages={[
+              message({
+                content:
+                  'The MPDX help desk can help. Ask the Help Desk, not `help desk`.',
+                cards: [handoff],
+              }),
+            ]}
+            streaming={false}
+          />
+        </TestRouter>,
+      );
+
+      const links = getAllByRole('link', { name: /^(MPDX )?help desk$/i });
+      expect(links.map((link) => link.textContent)).toEqual([
+        'MPDX help desk',
+        'Help Desk',
+      ]);
+      const url = new URL(links[0].getAttribute('href') ?? '');
+      expect(url.origin + url.pathname).toBe(handoff.contact_form.url);
+      expect(links[0]).toHaveAttribute('target', '_blank');
+      expect(
+        getByRole('link', { name: 'Contact the help desk' }),
+      ).toHaveAttribute('href', links[0].getAttribute('href'));
+    });
+
+    it('leaves the text alone without a hand-off card', () => {
+      const { getByText, queryByRole } = render(
+        <MessageList
+          messages={[message({ content: 'The MPDX help desk can help.' })]}
+          streaming={false}
+        />,
+      );
+
+      expect(getByText('The MPDX help desk can help.')).toBeInTheDocument();
+      expect(queryByRole('link')).not.toBeInTheDocument();
+    });
   });
 
   it('shows the working indicator', () => {
