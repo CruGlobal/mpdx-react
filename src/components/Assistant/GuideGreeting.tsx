@@ -2,11 +2,13 @@ import React, { useContext, useId } from 'react';
 import { getApolloContext } from '@apollo/client';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import SyncOutlinedIcon from '@mui/icons-material/SyncOutlined';
 import {
   Box,
+  Link,
   List,
   ListItem,
   ListItemButton,
@@ -36,16 +38,32 @@ const TopicButton = styled(ListItemButton)(({ theme }) => ({
   },
 }));
 
+const PersonBanner = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(1.5),
+  padding: theme.spacing(1.5, 2),
+  borderRadius: theme.spacing(1.5),
+  backgroundColor: theme.palette.action.hover,
+}));
+
 interface GreetingProps {
   firstName?: string | null;
+  helpDeskUrl: string;
   disabled: boolean;
   onPick: (question: string) => void;
 }
 
-const Greeting: React.FC<GreetingProps> = ({ firstName, disabled, onPick }) => {
+const Greeting: React.FC<GreetingProps> = ({
+  firstName,
+  helpDeskUrl,
+  disabled,
+  onPick,
+}) => {
   const { t } = useTranslation();
   const appName = getAppName();
   const topicsLabelId = useId();
+  const personLabelId = useId();
   // Four fit the 640px card without scrolling; each follows a help center article
   const topics = [
     {
@@ -115,6 +133,22 @@ const Greeting: React.FC<GreetingProps> = ({ firstName, disabled, onPick }) => {
           ))}
         </Topics>
       </Box>
+      <PersonBanner role="group" aria-labelledby={personLabelId}>
+        <HelpOutlineIcon sx={{ color: 'text.secondary' }} />
+        <Typography id={personLabelId} variant="body2" flexGrow={1}>
+          {t('Need a person instead?')}
+        </Typography>
+        <Link
+          href={helpDeskUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          variant="button"
+          underline="hover"
+          fontWeight="bold"
+        >
+          {t('Help desk')}
+        </Link>
+      </PersonBanner>
     </Box>
   );
 };

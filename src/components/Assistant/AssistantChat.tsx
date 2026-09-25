@@ -109,7 +109,12 @@ const Disclaimer: React.FC<DisclaimerProps> = ({ helpDeskUrl }) => {
   const { t } = useTranslation();
 
   return (
-    <Typography variant="caption" color="text.secondary" textAlign="center">
+    <Typography
+      variant="caption"
+      color="text.secondary"
+      textAlign="center"
+      data-testid="GuideDisclaimer"
+    >
       {t('The Guide can make mistakes. Check important details.')}{' '}
       <Link href={helpDeskUrl} target="_blank" rel="noopener noreferrer">
         {t('Help desk')}
@@ -271,6 +276,7 @@ export const AssistantChat: React.FC<AssistantChatProps> = ({
         <MessageList messages={visibleMessages} streaming={streaming} />
         {beforeFirstMessage && (
           <GuideGreeting
+            helpDeskUrl={helpDeskUrl}
             disabled={streaming || !ready || !accountListId}
             onPick={sendStarter}
           />
