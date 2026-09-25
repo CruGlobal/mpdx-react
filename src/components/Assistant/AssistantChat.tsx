@@ -31,7 +31,6 @@ import { AssistantHeader, GuideStatus } from './AssistantHeader';
 import { useAssistantContext } from './AssistantProvider';
 import { GuideGreeting } from './GuideGreeting';
 import { MessageList } from './MessageList';
-import { StarterQuestions } from './StarterQuestions';
 import { isReplying } from './isThinking';
 import { toSafeHttpUrl } from './safeUrl';
 import { AssistantMessage } from './types';
@@ -270,7 +269,12 @@ export const AssistantChat: React.FC<AssistantChatProps> = ({
       />
       <MessageArea>
         <MessageList messages={visibleMessages} streaming={streaming} />
-        {beforeFirstMessage && <GuideGreeting />}
+        {beforeFirstMessage && (
+          <GuideGreeting
+            disabled={streaming || !ready || !accountListId}
+            onPick={sendStarter}
+          />
+        )}
       </MessageArea>
       <Divider />
       <Footer>
@@ -297,51 +301,43 @@ export const AssistantChat: React.FC<AssistantChatProps> = ({
             }
           />
         ) : (
-          <>
-            {beforeFirstMessage && (
-              <StarterQuestions
-                disabled={streaming || !ready || !accountListId}
-                onPick={sendStarter}
-              />
-            )}
-            <Composer onSubmit={handleSubmit}>
-              <TextField
-                fullWidth
-                multiline
-                autoFocus
-                maxRows={4}
-                size="small"
-                value={draft}
-                inputRef={inputRef}
-                disabled={!accountListId}
-                placeholder={t('Ask how to do something in {{appName}}', {
-                  appName: getAppName(),
-                })}
-                onChange={(event) => setDraft(event.target.value)}
-                onKeyDown={handleKeyDown}
-                slotProps={{
-                  input: {
-                    sx: {
-                      borderRadius: '24px',
-                      px: 2,
-                      py: 1.25,
-                      backgroundColor: 'action.hover',
-                    },
+          <Composer onSubmit={handleSubmit}>
+            <TextField
+              fullWidth
+              multiline
+              autoFocus
+              maxRows={4}
+              size="small"
+              value={draft}
+              inputRef={inputRef}
+              disabled={!accountListId}
+              placeholder={t('Ask how to do something in {{appName}}', {
+                appName: getAppName(),
+              })}
+              onChange={(event) => setDraft(event.target.value)}
+              onKeyDown={handleKeyDown}
+              slotProps={{
+                input: {
+                  sx: {
+                    borderRadius: '24px',
+                    px: 2,
+                    py: 1.25,
+                    backgroundColor: 'action.hover',
                   },
-                  htmlInput: { 'aria-label': t('Ask the Guide') },
-                }}
-              />
-              {/* One button that swaps between Send and Stop so keyboard focus survives the swap */}
-              <RoundButton
-                type={streaming ? 'button' : 'submit'}
-                onClick={streaming ? stop : undefined}
-                disabled={!streaming && !canSend}
-                aria-label={streaming ? t('Stop') : t('Send')}
-              >
-                {streaming ? <StopIcon /> : <ArrowForwardIcon />}
-              </RoundButton>
-            </Composer>
-          </>
+                },
+                htmlInput: { 'aria-label': t('Ask the Guide') },
+              }}
+            />
+            {/* One button that swaps between Send and Stop so keyboard focus survives the swap */}
+            <RoundButton
+              type={streaming ? 'button' : 'submit'}
+              onClick={streaming ? stop : undefined}
+              disabled={!streaming && !canSend}
+              aria-label={streaming ? t('Stop') : t('Send')}
+            >
+              {streaming ? <StopIcon /> : <ArrowForwardIcon />}
+            </RoundButton>
+          </Composer>
         )}
         {configured && !accountListId && (
           <Typography variant="caption" color="text.secondary">

@@ -861,70 +861,106 @@ describe('AssistantChat', () => {
   });
 
   describe('before the first message', () => {
-    const greeting =
-      "I'm your MPDX Guide. Ask me how to do anything on this site, or pick a question below to get started.";
-    const starters = [
-      'How do I add a task?',
-      'How do I add a contact?',
-      'What is a commitment?',
-      'How do I log a gift?',
+    const description =
+      'Ask me how to do something in MPDX, like tracking partners, logging tasks, or connecting your donation services.';
+    const topics = [
+      ['Connect services', 'How do I connect my donation services?'],
+      ["A contact's page", "What can I do on a contact's page?"],
+      ['Contact stars', 'How do I star a contact?'],
+      ['Contacts views', 'How do I switch between the contacts views?'],
     ];
+    const topicList = (getByRole: ReturnType<typeof render>['getByRole']) =>
+      getByRole('list', { name: 'Popular topics' });
 
-    it('greets the user by first name and offers starter questions', async () => {
-      const { findByText, getByRole } = render(
+    it('greets the user by first name and lists the popular topics', async () => {
+      const { findByRole, getByRole, getByText } = render(
         <TestComponent firstName="Pedra" />,
       );
 
-      expect(await findByText(`Hi Pedra, ${greeting}`)).toBeInTheDocument();
-      const group = getByRole('group', { name: 'Suggested questions' });
       expect(
-        within(group)
+        await findByRole('heading', { name: 'Hi Pedra, how can I help?' }),
+      ).toBeInTheDocument();
+      expect(getByText(description)).toBeInTheDocument();
+      expect(getByText('Popular topics')).toBeInTheDocument();
+      expect(
+        within(topicList(getByRole))
           .getAllByRole('button')
-          .map((chip) => chip.textContent),
-      ).toEqual(starters);
+          .map((row) => row.textContent),
+      ).toEqual(topics.map(([title]) => title));
       await waitForMint();
     });
 
     it('says hi there when the name is not known', async () => {
-      const { getByText } = render(<TestComponent />);
+      const { getByRole } = render(<TestComponent />);
 
-      expect(getByText(`Hi there, ${greeting}`)).toBeInTheDocument();
+      expect(
+        getByRole('heading', { name: 'Hi there, how can I help?' }),
+      ).toBeInTheDocument();
       await waitForMint();
     });
 
-    it('sends a starter question as the user message and then clears the greeting', async () => {
-      fetchSpy
-        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
-        .mockResolvedValueOnce(mockStreamResponse(replyFrames));
-      const { getByRole, findByText, queryByText, queryByRole } = render(
-        <TestComponent />,
-      );
-      const chip = getByRole('button', { name: 'What is a commitment?' });
-      await waitFor(() => expect(chip).toBeEnabled());
+    it.each(topics)(
+      'sends a question for %s as the user message and then clears the topics',
+      async (title, question) => {
+        fetchSpy
+          .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+          .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+        const { getByRole, findByText, queryByRole } = render(
+          <TestComponent />,
+        );
+        const row = getByRole('button', { name: title });
+        await waitFor(() => expect(row).not.toHaveAttribute('aria-disabled'));
 
-      userEvent.click(chip);
+        userEvent.click(row);
 
-      expect(
-        await findByText('You have 12 contacts.', inTranscript),
-      ).toBeInTheDocument();
-      expect(JSON.parse(fetchSpy.mock.calls[1][1].body)).toMatchObject({
-        content: 'What is a commitment?',
+        expect(
+          await findByText('You have 12 contacts.', inTranscript),
+        ).toBeInTheDocument();
+        expect(JSON.parse(fetchSpy.mock.calls[1][1].body)).toMatchObject({
+          content: question,
+        });
+        expect(getByRole('log', { name: 'Conversation' })).toHaveTextContent(
+          question,
+        );
+        expect(
+          queryByRole('heading', { name: /how can I help/ }),
+        ).not.toBeInTheDocument();
+        expect(
+          queryByRole('list', { name: 'Popular topics' }),
+        ).not.toBeInTheDocument();
+      },
+    );
+
+    it('reaches each topic row with one tab stop', async () => {
+      const { getByRole } = render(<TestComponent />);
+      await waitForMint();
+      const rows = within(topicList(getByRole)).getAllByRole('button');
+      rows.forEach((row) => {
+        expect(row).toHaveAttribute('tabindex', '0');
+        expect(row.querySelectorAll('a, button, [tabindex]')).toHaveLength(0);
       });
-      expect(getByRole('log', { name: 'Conversation' })).toHaveTextContent(
-        'What is a commitment?',
-      );
-      expect(queryByText(`Hi there, ${greeting}`)).not.toBeInTheDocument();
-      expect(
-        queryByRole('group', { name: 'Suggested questions' }),
-      ).not.toBeInTheDocument();
+
+      for (
+        let press = 0;
+        press < 20 && document.activeElement !== rows[0];
+        press++
+      ) {
+        userEvent.tab();
+      }
+      expect(rows[0]).toHaveFocus();
+      rows.slice(1).forEach((row) => {
+        userEvent.tab();
+        expect(row).toHaveFocus();
+      });
     });
 
     it('stays away when a conversation is restored on reopen', async () => {
       fetchSpy
         .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
         .mockResolvedValueOnce(mockStreamResponse(replyFrames));
-      const { getByRole, findByText, queryByRole, queryByText, rerender } =
-        render(<TestComponent />);
+      const { getByRole, findByText, queryByRole, rerender } = render(
+        <TestComponent />,
+      );
       await typeMessage(getByRole, 'Hi');
       userEvent.click(getByRole('button', { name: 'Send' }));
       await findByText('You have 12 contacts.', inTranscript);
@@ -935,20 +971,23 @@ describe('AssistantChat', () => {
       expect(
         await findByText('You have 12 contacts.', inTranscript),
       ).toBeInTheDocument();
-      expect(queryByText(/I'm your MPDX Guide/)).not.toBeInTheDocument();
       expect(
-        queryByRole('group', { name: 'Suggested questions' }),
+        queryByRole('heading', { name: /how can I help/ }),
+      ).not.toBeInTheDocument();
+      expect(
+        queryByRole('list', { name: 'Popular topics' }),
       ).not.toBeInTheDocument();
     });
 
-    it('keeps the starter questions disabled until the Guide is connected', async () => {
+    it('keeps the topics disabled until the Guide is connected', async () => {
       const { getByRole } = render(
         <TestComponent mints={[{ networkError: true }]} />,
       );
 
-      expect(
-        getByRole('button', { name: 'How do I add a task?' }),
-      ).toBeDisabled();
+      expect(getByRole('button', { name: 'Connect services' })).toHaveAttribute(
+        'aria-disabled',
+        'true',
+      );
       await waitFor(() => expect(onMint).toHaveBeenCalled());
     });
   });
@@ -1148,7 +1187,7 @@ describe('AssistantChat', () => {
     });
   });
 
-  it('disables Send and hides the starter questions until Retry-After passes', async () => {
+  it('disables Send and hides the popular topics until Retry-After passes', async () => {
     jest.useFakeTimers();
     fetchSpy.mockResolvedValueOnce(
       mockJsonResponse(
@@ -1174,7 +1213,7 @@ describe('AssistantChat', () => {
     userEvent.type(getByRole('textbox', { name: 'Ask the Guide' }), 'Hi');
     expect(getByRole('button', { name: 'Send' })).toBeDisabled();
     expect(
-      queryByRole('group', { name: 'Suggested questions' }),
+      queryByRole('list', { name: 'Popular topics' }),
     ).not.toBeInTheDocument();
 
     act(() => jest.advanceTimersByTime(30000));

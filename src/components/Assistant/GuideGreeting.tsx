@@ -1,51 +1,134 @@
-import React, { useContext } from 'react';
+import React, { useContext, useId } from 'react';
 import { getApolloContext } from '@apollo/client';
-import { Box, Typography } from '@mui/material';
-import { alpha, styled } from '@mui/material/styles';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+import SyncOutlinedIcon from '@mui/icons-material/SyncOutlined';
+import {
+  Box,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { getAppName } from 'src/lib/getAppName';
 
-const Bubble = styled(Box)(({ theme }) => ({
-  maxWidth: '90%',
+const Topics = styled(List)(({ theme }) => ({
+  padding: 0,
+  border: `1px solid ${theme.palette.divider}`,
+  borderRadius: theme.spacing(1.5),
+  overflow: 'hidden',
+  backgroundColor: theme.palette.background.paper,
+}));
+
+const TopicButton = styled(ListItemButton)(({ theme }) => ({
+  gap: theme.spacing(1.5),
   padding: theme.spacing(1.5, 2),
-  borderRadius: theme.spacing(2),
-  backgroundColor: alpha(theme.palette.primary.main, 0.08),
+  '&.Mui-focusVisible': {
+    outline: `2px solid ${theme.palette.primary.main}`,
+    outlineOffset: -2,
+  },
 }));
 
 interface GreetingProps {
   firstName?: string | null;
+  disabled: boolean;
+  onPick: (question: string) => void;
 }
 
-const Greeting: React.FC<GreetingProps> = ({ firstName }) => {
+const Greeting: React.FC<GreetingProps> = ({ firstName, disabled, onPick }) => {
   const { t } = useTranslation();
   const appName = getAppName();
+  const topicsLabelId = useId();
+  // Four fit the 640px card without scrolling; each follows a help center article
+  const topics = [
+    {
+      title: t('Connect services'),
+      question: t('How do I connect my donation services?'),
+      Icon: SyncOutlinedIcon,
+    },
+    {
+      title: t("A contact's page"),
+      question: t("What can I do on a contact's page?"),
+      Icon: PersonOutlineIcon,
+    },
+    {
+      title: t('Contact stars'),
+      question: t('How do I star a contact?'),
+      Icon: StarBorderIcon,
+    },
+    {
+      title: t('Contacts views'),
+      question: t('How do I switch between the contacts views?'),
+      Icon: FilterAltOutlinedIcon,
+    },
+  ];
 
   return (
-    <Bubble>
-      <Typography variant="body2">
-        {firstName
-          ? t(
-              "Hi {{firstName}}, I'm your {{appName}} Guide. Ask me how to do anything on this site, or pick a question below to get started.",
-              { firstName, appName },
-            )
-          : t(
-              "Hi there, I'm your {{appName}} Guide. Ask me how to do anything on this site, or pick a question below to get started.",
-              { appName },
-            )}
-      </Typography>
-    </Bubble>
+    <Box display="flex" flexDirection="column" gap={3}>
+      <Box>
+        <Typography variant="h5" component="h3" gutterBottom>
+          {firstName
+            ? t('Hi {{firstName}}, how can I help?', { firstName })
+            : t('Hi there, how can I help?')}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {t(
+            'Ask me how to do something in {{appName}}, like tracking partners, logging tasks, or connecting your donation services.',
+            { appName },
+          )}
+        </Typography>
+      </Box>
+      <Box>
+        <Typography
+          id={topicsLabelId}
+          variant="overline"
+          component="p"
+          color="primary"
+          fontWeight="bold"
+          lineHeight={2}
+          mb={1}
+        >
+          {t('Popular topics')}
+        </Typography>
+        <Topics aria-labelledby={topicsLabelId}>
+          {topics.map(({ title, question, Icon }, index) => (
+            <ListItem
+              key={title}
+              disablePadding
+              divider={index < topics.length - 1}
+            >
+              <TopicButton disabled={disabled} onClick={() => onPick(question)}>
+                <ListItemIcon sx={{ minWidth: 0 }}>
+                  <Icon color="primary" />
+                </ListItemIcon>
+                <ListItemText primary={title} />
+                <ChevronRightIcon sx={{ color: 'text.secondary' }} />
+              </TopicButton>
+            </ListItem>
+          ))}
+        </Topics>
+      </Box>
+    </Box>
   );
 };
 
-const CachedUserGreeting: React.FC = () => {
+type GuideGreetingProps = Omit<GreetingProps, 'firstName'>;
+
+const CachedUserGreeting: React.FC<GuideGreetingProps> = (props) => {
   // Every signed-in page already loads the user, so the greeting only reads what is cached
   const { data } = useGetUserQuery({ fetchPolicy: 'cache-only' });
-  return <Greeting firstName={data?.user.firstName} />;
+  return <Greeting firstName={data?.user.firstName} {...props} />;
 };
 
 // The drawer can open on /404 and /500, which have no Apollo provider to read the name from
-export const GuideGreeting: React.FC = () => {
+export const GuideGreeting: React.FC<GuideGreetingProps> = (props) => {
   const { client } = useContext(getApolloContext());
-  return client ? <CachedUserGreeting /> : <Greeting />;
+  return client ? <CachedUserGreeting {...props} /> : <Greeting {...props} />;
 };
