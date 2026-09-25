@@ -4,6 +4,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 import PrintIcon from '@mui/icons-material/Print';
 import {
+  Alert,
   Box,
   Button,
   Container,
@@ -134,7 +135,12 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
         'Re-Entry',
       ];
 
-  const { data, loading: reportLoading } = useReportsStaffExpensesQuery({
+  const {
+    data,
+    loading: reportLoading,
+    error: reportError,
+    refetch,
+  } = useReportsStaffExpensesQuery({
     variables: {
       fundTypes,
       staffAccountId,
@@ -142,6 +148,10 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     },
     skip: hcmLoading,
   });
+
+  const refetchReport = () => {
+    refetch().catch(() => {});
+  };
 
   const { data: accountData } = useStaffAccountQuery({
     skip: isSupervisorView,
@@ -381,32 +391,55 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
             {loading ? (
               <AccountInfoBoxSkeleton hasOverallBalance />
             ) : (
-              <AccountInfoBox
-                name={accountName}
-                overallBalance={overallBalance}
-              />
+              // A supervisor's staff name comes from the failed report, so there is no name to show
+              !(isSupervisorView && reportError) && (
+                <AccountInfoBox
+                  name={accountName}
+                  overallBalance={reportError ? undefined : overallBalance}
+                />
+              )
             )}
             <SimpleScreenOnly>
-              <Box
-                display="flex"
-                flexWrap="wrap"
-                gap={2}
-                sx={{
-                  flexDirection: { xs: 'column', sm: 'row' },
-                }}
-              >
-                <BalanceCardList
-                  funds={allFunds}
-                  selectedFundType={selectedFundType}
-                  transferTotals={transferTotals}
-                  onCardClick={handleCardClick}
-                  loading={loading}
-                />
-              </Box>
+              {reportError ? (
+                // The global Apollo error link already shows the error details in a snackbar
+                <Alert
+                  severity="error"
+                  action={
+                    <Button
+                      color="inherit"
+                      size="small"
+                      onClick={refetchReport}
+                    >
+                      {t('Try Again')}
+                    </Button>
+                  }
+                >
+                  {t(
+                    'The Staff Expense report could not be loaded. Please try again later.',
+                  )}
+                </Alert>
+              ) : (
+                <Box
+                  display="flex"
+                  flexWrap="wrap"
+                  gap={2}
+                  sx={{
+                    flexDirection: { xs: 'column', sm: 'row' },
+                  }}
+                >
+                  <BalanceCardList
+                    funds={allFunds}
+                    selectedFundType={selectedFundType}
+                    transferTotals={transferTotals}
+                    onCardClick={handleCardClick}
+                    loading={loading}
+                  />
+                </Box>
+              )}
             </SimpleScreenOnly>
             <SimplePrintOnly>
               <Box>
-                {selectedFundType && (
+                {selectedFundType && !reportError && (
                   <PrintHeader
                     icon={getIconForFundType(selectedFundType)}
                     iconColor={getIconColorForFundType(selectedFundType, theme)}
