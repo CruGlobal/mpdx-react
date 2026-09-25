@@ -34,6 +34,54 @@ describe('buildHelpjuiceContactUrl', () => {
     expect(url.searchParams.get('mpdxUrl')).toBe('https://example.com/');
   });
 
+  describe('summary', () => {
+    const mpdxSummary = (summary?: string) =>
+      new URL(
+        buildHelpjuiceContactUrl({
+          contactUrl: 'https://domain.helpjuice.com/contact-us',
+          href: 'https://example.com/',
+          summary,
+        }),
+      ).searchParams.get('mpdxSummary');
+
+    it('adds the summary', () => {
+      expect(mpdxSummary('I asked: How do I sync?')).toBe(
+        'I asked: How do I sync?',
+      );
+    });
+
+    it.each([undefined, '', '   '])(
+      'omits a missing summary: %p',
+      (summary) => {
+        expect(mpdxSummary(summary)).toBeNull();
+      },
+    );
+
+    it('keeps a summary of exactly 1,500 characters whole', () => {
+      const summary = 'a'.repeat(1500);
+
+      expect(mpdxSummary(summary)).toBe(summary);
+    });
+
+    it('trims a long summary to 1,500 characters at a word boundary', () => {
+      const summary = `${'word '.repeat(299)}wordiest`;
+
+      const trimmed = mpdxSummary(summary) ?? '';
+      expect(trimmed.length).toBeLessThanOrEqual(1500);
+      expect(trimmed).toBe('word '.repeat(299).trimEnd());
+    });
+
+    it('keeps the last word when the cut lands on a space', () => {
+      const summary = `${'a'.repeat(1500)} more`;
+
+      expect(mpdxSummary(summary)).toBe('a'.repeat(1500));
+    });
+
+    it('cuts a single long word at 1,500 characters', () => {
+      expect(mpdxSummary('a'.repeat(2000))).toBe('a'.repeat(1500));
+    });
+  });
+
   describe('page url', () => {
     const mpdxUrl = (href: string) =>
       new URL(

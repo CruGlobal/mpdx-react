@@ -7,7 +7,24 @@ interface ContactUrlOptions {
   name?: string | null;
   email?: string | null;
   href: string;
+  summary?: string;
 }
+
+const MAX_SUMMARY_LENGTH = 1500;
+
+// Keeps the link well under URL length limits without cutting a word in half
+const trimSummary = (summary: string): string => {
+  const text = summary.trim();
+  if (text.length <= MAX_SUMMARY_LENGTH) {
+    return text;
+  }
+  const cut = text.slice(0, MAX_SUMMARY_LENGTH);
+  if (/\s/.test(text[MAX_SUMMARY_LENGTH])) {
+    return cut.trimEnd();
+  }
+  const lastSpace = cut.search(/\s\S*$/);
+  return lastSpace > 0 ? cut.slice(0, lastSpace).trimEnd() : cut;
+};
 
 const isPublicHost = (hostname: string): boolean =>
   hostname.includes('.') &&
@@ -34,6 +51,7 @@ export const buildHelpjuiceContactUrl = ({
   name,
   email,
   href,
+  summary,
 }: ContactUrlOptions): string => {
   const url = new URL(contactUrl);
   if (name) {
@@ -43,5 +61,9 @@ export const buildHelpjuiceContactUrl = ({
     url.searchParams.set('mpdxEmail', email);
   }
   url.searchParams.set('mpdxUrl', pageUrlFor(href));
+  const trimmedSummary = summary && trimSummary(summary);
+  if (trimmedSummary) {
+    url.searchParams.set('mpdxSummary', trimmedSummary);
+  }
   return url.toString();
 };
