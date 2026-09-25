@@ -159,6 +159,11 @@ const typeMessage = async (
 // The reply announcer repeats reply text, so match only what the transcript shows
 const inTranscript = { selector: 'p' };
 
+const footerLink = (getByTestId: ReturnType<typeof render>['getByTestId']) =>
+  within(getByTestId('GuideDisclaimer')).getByRole('link', {
+    name: 'Help desk',
+  });
+
 const offNotice = 'The Guide is off right now. Please try again later.';
 
 const seconds = (count: number) => count * 1000;
@@ -445,17 +450,24 @@ describe('AssistantChat', () => {
       ).toHaveLength(1);
     });
 
-    it('makes the header orb think only while the dots show', async () => {
-      const { getByTestId, findByText, stream } = await startReply();
+    it('keeps the header orb busy from send until generation_complete', async () => {
+      const { getByTestId, findByText, queryByTestId, stream } =
+        await startReply();
       const orb = getByTestId('GuideHeaderOrb');
 
       expect(getByTestId('GuideThinking')).toBeInTheDocument();
-      expect(orb).toHaveAttribute('data-thinking', 'true');
+      expect(orb).toHaveAttribute('data-busy', 'true');
       expect(orb).toHaveAttribute('data-animating', 'true');
 
       stream.push(frame({ type: 'chunk', message_id: 'm1', delta: 'Hello' }));
       expect(await findByText('Hello', inTranscript)).toBeInTheDocument();
-      expect(orb).toHaveAttribute('data-thinking', 'false');
+      expect(queryByTestId('GuideThinking')).not.toBeInTheDocument();
+      expect(orb).toHaveAttribute('data-busy', 'true');
+
+      stream.push(
+        frame({ type: 'generation_complete', message_id: 'm1', citations: [] }),
+      );
+      await waitFor(() => expect(orb).toHaveAttribute('data-busy', 'false'));
       expect(orb).toHaveAttribute('data-animating', 'true');
       stream.close();
     });
@@ -495,7 +507,7 @@ describe('AssistantChat', () => {
         expect(queryByTestId('GuideThinking')).not.toBeInTheDocument(),
       );
       expect(getByTestId('GuideHeaderOrb')).toHaveAttribute(
-        'data-thinking',
+        'data-busy',
         'false',
       );
     });
@@ -513,7 +525,7 @@ describe('AssistantChat', () => {
         expect(queryByTestId('GuideThinking')).not.toBeInTheDocument(),
       );
       expect(getByTestId('GuideHeaderOrb')).toHaveAttribute(
-        'data-thinking',
+        'data-busy',
         'false',
       );
     });
@@ -594,21 +606,53 @@ describe('AssistantChat', () => {
     ).toBeInTheDocument();
   });
 
-  it('links to the help desk contact form with the current route', async () => {
-    const { getByRole } = render(<TestComponent />);
-    await waitForMint();
+  describe('footer', () => {
+    const disclaimer = 'The Guide can make mistakes. Check important details.';
 
-    const link = getByRole('link', { name: 'Contact the help desk' });
-    expect(link).toHaveAttribute('target', '_blank');
-    const url = new URL(link.getAttribute('href') ?? '');
-    expect(url.origin + url.pathname).toBe(
-      'https://domain.helpjuice.com/contact-us',
-    );
-    expect(url.searchParams.get('mpdxName')).toBe('First Last');
-    expect(url.searchParams.get('mpdxEmail')).toBe('first.last@cru.org');
-    expect(url.searchParams.get('mpdxUrl')).toBe(
-      '/accountLists/account-list-1/contacts',
-    );
+    it('always shows the short disclaimer with a help desk link', async () => {
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+      const { getByRole, getByTestId, getByText, findByText } = render(
+        <TestComponent />,
+      );
+      expect(getByText(disclaimer)).toBeInTheDocument();
+      expect(footerLink(getByTestId)).toBeInTheDocument();
+
+      await typeMessage(getByRole, 'Hi');
+      userEvent.click(getByRole('button', { name: 'Send' }));
+      await findByText('You have 12 contacts.', inTranscript);
+
+      expect(getByText(disclaimer)).toBeInTheDocument();
+      expect(footerLink(getByTestId)).toBeInTheDocument();
+    });
+
+    it('keeps the disclaimer and link when the Guide cannot connect', async () => {
+      const { findByText, getByText, getByTestId } = render(
+        <TestComponent mints={[{ networkError: true }]} />,
+      );
+
+      expect(await findByText('Could not connect')).toBeInTheDocument();
+      expect(getByText(disclaimer)).toBeInTheDocument();
+      expect(footerLink(getByTestId)).toBeInTheDocument();
+    });
+
+    it('links to the help desk contact form with the current route', async () => {
+      const { getByTestId } = render(<TestComponent />);
+      await waitForMint();
+
+      const link = footerLink(getByTestId);
+      expect(link).toHaveAttribute('target', '_blank');
+      const url = new URL(link.getAttribute('href') ?? '');
+      expect(url.origin + url.pathname).toBe(
+        'https://domain.helpjuice.com/contact-us',
+      );
+      expect(url.searchParams.get('mpdxName')).toBe('First Last');
+      expect(url.searchParams.get('mpdxEmail')).toBe('first.last@cru.org');
+      expect(url.searchParams.get('mpdxUrl')).toBe(
+        '/accountLists/account-list-1/contacts',
+      );
+    });
   });
 
   describe('when Helpjuice is not configured', () => {
@@ -622,10 +666,10 @@ describe('AssistantChat', () => {
     });
 
     it('still links the footer to the default help desk form', async () => {
-      const { getByRole } = render(<TestComponent />);
+      const { getByTestId } = render(<TestComponent />);
       await waitForMint();
 
-      expect(formOf(getByRole('link', { name: 'Contact the help desk' }))).toBe(
+      expect(formOf(footerLink(getByTestId))).toBe(
         'https://www.helpducks.org/contact-us',
       );
     });
@@ -661,9 +705,11 @@ describe('AssistantChat', () => {
 
       await waitFor(async () =>
         expect(
-          (await findAllByRole('link', { name: 'Contact the help desk' })).map(
-            formOf,
-          ),
+          (
+            await findAllByRole('link', {
+              name: /^(Contact the help desk|Help desk)$/,
+            })
+          ).map(formOf),
         ).toEqual([
           'https://desk.example.org/contact-us',
           'https://desk.example.org/contact-us',
@@ -822,70 +868,137 @@ describe('AssistantChat', () => {
   });
 
   describe('before the first message', () => {
-    const greeting =
-      "I'm your MPDX Guide. Ask me how to do anything on this site, or pick a question below to get started.";
-    const starters = [
-      'How do I add a task?',
-      'How do I add a contact?',
-      'What is a commitment?',
-      'How do I log a gift?',
+    const description =
+      'Ask me how to do something in MPDX, like tracking partners, logging tasks, or connecting your donation services.';
+    const topics = [
+      ['Connect services', 'How do I connect my donation services?'],
+      ["A contact's page", "What can I do on a contact's page?"],
+      ['Contact stars', 'How do I star a contact?'],
+      ['Contacts views', 'How do I switch between the contacts views?'],
     ];
+    const topicList = (getByRole: ReturnType<typeof render>['getByRole']) =>
+      getByRole('list', { name: 'Popular topics' });
 
-    it('greets the user by first name and offers starter questions', async () => {
-      const { findByText, getByRole } = render(
+    it('greets the user by first name and lists the popular topics', async () => {
+      const { findByRole, getByRole, getByText } = render(
         <TestComponent firstName="Pedra" />,
       );
 
-      expect(await findByText(`Hi Pedra, ${greeting}`)).toBeInTheDocument();
-      const group = getByRole('group', { name: 'Suggested questions' });
       expect(
-        within(group)
+        await findByRole('heading', { name: 'Hi Pedra, how can I help?' }),
+      ).toBeInTheDocument();
+      expect(getByText(description)).toBeInTheDocument();
+      expect(getByText('Popular topics')).toBeInTheDocument();
+      expect(
+        within(topicList(getByRole))
           .getAllByRole('button')
-          .map((chip) => chip.textContent),
-      ).toEqual(starters);
+          .map((row) => row.textContent),
+      ).toEqual(topics.map(([title]) => title));
       await waitForMint();
     });
 
     it('says hi there when the name is not known', async () => {
-      const { getByText } = render(<TestComponent />);
+      const { getByRole } = render(<TestComponent />);
 
-      expect(getByText(`Hi there, ${greeting}`)).toBeInTheDocument();
+      expect(
+        getByRole('heading', { name: 'Hi there, how can I help?' }),
+      ).toBeInTheDocument();
       await waitForMint();
     });
 
-    it('sends a starter question as the user message and then clears the greeting', async () => {
+    it.each(topics)(
+      'sends a question for %s as the user message and then clears the topics',
+      async (title, question) => {
+        fetchSpy
+          .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+          .mockResolvedValueOnce(mockStreamResponse(replyFrames));
+        const { getByRole, findByText, queryByRole } = render(
+          <TestComponent />,
+        );
+        const row = getByRole('button', { name: title });
+        await waitFor(() => expect(row).not.toHaveAttribute('aria-disabled'));
+
+        userEvent.click(row);
+
+        expect(
+          await findByText('You have 12 contacts.', inTranscript),
+        ).toBeInTheDocument();
+        expect(JSON.parse(fetchSpy.mock.calls[1][1].body)).toMatchObject({
+          content: question,
+        });
+        expect(getByRole('log', { name: 'Conversation' })).toHaveTextContent(
+          question,
+        );
+        expect(
+          queryByRole('heading', { name: /how can I help/ }),
+        ).not.toBeInTheDocument();
+        expect(
+          queryByRole('list', { name: 'Popular topics' }),
+        ).not.toBeInTheDocument();
+      },
+    );
+
+    it('offers the help desk form for a person instead', async () => {
+      const { getByRole } = render(<TestComponent />);
+      await waitForMint();
+
+      const banner = getByRole('group', { name: 'Need a person instead?' });
+      const link = within(banner).getByRole('link', { name: 'Help desk' });
+      expect(link).toHaveAttribute('target', '_blank');
+      const url = new URL(link.getAttribute('href') ?? '');
+      expect(url.origin + url.pathname).toBe(
+        'https://domain.helpjuice.com/contact-us',
+      );
+      expect(url.searchParams.get('mpdxName')).toBe('First Last');
+      expect(url.searchParams.get('mpdxUrl')).toBe(
+        '/accountLists/account-list-1/contacts',
+      );
+    });
+
+    it('drops the help desk banner once a message exists', async () => {
       fetchSpy
         .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
         .mockResolvedValueOnce(mockStreamResponse(replyFrames));
-      const { getByRole, findByText, queryByText, queryByRole } = render(
-        <TestComponent />,
-      );
-      const chip = getByRole('button', { name: 'What is a commitment?' });
-      await waitFor(() => expect(chip).toBeEnabled());
-
-      userEvent.click(chip);
+      const { getByRole, findByText, queryByRole } = render(<TestComponent />);
+      await typeMessage(getByRole, 'Hi');
+      userEvent.click(getByRole('button', { name: 'Send' }));
+      await findByText('You have 12 contacts.', inTranscript);
 
       expect(
-        await findByText('You have 12 contacts.', inTranscript),
-      ).toBeInTheDocument();
-      expect(JSON.parse(fetchSpy.mock.calls[1][1].body)).toMatchObject({
-        content: 'What is a commitment?',
-      });
-      expect(getByRole('log', { name: 'Conversation' })).toHaveTextContent(
-        'What is a commitment?',
-      );
-      expect(queryByText(`Hi there, ${greeting}`)).not.toBeInTheDocument();
-      expect(
-        queryByRole('group', { name: 'Suggested questions' }),
+        queryByRole('group', { name: 'Need a person instead?' }),
       ).not.toBeInTheDocument();
+    });
+
+    it('reaches each topic row with one tab stop', async () => {
+      const { getByRole } = render(<TestComponent />);
+      await waitForMint();
+      const rows = within(topicList(getByRole)).getAllByRole('button');
+      rows.forEach((row) => {
+        expect(row).toHaveAttribute('tabindex', '0');
+        expect(row.querySelectorAll('a, button, [tabindex]')).toHaveLength(0);
+      });
+
+      for (
+        let press = 0;
+        press < 20 && document.activeElement !== rows[0];
+        press++
+      ) {
+        userEvent.tab();
+      }
+      expect(rows[0]).toHaveFocus();
+      rows.slice(1).forEach((row) => {
+        userEvent.tab();
+        expect(row).toHaveFocus();
+      });
     });
 
     it('stays away when a conversation is restored on reopen', async () => {
       fetchSpy
         .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
         .mockResolvedValueOnce(mockStreamResponse(replyFrames));
-      const { getByRole, findByText, queryByRole, queryByText, rerender } =
-        render(<TestComponent />);
+      const { getByRole, findByText, queryByRole, rerender } = render(
+        <TestComponent />,
+      );
       await typeMessage(getByRole, 'Hi');
       userEvent.click(getByRole('button', { name: 'Send' }));
       await findByText('You have 12 contacts.', inTranscript);
@@ -896,20 +1009,23 @@ describe('AssistantChat', () => {
       expect(
         await findByText('You have 12 contacts.', inTranscript),
       ).toBeInTheDocument();
-      expect(queryByText(/I'm your MPDX Guide/)).not.toBeInTheDocument();
       expect(
-        queryByRole('group', { name: 'Suggested questions' }),
+        queryByRole('heading', { name: /how can I help/ }),
+      ).not.toBeInTheDocument();
+      expect(
+        queryByRole('list', { name: 'Popular topics' }),
       ).not.toBeInTheDocument();
     });
 
-    it('keeps the starter questions disabled until the Guide is connected', async () => {
+    it('keeps the topics disabled until the Guide is connected', async () => {
       const { getByRole } = render(
         <TestComponent mints={[{ networkError: true }]} />,
       );
 
-      expect(
-        getByRole('button', { name: 'How do I add a task?' }),
-      ).toBeDisabled();
+      expect(getByRole('button', { name: 'Connect services' })).toHaveAttribute(
+        'aria-disabled',
+        'true',
+      );
       await waitFor(() => expect(onMint).toHaveBeenCalled());
     });
   });
@@ -930,19 +1046,40 @@ describe('AssistantChat', () => {
       const { getByText, findByText } = render(<TestComponent />);
 
       expect(getByText('Connecting')).toBeInTheDocument();
-      expect(await findByText('Here to show you around')).toBeInTheDocument();
+      expect(
+        await findByText('Answers from the MPDX help center'),
+      ).toBeInTheDocument();
     });
 
     it('never flashes Off right now while the first token is on its way', async () => {
       (AssistantHeader as jest.Mock).mockClear();
       const { findByText } = render(<TestComponent />);
 
-      expect(await findByText('Here to show you around')).toBeInTheDocument();
+      expect(
+        await findByText('Answers from the MPDX help center'),
+      ).toBeInTheDocument();
       const statuses = (AssistantHeader as jest.Mock).mock.calls.map(
         ([{ status }]) => status,
       );
       expect(statuses[0]).toBe('connecting');
       expect(statuses).not.toContain('off');
+    });
+
+    it('shows the ready subtitle without a status dot', async () => {
+      const { findByText, queryByTestId } = render(<TestComponent />);
+
+      expect(
+        await findByText('Answers from the MPDX help center'),
+      ).toBeInTheDocument();
+      expect(queryByTestId('GuideStatusDot')).not.toBeInTheDocument();
+    });
+
+    it('shows a status dot beside the status while connecting', async () => {
+      const { getByTestId, getByText } = render(<TestComponent />);
+
+      expect(getByText('Connecting')).toBeInTheDocument();
+      expect(getByTestId('GuideStatusDot')).toBeInTheDocument();
+      await waitForMint();
     });
 
     it('says it could not connect when the mint fails', async () => {
@@ -966,7 +1103,9 @@ describe('AssistantChat', () => {
       userEvent.click(getByRole('button', { name: 'Send' }));
 
       expect(await findByText('Off right now')).toBeInTheDocument();
-      expect(queryByText('Here to show you around')).not.toBeInTheDocument();
+      expect(
+        queryByText('Answers from the MPDX help center'),
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -1086,7 +1225,7 @@ describe('AssistantChat', () => {
     });
   });
 
-  it('disables Send and hides the starter questions until Retry-After passes', async () => {
+  it('disables Send and hides the popular topics until Retry-After passes', async () => {
     jest.useFakeTimers();
     fetchSpy.mockResolvedValueOnce(
       mockJsonResponse(
@@ -1112,7 +1251,7 @@ describe('AssistantChat', () => {
     userEvent.type(getByRole('textbox', { name: 'Ask the Guide' }), 'Hi');
     expect(getByRole('button', { name: 'Send' })).toBeDisabled();
     expect(
-      queryByRole('group', { name: 'Suggested questions' }),
+      queryByRole('list', { name: 'Popular topics' }),
     ).not.toBeInTheDocument();
 
     act(() => jest.advanceTimersByTime(30000));

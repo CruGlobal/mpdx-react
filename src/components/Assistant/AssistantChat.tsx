@@ -8,7 +8,6 @@ import React, {
 } from 'react';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import StopIcon from '@mui/icons-material/Stop';
-import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import {
   Box,
   Button,
@@ -32,8 +31,7 @@ import { AssistantHeader, GuideStatus } from './AssistantHeader';
 import { useAssistantContext } from './AssistantProvider';
 import { GuideGreeting } from './GuideGreeting';
 import { MessageList } from './MessageList';
-import { StarterQuestions } from './StarterQuestions';
-import { isThinking } from './isThinking';
+import { isReplying } from './isThinking';
 import { toSafeHttpUrl } from './safeUrl';
 import { AssistantMessage } from './types';
 import { getAssistantUrl, useAssistantStream } from './useAssistantStream';
@@ -88,16 +86,12 @@ const latestHandoffFormUrl = (messages: AssistantMessage[]): string | null => {
   return urls.at(-1) ?? null;
 };
 
-interface HelpDeskLinkProps {
-  messages: AssistantMessage[];
-}
-
-const HelpDeskLink: React.FC<HelpDeskLinkProps> = ({ messages }) => {
-  const { t } = useTranslation();
+// The footer and the empty state share one way to the help desk, the same form a hand-off card opens
+const useHelpDeskUrl = (messages: AssistantMessage[]): string => {
   const { data: session } = useSession();
   const href = useCurrentPageUrl();
 
-  const contactUrl = buildHelpjuiceContactUrl({
+  return buildHelpjuiceContactUrl({
     contactUrl: process.env.HELPJUICE_ORIGIN
       ? `${process.env.HELPJUICE_ORIGIN}/contact-us`
       : (latestHandoffFormUrl(messages) ?? DEFAULT_HELP_DESK_CONTACT_URL),
@@ -105,19 +99,27 @@ const HelpDeskLink: React.FC<HelpDeskLinkProps> = ({ messages }) => {
     email: session?.user.email,
     href,
   });
+};
+
+interface DisclaimerProps {
+  helpDeskUrl: string;
+}
+
+const Disclaimer: React.FC<DisclaimerProps> = ({ helpDeskUrl }) => {
+  const { t } = useTranslation();
 
   return (
-    <Button
-      component="a"
-      href={contactUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      size="small"
-      startIcon={<SupportAgentIcon />}
-      sx={{ alignSelf: 'flex-start' }}
+    <Typography
+      variant="caption"
+      color="text.secondary"
+      textAlign="center"
+      data-testid="GuideDisclaimer"
     >
-      {t('Contact the help desk')}
-    </Button>
+      {t('The Guide can make mistakes. Check important details.')}{' '}
+      <Link href={helpDeskUrl} target="_blank" rel="noopener noreferrer">
+        {t('Help desk')}
+      </Link>
+    </Typography>
   );
 };
 
@@ -218,6 +220,7 @@ export const AssistantChat: React.FC<AssistantChatProps> = ({
         : tokenState.status === 'failed'
           ? 'failed'
           : 'off';
+  const helpDeskUrl = useHelpDeskUrl(visibleMessages);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const wasStreaming = useRef(streaming);
   const [buttonAnnouncement, setButtonAnnouncement] = useState('');
@@ -266,12 +269,18 @@ export const AssistantChat: React.FC<AssistantChatProps> = ({
       <AssistantHeader
         titleId={titleId}
         status={status}
-        thinking={visibleMessages.some(isThinking)}
+        busy={visibleMessages.some(isReplying)}
         onClose={onClose}
       />
       <MessageArea>
         <MessageList messages={visibleMessages} streaming={streaming} />
-        {beforeFirstMessage && <GuideGreeting />}
+        {beforeFirstMessage && (
+          <GuideGreeting
+            helpDeskUrl={helpDeskUrl}
+            disabled={streaming || !ready || !accountListId}
+            onPick={sendStarter}
+          />
+        )}
       </MessageArea>
       <Divider />
       <Footer>
@@ -298,51 +307,43 @@ export const AssistantChat: React.FC<AssistantChatProps> = ({
             }
           />
         ) : (
-          <>
-            {beforeFirstMessage && (
-              <StarterQuestions
-                disabled={streaming || !ready || !accountListId}
-                onPick={sendStarter}
-              />
-            )}
-            <Composer onSubmit={handleSubmit}>
-              <TextField
-                fullWidth
-                multiline
-                autoFocus
-                maxRows={4}
-                size="small"
-                value={draft}
-                inputRef={inputRef}
-                disabled={!accountListId}
-                placeholder={t('Ask how to do something in {{appName}}', {
-                  appName: getAppName(),
-                })}
-                onChange={(event) => setDraft(event.target.value)}
-                onKeyDown={handleKeyDown}
-                slotProps={{
-                  input: {
-                    sx: {
-                      borderRadius: '24px',
-                      px: 2,
-                      py: 1.25,
-                      backgroundColor: 'action.hover',
-                    },
+          <Composer onSubmit={handleSubmit}>
+            <TextField
+              fullWidth
+              multiline
+              autoFocus
+              maxRows={4}
+              size="small"
+              value={draft}
+              inputRef={inputRef}
+              disabled={!accountListId}
+              placeholder={t('Ask how to do something in {{appName}}', {
+                appName: getAppName(),
+              })}
+              onChange={(event) => setDraft(event.target.value)}
+              onKeyDown={handleKeyDown}
+              slotProps={{
+                input: {
+                  sx: {
+                    borderRadius: '24px',
+                    px: 2,
+                    py: 1.25,
+                    backgroundColor: 'action.hover',
                   },
-                  htmlInput: { 'aria-label': t('Ask the Guide') },
-                }}
-              />
-              {/* One button that swaps between Send and Stop so keyboard focus survives the swap */}
-              <RoundButton
-                type={streaming ? 'button' : 'submit'}
-                onClick={streaming ? stop : undefined}
-                disabled={!streaming && !canSend}
-                aria-label={streaming ? t('Stop') : t('Send')}
-              >
-                {streaming ? <StopIcon /> : <ArrowForwardIcon />}
-              </RoundButton>
-            </Composer>
-          </>
+                },
+                htmlInput: { 'aria-label': t('Ask the Guide') },
+              }}
+            />
+            {/* One button that swaps between Send and Stop so keyboard focus survives the swap */}
+            <RoundButton
+              type={streaming ? 'button' : 'submit'}
+              onClick={streaming ? stop : undefined}
+              disabled={!streaming && !canSend}
+              aria-label={streaming ? t('Stop') : t('Send')}
+            >
+              {streaming ? <StopIcon /> : <ArrowForwardIcon />}
+            </RoundButton>
+          </Composer>
         )}
         {configured && !accountListId && (
           <Typography variant="caption" color="text.secondary">
@@ -356,7 +357,7 @@ export const AssistantChat: React.FC<AssistantChatProps> = ({
             )}
           </Typography>
         )}
-        <HelpDeskLink messages={visibleMessages} />
+        <Disclaimer helpDeskUrl={helpDeskUrl} />
         <div
           aria-live="polite"
           aria-atomic="true"

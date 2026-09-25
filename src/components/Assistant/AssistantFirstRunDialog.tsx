@@ -60,7 +60,10 @@ export const AssistantFirstRunDialog: React.FC<
     t(
       'It never changes your data on its own. Anything it suggests is yours to do or skip.',
     ),
-    t('It is an AI, so it can be wrong. Check anything important.'),
+    t(
+      "It is an AI, so it can be wrong. Check anything important, and check any figures in {{appName}}'s reports before acting on them.",
+      { appName },
+    ),
     t(
       'What you type and what it answers are kept in a permanent audit log. Turning the Guide off deletes your conversations, but not that log.',
     ),

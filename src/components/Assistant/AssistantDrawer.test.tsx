@@ -120,7 +120,7 @@ describe('AssistantDrawer', () => {
     userEvent.click(getByRole('button', { name: 'Open' }));
 
     expect(getByRole('dialog', { name: 'MPDX Guide' })).toBeInTheDocument();
-    expect(getByText(/I'm your MPDX Guide/)).toBeInTheDocument();
+    expect(getByText(/how can I help\?/)).toBeInTheDocument();
     expect(getByRole('textbox', { name: 'Ask the Guide' })).toBeEnabled();
     await waitForMint();
   });
