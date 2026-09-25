@@ -266,7 +266,9 @@ describe('AssistantDrawer', () => {
       const citation = getByRole('link', { name: 'Finding gifts' });
       const buttons = [
         getByRole('link', { name: 'Open the Dashboard' }),
-        getByRole('link', { name: 'Contact the help desk' }),
+        within(getByRole('log', { name: 'Conversation' })).getByRole('link', {
+          name: 'Contact the help desk',
+        }),
         getByRole('button', { name: 'Copy summary' }),
       ];
 

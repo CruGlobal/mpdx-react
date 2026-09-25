@@ -611,14 +611,65 @@ describe('AssistantChat', () => {
     );
   });
 
-  it('hides the help desk link when Helpjuice is not configured', async () => {
-    process.env.HELPJUICE_ORIGIN = '';
-    const { queryByRole } = render(<TestComponent />);
-    await waitForMint();
+  describe('when Helpjuice is not configured', () => {
+    const formOf = (link: HTMLElement) => {
+      const url = new URL(link.getAttribute('href') ?? '');
+      return url.origin + url.pathname;
+    };
 
-    expect(
-      queryByRole('link', { name: 'Contact the help desk' }),
-    ).not.toBeInTheDocument();
+    beforeEach(() => {
+      process.env.HELPJUICE_ORIGIN = '';
+    });
+
+    it('still links the footer to the default help desk form', async () => {
+      const { getByRole } = render(<TestComponent />);
+      await waitForMint();
+
+      expect(formOf(getByRole('link', { name: 'Contact the help desk' }))).toBe(
+        'https://www.helpducks.org/contact-us',
+      );
+    });
+
+    it("links the footer to the latest hand-off card's form", async () => {
+      fetchSpy
+        .mockResolvedValueOnce(mockJsonResponse({ id: 'conversation-1' }))
+        .mockResolvedValueOnce(
+          mockStreamResponse([
+            frame({
+              type: 'card',
+              message_id: 'm1',
+              card: {
+                kind: 'handoff',
+                summary: 'I asked: How do I sync.',
+                contact_form: {
+                  name: '',
+                  email: '',
+                  url: 'https://desk.example.org/contact-us',
+                },
+              },
+            }),
+            frame({
+              type: 'generation_complete',
+              message_id: 'm1',
+              citations: [],
+            }),
+          ]),
+        );
+      const { getByRole, findAllByRole } = render(<TestComponent />);
+      await typeMessage(getByRole, 'Can I talk to a person?');
+      userEvent.click(getByRole('button', { name: 'Send' }));
+
+      await waitFor(async () =>
+        expect(
+          (await findAllByRole('link', { name: 'Contact the help desk' })).map(
+            formOf,
+          ),
+        ).toEqual([
+          'https://desk.example.org/contact-us',
+          'https://desk.example.org/contact-us',
+        ]),
+      );
+    });
   });
 
   it('points to Preferences when the assistant is not turned on', async () => {

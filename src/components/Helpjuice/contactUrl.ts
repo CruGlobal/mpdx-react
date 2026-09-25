@@ -1,3 +1,7 @@
+// Matches the Guide service's default, so a missing HELPJUICE_ORIGIN never leaves the user without a way to the help desk
+export const DEFAULT_HELP_DESK_CONTACT_URL =
+  'https://www.helpducks.org/contact-us';
+
 interface ContactUrlOptions {
   contactUrl: string;
   name?: string | null;
