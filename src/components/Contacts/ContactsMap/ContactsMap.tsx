@@ -50,6 +50,7 @@ export const ContactsMap: React.FC = ({}) => {
   const { t } = useTranslation();
   const {
     mapData: data,
+    contactsFullyLoaded,
     mapRef,
     selected,
     setSelected,
@@ -78,7 +79,13 @@ export const ContactsMap: React.FC = ({}) => {
   }, []);
 
   useEffect(() => {
-    if (!data || !isLoaded || !mapRef.current) {
+    // Wait until every page of contacts has loaded before fitting the bounds.
+    // Contacts stream in one page at a time (see the "Load all pages of
+    // contacts on the map view" effect in ContactsContext), and re-fitting the
+    // bounds on every partial page snaps the map's zoom/pan back to fit
+    // whatever has loaded so far — cancelling out any zoom/pan the user is
+    // actively doing and making the zoom controls look broken.
+    if (!data || !isLoaded || !mapRef.current || !contactsFullyLoaded) {
       return;
     }
 
@@ -90,7 +97,7 @@ export const ContactsMap: React.FC = ({}) => {
       }
     });
     mapRef.current.fitBounds(bounds);
-  }, [data, isLoaded, mapRef.current]);
+  }, [data, isLoaded, mapRef.current, contactsFullyLoaded]);
 
   const getStatusPin = (status: StatusEnum | null | undefined): string => {
     return status && contactStatuses[status] ? status.toLowerCase() : 'grey';
