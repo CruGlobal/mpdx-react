@@ -33,7 +33,7 @@ import { useAssistantContext } from './AssistantProvider';
 import { GuideGreeting } from './GuideGreeting';
 import { MessageList } from './MessageList';
 import { StarterQuestions } from './StarterQuestions';
-import { isThinking } from './isThinking';
+import { isReplying } from './isThinking';
 import { toSafeHttpUrl } from './safeUrl';
 import { AssistantMessage } from './types';
 import { getAssistantUrl, useAssistantStream } from './useAssistantStream';
@@ -266,7 +266,7 @@ export const AssistantChat: React.FC<AssistantChatProps> = ({
       <AssistantHeader
         titleId={titleId}
         status={status}
-        thinking={visibleMessages.some(isThinking)}
+        busy={visibleMessages.some(isReplying)}
         onClose={onClose}
       />
       <MessageArea>

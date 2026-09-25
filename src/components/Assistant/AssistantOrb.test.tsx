@@ -180,14 +180,33 @@ describe('AssistantOrb', () => {
       )?.[1] ?? '';
     expect(frames).toMatch(/scale\(1\.02\)/);
     expect(frames).not.toMatch(/brightness|filter/);
-    expect(circleOf(orb)).not.toHaveAttribute('data-thinking');
-    const thinking = css.match(
-      /@media \(prefers-reduced-motion: no-preference\)\{[^@]*\[data-thinking="true"\]\{[^}]*?animation:(\S+) 1\.2s /,
+    expect(circleOf(orb)).not.toHaveAttribute('data-busy');
+    const motionBlocks = (
+      css.match(
+        /@media \(prefers-reduced-motion: no-preference\)\{(?:[^{}]*\{[^{}]*\})*\}/g,
+      ) ?? []
+    ).join('');
+    const keyframesOf = (name?: string) =>
+      css.match(new RegExp(`@keyframes ${name}\\{(.*?\\})\\}`))?.[1] ?? '';
+    const busyPulse = motionBlocks.match(
+      /\[data-busy="true"\]\{[^}]*?animation:(\S+) 1\.2s /,
     );
-    expect(thinking).not.toBeNull();
-    expect(
-      css.match(new RegExp(`@keyframes ${thinking?.[1]}\\{(.*?\\})\\}`))?.[1],
-    ).toMatch(/scale\(1\.04\)/);
+    expect(keyframesOf(busyPulse?.[1])).toMatch(/scale\(1\.04\)/);
+    const busyTurn = motionBlocks.match(
+      /\[data-busy\]::after\{[^}]*?animation:(\S+) ([\d.]+)s linear/,
+    );
+    expect(motionBlocks).toMatch(
+      /\[data-busy="true"\]::after\{[^}]*animation-play-state:running/,
+    );
+    expect(keyframesOf(busyTurn?.[1])).toMatch(/rotate\(360deg\)/);
+    expect(Number(busyTurn?.[2])).toBeGreaterThanOrEqual(6);
+    expect(Number(busyTurn?.[2])).toBeLessThanOrEqual(8);
+    // Reduced motion keeps the orb still, so nothing busy animates outside the guard
+    const outsideGuard = css.replace(
+      /@media \(prefers-reduced-motion: no-preference\)\{(?:[^{}]*\{[^{}]*\})*\}/g,
+      '',
+    );
+    expect(outsideGuard).not.toMatch(/\[data-busy[^{]*\{[^}]*animation/);
 
     userEvent.keyboard('{esc}');
     await waitFor(() =>
