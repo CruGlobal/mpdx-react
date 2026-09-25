@@ -937,19 +937,40 @@ describe('AssistantChat', () => {
       const { getByText, findByText } = render(<TestComponent />);
 
       expect(getByText('Connecting')).toBeInTheDocument();
-      expect(await findByText('Here to show you around')).toBeInTheDocument();
+      expect(
+        await findByText('Answers from the MPDX help center'),
+      ).toBeInTheDocument();
     });
 
     it('never flashes Off right now while the first token is on its way', async () => {
       (AssistantHeader as jest.Mock).mockClear();
       const { findByText } = render(<TestComponent />);
 
-      expect(await findByText('Here to show you around')).toBeInTheDocument();
+      expect(
+        await findByText('Answers from the MPDX help center'),
+      ).toBeInTheDocument();
       const statuses = (AssistantHeader as jest.Mock).mock.calls.map(
         ([{ status }]) => status,
       );
       expect(statuses[0]).toBe('connecting');
       expect(statuses).not.toContain('off');
+    });
+
+    it('shows the ready subtitle without a status dot', async () => {
+      const { findByText, queryByTestId } = render(<TestComponent />);
+
+      expect(
+        await findByText('Answers from the MPDX help center'),
+      ).toBeInTheDocument();
+      expect(queryByTestId('GuideStatusDot')).not.toBeInTheDocument();
+    });
+
+    it('shows a status dot beside the status while connecting', async () => {
+      const { getByTestId, getByText } = render(<TestComponent />);
+
+      expect(getByText('Connecting')).toBeInTheDocument();
+      expect(getByTestId('GuideStatusDot')).toBeInTheDocument();
+      await waitForMint();
     });
 
     it('says it could not connect when the mint fails', async () => {
@@ -973,7 +994,9 @@ describe('AssistantChat', () => {
       userEvent.click(getByRole('button', { name: 'Send' }));
 
       expect(await findByText('Off right now')).toBeInTheDocument();
-      expect(queryByText('Here to show you around')).not.toBeInTheDocument();
+      expect(
+        queryByText('Answers from the MPDX help center'),
+      ).not.toBeInTheDocument();
     });
   });
 

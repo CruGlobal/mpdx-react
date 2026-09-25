@@ -60,7 +60,7 @@ export const AssistantHeader: React.FC<AssistantHeaderProps> = ({
   const { t } = useTranslation();
   const appName = getAppName();
   const statusText = {
-    ready: t('Here to show you around'),
+    ready: t('Answers from the {{appName}} help center', { appName }),
     connecting: t('Connecting'),
     off: t('Off right now'),
     failed: t('Could not connect'),
@@ -80,7 +80,13 @@ export const AssistantHeader: React.FC<AssistantHeaderProps> = ({
           {t('{{appName}} Guide', { appName })}
         </Typography>
         <Box display="flex" alignItems="center" gap={1}>
-          <StatusDot status={status} aria-hidden />
+          {status !== 'ready' && (
+            <StatusDot
+              status={status}
+              data-testid="GuideStatusDot"
+              aria-hidden
+            />
+          )}
           <Typography variant="body2">{statusText}</Typography>
         </Box>
       </Box>
