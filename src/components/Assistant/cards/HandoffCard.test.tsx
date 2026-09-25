@@ -69,6 +69,7 @@ describe('HandoffCard', () => {
     expect(url.searchParams.get('mpdxName')).toBe('First Last');
     expect(url.searchParams.get('mpdxEmail')).toBe('first.last@cru.org');
     expect(url.searchParams.get('mpdxUrl')).toBe('/accountLists/1/contacts');
+    expect(url.searchParams.get('mpdxSummary')).toBe(card.summary);
   });
 
   it('fills a blank name and email from the signed-in user', () => {

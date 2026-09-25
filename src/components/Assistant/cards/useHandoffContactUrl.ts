@@ -16,6 +16,7 @@ export const useHandoffContactUrl = (card: HandoffCardData): string | null => {
       name: card.contact_form.name || session?.user.name,
       email: card.contact_form.email || session?.user.email,
       href,
+      summary: card.summary,
     })
   );
 };
