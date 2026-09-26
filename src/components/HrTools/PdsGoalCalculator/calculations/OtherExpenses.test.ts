@@ -131,6 +131,15 @@ describe('calculateOtherExpenses', () => {
     });
   });
 
+  describe('otherSubtotal', () => {
+    it('sums only reimbursable + 403b + workComp + benefits, excluding salary', () => {
+      const result = calculateOtherExpenses(fullTime(), defaultConstants);
+      // 500 reimbursable + 400 403b + 0 workComp + 1500 benefits,
+      // with the 5000 salarySubtotal left out
+      expect(result.otherSubtotal).toBeCloseTo(2400);
+    });
+  });
+
   describe('subtotal', () => {
     it('sums salarySubtotal + reimbursable + 403b + benefits for full-time', () => {
       const result = calculateOtherExpenses(fullTime(), defaultConstants);

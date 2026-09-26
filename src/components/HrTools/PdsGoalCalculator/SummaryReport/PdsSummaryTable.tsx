@@ -143,7 +143,7 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
       {
         line: '2',
         category: t('Other Subtotal'),
-        amount: otherTotals.subtotal,
+        amount: otherTotals.otherSubtotal,
       },
       // Totals section
       {
