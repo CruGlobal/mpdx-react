@@ -68,6 +68,17 @@ describe('QuickGlance', () => {
     expect(glance).not.toHaveTextContent('Spouse');
   });
 
+  it('shows a zero healthcare dependents count as 0, not the placeholder', () => {
+    const { getByTestId } = renderGlance(
+      managedStaffMember({ healthcareDependentsCount: 0 }),
+    );
+    const glance = getByTestId('quick-glance');
+    expect(glance).toHaveTextContent('Healthcare dependents0');
+    expect(glance).not.toHaveTextContent(
+      `Healthcare dependents${pendingField}`,
+    );
+  });
+
   it('marks a Monthly Gross Salary below the New Staff benchmark', () => {
     const { getByTestId, getByLabelText } = renderGlance(
       managedStaffMember({
@@ -99,7 +110,8 @@ describe('QuickGlance', () => {
       firstName: 'Jane',
       personNumber: '10000002',
       tenure: 3,
-      healthcareDependentsCount: 0,
+      // The API gives both spouses the household maximum
+      healthcareDependentsCount: 2,
       peopleGroupSupportType: PeopleGroupSupportTypeEnum.Designation,
       secaStatus: SecaStatusEnum.Optout,
       teams: {
@@ -121,7 +133,6 @@ describe('QuickGlance', () => {
       const { getByTestId, getByText } = renderGlance(pair);
       const glance = getByTestId('quick-glance');
       expect(glance).toHaveTextContent('TenureJohn: 6 yearsJane: 3 years');
-      expect(glance).toHaveTextContent('Healthcare dependentsJohn: 2Jane: 0');
       expect(glance).toHaveTextContent(
         'Support typeJohn: Supported RMOJane: Designation',
       );
@@ -129,6 +140,13 @@ describe('QuickGlance', () => {
       // Each person's value is its own line
       expect(getByText('John: 6 years').tagName).toBe('SPAN');
       expect(getByText('Jane: 3 years').tagName).toBe('SPAN');
+    });
+
+    it('shows one healthcare dependents count for the household', () => {
+      const { getByTestId } = renderGlance(pair);
+      const glance = getByTestId('quick-glance');
+      expect(glance).toHaveTextContent('Healthcare dependents2');
+      expect(glance).not.toHaveTextContent('Healthcare dependentsJohn:');
     });
   });
 });

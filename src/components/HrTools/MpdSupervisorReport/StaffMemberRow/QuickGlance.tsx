@@ -43,7 +43,9 @@ interface QuickGlanceProps {
 /**
  * The extra details a row shows when expanded, without opening the drawer.
  * A merged couple shares every health figure (both rows come from one staff
- * account), but the HR fields are per person, so those name each spouse.
+ * account) and one healthcare dependents count (the API gives both spouses the
+ * household maximum). Tenure, support type and SECA are per person, so those
+ * name each spouse.
  */
 export const QuickGlance: React.FC<QuickGlanceProps> = ({ row }) => {
   const { t } = useTranslation();
@@ -138,9 +140,7 @@ export const QuickGlance: React.FC<QuickGlanceProps> = ({ row }) => {
       <Detail label={t('Tenure')} value={perPerson(years)} />
       <Detail
         label={t('Healthcare dependents')}
-        value={perPerson(
-          ({ healthcareDependentsCount }) => healthcareDependentsCount,
-        )}
+        value={row.healthcareDependentsCount ?? pendingField}
       />
       <Detail
         label={t('Support type')}
