@@ -18,6 +18,6 @@ jobs:
     with:
       comment_id: ${{ github.event.comment.id }}
       pr_number: ${{ github.event.issue.number }}
-      auto_approve: false
+      auto_approve: true
     secrets:
       anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
