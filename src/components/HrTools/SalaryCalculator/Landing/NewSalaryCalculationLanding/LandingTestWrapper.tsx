@@ -129,7 +129,7 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
           },
           AccountBalance: {
             reportsStaffExpenses: {
-              funds: [{ total: 10000 }],
+              funds: [{ fundType: 'Primary', endBalance: 10000 }],
             },
           },
           GetUser: {
