@@ -21,7 +21,7 @@ jobs:
       rollout_mode: advisory
       # Approve the PR when the CI report passes for the current head (advisory
       # reports approve; set the mode to shadow to post advice only).
-      auto_approve: false
+      auto_approve: true
     secrets:
       anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
       context_token: ${{ secrets.AGENT_REVIEW_CONTEXT_TOKEN }}
