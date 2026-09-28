@@ -1,4 +1,4 @@
-# agent-review-template-version: 0.6.0
+# agent-review-template-version: 1.0.0
 name: agent-review
 on:
   pull_request:
@@ -8,9 +8,9 @@ concurrency:
   cancel-in-progress: true
 jobs:
   review:
-    # Shadow rollout: adding this label starts a review; later pushes re-review.
-    # Keep this gate until `agent-review rollout --fail-on-gate` passes and a
-    # maintainer explicitly approves every-PR advisory mode.
+    # Label gate: adding the `agent-review` label starts a review; later pushes
+    # re-review incrementally. The gate controls review cost, not trust — drop the
+    # first condition and `labeled` from the trigger to review every PR.
     if: >-
       contains(github.event.pull_request.labels.*.name, 'agent-review') &&
       (github.event.action != 'labeled' || github.event.label.name == 'agent-review') &&
@@ -19,6 +19,9 @@ jobs:
     with:
       mode: auto
       rollout_mode: shadow
+      # Approve the PR when the CI report passes for the current head (advisory
+      # reports approve; set the mode to shadow to post advice only).
+      auto_approve: false
     secrets:
       anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
       context_token: ${{ secrets.AGENT_REVIEW_CONTEXT_TOKEN }}

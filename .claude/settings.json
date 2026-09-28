@@ -5,7 +5,7 @@
     "testing@cru-plugins": true,
     "admin@cru-plugins": true,
     "figma@cru-plugins": true,
-    "agent-review@cruglobal": true
+    "agent-review@cru-plugins": true
   },
   "extraKnownMarketplaces": {
     "cru-plugins": {
@@ -14,12 +14,6 @@
         "url": "https://github.com/CruGlobal/claude-code-plugins.git"
       },
       "autoUpdate": true
-    },
-    "cruglobal": {
-      "source": {
-        "source": "github",
-        "repo": "CruGlobal/agent-review"
-      }
     }
   }
 }
