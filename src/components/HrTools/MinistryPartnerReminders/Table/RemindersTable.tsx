@@ -1,6 +1,7 @@
 import React, { forwardRef, useMemo } from 'react';
 import { ErrorOutline, HourglassDisabled } from '@mui/icons-material';
 import {
+  Link,
   Paper,
   Table,
   TableBody,
@@ -9,7 +10,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { TableVirtuoso, TableVirtuosoProps } from 'react-virtuoso';
 import { EmptyTable } from 'src/components/HrTools/Shared/EmptyTable/EmptyTable';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
@@ -44,18 +45,14 @@ Body.displayName = 'Body';
 
 interface RemindersTableProps {
   data: ReminderData[];
-  error?: Error | null;
+  noDesignation?: boolean;
 }
 
 export const RemindersTable: React.FC<RemindersTableProps> = ({
   data,
-  error,
+  noDesignation,
 }) => {
   const { t } = useTranslation();
-
-  const noDesignation = error?.message.includes(
-    'Designation account not found',
-  );
   const isEmpty = !data.length;
 
   const TableComponents: TableVirtuosoProps<
@@ -109,11 +106,16 @@ export const RemindersTable: React.FC<RemindersTableProps> = ({
                   : t('No ministry partners found')
               }
               subtitle={
-                noDesignation
-                  ? t(
-                      'This account is not associated with a designation account number',
-                    )
-                  : t('Add a ministry partner to get started')
+                noDesignation ? (
+                  <Trans t={t}>
+                    This account is not associated with a designation account
+                    number. Please contact{' '}
+                    <Link href="mailto:HR@cru.org">HR@cru.org</Link> if this is
+                    incorrect.
+                  </Trans>
+                ) : (
+                  t('Add a ministry partner to get started')
+                )
               }
               icon={noDesignation ? ErrorOutline : HourglassDisabled}
             />
