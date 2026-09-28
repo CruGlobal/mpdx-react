@@ -453,10 +453,10 @@ context:
   enabled: false
   manifest: context/repositories.json
 
-# Stay label-gated and non-approving until `agent-review rollout` says the
-# seeded suite and real PR dismissal telemetry meet these gates.
+# Advisory rollout: reviews post normally but never block merges. Still
+# label-gated. Move to `enforce` only once these gates pass.
 rollout:
-  mode: shadow
+  mode: advisory
   label: agent-review
   minimum_evaluated_runs: 50
   minimum_dispositions: 30
