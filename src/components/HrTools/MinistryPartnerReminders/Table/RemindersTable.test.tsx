@@ -100,18 +100,15 @@ describe('RemindersTable', () => {
     ).toBeInTheDocument();
   });
 
-  it('should render no designation account message when designation error is present', () => {
-    const { getByText } = render(
+  it('should render no designation account message when there is no designation', () => {
+    const { getByText, getByRole } = render(
       <ThemeProvider theme={theme}>
         <VirtuosoMockContext.Provider
           value={{ viewportHeight: 300, itemHeight: 100 }}
         >
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <GqlMockedProvider onCall={mutationSpy}>
-              <RemindersTable
-                data={[]}
-                error={{ message: 'Designation account not found', name: '' }}
-              />
+              <RemindersTable data={[]} noDesignation />
             </GqlMockedProvider>
           </LocalizationProvider>
         </VirtuosoMockContext.Provider>
@@ -121,8 +118,12 @@ describe('RemindersTable', () => {
     expect(getByText('No designation account found')).toBeInTheDocument();
     expect(
       getByText(
-        'This account is not associated with a designation account number',
+        /This account is not associated with a designation account number/,
       ),
     ).toBeInTheDocument();
+    expect(getByRole('link', { name: 'HR@cru.org' })).toHaveAttribute(
+      'href',
+      'mailto:HR@cru.org',
+    );
   });
 });

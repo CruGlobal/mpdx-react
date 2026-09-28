@@ -3,7 +3,7 @@ import { EmptyTableWrapper } from 'src/components/Shared/styledComponents/EmptyT
 
 interface EmptyTableProps {
   title: string;
-  subtitle: string;
+  subtitle: React.ReactNode;
   icon: React.ComponentType<SvgIconProps>;
 }
 
