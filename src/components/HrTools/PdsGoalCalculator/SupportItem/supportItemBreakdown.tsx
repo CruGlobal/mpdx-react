@@ -141,7 +141,7 @@ export const buildSupportItemBreakdownRows = (
     {
       id: 'subtotal',
       category: t('Subtotal'),
-      amount: totals.subtotal,
+      amount: totals.combinedSubtotal,
       format: 'currency',
       bold: true,
     },

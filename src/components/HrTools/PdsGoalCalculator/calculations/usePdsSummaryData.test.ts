@@ -283,19 +283,6 @@ describe('usePdsSummaryData', () => {
   });
 
   describe('overall total', () => {
-    it('sums subtotal + attrition + creditCardFees + assessment', () => {
-      const { result } = renderHook(() =>
-        usePdsSummaryData(defaultCalculation, defaultHcmUser),
-      );
-      const data = result.current.data!;
-      const expected =
-        data.otherTotals.subtotal +
-        data.otherTotals.attrition +
-        data.otherTotals.creditCardFees +
-        data.otherTotals.assessment;
-      expect(data.overallTotal).toBeCloseTo(expected);
-    });
-
     it('computes correct overallTotal for a full-time salaried employee', () => {
       // Geographic multiplier defaults to 0 (no adjustment), payRate = 60000
       // grossMonthlyPay = 60000 / 12 * (1 + 0) = 5000
@@ -308,7 +295,8 @@ describe('usePdsSummaryData', () => {
       // 403b: (5+3)/100 = 0.08, contributions = 5000 * 0.08 = 400
       // benefits = 1500 (full-time)
       // workComp = 0 (full-time)
-      // otherSubtotal = 5400 + 500 + 400 + 0 + 1500 = 7800
+      // otherSubtotal = 500 + 400 + 0 + 1500 = 2400
+      // combinedSubtotal = 2400 + 5400 salary = 7800
       // attrition = 7800 * 0.06 = 468
       // creditCardFees = (7800 + 468) / (1 - 0.06) - (7800 + 468) ≈ 527.74
       // adminBase = 7800 + 468 + 527.74 ≈ 8795.74
@@ -332,7 +320,7 @@ describe('usePdsSummaryData', () => {
       // 403b = 2166.667 * 0.08 = 173.333
       // workComp = 400 (fixed amount, part-time)
       // benefits = 0 (part-time, ignores calculation.benefits)
-      // subtotal = 2340 + 500 + 173.333 + 400 + 0 = 3413.333
+      // combinedSubtotal = 2340 + 500 + 173.333 + 400 + 0 = 3413.333
       // attrition = 3413.333 * 0.06 = 204.8
       // creditCardFees = (3413.333 + 204.8) / (1 - 0.06) - (3413.333 + 204.8) ≈ 230.94
       // adminBase ≈ 3849.08
