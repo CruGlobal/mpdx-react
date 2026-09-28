@@ -4,6 +4,7 @@ query LandingSalaryCalculations {
   ) {
     id
     status
+    personNumber
     salary
     spouseSalary
     mhaAmount
@@ -11,6 +12,12 @@ query LandingSalaryCalculations {
     submittedAt
     changesRequestedAt
     feedback
+    calculations {
+      requestedGross
+    }
+    spouseCalculations {
+      requestedGross
+    }
   }
   inProgressCalculation: latestSalaryRequest(status: [IN_PROGRESS]) {
     id

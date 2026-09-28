@@ -26,6 +26,7 @@ export interface LandingTestWrapperProps {
   hasApprovedCalculation?: boolean;
   hasSpouseApprovedCalculation?: boolean;
   hasLatestCalculation?: boolean;
+  hasSpouseLatestCalculation?: boolean;
   salaryRequestEligible?: boolean;
 }
 
@@ -36,6 +37,7 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
   hasApprovedCalculation = false,
   hasSpouseApprovedCalculation = false,
   hasLatestCalculation = false,
+  hasSpouseLatestCalculation = false,
   salaryRequestEligible = true,
 }) => (
   <ThemeProvider theme={theme}>
@@ -116,9 +118,16 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
               ? {
                   id: 'pending-calc-1',
                   status: SalaryRequestStatusEnum.Pending,
+                  personNumber: hasSpouseLatestCalculation
+                    ? '000123457'
+                    : '000123456',
+                  salary: 52000,
+                  spouseSalary: 51000,
                   submittedAt: '2025-01-16T10:00:00Z',
                   changesRequestedAt: null,
                   feedback: null,
+                  calculations: { requestedGross: 69714.29 },
+                  spouseCalculations: { requestedGross: 62000 },
                 }
               : null,
           },
