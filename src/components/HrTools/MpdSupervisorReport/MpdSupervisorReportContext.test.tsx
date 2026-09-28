@@ -1,17 +1,27 @@
 import React from 'react';
+import { ApolloError } from '@apollo/client';
 import { act, render, waitFor } from '@testing-library/react';
+import { GraphQLError } from 'graphql';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { MpdAssignmentCategoryGroupEnum } from 'src/graphql/types.generated';
 import { MpdSupervisorReportQuickFilterEnum } from './Filters/mpdSupervisorReportFilters';
-import { ManagedStaffQuery } from './ManagedStaff.generated';
 import {
+  ManagedStaffQuery,
+  ManagedStaffQueryVariables,
+} from './ManagedStaff.generated';
+import {
+  FilterRequired,
   MpdSupervisorReportProvider,
   Panel,
+  RowDensityEnum,
+  filterRequiredFromError,
+  rowDensityStorageKey,
   useMpdSupervisorReport,
 } from './MpdSupervisorReportContext';
 import { StaffDetailTabEnum } from './StaffDetailsTabs/StaffDetailTab';
-import { ManagedStaffMember } from './helpers';
+import { ManagedStaffMember, StaffRow } from './helpers';
 import {
   managedStaffMember,
   managedStaffMock,
@@ -42,6 +52,19 @@ interface ConsumerResult {
   setEmploymentType: (v: MpdAssignmentCategoryGroupEnum | null) => void;
   activeQuickFilter: MpdSupervisorReportQuickFilterEnum;
   setActiveQuickFilter: (v: MpdSupervisorReportQuickFilterEnum) => void;
+  activeFilterCount: number;
+  clearFilters: () => void;
+  filterRequired: FilterRequired | null;
+  staffError: ApolloError | undefined;
+  loadMoreError: ApolloError | undefined;
+  staffMembers: StaffRow[];
+  loadedCount: number;
+  staffComplete: boolean;
+  queryVariables: ManagedStaffQueryVariables;
+  expandedRows: ReadonlySet<string>;
+  toggleRow: (personNumber: string) => void;
+  rowDensity: RowDensityEnum;
+  setRowDensity: (v: RowDensityEnum) => void;
   loadMore: () => void;
 }
 
@@ -70,11 +93,13 @@ const renderInProvider = (
   children: React.ReactNode,
   router: React.ComponentProps<typeof TestRouter>['router'] = {},
   managedStaff: ManagedStaffQuery = managedStaffMock([sampleMember]),
+  /** Overrides the default mocks, e.g. to make the query throw. */
+  mocks: ApolloErgonoMockMap = {},
 ) =>
   render(
     <TestRouter router={router}>
       <GqlMockedProvider<{ ManagedStaff: ManagedStaffQuery }>
-        mocks={{ ManagedStaff: managedStaff }}
+        mocks={{ ManagedStaff: managedStaff, ...mocks } as ApolloErgonoMockMap}
         onCall={mutationSpy}
       >
         <MpdSupervisorReportProvider>{children}</MpdSupervisorReportProvider>
@@ -82,7 +107,44 @@ const renderInProvider = (
     </TestRouter>,
   );
 
-const renderConsumer = () => renderInProvider(<Consumer />);
+const renderConsumer = (mocks: ApolloErgonoMockMap = {}) =>
+  renderInProvider(<Consumer />, {}, undefined, mocks);
+
+const filterGuard = (filtered: boolean): ApolloErgonoMockMap => ({
+  ManagedStaff: {
+    managedStaff: () => {
+      throw new GraphQLError('228 staff are in reach', {
+        extensions: { code: 'FILTER_REQUIRED', count: 228, filtered },
+      });
+    },
+  },
+});
+
+describe('filterRequiredFromError', () => {
+  const guard = (extensions: Record<string, unknown>) =>
+    new ApolloError({
+      graphQLErrors: [new GraphQLError('too many', { extensions })],
+    });
+
+  it('parses count and filtered from a FILTER_REQUIRED error', () => {
+    expect(
+      filterRequiredFromError(
+        guard({ code: 'FILTER_REQUIRED', count: 228, filtered: true }),
+      ),
+    ).toEqual({ count: 228, filtered: true });
+  });
+
+  it('falls back to 0 / unfiltered when the extensions are malformed', () => {
+    expect(filterRequiredFromError(guard({ code: 'FILTER_REQUIRED' }))).toEqual(
+      { count: 0, filtered: false },
+    );
+  });
+
+  it('ignores other errors', () => {
+    expect(filterRequiredFromError(guard({ code: 'NOT_FOUND' }))).toBeNull();
+    expect(filterRequiredFromError(undefined)).toBeNull();
+  });
+});
 
 describe('MpdSupervisorReportContext', () => {
   it('starts with isOpen false and no selected member', () => {
@@ -232,9 +294,262 @@ describe('MpdSupervisorReportContext', () => {
       MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative,
     );
   });
+
+  describe('row density', () => {
+    afterEach(() => {
+      window.localStorage.clear();
+    });
+
+    it('defaults to comfortable rows and persists a change', () => {
+      renderConsumer();
+      expect(consumerResult.rowDensity).toBe(RowDensityEnum.Comfortable);
+
+      act(() => {
+        consumerResult.setRowDensity(RowDensityEnum.Compact);
+      });
+
+      expect(consumerResult.rowDensity).toBe(RowDensityEnum.Compact);
+      expect(window.localStorage.getItem(rowDensityStorageKey)).toBe(
+        '"compact"',
+      );
+    });
+
+    it('ignores a stored density it does not recognise', () => {
+      window.localStorage.setItem(rowDensityStorageKey, '"dense"');
+      renderConsumer();
+      expect(consumerResult.rowDensity).toBe(RowDensityEnum.Comfortable);
+    });
+  });
+
+  it('counts the panel filters but not the search', () => {
+    renderConsumer();
+    expect(consumerResult.activeFilterCount).toBe(0);
+
+    act(() => {
+      consumerResult.setSearch('Jo');
+      consumerResult.setTeam('Central Team');
+      consumerResult.setDepartment('Cru Military');
+      consumerResult.setEmploymentType(MpdAssignmentCategoryGroupEnum.FullTime);
+      consumerResult.setActiveQuickFilter(
+        MpdSupervisorReportQuickFilterEnum.NegativeLastMonth,
+      );
+    });
+
+    expect(consumerResult.activeFilterCount).toBe(4);
+  });
+
+  it('clearFilters resets the search and every panel filter', () => {
+    const { getByTestId } = renderConsumer();
+    act(() => {
+      consumerResult.setSearch('Jo');
+      consumerResult.setTeam('Central Team');
+      consumerResult.setDepartment('Cru Military');
+      consumerResult.setEmploymentType(MpdAssignmentCategoryGroupEnum.FullTime);
+      consumerResult.setActiveQuickFilter(
+        MpdSupervisorReportQuickFilterEnum.NegativeLastMonth,
+      );
+    });
+
+    act(() => {
+      consumerResult.clearFilters();
+    });
+
+    expect(getByTestId('search').textContent).toBe('');
+    expect(getByTestId('team').textContent).toBe('');
+    expect(getByTestId('department').textContent).toBe('');
+    expect(getByTestId('employmentType').textContent).toBe('');
+    expect(getByTestId('activeQuickFilter').textContent).toBe(
+      MpdSupervisorReportQuickFilterEnum.AllPeople,
+    );
+    expect(consumerResult.activeFilterCount).toBe(0);
+  });
+});
+
+describe('rows', () => {
+  const john = managedStaffMember({
+    personNumber: '1',
+    spousePersonNumber: '2',
+  });
+  const jane = managedStaffMember({
+    firstName: 'Jane',
+    personNumber: '2',
+    spousePersonNumber: '1',
+  });
+
+  it('asks for the whole result in one page of 100', async () => {
+    renderConsumer();
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        first: 100,
+      }),
+    );
+  });
+
+  it('merges a spouse pair into one row and counts both people', async () => {
+    renderInProvider(<Consumer />, {}, managedStaffMock([john, jane]));
+
+    await waitFor(() => expect(consumerResult.staffMembers).toHaveLength(1));
+    expect(consumerResult.staffMembers[0].partner?.personNumber).toBe('2');
+    expect(consumerResult.loadedCount).toBe(2);
+  });
+
+  it('loads every page by itself and reports when the result is complete', async () => {
+    const page1 = managedStaffMock([john]);
+    page1.managedStaff.pageInfo = { endCursor: 'cursor-1', hasNextPage: true };
+    const page2 = managedStaffMock([
+      managedStaffMember({
+        firstName: 'Zoe',
+        personNumber: '9',
+        staffAccountId: 'z',
+      }),
+    ]);
+    renderConsumer({
+      ManagedStaff: {
+        managedStaff: (_root: unknown, args: { after?: string | null }) =>
+          args.after ? page2.managedStaff : page1.managedStaff,
+      },
+    });
+
+    await waitFor(() => expect(consumerResult.staffComplete).toBe(true));
+    expect(
+      consumerResult.staffMembers.map(({ firstName }) => firstName),
+    ).toEqual(['John', 'Zoe']);
+  });
+
+  it('exposes the variables the roster query runs with', async () => {
+    renderConsumer();
+    act(() => {
+      consumerResult.setTeam('Central Team');
+    });
+    await waitFor(() =>
+      expect(consumerResult.queryVariables).toMatchObject({
+        first: 100,
+        teamNames: ['Central Team'],
+      }),
+    );
+  });
+
+  it('toggles a row open and closed', () => {
+    renderConsumer();
+    expect(consumerResult.expandedRows.has('1')).toBe(false);
+
+    act(() => {
+      consumerResult.toggleRow('1');
+    });
+    expect(consumerResult.expandedRows.has('1')).toBe(true);
+
+    act(() => {
+      consumerResult.toggleRow('1');
+    });
+    expect(consumerResult.expandedRows.has('1')).toBe(false);
+  });
 });
 
 describe('managed staff query variables', () => {
+  it('exposes the FILTER_REQUIRED guard instead of an error', async () => {
+    renderConsumer(filterGuard(false));
+
+    await waitFor(() =>
+      expect(consumerResult.filterRequired).toEqual({
+        count: 228,
+        filtered: false,
+      }),
+    );
+    expect(consumerResult.staffError).toBeUndefined();
+  });
+
+  it('reports other query failures as staffError', async () => {
+    renderConsumer({
+      ManagedStaff: {
+        managedStaff: () => {
+          throw new Error('Not authorized');
+        },
+      },
+    });
+
+    await waitFor(() =>
+      expect(consumerResult.staffError?.message).toBe('Not authorized'),
+    );
+    expect(consumerResult.filterRequired).toBeNull();
+  });
+
+  it('asks the client not to toast only the filter guard', async () => {
+    renderConsumer();
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {}),
+    );
+    const call = mutationSpy.mock.calls.find(
+      ([{ operation }]) => operation.operationName === 'ManagedStaff',
+    );
+    const context = call?.[0].operation.getContext();
+    expect(context.suppressErrorCodes).toEqual(['FILTER_REQUIRED']);
+    expect(context.suppressErrors).toBeUndefined();
+  });
+
+  describe('a failed load-more page', () => {
+    const firstPage = managedStaffMock([sampleMember]);
+    firstPage.managedStaff.pageInfo = {
+      endCursor: 'cursor-1',
+      hasNextPage: true,
+    };
+    // The first page loads; every page after a cursor fails
+    const failingSecondPage: ApolloErgonoMockMap = {
+      ManagedStaff: {
+        managedStaff: (_root: unknown, args: { after?: string | null }) => {
+          if (args.after) {
+            throw new Error('Page failed');
+          }
+          return firstPage.managedStaff;
+        },
+      },
+    };
+    const pageRequests = () =>
+      mutationSpy.mock.calls.filter(
+        ([{ operation }]) =>
+          operation.operationName === 'ManagedStaff' &&
+          operation.variables.after === 'cursor-1',
+      );
+
+    it('asks for the rest of the result by itself, keeps the loaded rows and exposes the failure', async () => {
+      renderConsumer(failingSecondPage);
+
+      await waitFor(() =>
+        expect(consumerResult.loadMoreError?.message).toBe('Page failed'),
+      );
+      expect(consumerResult.staffMembers).toHaveLength(1);
+      expect(consumerResult.staffError).toBeUndefined();
+      expect(consumerResult.staffComplete).toBe(false);
+      // A failed page is not retried in a loop
+      await act(() => new Promise((resolve) => setTimeout(resolve, 50)));
+      expect(pageRequests()).toHaveLength(1);
+    });
+
+    it('retries the same cursor when asked', async () => {
+      renderConsumer(failingSecondPage);
+      await waitFor(() => expect(consumerResult.loadMoreError).toBeDefined());
+      const before = pageRequests().length;
+
+      act(() => {
+        consumerResult.loadMore();
+      });
+
+      await waitFor(() => expect(pageRequests().length).toBe(before + 1));
+    });
+
+    it('forgets the failure when the filters change', async () => {
+      renderConsumer(failingSecondPage);
+      await waitFor(() => expect(consumerResult.loadMoreError).toBeDefined());
+
+      act(() => {
+        consumerResult.setTeam('Central Team');
+      });
+
+      await waitFor(() => expect(consumerResult.loadMoreError).toBeUndefined());
+    });
+  });
+
   it('omits teamNames and departments until a filter is chosen', async () => {
     renderConsumer();
 

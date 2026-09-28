@@ -199,8 +199,13 @@ export const ReportLegendPanel: React.FC = () => {
                 'The quarter in which payroll started. Open the staff member to see each of its months graded on its own.',
               )}
             </Term>
-            <Term term="-">
+            <Term term={t('- (dash)')}>
               {t("No payroll in a quarter that can't be graded.")}
+            </Term>
+            <Term term={t('Geographic location')}>
+              {t(
+                "Sets the cost-of-living multiplier in the New Staff Monthly Salary. It is stored on the staff member's own MPDX account list, so it can only be set for staff who have one; until then the report shows no location.",
+              )}
             </Term>
             <Term term={t('Monthly Gross Salary')}>
               {t(
@@ -209,7 +214,7 @@ export const ReportLegendPanel: React.FC = () => {
             </Term>
             <Term term={t('Sort order')}>
               {t(
-                'Staff with the highest share of red quarters come first, then the highest share of yellow, then those furthest below their benchmarks. Staff with no data are listed last.',
+                'Staff with the highest share of red quarters come first, then the highest share of yellow, then those furthest below their benchmarks. Staff with no data are listed last, sorted alphabetically by last name.',
               )}
             </Term>
           </Box>

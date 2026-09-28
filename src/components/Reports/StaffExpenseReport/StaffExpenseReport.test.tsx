@@ -300,6 +300,9 @@ describe('StaffExpenseReport', () => {
   });
 
   it('names each salary row for the person HCM attributes it to', async () => {
+    // After payday, so the rows are not also marked pending
+    Settings.now = () => new Date(2020, 0, 31).valueOf();
+
     const { findByRole, getByRole } = render(<TestComponent withSalary />);
 
     expect(
@@ -307,6 +310,19 @@ describe('StaffExpenseReport', () => {
     ).toBeInTheDocument();
     expect(
       getByRole('gridcell', { name: 'Salary (Jordan)' }),
+    ).toBeInTheDocument();
+  });
+
+  it('marks salary dated after today as pending', async () => {
+    Settings.now = () => new Date(2020, 0, 10).valueOf();
+
+    const { findByRole, getByRole } = render(<TestComponent withSalary />);
+
+    expect(
+      await findByRole('gridcell', { name: 'Salary (Alex) Pending' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('gridcell', { name: 'Salary (Jordan) Pending' }),
     ).toBeInTheDocument();
   });
 

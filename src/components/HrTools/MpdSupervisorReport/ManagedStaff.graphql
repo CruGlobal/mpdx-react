@@ -29,6 +29,10 @@ query ManagedStaff(
       spouseStaffAccountId
       geographicLocation
       assignmentCategoryGroup
+      tenure
+      healthcareDependentsCount
+      peopleGroupSupportType
+      secaStatus
       teams {
         employee {
           id
