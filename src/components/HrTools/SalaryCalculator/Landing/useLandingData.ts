@@ -144,12 +144,12 @@ export const useLandingData = (): LandingData => {
     };
   }, [self, spouse]);
 
+  // Match the Additional Salary Request, which uses the Primary fund's ending balance
   const accountBalance = useMemo(
     () =>
-      accountBalanceData?.reportsStaffExpenses?.funds?.reduce(
-        (sum, fund) => sum + (fund.total ?? 0),
-        0,
-      ) ?? 0,
+      accountBalanceData?.reportsStaffExpenses?.funds?.find(
+        (fund) => fund.fundType === 'Primary',
+      )?.endBalance ?? 0,
     [accountBalanceData],
   );
 
