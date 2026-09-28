@@ -18,7 +18,7 @@ jobs:
     uses: CruGlobal/agent-review/.github/workflows/review.yml@main
     with:
       mode: auto
-      rollout_mode: shadow
+      rollout_mode: advisory
       # Approve the PR when the CI report passes for the current head (advisory
       # reports approve; set the mode to shadow to post advice only).
       auto_approve: false
