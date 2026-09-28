@@ -77,7 +77,7 @@ export const usePdsSummaryData = (
     const otherTotals = calculateOtherExpenses(calculation, otherConstants);
 
     const overallTotal =
-      otherTotals.subtotal +
+      otherTotals.combinedSubtotal +
       otherTotals.attrition +
       otherTotals.creditCardFees +
       otherTotals.assessment;
