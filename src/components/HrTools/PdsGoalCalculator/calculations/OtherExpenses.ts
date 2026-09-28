@@ -26,7 +26,7 @@ export interface OtherExpensesTotals {
   workComp: number;
   benefits: number;
   otherSubtotal: number;
-  subtotal: number;
+  combinedSubtotal: number;
   attrition: number;
   creditCardFees: number;
   assessment: number;
@@ -48,13 +48,13 @@ export const calculateOtherExpenses = (
   const otherSubtotal =
     reimbursableExpenses + fourOThreeBContributions + workComp + benefits;
 
-  const subtotal = otherSubtotal + constants.salarySubtotal;
+  const combinedSubtotal = otherSubtotal + constants.salarySubtotal;
 
-  const attrition = subtotal * constants.attritionRate;
+  const attrition = combinedSubtotal * constants.attritionRate;
   const creditCardFees =
-    (subtotal + attrition) / (1 - constants.creditCardFeeRate) -
-    (subtotal + attrition);
-  const adminBase = subtotal + attrition + creditCardFees;
+    (combinedSubtotal + attrition) / (1 - constants.creditCardFeeRate) -
+    (combinedSubtotal + attrition);
+  const adminBase = combinedSubtotal + attrition + creditCardFees;
   // Admin assessment is `adminRate` of the post-admin total, not a markup on
   // `adminBase`, so gross up: assessment / (adminBase + assessment) = adminRate.
   const assessment = adminBase / (1 - constants.adminRate) - adminBase;
@@ -65,7 +65,7 @@ export const calculateOtherExpenses = (
     workComp,
     benefits,
     otherSubtotal,
-    subtotal,
+    combinedSubtotal,
     attrition,
     creditCardFees,
     assessment,
