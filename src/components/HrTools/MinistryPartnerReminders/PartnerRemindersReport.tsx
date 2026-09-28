@@ -83,6 +83,10 @@ export const PartnerRemindersReport: React.FC<MPRemindersReportProps> = ({
     skip: !designationNumber,
   });
 
+  const noDesignation =
+    (!!userData && !designationNumber) ||
+    !!error?.message.includes('Designation account not found');
+
   const reminders = data?.ministryPartnerReminders ?? [];
 
   const handlePrint = () => {
@@ -254,11 +258,17 @@ export const PartnerRemindersReport: React.FC<MPRemindersReportProps> = ({
                       />
                     </LoadingBox>
                   ) : (
-                    <RemindersTable data={transformedData} error={error} />
+                    <RemindersTable
+                      data={transformedData}
+                      noDesignation={noDesignation}
+                    />
                   )}
                 </SimpleScreenOnly>
                 <SimplePrintOnly>
-                  <PrintTable data={transformedData} error={error} />
+                  <PrintTable
+                    data={transformedData}
+                    noDesignation={noDesignation}
+                  />
                 </SimplePrintOnly>
               </Box>
             </Container>

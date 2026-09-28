@@ -28,11 +28,6 @@ const mocks = {
       name: 'Test Account',
     },
   },
-  GetUser: {
-    user: {
-      primaryDesignation: '09876',
-    },
-  },
   MinistryPartnerReminders: {
     ministryPartnerReminders: [
       {
@@ -61,7 +56,13 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const TestComponent: React.FC = () => (
+interface TestComponentProps {
+  primaryDesignation?: string | null;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({
+  primaryDesignation = '09876',
+}) => (
   <ThemeProvider theme={theme}>
     <VirtuosoMockContext.Provider
       value={{ viewportHeight: 300, itemHeight: 100 }}
@@ -74,7 +75,7 @@ const TestComponent: React.FC = () => (
               MinistryPartnerReminders: MinistryPartnerRemindersQuery;
               GetUser: GetUserQuery;
             }>
-              mocks={mocks}
+              mocks={{ ...mocks, GetUser: { user: { primaryDesignation } } }}
               onCall={mutationSpy}
             >
               <PartnerRemindersReport
@@ -162,6 +163,31 @@ describe('PartnerRemindersReport', () => {
     expect(getAllByText('Jan 15, 2023')).toHaveLength(2);
     expect(getAllByText('Feb 15, 2023')).toHaveLength(2);
     expect(getByText('None')).toBeInTheDocument();
+  });
+
+  it('should render no designation message when user has no primary designation', async () => {
+    const { findByText, getByRole } = render(
+      <TestComponent primaryDesignation={null} />,
+    );
+
+    expect(
+      await findByText('No designation account found'),
+    ).toBeInTheDocument();
+    expect(getByRole('link', { name: 'HR@cru.org' })).toBeInTheDocument();
+    expect(mutationSpy).not.toHaveGraphqlOperation('MinistryPartnerReminders');
+  });
+
+  it('should not render no designation message while user is loading', async () => {
+    const { queryByText, findAllByText } = render(<TestComponent />);
+
+    expect(
+      queryByText('No designation account found.'),
+    ).not.toBeInTheDocument();
+
+    expect(await findAllByText('Doe, John')).toHaveLength(2);
+    expect(
+      queryByText('No designation account found.'),
+    ).not.toBeInTheDocument();
   });
 
   it('should call update mutation when changing reminder status and clicking save', async () => {
