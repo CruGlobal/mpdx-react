@@ -404,6 +404,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                 // The global Apollo error link already shows the error details in a snackbar
                 <Alert
                   severity="error"
+                  sx={{ mt: 2 }}
                   action={
                     <Button
                       color="inherit"
