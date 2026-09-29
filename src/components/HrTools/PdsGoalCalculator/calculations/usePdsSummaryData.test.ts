@@ -154,6 +154,17 @@ describe('usePdsSummaryData', () => {
         skip: true,
       });
     });
+
+    it("returns no data when the year's constants are unavailable", () => {
+      setupMock({ unavailable: true });
+
+      const { result } = renderHook(() =>
+        usePdsSummaryData(defaultCalculation, defaultHcmUser),
+      );
+
+      expect(result.current.data).toBeNull();
+      expect(result.current.unavailable).toBe(true);
+    });
   });
 
   describe('null guards', () => {

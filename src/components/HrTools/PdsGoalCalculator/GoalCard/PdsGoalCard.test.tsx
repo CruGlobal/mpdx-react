@@ -114,4 +114,20 @@ describe('PdsGoalCard', () => {
       expect(queryByText('2020')).not.toBeInTheDocument();
     });
   });
+
+  it("flags the goal when its year's rates are unavailable", async () => {
+    const { findByText } = render(
+      <PdsGoalCalculatorTestWrapper
+        withProvider={false}
+        calculationsMock={{
+          nodes: [{ name: 'Old Goal', calculationsYear: 2019 }],
+        }}
+        constantsMock={{ mpdGoalBenefitsConstants: [] }}
+      >
+        <PdsGoalsList />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    expect(await findByText('Rates Unavailable')).toBeInTheDocument();
+  });
 });

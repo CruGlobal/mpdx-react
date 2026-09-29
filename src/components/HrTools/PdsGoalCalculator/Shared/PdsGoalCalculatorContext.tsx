@@ -38,6 +38,7 @@ export type PdsGoalCalculatorType = {
   calculationLoading: boolean;
   hcmUser?: HcmUserQuery['hcm'][number];
   summaryData: PdsSummaryData | null;
+  constantsUnavailable: boolean;
   percentComplete: number;
 
   /** Whether any mutations are currently in progress */
@@ -101,7 +102,8 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const { data: hcmData } = useHcmUserQuery();
   const hcmUser = hcmData?.hcm[0];
 
-  const { data: summaryData } = usePdsSummaryData(calculation, hcmUser);
+  const { data: summaryData, unavailable: constantsUnavailable } =
+    usePdsSummaryData(calculation, hcmUser);
 
   // Track the user's place by step enum, not numeric index, so that a change
   // to the steps array (e.g. formType switch Detailed → Simple, dropping the
@@ -226,6 +228,7 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       calculation,
       calculationLoading,
       summaryData,
+      constantsUnavailable,
       percentComplete,
       isMutating,
       isFieldSaving,
@@ -249,6 +252,7 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       calculation,
       calculationLoading,
       summaryData,
+      constantsUnavailable,
       percentComplete,
       isMutating,
       isFieldSaving,

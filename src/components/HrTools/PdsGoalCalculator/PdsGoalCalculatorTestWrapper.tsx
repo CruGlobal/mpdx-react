@@ -13,6 +13,8 @@ import {
   DesignationSupportFormType,
   DesignationSupportSalaryType,
   DesignationSupportStatus,
+  MpdGoalBenefitsConstantPlanEnum,
+  MpdGoalBenefitsConstantSizeEnum,
   MpdGoalMiscConstantCategoryEnum,
   MpdGoalMiscConstantLabelEnum,
 } from 'src/graphql/types.generated';
@@ -251,7 +253,13 @@ export const PdsGoalCalculatorTestWrapper = <
                   constant: mergeWith(
                     {},
                     {
-                      mpdGoalBenefitsConstants: [],
+                      mpdGoalBenefitsConstants: [
+                        {
+                          size: MpdGoalBenefitsConstantSizeEnum.Single,
+                          plan: MpdGoalBenefitsConstantPlanEnum.Select,
+                          cost: 1204.45,
+                        },
+                      ],
                       mpdGoalGeographicConstants: [
                         {
                           location: 'None',

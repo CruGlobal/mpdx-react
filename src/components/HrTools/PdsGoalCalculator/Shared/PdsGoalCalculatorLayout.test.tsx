@@ -118,6 +118,27 @@ describe('PdsGoalCalculatorLayout', () => {
       await findByRole('progressbar', { name: 'Form Progress' });
       expect(queryByText(/This goal uses/)).not.toBeInTheDocument();
     });
+
+    it("shows an error instead when the year's rates are unavailable", async () => {
+      const { findByText, queryByText } = render(
+        <PdsGoalCalculatorTestWrapper
+          calculationMock={{ calculationsYear: 2019 }}
+          constantsMock={{ mpdGoalBenefitsConstants: [] }}
+        >
+          <PdsGoalCalculatorLayout
+            sectionListPanel={<div>Section List</div>}
+            mainContent={<div>Main Content</div>}
+          />
+        </PdsGoalCalculatorTestWrapper>,
+      );
+
+      expect(
+        await findByText(
+          "This goal's 2019 rates are not available, so its totals can't be calculated.",
+        ),
+      ).toBeInTheDocument();
+      expect(queryByText(/This goal uses/)).not.toBeInTheDocument();
+    });
   });
 
   it('shows an indeterminate progress indicator while calculation is loading', async () => {

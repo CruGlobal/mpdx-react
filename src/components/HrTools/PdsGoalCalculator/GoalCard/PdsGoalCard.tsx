@@ -24,10 +24,11 @@ export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal }) => {
   const { data: hcmData, loading: hcmLoading } = useHcmUserQuery();
   const hcmUser = hcmData?.hcm[0];
 
-  const { data: summaryData, loading: summaryLoading } = usePdsSummaryData(
-    goal,
-    hcmUser,
-  );
+  const {
+    data: summaryData,
+    loading: summaryLoading,
+    unavailable: constantsUnavailable,
+  } = usePdsSummaryData(goal, hcmUser);
   const goalTotal = summaryData?.overallTotal ?? 0;
 
   const formType = goal.formType ?? DesignationSupportFormType.Detailed;
@@ -62,6 +63,14 @@ export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal }) => {
       badge={
         <Stack direction="row" spacing={1}>
           {formTypeBadge}
+          {constantsUnavailable && (
+            <Chip
+              label={t('Rates Unavailable')}
+              size="small"
+              color="error"
+              variant="outlined"
+            />
+          )}
           {/* Explains why an old goal's total differs from a new goal's */}
           {isPastYear && (
             <Tooltip title={t('Calculation Year')}>

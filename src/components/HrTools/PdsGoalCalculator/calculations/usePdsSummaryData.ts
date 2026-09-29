@@ -37,19 +37,25 @@ export interface UsePdsSummaryDataResult {
   data: PdsSummaryData | null;
   loading: boolean;
   error: ApolloError | undefined;
+  unavailable: boolean;
 }
 
 export const usePdsSummaryData = (
   calculation: PdsGoalCalculationFieldsFragment | undefined,
   hcmUser: HcmUserQuery['hcm'][number] | undefined,
 ): UsePdsSummaryDataResult => {
-  const { goalMiscConstants, goalGeographicConstantMap, loading, error } =
-    useGoalCalculatorConstants(calculation?.calculationsYear, {
-      skip: !calculation,
-    });
+  const {
+    goalMiscConstants,
+    goalGeographicConstantMap,
+    loading,
+    error,
+    unavailable,
+  } = useGoalCalculatorConstants(calculation?.calculationsYear, {
+    skip: !calculation,
+  });
 
   const data = useMemo(() => {
-    if (!calculation) {
+    if (!calculation || unavailable) {
       return null;
     }
 
@@ -93,7 +99,13 @@ export const usePdsSummaryData = (
       overallTotal,
       geographicMultiplier: constants.geographicMultiplier,
     };
-  }, [calculation, hcmUser, goalMiscConstants, goalGeographicConstantMap]);
+  }, [
+    calculation,
+    hcmUser,
+    goalMiscConstants,
+    goalGeographicConstantMap,
+    unavailable,
+  ]);
 
-  return { data, loading, error };
+  return { data, loading, error, unavailable };
 };

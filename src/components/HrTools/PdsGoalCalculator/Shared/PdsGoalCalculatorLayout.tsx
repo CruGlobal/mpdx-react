@@ -30,6 +30,7 @@ export const PdsGoalCalculatorLayout: React.FC<
     toggleDrawer,
     percentComplete,
     calculationLoading,
+    constantsUnavailable,
   } = usePdsGoalCalculator();
 
   const currentYear = useMemo(() => DateTime.local().year, []);
@@ -70,7 +71,15 @@ export const PdsGoalCalculatorLayout: React.FC<
       sidebarAriaLabel={t('{{step}} Sections', { step: currentStep.title })}
       mainContent={
         <>
-          {isPastYear && (
+          {constantsUnavailable && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {t(
+                "This goal's {{year}} rates are not available, so its totals can't be calculated.",
+                { year: calculationsYear },
+              )}
+            </Alert>
+          )}
+          {isPastYear && !constantsUnavailable && (
             <Alert severity="info" sx={{ mb: 2 }}>
               {t(
                 'This goal uses {{year}} rates. To use {{currentYear}} rates, create a new goal.',
