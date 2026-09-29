@@ -83,6 +83,34 @@ describe('EligibilityStatusTable', () => {
     expect(getByRole('cell', { name: expectedText })).toBeInTheDocument();
   });
 
+  // The MHI Reason row renders for Italian users; codes map to MHI-specific copy
+  it.each([
+    [
+      MinistersHousingIneligibilityReasonEnum.PersonType,
+      'Staff type is not eligible for MHI',
+    ],
+    [
+      MinistersHousingIneligibilityReasonEnum.AssignmentStatus,
+      'Assignment status must be payroll eligible',
+    ],
+    [
+      MinistersHousingIneligibilityReasonEnum.InvalidIbsCertification,
+      'Does not satisfy the IBS Exception for Italy staff',
+    ],
+  ])('shows the MHI reason for the %s code', (reasonCode, expectedText) => {
+    const { getByRole } = render(
+      <EligibilityStatusTable
+        userPreferredName="Marco"
+        userEligible={false}
+        userCountry="IT"
+        userMhiEligibility={false}
+        userMhiIneligibilityReasonCode={reasonCode}
+      />,
+    );
+
+    expect(getByRole('cell', { name: expectedText })).toBeInTheDocument();
+  });
+
   it('shows the reason from each spouse’s own reason code', () => {
     const { getByRole } = render(
       <EligibilityStatusTable

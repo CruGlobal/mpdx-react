@@ -42,11 +42,13 @@ interface EligibilityStatusTableProps {
   userCountry?: string | null;
   userMhiEligibility?: boolean;
   userIneligibilityReasonCode?: MinistersHousingIneligibilityReasonEnum | null;
+  userMhiIneligibilityReasonCode?: MinistersHousingIneligibilityReasonEnum | null;
   spousePreferredName?: string;
   spouseEligible?: boolean;
   spouseCountry?: string | null;
   spouseMhiEligibility?: boolean;
   spouseIneligibilityReasonCode?: MinistersHousingIneligibilityReasonEnum | null;
+  spouseMhiIneligibilityReasonCode?: MinistersHousingIneligibilityReasonEnum | null;
   compact?: boolean;
 }
 
@@ -72,6 +74,8 @@ const getIneligibilityReason = (
     [MinistersHousingIneligibilityReasonEnum.ItalyMhi]: t(
       'Must complete an MHI form instead',
     ),
+    // Unreachable in MHA results (the MHA country check only fails for Italy)
+    [MinistersHousingIneligibilityReasonEnum.NonItalyMha]: t('Not applicable'),
     [MinistersHousingIneligibilityReasonEnum.NoIbsCertification]: t(
       'Has not completed the required IBS courses',
     ),
@@ -98,13 +102,44 @@ const getMhiReason = (
   t: (key: string) => string,
   eligible: boolean,
   country: string | null,
+  reasonCode: MinistersHousingIneligibilityReasonEnum | null,
 ): string => {
   if (getHousingKind(country) !== 'MHI') {
     return t('Not applicable');
   }
-  return eligible
-    ? t('Satisfies the IBS Exception for Italy staff')
-    : t('Does not satisfy the IBS Exception for Italy staff');
+  if (eligible) {
+    return t('Satisfies the IBS Exception for Italy staff');
+  }
+  const exceptionNotSatisfied = t(
+    'Does not satisfy the IBS Exception for Italy staff',
+  );
+  const reasonCopy: Record<MinistersHousingIneligibilityReasonEnum, string> = {
+    [MinistersHousingIneligibilityReasonEnum.PersonType]: t(
+      'Staff type is not eligible for MHI',
+    ),
+    [MinistersHousingIneligibilityReasonEnum.SupportType]: t(
+      'Support type must be Supported RMO',
+    ),
+    [MinistersHousingIneligibilityReasonEnum.AssignmentStatus]: t(
+      'Assignment status must be payroll eligible',
+    ),
+    // Every certification-family failure means the Italy exception is not met
+    [MinistersHousingIneligibilityReasonEnum.NoIbsCertification]:
+      exceptionNotSatisfied,
+    [MinistersHousingIneligibilityReasonEnum.InvalidIbsCertification]:
+      exceptionNotSatisfied,
+    [MinistersHousingIneligibilityReasonEnum.IbsCertificationExpired]:
+      exceptionNotSatisfied,
+    [MinistersHousingIneligibilityReasonEnum.MissingIbsCertificationDate]:
+      exceptionNotSatisfied,
+    // Unreachable in MHI results: Italy staff pass the MHI country check
+    [MinistersHousingIneligibilityReasonEnum.ItalyMhi]: exceptionNotSatisfied,
+    // Unreachable here: the country gate above already returned Not applicable
+    [MinistersHousingIneligibilityReasonEnum.NonItalyMha]: t('Not applicable'),
+  };
+  const fallbackCode =
+    MinistersHousingIneligibilityReasonEnum.InvalidIbsCertification;
+  return reasonCopy[reasonCode ?? fallbackCode] ?? reasonCopy[fallbackCode];
 };
 
 export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
@@ -113,11 +148,13 @@ export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
   userCountry,
   userMhiEligibility,
   userIneligibilityReasonCode,
+  userMhiIneligibilityReasonCode,
   spousePreferredName,
   spouseEligible,
   spouseCountry,
   spouseMhiEligibility,
   spouseIneligibilityReasonCode,
+  spouseMhiIneligibilityReasonCode,
   compact = false,
 }) => {
   const { t } = useTranslation();
@@ -204,6 +241,7 @@ export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
                     t,
                     userMhiEligibility ?? false,
                     userCountry ?? null,
+                    userMhiIneligibilityReasonCode ?? null,
                   )}
                 </TableCell>
                 {hasSpouse && (
@@ -212,6 +250,7 @@ export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
                       t,
                       spouseMhiEligibility ?? false,
                       spouseCountry ?? null,
+                      spouseMhiIneligibilityReasonCode ?? null,
                     )}
                   </TableCell>
                 )}

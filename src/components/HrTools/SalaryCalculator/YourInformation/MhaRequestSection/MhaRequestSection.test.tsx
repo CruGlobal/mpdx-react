@@ -137,7 +137,7 @@ describe('MhaRequestSection', () => {
         ineligibilityReasonCode:
           MinistersHousingIneligibilityReasonEnum.ItalyMhi,
       },
-      mhiEit: { mhiEligibility: true },
+      mhiEit: { mhiEligibility: true, ineligibilityReasonCode: null },
     };
 
     it('renders MHI field labels when user is from Italy', async () => {

@@ -43,6 +43,8 @@ const noMhaAndNoException: HcmQuery['hcm'][number] = {
   },
   mhiEit: {
     mhiEligibility: false,
+    ineligibilityReasonCode:
+      MinistersHousingIneligibilityReasonEnum.NonItalyMha,
   },
   asrEit: {
     asrEligibility: true,
@@ -89,7 +91,7 @@ const italianMhiEligible: HcmQuery['hcm'][number] = {
     mhaEligibility: false,
     ineligibilityReasonCode: MinistersHousingIneligibilityReasonEnum.ItalyMhi,
   },
-  mhiEit: { mhiEligibility: true },
+  mhiEit: { mhiEligibility: true, ineligibilityReasonCode: null },
 };
 
 export const singleNoMhaNoException: HcmQuery['hcm'] = [noMhaAndNoException];
