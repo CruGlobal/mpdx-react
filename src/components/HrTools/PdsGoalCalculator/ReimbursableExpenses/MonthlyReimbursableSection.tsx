@@ -1,6 +1,5 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { usePdsGoalCalculator } from '../Shared/PdsGoalCalculatorContext';
@@ -13,11 +12,10 @@ import {
 export const MonthlyReimbursableSection: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { calculation } = usePdsGoalCalculator();
-  const { goalMiscConstants } = useGoalCalculatorConstants(
-    calculation?.calculationsYear,
-    { skip: !calculation },
-  );
+  const {
+    calculation,
+    constants: { goalMiscConstants },
+  } = usePdsGoalCalculator();
   const phoneMax = goalMiscConstants.REIMBURSEMENTS_WITH_MAXIMUM?.PHONE?.fee;
   const internetMax =
     goalMiscConstants.REIMBURSEMENTS_WITH_MAXIMUM?.INTERNET?.fee;

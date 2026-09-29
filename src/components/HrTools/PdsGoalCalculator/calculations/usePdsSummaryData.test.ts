@@ -163,7 +163,7 @@ describe('usePdsSummaryData', () => {
       );
 
       expect(result.current.data).toBeNull();
-      expect(result.current.unavailable).toBe(true);
+      expect(result.current.constants.unavailable).toBe(true);
     });
   });
 

@@ -27,10 +27,7 @@ import {
   DesignationSupportSalaryType,
   DesignationSupportStatus,
 } from 'src/graphql/types.generated';
-import {
-  GEOGRAPHIC_LOCATION_NONE,
-  useGoalCalculatorConstants,
-} from 'src/hooks/useGoalCalculatorConstants';
+import { GEOGRAPHIC_LOCATION_NONE } from 'src/hooks/useGoalCalculatorConstants';
 import { useLocale } from 'src/hooks/useLocale';
 import { percentageFormat } from 'src/lib/intlFormat';
 import { LocationInfoAlert } from '../../Shared/LocationInfoAlert/LocationInfoAlert';
@@ -43,7 +40,9 @@ import { PayTypeField } from './PayTypeField';
 export const SetupStep: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { calculation, hcmUser, setRightPanelContent } = usePdsGoalCalculator();
+  const { calculation, hcmUser, constants, setRightPanelContent } =
+    usePdsGoalCalculator();
+  const { goalGeographicConstantMap } = constants;
   const { data: userData } = useGetUserQuery();
   const schema = useMemo(
     () =>
@@ -78,10 +77,6 @@ export const SetupStep: React.FC = () => {
           .positive(t('Benefits must be a positive number')),
       }),
     [t],
-  );
-  const { goalGeographicConstantMap } = useGoalCalculatorConstants(
-    calculation?.calculationsYear,
-    { skip: !calculation },
   );
   const saveField = useSaveField();
   const locale = useLocale();

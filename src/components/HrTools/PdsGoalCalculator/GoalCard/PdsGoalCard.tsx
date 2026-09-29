@@ -24,11 +24,7 @@ export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal }) => {
   const { data: hcmData, loading: hcmLoading } = useHcmUserQuery();
   const hcmUser = hcmData?.hcm[0];
 
-  const {
-    data: summaryData,
-    loading: summaryLoading,
-    unavailable: constantsUnavailable,
-  } = usePdsSummaryData(goal, hcmUser);
+  const { data: summaryData, constants } = usePdsSummaryData(goal, hcmUser);
   const goalTotal = summaryData?.overallTotal ?? 0;
 
   const formType = goal.formType ?? DesignationSupportFormType.Detailed;
@@ -56,14 +52,14 @@ export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal }) => {
       name={goal.name}
       goalAmount={goalTotal}
       currency="USD"
-      loading={summaryLoading || hcmLoading}
+      loading={constants.loading || hcmLoading}
       updatedAt={goal.updatedAt}
       viewHref={`/accountLists/${accountListId}/hrTools/pdsGoalCalculator/${goal.id}`}
       onDelete={handleDelete}
       badge={
         <Stack direction="row" spacing={1}>
           {formTypeBadge}
-          {constantsUnavailable && (
+          {constants.unavailable && (
             <Chip
               label={t('Rates Unavailable')}
               size="small"

@@ -140,7 +140,9 @@ same change.
 user-selected, GoalCalculator user-selected within its range, PDS locked to the
 creation year). Pass it to `useGoalCalculatorConstants(year, { skip })` so a
 goal keeps its own year's rates; calling the hook with no year loads the
-current year, which is only right for brand new goals.
+current year, which is only right for brand new goals. Inside GoalCalculator
+and PdsGoalCalculator, read `constants` from the calculator context instead of
+calling the hook yourself; the context already loads the goal's year.
 
 Non-obvious per-calculator rules:
 

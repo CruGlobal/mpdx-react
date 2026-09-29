@@ -1,7 +1,9 @@
 import { useMemo } from 'react';
-import { ApolloError } from '@apollo/client';
 import { DesignationSupportFormType } from 'src/graphql/types.generated';
-import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
+import {
+  UseGoalCalculatorConstantsResult,
+  useGoalCalculatorConstants,
+} from 'src/hooks/useGoalCalculatorConstants';
 import { PdsGoalCalculationFieldsFragment } from '../GoalsList/PdsGoalCalculations.generated';
 import { HcmUserQuery } from '../Shared/HCM.generated';
 import {
@@ -35,24 +37,19 @@ export interface PdsSummaryData {
 
 export interface UsePdsSummaryDataResult {
   data: PdsSummaryData | null;
-  loading: boolean;
-  error: ApolloError | undefined;
-  unavailable: boolean;
+  constants: UseGoalCalculatorConstantsResult;
 }
 
 export const usePdsSummaryData = (
   calculation: PdsGoalCalculationFieldsFragment | undefined,
   hcmUser: HcmUserQuery['hcm'][number] | undefined,
 ): UsePdsSummaryDataResult => {
-  const {
-    goalMiscConstants,
-    goalGeographicConstantMap,
-    loading,
-    error,
-    unavailable,
-  } = useGoalCalculatorConstants(calculation?.calculationsYear, {
-    skip: !calculation,
-  });
+  const calculatorConstants = useGoalCalculatorConstants(
+    calculation?.calculationsYear,
+    { skip: !calculation },
+  );
+  const { goalMiscConstants, goalGeographicConstantMap, unavailable } =
+    calculatorConstants;
 
   const data = useMemo(() => {
     if (!calculation || unavailable) {
@@ -107,5 +104,5 @@ export const usePdsSummaryData = (
     unavailable,
   ]);
 
-  return { data, loading, error, unavailable };
+  return { data, constants: calculatorConstants };
 };
