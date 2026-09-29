@@ -20,7 +20,6 @@ export function useReportNavItems(): NavItems[] {
 
   const userType = data?.user.userType;
   const usStaff = userType === UserTypeEnum.UsStaff;
-  const globalStaff = userType === UserTypeEnum.GlobalStaff;
   const hybridStaff = userType === UserTypeEnum.HybridStaff;
 
   const hasNoStaffAccount =
@@ -64,7 +63,6 @@ export function useReportNavItems(): NavItems[] {
     {
       id: 'financialAccounts',
       title: t('Responsibility Centers'),
-      hideItem: reportsDisabled ? undefined : !globalStaff && !hybridStaff,
     },
     {
       id: 'expectedMonthlyTotal',
@@ -85,7 +83,6 @@ export function useReportNavItems(): NavItems[] {
     [
       t,
       usStaff,
-      globalStaff,
       hybridStaff,
       reportsDisabled,
       hasNoStaffAccount,
