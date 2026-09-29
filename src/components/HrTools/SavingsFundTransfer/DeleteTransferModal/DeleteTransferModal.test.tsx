@@ -4,6 +4,8 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { GraphQLError } from 'graphql';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
@@ -32,16 +34,18 @@ const mockTransfer = {
 
 interface TestComponentProps {
   type?: ActionTypeEnum;
+  mocks?: ApolloErgonoMockMap;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   type = ActionTypeEnum.Stop,
+  mocks,
 }) => {
   return (
     <SnackbarProvider>
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <GqlMockedProvider onCall={mutationSpy}>
+          <GqlMockedProvider mocks={mocks} onCall={mutationSpy}>
             <DeleteTransferModal
               handleClose={handleClose}
               transfer={mockTransfer}
@@ -85,5 +89,33 @@ describe('DeleteTransferModal', () => {
         { variant: 'success' },
       );
     });
+    expect(handleClose).toHaveBeenCalled();
+  });
+
+  it('renders error snackbar and stays open on delete failure', async () => {
+    const { getByRole } = render(
+      <TestComponent
+        mocks={{
+          DeleteRecurringTransfer: {
+            deleteRecurringTransfer: () => {
+              throw new GraphQLError('Transfer not found');
+            },
+          },
+        }}
+      />,
+    );
+
+    userEvent.click(getByRole('button', { name: 'Yes' }));
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalledWith('Failed to stop transfer', {
+        variant: 'error',
+      });
+    });
+    expect(mockEnqueue).not.toHaveBeenCalledWith(
+      'Transfer stopped successfully',
+      expect.anything(),
+    );
+    expect(handleClose).not.toHaveBeenCalled();
+    expect(getByRole('button', { name: 'Yes' })).not.toBeDisabled();
   });
 });
