@@ -17,6 +17,8 @@ import { Trans, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import { useAutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
+import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
 import { amount } from 'src/lib/yupHelpers';
 import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
 import {
@@ -57,6 +59,7 @@ export const RequestedSalaryCard: React.FC = () => {
     hcmSpouse,
   } = useSalaryCalculator();
   const { formatCurrency } = useFormatters();
+  const locale = useLocale();
   const { overCapPerson } = useCaps();
   const { isUserSosa, blockOnCap } = useSosaBlockOverCap();
   const { markValid, markInvalid } = useAutosaveForm();
@@ -92,24 +95,30 @@ export const RequestedSalaryCard: React.FC = () => {
       return '–';
     }
     return (
-      <Box
-        component="span"
-        sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}
-      >
-        {formatCurrency(estimated)}
-        <Tooltip
-          title={t(
-            'We could not find an approved salary request on file, so this is our best estimate based on your current salary and 403(b) contributions in HCM. Please check your current salary in HCM to confirm it.',
-          )}
-          arrow
+      <>
+        <Box
+          component="span"
+          sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}
         >
-          <InfoIcon
-            fontSize="small"
-            color="action"
-            data-testid="RequestedSalaryCard-estimateIcon"
-          />
-        </Tooltip>
-      </Box>
+          {/* No cents, since this is an estimate and not an exact amount */}
+          {currencyFormat(estimated, 'USD', locale, { fractionDigits: 0 })}
+          <Tooltip
+            title={t(
+              'We could not find an approved salary request on file, so this is our best estimate based on your current salary and 403(b) contributions in HCM. Please check your current salary in HCM to confirm it.',
+            )}
+            arrow
+          >
+            <InfoIcon
+              fontSize="small"
+              color="action"
+              data-testid="RequestedSalaryCard-estimateIcon"
+            />
+          </Tooltip>
+        </Box>
+        <Typography variant="caption" color="textSecondary" display="block">
+          {t('Estimate - confirm in HCM')}
+        </Typography>
+      </>
     );
   };
 
