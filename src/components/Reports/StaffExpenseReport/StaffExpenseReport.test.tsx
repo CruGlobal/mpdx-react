@@ -329,7 +329,21 @@ describe('StaffExpenseReport', () => {
 
     expect(getByRole('heading', { name: 'Report title' })).toBeInTheDocument();
     expect(await findByText('Test Account')).toBeInTheDocument();
-    expect(await findByText('$4,000.00')).toBeInTheDocument();
+    expect(
+      await findByText('Ending Balance (All Accounts): $4,000.00'),
+    ).toBeInTheDocument();
+  });
+
+  it('shows a skeleton for the overall balance while loading', async () => {
+    const { getByTestId, findByText, queryByTestId } = render(
+      <TestComponent />,
+    );
+
+    expect(getByTestId('overall-balance-skeleton')).toBeInTheDocument();
+    expect(
+      await findByText('Ending Balance (All Accounts): $4,000.00'),
+    ).toBeInTheDocument();
+    expect(queryByTestId('overall-balance-skeleton')).not.toBeInTheDocument();
   });
 
   it('names each salary row for the person HCM attributes it to', async () => {
@@ -466,7 +480,9 @@ describe('StaffExpenseReport', () => {
       const alert = await findByRole('alert');
       userEvent.click(within(alert).getByRole('button', { name: 'Try Again' }));
 
-      expect(await findByText('$4,000.00')).toBeInTheDocument();
+      expect(
+        await findByText('Ending Balance (All Accounts): $4,000.00'),
+      ).toBeInTheDocument();
       expect(queryByRole('alert')).not.toBeInTheDocument();
     });
 
@@ -486,7 +502,9 @@ describe('StaffExpenseReport', () => {
       const { findByRole, findByText, getByRole, queryByTestId, queryByText } =
         render(<TestComponent failReportCall={secondCall} />);
 
-      expect(await findByText('$4,000.00')).toBeInTheDocument();
+      expect(
+        await findByText('Ending Balance (All Accounts): $4,000.00'),
+      ).toBeInTheDocument();
       userEvent.click(getByRole('button', { name: 'Previous Month' }));
 
       await findByRole('alert');
@@ -503,7 +521,9 @@ describe('StaffExpenseReport', () => {
       await findByRole('alert');
       userEvent.click(getByRole('button', { name: 'Previous Month' }));
 
-      expect(await findByText('$4,000.00')).toBeInTheDocument();
+      expect(
+        await findByText('Ending Balance (All Accounts): $4,000.00'),
+      ).toBeInTheDocument();
       expect(queryByRole('alert')).not.toBeInTheDocument();
     });
 
@@ -518,6 +538,14 @@ describe('StaffExpenseReport', () => {
       await findByRole('alert');
       expect(queryByTestId('account-info')).not.toBeInTheDocument();
     });
+  });
+
+  it('shows a zero overall balance when the report has no funds', async () => {
+    const { findByText } = render(<TestComponent isEmpty={true} />);
+
+    expect(
+      await findByText('Ending Balance (All Accounts): $0.00'),
+    ).toBeInTheDocument();
   });
 
   it('keeps the Report Settings button visible when there are no transactions', async () => {
