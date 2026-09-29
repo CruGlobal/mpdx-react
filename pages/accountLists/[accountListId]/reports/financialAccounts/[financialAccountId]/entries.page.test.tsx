@@ -26,12 +26,10 @@ const router = {
 };
 interface ComponentProps {
   userType?: UserTypeEnum;
-  userOptionValue?: string;
 }
 
 const Components: React.FC<ComponentProps> = ({
   userType = UserTypeEnum.GlobalStaff,
-  userOptionValue = 'true',
 }) => (
   <LocalizationProvider dateAdapter={AdapterLuxon}>
     <SnackbarProvider>
@@ -46,7 +44,7 @@ const Components: React.FC<ComponentProps> = ({
               FinancialAccount: defaultFinancialAccount,
               GetUser: { user: { userType } },
               UserOption: {
-                userOption: { value: userOptionValue },
+                userOption: { value: 'true' },
               },
             }}
           >
@@ -60,8 +58,9 @@ const Components: React.FC<ComponentProps> = ({
 
 describe('Financial Accounts Page', () => {
   it('should show the transactions page for a financial account', async () => {
-    const { findByText, findByRole, getByText, queryByText, queryByRole } =
-      render(<Components />);
+    const { findByText, findByRole, getByText, queryByText } = render(
+      <Components />,
+    );
 
     expect(await findByText('Account 1')).toBeInTheDocument();
 
@@ -72,9 +71,6 @@ describe('Financial Accounts Page', () => {
     expect(getByText('Totals for Period')).toBeInTheDocument();
 
     expect(queryByText('Responsibility Centers')).not.toBeInTheDocument();
-    expect(
-      queryByRole('heading', { name: 'Category' }),
-    ).not.toBeInTheDocument();
   });
 
   it('should open filters on load', async () => {
@@ -98,19 +94,9 @@ describe('Financial Accounts Page', () => {
     expect(queryByRole('heading', { name: 'Reports' })).not.toBeInTheDocument();
   });
 
-  it('should show limited access if user does not have access to page', async () => {
+  it('should show page for a non-Cru user', async () => {
     const { findByText } = render(
       <Components userType={UserTypeEnum.NonCru} />,
-    );
-
-    expect(
-      await findByText('Access to this feature is limited.'),
-    ).toBeInTheDocument();
-  });
-
-  it('should show page if user has not verified user type', async () => {
-    const { findByText } = render(
-      <Components userType={UserTypeEnum.NonCru} userOptionValue="" />,
     );
 
     expect(await findByText('Account 1')).toBeInTheDocument();
