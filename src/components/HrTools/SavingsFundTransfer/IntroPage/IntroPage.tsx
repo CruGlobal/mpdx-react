@@ -106,13 +106,6 @@ export const SavingsFundTransfer: React.FC<SavingsFundTransferProps> = ({
               <StyledListItem>
                 <ListItemText
                   primary={t(
-                    "Need to update the amount you're transferring each month? No problem! Just set an end date for the end of the current month on your existing transfer. After that, go ahead and set up a brand-new monthly transfer with the updated amount.",
-                  )}
-                />
-              </StyledListItem>
-              <StyledListItem>
-                <ListItemText
-                  primary={t(
                     "For brand-new monthly transfers, it might take up to one full month cycle before you see it show up in your account. So hang tight—it's on its way!",
                   )}
                 />

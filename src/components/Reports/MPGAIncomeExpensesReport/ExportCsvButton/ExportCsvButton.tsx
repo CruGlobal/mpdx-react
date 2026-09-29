@@ -11,15 +11,21 @@ export const ExportCsvButton: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { allData: data, dataLoading, monthLabels } = useMPGAIncomeExpenses();
+  const {
+    allData: data,
+    dataLoading,
+    reportError,
+    monthLabels,
+  } = useMPGAIncomeExpenses();
   const balanceData = useBalanceTableData();
 
   return (
     <CsvExportMenu
       label={t('Export CSV')}
+      disabled={Boolean(reportError)}
       items={[
         {
-          label: t('Balance Report'),
+          label: t('Primary Account Balance Report'),
           disabled: !balanceData.length,
           onClick: () =>
             exportToCsv(

@@ -118,7 +118,7 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
           names={names}
           showContent
           titleOne={t('Current Gross Salary')}
-          titleTwo={t('Account Balance')}
+          titleTwo={t('Primary Account Balance')}
           amountOne={currentGrossSalary}
           amountTwo={accountBalance}
         />

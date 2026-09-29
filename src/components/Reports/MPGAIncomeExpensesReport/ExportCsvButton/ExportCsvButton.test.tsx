@@ -84,7 +84,9 @@ describe('ExportCsvButton', () => {
 
     userEvent.click(getByRole('button', { name: 'Export CSV' }));
 
-    const balance = await findByRole('menuitem', { name: 'Balance Report' });
+    const balance = await findByRole('menuitem', {
+      name: 'Primary Account Balance Report',
+    });
     await waitFor(() =>
       expect(balance).not.toHaveAttribute('aria-disabled', 'true'),
     );
@@ -203,10 +205,9 @@ describe('ExportCsvButton', () => {
       'aria-disabled',
       'true',
     );
-    expect(getByRole('menuitem', { name: 'Balance Report' })).toHaveAttribute(
-      'aria-disabled',
-      'true',
-    );
+    expect(
+      getByRole('menuitem', { name: 'Primary Account Balance Report' }),
+    ).toHaveAttribute('aria-disabled', 'true');
   });
 
   it('closes the menu after an export is selected', async () => {

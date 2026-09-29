@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { getLocalizedTaxStatus } from 'src/components/HrTools/Shared/getLocalizedTaxStatus';
 import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { type HcmQuery, useHcmQuery } from '../../Shared/HcmData/Hcm.generated';
 import { useStaffAccountIdQuery } from '../../Shared/StaffAccountId.generated';
-import { getLocalizedTaxStatus } from '../Shared/getLocalizedTaxStatus';
 import { orientSalaryRequest } from '../Shared/orientSalaryRequest';
 import { useAccountBalanceQuery } from './AccountBalance.generated';
 import {
@@ -96,6 +96,13 @@ export const useLandingData = (): LandingData => {
     };
   }, [hcmData]);
 
+  // The latest calculation may have been created by the spouse, so orient it to the user's
+  // perspective before exposing its amounts
+  const calculation = useMemo(
+    () => orientSalaryRequest(latestCalculation, self?.staffInfo.personNumber),
+    [latestCalculation, self],
+  );
+
   const staffAccountId = useMemo(
     () => staffAccountIdData?.user?.staffAccountId ?? null,
     [staffAccountIdData],
@@ -144,12 +151,12 @@ export const useLandingData = (): LandingData => {
     };
   }, [self, spouse]);
 
+  // Match the Additional Salary Request, which uses the Primary fund's ending balance
   const accountBalance = useMemo(
     () =>
-      accountBalanceData?.reportsStaffExpenses?.funds?.reduce(
-        (sum, fund) => sum + (fund.total ?? 0),
-        0,
-      ) ?? 0,
+      accountBalanceData?.reportsStaffExpenses?.funds?.find(
+        (fund) => fund.fundType === 'Primary',
+      )?.endBalance ?? 0,
     [accountBalanceData],
   );
 
@@ -264,7 +271,7 @@ export const useLandingData = (): LandingData => {
       calculationLoading ||
       accountBalanceLoading ||
       staffAccountIdLoading,
-    calculation: latestCalculation,
+    calculation,
     requestedOn,
     processedOn,
     feedback,

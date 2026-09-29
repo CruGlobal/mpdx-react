@@ -40,6 +40,7 @@ const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
       non403bFraction: 0.7655,
       personalFactorsCap: 20008,
       effectiveCap: 20009,
+      hardCap: 10010,
     },
   };
 
@@ -85,8 +86,50 @@ describe('SalaryCapCard', () => {
     );
   });
 
+  it("names each person's limit when the hard caps differ", async () => {
+    const { findByText } = render(
+      <TestComponent
+        salaryRequestMock={{
+          ...defaultSalaryMock,
+          spouseCalculations: {
+            ...defaultSalaryMock?.spouseCalculations,
+            hardCap: 20010,
+          },
+        }}
+      />,
+    );
+
+    expect(
+      await findByText(
+        'For a couple, the combined CAPs cannot exceed $10,011.00, with John not exceeding $10,010.00 and Jane not exceeding $20,010.00.',
+        { exact: false },
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('shows a single limit when the hard caps differ by less than a cent', async () => {
+    const { findByText } = render(
+      <TestComponent
+        salaryRequestMock={{
+          ...defaultSalaryMock,
+          spouseCalculations: {
+            ...defaultSalaryMock?.spouseCalculations,
+            hardCap: 10010.004,
+          },
+        }}
+      />,
+    );
+
+    expect(
+      await findByText(
+        'For a couple, the combined CAPs cannot exceed $10,011.00, with neither individual exceeding $10,010.00.',
+        { exact: false },
+      ),
+    ).toBeInTheDocument();
+  });
+
   it('should render fewer table headers and cells when single', async () => {
-    const { getAllByRole, getByRole } = render(
+    const { getAllByRole, getByRole, queryByText } = render(
       <TestComponent hasSpouse={false} />,
     );
 
@@ -98,5 +141,6 @@ describe('SalaryCapCard', () => {
 
     // 12 rows with 2 cells each and 1 row (row 9) with one cell
     expect(getAllByRole('cell').length).toBe(25);
+    expect(queryByText(/For a couple/)).not.toBeInTheDocument();
   });
 });

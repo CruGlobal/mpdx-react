@@ -1,7 +1,9 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { gql, useApolloClient } from '@apollo/client';
+import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
+  GoalCalculationRole,
   PrimaryBudgetCategory,
   PrimaryBudgetCategoryEnum,
 } from 'src/graphql/types.generated';
@@ -39,6 +41,30 @@ const RightPanel: React.FC = () => {
   const { rightPanelContent } = useGoalCalculator();
 
   return <aside aria-label="Right Panel">{rightPanelContent}</aside>;
+};
+
+// Simulates a genuine role change after load by updating the cached goal the
+// same way the settings form's autosave mutation response does
+const ChangeRoleButton: React.FC = () => {
+  const client = useApolloClient();
+
+  return (
+    <button
+      onClick={() =>
+        client.writeFragment({
+          id: 'GoalCalculation:goal-calculation-1',
+          fragment: gql`
+            fragment ChangeRole on GoalCalculation {
+              role
+            }
+          `,
+          data: { role: GoalCalculationRole.Field },
+        })
+      }
+    >
+      Change Role
+    </button>
+  );
 };
 
 describe('GoalCalculatorGrid', () => {
@@ -355,6 +381,58 @@ describe('GoalCalculatorGrid', () => {
     expect(
       await findByText('Only the portion not reimbursed as ministry expense.'),
     ).toBeInTheDocument();
+  });
+
+  describe('line item defaults', () => {
+    // The wrapper's goal is Office + married (MarriedOffice), so loading it
+    // exercises the transition from the pre-load SingleField fallback to the
+    // real default type without any user action.
+    it('does not overwrite saved amounts when the goal first loads', async () => {
+      const mutationSpy = jest.fn();
+      const { findByText } = render(
+        <GoalCalculatorTestWrapper onCall={mutationSpy}>
+          <TestComponent />
+        </GoalCalculatorTestWrapper>,
+      );
+
+      expect(await findByText('Compass Room')).toBeInTheDocument();
+      expect(await findByText('$1,450')).toBeInTheDocument();
+      // Flush the post-load render cycle that recomputes the default type
+      await act(() => new Promise((resolve) => setTimeout(resolve, 0)));
+
+      expect(mutationSpy).not.toHaveGraphqlOperation('UpdateSubBudgetCategory');
+    });
+
+    it('repopulates predefined rows when the default type genuinely changes', async () => {
+      const mutationSpy = jest.fn();
+      const { findByText, getByRole } = render(
+        <GoalCalculatorTestWrapper onCall={mutationSpy}>
+          <ChangeRoleButton />
+          <TestComponent />
+        </GoalCalculatorTestWrapper>,
+      );
+
+      expect(await findByText('Compass Room')).toBeInTheDocument();
+      await act(() => new Promise((resolve) => setTimeout(resolve, 0)));
+      expect(mutationSpy).not.toHaveGraphqlOperation('UpdateSubBudgetCategory');
+
+      // Office -> Field changes the default type from MarriedOffice to
+      // MarriedField, which resets predefined rows to the reference amount
+      userEvent.click(getByRole('button', { name: 'Change Role' }));
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('UpdateSubBudgetCategory', {
+          input: {
+            accountListId: 'account-list-1',
+            attributes: {
+              id: 'compass-room',
+              label: 'Compass Room',
+              amount: 98,
+            },
+          },
+        }),
+      );
+    });
   });
 
   describe('read-only goal', () => {

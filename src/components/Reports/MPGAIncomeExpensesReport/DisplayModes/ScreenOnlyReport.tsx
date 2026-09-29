@@ -41,12 +41,12 @@ export const ScreenOnlyReport: React.FC = () => {
             data={balanceData}
             emptyPlaceholder={
               <EmptyTable
-                title={t('No Balance data available')}
+                title={t('No Primary Account Balance data available')}
                 subtitle={t('Data not found in the last 12 months')}
                 icon={HourglassDisabled}
               />
             }
-            title={t('Balance')}
+            title={t('Primary Account Balance')}
           />
         </Box>
         <Box mt={2}>

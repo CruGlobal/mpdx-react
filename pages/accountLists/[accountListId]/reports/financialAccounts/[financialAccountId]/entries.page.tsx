@@ -21,10 +21,7 @@ import {
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import { UrlFiltersProvider } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
-import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
-import { UserTypeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useReportsDisabled } from 'src/hooks/useReportsDisabled';
 import { getAppName } from 'src/lib/getAppName';
 import { Panel } from '../../helpers';
 import { FinancialAccountsWrapper } from './Wrapper';
@@ -45,7 +42,6 @@ const FinancialAccountEntries = (): ReactElement => {
   } = useContext(FinancialAccountContext) as FinancialAccountType;
 
   const { data } = financialAccountQuery;
-  const { reportsDisabled } = useReportsDisabled();
 
   const filterGroups = useMemo(() => {
     const categoryOptions =
@@ -110,42 +106,37 @@ const FinancialAccountEntries = (): ReactElement => {
         </title>
       </Head>
       {accountListId ? (
-        <UserTypeAccess
-          requiredUserType={UserTypeEnum.GlobalStaff}
-          alwaysAllow={reportsDisabled}
-        >
-          <Box sx={{ background: 'common.white' }}>
-            <SidePanelsLayout
-              headerHeight={headerHeight}
-              isScrollBox={false}
-              leftOpen={isNavListOpen}
-              leftWidth="290px"
-              mainContent={<AccountTransactions />}
-              leftPanel={
-                panelOpen === Panel.Navigation ? (
-                  <MultiPageMenu
-                    isOpen={isNavListOpen}
-                    selectedId="financialAccounts"
-                    onClose={handleNavListToggle}
-                    designationAccounts={designationAccounts}
-                    setDesignationAccounts={setDesignationAccounts}
-                    navType={NavTypeEnum.Reports}
-                  />
-                ) : panelOpen === Panel.Filters ? (
-                  <DynamicFilterPanel
-                    filters={filterGroups}
-                    defaultExpandedFilterGroups={
-                      new Set(['Transaction Date', 'Category'])
-                    }
-                    savedFilters={[]}
-                    onClose={() => setPanelOpen(null)}
-                    showSaveButton={false}
-                  />
-                ) : undefined
-              }
-            />
-          </Box>
-        </UserTypeAccess>
+        <Box sx={{ background: 'common.white' }}>
+          <SidePanelsLayout
+            headerHeight={headerHeight}
+            isScrollBox={false}
+            leftOpen={isNavListOpen}
+            leftWidth="290px"
+            mainContent={<AccountTransactions />}
+            leftPanel={
+              panelOpen === Panel.Navigation ? (
+                <MultiPageMenu
+                  isOpen={isNavListOpen}
+                  selectedId="financialAccounts"
+                  onClose={handleNavListToggle}
+                  designationAccounts={designationAccounts}
+                  setDesignationAccounts={setDesignationAccounts}
+                  navType={NavTypeEnum.Reports}
+                />
+              ) : panelOpen === Panel.Filters ? (
+                <DynamicFilterPanel
+                  filters={filterGroups}
+                  defaultExpandedFilterGroups={
+                    new Set(['Transaction Date', 'Category'])
+                  }
+                  savedFilters={[]}
+                  onClose={() => setPanelOpen(null)}
+                  showSaveButton={false}
+                />
+              ) : undefined
+            }
+          />
+        </Box>
       ) : (
         <Loading loading />
       )}

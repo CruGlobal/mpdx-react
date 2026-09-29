@@ -12,6 +12,7 @@ export enum RequiredUserGroupEnum {
   NsGoalCalc = 'nsGoalCalc',
   PdsGoalCalc = 'pdsGoalCalc',
   MpdSupervisor = 'mpdSupervisor',
+  NewStaffCohorts = 'newStaffCohorts',
 }
 
 export const isUsStaffLike = (user?: UserTypeEnum) =>
@@ -42,6 +43,7 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     inNsGoalCalcIneligibleGroup,
     inPdsGoalCalcIneligibleGroup,
     inMpdSupervisorIneligibleGroup,
+    canViewNewStaffCohorts,
     userType,
     hasNoStaffAccount,
     userLoading,
@@ -57,6 +59,7 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     [RequiredUserGroupEnum.NsGoalCalc]: inNsGoalCalcIneligibleGroup,
     [RequiredUserGroupEnum.PdsGoalCalc]: inPdsGoalCalcIneligibleGroup,
     [RequiredUserGroupEnum.MpdSupervisor]: inMpdSupervisorIneligibleGroup,
+    [RequiredUserGroupEnum.NewStaffCohorts]: !canViewNewStaffCohorts,
   };
 
   const meetsRequiredUserType =

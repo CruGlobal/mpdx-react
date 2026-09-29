@@ -50,7 +50,11 @@ export const MaxAllowableStep: React.FC = () => {
   const formattedSingleCap = formatCap(calculations?.individualCap);
   const formattedFamilyCap = formatCap(calculations?.familyCap);
   const formattedHardCap = formatCap(calculations?.hardCap);
+  const formattedSpouseHardCap = formatCap(spouseCalculations?.hardCap);
   const formattedCombinedCap = formatCap(calculations?.combinedCap);
+  // Compare the displayed amounts so caps that differ below the shown precision
+  // don't produce a per-person sentence with two identical limits
+  const hardCapsMatch = formattedHardCap === formattedSpouseHardCap;
 
   const effectiveCap = calculations?.effectiveCap ?? 0;
   const spouseEffectiveCap = spouseCalculations?.effectiveCap ?? 0;
@@ -62,25 +66,36 @@ export const MaxAllowableStep: React.FC = () => {
     (salaryCalculation?.salaryCap ?? 0) +
     (salaryCalculation?.spouseSalaryCap ?? 0);
 
-  const schema = useMemo(() => {
-    const maxMessage = t(
-      'Maximum Allowable Salary must not exceed cap of {{ cap }}',
-      { cap: formattedHardCap },
-    );
-
-    return yup.object({
-      salaryCap: amount(t('Maximum Allowable Salary'), t, {
-        required: true,
-        max: calculations?.hardCap,
-        maxMessage,
+  // The server checks each person's cap against their own hard cap, so the
+  // client limits must use each person's hard cap too
+  const schema = useMemo(
+    () =>
+      yup.object({
+        salaryCap: amount(t('Maximum Allowable Salary'), t, {
+          required: true,
+          max: calculations?.hardCap,
+          maxMessage: t(
+            'Maximum Allowable Salary must not exceed cap of {{ cap }}',
+            { cap: formattedHardCap },
+          ),
+        }),
+        spouseSalaryCap: amount(t('Spouse Maximum Allowable Salary'), t, {
+          required: true,
+          max: spouseCalculations?.hardCap,
+          maxMessage: t(
+            'Maximum Allowable Salary must not exceed cap of {{ cap }}',
+            { cap: formattedSpouseHardCap },
+          ),
+        }),
       }),
-      spouseSalaryCap: amount(t('Spouse Maximum Allowable Salary'), t, {
-        required: true,
-        max: calculations?.hardCap,
-        maxMessage,
-      }),
-    });
-  }, [t, calculations, formattedHardCap]);
+    [
+      t,
+      calculations,
+      spouseCalculations,
+      formattedHardCap,
+      formattedSpouseHardCap,
+    ],
+  );
 
   const name = hcmUser?.staffInfo.preferredName;
   const spouseName = hcmSpouse?.staffInfo.preferredName;
@@ -136,13 +151,24 @@ export const MaxAllowableStep: React.FC = () => {
                 <TableRow>
                   <TableCell>{t('Maximum Allowable Salary')}</TableCell>
                   <TableCell>
-                    {t(
-                      '{{ combinedCap }} (with neither exceeding {{ singleCap }})',
-                      {
-                        combinedCap: formattedCombinedCap,
-                        singleCap: formattedHardCap,
-                      },
-                    )}
+                    {hardCapsMatch
+                      ? t(
+                          '{{ combinedCap }} (with neither exceeding {{ singleCap }})',
+                          {
+                            combinedCap: formattedCombinedCap,
+                            singleCap: formattedHardCap,
+                          },
+                        )
+                      : t(
+                          '{{ combinedCap }} (with {{ name }} not exceeding {{ singleCap }} and {{ spouseName }} not exceeding {{ spouseSingleCap }})',
+                          {
+                            combinedCap: formattedCombinedCap,
+                            name,
+                            singleCap: formattedHardCap,
+                            spouseName,
+                            spouseSingleCap: formattedSpouseHardCap,
+                          },
+                        )}
                   </TableCell>
                 </TableRow>
               </TableBody>

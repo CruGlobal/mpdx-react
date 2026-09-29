@@ -64,14 +64,14 @@ describe('StaffTabPayroll', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders the headers and a row per month', async () => {
+  it('renders the headers and a row per month newest first', async () => {
     const { findByRole } = render(<TestComponent />);
 
     expect(await findByRole('table')).toHaveTableStructure({
       columnHeaders,
       cells: [
-        ['Jan 2023', '$3,000.00', '$700.00', '80.0%'],
         ['Feb 2023', '$3,200.00', '$550.00', '85.0%'],
+        ['Jan 2023', '$3,000.00', '$700.00', '80.0%'],
       ],
     });
   });
