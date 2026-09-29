@@ -141,7 +141,10 @@ As you set your salary level, the amount you receive should reflect the amount o
         expect(getByRole('table')).toHaveTableStructure({
           cells: [
             // 10001 * 0.851 / 1 = 8510.85 and 20001 * 0.9 / 1.1 = 16364.45
-            ['$8,511.00', '$16,364.00'],
+            [
+              '$8,511Estimate - confirm in HCM',
+              '$16,364Estimate - confirm in HCM',
+            ],
             ['$10,003.00', '$20,003.00'],
             ['$10,004.00', '$20,004.00'],
             // The requested salary inputs
@@ -280,7 +283,7 @@ As you set your salary level, the amount you receive should reflect the amount o
       await waitFor(() =>
         expect(getByRole('table')).toHaveTableStructure({
           cells: [
-            '$8,511.00',
+            '$8,511Estimate - confirm in HCM',
             '$10,003.00',
             '$10,004.00',
             // The requested salary input

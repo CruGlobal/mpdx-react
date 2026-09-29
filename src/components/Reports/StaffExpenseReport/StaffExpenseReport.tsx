@@ -9,6 +9,7 @@ import {
   Button,
   Container,
   Divider,
+  Skeleton,
   SvgIcon,
   Typography,
 } from '@mui/material';
@@ -23,6 +24,7 @@ import {
 import { useStaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import { Fund, UsStaffGroupEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { AccountInfoBox } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBox';
 import { AccountInfoBoxSkeleton } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBoxSkeleton';
@@ -389,22 +391,77 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               )}
             </StyledHeaderBox>
             {loading ? (
-              <AccountInfoBoxSkeleton hasOverallBalance />
+              <AccountInfoBoxSkeleton />
             ) : (
               // A supervisor's staff name comes from the failed report, so there is no name to show
               !(isSupervisorView && reportError) && (
-                <AccountInfoBox
-                  name={accountName}
-                  overallBalance={reportError ? undefined : overallBalance}
-                />
+                <AccountInfoBox name={accountName} />
               )
+            )}
+            <SimpleScreenOnly>
+              <Divider sx={{ my: 2 }} />
+              <StyledTimeNavBox>
+                {!isFilterDateSelected ? (
+                  <Typography variant="h6">{timeTitle}</Typography>
+                ) : (
+                  <Typography variant="h6">{filterTimeTitle}</Typography>
+                )}
+                {!isFilterDateSelected ? (
+                  <>
+                    <Button
+                      sx={{ ml: 'auto', maxHeight: 35 }}
+                      variant="contained"
+                      startIcon={<ChevronLeftIcon />}
+                      size="small"
+                      onClick={setPrevMonth}
+                    >
+                      {t('Previous Month')}
+                    </Button>
+                    <Button
+                      sx={{ maxHeight: 35 }}
+                      variant="contained"
+                      endIcon={<ChevronRightIcon />}
+                      size="small"
+                      onClick={setNextMonth}
+                      disabled={hasNext}
+                    >
+                      {t('Next Month')}
+                    </Button>
+                  </>
+                ) : null}
+              </StyledTimeNavBox>
+              <Divider sx={{ my: 2 }} />
+            </SimpleScreenOnly>
+            {!reportError && (
+              <Typography
+                variant="body1"
+                sx={{ mb: 2, fontWeight: 'bold' }}
+                data-testid="overall-balance"
+              >
+                {loading ? (
+                  <Skeleton
+                    variant="text"
+                    data-testid="overall-balance-skeleton"
+                  >
+                    <Box
+                      component="span"
+                      sx={{ display: 'inline-block', width: 320, height: 24 }}
+                    />
+                  </Skeleton>
+                ) : (
+                  t('Ending Balance (All Accounts): {{balance}}', {
+                    balance: currencyFormat(overallBalance, 'USD', locale, {
+                      showTrailingZeros: true,
+                    }),
+                  })
+                )}
+              </Typography>
             )}
             <SimpleScreenOnly>
               {reportError ? (
                 // The global Apollo error link already shows the error details in a snackbar
                 <Alert
                   severity="error"
-                  sx={{ mt: 2 }}
                   action={
                     <Button
                       color="inherit"
@@ -454,50 +511,6 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               </Box>
             </SimplePrintOnly>
           </Box>
-        </Container>
-      </Box>
-      <SimpleScreenOnly mt={2} mb={2}>
-        <Container>
-          <Divider />
-        </Container>
-      </SimpleScreenOnly>
-      <SimpleScreenOnly mt={2}>
-        <Container>
-          <StyledTimeNavBox>
-            {!isFilterDateSelected ? (
-              <Typography variant="h6">{timeTitle}</Typography>
-            ) : (
-              <Typography variant="h6">{filterTimeTitle}</Typography>
-            )}
-            {!isFilterDateSelected ? (
-              <>
-                <Button
-                  style={{ marginLeft: 'auto', maxHeight: 35 }}
-                  variant="contained"
-                  startIcon={<ChevronLeftIcon />}
-                  size="small"
-                  onClick={setPrevMonth}
-                >
-                  {t('Previous Month')}
-                </Button>
-                <Button
-                  style={{ maxHeight: 35 }}
-                  variant="contained"
-                  endIcon={<ChevronRightIcon />}
-                  size="small"
-                  onClick={setNextMonth}
-                  disabled={hasNext}
-                >
-                  {t('Next Month')}
-                </Button>
-              </>
-            ) : null}
-          </StyledTimeNavBox>
-        </Container>
-      </SimpleScreenOnly>
-      <Box mt={2} mb={2}>
-        <Container>
-          <Divider></Divider>
         </Container>
       </Box>
       <Box>
