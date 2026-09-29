@@ -43,7 +43,7 @@ describe('MultiPageMenu', () => {
   });
 
   it('Cru US default', async () => {
-    const { findByText, getByText, queryByText } = render(
+    const { findByText, getByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <GqlMockedProvider<{
@@ -84,7 +84,7 @@ describe('MultiPageMenu', () => {
     expect(getByText('Partner Giving Analysis')).toBeInTheDocument();
     expect(getByText('Coaching')).toBeInTheDocument();
 
-    expect(queryByText('Responsibility Centers')).not.toBeInTheDocument();
+    expect(getByText('Responsibility Centers')).toBeInTheDocument();
   });
 
   it('Cru Global default', async () => {
@@ -218,44 +218,7 @@ describe('MultiPageMenu', () => {
 
     expect(queryByText('Staff Expense Report')).not.toBeInTheDocument();
     expect(queryByText('Income/Expense Analysis')).not.toBeInTheDocument();
-    await waitFor(() => {
-      expect(queryByText('Responsibility Centers')).not.toBeInTheDocument();
-    });
-  });
-
-  it('shows responsibility centers when user is us staff but not verified user type', async () => {
-    const { findByText } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <GqlMockedProvider<{
-            GetUser: GetUserQuery;
-            UserOption: UserOptionQuery;
-          }>
-            mocks={{
-              GetUser: {
-                user: { userType: UserTypeEnum.UsStaff },
-              },
-              UserOption: {
-                userOption: {
-                  value: '',
-                },
-              },
-            }}
-          >
-            <MultiPageMenu
-              selectedId={selected}
-              isOpen={true}
-              onClose={() => {}}
-              designationAccounts={[]}
-              setDesignationAccounts={() => {}}
-              navType={NavTypeEnum.Reports}
-            />
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
-    );
-
-    expect(await findByText('Responsibility Centers')).toBeInTheDocument();
+    expect(getByText('Responsibility Centers')).toBeInTheDocument();
   });
 
   it('has designation account filter', async () => {

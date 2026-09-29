@@ -99,10 +99,12 @@ describe('NavMenu', () => {
   });
 
   it('renders Reports submenu items', async () => {
-    const { findByRole, getByRole, getByTestId, queryByRole } = render(
+    const { findByRole, getByRole, getByTestId } = render(
       <TestComponent mocks={defaultMocks} />,
     );
-    await findByRole('menuitem', { name: 'Reports' });
+    expect(
+      await findByRole('menuitem', { name: 'Reports' }),
+    ).toBeInTheDocument();
     userEvent.click(getByTestId('ReportMenuToggle'));
     expectMenuItems(getByRole, [
       'Donations',
@@ -111,12 +113,10 @@ describe('NavMenu', () => {
       'Staff Expense Report',
       'Income/Expense Analysis',
       'Designation Accounts',
+      'Responsibility Centers',
       'Expected Monthly Total',
       'Partner Giving Analysis',
     ]);
-    expect(
-      queryByRole('menuitem', { name: 'Responsibility Centers' }),
-    ).not.toBeInTheDocument();
   });
 
   it('renders HR Tools submenu items', async () => {
