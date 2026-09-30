@@ -8,7 +8,7 @@ const SEVERITIES: readonly WarningSeverity[] = ['error', 'warning'];
 
 /**
  * The non-blocking admin warnings from NSGC A33, rendered beside the save
- * actions so an admin sees them at the point of Save & Share regardless of how
+ * actions so an admin sees them at the point of Save regardless of how
  * far the long form has scrolled. Built by the preview provider, which also
  * drives the matching field outlines, so the two always agree.
  *
