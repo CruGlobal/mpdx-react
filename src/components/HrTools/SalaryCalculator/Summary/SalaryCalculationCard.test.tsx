@@ -10,6 +10,8 @@ import { SalaryCalculationCard } from './SalaryCalculationCard';
 
 const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
   {
+    salary: 10000,
+    spouseSalary: 20000,
     calculations: {
       annualBase: 10001,
       requestedSeca: 10002,
@@ -48,8 +50,8 @@ describe('SalaryCalculationCard', () => {
         cells: [
           [
             '10. Requested SalaryBefore SECA and 403(b)',
-            '$10,001.00',
-            '$20,001.00',
+            '$10,000.00',
+            '$20,000.00',
           ],
           ['11. Taxes', '$10,002.00', '$20,002.00'],
           ['a. SECA(If applicable) Line 10 × 0.22', '$10,002.00', '$20,002.00'],
