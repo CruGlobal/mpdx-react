@@ -48,9 +48,11 @@ export const SalaryCalculationCard: React.FC = () => {
                   {t('Before SECA and 403(b)')}
                 </span>
               </TableCell>
-              <TableCell>{formatCurrency(calcs?.annualBase)}</TableCell>
+              <TableCell>{formatCurrency(calculation?.salary)}</TableCell>
               {hasSpouse && (
-                <TableCell>{formatCurrency(spouseCalcs.annualBase)}</TableCell>
+                <TableCell>
+                  {formatCurrency(calculation?.spouseSalary)}
+                </TableCell>
               )}
             </TableRow>
 
