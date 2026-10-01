@@ -52,14 +52,17 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
   } = useMinisterHousingAllowance();
   const requestId = request?.id;
 
+  // MHAs approved before the MPDX launch only exist in HCM, so there is no
+  // request to view, print, or duplicate
+  const isHcmOnly = !request;
+
   const { hrApprovedAt } = request?.requestAttributes || {};
-  // Without an MPDX request, fall back to the board approved date from HCM
-  const userApprovedOn = request
-    ? hrApprovedAt
-    : userHcmData?.mhaRequest.boardApprovedOnDate;
-  const spouseApprovedOn = request
-    ? hrApprovedAt
-    : spouseHcmData?.mhaRequest.boardApprovedOnDate;
+  const userApprovedOn = isHcmOnly
+    ? userHcmData?.mhaRequest.boardApprovedOnDate
+    : hrApprovedAt;
+  const spouseApprovedOn = isHcmOnly
+    ? spouseHcmData?.mhaRequest.boardApprovedOnDate
+    : hrApprovedAt;
 
   const lastUpdated = request?.updatedAt ?? null;
 
@@ -111,8 +114,8 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
       handleLinkTwo={handleDuplicateRequest}
       hideLinkTwoButton={hasOpenRequest}
       isRequest={false}
-      hidePrint={!request}
-      hideActions={!request}
+      hidePrint={isHcmOnly}
+      hideActions={isHcmOnly}
       handlePrint={handlePrint}
       styling={{ p: 0 }}
     >
@@ -157,7 +160,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
                       )}
                     </Typography>
                   </Grid>
-                  {(request || userApprovedOn) && (
+                  {(!isHcmOnly || userApprovedOn) && (
                     <Grid>
                       <Typography sx={{ color: 'text.secondary' }}>
                         {t('Approved on')}:{' '}
@@ -195,7 +198,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
                       )}
                     </Typography>
                   </Grid>
-                  {request && (
+                  {!isHcmOnly && (
                     <Grid>
                       <Typography sx={{ color: 'text.secondary' }}>
                         {t('Last updated')}:{' '}
@@ -236,7 +239,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
                         )}
                       </Typography>
                     </Grid>
-                    {(request || spouseApprovedOn) && (
+                    {(!isHcmOnly || spouseApprovedOn) && (
                       <Grid>
                         <Typography sx={{ color: 'text.secondary' }}>
                           {t('Approved on')}:{' '}
@@ -274,7 +277,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
                         )}
                       </Typography>
                     </Grid>
-                    {request && (
+                    {!isHcmOnly && (
                       <Grid>
                         <Typography sx={{ color: 'text.secondary' }}>
                           {t('Last updated')}:{' '}

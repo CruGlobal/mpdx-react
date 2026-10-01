@@ -119,9 +119,8 @@ export const MinisterHousingAllowanceReport = () => {
   // MHAs approved before the MPDX launch only exist in HCM
   const isHcmApprovedOnly =
     hasNoRequests &&
-    eitherPersonEligible &&
-    ((userApprovedOverallAmount ?? 0) > 0 ||
-      (spouseApprovedOverallAmount ?? 0) > 0);
+    ((userEligibleForMHA && (userApprovedOverallAmount ?? 0) > 0) ||
+      (spouseEligibleForMHA && (spouseApprovedOverallAmount ?? 0) > 0));
 
   const hasCurrentBoardApprovedMha =
     currentRequest?.status === MhaStatusEnum.BoardApproved;

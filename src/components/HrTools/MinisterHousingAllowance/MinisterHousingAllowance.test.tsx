@@ -176,6 +176,27 @@ describe('MinisterHousingAllowanceReport', () => {
       expect(queryByText('Current Board Approved MHA')).not.toBeInTheDocument();
     });
 
+    it('does not show the HCM approved MHA when only an ineligible spouse has one', async () => {
+      const { findByText, queryByText } = render(
+        <TestComponent
+          hcmMock={[
+            marriedNoMhaNoException[0],
+            {
+              ...singleMhaNoException[0],
+              staffInfo: marriedNoMhaNoException[1].staffInfo,
+              mhaEit: { mhaEligibility: false },
+            },
+          ]}
+          mhaRequestsMock={[]}
+        />,
+      );
+
+      expect(
+        await findByText(/our records indicate that you have not applied for/i),
+      ).toBeInTheDocument();
+      expect(queryByText('Current Board Approved MHA')).not.toBeInTheDocument();
+    });
+
     it('does not show the HCM approved MHA when ineligible', async () => {
       const { findByText, queryByText } = render(
         <TestComponent
