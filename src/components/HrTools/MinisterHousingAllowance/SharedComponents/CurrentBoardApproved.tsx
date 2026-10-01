@@ -18,9 +18,16 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import { StatusCard } from '../../Shared/CalculationReports/StatusCard/StatusCard';
 import { useDuplicateMinistryHousingAllowanceRequestMutation } from '../MinisterHousingAllowance.generated';
-import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
+import {
+  HcmData,
+  useMinisterHousingAllowance,
+} from '../Shared/Context/MinisterHousingAllowanceContext';
 import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
 import { MHARequest } from './types';
+
+// HCM can keep an old board approved date on a record whose amount is now 0
+const hcmApprovedOn = (amount: number | null, hcmData: HcmData | null) =>
+  (amount ?? 0) > 0 ? hcmData?.mhaRequest.boardApprovedOnDate : null;
 
 interface CurrentBoardApprovedProps {
   request: MHARequest | null;
@@ -47,10 +54,28 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
     spouseApprovedOverallAmount,
     userTakenAmount,
     spouseTakenAmount,
+    userHcmData,
+    spouseHcmData,
+    userEligibleForMHA,
+    spouseEligibleForMHA,
   } = useMinisterHousingAllowance();
   const requestId = request?.id;
 
+  // MHAs approved before the MPDX launch only exist in HCM, so there is no
+  // request to view, print, or duplicate
+  const isHcmOnly = !request;
+  // Like the Salary Calculator, an HCM-only card skips ineligible people; the
+  // page shows the eligibility table instead
+  const showUserRow = !isHcmOnly || userEligibleForMHA;
+  const showSpouseRow = isMarried && (!isHcmOnly || spouseEligibleForMHA);
+
   const { hrApprovedAt } = request?.requestAttributes || {};
+  const userApprovedOn = isHcmOnly
+    ? hcmApprovedOn(userApprovedOverallAmount, userHcmData)
+    : hrApprovedAt;
+  const spouseApprovedOn = isHcmOnly
+    ? hcmApprovedOn(spouseApprovedOverallAmount, spouseHcmData)
+    : hrApprovedAt;
 
   const lastUpdated = request?.updatedAt ?? null;
 
@@ -102,6 +127,8 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
       handleLinkTwo={handleDuplicateRequest}
       hideLinkTwoButton={hasOpenRequest}
       isRequest={false}
+      hidePrint={isHcmOnly}
+      hideActions={isHcmOnly}
       handlePrint={handlePrint}
       styling={{ p: 0 }}
     >
@@ -128,76 +155,88 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            <TableRow>
-              <TableCell sx={{ fontSize: 20 }}>{preferredName}</TableCell>
-              <TableCell>
-                <Grid container direction="column">
-                  <Grid>
-                    <Typography
-                      sx={{ color: 'primary.main', fontWeight: 'bold' }}
-                    >
-                      {currencyFormat(
-                        Number(userApprovedOverallAmount),
-                        currency,
-                        locale,
-                        {
-                          showTrailingZeros: true,
-                        },
-                      )}
-                    </Typography>
+            {showUserRow && (
+              <TableRow>
+                <TableCell sx={{ fontSize: 20 }}>{preferredName}</TableCell>
+                <TableCell>
+                  <Grid container direction="column">
+                    <Grid>
+                      <Typography
+                        sx={{ color: 'primary.main', fontWeight: 'bold' }}
+                      >
+                        {currencyFormat(
+                          Number(userApprovedOverallAmount),
+                          currency,
+                          locale,
+                          {
+                            showTrailingZeros: true,
+                          },
+                        )}
+                      </Typography>
+                    </Grid>
+                    {(!isHcmOnly || userApprovedOn) && (
+                      <Grid>
+                        <Typography sx={{ color: 'text.secondary' }}>
+                          {t('Approved on')}:{' '}
+                          {userApprovedOn ? (
+                            dateFormatShort(
+                              DateTime.fromISO(userApprovedOn),
+                              locale,
+                            )
+                          ) : (
+                            <Skeleton
+                              width={100}
+                              variant="text"
+                              sx={{ ml: 1 }}
+                              style={{ display: 'inline-block' }}
+                            />
+                          )}
+                        </Typography>
+                      </Grid>
+                    )}
                   </Grid>
-                  <Grid>
-                    <Typography sx={{ color: 'text.secondary' }}>
-                      {t('Approved on')}:{' '}
-                      {hrApprovedAt ? (
-                        dateFormatShort(DateTime.fromISO(hrApprovedAt), locale)
-                      ) : (
-                        <Skeleton
-                          width={100}
-                          variant="text"
-                          sx={{ ml: 1 }}
-                          style={{ display: 'inline-block' }}
-                        />
-                      )}
-                    </Typography>
+                </TableCell>
+                <TableCell>
+                  <Grid container direction="column">
+                    <Grid>
+                      <Typography
+                        sx={{ color: 'primary.main', fontWeight: 'bold' }}
+                      >
+                        {currencyFormat(
+                          Number(userTakenAmount),
+                          currency,
+                          locale,
+                          {
+                            showTrailingZeros: true,
+                          },
+                        )}
+                      </Typography>
+                    </Grid>
+                    {!isHcmOnly && (
+                      <Grid>
+                        <Typography sx={{ color: 'text.secondary' }}>
+                          {t('Last updated')}:{' '}
+                          {lastUpdated ? (
+                            dateFormatShort(
+                              DateTime.fromISO(lastUpdated),
+                              locale,
+                            )
+                          ) : (
+                            <Skeleton
+                              width={100}
+                              variant="text"
+                              sx={{ ml: 1 }}
+                              style={{ display: 'inline-block' }}
+                            />
+                          )}
+                        </Typography>
+                      </Grid>
+                    )}
                   </Grid>
-                </Grid>
-              </TableCell>
-              <TableCell>
-                <Grid container direction="column">
-                  <Grid>
-                    <Typography
-                      sx={{ color: 'primary.main', fontWeight: 'bold' }}
-                    >
-                      {currencyFormat(
-                        Number(userTakenAmount),
-                        currency,
-                        locale,
-                        {
-                          showTrailingZeros: true,
-                        },
-                      )}
-                    </Typography>
-                  </Grid>
-                  <Grid>
-                    <Typography sx={{ color: 'text.secondary' }}>
-                      {t('Last updated')}:{' '}
-                      {lastUpdated ? (
-                        dateFormatShort(DateTime.fromISO(lastUpdated), locale)
-                      ) : (
-                        <Skeleton
-                          width={100}
-                          variant="text"
-                          sx={{ ml: 1 }}
-                          style={{ display: 'inline-block' }}
-                        />
-                      )}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </TableCell>
-            </TableRow>
-            {isMarried && (
+                </TableCell>
+              </TableRow>
+            )}
+            {showSpouseRow && (
               <TableRow>
                 <TableCell sx={{ fontSize: 20 }}>
                   {spousePreferredName ? spousePreferredName : 'N/A'}
@@ -218,24 +257,26 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
                         )}
                       </Typography>
                     </Grid>
-                    <Grid>
-                      <Typography sx={{ color: 'text.secondary' }}>
-                        {t('Approved on')}:{' '}
-                        {hrApprovedAt ? (
-                          dateFormatShort(
-                            DateTime.fromISO(hrApprovedAt),
-                            locale,
-                          )
-                        ) : (
-                          <Skeleton
-                            width={100}
-                            variant="text"
-                            sx={{ ml: 1 }}
-                            style={{ display: 'inline-block' }}
-                          />
-                        )}
-                      </Typography>
-                    </Grid>
+                    {(!isHcmOnly || spouseApprovedOn) && (
+                      <Grid>
+                        <Typography sx={{ color: 'text.secondary' }}>
+                          {t('Approved on')}:{' '}
+                          {spouseApprovedOn ? (
+                            dateFormatShort(
+                              DateTime.fromISO(spouseApprovedOn),
+                              locale,
+                            )
+                          ) : (
+                            <Skeleton
+                              width={100}
+                              variant="text"
+                              sx={{ ml: 1 }}
+                              style={{ display: 'inline-block' }}
+                            />
+                          )}
+                        </Typography>
+                      </Grid>
+                    )}
                   </Grid>
                 </TableCell>
                 <TableCell>
@@ -254,21 +295,26 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
                         )}
                       </Typography>
                     </Grid>
-                    <Grid>
-                      <Typography sx={{ color: 'text.secondary' }}>
-                        {t('Last updated')}:{' '}
-                        {lastUpdated ? (
-                          dateFormatShort(DateTime.fromISO(lastUpdated), locale)
-                        ) : (
-                          <Skeleton
-                            width={100}
-                            variant="text"
-                            sx={{ ml: 1 }}
-                            style={{ display: 'inline-block' }}
-                          />
-                        )}
-                      </Typography>
-                    </Grid>
+                    {!isHcmOnly && (
+                      <Grid>
+                        <Typography sx={{ color: 'text.secondary' }}>
+                          {t('Last updated')}:{' '}
+                          {lastUpdated ? (
+                            dateFormatShort(
+                              DateTime.fromISO(lastUpdated),
+                              locale,
+                            )
+                          ) : (
+                            <Skeleton
+                              width={100}
+                              variant="text"
+                              sx={{ ml: 1 }}
+                              style={{ display: 'inline-block' }}
+                            />
+                          )}
+                        </Typography>
+                      </Grid>
+                    )}
                   </Grid>
                 </TableCell>
               </TableRow>

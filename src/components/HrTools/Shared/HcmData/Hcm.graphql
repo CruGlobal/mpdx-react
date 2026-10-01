@@ -51,6 +51,7 @@ query Hcm($effectiveDate: ISO8601Date, $personNumber: String) {
     mhaRequest {
       currentApprovedOverallAmount
       currentTakenAmount
+      boardApprovedOnDate
     }
     salaryRequestEligible
     designationSupportCalculatorEligible
