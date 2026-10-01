@@ -20,6 +20,9 @@ import { useRefreshHcmMutation } from './RefreshHcm.generated';
 /** Matches the API's limit of one refresh per person every 3 minutes. */
 export const REFRESH_COOLDOWN = Duration.fromObject({ minutes: 3 });
 
+/** Refresh failures this component explains itself; the global error link toasts any other. */
+const HANDLED_ERROR_CODES = ['HCM_REFRESH_RATE_LIMITED', 'HCM_UNAVAILABLE'];
+
 /** The background sync revisits everyone well inside this, so older data means it has stalled. */
 const STALE_AFTER = Duration.fromObject({ hours: 24 });
 
@@ -53,6 +56,7 @@ const useHcmSync = (personNumber?: string) => {
   const [refreshHcm, { loading: refreshing }] = useRefreshHcmMutation({
     refetchQueries: ['Hcm'],
     awaitRefetchQueries: true,
+    context: { suppressErrorCodes: HANDLED_ERROR_CODES },
   });
   const [coolingDown, setCoolingDown] = useState(false);
 
@@ -77,14 +81,19 @@ const useHcmSync = (personNumber?: string) => {
         setCoolingDown(true);
         enqueueSnackbar(t('HCM data refreshed.'), { variant: 'success' });
       },
-      onError: (error) => {
-        const rateLimited = error.graphQLErrors.some(
-          ({ extensions }) => extensions?.code === 'HCM_REFRESH_RATE_LIMITED',
+      onError: ({ graphQLErrors }) => {
+        const handled = graphQLErrors.find(({ extensions }) =>
+          HANDLED_ERROR_CODES.includes(String(extensions?.code)),
         );
+        if (!handled) {
+          return;
+        }
+        const rateLimited =
+          handled.extensions?.code === 'HCM_REFRESH_RATE_LIMITED';
         if (rateLimited) {
           setCoolingDown(true);
         }
-        enqueueSnackbar(error.message, {
+        enqueueSnackbar(handled.message, {
           variant: rateLimited ? 'info' : 'error',
         });
       },

@@ -161,6 +161,23 @@ describe('HcmSyncStatus', () => {
     expect(await body.findByRole('button', { name: 'Refresh' })).toBeDisabled();
   });
 
+  it('keeps the global error toast quiet for the errors it explains itself', async () => {
+    const { body } = await renderBody({ refreshError: 'rateLimited' });
+
+    userEvent.click(body.getByRole('button', { name: 'Refresh' }));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('RefreshHcm'),
+    );
+    const refreshCall = mutationSpy.mock.calls.find(
+      ([{ operation }]) => operation.operationName === 'RefreshHcm',
+    );
+    expect(refreshCall?.[0].operation.getContext().suppressErrorCodes).toEqual([
+      'HCM_REFRESH_RATE_LIMITED',
+      'HCM_UNAVAILABLE',
+    ]);
+  });
+
   it('lets the user try again right away when HCM is unavailable', async () => {
     const { body } = await renderBody({ refreshError: 'unavailable' });
 
