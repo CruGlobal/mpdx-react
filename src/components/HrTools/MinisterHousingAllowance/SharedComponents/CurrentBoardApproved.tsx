@@ -47,10 +47,22 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
     spouseApprovedOverallAmount,
     userTakenAmount,
     spouseTakenAmount,
+    userHcmData,
+    spouseHcmData,
   } = useMinisterHousingAllowance();
   const requestId = request?.id;
 
+  // MHAs approved before the MPDX launch only exist in HCM, so there is no
+  // request to view, print, or duplicate
+  const isHcmOnly = !request;
+
   const { hrApprovedAt } = request?.requestAttributes || {};
+  const userApprovedOn = isHcmOnly
+    ? userHcmData?.mhaRequest.boardApprovedOnDate
+    : hrApprovedAt;
+  const spouseApprovedOn = isHcmOnly
+    ? spouseHcmData?.mhaRequest.boardApprovedOnDate
+    : hrApprovedAt;
 
   const lastUpdated = request?.updatedAt ?? null;
 
@@ -102,6 +114,8 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
       handleLinkTwo={handleDuplicateRequest}
       hideLinkTwoButton={hasOpenRequest}
       isRequest={false}
+      hidePrint={isHcmOnly}
+      hideActions={isHcmOnly}
       handlePrint={handlePrint}
       styling={{ p: 0 }}
     >
@@ -146,21 +160,26 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
                       )}
                     </Typography>
                   </Grid>
-                  <Grid>
-                    <Typography sx={{ color: 'text.secondary' }}>
-                      {t('Approved on')}:{' '}
-                      {hrApprovedAt ? (
-                        dateFormatShort(DateTime.fromISO(hrApprovedAt), locale)
-                      ) : (
-                        <Skeleton
-                          width={100}
-                          variant="text"
-                          sx={{ ml: 1 }}
-                          style={{ display: 'inline-block' }}
-                        />
-                      )}
-                    </Typography>
-                  </Grid>
+                  {(!isHcmOnly || userApprovedOn) && (
+                    <Grid>
+                      <Typography sx={{ color: 'text.secondary' }}>
+                        {t('Approved on')}:{' '}
+                        {userApprovedOn ? (
+                          dateFormatShort(
+                            DateTime.fromISO(userApprovedOn),
+                            locale,
+                          )
+                        ) : (
+                          <Skeleton
+                            width={100}
+                            variant="text"
+                            sx={{ ml: 1 }}
+                            style={{ display: 'inline-block' }}
+                          />
+                        )}
+                      </Typography>
+                    </Grid>
+                  )}
                 </Grid>
               </TableCell>
               <TableCell>
@@ -179,21 +198,23 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
                       )}
                     </Typography>
                   </Grid>
-                  <Grid>
-                    <Typography sx={{ color: 'text.secondary' }}>
-                      {t('Last updated')}:{' '}
-                      {lastUpdated ? (
-                        dateFormatShort(DateTime.fromISO(lastUpdated), locale)
-                      ) : (
-                        <Skeleton
-                          width={100}
-                          variant="text"
-                          sx={{ ml: 1 }}
-                          style={{ display: 'inline-block' }}
-                        />
-                      )}
-                    </Typography>
-                  </Grid>
+                  {!isHcmOnly && (
+                    <Grid>
+                      <Typography sx={{ color: 'text.secondary' }}>
+                        {t('Last updated')}:{' '}
+                        {lastUpdated ? (
+                          dateFormatShort(DateTime.fromISO(lastUpdated), locale)
+                        ) : (
+                          <Skeleton
+                            width={100}
+                            variant="text"
+                            sx={{ ml: 1 }}
+                            style={{ display: 'inline-block' }}
+                          />
+                        )}
+                      </Typography>
+                    </Grid>
+                  )}
                 </Grid>
               </TableCell>
             </TableRow>
@@ -218,24 +239,26 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
                         )}
                       </Typography>
                     </Grid>
-                    <Grid>
-                      <Typography sx={{ color: 'text.secondary' }}>
-                        {t('Approved on')}:{' '}
-                        {hrApprovedAt ? (
-                          dateFormatShort(
-                            DateTime.fromISO(hrApprovedAt),
-                            locale,
-                          )
-                        ) : (
-                          <Skeleton
-                            width={100}
-                            variant="text"
-                            sx={{ ml: 1 }}
-                            style={{ display: 'inline-block' }}
-                          />
-                        )}
-                      </Typography>
-                    </Grid>
+                    {(!isHcmOnly || spouseApprovedOn) && (
+                      <Grid>
+                        <Typography sx={{ color: 'text.secondary' }}>
+                          {t('Approved on')}:{' '}
+                          {spouseApprovedOn ? (
+                            dateFormatShort(
+                              DateTime.fromISO(spouseApprovedOn),
+                              locale,
+                            )
+                          ) : (
+                            <Skeleton
+                              width={100}
+                              variant="text"
+                              sx={{ ml: 1 }}
+                              style={{ display: 'inline-block' }}
+                            />
+                          )}
+                        </Typography>
+                      </Grid>
+                    )}
                   </Grid>
                 </TableCell>
                 <TableCell>
@@ -254,21 +277,26 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
                         )}
                       </Typography>
                     </Grid>
-                    <Grid>
-                      <Typography sx={{ color: 'text.secondary' }}>
-                        {t('Last updated')}:{' '}
-                        {lastUpdated ? (
-                          dateFormatShort(DateTime.fromISO(lastUpdated), locale)
-                        ) : (
-                          <Skeleton
-                            width={100}
-                            variant="text"
-                            sx={{ ml: 1 }}
-                            style={{ display: 'inline-block' }}
-                          />
-                        )}
-                      </Typography>
-                    </Grid>
+                    {!isHcmOnly && (
+                      <Grid>
+                        <Typography sx={{ color: 'text.secondary' }}>
+                          {t('Last updated')}:{' '}
+                          {lastUpdated ? (
+                            dateFormatShort(
+                              DateTime.fromISO(lastUpdated),
+                              locale,
+                            )
+                          ) : (
+                            <Skeleton
+                              width={100}
+                              variant="text"
+                              sx={{ ml: 1 }}
+                              style={{ display: 'inline-block' }}
+                            />
+                          )}
+                        </Typography>
+                      </Grid>
+                    )}
                   </Grid>
                 </TableCell>
               </TableRow>

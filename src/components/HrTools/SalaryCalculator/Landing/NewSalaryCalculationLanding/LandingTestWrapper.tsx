@@ -3,6 +3,7 @@ import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
+import { mockHcmUnavailable } from 'src/components/HrTools/Shared/HcmData/mockHcmUnavailable';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   AssignmentCategoryEnum,
@@ -28,6 +29,8 @@ export interface LandingTestWrapperProps {
   hasLatestCalculation?: boolean;
   hasSpouseLatestCalculation?: boolean;
   salaryRequestEligible?: boolean;
+  /** How many HCM calls fail with HCM_UNAVAILABLE before it loads */
+  hcmUnavailableCalls?: number;
 }
 
 export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
@@ -39,6 +42,7 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
   hasLatestCalculation = false,
   hasSpouseLatestCalculation = false,
   salaryRequestEligible = true,
+  hcmUnavailableCalls = 0,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
@@ -51,53 +55,57 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
       }>
         mocks={{
           Hcm: {
-            hcm: [
-              {
-                staffInfo: {
-                  preferredName: 'John',
-                  lastName: 'Doe',
-                  personNumber: '000123456',
-                  secaStatus: SecaStatusEnum.Seca,
-                  peopleGroupSupportType:
-                    PeopleGroupSupportTypeEnum.SupportedRmo,
-                  assignmentStatus: AssignmentStatusEnum.ActivePayrollEligible,
-                  assignmentCategory: AssignmentCategoryEnum.FullTimeRegular,
-                  userPersonType: UserPersonTypeEnum.EmployeeStaff,
+            hcm: mockHcmUnavailable(
+              [
+                {
+                  staffInfo: {
+                    preferredName: 'John',
+                    lastName: 'Doe',
+                    personNumber: '000123456',
+                    secaStatus: SecaStatusEnum.Seca,
+                    peopleGroupSupportType:
+                      PeopleGroupSupportTypeEnum.SupportedRmo,
+                    assignmentStatus:
+                      AssignmentStatusEnum.ActivePayrollEligible,
+                    assignmentCategory: AssignmentCategoryEnum.FullTimeRegular,
+                    userPersonType: UserPersonTypeEnum.EmployeeStaff,
+                  },
+                  currentSalary: {
+                    grossSalaryAmount: 55000,
+                    lastUpdated: '2024-03-01',
+                  },
+                  fourOThreeB: {
+                    currentRothContributionPercentage: 12,
+                    currentTaxDeferredContributionPercentage: 5,
+                  },
+                  mhaRequest: {
+                    currentTakenAmount: 10000,
+                  },
+                  salaryRequestEligible,
                 },
-                currentSalary: {
-                  grossSalaryAmount: 55000,
-                  lastUpdated: '2024-03-01',
+                {
+                  staffInfo: {
+                    preferredName: 'Jane',
+                    lastName: 'Doe',
+                    personNumber: '000123457',
+                    secaStatus: SecaStatusEnum.Seca,
+                  },
+                  currentSalary: {
+                    grossSalaryAmount: 10000,
+                    lastUpdated: '2024-03-01',
+                  },
+                  fourOThreeB: {
+                    currentRothContributionPercentage: 10,
+                    currentTaxDeferredContributionPercentage: 6,
+                  },
+                  mhaRequest: {
+                    currentTakenAmount: 12000,
+                  },
+                  salaryRequestEligible,
                 },
-                fourOThreeB: {
-                  currentRothContributionPercentage: 12,
-                  currentTaxDeferredContributionPercentage: 5,
-                },
-                mhaRequest: {
-                  currentTakenAmount: 10000,
-                },
-                salaryRequestEligible,
-              },
-              {
-                staffInfo: {
-                  preferredName: 'Jane',
-                  lastName: 'Doe',
-                  personNumber: '000123457',
-                  secaStatus: SecaStatusEnum.Seca,
-                },
-                currentSalary: {
-                  grossSalaryAmount: 10000,
-                  lastUpdated: '2024-03-01',
-                },
-                fourOThreeB: {
-                  currentRothContributionPercentage: 10,
-                  currentTaxDeferredContributionPercentage: 6,
-                },
-                mhaRequest: {
-                  currentTakenAmount: 12000,
-                },
-                salaryRequestEligible,
-              },
-            ],
+              ],
+              hcmUnavailableCalls,
+            ),
           },
           LandingSalaryCalculations: {
             inProgressCalculation: hasInProgressCalculation

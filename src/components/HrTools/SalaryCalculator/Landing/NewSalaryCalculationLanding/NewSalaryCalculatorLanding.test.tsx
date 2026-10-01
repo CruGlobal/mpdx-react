@@ -168,4 +168,39 @@ describe('NewSalaryCalculatorLanding', () => {
       expect(within(button).getByRole('progressbar')).toBeInTheDocument();
     });
   });
+
+  describe('when HCM is unavailable', () => {
+    it('shows the heavy load alert instead of the salary information', async () => {
+      const { findByRole, queryByRole } = render(
+        <TestComponent hcmUnavailableCalls={Infinity} />,
+      );
+
+      expect(await findByRole('alert')).toHaveTextContent(
+        'The system is currently under heavy load. Please try again in a few minutes.',
+      );
+      expect(
+        queryByRole('heading', { name: 'Current Salary Information' }),
+      ).not.toBeInTheDocument();
+      expect(
+        queryByRole('button', { name: 'Calculate New Salary' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('loads the salary information when Try Again succeeds', async () => {
+      const { findByRole, queryByRole } = render(
+        <TestComponent hcmUnavailableCalls={1} />,
+      );
+
+      const alert = await findByRole('alert');
+      userEvent.click(within(alert).getByRole('button', { name: 'Try Again' }));
+
+      expect(
+        await findByRole('heading', { name: 'Doe, John and Jane' }),
+      ).toBeInTheDocument();
+      expect(
+        await findByRole('button', { name: 'Calculate New Salary' }),
+      ).toBeInTheDocument();
+      expect(queryByRole('alert')).not.toBeInTheDocument();
+    });
+  });
 });

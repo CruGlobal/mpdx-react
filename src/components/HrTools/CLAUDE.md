@@ -105,9 +105,13 @@ Other shared pieces worth knowing before you build a local copy:
 - `Shared/Adornments.tsx` — `CurrencyAdornment` / `PercentageAdornment`. Use on
   every money/percent input (widest reuse in the tree).
 - `Shared/HcmData/Hcm.graphql` — the shared `hcm(effectiveDate:)` query for
-  staff/HR data. `StaffInfoCard`, `AccountInfoBox`, `EligibilityStatusTable`,
-  `GoalPresentation/`, `SummaryHeaderCard`, and `useFormatters` are the other
-  shared leaves. Prefer them over one-off equivalents.
+  staff/HR data. When HCM is overloaded the API answers with an
+  `HCM_UNAVAILABLE` error; check it with `isHcmUnavailableError` and render
+  `HcmUnavailableAlert` (heavy-load message + Try Again that refetches HCM)
+  from `Shared/HcmData/HcmUnavailableAlert.tsx`. `StaffInfoCard`,
+  `AccountInfoBox`, `EligibilityStatusTable`, `GoalPresentation/`,
+  `SummaryHeaderCard`, and `useFormatters` are the other shared leaves. Prefer
+  them over one-off equivalents.
 
 ## The three goal calculators are independent — and their math can drift
 

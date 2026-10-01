@@ -7,19 +7,25 @@ import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayou
 import { useIconPanelItems } from '../Shared/CalculationReports/PanelLayout/useIconPanelItems';
 import { PanelTypeEnum } from '../Shared/CalculationReports/Shared/sharedTypes';
 import { StepsList } from '../Shared/CalculationReports/StepsList/StepsList';
+import { HcmUnavailableAlert } from '../Shared/HcmData/HcmUnavailableAlert';
 import { CurrentStep } from './CurrentStep';
 import { useSalaryCalculator } from './SalaryCalculatorContext/SalaryCalculatorContext';
 import { StepNavigation } from './StepNavigation/StepNavigation';
 import { SummaryStep } from './Summary/Summary';
 
 const MainContent: React.FC = () => {
-  const { editing } = useSalaryCalculator();
+  const { editing, hcmUnavailable, refetchHcm } = useSalaryCalculator();
   return (
     <Stack gap={4} maxWidth={800}>
-      <AutosaveForm>
-        {editing ? <CurrentStep /> : <SummaryStep key="summary" />}
-        <StepNavigation />
-      </AutosaveForm>
+      {/* Every step reads staff info, caps, and 403(b) data from HCM */}
+      {hcmUnavailable ? (
+        <HcmUnavailableAlert refetch={refetchHcm} />
+      ) : (
+        <AutosaveForm>
+          {editing ? <CurrentStep /> : <SummaryStep key="summary" />}
+          <StepNavigation />
+        </AutosaveForm>
+      )}
     </Stack>
   );
 };
