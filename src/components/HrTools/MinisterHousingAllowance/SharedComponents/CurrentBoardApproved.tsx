@@ -56,12 +56,18 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
     spouseTakenAmount,
     userHcmData,
     spouseHcmData,
+    userEligibleForMHA,
+    spouseEligibleForMHA,
   } = useMinisterHousingAllowance();
   const requestId = request?.id;
 
   // MHAs approved before the MPDX launch only exist in HCM, so there is no
   // request to view, print, or duplicate
   const isHcmOnly = !request;
+  // Like the Salary Calculator, an HCM-only card skips ineligible people; the
+  // page shows the eligibility table instead
+  const showUserRow = !isHcmOnly || userEligibleForMHA;
+  const showSpouseRow = isMarried && (!isHcmOnly || spouseEligibleForMHA);
 
   const { hrApprovedAt } = request?.requestAttributes || {};
   const userApprovedOn = isHcmOnly
@@ -149,83 +155,88 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            <TableRow>
-              <TableCell sx={{ fontSize: 20 }}>{preferredName}</TableCell>
-              <TableCell>
-                <Grid container direction="column">
-                  <Grid>
-                    <Typography
-                      sx={{ color: 'primary.main', fontWeight: 'bold' }}
-                    >
-                      {currencyFormat(
-                        Number(userApprovedOverallAmount),
-                        currency,
-                        locale,
-                        {
-                          showTrailingZeros: true,
-                        },
-                      )}
-                    </Typography>
-                  </Grid>
-                  {(!isHcmOnly || userApprovedOn) && (
+            {showUserRow && (
+              <TableRow>
+                <TableCell sx={{ fontSize: 20 }}>{preferredName}</TableCell>
+                <TableCell>
+                  <Grid container direction="column">
                     <Grid>
-                      <Typography sx={{ color: 'text.secondary' }}>
-                        {t('Approved on')}:{' '}
-                        {userApprovedOn ? (
-                          dateFormatShort(
-                            DateTime.fromISO(userApprovedOn),
-                            locale,
-                          )
-                        ) : (
-                          <Skeleton
-                            width={100}
-                            variant="text"
-                            sx={{ ml: 1 }}
-                            style={{ display: 'inline-block' }}
-                          />
+                      <Typography
+                        sx={{ color: 'primary.main', fontWeight: 'bold' }}
+                      >
+                        {currencyFormat(
+                          Number(userApprovedOverallAmount),
+                          currency,
+                          locale,
+                          {
+                            showTrailingZeros: true,
+                          },
                         )}
                       </Typography>
                     </Grid>
-                  )}
-                </Grid>
-              </TableCell>
-              <TableCell>
-                <Grid container direction="column">
-                  <Grid>
-                    <Typography
-                      sx={{ color: 'primary.main', fontWeight: 'bold' }}
-                    >
-                      {currencyFormat(
-                        Number(userTakenAmount),
-                        currency,
-                        locale,
-                        {
-                          showTrailingZeros: true,
-                        },
-                      )}
-                    </Typography>
+                    {(!isHcmOnly || userApprovedOn) && (
+                      <Grid>
+                        <Typography sx={{ color: 'text.secondary' }}>
+                          {t('Approved on')}:{' '}
+                          {userApprovedOn ? (
+                            dateFormatShort(
+                              DateTime.fromISO(userApprovedOn),
+                              locale,
+                            )
+                          ) : (
+                            <Skeleton
+                              width={100}
+                              variant="text"
+                              sx={{ ml: 1 }}
+                              style={{ display: 'inline-block' }}
+                            />
+                          )}
+                        </Typography>
+                      </Grid>
+                    )}
                   </Grid>
-                  {!isHcmOnly && (
+                </TableCell>
+                <TableCell>
+                  <Grid container direction="column">
                     <Grid>
-                      <Typography sx={{ color: 'text.secondary' }}>
-                        {t('Last updated')}:{' '}
-                        {lastUpdated ? (
-                          dateFormatShort(DateTime.fromISO(lastUpdated), locale)
-                        ) : (
-                          <Skeleton
-                            width={100}
-                            variant="text"
-                            sx={{ ml: 1 }}
-                            style={{ display: 'inline-block' }}
-                          />
+                      <Typography
+                        sx={{ color: 'primary.main', fontWeight: 'bold' }}
+                      >
+                        {currencyFormat(
+                          Number(userTakenAmount),
+                          currency,
+                          locale,
+                          {
+                            showTrailingZeros: true,
+                          },
                         )}
                       </Typography>
                     </Grid>
-                  )}
-                </Grid>
-              </TableCell>
-            </TableRow>
-            {isMarried && (
+                    {!isHcmOnly && (
+                      <Grid>
+                        <Typography sx={{ color: 'text.secondary' }}>
+                          {t('Last updated')}:{' '}
+                          {lastUpdated ? (
+                            dateFormatShort(
+                              DateTime.fromISO(lastUpdated),
+                              locale,
+                            )
+                          ) : (
+                            <Skeleton
+                              width={100}
+                              variant="text"
+                              sx={{ ml: 1 }}
+                              style={{ display: 'inline-block' }}
+                            />
+                          )}
+                        </Typography>
+                      </Grid>
+                    )}
+                  </Grid>
+                </TableCell>
+              </TableRow>
+            )}
+            {showSpouseRow && (
               <TableRow>
                 <TableCell sx={{ fontSize: 20 }}>
                   {spousePreferredName ? spousePreferredName : 'N/A'}

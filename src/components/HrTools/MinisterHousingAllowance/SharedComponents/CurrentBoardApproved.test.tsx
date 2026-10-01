@@ -271,6 +271,8 @@ describe('CurrentBoardApproved Component', () => {
                   isMarried: true,
                   preferredName: 'John',
                   spousePreferredName: 'Jane',
+                  userEligibleForMHA: true,
+                  spouseEligibleForMHA: true,
                   userApprovedOverallAmount: 2000,
                   spouseApprovedOverallAmount: 800,
                   userTakenAmount: 1200,
@@ -313,6 +315,8 @@ describe('CurrentBoardApproved Component', () => {
                   isMarried: true,
                   preferredName: 'John',
                   spousePreferredName: 'Jane',
+                  userEligibleForMHA: true,
+                  spouseEligibleForMHA: true,
                   userApprovedOverallAmount: 36600,
                   spouseApprovedOverallAmount: 0,
                   userTakenAmount: 36600,
@@ -335,6 +339,43 @@ describe('CurrentBoardApproved Component', () => {
 
     expect(getByText('Approved on: 3/1/2024')).toBeInTheDocument();
     expect(queryByText('Approved on: 8/1/2016')).not.toBeInTheDocument();
+  });
+
+  it('leaves out the row for an ineligible spouse without a request', () => {
+    const { getByRole, queryByRole } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter>
+          <GqlMockedProvider>
+            <MinisterHousingAllowanceContext.Provider
+              value={
+                {
+                  isMarried: true,
+                  preferredName: 'John',
+                  spousePreferredName: 'Jane',
+                  userEligibleForMHA: true,
+                  spouseEligibleForMHA: false,
+                  userApprovedOverallAmount: 36600,
+                  spouseApprovedOverallAmount: 0,
+                  userTakenAmount: 36600,
+                  spouseTakenAmount: 0,
+                  userHcmData: {
+                    mhaRequest: { boardApprovedOnDate: '2024-03-01' },
+                  } as unknown as HcmData,
+                  spouseHcmData: {
+                    mhaRequest: { boardApprovedOnDate: '2016-08-01' },
+                  } as unknown as HcmData,
+                } as ContextType
+              }
+            >
+              <CurrentBoardApproved request={null} hasOpenRequest={false} />
+            </MinisterHousingAllowanceContext.Provider>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    expect(getByRole('cell', { name: 'John' })).toBeInTheDocument();
+    expect(queryByRole('cell', { name: 'Jane' })).not.toBeInTheDocument();
   });
 
   it('should hide Update Current MHA button when there is an open request', () => {
