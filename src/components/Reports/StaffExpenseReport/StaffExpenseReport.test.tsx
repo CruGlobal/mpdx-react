@@ -9,6 +9,7 @@ import {
   within,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { GraphQLError } from 'graphql';
 import { Settings } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
@@ -37,6 +38,7 @@ interface TestComponentProps {
   staffName?: string;
   personNumber?: string;
   failReportCall?: FailReportCall;
+  failHcmCall?: FailHcmCall;
 }
 
 const salaryCategory = {
@@ -88,8 +90,10 @@ const router = {
 };
 
 let reportCalls = 0;
+let hcmCalls = 0;
 beforeEach(() => {
   reportCalls = 0;
+  hcmCalls = 0;
 });
 
 type ReportMock = DeepPartialMock<
@@ -114,6 +118,28 @@ const failReportCallsWhen = (
       }) as unknown as ReportMock)
     : report;
 
+type HcmMock = DeepPartialMock<HcmQuery['hcm']>;
+
+interface FailHcmCall {
+  when: FailReportCall;
+  code: string;
+}
+
+const failHcmCallsWhen = (
+  failHcmCall: FailHcmCall | undefined,
+  hcm: HcmMock,
+): HcmMock =>
+  failHcmCall
+    ? ((() => {
+        if (failHcmCall.when(hcmCalls++)) {
+          throw new GraphQLError('HCM UserInfo report unavailable', {
+            extensions: { code: failHcmCall.code },
+          });
+        }
+        return hcm;
+      }) as unknown as HcmMock)
+    : hcm;
+
 const TestComponent: React.FC<TestComponentProps> = ({
   isEmpty,
   routerMonth,
@@ -123,6 +149,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   staffName,
   personNumber,
   failReportCall,
+  failHcmCall,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter
@@ -288,7 +315,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                   },
                 },
                 Hcm: {
-                  hcm: [
+                  hcm: failHcmCallsWhen(failHcmCall, [
                     {
                       usStaffGroup,
                       staffInfo: {
@@ -303,7 +330,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                         preferredName: 'Jordan',
                       },
                     },
-                  ],
+                  ]),
                 },
               }}
               onCall={mutationSpy}
@@ -537,6 +564,81 @@ describe('StaffExpenseReport', () => {
 
       await findByRole('alert');
       expect(queryByTestId('account-info')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('when HCM is unavailable', () => {
+    const hcmUnavailable = (when: FailReportCall): FailHcmCall => ({
+      when,
+      code: 'HCM_UNAVAILABLE',
+    });
+
+    it('shows the heavy load alert instead of the report', async () => {
+      const { findByRole, queryByTestId } = render(
+        <TestComponent failHcmCall={hcmUnavailable(everyCall)} />,
+      );
+
+      expect(await findByRole('alert')).toHaveTextContent(
+        'The system is currently under heavy load. Please try again in a few minutes.',
+      );
+      expect(queryByTestId('overall-balance')).not.toBeInTheDocument();
+      // Without HCM the salary rows and fund list would be wrong
+      expect(mutationSpy).not.toHaveGraphqlOperation('ReportsStaffExpenses');
+    });
+
+    it('loads the report when Try Again succeeds', async () => {
+      const { findByRole, findByText, queryByRole } = render(
+        <TestComponent failHcmCall={hcmUnavailable(firstCall)} />,
+      );
+
+      const alert = await findByRole('alert');
+      userEvent.click(within(alert).getByRole('button', { name: 'Try Again' }));
+
+      expect(
+        await findByText('Ending Balance (All Accounts): $4,000.00'),
+      ).toBeInTheDocument();
+      expect(queryByRole('alert')).not.toBeInTheDocument();
+    });
+
+    it('keeps the alert when Try Again fails too', async () => {
+      const { findByRole, getByRole } = render(
+        <TestComponent failHcmCall={hcmUnavailable(everyCall)} />,
+      );
+
+      const alert = await findByRole('alert');
+      userEvent.click(within(alert).getByRole('button', { name: 'Try Again' }));
+
+      await waitFor(() => expect(hcmCalls).toBe(2));
+      expect(getByRole('alert')).toHaveTextContent(
+        'The system is currently under heavy load.',
+      );
+      expect(mutationSpy).not.toHaveGraphqlOperation('ReportsStaffExpenses');
+    });
+
+    it('hides the empty account info in supervisor view', async () => {
+      const { findByRole, queryByTestId } = render(
+        <TestComponent
+          staffAccountId={staffAccountId}
+          personNumber={personNumber}
+          failHcmCall={hcmUnavailable(everyCall)}
+        />,
+      );
+
+      await findByRole('alert');
+      expect(queryByTestId('account-info')).not.toBeInTheDocument();
+    });
+
+    it('still loads the report for other HCM errors', async () => {
+      const { findByText, queryByText } = render(
+        <TestComponent failHcmCall={{ when: everyCall, code: 'NOT_FOUND' }} />,
+      );
+
+      expect(
+        await findByText('Ending Balance (All Accounts): $4,000.00'),
+      ).toBeInTheDocument();
+      expect(
+        queryByText(/The system is currently under heavy load/),
+      ).not.toBeInTheDocument();
     });
   });
 

@@ -18,6 +18,10 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useHcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import {
+  HcmUnavailableAlert,
+  isHcmUnavailableError,
+} from 'src/components/HrTools/Shared/HcmData/HcmUnavailableAlert';
+import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
@@ -100,10 +104,16 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   // Person numbers tell the reader's payroll from their spouse's. HCM lists the reader first, then
   // their spouse. Held alongside the report data's own loading so salary is not rendered as one
   // household total and then split.
-  const { data: hcmData, loading: hcmLoading } = useHcmQuery({
+  const {
+    data: hcmData,
+    loading: hcmLoading,
+    error: hcmError,
+    refetch: refetchHcm,
+  } = useHcmQuery({
     variables: { personNumber },
     skip: isSupervisorView && !personNumber,
   });
+  const hcmUnavailable = isHcmUnavailableError(hcmError);
   const household: HouseholdMember[] = useMemo(
     () =>
       hcmData?.hcm.map(({ staffInfo }) => ({
@@ -148,8 +158,10 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       staffAccountId,
       ...getStaffExpenseMonthRange(filters, time),
     },
-    skip: hcmLoading,
+    // Without HCM the salary rows can't be split by person and the fund list is wrong
+    skip: hcmLoading || hcmUnavailable,
   });
+  const showError = !!reportError || hcmUnavailable;
 
   const refetchReport = () => {
     refetch().catch(() => {});
@@ -393,8 +405,8 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
             {loading ? (
               <AccountInfoBoxSkeleton />
             ) : (
-              // A supervisor's staff name comes from the failed report, so there is no name to show
-              !(isSupervisorView && reportError) && (
+              // A supervisor's staff name comes from the report, so there is no name to show without it
+              !(isSupervisorView && showError) && (
                 <AccountInfoBox name={accountName} />
               )
             )}
@@ -432,7 +444,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               </StyledTimeNavBox>
               <Divider sx={{ my: 2 }} />
             </SimpleScreenOnly>
-            {!reportError && (
+            {!showError && (
               <Typography
                 variant="body1"
                 sx={{ mb: 2, fontWeight: 'bold' }}
@@ -458,7 +470,9 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               </Typography>
             )}
             <SimpleScreenOnly>
-              {reportError ? (
+              {hcmUnavailable ? (
+                <HcmUnavailableAlert refetch={refetchHcm} />
+              ) : reportError ? (
                 // The global Apollo error link already shows the error details in a snackbar
                 <Alert
                   severity="error"
@@ -497,7 +511,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
             </SimpleScreenOnly>
             <SimplePrintOnly>
               <Box>
-                {selectedFundType && !reportError && (
+                {selectedFundType && !showError && (
                   <PrintHeader
                     icon={getIconForFundType(selectedFundType)}
                     iconColor={getIconColorForFundType(selectedFundType, theme)}
