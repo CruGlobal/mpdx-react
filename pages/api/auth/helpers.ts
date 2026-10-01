@@ -133,16 +133,20 @@ export const isJwtExpired = (jwt: string): boolean =>
   jwtExp(jwt) <= DateTime.now().toSeconds();
 
 // The API mints exp as the issue time plus 30 days and carries no iat, so the issue time is derived.
+// Must match the API's lifetime: a shorter API lifetime makes fresh tokens read as pre-cutoff, and
+// every sign-in would bounce straight back to login.
 const API_TOKEN_LIFETIME_SECONDS = 30 * 24 * 60 * 60;
-// Login copies the HCM person number from Okta only for tokens minted after this. The last token
-// minted before it expires at 2026-10-28T15:00:00Z; after that this check never fires and it can be
-// deleted along with its caller in the session callback.
+// Login started copying the HCM person number from Okta around 2026-09-28T13:31Z. The cutoff must
+// not move earlier than that; it sits later as a margin. The last token minted before it expires at
+// 2026-10-28T15:00:00Z; after that this check never fires and it can be deleted along with its
+// caller in the session callback.
 const HCM_GO_LIVE_SECONDS = DateTime.fromISO(
   '2026-09-28T15:00:00Z',
 ).toSeconds();
 
 // Whether a session must sign in once more so login can copy the user's HCM person number.
-// Impersonation tokens live minutes, not 30 days, so their derived issue time means nothing.
+// Impersonation tokens live 20 minutes (a day for developers), not 30 days, so their derived issue
+// time means nothing.
 export const requiresHcmReLogin = (
   jwt: string,
   impersonating: boolean | undefined,

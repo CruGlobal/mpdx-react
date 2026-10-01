@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import { Settings } from 'luxon';
 import { NextAuthOptions, Session } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
 import { setUserInfo } from 'pages/api/auth/helpers';
@@ -129,6 +130,9 @@ describe('session callback', () => {
   // exp is 2026-10-01T18:30:00Z, a 20-minute impersonation token
   const impersonationToken =
     'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoidSIsImV4cCI6MTc5MDg3OTQwMH0.sig';
+  // exp is 2026-10-01T11:50:00Z, an impersonation token that expired before "now"
+  const expiredImpersonationToken =
+    'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoidSIsImV4cCI6MTc5MDg1NTQwMH0.sig';
 
   const oktaEnv = {
     AUTH_PROVIDER: 'OKTA',
@@ -157,11 +161,7 @@ describe('session callback', () => {
   });
 
   beforeEach(() => {
-    jest.useFakeTimers({ now: new Date('2026-10-01T12:00:00Z') });
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
+    Settings.now = () => new Date('2026-10-01T12:00:00Z').valueOf();
   });
 
   const callSession = (token: Partial<JWT>) =>
@@ -188,5 +188,11 @@ describe('session callback', () => {
     ).toMatchObject({
       user: { apiToken: impersonationToken, impersonating: true },
     });
+  });
+
+  it('still sends an expired impersonation session back to login', () => {
+    expect(() =>
+      callSession({ apiToken: expiredImpersonationToken, impersonating: true }),
+    ).toThrow('Expired API token');
   });
 });
