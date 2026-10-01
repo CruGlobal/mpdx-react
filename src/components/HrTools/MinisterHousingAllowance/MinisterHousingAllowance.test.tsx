@@ -155,7 +155,7 @@ describe('MinisterHousingAllowanceReport', () => {
     });
 
     it('shows not applied when the HCM approved amount is 0', async () => {
-      const { findByText, queryByText } = render(
+      const { findByText, findByRole, queryByText } = render(
         <TestComponent
           hcmMock={[
             {
@@ -173,11 +173,15 @@ describe('MinisterHousingAllowanceReport', () => {
       expect(
         await findByText(/our records indicate that you have not applied for/i),
       ).toBeInTheDocument();
+      // Wait for HCM data so the negative check can't pass before it loads
+      expect(
+        await findByRole('columnheader', { name: 'John' }),
+      ).toBeInTheDocument();
       expect(queryByText('Current Board Approved MHA')).not.toBeInTheDocument();
     });
 
     it('does not show the HCM approved MHA when only an ineligible spouse has one', async () => {
-      const { findByText, queryByText } = render(
+      const { findByText, findByRole, queryByText } = render(
         <TestComponent
           hcmMock={[
             marriedNoMhaNoException[0],
@@ -194,11 +198,15 @@ describe('MinisterHousingAllowanceReport', () => {
       expect(
         await findByText(/our records indicate that you have not applied for/i),
       ).toBeInTheDocument();
+      // Wait for HCM data so the negative check can't pass before it loads
+      expect(
+        await findByRole('columnheader', { name: 'Jane' }),
+      ).toBeInTheDocument();
       expect(queryByText('Current Board Approved MHA')).not.toBeInTheDocument();
     });
 
     it('does not show the HCM approved MHA when only an ineligible user has one', async () => {
-      const { findByText, queryByText } = render(
+      const { findByText, findByRole, queryByText } = render(
         <TestComponent
           hcmMock={[
             { ...singleMhaNoException[0], mhaEit: { mhaEligibility: false } },
@@ -211,11 +219,15 @@ describe('MinisterHousingAllowanceReport', () => {
       expect(
         await findByText(/our records indicate that you have not applied for/i),
       ).toBeInTheDocument();
+      // Wait for HCM data so the negative check can't pass before it loads
+      expect(
+        await findByRole('columnheader', { name: 'Jane' }),
+      ).toBeInTheDocument();
       expect(queryByText('Current Board Approved MHA')).not.toBeInTheDocument();
     });
 
     it('does not show the HCM approved MHA when ineligible', async () => {
-      const { findByText, queryByText } = render(
+      const { findByText, findByRole, queryByText } = render(
         <TestComponent
           hcmMock={[
             { ...singleMhaNoException[0], mhaEit: { mhaEligibility: false } },
@@ -226,6 +238,10 @@ describe('MinisterHousingAllowanceReport', () => {
 
       expect(
         await findByText(/our records indicate that you have not applied for/i),
+      ).toBeInTheDocument();
+      // Wait for HCM data so the negative check can't pass before it loads
+      expect(
+        await findByRole('columnheader', { name: 'John' }),
       ).toBeInTheDocument();
       expect(queryByText('Current Board Approved MHA')).not.toBeInTheDocument();
     });
