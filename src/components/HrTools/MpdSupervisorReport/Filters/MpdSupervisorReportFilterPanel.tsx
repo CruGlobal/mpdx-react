@@ -6,12 +6,12 @@ import {
   Checkbox,
   Chip,
   IconButton,
-  ListSubheader,
   MenuItem,
   Stack,
   TextField,
   Tooltip,
   Typography,
+  createFilterOptions,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import {
@@ -35,6 +35,25 @@ import {
   userPersonTypeGroups,
   userPersonTypeOptions,
 } from './mpdSupervisorReportFilters';
+
+type UserPersonTypeOption = MpdUserPersonTypeEnum | MpdUserPersonTypeEnum[];
+
+const userPersonTypeGroupOptions: UserPersonTypeOption[] =
+  userPersonTypeGroups.flatMap((types) => [types, ...types]);
+
+const defaultFilterOptions = createFilterOptions<UserPersonTypeOption>();
+
+const filterUserPersonTypeOptions: typeof defaultFilterOptions = (
+  options,
+  state,
+) => {
+  const matches = defaultFilterOptions(options, state);
+  return options.filter(
+    (option) =>
+      matches.includes(option) ||
+      (Array.isArray(option) && option.some((type) => matches.includes(type))),
+  );
+};
 
 interface FilterAutocompleteProps {
   label: string;
@@ -232,64 +251,71 @@ export const MpdSupervisorReportFilterPanel: React.FC<
           limitTags={2}
           size="small"
           value={userPersonTypes}
-          onChange={(_, newValue) => setUserPersonTypes(newValue)}
-          options={userPersonTypeOptions}
-          groupBy={(option) => getLocalizedUserPersonTypeGroup(t, option)}
-          renderGroup={({ key, group, children }) => {
-            const types =
-              userPersonTypeGroups.find(
-                (groupTypes) =>
-                  getLocalizedUserPersonTypeGroup(t, groupTypes[0]) === group,
-              ) ?? [];
-            const checkedCount = types.filter((type) =>
-              userPersonTypes.includes(type),
-            ).length;
-            return (
-              <li key={key}>
-                <ListSubheader
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    top: -8,
-                    fontSize: 'inherit',
-                  }}
+          onChange={(_, newValue, _reason, details) => {
+            if (Array.isArray(details?.option)) {
+              toggleUserPersonTypeGroup(details.option);
+              return;
+            }
+            setUserPersonTypes(
+              userPersonTypeOptions.filter((type) => newValue.includes(type)),
+            );
+          }}
+          options={userPersonTypeGroupOptions}
+          filterOptions={filterUserPersonTypeOptions}
+          getOptionLabel={(option) =>
+            Array.isArray(option)
+              ? getLocalizedUserPersonTypeGroup(t, option[0])
+              : getLocalizedUserPersonTypeName(t, option)
+          }
+          slotProps={{
+            listbox: {
+              sx: { '& .MuiAutocomplete-option:not([data-group])': { pl: 5 } },
+            },
+          }}
+          renderOption={(props, option, { selected }) => {
+            if (!Array.isArray(option)) {
+              return (
+                <li
+                  {...props}
+                  key={option}
+                  aria-label={getLocalizedUserPersonTypeName(t, option)}
                 >
                   <Checkbox
                     edge="start"
                     size="small"
-                    checked={checkedCount === types.length}
-                    indeterminate={
-                      checkedCount > 0 && checkedCount < types.length
-                    }
-                    onChange={() => toggleUserPersonTypeGroup(types)}
-                    inputProps={{
-                      'aria-label': t('Select all {{group}}', { group }),
-                    }}
+                    checked={selected}
                     disableRipple
                   />
-                  {group}
-                </ListSubheader>
-                <Box
-                  component="ul"
-                  sx={{ p: 0, '&& .MuiAutocomplete-option': { pl: 5 } }}
-                >
-                  {children}
-                </Box>
-              </li>
+                  {getLocalizedUserPersonType(t, option)}
+                </li>
+              );
+            }
+            const group = getLocalizedUserPersonTypeGroup(t, option[0]);
+            const checkedCount = option.filter((type) =>
+              userPersonTypes.includes(type),
+            ).length;
+            const allChecked = checkedCount === option.length;
+            return (
+              <Box
+                component="li"
+                {...props}
+                key={`group-${option[0]}`}
+                data-group
+                aria-label={t('Select all {{group}}', { group })}
+                aria-selected={allChecked}
+                sx={{ color: 'text.secondary', fontWeight: 500 }}
+              >
+                <Checkbox
+                  edge="start"
+                  size="small"
+                  checked={allChecked}
+                  indeterminate={checkedCount > 0 && !allChecked}
+                  disableRipple
+                />
+                {group}
+              </Box>
             );
           }}
-          getOptionLabel={(option) => getLocalizedUserPersonTypeName(t, option)}
-          renderOption={(props, option, { selected }) => (
-            <li {...props} key={option}>
-              <Checkbox
-                edge="start"
-                size="small"
-                checked={selected}
-                disableRipple
-              />
-              {getLocalizedUserPersonType(t, option)}
-            </li>
-          )}
           renderInput={(params) => (
             <TextField
               {...params}

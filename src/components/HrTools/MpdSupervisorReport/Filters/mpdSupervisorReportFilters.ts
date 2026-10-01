@@ -55,8 +55,6 @@ export const quickFilterDescription = (
 
 export const ALL_TYPES = 'all';
 
-// Employee, Non-worker, then Pending, as the Autocomplete's groupBy only
-// merges neighboring options.
 export const userPersonTypeGroups: MpdUserPersonTypeEnum[][] = [
   [
     MpdUserPersonTypeEnum.EmployeeStaff,

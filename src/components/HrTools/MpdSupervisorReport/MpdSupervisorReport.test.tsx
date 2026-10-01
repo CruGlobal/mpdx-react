@@ -281,15 +281,14 @@ describe('MpdSupervisorReport', () => {
     });
 
     it('lists each checked person type as its own chip', async () => {
-      const { findByText, getByRole, findAllByRole } = renderReport({
+      const { findByText, getByRole, findByRole } = renderReport({
         withFilters: true,
       });
       await findByText('John Smith');
 
       userEvent.click(getByRole('combobox', { name: 'Person type' }));
-      const staffOptions = await findAllByRole('option', { name: 'Staff' });
-      userEvent.click(staffOptions[0]);
-      userEvent.click(staffOptions[2]);
+      userEvent.click(await findByRole('option', { name: 'Employee - Staff' }));
+      userEvent.click(getByRole('option', { name: 'Pending - Staff' }));
       const chips = getByRole('list', { name: 'Applied filters' });
       expect(chips).toHaveTextContent('Person type: Employee - Staff');
       expect(chips).toHaveTextContent('Person type: Pending - Staff');
@@ -302,6 +301,29 @@ describe('MpdSupervisorReport', () => {
 
       expect(chips).not.toHaveTextContent('Person type: Employee - Staff');
       expect(chips).toHaveTextContent('Person type: Pending - Staff');
+    });
+
+    it('shows a fully checked group as one chip that removes only that group', async () => {
+      const { findByText, getByRole, findByRole } = renderReport({
+        withFilters: true,
+      });
+      await findByText('John Smith');
+
+      userEvent.click(getByRole('combobox', { name: 'Person type' }));
+      userEvent.click(await findByRole('option', { name: 'Employee - Staff' }));
+      userEvent.click(getByRole('option', { name: 'Select all Pending' }));
+      const chips = getByRole('list', { name: 'Applied filters' });
+      expect(chips).toHaveTextContent('Person type: Pending - All');
+      expect(chips).not.toHaveTextContent('Person type: Pending - Staff');
+
+      userEvent.click(
+        within(chips).getByRole('button', {
+          name: 'Remove Person type: Pending - All',
+        }),
+      );
+
+      expect(chips).not.toHaveTextContent('Pending');
+      expect(chips).toHaveTextContent('Person type: Employee - Staff');
     });
 
     it('clears every filter and the search from the chip row', async () => {
