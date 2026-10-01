@@ -12,6 +12,7 @@ import {
 import { styled } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import { NameDisplay } from 'src/components/HrTools/Shared/CalculationReports/NameDisplay/NameDisplay';
+import { HcmUnavailableAlert } from 'src/components/HrTools/Shared/HcmData/HcmUnavailableAlert';
 import Loading from 'src/components/Loading/Loading';
 import { LimitedAccess } from 'src/components/Shared/LimitedAccess/LimitedAccess';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -37,6 +38,8 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
     salaryData: { currentGrossSalary },
     accountBalance,
     inProgressCalculationId,
+    hcmUnavailable,
+    refetchHcm,
   } = useLandingData();
 
   const [createSalaryCalculation, { loading: creatingCalculation }] =
@@ -114,15 +117,21 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
             </Trans>
           </Typography>
         </Box>
-        <NameDisplay
-          names={names}
-          showContent
-          titleOne={t('Current Gross Salary')}
-          titleTwo={t('Primary Account Balance')}
-          amountOne={currentGrossSalary}
-          amountTwo={accountBalance}
-        />
-        <SalaryInformationCard />
+        {hcmUnavailable ? (
+          <HcmUnavailableAlert refetch={refetchHcm} />
+        ) : (
+          <>
+            <NameDisplay
+              names={names}
+              showContent
+              titleOne={t('Current Gross Salary')}
+              titleTwo={t('Primary Account Balance')}
+              amountOne={currentGrossSalary}
+              amountTwo={accountBalance}
+            />
+            <SalaryInformationCard />
+          </>
+        )}
         {self?.salaryRequestEligible && (
           <Box sx={{ marginTop: theme.spacing(4) }}>
             {inProgressCalculationId ? (
