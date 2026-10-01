@@ -53,12 +53,10 @@ describe('SalaryCalculationCard', () => {
             '$10,000.00',
             '$20,000.00',
           ],
-          ['11. Taxes', '$10,002.00', '$20,002.00'],
-          ['a. SECA(If applicable) Line 10 × 0.22', '$10,002.00', '$20,002.00'],
           [
-            'b. State and Local(If selected in Step 6) Line 10 × 0.05',
-            'TBD',
-            'TBD',
+            '11. SECA(If applicable) Line 10 × 0.22',
+            '$10,002.00',
+            '$20,002.00',
           ],
           [
             '12. SubtotalLine 10 + Line 11This amount must be at least $10,004.00',
@@ -91,7 +89,7 @@ describe('SalaryCalculationCard', () => {
       }),
     );
 
-    // 10 rows with 2 cells each and 1 row (row 13) with one cell
-    expect(getAllByRole('cell').length).toBe(21);
+    // 8 rows with 2 cells each and 1 row (row 13) with one cell
+    expect(getAllByRole('cell').length).toBe(17);
   });
 });
