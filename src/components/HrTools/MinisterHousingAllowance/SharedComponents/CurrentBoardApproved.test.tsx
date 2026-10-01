@@ -260,6 +260,83 @@ describe('CurrentBoardApproved Component', () => {
     });
   });
 
+  it('shows HCM approved dates and hides request actions without a request', () => {
+    const { getByText, queryByText, queryByRole } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter>
+          <GqlMockedProvider>
+            <MinisterHousingAllowanceContext.Provider
+              value={
+                {
+                  isMarried: true,
+                  preferredName: 'John',
+                  spousePreferredName: 'Jane',
+                  userApprovedOverallAmount: 2000,
+                  spouseApprovedOverallAmount: 800,
+                  userTakenAmount: 1200,
+                  spouseTakenAmount: 300,
+                  userHcmData: {
+                    mhaRequest: { boardApprovedOnDate: '2026-06-01' },
+                  } as unknown as HcmData,
+                  spouseHcmData: {
+                    mhaRequest: { boardApprovedOnDate: '2026-05-15' },
+                  } as unknown as HcmData,
+                } as ContextType
+              }
+            >
+              <CurrentBoardApproved request={null} hasOpenRequest={false} />
+            </MinisterHousingAllowanceContext.Provider>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    expect(getByText('$2,000.00')).toBeInTheDocument();
+    expect(getByText('Approved on: 6/1/2026')).toBeInTheDocument();
+    expect(getByText('$800.00')).toBeInTheDocument();
+    expect(getByText('Approved on: 5/15/2026')).toBeInTheDocument();
+
+    expect(queryByText(/last updated/i)).not.toBeInTheDocument();
+    expect(queryByText('View Current MHA')).not.toBeInTheDocument();
+    expect(queryByText('Update Current MHA')).not.toBeInTheDocument();
+    expect(queryByRole('button', { name: 'Print' })).not.toBeInTheDocument();
+  });
+
+  it('hides the HCM approved date for a person whose approved amount is 0', () => {
+    const { getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter>
+          <GqlMockedProvider>
+            <MinisterHousingAllowanceContext.Provider
+              value={
+                {
+                  isMarried: true,
+                  preferredName: 'John',
+                  spousePreferredName: 'Jane',
+                  userApprovedOverallAmount: 36600,
+                  spouseApprovedOverallAmount: 0,
+                  userTakenAmount: 36600,
+                  spouseTakenAmount: 0,
+                  userHcmData: {
+                    mhaRequest: { boardApprovedOnDate: '2024-03-01' },
+                  } as unknown as HcmData,
+                  spouseHcmData: {
+                    mhaRequest: { boardApprovedOnDate: '2016-08-01' },
+                  } as unknown as HcmData,
+                } as ContextType
+              }
+            >
+              <CurrentBoardApproved request={null} hasOpenRequest={false} />
+            </MinisterHousingAllowanceContext.Provider>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    expect(getByText('Approved on: 3/1/2024')).toBeInTheDocument();
+    expect(queryByText('Approved on: 8/1/2016')).not.toBeInTheDocument();
+  });
+
   it('should hide Update Current MHA button when there is an open request', () => {
     const { queryByText, getByText } = render(
       <TestComponent
