@@ -48,6 +48,8 @@ export const MinisterHousingAllowanceReport = () => {
     spouseEligibleForMHA,
     userHcmData,
     spouseHcmData,
+    userApprovedOverallAmount,
+    spouseApprovedOverallAmount,
   } = useMinisterHousingAllowance();
 
   const [createMHA] = useCreateHousingAllowanceRequestMutation();
@@ -114,6 +116,13 @@ export const MinisterHousingAllowanceReport = () => {
 
   const eitherPersonEligible = userEligibleForMHA || spouseEligibleForMHA;
 
+  // MHAs approved before the MPDX launch only exist in HCM
+  const isHcmApprovedOnly =
+    hasNoRequests &&
+    eitherPersonEligible &&
+    ((userApprovedOverallAmount ?? 0) > 0 ||
+      (spouseApprovedOverallAmount ?? 0) > 0);
+
   const hasCurrentBoardApprovedMha =
     currentRequest?.status === MhaStatusEnum.BoardApproved;
   const showNewRequestButton =
@@ -146,7 +155,21 @@ export const MinisterHousingAllowanceReport = () => {
                   <Typography variant="h5">{t('Your MHA')}</Typography>
                 </Box>
 
-                {hasNoRequests ? (
+                {isHcmApprovedOnly ? (
+                  <>
+                    <Box mb={2}>
+                      <EligibleDisplay
+                        isPending={false}
+                        isEditable={false}
+                        isHcmApprovedOnly
+                      />
+                    </Box>
+                    <CurrentBoardApproved
+                      request={null}
+                      hasOpenRequest={false}
+                    />
+                  </>
+                ) : hasNoRequests ? (
                   <>
                     <NoRequestsDisplay />
                     <Box mt={2}>

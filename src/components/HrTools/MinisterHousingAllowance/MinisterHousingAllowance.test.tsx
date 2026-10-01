@@ -108,6 +108,91 @@ describe('MinisterHousingAllowanceReport', () => {
     ).toBeInTheDocument();
   });
 
+  describe('no MPDX requests but an HCM approved MHA', () => {
+    it('shows the HCM approved MHA instead of not applied', async () => {
+      const { findByText, getByText, getByRole, queryByText, queryByTestId } =
+        render(
+          <TestComponent hcmMock={singleMhaNoException} mhaRequestsMock={[]} />,
+        );
+
+      expect(
+        await findByText('Current Board Approved MHA'),
+      ).toBeInTheDocument();
+      expect(getByText(/click "request new mha"/i)).toBeInTheDocument();
+      expect(getByText('$15,000.00')).toBeInTheDocument();
+      expect(getByText('Approved on: 6/1/2026')).toBeInTheDocument();
+      expect(
+        getByRole('button', { name: 'Request New MHA' }),
+      ).toBeInTheDocument();
+
+      expect(queryByText(/have not applied for/i)).not.toBeInTheDocument();
+      expect(queryByText(/waiting to be processed/i)).not.toBeInTheDocument();
+      expect(queryByTestId('eligibility-status-table')).not.toBeInTheDocument();
+      expect(queryByText('View Current MHA')).not.toBeInTheDocument();
+      expect(queryByText('Update Current MHA')).not.toBeInTheDocument();
+    });
+
+    it('shows the HCM approved MHA when only the spouse has one', async () => {
+      const { findByText, getByRole, getByText } = render(
+        <TestComponent
+          hcmMock={[
+            marriedNoMhaNoException[0],
+            {
+              ...singleMhaNoException[0],
+              staffInfo: marriedNoMhaNoException[1].staffInfo,
+            },
+          ]}
+          mhaRequestsMock={[]}
+        />,
+      );
+
+      expect(
+        await findByText('Current Board Approved MHA'),
+      ).toBeInTheDocument();
+      expect(getByRole('cell', { name: 'Jane' })).toBeInTheDocument();
+      expect(getByText('$15,000.00')).toBeInTheDocument();
+      expect(getByText('Approved on: 6/1/2026')).toBeInTheDocument();
+    });
+
+    it('shows not applied when the HCM approved amount is 0', async () => {
+      const { findByText, queryByText } = render(
+        <TestComponent
+          hcmMock={[
+            {
+              ...singleMhaNoException[0],
+              mhaRequest: {
+                ...singleMhaNoException[0].mhaRequest,
+                currentApprovedOverallAmount: 0,
+              },
+            },
+          ]}
+          mhaRequestsMock={[]}
+        />,
+      );
+
+      expect(
+        await findByText(/our records indicate that you have not applied for/i),
+      ).toBeInTheDocument();
+      expect(queryByText('Current Board Approved MHA')).not.toBeInTheDocument();
+    });
+
+    it('does not show the HCM approved MHA when ineligible', async () => {
+      const { findByText, queryByText } = render(
+        <TestComponent
+          hcmMock={[
+            { ...singleMhaNoException[0], mhaEit: { mhaEligibility: false } },
+          ]}
+          mhaRequestsMock={[]}
+        />,
+      );
+
+      expect(
+        await findByText(/our records indicate that you have not applied for/i),
+      ).toBeInTheDocument();
+      expect(queryByText('Current Board Approved MHA')).not.toBeInTheDocument();
+    });
+  });
+
   it('renders married, no pending, approved correctly', async () => {
     const { findByText } = render(
       <TestComponent
