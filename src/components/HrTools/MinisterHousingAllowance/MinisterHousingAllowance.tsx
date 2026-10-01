@@ -130,6 +130,26 @@ export const MinisterHousingAllowanceReport = () => {
   const showCurrentRequest = eitherPersonEligible && currentRequest;
   const showPreviousRequests = eitherPersonEligible && previousApprovedRequest;
 
+  const anyoneIneligible =
+    !userEligibleForMHA || (isMarried && !spouseEligibleForMHA);
+
+  const eligibilityStatusTable = (
+    <EligibilityStatusTable
+      userPreferredName={preferredName}
+      userEligible={userEligibleForMHA}
+      userCountry={userHcmData?.staffInfo.country ?? undefined}
+      spousePreferredName={isMarried ? spousePreferredName : undefined}
+      spouseEligible={isMarried ? spouseEligibleForMHA : undefined}
+      spouseCountry={
+        isMarried ? (spouseHcmData?.staffInfo.country ?? undefined) : undefined
+      }
+      userMhiEligibility={getMhiEligibility(userHcmData)}
+      spouseMhiEligibility={
+        isMarried ? getMhiEligibility(spouseHcmData) : undefined
+      }
+    />
+  );
+
   if (creatingRequest) {
     return <Loading loading />;
   }
@@ -167,36 +187,14 @@ export const MinisterHousingAllowanceReport = () => {
                       request={null}
                       hasOpenRequest={false}
                     />
+                    {anyoneIneligible && (
+                      <Box mt={2}>{eligibilityStatusTable}</Box>
+                    )}
                   </>
                 ) : hasNoRequests ? (
                   <>
                     <NoRequestsDisplay />
-                    <Box mt={2}>
-                      <EligibilityStatusTable
-                        userPreferredName={preferredName}
-                        userEligible={userEligibleForMHA}
-                        userCountry={
-                          userHcmData?.staffInfo.country ?? undefined
-                        }
-                        spousePreferredName={
-                          isMarried ? spousePreferredName : undefined
-                        }
-                        spouseEligible={
-                          isMarried ? spouseEligibleForMHA : undefined
-                        }
-                        spouseCountry={
-                          isMarried
-                            ? (spouseHcmData?.staffInfo.country ?? undefined)
-                            : undefined
-                        }
-                        userMhiEligibility={getMhiEligibility(userHcmData)}
-                        spouseMhiEligibility={
-                          isMarried
-                            ? getMhiEligibility(spouseHcmData)
-                            : undefined
-                        }
-                      />
-                    </Box>
+                    <Box mt={2}>{eligibilityStatusTable}</Box>
                   </>
                 ) : (
                   eitherPersonEligible && (

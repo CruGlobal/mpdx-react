@@ -154,6 +154,30 @@ describe('MinisterHousingAllowanceReport', () => {
       expect(getByText('Approved on: 6/1/2026')).toBeInTheDocument();
     });
 
+    it('shows eligibility instead of a row for an ineligible spouse', async () => {
+      const { findByText, findByTestId, getByRole, queryByRole } = render(
+        <TestComponent
+          hcmMock={[
+            singleMhaNoException[0],
+            {
+              ...marriedNoMhaNoException[1],
+              mhaEit: { mhaEligibility: false },
+            },
+          ]}
+          mhaRequestsMock={[]}
+        />,
+      );
+
+      expect(
+        await findByText('Current Board Approved MHA'),
+      ).toBeInTheDocument();
+      expect(
+        await findByTestId('eligibility-status-table'),
+      ).toBeInTheDocument();
+      expect(getByRole('cell', { name: 'John' })).toBeInTheDocument();
+      expect(queryByRole('cell', { name: 'Jane' })).not.toBeInTheDocument();
+    });
+
     it('shows not applied when the HCM approved amount is 0', async () => {
       const { findByText, findByRole, queryByText } = render(
         <TestComponent
