@@ -22,14 +22,24 @@ interface TestComponentProps {
   syncedAt?: string | null;
   outOfSync?: boolean;
   personNumber?: string;
-  refreshError?: boolean;
+  refreshError?: 'rateLimited' | 'unavailable';
 }
+
+const errors = {
+  rateLimited: new GraphQLError(
+    'HCM data can be refreshed once every 3 minutes',
+    { extensions: { code: 'HCM_REFRESH_RATE_LIMITED' } },
+  ),
+  unavailable: new GraphQLError('HCM UserInfo report unavailable', {
+    extensions: { code: 'HCM_UNAVAILABLE' },
+  }),
+};
 
 const TestComponent: React.FC<TestComponentProps> = ({
   syncedAt = '2026-09-30T12:00:00Z',
   outOfSync = false,
   personNumber,
-  refreshError = false,
+  refreshError,
 }) => (
   <ThemeProvider theme={theme}>
     <GqlMockedProvider
@@ -38,10 +48,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
         RefreshHcm: refreshError
           ? {
               refreshHcm: () => {
-                throw new GraphQLError(
-                  'HCM data can be refreshed once every 3 minutes',
-                  { extensions: { code: 'HCM_REFRESH_RATE_LIMITED' } },
-                );
+                throw errors[refreshError];
               },
             }
           : { refreshHcm: { hcm: [{ syncedAt: now.toISO(), outOfSync }] } },
@@ -62,36 +69,57 @@ describe('HcmSyncStatus', () => {
     Settings.now = () => Date.now();
   });
 
-  it('shows how long ago the data was read from HCM', async () => {
+  it('shows how long ago the data was synced from HCM', async () => {
     const { findByText, queryByRole } = render(<TestComponent />);
 
-    expect(
-      await findByText('HCM data updated 3 hours ago'),
-    ).toBeInTheDocument();
+    expect(await findByText('Synced from HCM 3 hours ago')).toBeInTheDocument();
     expect(queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('shows the exact sync time on hover', async () => {
+    const { findByText, findByRole } = render(<TestComponent />);
+
+    userEvent.hover(await findByText('Synced from HCM 3 hours ago'));
+
+    expect(await findByRole('tooltip')).toHaveTextContent('Sep 30, 2026');
+  });
+
+  it('marks data the sync has not reached in over a day', async () => {
+    const { findByText } = render(
+      <TestComponent syncedAt="2026-09-28T12:00:00Z" />,
+    );
+
+    expect(await findByText('Synced from HCM 2 days ago')).toHaveStyle({
+      color: theme.palette.warning.dark,
+    });
   });
 
   it('warns when HCM no longer has a record for the person', async () => {
     const { findByRole } = render(<TestComponent outOfSync />);
 
-    expect(await findByRole('alert')).toHaveTextContent(
+    const alert = await findByRole('alert');
+    expect(alert).toHaveTextContent(
       'HCM no longer has a record for this person',
+    );
+    expect(alert).toHaveTextContent(
+      'The information below is from Sep 30, 2026',
     );
   });
 
-  it('leaves out the updated time when there is none', async () => {
+  it('leaves out the sync time when there is none', async () => {
     const { findByRole, queryByText } = render(
       <TestComponent syncedAt={null} />,
     );
 
     expect(await findByRole('button', { name: 'Refresh' })).toBeInTheDocument();
-    expect(queryByText(/HCM data updated/)).not.toBeInTheDocument();
+    expect(queryByText(/Synced from HCM/)).not.toBeInTheDocument();
   });
 
-  it('refreshes the person shown and reloads the page data', async () => {
+  it('refreshes the person shown, reloads the page data, and waits out the cooldown', async () => {
     const { findByRole } = render(<TestComponent personNumber="000123456" />);
 
-    userEvent.click(await findByRole('button', { name: 'Refresh' }));
+    const button = await findByRole('button', { name: 'Refresh' });
+    userEvent.click(button);
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('RefreshHcm', {
@@ -108,18 +136,34 @@ describe('HcmSyncStatus', () => {
         ([{ operation }]) => operation.operationName === 'Hcm',
       ),
     ).toHaveLength(2);
+    expect(await findByRole('button', { name: 'Refresh' })).toBeDisabled();
   });
 
-  it('shows the error when a refresh is refused', async () => {
-    const { findByRole } = render(<TestComponent refreshError />);
+  it('waits out the cooldown when the API says the person was just refreshed', async () => {
+    const { findByRole } = render(<TestComponent refreshError="rateLimited" />);
 
     userEvent.click(await findByRole('button', { name: 'Refresh' }));
 
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith(
         'HCM data can be refreshed once every 3 minutes',
+        { variant: 'info' },
+      ),
+    );
+    expect(await findByRole('button', { name: 'Refresh' })).toBeDisabled();
+  });
+
+  it('lets the user try again right away when HCM is unavailable', async () => {
+    const { findByRole } = render(<TestComponent refreshError="unavailable" />);
+
+    userEvent.click(await findByRole('button', { name: 'Refresh' }));
+
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'HCM UserInfo report unavailable',
         { variant: 'error' },
       ),
     );
+    expect(await findByRole('button', { name: 'Refresh' })).toBeEnabled();
   });
 });

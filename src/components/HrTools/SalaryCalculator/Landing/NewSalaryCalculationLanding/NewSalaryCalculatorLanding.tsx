@@ -12,7 +12,6 @@ import {
 import { styled } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import { NameDisplay } from 'src/components/HrTools/Shared/CalculationReports/NameDisplay/NameDisplay';
-import { HcmSyncStatus } from 'src/components/HrTools/Shared/HcmSyncStatus/HcmSyncStatus';
 import Loading from 'src/components/Loading/Loading';
 import { LimitedAccess } from 'src/components/Shared/LimitedAccess/LimitedAccess';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -115,7 +114,6 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
             </Trans>
           </Typography>
         </Box>
-        <HcmSyncStatus />
         <NameDisplay
           names={names}
           showContent

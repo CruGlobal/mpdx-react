@@ -6,7 +6,6 @@ import theme from 'src/theme';
 import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { useIconPanelItems } from '../Shared/CalculationReports/PanelLayout/useIconPanelItems';
 import { PanelTypeEnum } from '../Shared/CalculationReports/Shared/sharedTypes';
-import { HcmSyncStatus } from '../Shared/HcmSyncStatus/HcmSyncStatus';
 import { AdditionalSalaryRequestSkeleton } from './AdditionalSalaryRequestSkeleton';
 import { EligibleDisplay } from './MainPages/EligibleDisplay';
 import { useAdditionalSalaryRequest } from './Shared/AdditionalSalaryRequestContext';
@@ -75,7 +74,6 @@ export const AdditionalSalaryRequest: React.FC = () => {
               }}
               width={mainContentWidth}
             >
-              <HcmSyncStatus />
               <EligibleDisplay />
 
               {request && <CurrentRequest request={request} />}

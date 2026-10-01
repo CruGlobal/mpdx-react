@@ -144,9 +144,11 @@ export const MinisterHousingAllowanceReport = () => {
             <>
               <Stack direction="column" width={mainContentWidth}>
                 <Box mb={2}>
-                  <Typography variant="h5">{t('Your MHA')}</Typography>
+                  <Typography variant="h5" gutterBottom>
+                    {t('Your MHA')}
+                  </Typography>
+                  <HcmSyncStatus />
                 </Box>
-                <HcmSyncStatus />
 
                 {hasNoRequests ? (
                   <>
