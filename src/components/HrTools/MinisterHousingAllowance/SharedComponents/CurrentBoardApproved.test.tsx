@@ -302,6 +302,41 @@ describe('CurrentBoardApproved Component', () => {
     expect(queryByRole('button', { name: 'Print' })).not.toBeInTheDocument();
   });
 
+  it('hides the HCM approved date for a person whose approved amount is 0', () => {
+    const { getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter>
+          <GqlMockedProvider>
+            <MinisterHousingAllowanceContext.Provider
+              value={
+                {
+                  isMarried: true,
+                  preferredName: 'John',
+                  spousePreferredName: 'Jane',
+                  userApprovedOverallAmount: 36600,
+                  spouseApprovedOverallAmount: 0,
+                  userTakenAmount: 36600,
+                  spouseTakenAmount: 0,
+                  userHcmData: {
+                    mhaRequest: { boardApprovedOnDate: '2024-03-01' },
+                  } as unknown as HcmData,
+                  spouseHcmData: {
+                    mhaRequest: { boardApprovedOnDate: '2016-08-01' },
+                  } as unknown as HcmData,
+                } as ContextType
+              }
+            >
+              <CurrentBoardApproved request={null} hasOpenRequest={false} />
+            </MinisterHousingAllowanceContext.Provider>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    expect(getByText('Approved on: 3/1/2024')).toBeInTheDocument();
+    expect(queryByText('Approved on: 8/1/2016')).not.toBeInTheDocument();
+  });
+
   it('should hide Update Current MHA button when there is an open request', () => {
     const { queryByText, getByText } = render(
       <TestComponent
