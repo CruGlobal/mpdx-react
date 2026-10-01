@@ -18,9 +18,16 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import { StatusCard } from '../../Shared/CalculationReports/StatusCard/StatusCard';
 import { useDuplicateMinistryHousingAllowanceRequestMutation } from '../MinisterHousingAllowance.generated';
-import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
+import {
+  HcmData,
+  useMinisterHousingAllowance,
+} from '../Shared/Context/MinisterHousingAllowanceContext';
 import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
 import { MHARequest } from './types';
+
+// HCM can keep an old board approved date on a record whose amount is now 0
+const hcmApprovedOn = (amount: number | null, hcmData: HcmData | null) =>
+  (amount ?? 0) > 0 ? hcmData?.mhaRequest.boardApprovedOnDate : null;
 
 interface CurrentBoardApprovedProps {
   request: MHARequest | null;
@@ -58,10 +65,10 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
 
   const { hrApprovedAt } = request?.requestAttributes || {};
   const userApprovedOn = isHcmOnly
-    ? userHcmData?.mhaRequest.boardApprovedOnDate
+    ? hcmApprovedOn(userApprovedOverallAmount, userHcmData)
     : hrApprovedAt;
   const spouseApprovedOn = isHcmOnly
-    ? spouseHcmData?.mhaRequest.boardApprovedOnDate
+    ? hcmApprovedOn(spouseApprovedOverallAmount, spouseHcmData)
     : hrApprovedAt;
 
   const lastUpdated = request?.updatedAt ?? null;
