@@ -55,23 +55,31 @@ export const quickFilterDescription = (
 
 export const ALL_TYPES = 'all';
 
-// Grouped by Employee, Non-worker, then Pending, as the Autocomplete's groupBy
-// only merges neighboring options.
-export const userPersonTypeOptions: MpdUserPersonTypeEnum[] = [
-  MpdUserPersonTypeEnum.EmployeeStaff,
-  MpdUserPersonTypeEnum.EmployeePtfs,
-  MpdUserPersonTypeEnum.EmployeeUsIntern,
-  MpdUserPersonTypeEnum.EmployeeInternationalIntern,
-  MpdUserPersonTypeEnum.EmployeeNationalStaffExpat,
-  MpdUserPersonTypeEnum.EmployeeStaffNonRmoSpouse,
-  MpdUserPersonTypeEnum.NonworkerStaff,
-  MpdUserPersonTypeEnum.NonworkerNationalStaff,
-  MpdUserPersonTypeEnum.NonworkerNmbhr,
-  MpdUserPersonTypeEnum.NonworkerStaffEmeritus,
-  MpdUserPersonTypeEnum.NonworkerVolunteer,
-  MpdUserPersonTypeEnum.PendingStaff,
-  MpdUserPersonTypeEnum.PendingPtfs,
-  MpdUserPersonTypeEnum.PendingUsIntern,
-  MpdUserPersonTypeEnum.PendingInternationalIntern,
-  MpdUserPersonTypeEnum.PendingStaffNonRmoSpouse,
+// Employee, Non-worker, then Pending, as the Autocomplete's groupBy only
+// merges neighboring options.
+export const userPersonTypeGroups: MpdUserPersonTypeEnum[][] = [
+  [
+    MpdUserPersonTypeEnum.EmployeeStaff,
+    MpdUserPersonTypeEnum.EmployeePtfs,
+    MpdUserPersonTypeEnum.EmployeeUsIntern,
+    MpdUserPersonTypeEnum.EmployeeInternationalIntern,
+    MpdUserPersonTypeEnum.EmployeeNationalStaffExpat,
+    MpdUserPersonTypeEnum.EmployeeStaffNonRmoSpouse,
+  ],
+  [
+    MpdUserPersonTypeEnum.NonworkerStaff,
+    MpdUserPersonTypeEnum.NonworkerNationalStaff,
+    MpdUserPersonTypeEnum.NonworkerNmbhr,
+    MpdUserPersonTypeEnum.NonworkerStaffEmeritus,
+    MpdUserPersonTypeEnum.NonworkerVolunteer,
+  ],
+  [
+    MpdUserPersonTypeEnum.PendingStaff,
+    MpdUserPersonTypeEnum.PendingPtfs,
+    MpdUserPersonTypeEnum.PendingUsIntern,
+    MpdUserPersonTypeEnum.PendingInternationalIntern,
+    MpdUserPersonTypeEnum.PendingStaffNonRmoSpouse,
+  ],
 ];
+
+export const userPersonTypeOptions = userPersonTypeGroups.flat();

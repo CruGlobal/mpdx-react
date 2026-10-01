@@ -5,10 +5,12 @@ import { useTranslation } from 'react-i18next';
 import {
   MpdSupervisorReportQuickFilterEnum,
   quickFilterLabel,
+  userPersonTypeGroups,
 } from '../Filters/mpdSupervisorReportFilters';
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
 import {
   getLocalizedAssignmentCategoryGroup,
+  getLocalizedUserPersonTypeGroup,
   getLocalizedUserPersonTypeName,
 } from '../helpers';
 
@@ -75,15 +77,32 @@ export const AppliedFilters: React.FC = () => {
       onDelete: () => setEmploymentType(null),
     });
   }
-  userPersonTypes.forEach((type) => {
-    chips.push({
-      key: `userPersonType-${type}`,
-      label: t('Person type: {{type}}', {
-        type: getLocalizedUserPersonTypeName(t, type),
-      }),
-      onDelete: () =>
-        setUserPersonTypes(userPersonTypes.filter((it) => it !== type)),
-    });
+  userPersonTypeGroups.forEach((types) => {
+    if (types.every((type) => userPersonTypes.includes(type))) {
+      chips.push({
+        key: `userPersonTypeGroup-${types[0]}`,
+        label: t('Person type: {{group}} - All', {
+          group: getLocalizedUserPersonTypeGroup(t, types[0]),
+        }),
+        onDelete: () =>
+          setUserPersonTypes(
+            userPersonTypes.filter((type) => !types.includes(type)),
+          ),
+      });
+      return;
+    }
+    types
+      .filter((type) => userPersonTypes.includes(type))
+      .forEach((type) => {
+        chips.push({
+          key: `userPersonType-${type}`,
+          label: t('Person type: {{type}}', {
+            type: getLocalizedUserPersonTypeName(t, type),
+          }),
+          onDelete: () =>
+            setUserPersonTypes(userPersonTypes.filter((it) => it !== type)),
+        });
+      });
   });
 
   return (
