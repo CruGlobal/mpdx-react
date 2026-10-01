@@ -7,7 +7,10 @@ import {
   quickFilterLabel,
 } from '../Filters/mpdSupervisorReportFilters';
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
-import { getLocalizedAssignmentCategoryGroup } from '../helpers';
+import {
+  getLocalizedAssignmentCategoryGroup,
+  getLocalizedUserPersonTypeName,
+} from '../helpers';
 
 interface AppliedFilterChip {
   key: string;
@@ -28,6 +31,8 @@ export const AppliedFilters: React.FC = () => {
     setDepartment,
     employmentType,
     setEmploymentType,
+    userPersonTypes,
+    setUserPersonTypes,
     activeQuickFilter,
     setActiveQuickFilter,
     activeFilterCount,
@@ -70,6 +75,16 @@ export const AppliedFilters: React.FC = () => {
       onDelete: () => setEmploymentType(null),
     });
   }
+  userPersonTypes.forEach((type) => {
+    chips.push({
+      key: `userPersonType-${type}`,
+      label: t('Person type: {{type}}', {
+        type: getLocalizedUserPersonTypeName(t, type),
+      }),
+      onDelete: () =>
+        setUserPersonTypes(userPersonTypes.filter((it) => it !== type)),
+    });
+  });
 
   return (
     <Box

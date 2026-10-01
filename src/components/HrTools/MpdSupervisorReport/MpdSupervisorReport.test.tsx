@@ -280,6 +280,30 @@ describe('MpdSupervisorReport', () => {
       );
     });
 
+    it('lists each checked person type as its own chip', async () => {
+      const { findByText, getByRole, findAllByRole } = renderReport({
+        withFilters: true,
+      });
+      await findByText('John Smith');
+
+      userEvent.click(getByRole('combobox', { name: 'Person type' }));
+      const staffOptions = await findAllByRole('option', { name: 'Staff' });
+      userEvent.click(staffOptions[0]);
+      userEvent.click(staffOptions[2]);
+      const chips = getByRole('list', { name: 'Applied filters' });
+      expect(chips).toHaveTextContent('Person type: Employee - Staff');
+      expect(chips).toHaveTextContent('Person type: Pending - Staff');
+
+      userEvent.click(
+        within(chips).getByRole('button', {
+          name: 'Remove Person type: Employee - Staff',
+        }),
+      );
+
+      expect(chips).not.toHaveTextContent('Person type: Employee - Staff');
+      expect(chips).toHaveTextContent('Person type: Pending - Staff');
+    });
+
     it('clears every filter and the search from the chip row', async () => {
       const { findByText, getByRole, queryByRole } = renderReport({
         withFilters: true,
