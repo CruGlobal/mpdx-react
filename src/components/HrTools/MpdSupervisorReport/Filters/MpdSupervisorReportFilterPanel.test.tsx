@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { act, render, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -432,6 +432,43 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
           MpdUserPersonTypeEnum.PendingPtfs,
         ].join(','),
       );
+    });
+
+    it('indents the types under their group headings', () => {
+      const { getAllByRole } = openPersonTypeSelect();
+
+      expect(getAllByRole('option')[0]).toHaveStyle('padding-left: 40px');
+    });
+
+    it('checks and unchecks a whole group from its heading', () => {
+      const { getByRole, getByTestId } = openPersonTypeSelect();
+      const selectAll = getByRole('checkbox', { name: 'Select all Pending' });
+
+      fireEvent.click(selectAll);
+      expect(selectAll).toBeChecked();
+      expect(getByTestId('userPersonTypes').textContent).toBe(
+        [
+          MpdUserPersonTypeEnum.PendingStaff,
+          MpdUserPersonTypeEnum.PendingPtfs,
+          MpdUserPersonTypeEnum.PendingUsIntern,
+          MpdUserPersonTypeEnum.PendingInternationalIntern,
+          MpdUserPersonTypeEnum.PendingStaffNonRmoSpouse,
+        ].join(','),
+      );
+
+      fireEvent.click(selectAll);
+      expect(selectAll).not.toBeChecked();
+      expect(getByTestId('userPersonTypes').textContent).toBe('');
+    });
+
+    it('marks a heading partly checked when only some of its types are', () => {
+      const { getByRole, getAllByRole } = openPersonTypeSelect();
+
+      userEvent.click(getAllByRole('option', { name: 'Staff' })[0]);
+
+      expect(
+        getByRole('checkbox', { name: 'Select all Employee' }),
+      ).toHaveAttribute('data-indeterminate', 'true');
     });
 
     it('finds types by their group name', () => {

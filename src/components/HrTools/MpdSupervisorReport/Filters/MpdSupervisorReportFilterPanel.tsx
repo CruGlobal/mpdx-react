@@ -6,6 +6,7 @@ import {
   Checkbox,
   Chip,
   IconButton,
+  ListSubheader,
   MenuItem,
   Stack,
   TextField,
@@ -13,7 +14,10 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { MpdAssignmentCategoryGroupEnum } from 'src/graphql/types.generated';
+import {
+  MpdAssignmentCategoryGroupEnum,
+  MpdUserPersonTypeEnum,
+} from 'src/graphql/types.generated';
 import { useManagedStaffTeamsQuery } from '../ManagedStaffTeams.generated';
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
 import {
@@ -28,6 +32,7 @@ import {
   quickFilterDescription,
   quickFilterIds,
   quickFilterLabel,
+  userPersonTypeGroups,
   userPersonTypeOptions,
 } from './mpdSupervisorReportFilters';
 
@@ -113,6 +118,17 @@ export const MpdSupervisorReportFilterPanel: React.FC<
 
   const handleQuickFilter = (filterId: MpdSupervisorReportQuickFilterEnum) => {
     setActiveQuickFilter(filterId);
+  };
+
+  const toggleUserPersonTypeGroup = (types: MpdUserPersonTypeEnum[]) => {
+    const allChecked = types.every((type) => userPersonTypes.includes(type));
+    setUserPersonTypes(
+      allChecked
+        ? userPersonTypes.filter((type) => !types.includes(type))
+        : userPersonTypeOptions.filter(
+            (type) => userPersonTypes.includes(type) || types.includes(type),
+          ),
+    );
   };
 
   const handleSetEmploymentType = (
@@ -219,6 +235,49 @@ export const MpdSupervisorReportFilterPanel: React.FC<
           onChange={(_, newValue) => setUserPersonTypes(newValue)}
           options={userPersonTypeOptions}
           groupBy={(option) => getLocalizedUserPersonTypeGroup(t, option)}
+          renderGroup={({ key, group, children }) => {
+            const types =
+              userPersonTypeGroups.find(
+                (groupTypes) =>
+                  getLocalizedUserPersonTypeGroup(t, groupTypes[0]) === group,
+              ) ?? [];
+            const checkedCount = types.filter((type) =>
+              userPersonTypes.includes(type),
+            ).length;
+            return (
+              <li key={key}>
+                <ListSubheader
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    top: -8,
+                    fontSize: 'inherit',
+                  }}
+                >
+                  <Checkbox
+                    edge="start"
+                    size="small"
+                    checked={checkedCount === types.length}
+                    indeterminate={
+                      checkedCount > 0 && checkedCount < types.length
+                    }
+                    onChange={() => toggleUserPersonTypeGroup(types)}
+                    inputProps={{
+                      'aria-label': t('Select all {{group}}', { group }),
+                    }}
+                    disableRipple
+                  />
+                  {group}
+                </ListSubheader>
+                <Box
+                  component="ul"
+                  sx={{ p: 0, '&& .MuiAutocomplete-option': { pl: 5 } }}
+                >
+                  {children}
+                </Box>
+              </li>
+            );
+          }}
           getOptionLabel={(option) => getLocalizedUserPersonTypeName(t, option)}
           renderOption={(props, option, { selected }) => (
             <li {...props} key={option}>
