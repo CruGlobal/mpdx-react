@@ -160,12 +160,22 @@ describe('StaffMember', () => {
       getByRole('button', { name: 'View details for Brooke Butler' }),
     ).toBeInTheDocument();
     expect(getByTestId('person-numbers')).toHaveTextContent(
-      '1000000001 · Full time · FamilyLife',
+      '1000000001 · Full time · Employee - Staff · FamilyLife',
     );
   });
 
-  it('renders the staff account, employment type, and team line', () => {
+  it('renders the staff account, employment type, person type, and team line', () => {
     const { getByTestId } = renderRow();
+    expect(getByTestId('person-numbers')).toHaveTextContent(
+      '1000000001 · Full time · Employee - Staff · FamilyLife',
+    );
+  });
+
+  it('drops the person type segment when the member has none', () => {
+    const { getByTestId } = renderRow(
+      jest.fn(),
+      managedStaffMember({ ...member, userPersonType: null }),
+    );
     expect(getByTestId('person-numbers')).toHaveTextContent(
       '1000000001 · Full time · FamilyLife',
     );
@@ -188,7 +198,7 @@ describe('StaffMember', () => {
       }),
     );
     expect(getByTestId('person-numbers')).toHaveTextContent(
-      /^1000000001 · Full time$/,
+      /^1000000001 · Full time · Employee - Staff$/,
     );
   });
 
