@@ -155,7 +155,7 @@ describe('MinisterHousingAllowanceReport', () => {
     });
 
     it('shows eligibility instead of a row for an ineligible spouse', async () => {
-      const { findByText, findByTestId, getByRole, queryByRole } = render(
+      const { findByText, getByTestId, getByRole, queryByRole } = render(
         <TestComponent
           hcmMock={[
             singleMhaNoException[0],
@@ -171,11 +171,34 @@ describe('MinisterHousingAllowanceReport', () => {
       expect(
         await findByText('Current Board Approved MHA'),
       ).toBeInTheDocument();
-      expect(
-        await findByTestId('eligibility-status-table'),
-      ).toBeInTheDocument();
+      expect(getByTestId('eligibility-status-table')).toBeInTheDocument();
       expect(getByRole('cell', { name: 'John' })).toBeInTheDocument();
       expect(queryByRole('cell', { name: 'Jane' })).not.toBeInTheDocument();
+    });
+
+    it('shows eligibility instead of a row for an ineligible user', async () => {
+      const { findByText, getByTestId, getByRole, queryByRole } = render(
+        <TestComponent
+          hcmMock={[
+            {
+              ...marriedNoMhaNoException[0],
+              mhaEit: { mhaEligibility: false },
+            },
+            {
+              ...singleMhaNoException[0],
+              staffInfo: marriedNoMhaNoException[1].staffInfo,
+            },
+          ]}
+          mhaRequestsMock={[]}
+        />,
+      );
+
+      expect(
+        await findByText('Current Board Approved MHA'),
+      ).toBeInTheDocument();
+      expect(getByTestId('eligibility-status-table')).toBeInTheDocument();
+      expect(getByRole('cell', { name: 'Jane' })).toBeInTheDocument();
+      expect(queryByRole('cell', { name: 'John' })).not.toBeInTheDocument();
     });
 
     it('shows not applied when the HCM approved amount is 0', async () => {
