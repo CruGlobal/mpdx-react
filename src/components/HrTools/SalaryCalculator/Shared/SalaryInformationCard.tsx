@@ -19,7 +19,6 @@ import {
   useTheme,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { HcmSyncStatus } from 'src/components/HrTools/Shared/HcmSyncStatus/HcmSyncStatus';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLandingData } from '../Landing/useLandingData';
 import { StepCard } from './StepCard';
@@ -61,9 +60,6 @@ export const SalaryInformationCard: React.FC = () => {
             >
               {t('Last updated:')} {lastUpdated}
             </Typography>
-            <Box mt={1.5}>
-              <HcmSyncStatus />
-            </Box>
           </Box>
         }
       />

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
-import { HcmSyncStatus } from 'src/components/HrTools/Shared/HcmSyncStatus/HcmSyncStatus';
 import { AsrStatusEnum } from 'src/graphql/types.generated';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 
@@ -14,10 +13,9 @@ export const EligibleDisplay: React.FC = () => {
   return (
     <>
       <Box>
-        <Typography variant="h5" gutterBottom>
+        <Typography variant="h5">
           {t('Your Additional Salary Request')}
         </Typography>
-        <HcmSyncStatus />
       </Box>
       <Box>
         {isPending && (

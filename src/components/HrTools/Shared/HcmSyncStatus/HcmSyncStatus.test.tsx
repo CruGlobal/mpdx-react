@@ -1,12 +1,12 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GraphQLError } from 'graphql';
 import { DateTime, Settings } from 'luxon';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import { HcmSyncStatus } from './HcmSyncStatus';
+import { HcmSyncBodyStatus, HcmSyncHeaderStatus } from './HcmSyncStatus';
 
 const mutationSpy = jest.fn();
 const mockEnqueue = jest.fn();
@@ -35,6 +35,8 @@ const errors = {
   }),
 };
 
+// Rendered the way a page does: one piece in the header, one under it. Which one shows at which
+// width is CSS media queries, which jsdom does not apply faithfully, so that is checked by eye.
 const TestComponent: React.FC<TestComponentProps> = ({
   syncedAt = '2026-09-30T12:00:00Z',
   outOfSync = false,
@@ -55,10 +57,19 @@ const TestComponent: React.FC<TestComponentProps> = ({
       }}
       onCall={mutationSpy}
     >
-      <HcmSyncStatus personNumber={personNumber} />
+      <>
+        <HcmSyncHeaderStatus personNumber={personNumber} />
+        <HcmSyncBodyStatus personNumber={personNumber} />
+      </>
     </GqlMockedProvider>
   </ThemeProvider>
 );
+
+const renderBody = async (props: TestComponentProps = {}) => {
+  const result = render(<TestComponent {...props} />);
+  const body = within(await result.findByTestId('HcmSyncBodyStatus'));
+  return { ...result, body };
+};
 
 describe('HcmSyncStatus', () => {
   beforeEach(() => {
@@ -69,35 +80,35 @@ describe('HcmSyncStatus', () => {
     Settings.now = () => Date.now();
   });
 
-  it('shows how long ago the data was synced from HCM', async () => {
-    const { findByText, queryByRole } = render(<TestComponent />);
+  it('renders the sync time for the header and for under it on narrow screens', async () => {
+    const { findByTestId, body } = await renderBody();
 
-    expect(await findByText('Synced from HCM 3 hours ago')).toBeInTheDocument();
-    expect(queryByRole('alert')).not.toBeInTheDocument();
+    const header = await findByTestId('HcmSyncHeaderStatus');
+    expect(header).toHaveTextContent('Synced from HCM 3 hr. ago');
+    expect(body.getByText('Synced from HCM 3 hr. ago')).toBeInTheDocument();
+    expect(body.queryByRole('alert')).not.toBeInTheDocument();
   });
 
   it('shows the exact sync time on hover', async () => {
-    const { findByText, findByRole } = render(<TestComponent />);
+    const { findByRole, body } = await renderBody();
 
-    userEvent.hover(await findByText('Synced from HCM 3 hours ago'));
+    userEvent.hover(body.getByText('Synced from HCM 3 hr. ago'));
 
     expect(await findByRole('tooltip')).toHaveTextContent('Sep 30, 2026');
   });
 
   it('marks data the sync has not reached in over a day', async () => {
-    const { findByText } = render(
-      <TestComponent syncedAt="2026-09-28T12:00:00Z" />,
-    );
+    const { body } = await renderBody({ syncedAt: '2026-09-28T12:00:00Z' });
 
-    expect(await findByText('Synced from HCM 2 days ago')).toHaveStyle({
+    expect(body.getByText('Synced from HCM 2 days ago')).toHaveStyle({
       color: theme.palette.warning.dark,
     });
   });
 
-  it('warns when HCM no longer has a record for the person', async () => {
-    const { findByRole } = render(<TestComponent outOfSync />);
+  it('warns under the header when HCM no longer has a record for the person', async () => {
+    const { body } = await renderBody({ outOfSync: true });
 
-    const alert = await findByRole('alert');
+    const alert = body.getByRole('alert');
     expect(alert).toHaveTextContent(
       'HCM no longer has a record for this person',
     );
@@ -107,19 +118,16 @@ describe('HcmSyncStatus', () => {
   });
 
   it('leaves out the sync time when there is none', async () => {
-    const { findByRole, queryByText } = render(
-      <TestComponent syncedAt={null} />,
-    );
+    const { body } = await renderBody({ syncedAt: null });
 
-    expect(await findByRole('button', { name: 'Refresh' })).toBeInTheDocument();
-    expect(queryByText(/Synced from HCM/)).not.toBeInTheDocument();
+    expect(body.getByRole('button', { name: 'Refresh' })).toBeInTheDocument();
+    expect(body.queryByText(/Synced from HCM/)).not.toBeInTheDocument();
   });
 
   it('refreshes the person shown, reloads the page data, and waits out the cooldown', async () => {
-    const { findByRole } = render(<TestComponent personNumber="000123456" />);
+    const { body } = await renderBody({ personNumber: '000123456' });
 
-    const button = await findByRole('button', { name: 'Refresh' });
-    userEvent.click(button);
+    userEvent.click(body.getByRole('button', { name: 'Refresh' }));
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('RefreshHcm', {
@@ -136,13 +144,13 @@ describe('HcmSyncStatus', () => {
         ([{ operation }]) => operation.operationName === 'Hcm',
       ),
     ).toHaveLength(2);
-    expect(await findByRole('button', { name: 'Refresh' })).toBeDisabled();
+    expect(await body.findByRole('button', { name: 'Refresh' })).toBeDisabled();
   });
 
   it('waits out the cooldown when the API says the person was just refreshed', async () => {
-    const { findByRole } = render(<TestComponent refreshError="rateLimited" />);
+    const { body } = await renderBody({ refreshError: 'rateLimited' });
 
-    userEvent.click(await findByRole('button', { name: 'Refresh' }));
+    userEvent.click(body.getByRole('button', { name: 'Refresh' }));
 
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith(
@@ -150,13 +158,13 @@ describe('HcmSyncStatus', () => {
         { variant: 'info' },
       ),
     );
-    expect(await findByRole('button', { name: 'Refresh' })).toBeDisabled();
+    expect(await body.findByRole('button', { name: 'Refresh' })).toBeDisabled();
   });
 
   it('lets the user try again right away when HCM is unavailable', async () => {
-    const { findByRole } = render(<TestComponent refreshError="unavailable" />);
+    const { body } = await renderBody({ refreshError: 'unavailable' });
 
-    userEvent.click(await findByRole('button', { name: 'Refresh' }));
+    userEvent.click(body.getByRole('button', { name: 'Refresh' }));
 
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith(
@@ -164,6 +172,6 @@ describe('HcmSyncStatus', () => {
         { variant: 'error' },
       ),
     );
-    expect(await findByRole('button', { name: 'Refresh' })).toBeEnabled();
+    expect(body.getByRole('button', { name: 'Refresh' })).toBeEnabled();
   });
 });

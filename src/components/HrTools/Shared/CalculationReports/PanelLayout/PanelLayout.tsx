@@ -11,6 +11,10 @@ import {
   iconPanelWidth,
 } from 'src/components/HrTools/Shared/CalculationReports/Shared/styledComponents/PanelLayoutStyles';
 import { Steps } from 'src/components/HrTools/Shared/CalculationReports/StepsList/StepsList';
+import {
+  HcmSyncBodyStatus,
+  useHcmSyncStatusPlacement,
+} from 'src/components/HrTools/Shared/HcmSyncStatus/HcmSyncStatus';
 import theme from 'src/theme';
 import { PanelTypeEnum } from '../Shared/sharedTypes';
 import { BackArrow } from './BackArrow';
@@ -64,6 +68,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
 }) => {
   const isLastStep = steps ? currentIndex === steps.length - 1 : false;
   const mainContentRef = useRef<HTMLDivElement>(null);
+  const hcmSyncStatus = useHcmSyncStatusPlacement();
 
   useEffect(() => {
     if (mainContentRef.current) {
@@ -112,6 +117,9 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
           </StyledSidebar>
           <Divider orientation="vertical" flexItem />
           <MainContent className="main-content" ref={mainContentRef}>
+            {hcmSyncStatus && (
+              <HcmSyncBodyStatus personNumber={hcmSyncStatus.personNumber} />
+            )}
             {mainContent}
           </MainContent>
         </>
@@ -184,6 +192,9 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
             </>
           )}
           <MainContent className="main-content" ref={mainContentRef}>
+            {hcmSyncStatus && (
+              <HcmSyncBodyStatus personNumber={hcmSyncStatus.personNumber} />
+            )}
             {mainContent}
           </MainContent>
         </>

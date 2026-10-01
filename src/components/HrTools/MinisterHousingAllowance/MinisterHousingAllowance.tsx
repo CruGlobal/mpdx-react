@@ -13,7 +13,6 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { PanelTypeEnum } from '../Shared/CalculationReports/Shared/sharedTypes';
-import { HcmSyncStatus } from '../Shared/HcmSyncStatus/HcmSyncStatus';
 import { EligibleDisplay } from './MainPages/EligibleDisplay';
 import { NoRequestsDisplay } from './MainPages/NoRequestsDisplay';
 import {
@@ -144,10 +143,7 @@ export const MinisterHousingAllowanceReport = () => {
             <>
               <Stack direction="column" width={mainContentWidth}>
                 <Box mb={2}>
-                  <Typography variant="h5" gutterBottom>
-                    {t('Your MHA')}
-                  </Typography>
-                  <HcmSyncStatus />
+                  <Typography variant="h5">{t('Your MHA')}</Typography>
                 </Box>
 
                 {hasNoRequests ? (
