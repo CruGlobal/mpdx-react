@@ -17,6 +17,7 @@ jest.mock('notistack', () => ({
 }));
 
 const now = DateTime.fromISO('2026-09-30T15:00:00Z');
+const refreshedAt = now.minus({ minutes: 1 }).toISO();
 
 interface TestComponentProps {
   syncedAt?: string | null;
@@ -46,14 +47,17 @@ const TestComponent: React.FC<TestComponentProps> = ({
   <ThemeProvider theme={theme}>
     <GqlMockedProvider
       mocks={{
-        Hcm: { hcm: [{ syncedAt, outOfSync }] },
-        RefreshHcm: refreshError
-          ? {
-              refreshHcm: () => {
-                throw errors[refreshError];
-              },
+        Hcm: {
+          // A refresh comes back synced just now, so tests can see it replace the page's read.
+          hcm: (_parent: unknown, args: { refresh?: boolean }) => {
+            if (args.refresh && refreshError) {
+              throw errors[refreshError];
             }
-          : { refreshHcm: { hcm: [{ syncedAt: now.toISO(), outOfSync }] } },
+            return [
+              { syncedAt: args.refresh ? refreshedAt : syncedAt, outOfSync },
+            ];
+          },
+        },
       }}
       onCall={mutationSpy}
     >
@@ -124,14 +128,17 @@ describe('HcmSyncStatus', () => {
     expect(body.queryByText(/Synced from HCM/)).not.toBeInTheDocument();
   });
 
-  it('refreshes the person shown, reloads the page data, and waits out the cooldown', async () => {
-    const { body } = await renderBody({ personNumber: '000123456' });
+  it('refreshes through the page Hcm query and replaces what the page shows', async () => {
+    const { body, findByTestId } = await renderBody({
+      personNumber: '000123456',
+    });
 
     userEvent.click(body.getByRole('button', { name: 'Refresh' }));
 
     await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('RefreshHcm', {
+      expect(mutationSpy).toHaveGraphqlOperation('Hcm', {
         personNumber: '000123456',
+        refresh: true,
       }),
     );
     await waitFor(() =>
@@ -139,11 +146,17 @@ describe('HcmSyncStatus', () => {
         variant: 'success',
       }),
     );
+    // The page's read (no refresh argument) shows the refreshed answer, with no second request.
+    expect(await findByTestId('HcmSyncHeaderStatus')).toHaveTextContent(
+      'Synced from HCM 1 min. ago',
+    );
+    expect(body.getByText('Synced from HCM 1 min. ago')).toBeInTheDocument();
     expect(
       mutationSpy.mock.calls.filter(
-        ([{ operation }]) => operation.operationName === 'Hcm',
+        ([{ operation }]) =>
+          operation.operationName === 'Hcm' && !operation.variables.refresh,
       ),
-    ).toHaveLength(2);
+    ).toHaveLength(1);
     expect(await body.findByRole('button', { name: 'Refresh' })).toBeDisabled();
   });
 
@@ -167,10 +180,10 @@ describe('HcmSyncStatus', () => {
     userEvent.click(body.getByRole('button', { name: 'Refresh' }));
 
     await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('RefreshHcm'),
+      expect(mutationSpy).toHaveGraphqlOperation('Hcm', { refresh: true }),
     );
     const refreshCall = mutationSpy.mock.calls.find(
-      ([{ operation }]) => operation.operationName === 'RefreshHcm',
+      ([{ operation }]) => operation.variables.refresh,
     );
     expect(refreshCall?.[0].operation.getContext().suppressErrorCodes).toEqual([
       'HCM_REFRESH_RATE_LIMITED',

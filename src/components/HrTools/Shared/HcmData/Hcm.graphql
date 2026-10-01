@@ -1,5 +1,13 @@
-query Hcm($effectiveDate: ISO8601Date, $personNumber: String) {
-  hcm(effectiveDate: $effectiveDate, personNumber: $personNumber) {
+query Hcm(
+  $effectiveDate: ISO8601Date
+  $personNumber: String
+  $refresh: Boolean
+) {
+  hcm(
+    effectiveDate: $effectiveDate
+    personNumber: $personNumber
+    refresh: $refresh
+  ) {
     syncedAt
     outOfSync
     usStaffGroup

@@ -1,8 +1,0 @@
-mutation RefreshHcm($personNumber: String) {
-  refreshHcm(input: { personNumber: $personNumber }) {
-    hcm {
-      syncedAt
-      outOfSync
-    }
-  }
-}

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { ApolloError, useApolloClient } from '@apollo/client';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import {
   Alert,
@@ -14,8 +15,12 @@ import { DateTime, Duration } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
-import { useHcmQuery } from '../HcmData/Hcm.generated';
-import { useRefreshHcmMutation } from './RefreshHcm.generated';
+import {
+  HcmDocument,
+  HcmQuery,
+  HcmQueryVariables,
+  useHcmQuery,
+} from '../HcmData/Hcm.generated';
 
 /** Matches the API's limit of one refresh per person every 3 minutes. */
 export const REFRESH_COOLDOWN = Duration.fromObject({ minutes: 3 });
@@ -48,16 +53,17 @@ export const HcmSyncStatusProvider: React.FC<
 
 export const useHcmSyncStatusPlacement = () => useContext(HcmSyncStatusContext);
 
-/** Reads the same Hcm query the page already loaded, so it adds no request of its own. */
+/**
+ * Reads the same Hcm query the page already loaded, so it adds no request of its own. A refresh
+ * re-runs that query with refresh: true; the cache keys hcm without refresh, so the answer
+ * replaces the household every component on the page is showing.
+ */
 const useHcmSync = (personNumber?: string) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
+  const client = useApolloClient();
   const { data } = useHcmQuery({ variables: { personNumber } });
-  const [refreshHcm, { loading: refreshing }] = useRefreshHcmMutation({
-    refetchQueries: ['Hcm'],
-    awaitRefetchQueries: true,
-    context: { suppressErrorCodes: HANDLED_ERROR_CODES },
-  });
+  const [refreshing, setRefreshing] = useState(false);
   const [coolingDown, setCoolingDown] = useState(false);
 
   useEffect(() => {
@@ -74,30 +80,42 @@ const useHcmSync = (personNumber?: string) => {
   const person = data?.hcm[0];
   const syncedAt = person?.syncedAt ? DateTime.fromISO(person.syncedAt) : null;
 
-  const refresh = () =>
-    refreshHcm({
-      variables: { personNumber },
-      onCompleted: () => {
-        setCoolingDown(true);
-        enqueueSnackbar(t('HCM data refreshed.'), { variant: 'success' });
-      },
-      onError: ({ graphQLErrors }) => {
-        const handled = graphQLErrors.find(({ extensions }) =>
-          HANDLED_ERROR_CODES.includes(String(extensions?.code)),
-        );
-        if (!handled) {
-          return;
-        }
-        const rateLimited =
-          handled.extensions?.code === 'HCM_REFRESH_RATE_LIMITED';
-        if (rateLimited) {
-          setCoolingDown(true);
-        }
-        enqueueSnackbar(handled.message, {
-          variant: rateLimited ? 'info' : 'error',
-        });
-      },
+  const handleError = (error: unknown) => {
+    const handled =
+      error instanceof ApolloError
+        ? error.graphQLErrors.find(({ extensions }) =>
+            HANDLED_ERROR_CODES.includes(String(extensions?.code)),
+          )
+        : undefined;
+    if (!handled) {
+      return;
+    }
+    const rateLimited = handled.extensions?.code === 'HCM_REFRESH_RATE_LIMITED';
+    if (rateLimited) {
+      setCoolingDown(true);
+    }
+    enqueueSnackbar(handled.message, {
+      variant: rateLimited ? 'info' : 'error',
     });
+  };
+
+  const refresh = async () => {
+    setRefreshing(true);
+    try {
+      await client.query<HcmQuery, HcmQueryVariables>({
+        query: HcmDocument,
+        variables: { personNumber, refresh: true },
+        fetchPolicy: 'network-only',
+        context: { suppressErrorCodes: HANDLED_ERROR_CODES },
+      });
+      setCoolingDown(true);
+      enqueueSnackbar(t('HCM data refreshed.'), { variant: 'success' });
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   return {
     person,
