@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { act, fireEvent, render, waitFor } from '@testing-library/react';
+import { act, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -405,22 +405,24 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
     });
 
     it('lists all 16 types under their group headings', () => {
-      const { getAllByRole, getByText } = openPersonTypeSelect();
+      const { getAllByRole, getByRole } = openPersonTypeSelect();
 
-      expect(getAllByRole('option')).toHaveLength(16);
-      expect(getByText('Employee')).toBeInTheDocument();
-      expect(getByText('Non-worker')).toBeInTheDocument();
-      expect(getByText('Pending')).toBeInTheDocument();
+      expect(getAllByRole('option')).toHaveLength(19);
+      ['Employee', 'Non-worker', 'Pending'].forEach((group) =>
+        expect(
+          getByRole('option', { name: `Select all ${group}` }),
+        ).toBeInTheDocument(),
+      );
     });
 
-    it('stays open and keeps every type listed while several are checked', () => {
-      const { getAllByRole, getByTestId } = openPersonTypeSelect();
+    it('stays open and keeps the types in list order while several are checked', () => {
+      const { getByRole, getAllByRole, getByTestId } = openPersonTypeSelect();
 
-      userEvent.click(getAllByRole('option', { name: 'Staff' })[0]);
-      userEvent.click(getAllByRole('option', { name: 'PTFS' })[1]);
+      userEvent.click(getByRole('option', { name: 'Pending - PTFS' }));
+      userEvent.click(getByRole('option', { name: 'Employee - Staff' }));
 
       const options = getAllByRole('option');
-      expect(options).toHaveLength(16);
+      expect(options).toHaveLength(19);
       expect(
         options.filter(
           (option) => option.getAttribute('aria-selected') === 'true',
@@ -435,17 +437,22 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
     });
 
     it('indents the types under their group headings', () => {
-      const { getAllByRole } = openPersonTypeSelect();
+      const { getByRole } = openPersonTypeSelect();
 
-      expect(getAllByRole('option')[0]).toHaveStyle('padding-left: 40px');
+      expect(getByRole('option', { name: 'Employee - Staff' })).toHaveStyle(
+        'padding-left: 40px',
+      );
+      expect(
+        getByRole('option', { name: 'Select all Employee' }),
+      ).not.toHaveStyle('padding-left: 40px');
     });
 
     it('checks and unchecks a whole group from its heading', () => {
       const { getByRole, getByTestId } = openPersonTypeSelect();
-      const selectAll = getByRole('checkbox', { name: 'Select all Pending' });
+      const selectAll = getByRole('option', { name: 'Select all Pending' });
 
-      fireEvent.click(selectAll);
-      expect(selectAll).toBeChecked();
+      userEvent.click(selectAll);
+      expect(selectAll).toHaveAttribute('aria-selected', 'true');
       expect(getByTestId('userPersonTypes').textContent).toBe(
         [
           MpdUserPersonTypeEnum.PendingStaff,
@@ -456,18 +463,37 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
         ].join(','),
       );
 
-      fireEvent.click(selectAll);
-      expect(selectAll).not.toBeChecked();
+      userEvent.click(selectAll);
+      expect(selectAll).toHaveAttribute('aria-selected', 'false');
       expect(getByTestId('userPersonTypes').textContent).toBe('');
     });
 
-    it('marks a heading partly checked when only some of its types are', () => {
-      const { getByRole, getAllByRole } = openPersonTypeSelect();
+    it('checks a whole group from the keyboard', () => {
+      const { getByTestId } = openPersonTypeSelect();
 
-      userEvent.click(getAllByRole('option', { name: 'Staff' })[0]);
+      userEvent.keyboard('{Enter}');
+
+      expect(getByTestId('userPersonTypes').textContent).toBe(
+        [
+          MpdUserPersonTypeEnum.EmployeeStaff,
+          MpdUserPersonTypeEnum.EmployeePtfs,
+          MpdUserPersonTypeEnum.EmployeeUsIntern,
+          MpdUserPersonTypeEnum.EmployeeInternationalIntern,
+          MpdUserPersonTypeEnum.EmployeeNationalStaffExpat,
+          MpdUserPersonTypeEnum.EmployeeStaffNonRmoSpouse,
+        ].join(','),
+      );
+    });
+
+    it('marks a heading partly checked when only some of its types are', () => {
+      const { getByRole } = openPersonTypeSelect();
+
+      userEvent.click(getByRole('option', { name: 'Employee - Staff' }));
 
       expect(
-        getByRole('checkbox', { name: 'Select all Employee' }),
+        within(getByRole('option', { name: 'Select all Employee' })).getByRole(
+          'checkbox',
+        ),
       ).toHaveAttribute('data-indeterminate', 'true');
     });
 
@@ -476,7 +502,21 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
 
       userEvent.type(getByRole('combobox', { name: 'Person type' }), 'pending');
 
-      expect(getAllByRole('option')).toHaveLength(5);
+      expect(getAllByRole('option')).toHaveLength(6);
+    });
+
+    it('keeps the heading above the types a search finds', () => {
+      const { getByRole, getAllByRole } = openPersonTypeSelect();
+
+      userEvent.type(
+        getByRole('combobox', { name: 'Person type' }),
+        'volunteer',
+      );
+
+      expect(getAllByRole('option')).toHaveLength(2);
+      expect(
+        getByRole('option', { name: 'Select all Non-worker' }),
+      ).toBeInTheDocument();
     });
   });
 

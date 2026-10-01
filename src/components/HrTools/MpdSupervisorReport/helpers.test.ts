@@ -10,11 +10,16 @@ import {
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import {
+  userPersonTypeGroups,
+  userPersonTypeOptions,
+} from './Filters/mpdSupervisorReportFilters';
+import {
   buildQuarterChips,
   countPeople,
   getInitials,
   getLocalizedAssignmentCategoryGroup,
   getLocalizedSupportType,
+  getLocalizedUserPersonTypeGroup,
   getLocalizedUserPersonTypeName,
   getQuarterLabel,
   getQuarterMonthRange,
@@ -197,6 +202,23 @@ describe('getLocalizedUserPersonTypeName', () => {
     ],
   ])('maps %s to "%s"', (type, expected) => {
     expect(getLocalizedUserPersonTypeName(i18n.t, type)).toBe(expected);
+  });
+});
+
+describe('userPersonTypeGroups', () => {
+  it('lists every person type exactly once', () => {
+    expect([...userPersonTypeOptions].sort()).toEqual(
+      Object.values(MpdUserPersonTypeEnum).sort(),
+    );
+  });
+
+  it('gives each group one label of its own', () => {
+    const labels = userPersonTypeGroups.map((types) => [
+      ...new Set(types.map((type) => getLocalizedUserPersonTypeGroup(t, type))),
+    ]);
+
+    labels.forEach((groupLabels) => expect(groupLabels).toHaveLength(1));
+    expect(new Set(labels.flat()).size).toBe(userPersonTypeGroups.length);
   });
 });
 
