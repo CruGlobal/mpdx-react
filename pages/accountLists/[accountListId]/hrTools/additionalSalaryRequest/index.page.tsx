@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import React, { useState } from 'react';
+import { Alert, Button, Container } from '@mui/material';
 import { FormikProvider } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
@@ -44,13 +45,42 @@ const FormikRequestPage: React.FC = () => {
 };
 
 const AdditionalSalaryRequestRouter: React.FC = () => {
-  const { pageType, isNewAsr, requestData, loading, user } =
-    useAdditionalSalaryRequest();
+  const { t } = useTranslation();
+  const {
+    pageType,
+    isNewAsr,
+    requestData,
+    loading,
+    hcmLoading,
+    requestError,
+    hcmError,
+    refetchData,
+    user,
+  } = useAdditionalSalaryRequest();
 
   const isEdit = pageType === PageEnum.Edit;
 
-  if (loading) {
+  if (loading || hcmLoading) {
     return <Loading loading />;
+  }
+
+  if (requestError || hcmError) {
+    return (
+      <Container sx={{ mt: 2 }}>
+        <Alert
+          severity="error"
+          action={
+            <Button color="inherit" size="small" onClick={refetchData}>
+              {t('Try Again')}
+            </Button>
+          }
+        >
+          {t(
+            'Your Additional Salary Request could not be loaded. Please try again later.',
+          )}
+        </Alert>
+      </Container>
+    );
   }
 
   if (user?.asrEit?.asrEligibility === false) {

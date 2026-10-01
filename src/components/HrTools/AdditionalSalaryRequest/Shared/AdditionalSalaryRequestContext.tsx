@@ -96,6 +96,9 @@ export type AdditionalSalaryRequestType = {
   loading: boolean;
   currentYear?: number;
   requestError?: ApolloError;
+  hcmLoading: boolean;
+  hcmError?: ApolloError;
+  refetchData: () => void;
   pageType: PageEnum;
   setPageType: (pageType: PageEnum) => void;
   pendingPrint: boolean;
@@ -176,12 +179,18 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     currentIndex,
   } = useStepList(FormEnum.AdditionalSalary, undefined, 0);
 
-  const { data: hcmData } = useHcmQuery();
+  const {
+    data: hcmData,
+    error: hcmError,
+    loading: hcmLoading,
+    refetch: refetchHcm,
+  } = useHcmQuery();
 
   const {
     data: requestData,
     error: requestError,
     loading,
+    refetch: refetchRequest,
   } = useAdditionalSalaryRequestQuery({
     variables: { isSpouse },
   });
@@ -271,6 +280,15 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
 
   const fieldConfig = useMemo(() => getFieldConfig(t), [t]);
 
+  const refetchData = useCallback(() => {
+    if (hcmError) {
+      refetchHcm();
+    }
+    if (requestError) {
+      refetchRequest();
+    }
+  }, [hcmError, requestError, refetchHcm, refetchRequest]);
+
   const contextValue = useMemo<AdditionalSalaryRequestType>(
     () => ({
       staffAccountId,
@@ -285,6 +303,9 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       toggleDrawer,
       requestData,
       requestError,
+      hcmLoading,
+      hcmError,
+      refetchData,
       loading,
       currentYear,
       pageType,
@@ -323,6 +344,9 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       toggleDrawer,
       requestData,
       requestError,
+      hcmLoading,
+      hcmError,
+      refetchData,
       loading,
       currentYear,
       pageType,

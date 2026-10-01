@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import React, { useState } from 'react';
+import { Alert, Button, Container } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { NewSalaryCalculatorLanding } from 'src/components/HrTools/SalaryCalculator/Landing/NewSalaryCalculationLanding/NewSalaryCalculatorLanding';
@@ -24,7 +25,7 @@ const SalaryCalculatorPage: React.FC = () => {
   const appName = getAppName();
   const { t } = useTranslation();
   const [isNavListOpen, setIsNavListOpen] = useState(false);
-  const { shouldShowPending } = useLandingData();
+  const { shouldShowPending, error, refetch } = useLandingData();
 
   const handleNavListToggle = () => {
     setIsNavListOpen(!isNavListOpen);
@@ -60,7 +61,22 @@ const SalaryCalculatorPage: React.FC = () => {
                 headerType={HeaderTypeEnum.HrTools}
               />
 
-              {shouldShowPending ? (
+              {error ? (
+                <Container sx={{ mt: 2 }}>
+                  <Alert
+                    severity="error"
+                    action={
+                      <Button color="inherit" size="small" onClick={refetch}>
+                        {t('Try Again')}
+                      </Button>
+                    }
+                  >
+                    {t(
+                      'Your Salary Calculation could not be loaded. Please try again later.',
+                    )}
+                  </Alert>
+                </Container>
+              ) : shouldShowPending ? (
                 <PendingSalaryCalculationLanding />
               ) : (
                 <NewSalaryCalculatorLanding />

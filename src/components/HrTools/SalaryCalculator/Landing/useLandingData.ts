@@ -1,4 +1,5 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
+import { ApolloError } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
 import { getLocalizedTaxStatus } from 'src/components/HrTools/Shared/getLocalizedTaxStatus';
 import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
@@ -46,6 +47,8 @@ export interface LandingData {
   accountBalance: number;
   inProgressCalculationId: string | null;
   loading: boolean;
+  error: ApolloError | undefined;
+  refetch: () => void;
   calculation: LandingSalaryCalculationsQuery['latestCalculation'];
   requestedOn: string;
   processedOn: string;
@@ -57,13 +60,45 @@ export const useLandingData = (): LandingData => {
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { data: hcmData, loading: hcmLoading } = useHcmQuery();
-  const { data: calculationData, loading: calculationLoading } =
-    useLandingSalaryCalculationsQuery();
-  const { data: accountBalanceData, loading: accountBalanceLoading } =
-    useAccountBalanceQuery();
+  const {
+    data: hcmData,
+    loading: hcmLoading,
+    error: hcmError,
+    refetch: refetchHcm,
+  } = useHcmQuery();
+  const {
+    data: calculationData,
+    loading: calculationLoading,
+    error: calculationError,
+    refetch: refetchCalculation,
+  } = useLandingSalaryCalculationsQuery();
+  const {
+    data: accountBalanceData,
+    loading: accountBalanceLoading,
+    error: accountBalanceError,
+    refetch: refetchAccountBalance,
+  } = useAccountBalanceQuery();
   const { data: staffAccountIdData, loading: staffAccountIdLoading } =
     useStaffAccountIdQuery();
+
+  const refetch = useCallback(() => {
+    if (hcmError) {
+      refetchHcm();
+    }
+    if (calculationError) {
+      refetchCalculation();
+    }
+    if (accountBalanceError) {
+      refetchAccountBalance();
+    }
+  }, [
+    hcmError,
+    calculationError,
+    accountBalanceError,
+    refetchHcm,
+    refetchCalculation,
+    refetchAccountBalance,
+  ]);
 
   const inProgressCalculationId =
     calculationData?.inProgressCalculation?.id ?? null;
@@ -271,6 +306,8 @@ export const useLandingData = (): LandingData => {
       calculationLoading ||
       accountBalanceLoading ||
       staffAccountIdLoading,
+    error: hcmError ?? calculationError ?? accountBalanceError,
+    refetch,
     calculation,
     requestedOn,
     processedOn,
