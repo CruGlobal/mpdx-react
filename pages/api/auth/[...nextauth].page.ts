@@ -13,7 +13,7 @@ import {
   ApiOauthSignInMutation,
   ApiOauthSignInMutationVariables,
 } from './apiOauthSignIn';
-import { isJwtExpired, setUserInfo } from './helpers';
+import { isJwtExpired, requiresHcmReLogin, setUserInfo } from './helpers';
 import {
   OktaSignInDocument,
   OktaSignInMutation,
@@ -263,7 +263,10 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
 
         // Check the expiration of the API token JWT without verifying its signature
         // Throwing an exception here will cause a redirect to the login page
-        if (isJwtExpired(apiToken)) {
+        if (
+          isJwtExpired(apiToken) ||
+          requiresHcmReLogin(apiToken, impersonating)
+        ) {
           throw new Error('Expired API token');
         }
 

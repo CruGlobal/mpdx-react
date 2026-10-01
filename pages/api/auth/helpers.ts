@@ -118,14 +118,38 @@ export function verifySignedValue(signedValue: string): string | null {
   }
 }
 
-// Determinate whether a JWT is expired without validating its signature
-export const isJwtExpired = (jwt: string): boolean => {
+// Read a JWT's exp without validating its signature
+const jwtExp = (jwt: string): number => {
   try {
     const decoded = Buffer.from(jwt.split('.')[1], 'base64').toString();
-    const payload = JSON.parse(decoded);
-    const now = DateTime.now().toSeconds();
-    return payload.exp <= now;
+    return JSON.parse(decoded).exp;
   } catch {
     throw new Error('Malformed API token');
   }
+};
+
+// Determinate whether a JWT is expired without validating its signature
+export const isJwtExpired = (jwt: string): boolean =>
+  jwtExp(jwt) <= DateTime.now().toSeconds();
+
+// The API mints exp as the issue time plus 30 days and carries no iat, so the issue time is derived.
+const API_TOKEN_LIFETIME_SECONDS = 30 * 24 * 60 * 60;
+// Login copies the HCM person number from Okta only for tokens minted after this. The last token
+// minted before it expires at 2026-10-28T15:00:00Z; after that this check never fires and it can be
+// deleted along with its caller in the session callback.
+const HCM_GO_LIVE_SECONDS = DateTime.fromISO(
+  '2026-09-28T15:00:00Z',
+).toSeconds();
+
+// Whether a session must sign in once more so login can copy the user's HCM person number.
+// Impersonation tokens live minutes, not 30 days, so their derived issue time means nothing.
+export const requiresHcmReLogin = (
+  jwt: string,
+  impersonating: boolean | undefined,
+): boolean => {
+  if (impersonating) {
+    return false;
+  }
+
+  return jwtExp(jwt) - API_TOKEN_LIFETIME_SECONDS < HCM_GO_LIVE_SECONDS;
 };
