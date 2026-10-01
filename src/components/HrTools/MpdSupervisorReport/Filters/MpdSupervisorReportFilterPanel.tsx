@@ -3,6 +3,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import {
   Autocomplete,
   Box,
+  Checkbox,
   Chip,
   IconButton,
   MenuItem,
@@ -15,13 +16,19 @@ import { useTranslation } from 'react-i18next';
 import { MpdAssignmentCategoryGroupEnum } from 'src/graphql/types.generated';
 import { useManagedStaffTeamsQuery } from '../ManagedStaffTeams.generated';
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
-import { getLocalizedAssignmentCategoryGroup } from '../helpers';
+import {
+  getLocalizedAssignmentCategoryGroup,
+  getLocalizedUserPersonType,
+  getLocalizedUserPersonTypeGroup,
+  getLocalizedUserPersonTypeName,
+} from '../helpers';
 import {
   ALL_TYPES,
   MpdSupervisorReportQuickFilterEnum,
   quickFilterDescription,
   quickFilterIds,
   quickFilterLabel,
+  userPersonTypeOptions,
 } from './mpdSupervisorReportFilters';
 
 interface FilterAutocompleteProps {
@@ -70,6 +77,8 @@ export const MpdSupervisorReportFilterPanel: React.FC<
     setDepartment,
     employmentType,
     setEmploymentType,
+    userPersonTypes,
+    setUserPersonTypes,
   } = useMpdSupervisorReport();
 
   const { data: teamsData } = useManagedStaffTeamsQuery();
@@ -198,6 +207,40 @@ export const MpdSupervisorReportFilterPanel: React.FC<
             </MenuItem>
           ))}
         </TextField>
+
+        <Autocomplete
+          multiple
+          fullWidth
+          autoHighlight
+          disableCloseOnSelect
+          limitTags={2}
+          size="small"
+          value={userPersonTypes}
+          onChange={(_, newValue) => setUserPersonTypes(newValue)}
+          options={userPersonTypeOptions}
+          groupBy={(option) => getLocalizedUserPersonTypeGroup(t, option)}
+          getOptionLabel={(option) => getLocalizedUserPersonTypeName(t, option)}
+          renderOption={(props, option, { selected }) => (
+            <li {...props} key={option}>
+              <Checkbox
+                edge="start"
+                size="small"
+                checked={selected}
+                disableRipple
+              />
+              {getLocalizedUserPersonType(t, option)}
+            </li>
+          )}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label={t('Person type')}
+              placeholder={
+                userPersonTypes.length ? undefined : t('All person types')
+              }
+            />
+          )}
+        />
       </Stack>
     </Box>
   );

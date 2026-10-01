@@ -5,7 +5,10 @@ import { GraphQLError } from 'graphql';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { MpdAssignmentCategoryGroupEnum } from 'src/graphql/types.generated';
+import {
+  MpdAssignmentCategoryGroupEnum,
+  MpdUserPersonTypeEnum,
+} from 'src/graphql/types.generated';
 import { MpdSupervisorReportQuickFilterEnum } from './Filters/mpdSupervisorReportFilters';
 import {
   ManagedStaffQuery,
@@ -50,6 +53,8 @@ interface ConsumerResult {
   setDepartment: (v: string | null) => void;
   employmentType: MpdAssignmentCategoryGroupEnum | null;
   setEmploymentType: (v: MpdAssignmentCategoryGroupEnum | null) => void;
+  userPersonTypes: MpdUserPersonTypeEnum[];
+  setUserPersonTypes: (v: MpdUserPersonTypeEnum[]) => void;
   activeQuickFilter: MpdSupervisorReportQuickFilterEnum;
   setActiveQuickFilter: (v: MpdSupervisorReportQuickFilterEnum) => void;
   activeFilterCount: number;
@@ -330,12 +335,16 @@ describe('MpdSupervisorReportContext', () => {
       consumerResult.setTeam('Central Team');
       consumerResult.setDepartment('Cru Military');
       consumerResult.setEmploymentType(MpdAssignmentCategoryGroupEnum.FullTime);
+      consumerResult.setUserPersonTypes([
+        MpdUserPersonTypeEnum.EmployeeStaff,
+        MpdUserPersonTypeEnum.PendingStaff,
+      ]);
       consumerResult.setActiveQuickFilter(
         MpdSupervisorReportQuickFilterEnum.NegativeLastMonth,
       );
     });
 
-    expect(consumerResult.activeFilterCount).toBe(4);
+    expect(consumerResult.activeFilterCount).toBe(5);
   });
 
   it('clearFilters resets the search and every panel filter', () => {
@@ -345,6 +354,7 @@ describe('MpdSupervisorReportContext', () => {
       consumerResult.setTeam('Central Team');
       consumerResult.setDepartment('Cru Military');
       consumerResult.setEmploymentType(MpdAssignmentCategoryGroupEnum.FullTime);
+      consumerResult.setUserPersonTypes([MpdUserPersonTypeEnum.EmployeeStaff]);
       consumerResult.setActiveQuickFilter(
         MpdSupervisorReportQuickFilterEnum.NegativeLastMonth,
       );
@@ -358,6 +368,7 @@ describe('MpdSupervisorReportContext', () => {
     expect(getByTestId('team').textContent).toBe('');
     expect(getByTestId('department').textContent).toBe('');
     expect(getByTestId('employmentType').textContent).toBe('');
+    expect(consumerResult.userPersonTypes).toEqual([]);
     expect(getByTestId('activeQuickFilter').textContent).toBe(
       MpdSupervisorReportQuickFilterEnum.AllPeople,
     );
@@ -621,6 +632,35 @@ describe('managed staff query variables', () => {
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
         assignmentCategoryGroup: MpdAssignmentCategoryGroupEnum.PartTime,
+      }),
+    );
+  });
+
+  it('sends a null userPersonTypes until a person type is chosen', async () => {
+    renderConsumer();
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        userPersonTypes: null,
+      }),
+    );
+  });
+
+  it('sends every chosen person type as userPersonTypes', async () => {
+    renderConsumer();
+    act(() => {
+      consumerResult.setUserPersonTypes([
+        MpdUserPersonTypeEnum.EmployeeStaff,
+        MpdUserPersonTypeEnum.PendingStaff,
+      ]);
+    });
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        userPersonTypes: [
+          MpdUserPersonTypeEnum.EmployeeStaff,
+          MpdUserPersonTypeEnum.PendingStaff,
+        ],
       }),
     );
   });
