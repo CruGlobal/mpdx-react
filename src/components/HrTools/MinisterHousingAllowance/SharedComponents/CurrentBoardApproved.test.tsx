@@ -378,6 +378,43 @@ describe('CurrentBoardApproved Component', () => {
     expect(queryByRole('cell', { name: 'Jane' })).not.toBeInTheDocument();
   });
 
+  it('leaves out the row for an ineligible user without a request', () => {
+    const { getByRole, queryByRole } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter>
+          <GqlMockedProvider>
+            <MinisterHousingAllowanceContext.Provider
+              value={
+                {
+                  isMarried: true,
+                  preferredName: 'John',
+                  spousePreferredName: 'Jane',
+                  userEligibleForMHA: false,
+                  spouseEligibleForMHA: true,
+                  userApprovedOverallAmount: 0,
+                  spouseApprovedOverallAmount: 15000,
+                  userTakenAmount: 0,
+                  spouseTakenAmount: 10000,
+                  userHcmData: {
+                    mhaRequest: { boardApprovedOnDate: null },
+                  } as unknown as HcmData,
+                  spouseHcmData: {
+                    mhaRequest: { boardApprovedOnDate: '2026-06-01' },
+                  } as unknown as HcmData,
+                } as ContextType
+              }
+            >
+              <CurrentBoardApproved request={null} hasOpenRequest={false} />
+            </MinisterHousingAllowanceContext.Provider>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    expect(getByRole('cell', { name: 'Jane' })).toBeInTheDocument();
+    expect(queryByRole('cell', { name: 'John' })).not.toBeInTheDocument();
+  });
+
   it('should hide Update Current MHA button when there is an open request', () => {
     const { queryByText, getByText } = render(
       <TestComponent
