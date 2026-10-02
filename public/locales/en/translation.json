@@ -1304,7 +1304,7 @@
     "Every 4 Months": "Every 4 Months",
     "Every 6 Months": "Every 6 Months",
     "Exceeds {{amount}} limit": "Exceeds {{amount}} limit",
-    "Exceeds account balance.": "Exceeds account balance.",
+    "Exceeds account balance plus deficit limit.": "Exceeds account balance plus deficit limit.",
     "Excluded": "Excluded",
     "Exempt": "Exempt",
     "Expand": "Expand",
