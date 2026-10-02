@@ -1,5 +1,6 @@
-import React from 'react';
-import { Chip } from '@mui/material';
+import React, { useMemo } from 'react';
+import { Chip, Stack, Tooltip } from '@mui/material';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { GoalCard } from 'src/components/Reports/Shared/GoalCard/GoalCard';
 import { DesignationSupportFormType } from 'src/graphql/types.generated';
@@ -23,10 +24,7 @@ export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal }) => {
   const { data: hcmData, loading: hcmLoading } = useHcmUserQuery();
   const hcmUser = hcmData?.hcm[0];
 
-  const { data: summaryData, loading: summaryLoading } = usePdsSummaryData(
-    goal,
-    hcmUser,
-  );
+  const { data: summaryData, constants } = usePdsSummaryData(goal, hcmUser);
   const goalTotal = summaryData?.overallTotal ?? 0;
 
   const formType = goal.formType ?? DesignationSupportFormType.Detailed;
@@ -36,6 +34,8 @@ export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal }) => {
     ) : (
       <Chip label={t('Default')} size="small" />
     );
+  const currentYear = useMemo(() => DateTime.local().year, []);
+  const isPastYear = goal.calculationsYear !== currentYear;
 
   const handleDelete = async () => {
     await deletePdsGoalCalculation({
@@ -52,11 +52,33 @@ export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal }) => {
       name={goal.name}
       goalAmount={goalTotal}
       currency="USD"
-      loading={summaryLoading || hcmLoading}
+      loading={constants.loading || hcmLoading}
       updatedAt={goal.updatedAt}
       viewHref={`/accountLists/${accountListId}/hrTools/pdsGoalCalculator/${goal.id}`}
       onDelete={handleDelete}
-      badge={formTypeBadge}
+      badge={
+        <Stack direction="row" spacing={1}>
+          {formTypeBadge}
+          {constants.unavailable && (
+            <Chip
+              label={t('Rates Unavailable')}
+              size="small"
+              color="error"
+              variant="outlined"
+            />
+          )}
+          {/* Explains why an old goal's total differs from a new goal's */}
+          {isPastYear && (
+            <Tooltip title={t('Calculation Year')}>
+              <Chip
+                label={String(goal.calculationsYear)}
+                size="small"
+                variant="outlined"
+              />
+            </Tooltip>
+          )}
+        </Stack>
+      }
     />
   );
 };
