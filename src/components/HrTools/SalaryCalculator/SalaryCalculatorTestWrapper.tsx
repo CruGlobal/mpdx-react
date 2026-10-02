@@ -8,6 +8,7 @@ import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
+  MinistersHousingIneligibilityReasonEnum,
   SalaryRequestStatusEnum,
   UsStaffGroupEnum,
   UserTypeEnum,
@@ -57,9 +58,12 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
         },
         mhaEit: {
           mhaEligibility: true,
+          ineligibilityReasonCode: null,
         },
         mhiEit: {
           mhiEligibility: false,
+          ineligibilityReasonCode:
+            MinistersHousingIneligibilityReasonEnum.NonItalyMha,
         },
       },
       {
@@ -83,9 +87,12 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
         },
         mhaEit: {
           mhaEligibility: true,
+          ineligibilityReasonCode: null,
         },
         mhiEit: {
           mhiEligibility: false,
+          ineligibilityReasonCode:
+            MinistersHousingIneligibilityReasonEnum.NonItalyMha,
         },
       },
     ],
