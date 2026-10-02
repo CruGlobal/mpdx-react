@@ -23,6 +23,8 @@ interface MultiPageHeaderProps {
   onNavListToggle: () => void;
   title: string;
   headerType: HeaderTypeEnum;
+  /** Shown just after the title, e.g. how fresh the page's data is. */
+  titleExtra?: ReactNode;
   rightExtra?: ReactNode;
 }
 
@@ -60,6 +62,7 @@ export const NavMenuIcon = styled(MenuIcon)(() => ({
 
 export const MultiPageHeader: FC<MultiPageHeaderProps> = ({
   title,
+  titleExtra,
   rightExtra,
   isNavListOpen,
   onNavListToggle,
@@ -116,9 +119,18 @@ export const MultiPageHeader: FC<MultiPageHeaderProps> = ({
             />
           )}
         </NavListButton>
-        <Typography variant="h5" sx={{ flex: 1 }}>
-          {title}
-        </Typography>
+        <Box
+          sx={{
+            flex: 1,
+            minWidth: 0,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 3,
+          }}
+        >
+          <Typography variant="h5">{title}</Typography>
+          {titleExtra}
+        </Box>
         {rightExtra}
       </Box>
     </StickyHeader>

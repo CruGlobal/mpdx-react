@@ -9,6 +9,10 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import {
+  HcmSyncBodyStatus,
+  HcmSyncHeaderStatus,
+} from 'src/components/HrTools/Shared/HcmSyncStatus/HcmSyncStatus';
 import { LoadErrorAlert } from 'src/components/Shared/LoadErrorAlert/LoadErrorAlert';
 import {
   HeaderTypeEnum,
@@ -65,6 +69,7 @@ export const MPGAIncomeExpensesReport: React.FC<
     staffName,
     isSupervisorView,
     staffAccountId,
+    personNumber,
     dataLoading,
     reportError,
     refetchReport,
@@ -125,6 +130,12 @@ export const MPGAIncomeExpensesReport: React.FC<
             onNavListToggle={onNavListToggle}
             headerType={HeaderTypeEnum.Report}
             title={title}
+            titleExtra={
+              <HcmSyncHeaderStatus
+                personNumber={personNumber}
+                skip={isSupervisorView && !personNumber}
+              />
+            }
           />
         </SimpleScreenOnly>
         {isSupervisorView && (
@@ -132,6 +143,12 @@ export const MPGAIncomeExpensesReport: React.FC<
         )}
         <Box mt={2}>
           <Container>
+            <SimpleScreenOnly>
+              <HcmSyncBodyStatus
+                personNumber={personNumber}
+                skip={isSupervisorView && !personNumber}
+              />
+            </SimpleScreenOnly>
             <StyledHeaderBox>
               <SimpleScreenOnly>
                 <Typography variant="h4">

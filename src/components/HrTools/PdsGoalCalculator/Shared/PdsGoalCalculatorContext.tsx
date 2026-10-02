@@ -9,6 +9,10 @@ import React, {
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import {
+  HcmQuery,
+  useHcmQuery,
+} from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
+import {
   DesignationSupportCalculationUpdateInput,
   DesignationSupportFormType,
 } from 'src/graphql/types.generated';
@@ -24,7 +28,6 @@ import {
   PdsSummaryData,
   usePdsSummaryData,
 } from '../calculations/usePdsSummaryData';
-import { HcmUserQuery, useHcmUserQuery } from './HCM.generated';
 import {
   PdsGoalCalculatorStep,
   PdsGoalCalculatorSteps,
@@ -37,7 +40,7 @@ export type PdsGoalCalculatorType = {
 
   calculation?: PdsGoalCalculationFieldsFragment;
   calculationLoading: boolean;
-  hcmUser?: HcmUserQuery['hcm'][number];
+  hcmUser?: HcmQuery['hcm'][number];
   summaryData: PdsSummaryData | null;
   constants: UseGoalCalculatorConstantsResult;
   percentComplete: number;
@@ -100,7 +103,7 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     });
   const calculation = calculationData?.designationSupportCalculation;
 
-  const { data: hcmData } = useHcmUserQuery();
+  const { data: hcmData } = useHcmQuery();
   const hcmUser = hcmData?.hcm[0];
 
   const { data: summaryData, constants } = usePdsSummaryData(

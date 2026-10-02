@@ -16,6 +16,10 @@ import { useAdditionalSalaryRequestForm } from 'src/components/HrTools/Additiona
 import { SavingStatus } from 'src/components/HrTools/Shared/CalculationReports/SavingStatus/SavingStatus';
 import { PageEnum } from 'src/components/HrTools/Shared/CalculationReports/Shared/sharedTypes';
 import { HcmUnavailableAlert } from 'src/components/HrTools/Shared/HcmData/HcmUnavailableAlert';
+import {
+  HcmSyncHeaderStatus,
+  HcmSyncStatusProvider,
+} from 'src/components/HrTools/Shared/HcmSyncStatus/HcmSyncStatus';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import { LoadErrorAlert } from 'src/components/Shared/LoadErrorAlert/LoadErrorAlert';
@@ -160,6 +164,7 @@ const AdditionalSalaryRequestContent: React.FC = () => {
             onNavListToggle={handleNavListToggle}
             title={t('Additional Salary Request')}
             headerType={HeaderTypeEnum.HrTools}
+            titleExtra={<HcmSyncHeaderStatus />}
             rightExtra={
               showSavingStatus && (
                 <SavingStatus
@@ -174,7 +179,9 @@ const AdditionalSalaryRequestContent: React.FC = () => {
               )
             }
           />
-          <AdditionalSalaryRequestRouter />
+          <HcmSyncStatusProvider>
+            <AdditionalSalaryRequestRouter />
+          </HcmSyncStatusProvider>
         </>
       }
     />

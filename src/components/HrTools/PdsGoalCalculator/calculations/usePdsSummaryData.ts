@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
+import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { DesignationSupportFormType } from 'src/graphql/types.generated';
 import {
   UseGoalCalculatorConstantsResult,
   useGoalCalculatorConstants,
 } from 'src/hooks/useGoalCalculatorConstants';
 import { PdsGoalCalculationFieldsFragment } from '../GoalsList/PdsGoalCalculations.generated';
-import { HcmUserQuery } from '../Shared/HCM.generated';
 import {
   OtherExpensesConstants,
   OtherExpensesTotals,
@@ -42,7 +42,7 @@ export interface UsePdsSummaryDataResult {
 
 export const usePdsSummaryData = (
   calculation: PdsGoalCalculationFieldsFragment | undefined,
-  hcmUser: HcmUserQuery['hcm'][number] | undefined,
+  hcmUser: HcmQuery['hcm'][number] | undefined,
 ): UsePdsSummaryDataResult => {
   const calculatorConstants = useGoalCalculatorConstants(
     calculation?.calculationsYear,
