@@ -121,15 +121,34 @@ describe('HcmSyncStatus', () => {
     });
   });
 
-  it('warns under the header when HCM no longer has a record for the person', async () => {
+  it('explains what HCM is on hover', async () => {
+    const { findByRole, body } = await renderBody();
+
+    userEvent.hover(body.getByTestId('HcmInfoTooltip'));
+
+    expect(await findByRole('tooltip')).toHaveTextContent(
+      "HCM (Human Capital Management) is Cru's HR system.",
+    );
+  });
+
+  it('warns you under the header when HCM no longer has a record for you', async () => {
     const { body } = await renderBody({ outOfSync: true });
 
     const alert = body.getByRole('alert');
-    expect(alert).toHaveTextContent(
-      'HCM no longer has a record for this person',
-    );
+    expect(alert).toHaveTextContent('HCM no longer has a record for you');
     expect(alert).toHaveTextContent(
       'The information below is from Sep 30, 2026',
+    );
+  });
+
+  it('names the person rather than you when a supervisor is viewing someone else', async () => {
+    const { body } = await renderBody({
+      outOfSync: true,
+      personNumber: '000123456',
+    });
+
+    expect(body.getByRole('alert')).toHaveTextContent(
+      'HCM no longer has a record for this person',
     );
   });
 
