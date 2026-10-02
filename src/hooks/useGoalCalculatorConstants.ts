@@ -56,12 +56,12 @@ export const formatConstants = (
   });
 
   const goalGeographicConstantMap: GoalGeographicConstantMap = new Map();
-  // Ensure the None option always exists
   goalGeographicConstantMap.set(GEOGRAPHIC_LOCATION_NONE, 0);
-  constant?.mpdGoalGeographicConstants.forEach((constant) => {
-    const { location, percentageMultiplier } = constant;
-    goalGeographicConstantMap.set(location, percentageMultiplier);
-  });
+  [...(constant?.mpdGoalGeographicConstants ?? [])]
+    .sort((a, b) => a.location.localeCompare(b.location))
+    .forEach(({ location, percentageMultiplier }) => {
+      goalGeographicConstantMap.set(location, percentageMultiplier);
+    });
 
   return {
     goalBenefitsPlans: constant?.mpdGoalBenefitsConstants ?? [],
