@@ -117,9 +117,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
           </StyledSidebar>
           <Divider orientation="vertical" flexItem />
           <MainContent className="main-content" ref={mainContentRef}>
-            {hcmSyncStatus && (
-              <HcmSyncBodyStatus personNumber={hcmSyncStatus.personNumber} />
-            )}
+            {hcmSyncStatus && <HcmSyncBodyStatus {...hcmSyncStatus} />}
             {mainContent}
           </MainContent>
         </>
@@ -192,9 +190,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
             </>
           )}
           <MainContent className="main-content" ref={mainContentRef}>
-            {hcmSyncStatus && (
-              <HcmSyncBodyStatus personNumber={hcmSyncStatus.personNumber} />
-            )}
+            {hcmSyncStatus && <HcmSyncBodyStatus {...hcmSyncStatus} />}
             {mainContent}
           </MainContent>
         </>

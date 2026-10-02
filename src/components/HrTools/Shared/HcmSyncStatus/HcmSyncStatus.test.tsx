@@ -23,6 +23,8 @@ interface TestComponentProps {
   syncedAt?: string | null;
   outOfSync?: boolean;
   personNumber?: string;
+  effectiveDate?: string;
+  skip?: boolean;
   refreshError?: 'rateLimited' | 'unavailable';
 }
 
@@ -42,6 +44,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
   syncedAt = '2026-09-30T12:00:00Z',
   outOfSync = false,
   personNumber,
+  effectiveDate,
+  skip,
   refreshError,
 }) => (
   <ThemeProvider theme={theme}>
@@ -62,8 +66,16 @@ const TestComponent: React.FC<TestComponentProps> = ({
       onCall={mutationSpy}
     >
       <>
-        <HcmSyncHeaderStatus personNumber={personNumber} />
-        <HcmSyncBodyStatus personNumber={personNumber} />
+        <HcmSyncHeaderStatus
+          personNumber={personNumber}
+          effectiveDate={effectiveDate}
+          skip={skip}
+        />
+        <HcmSyncBodyStatus
+          personNumber={personNumber}
+          effectiveDate={effectiveDate}
+          skip={skip}
+        />
       </>
     </GqlMockedProvider>
   </ThemeProvider>
@@ -158,6 +170,32 @@ describe('HcmSyncStatus', () => {
       ),
     ).toHaveLength(1);
     expect(await body.findByRole('button', { name: 'Refresh' })).toBeDisabled();
+  });
+
+  it('refreshes the HCM data for the date the page loaded', async () => {
+    const { body, findByTestId } = await renderBody({
+      effectiveDate: '2027-01-01',
+    });
+
+    userEvent.click(body.getByRole('button', { name: 'Refresh' }));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('Hcm', {
+        effectiveDate: '2027-01-01',
+        refresh: true,
+      }),
+    );
+    expect(await findByTestId('HcmSyncHeaderStatus')).toHaveTextContent(
+      'Synced from HCM 1 min. ago',
+    );
+  });
+
+  it('loads nothing and shows nothing when skipped', async () => {
+    const { queryByTestId } = render(<TestComponent skip />);
+
+    await waitFor(() => expect(mutationSpy).not.toHaveBeenCalled());
+    expect(queryByTestId('HcmSyncHeaderStatus')).not.toBeInTheDocument();
+    expect(queryByTestId('HcmSyncBodyStatus')).not.toBeInTheDocument();
   });
 
   it('waits out the cooldown when the API says the person was just refreshed', async () => {

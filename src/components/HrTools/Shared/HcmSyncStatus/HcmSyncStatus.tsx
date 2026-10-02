@@ -34,6 +34,10 @@ const STALE_AFTER = Duration.fromObject({ hours: 24 });
 interface HcmSyncStatusProps {
   /** The person whose HCM data the page shows. Defaults to the current user. */
   personNumber?: string;
+  /** The date the page loaded HCM data for, so a refresh replaces the data the page shows. */
+  effectiveDate?: string | null;
+  /** Hides the status until the page knows which HCM data it loads. */
+  skip?: boolean;
 }
 
 const HcmSyncStatusContext = createContext<HcmSyncStatusProps | null>(null);
@@ -45,8 +49,8 @@ const HcmSyncStatusContext = createContext<HcmSyncStatusProps | null>(null);
  */
 export const HcmSyncStatusProvider: React.FC<
   React.PropsWithChildren<HcmSyncStatusProps>
-> = ({ personNumber, children }) => (
-  <HcmSyncStatusContext.Provider value={{ personNumber }}>
+> = ({ children, ...props }) => (
+  <HcmSyncStatusContext.Provider value={props}>
     {children}
   </HcmSyncStatusContext.Provider>
 );
@@ -58,11 +62,18 @@ export const useHcmSyncStatusPlacement = () => useContext(HcmSyncStatusContext);
  * re-runs that query with refresh: true; the cache keys hcm without refresh, so the answer
  * replaces the household every component on the page is showing.
  */
-const useHcmSync = (personNumber?: string) => {
+const useHcmSync = ({
+  personNumber,
+  effectiveDate,
+  skip,
+}: HcmSyncStatusProps) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const client = useApolloClient();
-  const { data } = useHcmQuery({ variables: { personNumber } });
+  const { data } = useHcmQuery({
+    variables: { personNumber, effectiveDate },
+    skip,
+  });
   const [refreshing, setRefreshing] = useState(false);
   const [coolingDown, setCoolingDown] = useState(false);
 
@@ -104,7 +115,7 @@ const useHcmSync = (personNumber?: string) => {
     try {
       await client.query<HcmQuery, HcmQueryVariables>({
         query: HcmDocument,
-        variables: { personNumber, refresh: true },
+        variables: { personNumber, effectiveDate, refresh: true },
         fetchPolicy: 'network-only',
         context: { suppressErrorCodes: HANDLED_ERROR_CODES },
       });
@@ -186,10 +197,8 @@ const SyncRow: React.FC<{ sync: HcmSync }> = ({ sync }) => {
  * header's rightExtra slot; on narrow screens the header has no room, so HcmSyncBodyStatus shows
  * the same row under the header instead.
  */
-export const HcmSyncHeaderStatus: React.FC<HcmSyncStatusProps> = ({
-  personNumber,
-}) => {
-  const sync = useHcmSync(personNumber);
+export const HcmSyncHeaderStatus: React.FC<HcmSyncStatusProps> = (props) => {
+  const sync = useHcmSync(props);
   if (!sync.person) {
     return null;
   }
@@ -208,12 +217,10 @@ export const HcmSyncHeaderStatus: React.FC<HcmSyncStatusProps> = ({
  * Goes at the top of the page body, under the header. Shows the sync row on narrow screens, and at
  * every width warns when HCM no longer has a record for the person.
  */
-export const HcmSyncBodyStatus: React.FC<HcmSyncStatusProps> = ({
-  personNumber,
-}) => {
+export const HcmSyncBodyStatus: React.FC<HcmSyncStatusProps> = (props) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const sync = useHcmSync(personNumber);
+  const sync = useHcmSync(props);
   const { person, syncedAt } = sync;
   if (!person) {
     return null;
