@@ -59,6 +59,7 @@ const mockContextValue = {
   toggleDrawer: jest.fn(),
   requestData: null,
   requestError: undefined,
+  hcmLoading: false,
   hcmUnavailable: false,
   refetchHcm: jest.fn(),
   pageType: PageEnum.New,

@@ -97,6 +97,7 @@ export type AdditionalSalaryRequestType = {
   loading: boolean;
   currentYear?: number;
   requestError?: ApolloError;
+  hcmLoading: boolean;
   hcmUnavailable: boolean;
   refetchHcm: () => Promise<unknown>;
   pageType: PageEnum;
@@ -181,6 +182,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
 
   const {
     data: hcmData,
+    loading: hcmQueryLoading,
     error: hcmError,
     refetch: refetchHcmQuery,
   } = useHcmQuery();
@@ -194,6 +196,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     variables: { isSpouse },
   });
 
+  const hcmLoading = hcmQueryLoading && !hcmData;
   const hcmQueryUnavailable = isHcmUnavailableError(hcmError);
   const requestHcmUnavailable = isHcmUnavailableError(requestError);
   const hcmUnavailable = hcmQueryUnavailable || requestHcmUnavailable;
@@ -311,6 +314,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       toggleDrawer,
       requestData,
       requestError,
+      hcmLoading,
       hcmUnavailable,
       refetchHcm,
       loading,
@@ -351,6 +355,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       toggleDrawer,
       requestData,
       requestError,
+      hcmLoading,
       hcmUnavailable,
       refetchHcm,
       loading,

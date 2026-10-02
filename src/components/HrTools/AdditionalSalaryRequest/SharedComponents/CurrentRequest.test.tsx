@@ -77,6 +77,7 @@ const mockContextValue = {
   requestData: null,
   loading: false,
   requestError: undefined,
+  hcmLoading: false,
   hcmUnavailable: false,
   refetchHcm: jest.fn(),
   pageType: PageEnum.New,
