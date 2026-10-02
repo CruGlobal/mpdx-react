@@ -22,7 +22,7 @@ import { useStepList } from 'src/hooks/useStepList';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
 import { HcmQuery, useHcmQuery } from '../../Shared/HcmData/Hcm.generated';
-import { isHcmUnavailableError } from '../../Shared/HcmData/HcmUnavailableAlert';
+import { useHcmUnavailable } from '../../Shared/HcmData/useHcmUnavailable';
 import { useStaffAccountIdQuery } from '../../Shared/StaffAccountId.generated';
 import {
   AdditionalSalaryRequestQuery,
@@ -100,7 +100,7 @@ export type AdditionalSalaryRequestType = {
   hcmLoading: boolean;
   hcmUnavailable: boolean;
   refetchHcm: () => Promise<unknown>;
-  refetchRequest: () => Promise<unknown>;
+  refetchRequest: () => void;
   pageType: PageEnum;
   setPageType: (pageType: PageEnum) => void;
   pendingPrint: boolean;
@@ -192,29 +192,20 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     data: requestData,
     error: requestError,
     loading,
-    refetch: refetchRequest,
+    refetch: refetchRequestQuery,
   } = useAdditionalSalaryRequestQuery({
     variables: { isSpouse },
   });
 
   const hcmLoading = hcmQueryLoading && !hcmData;
-  const hcmQueryUnavailable = isHcmUnavailableError(hcmError);
-  const requestHcmUnavailable = isHcmUnavailableError(requestError);
-  const hcmUnavailable = hcmQueryUnavailable || requestHcmUnavailable;
-
-  const refetchHcm = useCallback(
-    () =>
-      Promise.all([
-        hcmQueryUnavailable && refetchHcmQuery(),
-        requestHcmUnavailable && refetchRequest(),
-      ]),
-    [
-      hcmQueryUnavailable,
-      requestHcmUnavailable,
-      refetchHcmQuery,
-      refetchRequest,
-    ],
+  const { hcmUnavailable, refetchHcm } = useHcmUnavailable(
+    { error: hcmError, refetch: refetchHcmQuery },
+    { error: requestError, refetch: refetchRequestQuery },
   );
+
+  const refetchRequest = useCallback(() => {
+    refetchRequestQuery().catch(() => {});
+  }, [refetchRequestQuery]);
 
   const status = requestData?.latestAdditionalSalaryRequest?.status;
   const isPending = status === AsrStatusEnum.Pending;

@@ -66,6 +66,10 @@ const AdditionalSalaryRequestRouter: React.FC = () => {
     return <Loading loading />;
   }
 
+  if (user?.asrEit?.asrEligibility === false) {
+    return <IneligiblePage />;
+  }
+
   if (hcmUnavailable) {
     return (
       <Container sx={{ mt: 2 }}>
@@ -81,14 +85,10 @@ const AdditionalSalaryRequestRouter: React.FC = () => {
           message={t(
             'Your Additional Salary Request could not be loaded. Please try again later.',
           )}
-          onRetry={() => refetchRequest().catch(() => {})}
+          onRetry={refetchRequest}
         />
       </Container>
     );
-  }
-
-  if (user?.asrEit?.asrEligibility === false) {
-    return <IneligiblePage />;
   }
 
   if (!requestData) {

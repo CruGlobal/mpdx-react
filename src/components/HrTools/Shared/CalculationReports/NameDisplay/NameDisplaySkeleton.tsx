@@ -40,7 +40,7 @@ export const NameDisplaySkeleton: React.FC<NameDisplaySkeletonProps> = ({
           sx={{ paddingInline: theme.spacing(4) }}
         />
         {showContent && (
-          <CardContent>
+          <CardContent data-testid="name-display-skeleton-amounts">
             <Grid container spacing={theme.spacing(2)}>
               {[0, 1].map((column) => (
                 <Grid size={6} key={column}>

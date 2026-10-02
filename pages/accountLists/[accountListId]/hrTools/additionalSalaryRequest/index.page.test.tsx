@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@mui/material/styles';
-import { within } from '@testing-library/react';
+import { waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
@@ -18,6 +18,8 @@ import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import AdditionalSalaryRequestPage, { getServerSideProps } from './index.page';
 
+const mutationSpy = jest.fn();
+
 const heavyLoadMessage =
   'The system is currently under heavy load. Please try again in a few minutes.';
 
@@ -27,6 +29,7 @@ interface TestComponentProps {
   staffAccountId?: string;
   hcmUnavailableCalls?: number;
   requestUnavailableCalls?: number;
+  requestError?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -35,6 +38,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   staffAccountId = 'account-list-1',
   hcmUnavailableCalls = 0,
   requestUnavailableCalls = 0,
+  requestError = false,
 }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
@@ -60,6 +64,13 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 hcmUnavailableCalls,
               ),
             },
+            ...(requestError && {
+              AdditionalSalaryRequest: {
+                latestAdditionalSalaryRequest: (() => {
+                  throw new Error('SAA is unavailable');
+                }) as never,
+              },
+            }),
             ...(requestUnavailableCalls > 0 && {
               AdditionalSalaryRequest: {
                 latestAdditionalSalaryRequest: mockHcmUnavailable(
@@ -69,6 +80,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
               },
             }),
           }}
+          onCall={mutationSpy}
         >
           <AdditionalSalaryRequestPage />
         </GqlMockedProvider>
@@ -169,6 +181,28 @@ describe('AdditionalSalaryRequest page', () => {
       ).toBeInTheDocument();
       expect(queryByText(heavyLoadMessage)).not.toBeInTheDocument();
     });
+  });
+
+  it('shows the load error when the request fails for another reason', async () => {
+    const { findByRole, queryByText } = render(<TestComponent requestError />);
+
+    const alert = await findByRole('alert');
+    expect(alert).toHaveTextContent(
+      'Your Additional Salary Request could not be loaded. Please try again later.',
+    );
+    expect(queryByText(heavyLoadMessage)).not.toBeInTheDocument();
+
+    userEvent.click(within(alert).getByRole('button', { name: 'Try Again' }));
+    await waitFor(() =>
+      expect(
+        mutationSpy.mock.calls
+          .map(([{ operation }]) => operation)
+          .filter(
+            (operation) =>
+              operation.operationName === 'AdditionalSalaryRequest',
+          ),
+      ).toHaveLength(2),
+    );
   });
 
   it('should show limited access if user does not have access to page', async () => {
