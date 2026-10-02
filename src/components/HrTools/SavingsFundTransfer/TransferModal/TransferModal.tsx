@@ -34,6 +34,7 @@ import {
   dateFormat,
   dateFormatShort,
 } from 'src/lib/intlFormat';
+import { availableBalance, toCents } from '../Helper/availableBalance';
 import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
 import {
   useCreateRecurringTransferMutation,
@@ -92,7 +93,7 @@ const pastDateMessage = (schedule: ScheduleEnum): string =>
     ? i18n.t('Transfer date cannot be in the past')
     : i18n.t('Recurring transfers must start at least one day in the future');
 
-const transferSchema = (locale: string) =>
+const transferSchema = (locale: string, funds: FundFieldsFragment[]) =>
   yup.object({
     transferFrom: yup.string().required(i18n.t('From account is required')),
     transferTo: yup.string().required(i18n.t('To account is required')),
@@ -156,7 +157,47 @@ const transferSchema = (locale: string) =>
     amount: yup
       .number()
       .required(i18n.t('Amount is required'))
-      .min(0.01, i18n.t('Amount must be at least $0.01')),
+      .min(0.01, i18n.t('Amount must be at least $0.01'))
+      .test('within-available-balance', function (value) {
+        const { transferFrom, schedule, isEditing } = this.parent as {
+          transferFrom?: string;
+          schedule?: ScheduleEnum;
+          isEditing?: boolean;
+        };
+        if (typeof value !== 'number') {
+          return true;
+        }
+        // Only a new one-time transfer debits the account immediately, so
+        // only it is hard-blocked (MPDX-10004). A recurring setup's payments
+        // happen in the future against future balances — the form shows a
+        // non-blocking warning instead, and each payment is enforced when it
+        // is processed.
+        if (schedule !== ScheduleEnum.OneTime || isEditing) {
+          return true;
+        }
+        const fund = funds.find((fund) => fund.fundType === transferFrom);
+        if (!fund) {
+          return this.createError({
+            message: i18n.t(
+              'Unable to verify the available balance for this account',
+            ),
+          });
+        }
+        const available = availableBalance(fund);
+        if (toCents(value) <= toCents(available)) {
+          return true;
+        }
+        return this.createError({
+          message: i18n.t(
+            'Amount cannot exceed the available balance of {{balance}}',
+            {
+              balance: currencyFormat(Math.max(available, 0), 'USD', locale, {
+                showTrailingZeros: true,
+              }),
+            },
+          ),
+        });
+      }),
     note: yup.string().when('schedule', {
       is: ScheduleEnum.OneTime,
       then: (schema) => schema.trim().required(i18n.t('Note is required')),
@@ -291,7 +332,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
           isEditing: Boolean(data.transfer.id),
           originalStart: data.transfer.transferDate ?? null,
         }}
-        validationSchema={transferSchema(locale)}
+        validationSchema={transferSchema(locale, funds)}
         onSubmit={handleSubmit}
       >
         {({
@@ -320,11 +361,15 @@ export const TransferModal: React.FC<TransferModalProps> = ({
           const locale = useLocale();
 
           const fund = funds.find((f) => f.fundType === transferFrom);
+          // New one-time transfers over the balance are hard-blocked by the
+          // schema; recurring setups and edits only warn, since their
+          // payments process in the future against future balances.
           const projected = fund ? fund.endBalance - amount : null;
-          const showAlert =
+          const showOverdraftWarning =
             !!fund &&
             projected !== null &&
-            projected < -(fund.deficitLimit ?? 0);
+            !(isNew && schedule === ScheduleEnum.OneTime) &&
+            toCents(amount) > toCents(availableBalance(fund));
 
           return (
             <form onSubmit={handleSubmit} noValidate>
@@ -621,22 +666,22 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                   </Box>
                 )}
 
-                {showAlert && (
+                {showOverdraftWarning && (
                   <Alert severity="warning">
                     {t(
-                      "This amount will cause your account balance to exceed the deficit limit. If you proceed, your {{ fund }} account's projected balance will be ",
+                      "This amount is greater than your {{ fund }} account's available balance. If you proceed, the account's projected balance will be ",
                       {
                         fund: fund.fundType,
                       },
                     )}
                     <strong>
-                      {t('{{ projected }}', {
-                        projected: currencyFormat(projected, 'USD', locale, {
-                          showTrailingZeros: true,
-                        }),
+                      {currencyFormat(projected, 'USD', locale, {
+                        showTrailingZeros: true,
                       })}
                     </strong>
-                    {t(' after the first scheduled payment is processed.')}
+                    {t(
+                      ' after the first scheduled payment is processed. Payments that would cause a negative balance may not be processed.',
+                    )}
                   </Alert>
                 )}
               </DialogContent>
