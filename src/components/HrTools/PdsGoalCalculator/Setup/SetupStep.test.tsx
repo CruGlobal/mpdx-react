@@ -64,6 +64,25 @@ const renderSetup = (
 ) => render(setupTree(props, extraChildren));
 
 describe('SetupStep', () => {
+  it("loads the constants for the goal's calculations year", async () => {
+    const { findByRole } = renderSetup({
+      calculationMock: { ...fullTimeSalariedMock, calculationsYear: 2019 },
+      onCall: mutationSpy,
+    });
+
+    await findByRole('combobox', { name: 'Geographic Multiplier' });
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('GoalCalculatorConstants', {
+        year: 2019,
+      }),
+    );
+    // The provider also loads the goal's year, so check that nothing loads
+    // the current year's constants instead
+    expect(mutationSpy).not.toHaveGraphqlOperation('GoalCalculatorConstants', {
+      year: null,
+    });
+  });
+
   it('disables fields while calculation data is loading', async () => {
     const { findByRole } = renderSetup({ calculationMock: undefined });
 

@@ -22,6 +22,7 @@ import { useStepList } from 'src/hooks/useStepList';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
 import { HcmQuery, useHcmQuery } from '../../Shared/HcmData/Hcm.generated';
+import { useHcmUnavailable } from '../../Shared/HcmData/useHcmUnavailable';
 import { useStaffAccountIdQuery } from '../../Shared/StaffAccountId.generated';
 import {
   AdditionalSalaryRequestQuery,
@@ -96,6 +97,10 @@ export type AdditionalSalaryRequestType = {
   loading: boolean;
   currentYear?: number;
   requestError?: ApolloError;
+  hcmLoading: boolean;
+  hcmUnavailable: boolean;
+  refetchHcm: () => Promise<unknown>;
+  refetchRequest: () => void;
   pageType: PageEnum;
   setPageType: (pageType: PageEnum) => void;
   pendingPrint: boolean;
@@ -176,15 +181,31 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     currentIndex,
   } = useStepList(FormEnum.AdditionalSalary, undefined, 0);
 
-  const { data: hcmData } = useHcmQuery();
+  const {
+    data: hcmData,
+    loading: hcmQueryLoading,
+    error: hcmError,
+    refetch: refetchHcmQuery,
+  } = useHcmQuery();
 
   const {
     data: requestData,
     error: requestError,
     loading,
+    refetch: refetchRequestQuery,
   } = useAdditionalSalaryRequestQuery({
     variables: { isSpouse },
   });
+
+  const hcmLoading = hcmQueryLoading && !hcmData;
+  const { hcmUnavailable, refetchHcm } = useHcmUnavailable(
+    { error: hcmError, refetch: refetchHcmQuery },
+    { error: requestError, refetch: refetchRequestQuery },
+  );
+
+  const refetchRequest = useCallback(() => {
+    refetchRequestQuery().catch(() => {});
+  }, [refetchRequestQuery]);
 
   const status = requestData?.latestAdditionalSalaryRequest?.status;
   const isPending = status === AsrStatusEnum.Pending;
@@ -285,6 +306,10 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       toggleDrawer,
       requestData,
       requestError,
+      hcmLoading,
+      hcmUnavailable,
+      refetchHcm,
+      refetchRequest,
       loading,
       currentYear,
       pageType,
@@ -323,6 +348,10 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       toggleDrawer,
       requestData,
       requestError,
+      hcmLoading,
+      hcmUnavailable,
+      refetchHcm,
+      refetchRequest,
       loading,
       currentYear,
       pageType,

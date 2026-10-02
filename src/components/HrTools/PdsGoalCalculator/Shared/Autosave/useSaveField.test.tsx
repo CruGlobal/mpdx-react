@@ -5,6 +5,7 @@ import {
   PdsGoalCalculatorTestWrapper,
   PdsGoalCalculatorTestWrapperProps,
 } from '../../PdsGoalCalculatorTestWrapper';
+import { usePdsGoalCalculator } from '../PdsGoalCalculatorContext';
 import { useSaveField } from './useSaveField';
 
 type WrapperExtraMocks = {
@@ -45,15 +46,19 @@ const Wrapper: React.FC<WrapperProps> = ({ children, extraMocks }) => (
   </PdsGoalCalculatorTestWrapper>
 );
 
+// saveField is a no-op until the calculation loads, so tests wait on it
+const useHook = () => ({
+  saveField: useSaveField(),
+  calculation: usePdsGoalCalculator().calculation,
+});
+
 describe('useSaveField', () => {
   it('should update the calculation when a value changes', async () => {
-    const { result } = renderHook(useSaveField, { wrapper: Wrapper });
+    const { result } = renderHook(useHook, { wrapper: Wrapper });
 
-    await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('PdsGoalCalculation'),
-    );
+    await waitFor(() => expect(result.current.calculation).toBeDefined());
 
-    result.current({ name: 'New Name' });
+    result.current.saveField({ name: 'New Name' });
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('UpdatePdsGoalCalculation', {
@@ -66,7 +71,7 @@ describe('useSaveField', () => {
   });
 
   it('shows an error snackbar when the mutation fails', async () => {
-    const { result } = renderHook(useSaveField, {
+    const { result } = renderHook(useHook, {
       wrapper: ({ children }) => (
         <Wrapper
           extraMocks={{
@@ -80,11 +85,9 @@ describe('useSaveField', () => {
       ),
     });
 
-    await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('PdsGoalCalculation'),
-    );
+    await waitFor(() => expect(result.current.calculation).toBeDefined());
 
-    await result.current({ name: 'New Name' });
+    await result.current.saveField({ name: 'New Name' });
 
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith(

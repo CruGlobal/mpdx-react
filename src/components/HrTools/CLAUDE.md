@@ -106,9 +106,13 @@ Other shared pieces worth knowing before you build a local copy:
   every money/percent input (widest reuse in the tree).
 - `Shared/HcmData/Hcm.graphql` — the shared `hcm(effectiveDate:)` query for
   staff/HR data. When HCM is overloaded the API answers with an
-  `HCM_UNAVAILABLE` error; check it with `isHcmUnavailableError` and render
-  `HcmUnavailableAlert` (heavy-load message + Try Again that refetches HCM)
-  from `Shared/HcmData/HcmUnavailableAlert.tsx`. `StaffInfoCard`,
+  `HCM_UNAVAILABLE` error; render `HcmUnavailableAlert` (heavy-load message +
+  Try Again that refetches HCM) from `Shared/HcmData/HcmUnavailableAlert.tsx`.
+  Queries whose resolvers call HCM themselves (salary/ASR `calculations`) fail
+  with the same code, so pass the `Hcm` query and that query to
+  `useHcmUnavailable` (`Shared/HcmData/useHcmUnavailable.ts`) for one
+  `hcmUnavailable` flag and a `refetchHcm` that retries only what failed.
+  `StaffInfoCard`,
   `AccountInfoBox`, `EligibilityStatusTable`, `GoalPresentation/`,
   `SummaryHeaderCard`, and `useFormatters` are the other shared leaves. Prefer
   them over one-off equivalents.
@@ -134,8 +138,15 @@ attrition) are computed independently in generic (`calculateTotals.ts`), PDS
 (`calculations/`), and again on the server for NS — with different step ordering.
 Changing the math in one place does **not** update the others. Treat these three
 as a set: when you touch goal arithmetic, check whether the other copies need the
-same change. NS captures a user-selected `calculationsYear`; the client
-constants themselves are not year-versioned.
+same change.
+
+**Constants are year-versioned.** Every goal carries a `calculationsYear` (NS
+user-selected, GoalCalculator user-selected within its range, PDS locked to the
+creation year). Pass it to `useGoalCalculatorConstants(year, { skip })` so a
+goal keeps its own year's rates; calling the hook with no year loads the
+current year, which is only right for brand new goals. Inside GoalCalculator
+and PdsGoalCalculator, read `constants` from the calculator context instead of
+calling the hook yourself; the context already loads the goal's year.
 
 Non-obvious per-calculator rules:
 

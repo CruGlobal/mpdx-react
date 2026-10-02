@@ -24,10 +24,13 @@ describe('SalaryCalculator', () => {
     });
   });
 
-  describe('when HCM is unavailable', () => {
+  describe.each([
+    ['HCM query', 'hcmUnavailableCalls'],
+    ['calculation query', 'calculationUnavailableCalls'],
+  ] as const)('when the %s is unavailable', (_, failingQuery) => {
     it('shows the heavy load alert instead of the step', async () => {
       const { findByRole, getByRole, queryByRole } = render(
-        <SalaryCalculatorTestWrapper hcmUnavailableCalls={Infinity}>
+        <SalaryCalculatorTestWrapper {...{ [failingQuery]: Infinity }}>
           <SalaryCalculator />
         </SalaryCalculatorTestWrapper>,
       );
@@ -43,7 +46,7 @@ describe('SalaryCalculator', () => {
 
     it('shows the step when Try Again succeeds', async () => {
       const { findByRole, queryByText } = render(
-        <SalaryCalculatorTestWrapper hcmUnavailableCalls={1}>
+        <SalaryCalculatorTestWrapper {...{ [failingQuery]: 1 }}>
           <SalaryCalculator />
         </SalaryCalculatorTestWrapper>,
       );
@@ -59,6 +62,32 @@ describe('SalaryCalculator', () => {
         queryByText(/The system is currently under heavy load/),
       ).not.toBeInTheDocument();
     });
+  });
+
+  it('shows the load error instead of the step when the calculation fails', async () => {
+    const mutationSpy = jest.fn();
+    const { findByRole, queryByRole } = render(
+      <SalaryCalculatorTestWrapper calculationError onCall={mutationSpy}>
+        <SalaryCalculator />
+      </SalaryCalculatorTestWrapper>,
+    );
+
+    const alert = await findByRole('alert');
+    expect(alert).toHaveTextContent(
+      'Your Salary Calculation could not be loaded. Please try again later.',
+    );
+    expect(queryByRole('button', { name: 'Continue' })).not.toBeInTheDocument();
+
+    userEvent.click(within(alert).getByRole('button', { name: 'Try Again' }));
+    await waitFor(() =>
+      expect(
+        mutationSpy.mock.calls
+          .map(([{ operation }]) => operation)
+          .filter(
+            (operation) => operation.operationName === 'SalaryCalculation',
+          ),
+      ).toHaveLength(2),
+    );
   });
 
   describe('view mode', () => {
