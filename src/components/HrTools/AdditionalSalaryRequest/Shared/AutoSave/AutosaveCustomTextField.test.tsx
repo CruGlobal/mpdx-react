@@ -66,6 +66,8 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   } as AdditionalSalaryRequestType['requestData'],
   loading: false,
   requestError: undefined,
+  hcmUnavailable: false,
+  refetchHcm: jest.fn(),
   pageType: PageEnum.New,
   setPageType: jest.fn(),
   pendingPrint: false,

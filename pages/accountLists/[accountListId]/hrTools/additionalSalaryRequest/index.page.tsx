@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import React, { useState } from 'react';
+import { Container } from '@mui/material';
 import { FormikProvider } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
@@ -14,6 +15,7 @@ import {
 import { useAdditionalSalaryRequestForm } from 'src/components/HrTools/AdditionalSalaryRequest/Shared/useAdditionalSalaryRequestForm';
 import { SavingStatus } from 'src/components/HrTools/Shared/CalculationReports/SavingStatus/SavingStatus';
 import { PageEnum } from 'src/components/HrTools/Shared/CalculationReports/Shared/sharedTypes';
+import { HcmUnavailableAlert } from 'src/components/HrTools/Shared/HcmData/HcmUnavailableAlert';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import {
@@ -44,13 +46,28 @@ const FormikRequestPage: React.FC = () => {
 };
 
 const AdditionalSalaryRequestRouter: React.FC = () => {
-  const { pageType, isNewAsr, requestData, loading, user } =
-    useAdditionalSalaryRequest();
+  const {
+    pageType,
+    isNewAsr,
+    requestData,
+    loading,
+    user,
+    hcmUnavailable,
+    refetchHcm,
+  } = useAdditionalSalaryRequest();
 
   const isEdit = pageType === PageEnum.Edit;
 
   if (loading) {
     return <Loading loading />;
+  }
+
+  if (hcmUnavailable) {
+    return (
+      <Container sx={{ mt: 2 }}>
+        <HcmUnavailableAlert refetch={refetchHcm} />
+      </Container>
+    );
   }
 
   if (user?.asrEit?.asrEligibility === false) {
