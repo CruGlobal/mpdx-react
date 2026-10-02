@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import React, { useState } from 'react';
+import { Container } from '@mui/material';
 import { FormikProvider } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
@@ -14,8 +15,10 @@ import {
 import { useAdditionalSalaryRequestForm } from 'src/components/HrTools/AdditionalSalaryRequest/Shared/useAdditionalSalaryRequestForm';
 import { SavingStatus } from 'src/components/HrTools/Shared/CalculationReports/SavingStatus/SavingStatus';
 import { PageEnum } from 'src/components/HrTools/Shared/CalculationReports/Shared/sharedTypes';
+import { HcmUnavailableAlert } from 'src/components/HrTools/Shared/HcmData/HcmUnavailableAlert';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
+import { LoadErrorAlert } from 'src/components/Shared/LoadErrorAlert/LoadErrorAlert';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -44,8 +47,18 @@ const FormikRequestPage: React.FC = () => {
 };
 
 const AdditionalSalaryRequestRouter: React.FC = () => {
-  const { pageType, isNewAsr, requestData, loading, user } =
-    useAdditionalSalaryRequest();
+  const { t } = useTranslation();
+  const {
+    pageType,
+    isNewAsr,
+    requestData,
+    loading,
+    user,
+    hcmUnavailable,
+    refetchHcm,
+    requestError,
+    refetchRequest,
+  } = useAdditionalSalaryRequest();
 
   const isEdit = pageType === PageEnum.Edit;
 
@@ -55,6 +68,27 @@ const AdditionalSalaryRequestRouter: React.FC = () => {
 
   if (user?.asrEit?.asrEligibility === false) {
     return <IneligiblePage />;
+  }
+
+  if (hcmUnavailable) {
+    return (
+      <Container sx={{ mt: 2 }}>
+        <HcmUnavailableAlert refetch={refetchHcm} />
+      </Container>
+    );
+  }
+
+  if (requestError) {
+    return (
+      <Container sx={{ mt: 2 }}>
+        <LoadErrorAlert
+          message={t(
+            'Your Additional Salary Request could not be loaded. Please try again later.',
+          )}
+          onRetry={refetchRequest}
+        />
+      </Container>
+    );
   }
 
   if (!requestData) {
