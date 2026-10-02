@@ -18,6 +18,10 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useHcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import {
+  HcmSyncBodyStatus,
+  HcmSyncHeaderStatus,
+} from 'src/components/HrTools/Shared/HcmSyncStatus/HcmSyncStatus';
+import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
@@ -325,6 +329,12 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
           onNavListToggle={onNavListToggle}
           title={title}
           headerType={HeaderTypeEnum.Report}
+          titleExtra={
+            <HcmSyncHeaderStatus
+              personNumber={personNumber}
+              skip={isSupervisorView && !personNumber}
+            />
+          }
         />
       </SimpleScreenOnly>
       {isSupervisorView && (
@@ -335,6 +345,12 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       )}
       <Box mt={2}>
         <Container>
+          <SimpleScreenOnly>
+            <HcmSyncBodyStatus
+              personNumber={personNumber}
+              skip={isSupervisorView && !personNumber}
+            />
+          </SimpleScreenOnly>
           <Box>
             <StyledHeaderBox>
               <SimplePrintOnly>

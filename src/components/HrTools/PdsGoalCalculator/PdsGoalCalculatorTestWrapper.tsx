@@ -6,6 +6,11 @@ import { SnackbarProvider } from 'notistack';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import {
+  HcmDocument,
+  HcmQuery,
+  HcmQueryVariables,
+} from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { AutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
@@ -27,11 +32,6 @@ import {
   PdsGoalCalculationsQuery,
   PdsGoalCalculationsQueryVariables,
 } from './GoalsList/PdsGoalCalculations.generated';
-import {
-  HcmUserDocument,
-  HcmUserQuery,
-  HcmUserQueryVariables,
-} from './Shared/HCM.generated';
 import { PdsGoalCalculatorProvider } from './Shared/PdsGoalCalculatorContext';
 
 const calculationsDefault = gqlMock<
@@ -111,23 +111,20 @@ const calculationDefault = gqlMock<
   variables: { id: 'goal-1' },
 }).designationSupportCalculation;
 
-const hcmUserDefault = gqlMock<HcmUserQuery, HcmUserQueryVariables>(
-  HcmUserDocument,
-  {
-    mocks: {
-      hcm: [
-        {
-          fourOThreeB: {
-            currentTaxDeferredContributionPercentage: 0,
-            currentRothContributionPercentage: 0,
-          },
+const hcmUserDefault = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
+  mocks: {
+    hcm: [
+      {
+        fourOThreeB: {
+          currentTaxDeferredContributionPercentage: 0,
+          currentRothContributionPercentage: 0,
         },
-      ],
-    },
+      },
+    ],
   },
-);
+});
 
-export type HcmUserMock = DeepPartial<HcmUserQuery['hcm'][number]>;
+export type HcmUserMock = DeepPartial<HcmQuery['hcm'][number]>;
 export type GetUserMock = DeepPartial<GetUserQuery>;
 
 export type GoalCalculatorConstantsMock = DeepPartial<
@@ -192,7 +189,7 @@ export const PdsGoalCalculatorTestWrapper = <
             PdsGoalCalculations: PdsGoalCalculationsQuery;
             PdsGoalCalculation: PdsGoalCalculationQuery;
             GoalCalculatorConstants: GoalCalculatorConstantsQuery;
-            HcmUser: HcmUserQuery;
+            Hcm: HcmQuery;
             GetUser: GetUserQuery;
             AccountListSupportRaised: AccountListSupportRaisedQuery;
             AccountGeographicLocation: AccountGeographicLocationQuery;
@@ -220,7 +217,7 @@ export const PdsGoalCalculatorTestWrapper = <
                     calculationMock,
                   ),
                 },
-                HcmUser: {
+                Hcm: {
                   hcm:
                     hcmUserMock === null
                       ? []

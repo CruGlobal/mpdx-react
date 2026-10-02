@@ -4,6 +4,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
@@ -122,29 +123,31 @@ const TestComponent: React.FC<TestComponentProps> = ({
     <ThemeProvider theme={theme}>
       <TestRouter>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <GqlMockedProvider<{
-            StaffAccount: StaffAccountQuery;
-            MPGATransactions: MpgaTransactionsQuery;
-            ReportsStaffExpenses: ReportsStaffExpensesQuery;
-          }>
-            mocks={{
-              ...mockData,
-              MPGATransactions: {
-                reportsStaffExpenses: failReportCalls
-                  ? failingReport
-                  : reportsStaffExpenses,
-              },
-            }}
-            onCall={mutationSpy}
-          >
-            <MPGAIncomeExpensesReportProvider staffAccountId={staffAccountId}>
-              <MPGAIncomeExpensesReport
-                onNavListToggle={onNavListToggle}
-                isNavListOpen={true}
-                title={title}
-              />
-            </MPGAIncomeExpensesReportProvider>
-          </GqlMockedProvider>
+          <SnackbarProvider>
+            <GqlMockedProvider<{
+              StaffAccount: StaffAccountQuery;
+              MPGATransactions: MpgaTransactionsQuery;
+              ReportsStaffExpenses: ReportsStaffExpensesQuery;
+            }>
+              mocks={{
+                ...mockData,
+                MPGATransactions: {
+                  reportsStaffExpenses: failReportCalls
+                    ? failingReport
+                    : reportsStaffExpenses,
+                },
+              }}
+              onCall={mutationSpy}
+            >
+              <MPGAIncomeExpensesReportProvider staffAccountId={staffAccountId}>
+                <MPGAIncomeExpensesReport
+                  onNavListToggle={onNavListToggle}
+                  isNavListOpen={true}
+                  title={title}
+                />
+              </MPGAIncomeExpensesReportProvider>
+            </GqlMockedProvider>
+          </SnackbarProvider>
         </LocalizationProvider>
       </TestRouter>
     </ThemeProvider>
