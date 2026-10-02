@@ -80,6 +80,7 @@ const mockContextValue = {
   hcmLoading: false,
   hcmUnavailable: false,
   refetchHcm: jest.fn(),
+  refetchRequest: jest.fn(),
   pageType: PageEnum.New,
   setPageType: jest.fn(),
   pendingPrint: false,

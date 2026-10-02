@@ -100,6 +100,7 @@ export type AdditionalSalaryRequestType = {
   hcmLoading: boolean;
   hcmUnavailable: boolean;
   refetchHcm: () => Promise<unknown>;
+  refetchRequest: () => Promise<unknown>;
   pageType: PageEnum;
   setPageType: (pageType: PageEnum) => void;
   pendingPrint: boolean;
@@ -317,6 +318,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       hcmLoading,
       hcmUnavailable,
       refetchHcm,
+      refetchRequest,
       loading,
       currentYear,
       pageType,
@@ -358,6 +360,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       hcmLoading,
       hcmUnavailable,
       refetchHcm,
+      refetchRequest,
       loading,
       currentYear,
       pageType,

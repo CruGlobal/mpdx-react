@@ -18,6 +18,7 @@ import { PageEnum } from 'src/components/HrTools/Shared/CalculationReports/Share
 import { HcmUnavailableAlert } from 'src/components/HrTools/Shared/HcmData/HcmUnavailableAlert';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
+import { LoadErrorAlert } from 'src/components/Shared/LoadErrorAlert/LoadErrorAlert';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -46,6 +47,7 @@ const FormikRequestPage: React.FC = () => {
 };
 
 const AdditionalSalaryRequestRouter: React.FC = () => {
+  const { t } = useTranslation();
   const {
     pageType,
     isNewAsr,
@@ -54,6 +56,8 @@ const AdditionalSalaryRequestRouter: React.FC = () => {
     user,
     hcmUnavailable,
     refetchHcm,
+    requestError,
+    refetchRequest,
   } = useAdditionalSalaryRequest();
 
   const isEdit = pageType === PageEnum.Edit;
@@ -66,6 +70,19 @@ const AdditionalSalaryRequestRouter: React.FC = () => {
     return (
       <Container sx={{ mt: 2 }}>
         <HcmUnavailableAlert refetch={refetchHcm} />
+      </Container>
+    );
+  }
+
+  if (requestError) {
+    return (
+      <Container sx={{ mt: 2 }}>
+        <LoadErrorAlert
+          message={t(
+            'Your Additional Salary Request could not be loaded. Please try again later.',
+          )}
+          onRetry={() => refetchRequest().catch(() => {})}
+        />
       </Container>
     );
   }
