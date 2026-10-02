@@ -8,7 +8,10 @@ import React, {
   useState,
 } from 'react';
 import { ApolloError } from '@apollo/client';
-import { MpdAssignmentCategoryGroupEnum } from 'src/graphql/types.generated';
+import {
+  MpdAssignmentCategoryGroupEnum,
+  MpdUserPersonTypeEnum,
+} from 'src/graphql/types.generated';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
 import { useLocalStorage } from 'src/hooks/useLocalStorage';
 import { MpdSupervisorReportQuickFilterEnum } from './Filters/mpdSupervisorReportFilters';
@@ -92,6 +95,8 @@ export interface MpdSupervisorReportContextValue {
   setDepartment: (v: string | null) => void;
   employmentType: MpdAssignmentCategoryGroupEnum | null;
   setEmploymentType: (v: MpdAssignmentCategoryGroupEnum | null) => void;
+  userPersonTypes: MpdUserPersonTypeEnum[];
+  setUserPersonTypes: (v: MpdUserPersonTypeEnum[]) => void;
   activeQuickFilter: MpdSupervisorReportQuickFilterEnum;
   setActiveQuickFilter: (v: MpdSupervisorReportQuickFilterEnum) => void;
   /** How many panel filters narrow the report; the search box is not counted */
@@ -163,6 +168,9 @@ export const MpdSupervisorReportProvider: React.FC<{
   const [department, setDepartment] = useState<string | null>(null);
   const [employmentType, setEmploymentType] =
     useState<MpdAssignmentCategoryGroupEnum | null>(null);
+  const [userPersonTypes, setUserPersonTypes] = useState<
+    MpdUserPersonTypeEnum[]
+  >([]);
   const [activeQuickFilter, setActiveQuickFilter] =
     useState<MpdSupervisorReportQuickFilterEnum>(
       MpdSupervisorReportQuickFilterEnum.AllPeople,
@@ -188,6 +196,7 @@ export const MpdSupervisorReportProvider: React.FC<{
       teamNames: team ? [team] : null,
       departments: department ? [department] : null,
       assignmentCategoryGroup: employmentType,
+      userPersonTypes: userPersonTypes.length ? userPersonTypes : null,
       // Send the flag only when its chip is active; false would filter on it.
       negativeLastMonth:
         activeQuickFilter ===
@@ -196,7 +205,14 @@ export const MpdSupervisorReportProvider: React.FC<{
         activeQuickFilter ===
           MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative || null,
     }),
-    [debouncedSearch, team, department, employmentType, activeQuickFilter],
+    [
+      debouncedSearch,
+      team,
+      department,
+      employmentType,
+      userPersonTypes,
+      activeQuickFilter,
+    ],
   );
 
   const { data, loading, error, fetchMore, refetch } = useManagedStaffQuery({
@@ -218,7 +234,14 @@ export const MpdSupervisorReportProvider: React.FC<{
   // must not linger over it.
   useEffect(() => {
     setLoadMoreError(undefined);
-  }, [debouncedSearch, team, department, employmentType, activeQuickFilter]);
+  }, [
+    debouncedSearch,
+    team,
+    department,
+    employmentType,
+    userPersonTypes,
+    activeQuickFilter,
+  ]);
 
   // The spouse merge and team summary need the whole result, so the rest of
   // it is fetched without waiting for the list to be scrolled. A failed page
@@ -265,6 +288,7 @@ export const MpdSupervisorReportProvider: React.FC<{
     (team ? 1 : 0) +
     (department ? 1 : 0) +
     (employmentType ? 1 : 0) +
+    (userPersonTypes.length ? 1 : 0) +
     (activeQuickFilter === MpdSupervisorReportQuickFilterEnum.AllPeople
       ? 0
       : 1);
@@ -274,6 +298,7 @@ export const MpdSupervisorReportProvider: React.FC<{
     setTeam(null);
     setDepartment(null);
     setEmploymentType(null);
+    setUserPersonTypes([]);
     setActiveQuickFilter(MpdSupervisorReportQuickFilterEnum.AllPeople);
   }, []);
 
@@ -340,6 +365,8 @@ export const MpdSupervisorReportProvider: React.FC<{
       setDepartment,
       employmentType,
       setEmploymentType,
+      userPersonTypes,
+      setUserPersonTypes,
       activeQuickFilter,
       setActiveQuickFilter,
       activeFilterCount,
@@ -371,6 +398,7 @@ export const MpdSupervisorReportProvider: React.FC<{
       team,
       department,
       employmentType,
+      userPersonTypes,
       activeQuickFilter,
       activeFilterCount,
       clearFilters,

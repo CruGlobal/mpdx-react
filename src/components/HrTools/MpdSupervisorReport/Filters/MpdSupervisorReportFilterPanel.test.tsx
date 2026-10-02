@@ -1,10 +1,13 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { act, render, waitFor } from '@testing-library/react';
+import { act, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { MpdAssignmentCategoryGroupEnum } from 'src/graphql/types.generated';
+import {
+  MpdAssignmentCategoryGroupEnum,
+  MpdUserPersonTypeEnum,
+} from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { ManagedStaffTeamsQuery } from '../ManagedStaffTeams.generated';
 import {
@@ -149,13 +152,19 @@ describe('MpdSupervisorReportFilterPanel', () => {
 
 // Consumer component to verify context-driven state changes
 const FilterContextConsumer: React.FC = () => {
-  const { team, department, employmentType, activeQuickFilter } =
-    useMpdSupervisorReport();
+  const {
+    team,
+    department,
+    employmentType,
+    userPersonTypes,
+    activeQuickFilter,
+  } = useMpdSupervisorReport();
   return (
     <div>
       <span data-testid="team">{team}</span>
       <span data-testid="department">{department}</span>
       <span data-testid="employmentType">{employmentType}</span>
+      <span data-testid="userPersonTypes">{userPersonTypes.join(',')}</span>
       <span data-testid="activeQuickFilter">{activeQuickFilter}</span>
     </div>
   );
@@ -377,6 +386,137 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
 
       expect(getByTestId('department').textContent).toBe('');
       expect(getByRole('combobox', { name: 'Department' })).toBeDisabled();
+    });
+  });
+
+  describe('Person type autocomplete', () => {
+    const openPersonTypeSelect = () => {
+      const view = renderWithConsumer();
+      userEvent.click(view.getByRole('combobox', { name: 'Person type' }));
+      return view;
+    };
+
+    it('offers All person types as the placeholder while nothing is chosen', () => {
+      const { getByRole } = renderWithConsumer();
+      expect(getByRole('combobox', { name: 'Person type' })).toHaveAttribute(
+        'placeholder',
+        'All person types',
+      );
+    });
+
+    it('lists all 16 types under their group headings', () => {
+      const { getAllByRole, getByRole } = openPersonTypeSelect();
+
+      expect(getAllByRole('option')).toHaveLength(19);
+      ['Employee', 'Non-worker', 'Pending'].forEach((group) =>
+        expect(
+          getByRole('option', { name: `Select all ${group}` }),
+        ).toBeInTheDocument(),
+      );
+    });
+
+    it('stays open and keeps the types in list order while several are checked', () => {
+      const { getByRole, getAllByRole, getByTestId } = openPersonTypeSelect();
+
+      userEvent.click(getByRole('option', { name: 'Pending - PTFS' }));
+      userEvent.click(getByRole('option', { name: 'Employee - Staff' }));
+
+      const options = getAllByRole('option');
+      expect(options).toHaveLength(19);
+      expect(
+        options.filter(
+          (option) => option.getAttribute('aria-selected') === 'true',
+        ),
+      ).toHaveLength(2);
+      expect(getByTestId('userPersonTypes').textContent).toBe(
+        [
+          MpdUserPersonTypeEnum.EmployeeStaff,
+          MpdUserPersonTypeEnum.PendingPtfs,
+        ].join(','),
+      );
+    });
+
+    it('indents the types under their group headings', () => {
+      const { getByRole } = openPersonTypeSelect();
+
+      expect(getByRole('option', { name: 'Employee - Staff' })).toHaveStyle(
+        'padding-left: 40px',
+      );
+      expect(
+        getByRole('option', { name: 'Select all Employee' }),
+      ).not.toHaveStyle('padding-left: 40px');
+    });
+
+    it('checks and unchecks a whole group from its heading', () => {
+      const { getByRole, getByTestId } = openPersonTypeSelect();
+      const selectAll = getByRole('option', { name: 'Select all Pending' });
+
+      userEvent.click(selectAll);
+      expect(selectAll).toHaveAttribute('aria-selected', 'true');
+      expect(getByTestId('userPersonTypes').textContent).toBe(
+        [
+          MpdUserPersonTypeEnum.PendingStaff,
+          MpdUserPersonTypeEnum.PendingPtfs,
+          MpdUserPersonTypeEnum.PendingUsIntern,
+          MpdUserPersonTypeEnum.PendingInternationalIntern,
+          MpdUserPersonTypeEnum.PendingStaffNonRmoSpouse,
+        ].join(','),
+      );
+
+      userEvent.click(selectAll);
+      expect(selectAll).toHaveAttribute('aria-selected', 'false');
+      expect(getByTestId('userPersonTypes').textContent).toBe('');
+    });
+
+    it('checks a whole group from the keyboard', () => {
+      const { getByTestId } = openPersonTypeSelect();
+
+      userEvent.keyboard('{Enter}');
+
+      expect(getByTestId('userPersonTypes').textContent).toBe(
+        [
+          MpdUserPersonTypeEnum.EmployeeStaff,
+          MpdUserPersonTypeEnum.EmployeePtfs,
+          MpdUserPersonTypeEnum.EmployeeUsIntern,
+          MpdUserPersonTypeEnum.EmployeeInternationalIntern,
+          MpdUserPersonTypeEnum.EmployeeNationalStaffExpat,
+          MpdUserPersonTypeEnum.EmployeeStaffNonRmoSpouse,
+        ].join(','),
+      );
+    });
+
+    it('marks a heading partly checked when only some of its types are', () => {
+      const { getByRole } = openPersonTypeSelect();
+
+      userEvent.click(getByRole('option', { name: 'Employee - Staff' }));
+
+      expect(
+        within(getByRole('option', { name: 'Select all Employee' })).getByRole(
+          'checkbox',
+        ),
+      ).toHaveAttribute('data-indeterminate', 'true');
+    });
+
+    it('finds types by their group name', () => {
+      const { getByRole, getAllByRole } = openPersonTypeSelect();
+
+      userEvent.type(getByRole('combobox', { name: 'Person type' }), 'pending');
+
+      expect(getAllByRole('option')).toHaveLength(6);
+    });
+
+    it('keeps the heading above the types a search finds', () => {
+      const { getByRole, getAllByRole } = openPersonTypeSelect();
+
+      userEvent.type(
+        getByRole('combobox', { name: 'Person type' }),
+        'volunteer',
+      );
+
+      expect(getAllByRole('option')).toHaveLength(2);
+      expect(
+        getByRole('option', { name: 'Select all Non-worker' }),
+      ).toBeInTheDocument();
     });
   });
 

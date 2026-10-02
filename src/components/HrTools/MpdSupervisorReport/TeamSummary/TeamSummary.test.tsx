@@ -138,7 +138,7 @@ describe('TeamSummary', () => {
     const { findByRole } = renderSummary();
 
     const region = await findByRole('region', { name: 'Teams' });
-    const cards = within(region).getAllByRole('button');
+    const cards = within(region).getAllByRole('button', { pressed: false });
     expect(cards).toHaveLength(2);
     expect(cards[0]).toHaveTextContent('Campus');
     expect(cards[0]).toHaveTextContent('1 staff');
@@ -148,6 +148,25 @@ describe('TeamSummary', () => {
     expect(cards[1]).toHaveTextContent('Needs attention (1)');
     expect(cards[1]).toHaveTextContent('On track (1)');
     expect(cards[1]).not.toHaveTextContent('At risk');
+  });
+
+  it('starts open and collapses the cards from its heading', async () => {
+    const { findByRole, getByRole, queryByRole } = renderSummary();
+    const toggle = await findByRole('button', { name: 'Teams (2)' });
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    expect(getByRole('button', { name: /Campus/ })).toBeInTheDocument();
+
+    userEvent.click(toggle);
+
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await waitFor(() =>
+      expect(queryByRole('button', { name: /Campus/ })).not.toBeInTheDocument(),
+    );
+
+    userEvent.click(toggle);
+
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    expect(getByRole('button', { name: /Campus/ })).toBeInTheDocument();
   });
 
   it('toggles the team filter from a card', async () => {
