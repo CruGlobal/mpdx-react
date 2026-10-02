@@ -5,6 +5,7 @@ import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { type HcmQuery, useHcmQuery } from '../../Shared/HcmData/Hcm.generated';
+import { isHcmUnavailableError } from '../../Shared/HcmData/HcmUnavailableAlert';
 import { useStaffAccountIdQuery } from '../../Shared/StaffAccountId.generated';
 import { orientSalaryRequest } from '../Shared/orientSalaryRequest';
 import { useAccountBalanceQuery } from './AccountBalance.generated';
@@ -51,13 +52,20 @@ export interface LandingData {
   processedOn: string;
   feedback: string | null;
   shouldShowPending: boolean;
+  hcmUnavailable: boolean;
+  refetchHcm: () => Promise<unknown>;
 }
 
 export const useLandingData = (): LandingData => {
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { data: hcmData, loading: hcmLoading } = useHcmQuery();
+  const {
+    data: hcmData,
+    loading: hcmLoading,
+    error: hcmError,
+    refetch: refetchHcm,
+  } = useHcmQuery();
   const { data: calculationData, loading: calculationLoading } =
     useLandingSalaryCalculationsQuery();
   const { data: accountBalanceData, loading: accountBalanceLoading } =
@@ -276,5 +284,7 @@ export const useLandingData = (): LandingData => {
     processedOn,
     feedback,
     shouldShowPending,
+    hcmUnavailable: isHcmUnavailableError(hcmError),
+    refetchHcm,
   };
 };

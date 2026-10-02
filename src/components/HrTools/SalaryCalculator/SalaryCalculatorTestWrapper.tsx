@@ -20,6 +20,7 @@ import {
   HcmQuery,
   HcmQueryVariables,
 } from '../Shared/HcmData/Hcm.generated';
+import { mockHcmUnavailable } from '../Shared/HcmData/mockHcmUnavailable';
 import { PayrollDatesQuery } from './EffectiveDateStep/PayrollDates.generated';
 import {
   EffectiveSalaryCalculationQuery,
@@ -114,6 +115,8 @@ export interface SalaryCalculatorTestWrapperProps {
   userType?: UserTypeEnum;
   usStaffGroup?: UsStaffGroupEnum;
   accountGeographicLocation?: string | null;
+  /** How many HCM calls fail with HCM_UNAVAILABLE before it loads */
+  hcmUnavailableCalls?: number;
 }
 
 export const SalaryCalculatorTestWrapper: React.FC<
@@ -131,6 +134,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
   userType = UserTypeEnum.UsStaff,
   usStaffGroup = UsStaffGroupEnum.SeniorStaff,
   accountGeographicLocation = null,
+  hcmUnavailableCalls = 0,
 }) => {
   const hcmUserMerged = merge({}, hcmUserMock, hcmUser);
   const hcmSpouseMerged = merge({}, hcmSpouseMock, hcmSpouse);
@@ -191,9 +195,12 @@ export const SalaryCalculatorTestWrapper: React.FC<
                 },
               },
               Hcm: {
-                hcm: hasSpouse
-                  ? [hcmUserMerged, hcmSpouseMerged]
-                  : [hcmUserMerged],
+                hcm: mockHcmUnavailable(
+                  hasSpouse
+                    ? [hcmUserMerged, hcmSpouseMerged]
+                    : [hcmUserMerged],
+                  hcmUnavailableCalls,
+                ),
               },
               SalaryCalculation: {
                 salaryRequest: merge(

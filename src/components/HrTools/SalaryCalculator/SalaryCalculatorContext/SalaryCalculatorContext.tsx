@@ -16,6 +16,7 @@ import { getQueryParam } from 'src/lib/queryParam';
 import { FormEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
 import { HcmQuery, useHcmQuery } from '../../Shared/HcmData/Hcm.generated';
+import { isHcmUnavailableError } from '../../Shared/HcmData/HcmUnavailableAlert';
 import { SalaryCalculatorSectionEnum } from './Helper/sharedTypes';
 import {
   SalaryCalculationQuery,
@@ -43,6 +44,8 @@ export interface SalaryCalculatorContextType {
   hcmSpouse: HcmQuery['hcm'][number] | null;
   hasSpouse: boolean;
   calculation: SalaryCalculationQuery['salaryRequest'] | null;
+  hcmUnavailable: boolean;
+  refetchHcm: () => Promise<unknown>;
 
   /** Whether any mutations are currently in progress */
   isMutating: boolean;
@@ -83,10 +86,15 @@ export const SalaryCalculatorProvider: React.FC<
   });
   const calculation = calculationData?.salaryRequest ?? null;
 
-  const { data: hcmData } = useHcmQuery({
+  const {
+    data: hcmData,
+    error: hcmError,
+    refetch: refetchHcm,
+  } = useHcmQuery({
     variables: { effectiveDate: calculation?.effectiveDate },
     skip: !calculation,
   });
+  const hcmUnavailable = isHcmUnavailableError(hcmError);
 
   const { trackMutation, isMutating } = useTrackMutation();
 
@@ -125,6 +133,8 @@ export const SalaryCalculatorProvider: React.FC<
       hcmSpouse: eligibleSpouse,
       hasSpouse: !!eligibleSpouse,
       calculation,
+      hcmUnavailable,
+      refetchHcm,
       isMutating,
       trackMutation,
       loading,
@@ -139,6 +149,8 @@ export const SalaryCalculatorProvider: React.FC<
     isDrawerOpen,
     toggleDrawer,
     hcmData,
+    hcmUnavailable,
+    refetchHcm,
     calculationData,
     isMutating,
     trackMutation,
