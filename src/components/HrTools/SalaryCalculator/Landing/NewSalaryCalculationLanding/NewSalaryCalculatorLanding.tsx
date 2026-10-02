@@ -15,6 +15,7 @@ import { NameDisplay } from 'src/components/HrTools/Shared/CalculationReports/Na
 import { HcmUnavailableAlert } from 'src/components/HrTools/Shared/HcmData/HcmUnavailableAlert';
 import Loading from 'src/components/Loading/Loading';
 import { LimitedAccess } from 'src/components/Shared/LimitedAccess/LimitedAccess';
+import { LoadErrorAlert } from 'src/components/Shared/LoadErrorAlert/LoadErrorAlert';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { SalaryInformationCard } from '../../Shared/SalaryInformationCard';
 import { useLandingData } from '../useLandingData';
@@ -40,6 +41,8 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
     inProgressCalculationId,
     hcmUnavailable,
     refetchHcm,
+    loadError,
+    refetchLoadError,
   } = useLandingData();
 
   const [createSalaryCalculation, { loading: creatingCalculation }] =
@@ -119,6 +122,13 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
         </Box>
         {hcmUnavailable ? (
           <HcmUnavailableAlert refetch={refetchHcm} />
+        ) : loadError ? (
+          <LoadErrorAlert
+            message={t(
+              'Your Salary Calculation could not be loaded. Please try again later.',
+            )}
+            onRetry={refetchLoadError}
+          />
         ) : (
           <>
             <NameDisplay
@@ -132,7 +142,7 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
             <SalaryInformationCard />
           </>
         )}
-        {self?.salaryRequestEligible && (
+        {self?.salaryRequestEligible && !hcmUnavailable && !loadError && (
           <Box sx={{ marginTop: theme.spacing(4) }}>
             {inProgressCalculationId ? (
               <Button

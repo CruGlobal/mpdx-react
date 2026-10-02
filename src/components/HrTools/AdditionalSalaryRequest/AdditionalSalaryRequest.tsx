@@ -1,6 +1,5 @@
 import { Container, Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { Notification } from 'src/components/Notification/Notification';
 import { ElectionType403bEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayout';
@@ -42,7 +41,6 @@ export const AdditionalSalaryRequest: React.FC = () => {
     toggleDrawer,
     steps,
     currentIndex,
-    requestError,
     requestData,
     loading: requestLoading,
   } = useAdditionalSalaryRequest();
@@ -62,9 +60,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
       sidebarAriaLabel={t('Additional Salary Request Sections')}
       mainContent={
         <Container sx={{ ml: 5 }}>
-          {requestError ? (
-            <Notification type="error" message={requestError.message} />
-          ) : requestLoading ? (
+          {requestLoading ? (
             <AdditionalSalaryRequestSkeleton />
           ) : (
             <Stack

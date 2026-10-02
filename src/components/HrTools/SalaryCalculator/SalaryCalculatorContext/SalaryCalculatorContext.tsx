@@ -16,7 +16,7 @@ import { getQueryParam } from 'src/lib/queryParam';
 import { FormEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
 import { HcmQuery, useHcmQuery } from '../../Shared/HcmData/Hcm.generated';
-import { isHcmUnavailableError } from '../../Shared/HcmData/HcmUnavailableAlert';
+import { useHcmUnavailable } from '../../Shared/HcmData/useHcmUnavailable';
 import { SalaryCalculatorSectionEnum } from './Helper/sharedTypes';
 import {
   SalaryCalculationQuery,
@@ -46,6 +46,8 @@ export interface SalaryCalculatorContextType {
   calculation: SalaryCalculationQuery['salaryRequest'] | null;
   hcmUnavailable: boolean;
   refetchHcm: () => Promise<unknown>;
+  calculationError: boolean;
+  refetchCalculation: () => void;
 
   /** Whether any mutations are currently in progress */
   isMutating: boolean;
@@ -80,7 +82,12 @@ export const SalaryCalculatorProvider: React.FC<
   const { mode } = query;
   const calculationId = getQueryParam(query, 'calculationId') || '';
 
-  const { data: calculationData, loading } = useSalaryCalculationQuery({
+  const {
+    data: calculationData,
+    loading,
+    error: calculationQueryError,
+    refetch: refetchCalculationQuery,
+  } = useSalaryCalculationQuery({
     variables: { id: calculationId },
     skip: !calculationId,
   });
@@ -89,12 +96,19 @@ export const SalaryCalculatorProvider: React.FC<
   const {
     data: hcmData,
     error: hcmError,
-    refetch: refetchHcm,
+    refetch: refetchHcmQuery,
   } = useHcmQuery({
     variables: { effectiveDate: calculation?.effectiveDate },
     skip: !calculation,
   });
-  const hcmUnavailable = isHcmUnavailableError(hcmError);
+  const { hcmUnavailable, refetchHcm } = useHcmUnavailable(
+    { error: hcmError, refetch: refetchHcmQuery },
+    { error: calculationQueryError, refetch: refetchCalculationQuery },
+  );
+
+  const refetchCalculation = useCallback(() => {
+    refetchCalculationQuery().catch(() => {});
+  }, [refetchCalculationQuery]);
 
   const { trackMutation, isMutating } = useTrackMutation();
 
@@ -135,6 +149,8 @@ export const SalaryCalculatorProvider: React.FC<
       calculation,
       hcmUnavailable,
       refetchHcm,
+      calculationError: !!calculationQueryError,
+      refetchCalculation,
       isMutating,
       trackMutation,
       loading,
@@ -151,6 +167,8 @@ export const SalaryCalculatorProvider: React.FC<
     hcmData,
     hcmUnavailable,
     refetchHcm,
+    calculationQueryError,
+    refetchCalculation,
     calculationData,
     isMutating,
     trackMutation,
@@ -158,7 +176,7 @@ export const SalaryCalculatorProvider: React.FC<
     editing,
   ]);
 
-  if (calculationId && !calculationData) {
+  if (calculationId && !calculationData && !calculationQueryError) {
     return (
       <Box
         display="flex"

@@ -31,6 +31,11 @@ export interface LandingTestWrapperProps {
   salaryRequestEligible?: boolean;
   /** How many HCM calls fail with HCM_UNAVAILABLE before it loads */
   hcmUnavailableCalls?: number;
+  /** How many LandingSalaryCalculations calls fail with HCM_UNAVAILABLE before it loads */
+  calculationUnavailableCalls?: number;
+  /** Makes LandingSalaryCalculations fail with an error other than HCM_UNAVAILABLE */
+  calculationError?: boolean;
+  balanceError?: boolean;
 }
 
 export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
@@ -43,6 +48,9 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
   hasSpouseLatestCalculation = false,
   salaryRequestEligible = true,
   hcmUnavailableCalls = 0,
+  calculationUnavailableCalls = 0,
+  calculationError = false,
+  balanceError = false,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
@@ -108,9 +116,16 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
             ),
           },
           LandingSalaryCalculations: {
-            inProgressCalculation: hasInProgressCalculation
-              ? { id: 'in-progress-calc-1' }
-              : null,
+            inProgressCalculation: calculationError
+              ? ((() => {
+                  throw new Error('Salary calculations are unavailable');
+                }) as never)
+              : (mockHcmUnavailable(
+                  (hasInProgressCalculation
+                    ? { id: 'in-progress-calc-1' }
+                    : null) as never,
+                  calculationUnavailableCalls,
+                ) as never),
             effectiveCalculation: hasApprovedCalculation
               ? {
                   personNumber: hasSpouseApprovedCalculation
@@ -145,9 +160,13 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
             },
           },
           AccountBalance: {
-            reportsStaffExpenses: {
-              funds: [{ fundType: 'Primary', endBalance: 10000 }],
-            },
+            reportsStaffExpenses: balanceError
+              ? ((() => {
+                  throw new Error('SAA is unavailable');
+                }) as never)
+              : {
+                  funds: [{ fundType: 'Primary', endBalance: 10000 }],
+                },
           },
           GetUser: {
             user: {
