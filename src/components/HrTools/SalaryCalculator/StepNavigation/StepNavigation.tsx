@@ -107,7 +107,11 @@ export const SubmitButton: React.FC<ButtonProps> = (props) => {
   } = useApplyGoalAndLocation(calculation?.location ?? null);
 
   const handleSubmit = async () => {
-    if (calculation) {
+    if (!calculation) {
+      return;
+    }
+
+    try {
       await submit({
         variables: {
           input: {
@@ -115,11 +119,19 @@ export const SubmitButton: React.FC<ButtonProps> = (props) => {
           },
         },
       });
-      handleNextStep();
+    } catch {
+      // The mutation error already surfaced a toast via the global GraphQL
+      // error link. Close the confirmation dialog instead of leaving it open,
+      // since re-clicking "Yes, Continue" will only repeat the same failure
+      // until the user goes back and changes their answers.
+      setSubmitDialogOpen(false);
+      return;
+    }
 
-      if (geographicLocationChanged) {
-        applyMonthlyGoal();
-      }
+    handleNextStep();
+
+    if (geographicLocationChanged) {
+      applyMonthlyGoal();
     }
   };
 
