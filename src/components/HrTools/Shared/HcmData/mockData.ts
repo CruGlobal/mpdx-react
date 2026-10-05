@@ -29,6 +29,8 @@ const janeDoe: HcmQuery['hcm'][number]['staffInfo'] = {
 };
 
 const noMhaAndNoException: HcmQuery['hcm'][number] = {
+  syncedAt: null,
+  outOfSync: false,
   salaryRequestEligible: true,
   designationSupportCalculatorEligible: false,
   staffInfo: johnDoe,

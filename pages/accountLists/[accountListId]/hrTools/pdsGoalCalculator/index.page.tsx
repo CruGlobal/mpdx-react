@@ -1,8 +1,13 @@
 import Head from 'next/head';
 import React from 'react';
+import { Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { PdsGoalsList } from 'src/components/HrTools/PdsGoalCalculator/GoalsList/PdsGoalsList';
+import {
+  HcmSyncBodyStatus,
+  HcmSyncHeaderStatus,
+} from 'src/components/HrTools/Shared/HcmSyncStatus/HcmSyncStatus';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import {
@@ -60,7 +65,11 @@ const PdsGoalCalculatorPage: React.FC = () => {
                     onNavListToggle={handleNavListToggle}
                     title={t('Paid with Designation Support Goal Calculator')}
                     headerType={HeaderTypeEnum.HrTools}
+                    titleExtra={<HcmSyncHeaderStatus />}
                   />
+                  <Box sx={{ px: 2, pt: 2 }}>
+                    <HcmSyncBodyStatus />
+                  </Box>
                   <PdsGoalsList />
                 </>
               }
