@@ -1,6 +1,7 @@
 import {
   MpdAssignmentCategoryGroupEnum,
   MpdHealthStatusEnum,
+  MpdUserPersonTypeEnum,
   PeopleGroupSupportTypeEnum,
   SecaStatusEnum,
 } from 'src/graphql/types.generated';
@@ -20,6 +21,7 @@ const baseMember: ManagedStaffMember = {
   newStaffMonthlySalary: 2500,
   geographicLocation: 'Orlando, FL',
   assignmentCategoryGroup: MpdAssignmentCategoryGroupEnum.FullTime,
+  userPersonType: MpdUserPersonTypeEnum.EmployeeStaff,
   tenure: 6,
   healthcareDependentsCount: 2,
   peopleGroupSupportType: PeopleGroupSupportTypeEnum.SupportedRmo,
