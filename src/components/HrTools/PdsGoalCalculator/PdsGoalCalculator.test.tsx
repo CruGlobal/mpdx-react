@@ -406,7 +406,7 @@ describe('PdsGoalCalculator', () => {
         await findByText(
           `Successfully updated your monthly goal to $${EXPECTED_MONTHLY_GOAL.toLocaleString(
             'en-US',
-          )} and geographic location to Miami, FL!`,
+          )} and default location multiplier to Miami, FL!`,
         ),
       ).toBeInTheDocument();
     });

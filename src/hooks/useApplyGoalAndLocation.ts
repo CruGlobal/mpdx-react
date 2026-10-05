@@ -64,7 +64,7 @@ export const useApplyGoalAndLocation = (geographicLocation: string | null) => {
                 { formattedTotal },
               )
             : t(
-                'Successfully updated your monthly goal to {{formattedTotal}} and geographic location to {{geographicLocation}}!',
+                'Successfully updated your monthly goal to {{formattedTotal}} and default location multiplier to {{geographicLocation}}!',
                 {
                   formattedTotal,
                   geographicLocation: normalizedGeographicLocation,

@@ -101,7 +101,7 @@ describe('GoalApplicationButtonGroup', () => {
 
     expect(
       await findByText(
-        'Successfully updated your monthly goal to $16,139 and geographic location to Miami, FL!',
+        'Successfully updated your monthly goal to $16,139 and default location multiplier to Miami, FL!',
       ),
     ).toBeInTheDocument();
   });
