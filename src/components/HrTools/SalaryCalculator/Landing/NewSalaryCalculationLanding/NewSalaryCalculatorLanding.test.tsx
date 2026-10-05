@@ -169,10 +169,13 @@ describe('NewSalaryCalculatorLanding', () => {
     });
   });
 
-  describe('when HCM is unavailable', () => {
+  describe.each([
+    ['HCM query', 'hcmUnavailableCalls'],
+    ['calculation query', 'calculationUnavailableCalls'],
+  ] as const)('when the %s is unavailable', (_, failingQuery) => {
     it('shows the heavy load alert instead of the salary information', async () => {
       const { findByRole, queryByRole } = render(
-        <TestComponent hcmUnavailableCalls={Infinity} />,
+        <TestComponent {...{ [failingQuery]: Infinity }} />,
       );
 
       expect(await findByRole('alert')).toHaveTextContent(
@@ -188,7 +191,7 @@ describe('NewSalaryCalculatorLanding', () => {
 
     it('loads the salary information when Try Again succeeds', async () => {
       const { findByRole, queryByRole } = render(
-        <TestComponent hcmUnavailableCalls={1} />,
+        <TestComponent {...{ [failingQuery]: 1 }} />,
       );
 
       const alert = await findByRole('alert');
@@ -203,4 +206,35 @@ describe('NewSalaryCalculatorLanding', () => {
       expect(queryByRole('alert')).not.toBeInTheDocument();
     });
   });
+
+  it.each([
+    ['calculation query', 'calculationError', 'LandingSalaryCalculations'],
+    ['account balance', 'balanceError', 'AccountBalance'],
+  ] as const)(
+    'shows the load error instead of the salary information when the %s fails',
+    async (_, failingQuery, operationName) => {
+      const { findByRole, getByRole, queryByRole } = render(
+        <TestComponent {...{ [failingQuery]: true }} />,
+      );
+
+      expect(await findByRole('alert')).toHaveTextContent(
+        'Your Salary Calculation could not be loaded. Please try again later.',
+      );
+      expect(
+        queryByRole('heading', { name: 'Current Salary Information' }),
+      ).not.toBeInTheDocument();
+      expect(
+        queryByRole('button', { name: 'Calculate New Salary' }),
+      ).not.toBeInTheDocument();
+
+      userEvent.click(getByRole('button', { name: 'Try Again' }));
+      await waitFor(() =>
+        expect(
+          mutationSpy.mock.calls
+            .map(([{ operation }]) => operation)
+            .filter((operation) => operation.operationName === operationName),
+        ).toHaveLength(2),
+      );
+    },
+  );
 });

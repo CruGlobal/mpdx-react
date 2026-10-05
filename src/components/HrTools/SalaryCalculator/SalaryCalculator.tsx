@@ -2,6 +2,7 @@ import React from 'react';
 import { Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { AutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
+import { LoadErrorAlert } from 'src/components/Shared/LoadErrorAlert/LoadErrorAlert';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { useIconPanelItems } from '../Shared/CalculationReports/PanelLayout/useIconPanelItems';
@@ -14,12 +15,26 @@ import { StepNavigation } from './StepNavigation/StepNavigation';
 import { SummaryStep } from './Summary/Summary';
 
 const MainContent: React.FC = () => {
-  const { editing, hcmUnavailable, refetchHcm } = useSalaryCalculator();
+  const { t } = useTranslation();
+  const {
+    editing,
+    hcmUnavailable,
+    refetchHcm,
+    calculationError,
+    refetchCalculation,
+  } = useSalaryCalculator();
   return (
     <Stack gap={4} maxWidth={800}>
       {/* Every step reads staff info, caps, and 403(b) data from HCM */}
       {hcmUnavailable ? (
         <HcmUnavailableAlert refetch={refetchHcm} />
+      ) : calculationError ? (
+        <LoadErrorAlert
+          message={t(
+            'Your Salary Calculation could not be loaded. Please try again later.',
+          )}
+          onRetry={refetchCalculation}
+        />
       ) : (
         <AutosaveForm>
           {editing ? <CurrentStep /> : <SummaryStep key="summary" />}

@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
 import { merge, mergeWith } from 'lodash';
+import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
@@ -17,6 +18,8 @@ import {
   DesignationSupportFormType,
   DesignationSupportSalaryType,
   DesignationSupportStatus,
+  MpdGoalBenefitsConstantPlanEnum,
+  MpdGoalBenefitsConstantSizeEnum,
   MpdGoalMiscConstantCategoryEnum,
   MpdGoalMiscConstantLabelEnum,
 } from 'src/graphql/types.generated';
@@ -176,6 +179,9 @@ export const PdsGoalCalculatorTestWrapper = <
   onCall,
   router,
 }: PdsGoalCalculatorTestWrapperProps<TExtraMocks>): React.ReactElement => {
+  // Read at render time so it matches the mocked Luxon clock from test setup
+  const currentYearMock = { calculationsYear: DateTime.local().year };
+
   return (
     <ThemeProvider theme={theme}>
       <TestRouter
@@ -207,6 +213,11 @@ export const PdsGoalCalculatorTestWrapper = <
                   designationSupportCalculations: merge(
                     {},
                     calculationsDefault,
+                    {
+                      nodes: calculationsDefault.nodes.map(
+                        () => currentYearMock,
+                      ),
+                    },
                     calculationsMock,
                   ),
                 },
@@ -214,6 +225,7 @@ export const PdsGoalCalculatorTestWrapper = <
                   designationSupportCalculation: merge(
                     {},
                     calculationDefault,
+                    currentYearMock,
                     calculationMock,
                   ),
                 },
@@ -238,7 +250,13 @@ export const PdsGoalCalculatorTestWrapper = <
                   constant: mergeWith(
                     {},
                     {
-                      mpdGoalBenefitsConstants: [],
+                      mpdGoalBenefitsConstants: [
+                        {
+                          size: MpdGoalBenefitsConstantSizeEnum.Single,
+                          plan: MpdGoalBenefitsConstantPlanEnum.Select,
+                          cost: 1204.45,
+                        },
+                      ],
                       mpdGoalGeographicConstants: [
                         {
                           location: 'None',

@@ -136,6 +136,40 @@ describe('usePdsSummaryData', () => {
     setupMock();
   });
 
+  describe('calculations year', () => {
+    it("loads the constants for the goal's calculations year", () => {
+      renderHook(() =>
+        usePdsSummaryData(
+          { ...defaultCalculation, calculationsYear: 2024 },
+          defaultHcmUser,
+        ),
+      );
+
+      expect(mockUseGoalCalculatorConstants).toHaveBeenCalledWith(2024, {
+        skip: false,
+      });
+    });
+
+    it('skips loading the constants until the calculation loads', () => {
+      renderHook(() => usePdsSummaryData(undefined, defaultHcmUser));
+
+      expect(mockUseGoalCalculatorConstants).toHaveBeenCalledWith(undefined, {
+        skip: true,
+      });
+    });
+
+    it("returns no data when the year's constants are unavailable", () => {
+      setupMock({ unavailable: true });
+
+      const { result } = renderHook(() =>
+        usePdsSummaryData(defaultCalculation, defaultHcmUser),
+      );
+
+      expect(result.current.data).toBeNull();
+      expect(result.current.constants.unavailable).toBe(true);
+    });
+  });
+
   describe('null guards', () => {
     it('returns null when calculation is undefined', () => {
       const { result } = renderHook(() =>

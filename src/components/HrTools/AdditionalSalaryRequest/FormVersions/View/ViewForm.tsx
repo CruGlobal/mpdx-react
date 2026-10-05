@@ -3,6 +3,7 @@ import { Button, Stack, Typography } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { Trans, useTranslation } from 'react-i18next';
 import { NameDisplay } from 'src/components/HrTools/Shared/CalculationReports/NameDisplay/NameDisplay';
+import { NameDisplaySkeleton } from 'src/components/HrTools/Shared/CalculationReports/NameDisplay/NameDisplaySkeleton';
 import { PageEnum } from 'src/components/HrTools/Shared/CalculationReports/Shared/sharedTypes';
 import {
   CompleteFormValues,
@@ -21,8 +22,13 @@ import { TotalSalaryRequested } from '../../SubmitModalAccordions/TotalSalaryReq
 
 export const ViewForm: React.FC = () => {
   const { t } = useTranslation();
-  const { calculations, setPageType, pendingPrint, setPendingPrint } =
-    useAdditionalSalaryRequest();
+  const {
+    calculations,
+    setPageType,
+    pendingPrint,
+    setPendingPrint,
+    hcmLoading,
+  } = useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
   const { name, primaryAccountBalance } = useFormUserInfo();
   const individualCap = calculations?.currentSalaryCap ?? 0;
@@ -63,15 +69,19 @@ export const ViewForm: React.FC = () => {
   return (
     <Stack gap={4} padding={4} width={mainContentWidth}>
       <Typography variant="h4">{t('View Your Request')}</Typography>
-      <NameDisplay
-        names={name ?? ''}
-        titleOne={t('Primary Account Balance')}
-        amountOne={primaryAccountBalance}
-        titleTwo={t('Your Maximum Allowable Salary (CAP)')}
-        amountTwo={individualCap}
-        spouseComponent={<SpouseComponent />}
-        showContent
-      />
+      {hcmLoading ? (
+        <NameDisplaySkeleton showContent />
+      ) : (
+        <NameDisplay
+          names={name ?? ''}
+          titleOne={t('Primary Account Balance')}
+          amountOne={primaryAccountBalance}
+          titleTwo={t('Your Maximum Allowable Salary (CAP)')}
+          amountTwo={individualCap}
+          spouseComponent={<SpouseComponent />}
+          showContent
+        />
+      )}
       <Typography variant="body1" paragraph>
         <Trans t={t}>
           Your Net Additional Salary calculated below represents the amount you

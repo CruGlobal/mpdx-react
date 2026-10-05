@@ -4,7 +4,6 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 import PrintIcon from '@mui/icons-material/Print';
 import {
-  Alert,
   Box,
   Button,
   Container,
@@ -21,6 +20,7 @@ import {
   HcmSyncBodyStatus,
   HcmSyncHeaderStatus,
 } from 'src/components/HrTools/Shared/HcmSyncStatus/HcmSyncStatus';
+import { LoadErrorAlert } from 'src/components/Shared/LoadErrorAlert/LoadErrorAlert';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -476,22 +476,12 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
             <SimpleScreenOnly>
               {reportError ? (
                 // The global Apollo error link already shows the error details in a snackbar
-                <Alert
-                  severity="error"
-                  action={
-                    <Button
-                      color="inherit"
-                      size="small"
-                      onClick={refetchReport}
-                    >
-                      {t('Try Again')}
-                    </Button>
-                  }
-                >
-                  {t(
+                <LoadErrorAlert
+                  message={t(
                     'The Staff Expense report could not be loaded. Please try again later.',
                   )}
-                </Alert>
+                  onRetry={refetchReport}
+                />
               ) : (
                 <Box
                   display="flex"
