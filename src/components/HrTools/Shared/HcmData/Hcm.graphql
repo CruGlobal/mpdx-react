@@ -62,6 +62,7 @@ query Hcm(
     mhaRequest {
       currentApprovedOverallAmount
       currentTakenAmount
+      boardApprovedOnDate
     }
     salaryRequestEligible
     designationSupportCalculatorEligible
