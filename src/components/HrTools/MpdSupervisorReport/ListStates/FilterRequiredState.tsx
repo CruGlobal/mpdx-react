@@ -40,7 +40,7 @@ export const FilterRequiredState: React.FC<FilterRequiredStateProps> = ({
         {filtered
           ? t('Add another filter or search by name to narrow the list.')
           : t(
-              'Search by name, or pick a team, department, employment type or one of the negative-month filters.',
+              'Search by name, or pick a team, department, employment type, person type or one of the negative-month filters.',
             )}
       </Typography>
       {onOpenFilters && (

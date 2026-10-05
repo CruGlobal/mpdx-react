@@ -3,6 +3,7 @@ import { TFunction } from 'i18next';
 import {
   MpdAssignmentCategoryGroupEnum,
   MpdHealthStatusEnum,
+  MpdUserPersonTypeEnum,
   PeopleGroupSupportTypeEnum,
   QuarterlyPayrollHistory,
 } from 'src/graphql/types.generated';
@@ -206,6 +207,77 @@ export const getLocalizedAssignmentCategoryGroup = (
       return pendingField;
   }
 };
+
+export const getLocalizedUserPersonTypeGroup = (
+  t: TFunction,
+  type: MpdUserPersonTypeEnum,
+): string => {
+  switch (type) {
+    case MpdUserPersonTypeEnum.EmployeeStaff:
+    case MpdUserPersonTypeEnum.EmployeePtfs:
+    case MpdUserPersonTypeEnum.EmployeeUsIntern:
+    case MpdUserPersonTypeEnum.EmployeeInternationalIntern:
+    case MpdUserPersonTypeEnum.EmployeeNationalStaffExpat:
+    case MpdUserPersonTypeEnum.EmployeeStaffNonRmoSpouse:
+      return t('Employee');
+    case MpdUserPersonTypeEnum.NonworkerStaff:
+    case MpdUserPersonTypeEnum.NonworkerNationalStaff:
+    case MpdUserPersonTypeEnum.NonworkerNmbhr:
+    case MpdUserPersonTypeEnum.NonworkerStaffEmeritus:
+    case MpdUserPersonTypeEnum.NonworkerVolunteer:
+      return t('Non-worker');
+    case MpdUserPersonTypeEnum.PendingStaff:
+    case MpdUserPersonTypeEnum.PendingPtfs:
+    case MpdUserPersonTypeEnum.PendingUsIntern:
+    case MpdUserPersonTypeEnum.PendingInternationalIntern:
+    case MpdUserPersonTypeEnum.PendingStaffNonRmoSpouse:
+      return t('Pending');
+  }
+};
+
+export const getLocalizedUserPersonType = (
+  t: TFunction,
+  type: MpdUserPersonTypeEnum,
+): string => {
+  switch (type) {
+    case MpdUserPersonTypeEnum.EmployeeStaff:
+    case MpdUserPersonTypeEnum.NonworkerStaff:
+    case MpdUserPersonTypeEnum.PendingStaff:
+      return t('Staff');
+    case MpdUserPersonTypeEnum.EmployeePtfs:
+    case MpdUserPersonTypeEnum.PendingPtfs:
+      return t('PTFS');
+    case MpdUserPersonTypeEnum.EmployeeUsIntern:
+    case MpdUserPersonTypeEnum.PendingUsIntern:
+      return t('US Intern');
+    case MpdUserPersonTypeEnum.EmployeeInternationalIntern:
+    case MpdUserPersonTypeEnum.PendingInternationalIntern:
+      return t('International Intern');
+    case MpdUserPersonTypeEnum.EmployeeNationalStaffExpat:
+      return t('National Staff (Expat)');
+    case MpdUserPersonTypeEnum.NonworkerNationalStaff:
+      return t('National Staff');
+    case MpdUserPersonTypeEnum.EmployeeStaffNonRmoSpouse:
+    case MpdUserPersonTypeEnum.PendingStaffNonRmoSpouse:
+      return t('Staff - non-RMO Spouse');
+    case MpdUserPersonTypeEnum.NonworkerNmbhr:
+      return t('NMBHR');
+    case MpdUserPersonTypeEnum.NonworkerStaffEmeritus:
+      return t('Staff Emeritus');
+    case MpdUserPersonTypeEnum.NonworkerVolunteer:
+      return t('Volunteer');
+  }
+};
+
+/** The group and type together, for places that show a type on its own */
+export const getLocalizedUserPersonTypeName = (
+  t: TFunction,
+  type: MpdUserPersonTypeEnum,
+): string =>
+  t('{{group}} - {{type}}', {
+    group: getLocalizedUserPersonTypeGroup(t, type),
+    type: getLocalizedUserPersonType(t, type),
+  });
 
 /**
  * A list row. When both spouses are in the results the second one is folded

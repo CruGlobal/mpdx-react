@@ -3,16 +3,24 @@ import {
   CompletedQuarterPayroll,
   MpdAssignmentCategoryGroupEnum,
   MpdHealthStatusEnum,
+  MpdUserPersonTypeEnum,
   PeopleGroupSupportTypeEnum,
   StartingQuarterPayroll,
 } from 'src/graphql/types.generated';
+import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
+import {
+  userPersonTypeGroups,
+  userPersonTypeOptions,
+} from './Filters/mpdSupervisorReportFilters';
 import {
   buildQuarterChips,
   countPeople,
   getInitials,
   getLocalizedAssignmentCategoryGroup,
   getLocalizedSupportType,
+  getLocalizedUserPersonTypeGroup,
+  getLocalizedUserPersonTypeName,
   getQuarterLabel,
   getQuarterMonthRange,
   getRowInitials,
@@ -150,6 +158,67 @@ describe('getLocalizedAssignmentCategoryGroup', () => {
         'ON_CALL' as MpdAssignmentCategoryGroupEnum,
       ),
     ).toBe(pendingField);
+  });
+});
+
+describe('getLocalizedUserPersonTypeName', () => {
+  it.each([
+    [MpdUserPersonTypeEnum.EmployeeStaff, 'Employee - Staff'],
+    [MpdUserPersonTypeEnum.EmployeePtfs, 'Employee - PTFS'],
+    [MpdUserPersonTypeEnum.EmployeeUsIntern, 'Employee - US Intern'],
+    [
+      MpdUserPersonTypeEnum.EmployeeInternationalIntern,
+      'Employee - International Intern',
+    ],
+    [
+      MpdUserPersonTypeEnum.EmployeeNationalStaffExpat,
+      'Employee - National Staff (Expat)',
+    ],
+    [
+      MpdUserPersonTypeEnum.EmployeeStaffNonRmoSpouse,
+      'Employee - Staff - non-RMO Spouse',
+    ],
+    [MpdUserPersonTypeEnum.NonworkerStaff, 'Non-worker - Staff'],
+    [
+      MpdUserPersonTypeEnum.NonworkerNationalStaff,
+      'Non-worker - National Staff',
+    ],
+    [MpdUserPersonTypeEnum.NonworkerNmbhr, 'Non-worker - NMBHR'],
+    [
+      MpdUserPersonTypeEnum.NonworkerStaffEmeritus,
+      'Non-worker - Staff Emeritus',
+    ],
+    [MpdUserPersonTypeEnum.NonworkerVolunteer, 'Non-worker - Volunteer'],
+    [MpdUserPersonTypeEnum.PendingStaff, 'Pending - Staff'],
+    [MpdUserPersonTypeEnum.PendingPtfs, 'Pending - PTFS'],
+    [MpdUserPersonTypeEnum.PendingUsIntern, 'Pending - US Intern'],
+    [
+      MpdUserPersonTypeEnum.PendingInternationalIntern,
+      'Pending - International Intern',
+    ],
+    [
+      MpdUserPersonTypeEnum.PendingStaffNonRmoSpouse,
+      'Pending - Staff - non-RMO Spouse',
+    ],
+  ])('maps %s to "%s"', (type, expected) => {
+    expect(getLocalizedUserPersonTypeName(i18n.t, type)).toBe(expected);
+  });
+});
+
+describe('userPersonTypeGroups', () => {
+  it('lists every person type exactly once', () => {
+    expect([...userPersonTypeOptions].sort()).toEqual(
+      Object.values(MpdUserPersonTypeEnum).sort(),
+    );
+  });
+
+  it('gives each group one label of its own', () => {
+    const labels = userPersonTypeGroups.map((types) => [
+      ...new Set(types.map((type) => getLocalizedUserPersonTypeGroup(t, type))),
+    ]);
+
+    labels.forEach((groupLabels) => expect(groupLabels).toHaveLength(1));
+    expect(new Set(labels.flat()).size).toBe(userPersonTypeGroups.length);
   });
 });
 
