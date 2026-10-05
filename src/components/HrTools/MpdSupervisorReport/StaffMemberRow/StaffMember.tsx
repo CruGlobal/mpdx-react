@@ -24,6 +24,7 @@ import {
   StaffRow,
   buildQuarterChips,
   getLocalizedAssignmentCategoryGroup,
+  getLocalizedUserPersonTypeName,
   getQuarterLabel,
   getRowInitials,
   getRowName,
@@ -82,7 +83,8 @@ export const StaffMember: React.FC<StaffMemberProps> = ({
   const { t } = useTranslation();
   const compact = density === RowDensityEnum.Compact;
   const { formatCurrency } = useFormatters();
-  const { staffAccountId, assignmentCategoryGroup, partner } = data;
+  const { staffAccountId, assignmentCategoryGroup, userPersonType, partner } =
+    data;
   const grossWarning = grossSalaryWarning(t, formatCurrency, data);
 
   const names = getRowName(data);
@@ -163,10 +165,14 @@ export const StaffMember: React.FC<StaffMemberProps> = ({
                   <StaffInfo
                     names={names}
                     staffAccountID={staffAccountId}
-                    userPersonType={getLocalizedAssignmentCategoryGroup(
+                    employmentType={getLocalizedAssignmentCategoryGroup(
                       t,
                       assignmentCategoryGroup,
                     )}
+                    userPersonType={
+                      userPersonType &&
+                      getLocalizedUserPersonTypeName(t, userPersonType)
+                    }
                     team={team}
                     spouse={spouse}
                     grossWarning={grossWarning}
@@ -240,7 +246,8 @@ export const FiscalYearQuarters = React.memo(FiscalYearQuartersBase);
 interface StaffInfoProps {
   names: string;
   staffAccountID: string;
-  userPersonType: string;
+  employmentType: string;
+  userPersonType?: string | null;
   team: string;
   /** The spouse's name when they are not merged into this row */
   spouse?: string | null;
@@ -252,6 +259,7 @@ interface StaffInfoProps {
 const StaffInfoBase: React.FC<StaffInfoProps> = ({
   names,
   staffAccountID,
+  employmentType,
   userPersonType,
   team,
   spouse,
@@ -288,7 +296,8 @@ const StaffInfoBase: React.FC<StaffInfoProps> = ({
         >
           {staffAccountID}
           {' · '}
-          {userPersonType}
+          {employmentType}
+          {userPersonType && ` · ${userPersonType}`}
           {team && ` · ${team}`}
           {spouse && ` · ${t('Spouse: {{name}}', { name: spouse })}`}
         </Typography>

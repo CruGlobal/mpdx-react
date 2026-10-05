@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useId, useMemo, useState } from 'react';
 import { ApolloError } from '@apollo/client';
-import { Alert, Box, ButtonBase, Typography } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Alert, Box, ButtonBase, Collapse, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
@@ -139,6 +140,8 @@ export const TeamSummary: React.FC = () => {
     refetch: refetchTeams,
   } = useManagedStaffTeamsQuery();
   const teamCount = teamsData?.managedStaffTeams.length ?? 0;
+  const cardsId = useId();
+  const [open, setOpen] = useState(true);
 
   // Identical to the roster query while no team is selected, so Apollo serves
   // it from the same cache entry; with a team selected it is the one extra
@@ -247,18 +250,34 @@ export const TeamSummary: React.FC = () => {
         color="text.secondary"
         sx={{ display: 'block', mb: 0.5 }}
       >
-        {t('Teams')}
-      </Typography>
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-        {summary.map((row) => (
-          <TeamCard
-            key={row.name}
-            team={row}
-            selected={team === row.name}
-            onToggle={() => setTeam(team === row.name ? null : row.name)}
+        <ButtonBase
+          onClick={() => setOpen(!open)}
+          aria-expanded={open}
+          aria-controls={cardsId}
+          sx={{ font: 'inherit', gap: 0.5, borderRadius: 1 }}
+        >
+          {t('Teams ({{total}})', { total: summary.length })}
+          <ExpandMoreIcon
+            fontSize="small"
+            sx={{
+              transition: 'transform 150ms',
+              transform: open ? 'rotate(180deg)' : 'none',
+            }}
           />
-        ))}
-      </Box>
+        </ButtonBase>
+      </Typography>
+      <Collapse in={open} id={cardsId}>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+          {summary.map((row) => (
+            <TeamCard
+              key={row.name}
+              team={row}
+              selected={team === row.name}
+              onToggle={() => setTeam(team === row.name ? null : row.name)}
+            />
+          ))}
+        </Box>
+      </Collapse>
     </Box>
   );
 };
