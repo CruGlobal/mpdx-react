@@ -600,6 +600,49 @@ describe('useAdditionalSalaryRequestForm', () => {
       expect(errors.additionalInfo).toBeUndefined();
     });
 
+    it('should not require additional info for backpay when gross salary is already over the cap', async () => {
+      const { result } = renderHook(
+        () =>
+          useAdditionalSalaryRequestForm({
+            ...defaultFormValues,
+            phoneNumber: '555-123-4567',
+            currentYearSalaryNotReceived: '1424.53',
+          }),
+        {
+          wrapper: ({ children }) => (
+            <TestWrapper
+              mocks={{
+                AdditionalSalaryRequest: {
+                  latestAdditionalSalaryRequest: {
+                    ...defaultGqlMocks.AdditionalSalaryRequest
+                      ?.latestAdditionalSalaryRequest,
+                    calculations: {
+                      currentSalaryCap: 67500,
+                      ytdAsrAmount: 0,
+                      grossAnnualSalary: 96234.65,
+                    },
+                  },
+                },
+              }}
+            >
+              {children as React.ReactElement}
+            </TestWrapper>
+          ),
+        },
+      );
+
+      await waitFor(() => {
+        expect(mutationSpy).toHaveGraphqlOperation('AdditionalSalaryRequest');
+      });
+
+      let errors: Record<string, string> = {};
+      await act(async () => {
+        errors = await result.current.validateForm();
+      });
+
+      expect(errors.additionalInfo).toBeUndefined();
+    });
+
     it('should not require additional info when exceedsCap is true and user has board cap exception', async () => {
       const { result } = renderHook(
         () =>

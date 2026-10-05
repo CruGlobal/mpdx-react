@@ -187,7 +187,8 @@ export const useAdditionalSalaryRequestForm = (
 
               const amountRequestedYtd =
                 grossAnnualSalary + ytdAsrAmount + stableNonBackpayTotal;
-              const exceedsCap = amountRequestedYtd > individualCap;
+              const exceedsCap =
+                stableNonBackpayTotal > 0 && amountRequestedYtd > individualCap;
 
               if (exceedsCap) {
                 return !!value && value.trim().length > 0;
