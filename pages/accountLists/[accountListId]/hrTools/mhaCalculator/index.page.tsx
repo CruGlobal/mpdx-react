@@ -4,6 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { MinisterHousingAllowanceReport } from 'src/components/HrTools/MinisterHousingAllowance/MinisterHousingAllowance';
 import { MinisterHousingAllowanceProvider } from 'src/components/HrTools/MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
+import {
+  HcmSyncHeaderStatus,
+  HcmSyncStatusProvider,
+} from 'src/components/HrTools/Shared/HcmSyncStatus/HcmSyncStatus';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import {
   HeaderTypeEnum,
@@ -60,10 +64,13 @@ const MinisterHousingAllowancePage: React.FC = () => {
                   onNavListToggle={handleNavListToggle}
                   title={t("Minister's Housing Allowance Calculation Tool")}
                   headerType={HeaderTypeEnum.HrTools}
+                  titleExtra={<HcmSyncHeaderStatus />}
                 />
-                <MinisterHousingAllowanceProvider>
-                  <MinisterHousingAllowanceReport />
-                </MinisterHousingAllowanceProvider>
+                <HcmSyncStatusProvider>
+                  <MinisterHousingAllowanceProvider>
+                    <MinisterHousingAllowanceReport />
+                  </MinisterHousingAllowanceProvider>
+                </HcmSyncStatusProvider>
               </>
             }
           />

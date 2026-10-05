@@ -100,6 +100,14 @@ describe('AboutForm', () => {
     ).toBeInTheDocument();
   });
 
+  it('shows the name skeleton until HCM loads', async () => {
+    const { getByTestId, findByText, queryByTestId } = render(<TestWrapper />);
+
+    expect(getByTestId('name-display-skeleton')).toBeInTheDocument();
+    expect(await findByText('Doc, John')).toBeInTheDocument();
+    expect(queryByTestId('name-display-skeleton')).not.toBeInTheDocument();
+  });
+
   it('should display user information', async () => {
     const { findByText } = render(<TestWrapper />);
 

@@ -117,6 +117,10 @@ export interface SalaryCalculatorTestWrapperProps {
   accountGeographicLocation?: string | null;
   /** How many HCM calls fail with HCM_UNAVAILABLE before it loads */
   hcmUnavailableCalls?: number;
+  /** How many SalaryCalculation calls fail with HCM_UNAVAILABLE before it loads */
+  calculationUnavailableCalls?: number;
+  /** Makes SalaryCalculation fail with an error other than HCM_UNAVAILABLE */
+  calculationError?: boolean;
 }
 
 export const SalaryCalculatorTestWrapper: React.FC<
@@ -135,6 +139,8 @@ export const SalaryCalculatorTestWrapper: React.FC<
   usStaffGroup = UsStaffGroupEnum.SeniorStaff,
   accountGeographicLocation = null,
   hcmUnavailableCalls = 0,
+  calculationUnavailableCalls = 0,
+  calculationError = false,
 }) => {
   const hcmUserMerged = merge({}, hcmUserMock, hcmUser);
   const hcmSpouseMerged = merge({}, hcmSpouseMock, hcmSpouse);
@@ -203,25 +209,32 @@ export const SalaryCalculatorTestWrapper: React.FC<
                 ),
               },
               SalaryCalculation: {
-                salaryRequest: merge(
-                  {
-                    id: 'salary-request-1',
-                    status: SalaryRequestStatusEnum.InProgress,
-                    effectiveDate: '2025-01-01',
-                    calculations: {
-                      hardCap: 80000,
-                      exceptionCap: null,
-                      combinedCap: 125000,
-                    },
-                    spouseCalculations: {
-                      hardCap: 80000,
-                    },
-                    progressiveApprovalTier: null,
-                    progressiveApprovalTierReason: null,
-                  } satisfies SalaryRequestMock,
-                  salaryRequestMock,
-                  hasSpouse ? undefined : { spouseCalculations: null },
-                ),
+                salaryRequest: calculationError
+                  ? ((() => {
+                      throw new Error('Salary calculation is unavailable');
+                    }) as never)
+                  : (mockHcmUnavailable(
+                      merge(
+                        {
+                          id: 'salary-request-1',
+                          status: SalaryRequestStatusEnum.InProgress,
+                          effectiveDate: '2025-01-01',
+                          calculations: {
+                            hardCap: 80000,
+                            exceptionCap: null,
+                            combinedCap: 125000,
+                          },
+                          spouseCalculations: {
+                            hardCap: 80000,
+                          },
+                          progressiveApprovalTier: null,
+                          progressiveApprovalTierReason: null,
+                        } satisfies SalaryRequestMock,
+                        salaryRequestMock,
+                        hasSpouse ? undefined : { spouseCalculations: null },
+                      ) as never,
+                      calculationUnavailableCalls,
+                    ) as never),
               },
             }}
             onCall={onCall}

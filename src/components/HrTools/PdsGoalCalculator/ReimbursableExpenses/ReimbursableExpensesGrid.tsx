@@ -207,6 +207,7 @@ export const ReimbursableExpensesGrid: React.FC<
           rows={rows}
           columns={columns}
           processRowUpdate={processRowUpdate}
+          disableVirtualization
         />
       </StyledCard>
       {Object.entries(cellErrors).map(([cellKey, error]) => (

@@ -1,6 +1,7 @@
 import { ThemeProvider } from '@emotion/react';
 import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
@@ -53,7 +54,9 @@ const Components = ({
         }}
         onCall={mutationSpy}
       >
-        <MPGAReportPage />
+        <SnackbarProvider>
+          <MPGAReportPage />
+        </SnackbarProvider>
       </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>
@@ -108,7 +111,9 @@ describe('MPGA Report Page', () => {
           mocks={mockNoStaffAccount}
           onCall={mutationSpy}
         >
-          <MPGAReportPage />
+          <SnackbarProvider>
+            <MPGAReportPage />
+          </SnackbarProvider>
         </GqlMockedProvider>
       </TestRouter>,
     );

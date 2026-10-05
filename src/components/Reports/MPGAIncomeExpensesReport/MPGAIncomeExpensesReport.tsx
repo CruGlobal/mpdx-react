@@ -1,9 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import PrintIcon from '@mui/icons-material/Print';
 import {
-  Alert,
   Box,
-  Button,
   Container,
   Divider,
   GlobalStyles,
@@ -11,6 +9,11 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import {
+  HcmSyncBodyStatus,
+  HcmSyncHeaderStatus,
+} from 'src/components/HrTools/Shared/HcmSyncStatus/HcmSyncStatus';
+import { LoadErrorAlert } from 'src/components/Shared/LoadErrorAlert/LoadErrorAlert';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -66,6 +69,7 @@ export const MPGAIncomeExpensesReport: React.FC<
     staffName,
     isSupervisorView,
     staffAccountId,
+    personNumber,
     dataLoading,
     reportError,
     refetchReport,
@@ -126,6 +130,12 @@ export const MPGAIncomeExpensesReport: React.FC<
             onNavListToggle={onNavListToggle}
             headerType={HeaderTypeEnum.Report}
             title={title}
+            titleExtra={
+              <HcmSyncHeaderStatus
+                personNumber={personNumber}
+                skip={isSupervisorView && !personNumber}
+              />
+            }
           />
         </SimpleScreenOnly>
         {isSupervisorView && (
@@ -133,6 +143,12 @@ export const MPGAIncomeExpensesReport: React.FC<
         )}
         <Box mt={2}>
           <Container>
+            <SimpleScreenOnly>
+              <HcmSyncBodyStatus
+                personNumber={personNumber}
+                skip={isSupervisorView && !personNumber}
+              />
+            </SimpleScreenOnly>
             <StyledHeaderBox>
               <SimpleScreenOnly>
                 <Typography variant="h4">
@@ -182,18 +198,12 @@ export const MPGAIncomeExpensesReport: React.FC<
         {reportError ? (
           // The global Apollo error link already shows the error details in a snackbar
           <Container sx={{ mt: 2 }}>
-            <Alert
-              severity="error"
-              action={
-                <Button color="inherit" size="small" onClick={refetchReport}>
-                  {t('Try Again')}
-                </Button>
-              }
-            >
-              {t(
+            <LoadErrorAlert
+              message={t(
                 'The Income & Expenses report could not be loaded. Please try again later.',
               )}
-            </Alert>
+              onRetry={refetchReport}
+            />
           </Container>
         ) : (
           <>

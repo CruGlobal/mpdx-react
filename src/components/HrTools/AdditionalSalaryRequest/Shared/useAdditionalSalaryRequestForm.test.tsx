@@ -68,6 +68,7 @@ const defaultMockContextValue = {
             calculations: {
               currentSalaryCap: 100000,
               staffAccountBalance: 50000,
+              availableStaffAccountBalance: 50000,
               ytdAsrAmount: 0,
               grossAnnualSalary: 40000,
             },
@@ -77,6 +78,10 @@ const defaultMockContextValue = {
   },
   loading: false,
   requestError: undefined,
+  hcmLoading: false,
+  hcmUnavailable: false,
+  refetchHcm: jest.fn(),
+  refetchRequest: jest.fn(),
   pageType: PageEnum.New,
   setPageType: jest.fn(),
   pendingPrint: false,
@@ -288,6 +293,7 @@ describe('useAdditionalSalaryRequestForm', () => {
             calculations: {
               currentSalaryCap: 50000,
               staffAccountBalance: 20000,
+              availableStaffAccountBalance: 20000,
               ytdAsrAmount: 0,
             },
           },
@@ -380,6 +386,58 @@ describe('useAdditionalSalaryRequestForm', () => {
       });
 
       expect(errors.phoneNumber).toBeUndefined();
+    });
+
+    describe('total within the available account balance', () => {
+      beforeEach(() => {
+        mockUseAdditionalSalaryRequest.mockReturnValue({
+          ...defaultMockContextValue,
+          requestData: {
+            latestAdditionalSalaryRequest: {
+              ...defaultMockContextValue.requestData
+                .latestAdditionalSalaryRequest,
+              calculations: {
+                ...defaultMockContextValue.requestData
+                  .latestAdditionalSalaryRequest.calculations,
+                staffAccountBalance: 1000,
+                availableStaffAccountBalance: 11000,
+              },
+            },
+          },
+        } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+      });
+
+      const validateBackpay = async (amount: string) => {
+        const { result } = renderHook(
+          () =>
+            useAdditionalSalaryRequestForm({
+              ...defaultFormValues,
+              currentYearSalaryNotReceived: amount,
+              phoneNumber: '555-123-4567',
+            }),
+          { wrapper: TestWrapper },
+        );
+
+        let errors: Record<string, string> = {};
+        await act(async () => {
+          errors = await result.current.validateForm();
+        });
+        return errors;
+      };
+
+      it('allows backpay that dips into the deficit limit', async () => {
+        const errors = await validateBackpay('8000');
+
+        expect(errors.totalAdditionalSalaryRequested).toBeUndefined();
+      });
+
+      it('rejects a total beyond the balance plus deficit limit', async () => {
+        const errors = await validateBackpay('12000');
+
+        expect(errors.totalAdditionalSalaryRequested).toBe(
+          'Exceeds account balance plus deficit limit.',
+        );
+      });
     });
 
     it('should validate adoption max amount of $15,000', async () => {
@@ -863,6 +921,7 @@ describe('useAdditionalSalaryRequestForm', () => {
             calculations: {
               currentSalaryCap: 50000,
               staffAccountBalance: 20000,
+              availableStaffAccountBalance: 20000,
             },
           },
         },
