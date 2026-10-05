@@ -21,6 +21,7 @@ import {
   HcmQueryVariables,
   useHcmQuery,
 } from '../HcmData/Hcm.generated';
+import { InfoTooltipIcon } from '../InfoTooltipIcon';
 
 /** Matches the API's limit of one refresh per person every 3 minutes. */
 export const REFRESH_COOLDOWN = Duration.fromObject({ minutes: 3 });
@@ -32,7 +33,10 @@ const HANDLED_ERROR_CODES = ['HCM_REFRESH_RATE_LIMITED', 'HCM_UNAVAILABLE'];
 const STALE_AFTER = Duration.fromObject({ hours: 24 });
 
 interface HcmSyncStatusProps {
-  /** The person whose HCM data the page shows. Defaults to the current user. */
+  /**
+   * The person whose HCM data the page shows, set only when viewing someone else (a supervisor
+   * view). Leave it out for the current user, which also words the out-of-sync warning as "you".
+   */
   personNumber?: string;
   /** The date the page loaded HCM data for, so a refresh replaces the data the page shows. */
   effectiveDate?: string | null;
@@ -147,21 +151,33 @@ const SyncRow: React.FC<{ sync: HcmSync }> = ({ sync }) => {
 
   return (
     <Stack direction="row" alignItems="center" spacing={1.5}>
-      {syncedAt && (
-        <Tooltip
-          title={syncedAt.toLocaleString(DateTime.DATETIME_MED, { locale })}
-        >
-          <Typography
-            variant="body2"
-            color={stale ? 'warning.dark' : 'text.secondary'}
-            noWrap
+      <Stack direction="row" alignItems="center">
+        {syncedAt && (
+          <Tooltip
+            title={syncedAt.toLocaleString(DateTime.DATETIME_MED, { locale })}
           >
-            {t('Synced from HCM {{when}}', {
-              when: syncedAt.toRelative({ locale, style: 'short' }),
-            })}
-          </Typography>
+            <Typography
+              variant="body2"
+              color={stale ? 'warning.dark' : 'text.secondary'}
+              noWrap
+            >
+              {t('Synced from HCM {{when}}', {
+                when: syncedAt.toRelative({ locale, style: 'short' }),
+              })}
+            </Typography>
+          </Tooltip>
+        )}
+        <Tooltip
+          title={t(
+            "HCM (Human Capital Management) is Cru's HR system. MPDX gets salary, benefits and other staff details from it.",
+          )}
+        >
+          <InfoTooltipIcon
+            aria-label={t('What is HCM?')}
+            data-testid="HcmInfoTooltip"
+          />
         </Tooltip>
-      )}
+      </Stack>
       <Tooltip
         title={
           coolingDown
@@ -241,7 +257,9 @@ export const HcmSyncBodyStatus: React.FC<HcmSyncStatusProps> = (props) => {
       {person.outOfSync && (
         <Alert severity="warning">
           <AlertTitle>
-            {t('HCM no longer has a record for this person')}
+            {props.personNumber
+              ? t('HCM no longer has a record for this person')
+              : t('HCM no longer has a record for you')}
           </AlertTitle>
           {syncedAt
             ? t(

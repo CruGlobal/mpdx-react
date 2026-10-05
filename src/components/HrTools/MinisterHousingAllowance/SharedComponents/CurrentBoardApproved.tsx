@@ -29,6 +29,92 @@ import { MHARequest } from './types';
 const hcmApprovedOn = (amount: number | null, hcmData: HcmData | null) =>
   (amount ?? 0) > 0 ? hcmData?.mhaRequest.boardApprovedOnDate : null;
 
+interface DateLineProps {
+  label: string;
+  date?: string | null;
+}
+
+// Shows a skeleton while the date is still loading
+const DateLine: React.FC<DateLineProps> = ({ label, date }) => {
+  const locale = useLocale();
+
+  return (
+    <Grid>
+      <Typography sx={{ color: 'text.secondary' }}>
+        {label}:{' '}
+        {date ? (
+          dateFormatShort(DateTime.fromISO(date), locale)
+        ) : (
+          <Skeleton
+            width={100}
+            variant="text"
+            sx={{ ml: 1 }}
+            style={{ display: 'inline-block' }}
+          />
+        )}
+      </Typography>
+    </Grid>
+  );
+};
+
+interface PersonRowProps {
+  name: string;
+  approvedAmount: number | null;
+  approvedOn?: string | null;
+  showApprovedOn: boolean;
+  takenAmount: number | null;
+  lastUpdated: string | null;
+  showLastUpdated: boolean;
+}
+
+const PersonRow: React.FC<PersonRowProps> = ({
+  name,
+  approvedAmount,
+  approvedOn,
+  showApprovedOn,
+  takenAmount,
+  lastUpdated,
+  showLastUpdated,
+}) => {
+  const { t } = useTranslation();
+  const locale = useLocale();
+
+  const formatAmount = (amount: number | null) =>
+    currencyFormat(Number(amount), 'USD', locale, {
+      showTrailingZeros: true,
+    });
+
+  return (
+    <TableRow>
+      <TableCell sx={{ fontSize: 20 }}>{name}</TableCell>
+      <TableCell>
+        <Grid container direction="column">
+          <Grid>
+            <Typography sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+              {formatAmount(approvedAmount)}
+            </Typography>
+          </Grid>
+          {showApprovedOn && (
+            <DateLine label={t('Approved on')} date={approvedOn} />
+          )}
+        </Grid>
+      </TableCell>
+      <TableCell>
+        <Grid container direction="column">
+          <Grid>
+            <Typography sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+              {formatAmount(takenAmount)}
+            </Typography>
+          </Grid>
+          {showLastUpdated && (
+            <DateLine label={t('Last updated')} date={lastUpdated} />
+          )}
+        </Grid>
+      </TableCell>
+    </TableRow>
+  );
+};
+
 interface CurrentBoardApprovedProps {
   request: MHARequest | null;
   hasOpenRequest: boolean;
@@ -39,10 +125,8 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
   hasOpenRequest,
 }) => {
   const { t } = useTranslation();
-  const locale = useLocale();
   const accountListId = useAccountListId();
   const router = useRouter();
-  const currency = 'USD';
 
   const [duplicateMHA] = useDuplicateMinistryHousingAllowanceRequestMutation();
 
@@ -156,168 +240,26 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
           </TableHead>
           <TableBody>
             {showUserRow && (
-              <TableRow>
-                <TableCell sx={{ fontSize: 20 }}>{preferredName}</TableCell>
-                <TableCell>
-                  <Grid container direction="column">
-                    <Grid>
-                      <Typography
-                        sx={{ color: 'primary.main', fontWeight: 'bold' }}
-                      >
-                        {currencyFormat(
-                          Number(userApprovedOverallAmount),
-                          currency,
-                          locale,
-                          {
-                            showTrailingZeros: true,
-                          },
-                        )}
-                      </Typography>
-                    </Grid>
-                    {(!isHcmOnly || userApprovedOn) && (
-                      <Grid>
-                        <Typography sx={{ color: 'text.secondary' }}>
-                          {t('Approved on')}:{' '}
-                          {userApprovedOn ? (
-                            dateFormatShort(
-                              DateTime.fromISO(userApprovedOn),
-                              locale,
-                            )
-                          ) : (
-                            <Skeleton
-                              width={100}
-                              variant="text"
-                              sx={{ ml: 1 }}
-                              style={{ display: 'inline-block' }}
-                            />
-                          )}
-                        </Typography>
-                      </Grid>
-                    )}
-                  </Grid>
-                </TableCell>
-                <TableCell>
-                  <Grid container direction="column">
-                    <Grid>
-                      <Typography
-                        sx={{ color: 'primary.main', fontWeight: 'bold' }}
-                      >
-                        {currencyFormat(
-                          Number(userTakenAmount),
-                          currency,
-                          locale,
-                          {
-                            showTrailingZeros: true,
-                          },
-                        )}
-                      </Typography>
-                    </Grid>
-                    {!isHcmOnly && (
-                      <Grid>
-                        <Typography sx={{ color: 'text.secondary' }}>
-                          {t('Last updated')}:{' '}
-                          {lastUpdated ? (
-                            dateFormatShort(
-                              DateTime.fromISO(lastUpdated),
-                              locale,
-                            )
-                          ) : (
-                            <Skeleton
-                              width={100}
-                              variant="text"
-                              sx={{ ml: 1 }}
-                              style={{ display: 'inline-block' }}
-                            />
-                          )}
-                        </Typography>
-                      </Grid>
-                    )}
-                  </Grid>
-                </TableCell>
-              </TableRow>
+              <PersonRow
+                name={preferredName}
+                approvedAmount={userApprovedOverallAmount}
+                approvedOn={userApprovedOn}
+                showApprovedOn={!isHcmOnly || !!userApprovedOn}
+                takenAmount={userTakenAmount}
+                lastUpdated={lastUpdated}
+                showLastUpdated={!isHcmOnly}
+              />
             )}
             {showSpouseRow && (
-              <TableRow>
-                <TableCell sx={{ fontSize: 20 }}>
-                  {spousePreferredName ? spousePreferredName : 'N/A'}
-                </TableCell>
-                <TableCell>
-                  <Grid container direction="column">
-                    <Grid>
-                      <Typography
-                        sx={{ color: 'primary.main', fontWeight: 'bold' }}
-                      >
-                        {currencyFormat(
-                          Number(spouseApprovedOverallAmount),
-                          currency,
-                          locale,
-                          {
-                            showTrailingZeros: true,
-                          },
-                        )}
-                      </Typography>
-                    </Grid>
-                    {(!isHcmOnly || spouseApprovedOn) && (
-                      <Grid>
-                        <Typography sx={{ color: 'text.secondary' }}>
-                          {t('Approved on')}:{' '}
-                          {spouseApprovedOn ? (
-                            dateFormatShort(
-                              DateTime.fromISO(spouseApprovedOn),
-                              locale,
-                            )
-                          ) : (
-                            <Skeleton
-                              width={100}
-                              variant="text"
-                              sx={{ ml: 1 }}
-                              style={{ display: 'inline-block' }}
-                            />
-                          )}
-                        </Typography>
-                      </Grid>
-                    )}
-                  </Grid>
-                </TableCell>
-                <TableCell>
-                  <Grid container direction="column">
-                    <Grid>
-                      <Typography
-                        sx={{ color: 'primary.main', fontWeight: 'bold' }}
-                      >
-                        {currencyFormat(
-                          Number(spouseTakenAmount),
-                          currency,
-                          locale,
-                          {
-                            showTrailingZeros: true,
-                          },
-                        )}
-                      </Typography>
-                    </Grid>
-                    {!isHcmOnly && (
-                      <Grid>
-                        <Typography sx={{ color: 'text.secondary' }}>
-                          {t('Last updated')}:{' '}
-                          {lastUpdated ? (
-                            dateFormatShort(
-                              DateTime.fromISO(lastUpdated),
-                              locale,
-                            )
-                          ) : (
-                            <Skeleton
-                              width={100}
-                              variant="text"
-                              sx={{ ml: 1 }}
-                              style={{ display: 'inline-block' }}
-                            />
-                          )}
-                        </Typography>
-                      </Grid>
-                    )}
-                  </Grid>
-                </TableCell>
-              </TableRow>
+              <PersonRow
+                name={spousePreferredName ? spousePreferredName : 'N/A'}
+                approvedAmount={spouseApprovedOverallAmount}
+                approvedOn={spouseApprovedOn}
+                showApprovedOn={!isHcmOnly || !!spouseApprovedOn}
+                takenAmount={spouseTakenAmount}
+                lastUpdated={lastUpdated}
+                showLastUpdated={!isHcmOnly}
+              />
             )}
           </TableBody>
         </Table>
