@@ -168,6 +168,24 @@ const config: NextConfig = {
       destination: '/accountLists/:accountListId/settings/preferences',
       permanent: true,
     },
+    {
+      source: '/accountLists/:accountListId/reports/housingAllowance/:path*',
+      destination: '/accountLists/:accountListId/hrTools/mhaCalculator/:path*',
+      permanent: true,
+    },
+    {
+      source:
+        '/accountLists/:accountListId/reports/additionalSalaryRequest/:path*',
+      destination:
+        '/accountLists/:accountListId/hrTools/additionalSalaryRequest/:path*',
+      permanent: true,
+    },
+    {
+      source: '/accountLists/:accountListId/reports/salaryCalculator/:path*',
+      destination:
+        '/accountLists/:accountListId/hrTools/salaryCalculator/:path*',
+      permanent: true,
+    },
   ],
 };
 
