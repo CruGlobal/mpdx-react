@@ -19,12 +19,10 @@ import { useUpdateUserGeographicLocationMutation } from '../UpdateUserGeographic
 
 interface SetLocationModalProps {
   handleClose: () => void;
-  onSaved: () => void;
 }
 
 export const SetLocationModal: React.FC<SetLocationModalProps> = ({
   handleClose,
-  onSaved,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -54,7 +52,6 @@ export const SetLocationModal: React.FC<SetLocationModalProps> = ({
       return;
     }
 
-    onSaved();
     enqueueSnackbar(t('Saved successfully.'), { variant: 'success' });
     handleClose();
   };

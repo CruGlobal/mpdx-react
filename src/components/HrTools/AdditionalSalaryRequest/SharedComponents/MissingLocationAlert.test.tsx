@@ -1,26 +1,20 @@
 import { ThemeProvider } from '@mui/material/styles';
-import { act, render, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { DeepPartial } from 'ts-essentials';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import {
-  UpdateUserOptionMutation,
-  UserOptionQuery,
-} from 'src/hooks/UserPreference.generated';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
 import {
   AdditionalSalaryRequestContext,
   AdditionalSalaryRequestType,
 } from '../Shared/AdditionalSalaryRequestContext';
+import { UpdateUserGeographicLocationMutation } from '../UpdateUserGeographicLocation.generated';
 import { MissingLocationAlert } from './MissingLocationAlert';
 
 const missingLocationText =
   "Your cap may be inaccurate because your location isn't set.";
-const oneTimeUsedText =
-  "You've already used your one-time location update, so please submit a new Salary Calculation Form to set your location.";
-const preferenceKey = 'location_set_from_asr';
 
 const userDefault = {
   staffInfo: {
@@ -35,7 +29,6 @@ type ComponentProps = {
   > | null;
   user?: DeepPartial<AdditionalSalaryRequestType['user']>;
   hcmLoading?: boolean;
-  locationSetFromAsr?: boolean;
   onCall?: jest.Mock;
 };
 
@@ -43,27 +36,19 @@ const renderComponent = ({
   calculations = { currentSalaryCap: 75000, geographicLocation: null },
   user = userDefault,
   hcmLoading = false,
-  locationSetFromAsr = false,
   onCall = jest.fn(),
 }: ComponentProps = {}) =>
   render(
     <ThemeProvider theme={theme}>
       <SnackbarProvider>
         <GqlMockedProvider<{
-          UserOption: UserOptionQuery;
-          UpdateUserOption: UpdateUserOptionMutation;
+          UpdateUserGeographicLocation: UpdateUserGeographicLocationMutation;
           GoalCalculatorConstants: GoalCalculatorConstantsQuery;
         }>
           mocks={{
-            UserOption: {
-              userOption: {
-                key: preferenceKey,
-                value: String(locationSetFromAsr),
-              },
-            },
-            UpdateUserOption: {
-              createOrUpdateUserOption: {
-                option: { key: preferenceKey, value: 'true' },
+            UpdateUserGeographicLocation: {
+              updateUserGeographicLocation: {
+                geographicLocation: 'Orlando, FL',
               },
             },
             GoalCalculatorConstants: {
@@ -104,11 +89,6 @@ const saveLocation = async ({
   userEvent.click(getByRole('combobox'));
   userEvent.click(await findByRole('option', { name: 'Orlando, FL' }));
   userEvent.click(getByRole('button', { name: 'Save' }));
-};
-
-const waitForPreference = async (onCall: jest.Mock) => {
-  await waitFor(() => expect(onCall).toHaveGraphqlOperation('UserOption'));
-  await act(async () => {});
 };
 
 describe('MissingLocationAlert', () => {
@@ -152,74 +132,46 @@ describe('MissingLocationAlert', () => {
     expect(queryByRole('dialog')).toBeInTheDocument();
   });
 
-  it('remembers that the one-time update was used after saving', async () => {
+  it('saves the location from the modal', async () => {
     const onCall = jest.fn();
     const utils = renderComponent({ onCall });
 
     await saveLocation(utils);
 
     await waitFor(() =>
-      expect(onCall).toHaveGraphqlOperation('UpdateUserOption', {
-        key: preferenceKey,
-        value: 'true',
+      expect(onCall).toHaveGraphqlOperation('UpdateUserGeographicLocation', {
+        geographicLocation: 'Orlando, FL',
       }),
     );
-    expect(
-      await utils.findByText(/already used your one-time location update/),
-    ).toBeInTheDocument();
-    expect(
-      utils.queryByRole('button', { name: 'Set Location' }),
-    ).not.toBeInTheDocument();
   });
 
-  it('points to the Salary Calculation Form once the one-time update is used', async () => {
-    const { findByRole, queryByRole } = renderComponent({
-      locationSetFromAsr: true,
-    });
-
-    expect(queryByRole('alert')).not.toBeInTheDocument();
-
-    const alert = await findByRole('alert');
-    expect(alert).toHaveTextContent(missingLocationText);
-    expect(alert).toHaveTextContent(oneTimeUsedText);
-    expect(alert).not.toHaveTextContent('We see that you live in');
-    expect(
-      queryByRole('button', { name: 'Set Location' }),
-    ).not.toBeInTheDocument();
-  });
-
-  it('hides the alert when the location is set', async () => {
-    const onCall = jest.fn();
+  it('hides the alert when the location is set', () => {
     const { queryByRole } = renderComponent({
       calculations: {
         currentSalaryCap: 75000,
         geographicLocation: 'Orlando, FL',
       },
-      onCall,
     });
 
-    await waitForPreference(onCall);
-
     expect(queryByRole('alert')).not.toBeInTheDocument();
   });
 
-  it('waits for HCM before showing the alert', async () => {
-    const onCall = jest.fn();
-    const { queryByRole } = renderComponent({ hcmLoading: true, onCall });
-
-    await waitForPreference(onCall);
-
-    expect(queryByRole('alert')).not.toBeInTheDocument();
-  });
-
-  it('hides the alert when there are no calculations yet', async () => {
-    const onCall = jest.fn();
+  it('hides the alert when the location is set to None', () => {
     const { queryByRole } = renderComponent({
-      calculations: null,
-      onCall,
+      calculations: { currentSalaryCap: 75000, geographicLocation: 'None' },
     });
 
-    await waitForPreference(onCall);
+    expect(queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('waits for HCM before showing the alert', () => {
+    const { queryByRole } = renderComponent({ hcmLoading: true });
+
+    expect(queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('hides the alert when there are no calculations yet', () => {
+    const { queryByRole } = renderComponent({ calculations: null });
 
     expect(queryByRole('alert')).not.toBeInTheDocument();
   });

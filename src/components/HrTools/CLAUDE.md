@@ -182,8 +182,10 @@ Three patterns — know which one a form uses before adding a field:
     `updateManagedStaffGeographicLocation`. The record belongs to another person.
   - AdditionalSalaryRequest's `SetLocationModal`: a user without a location on
     their cap sets their own once, through `updateUserGeographicLocation`. The
-    one-time limit is UI-only, enforced by the `location_set_from_asr` user
-    option, since the same preference stays editable in Settings.
+    one-time limit needs no flag: the cap reads the SCR's location, then falls
+    back to the primary account list's, so a null
+    `calculations.geographicLocation` means both are empty, and once the modal
+    saves, the refetched cap has a location and the alert goes away.
 
 Note the finalize step is separate from persistence: NSO autosaves each field but
 has a distinct `Complete` mutation, and the request forms autosave a draft but
