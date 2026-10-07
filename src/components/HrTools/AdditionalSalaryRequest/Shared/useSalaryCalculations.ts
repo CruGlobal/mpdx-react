@@ -126,7 +126,10 @@ export const useSalaryCalculations = ({
 
     // Exceeding cap calculations
     const isMarried = !!spouse;
-    const exceedsCap = requestedAnnualSalary > individualCap;
+    // Backpay does not count against the cap, so a request with nothing else in it
+    // cannot exceed the cap or need splitting, even when the base salary is already over
+    const addsToCap = nonBackpayTotal > 0;
+    const exceedsCap = addsToCap && requestedAnnualSalary > individualCap;
     const spouseExceedsCap =
       isMarried &&
       spouseIndividualCap !== null &&
@@ -145,7 +148,7 @@ export const useSalaryCalculations = ({
       exceedsCap && isMarried && !spouseAtCap && !spouseExceedsCap;
     // Only show spouse split when user has room to increase (not at/over cap)
     const spouseSplitAsr =
-      !exceedsCap && !userAtCap && isMarried && spouseExceedsCap;
+      addsToCap && !exceedsCap && !userAtCap && isMarried && spouseExceedsCap;
 
     const splitAsr = userSplitAsr || spouseSplitAsr;
     const splitAsrType: 'user' | 'spouse' | null = userSplitAsr

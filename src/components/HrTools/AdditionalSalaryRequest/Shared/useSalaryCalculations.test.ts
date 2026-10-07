@@ -454,6 +454,98 @@ describe('useSalaryCalculations', () => {
     });
   });
 
+  describe('Married - gross salary already over cap', () => {
+    beforeEach(() => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        traditional403bPercentage: 0.12,
+        roth403bPercentage: 0.1,
+        spouse: {},
+        requestData: {
+          latestAdditionalSalaryRequest: {
+            calculations: {
+              grossAnnualSalary: 96234.65,
+              currentSalaryCap: 67500,
+              ytdAsrAmount: 0,
+            },
+            spouseCalculations: {
+              grossAnnualSalary: 60190.57,
+              currentSalaryCap: 67500,
+              ytdAsrAmount: 0,
+            },
+            progressiveApprovalTier: null,
+          },
+        },
+      } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+    });
+
+    it('does not exceed the cap or split a backpay-only request', () => {
+      const values: CompleteFormValues = {
+        ...baseValues,
+        currentYearSalaryNotReceived: '1424.53',
+      };
+
+      const { result } = renderHook(() => useSalaryCalculations({ values }), {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      });
+
+      expect(result.current.exceedsCap).toBe(false);
+      expect(result.current.splitAsr).toBe(false);
+      expect(result.current.splitAsrType).toBeNull();
+    });
+
+    it('splits a request that adds non-backpay salary', () => {
+      const values: CompleteFormValues = {
+        ...baseValues,
+        currentYearSalaryNotReceived: '1424.53',
+        additionalSalaryWithinMax: '1000',
+      };
+
+      const { result } = renderHook(() => useSalaryCalculations({ values }), {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      });
+
+      expect(result.current.exceedsCap).toBe(true);
+      expect(result.current.splitAsr).toBe(true);
+      expect(result.current.splitAsrType).toBe('user');
+    });
+  });
+
+  describe('Married - backpay only with spouse over cap', () => {
+    it('does not ask to split onto the spouse', () => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        traditional403bPercentage: 0.12,
+        roth403bPercentage: 0.1,
+        spouse: {},
+        requestData: {
+          latestAdditionalSalaryRequest: {
+            calculations: {
+              grossAnnualSalary: 50000,
+              currentSalaryCap: 70000,
+              ytdAsrAmount: 0,
+            },
+            spouseCalculations: {
+              grossAnnualSalary: 60000,
+              currentSalaryCap: 50000,
+              ytdAsrAmount: 0,
+            },
+          },
+        },
+      } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+      const values: CompleteFormValues = {
+        ...baseValues,
+        currentYearSalaryNotReceived: '2000',
+      };
+
+      const { result } = renderHook(() => useSalaryCalculations({ values }), {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      });
+
+      expect(result.current.splitAsr).toBe(false);
+      expect(result.current.splitAsrType).toBeNull();
+    });
+  });
+
   describe('Married - Staff Member over cap', () => {
     const setupOverCap = (
       spouseCalculations: {
