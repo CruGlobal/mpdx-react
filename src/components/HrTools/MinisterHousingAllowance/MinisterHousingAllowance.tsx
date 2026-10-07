@@ -48,6 +48,8 @@ export const MinisterHousingAllowanceReport = () => {
     spouseEligibleForMHA,
     userHcmData,
     spouseHcmData,
+    userApprovedOverallAmount,
+    spouseApprovedOverallAmount,
   } = useMinisterHousingAllowance();
 
   const [createMHA] = useCreateHousingAllowanceRequestMutation();
@@ -114,6 +116,12 @@ export const MinisterHousingAllowanceReport = () => {
 
   const eitherPersonEligible = userEligibleForMHA || spouseEligibleForMHA;
 
+  // MHAs approved before the MPDX launch only exist in HCM
+  const isHcmApprovedOnly =
+    hasNoRequests &&
+    ((userEligibleForMHA && (userApprovedOverallAmount ?? 0) > 0) ||
+      (spouseEligibleForMHA && (spouseApprovedOverallAmount ?? 0) > 0));
+
   const hasCurrentBoardApprovedMha =
     currentRequest?.status === MhaStatusEnum.BoardApproved;
   const showNewRequestButton =
@@ -121,6 +129,36 @@ export const MinisterHousingAllowanceReport = () => {
 
   const showCurrentRequest = eitherPersonEligible && currentRequest;
   const showPreviousRequests = eitherPersonEligible && previousApprovedRequest;
+
+  const anyoneIneligible =
+    !userEligibleForMHA || (isMarried && !spouseEligibleForMHA);
+
+  const eligibilityStatusTable = (
+    <EligibilityStatusTable
+      userPreferredName={preferredName}
+      userEligible={userEligibleForMHA}
+      userCountry={userHcmData?.staffInfo.country ?? undefined}
+      spousePreferredName={isMarried ? spousePreferredName : undefined}
+      spouseEligible={isMarried ? spouseEligibleForMHA : undefined}
+      spouseCountry={
+        isMarried ? (spouseHcmData?.staffInfo.country ?? undefined) : undefined
+      }
+      userMhiEligibility={getMhiEligibility(userHcmData)}
+      spouseMhiEligibility={
+        isMarried ? getMhiEligibility(spouseHcmData) : undefined
+      }
+      userIneligibilityReasonCode={userHcmData?.mhaEit.ineligibilityReasonCode}
+      spouseIneligibilityReasonCode={
+        isMarried ? spouseHcmData?.mhaEit.ineligibilityReasonCode : undefined
+      }
+      userMhiIneligibilityReasonCode={
+        userHcmData?.mhiEit.ineligibilityReasonCode
+      }
+      spouseMhiIneligibilityReasonCode={
+        isMarried ? spouseHcmData?.mhiEit.ineligibilityReasonCode : undefined
+      }
+    />
+  );
 
   if (creatingRequest) {
     return <Loading loading />;
@@ -146,51 +184,27 @@ export const MinisterHousingAllowanceReport = () => {
                   <Typography variant="h5">{t('Your MHA')}</Typography>
                 </Box>
 
-                {hasNoRequests ? (
+                {isHcmApprovedOnly ? (
                   <>
-                    <NoRequestsDisplay />
-                    <Box mt={2}>
-                      <EligibilityStatusTable
-                        userPreferredName={preferredName}
-                        userEligible={userEligibleForMHA}
-                        userCountry={
-                          userHcmData?.staffInfo.country ?? undefined
-                        }
-                        spousePreferredName={
-                          isMarried ? spousePreferredName : undefined
-                        }
-                        spouseEligible={
-                          isMarried ? spouseEligibleForMHA : undefined
-                        }
-                        spouseCountry={
-                          isMarried
-                            ? (spouseHcmData?.staffInfo.country ?? undefined)
-                            : undefined
-                        }
-                        userMhiEligibility={getMhiEligibility(userHcmData)}
-                        spouseMhiEligibility={
-                          isMarried
-                            ? getMhiEligibility(spouseHcmData)
-                            : undefined
-                        }
-                        userIneligibilityReasonCode={
-                          userHcmData?.mhaEit.ineligibilityReasonCode
-                        }
-                        spouseIneligibilityReasonCode={
-                          isMarried
-                            ? spouseHcmData?.mhaEit.ineligibilityReasonCode
-                            : undefined
-                        }
-                        userMhiIneligibilityReasonCode={
-                          userHcmData?.mhiEit.ineligibilityReasonCode
-                        }
-                        spouseMhiIneligibilityReasonCode={
-                          isMarried
-                            ? spouseHcmData?.mhiEit.ineligibilityReasonCode
-                            : undefined
-                        }
+                    <Box mb={2}>
+                      <EligibleDisplay
+                        isPending={false}
+                        isEditable={false}
+                        isHcmApprovedOnly
                       />
                     </Box>
+                    <CurrentBoardApproved
+                      request={null}
+                      hasOpenRequest={false}
+                    />
+                    {anyoneIneligible && (
+                      <Box mt={2}>{eligibilityStatusTable}</Box>
+                    )}
+                  </>
+                ) : hasNoRequests ? (
+                  <>
+                    <NoRequestsDisplay />
+                    <Box mt={2}>{eligibilityStatusTable}</Box>
                   </>
                 ) : (
                   eitherPersonEligible && (

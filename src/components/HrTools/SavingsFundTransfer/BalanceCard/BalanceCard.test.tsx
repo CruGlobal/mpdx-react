@@ -244,4 +244,32 @@ describe('BalanceCard', () => {
 
     expect(transferFromButton).toBeDisabled();
   });
+
+  describe('HR-managed funds', () => {
+    it.each([FundTypeEnum.ReturnTravel, FundTypeEnum.ReEntry])(
+      'shows the %s balance with an HR Services note instead of a transfer button',
+      (fundType) => {
+        const { getByText, queryByRole } = render(
+          <Components fund={{ ...defaultFund, fundType }} />,
+        );
+
+        expect(getByText(`${fundType} Account Balance`)).toBeInTheDocument();
+        expect(getByText('$15,000.00')).toBeInTheDocument();
+        expect(
+          getByText(
+            'Managed by HR Services. Contact them to transfer these funds.',
+          ),
+        ).toBeInTheDocument();
+        expect(
+          queryByRole('button', { name: /transfer from/i }),
+        ).not.toBeInTheDocument();
+      },
+    );
+
+    it('does not show the HR Services note on a transferable fund', () => {
+      const { queryByText } = render(<Components />);
+
+      expect(queryByText(/managed by hr services/i)).not.toBeInTheDocument();
+    });
+  });
 });

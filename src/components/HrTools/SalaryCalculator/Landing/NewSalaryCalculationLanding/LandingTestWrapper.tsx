@@ -1,8 +1,10 @@
 import { ThemeProvider } from '@emotion/react';
 import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
+import { mockHcmUnavailable } from 'src/components/HrTools/Shared/HcmData/mockHcmUnavailable';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   AssignmentCategoryEnum,
@@ -28,6 +30,13 @@ export interface LandingTestWrapperProps {
   hasLatestCalculation?: boolean;
   hasSpouseLatestCalculation?: boolean;
   salaryRequestEligible?: boolean;
+  /** How many HCM calls fail with HCM_UNAVAILABLE before it loads */
+  hcmUnavailableCalls?: number;
+  /** How many LandingSalaryCalculations calls fail with HCM_UNAVAILABLE before it loads */
+  calculationUnavailableCalls?: number;
+  /** Makes LandingSalaryCalculations fail with an error other than HCM_UNAVAILABLE */
+  calculationError?: boolean;
+  balanceError?: boolean;
 }
 
 export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
@@ -39,119 +48,141 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
   hasLatestCalculation = false,
   hasSpouseLatestCalculation = false,
   salaryRequestEligible = true,
+  hcmUnavailableCalls = 0,
+  calculationUnavailableCalls = 0,
+  calculationError = false,
+  balanceError = false,
 }) => (
   <ThemeProvider theme={theme}>
-    <TestRouter>
-      <GqlMockedProvider<{
-        Hcm: HcmQuery;
-        StaffAccountId: StaffAccountIdQuery;
-        AccountBalance: AccountBalanceQuery;
-        LandingSalaryCalculations: LandingSalaryCalculationsQuery;
-        GetUser: GetUserQuery;
-      }>
-        mocks={{
-          Hcm: {
-            hcm: [
-              {
-                staffInfo: {
-                  preferredName: 'John',
-                  lastName: 'Doe',
-                  personNumber: '000123456',
-                  secaStatus: SecaStatusEnum.Seca,
-                  peopleGroupSupportType:
-                    PeopleGroupSupportTypeEnum.SupportedRmo,
-                  assignmentStatus: AssignmentStatusEnum.ActivePayrollEligible,
-                  assignmentCategory: AssignmentCategoryEnum.FullTimeRegular,
-                  userPersonType: UserPersonTypeEnum.EmployeeStaff,
-                },
-                currentSalary: {
-                  grossSalaryAmount: 55000,
-                  lastUpdated: '2024-03-01',
-                },
-                fourOThreeB: {
-                  currentRothContributionPercentage: 12,
-                  currentTaxDeferredContributionPercentage: 5,
-                },
-                mhaRequest: {
-                  currentTakenAmount: 10000,
-                },
-                salaryRequestEligible,
+    <SnackbarProvider>
+      <TestRouter>
+        <GqlMockedProvider<{
+          Hcm: HcmQuery;
+          StaffAccountId: StaffAccountIdQuery;
+          AccountBalance: AccountBalanceQuery;
+          LandingSalaryCalculations: LandingSalaryCalculationsQuery;
+          GetUser: GetUserQuery;
+        }>
+          mocks={{
+            Hcm: {
+              hcm: mockHcmUnavailable(
+                [
+                  {
+                    staffInfo: {
+                      preferredName: 'John',
+                      lastName: 'Doe',
+                      personNumber: '000123456',
+                      secaStatus: SecaStatusEnum.Seca,
+                      peopleGroupSupportType:
+                        PeopleGroupSupportTypeEnum.SupportedRmo,
+                      assignmentStatus:
+                        AssignmentStatusEnum.ActivePayrollEligible,
+                      assignmentCategory:
+                        AssignmentCategoryEnum.FullTimeRegular,
+                      userPersonType: UserPersonTypeEnum.EmployeeStaff,
+                    },
+                    currentSalary: {
+                      grossSalaryAmount: 55000,
+                      lastUpdated: '2024-03-01',
+                    },
+                    fourOThreeB: {
+                      currentRothContributionPercentage: 12,
+                      currentTaxDeferredContributionPercentage: 5,
+                    },
+                    mhaRequest: {
+                      currentTakenAmount: 10000,
+                    },
+                    salaryRequestEligible,
+                  },
+                  {
+                    staffInfo: {
+                      preferredName: 'Jane',
+                      lastName: 'Doe',
+                      personNumber: '000123457',
+                      secaStatus: SecaStatusEnum.Seca,
+                    },
+                    currentSalary: {
+                      grossSalaryAmount: 10000,
+                      lastUpdated: '2024-03-01',
+                    },
+                    fourOThreeB: {
+                      currentRothContributionPercentage: 10,
+                      currentTaxDeferredContributionPercentage: 6,
+                    },
+                    mhaRequest: {
+                      currentTakenAmount: 12000,
+                    },
+                    salaryRequestEligible,
+                  },
+                ],
+                hcmUnavailableCalls,
+              ),
+            },
+            LandingSalaryCalculations: {
+              inProgressCalculation: calculationError
+                ? ((() => {
+                    throw new Error('Salary calculations are unavailable');
+                  }) as never)
+                : (mockHcmUnavailable(
+                    (hasInProgressCalculation
+                      ? { id: 'in-progress-calc-1' }
+                      : null) as never,
+                    calculationUnavailableCalls,
+                  ) as never),
+              effectiveCalculation: hasApprovedCalculation
+                ? {
+                    personNumber: hasSpouseApprovedCalculation
+                      ? '000123457'
+                      : '000123456',
+                    salary: 50000,
+                    spouseSalary: 60000,
+                    calculations: { effectiveCap: 60000 },
+                    spouseCalculations: { effectiveCap: 70000 },
+                  }
+                : null,
+              latestCalculation: hasLatestCalculation
+                ? {
+                    id: 'pending-calc-1',
+                    status: SalaryRequestStatusEnum.Pending,
+                    personNumber: hasSpouseLatestCalculation
+                      ? '000123457'
+                      : '000123456',
+                    salary: 52000,
+                    spouseSalary: 51000,
+                    submittedAt: '2025-01-16T10:00:00Z',
+                    changesRequestedAt: null,
+                    feedback: null,
+                    calculations: { requestedGross: 69714.29 },
+                    spouseCalculations: { requestedGross: 62000 },
+                  }
+                : null,
+            },
+            StaffAccountId: {
+              user: {
+                staffAccountId: '111111111',
               },
-              {
-                staffInfo: {
-                  preferredName: 'Jane',
-                  lastName: 'Doe',
-                  personNumber: '000123457',
-                  secaStatus: SecaStatusEnum.Seca,
-                },
-                currentSalary: {
-                  grossSalaryAmount: 10000,
-                  lastUpdated: '2024-03-01',
-                },
-                fourOThreeB: {
-                  currentRothContributionPercentage: 10,
-                  currentTaxDeferredContributionPercentage: 6,
-                },
-                mhaRequest: {
-                  currentTakenAmount: 12000,
-                },
-                salaryRequestEligible,
+            },
+            AccountBalance: {
+              reportsStaffExpenses: balanceError
+                ? ((() => {
+                    throw new Error('SAA is unavailable');
+                  }) as never)
+                : {
+                    funds: [{ fundType: 'Primary', endBalance: 10000 }],
+                  },
+            },
+            GetUser: {
+              user: {
+                userType: UserTypeEnum.UsStaff,
+                usStaffGroup: UsStaffGroupEnum.SeniorStaff,
               },
-            ],
-          },
-          LandingSalaryCalculations: {
-            inProgressCalculation: hasInProgressCalculation
-              ? { id: 'in-progress-calc-1' }
-              : null,
-            effectiveCalculation: hasApprovedCalculation
-              ? {
-                  personNumber: hasSpouseApprovedCalculation
-                    ? '000123457'
-                    : '000123456',
-                  salary: 50000,
-                  spouseSalary: 60000,
-                  calculations: { effectiveCap: 60000 },
-                  spouseCalculations: { effectiveCap: 70000 },
-                }
-              : null,
-            latestCalculation: hasLatestCalculation
-              ? {
-                  id: 'pending-calc-1',
-                  status: SalaryRequestStatusEnum.Pending,
-                  personNumber: hasSpouseLatestCalculation
-                    ? '000123457'
-                    : '000123456',
-                  salary: 52000,
-                  spouseSalary: 51000,
-                  submittedAt: '2025-01-16T10:00:00Z',
-                  changesRequestedAt: null,
-                  feedback: null,
-                  calculations: { requestedGross: 69714.29 },
-                  spouseCalculations: { requestedGross: 62000 },
-                }
-              : null,
-          },
-          StaffAccountId: {
-            user: {
-              staffAccountId: '111111111',
             },
-          },
-          AccountBalance: {
-            reportsStaffExpenses: {
-              funds: [{ fundType: 'Primary', endBalance: 10000 }],
-            },
-          },
-          GetUser: {
-            user: {
-              userType: UserTypeEnum.UsStaff,
-              usStaffGroup: UsStaffGroupEnum.SeniorStaff,
-            },
-          },
-        }}
-        onCall={onCall}
-      >
-        {children as React.ReactElement}
-      </GqlMockedProvider>
-    </TestRouter>
+          }}
+          onCall={onCall}
+        >
+          {children as React.ReactElement}
+        </GqlMockedProvider>
+      </TestRouter>
+    </SnackbarProvider>
   </ThemeProvider>
 );

@@ -68,6 +68,7 @@ const defaultMockContextValue = {
             calculations: {
               currentSalaryCap: 100000,
               staffAccountBalance: 50000,
+              availableStaffAccountBalance: 50000,
               ytdAsrAmount: 0,
               grossAnnualSalary: 40000,
             },
@@ -77,6 +78,10 @@ const defaultMockContextValue = {
   },
   loading: false,
   requestError: undefined,
+  hcmLoading: false,
+  hcmUnavailable: false,
+  refetchHcm: jest.fn(),
+  refetchRequest: jest.fn(),
   pageType: PageEnum.New,
   setPageType: jest.fn(),
   pendingPrint: false,
@@ -288,6 +293,7 @@ describe('useAdditionalSalaryRequestForm', () => {
             calculations: {
               currentSalaryCap: 50000,
               staffAccountBalance: 20000,
+              availableStaffAccountBalance: 20000,
               ytdAsrAmount: 0,
             },
           },
@@ -380,6 +386,58 @@ describe('useAdditionalSalaryRequestForm', () => {
       });
 
       expect(errors.phoneNumber).toBeUndefined();
+    });
+
+    describe('total within the available account balance', () => {
+      beforeEach(() => {
+        mockUseAdditionalSalaryRequest.mockReturnValue({
+          ...defaultMockContextValue,
+          requestData: {
+            latestAdditionalSalaryRequest: {
+              ...defaultMockContextValue.requestData
+                .latestAdditionalSalaryRequest,
+              calculations: {
+                ...defaultMockContextValue.requestData
+                  .latestAdditionalSalaryRequest.calculations,
+                staffAccountBalance: 1000,
+                availableStaffAccountBalance: 11000,
+              },
+            },
+          },
+        } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+      });
+
+      const validateBackpay = async (amount: string) => {
+        const { result } = renderHook(
+          () =>
+            useAdditionalSalaryRequestForm({
+              ...defaultFormValues,
+              currentYearSalaryNotReceived: amount,
+              phoneNumber: '555-123-4567',
+            }),
+          { wrapper: TestWrapper },
+        );
+
+        let errors: Record<string, string> = {};
+        await act(async () => {
+          errors = await result.current.validateForm();
+        });
+        return errors;
+      };
+
+      it('allows backpay that dips into the deficit limit', async () => {
+        const errors = await validateBackpay('8000');
+
+        expect(errors.totalAdditionalSalaryRequested).toBeUndefined();
+      });
+
+      it('rejects a total beyond the balance plus deficit limit', async () => {
+        const errors = await validateBackpay('12000');
+
+        expect(errors.totalAdditionalSalaryRequested).toBe(
+          'Exceeds account balance plus deficit limit.',
+        );
+      });
     });
 
     it('should validate adoption max amount of $15,000', async () => {
@@ -535,6 +593,101 @@ describe('useAdditionalSalaryRequestForm', () => {
       });
 
       let errors: Record<string, string> = {};
+      await act(async () => {
+        errors = await result.current.validateForm();
+      });
+
+      expect(errors.additionalInfo).toBeUndefined();
+    });
+
+    it('should not require additional info for backpay when gross salary is already over the cap', async () => {
+      const { result } = renderHook(
+        () =>
+          useAdditionalSalaryRequestForm({
+            ...defaultFormValues,
+            phoneNumber: '555-123-4567',
+            currentYearSalaryNotReceived: '1424.53',
+          }),
+        {
+          wrapper: ({ children }) => (
+            <TestWrapper
+              mocks={{
+                AdditionalSalaryRequest: {
+                  latestAdditionalSalaryRequest: {
+                    ...defaultGqlMocks.AdditionalSalaryRequest
+                      ?.latestAdditionalSalaryRequest,
+                    calculations: {
+                      currentSalaryCap: 67500,
+                      ytdAsrAmount: 0,
+                      grossAnnualSalary: 96234.65,
+                    },
+                  },
+                },
+              }}
+            >
+              {children as React.ReactElement}
+            </TestWrapper>
+          ),
+        },
+      );
+
+      await waitFor(() => {
+        expect(mutationSpy).toHaveGraphqlOperation('AdditionalSalaryRequest');
+      });
+
+      let errors: Record<string, string> = {};
+      await act(async () => {
+        errors = await result.current.validateForm();
+      });
+
+      expect(errors.additionalInfo).toBeUndefined();
+    });
+
+    it('should not require additional info after clearing a non-backpay amount back to backpay only', async () => {
+      const { result } = renderHook(
+        () =>
+          useAdditionalSalaryRequestForm({
+            ...defaultFormValues,
+            phoneNumber: '555-123-4567',
+            currentYearSalaryNotReceived: '1424.53',
+            additionalSalaryWithinMax: '5000',
+          }),
+        {
+          wrapper: ({ children }) => (
+            <TestWrapper
+              mocks={{
+                AdditionalSalaryRequest: {
+                  latestAdditionalSalaryRequest: {
+                    ...defaultGqlMocks.AdditionalSalaryRequest
+                      ?.latestAdditionalSalaryRequest,
+                    calculations: {
+                      currentSalaryCap: 67500,
+                      ytdAsrAmount: 0,
+                      grossAnnualSalary: 96234.65,
+                    },
+                  },
+                },
+              }}
+            >
+              {children as React.ReactElement}
+            </TestWrapper>
+          ),
+        },
+      );
+
+      let errors: Record<string, string> = {};
+      await waitFor(async () => {
+        await act(async () => {
+          errors = await result.current.validateForm();
+        });
+        expect(errors.additionalInfo).toBe(
+          'Additional info is required for requests exceeding your cap.',
+        );
+      });
+
+      await act(async () => {
+        await result.current.setFieldValue('additionalSalaryWithinMax', '0');
+      });
       await act(async () => {
         errors = await result.current.validateForm();
       });
@@ -863,6 +1016,7 @@ describe('useAdditionalSalaryRequestForm', () => {
             calculations: {
               currentSalaryCap: 50000,
               staffAccountBalance: 20000,
+              availableStaffAccountBalance: 20000,
             },
           },
         },

@@ -1,10 +1,11 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getLocalizedTaxStatus } from 'src/components/HrTools/Shared/getLocalizedTaxStatus';
 import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { type HcmQuery, useHcmQuery } from '../../Shared/HcmData/Hcm.generated';
+import { useHcmUnavailable } from '../../Shared/HcmData/useHcmUnavailable';
 import { useStaffAccountIdQuery } from '../../Shared/StaffAccountId.generated';
 import { orientSalaryRequest } from '../Shared/orientSalaryRequest';
 import { useAccountBalanceQuery } from './AccountBalance.generated';
@@ -51,17 +52,53 @@ export interface LandingData {
   processedOn: string;
   feedback: string | null;
   shouldShowPending: boolean;
+  hcmUnavailable: boolean;
+  refetchHcm: () => Promise<unknown>;
+  loadError: boolean;
+  refetchLoadError: () => void;
 }
 
 export const useLandingData = (): LandingData => {
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { data: hcmData, loading: hcmLoading } = useHcmQuery();
-  const { data: calculationData, loading: calculationLoading } =
-    useLandingSalaryCalculationsQuery();
-  const { data: accountBalanceData, loading: accountBalanceLoading } =
-    useAccountBalanceQuery();
+  const {
+    data: hcmData,
+    loading: hcmLoading,
+    error: hcmError,
+    refetch: refetchHcmQuery,
+  } = useHcmQuery();
+  const {
+    data: calculationData,
+    loading: calculationLoading,
+    error: calculationError,
+    refetch: refetchCalculation,
+  } = useLandingSalaryCalculationsQuery();
+  const {
+    data: accountBalanceData,
+    loading: accountBalanceLoading,
+    error: accountBalanceError,
+    refetch: refetchAccountBalance,
+  } = useAccountBalanceQuery();
+
+  const { hcmUnavailable, refetchHcm } = useHcmUnavailable(
+    { error: hcmError, refetch: refetchHcmQuery },
+    { error: calculationError, refetch: refetchCalculation },
+  );
+
+  const refetchLoadError = useCallback(() => {
+    if (calculationError) {
+      refetchCalculation().catch(() => {});
+    }
+    if (accountBalanceError) {
+      refetchAccountBalance().catch(() => {});
+    }
+  }, [
+    calculationError,
+    accountBalanceError,
+    refetchCalculation,
+    refetchAccountBalance,
+  ]);
   const { data: staffAccountIdData, loading: staffAccountIdLoading } =
     useStaffAccountIdQuery();
 
@@ -276,5 +313,9 @@ export const useLandingData = (): LandingData => {
     processedOn,
     feedback,
     shouldShowPending,
+    hcmUnavailable,
+    refetchHcm,
+    loadError: !!calculationError || !!accountBalanceError,
+    refetchLoadError,
   };
 };

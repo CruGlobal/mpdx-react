@@ -34,6 +34,7 @@ import {
   dateFormat,
   dateFormatShort,
 } from 'src/lib/intlFormat';
+import { isHrManagedFund } from '../Helper/isHrManagedFund';
 import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
 import {
   useCreateRecurringTransferMutation,
@@ -387,7 +388,9 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                           </InputLabel>
                           <TransferModalSelect
                             notSelected={transferFrom}
-                            funds={funds}
+                            funds={funds.filter(
+                              (f) => !isHrManagedFund(f.fundType),
+                            )}
                             label={t('To Account')}
                             labelId="transferTo"
                             name="transferTo"

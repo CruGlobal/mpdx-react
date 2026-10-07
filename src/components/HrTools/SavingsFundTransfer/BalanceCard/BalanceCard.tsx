@@ -10,6 +10,7 @@ import {
   getIconColorForFundType,
   getIconForFundType,
 } from '../../../Reports/StaffExpenseReport/Helpers/fundTypeHelpers';
+import { isHrManagedFund } from '../Helper/isHrManagedFund';
 import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
 import { TransferModalData } from '../mockData';
 
@@ -121,14 +122,20 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
           mt: 'auto',
         }}
       >
-        <Button
-          onClick={handleTransferFrom}
-          disabled={fund.endBalance <= fund.deficitLimit}
-          fullWidth
-        >
-          <Outbox fontSize="small" sx={{ mr: 0.5 }} />
-          {t('TRANSFER FROM')}
-        </Button>
+        {isHrManagedFund(fund.fundType) ? (
+          <Typography variant="body2" color="text.secondary" mt={2}>
+            {t('Managed by HR Services. Contact them to transfer these funds.')}
+          </Typography>
+        ) : (
+          <Button
+            onClick={handleTransferFrom}
+            disabled={fund.endBalance <= fund.deficitLimit}
+            fullWidth
+          >
+            <Outbox fontSize="small" sx={{ mr: 0.5 }} />
+            {t('TRANSFER FROM')}
+          </Button>
+        )}
       </SimpleScreenOnly>
     </Card>
   );

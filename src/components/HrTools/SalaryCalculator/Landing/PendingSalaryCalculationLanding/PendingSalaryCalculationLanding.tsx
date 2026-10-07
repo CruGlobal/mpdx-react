@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Container, Link, Typography, useTheme } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
+import { HcmUnavailableAlert } from 'src/components/HrTools/Shared/HcmData/HcmUnavailableAlert';
 import Loading from 'src/components/Loading/Loading';
 import { LimitedAccess } from 'src/components/Shared/LimitedAccess/LimitedAccess';
 import { SalaryInformationCard } from '../../Shared/SalaryInformationCard';
@@ -16,7 +17,8 @@ const StyledContainer = styled(Container)(({ theme }) => ({
 export const PendingSalaryCalculationLanding: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { loading, staffAccountId, names } = useLandingData();
+  const { loading, staffAccountId, names, hcmUnavailable, refetchHcm } =
+    useLandingData();
 
   if (loading) {
     return <Loading loading />;
@@ -33,22 +35,29 @@ export const PendingSalaryCalculationLanding: React.FC = () => {
           <Typography variant="h4" component="h1" gutterBottom>
             {t('Your Salary Calculation Form')}
           </Typography>
-          <Typography>
-            <Trans t={t}>
-              We see that {{ names }} currently has a pending Salary Calculation
-              Form in our system. You may review the status of that form below.
-              If you have any questions regarding a pending request please
-              contact HR Services at{' '}
-              <Link href="tel:888-278-7233">(888) 278-7233</Link> or{' '}
-              <Link href="tel:407-826-2287">(407) 826-2287</Link>. Email:{' '}
-              <Link href="mailto:HR@cru.org">HR@cru.org</Link>.
-            </Trans>
-          </Typography>
+          {hcmUnavailable ? (
+            <HcmUnavailableAlert refetch={refetchHcm} />
+          ) : (
+            <Typography>
+              <Trans t={t}>
+                We see that {{ names }} currently has a pending Salary
+                Calculation Form in our system. You may review the status of
+                that form below. If you have any questions regarding a pending
+                request please contact HR Services at{' '}
+                <Link href="tel:888-278-7233">(888) 278-7233</Link> or{' '}
+                <Link href="tel:407-826-2287">(407) 826-2287</Link>. Email:{' '}
+                <Link href="mailto:HR@cru.org">HR@cru.org</Link>.
+              </Trans>
+            </Typography>
+          )}
         </Box>
 
-        <PendingRequestCard />
-
-        <SalaryInformationCard />
+        {!hcmUnavailable && (
+          <>
+            <PendingRequestCard />
+            <SalaryInformationCard />
+          </>
+        )}
       </Box>
     </StyledContainer>
   );

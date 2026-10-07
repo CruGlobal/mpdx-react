@@ -1,6 +1,10 @@
 import { renderHook } from '@testing-library/react-hooks';
 import { gqlMock } from '__tests__/util/graphqlMocking';
 import {
+  HcmDocument,
+  HcmQuery,
+} from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
+import {
   DesignationSupportFormType,
   DesignationSupportSalaryType,
   DesignationSupportStatus,
@@ -16,7 +20,6 @@ import {
   PdsGoalCalculationFieldsFragment,
   PdsGoalCalculationFieldsFragmentDoc,
 } from '../GoalsList/PdsGoalCalculations.generated';
-import { HcmUserDocument, HcmUserQuery } from '../Shared/HCM.generated';
 import { usePdsSummaryData } from './usePdsSummaryData';
 
 jest.mock('src/hooks/useGoalCalculatorConstants');
@@ -115,7 +118,7 @@ const defaultCalculation = gqlMock<PdsGoalCalculationFieldsFragment>(
   },
 );
 
-const defaultHcmUser = gqlMock<HcmUserQuery>(HcmUserDocument, {
+const defaultHcmUser = gqlMock<HcmQuery>(HcmDocument, {
   mocks: {
     hcm: [
       {
@@ -131,6 +134,40 @@ const defaultHcmUser = gqlMock<HcmUserQuery>(HcmUserDocument, {
 describe('usePdsSummaryData', () => {
   beforeEach(() => {
     setupMock();
+  });
+
+  describe('calculations year', () => {
+    it("loads the constants for the goal's calculations year", () => {
+      renderHook(() =>
+        usePdsSummaryData(
+          { ...defaultCalculation, calculationsYear: 2024 },
+          defaultHcmUser,
+        ),
+      );
+
+      expect(mockUseGoalCalculatorConstants).toHaveBeenCalledWith(2024, {
+        skip: false,
+      });
+    });
+
+    it('skips loading the constants until the calculation loads', () => {
+      renderHook(() => usePdsSummaryData(undefined, defaultHcmUser));
+
+      expect(mockUseGoalCalculatorConstants).toHaveBeenCalledWith(undefined, {
+        skip: true,
+      });
+    });
+
+    it("returns no data when the year's constants are unavailable", () => {
+      setupMock({ unavailable: true });
+
+      const { result } = renderHook(() =>
+        usePdsSummaryData(defaultCalculation, defaultHcmUser),
+      );
+
+      expect(result.current.data).toBeNull();
+      expect(result.current.constants.unavailable).toBe(true);
+    });
   });
 
   describe('null guards', () => {
@@ -267,7 +304,7 @@ describe('usePdsSummaryData', () => {
     });
 
     it('defaults to 0 when contribution percentages are null', () => {
-      const hcmUser: HcmUserQuery['hcm'][number] = {
+      const hcmUser: HcmQuery['hcm'][number] = {
         ...defaultHcmUser,
         fourOThreeB: {
           ...defaultHcmUser.fourOThreeB,

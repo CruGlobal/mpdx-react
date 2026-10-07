@@ -64,7 +64,7 @@ const createValidationSchema = () =>
       .number()
       .test(
         'total-within-remaining-allowable-salary',
-        'Exceeds account balance.',
+        'Exceeds account balance plus deficit limit.',
         function (value) {
           const individualCap = 17500.0;
           return (value || 0) <= individualCap;

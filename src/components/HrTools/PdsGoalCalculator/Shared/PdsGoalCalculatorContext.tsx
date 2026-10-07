@@ -9,9 +9,14 @@ import React, {
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import {
+  HcmQuery,
+  useHcmQuery,
+} from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
+import {
   DesignationSupportCalculationUpdateInput,
   DesignationSupportFormType,
 } from 'src/graphql/types.generated';
+import { UseGoalCalculatorConstantsResult } from 'src/hooks/useGoalCalculatorConstants';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { safeProgressRatio } from '../../Shared/helpers/safeProgressRatio';
 import {
@@ -23,7 +28,6 @@ import {
   PdsSummaryData,
   usePdsSummaryData,
 } from '../calculations/usePdsSummaryData';
-import { HcmUserQuery, useHcmUserQuery } from './HCM.generated';
 import {
   PdsGoalCalculatorStep,
   PdsGoalCalculatorSteps,
@@ -36,8 +40,9 @@ export type PdsGoalCalculatorType = {
 
   calculation?: PdsGoalCalculationFieldsFragment;
   calculationLoading: boolean;
-  hcmUser?: HcmUserQuery['hcm'][number];
+  hcmUser?: HcmQuery['hcm'][number];
   summaryData: PdsSummaryData | null;
+  constants: UseGoalCalculatorConstantsResult;
   percentComplete: number;
 
   /** Whether any mutations are currently in progress */
@@ -98,10 +103,13 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     });
   const calculation = calculationData?.designationSupportCalculation;
 
-  const { data: hcmData } = useHcmUserQuery();
+  const { data: hcmData } = useHcmQuery();
   const hcmUser = hcmData?.hcm[0];
 
-  const { data: summaryData } = usePdsSummaryData(calculation, hcmUser);
+  const { data: summaryData, constants } = usePdsSummaryData(
+    calculation,
+    hcmUser,
+  );
 
   // Track the user's place by step enum, not numeric index, so that a change
   // to the steps array (e.g. formType switch Detailed → Simple, dropping the
@@ -226,6 +234,7 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       calculation,
       calculationLoading,
       summaryData,
+      constants,
       percentComplete,
       isMutating,
       isFieldSaving,
@@ -249,6 +258,7 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       calculation,
       calculationLoading,
       summaryData,
+      constants,
       percentComplete,
       isMutating,
       isFieldSaving,

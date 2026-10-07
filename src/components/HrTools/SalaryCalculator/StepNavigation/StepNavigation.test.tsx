@@ -113,6 +113,53 @@ describe('DiscardButton', () => {
   });
 });
 
+describe('StepNavigation split cap validation', () => {
+  const exceededSplitCapMock: SalaryCalculatorTestWrapperProps['salaryRequestMock'] =
+    {
+      splitCapRequired: true,
+      manuallySplitCap: true,
+      salaryCap: 85000,
+      spouseSalaryCap: 85000,
+      calculations: { combinedCap: 135000 },
+    };
+
+  it('lets the user reach the cap fields, then blocks continuing past them', async () => {
+    const { findByRole, getByRole } = render(
+      <TestComponent salaryRequestMock={exceededSplitCapMock} />,
+    );
+
+    // The Effective Date step comes before the cap fields
+    const continueButton = await findByRole('button', { name: 'Continue' });
+    expect(continueButton).toBeEnabled();
+
+    userEvent.click(continueButton);
+
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Back' })).toBeEnabled(),
+    );
+    expect(getByRole('button', { name: 'Continue' })).toBeDisabled();
+  });
+
+  it('keeps continue enabled when the split caps fit within the combined cap', async () => {
+    const { findByRole, getByRole } = render(
+      <TestComponent
+        salaryRequestMock={{
+          ...exceededSplitCapMock,
+          salaryCap: 70000,
+          spouseSalaryCap: 65000,
+        }}
+      />,
+    );
+
+    userEvent.click(await findByRole('button', { name: 'Continue' }));
+
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Back' })).toBeEnabled(),
+    );
+    expect(getByRole('button', { name: 'Continue' })).toBeEnabled();
+  });
+});
+
 describe('SubmitButton', () => {
   it('submits calculation', async () => {
     const { findByText } = render(

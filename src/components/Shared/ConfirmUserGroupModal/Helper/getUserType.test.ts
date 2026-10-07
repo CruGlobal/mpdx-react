@@ -14,7 +14,7 @@ describe('getUserType', () => {
 
   it('returns correct label and sublabel for Global Staff', () => {
     const result = getUserType(UserTypeEnum.GlobalStaff, t);
-    expect(result.label).toBe('Cru Global Staff');
+    expect(result.label).toBe('CCCI International Staff');
     expect(result.sublabel).toBe(
       'Users in this group receive (mostly) non-US donations and are paid through our Global NetSuite system.',
     );

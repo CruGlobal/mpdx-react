@@ -1,5 +1,15 @@
-query Hcm($effectiveDate: ISO8601Date, $personNumber: String) {
-  hcm(effectiveDate: $effectiveDate, personNumber: $personNumber) {
+query Hcm(
+  $effectiveDate: ISO8601Date
+  $personNumber: String
+  $refresh: Boolean
+) {
+  hcm(
+    effectiveDate: $effectiveDate
+    personNumber: $personNumber
+    refresh: $refresh
+  ) {
+    syncedAt
+    outOfSync
     usStaffGroup
     staffInfo {
       id
@@ -37,6 +47,7 @@ query Hcm($effectiveDate: ISO8601Date, $personNumber: String) {
       currentRothContributionPercentage
       currentTaxDeferredContributionPercentage
       maximumContributionLimit
+      fourOThreeBMakeUpLimitAmount
     }
     mhaEit {
       mhaEligibility
@@ -53,6 +64,7 @@ query Hcm($effectiveDate: ISO8601Date, $personNumber: String) {
     mhaRequest {
       currentApprovedOverallAmount
       currentTakenAmount
+      boardApprovedOnDate
     }
     salaryRequestEligible
     designationSupportCalculatorEligible

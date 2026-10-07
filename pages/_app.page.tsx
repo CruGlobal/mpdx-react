@@ -35,6 +35,7 @@ import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import makeClient from 'src/lib/apollo/client';
 import { suppressedErrorPatterns } from 'src/lib/error';
 import i18n from 'src/lib/i18n';
+import { addGraphQLErrorsToRollbarItem } from 'src/lib/rollbar';
 import theme from 'src/theme';
 import './helpjuice.css';
 import './print.css';
@@ -104,6 +105,7 @@ const App = ({
         suppressedErrorPatterns.some((pattern) => message.includes(pattern))
       );
     },
+    transform: addGraphQLErrorsToRollbarItem,
   };
 
   const emotionCache = createEmotionCache({ key: 'css' });

@@ -1,9 +1,9 @@
+import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { DesignationSupportFormType } from 'src/graphql/types.generated';
 import {
   GoalGeographicConstantMap,
   GoalMiscConstants,
 } from 'src/hooks/useGoalCalculatorConstants';
-import { HcmUserQuery } from '../Shared/HCM.generated';
 import { OtherExpensesConstants } from './OtherExpenses';
 import { SalaryTotals } from './salaryCalculation';
 
@@ -17,7 +17,7 @@ export interface PdsGoalTotalConstants {
   geographicMultiplier: number;
 }
 
-type FourOThreeB = NonNullable<HcmUserQuery['hcm'][number]['fourOThreeB']>;
+type FourOThreeB = NonNullable<HcmQuery['hcm'][number]['fourOThreeB']>;
 
 export const buildPdsGoalConstants = (
   goalMiscConstants: GoalMiscConstants,

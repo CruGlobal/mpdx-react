@@ -43,6 +43,8 @@ export type ContextType = {
   staffName: string | undefined;
   isSupervisorView: boolean;
   staffAccountId: string | null | undefined;
+  /** The HCM person the report is for, or undefined for the current user */
+  personNumber: string | undefined;
 
   /** Income and expenses totals */
   totals: {
@@ -315,6 +317,7 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
       staffName,
       isSupervisorView,
       staffAccountId,
+      personNumber,
       totals,
     }),
     [
@@ -336,6 +339,7 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
       staffName,
       isSupervisorView,
       staffAccountId,
+      personNumber,
       totals,
     ],
   );

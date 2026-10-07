@@ -120,7 +120,7 @@ describe('ConfirmUserGroupModal', () => {
       expect(
         getByText('The user group for your account is:'),
       ).toBeInTheDocument();
-      expect(getByText('Cru Global Staff')).toBeInTheDocument();
+      expect(getByText('CCCI International Staff')).toBeInTheDocument();
       expect(
         getByText(
           'Users in this group receive (mostly) non-US donations and are paid through our Global NetSuite system.',
