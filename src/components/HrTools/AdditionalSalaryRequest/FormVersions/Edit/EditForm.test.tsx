@@ -96,8 +96,8 @@ describe('EditForm', () => {
     expect(queryByText('Approval Process')).not.toBeInTheDocument();
   });
 
-  it('shows the missing location alert when the cap has no location', () => {
-    const { getByText } = renderComponent({
+  it('shows the missing location alert when the cap has no location', async () => {
+    const { findByText } = renderComponent({
       contextOverrides: {
         calculations: {
           ...defaultMockContextValue.calculations,
@@ -107,7 +107,9 @@ describe('EditForm', () => {
     });
 
     expect(
-      getByText(/Your cap may be inaccurate because your location isn't set/),
+      await findByText(
+        /Your cap may be inaccurate because your location isn't set/,
+      ),
     ).toBeInTheDocument();
   });
 

@@ -151,8 +151,8 @@ describe('NewForm', () => {
   });
 
   describe('missing location alert', () => {
-    it('shows the alert when the cap has no location', () => {
-      const { getByText } = renderComponent({
+    it('shows the alert when the cap has no location', async () => {
+      const { findByText } = renderComponent({
         contextOverrides: {
           calculations: {
             ...defaultMockContextValue.calculations,
@@ -162,7 +162,9 @@ describe('NewForm', () => {
       });
 
       expect(
-        getByText(/Your cap may be inaccurate because your location isn't set/),
+        await findByText(
+          /Your cap may be inaccurate because your location isn't set/,
+        ),
       ).toBeInTheDocument();
     });
   });

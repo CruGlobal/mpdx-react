@@ -29,12 +29,14 @@ const ActiveRequestQuery: React.FC = () => {
 
 interface TestComponentProps {
   handleClose?: jest.Mock;
+  onSaved?: jest.Mock;
   onCall?: jest.Mock;
   saveFails?: boolean;
 }
 
 const renderModal = ({
   handleClose = jest.fn(),
+  onSaved = jest.fn(),
   onCall = jest.fn(),
   saveFails = false,
 }: TestComponentProps = {}) =>
@@ -59,7 +61,7 @@ const renderModal = ({
         >
           <>
             <ActiveRequestQuery />
-            <SetLocationModal handleClose={handleClose} />
+            <SetLocationModal handleClose={handleClose} onSaved={onSaved} />
           </>
         </GqlMockedProvider>
       </SnackbarProvider>
@@ -111,13 +113,15 @@ describe('SetLocationModal', () => {
 
   it('saves the chosen location, refetches the request, and closes', async () => {
     const handleClose = jest.fn();
+    const onSaved = jest.fn();
     const onCall = jest.fn();
-    const utils = renderModal({ handleClose, onCall });
+    const utils = renderModal({ handleClose, onSaved, onCall });
 
     await chooseLocation(utils, 'New York, NY');
     userEvent.click(utils.getByRole('button', { name: 'Save' }));
 
     await waitFor(() => expect(handleClose).toHaveBeenCalled());
+    expect(onSaved).toHaveBeenCalled();
     expect(onCall).toHaveGraphqlOperation('UpdateUserGeographicLocation', {
       geographicLocation: 'New York, NY',
     });
@@ -132,8 +136,14 @@ describe('SetLocationModal', () => {
 
   it('stays open when the save fails', async () => {
     const handleClose = jest.fn();
+    const onSaved = jest.fn();
     const onCall = jest.fn();
-    const utils = renderModal({ handleClose, onCall, saveFails: true });
+    const utils = renderModal({
+      handleClose,
+      onSaved,
+      onCall,
+      saveFails: true,
+    });
 
     await chooseLocation(utils, 'Orlando, FL');
     userEvent.click(utils.getByRole('button', { name: 'Save' }));
@@ -142,18 +152,21 @@ describe('SetLocationModal', () => {
       expect(onCall).toHaveGraphqlOperation('UpdateUserGeographicLocation'),
     );
     expect(handleClose).not.toHaveBeenCalled();
+    expect(onSaved).not.toHaveBeenCalled();
     expect(utils.queryByText('Saved successfully.')).not.toBeInTheDocument();
     expect(utils.getByRole('button', { name: 'Save' })).toBeEnabled();
   });
 
   it('closes without saving when Cancel is clicked', () => {
     const handleClose = jest.fn();
+    const onSaved = jest.fn();
     const onCall = jest.fn();
-    const { getByRole } = renderModal({ handleClose, onCall });
+    const { getByRole } = renderModal({ handleClose, onSaved, onCall });
 
     userEvent.click(getByRole('button', { name: 'Cancel' }));
 
     expect(handleClose).toHaveBeenCalled();
+    expect(onSaved).not.toHaveBeenCalled();
     expect(onCall).not.toHaveGraphqlOperation('UpdateUserGeographicLocation');
   });
 });
