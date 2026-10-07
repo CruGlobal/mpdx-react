@@ -1,4 +1,9 @@
+import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import theme from 'src/theme';
 import {
   AdditionalSalaryRequestContext,
   AdditionalSalaryRequestType,
@@ -25,11 +30,19 @@ const renderComponent = ({
   user = userDefault,
 }: ComponentProps = {}) =>
   render(
-    <AdditionalSalaryRequestContext.Provider
-      value={{ calculations, user } as unknown as AdditionalSalaryRequestType}
-    >
-      <MissingLocationAlert />
-    </AdditionalSalaryRequestContext.Provider>,
+    <ThemeProvider theme={theme}>
+      <SnackbarProvider>
+        <GqlMockedProvider>
+          <AdditionalSalaryRequestContext.Provider
+            value={
+              { calculations, user } as unknown as AdditionalSalaryRequestType
+            }
+          >
+            <MissingLocationAlert />
+          </AdditionalSalaryRequestContext.Provider>
+        </GqlMockedProvider>
+      </SnackbarProvider>
+    </ThemeProvider>,
   );
 
 describe('MissingLocationAlert', () => {
@@ -60,6 +73,18 @@ describe('MissingLocationAlert', () => {
     });
 
     expect(getByRole('alert')).toHaveTextContent('We see that you live in TX.');
+  });
+
+  it('opens the location modal from the Set Location button', () => {
+    const { getByRole, queryByRole } = renderComponent();
+
+    expect(queryByRole('dialog')).not.toBeInTheDocument();
+
+    userEvent.click(getByRole('button', { name: 'Set Location' }));
+
+    expect(
+      getByRole('heading', { name: 'Set Your Location' }),
+    ).toBeInTheDocument();
   });
 
   it('hides the alert when the location is set', () => {
