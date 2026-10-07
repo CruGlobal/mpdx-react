@@ -32,7 +32,7 @@ const PartnerRemindersReportPage: React.FC = () => {
       <Head>
         <title>{`${appName} | ${t('HR Tools | Ministry Partner Reminders')}`}</title>
       </Head>
-      <UserTypeAccess>
+      <UserTypeAccess requireStaffAccount>
         <PartnerRemindersReportPageWrapper>
           <SidePanelsLayout
             isScrollBox={false}
