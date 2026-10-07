@@ -105,9 +105,17 @@ Other shared pieces worth knowing before you build a local copy:
 - `Shared/Adornments.tsx` — `CurrencyAdornment` / `PercentageAdornment`. Use on
   every money/percent input (widest reuse in the tree).
 - `Shared/HcmData/Hcm.graphql` — the shared `hcm(effectiveDate:)` query for
-  staff/HR data. `StaffInfoCard`, `AccountInfoBox`, `EligibilityStatusTable`,
-  `GoalPresentation/`, `SummaryHeaderCard`, and `useFormatters` are the other
-  shared leaves. Prefer them over one-off equivalents.
+  staff/HR data. When HCM is overloaded the API answers with an
+  `HCM_UNAVAILABLE` error; render `HcmUnavailableAlert` (heavy-load message +
+  Try Again that refetches HCM) from `Shared/HcmData/HcmUnavailableAlert.tsx`.
+  Queries whose resolvers call HCM themselves (salary/ASR `calculations`) fail
+  with the same code, so pass the `Hcm` query and that query to
+  `useHcmUnavailable` (`Shared/HcmData/useHcmUnavailable.ts`) for one
+  `hcmUnavailable` flag and a `refetchHcm` that retries only what failed.
+  `StaffInfoCard`,
+  `AccountInfoBox`, `EligibilityStatusTable`, `GoalPresentation/`,
+  `SummaryHeaderCard`, and `useFormatters` are the other shared leaves. Prefer
+  them over one-off equivalents.
 
 ## The three goal calculators are independent — and their math can drift
 
@@ -130,8 +138,15 @@ attrition) are computed independently in generic (`calculateTotals.ts`), PDS
 (`calculations/`), and again on the server for NS — with different step ordering.
 Changing the math in one place does **not** update the others. Treat these three
 as a set: when you touch goal arithmetic, check whether the other copies need the
-same change. NS captures a user-selected `calculationsYear`; the client
-constants themselves are not year-versioned.
+same change.
+
+**Constants are year-versioned.** Every goal carries a `calculationsYear` (NS
+user-selected, GoalCalculator user-selected within its range, PDS locked to the
+creation year). Pass it to `useGoalCalculatorConstants(year, { skip })` so a
+goal keeps its own year's rates; calling the hook with no year loads the
+current year, which is only right for brand new goals. Inside GoalCalculator
+and PdsGoalCalculator, read `constants` from the calculator context instead of
+calling the hook yourself; the context already loads the goal's year.
 
 Non-obvious per-calculator rules:
 
@@ -199,6 +214,16 @@ has a distinct `Complete` mutation, and the request forms autosave a draft but
   result set means a click mid-search would otherwise send the ids the preceding
   search returned. Mutation failures toast through the global Apollo error link;
   only the blob fetch needs its own message.
+- **MpdSupervisorReport** — `managedStaff` refuses to grade more than its row
+  cap and answers with a `FILTER_REQUIRED` GraphQL error (`count`, `filtered`
+  in `extensions`). The context turns it into `filterRequired` guidance and
+  the query sets `context: { suppressErrorCodes: ['FILTER_REQUIRED'] }` so only
+  that code skips the global toast. **Rule for the whole tree:** suppress
+  specific codes with `suppressErrorCodes`, and only when the component renders
+  that error itself; a blanket `suppressErrors: true` also drops the Datadog
+  report for every error on the operation, so a real failure goes unseen.
+  A rejected `fetchMore` never sets the hook's `error`, so the context catches
+  it into `loadMoreError` and the report shows an inline Retry above the rows.
 - **NsoMpdQuestionnaire** — **no create/upsert exists.** The record is created by
   the OneApp import; the frontend only Updates/Completes, keyed by
   `accountListId` (not a questionnaire id). A null query → render

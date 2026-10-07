@@ -155,7 +155,9 @@ describe('AdditionalSalaryRequest', () => {
       );
 
       await waitFor(() => {
-        expect(getByText('Exceeds account balance.')).toBeInTheDocument();
+        expect(
+          getByText('Exceeds account balance plus deficit limit.'),
+        ).toBeInTheDocument();
       });
     });
   });

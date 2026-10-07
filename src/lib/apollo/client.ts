@@ -20,6 +20,10 @@ import {
 } from './accountListRedirect';
 import { createCache } from './cache';
 import { batchLink, makeAuthLink } from './link';
+import {
+  SuppressErrorsContext,
+  isGraphQLErrorSuppressed,
+} from './suppressErrors';
 
 const cache = createCache();
 if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
@@ -34,7 +38,7 @@ const makeClient = (apiToken: string) => {
     link: from([
       makeAuthLink(apiToken),
       onError(({ graphQLErrors, networkError, operation }) => {
-        const suppressErrors = operation.getContext().suppressErrors === true;
+        const suppressContext: SuppressErrorsContext = operation.getContext();
 
         graphQLErrors?.forEach((graphQLError) => {
           if (graphQLError?.extensions?.code === 'AUTHENTICATION_ERROR') {
@@ -57,7 +61,7 @@ const makeClient = (apiToken: string) => {
                   ),
                 );
               });
-          } else if (!suppressErrors) {
+          } else if (!isGraphQLErrorSuppressed(suppressContext, graphQLError)) {
             snackNotifications.error(graphQLError.message);
             reportGraphQLError(graphQLError, operation);
           }

@@ -8,6 +8,10 @@ import {
   useSalaryCalculator,
 } from 'src/components/HrTools/SalaryCalculator/SalaryCalculatorContext/SalaryCalculatorContext';
 import { SavingStatus } from 'src/components/HrTools/Shared/CalculationReports/SavingStatus/SavingStatus';
+import {
+  HcmSyncHeaderStatus,
+  HcmSyncStatusProvider,
+} from 'src/components/HrTools/Shared/HcmSyncStatus/HcmSyncStatus';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import {
   HeaderTypeEnum,
@@ -47,6 +51,13 @@ const SalaryCalculatorEditInnerPage: React.FC = () => {
   const appName = getAppName();
   const { t } = useTranslation();
   const [isNavListOpen, setIsNavListOpen] = useState(false);
+  const { calculation } = useSalaryCalculator();
+  // The form loads HCM for the calculation's effective date, so the status waits for it and
+  // refreshes that same data.
+  const hcmSync = {
+    effectiveDate: calculation?.effectiveDate,
+    skip: !calculation,
+  };
 
   const handleNavListToggle = () => {
     setIsNavListOpen(!isNavListOpen);
@@ -80,9 +91,12 @@ const SalaryCalculatorEditInnerPage: React.FC = () => {
                 onNavListToggle={handleNavListToggle}
                 title={t('Salary Calculation Form')}
                 headerType={HeaderTypeEnum.HrTools}
+                titleExtra={<HcmSyncHeaderStatus {...hcmSync} />}
                 rightExtra={<SalaryCalculatorSavingStatus />}
               />
-              <SalaryCalculator />
+              <HcmSyncStatusProvider {...hcmSync}>
+                <SalaryCalculator />
+              </HcmSyncStatusProvider>
             </>
           }
         />

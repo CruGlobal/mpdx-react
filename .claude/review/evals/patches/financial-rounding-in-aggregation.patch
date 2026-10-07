@@ -1,0 +1,14 @@
+diff --git a/src/components/Reports/MPGAIncomeExpensesReport/Tables/TotalRow.tsx b/src/components/Reports/MPGAIncomeExpensesReport/Tables/TotalRow.tsx
+--- a/src/components/Reports/MPGAIncomeExpensesReport/Tables/TotalRow.tsx
++++ b/src/components/Reports/MPGAIncomeExpensesReport/Tables/TotalRow.tsx
+@@ -37,8 +37,9 @@
+       data[0]?.monthly
+         ? data[0].monthly.map((_, monthIndex) =>
+             data.reduce(
+-              (acc, curr) => acc + (curr.monthly?.[monthIndex] ?? 0),
++              (acc, curr) =>
++                Number((acc + curr.monthly![monthIndex]).toFixed(2)),
+               0,
+             ),
+           )
+         : [],

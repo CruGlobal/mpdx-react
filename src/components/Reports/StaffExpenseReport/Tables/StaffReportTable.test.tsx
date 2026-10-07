@@ -251,4 +251,46 @@ describe('StaffReportTable', () => {
     expect(amountCells[1]).toHaveTextContent('$50');
     expect(amountCells[2]).toHaveTextContent('$100');
   });
+
+  it('marks a pending itemized transaction as pending', async () => {
+    const { findByText } = render(
+      <TestComponent
+        tableProps={{
+          transactions: [{ ...defaultTransactions[0], isPending: true }],
+        }}
+      />,
+    );
+
+    expect(await findByText('Pending')).toBeInTheDocument();
+  });
+
+  it('counts the pending transactions in a partly pending rollup', async () => {
+    const { findByText } = render(
+      <TestComponent
+        tableProps={{
+          transactions: [
+            {
+              ...groupedTransaction,
+              isPending: true,
+              groupedTransactions: [
+                { ...defaultTransactions[0], isPending: true },
+                { ...defaultTransactions[1], isPending: false },
+                { ...defaultTransactions[1], id: '3', isPending: true },
+              ],
+            },
+          ],
+        }}
+      />,
+    );
+
+    expect(await findByText('Pending 2 of 3')).toBeInTheDocument();
+  });
+
+  it('does not mark transactions that are not pending', async () => {
+    const { findByRole, queryByText } = render(<TestComponent />);
+
+    await findByRole('columnheader', { name: 'Date' });
+
+    expect(queryByText(/Pending/)).not.toBeInTheDocument();
+  });
 });

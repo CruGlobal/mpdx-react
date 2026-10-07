@@ -426,6 +426,27 @@ describe('CsvHeaders', () => {
       expect(nextButton).not.toBeDisabled();
     });
 
+    it('should show an error toast when the save fails', async () => {
+      (save as jest.Mock).mockRejectedValue(new Error('Server unavailable'));
+
+      const { findByRole, findByText } = render(
+        <CsvHeadersMockComponent
+          accountListId="wee"
+          setCurrentTab={setCurrentTab}
+        ></CsvHeadersMockComponent>,
+      );
+
+      const nextButton = await findByRole('button', { name: 'Next' });
+      userEvent.click(nextButton);
+
+      expect(await findByText('Server unavailable')).toBeInTheDocument();
+      expect(setCurrentTab).not.toHaveBeenCalled();
+      await waitFor(() =>
+        expect(nextButton).toHaveAttribute('aria-busy', 'false'),
+      );
+      expect(nextButton).not.toBeDisabled();
+    });
+
     it('should allow the user to not map every header', async () => {
       uploadData.fileHeadersMappings.weird = -1;
 

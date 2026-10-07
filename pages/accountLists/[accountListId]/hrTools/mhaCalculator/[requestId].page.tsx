@@ -12,6 +12,10 @@ import {
 } from 'src/components/HrTools/MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
 import { SavingStatus } from 'src/components/HrTools/Shared/CalculationReports/SavingStatus/SavingStatus';
 import { PageEnum } from 'src/components/HrTools/Shared/CalculationReports/Shared/sharedTypes';
+import {
+  HcmSyncHeaderStatus,
+  HcmSyncStatusProvider,
+} from 'src/components/HrTools/Shared/HcmSyncStatus/HcmSyncStatus';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { SimpleScreenOnly } from 'src/components/Reports/styledComponents';
 import {
@@ -88,6 +92,7 @@ export const HousingAllowanceRequestPageContent: React.FC = () => {
                     isNavListOpen={isNavListOpen}
                     onNavListToggle={handleNavListToggle}
                     title={t("Minister's Housing Allowance Calculation Tool")}
+                    titleExtra={<HcmSyncHeaderStatus />}
                     rightExtra={
                       <SavingStatus
                         loading={loading}
@@ -99,7 +104,9 @@ export const HousingAllowanceRequestPageContent: React.FC = () => {
                     headerType={HeaderTypeEnum.HrTools}
                   />
                 </SimpleScreenOnly>
-                <RequestPage />
+                <HcmSyncStatusProvider>
+                  <RequestPage />
+                </HcmSyncStatusProvider>
               </>
             }
           />

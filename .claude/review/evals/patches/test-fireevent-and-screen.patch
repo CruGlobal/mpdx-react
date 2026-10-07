@@ -1,0 +1,32 @@
+diff --git a/src/components/Shared/CollapsibleContactInfo/CollapsibleList.test.tsx b/src/components/Shared/CollapsibleContactInfo/CollapsibleList.test.tsx
+--- a/src/components/Shared/CollapsibleContactInfo/CollapsibleList.test.tsx
++++ b/src/components/Shared/CollapsibleContactInfo/CollapsibleList.test.tsx
+@@ -1,5 +1,4 @@
+-import { render } from '@testing-library/react';
+-import userEvent from '@testing-library/user-event';
++import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+ import { CollapsibleList } from './CollapsibleList';
+ 
+ describe('CollapsibleList', () => {
+@@ -24,13 +23,15 @@
+   });
+ 
+   it('toggles the secondary items visible', () => {
+-    const { getByTestId, getByText, queryByText } = render(
++    render(
+       <CollapsibleList primaryItem="Primary" secondaryItems="Secondary" />,
+     );
+ 
+-    userEvent.click(getByTestId('ExpandMoreIcon'));
+-    expect(getByText('Secondary')).toBeInTheDocument();
++    fireEvent.click(screen.getByTestId('ExpandMoreIcon'));
++    waitFor(() => expect(screen.getByText('Secondary')).toBeInTheDocument());
+ 
+-    userEvent.click(getByTestId('ExpandLessIcon'));
+-    expect(queryByText('Secondary')).not.toBeInTheDocument();
++    fireEvent.click(screen.getByTestId('ExpandLessIcon'));
++    waitFor(() =>
++      expect(screen.queryByText('Secondary')).not.toBeInTheDocument(),
++    );
+   });
+ });

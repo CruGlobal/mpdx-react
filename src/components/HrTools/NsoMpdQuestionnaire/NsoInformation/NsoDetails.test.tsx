@@ -28,23 +28,57 @@ describe('NsoDetails', () => {
       getByRole('radio', { name: 'Single in hotel/dorm room' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('radio', { name: 'Sharing 2 in hotel/dorm room' }),
+      getByRole('radio', { name: 'Sharing 2 in hotel/suite dorm room' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('radio', { name: 'Couple in hotel/dorm room' }),
+      getByRole('radio', { name: 'Married couple in hotel/suite dorm room' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('radio', { name: 'Family in a hotel/room' }),
+      getByRole('radio', { name: 'Family in hotel/suite dorm room' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('radio', { name: 'Local / Commuting' }),
+      getByRole('radio', { name: 'Virtual / Local / Commuting' }),
     ).toBeInTheDocument();
   });
+
+  it.each([
+    ['Single in hotel/dorm room', 'You have no roommate and no suitemates.'],
+    [
+      'Sharing 2 in hotel/suite dorm room',
+      'You have a roommate, or your own bedroom in a shared suite.',
+    ],
+    [
+      'Married couple in hotel/suite dorm room',
+      "You're staying together as a couple or family.",
+    ],
+    [
+      'Family in hotel/suite dorm room',
+      "You're staying together as a couple or family.",
+    ],
+    [
+      'Virtual / Local / Commuting',
+      "You're attending virtually or commuting daily and not using NSO housing.",
+    ],
+  ])(
+    'explains the "%s" housing option under its label',
+    (label, description) => {
+      const { getByRole } = render(<TestComponent />);
+
+      const descriptionId = getByRole('radio', { name: label }).getAttribute(
+        'aria-describedby',
+      );
+      expect(document.getElementById(descriptionId ?? '')).toHaveTextContent(
+        description,
+      );
+    },
+  );
 
   it('saves the housing enum constant', async () => {
     const { getByRole } = render(<TestComponent onCall={mutationSpy} />);
 
-    userEvent.click(getByRole('radio', { name: 'Family in a hotel/room' }));
+    userEvent.click(
+      getByRole('radio', { name: 'Family in hotel/suite dorm room' }),
+    );
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation(

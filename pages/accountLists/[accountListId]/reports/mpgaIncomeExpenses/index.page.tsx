@@ -28,8 +28,9 @@ const MPGAReportPage: React.FC = () => {
   const { t } = useTranslation();
   const { query } = useRouter();
   // A blank param is a request for somebody else, which the API denies.
-  // Only a missing one falls back to your own account.
+  // Only a missing one falls back to your own account and HCM record.
   const staffAccountId = getQueryParam(query, 'staffAccountId') || undefined;
+  const personNumber = getQueryParam(query, 'personNumber') || undefined;
 
   const [isNavListOpen, setIsNavListOpen] = useState<boolean>(false);
 
@@ -64,7 +65,10 @@ const MPGAReportPage: React.FC = () => {
             leftOpen={isNavListOpen}
             leftWidth="290px"
             mainContent={
-              <MPGAIncomeExpensesReportProvider staffAccountId={staffAccountId}>
+              <MPGAIncomeExpensesReportProvider
+                staffAccountId={staffAccountId}
+                personNumber={personNumber}
+              >
                 <MPGAIncomeExpensesReport
                   isNavListOpen={isNavListOpen}
                   onNavListToggle={handleNavListToggle}

@@ -17,9 +17,11 @@ import {
   TableRow,
 } from '@mui/material';
 import { cloneDeep } from 'lodash/fp';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
+import { getErrorMessage } from 'src/lib/error';
 import { getAppName } from 'src/lib/getAppName';
 import theme from 'src/theme';
 import {
@@ -94,6 +96,7 @@ const CsvHeaders: React.FC<CsvHeadersProps> = ({
   const [mappedHeaders, setMappedHeaders] = useState<string[]>([]);
   const [showBackWarningModal, setShowBackWarningModal] = useState(false);
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
   const appName = getAppName();
 
   const [unmappedHeadersChecked, setUnmappedHeadersChecked] = useState(false);
@@ -206,6 +209,9 @@ const CsvHeaders: React.FC<CsvHeadersProps> = ({
           ? CsvImportViewStepEnum.Preview
           : CsvImportViewStepEnum.Values;
         setCurrentTab(nextTab);
+      })
+      .catch((err) => {
+        enqueueSnackbar(getErrorMessage(err), { variant: 'error' });
       })
       .finally(() => {
         setSaving(false);

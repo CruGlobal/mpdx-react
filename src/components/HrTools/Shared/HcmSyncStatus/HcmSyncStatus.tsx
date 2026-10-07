@@ -1,0 +1,278 @@
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { ApolloError, useApolloClient } from '@apollo/client';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import {
+  Alert,
+  AlertTitle,
+  Box,
+  Button,
+  CircularProgress,
+  Stack,
+  Tooltip,
+  Typography,
+} from '@mui/material';
+import { DateTime, Duration } from 'luxon';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
+import { useLocale } from 'src/hooks/useLocale';
+import {
+  HcmDocument,
+  HcmQuery,
+  HcmQueryVariables,
+  useHcmQuery,
+} from '../HcmData/Hcm.generated';
+import { InfoTooltipIcon } from '../InfoTooltipIcon';
+
+/** Matches the API's limit of one refresh per person every 3 minutes. */
+export const REFRESH_COOLDOWN = Duration.fromObject({ minutes: 3 });
+
+/** Refresh failures this component explains itself; the global error link toasts any other. */
+const HANDLED_ERROR_CODES = ['HCM_REFRESH_RATE_LIMITED', 'HCM_UNAVAILABLE'];
+
+/** The background sync revisits everyone well inside this, so older data means it has stalled. */
+const STALE_AFTER = Duration.fromObject({ hours: 24 });
+
+interface HcmSyncStatusProps {
+  /**
+   * The person whose HCM data the page shows, set only when viewing someone else (a supervisor
+   * view). Leave it out for the current user, which also words the out-of-sync warning as "you".
+   */
+  personNumber?: string;
+  /** The date the page loaded HCM data for, so a refresh replaces the data the page shows. */
+  effectiveDate?: string | null;
+  /** Hides the status until the page knows which HCM data it loads. */
+  skip?: boolean;
+}
+
+const HcmSyncStatusContext = createContext<HcmSyncStatusProps | null>(null);
+
+/**
+ * Marks a page whose PanelLayout should show HcmSyncBodyStatus at the top of its main content.
+ * PanelLayout positions its sidebar and sizes its main area from the header down, so anything
+ * placed between the header and the layout is covered on narrow screens.
+ */
+export const HcmSyncStatusProvider: React.FC<
+  React.PropsWithChildren<HcmSyncStatusProps>
+> = ({ children, ...props }) => (
+  <HcmSyncStatusContext.Provider value={props}>
+    {children}
+  </HcmSyncStatusContext.Provider>
+);
+
+export const useHcmSyncStatusPlacement = () => useContext(HcmSyncStatusContext);
+
+/**
+ * Reads the same Hcm query the page already loaded, so it adds no request of its own. A refresh
+ * re-runs that query with refresh: true; the cache keys hcm without refresh, so the answer
+ * replaces the household every component on the page is showing.
+ */
+const useHcmSync = ({
+  personNumber,
+  effectiveDate,
+  skip,
+}: HcmSyncStatusProps) => {
+  const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
+  const client = useApolloClient();
+  const { data } = useHcmQuery({
+    variables: { personNumber, effectiveDate },
+    skip,
+  });
+  const [refreshing, setRefreshing] = useState(false);
+  const [coolingDown, setCoolingDown] = useState(false);
+
+  useEffect(() => {
+    if (!coolingDown) {
+      return;
+    }
+    const timer = setTimeout(
+      () => setCoolingDown(false),
+      REFRESH_COOLDOWN.toMillis(),
+    );
+    return () => clearTimeout(timer);
+  }, [coolingDown]);
+
+  const person = data?.hcm[0];
+  const syncedAt = person?.syncedAt ? DateTime.fromISO(person.syncedAt) : null;
+
+  const handleError = (error: unknown) => {
+    const handled =
+      error instanceof ApolloError
+        ? error.graphQLErrors.find(({ extensions }) =>
+            HANDLED_ERROR_CODES.includes(String(extensions?.code)),
+          )
+        : undefined;
+    if (!handled) {
+      return;
+    }
+    const rateLimited = handled.extensions?.code === 'HCM_REFRESH_RATE_LIMITED';
+    if (rateLimited) {
+      setCoolingDown(true);
+    }
+    enqueueSnackbar(handled.message, {
+      variant: rateLimited ? 'info' : 'error',
+    });
+  };
+
+  const refresh = async () => {
+    setRefreshing(true);
+    try {
+      await client.query<HcmQuery, HcmQueryVariables>({
+        query: HcmDocument,
+        variables: { personNumber, effectiveDate, refresh: true },
+        fetchPolicy: 'network-only',
+        context: { suppressErrorCodes: HANDLED_ERROR_CODES },
+      });
+      setCoolingDown(true);
+      enqueueSnackbar(t('HCM data refreshed.'), { variant: 'success' });
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  return {
+    person,
+    syncedAt,
+    stale: !!syncedAt && syncedAt < DateTime.now().minus(STALE_AFTER),
+    refreshing,
+    coolingDown,
+    refresh,
+  };
+};
+
+type HcmSync = ReturnType<typeof useHcmSync>;
+
+const SyncRow: React.FC<{ sync: HcmSync }> = ({ sync }) => {
+  const { t } = useTranslation();
+  const locale = useLocale();
+  const { syncedAt, stale, refreshing, coolingDown, refresh } = sync;
+
+  return (
+    <Stack direction="row" alignItems="center" spacing={1.5}>
+      <Stack direction="row" alignItems="center">
+        {syncedAt && (
+          <Tooltip
+            title={syncedAt.toLocaleString(DateTime.DATETIME_MED, { locale })}
+          >
+            <Typography
+              variant="body2"
+              color={stale ? 'warning.dark' : 'text.secondary'}
+              noWrap
+            >
+              {t('Synced from HCM {{when}}', {
+                when: syncedAt.toRelative({ locale, style: 'short' }),
+              })}
+            </Typography>
+          </Tooltip>
+        )}
+        <Tooltip
+          title={t(
+            "HCM (Human Capital Management) is Cru's HR system. MPDX gets salary, benefits and other staff details from it.",
+          )}
+        >
+          <InfoTooltipIcon
+            aria-label={t('What is HCM?')}
+            data-testid="HcmInfoTooltip"
+          />
+        </Tooltip>
+      </Stack>
+      <Tooltip
+        title={
+          coolingDown
+            ? t('You can refresh again in a few minutes')
+            : t('Get the latest information from HCM')
+        }
+      >
+        {/* A disabled button fires no events, so the span keeps the tooltip working. */}
+        <span>
+          <Button
+            size="small"
+            variant="outlined"
+            startIcon={
+              refreshing ? (
+                <CircularProgress size={14} color="inherit" />
+              ) : (
+                <RefreshIcon />
+              )
+            }
+            onClick={refresh}
+            disabled={refreshing || coolingDown}
+          >
+            {refreshing ? t('Refreshing…') : t('Refresh')}
+          </Button>
+        </span>
+      </Tooltip>
+    </Stack>
+  );
+};
+
+/**
+ * When the page's HCM data was last synced, and a button to pull the latest. Goes in the page
+ * header's rightExtra slot; on narrow screens the header has no room, so HcmSyncBodyStatus shows
+ * the same row under the header instead.
+ */
+export const HcmSyncHeaderStatus: React.FC<HcmSyncStatusProps> = (props) => {
+  const sync = useHcmSync(props);
+  if (!sync.person) {
+    return null;
+  }
+
+  return (
+    <Box
+      sx={{ display: { xs: 'none', md: 'block' } }}
+      data-testid="HcmSyncHeaderStatus"
+    >
+      <SyncRow sync={sync} />
+    </Box>
+  );
+};
+
+/**
+ * Goes at the top of the page body, under the header. Shows the sync row on narrow screens, and at
+ * every width warns when HCM no longer has a record for the person.
+ */
+export const HcmSyncBodyStatus: React.FC<HcmSyncStatusProps> = (props) => {
+  const { t } = useTranslation();
+  const locale = useLocale();
+  const sync = useHcmSync(props);
+  const { person, syncedAt } = sync;
+  if (!person) {
+    return null;
+  }
+
+  return (
+    <Stack
+      spacing={1.5}
+      sx={{
+        mb: 3,
+        display: person.outOfSync ? 'flex' : { xs: 'flex', md: 'none' },
+      }}
+      data-testid="HcmSyncBodyStatus"
+    >
+      <Box sx={{ display: { xs: 'block', md: 'none' } }}>
+        <SyncRow sync={sync} />
+      </Box>
+      {person.outOfSync && (
+        <Alert severity="warning">
+          <AlertTitle>
+            {props.personNumber
+              ? t('HCM no longer has a record for this person')
+              : t('HCM no longer has a record for you')}
+          </AlertTitle>
+          {syncedAt
+            ? t(
+                'The information below is from {{date}} and may be out of date. Please contact HR Services if this looks wrong.',
+                {
+                  date: syncedAt.toLocaleString(DateTime.DATE_MED, { locale }),
+                },
+              )
+            : t(
+                'The information below may be out of date. Please contact HR Services if this looks wrong.',
+              )}
+        </Alert>
+      )}
+    </Stack>
+  );
+};

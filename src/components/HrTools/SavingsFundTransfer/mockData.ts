@@ -86,6 +86,7 @@ export interface Transactions {
   failedCount?: number;
   summarizedTransfers?: Map<string, Transactions> | null;
   missingMonths?: DateTime[] | null;
+  historyTruncated?: boolean;
 }
 
 export interface Transfers {
@@ -106,6 +107,7 @@ export interface Transfers {
   failedCount?: number;
   summarizedTransfers?: Map<string, Transactions> | null;
   missingMonths?: DateTime[] | null;
+  historyTruncated?: boolean;
 }
 
 export const incomingTransfers = [

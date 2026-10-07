@@ -1,0 +1,11 @@
+id: no-global-screen
+language: Tsx
+severity: info
+message: Use the queries returned from render(), not the global `screen`.
+note: >-
+  House style, and it diverges from RTL's own docs on purpose:
+  `const { getByRole } = render(...)`. See .claude/review/rules/standards.md.
+files:
+  - '**/*.test.tsx'
+rule:
+  pattern: screen.$METHOD($$$ARGS)

@@ -1,4 +1,10 @@
-import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
+import {
+  MpdAssignmentCategoryGroupEnum,
+  MpdHealthStatusEnum,
+  MpdUserPersonTypeEnum,
+  PeopleGroupSupportTypeEnum,
+  SecaStatusEnum,
+} from 'src/graphql/types.generated';
 import { ManagedStaffQuery } from './ManagedStaff.generated';
 import { ManagedStaffTeamsQuery } from './ManagedStaffTeams.generated';
 import { ManagedStaffMember } from './helpers';
@@ -14,6 +20,12 @@ const baseMember: ManagedStaffMember = {
   spouseStaffAccountId: '1000000002',
   newStaffMonthlySalary: 2500,
   geographicLocation: 'Orlando, FL',
+  assignmentCategoryGroup: MpdAssignmentCategoryGroupEnum.FullTime,
+  userPersonType: MpdUserPersonTypeEnum.EmployeeStaff,
+  tenure: 6,
+  healthcareDependentsCount: 2,
+  peopleGroupSupportType: PeopleGroupSupportTypeEnum.SupportedRmo,
+  secaStatus: SecaStatusEnum.Seca,
   teams: {
     employee: [{ id: 'team-1', name: 'Campus', department: 'US Campus' }],
     spouse: [],
@@ -53,21 +65,13 @@ export const managedStaffMember = (
   overrides: Partial<ManagedStaffMember> = {},
 ): ManagedStaffMember => ({ ...baseMember, ...overrides });
 
-export const managedStaffTeamsMock = (): ManagedStaffTeamsQuery => ({
-  managedStaffTeams: [
-    {
-      id: 'team-2',
-      name: 'User Interaction Team',
-      department: 'US Technology',
-    },
-    {
-      id: 'team-1',
-      name: 'Solution Delivery Team',
-      department: 'US Technology',
-    },
-    { id: null, name: 'Unassigned', department: null },
+export const managedStaffTeamsMock = (
+  managedStaffTeams: ManagedStaffTeamsQuery['managedStaffTeams'] = [
+    { name: 'Central Team', departments: ['Cru Military', 'US Technology'] },
+    { name: 'Solution Delivery Team', departments: ['US Technology'] },
+    { name: 'Unassigned', departments: [] },
   ],
-});
+): ManagedStaffTeamsQuery => ({ managedStaffTeams });
 
 export const managedStaffMock = (
   nodes: ManagedStaffMember[] = [managedStaffMember()],

@@ -1,7 +1,6 @@
 query ManagedStaffTeams {
   managedStaffTeams {
-    id
     name
-    department
+    departments
   }
 }

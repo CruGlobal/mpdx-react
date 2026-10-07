@@ -62,4 +62,27 @@ describe('BreakdownModal', () => {
     expect(getByRole('dialog')).toBeInTheDocument();
     expect(queryByText('Donation - Non Cash')).not.toBeInTheDocument();
   });
+
+  it('names the person whose row is being broken down', () => {
+    const { getByText } = render(
+      <TestComponent
+        {...defaultProps}
+        category={StaffExpenseCategoryEnum.Salary}
+        person="Alex"
+      />,
+    );
+
+    expect(getByText('Salary (Alex) Breakdown')).toBeInTheDocument();
+    expect(getByText('Total Salary (Alex) Income')).toBeInTheDocument();
+  });
+
+  it('ignores a person on any category other than salary', () => {
+    const { getByText, queryByText } = render(
+      <TestComponent {...defaultProps} person="Alex" />,
+    );
+
+    expect(getByText('Donation Breakdown')).toBeInTheDocument();
+    expect(getByText('Total Donation Income')).toBeInTheDocument();
+    expect(queryByText(/Alex/)).not.toBeInTheDocument();
+  });
 });

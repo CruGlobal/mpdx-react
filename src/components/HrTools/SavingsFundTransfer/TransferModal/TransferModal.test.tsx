@@ -10,12 +10,14 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { StaffSavingFundProvider } from '../../StaffSavingFund/StaffSavingFundContext';
+import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
 import {
   CreateRecurringTransferMutation,
   CreateTransferMutation,
   UpdateRecurringTransferMutation,
 } from '../TransferMutations.generated';
 import {
+  FundTypeEnum,
   ScheduleEnum,
   TransferModalData,
   TransferTypeEnum,
@@ -66,7 +68,7 @@ const transferDefaultData: TransferModalData['transfer'] = {
 interface ComponentsProps {
   transfer?: TransferModalData['transfer'];
   type?: TransferTypeEnum;
-  funds?: typeof fundsMock;
+  funds?: FundFieldsFragment[];
 }
 
 const Components = ({
@@ -502,6 +504,42 @@ describe('TransferModal', () => {
       expect(
         getByRole('option', { name: /staff savings/i }),
       ).toBeInTheDocument();
+    });
+
+    it('leaves the HR-managed funds out of the To Account options', async () => {
+      const { getByRole, queryByRole } = render(
+        <Components
+          funds={[
+            ...fundsMock,
+            {
+              id: '3',
+              fundType: FundTypeEnum.ReturnTravel,
+              endBalance: 4000,
+              deficitLimit: 0,
+            },
+            {
+              id: '4',
+              fundType: FundTypeEnum.ReEntry,
+              endBalance: 3000,
+              deficitLimit: 0,
+            },
+          ]}
+        />,
+      );
+
+      userEvent.click(getByRole('combobox', { name: /to account/i }));
+
+      expect(
+        await within(getByRole('listbox')).findByRole('option', {
+          name: /staff savings/i,
+        }),
+      ).toBeInTheDocument();
+      expect(
+        queryByRole('option', { name: /return travel/i }),
+      ).not.toBeInTheDocument();
+      expect(
+        queryByRole('option', { name: /re-entry/i }),
+      ).not.toBeInTheDocument();
     });
 
     it('should show/hide end date based on schedule selection', async () => {

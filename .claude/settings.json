@@ -4,7 +4,8 @@
     "quality@cru-plugins": true,
     "testing@cru-plugins": true,
     "admin@cru-plugins": true,
-    "figma@cru-plugins": true
+    "figma@cru-plugins": true,
+    "agent-review@cru-plugins": true
   },
   "extraKnownMarketplaces": {
     "cru-plugins": {

@@ -207,6 +207,33 @@ This may affect your selected effective date.',
     );
   });
 
+  it('never shows a max allowable salary above the combined cap', async () => {
+    const { getByTestId } = render(
+      <TestComponent
+        salaryRequestMock={{
+          calculations: {
+            requestedYtdGross: 89479.91,
+            effectiveCap: 84988.18,
+            combinedCap: 135000,
+          },
+          spouseCalculations: {
+            requestedYtdGross: 81560.28,
+            effectiveCap: 84988.18,
+          },
+        }}
+      />,
+    );
+
+    await waitFor(() =>
+      expect(
+        getByTestId('RequestSummaryCard-requestedVsMax'),
+      ).toHaveTextContent('$171,040.19 / $135,000.00'),
+    );
+    expect(getByTestId('RequestSummaryCard-remaining')).toHaveTextContent(
+      '-$36,040.19',
+    );
+  });
+
   it('splits the distribution bar between the salary components and the ASRs', async () => {
     const { findByTestId } = render(
       <TestComponent

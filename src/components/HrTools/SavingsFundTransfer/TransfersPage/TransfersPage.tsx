@@ -105,8 +105,21 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
   const { data: staffAccountData, error: staffAccountError } =
     useStaffAccountQuery();
 
+  // The page shows about a year of history. SAA would default to this same window if none were
+  // sent, but sending it explicitly lets the missed-month scan know where the fetched history
+  // begins, so a recurring transfer that started earlier is not shown as failed for months that
+  // have no rows (MPDX-10044).
+  const historyStart = useMemo(
+    () => DateTime.local().minus({ years: 1 }).startOf('month'),
+    [],
+  );
+
   const { data: reportData, loading: reportLoading } =
-    useReportsSavingsFundTransferQuery();
+    useReportsSavingsFundTransferQuery({
+      variables: {
+        transactedAtStart: historyStart.toISODate(),
+      },
+    });
   const { data: fundsData, error: fundsError } = useFundBalancesQuery({
     variables: {
       fundTypes,
@@ -166,14 +179,15 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
           failedCount: 0,
           summarizedTransfers: null,
           missingMonths: null,
+          historyTruncated: false,
         };
       }),
     [reportData],
   );
 
   const { filtered, upcoming } = useMemo(
-    () => filteredTransfers(transactions),
-    [transactions],
+    () => filteredTransfers(transactions, historyStart),
+    [transactions, historyStart],
   );
 
   const transferHistory: Transfers[] = filtered.map((tx) => {
@@ -202,6 +216,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
       failedCount: tx.failedCount,
       summarizedTransfers: tx.summarizedTransfers,
       missingMonths: tx.missingMonths,
+      historyTruncated: tx.historyTruncated,
     };
   });
 

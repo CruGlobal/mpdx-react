@@ -210,9 +210,11 @@ jest.mock('notistack', () => ({
 const Components = ({
   title = 'Staff Savings Fund Transfers',
   usStaffGroup = UsStaffGroupEnum.SeniorStaff,
+  transfers,
 }: {
   title?: string;
   usStaffGroup?: UsStaffGroupEnum;
+  transfers?: ReportsSavingsFundTransferQuery['reportsSavingsFundTransfer'];
 }) => (
   <SnackbarProvider>
     <ThemeProvider theme={theme}>
@@ -224,7 +226,15 @@ const Components = ({
             FundBalances: FundBalancesQuery;
             GetUser: GetUserQuery;
           }>
-            mocks={{ ...mock, GetUser: { user: { usStaffGroup } } }}
+            mocks={{
+              ...mock,
+              ...(transfers && {
+                ReportsSavingsFundTransfer: {
+                  reportsSavingsFundTransfer: transfers,
+                },
+              }),
+              GetUser: { user: { usStaffGroup } },
+            }}
             onCall={mutationSpy}
           >
             <MockStaffSavingFundProvider>
@@ -303,6 +313,65 @@ describe('TransfersPage', () => {
     expect(tables.length).toBe(2);
 
     expect(within(tables[0]).getAllByRole('columnheader')).toHaveLength(9);
+  });
+
+  it('requests transfer history from the start of the month one year ago', async () => {
+    render(<Components />);
+
+    // SAA would default to this same window; sending it explicitly lets the page
+    // know where the history begins so it does not flag earlier months as failed.
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ReportsSavingsFundTransfer', {
+        transactedAtStart: '2023-01-01',
+      }),
+    );
+  });
+
+  it('only lists failed months inside the history window for a long-running recurring transfer', async () => {
+    // Started in 2022, so everything before the 2023-01-01 window start has no rows.
+    const recurringTransfer = {
+      id: '4',
+      amount: 50,
+      recurringStart: '2022-06-15',
+      recurringEnd: null,
+      active: true,
+    };
+    const longRunning = ['2023-11-15', '2024-01-15'].map((date, index) => ({
+      transaction: {
+        id: `long-${index}`,
+        amount: 50,
+        description: null,
+        transactedAt: `${date}T00:00:00+00:00`,
+      },
+      subCategory: { id: '1', name: 'deposit' },
+      transfer: {
+        sourceFundTypeName: 'Primary',
+        destinationFundTypeName: 'Savings',
+      },
+      recurringTransfer,
+      scheduledTransfer: null,
+    }));
+    const { findByTitle, findByRole } = render(
+      <Components transfers={longRunning} />,
+    );
+
+    userEvent.click(
+      await findByTitle('Failed Transfers', {}, { timeout: 10000 }),
+    );
+
+    const dialog = await findByRole('dialog');
+    expect(
+      within(dialog).getByText(
+        'Only the last year of transfer history is shown.',
+      ),
+    ).toBeInTheDocument();
+
+    const dates = within(dialog)
+      .getAllByRole('row')
+      .slice(1)
+      .map((row) => row.querySelectorAll('td')[2]?.textContent);
+    expect(dates[0]).toBe('Jan 15, 2023');
+    expect(dates.some((date) => date?.endsWith('2022'))).toBe(false);
   });
 
   it.each([

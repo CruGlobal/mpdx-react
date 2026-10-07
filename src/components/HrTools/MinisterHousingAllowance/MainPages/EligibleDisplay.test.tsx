@@ -34,6 +34,16 @@ describe('EligibleDisplay', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('should point to Request New MHA when approved only in HCM', () => {
+    const { getByText, queryByText } = render(
+      <TestComponent isPending={false} isEditable={false} isHcmApprovedOnly />,
+    );
+
+    expect(getByText(/you have an approved mha amount/i)).toBeInTheDocument();
+    expect(getByText(/click "request new mha"/i)).toBeInTheDocument();
+    expect(queryByText(/view current mha/i)).not.toBeInTheDocument();
+  });
+
   it('should render message when isPending is false', () => {
     const { getByText } = render(
       <TestComponent isPending={false} isEditable={false} />,

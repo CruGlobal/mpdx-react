@@ -56,6 +56,8 @@ fragment DonationTableRow on Donation {
     accountNumber
   }
   paymentMethod
+  memo
+  motivation
 }
 
 query AccountListCurrency($accountListId: ID!) {

@@ -1,0 +1,12 @@
+id: no-awaited-user-event
+language: Tsx
+severity: info
+message: Do not await a userEvent call.
+note: >-
+  This repo pins @testing-library/user-event ^13, where click/type/etc. are
+  synchronous — the await suppresses nothing and diverges from the ~3000
+  non-awaited call sites. See .claude/review/rules/testing.md.
+files:
+  - '**/*.test.tsx'
+rule:
+  pattern: await userEvent.$METHOD($$$ARGS)

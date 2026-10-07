@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { TFunction } from 'react-i18next';
 import { Funds } from 'src/components/Reports/MPGAIncomeExpensesReport/Helper/MPGAReportEnum';
+import { HouseholdMember } from 'src/components/Reports/Shared/Helpers/household';
 import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import {
   addCategoryRow,
@@ -14,10 +15,18 @@ import {
 } from '../components/Reports/MPGAIncomeExpensesReport/Helper/sortFunds';
 import { DataFields } from '../components/Reports/MPGAIncomeExpensesReport/mockData';
 
+// A stable default so the memo below is not invalidated by a fresh array every render.
+const noHousehold: HouseholdMember[] = [];
+
+/**
+ * `household` lists the people sharing the account, reader first. With a spouse present, the
+ * combined Salary row splits into one row per person.
+ */
 export function useFilteredFunds(
   funds: Funds[],
   selectedCategories: string[] | null,
   t: TFunction,
+  household: HouseholdMember[] = noHousehold,
 ) {
   return useMemo(() => {
     const incomeData: DataFields[] = [];
@@ -52,6 +61,7 @@ export function useFilteredFunds(
             t,
             incomeData,
             expenseData,
+            household,
           });
         } else {
           addCategoryRow({ baseId, category, t, incomeData, expenseData });
@@ -71,5 +81,5 @@ export function useFilteredFunds(
       incomeData,
       expenseData,
     };
-  }, [funds, selectedCategories, t]);
+  }, [funds, selectedCategories, t, household]);
 }

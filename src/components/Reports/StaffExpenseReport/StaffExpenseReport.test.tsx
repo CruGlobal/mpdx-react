@@ -6,12 +6,16 @@ import {
   render,
   waitFor,
   waitForElementToBeRemoved,
+  within,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Settings } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  DeepPartialMock,
+  GqlMockedProvider,
+} from '__tests__/util/graphqlMocking';
 import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import {
@@ -32,6 +36,7 @@ interface TestComponentProps {
   staffAccountId?: string;
   staffName?: string;
   personNumber?: string;
+  failReportCall?: FailReportCall;
 }
 
 const salaryCategory = {
@@ -82,6 +87,33 @@ const router = {
   push,
 };
 
+let reportCalls = 0;
+beforeEach(() => {
+  reportCalls = 0;
+});
+
+type ReportMock = DeepPartialMock<
+  ReportsStaffExpensesQuery['reportsStaffExpenses']
+>;
+
+type FailReportCall = (call: number) => boolean;
+const everyCall: FailReportCall = () => true;
+const firstCall: FailReportCall = (call) => call === 0;
+const secondCall: FailReportCall = (call) => call === 1;
+
+const failReportCallsWhen = (
+  failReportCall: FailReportCall | undefined,
+  report: ReportMock,
+): ReportMock =>
+  failReportCall
+    ? ((() => {
+        if (failReportCall(reportCalls++)) {
+          throw new Error('SAA is unavailable');
+        }
+        return report;
+      }) as unknown as ReportMock)
+    : report;
+
 const TestComponent: React.FC<TestComponentProps> = ({
   isEmpty,
   routerMonth,
@@ -90,6 +122,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   staffAccountId = null,
   staffName,
   personNumber,
+  failReportCall,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter
@@ -112,7 +145,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
             }>
               mocks={{
                 ReportsStaffExpenses: {
-                  reportsStaffExpenses: {
+                  reportsStaffExpenses: failReportCallsWhen(failReportCall, {
                     name: staffName ?? 'Test Account',
                     funds: isEmpty
                       ? []
@@ -245,7 +278,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                             ],
                           },
                         ],
-                  },
+                  }),
                 },
                 StaffAccount: {
                   staffAccount: {
@@ -296,10 +329,27 @@ describe('StaffExpenseReport', () => {
 
     expect(getByRole('heading', { name: 'Report title' })).toBeInTheDocument();
     expect(await findByText('Test Account')).toBeInTheDocument();
-    expect(await findByText('$4,000.00')).toBeInTheDocument();
+    expect(
+      await findByText('Ending Balance (All Accounts): $4,000.00'),
+    ).toBeInTheDocument();
+  });
+
+  it('shows a skeleton for the overall balance while loading', async () => {
+    const { getByTestId, findByText, queryByTestId } = render(
+      <TestComponent />,
+    );
+
+    expect(getByTestId('overall-balance-skeleton')).toBeInTheDocument();
+    expect(
+      await findByText('Ending Balance (All Accounts): $4,000.00'),
+    ).toBeInTheDocument();
+    expect(queryByTestId('overall-balance-skeleton')).not.toBeInTheDocument();
   });
 
   it('names each salary row for the person HCM attributes it to', async () => {
+    // After payday, so the rows are not also marked pending
+    Settings.now = () => new Date(2020, 0, 31).valueOf();
+
     const { findByRole, getByRole } = render(<TestComponent withSalary />);
 
     expect(
@@ -307,6 +357,19 @@ describe('StaffExpenseReport', () => {
     ).toBeInTheDocument();
     expect(
       getByRole('gridcell', { name: 'Salary (Jordan)' }),
+    ).toBeInTheDocument();
+  });
+
+  it('marks salary dated after today as pending', async () => {
+    Settings.now = () => new Date(2020, 0, 10).valueOf();
+
+    const { findByRole, getByRole } = render(<TestComponent withSalary />);
+
+    expect(
+      await findByRole('gridcell', { name: 'Salary (Alex) Pending' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('gridcell', { name: 'Salary (Jordan) Pending' }),
     ).toBeInTheDocument();
   });
 
@@ -391,6 +454,98 @@ describe('StaffExpenseReport', () => {
         }),
       );
     });
+  });
+
+  describe('when the report fails to load', () => {
+    it('shows a friendly error instead of the empty report', async () => {
+      const { findByRole, getByTestId, queryByTestId } = render(
+        <TestComponent failReportCall={everyCall} />,
+      );
+
+      const alert = await findByRole('alert');
+      expect(alert).toHaveTextContent(
+        'The Staff Expense report could not be loaded. Please try again later.',
+      );
+      // The raw error is left to the global error snackbar.
+      expect(alert).not.toHaveTextContent('SAA is unavailable');
+      expect(getByTestId('name')).toHaveTextContent('Test Account');
+      expect(queryByTestId('overall-balance')).not.toBeInTheDocument();
+    });
+
+    it('loads the report when Try Again is clicked', async () => {
+      const { findByRole, findByText, queryByRole } = render(
+        <TestComponent failReportCall={firstCall} />,
+      );
+
+      const alert = await findByRole('alert');
+      userEvent.click(within(alert).getByRole('button', { name: 'Try Again' }));
+
+      expect(
+        await findByText('Ending Balance (All Accounts): $4,000.00'),
+      ).toBeInTheDocument();
+      expect(queryByRole('alert')).not.toBeInTheDocument();
+    });
+
+    it('keeps the error when Try Again fails too', async () => {
+      const { findByRole, getByRole } = render(
+        <TestComponent failReportCall={everyCall} />,
+      );
+
+      const alert = await findByRole('alert');
+      userEvent.click(within(alert).getByRole('button', { name: 'Try Again' }));
+
+      await waitFor(() => expect(reportCalls).toBe(2));
+      expect(getByRole('alert')).toBeInTheDocument();
+    });
+
+    it('hides the previous month balances when the next month fails', async () => {
+      const { findByRole, findByText, getByRole, queryByTestId, queryByText } =
+        render(<TestComponent failReportCall={secondCall} />);
+
+      expect(
+        await findByText('Ending Balance (All Accounts): $4,000.00'),
+      ).toBeInTheDocument();
+      userEvent.click(getByRole('button', { name: 'Previous Month' }));
+
+      await findByRole('alert');
+      // The print header keeps the selected fund, so it would show zeroed balances
+      expect(queryByText(/Starting Balance/)).not.toBeInTheDocument();
+      expect(queryByTestId('overall-balance')).not.toBeInTheDocument();
+    });
+
+    it('loads the report when a different month is chosen', async () => {
+      const { findByRole, findByText, getByRole, queryByRole } = render(
+        <TestComponent failReportCall={firstCall} />,
+      );
+
+      await findByRole('alert');
+      userEvent.click(getByRole('button', { name: 'Previous Month' }));
+
+      expect(
+        await findByText('Ending Balance (All Accounts): $4,000.00'),
+      ).toBeInTheDocument();
+      expect(queryByRole('alert')).not.toBeInTheDocument();
+    });
+
+    it('hides the empty account info in supervisor view', async () => {
+      const { findByRole, queryByTestId } = render(
+        <TestComponent
+          staffAccountId={staffAccountId}
+          failReportCall={everyCall}
+        />,
+      );
+
+      await findByRole('alert');
+      expect(queryByTestId('account-info')).not.toBeInTheDocument();
+    });
+  });
+
+  it('shows a zero overall balance when the report has no funds', async () => {
+    const { findByText } = render(<TestComponent isEmpty={true} />);
+
+    expect(
+      await findByText('Ending Balance (All Accounts): $0.00'),
+    ).toBeInTheDocument();
   });
 
   it('keeps the Report Settings button visible when there are no transactions', async () => {

@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { mockSession } from '__tests__/util/mockSession';
 import { render } from '__tests__/util/testingLibraryReactMock';
 import {
   afterTestResizeObserver,
@@ -53,6 +54,7 @@ describe('MPD Supervisor Page', () => {
 
   afterEach(() => {
     afterTestResizeObserver();
+    mockSession({ developer: false });
   });
 
   it('uses blockImpersonatingNonDevelopers for server-side props', () => {
@@ -92,6 +94,34 @@ describe('MPD Supervisor Page', () => {
   });
 
   it('should show limited access if the user supervises no staff', async () => {
+    const { findByText, queryByRole } = render(
+      <Components supervisesStaff={false} />,
+    );
+
+    expect(
+      await findByText(/our records show that you do not supervise any staff/i),
+    ).toBeInTheDocument();
+    expect(
+      queryByRole('heading', { name: /mpd supervisor report/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('should show the report outside a development env to a developer who supervises no staff', async () => {
+    process.env.DEVELOPMENT_ENV = 'false';
+    mockSession({ developer: true });
+
+    const { findAllByRole } = render(<Components supervisesStaff={false} />);
+
+    const heading = await findAllByRole('heading', {
+      name: /mpd supervisor report/i,
+    });
+    expect(heading[0]).toBeInTheDocument();
+  });
+
+  it('should show limited access outside a development env to a non-developer who supervises no staff', async () => {
+    process.env.DEVELOPMENT_ENV = 'false';
+    mockSession({ developer: false });
+
     const { findByText, queryByRole } = render(
       <Components supervisesStaff={false} />,
     );

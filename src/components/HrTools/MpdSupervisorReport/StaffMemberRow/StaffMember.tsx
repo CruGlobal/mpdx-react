@@ -1,11 +1,13 @@
 import React, { useMemo } from 'react';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Avatar,
   Box,
   Card,
   CardActionArea,
-  Chip,
+  Collapse,
   Grid,
+  IconButton,
   Stack,
   SxProps,
   Theme,
@@ -15,22 +17,31 @@ import { styled } from '@mui/material/styles';
 import { visuallyHidden } from '@mui/utils';
 import { useTranslation } from 'react-i18next';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
-import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
+import { RowDensityEnum } from '../MpdSupervisorReportContext';
 import {
-  ManagedStaffMember,
   QuarterChipData,
+  StaffRow,
   buildQuarterChips,
-  getInitials,
+  getLocalizedAssignmentCategoryGroup,
+  getLocalizedUserPersonTypeName,
   getQuarterLabel,
-  healthColor,
+  getRowInitials,
+  getRowName,
+  getRowSpouseName,
+  getRowTeamNames,
+  grossSalaryWarning,
   healthLabel,
-  pendingField,
   quarterAmountLabel,
 } from '../helpers';
+import { GrossSalaryMarker } from './GrossSalaryMarker';
+import { QuarterChip } from './QuarterChip';
+import { QuickGlance } from './QuickGlance';
 
-const StyledCard = styled(Card)(({ theme }) => ({
-  marginBottom: theme.spacing(1),
+const StyledCard = styled(Card, {
+  shouldForwardProp: (prop) => prop !== 'compact',
+})<{ compact: boolean }>(({ theme, compact }) => ({
+  marginBottom: theme.spacing(compact ? 0.5 : 1),
   boxShadow: theme.shadows[1],
   border: '1px solid',
   borderColor: theme.palette.divider,
@@ -52,89 +63,135 @@ const GridQuarter = styled(Grid)(({ theme }) => ({
   justifyContent: 'flex-end',
 }));
 
-const QuarterChip = styled(Chip, {
-  shouldForwardProp: (prop) => prop !== 'health',
-})<{ health: MpdHealthStatusEnum }>(({ health }) => {
-  const { bg, color } = healthColor(theme, health);
-  return {
-    height: 22,
-    fontWeight: 600,
-    backgroundColor: bg,
-    color: color,
-    minWidth: '80px',
-    '& .MuiChip-label': {
-      paddingInline: theme.spacing(1),
-    },
-  };
-});
-
 interface StaffMemberProps {
-  data: ManagedStaffMember;
+  data: StaffRow;
+  /** Compact drops the avatar and puts the name and details on one line */
+  density?: RowDensityEnum;
+  /** Whether the quick-glance strip is open; the chevron only renders with onToggleExpand */
+  expanded?: boolean;
+  onToggleExpand?: () => void;
   onClick?: () => void;
 }
 
-export const StaffMember: React.FC<StaffMemberProps> = ({ data, onClick }) => {
+export const StaffMember: React.FC<StaffMemberProps> = ({
+  data,
+  density = RowDensityEnum.Comfortable,
+  expanded = false,
+  onToggleExpand,
+  onClick,
+}) => {
   const { t } = useTranslation();
-  const { firstName: name, lastName, staffAccountId, teams } = data;
+  const compact = density === RowDensityEnum.Compact;
+  const { formatCurrency } = useFormatters();
+  const { staffAccountId, assignmentCategoryGroup, userPersonType, partner } =
+    data;
+  const grossWarning = grossSalaryWarning(t, formatCurrency, data);
 
-  const names = useMemo(() => {
-    if (!name || !lastName) {
-      return '';
-    }
-    return `${name} ${lastName}`;
-  }, [name, lastName]);
+  const names = getRowName(data);
 
   const quarters = useMemo(
     () => buildQuarterChips(data.quarterlyHealth),
     [data.quarterlyHealth],
   );
 
-  // A member can be on several teams; the API has no employment type at all.
-  const team = useMemo(
-    () => teams.employee.map(({ name }) => name).join(', ') || pendingField,
-    [teams],
-  );
+  // A member can be on several teams; a merged pair shows both spouses' teams.
+  // No team means no segment at all rather than a placeholder.
+  const team = useMemo(() => getRowTeamNames(data).join(', '), [data]);
+  // A merged row already carries both names; any other spouse is named here
+  const spouse = partner ? null : getRowSpouseName(data);
 
   return (
-    <StyledCard>
-      <CardActionArea
-        aria-label={t('View details for {{name}}', { name: names })}
-        onClick={onClick}
-        sx={{
-          paddingInline: theme.spacing(4),
-          paddingTop: theme.spacing(1),
-          paddingBottom: theme.spacing(1),
-        }}
-      >
-        <Grid container>
-          <GridItem size={6}>
-            <Avatar
-              sx={{ bgcolor: 'mpdxGrayLight.main', color: 'text.primary' }}
+    <StyledCard compact={compact}>
+      <Box sx={{ display: 'flex', alignItems: 'stretch' }}>
+        {onToggleExpand && (
+          <Box sx={{ display: 'flex', alignItems: 'center', pl: 1 }}>
+            <IconButton
+              size="small"
+              onClick={onToggleExpand}
+              aria-expanded={expanded}
+              aria-label={
+                expanded
+                  ? t('Hide details for {{name}}', { name: names })
+                  : t('Show details for {{name}}', { name: names })
+              }
             >
-              {getInitials(name, lastName)}
-            </Avatar>
-            <Box sx={{ flexGrow: 1, minWidth: 200, ml: 1 }}>
-              <Box
+              <ExpandMoreIcon
+                fontSize="small"
                 sx={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  flexWrap: 'wrap',
+                  transition: 'transform 150ms',
+                  transform: expanded ? 'rotate(180deg)' : 'none',
                 }}
-              >
-                <StaffInfo
-                  names={names}
-                  staffAccountID={staffAccountId}
-                  userPersonType={pendingField}
-                  team={team}
-                />
+              />
+            </IconButton>
+          </Box>
+        )}
+        <CardActionArea
+          // The marker inside is not focusable, so the row's own name carries
+          // the gross salary warning for keyboard and screen-reader users.
+          aria-label={
+            grossWarning
+              ? t('View details for {{name}}. {{warning}}', {
+                  name: names,
+                  warning: grossWarning,
+                })
+              : t('View details for {{name}}', { name: names })
+          }
+          onClick={onClick}
+          sx={{
+            flex: 1,
+            paddingInline: theme.spacing(onToggleExpand ? 2 : 4),
+            paddingRight: theme.spacing(4),
+            paddingTop: theme.spacing(compact ? 0.5 : 1),
+            paddingBottom: theme.spacing(compact ? 0.5 : 1),
+          }}
+        >
+          <Grid container>
+            <GridItem size={6}>
+              {!compact && (
+                <Avatar
+                  sx={{ bgcolor: 'mpdxGrayLight.main', color: 'text.primary' }}
+                >
+                  {getRowInitials(data)}
+                </Avatar>
+              )}
+              <Box sx={{ flexGrow: 1, minWidth: 200, ml: compact ? 0 : 1 }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                  }}
+                >
+                  <StaffInfo
+                    names={names}
+                    staffAccountID={staffAccountId}
+                    employmentType={getLocalizedAssignmentCategoryGroup(
+                      t,
+                      assignmentCategoryGroup,
+                    )}
+                    userPersonType={
+                      userPersonType &&
+                      getLocalizedUserPersonTypeName(t, userPersonType)
+                    }
+                    team={team}
+                    spouse={spouse}
+                    grossWarning={grossWarning}
+                    compact={compact}
+                  />
+                </Box>
               </Box>
-            </Box>
-          </GridItem>
-          <GridQuarter size={6}>
-            <FiscalYearQuarters quarters={quarters} />
-          </GridQuarter>
-        </Grid>
-      </CardActionArea>
+            </GridItem>
+            <GridQuarter size={6}>
+              <FiscalYearQuarters quarters={quarters} />
+            </GridQuarter>
+          </Grid>
+        </CardActionArea>
+      </Box>
+      {onToggleExpand && (
+        <Collapse in={expanded} unmountOnExit>
+          <QuickGlance row={data} />
+        </Collapse>
+      )}
     </StyledCard>
   );
 };
@@ -183,24 +240,55 @@ const FiscalYearQuartersBase: React.FC<FiscalYearQuartersProps> = ({
     </Stack>
   );
 };
-const FiscalYearQuarters = React.memo(FiscalYearQuartersBase);
+/** The four quarter chips; also shown in the drawer header, which covers the row. */
+export const FiscalYearQuarters = React.memo(FiscalYearQuartersBase);
 
 interface StaffInfoProps {
   names: string;
   staffAccountID: string;
-  userPersonType: string;
+  employmentType: string;
+  userPersonType?: string | null;
   team: string;
+  /** The spouse's name when they are not merged into this row */
+  spouse?: string | null;
+  /** Set when Monthly Gross Salary is below New Staff Monthly Salary */
+  grossWarning: string | null;
+  /** Puts the details on the same line as the name */
+  compact?: boolean;
 }
 const StaffInfoBase: React.FC<StaffInfoProps> = ({
   names,
   staffAccountID,
+  employmentType,
   userPersonType,
   team,
+  spouse,
+  grossWarning,
+  compact = false,
 }) => {
+  const { t } = useTranslation();
   return (
     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-        <Typography variant="h6">{names}</Typography>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: compact ? 'row' : 'column',
+          alignItems: compact ? 'baseline' : 'stretch',
+          flexWrap: 'wrap',
+          columnGap: compact ? 1.5 : 0,
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography
+            variant={compact ? 'body1' : 'h6'}
+            fontWeight={compact ? 600 : undefined}
+          >
+            {names}
+          </Typography>
+          {grossWarning && (
+            <GrossSalaryMarker warning={grossWarning} focusable={false} />
+          )}
+        </Box>
         <Typography
           variant="body2"
           sx={{ color: 'text.secondary' }}
@@ -208,9 +296,10 @@ const StaffInfoBase: React.FC<StaffInfoProps> = ({
         >
           {staffAccountID}
           {' · '}
-          {userPersonType}
-          {' · '}
-          {team}
+          {employmentType}
+          {userPersonType && ` · ${userPersonType}`}
+          {team && ` · ${team}`}
+          {spouse && ` · ${t('Spouse: {{name}}', { name: spouse })}`}
         </Typography>
       </Box>
     </Box>

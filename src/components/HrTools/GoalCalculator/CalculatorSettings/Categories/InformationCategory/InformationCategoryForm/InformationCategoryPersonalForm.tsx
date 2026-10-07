@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGoalCalculator } from 'src/components/HrTools/GoalCalculator/Shared/GoalCalculatorContext';
 import { LocationInfoAlert } from 'src/components/HrTools/Shared/LocationInfoAlert/LocationInfoAlert';
+import { getLocalizedBenefitsPlan } from 'src/components/HrTools/Shared/helpers/goalCalculatorConstantsHelper';
 import {
   GoalCalculationAge,
   GoalCalculationRole,
@@ -76,11 +77,15 @@ export const InformationCategoryPersonalForm: React.FC<
     goalBenefitsPlans.forEach((benefits) => {
       // Only include plans that match the selected family size
       if (benefits.size === familySize) {
-        plans.set(benefits.plan, benefits.planDisplayName);
+        plans.set(
+          benefits.plan,
+          getLocalizedBenefitsPlan(t, benefits.plan) ??
+            benefits.planDisplayName,
+        );
       }
     });
     return Array.from(plans.entries());
-  }, [goalBenefitsPlans, familySize]);
+  }, [goalBenefitsPlans, familySize, t]);
 
   useEffect(() => {
     // Read-only goals reject mutations, so don't try to fix an incompatible

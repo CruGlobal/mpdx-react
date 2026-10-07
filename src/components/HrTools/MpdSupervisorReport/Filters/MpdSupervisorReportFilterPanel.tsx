@@ -1,25 +1,88 @@
 import React, { useMemo } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import {
+  Autocomplete,
   Box,
+  Checkbox,
   Chip,
   IconButton,
   MenuItem,
   Stack,
   TextField,
+  Tooltip,
   Typography,
+  createFilterOptions,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import {
+  MpdAssignmentCategoryGroupEnum,
+  MpdUserPersonTypeEnum,
+} from 'src/graphql/types.generated';
 import { useManagedStaffTeamsQuery } from '../ManagedStaffTeams.generated';
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
 import {
-  ALL_TEAMS,
+  getLocalizedAssignmentCategoryGroup,
+  getLocalizedUserPersonType,
+  getLocalizedUserPersonTypeGroup,
+  getLocalizedUserPersonTypeName,
+} from '../helpers';
+import {
   ALL_TYPES,
-  MpdSupervisorReportEmploymentTypeEnum,
   MpdSupervisorReportQuickFilterEnum,
+  quickFilterDescription,
   quickFilterIds,
   quickFilterLabel,
+  userPersonTypeGroups,
+  userPersonTypeOptions,
 } from './mpdSupervisorReportFilters';
+
+type UserPersonTypeOption = MpdUserPersonTypeEnum | MpdUserPersonTypeEnum[];
+
+const userPersonTypeGroupOptions: UserPersonTypeOption[] =
+  userPersonTypeGroups.flatMap((types) => [types, ...types]);
+
+const defaultFilterOptions = createFilterOptions<UserPersonTypeOption>();
+
+const filterUserPersonTypeOptions: typeof defaultFilterOptions = (
+  options,
+  state,
+) => {
+  const matches = defaultFilterOptions(options, state);
+  return options.filter(
+    (option) =>
+      matches.includes(option) ||
+      (Array.isArray(option) && option.some((type) => matches.includes(type))),
+  );
+};
+
+interface FilterAutocompleteProps {
+  label: string;
+  placeholder: string;
+  value: string | null;
+  onChange: (value: string | null) => void;
+  options: string[];
+}
+
+const FilterAutocomplete: React.FC<FilterAutocompleteProps> = ({
+  label,
+  placeholder,
+  value,
+  onChange,
+  options,
+}) => (
+  <Autocomplete
+    fullWidth
+    autoHighlight
+    size="small"
+    value={value}
+    onChange={(_, newValue) => onChange(newValue)}
+    options={options}
+    disabled={!options.length}
+    renderInput={(params) => (
+      <TextField {...params} label={label} placeholder={placeholder} />
+    )}
+  />
+);
 
 interface MpdSupervisorReportFilterPanelProps {
   onClose: () => void;
@@ -34,33 +97,65 @@ export const MpdSupervisorReportFilterPanel: React.FC<
     setActiveQuickFilter,
     team,
     setTeam,
+    department,
+    setDepartment,
     employmentType,
     setEmploymentType,
+    userPersonTypes,
+    setUserPersonTypes,
   } = useMpdSupervisorReport();
 
   const { data: teamsData } = useManagedStaffTeamsQuery();
 
+  const allTeams = useMemo(
+    () => teamsData?.managedStaffTeams ?? [],
+    [teamsData],
+  );
+
   const teamOptions = useMemo(
     () =>
-      (teamsData?.managedStaffTeams ?? [])
-        .flatMap(({ id, name }) => (id ? [{ id, name }] : []))
-        .sort((a, b) => a.name.localeCompare(b.name)),
-    [teamsData],
+      allTeams
+        .filter(
+          ({ departments }) => !department || departments.includes(department),
+        )
+        .map(({ name }) => name)
+        .sort((a, b) => a.localeCompare(b, undefined, { numeric: true })),
+    [allTeams, department],
+  );
+
+  const departmentOptions = useMemo(
+    () =>
+      [
+        ...new Set(
+          allTeams
+            .filter(({ name }) => !team || name === team)
+            .flatMap(({ departments }) => departments),
+        ),
+      ].sort((a, b) => a.localeCompare(b, undefined, { numeric: true })),
+    [allTeams, team],
   );
 
   const handleQuickFilter = (filterId: MpdSupervisorReportQuickFilterEnum) => {
     setActiveQuickFilter(filterId);
   };
 
-  const handleSetTeam = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setTeam(event.target.value as string);
+  const toggleUserPersonTypeGroup = (types: MpdUserPersonTypeEnum[]) => {
+    const allChecked = types.every((type) => userPersonTypes.includes(type));
+    setUserPersonTypes(
+      allChecked
+        ? userPersonTypes.filter((type) => !types.includes(type))
+        : userPersonTypeOptions.filter(
+            (type) => userPersonTypes.includes(type) || types.includes(type),
+          ),
+    );
   };
 
   const handleSetEmploymentType = (
     event: React.ChangeEvent<{ value: unknown }>,
   ) => {
+    const value = event.target.value as string;
     setEmploymentType(
-      event.target.value as MpdSupervisorReportEmploymentTypeEnum,
+      value === ALL_TYPES ? null : (value as MpdAssignmentCategoryGroupEnum),
     );
   };
 
@@ -87,58 +182,150 @@ export const MpdSupervisorReportFilterPanel: React.FC<
 
       <Stack spacing={2} sx={{ p: 2 }}>
         <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
-          {quickFilterIds.map((filterId) => (
-            <Chip
-              key={filterId}
-              label={quickFilterLabel(t, filterId)}
-              variant={activeQuickFilter === filterId ? 'filled' : 'outlined'}
-              sx={{
-                backgroundColor:
-                  activeQuickFilter === filterId ? 'primary.main' : 'default',
-                color:
-                  activeQuickFilter === filterId
-                    ? 'primary.contrastText'
-                    : 'default',
-              }}
-              onClick={() => handleQuickFilter(filterId)}
-            />
-          ))}
+          {quickFilterIds.map((filterId) => {
+            const chip = (
+              <Chip
+                key={filterId}
+                label={quickFilterLabel(t, filterId)}
+                variant={activeQuickFilter === filterId ? 'filled' : 'outlined'}
+                sx={{
+                  backgroundColor:
+                    activeQuickFilter === filterId ? 'primary.main' : 'default',
+                  color:
+                    activeQuickFilter === filterId
+                      ? 'primary.contrastText'
+                      : 'default',
+                }}
+                onClick={() => handleQuickFilter(filterId)}
+              />
+            );
+            const description = quickFilterDescription(t, filterId);
+            // describeChild keeps the chip's label as its accessible name
+            return description ? (
+              <Tooltip key={filterId} title={description} describeChild>
+                {chip}
+              </Tooltip>
+            ) : (
+              chip
+            );
+          })}
         </Stack>
 
-        <TextField
-          select
-          fullWidth
-          value={team}
-          onChange={handleSetTeam}
-          size="small"
+        <FilterAutocomplete
           label={t('Team')}
-          // Still loading, or the query failed; either way there is nothing to pick.
-          disabled={!teamOptions.length}
-        >
-          <MenuItem value={ALL_TEAMS}>{t('All teams')}</MenuItem>
-          {teamOptions.map(({ id, name }) => (
-            <MenuItem key={id} value={id}>
-              {name}
-            </MenuItem>
-          ))}
-        </TextField>
+          placeholder={t('All teams')}
+          value={team}
+          onChange={setTeam}
+          options={teamOptions}
+        />
+
+        <FilterAutocomplete
+          label={t('Department')}
+          placeholder={t('All departments')}
+          value={department}
+          onChange={setDepartment}
+          options={departmentOptions}
+        />
 
         <TextField
           select
           fullWidth
-          value={employmentType}
+          value={employmentType ?? ALL_TYPES}
           onChange={handleSetEmploymentType}
           size="small"
           label={t('Employment type')}
         >
           <MenuItem value={ALL_TYPES}>{t('All types')}</MenuItem>
-          <MenuItem value={MpdSupervisorReportEmploymentTypeEnum.FullTime}>
-            {t('Full time')}
-          </MenuItem>
-          <MenuItem value={MpdSupervisorReportEmploymentTypeEnum.PartTime}>
-            {t('Part time')}
-          </MenuItem>
+          {Object.values(MpdAssignmentCategoryGroupEnum).map((group) => (
+            <MenuItem key={group} value={group}>
+              {getLocalizedAssignmentCategoryGroup(t, group)}
+            </MenuItem>
+          ))}
         </TextField>
+
+        <Autocomplete
+          multiple
+          fullWidth
+          autoHighlight
+          disableCloseOnSelect
+          limitTags={2}
+          size="small"
+          value={userPersonTypes}
+          onChange={(_, newValue, _reason, details) => {
+            if (Array.isArray(details?.option)) {
+              toggleUserPersonTypeGroup(details.option);
+              return;
+            }
+            setUserPersonTypes(
+              userPersonTypeOptions.filter((type) => newValue.includes(type)),
+            );
+          }}
+          options={userPersonTypeGroupOptions}
+          filterOptions={filterUserPersonTypeOptions}
+          getOptionLabel={(option) =>
+            Array.isArray(option)
+              ? getLocalizedUserPersonTypeGroup(t, option[0])
+              : getLocalizedUserPersonTypeName(t, option)
+          }
+          slotProps={{
+            listbox: {
+              sx: { '& .MuiAutocomplete-option:not([data-group])': { pl: 5 } },
+            },
+          }}
+          renderOption={(props, option, { selected }) => {
+            if (!Array.isArray(option)) {
+              return (
+                <li
+                  {...props}
+                  key={option}
+                  aria-label={getLocalizedUserPersonTypeName(t, option)}
+                >
+                  <Checkbox
+                    edge="start"
+                    size="small"
+                    checked={selected}
+                    disableRipple
+                  />
+                  {getLocalizedUserPersonType(t, option)}
+                </li>
+              );
+            }
+            const group = getLocalizedUserPersonTypeGroup(t, option[0]);
+            const checkedCount = option.filter((type) =>
+              userPersonTypes.includes(type),
+            ).length;
+            const allChecked = checkedCount === option.length;
+            return (
+              <Box
+                component="li"
+                {...props}
+                key={`group-${option[0]}`}
+                data-group
+                aria-label={t('Select all {{group}}', { group })}
+                aria-selected={allChecked}
+                sx={{ color: 'text.secondary', fontWeight: 500 }}
+              >
+                <Checkbox
+                  edge="start"
+                  size="small"
+                  checked={allChecked}
+                  indeterminate={checkedCount > 0 && !allChecked}
+                  disableRipple
+                />
+                {group}
+              </Box>
+            );
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label={t('Person type')}
+              placeholder={
+                userPersonTypes.length ? undefined : t('All person types')
+              }
+            />
+          )}
+        />
       </Stack>
     </Box>
   );

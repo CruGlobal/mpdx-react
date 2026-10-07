@@ -6,6 +6,7 @@ import {
   StaffExpenseCategoryEnum,
   StaffExpensesSubCategoryEnum,
 } from 'src/graphql/types.generated';
+import { HouseholdMember } from '../../Shared/Helpers/household';
 import {
   getLocalizedCategory,
   getLocalizedSubCategory,
@@ -32,12 +33,8 @@ export interface Transaction {
   displayCategory: string;
   /** Null when SAA has no employee for the transaction's EMPLID. */
   personNumber?: string | null;
-}
-
-/** A person sharing the account, in HCM's order: the staff member reading the report, then their spouse. */
-export interface HouseholdMember {
-  personNumber: string;
-  name: string;
+  /** Dated after today, so it has not happened yet. */
+  isPending?: boolean;
 }
 
 export interface GroupedTransaction extends Transaction {
@@ -65,6 +62,8 @@ interface FilterTransactionsParams {
   filters?: Filters | null;
   tableType: ReportType;
   household?: HouseholdMember[];
+  /** Transactions dated after this day are pending. Defaults to now. */
+  today?: DateTime;
 }
 
 /** A transaction before it gets a localized label. */
@@ -252,6 +251,8 @@ const groupTransactions = (
         category: bucket.sharedCategory ?? first.category,
         subcategory: bucket.sharedCategory ? undefined : first.subcategory,
         personNumber: bucket.personNumber,
+        // The row still has something to come while any of its members does.
+        isPending: bucket.transactions.some(({ isPending }) => isPending),
         groupedTransactions: bucket.transactions,
         bucketKey,
         period: bucket.period,
@@ -285,8 +286,11 @@ export const filterTransactions = ({
   filters,
   tableType,
   household,
+  today = DateTime.now(),
 }: FilterTransactionsParams): (Transaction | GroupedTransaction)[] => {
   const isInDateRange = createDateRangeFilter(filters, targetTime);
+  // Both sides are YYYY-MM-DD, so they compare as strings.
+  const todayDate = today.toISODate() ?? '';
   const belongsInTable = (amount: number) =>
     tableType === ReportType.Income ? amount > 0 : amount < 0;
 
@@ -296,7 +300,10 @@ export const filterTransactions = ({
         belongsInTable(transaction.amount) &&
         isInDateRange(DateTime.fromISO(transaction.transactedAt)),
     )
-    .map((transaction) => withDisplayCategory(transaction, t));
+    .map((transaction) => ({
+      ...withDisplayCategory(transaction, t),
+      isPending: transaction.transactedAt > todayDate,
+    }));
 
   return groupTransactions(
     transactions,

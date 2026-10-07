@@ -75,6 +75,46 @@ describe('CustomExport', () => {
     expect(data).toContain('data:text/csv');
   });
 
+  describe('balance report', () => {
+    const balanceRow: DataFields[] = [
+      {
+        id: 'ending-balance',
+        description: 'Ending Balance',
+        monthly: [12000, 0, 17709],
+        average: 9903,
+        total: 0,
+      },
+    ];
+
+    it('drops the total column and pads the months the balance stops before', () => {
+      const csvData = createTable(
+        ['Description', ...months.map((m) => m.split(' ')[0]), 'Average'],
+        balanceRow,
+        locale,
+        { monthCount: months.length, isBalance: true },
+      );
+
+      expect(csvData[0]).toHaveLength(14);
+      expect(csvData[1]).toHaveLength(14);
+      expect(csvData[1]).toEqual([
+        'Ending Balance',
+        '12000',
+        '0',
+        '17709',
+        '-',
+        '-',
+        '-',
+        '-',
+        '-',
+        '-',
+        '-',
+        '-',
+        '-',
+        '9903',
+      ]);
+    });
+  });
+
   it('should contain correct data', () => {
     const csvData = createTable(mockHeaders, mockData.income, locale);
 

@@ -93,7 +93,7 @@ describe('StaffTabMonthlySummary', () => {
     afterTestResizeObserver();
   });
 
-  it('renders the headers and a row per month, showing negative net and end balance in parentheses without a minus sign', async () => {
+  it('renders the headers and a row per month newest first, showing negative net and end balance in parentheses without a minus sign', async () => {
     const { findByRole } = render(
       <TestComponent monthlySummary={mockMonthlySummary} />,
     );
@@ -101,9 +101,9 @@ describe('StaffTabMonthlySummary', () => {
     expect(await findByRole('table')).toHaveTableStructure({
       columnHeaders,
       cells: [
-        ['Jan 2023', '$4,000.00', '($3,500.00)', '$500.00', '$10,000.00'],
-        ['Feb 2023', '$4,200.00', '($4,500.00)', '($300.00)', '$9,700.00'],
         ['Mar 2023', '$3,000.00', '($3,200.00)', '($200.00)', '($100.00)'],
+        ['Feb 2023', '$4,200.00', '($4,500.00)', '($300.00)', '$9,700.00'],
+        ['Jan 2023', '$4,000.00', '($3,500.00)', '$500.00', '$10,000.00'],
       ],
     });
   });

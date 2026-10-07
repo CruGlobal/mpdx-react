@@ -1,6 +1,7 @@
 import { ThemeProvider } from '@emotion/react';
 import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
@@ -16,12 +17,14 @@ import MPGAReportPage, { getServerSideProps } from './index.page';
 
 const mutationSpy = jest.fn();
 const id = '1000000001';
+const personNumber = '000000111';
 
 interface ComponentProps {
   userType?: UserTypeEnum;
   staffAccountId?: string | null;
   supervisesStaff?: boolean;
   viewedStaffAccountId?: string;
+  viewedPersonNumber?: string;
 }
 
 const Components = ({
@@ -29,6 +32,7 @@ const Components = ({
   staffAccountId = '12345',
   supervisesStaff = false,
   viewedStaffAccountId,
+  viewedPersonNumber,
 }: ComponentProps) => (
   <ThemeProvider theme={theme}>
     <TestRouter
@@ -38,6 +42,7 @@ const Components = ({
           ...(viewedStaffAccountId && {
             staffAccountId: viewedStaffAccountId,
           }),
+          ...(viewedPersonNumber && { personNumber: viewedPersonNumber }),
         },
       }}
     >
@@ -49,7 +54,9 @@ const Components = ({
         }}
         onCall={mutationSpy}
       >
-        <MPGAReportPage />
+        <SnackbarProvider>
+          <MPGAReportPage />
+        </SnackbarProvider>
       </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>
@@ -104,7 +111,9 @@ describe('MPGA Report Page', () => {
           mocks={mockNoStaffAccount}
           onCall={mutationSpy}
         >
-          <MPGAReportPage />
+          <SnackbarProvider>
+            <MPGAReportPage />
+          </SnackbarProvider>
         </GqlMockedProvider>
       </TestRouter>,
     );
@@ -156,6 +165,20 @@ describe('MPGA Report Page', () => {
         expect(mutationSpy).toHaveGraphqlOperation('MPGATransactions', {
           staffAccountId: id,
         }),
+      );
+    });
+
+    it('passes the person number from the url into the household query', async () => {
+      render(
+        <Components
+          supervisesStaff
+          viewedStaffAccountId={id}
+          viewedPersonNumber={personNumber}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('Hcm', { personNumber }),
       );
     });
   });

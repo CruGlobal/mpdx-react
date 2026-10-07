@@ -1,0 +1,21 @@
+diff --git a/src/components/Shared/EmptyDonationsTable/EmptyDonationsTable.tsx b/src/components/Shared/EmptyDonationsTable/EmptyDonationsTable.tsx
+--- a/src/components/Shared/EmptyDonationsTable/EmptyDonationsTable.tsx
++++ b/src/components/Shared/EmptyDonationsTable/EmptyDonationsTable.tsx
+@@ -41,15 +41,14 @@
+           component={NextLink}
+           href={`/accountLists/${accountListId}/settings/integrations`}
+           variant="contained"
+         >
+-          {t('Connect Services')}
++          Connect Services
+         </Button>
+ 
+         <Button
+           variant="contained"
+           color="primary"
+           onClick={() => setAddDonationOpen(true)}
+-          onMouseEnter={preloadAddDonation}
+         >
+-          {t('Add New Donation')}
++          Add New Donation
+         </Button>

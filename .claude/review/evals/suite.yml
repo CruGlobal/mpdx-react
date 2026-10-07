@@ -1,0 +1,126 @@
+version: 1
+name: mpdx-react-review-gate
+# Visible development set. Keep a separate private holdout so rule and prompt
+# edits cannot overfit to every expected answer here.
+blocker_threshold: 7
+thresholds:
+  blocker_recall: 0.85
+  blocker_precision: 0.80
+  clean_false_blocker_rate: 0.05
+  false_positive_dismissal_rate: 0.20
+  category_recall: 0.70
+  minimum_runs: 50
+cases:
+  - id: auth-timing-unsafe-signature
+    kind: seeded_bug
+    category: security
+    # Replaces timingSafeEqual with ===, reintroducing a timing side channel on
+    # the HMAC that gates the isImpersonatorDeveloper cookie.
+    patch: patches/auth-timing-unsafe-signature.patch
+    expected:
+      - id: timing-unsafe-comparison
+        must_block: true
+        min_severity: 7
+        category: security
+        match:
+          paths: ['pages/api/auth/**']
+          categories: [security, cryptography]
+          message_any:
+            [timing, timingSafeEqual, constant-time, signature, comparison]
+
+  - id: datahandler-drops-id
+    kind: seeded_bug
+    category: data-integrity
+    # Drops `id` from the REST-proxy data handler's mapped object, breaking
+    # Apollo cache normalization for DesignationWithDisplayName.
+    patch: patches/datahandler-drops-id.patch
+    expected:
+      - id: missing-id-breaks-normalization
+        must_block: true
+        min_severity: 7
+        category: data-integrity
+        match:
+          paths: ['pages/api/Schema/**']
+          categories: [data-integrity, caching, api-contracts]
+          message_any: [id, normaliz, cache, apollo]
+
+  - id: financial-rounding-in-aggregation
+    kind: seeded_bug
+    category: financial
+    # Rounds with .toFixed(2) inside the reduce and swaps the `?? 0` guard for a
+    # non-null assertion, so a missing month throws and every partial sum is
+    # re-rounded.
+    patch: patches/financial-rounding-in-aggregation.patch
+    expected:
+      - id: rounding-inside-aggregation
+        must_block: true
+        min_severity: 7
+        category: financial
+        match:
+          paths: ['src/components/Reports/**']
+          categories: [financial, correctness]
+          message_any:
+            [toFixed, round, aggregat, non-null, 'null', display boundary]
+
+  - id: i18n-hardcoded-string
+    kind: seeded_bug
+    category: standards
+    # Replaces two t() calls with literal English and removes the
+    # onMouseEnter preload from the code-split AddDonation modal trigger.
+    patch: patches/i18n-hardcoded-string.patch
+    expected:
+      - id: untranslated-user-visible-string
+        must_block: false
+        min_severity: 5
+        category: standards
+        match:
+          paths: ['src/components/Shared/EmptyDonationsTable/**']
+          categories: [standards, i18n, localization]
+          message_any: [translat, useTranslation, 't(', localiz, hardcoded]
+      - id: dropped-modal-preload
+        must_block: false
+        min_severity: 4
+        category: ux
+        match:
+          paths: ['src/components/Shared/EmptyDonationsTable/**']
+          categories: [ux, performance]
+          message_any: [preload, onMouseEnter, dynamic, chunk]
+
+  - id: test-fireevent-and-screen
+    kind: seeded_bug
+    category: testing
+    # Converts userEvent to fireEvent, switches to the global `screen`, and
+    # wraps assertions in un-awaited waitFor() calls that can never fail.
+    patch: patches/test-fireevent-and-screen.patch
+    expected:
+      - id: unawaited-waitfor-assertion
+        must_block: true
+        min_severity: 7
+        category: testing
+        match:
+          paths: ['src/components/Shared/CollapsibleContactInfo/**']
+          categories: [testing, correctness]
+          message_any: [waitFor, await, assertion, vacuous, cannot fail]
+      - id: fire-event-instead-of-user-event
+        must_block: false
+        min_severity: 4
+        category: testing
+        match:
+          paths: ['src/components/Shared/CollapsibleContactInfo/**']
+          categories: [testing, standards]
+          message_any: [fireEvent, userEvent, screen, render]
+
+  - id: clean-rename-local
+    kind: clean_control
+    # Behavior-preserving: renames the find() callback parameter and hoists the
+    # relationship id into a local. Same output, same types.
+    patch: patches/clean-rename-local.patch
+    expected: []
+
+  - id: clean-extract-batch-options
+    kind: clean_control
+    # Behavior-preserving: extracts the duplicated BatchHttpLink batching
+    # options into a shared object. Touches a CRITICAL-tier file (Apollo link),
+    # so it measures whether high risk alone provokes a false blocker.
+    patch: patches/clean-extract-batch-options.patch
+    expected: []

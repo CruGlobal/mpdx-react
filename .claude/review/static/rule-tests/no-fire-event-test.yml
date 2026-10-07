@@ -1,0 +1,7 @@
+id: no-fire-event
+valid:
+  - "userEvent.click(getByRole('button'));"
+  - 'handleFireEvent(node);'
+invalid:
+  - "fireEvent.click(getByRole('button'));"
+  - "fireEvent.change(input, { target: { value: 'x' } });"

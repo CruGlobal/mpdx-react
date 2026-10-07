@@ -1,11 +1,14 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import { ApolloError } from '@apollo/client';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { useHcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { useExpenseCategories } from 'src/hooks/useExpenseCategories';
 import { useFilteredFunds } from 'src/hooks/useFilteredFunds';
 import { useGetLastTwelveMonths } from 'src/hooks/useGetLastTwelveMonths';
 import { useLocale } from 'src/hooks/useLocale';
 import { monthYearFormat } from 'src/lib/intlFormat';
+import { HouseholdMember } from '../../Shared/Helpers/household';
 import { transformTransactionDate } from '../../Shared/Helpers/transformTransactionDate';
 import { Filters } from '../../Shared/SettingsDialog/SettingsDialog';
 import { DateRange } from '../../StaffExpenseReport/Helpers/StaffReportEnum';
@@ -25,9 +28,14 @@ export type ContextType = {
 
   allData: AllData;
   dataLoading: boolean;
+  reportError: ApolloError | undefined;
+  refetchReport: () => void;
   startDate: DateTime;
   endDate: DateTime;
   transactionYears: number[];
+
+  /** Fund balance at the start of the queried period, or null when the report has no funds */
+  startBalance: number | null;
 
   subtitle: string;
 
@@ -35,6 +43,8 @@ export type ContextType = {
   staffName: string | undefined;
   isSupervisorView: boolean;
   staffAccountId: string | null | undefined;
+  /** The HCM person the report is for, or undefined for the current user */
+  personNumber: string | undefined;
 
   /** Income and expenses totals */
   totals: {
@@ -65,6 +75,8 @@ export const useMPGAIncomeExpenses = (): ContextType => {
 interface Props {
   children?: React.ReactNode;
   staffAccountId?: string | null;
+  /** The HCM person whose household to load when a supervisor views someone else's report. */
+  personNumber?: string;
 }
 
 const sum = (rows?: DataFields[]): number => {
@@ -74,10 +86,29 @@ const sum = (rows?: DataFields[]): number => {
 export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
   children,
   staffAccountId,
+  personNumber,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const currency = 'USD';
+
+  const isSupervisorView = Boolean(staffAccountId);
+
+  // Person numbers tell the reader's payroll from their spouse's. HCM lists the reader first, then
+  // their spouse. Both requests leave together; `loading` below covers them both so salary is not
+  // rendered as one household total and then split.
+  const { data: hcmData, loading: hcmLoading } = useHcmQuery({
+    variables: { personNumber },
+    skip: isSupervisorView && !personNumber,
+  });
+  const household: HouseholdMember[] = useMemo(
+    () =>
+      hcmData?.hcm.map(({ staffInfo }) => ({
+        personNumber: staffInfo.personNumber,
+        name: staffInfo.preferredName ?? staffInfo.lastName,
+      })) ?? [],
+    [hcmData],
+  );
 
   const [filters, setFilters] = useState<Filters | null>(null);
 
@@ -139,7 +170,12 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
     });
   }, [selectedYear, isYearToDate, startDate, endDate, locale, t]);
 
-  const { data: reportData, loading } = useMpgaTransactionsQuery({
+  const {
+    data: reportData,
+    loading: reportLoading,
+    error: reportError,
+    refetch,
+  } = useMpgaTransactionsQuery({
     variables: {
       fundTypes: [FundTypes.Primary],
       startMonth: startDate.toISODate(),
@@ -147,9 +183,13 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
       staffAccountId,
     },
   });
+  const loading = reportLoading || hcmLoading;
+
+  const refetchReport = useCallback(() => {
+    refetch().catch(() => {});
+  }, [refetch]);
 
   const staffName = reportData?.reportsStaffExpenses?.name;
-  const isSupervisorView = Boolean(staffAccountId);
 
   // Filter out the current year since we only want to show previous years in filter dropdown
   const transactionYears = useMemo(
@@ -159,6 +199,11 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
       ),
     [reportData, now.year],
   );
+
+  const funds = reportData?.reportsStaffExpenses?.funds;
+  const startBalance = funds?.length
+    ? funds.reduce((acc, fund) => acc + fund.startBalance, 0)
+    : null;
 
   // Transform the data to ensure that all optional fields are defined, so we don't have to check for them later
   const transformedData: Funds[] = useMemo(
@@ -177,6 +222,7 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
                 ),
                 description: transaction.description ?? '',
                 amount: transaction.amount,
+                personNumber: transaction.personNumber,
               })),
             })),
           })),
@@ -189,6 +235,7 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
     transformedData,
     filters?.categories ?? null,
     t,
+    household,
   );
 
   const allData: AllData = useMemo(() => {
@@ -260,13 +307,17 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
       isFutureMonth,
       allData,
       dataLoading: loading,
+      reportError,
+      refetchReport,
       startDate,
       endDate,
       transactionYears,
+      startBalance,
       subtitle,
       staffName,
       isSupervisorView,
       staffAccountId,
+      personNumber,
       totals,
     }),
     [
@@ -278,13 +329,17 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
       isFutureMonth,
       allData,
       loading,
+      reportError,
+      refetchReport,
       startDate,
       endDate,
       transactionYears,
+      startBalance,
       subtitle,
       staffName,
       isSupervisorView,
       staffAccountId,
+      personNumber,
       totals,
     ],
   );

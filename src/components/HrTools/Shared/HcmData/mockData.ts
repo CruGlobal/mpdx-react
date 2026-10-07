@@ -29,12 +29,15 @@ const janeDoe: HcmQuery['hcm'][number]['staffInfo'] = {
 };
 
 const noMhaAndNoException: HcmQuery['hcm'][number] = {
+  syncedAt: null,
+  outOfSync: false,
   salaryRequestEligible: true,
   designationSupportCalculatorEligible: false,
   staffInfo: johnDoe,
   mhaRequest: {
     currentApprovedOverallAmount: null,
     currentTakenAmount: null,
+    boardApprovedOnDate: null,
   },
   mhaEit: {
     mhaEligibility: true,
@@ -73,6 +76,7 @@ const mhaAndNoException: HcmQuery['hcm'][number] = {
   mhaRequest: {
     currentApprovedOverallAmount: 15000,
     currentTakenAmount: 10000,
+    boardApprovedOnDate: '2026-06-01',
   },
 };
 

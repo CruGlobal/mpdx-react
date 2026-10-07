@@ -1,0 +1,7 @@
+id: no-global-screen
+valid:
+  - 'const { getByRole } = render(<Foo />);'
+  - "getByRole('button');"
+invalid:
+  - "screen.getByRole('button');"
+  - "screen.findByText('Saved');"

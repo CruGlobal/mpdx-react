@@ -123,6 +123,11 @@ export const FailedTransferModal: React.FC<FailedTransferModalProps> = ({
             </TableBody>
           </Table>
         </TableContainer>
+        {transfer.historyTruncated && (
+          <Typography variant="body2" sx={{ mt: 2 }}>
+            {t('Only the last year of transfer history is shown.')}
+          </Typography>
+        )}
         <Typography variant="body2" sx={{ mt: 2 }}>
           <Trans t={t}>
             For more information about failed transfers, email{' '}

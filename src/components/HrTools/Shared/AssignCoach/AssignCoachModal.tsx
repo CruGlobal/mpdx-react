@@ -14,6 +14,7 @@ import {
 import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { filterOptionsByWords } from 'src/components/Shared/Autocomplete/filterOptionsByWords';
 import {
   CancelButton,
   SubmitButton,
@@ -164,7 +165,9 @@ export const AssignCoachModal: React.FC<AssignCoachModalProps> = ({
                   onChange={(_, value) =>
                     setFieldValue('coachId', value?.id ?? '')
                   }
+                  filterOptions={filterOptionsByWords}
                   options={coaches}
+                  getOptionKey={(coach) => coach.id}
                   getOptionLabel={(coach) => coach.name}
                   isOptionEqualToValue={(option, value) =>
                     option.id === value.id

@@ -7,18 +7,16 @@ import {
   DialogContent,
   DialogTitle,
   FormControl,
-  FormControlLabel,
   FormLabel,
-  Radio,
   RadioGroup,
   SxProps,
   Theme,
-  Typography,
 } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { Formik, FormikProps } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { DescribedRadioOption } from 'src/components/HrTools/Shared/DescribedRadioOption';
 import { DesignationSupportFormType } from 'src/graphql/types.generated';
 
 export interface CreateGoalDialogProps {
@@ -110,48 +108,18 @@ export const CreateGoalDialog: React.FC<CreateGoalDialogProps> = ({
                   name="formType"
                   value={values.formType}
                   onChange={handleChange}
+                  sx={{ gap: 2 }}
                 >
-                  {formTypeOptions.map(
-                    ({ value, title, description }, index) => (
-                      <FormControlLabel
-                        key={value}
-                        value={value}
-                        control={
-                          <Radio
-                            inputProps={{
-                              'aria-labelledby': `${value}-title`,
-                              'aria-describedby': `${value}-desc`,
-                            }}
-                          />
-                        }
-                        label={
-                          <>
-                            <Typography
-                              id={`${value}-title`}
-                              variant="subtitle1"
-                              component="span"
-                              display="block"
-                            >
-                              {title}
-                            </Typography>
-                            <Typography
-                              id={`${value}-desc`}
-                              variant="body2"
-                              color="text.secondary"
-                              component="span"
-                              display="block"
-                            >
-                              {description}
-                            </Typography>
-                          </>
-                        }
-                        sx={{
-                          alignItems: 'flex-start',
-                          mb: index < formTypeOptions.length - 1 ? 2 : 0,
-                        }}
-                      />
-                    ),
-                  )}
+                  {formTypeOptions.map(({ value, title, description }) => (
+                    <DescribedRadioOption
+                      key={value}
+                      value={value}
+                      label={title}
+                      description={description}
+                      labelVariant="subtitle1"
+                      descriptionVariant="body2"
+                    />
+                  ))}
                 </RadioGroup>
               </FormControl>
             </DialogContent>

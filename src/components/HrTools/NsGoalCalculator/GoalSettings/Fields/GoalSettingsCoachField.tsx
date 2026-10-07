@@ -1,6 +1,7 @@
 import React from 'react';
 import { Autocomplete, Box, CircularProgress, TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { filterOptionsByWords } from 'src/components/Shared/Autocomplete/filterOptionsByWords';
 import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
 import { GoalSettingsAttendee } from '../goalSettingsSectionProps';
 import { CoachFieldAlerts } from './CoachFieldAlerts';
@@ -49,7 +50,9 @@ export const GoalSettingsCoachField: React.FC<GoalSettingsCoachFieldProps> = ({
         value={coach.value}
         onOpen={coach.loadCoaches}
         onChange={(_, selected) => coach.pick(selected)}
+        filterOptions={filterOptionsByWords}
         options={coach.options}
+        getOptionKey={(option) => option.id}
         getOptionLabel={(option) => option.name}
         isOptionEqualToValue={(option, selected) => option.id === selected.id}
         noOptionsText={t(

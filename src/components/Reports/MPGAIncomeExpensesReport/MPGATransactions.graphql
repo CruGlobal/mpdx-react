@@ -13,6 +13,7 @@ query MPGATransactions(
     name
     transactionYears
     funds {
+      startBalance
       categories {
         averagePerMonth
         breakdownByMonth {
@@ -30,6 +31,7 @@ query MPGATransactions(
               amount
               transactedAt
               description
+              personNumber
             }
           }
           subCategory
