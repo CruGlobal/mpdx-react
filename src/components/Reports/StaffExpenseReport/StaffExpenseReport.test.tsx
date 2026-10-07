@@ -291,6 +291,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                   hcm: [
                     {
                       usStaffGroup,
+                      outOfSync: false,
                       staffInfo: {
                         personNumber: '000000111',
                         preferredName: 'Alex',
@@ -298,6 +299,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                     },
                     {
                       usStaffGroup,
+                      outOfSync: false,
                       staffInfo: {
                         personNumber: '000000222',
                         preferredName: 'Jordan',

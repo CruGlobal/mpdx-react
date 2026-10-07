@@ -1,6 +1,13 @@
 import { getHousingKind } from 'src/components/Reports/Shared/HousingAllowance/housingAllowance';
 import { MinistersHousingIneligibilityReasonEnum } from 'src/graphql/types.generated';
 
+// Partial on purpose: the API enum is still growing, so a code newer than this
+// client must degrade to the fallback copy at runtime instead of failing the
+// build (see .claude/review/rules/data-integrity.md).
+type ReasonCopy = Partial<
+  Record<MinistersHousingIneligibilityReasonEnum, string>
+>;
+
 export const getIneligibilityReason = (
   t: (key: string) => string,
   eligible: boolean,
@@ -10,7 +17,9 @@ export const getIneligibilityReason = (
   if (eligible) {
     return t('Completed the required IBS courses');
   }
-  const reasonCopy: Record<MinistersHousingIneligibilityReasonEnum, string> = {
+  const mustUseMhiForm = t('Must complete an MHI form instead');
+  const noIbsCourses = t('Has not completed the required IBS courses');
+  const reasonCopy: ReasonCopy = {
     [MinistersHousingIneligibilityReasonEnum.PersonType]: t(
       'Staff type is not eligible for MHA',
     ),
@@ -20,14 +29,10 @@ export const getIneligibilityReason = (
     [MinistersHousingIneligibilityReasonEnum.AssignmentStatus]: t(
       'Assignment status must be payroll eligible',
     ),
-    [MinistersHousingIneligibilityReasonEnum.ItalyMhi]: t(
-      'Must complete an MHI form instead',
-    ),
+    [MinistersHousingIneligibilityReasonEnum.ItalyMhi]: mustUseMhiForm,
     // Unreachable in MHA results (the MHA country check only fails for Italy)
     [MinistersHousingIneligibilityReasonEnum.NonItalyMha]: t('Not applicable'),
-    [MinistersHousingIneligibilityReasonEnum.NoIbsCertification]: t(
-      'Has not completed the required IBS courses',
-    ),
+    [MinistersHousingIneligibilityReasonEnum.NoIbsCertification]: noIbsCourses,
     [MinistersHousingIneligibilityReasonEnum.InvalidIbsCertification]: t(
       'IBS certification type is not valid for MHA',
     ),
@@ -39,12 +44,11 @@ export const getIneligibilityReason = (
     ),
   };
   // Fall back to the country-based guess when the API predates the reason code
-  // (null) or sends a code newer than this client (missing from the record)
-  const fallbackCode =
-    getHousingKind(country) === 'MHI'
-      ? MinistersHousingIneligibilityReasonEnum.ItalyMhi
-      : MinistersHousingIneligibilityReasonEnum.NoIbsCertification;
-  return reasonCopy[reasonCode ?? fallbackCode] ?? reasonCopy[fallbackCode];
+  // (null) or sends a code this client does not know yet
+  const fallbackCopy =
+    getHousingKind(country) === 'MHI' ? mustUseMhiForm : noIbsCourses;
+  const copy = reasonCode ? reasonCopy[reasonCode] : undefined;
+  return copy ?? fallbackCopy;
 };
 
 export const getMhiReason = (
@@ -62,7 +66,7 @@ export const getMhiReason = (
   const exceptionNotSatisfied = t(
     'Does not satisfy the IBS Exception for Italy staff',
   );
-  const reasonCopy: Record<MinistersHousingIneligibilityReasonEnum, string> = {
+  const reasonCopy: ReasonCopy = {
     [MinistersHousingIneligibilityReasonEnum.PersonType]: t(
       'Staff type is not eligible for MHI',
     ),
@@ -86,7 +90,7 @@ export const getMhiReason = (
     // Unreachable here: the country gate above already returned Not applicable
     [MinistersHousingIneligibilityReasonEnum.NonItalyMha]: t('Not applicable'),
   };
-  const fallbackCode =
-    MinistersHousingIneligibilityReasonEnum.InvalidIbsCertification;
-  return reasonCopy[reasonCode ?? fallbackCode] ?? reasonCopy[fallbackCode];
+  // A null or unknown code still means the exception was not met
+  const copy = reasonCode ? reasonCopy[reasonCode] : undefined;
+  return copy ?? exceptionNotSatisfied;
 };
