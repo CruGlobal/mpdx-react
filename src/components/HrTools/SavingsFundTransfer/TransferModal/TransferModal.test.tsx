@@ -721,12 +721,32 @@ describe('TransferModal', () => {
         ),
       ).toBeInTheDocument();
 
-      // user-event refuses to click a disabled button, so the disabled
-      // assertion above is what guarantees no mutation can fire.
+      // user-event refuses to click a disabled button, so asserting it is
+      // disabled is what guarantees no mutation can fire.
       await waitFor(() =>
         expect(getByRole('button', { name: /submit/i })).toBeDisabled(),
       );
 
+      expect(mutationSpy).not.toHaveGraphqlOperation('CreateTransfer');
+    });
+
+    it('should fail closed when the source fund is not in the loaded funds', async () => {
+      // If the source fund's balance cannot be resolved, a one-time transfer
+      // must not go through on an unverified balance.
+      const result = render(<Components funds={[fundsMock[1]]} />);
+      const { getByRole, findByText } = result;
+
+      enterTransferDetails(result, '100');
+
+      expect(
+        await findByText(
+          'Unable to verify the available balance for this account',
+        ),
+      ).toBeInTheDocument();
+
+      await waitFor(() =>
+        expect(getByRole('button', { name: /submit/i })).toBeDisabled(),
+      );
       expect(mutationSpy).not.toHaveGraphqlOperation('CreateTransfer');
     });
 
@@ -746,30 +766,34 @@ describe('TransferModal', () => {
       );
     });
 
-    it('allows transfers down to the deficit limit and blocks beyond it', async () => {
-      // Per review on MPDX-10004 the floor is the fund's deficitLimit, so a
-      // -$1,000 limit raises the available balance above the $15,000 end
-      // balance to $16,000.
-      const fundsWithDeficit = [
-        { ...fundsMock[0], deficitLimit: -1000 },
-        fundsMock[1],
-      ];
+    // SAA stores deficitLimit as a positive magnitude with floor
+    // -deficit_limit.abs (Fund#withdrawal_would_violate_deficit?); legacy
+    // mocks also exist with the negative convention. Both must yield the same
+    // floor: a $1,000 limit on a $15,000 balance makes $16,000 available.
+    it.each([[1000], [-1000]])(
+      'allows transfers down to the deficit limit and blocks beyond it (deficitLimit %p)',
+      async (deficitLimit) => {
+        const fundsWithDeficit = [
+          { ...fundsMock[0], deficitLimit },
+          fundsMock[1],
+        ];
 
-      const result = render(<Components funds={fundsWithDeficit} />);
-      const { getByRole, findByText } = result;
+        const result = render(<Components funds={fundsWithDeficit} />);
+        const { getByRole, findByText } = result;
 
-      enterTransferDetails(result, '16500');
+        enterTransferDetails(result, '16500');
 
-      expect(
-        await findByText(
-          'Amount cannot exceed the available balance of $16,000.00',
-        ),
-      ).toBeInTheDocument();
+        expect(
+          await findByText(
+            'Amount cannot exceed the available balance of $16,000.00',
+          ),
+        ).toBeInTheDocument();
 
-      await waitFor(() =>
-        expect(getByRole('button', { name: /submit/i })).toBeDisabled(),
-      );
-    });
+        await waitFor(() =>
+          expect(getByRole('button', { name: /submit/i })).toBeDisabled(),
+        );
+      },
+    );
 
     it('should allow winding down a recurring transfer whose amount exceeds the balance', async () => {
       const overBalanceTransfer: TransferModalData['transfer'] = {
