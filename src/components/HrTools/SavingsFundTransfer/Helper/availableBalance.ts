@@ -8,7 +8,9 @@ import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
 // floor (endBalance <= deficitLimit) while TransferModal's old warning
 // treated it as a positive magnitude, and mocks with both conventions
 // exist in the repo.
-export const minimumAllowedBalance = (_fund: FundFieldsFragment): number => 0;
+export const minimumAllowedBalance = (fund: FundFieldsFragment): number => {
+  fund.deficitLimit ?? 0;
+}
 
 // The most that can be transferred out of a fund right now.
 export const availableBalance = (fund: FundFieldsFragment): number =>
