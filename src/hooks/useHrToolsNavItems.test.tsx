@@ -79,18 +79,17 @@ describe('useHrToolsNavItems', () => {
     process.env.DISABLE_NEW_REPORTS = 'false';
   });
 
-  it('hides all items, except partner reminders, for an ineligible user when not in a development env', async () => {
+  it('hides all items for an ineligible user when not in a development env', async () => {
     const { result, waitForNextUpdate } = renderHook(
       () => useHrToolsNavItems(),
       { wrapper: Wrapper },
     );
     await waitForNextUpdate();
 
-    expect(result.current.items).toHaveLength(1);
-    expect(result.current.items[0].id).toBe('partnerReminders');
+    expect(result.current.items).toEqual([]);
   });
 
-  it('hides every eligible item except partner reminders when DISABLE_NEW_REPORTS is on', async () => {
+  it('hides every eligible item when DISABLE_NEW_REPORTS is on', async () => {
     process.env.DISABLE_NEW_REPORTS = 'true';
     mockSession({ developer: false });
 
@@ -100,9 +99,7 @@ describe('useHrToolsNavItems', () => {
     );
     await waitForNextUpdate();
 
-    expect(result.current.items.map((item) => item.id)).toEqual([
-      'partnerReminders',
-    ]);
+    expect(result.current.items).toEqual([]);
   });
 
   it('shows all items for an ineligible developer in a development env', async () => {
@@ -162,7 +159,7 @@ describe('useHrToolsNavItems', () => {
     );
   });
 
-  it('hides all items, except partner reminders, for an ineligible non-developer in a development env', async () => {
+  it('hides all items for an ineligible non-developer in a development env', async () => {
     process.env.DEVELOPMENT_ENV = 'true';
     mockSession({ developer: false });
 
@@ -172,11 +169,10 @@ describe('useHrToolsNavItems', () => {
     );
     await waitForNextUpdate();
 
-    expect(result.current.items).toHaveLength(1);
-    expect(result.current.items[0].id).toBe('partnerReminders');
+    expect(result.current.items).toEqual([]);
   });
 
-  it('hides all items, except partner reminders, for an ineligible developer outside a development env', async () => {
+  it('hides all items for an ineligible developer outside a development env', async () => {
     process.env.DEVELOPMENT_ENV = 'false';
     mockSession({ developer: true });
 
@@ -186,8 +182,7 @@ describe('useHrToolsNavItems', () => {
     );
     await waitForNextUpdate();
 
-    expect(result.current.items).toHaveLength(1);
-    expect(result.current.items[0].id).toBe('partnerReminders');
+    expect(result.current.items).toEqual([]);
   });
 
   describe('MPD Supervisor Report while impersonating', () => {
@@ -288,6 +283,41 @@ describe('useHrToolsNavItems', () => {
       const ids = result.current.items.map((item) => item.id);
       expect(ids).toContain('mpdGoalAdmin');
       expect(ids).not.toContain('goalCalculator');
+    });
+  });
+
+  describe('partnerReminders', () => {
+    const renderItemIds = async (user: DeepPartial<GetUserQuery['user']>) => {
+      const { result, waitForNextUpdate } = renderHook(
+        () => useHrToolsNavItems(),
+        {
+          wrapper: makeWrapper({
+            GetUser: { user },
+            UserOption: verifiedUserOption,
+          }),
+        },
+      );
+      await waitForNextUpdate();
+      return result.current.items.map((item) => item.id);
+    };
+
+    beforeEach(() => {
+      mockSession({ developer: false });
+    });
+
+    it('is shown to a user with a staff account even when their group is ineligible for every other tool', async () => {
+      expect(
+        await renderItemIds({
+          ...ineligibleUser,
+          staffAccountId: 'staff-account-1',
+        }),
+      ).toContain('partnerReminders');
+    });
+
+    it('is hidden from a user without a staff account', async () => {
+      expect(await renderItemIds(ineligibleUser)).not.toContain(
+        'partnerReminders',
+      );
     });
   });
 
