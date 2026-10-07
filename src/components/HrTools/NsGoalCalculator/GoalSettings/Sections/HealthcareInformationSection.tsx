@@ -1,10 +1,13 @@
 import React, { useMemo } from 'react';
+import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { getLocalizedBenefitsPlan } from 'src/components/HrTools/Shared/helpers/goalCalculatorConstantsHelper';
 import { MpdGoalBenefitsConstantPlanEnum } from 'src/graphql/types.generated';
-import { getLocalizedBenefitsPlan } from 'src/lib/functions/getLocalizedBenefitsPlan';
+import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { GoalSettingsNumberField } from '../Fields/GoalSettingsNumberField';
 import { GoalSettingsSelect, SelectOption } from '../Fields/GoalSettingsSelect';
 import { ColumnHeaderRow, FieldRow, Section } from '../GoalSettingsLayout';
+import { GoalSettingsFormValues } from '../goalSettingsFormValues';
 import { GoalSettingsSectionProps } from '../goalSettingsSectionProps';
 
 export const HealthcareInformationSection: React.FC<
@@ -12,17 +15,21 @@ export const HealthcareInformationSection: React.FC<
 > = ({ sharedHeader }) => {
   const { t } = useTranslation();
 
-  const benefitsPlanOptions = useMemo<SelectOption[]>(
-    () =>
-      [
-        MpdGoalBenefitsConstantPlanEnum.Select,
-        MpdGoalBenefitsConstantPlanEnum.Plus,
-        MpdGoalBenefitsConstantPlanEnum.Base,
-        MpdGoalBenefitsConstantPlanEnum.Minimum,
-        MpdGoalBenefitsConstantPlanEnum.Exempt,
-      ].map((value) => ({ value, label: getLocalizedBenefitsPlan(t, value) })),
-    [t],
+  const {
+    values: { calculationsYear },
+  } = useFormikContext<GoalSettingsFormValues>();
+  const { goalBenefitsPlans } = useGoalCalculatorConstants(
+    calculationsYear ? Number(calculationsYear) : null,
   );
+
+  const benefitsPlanOptions = useMemo<SelectOption[]>(() => {
+    // Each plan repeats once per family size
+    const plans = new Map<MpdGoalBenefitsConstantPlanEnum, string>();
+    goalBenefitsPlans.forEach(({ plan, planDisplayName }) => {
+      plans.set(plan, getLocalizedBenefitsPlan(t, plan) ?? planDisplayName);
+    });
+    return Array.from(plans, ([value, label]) => ({ value, label }));
+  }, [goalBenefitsPlans, t]);
 
   return (
     <Section title={t('Healthcare Information')}>
