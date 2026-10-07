@@ -106,8 +106,8 @@ describe('PartnerGivingAnalysisReport', () => {
     jest.clearAllMocks();
   });
 
-  // MPDX-10092: this page is open to every user, and deciding whether to show the balance card ran
-  // the StaffAccount query, which asks SAA for a full, unfiltered account summary on every load.
+  // MPDX-10092: deciding whether to show the balance card must not call SAA. The API resolves the
+  // StaffAccount query with a full, unfiltered SAA account summary.
   describe('balance card', () => {
     it('shows for a user with a staff account without running the StaffAccount query', async () => {
       const { findByText } = render(<TestComponent />);
