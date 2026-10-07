@@ -175,11 +175,15 @@ Three patterns — know which one a form uses before adding a field:
   are dropped. Adding a field here means updating that mapping, not just the form.
 - **Explicit modal CRUD** — SavingsFundTransfer persists through its transfer
   modals + mutations, not autosave.
-- **One-off mutation on an explicit Save** — MpdSupervisorReport's
-  `GeographicLocationSelect` is the only instance: a supervisor picks a location
-  for someone else and presses Save, which runs
-  `updateManagedStaffGeographicLocation`. Deliberately not autosave — the record
-  belongs to another person, so a stray dropdown change must not write.
+- **One-off mutation on an explicit Save** — two location pickers, both
+  deliberately not autosave because a stray dropdown change must not write:
+  - MpdSupervisorReport's `GeographicLocationSelect`: a supervisor picks a
+    location for someone else and presses Save, which runs
+    `updateManagedStaffGeographicLocation`. The record belongs to another person.
+  - AdditionalSalaryRequest's `SetLocationModal`: a user without a location on
+    their cap sets their own once, through `updateUserGeographicLocation`. The
+    one-time limit is UI-only, enforced by the `location_set_from_asr` user
+    option, since the same preference stays editable in Settings.
 
 Note the finalize step is separate from persistence: NSO autosaves each field but
 has a distinct `Complete` mutation, and the request forms autosave a draft but

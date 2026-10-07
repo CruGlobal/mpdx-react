@@ -2,8 +2,12 @@ import { ThemeProvider } from '@mui/material/styles';
 import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import { DeepPartial } from 'ts-essentials';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
+import {
+  UpdateUserOptionMutation,
+  UserOptionQuery,
+} from 'src/hooks/UserPreference.generated';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
 import {
@@ -26,8 +30,11 @@ const userDefault = {
 };
 
 type ComponentProps = {
-  calculations?: object | null;
-  user?: object;
+  calculations?: Partial<
+    NonNullable<AdditionalSalaryRequestType['calculations']>
+  > | null;
+  user?: DeepPartial<AdditionalSalaryRequestType['user']>;
+  hcmLoading?: boolean;
   locationSetFromAsr?: boolean;
   onCall?: jest.Mock;
 };
@@ -35,6 +42,7 @@ type ComponentProps = {
 const renderComponent = ({
   calculations = { currentSalaryCap: 75000, geographicLocation: null },
   user = userDefault,
+  hcmLoading = false,
   locationSetFromAsr = false,
   onCall = jest.fn(),
 }: ComponentProps = {}) =>
@@ -43,6 +51,7 @@ const renderComponent = ({
       <SnackbarProvider>
         <GqlMockedProvider<{
           UserOption: UserOptionQuery;
+          UpdateUserOption: UpdateUserOptionMutation;
           GoalCalculatorConstants: GoalCalculatorConstantsQuery;
         }>
           mocks={{
@@ -50,6 +59,11 @@ const renderComponent = ({
               userOption: {
                 key: preferenceKey,
                 value: String(locationSetFromAsr),
+              },
+            },
+            UpdateUserOption: {
+              createOrUpdateUserOption: {
+                option: { key: preferenceKey, value: 'true' },
               },
             },
             GoalCalculatorConstants: {
@@ -67,7 +81,11 @@ const renderComponent = ({
         >
           <AdditionalSalaryRequestContext.Provider
             value={
-              { calculations, user } as unknown as AdditionalSalaryRequestType
+              {
+                calculations,
+                user,
+                hcmLoading,
+              } as unknown as AdditionalSalaryRequestType
             }
           >
             <MissingLocationAlert />
@@ -76,6 +94,17 @@ const renderComponent = ({
       </SnackbarProvider>
     </ThemeProvider>,
   );
+
+const saveLocation = async ({
+  findByRole,
+  getByRole,
+}: ReturnType<typeof renderComponent>) => {
+  userEvent.click(await findByRole('button', { name: 'Set Location' }));
+  await waitFor(() => expect(getByRole('combobox')).toBeEnabled());
+  userEvent.click(getByRole('combobox'));
+  userEvent.click(await findByRole('option', { name: 'Orlando, FL' }));
+  userEvent.click(getByRole('button', { name: 'Save' }));
+};
 
 const waitForPreference = async (onCall: jest.Mock) => {
   await waitFor(() => expect(onCall).toHaveGraphqlOperation('UserOption'));
@@ -125,13 +154,9 @@ describe('MissingLocationAlert', () => {
 
   it('remembers that the one-time update was used after saving', async () => {
     const onCall = jest.fn();
-    const { findByRole, getByRole } = renderComponent({ onCall });
+    const utils = renderComponent({ onCall });
 
-    userEvent.click(await findByRole('button', { name: 'Set Location' }));
-    await waitFor(() => expect(getByRole('combobox')).toBeEnabled());
-    userEvent.click(getByRole('combobox'));
-    userEvent.click(await findByRole('option', { name: 'Orlando, FL' }));
-    userEvent.click(getByRole('button', { name: 'Save' }));
+    await saveLocation(utils);
 
     await waitFor(() =>
       expect(onCall).toHaveGraphqlOperation('UpdateUserOption', {
@@ -139,6 +164,12 @@ describe('MissingLocationAlert', () => {
         value: 'true',
       }),
     );
+    expect(
+      await utils.findByText(/already used your one-time location update/),
+    ).toBeInTheDocument();
+    expect(
+      utils.queryByRole('button', { name: 'Set Location' }),
+    ).not.toBeInTheDocument();
   });
 
   it('points to the Salary Calculation Form once the one-time update is used', async () => {
@@ -166,6 +197,15 @@ describe('MissingLocationAlert', () => {
       },
       onCall,
     });
+
+    await waitForPreference(onCall);
+
+    expect(queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('waits for HCM before showing the alert', async () => {
+    const onCall = jest.fn();
+    const { queryByRole } = renderComponent({ hcmLoading: true, onCall });
 
     await waitForPreference(onCall);
 

@@ -28,7 +28,8 @@ export const SetLocationModal: React.FC<SetLocationModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const { goalGeographicConstantMap, loading } = useGoalCalculatorConstants();
+  const { goalGeographicConstantMap, loading, unavailable } =
+    useGoalCalculatorConstants();
   const [selected, setSelected] = useState<string | null>(null);
   const [updateGeographicLocation, { loading: saving }] =
     useUpdateUserGeographicLocationMutation();
@@ -37,8 +38,6 @@ export const SetLocationModal: React.FC<SetLocationModalProps> = ({
     () => Array.from(goalGeographicConstantMap.keys()),
     [goalGeographicConstantMap],
   );
-
-  const label = t('Nearest Geographic Multiplier Location');
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -50,7 +49,6 @@ export const SetLocationModal: React.FC<SetLocationModalProps> = ({
       await updateGeographicLocation({
         variables: { geographicLocation: selected },
         refetchQueries: ['AdditionalSalaryRequest'],
-        awaitRefetchQueries: true,
       });
     } catch {
       return;
@@ -77,12 +75,12 @@ export const SetLocationModal: React.FC<SetLocationModalProps> = ({
               options={locations}
               value={selected}
               onChange={(_, location) => setSelected(location)}
-              disabled={loading || saving}
+              disabled={loading || saving || unavailable}
               disableClearable={selected !== null}
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label={label}
+                  label={t('Nearest Geographic Multiplier Location')}
                   slotProps={{ formHelperText: { sx: { mx: 0 } } }}
                   helperText={t(
                     'If you live within 50 miles of one of the following metropolitan areas, please select it from the list. If not, select "None."',
@@ -90,13 +88,20 @@ export const SetLocationModal: React.FC<SetLocationModalProps> = ({
                 />
               )}
             />
+            {unavailable && (
+              <Alert severity="warning">
+                {t(
+                  'Geographic locations are not available for this year, so this cannot be updated right now.',
+                )}
+              </Alert>
+            )}
           </Stack>
         </DialogContent>
         <DialogActions>
           <CancelButton onClick={handleClose} disabled={saving}>
             {t('Cancel')}
           </CancelButton>
-          <SubmitButton disabled={!selected || saving}>
+          <SubmitButton disabled={!selected || saving || unavailable}>
             {t('Save')}
           </SubmitButton>
         </DialogActions>

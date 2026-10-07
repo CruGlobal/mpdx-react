@@ -12,7 +12,7 @@ const locationSetFromAsrKey = 'location_set_from_asr';
 
 export const MissingLocationAlert: React.FC = () => {
   const { t } = useTranslation();
-  const { calculations, user } = useAdditionalSalaryRequest();
+  const { calculations, user, hcmLoading } = useAdditionalSalaryRequest();
   const [modalOpen, setModalOpen] = useState(false);
   const { data: optionData, loading } = useUserOptionQuery({
     variables: { key: locationSetFromAsrKey },
@@ -32,11 +32,12 @@ export const MissingLocationAlert: React.FC = () => {
           },
         },
       },
-    });
+    }).catch(() => {});
 
   if (
     !calculations ||
     calculations.geographicLocation ||
+    hcmLoading ||
     (loading && !optionData)
   ) {
     return null;

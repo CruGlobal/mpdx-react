@@ -33,7 +33,6 @@ export const defaultMockContextValue = {
         staffAccountBalance: 40000,
         ytdAsrAmount: 5000,
         grossAnnualSalary: 40000,
-        geographicLocation: 'Orlando, FL',
       },
     },
   },

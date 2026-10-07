@@ -6,7 +6,10 @@ import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
-import { useAdditionalSalaryRequestQuery } from '../AdditionalSalaryRequest.generated';
+import {
+  AdditionalSalaryRequestQuery,
+  useAdditionalSalaryRequestQuery,
+} from '../AdditionalSalaryRequest.generated';
 import { UpdateUserGeographicLocationMutation } from '../UpdateUserGeographicLocation.generated';
 import { SetLocationModal } from './SetLocationModal';
 
@@ -32,6 +35,8 @@ interface TestComponentProps {
   onSaved?: jest.Mock;
   onCall?: jest.Mock;
   saveFails?: boolean;
+  refetchFails?: boolean;
+  constants?: typeof geographicConstants;
 }
 
 const renderModal = ({
@@ -39,6 +44,8 @@ const renderModal = ({
   onSaved = jest.fn(),
   onCall = jest.fn(),
   saveFails = false,
+  refetchFails = false,
+  constants = geographicConstants,
 }: TestComponentProps = {}) =>
   render(
     <ThemeProvider theme={theme}>
@@ -46,9 +53,17 @@ const renderModal = ({
         <GqlMockedProvider<{
           GoalCalculatorConstants: GoalCalculatorConstantsQuery;
           UpdateUserGeographicLocation: UpdateUserGeographicLocationMutation;
+          AdditionalSalaryRequest: AdditionalSalaryRequestQuery;
         }>
           mocks={{
-            GoalCalculatorConstants: geographicConstants,
+            GoalCalculatorConstants: constants,
+            ...(refetchFails && {
+              AdditionalSalaryRequest: {
+                latestAdditionalSalaryRequest: (() => {
+                  throw new Error('SAA is unavailable');
+                }) as never,
+              },
+            }),
             ...(saveFails && {
               UpdateUserGeographicLocation: {
                 updateUserGeographicLocation: (() => {
@@ -125,13 +140,27 @@ describe('SetLocationModal', () => {
     expect(onCall).toHaveGraphqlOperation('UpdateUserGeographicLocation', {
       geographicLocation: 'New York, NY',
     });
-    expect(
-      onCall.mock.calls.filter(
-        ([{ operation }]) =>
-          operation.operationName === 'AdditionalSalaryRequest',
-      ),
-    ).toHaveLength(2);
+    await waitFor(() =>
+      expect(
+        onCall.mock.calls.filter(
+          ([{ operation }]) =>
+            operation.operationName === 'AdditionalSalaryRequest',
+        ),
+      ).toHaveLength(2),
+    );
     expect(await utils.findByText('Saved successfully.')).toBeInTheDocument();
+  });
+
+  it('records the one-time update even when the refetch fails', async () => {
+    const handleClose = jest.fn();
+    const onSaved = jest.fn();
+    const utils = renderModal({ handleClose, onSaved, refetchFails: true });
+
+    await chooseLocation(utils, 'Orlando, FL');
+    userEvent.click(utils.getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => expect(handleClose).toHaveBeenCalled());
+    expect(onSaved).toHaveBeenCalled();
   });
 
   it('stays open when the save fails', async () => {
@@ -168,5 +197,22 @@ describe('SetLocationModal', () => {
     expect(handleClose).toHaveBeenCalled();
     expect(onSaved).not.toHaveBeenCalled();
     expect(onCall).not.toHaveGraphqlOperation('UpdateUserGeographicLocation');
+  });
+
+  it('blocks saving when the year has no seeded constants', async () => {
+    const { findByText, getByRole } = renderModal({
+      constants: {
+        constant: {
+          ...geographicConstants.constant,
+          mpdGoalBenefitsConstants: [],
+        },
+      },
+    });
+
+    expect(
+      await findByText(/Geographic locations are not available for this year/),
+    ).toBeInTheDocument();
+    expect(getByRole('combobox')).toBeDisabled();
+    expect(getByRole('button', { name: 'Save' })).toBeDisabled();
   });
 });
