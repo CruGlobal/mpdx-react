@@ -57,7 +57,6 @@ export const useAdditionalSalaryRequestForm = (
     useSubmitAdditionalSalaryRequestMutation();
 
   const lastValidTotalRef = useRef<number>(0);
-  const lastValidNonBackpayTotalRef = useRef<number>(0);
 
   const createCurrencyValidation = useCallback(
     (fieldName: string, max?: number) => {
@@ -177,17 +176,11 @@ export const useAdditionalSalaryRequestForm = (
               const nonBackpayTotal = getNonBackpayTotal(
                 this.parent as CompleteFormValues,
               );
-              if (nonBackpayTotal > 0) {
-                lastValidNonBackpayTotalRef.current = nonBackpayTotal;
-              }
-              const stableNonBackpayTotal =
-                nonBackpayTotal > 0
-                  ? nonBackpayTotal
-                  : lastValidNonBackpayTotalRef.current;
-
+              // Match useSalaryCalculations: backpay alone never exceeds the cap
               const amountRequestedYtd =
-                grossAnnualSalary + ytdAsrAmount + stableNonBackpayTotal;
-              const exceedsCap = amountRequestedYtd > individualCap;
+                grossAnnualSalary + ytdAsrAmount + nonBackpayTotal;
+              const exceedsCap =
+                nonBackpayTotal > 0 && amountRequestedYtd > individualCap;
 
               if (exceedsCap) {
                 return !!value && value.trim().length > 0;
