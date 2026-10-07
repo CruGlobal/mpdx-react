@@ -1,16 +1,11 @@
 import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
 
-// The lowest a source account balance may go after a transfer. Per
-// MPDX-10004 a transfer may never take an account below $0 — fund deficit
-// limits apply to salary, not savings fund transfers. If that rule ever
-// loosens to allow a deficit, confirm the sign convention of
-// `deficitLimit` first: BalanceCard formerly treated it as a negative
-// floor (endBalance <= deficitLimit) while TransferModal's old warning
-// treated it as a positive magnitude, and mocks with both conventions
-// exist in the repo.
-export const minimumAllowedBalance = (fund: FundFieldsFragment): number => {
+// The lowest a source account balance may go after a transfer: the fund's
+// deficitLimit (per review on MPDX-10004), treated as a floor value the way
+// BalanceCard's endBalance <= deficitLimit check does, defaulting to $0 when
+// the fund has no limit.
+export const minimumAllowedBalance = (fund: FundFieldsFragment): number =>
   fund.deficitLimit ?? 0;
-}
 
 // The most that can be transferred out of a fund right now.
 export const availableBalance = (fund: FundFieldsFragment): number =>

@@ -2,7 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { RenderResult, render, waitFor } from '@testing-library/react';
+import { RenderResult, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
@@ -746,10 +746,10 @@ describe('TransferModal', () => {
       );
     });
 
-    it('should still block below a zero balance even when the fund has a deficit limit', async () => {
-      // Per MPDX-10004 the floor is $0 regardless of the fund's deficit
-      // limit. If the rule loosens to allow a deficit, this is the test to
-      // update.
+    it('allows transfers down to the deficit limit and blocks beyond it', async () => {
+      // Per review on MPDX-10004 the floor is the fund's deficitLimit, so a
+      // -$1,000 limit raises the available balance above the $15,000 end
+      // balance to $16,000.
       const fundsWithDeficit = [
         { ...fundsMock[0], deficitLimit: -1000 },
         fundsMock[1],
@@ -758,11 +758,11 @@ describe('TransferModal', () => {
       const result = render(<Components funds={fundsWithDeficit} />);
       const { getByRole, findByText } = result;
 
-      enterTransferDetails(result, '15500');
+      enterTransferDetails(result, '16500');
 
       expect(
         await findByText(
-          'Amount cannot exceed the available balance of $15,000.00',
+          'Amount cannot exceed the available balance of $16,000.00',
         ),
       ).toBeInTheDocument();
 
