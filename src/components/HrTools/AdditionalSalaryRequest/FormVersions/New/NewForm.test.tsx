@@ -150,6 +150,23 @@ describe('NewForm', () => {
     });
   });
 
+  describe('missing location alert', () => {
+    it('shows the alert when the cap has no location', () => {
+      const { getByText } = renderComponent({
+        contextOverrides: {
+          calculations: {
+            ...defaultMockContextValue.calculations,
+            geographicLocation: null,
+          },
+        },
+      });
+
+      expect(
+        getByText(/Your cap may be inaccurate because your location isn't set/),
+      ).toBeInTheDocument();
+    });
+  });
+
   describe('validation alert', () => {
     it('does not show alert initially', () => {
       const { queryByRole } = renderComponent();
