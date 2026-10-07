@@ -666,7 +666,7 @@ describe('MultiPageMenu', () => {
       expect(
         await findByText('Paid with Designation Support Goal Calculator'),
       ).toBeInTheDocument();
-      expect(getByText('Ministry Partner Reminders')).toBeInTheDocument();
+      expect(queryByText('Ministry Partner Reminders')).not.toBeInTheDocument();
       expect(queryByText('Salary Calculation Form')).not.toBeInTheDocument();
       expect(queryByText('Additional Salary Request')).not.toBeInTheDocument();
       expect(queryByText('Savings Fund Transfer')).not.toBeInTheDocument();
