@@ -104,7 +104,12 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   // Person numbers tell the reader's payroll from their spouse's. HCM lists the reader first, then
   // their spouse. Held alongside the report data's own loading so salary is not rendered as one
   // household total and then split.
-  const { data: hcmData, loading: hcmLoading } = useHcmQuery({
+  const {
+    data: hcmData,
+    loading: hcmLoading,
+    error: hcmError,
+    refetch: refetchHcm,
+  } = useHcmQuery({
     variables: { personNumber },
     skip: isSupervisorView && !personNumber,
   });
@@ -152,11 +157,15 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       staffAccountId,
       ...getStaffExpenseMonthRange(filters, time),
     },
-    skip: hcmLoading,
+    // Without HCM data the fund types and salary split would be wrong
+    skip: hcmLoading || !!hcmError,
   });
 
+  const loadError = hcmError ?? reportError;
+
   const refetchReport = () => {
-    refetch().catch(() => {});
+    // The report reloads on its own once HCM succeeds
+    (hcmError ? refetchHcm() : refetch()).catch(() => {});
   };
 
   const { data: accountData } = useStaffAccountQuery({
@@ -410,7 +419,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               <AccountInfoBoxSkeleton />
             ) : (
               // A supervisor's staff name comes from the failed report, so there is no name to show
-              !(isSupervisorView && reportError) && (
+              !(isSupervisorView && loadError) && (
                 <AccountInfoBox name={accountName} />
               )
             )}
@@ -448,7 +457,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               </StyledTimeNavBox>
               <Divider sx={{ my: 2 }} />
             </SimpleScreenOnly>
-            {!reportError && (
+            {!loadError && (
               <Typography
                 variant="body1"
                 sx={{ mb: 2, fontWeight: 'bold' }}
@@ -474,7 +483,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               </Typography>
             )}
             <SimpleScreenOnly>
-              {reportError ? (
+              {loadError ? (
                 // The global Apollo error link already shows the error details in a snackbar
                 <LoadErrorAlert
                   message={t(
@@ -503,7 +512,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
             </SimpleScreenOnly>
             <SimplePrintOnly>
               <Box>
-                {selectedFundType && !reportError && (
+                {selectedFundType && !loadError && (
                   <PrintHeader
                     icon={getIconForFundType(selectedFundType)}
                     iconColor={getIconColorForFundType(selectedFundType, theme)}
