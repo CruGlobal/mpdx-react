@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
+import { GraphQLError } from 'graphql';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { FundBalancesQuery } from '../../../HrTools/SavingsFundTransfer/ReportsSavingsFund.generated';
 import { BalanceCard } from './BalanceCard';
@@ -47,6 +48,30 @@ describe('BalanceCard', () => {
 
     expect(getByText('Primary Account Balance')).toBeInTheDocument();
     expect(getByText('$15,000.00')).toBeInTheDocument();
+  });
+
+  // A user whose staff account SAA does not know still has a staffAccountId, so the report renders
+  // this card and the balance query fails. It must not leave a skeleton up forever.
+  it('renders nothing when the balance cannot be loaded', async () => {
+    const { container, queryByTestId } = render(
+      <GqlMockedProvider
+        mocks={{
+          FundBalances: {
+            reportsStaffExpenses: () => {
+              throw new GraphQLError('Staff account not found');
+            },
+          },
+        }}
+        onCall={mutationSpy}
+      >
+        <BalanceCard />
+      </GqlMockedProvider>,
+    );
+
+    await waitFor(() =>
+      expect(queryByTestId('CardSkeleton')).not.toBeInTheDocument(),
+    );
+    expect(container).toBeEmptyDOMElement();
   });
 
   it('should make the correct GraphQL query', async () => {

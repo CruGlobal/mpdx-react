@@ -44,7 +44,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   const locale = useLocale();
   const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
 
-  const { data, loading } = useFundBalancesQuery({
+  const { data, loading, error } = useFundBalancesQuery({
     variables: {
       fundTypes: [FundTypeEnum.Primary],
     },
@@ -58,6 +58,10 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
     });
     return balance < 0 ? `(${formatted})` : formatted;
   };
+
+  if (error) {
+    return null;
+  }
 
   if (loading || !fund) {
     return <CardSkeleton />;
