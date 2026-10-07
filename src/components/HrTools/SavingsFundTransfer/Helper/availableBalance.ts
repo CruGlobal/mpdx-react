@@ -1,17 +1,16 @@
 import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
 
-// The lowest a source account balance may go after a transfer. SAA stores
-// deficitLimit as a positive magnitude and enforces
-// `balance - amount >= -deficit_limit.abs` on every withdrawal
-// (staff_accounting_app Fund#withdrawal_would_violate_deficit?), so the floor
-// is the NEGATIVE of the limit; Math.abs keeps legacy negative-convention
-// values correct too. Defaults to a $0 floor when the fund has no limit.
+// How far below zero SAA lets the fund go. SAA enforces
+// balance - amount >= -(deficit_limit).abs on every withdrawal
+// (staff_accounting_app Fund#withdrawal_would_violate_deficit?), so the
+// stored sign carries no meaning and this is always positive — same shape as
+// asr_max_calculation on the API (mpdx_api#3666).
 export const minimumAllowedBalance = (fund: FundFieldsFragment): number =>
-  fund.deficitLimit ? -Math.abs(fund.deficitLimit) : 0;
+  fund.deficitLimit ? Math.abs(fund.deficitLimit) : 0;
 
 // The most that can be transferred out of a fund right now.
 export const availableBalance = (fund: FundFieldsFragment): number =>
-  fund.endBalance - minimumAllowedBalance(fund);
+  fund.endBalance + minimumAllowedBalance(fund);
 
 // Compare money at cent precision: fund balances are floats and can carry
 // sub-cent noise that would otherwise reject the exact amount the UI

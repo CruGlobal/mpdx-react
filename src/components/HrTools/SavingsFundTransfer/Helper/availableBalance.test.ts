@@ -22,11 +22,11 @@ describe('minimumAllowedBalance', () => {
 
   // SAA stores the limit as a positive magnitude and enforces
   // balance - amount >= -deficit_limit.abs, so either sign means the same
-  // floor.
+  // allowance.
   it.each([[1000], [-1000]])(
-    'is the negative of the limit magnitude for deficitLimit %p',
+    'is the limit magnitude for deficitLimit %p',
     (deficitLimit) => {
-      expect(minimumAllowedBalance(buildFund({ deficitLimit }))).toBe(-1000);
+      expect(minimumAllowedBalance(buildFund({ deficitLimit }))).toBe(1000);
     },
   );
 });
