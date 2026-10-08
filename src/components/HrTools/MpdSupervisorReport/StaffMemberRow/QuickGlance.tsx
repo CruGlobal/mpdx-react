@@ -54,6 +54,7 @@ export const QuickGlance: React.FC<QuickGlanceProps> = ({ row }) => {
   const { partner, quarterlyHealth, newStaffMonthlySalary } = row;
   const grossSalary = quarterlyHealth?.monthlyGrossSalary ?? null;
   const grossWarning = grossSalaryWarning(t, formatCurrency, row);
+  const newStaffSalaryApplies = hasNewStaffSalary(row.userPersonType);
   const departments = [
     ...new Set(
       [...row.teams.employee, ...(partner?.teams.employee ?? [])]
@@ -117,12 +118,16 @@ export const QuickGlance: React.FC<QuickGlanceProps> = ({ row }) => {
       />
       <Detail
         label={t('Geographic location')}
-        value={row.geographicLocation ?? pendingField}
+        value={
+          newStaffSalaryApplies
+            ? (row.geographicLocation ?? pendingField)
+            : t('N/A')
+        }
       />
       <Detail
         label={t('New Staff Monthly Salary')}
         value={
-          !hasNewStaffSalary(row.userPersonType)
+          !newStaffSalaryApplies
             ? t('N/A')
             : newStaffMonthlySalary !== null &&
                 newStaffMonthlySalary !== undefined

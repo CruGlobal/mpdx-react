@@ -112,6 +112,19 @@ describe('QuickGlance', () => {
     },
   );
 
+  it.each([
+    MpdUserPersonTypeEnum.EmployeeUsIntern,
+    MpdUserPersonTypeEnum.EmployeePtfs,
+    MpdUserPersonTypeEnum.NonworkerVolunteer,
+  ])('shows N/A for the geographic location for %s', (userPersonType) => {
+    const { getByTestId } = renderGlance(
+      managedStaffMember({ userPersonType, geographicLocation: 'Orlando, FL' }),
+    );
+    const glance = getByTestId('quick-glance');
+    expect(glance).toHaveTextContent('Geographic locationN/A');
+    expect(glance).not.toHaveTextContent('Orlando, FL');
+  });
+
   it('names the starting quarter', () => {
     const { getByTestId } = renderGlance(
       managedStaffMember({

@@ -336,6 +336,19 @@ describe('StaffMemberDrawer', () => {
     await waitFor(() => expect(input).toHaveValue('Orlando, FL (6%)'));
   });
 
+  it.each([
+    MpdUserPersonTypeEnum.EmployeeUsIntern,
+    MpdUserPersonTypeEnum.EmployeePtfs,
+    MpdUserPersonTypeEnum.NonworkerVolunteer,
+  ])('hides the geographic multiplier for %s', (userPersonType) => {
+    const { queryByRole, queryByText } = renderDrawer();
+    openMember(managedStaffMember({ userPersonType }));
+    expect(queryByText('Geographic Multiplier:')).not.toBeInTheDocument();
+    expect(
+      queryByRole('combobox', { name: 'Geographic Location' }),
+    ).not.toBeInTheDocument();
+  });
+
   it('updates the new staff monthly salary after saving a location', async () => {
     const { findByRole, getByRole, getByText, queryByText } = renderDrawer();
     openMember(memberWithSpouse);
