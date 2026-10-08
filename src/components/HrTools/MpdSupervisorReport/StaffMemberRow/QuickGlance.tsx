@@ -10,6 +10,7 @@ import {
   getQuarterLabel,
   getRowSpouseName,
   grossSalaryWarning,
+  hasNewStaffSalary,
   pendingField,
 } from '../helpers';
 import { GrossSalaryMarker } from './GrossSalaryMarker';
@@ -121,9 +122,12 @@ export const QuickGlance: React.FC<QuickGlanceProps> = ({ row }) => {
       <Detail
         label={t('New Staff Monthly Salary')}
         value={
-          newStaffMonthlySalary !== null && newStaffMonthlySalary !== undefined
-            ? formatCurrency(newStaffMonthlySalary)
-            : pendingField
+          !hasNewStaffSalary(row.userPersonType)
+            ? t('N/A')
+            : newStaffMonthlySalary !== null &&
+                newStaffMonthlySalary !== undefined
+              ? formatCurrency(newStaffMonthlySalary)
+              : pendingField
         }
       />
       <Detail

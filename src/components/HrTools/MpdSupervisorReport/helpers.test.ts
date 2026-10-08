@@ -27,13 +27,20 @@ import {
   getRowName,
   getRowSpouseName,
   getRowTeamNames,
+  grossSalaryWarning,
+  hasNewStaffSalary,
   healthColor,
   healthLabel,
+  internPersonTypes,
+  isInternPersonType,
+  isUngradedPersonType,
   latestQuarterStatus,
   mergeSpouseRows,
+  missingBenchmarkMessage,
   pendingField,
   quarterAmountLabel,
   summarizeTeams,
+  ungradedPersonTypes,
 } from './helpers';
 import { managedStaffMember } from './mpdSupervisorReportMocks';
 
@@ -227,6 +234,106 @@ describe('userPersonTypeGroups', () => {
 
     labels.forEach((groupLabels) => expect(groupLabels).toHaveLength(1));
     expect(new Set(labels.flat()).size).toBe(userPersonTypeGroups.length);
+  });
+});
+
+describe('person type grading', () => {
+  const graded = Object.values(MpdUserPersonTypeEnum).filter(
+    (type) =>
+      !internPersonTypes.includes(type) && !ungradedPersonTypes.includes(type),
+  );
+
+  it.each(internPersonTypes)('treats %s as an intern', (type) => {
+    expect(isInternPersonType(type)).toBe(true);
+    expect(isUngradedPersonType(type)).toBe(false);
+    expect(hasNewStaffSalary(type)).toBe(false);
+  });
+
+  it.each(ungradedPersonTypes)('treats %s as ungraded', (type) => {
+    expect(isInternPersonType(type)).toBe(false);
+    expect(isUngradedPersonType(type)).toBe(true);
+    expect(hasNewStaffSalary(type)).toBe(false);
+  });
+
+  it.each(graded)('measures %s against the New Staff salary', (type) => {
+    expect(isInternPersonType(type)).toBe(false);
+    expect(isUngradedPersonType(type)).toBe(false);
+    expect(hasNewStaffSalary(type)).toBe(true);
+  });
+
+  it('measures a member with no person type against the New Staff salary', () => {
+    expect(hasNewStaffSalary(null)).toBe(true);
+    expect(hasNewStaffSalary(undefined)).toBe(true);
+  });
+});
+
+describe('missingBenchmarkMessage', () => {
+  const bothBenchmarks = 'MPD health cannot be graded without both benchmarks.';
+  const grossOnly =
+    'MPD health cannot be graded without the Monthly Gross Salary.';
+  const member = (
+    userPersonType: MpdUserPersonTypeEnum,
+    monthlyGrossSalary: number | null,
+    newStaffMonthlySalary: number | null,
+  ) => ({
+    userPersonType,
+    newStaffMonthlySalary,
+    quarterlyHealth: { monthlyGrossSalary, completedQuarters: [] },
+  });
+
+  it('needs both benchmarks for staff', () => {
+    const staff = MpdUserPersonTypeEnum.EmployeeStaff;
+    expect(missingBenchmarkMessage(t, member(staff, 4500, 2500))).toBeNull();
+    expect(missingBenchmarkMessage(t, member(staff, null, 2500))).toBe(
+      bothBenchmarks,
+    );
+    expect(missingBenchmarkMessage(t, member(staff, 4500, null))).toBe(
+      bothBenchmarks,
+    );
+  });
+
+  it('needs only the gross salary for interns', () => {
+    const intern = MpdUserPersonTypeEnum.EmployeeUsIntern;
+    expect(missingBenchmarkMessage(t, member(intern, 4500, null))).toBeNull();
+    expect(missingBenchmarkMessage(t, member(intern, null, null))).toBe(
+      grossOnly,
+    );
+  });
+
+  it.each([
+    MpdUserPersonTypeEnum.EmployeePtfs,
+    MpdUserPersonTypeEnum.NonworkerVolunteer,
+  ])('never warns for %s, who are not graded', (type) => {
+    expect(missingBenchmarkMessage(t, member(type, null, null))).toBeNull();
+  });
+});
+
+describe('grossSalaryWarning', () => {
+  const formatCurrency = (value: number) => `$${value.toFixed(2)}`;
+  const belowBenchmark = (userPersonType: MpdUserPersonTypeEnum) => ({
+    userPersonType,
+    newStaffMonthlySalary: 5000,
+    quarterlyHealth: { monthlyGrossSalary: 4500, completedQuarters: [] },
+  });
+
+  it('warns staff whose gross salary is below the New Staff salary', () => {
+    expect(
+      grossSalaryWarning(
+        t,
+        formatCurrency,
+        belowBenchmark(MpdUserPersonTypeEnum.EmployeeStaff),
+      ),
+    ).not.toBeNull();
+  });
+
+  it.each([
+    MpdUserPersonTypeEnum.EmployeeUsIntern,
+    MpdUserPersonTypeEnum.EmployeePtfs,
+    MpdUserPersonTypeEnum.NonworkerVolunteer,
+  ])('never warns %s, who have no New Staff salary', (type) => {
+    expect(
+      grossSalaryWarning(t, formatCurrency, belowBenchmark(type)),
+    ).toBeNull();
   });
 });
 

@@ -41,6 +41,8 @@ import {
   getInitials,
   getLocalizedAssignmentCategoryGroup,
   grossSalaryWarning,
+  hasNewStaffSalary,
+  missingBenchmarkMessage,
   pendingField,
 } from '../helpers';
 
@@ -148,8 +150,8 @@ export const StaffMemberDrawer: React.FC = () => {
   const team =
     teams.employee.map(({ name }) => name).join(', ') || pendingField;
   const monthlyGrossSalary = quarterlyHealth?.monthlyGrossSalary ?? null;
-  const missingBenchmark =
-    monthlyGrossSalary === null || newStaffMonthlySalary === null;
+  const benchmarkMessage = missingBenchmarkMessage(t, selectedMember);
+  const newStaffSalaryApplies = hasNewStaffSalary(userPersonType);
   const grossWarning = grossSalaryWarning(t, formatCurrency, selectedMember);
 
   return (
@@ -224,19 +226,32 @@ export const StaffMemberDrawer: React.FC = () => {
               labelAdornment={
                 // describeChild announces the explanation as the icon's
                 // description while titleAccess stays its accessible name
-                <Tooltip title={newStaffSalaryTooltip(t)} describeChild>
+                <Tooltip
+                  title={
+                    newStaffSalaryApplies
+                      ? newStaffSalaryTooltip(t)
+                      : t(
+                          "Interns, part-time field staff and volunteers aren't measured against the New Staff Monthly Salary.",
+                        )
+                  }
+                  describeChild
+                >
                   <InfoTooltipIcon
                     tabIndex={0}
-                    titleAccess={t(
-                      'How New Staff Monthly Salary is calculated',
-                    )}
+                    titleAccess={
+                      newStaffSalaryApplies
+                        ? t('How New Staff Monthly Salary is calculated')
+                        : t('Why New Staff Monthly Salary does not apply')
+                    }
                   />
                 </Tooltip>
               }
               value={
-                newStaffMonthlySalary !== null
-                  ? formatCurrency(newStaffMonthlySalary)
-                  : pendingField
+                !newStaffSalaryApplies
+                  ? t('N/A')
+                  : newStaffMonthlySalary !== null
+                    ? formatCurrency(newStaffMonthlySalary)
+                    : pendingField
               }
             />
             <DetailRow
@@ -252,9 +267,9 @@ export const StaffMemberDrawer: React.FC = () => {
               }
             />
           </StaffInfo>
-          {missingBenchmark && (
+          {benchmarkMessage && (
             <Alert severity="error" sx={{ width: 0, minWidth: '100%' }}>
-              {t('MPD health cannot be graded without both benchmarks.')}
+              {benchmarkMessage}
             </Alert>
           )}
         </Box>

@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import {
+  MpdUserPersonTypeEnum,
   PeopleGroupSupportTypeEnum,
   SecaStatusEnum,
 } from 'src/graphql/types.generated';
@@ -89,6 +90,27 @@ describe('QuickGlance', () => {
     expect(getByTestId('quick-glance')).toHaveTextContent('$4,500.00');
     expect(getByLabelText(/is \$500\.00 below/)).toBeInTheDocument();
   });
+
+  it.each([
+    MpdUserPersonTypeEnum.EmployeeUsIntern,
+    MpdUserPersonTypeEnum.EmployeePtfs,
+    MpdUserPersonTypeEnum.NonworkerVolunteer,
+  ])(
+    'shows N/A for the New Staff salary and no gross marker for %s',
+    (userPersonType) => {
+      const { getByTestId, queryByLabelText } = renderGlance(
+        managedStaffMember({
+          userPersonType,
+          newStaffMonthlySalary: 5000,
+          quarterlyHealth: { monthlyGrossSalary: 4500, completedQuarters: [] },
+        }),
+      );
+      expect(getByTestId('quick-glance')).toHaveTextContent(
+        'New Staff Monthly SalaryN/A',
+      );
+      expect(queryByLabelText(/below the New Staff/)).not.toBeInTheDocument();
+    },
+  );
 
   it('names the starting quarter', () => {
     const { getByTestId } = renderGlance(
