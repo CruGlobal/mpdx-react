@@ -92,6 +92,21 @@ describe('DeleteTransferModal', () => {
     expect(handleClose).toHaveBeenCalled();
   });
 
+  it('renders cancel snackbar on delete success when the type is cancel', async () => {
+    const { getByRole } = render(
+      <TestComponent type={ActionTypeEnum.Cancel} />,
+    );
+
+    userEvent.click(getByRole('button', { name: 'Yes' }));
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Transfer canceled successfully',
+        { variant: 'success' },
+      );
+    });
+    expect(handleClose).toHaveBeenCalled();
+  });
+
   it('renders error snackbar and stays open on delete failure', async () => {
     const { getByRole } = render(
       <TestComponent

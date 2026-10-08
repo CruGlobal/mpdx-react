@@ -46,7 +46,12 @@ export const DeleteTransferModal: React.FC<DeleteTransferModalProps> = ({
         },
       });
 
-      enqueueSnackbar(t('Transfer stopped successfully'), {
+      const successMessage =
+        type === ActionTypeEnum.Stop
+          ? t('Transfer stopped successfully')
+          : t('Transfer canceled successfully');
+
+      enqueueSnackbar(successMessage, {
         variant: 'success',
       });
       handleClose();
