@@ -129,6 +129,44 @@ describe('ReportLegendPanel', () => {
     expect(queryByText(/debt/i)).not.toBeInTheDocument();
   });
 
+  it('says in the intro that interns are graded on gross salary only', async () => {
+    const { getByText } = await openLegend();
+
+    expect(
+      getByText(
+        /Interns are graded against their Monthly Gross Salary only, and part-time field staff and volunteers aren't graded\./,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('sorts ungraded staff after graded staff and before no data', async () => {
+    const { getByText } = await openLegend();
+
+    expect(
+      getByText(
+        /Ungraded staff come next, and staff with no data are listed last/,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('says the negative month filters leave out ungraded and intern staff', async () => {
+    const { getByText } = await openLegend();
+
+    expect(
+      getByText(
+        'Interns, part-time field staff and volunteers have no New Staff Monthly Salary, so these filters never include them.',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('says interns, part-time field staff and volunteers have no Geographic Multiplier', async () => {
+    const { getByText } = await openLegend();
+
+    expect(
+      getByText(/so they have no Geographic Multiplier to change\./),
+    ).toBeInTheDocument();
+  });
+
   it('explains the fiscal quarters', async () => {
     const { getByText, getByRole } = await openLegend();
 

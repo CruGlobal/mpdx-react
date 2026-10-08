@@ -1,5 +1,5 @@
 import React from 'react';
-import Info from '@mui/icons-material/Info';
+import InfoOutlined from '@mui/icons-material/InfoOutlined';
 import { IconButton, Tooltip } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
@@ -16,7 +16,7 @@ export const ReportLegendButton: React.FC = () => {
         aria-label={t('How this report works')}
         onClick={openLegend}
       >
-        <Info fontSize="small" sx={{ color: 'mpdxGrayDark.main' }} />
+        <InfoOutlined fontSize="small" sx={{ color: 'primary.main' }} />
       </IconButton>
     </Tooltip>
   );

@@ -48,7 +48,7 @@ export const newStaffSalaryCopy = (t: TFunction) => ({
     t('Plus the 403(b) retirement contribution.'),
   ],
   footer: t(
-    "Change the Geographic Multiplier in the staff member's details to recalculate it.",
+    "Change the Geographic Multiplier in the staff member's details to recalculate it. Interns, part-time field staff and volunteers have no New Staff Monthly Salary, so they have no Geographic Multiplier to change.",
   ),
 });
 

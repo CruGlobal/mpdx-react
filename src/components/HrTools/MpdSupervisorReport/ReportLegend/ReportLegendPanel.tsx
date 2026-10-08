@@ -152,7 +152,7 @@ export const ReportLegendPanel: React.FC = () => {
       <PanelContent>
         <Typography variant="body2" color="text.secondary">
           {t(
-            "Each chip is a staff member's average monthly payroll for a fiscal quarter, graded against two benchmarks: their Monthly Gross Salary and their New Staff Monthly Salary.",
+            "Each chip is a staff member's average monthly payroll for a fiscal quarter, graded against two benchmarks: their Monthly Gross Salary and their New Staff Monthly Salary. Interns are graded against their Monthly Gross Salary only, and part-time field staff and volunteers aren't graded.",
           )}
         </Typography>
 
@@ -218,7 +218,7 @@ export const ReportLegendPanel: React.FC = () => {
             </Term>
             <Term term={t('Sort order')}>
               {t(
-                'Staff with the highest share of red quarters come first, then the highest share of yellow, then those furthest below their benchmarks. Staff with no data are listed last, sorted alphabetically by last name.',
+                'Staff with the highest share of red quarters come first, then the highest share of yellow, then those furthest below their benchmarks. Ungraded staff come next, and staff with no data are listed last, each sorted alphabetically by last name.',
               )}
             </Term>
           </Box>
@@ -234,6 +234,11 @@ export const ReportLegendPanel: React.FC = () => {
           </Box>
           <Typography variant="body2" color="text.secondary">
             {t('The current month is never counted.')}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            {t(
+              'Interns, part-time field staff and volunteers have no New Staff Monthly Salary, so these filters never include them.',
+            )}
           </Typography>
         </Section>
 
