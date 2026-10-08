@@ -93,6 +93,13 @@ describe('healthColor', () => {
       color: theme.palette.chipGrayDark.main,
     });
   });
+
+  it('returns blue palette colors for Blue', () => {
+    expect(healthColor(theme, MpdHealthStatusEnum.Blue)).toEqual({
+      bg: theme.palette.chipBlueLight.main,
+      color: theme.palette.chipBlueDark.main,
+    });
+  });
 });
 
 describe('getQuarterLabel', () => {
@@ -138,6 +145,7 @@ describe('healthLabel', () => {
     [MpdHealthStatusEnum.Red, 'at risk'],
     [MpdHealthStatusEnum.Yellow, 'needs attention'],
     [MpdHealthStatusEnum.Gray, 'no data'],
+    [MpdHealthStatusEnum.Blue, 'ungraded'],
   ])('maps %s to "%s"', (health, expected) => {
     expect(healthLabel(t, health)).toBe(expected);
   });
@@ -251,6 +259,12 @@ describe('quarterAmountLabel', () => {
     expect(
       label({ averagePayroll: 3200, status: MpdHealthStatusEnum.Gray }),
     ).toBe('$3200.00');
+  });
+
+  it('shows a zero for a blue quarter, since its payroll is real', () => {
+    expect(label({ averagePayroll: 0, status: MpdHealthStatusEnum.Blue })).toBe(
+      '$0.00',
+    );
   });
 
   it('prefers Partial over the gray dash when both apply', () => {
@@ -522,12 +536,12 @@ describe('summarizeTeams', () => {
       {
         name: 'Campus',
         staffCount: 1,
-        counts: { RED: 1, YELLOW: 0, GREEN: 0, GRAY: 0 },
+        counts: { RED: 1, YELLOW: 0, GREEN: 0, GRAY: 0, BLUE: 0 },
       },
       {
         name: 'City',
         staffCount: 2,
-        counts: { RED: 1, YELLOW: 0, GREEN: 1, GRAY: 0 },
+        counts: { RED: 1, YELLOW: 0, GREEN: 1, GRAY: 0, BLUE: 0 },
       },
     ]);
   });
@@ -545,6 +559,21 @@ describe('summarizeTeams', () => {
       withQuarters({ teams: { employee: [team('Campus')], spouse: [] } }, []),
     ];
     expect(summarizeTeams(rows)[0].counts.GRAY).toBe(1);
+  });
+
+  it('counts a member whose latest quarter is ungraded as blue', () => {
+    const rows = [
+      withQuarters({ teams: { employee: [team('Campus')], spouse: [] } }, [
+        quarter(2026, 3, MpdHealthStatusEnum.Blue),
+      ]),
+    ];
+    expect(summarizeTeams(rows)[0].counts).toEqual({
+      RED: 0,
+      YELLOW: 0,
+      GREEN: 0,
+      GRAY: 0,
+      BLUE: 1,
+    });
   });
 
   it('skips a member on no team', () => {

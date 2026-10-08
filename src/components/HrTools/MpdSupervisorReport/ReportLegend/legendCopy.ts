@@ -7,6 +7,7 @@ export const healthStatusOrder: MpdHealthStatusEnum[] = [
   MpdHealthStatusEnum.Green,
   MpdHealthStatusEnum.Yellow,
   MpdHealthStatusEnum.Red,
+  MpdHealthStatusEnum.Blue,
   MpdHealthStatusEnum.Gray,
 ];
 

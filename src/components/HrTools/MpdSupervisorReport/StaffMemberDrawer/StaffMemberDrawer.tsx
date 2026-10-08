@@ -141,6 +141,7 @@ export const StaffMemberDrawer: React.FC = () => {
     newStaffMonthlySalary,
     quarterlyHealth,
     assignmentCategoryGroup,
+    userPersonType,
   } = selectedMember;
   const initials = getInitials(firstName, lastName);
   const fullName = `${firstName} ${lastName}`;
@@ -321,7 +322,10 @@ export const StaffMemberDrawer: React.FC = () => {
           <DynamicMonthlySummary staffAccountId={staffAccountId} />
         </TabPanel>
         <TabPanel value={StaffDetailTabEnum.Quarterly}>
-          <DynamicQuarterly staffAccountId={staffAccountId} />
+          <DynamicQuarterly
+            staffAccountId={staffAccountId}
+            userPersonType={userPersonType ?? null}
+          />
         </TabPanel>
         <TabPanel value={StaffDetailTabEnum.Payroll}>
           <DynamicPayroll staffAccountId={staffAccountId} />

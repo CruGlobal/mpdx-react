@@ -5,7 +5,10 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { MpdAssignmentCategoryGroupEnum } from 'src/graphql/types.generated';
+import {
+  MpdAssignmentCategoryGroupEnum,
+  MpdUserPersonTypeEnum,
+} from 'src/graphql/types.generated';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
 import { UpdateStaffGeographicLocationMutation } from '../GeographicLocationSelect/UpdateStaffGeographicLocation.generated';
@@ -30,6 +33,8 @@ const geographicConstants = {
     mpdGoalMiscConstants: [],
   },
 };
+
+const mutationSpy = jest.fn();
 
 const benchmarkWarning = 'MPD health cannot be graded without both benchmarks.';
 
@@ -82,6 +87,7 @@ const renderDrawer = ({
                 },
               },
             }}
+            onCall={mutationSpy}
           >
             <MpdSupervisorReportProvider>
               <Opener />
@@ -401,6 +407,24 @@ describe('StaffMemberDrawer', () => {
     expect(getByRole('tab', { name: 'Monthly Summary' })).toHaveAttribute(
       'aria-selected',
       'false',
+    );
+  });
+
+  it("grades the Quarterly tab against the member's person type", async () => {
+    const { getByRole } = renderDrawer();
+    openMember(
+      managedStaffMember({
+        staffAccountId: '1000000009',
+        userPersonType: MpdUserPersonTypeEnum.NonworkerVolunteer,
+      }),
+    );
+    userEvent.click(getByRole('tab', { name: 'Quarterly' }));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('QuarterlyPayrollHistory', {
+        staffAccountId: '1000000009',
+        userPersonType: MpdUserPersonTypeEnum.NonworkerVolunteer,
+      }),
     );
   });
 

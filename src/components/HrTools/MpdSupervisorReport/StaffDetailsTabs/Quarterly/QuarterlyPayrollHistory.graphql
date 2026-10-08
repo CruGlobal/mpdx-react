@@ -1,9 +1,11 @@
 query QuarterlyPayrollHistory(
   $staffAccountId: String
+  $userPersonType: MpdUserPersonTypeEnum
   $historyRange: MpdHistoryRangeEnum = TWENTY_FOUR_MONTHS
 ) {
   quarterlyPayrollHistory(
     staffAccountId: $staffAccountId
+    userPersonType: $userPersonType
     historyRange: $historyRange
   ) {
     monthlyGrossSalary

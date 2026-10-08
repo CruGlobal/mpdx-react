@@ -73,6 +73,11 @@ export const healthColor = (
         bg: theme.palette.chipYellowLight.main,
         color: theme.palette.chipYellowDark.main,
       };
+    case MpdHealthStatusEnum.Blue:
+      return {
+        bg: theme.palette.chipBlueLight.main,
+        color: theme.palette.chipBlueDark.main,
+      };
     case MpdHealthStatusEnum.Gray:
     default:
       return {
@@ -125,6 +130,8 @@ export const healthLabel = (
       return t('at risk');
     case MpdHealthStatusEnum.Yellow:
       return t('needs attention');
+    case MpdHealthStatusEnum.Blue:
+      return t('ungraded');
     case MpdHealthStatusEnum.Gray:
     default:
       return t('no data');
@@ -390,6 +397,7 @@ const emptyCounts = (): Record<MpdHealthStatusEnum, number> => ({
   [MpdHealthStatusEnum.Yellow]: 0,
   [MpdHealthStatusEnum.Green]: 0,
   [MpdHealthStatusEnum.Gray]: 0,
+  [MpdHealthStatusEnum.Blue]: 0,
 });
 
 /**
