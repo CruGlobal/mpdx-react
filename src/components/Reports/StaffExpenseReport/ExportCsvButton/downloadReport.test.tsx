@@ -1,8 +1,9 @@
 import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
+import i18n from 'src/lib/i18n';
 import { ReportType } from '../Helpers/StaffReportEnum';
 import { AggregationPeriod } from '../Helpers/aggregationPolicy';
 import { GroupedTransaction, Transaction } from '../Helpers/filterTransactions';
-import { createCsvReport, dateSortTransactions } from './downloadReport';
+import { createCsvReport } from './downloadReport';
 
 const monthlyRollup: GroupedTransaction = {
   id: 'grouped-Primary|DONATION|2025-01',
@@ -190,13 +191,45 @@ describe('downloadReport', () => {
     expect(csvContent).toContain('"Other","$25"');
   });
 
-  describe('dateSortTransactions', () => {
-    it('sorts transactions by ascending date', () => {
-      expect(
-        dateSortTransactions(mockData).map(
-          (transaction) => transaction.transactedAt,
-        ),
-      ).toEqual(['2025-08-01', '2025-09-01', '2025-10-01']);
-    });
+  it('keeps the order the table shows', () => {
+    const realLink = document.createElement('a');
+    jest.spyOn(realLink, 'setAttribute').mockImplementation(setAttributeMock);
+    jest.spyOn(realLink, 'click').mockImplementation(clickMock);
+
+    jest.spyOn(document, 'createElement').mockReturnValue(realLink);
+
+    const expenses = mockData.filter((transaction) => transaction.amount < 0);
+    createCsvReport(ReportType.Expense, expenses, mockT, mockLocale);
+
+    const hrefValue = setAttributeMock.mock.calls.find(
+      ([attribute]) => attribute === 'href',
+    )?.[1];
+    const csvContent = decodeURIComponent(hrefValue);
+    expect(csvContent.indexOf('Ministry Reimbursement')).toBeLessThan(
+      csvContent.indexOf('Benefits'),
+    );
+  });
+
+  it('counts the pending transactions in a partly pending rollup', () => {
+    const realLink = document.createElement('a');
+    jest.spyOn(realLink, 'setAttribute').mockImplementation(setAttributeMock);
+    jest.spyOn(realLink, 'click').mockImplementation(clickMock);
+
+    jest.spyOn(document, 'createElement').mockReturnValue(realLink);
+
+    const partlyPending: GroupedTransaction = {
+      ...monthlyRollup,
+      groupedTransactions: [
+        { ...mockData[1], isPending: true },
+        { ...mockData[1], id: '4', isPending: false },
+      ],
+    };
+    createCsvReport(ReportType.Income, [partlyPending], i18n.t, mockLocale);
+
+    const hrefValue = setAttributeMock.mock.calls.find(
+      ([attribute]) => attribute === 'href',
+    )?.[1];
+    const csvContent = decodeURIComponent(hrefValue);
+    expect(csvContent).toContain('"Donations (1 of 2 Pending)"');
   });
 });

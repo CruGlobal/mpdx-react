@@ -1,31 +1,33 @@
 import { TFunction } from 'i18next';
-import {
-  GroupedTransaction,
-  Transaction,
-  isGroupedTransaction,
-} from './filterTransactions';
+import { StaffReportRow, StaffReportRowPending } from './staffReportRow';
 
 /**
  * How a row reads when some of it is dated after today, or null when none of it is. A rolled up
  * row that is only partly pending counts its pending transactions, since the total mixes both.
  */
 export const getPendingLabel = (
-  transaction: Transaction | GroupedTransaction,
+  pending: StaffReportRowPending | null,
   t: TFunction,
 ): string | null => {
-  if (!isGroupedTransaction(transaction)) {
-    return transaction.isPending ? t('Pending') : null;
-  }
-
-  const total = transaction.groupedTransactions.length;
-  const pending = transaction.groupedTransactions.filter(
-    ({ isPending }) => isPending,
-  ).length;
-
-  if (pending === 0) {
+  if (!pending) {
     return null;
   }
-  return pending === total
+
+  return pending.count === pending.total
     ? t('Pending')
-    : t('Pending {{pending}} of {{total}}', { pending, total });
+    : t('{{pending}} of {{total}} Pending', {
+        pending: pending.count,
+        total: pending.total,
+      });
+};
+
+/** The description with its pending label in parentheses, for outputs that only have plain text. */
+export const getDescriptionWithPending = (
+  row: Pick<StaffReportRow, 'description' | 'pending'>,
+  t: TFunction,
+): string => {
+  const pendingLabel = getPendingLabel(row.pending, t);
+  return pendingLabel
+    ? `${row.description} (${pendingLabel})`
+    : row.description;
 };
