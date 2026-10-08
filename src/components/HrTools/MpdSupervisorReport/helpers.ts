@@ -242,9 +242,27 @@ export const isUngradedPersonType = (
   type: MpdUserPersonTypeEnum | null | undefined,
 ): boolean => !!type && ungradedPersonTypes.includes(type);
 
+export enum GradingGroupEnum {
+  Graded = 'Graded',
+  GrossSalaryOnly = 'GrossSalaryOnly',
+  Ungraded = 'Ungraded',
+}
+
+export const gradingGroup = (
+  type: MpdUserPersonTypeEnum | null | undefined,
+): GradingGroupEnum => {
+  if (isInternPersonType(type)) {
+    return GradingGroupEnum.GrossSalaryOnly;
+  }
+  if (isUngradedPersonType(type)) {
+    return GradingGroupEnum.Ungraded;
+  }
+  return GradingGroupEnum.Graded;
+};
+
 export const hasNewStaffSalary = (
   type: MpdUserPersonTypeEnum | null | undefined,
-): boolean => !isInternPersonType(type) && !isUngradedPersonType(type);
+): boolean => gradingGroup(type) === GradingGroupEnum.Graded;
 
 export const missingBenchmarkMessage = (
   t: TFunction,
@@ -346,12 +364,13 @@ export type StaffRow = ManagedStaffMember & { partner?: ManagedStaffMember };
 
 /**
  * Fold each couple present in the list into one row, keeping the earlier
- * position. Two rows pair only when they share a staff account: the API
- * builds every health figure from the staff account, so such a pair carries
- * identical benchmarks and quarters, and a joint account only ever belongs to
- * a couple (HCM does not always carry the spouse link). Spouses who hold
- * separate staff accounts have their own health each, so they stay on their
- * own rows and name each other via `getRowSpouseName`.
+ * position. Two rows pair only when they share a staff account and a grading
+ * group: the API builds every health figure from the staff account and the
+ * person's grading group, so such a pair carries identical benchmarks and
+ * quarters, and a joint account only ever belongs to a couple (HCM does not
+ * always carry the spouse link). Spouses who hold separate staff accounts, or
+ * who are graded differently, have their own health each, so they stay on
+ * their own rows and name each other via `getRowSpouseName`.
  */
 export const mergeSpouseRows = (nodes: ManagedStaffMember[]): StaffRow[] => {
   const paired = new Set<string>();
@@ -364,7 +383,9 @@ export const mergeSpouseRows = (nodes: ManagedStaffMember[]): StaffRow[] => {
       (other) =>
         other.personNumber !== node.personNumber &&
         !paired.has(other.personNumber) &&
-        other.staffAccountId === node.staffAccountId,
+        other.staffAccountId === node.staffAccountId &&
+        gradingGroup(other.userPersonType) ===
+          gradingGroup(node.userPersonType),
     );
     if (partner) {
       paired.add(node.personNumber);
