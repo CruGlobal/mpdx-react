@@ -1,45 +1,32 @@
 import { TFunction } from 'i18next';
 import { buildURI } from 'react-csv/lib/core';
 import { Transaction } from 'src/components/Reports/StaffExpenseReport/Helpers/filterTransactions';
-import { currencyFormat } from 'src/lib/intlFormat';
 import { ReportType } from '../Helpers/StaffReportEnum';
-import { formatTransactionDate } from '../Helpers/formatDate';
+import { getDescriptionWithPending } from '../Helpers/pendingLabel';
+import { buildStaffReportRows } from '../Helpers/staffReportRow';
 
 const createTable = (
   title: string,
   csvHeader: string[],
   transactions: Transaction[],
+  tableType: ReportType.Income | ReportType.Expense,
+  t: TFunction,
   locale: string,
-  isExpense: boolean,
-) => {
-  const dateSortedTransactions = dateSortTransactions(transactions);
-  const csvData = [
-    [title],
-    csvHeader,
-    ...dateSortedTransactions.map((transaction) => [
-      formatTransactionDate(transaction, locale),
-      transaction.displayCategory,
-      currencyFormat(
-        isExpense ? Math.abs(transaction.amount) : transaction.amount,
-        'USD',
-        locale,
-      ),
-    ]),
-  ];
-
-  return csvData;
-};
-
-export function dateSortTransactions(transactions: Transaction[]) {
-  return [...transactions].sort((transactionA, transactionB) =>
-    transactionA.transactedAt.localeCompare(transactionB.transactedAt),
-  );
-}
+) => [
+  [title],
+  csvHeader,
+  ...buildStaffReportRows(transactions, tableType, locale).map((row) => [
+    row.dateLabel,
+    getDescriptionWithPending(row, t),
+    row.amountLabel,
+  ]),
+];
 
 function createCombinedReport(
   transactions: Transaction[],
   titles: { income: string; expense: string },
   csvHeader: string[],
+  t: TFunction,
   locale: string,
 ) {
   const income = transactions.filter((transaction) => transaction.amount > 0);
@@ -48,15 +35,17 @@ function createCombinedReport(
     titles.income,
     csvHeader,
     income,
+    ReportType.Income,
+    t,
     locale,
-    false,
   );
   const expenseData = createTable(
     titles.expense,
     csvHeader,
     expenses,
+    ReportType.Expense,
+    t,
     locale,
-    true,
   );
   return [...incomeData, [''], ...expenseData];
 }
@@ -87,7 +76,7 @@ export const createCsvReport = (
     reportTitle = t('Combined Report');
   }
 
-  const csvHeader = [t('Date'), t('Category'), t('Amount')];
+  const csvHeader = [t('Date'), t('Description'), t('Amount')];
 
   let csvData: string[][] = [];
 
@@ -100,6 +89,7 @@ export const createCsvReport = (
       transactions,
       tableTitles,
       csvHeader,
+      t,
       locale,
     );
   } else {
@@ -107,8 +97,9 @@ export const createCsvReport = (
       reportTitle,
       csvHeader,
       transactions,
+      type,
+      t,
       locale,
-      type === ReportType.Expense,
     );
   }
 
