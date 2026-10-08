@@ -14,6 +14,7 @@ import {
   userPersonTypeOptions,
 } from './Filters/mpdSupervisorReportFilters';
 import {
+  GradingGroupEnum,
   buildQuarterChips,
   countPeople,
   getInitials,
@@ -27,6 +28,7 @@ import {
   getRowName,
   getRowSpouseName,
   getRowTeamNames,
+  gradingGroup,
   grossSalaryWarning,
   hasNewStaffSalary,
   healthColor,
@@ -244,18 +246,21 @@ describe('person type grading', () => {
   );
 
   it.each(internPersonTypes)('treats %s as an intern', (type) => {
+    expect(gradingGroup(type)).toBe(GradingGroupEnum.GrossSalaryOnly);
     expect(isInternPersonType(type)).toBe(true);
     expect(isUngradedPersonType(type)).toBe(false);
     expect(hasNewStaffSalary(type)).toBe(false);
   });
 
   it.each(ungradedPersonTypes)('treats %s as ungraded', (type) => {
+    expect(gradingGroup(type)).toBe(GradingGroupEnum.Ungraded);
     expect(isInternPersonType(type)).toBe(false);
     expect(isUngradedPersonType(type)).toBe(true);
     expect(hasNewStaffSalary(type)).toBe(false);
   });
 
   it.each(graded)('measures %s against the New Staff salary', (type) => {
+    expect(gradingGroup(type)).toBe(GradingGroupEnum.Graded);
     expect(isInternPersonType(type)).toBe(false);
     expect(isUngradedPersonType(type)).toBe(false);
     expect(hasNewStaffSalary(type)).toBe(true);
@@ -264,6 +269,8 @@ describe('person type grading', () => {
   it('measures a member with no person type against the New Staff salary', () => {
     expect(hasNewStaffSalary(null)).toBe(true);
     expect(hasNewStaffSalary(undefined)).toBe(true);
+    expect(gradingGroup(null)).toBe(GradingGroupEnum.Graded);
+    expect(gradingGroup(undefined)).toBe(GradingGroupEnum.Graded);
   });
 });
 
@@ -565,6 +572,49 @@ describe('mergeSpouseRows', () => {
     const rows = mergeSpouseRows([john, jane, third]);
     expect(rows).toHaveLength(2);
     expect(rows[1].partner).toBeUndefined();
+  });
+
+  it('keeps spouses on a shared account apart when they are graded differently', () => {
+    const ptfsJane = managedStaffMember({
+      ...jane,
+      userPersonType: MpdUserPersonTypeEnum.EmployeePtfs,
+    });
+    const rows = mergeSpouseRows([john, ptfsJane]);
+    expect(rows.map(({ personNumber }) => personNumber)).toEqual(['1', '2']);
+    expect(rows.every(({ partner }) => partner === undefined)).toBe(true);
+    expect(rows.map(getRowSpouseName)).toEqual(['Jane Smith', 'John Smith']);
+  });
+
+  it('keeps an intern apart from a staff spouse on a shared account', () => {
+    const internJane = managedStaffMember({
+      ...jane,
+      userPersonType: MpdUserPersonTypeEnum.EmployeeUsIntern,
+    });
+    expect(mergeSpouseRows([john, internJane])).toHaveLength(2);
+  });
+
+  it('merges spouses whose person types differ but are graded the same', () => {
+    const nonRmoJane = managedStaffMember({
+      ...jane,
+      userPersonType: MpdUserPersonTypeEnum.EmployeeStaffNonRmoSpouse,
+    });
+    const rows = mergeSpouseRows([john, nonRmoJane]);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].partner?.personNumber).toBe('2');
+  });
+
+  it('merges an ungraded couple', () => {
+    const rows = mergeSpouseRows([
+      managedStaffMember({
+        ...john,
+        userPersonType: MpdUserPersonTypeEnum.EmployeePtfs,
+      }),
+      managedStaffMember({
+        ...jane,
+        userPersonType: MpdUserPersonTypeEnum.NonworkerVolunteer,
+      }),
+    ]);
+    expect(rows).toHaveLength(1);
   });
 
   it('unions the team names for display', () => {
