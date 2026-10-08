@@ -84,11 +84,11 @@ describe('ReportLegendPanel', () => {
     expect(getAllByText('-').length).toBeGreaterThan(0);
   });
 
-  it('explains that part-time staff and volunteers are not graded', async () => {
+  it('explains that part-time field staff and volunteers are not graded', async () => {
     const { getByText } = await openLegend();
 
     expect(
-      getByText(/Part-time staff and volunteers aren't graded/),
+      getByText(/Part-time field staff and volunteers aren't graded/),
     ).toBeInTheDocument();
     // Ungraded quarters still have real payroll, unlike No data
     expect(getByText('$2,000.00')).toBeInTheDocument();
@@ -136,6 +136,14 @@ describe('ReportLegendPanel', () => {
       getByText(
         /Interns are graded against their Monthly Gross Salary only, and part-time field staff and volunteers aren't graded\./,
       ),
+    ).toBeInTheDocument();
+  });
+
+  it('explains what needs attention means for interns', async () => {
+    const { getByText } = await openLegend();
+
+    expect(
+      getByText(/For interns, payroll was below their Monthly Gross Salary\./),
     ).toBeInTheDocument();
   });
 

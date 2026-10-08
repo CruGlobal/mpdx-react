@@ -57,3 +57,13 @@ export const newStaffSalaryTooltip = (t: TFunction): string =>
   t(
     'The monthly salary a new staff member in the same situation would receive: base salary for their marital status, children and age × geographic multiplier, plus tenure adjustment, plus SECA and 403(b). Combined with their spouse\'s and divided by 12. See "How this report works" for details.',
   );
+
+export const newStaffSalaryNotApplicable = (t: TFunction): string =>
+  t(
+    "Interns, part-time field staff and volunteers aren't measured against the New Staff Monthly Salary.",
+  );
+
+export const geographicLocationNotApplicable = (t: TFunction): string =>
+  t(
+    "The geographic location only adjusts the New Staff Monthly Salary, which interns, part-time field staff and volunteers aren't measured against.",
+  );

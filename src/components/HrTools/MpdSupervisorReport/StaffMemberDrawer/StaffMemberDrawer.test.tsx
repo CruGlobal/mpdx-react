@@ -264,7 +264,7 @@ describe('StaffMemberDrawer', () => {
       MpdUserPersonTypeEnum.EmployeePtfs,
       MpdUserPersonTypeEnum.NonworkerVolunteer,
     ])('never warns about benchmarks for %s', (userPersonType) => {
-      const { queryByRole } = renderDrawer();
+      const { getByText, queryByRole } = renderDrawer();
       openMember(
         managedStaffMember({
           userPersonType,
@@ -272,6 +272,7 @@ describe('StaffMemberDrawer', () => {
           quarterlyHealth: { monthlyGrossSalary: null, completedQuarters: [] },
         }),
       );
+      expect(getByText('MPD Health Benchmark:')).toBeInTheDocument();
       expect(queryByRole('alert')).not.toBeInTheDocument();
     });
 
@@ -318,13 +319,14 @@ describe('StaffMemberDrawer', () => {
     });
 
     it('does not flag a gross salary below the New Staff salary', () => {
-      const { queryByLabelText } = renderDrawer();
+      const { getByText, queryByLabelText } = renderDrawer();
       openMember(
         managedStaffMember({
           userPersonType: MpdUserPersonTypeEnum.EmployeePtfs,
           newStaffMonthlySalary: 5000,
         }),
       );
+      expect(getByText('$4,500.00', { selector: 'p' })).toBeInTheDocument();
       expect(queryByLabelText(/below the New Staff/)).not.toBeInTheDocument();
     });
   });
@@ -341,8 +343,9 @@ describe('StaffMemberDrawer', () => {
     MpdUserPersonTypeEnum.EmployeePtfs,
     MpdUserPersonTypeEnum.NonworkerVolunteer,
   ])('hides the geographic multiplier for %s', (userPersonType) => {
-    const { queryByRole, queryByText } = renderDrawer();
+    const { getByText, queryByRole, queryByText } = renderDrawer();
     openMember(managedStaffMember({ userPersonType }));
+    expect(getByText('N/A')).toBeInTheDocument();
     expect(queryByText('Geographic Multiplier:')).not.toBeInTheDocument();
     expect(
       queryByRole('combobox', { name: 'Geographic Location' }),

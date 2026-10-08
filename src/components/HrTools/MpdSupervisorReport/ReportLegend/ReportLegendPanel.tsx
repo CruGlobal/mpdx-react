@@ -95,11 +95,11 @@ export const ReportLegendPanel: React.FC = () => {
       'Payroll was at or above their Monthly Gross Salary (within $5).',
     ),
     [MpdHealthStatusEnum.Yellow]: t(
-      'Payroll was below their Monthly Gross Salary but at or above their New Staff Monthly Salary.',
+      'Payroll was below their Monthly Gross Salary but at or above their New Staff Monthly Salary. For interns, payroll was below their Monthly Gross Salary.',
     ),
     [MpdHealthStatusEnum.Red]: t('Payroll was below both benchmarks.'),
     [MpdHealthStatusEnum.Blue]: t(
-      "Part-time staff and volunteers aren't graded against salary benchmarks.",
+      "Part-time field staff and volunteers aren't graded against salary benchmarks.",
     ),
     [MpdHealthStatusEnum.Gray]: t(
       "The quarter can't be graded: a benchmark is missing, or the quarter is before or includes their first payroll (shown as Partial).",
@@ -225,6 +225,11 @@ export const ReportLegendPanel: React.FC = () => {
         </Section>
 
         <Section title={t('Filters')}>
+          <Typography variant="body2" sx={{ mb: 1 }}>
+            {t(
+              'Interns, part-time field staff and volunteers have no New Staff Monthly Salary, so these filters never include them.',
+            )}
+          </Typography>
           <Box component="dl" sx={{ m: 0 }}>
             {filters.map((filterId) => (
               <Term key={filterId} term={quickFilterLabel(t, filterId)}>
@@ -232,13 +237,8 @@ export const ReportLegendPanel: React.FC = () => {
               </Term>
             ))}
           </Box>
-          <Typography variant="body2" color="text.secondary">
-            {t('The current month is never counted.')}
-          </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            {t(
-              'Interns, part-time field staff and volunteers have no New Staff Monthly Salary, so these filters never include them.',
-            )}
+            {t('The current month is never counted.')}
           </Typography>
         </Section>
 

@@ -221,26 +221,21 @@ export const getLocalizedAssignmentCategoryGroup = (
   }
 };
 
-export const internPersonTypes = [
+// These two lists must match the API's Hcm::UserPersonTypes::INTERN and
+// ::UNGRADED, which grade the quarters. If they drift, the drawer, quick
+// glance and spouse merging disagree with the chips the API returns.
+const internPersonTypes = [
   MpdUserPersonTypeEnum.EmployeeUsIntern,
   MpdUserPersonTypeEnum.EmployeeInternationalIntern,
   MpdUserPersonTypeEnum.PendingUsIntern,
   MpdUserPersonTypeEnum.PendingInternationalIntern,
 ];
 
-export const ungradedPersonTypes = [
+const ungradedPersonTypes = [
   MpdUserPersonTypeEnum.EmployeePtfs,
   MpdUserPersonTypeEnum.PendingPtfs,
   MpdUserPersonTypeEnum.NonworkerVolunteer,
 ];
-
-export const isInternPersonType = (
-  type: MpdUserPersonTypeEnum | null | undefined,
-): boolean => !!type && internPersonTypes.includes(type);
-
-export const isUngradedPersonType = (
-  type: MpdUserPersonTypeEnum | null | undefined,
-): boolean => !!type && ungradedPersonTypes.includes(type);
 
 export enum GradingGroupEnum {
   Graded = 'Graded',
@@ -251,10 +246,10 @@ export enum GradingGroupEnum {
 export const gradingGroup = (
   type: MpdUserPersonTypeEnum | null | undefined,
 ): GradingGroupEnum => {
-  if (isInternPersonType(type)) {
+  if (type && internPersonTypes.includes(type)) {
     return GradingGroupEnum.GrossSalaryOnly;
   }
-  if (isUngradedPersonType(type)) {
+  if (type && ungradedPersonTypes.includes(type)) {
     return GradingGroupEnum.Ungraded;
   }
   return GradingGroupEnum.Graded;
@@ -272,17 +267,19 @@ export const missingBenchmarkMessage = (
   >,
 ): string | null => {
   const gross = member.quarterlyHealth?.monthlyGrossSalary ?? null;
-  if (isUngradedPersonType(member.userPersonType)) {
-    return null;
+  const newStaff = member.newStaffMonthlySalary ?? null;
+  switch (gradingGroup(member.userPersonType)) {
+    case GradingGroupEnum.Ungraded:
+      return null;
+    case GradingGroupEnum.GrossSalaryOnly:
+      return gross === null
+        ? t('MPD health cannot be graded without the Monthly Gross Salary.')
+        : null;
+    case GradingGroupEnum.Graded:
+      return gross === null || newStaff === null
+        ? t('MPD health cannot be graded without both benchmarks.')
+        : null;
   }
-  if (isInternPersonType(member.userPersonType)) {
-    return gross === null
-      ? t('MPD health cannot be graded without the Monthly Gross Salary.')
-      : null;
-  }
-  return gross === null || member.newStaffMonthlySalary === null
-    ? t('MPD health cannot be graded without both benchmarks.')
-    : null;
 };
 
 export const getLocalizedUserPersonTypeGroup = (
