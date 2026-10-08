@@ -23,8 +23,14 @@ export const pendingField = '—';
 export const grossSalaryWarning = (
   t: TFunction,
   formatCurrency: (amount: number) => string,
-  member: Pick<ManagedStaffMember, 'newStaffMonthlySalary' | 'quarterlyHealth'>,
+  member: Pick<
+    ManagedStaffMember,
+    'newStaffMonthlySalary' | 'quarterlyHealth' | 'userPersonType'
+  >,
 ): string | null => {
+  if (!hasNewStaffSalary(member.userPersonType)) {
+    return null;
+  }
   const gross = member.quarterlyHealth?.monthlyGrossSalary ?? null;
   const newStaff = member.newStaffMonthlySalary ?? null;
   if (gross === null || newStaff === null || gross >= newStaff) {
@@ -213,6 +219,52 @@ export const getLocalizedAssignmentCategoryGroup = (
     default:
       return pendingField;
   }
+};
+
+export const internPersonTypes = [
+  MpdUserPersonTypeEnum.EmployeeUsIntern,
+  MpdUserPersonTypeEnum.EmployeeInternationalIntern,
+  MpdUserPersonTypeEnum.PendingUsIntern,
+  MpdUserPersonTypeEnum.PendingInternationalIntern,
+];
+
+export const ungradedPersonTypes = [
+  MpdUserPersonTypeEnum.EmployeePtfs,
+  MpdUserPersonTypeEnum.PendingPtfs,
+  MpdUserPersonTypeEnum.NonworkerVolunteer,
+];
+
+export const isInternPersonType = (
+  type: MpdUserPersonTypeEnum | null | undefined,
+): boolean => !!type && internPersonTypes.includes(type);
+
+export const isUngradedPersonType = (
+  type: MpdUserPersonTypeEnum | null | undefined,
+): boolean => !!type && ungradedPersonTypes.includes(type);
+
+export const hasNewStaffSalary = (
+  type: MpdUserPersonTypeEnum | null | undefined,
+): boolean => !isInternPersonType(type) && !isUngradedPersonType(type);
+
+export const missingBenchmarkMessage = (
+  t: TFunction,
+  member: Pick<
+    ManagedStaffMember,
+    'userPersonType' | 'newStaffMonthlySalary' | 'quarterlyHealth'
+  >,
+): string | null => {
+  const gross = member.quarterlyHealth?.monthlyGrossSalary ?? null;
+  if (isUngradedPersonType(member.userPersonType)) {
+    return null;
+  }
+  if (isInternPersonType(member.userPersonType)) {
+    return gross === null
+      ? t('MPD health cannot be graded without the Monthly Gross Salary.')
+      : null;
+  }
+  return gross === null || member.newStaffMonthlySalary === null
+    ? t('MPD health cannot be graded without both benchmarks.')
+    : null;
 };
 
 export const getLocalizedUserPersonTypeGroup = (
