@@ -56,6 +56,7 @@ export const formatConstants = (
   });
 
   const goalGeographicConstantMap: GoalGeographicConstantMap = new Map();
+  // Ensure the None option always exists
   goalGeographicConstantMap.set(GEOGRAPHIC_LOCATION_NONE, 0);
   [...(constant?.mpdGoalGeographicConstants ?? [])]
     .sort((a, b) => a.location.localeCompare(b.location))
