@@ -326,7 +326,10 @@ describe('PdsGoalCalculator', () => {
 
     it('shows a success snackbar with the formatted monthly goal on completion', async () => {
       const { findByRole, findByText } = render(
-        <PdsGoalCalculatorTestWrapper calculationMock={simpleFormMock}>
+        <PdsGoalCalculatorTestWrapper
+          calculationMock={simpleFormMock}
+          accountGeographicLocation="None"
+        >
           <PdsGoalCalculator />
         </PdsGoalCalculatorTestWrapper>,
       );

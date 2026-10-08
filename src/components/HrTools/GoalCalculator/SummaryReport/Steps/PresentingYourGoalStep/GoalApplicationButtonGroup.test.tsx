@@ -13,6 +13,7 @@ const TestComponent: React.FC<{ geographicLocation?: string | null }> = ({
 }) => (
   <GoalCalculatorTestWrapper
     onCall={mutationSpy}
+    accountGeographicLocation="None"
     goalCalculation={
       geographicLocation === undefined
         ? goalCalculationMock

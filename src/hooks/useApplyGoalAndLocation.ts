@@ -26,9 +26,9 @@ export const useApplyGoalAndLocation = (geographicLocation: string | null) => {
   const normalizedGeographicLocation =
     geographicLocation ?? GEOGRAPHIC_LOCATION_NONE;
   const savedGeographicLocation =
-    data?.accountList?.settings?.geographicLocation ?? GEOGRAPHIC_LOCATION_NONE;
+    data?.accountList?.settings?.geographicLocation;
   const geographicLocationChanged =
-    savedGeographicLocation !== normalizedGeographicLocation;
+    !!data && savedGeographicLocation !== normalizedGeographicLocation;
 
   const applyMonthlyGoal = (
     monthlyGoal?: number,
