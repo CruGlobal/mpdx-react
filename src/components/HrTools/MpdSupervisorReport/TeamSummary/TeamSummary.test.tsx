@@ -72,6 +72,21 @@ const cityYellow = managedStaffMember({
   },
 });
 
+const cityBlue = managedStaffMember({
+  firstName: 'Dana',
+  personNumber: '4',
+  staffAccountId: 'a4',
+  spousePersonNumber: null,
+  teams: {
+    employee: [{ id: 'city', name: 'City', department: 'US City' }],
+    spouse: [],
+  },
+  quarterlyHealth: {
+    monthlyGrossSalary: 4500,
+    completedQuarters: [quarter(MpdHealthStatusEnum.Blue)],
+  },
+});
+
 const twoTeams: ManagedStaffTeamsQuery['managedStaffTeams'] = [
   { name: 'Campus', departments: ['US Campus'] },
   { name: 'City', departments: ['US City'] },
@@ -148,6 +163,17 @@ describe('TeamSummary', () => {
     expect(cards[1]).toHaveTextContent('Needs attention (1)');
     expect(cards[1]).toHaveTextContent('On track (1)');
     expect(cards[1]).not.toHaveTextContent('At risk');
+  });
+
+  it('counts ungraded staff on their team', async () => {
+    const { findByRole } = renderSummary(twoTeams, {
+      ManagedStaff: managedStaffMock([campusRed, cityBlue]),
+    });
+
+    const region = await findByRole('region', { name: 'Teams' });
+    const city = within(region).getByRole('button', { name: /City/ });
+    expect(city).toHaveTextContent('1 staff');
+    expect(city).toHaveTextContent('Ungraded (1)');
   });
 
   it('starts open and collapses the cards from its heading', async () => {

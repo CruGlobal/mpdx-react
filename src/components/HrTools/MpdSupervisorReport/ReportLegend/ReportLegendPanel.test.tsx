@@ -76,12 +76,22 @@ describe('ReportLegendPanel', () => {
   it('explains each chip color beside a sample chip', async () => {
     const { getByText, getAllByText } = await openLegend();
 
-    ['On track', 'Needs attention', 'At risk', 'No data'].forEach((label) =>
-      expect(getByText(label)).toBeInTheDocument(),
+    ['On track', 'Needs attention', 'At risk', 'No data', 'Ungraded'].forEach(
+      (label) => expect(getByText(label)).toBeInTheDocument(),
     );
     // Sample chips use the row chip's amount formatting
     expect(getByText('$4,250.00')).toBeInTheDocument();
     expect(getAllByText('-').length).toBeGreaterThan(0);
+  });
+
+  it('explains that part-time staff and volunteers are not graded', async () => {
+    const { getByText } = await openLegend();
+
+    expect(
+      getByText(/Part-time staff and volunteers aren't graded/),
+    ).toBeInTheDocument();
+    // Ungraded quarters still have real payroll, unlike No data
+    expect(getByText('$2,000.00')).toBeInTheDocument();
   });
 
   it('matches the API grading order for red and green', async () => {

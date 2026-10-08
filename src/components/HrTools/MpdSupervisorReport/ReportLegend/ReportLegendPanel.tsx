@@ -79,6 +79,7 @@ const sampleAmounts: Record<MpdHealthStatusEnum, number | null> = {
   [MpdHealthStatusEnum.Green]: 4250,
   [MpdHealthStatusEnum.Yellow]: 3100,
   [MpdHealthStatusEnum.Red]: 1900,
+  [MpdHealthStatusEnum.Blue]: 2000,
   [MpdHealthStatusEnum.Gray]: null,
 };
 
@@ -97,6 +98,9 @@ export const ReportLegendPanel: React.FC = () => {
       'Payroll was below their Monthly Gross Salary but at or above their New Staff Monthly Salary.',
     ),
     [MpdHealthStatusEnum.Red]: t('Payroll was below both benchmarks.'),
+    [MpdHealthStatusEnum.Blue]: t(
+      "Part-time staff and volunteers aren't graded against salary benchmarks.",
+    ),
     [MpdHealthStatusEnum.Gray]: t(
       "The quarter can't be graded: a benchmark is missing, or the quarter is before or includes their first payroll (shown as Partial).",
     ),
