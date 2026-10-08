@@ -5,7 +5,7 @@ import { HouseholdMember } from 'src/components/Reports/Shared/Helpers/household
 import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import {
   addCategoryRow,
-  addCombinedSubcategoryRow,
+  addCombinedRows,
   addRowPerSubcategory,
   buildUnknownKey,
 } from '../components/Reports/MPGAIncomeExpensesReport/Helper/filterFunds';
@@ -55,7 +55,7 @@ export function useFilteredFunds(
             expenseData,
           });
         } else if (category.subcategories?.length) {
-          addCombinedSubcategoryRow({
+          addCombinedRows({
             baseId,
             category,
             t,

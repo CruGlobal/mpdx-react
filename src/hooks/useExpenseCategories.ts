@@ -1,6 +1,9 @@
 import { useMemo } from 'react';
 import { DataFields } from 'src/components/Reports/MPGAIncomeExpensesReport/mockData';
-import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
+import {
+  StaffExpenseCategoryEnum,
+  StaffExpensesSubCategoryEnum,
+} from 'src/graphql/types.generated';
 
 const sum = (rows: DataFields[]): number => {
   return rows?.reduce((acc, item) => acc + item.total, 0) || 0;
@@ -31,6 +34,12 @@ export function useExpenseCategories(data: DataFields[]) {
           break;
         case StaffExpenseCategoryEnum.Salary:
           salary.push(item);
+          break;
+        case StaffExpenseCategoryEnum.StaffExpense:
+          (item.subCategory === StaffExpensesSubCategoryEnum.PaCard
+            ? healthcare
+            : other
+          ).push(item);
           break;
         default:
           other.push(item);
