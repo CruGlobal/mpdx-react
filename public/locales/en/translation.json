@@ -353,6 +353,7 @@
     "{{name}} may request up to their Board Approved {{sectionKind}} Amount of {{approvedAmount}}.": "{{name}} may request up to their Board Approved {{sectionKind}} Amount of {{approvedAmount}}.",
     "{{name}}'s commitment info updated!": "{{name}}'s commitment info updated!",
     "{{name}}'s Gross Requested Salary exceeds their individual Maximum Allowable Salary. If this is correct, please provide reasoning for why {{name}}'s Salary should exceed {{cap}} for division head approval below.": "{{name}}'s Gross Requested Salary exceeds their individual Maximum Allowable Salary. If this is correct, please provide reasoning for why {{name}}'s Salary should exceed {{cap}} for division head approval below.",
+    "{{pending}} of {{total}} Pending": "{{pending}} of {{total}} Pending",
     "{{preferredName}}'s Pending Additional Salary Request": "{{preferredName}}'s Pending Additional Salary Request",
     "{{range}} Partial quarter: payroll started during this quarter.": "{{range}} Partial quarter: payroll started during this quarter.",
     "{{reassigned}} of the selected staff already have a coach.": "{{reassigned}} of the selected staff already have a coach.",

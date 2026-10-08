@@ -11,14 +11,14 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { ReportType } from '../Helpers/StaffReportEnum';
-import { Transaction } from '../Helpers/filterTransactions';
-import { formatTransactionDate } from '../Helpers/formatDate';
-import { getPendingLabel } from '../Helpers/pendingLabel';
+import { GroupedTransaction, Transaction } from '../Helpers/filterTransactions';
+import { getDescriptionWithPending } from '../Helpers/pendingLabel';
+import { buildStaffReportRows } from '../Helpers/staffReportRow';
 
 export interface PrintTablesProps {
-  transactions: Transaction[];
+  transactions: (Transaction | GroupedTransaction)[];
   transactionTotal: number;
-  type: string;
+  type: ReportType.Income | ReportType.Expense;
 }
 
 export const PrintTables: React.FC<PrintTablesProps> = ({
@@ -32,6 +32,7 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
   const isExpense = type === ReportType.Expense;
   const formatAmount = (value: number) =>
     currencyFormat(isExpense ? Math.abs(value) : value, 'USD', locale);
+  const rows = buildStaffReportRows(transactions, type, locale);
 
   return (
     <TableContainer>
@@ -52,19 +53,13 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
         <TableBody>
           {transactions.length ? (
             <>
-              {transactions.map((row) => {
-                const pendingLabel = getPendingLabel(row, t);
-                return (
-                  <TableRow key={row.id}>
-                    <TableCell>{formatTransactionDate(row, locale)}</TableCell>
-                    <TableCell>
-                      {row.description || row.displayCategory}
-                      {pendingLabel && ` (${pendingLabel})`}
-                    </TableCell>
-                    <TableCell>{formatAmount(row.amount)}</TableCell>
-                  </TableRow>
-                );
-              })}
+              {rows.map((row) => (
+                <TableRow key={row.id}>
+                  <TableCell>{row.dateLabel}</TableCell>
+                  <TableCell>{getDescriptionWithPending(row, t)}</TableCell>
+                  <TableCell>{row.amountLabel}</TableCell>
+                </TableRow>
+              ))}
               <TableRow>
                 <TableCell>
                   <strong>{t('Total')}</strong>
