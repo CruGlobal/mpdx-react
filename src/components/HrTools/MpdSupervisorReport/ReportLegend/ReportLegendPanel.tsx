@@ -99,7 +99,7 @@ export const ReportLegendPanel: React.FC = () => {
     ),
     [MpdHealthStatusEnum.Red]: t('Payroll was below both benchmarks.'),
     [MpdHealthStatusEnum.Blue]: t(
-      "Part-time staff and volunteers aren't graded against salary benchmarks.",
+      "Part-time field staff and volunteers aren't graded against salary benchmarks.",
     ),
     [MpdHealthStatusEnum.Gray]: t(
       "The quarter can't be graded: a benchmark is missing, or the quarter is before or includes their first payroll (shown as Partial).",

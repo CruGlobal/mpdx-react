@@ -33,16 +33,12 @@ import {
   hasNewStaffSalary,
   healthColor,
   healthLabel,
-  internPersonTypes,
-  isInternPersonType,
-  isUngradedPersonType,
   latestQuarterStatus,
   mergeSpouseRows,
   missingBenchmarkMessage,
   pendingField,
   quarterAmountLabel,
   summarizeTeams,
-  ungradedPersonTypes,
 } from './helpers';
 import { managedStaffMember } from './mpdSupervisorReportMocks';
 
@@ -240,29 +236,33 @@ describe('userPersonTypeGroups', () => {
 });
 
 describe('person type grading', () => {
+  const interns = [
+    MpdUserPersonTypeEnum.EmployeeUsIntern,
+    MpdUserPersonTypeEnum.EmployeeInternationalIntern,
+    MpdUserPersonTypeEnum.PendingUsIntern,
+    MpdUserPersonTypeEnum.PendingInternationalIntern,
+  ];
+  const ungraded = [
+    MpdUserPersonTypeEnum.EmployeePtfs,
+    MpdUserPersonTypeEnum.PendingPtfs,
+    MpdUserPersonTypeEnum.NonworkerVolunteer,
+  ];
   const graded = Object.values(MpdUserPersonTypeEnum).filter(
-    (type) =>
-      !internPersonTypes.includes(type) && !ungradedPersonTypes.includes(type),
+    (type) => !interns.includes(type) && !ungraded.includes(type),
   );
 
-  it.each(internPersonTypes)('treats %s as an intern', (type) => {
+  it.each(interns)('treats %s as an intern', (type) => {
     expect(gradingGroup(type)).toBe(GradingGroupEnum.GrossSalaryOnly);
-    expect(isInternPersonType(type)).toBe(true);
-    expect(isUngradedPersonType(type)).toBe(false);
     expect(hasNewStaffSalary(type)).toBe(false);
   });
 
-  it.each(ungradedPersonTypes)('treats %s as ungraded', (type) => {
+  it.each(ungraded)('treats %s as ungraded', (type) => {
     expect(gradingGroup(type)).toBe(GradingGroupEnum.Ungraded);
-    expect(isInternPersonType(type)).toBe(false);
-    expect(isUngradedPersonType(type)).toBe(true);
     expect(hasNewStaffSalary(type)).toBe(false);
   });
 
   it.each(graded)('measures %s against the New Staff salary', (type) => {
     expect(gradingGroup(type)).toBe(GradingGroupEnum.Graded);
-    expect(isInternPersonType(type)).toBe(false);
-    expect(isUngradedPersonType(type)).toBe(false);
     expect(hasNewStaffSalary(type)).toBe(true);
   });
 
@@ -297,6 +297,15 @@ describe('missingBenchmarkMessage', () => {
     expect(missingBenchmarkMessage(t, member(staff, 4500, null))).toBe(
       bothBenchmarks,
     );
+  });
+
+  it('treats a missing New Staff salary like a null one', () => {
+    expect(
+      missingBenchmarkMessage(t, {
+        ...member(MpdUserPersonTypeEnum.EmployeeStaff, 4500, null),
+        newStaffMonthlySalary: undefined,
+      }),
+    ).toBe(bothBenchmarks);
   });
 
   it('needs only the gross salary for interns', () => {
