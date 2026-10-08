@@ -18,7 +18,7 @@ const createTable = (
     csvHeader,
     ...dateSortedTransactions.map((transaction) => [
       formatTransactionDate(transaction, locale),
-      transaction.displayCategory,
+      transaction.description || transaction.displayCategory,
       currencyFormat(
         isExpense ? Math.abs(transaction.amount) : transaction.amount,
         'USD',
@@ -87,7 +87,7 @@ export const createCsvReport = (
     reportTitle = t('Combined Report');
   }
 
-  const csvHeader = [t('Date'), t('Category'), t('Amount')];
+  const csvHeader = [t('Date'), t('Description'), t('Amount')];
 
   let csvData: string[][] = [];
 

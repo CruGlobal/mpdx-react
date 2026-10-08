@@ -152,6 +152,44 @@ describe('downloadReport', () => {
     expect(csvContent).not.toContain('Jan 1, 2025');
   });
 
+  it('writes the same description the table shows', () => {
+    const realLink = document.createElement('a');
+    jest.spyOn(realLink, 'setAttribute').mockImplementation(setAttributeMock);
+    jest.spyOn(realLink, 'click').mockImplementation(clickMock);
+
+    jest.spyOn(document, 'createElement').mockReturnValue(realLink);
+
+    const transactions: Transaction[] = [
+      {
+        id: '4',
+        category: StaffExpenseCategoryEnum.Other,
+        displayCategory: 'Other',
+        description: 'Conference Registration',
+        fundType: 'Primary',
+        transactedAt: '2025-09-02',
+        amount: -150,
+      },
+      {
+        id: '5',
+        category: StaffExpenseCategoryEnum.Other,
+        displayCategory: 'Other',
+        description: null,
+        fundType: 'Primary',
+        transactedAt: '2025-09-03',
+        amount: -25,
+      },
+    ];
+    createCsvReport(ReportType.Expense, transactions, mockT, mockLocale);
+
+    const hrefValue = setAttributeMock.mock.calls.find(
+      ([attribute]) => attribute === 'href',
+    )?.[1];
+    const csvContent = decodeURIComponent(hrefValue);
+    expect(csvContent).toContain('"Date","Description","Amount"');
+    expect(csvContent).toContain('"Conference Registration","$150"');
+    expect(csvContent).toContain('"Other","$25"');
+  });
+
   describe('dateSortTransactions', () => {
     it('sorts transactions by ascending date', () => {
       expect(
