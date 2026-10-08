@@ -274,32 +274,34 @@ export const StaffMemberDrawer: React.FC = () => {
           )}
         </Box>
 
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 1,
-            flex: 1,
-            minWidth: 260,
-          }}
-        >
-          <Typography variant="subtitle2" fontWeight="bold">
-            {t('Geographic Multiplier:')}
-          </Typography>
-          <GeographicLocationSelect
-            key={personNumber}
-            firstName={firstName}
-            personNumber={personNumber}
-            geographicLocation={geographicLocation}
-            onSaved={(geographicLocation, newStaffMonthlySalary) => {
-              updateSelectedMember(personNumber, {
-                geographicLocation,
-                newStaffMonthlySalary,
-              });
-              refetchStaff();
+        {newStaffSalaryApplies && (
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 1,
+              flex: 1,
+              minWidth: 260,
             }}
-          />
-        </Box>
+          >
+            <Typography variant="subtitle2" fontWeight="bold">
+              {t('Geographic Multiplier:')}
+            </Typography>
+            <GeographicLocationSelect
+              key={personNumber}
+              firstName={firstName}
+              personNumber={personNumber}
+              geographicLocation={geographicLocation}
+              onSaved={(geographicLocation, newStaffMonthlySalary) => {
+                updateSelectedMember(personNumber, {
+                  geographicLocation,
+                  newStaffMonthlySalary,
+                });
+                refetchStaff();
+              }}
+            />
+          </Box>
+        )}
       </StaffInfo>
 
       <TabContext value={selectedTabKey}>
