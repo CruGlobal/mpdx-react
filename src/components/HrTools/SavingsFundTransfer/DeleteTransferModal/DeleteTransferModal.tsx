@@ -27,21 +27,39 @@ export const DeleteTransferModal: React.FC<DeleteTransferModalProps> = ({
   const [deleting, setDeleting] = useState(false);
 
   const [deleteRecurringTransfer] = useDeleteRecurringTransferMutation({
-    refetchQueries: ['ReportsSavingsFundTransfer', 'AccountFunds'],
+    refetchQueries: ['ReportsSavingsFundTransfer', 'FundBalances'],
     awaitRefetchQueries: true,
   });
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     setDeleting(true);
 
-    deleteRecurringTransfer({
-      variables: {
-        id: transfer.recurringId ?? '',
-      },
-    });
+    const errorMessage =
+      type === ActionTypeEnum.Stop
+        ? t('Failed to stop transfer')
+        : t('Failed to cancel transfer');
 
-    enqueueSnackbar(t('Transfer stopped successfully'), { variant: 'success' });
-    handleClose();
+    try {
+      await deleteRecurringTransfer({
+        variables: {
+          id: transfer.recurringId ?? '',
+        },
+      });
+
+      const successMessage =
+        type === ActionTypeEnum.Stop
+          ? t('Transfer stopped successfully')
+          : t('Transfer canceled successfully');
+
+      enqueueSnackbar(successMessage, {
+        variant: 'success',
+      });
+      handleClose();
+    } catch (error) {
+      enqueueSnackbar(errorMessage, { variant: 'error' });
+    } finally {
+      setDeleting(false);
+    }
   };
 
   return (
