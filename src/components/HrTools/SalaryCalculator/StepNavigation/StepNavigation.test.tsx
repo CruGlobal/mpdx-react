@@ -246,7 +246,7 @@ describe('SubmitButton', () => {
     await waitFor(() =>
       expect(
         queryByText(
-          `Your geographic location will be updated as ${location} in your account settings.`,
+          `Your default location multiplier will be updated to ${location} in your account settings.`,
         ),
       ).not.toBeInTheDocument(),
     );

@@ -115,6 +115,7 @@ export type AdditionalSalaryRequestType = {
     | 'ytdAsrAmount'
     | 'grossAnnualSalary'
     | 'outstandingSalaryRequest'
+    | 'geographicLocation'
   >;
   user: HcmQuery['hcm'][0] | undefined;
   spouse: HcmQuery['hcm'][1] | undefined;

@@ -8,6 +8,7 @@ import {
   HcmQuery,
 } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import {
+  AsrStatusEnum,
   ElectionType403bEnum,
   ProgressiveApprovalTierReasonEnum,
 } from 'src/graphql/types.generated';
@@ -996,6 +997,7 @@ describe('useAdditionalSalaryRequestForm', () => {
         AdditionalSalaryRequest: {
           latestAdditionalSalaryRequest: {
             id: 'test-request-id',
+            status: AsrStatusEnum.InProgress,
             currentYearSalaryNotReceived: 999,
             previousYearSalaryNotReceived: 0,
             additionalSalaryWithinMax: 0,
