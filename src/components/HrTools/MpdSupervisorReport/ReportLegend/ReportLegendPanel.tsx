@@ -225,6 +225,11 @@ export const ReportLegendPanel: React.FC = () => {
         </Section>
 
         <Section title={t('Filters')}>
+          <Typography variant="body2" sx={{ mb: 1 }}>
+            {t(
+              'Interns, part-time field staff and volunteers have no New Staff Monthly Salary, so these filters never include them.',
+            )}
+          </Typography>
           <Box component="dl" sx={{ m: 0 }}>
             {filters.map((filterId) => (
               <Term key={filterId} term={quickFilterLabel(t, filterId)}>
@@ -232,11 +237,6 @@ export const ReportLegendPanel: React.FC = () => {
               </Term>
             ))}
           </Box>
-          <Typography variant="body2">
-            {t(
-              'Interns, part-time field staff and volunteers have no New Staff Monthly Salary, so these filters never include them.',
-            )}
-          </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
             {t('The current month is never counted.')}
           </Typography>
