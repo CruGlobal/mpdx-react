@@ -7,7 +7,9 @@ export const LocationInfoAlert: React.FC = () => {
 
   return (
     <Alert severity="info" sx={{ mt: 1 }}>
-      {t('This will update your geographic location in your account settings.')}
+      {t(
+        'This will update your default location multiplier in your account settings.',
+      )}
     </Alert>
   );
 };

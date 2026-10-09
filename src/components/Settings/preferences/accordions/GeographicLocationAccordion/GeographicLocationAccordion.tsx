@@ -1,5 +1,5 @@
 import { ReactElement, useMemo } from 'react';
-import { Autocomplete, TextField } from '@mui/material';
+import { Alert, Autocomplete, TextField } from '@mui/material';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -40,7 +40,7 @@ export const GeographicLocationAccordion: React.FC<
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const [updateAccountPreferences] = useUpdateAccountPreferencesMutation();
-  const label = t('Geographic Location');
+  const label = t('Default Location Multiplier');
 
   const { goalGeographicConstantMap } = useGoalCalculatorConstants();
   const locations = useMemo(
@@ -107,7 +107,7 @@ export const GeographicLocationAccordion: React.FC<
           >
             <FieldWrapper
               helperText={t(
-                'This should be the major city within 50 miles of you. If none apply, leave this blank.',
+                'This should be the major city within 50 miles of you. If none apply, select "None."',
               )}
             >
               <Autocomplete
@@ -128,6 +128,11 @@ export const GeographicLocationAccordion: React.FC<
                 )}
               />
             </FieldWrapper>
+            <Alert severity="info" sx={{ marginTop: 2 }}>
+              {t(
+                "This location is filled in automatically when you start a new calculator in HR Tools. Changing it won't update calculators you've already started or change your salary.",
+              )}
+            </Alert>
           </FormWrapper>
         )}
       </Formik>

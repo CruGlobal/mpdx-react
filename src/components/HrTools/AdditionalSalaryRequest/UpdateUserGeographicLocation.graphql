@@ -1,0 +1,7 @@
+mutation UpdateUserGeographicLocation($geographicLocation: String!) {
+  updateUserGeographicLocation(
+    input: { geographicLocation: $geographicLocation }
+  ) {
+    geographicLocation
+  }
+}

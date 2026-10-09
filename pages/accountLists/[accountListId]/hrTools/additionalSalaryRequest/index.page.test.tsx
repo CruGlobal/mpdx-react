@@ -14,7 +14,11 @@ import { AdditionalSalaryRequestQuery } from 'src/components/HrTools/AdditionalS
 import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { mockHcmUnavailable } from 'src/components/HrTools/Shared/HcmData/mockHcmUnavailable';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
-import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
+import {
+  AsrStatusEnum,
+  UsStaffGroupEnum,
+  UserTypeEnum,
+} from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import AdditionalSalaryRequestPage, { getServerSideProps } from './index.page';
 
@@ -63,6 +67,11 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 ],
                 hcmUnavailableCalls,
               ),
+            },
+            AdditionalSalaryRequest: {
+              latestAdditionalSalaryRequest: {
+                status: AsrStatusEnum.ApprovedAndPaid,
+              },
             },
             ...(requestError && {
               AdditionalSalaryRequest: {
