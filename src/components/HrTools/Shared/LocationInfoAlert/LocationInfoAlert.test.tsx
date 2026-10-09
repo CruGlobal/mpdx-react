@@ -8,7 +8,7 @@ describe('LocationInfoAlert', () => {
 
     expect(
       getByText(
-        'This will update your geographic location in your account settings.',
+        'This will update your default location multiplier in your account settings.',
       ),
     ).toBeInTheDocument();
   });
