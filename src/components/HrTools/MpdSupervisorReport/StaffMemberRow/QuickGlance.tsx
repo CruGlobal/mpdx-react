@@ -1,8 +1,13 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Tooltip, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { InfoTooltipIcon } from 'src/components/HrTools/Shared/InfoTooltipIcon';
 import { getLocalizedTaxStatus } from 'src/components/HrTools/Shared/getLocalizedTaxStatus';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
+import {
+  geographicLocationNotApplicable,
+  newStaffSalaryNotApplicable,
+} from '../ReportLegend/legendCopy';
 import {
   ManagedStaffMember,
   StaffRow,
@@ -17,15 +22,24 @@ import { GrossSalaryMarker } from './GrossSalaryMarker';
 
 interface DetailProps {
   label: string;
+  labelAdornment?: React.ReactNode;
   value: React.ReactNode;
   valueColor?: string;
 }
 
-const Detail: React.FC<DetailProps> = ({ label, value, valueColor }) => (
+const Detail: React.FC<DetailProps> = ({
+  label,
+  labelAdornment,
+  value,
+  valueColor,
+}) => (
   <Box sx={{ display: 'flex', flexDirection: 'column', minWidth: 140 }}>
-    <Typography variant="caption" color="text.secondary">
-      {label}
-    </Typography>
+    <Box display="flex" alignItems="center" gap={0.5}>
+      <Typography variant="caption" color="text.secondary">
+        {label}
+      </Typography>
+      {labelAdornment}
+    </Box>
     <Typography
       variant="body2"
       color={valueColor}
@@ -35,6 +49,20 @@ const Detail: React.FC<DetailProps> = ({ label, value, valueColor }) => (
       {value}
     </Typography>
   </Box>
+);
+
+interface ReasonTooltipProps {
+  reason: string;
+  reasonLabel: string;
+}
+
+const ReasonTooltip: React.FC<ReasonTooltipProps> = ({
+  reason,
+  reasonLabel,
+}) => (
+  <Tooltip title={reason} describeChild>
+    <InfoTooltipIcon tabIndex={0} titleAccess={reasonLabel} />
+  </Tooltip>
 );
 
 interface QuickGlanceProps {
@@ -118,6 +146,14 @@ export const QuickGlance: React.FC<QuickGlanceProps> = ({ row }) => {
       />
       <Detail
         label={t('Geographic location')}
+        labelAdornment={
+          !newStaffSalaryApplies && (
+            <ReasonTooltip
+              reason={geographicLocationNotApplicable(t)}
+              reasonLabel={t('Why geographic location does not apply')}
+            />
+          )
+        }
         value={
           newStaffSalaryApplies
             ? (row.geographicLocation ?? pendingField)
@@ -126,6 +162,14 @@ export const QuickGlance: React.FC<QuickGlanceProps> = ({ row }) => {
       />
       <Detail
         label={t('New Staff Monthly Salary')}
+        labelAdornment={
+          !newStaffSalaryApplies && (
+            <ReasonTooltip
+              reason={newStaffSalaryNotApplicable(t)}
+              reasonLabel={t('Why New Staff Monthly Salary does not apply')}
+            />
+          )
+        }
         value={
           !newStaffSalaryApplies
             ? t('N/A')

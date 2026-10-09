@@ -17,7 +17,10 @@ import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import theme from 'src/theme';
 import { GeographicLocationSelect } from '../GeographicLocationSelect/GeographicLocationSelect';
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
-import { newStaffSalaryTooltip } from '../ReportLegend/legendCopy';
+import {
+  newStaffSalaryNotApplicable,
+  newStaffSalaryTooltip,
+} from '../ReportLegend/legendCopy';
 import { DynamicMPGA, preloadMPGA } from '../StaffDetailsTabs/MPGA/DynamicMPGA';
 import {
   DynamicMonthlySummary,
@@ -230,9 +233,7 @@ export const StaffMemberDrawer: React.FC = () => {
                   title={
                     newStaffSalaryApplies
                       ? newStaffSalaryTooltip(t)
-                      : t(
-                          "Interns, part-time field staff and volunteers aren't measured against the New Staff Monthly Salary.",
-                        )
+                      : newStaffSalaryNotApplicable(t)
                   }
                   describeChild
                 >

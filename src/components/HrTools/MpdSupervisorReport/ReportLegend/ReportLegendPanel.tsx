@@ -232,13 +232,13 @@ export const ReportLegendPanel: React.FC = () => {
               </Term>
             ))}
           </Box>
-          <Typography variant="body2" color="text.secondary">
-            {t('The current month is never counted.')}
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+          <Typography variant="body2">
             {t(
               'Interns, part-time field staff and volunteers have no New Staff Monthly Salary, so these filters never include them.',
             )}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            {t('The current month is never counted.')}
           </Typography>
         </Section>
 
