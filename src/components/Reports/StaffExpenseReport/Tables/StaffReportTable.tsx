@@ -9,21 +9,17 @@ import {
 } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import { DataGrid, GridColDef, GridSortModel } from '@mui/x-data-grid';
-import { TFunction } from 'i18next';
-import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { CategoryBreakdownDialog } from '../CategoryBreakdownDialog/CategoryBreakdownDialog';
 import { ReportType } from '../Helpers/StaffReportEnum';
-import { AggregationPeriod } from '../Helpers/aggregationPolicy';
-import {
-  GroupedTransaction,
-  Transaction,
-  isGroupedTransaction,
-} from '../Helpers/filterTransactions';
-import { formatAggregatedDate } from '../Helpers/formatDate';
+import { GroupedTransaction, Transaction } from '../Helpers/filterTransactions';
 import { getPendingLabel } from '../Helpers/pendingLabel';
+import {
+  StaffReportRow,
+  buildStaffReportRows,
+} from '../Helpers/staffReportRow';
 import { PendingChip } from '../styledComponents/PendingChip';
 
 const DEFAULT_PAGE_SIZE = 25;
@@ -73,36 +69,6 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 
-export interface StaffReportRow {
-  id: string;
-  date: DateTime;
-  description: string;
-  amount: number;
-  isGrouped: boolean;
-  period: AggregationPeriod;
-  groupedTransaction?: GroupedTransaction;
-  pendingLabel: string | null;
-}
-
-export const createStaffReportRow = (
-  transaction: Transaction | GroupedTransaction,
-  index: number,
-  t: TFunction,
-): StaffReportRow => {
-  const isGrouped = isGroupedTransaction(transaction);
-  return {
-    id: index.toString(),
-    date: DateTime.fromISO(transaction.transactedAt),
-    // A rolled up row carries its bucket label; an itemized one shows what the transaction says.
-    description: transaction.description || transaction.displayCategory,
-    amount: transaction.amount,
-    isGrouped,
-    period: isGrouped ? transaction.period : AggregationPeriod.None,
-    groupedTransaction: isGrouped ? transaction : undefined,
-    pendingLabel: getPendingLabel(transaction, t),
-  };
-};
-
 export const StaffReportTable: React.FC<StaffReportTableProps> = ({
   transactions,
   tableType,
@@ -149,38 +115,35 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
     });
   };
 
-  const staffReportRows = useMemo(() => {
-    return transactions.map((data, index) =>
-      createStaffReportRow(data, index, t),
-    );
-  }, [transactions, t]);
-
-  const date: RenderCell = ({ row }) =>
-    formatAggregatedDate(row.date, row.period, locale);
-
-  const description: RenderCell = ({ row }) => (
-    <Box display="flex" alignItems="center" gap={1} minWidth={0}>
-      <Tooltip title={row.description}>
-        <Typography variant="body2" noWrap minWidth={0}>
-          {row.description}
-        </Typography>
-      </Tooltip>
-      {row.pendingLabel && <PendingChip label={row.pendingLabel} />}
-    </Box>
+  const staffReportRows = useMemo(
+    () => buildStaffReportRows(transactions, tableType, locale),
+    [transactions, tableType, locale],
   );
 
-  const amount: RenderCell = ({ row }) => {
-    const displayAmount =
-      tableType === ReportType.Expense ? Math.abs(row.amount) : row.amount;
+  const date: RenderCell = ({ row }) => row.dateLabel;
+
+  const description: RenderCell = ({ row }) => {
+    const pendingLabel = getPendingLabel(row.pending, t);
     return (
-      <Typography variant="body2" noWrap>
-        {currencyFormat(displayAmount, 'USD', locale)}
-      </Typography>
+      <Box display="flex" alignItems="center" gap={1} minWidth={0}>
+        <Tooltip title={row.description}>
+          <Typography variant="body2" noWrap minWidth={0}>
+            {row.description}
+          </Typography>
+        </Tooltip>
+        {pendingLabel && <PendingChip label={pendingLabel} />}
+      </Box>
     );
   };
 
+  const amount: RenderCell = ({ row }) => (
+    <Typography variant="body2" noWrap>
+      {row.amountLabel}
+    </Typography>
+  );
+
   const tooltip: RenderCell = ({ row }) => {
-    if (!row.isGrouped || !row.groupedTransaction) {
+    if (!row.groupedTransaction) {
       return null;
     }
     const grouped = row.groupedTransaction;

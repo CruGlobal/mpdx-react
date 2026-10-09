@@ -283,7 +283,7 @@ describe('StaffReportTable', () => {
       />,
     );
 
-    expect(await findByText('Pending 2 of 3')).toBeInTheDocument();
+    expect(await findByText('2 of 3 Pending')).toBeInTheDocument();
   });
 
   it('does not mark transactions that are not pending', async () => {
