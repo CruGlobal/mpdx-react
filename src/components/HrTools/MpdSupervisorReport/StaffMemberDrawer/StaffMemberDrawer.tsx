@@ -17,7 +17,10 @@ import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import theme from 'src/theme';
 import { GeographicLocationSelect } from '../GeographicLocationSelect/GeographicLocationSelect';
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
-import { newStaffSalaryTooltip } from '../ReportLegend/legendCopy';
+import {
+  newStaffSalaryNotApplicable,
+  newStaffSalaryTooltip,
+} from '../ReportLegend/legendCopy';
 import { DynamicMPGA, preloadMPGA } from '../StaffDetailsTabs/MPGA/DynamicMPGA';
 import {
   DynamicMonthlySummary,
@@ -41,6 +44,8 @@ import {
   getInitials,
   getLocalizedAssignmentCategoryGroup,
   grossSalaryWarning,
+  hasNewStaffSalary,
+  missingBenchmarkMessage,
   pendingField,
 } from '../helpers';
 
@@ -141,14 +146,15 @@ export const StaffMemberDrawer: React.FC = () => {
     newStaffMonthlySalary,
     quarterlyHealth,
     assignmentCategoryGroup,
+    userPersonType,
   } = selectedMember;
   const initials = getInitials(firstName, lastName);
   const fullName = `${firstName} ${lastName}`;
   const team =
     teams.employee.map(({ name }) => name).join(', ') || pendingField;
   const monthlyGrossSalary = quarterlyHealth?.monthlyGrossSalary ?? null;
-  const missingBenchmark =
-    monthlyGrossSalary === null || newStaffMonthlySalary === null;
+  const benchmarkMessage = missingBenchmarkMessage(t, selectedMember);
+  const newStaffSalaryApplies = hasNewStaffSalary(userPersonType);
   const grossWarning = grossSalaryWarning(t, formatCurrency, selectedMember);
 
   return (
@@ -223,19 +229,30 @@ export const StaffMemberDrawer: React.FC = () => {
               labelAdornment={
                 // describeChild announces the explanation as the icon's
                 // description while titleAccess stays its accessible name
-                <Tooltip title={newStaffSalaryTooltip(t)} describeChild>
+                <Tooltip
+                  title={
+                    newStaffSalaryApplies
+                      ? newStaffSalaryTooltip(t)
+                      : newStaffSalaryNotApplicable(t)
+                  }
+                  describeChild
+                >
                   <InfoTooltipIcon
                     tabIndex={0}
-                    titleAccess={t(
-                      'How New Staff Monthly Salary is calculated',
-                    )}
+                    titleAccess={
+                      newStaffSalaryApplies
+                        ? t('How New Staff Monthly Salary is calculated')
+                        : t('Why New Staff Monthly Salary does not apply')
+                    }
                   />
                 </Tooltip>
               }
               value={
-                newStaffMonthlySalary !== null
-                  ? formatCurrency(newStaffMonthlySalary)
-                  : pendingField
+                !newStaffSalaryApplies
+                  ? t('N/A')
+                  : newStaffMonthlySalary !== null
+                    ? formatCurrency(newStaffMonthlySalary)
+                    : pendingField
               }
             />
             <DetailRow
@@ -251,39 +268,41 @@ export const StaffMemberDrawer: React.FC = () => {
               }
             />
           </StaffInfo>
-          {missingBenchmark && (
+          {benchmarkMessage && (
             <Alert severity="error" sx={{ width: 0, minWidth: '100%' }}>
-              {t('MPD health cannot be graded without both benchmarks.')}
+              {benchmarkMessage}
             </Alert>
           )}
         </Box>
 
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 1,
-            flex: 1,
-            minWidth: 260,
-          }}
-        >
-          <Typography variant="subtitle2" fontWeight="bold">
-            {t('Geographic Multiplier:')}
-          </Typography>
-          <GeographicLocationSelect
-            key={personNumber}
-            firstName={firstName}
-            personNumber={personNumber}
-            geographicLocation={geographicLocation}
-            onSaved={(geographicLocation, newStaffMonthlySalary) => {
-              updateSelectedMember(personNumber, {
-                geographicLocation,
-                newStaffMonthlySalary,
-              });
-              refetchStaff();
+        {newStaffSalaryApplies && (
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 1,
+              flex: 1,
+              minWidth: 260,
             }}
-          />
-        </Box>
+          >
+            <Typography variant="subtitle2" fontWeight="bold">
+              {t('Geographic Multiplier:')}
+            </Typography>
+            <GeographicLocationSelect
+              key={personNumber}
+              firstName={firstName}
+              personNumber={personNumber}
+              geographicLocation={geographicLocation}
+              onSaved={(geographicLocation, newStaffMonthlySalary) => {
+                updateSelectedMember(personNumber, {
+                  geographicLocation,
+                  newStaffMonthlySalary,
+                });
+                refetchStaff();
+              }}
+            />
+          </Box>
+        )}
       </StaffInfo>
 
       <TabContext value={selectedTabKey}>
@@ -321,7 +340,10 @@ export const StaffMemberDrawer: React.FC = () => {
           <DynamicMonthlySummary staffAccountId={staffAccountId} />
         </TabPanel>
         <TabPanel value={StaffDetailTabEnum.Quarterly}>
-          <DynamicQuarterly staffAccountId={staffAccountId} />
+          <DynamicQuarterly
+            staffAccountId={staffAccountId}
+            userPersonType={userPersonType ?? null}
+          />
         </TabPanel>
         <TabPanel value={StaffDetailTabEnum.Payroll}>
           <DynamicPayroll staffAccountId={staffAccountId} />

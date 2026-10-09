@@ -1,7 +1,9 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import {
+  MpdUserPersonTypeEnum,
   PeopleGroupSupportTypeEnum,
   SecaStatusEnum,
 } from 'src/graphql/types.generated';
@@ -88,6 +90,82 @@ describe('QuickGlance', () => {
     );
     expect(getByTestId('quick-glance')).toHaveTextContent('$4,500.00');
     expect(getByLabelText(/is \$500\.00 below/)).toBeInTheDocument();
+  });
+
+  it.each([
+    MpdUserPersonTypeEnum.EmployeeUsIntern,
+    MpdUserPersonTypeEnum.EmployeePtfs,
+    MpdUserPersonTypeEnum.NonworkerVolunteer,
+  ])(
+    'shows N/A for the New Staff salary and no gross marker for %s',
+    (userPersonType) => {
+      const { getByTestId, queryByLabelText } = renderGlance(
+        managedStaffMember({
+          userPersonType,
+          newStaffMonthlySalary: 5000,
+          quarterlyHealth: { monthlyGrossSalary: 4500, completedQuarters: [] },
+        }),
+      );
+      expect(getByTestId('quick-glance')).toHaveTextContent(
+        'New Staff Monthly SalaryWhy New Staff Monthly Salary does not applyN/A',
+      );
+      expect(queryByLabelText(/below the New Staff/)).not.toBeInTheDocument();
+    },
+  );
+
+  it.each([
+    MpdUserPersonTypeEnum.EmployeeUsIntern,
+    MpdUserPersonTypeEnum.EmployeePtfs,
+    MpdUserPersonTypeEnum.NonworkerVolunteer,
+  ])('shows N/A for the geographic location for %s', (userPersonType) => {
+    const { getByTestId } = renderGlance(
+      managedStaffMember({ userPersonType, geographicLocation: 'Orlando, FL' }),
+    );
+    const glance = getByTestId('quick-glance');
+    expect(glance).toHaveTextContent(
+      'Geographic locationWhy geographic location does not applyN/A',
+    );
+    expect(glance).not.toHaveTextContent('Orlando, FL');
+  });
+
+  it('explains why the New Staff salary does not apply', async () => {
+    const { findByRole, getByRole } = renderGlance(
+      managedStaffMember({
+        userPersonType: MpdUserPersonTypeEnum.NonworkerVolunteer,
+      }),
+    );
+
+    userEvent.hover(
+      getByRole('img', { name: 'Why New Staff Monthly Salary does not apply' }),
+    );
+    expect(await findByRole('tooltip')).toHaveTextContent(
+      "Interns, part-time field staff and volunteers aren't measured against the New Staff Monthly Salary.",
+    );
+  });
+
+  it('explains why the geographic location does not apply', async () => {
+    const { findByRole, getByRole } = renderGlance(
+      managedStaffMember({
+        userPersonType: MpdUserPersonTypeEnum.EmployeePtfs,
+      }),
+    );
+
+    userEvent.hover(
+      getByRole('img', { name: 'Why geographic location does not apply' }),
+    );
+    expect(await findByRole('tooltip')).toHaveTextContent(
+      'The geographic location only adjusts the New Staff Monthly Salary',
+    );
+  });
+
+  it('shows no N/A explanations for staff', () => {
+    const { getByTestId, queryByRole } = renderGlance(managedStaffMember());
+    expect(getByTestId('quick-glance')).toHaveTextContent(
+      'Geographic locationOrlando, FL',
+    );
+    expect(
+      queryByRole('img', { name: /does not apply/ }),
+    ).not.toBeInTheDocument();
   });
 
   it('names the starting quarter', () => {

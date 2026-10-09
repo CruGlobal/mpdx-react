@@ -23,8 +23,14 @@ export const pendingField = '—';
 export const grossSalaryWarning = (
   t: TFunction,
   formatCurrency: (amount: number) => string,
-  member: Pick<ManagedStaffMember, 'newStaffMonthlySalary' | 'quarterlyHealth'>,
+  member: Pick<
+    ManagedStaffMember,
+    'newStaffMonthlySalary' | 'quarterlyHealth' | 'userPersonType'
+  >,
 ): string | null => {
+  if (!hasNewStaffSalary(member.userPersonType)) {
+    return null;
+  }
   const gross = member.quarterlyHealth?.monthlyGrossSalary ?? null;
   const newStaff = member.newStaffMonthlySalary ?? null;
   if (gross === null || newStaff === null || gross >= newStaff) {
@@ -72,6 +78,11 @@ export const healthColor = (
       return {
         bg: theme.palette.chipYellowLight.main,
         color: theme.palette.chipYellowDark.main,
+      };
+    case MpdHealthStatusEnum.Blue:
+      return {
+        bg: theme.palette.chipBlueLight.main,
+        color: theme.palette.chipBlueDark.main,
       };
     case MpdHealthStatusEnum.Gray:
     default:
@@ -125,6 +136,8 @@ export const healthLabel = (
       return t('at risk');
     case MpdHealthStatusEnum.Yellow:
       return t('needs attention');
+    case MpdHealthStatusEnum.Blue:
+      return t('ungraded');
     case MpdHealthStatusEnum.Gray:
     default:
       return t('no data');
@@ -208,6 +221,67 @@ export const getLocalizedAssignmentCategoryGroup = (
   }
 };
 
+// These two lists must match the API's Hcm::UserPersonTypes::INTERN and
+// ::UNGRADED, which grade the quarters. If they drift, the drawer, quick
+// glance and spouse merging disagree with the chips the API returns.
+const internPersonTypes = [
+  MpdUserPersonTypeEnum.EmployeeUsIntern,
+  MpdUserPersonTypeEnum.EmployeeInternationalIntern,
+  MpdUserPersonTypeEnum.PendingUsIntern,
+  MpdUserPersonTypeEnum.PendingInternationalIntern,
+];
+
+const ungradedPersonTypes = [
+  MpdUserPersonTypeEnum.EmployeePtfs,
+  MpdUserPersonTypeEnum.PendingPtfs,
+  MpdUserPersonTypeEnum.NonworkerVolunteer,
+];
+
+export enum GradingGroupEnum {
+  Graded = 'Graded',
+  GrossSalaryOnly = 'GrossSalaryOnly',
+  Ungraded = 'Ungraded',
+}
+
+export const gradingGroup = (
+  type: MpdUserPersonTypeEnum | null | undefined,
+): GradingGroupEnum => {
+  if (type && internPersonTypes.includes(type)) {
+    return GradingGroupEnum.GrossSalaryOnly;
+  }
+  if (type && ungradedPersonTypes.includes(type)) {
+    return GradingGroupEnum.Ungraded;
+  }
+  return GradingGroupEnum.Graded;
+};
+
+export const hasNewStaffSalary = (
+  type: MpdUserPersonTypeEnum | null | undefined,
+): boolean => gradingGroup(type) === GradingGroupEnum.Graded;
+
+export const missingBenchmarkMessage = (
+  t: TFunction,
+  member: Pick<
+    ManagedStaffMember,
+    'userPersonType' | 'newStaffMonthlySalary' | 'quarterlyHealth'
+  >,
+): string | null => {
+  const gross = member.quarterlyHealth?.monthlyGrossSalary ?? null;
+  const newStaff = member.newStaffMonthlySalary ?? null;
+  switch (gradingGroup(member.userPersonType)) {
+    case GradingGroupEnum.Ungraded:
+      return null;
+    case GradingGroupEnum.GrossSalaryOnly:
+      return gross === null
+        ? t('MPD health cannot be graded without the Monthly Gross Salary.')
+        : null;
+    case GradingGroupEnum.Graded:
+      return gross === null || newStaff === null
+        ? t('MPD health cannot be graded without both benchmarks.')
+        : null;
+  }
+};
+
 export const getLocalizedUserPersonTypeGroup = (
   t: TFunction,
   type: MpdUserPersonTypeEnum,
@@ -287,12 +361,13 @@ export type StaffRow = ManagedStaffMember & { partner?: ManagedStaffMember };
 
 /**
  * Fold each couple present in the list into one row, keeping the earlier
- * position. Two rows pair only when they share a staff account: the API
- * builds every health figure from the staff account, so such a pair carries
- * identical benchmarks and quarters, and a joint account only ever belongs to
- * a couple (HCM does not always carry the spouse link). Spouses who hold
- * separate staff accounts have their own health each, so they stay on their
- * own rows and name each other via `getRowSpouseName`.
+ * position. Two rows pair only when they share a staff account and a grading
+ * group: the API builds every health figure from the staff account and the
+ * person's grading group, so such a pair carries identical benchmarks and
+ * quarters, and a joint account only ever belongs to a couple (HCM does not
+ * always carry the spouse link). Spouses who hold separate staff accounts, or
+ * who are graded differently, have their own health each, so they stay on
+ * their own rows and name each other via `getRowSpouseName`.
  */
 export const mergeSpouseRows = (nodes: ManagedStaffMember[]): StaffRow[] => {
   const paired = new Set<string>();
@@ -305,7 +380,9 @@ export const mergeSpouseRows = (nodes: ManagedStaffMember[]): StaffRow[] => {
       (other) =>
         other.personNumber !== node.personNumber &&
         !paired.has(other.personNumber) &&
-        other.staffAccountId === node.staffAccountId,
+        other.staffAccountId === node.staffAccountId &&
+        gradingGroup(other.userPersonType) ===
+          gradingGroup(node.userPersonType),
     );
     if (partner) {
       paired.add(node.personNumber);
@@ -390,6 +467,7 @@ const emptyCounts = (): Record<MpdHealthStatusEnum, number> => ({
   [MpdHealthStatusEnum.Yellow]: 0,
   [MpdHealthStatusEnum.Green]: 0,
   [MpdHealthStatusEnum.Gray]: 0,
+  [MpdHealthStatusEnum.Blue]: 0,
 });
 
 /**
