@@ -51,9 +51,11 @@ query Hcm(
     }
     mhaEit {
       mhaEligibility
+      ineligibilityReasonCode
     }
     mhiEit {
       mhiEligibility
+      ineligibilityReasonCode
     }
     asrEit {
       asrEligibility

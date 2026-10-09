@@ -7,6 +7,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import {
   StaffExpenseCategoryEnum,
@@ -33,6 +34,11 @@ const generateBreakdown = (base: number) =>
   }));
 
 const mockData = {
+  // Pin the sync state so the HcmSyncStatus banner cannot pre-empt the
+  // report error alert these tests look for
+  Hcm: {
+    hcm: [{ outOfSync: false }],
+  },
   StaffAccount: {
     staffAccount: {
       name: 'Test Account',
@@ -125,6 +131,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <SnackbarProvider>
             <GqlMockedProvider<{
+              Hcm: HcmQuery;
               StaffAccount: StaffAccountQuery;
               MPGATransactions: MpgaTransactionsQuery;
               ReportsStaffExpenses: ReportsStaffExpensesQuery;

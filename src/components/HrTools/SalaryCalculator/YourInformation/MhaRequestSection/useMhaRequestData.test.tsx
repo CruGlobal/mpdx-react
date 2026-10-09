@@ -1,5 +1,6 @@
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
+import { MinistersHousingIneligibilityReasonEnum } from 'src/graphql/types.generated';
 import {
   SalaryCalculatorTestWrapper,
   SalaryCalculatorTestWrapperProps,
@@ -146,6 +147,56 @@ describe('useMhaRequestData', () => {
 
     expect(result.current.showUserFields).toBe(true);
     expect(result.current.showSpouseFields).toBe(false);
+  });
+
+  it('returns each person\u2019s own MHA and MHI ineligibility reason codes', async () => {
+    const { result } = renderHook(() => useMhaRequestData(), {
+      wrapper: createWrapper({
+        hcmUser: {
+          mhaEit: {
+            mhaEligibility: false,
+            ineligibilityReasonCode:
+              MinistersHousingIneligibilityReasonEnum.PersonType,
+          },
+          mhiEit: {
+            mhiEligibility: false,
+            ineligibilityReasonCode:
+              MinistersHousingIneligibilityReasonEnum.AssignmentStatus,
+          },
+        },
+        hcmSpouse: {
+          mhaEit: {
+            mhaEligibility: false,
+            ineligibilityReasonCode:
+              MinistersHousingIneligibilityReasonEnum.SupportType,
+          },
+          mhiEit: {
+            mhiEligibility: false,
+            ineligibilityReasonCode:
+              MinistersHousingIneligibilityReasonEnum.NoIbsCertification,
+          },
+        },
+      }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.userPreferredName).toBe('John');
+    });
+
+    // Four distinct codes prove nothing is crossed between user and spouse or
+    // between the MHA and MHI results
+    expect(result.current.userIneligibilityReasonCode).toBe(
+      MinistersHousingIneligibilityReasonEnum.PersonType,
+    );
+    expect(result.current.userMhiIneligibilityReasonCode).toBe(
+      MinistersHousingIneligibilityReasonEnum.AssignmentStatus,
+    );
+    expect(result.current.spouseIneligibilityReasonCode).toBe(
+      MinistersHousingIneligibilityReasonEnum.SupportType,
+    );
+    expect(result.current.spouseMhiIneligibilityReasonCode).toBe(
+      MinistersHousingIneligibilityReasonEnum.NoIbsCertification,
+    );
   });
 
   it('hides both fields when neither is eligible', async () => {

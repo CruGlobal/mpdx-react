@@ -66,6 +66,10 @@ export const MhaRequestSection: React.FC = () => {
     spouseKind,
     userMhiEligibility,
     spouseMhiEligibility,
+    userIneligibilityReasonCode,
+    spouseIneligibilityReasonCode,
+    userMhiIneligibilityReasonCode,
+    spouseMhiIneligibilityReasonCode,
     anyIneligible,
     hasSpouse,
   } = useMhaRequestData();
@@ -116,15 +120,21 @@ export const MhaRequestSection: React.FC = () => {
       />
       <CardContent>
         {anyIneligible && (
+          // The table keys its whole spouse column off spousePreferredName, so
+          // gating the name alone hides every other spouse prop with it
           <EligibilityStatusTable
             userPreferredName={userPreferredName}
             userEligible={userEligible}
             userCountry={userCountry}
             userMhiEligibility={userMhiEligibility}
+            userIneligibilityReasonCode={userIneligibilityReasonCode}
+            userMhiIneligibilityReasonCode={userMhiIneligibilityReasonCode}
             spousePreferredName={hasSpouse ? spousePreferredName : undefined}
-            spouseEligible={hasSpouse ? spouseEligible : undefined}
-            spouseCountry={hasSpouse ? spouseCountry : undefined}
-            spouseMhiEligibility={hasSpouse ? spouseMhiEligibility : undefined}
+            spouseEligible={spouseEligible}
+            spouseCountry={spouseCountry}
+            spouseMhiEligibility={spouseMhiEligibility}
+            spouseIneligibilityReasonCode={spouseIneligibilityReasonCode}
+            spouseMhiIneligibilityReasonCode={spouseMhiIneligibilityReasonCode}
             compact
           />
         )}

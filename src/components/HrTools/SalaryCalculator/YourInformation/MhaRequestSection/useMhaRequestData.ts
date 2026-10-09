@@ -35,6 +35,13 @@ export const useMhaRequestData = () => {
   const spouseKind = getHousingKind(spouseCountry);
   const userMhiEligibility = getMhiEligibility(hcmUser);
   const spouseMhiEligibility = getMhiEligibility(hcmSpouse);
+  const userIneligibilityReasonCode = hcmUser?.mhaEit.ineligibilityReasonCode;
+  const spouseIneligibilityReasonCode =
+    hcmSpouse?.mhaEit.ineligibilityReasonCode;
+  const userMhiIneligibilityReasonCode =
+    hcmUser?.mhiEit.ineligibilityReasonCode;
+  const spouseMhiIneligibilityReasonCode =
+    hcmSpouse?.mhiEit.ineligibilityReasonCode;
 
   const anyIneligible = !userEligible || (hasSpouse && !spouseEligible);
 
@@ -188,6 +195,10 @@ export const useMhaRequestData = () => {
     spouseKind,
     userMhiEligibility,
     spouseMhiEligibility,
+    userIneligibilityReasonCode,
+    spouseIneligibilityReasonCode,
+    userMhiIneligibilityReasonCode,
+    spouseMhiIneligibilityReasonCode,
     anyIneligible,
     hasSpouse,
   };
