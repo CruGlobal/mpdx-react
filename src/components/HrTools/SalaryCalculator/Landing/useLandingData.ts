@@ -87,6 +87,13 @@ export const useLandingData = (): LandingData => {
   );
 
   const refetchLoadError = useCallback(() => {
+    // hcmError here is any Hcm query failure other than HCM_UNAVAILABLE (that case is handled by
+    // hcmUnavailable/refetchHcm above) - e.g. HCM_PERSON_NOT_FOUND, which isn't recoverable by
+    // retrying but should still surface as a load error instead of silently rendering with no
+    // HCM data.
+    if (hcmError && !hcmUnavailable) {
+      refetchHcmQuery().catch(() => {});
+    }
     if (calculationError) {
       refetchCalculation().catch(() => {});
     }
@@ -94,8 +101,11 @@ export const useLandingData = (): LandingData => {
       refetchAccountBalance().catch(() => {});
     }
   }, [
+    hcmError,
+    hcmUnavailable,
     calculationError,
     accountBalanceError,
+    refetchHcmQuery,
     refetchCalculation,
     refetchAccountBalance,
   ]);
@@ -315,7 +325,10 @@ export const useLandingData = (): LandingData => {
     shouldShowPending,
     hcmUnavailable,
     refetchHcm,
-    loadError: !!calculationError || !!accountBalanceError,
+    loadError:
+      !!calculationError ||
+      !!accountBalanceError ||
+      (!!hcmError && !hcmUnavailable),
     refetchLoadError,
   };
 };
