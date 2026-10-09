@@ -1,5 +1,6 @@
 import { ThemeProvider } from '@emotion/react';
 import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
+import { GraphQLError } from 'graphql';
 import { merge } from 'lodash';
 import { SnackbarProvider } from 'notistack';
 import { DeepPartial } from 'ts-essentials';
@@ -121,6 +122,8 @@ export interface SalaryCalculatorTestWrapperProps {
   calculationUnavailableCalls?: number;
   /** Makes SalaryCalculation fail with an error other than HCM_UNAVAILABLE */
   calculationError?: boolean;
+  /** Makes the Hcm query permanently fail with an error other than HCM_UNAVAILABLE */
+  hcmError?: boolean;
 }
 
 export const SalaryCalculatorTestWrapper: React.FC<
@@ -141,6 +144,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
   hcmUnavailableCalls = 0,
   calculationUnavailableCalls = 0,
   calculationError = false,
+  hcmError = false,
 }) => {
   const hcmUserMerged = merge({}, hcmUserMock, hcmUser);
   const hcmSpouseMerged = merge({}, hcmSpouseMock, hcmSpouse);
@@ -201,12 +205,18 @@ export const SalaryCalculatorTestWrapper: React.FC<
                 },
               },
               Hcm: {
-                hcm: mockHcmUnavailable(
-                  hasSpouse
-                    ? [hcmUserMerged, hcmSpouseMerged]
-                    : [hcmUserMerged],
-                  hcmUnavailableCalls,
-                ),
+                hcm: hcmError
+                  ? ((() => {
+                      throw new GraphQLError('HCM person not found', {
+                        extensions: { code: 'HCM_PERSON_NOT_FOUND' },
+                      });
+                    }) as never)
+                  : mockHcmUnavailable(
+                      hasSpouse
+                        ? [hcmUserMerged, hcmSpouseMerged]
+                        : [hcmUserMerged],
+                      hcmUnavailableCalls,
+                    ),
               },
               SalaryCalculation: {
                 salaryRequest: calculationError
