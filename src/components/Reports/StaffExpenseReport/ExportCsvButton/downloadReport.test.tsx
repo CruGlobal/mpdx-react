@@ -210,6 +210,24 @@ describe('downloadReport', () => {
     );
   });
 
+  it('ends each table with its total', () => {
+    const realLink = document.createElement('a');
+    jest.spyOn(realLink, 'setAttribute').mockImplementation(setAttributeMock);
+    jest.spyOn(realLink, 'click').mockImplementation(clickMock);
+
+    jest.spyOn(document, 'createElement').mockReturnValue(realLink);
+
+    createCsvReport(ReportType.Combined, mockData, mockT, mockLocale);
+
+    const hrefValue = setAttributeMock.mock.calls.find(
+      ([attribute]) => attribute === 'href',
+    )?.[1];
+    const lines = decodeURIComponent(hrefValue).split('\n');
+    const incomeEnd = lines.indexOf('""');
+    expect(lines[incomeEnd - 1]).toBe('"Total","","$3,500"');
+    expect(lines[lines.length - 1]).toBe('"Total","","$3,224"');
+  });
+
   it('counts the pending transactions in a partly pending rollup', () => {
     const realLink = document.createElement('a');
     jest.spyOn(realLink, 'setAttribute').mockImplementation(setAttributeMock);
