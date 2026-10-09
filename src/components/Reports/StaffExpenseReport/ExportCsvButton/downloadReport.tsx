@@ -1,6 +1,7 @@
 import { TFunction } from 'i18next';
 import { buildURI } from 'react-csv/lib/core';
 import { Transaction } from 'src/components/Reports/StaffExpenseReport/Helpers/filterTransactions';
+import { currencyFormat } from 'src/lib/intlFormat';
 import { ReportType } from '../Helpers/StaffReportEnum';
 import { getDescriptionWithPending } from '../Helpers/pendingLabel';
 import { buildStaffReportRows } from '../Helpers/staffReportRow';
@@ -12,15 +13,31 @@ const createTable = (
   tableType: ReportType.Income | ReportType.Expense,
   t: TFunction,
   locale: string,
-) => [
-  [title],
-  csvHeader,
-  ...buildStaffReportRows(transactions, tableType, locale).map((row) => [
-    row.dateLabel,
-    getDescriptionWithPending(row, t),
-    row.amountLabel,
-  ]),
-];
+) => {
+  const total = transactions.reduce(
+    (sum, transaction) => sum + transaction.amount,
+    0,
+  );
+
+  return [
+    [title],
+    csvHeader,
+    ...buildStaffReportRows(transactions, tableType, locale).map((row) => [
+      row.dateLabel,
+      getDescriptionWithPending(row, t),
+      row.amountLabel,
+    ]),
+    [
+      t('Total'),
+      '',
+      currencyFormat(
+        tableType === ReportType.Expense ? Math.abs(total) : total,
+        'USD',
+        locale,
+      ),
+    ],
+  ];
+};
 
 function createCombinedReport(
   transactions: Transaction[],
