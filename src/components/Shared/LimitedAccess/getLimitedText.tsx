@@ -1,17 +1,28 @@
+import Link from 'next/link';
 import { TFunction } from 'i18next';
 import { Trans } from 'react-i18next';
+import theme from 'src/theme';
 
 interface GetLimitedTextProps {
   t: TFunction;
-  link: React.ReactNode;
   noStaffAccount?: boolean;
   userGroupError?: boolean;
   notSupervisor?: boolean;
 }
 
+const SupportLink: React.FC<{ children?: React.ReactNode }> = ({
+  children,
+}) => (
+  <Link
+    href="mailto:support@mpdx.org"
+    style={{ color: theme.palette.primary.main, fontWeight: 'bold' }}
+  >
+    {children}
+  </Link>
+);
+
 export const getLimitedText = ({
   t,
-  link,
   noStaffAccount,
   userGroupError,
   notSupervisor,
@@ -22,7 +33,8 @@ export const getLimitedText = ({
       content: (
         <Trans t={t}>
           Something went wrong while loading your account information. Please
-          try again later. If the problem persists, please contact {link}.
+          try again later. If the problem persists, please contact{' '}
+          <SupportLink>support@mpdx.org</SupportLink>.
         </Trans>
       ),
     };
@@ -35,7 +47,8 @@ export const getLimitedText = ({
         <Trans t={t}>
           Our records show that you do not have a staff account. You cannot
           access this feature if you do not have a staff account. If you think
-          this is a mistake, please contact {link}.
+          this is a mistake, please contact{' '}
+          <SupportLink>support@mpdx.org</SupportLink>.
         </Trans>
       ),
     };
@@ -48,7 +61,8 @@ export const getLimitedText = ({
         <Trans t={t}>
           Our records show that you do not supervise any staff. You cannot
           access this feature if you do not supervise staff. If you think this
-          is a mistake, please contact {link}.
+          is a mistake, please contact{' '}
+          <SupportLink>support@mpdx.org</SupportLink>.
         </Trans>
       ),
     };
@@ -59,8 +73,8 @@ export const getLimitedText = ({
     content: (
       <Trans t={t}>
         Our records show that you are not part of the user group that has access
-        to this feature. If you think this is a mistake, please contact {link}{' '}
-        to change your user group.
+        to this feature. If you think this is a mistake, please contact{' '}
+        <SupportLink>support@mpdx.org</SupportLink> to change your user group.
       </Trans>
     ),
   };
