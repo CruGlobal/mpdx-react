@@ -5,7 +5,10 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { MhaStatusEnum } from 'src/graphql/types.generated';
+import {
+  MhaStatusEnum,
+  MinistersHousingIneligibilityReasonEnum,
+} from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { HcmQuery } from '../Shared/HcmData/Hcm.generated';
 import {
@@ -161,7 +164,11 @@ describe('MinisterHousingAllowanceReport', () => {
             singleMhaNoException[0],
             {
               ...marriedNoMhaNoException[1],
-              mhaEit: { mhaEligibility: false },
+              mhaEit: {
+                mhaEligibility: false,
+                ineligibilityReasonCode:
+                  MinistersHousingIneligibilityReasonEnum.NoIbsCertification,
+              },
             },
           ]}
           mhaRequestsMock={[]}
@@ -182,7 +189,11 @@ describe('MinisterHousingAllowanceReport', () => {
           hcmMock={[
             {
               ...marriedNoMhaNoException[0],
-              mhaEit: { mhaEligibility: false },
+              mhaEit: {
+                mhaEligibility: false,
+                ineligibilityReasonCode:
+                  MinistersHousingIneligibilityReasonEnum.NoIbsCertification,
+              },
             },
             {
               ...singleMhaNoException[0],
@@ -235,7 +246,11 @@ describe('MinisterHousingAllowanceReport', () => {
             {
               ...singleMhaNoException[0],
               staffInfo: marriedNoMhaNoException[1].staffInfo,
-              mhaEit: { mhaEligibility: false },
+              mhaEit: {
+                mhaEligibility: false,
+                ineligibilityReasonCode:
+                  MinistersHousingIneligibilityReasonEnum.NoIbsCertification,
+              },
             },
           ]}
           mhaRequestsMock={[]}
@@ -256,7 +271,14 @@ describe('MinisterHousingAllowanceReport', () => {
       const { findByText, findByRole, queryByText } = render(
         <TestComponent
           hcmMock={[
-            { ...singleMhaNoException[0], mhaEit: { mhaEligibility: false } },
+            {
+              ...singleMhaNoException[0],
+              mhaEit: {
+                mhaEligibility: false,
+                ineligibilityReasonCode:
+                  MinistersHousingIneligibilityReasonEnum.NoIbsCertification,
+              },
+            },
             marriedNoMhaNoException[1],
           ]}
           mhaRequestsMock={[]}
@@ -277,7 +299,14 @@ describe('MinisterHousingAllowanceReport', () => {
       const { findByText, findByRole, queryByText } = render(
         <TestComponent
           hcmMock={[
-            { ...singleMhaNoException[0], mhaEit: { mhaEligibility: false } },
+            {
+              ...singleMhaNoException[0],
+              mhaEit: {
+                mhaEligibility: false,
+                ineligibilityReasonCode:
+                  MinistersHousingIneligibilityReasonEnum.NoIbsCertification,
+              },
+            },
           ]}
           mhaRequestsMock={[]}
         />,
