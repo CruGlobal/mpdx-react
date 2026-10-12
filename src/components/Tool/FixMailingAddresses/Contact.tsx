@@ -1,5 +1,5 @@
 import NextLink from 'next/link';
-import React, { Fragment, useMemo } from 'react';
+import React, { Fragment, useMemo, useState } from 'react';
 import styled from '@emotion/styled';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { Icon } from '@mdi/react';
@@ -12,6 +12,7 @@ import {
   Card,
   CardContent,
   CardHeader,
+  CircularProgress,
   Grid,
   IconButton,
   Link,
@@ -111,7 +112,9 @@ interface Props {
   addresses: ContactAddressFragment[];
   openEditAddressModal: (address: ContactAddressFragment, id: string) => void;
   openNewAddressModal: (address: ContactAddressFragment, id: string) => void;
-  handleSingleConfirm: ({ id, name }: HandleSingleConfirmProps) => void;
+  handleSingleConfirm: (
+    props: HandleSingleConfirmProps,
+  ) => Promise<{ success: boolean }>;
   handleChangePrimary: (contactId: string, addressId: string) => void;
   addressesState: any;
 }
@@ -131,6 +134,7 @@ const Contact: React.FC<Props> = ({
   const { classes } = useStyles();
   const { buildContactUrl } = useContactPanel();
   const contactUrl = buildContactUrl(id);
+  const [isConfirming, setIsConfirming] = useState(false);
 
   const newAddress = { ...emptyAddress, newAddress: true };
   const { getLocalizedContactStatus } = useLocalizedConstants();
@@ -150,8 +154,17 @@ const Contact: React.FC<Props> = ({
     );
   }, [addressesData]);
 
-  const handleConfirm = () => {
-    handleSingleConfirm({ id, name });
+  const handleConfirm = async () => {
+    // Ignore repeat clicks while the confirm is in flight
+    if (isConfirming) {
+      return;
+    }
+    setIsConfirming(true);
+    try {
+      await handleSingleConfirm({ id, name });
+    } finally {
+      setIsConfirming(false);
+    }
   };
 
   return (
@@ -167,9 +180,14 @@ const Contact: React.FC<Props> = ({
             variant="contained"
             className={classes.confirmButon}
             onClick={handleConfirm}
+            disabled={isConfirming}
           >
-            <Icon path={mdiCheckboxMarkedCircle} size={0.8} />
-            {t('Confirm')}
+            {isConfirming ? (
+              <CircularProgress color="inherit" size={16} sx={{ mr: 0.5 }} />
+            ) : (
+              <Icon path={mdiCheckboxMarkedCircle} size={0.8} />
+            )}
+            {isConfirming ? t('Confirming...') : t('Confirm')}
           </Button>
         }
         title={
