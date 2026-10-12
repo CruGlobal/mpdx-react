@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import {
   Box,
   Checkbox,
@@ -13,7 +13,7 @@ import {
 import { styled } from '@mui/material/styles';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
-import { useTranslation } from 'react-i18next';
+import { TFunction, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import {
@@ -26,7 +26,6 @@ import {
 } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';
-import i18n from 'src/lib/i18n';
 import { GoogleAccountAttributesSlimmed } from '../GoogleAccordion';
 import {
   GoogleAccountIntegrationsDocument,
@@ -62,30 +61,31 @@ const StyledFormControlLabel = styled(FormControlLabel)(() => ({
   margin: '0 0 0 -11px',
 }));
 
-const integrationSchema = yup.object({
-  id: yup.string().required(),
-  calendarId: yup.string().required(i18n.t('Calendar is required')),
-  calendarIntegrations: yup
-    .array()
-    .of(
-      yup
-        .mixed<ActivityTypeEnum>()
-        .oneOf(Object.values(ActivityTypeEnum))
-        .required(),
-    )
-    .required(),
-  calendars: yup
-    .array()
-    .of(
-      yup
-        .object({
-          id: yup.string().required(),
-          name: yup.string().required(),
-        })
-        .nullable(),
-    )
-    .required(),
-});
+const getIntegrationSchema = (t: TFunction) =>
+  yup.object({
+    id: yup.string().required(),
+    calendarId: yup.string().required(t('Calendar is required')),
+    calendarIntegrations: yup
+      .array()
+      .of(
+        yup
+          .mixed<ActivityTypeEnum>()
+          .oneOf(Object.values(ActivityTypeEnum))
+          .required(),
+      )
+      .required(),
+    calendars: yup
+      .array()
+      .of(
+        yup
+          .object({
+            id: yup.string().required(),
+            name: yup.string().required(),
+          })
+          .nullable(),
+      )
+      .required(),
+  });
 
 export const EditGoogleIntegrationForm: React.FC<
   EditGoogleIntegrationFormProps
@@ -98,6 +98,7 @@ export const EditGoogleIntegrationForm: React.FC<
   handleClose,
 }) => {
   const { t } = useTranslation();
+  const integrationSchema = useMemo(() => getIntegrationSchema(t), [t]);
   const accountListId = useAccountListId();
   const { enqueueSnackbar } = useSnackbar();
   const appName = getAppName();
