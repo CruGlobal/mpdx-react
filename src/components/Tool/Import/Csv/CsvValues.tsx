@@ -15,8 +15,10 @@ import {
 } from '@mui/material';
 import { invert } from 'lodash';
 import { cloneDeep } from 'lodash/fp';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
+import { getErrorMessage } from 'src/lib/error';
 import { getAppName } from 'src/lib/getAppName';
 import { snakeToCamel } from 'src/lib/snakeToCamel';
 import theme from 'src/theme';
@@ -43,6 +45,7 @@ const CsvValues: React.FC<CsvValuesProps> = ({
 
   const supportedHeaders = useSupportedHeaders();
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
   const appName = getAppName();
   const constants = useApiConstants();
   const [saving, setSaving] = useState(false);
@@ -78,6 +81,9 @@ const CsvValues: React.FC<CsvValuesProps> = ({
     })
       .then(() => {
         setCurrentTab(CsvImportViewStepEnum.Preview);
+      })
+      .catch((err) => {
+        enqueueSnackbar(getErrorMessage(err), { variant: 'error' });
       })
       .finally(() => {
         setSaving(false);
