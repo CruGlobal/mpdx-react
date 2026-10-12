@@ -27,6 +27,8 @@ export interface DataFields {
   id: string;
   description: string;
   category?: StaffExpenseCategoryEnum;
+  /** Set when the row holds a single subcategory. */
+  subCategory?: StaffExpensesSubCategoryEnum;
   person?: string;
   transactions?: TransactionBreakdown[];
   monthly: number[];

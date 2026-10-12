@@ -858,4 +858,108 @@ describe('useFilteredFunds', () => {
       ]);
     });
   });
+
+  describe('healthcare debit card', () => {
+    const staffExpenseFund: Funds[] = [
+      {
+        id: '1',
+        fundType: 'Primary',
+        total: -300,
+        categories: [
+          {
+            category: StaffExpenseCategoryEnum.StaffExpense,
+            total: -300,
+            averagePerMonth: -150,
+            breakdownByMonth: months([-150, -150]),
+            subcategories: [
+              subcategory(StaffExpensesSubCategoryEnum.PaCard, [-100, -100]),
+              subcategory(StaffExpensesSubCategoryEnum.OutOfPocket, [-50, -50]),
+            ],
+          },
+        ],
+      },
+    ];
+
+    it('gives the card its own row beside the combined Staff Expense row', () => {
+      const { result } = renderUseFilteredFunds(staffExpenseFund, null);
+
+      expect(
+        result.current.expenseData.map(
+          ({ id, description, subCategory, total }) => ({
+            id,
+            description,
+            subCategory,
+            total,
+          }),
+        ),
+      ).toEqual([
+        {
+          id: '1-STAFF_EXPENSE-expense',
+          description: 'Staff Expenses',
+          subCategory: undefined,
+          total: 100,
+        },
+        {
+          id: '1-STAFF_EXPENSE-PA_CARD-expense',
+          description: 'Staff Expense - Healthcare Debit Card',
+          subCategory: StaffExpensesSubCategoryEnum.PaCard,
+          total: 200,
+        },
+      ]);
+    });
+
+    it("keeps the card's transactions in its own row's breakdown", () => {
+      const funds: Funds[] = [
+        {
+          ...staffExpenseFund[0],
+          categories: [
+            {
+              ...staffExpenseFund[0].categories[0],
+              subcategories: [
+                {
+                  ...subcategory(StaffExpensesSubCategoryEnum.PaCard, [-100]),
+                  breakdownByMonth: [
+                    {
+                      month: '2024-01-01',
+                      total: -100,
+                      transactions: [
+                        {
+                          transactedAt: '2024-01-05',
+                          description: 'Pharmacy',
+                          amount: -100,
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ];
+
+      const { result } = renderUseFilteredFunds(funds, null);
+
+      expect(result.current.expenseData).toEqual([
+        expect.objectContaining({
+          id: '1-STAFF_EXPENSE-PA_CARD-expense',
+          transactions: [
+            expect.objectContaining({
+              description: 'Pharmacy',
+              subCategory: StaffExpensesSubCategoryEnum.PaCard,
+            }),
+          ],
+        }),
+      ]);
+    });
+
+    it('tags each row of an unchecked category with its subcategory', () => {
+      const { result } = renderUseFilteredFunds(staffExpenseFund, []);
+
+      expect(result.current.expenseData.map((row) => row.subCategory)).toEqual([
+        StaffExpensesSubCategoryEnum.PaCard,
+        StaffExpensesSubCategoryEnum.OutOfPocket,
+      ]);
+    });
+  });
 });
