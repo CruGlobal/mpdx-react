@@ -1,9 +1,9 @@
 import { useRouter } from 'next/router';
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { DialogActions, DialogContent, Grid } from '@mui/material';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
-import { useTranslation } from 'react-i18next';
+import { TFunction, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useCreatePersonMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal.generated';
 import {
@@ -21,7 +21,6 @@ import {
   PersonCreateInput,
   StatusEnum,
 } from 'src/graphql/types.generated';
-import i18n from 'src/lib/i18n';
 import { useCreateContactMutation } from './CreateContact.generated';
 
 interface Props {
@@ -34,9 +33,11 @@ interface Person {
   lastName: string;
 }
 
-const contactSchema: yup.ObjectSchema<Pick<ContactCreateInput, 'name'>> =
+const getContactSchema = (
+  t: TFunction,
+): yup.ObjectSchema<Pick<ContactCreateInput, 'name'>> =>
   yup.object({
-    name: yup.string().required(i18n.t('Name is required')),
+    name: yup.string().required(t('Name is required')),
   });
 
 const CreateContact = ({
@@ -44,6 +45,7 @@ const CreateContact = ({
   handleClose,
 }: Props): ReactElement<Props> => {
   const { t } = useTranslation();
+  const contactSchema = useMemo(() => getContactSchema(t), [t]);
   const { enqueueSnackbar } = useSnackbar();
   const { push } = useRouter();
 
