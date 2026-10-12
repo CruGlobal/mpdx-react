@@ -1,11 +1,11 @@
+import { useMemo } from 'react';
 import { Container, Stack } from '@mui/material';
 import { Formik } from 'formik';
-import { useTranslation } from 'react-i18next';
+import { TFunction, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import Loading from 'src/components/Loading/Loading';
 import { MhaRentOrOwnEnum, MhaStatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { PanelLayout } from '../../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { useIconPanelItems } from '../../Shared/CalculationReports/PanelLayout/useIconPanelItems';
@@ -30,14 +30,16 @@ export interface FormValues {
   rentOrOwn: MhaRentOrOwnEnum | undefined;
 }
 
-const validationSchema = yup.object({
-  rentOrOwn: yup
-    .string()
-    .required(i18n.t('Please select one of the options above to continue.')),
-});
+const getValidationSchema = (t: TFunction) =>
+  yup.object({
+    rentOrOwn: yup
+      .string()
+      .required(t('Please select one of the options above to continue.')),
+  });
 
 export const RequestPage: React.FC = () => {
   const { t } = useTranslation();
+  const validationSchema = useMemo(() => getValidationSchema(t), [t]);
 
   const {
     requestId,
