@@ -24,7 +24,7 @@ import clsx from 'clsx';
 import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
-import { useTranslation } from 'react-i18next';
+import { TFunction, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
 import { useContactPanel } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
@@ -32,7 +32,6 @@ import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmat
 import { useUpdateEmailAddressesMutation } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { getAppName } from 'src/lib/getAppName';
-import i18n from 'src/lib/i18n';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { isEditableSource, sourceToStr } from 'src/lib/sourceHelper';
 import theme from 'src/theme';
@@ -115,12 +114,13 @@ interface EmailToDelete {
   email: Email;
 }
 
-const validationSchema = yup.object({
-  newEmail: yup
-    .string()
-    .email(i18n.t('Invalid Email Address Format'))
-    .required(i18n.t('Please enter a valid email address')),
-});
+const getValidationSchema = (t: TFunction) =>
+  yup.object({
+    newEmail: yup
+      .string()
+      .email(t('Invalid Email Address Format'))
+      .required(t('Please enter a valid email address')),
+  });
 export interface FixEmailAddressPersonProps {
   person: PersonInvalidEmailFragment;
   dataState: { [key: string]: PersonEmailAddresses };
@@ -147,6 +147,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
 }) => {
   const appName = getAppName();
   const { t } = useTranslation();
+  const validationSchema = useMemo(() => getValidationSchema(t), [t]);
   const locale = useLocale();
   const { classes } = useStyles();
   const { enqueueSnackbar } = useSnackbar();
