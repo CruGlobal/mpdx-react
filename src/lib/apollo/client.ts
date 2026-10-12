@@ -40,7 +40,10 @@ const makeClient = (apiToken: string) => {
       onError(({ graphQLErrors, networkError, operation }) => {
         const suppressContext: SuppressErrorsContext = operation.getContext();
 
-        graphQLErrors?.forEach((graphQLError) => {
+        // Apollo passes a failed response's `errors` through unchecked, so it
+        // may not be an array. Throwing here would leave the query loading forever.
+        const errors = Array.isArray(graphQLErrors) ? graphQLErrors : [];
+        errors.forEach((graphQLError) => {
           if (graphQLError?.extensions?.code === 'AUTHENTICATION_ERROR') {
             signOut({ redirect: true, callbackUrl: 'signOut' }).then(() => {
               clearDatadogUser();

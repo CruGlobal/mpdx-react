@@ -4,6 +4,8 @@ import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { FundBalancesQuery } from 'src/components/HrTools/SavingsFundTransfer/ReportsSavingsFund.generated';
+import { StaffAccountIdQuery } from 'src/components/HrTools/Shared/StaffAccountId.generated';
 import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { UrlFiltersProvider } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
 import theme from 'src/theme';
@@ -37,17 +39,29 @@ const router = {
 
 interface TestComponentProps {
   noContacts?: boolean;
+  staffAccountId?: string | null;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   noContacts = false,
+  staffAccountId = '1000000059',
 }) => (
   <TestRouter router={router}>
     <ThemeProvider theme={theme}>
       <GqlMockedProvider<{
         PartnerGivingAnalysis: PartnerGivingAnalysisQuery;
+        StaffAccountId: StaffAccountIdQuery;
+        FundBalances: FundBalancesQuery;
       }>
-        mocks={noContacts ? emptyMock : mocks}
+        mocks={{
+          ...(noContacts ? emptyMock : mocks),
+          StaffAccountId: { user: { staffAccountId } },
+          FundBalances: {
+            reportsStaffExpenses: {
+              funds: [{ fundType: 'Primary', endBalance: 1500 }],
+            },
+          },
+        }}
         onCall={mutationSpy}
       >
         <ContactPanelProvider>
@@ -90,6 +104,30 @@ const findOperationCall = (operationName: string) => {
 describe('PartnerGivingAnalysisReport', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  // MPDX-10092: deciding whether to show the balance card must not call SAA. The API resolves the
+  // StaffAccount query with a full, unfiltered SAA account summary.
+  describe('balance card', () => {
+    it('shows for a user with a staff account without running the StaffAccount query', async () => {
+      const { findByText } = render(<TestComponent />);
+
+      expect(await findByText('Primary Account Balance')).toBeInTheDocument();
+      expect(findOperationCall('StaffAccount')).toBeUndefined();
+    });
+
+    it('is hidden for a user without a staff account', async () => {
+      const { findByRole, queryByTestId } = render(
+        <TestComponent staffAccountId={null} />,
+      );
+
+      expect(await findByRole('grid')).toBeInTheDocument();
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('StaffAccountId'),
+      );
+      expect(queryByTestId('CardSkeleton')).not.toBeInTheDocument();
+      expect(findOperationCall('FundBalances')).toBeUndefined();
+    });
   });
 
   it('loaded', async () => {

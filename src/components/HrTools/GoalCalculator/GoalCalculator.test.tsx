@@ -57,6 +57,10 @@ describe('GoalCalculator', () => {
     expect(
       getByRole('heading', { name: 'Enter your monthly budget' }),
     ).toBeInTheDocument();
+    expect(getByRole('link', { name: 'Stewardship@cru.org' })).toHaveAttribute(
+      'href',
+      'mailto:Stewardship@cru.org',
+    );
   });
 
   it('renders right panel components', async () => {

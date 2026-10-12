@@ -9,6 +9,7 @@ import { getHeader } from '../Shared/Helper/getHeader';
 import { paperVersionLink, progressiveApprovalsLink } from '../Shared/pdfLinks';
 import { useFormUserInfo } from '../Shared/useFormUserInfo';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
+import { MissingLocationAlert } from '../SharedComponents/MissingLocationAlert';
 import { SpouseComponent } from '../SharedComponents/SpouseComponent';
 
 export const AboutForm: React.FC = () => {
@@ -99,6 +100,7 @@ export const AboutForm: React.FC = () => {
           showContent={!!latestRequest}
         />
       )}
+      <MissingLocationAlert />
     </AdditionalSalaryRequestSection>
   );
 };

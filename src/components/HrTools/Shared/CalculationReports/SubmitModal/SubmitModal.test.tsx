@@ -296,7 +296,7 @@ describe('ConfirmationModal', () => {
 
       expect(
         await findByText(
-          /Your geographic location will be updated to Test Location in your account settings\./i,
+          /Your default location multiplier will be updated to Test Location in your account settings\./i,
         ),
       ).toBeInTheDocument();
     });

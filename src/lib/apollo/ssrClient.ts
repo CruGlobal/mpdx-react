@@ -11,8 +11,8 @@ import generatedIntrospection from 'src/graphql/possibleTypes.generated';
 import { batchLink, makeAuthLink } from './link';
 
 const serverErrorLink = onError(({ graphQLErrors, networkError }) => {
-  if (graphQLErrors) {
-    graphQLErrors.map(({ message, extensions }) => {
+  if (Array.isArray(graphQLErrors)) {
+    graphQLErrors.forEach(({ message, extensions }) => {
       rollbar.error(message, extensions);
     });
   }

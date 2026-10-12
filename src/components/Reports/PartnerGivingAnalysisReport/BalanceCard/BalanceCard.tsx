@@ -44,7 +44,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   const locale = useLocale();
   const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
 
-  const { data, loading } = useFundBalancesQuery({
+  const { data, loading, error } = useFundBalancesQuery({
     variables: {
       fundTypes: [FundTypeEnum.Primary],
     },
@@ -59,8 +59,12 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
     return balance < 0 ? `(${formatted})` : formatted;
   };
 
-  if (loading || !fund) {
-    return <CardSkeleton />;
+  if (error) {
+    return null;
+  }
+
+  if (!fund) {
+    return loading ? <CardSkeleton /> : null;
   }
 
   return (
@@ -98,7 +102,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
             </Typography>
           </Box>
         </Box>
-        {donationPeriodTotalSum && (
+        {donationPeriodTotalSum !== undefined && (
           <Box
             sx={{
               flex: 1,
@@ -109,7 +113,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
             </Typography>
 
             <Typography variant="h5" sx={{ fontSize: 'inherit' }}>
-              {formatBalance(donationPeriodTotalSum || 0)}
+              {formatBalance(donationPeriodTotalSum)}
             </Typography>
           </Box>
         )}

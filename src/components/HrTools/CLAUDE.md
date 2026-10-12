@@ -64,6 +64,7 @@ The table below is an orientation aid — verify against each tool's
 | NsGoalCalculator + NsoMpdQuestionnaire | NewStaff                                                 |
 | PdsGoalCalculator                      | PaidWithDesignation                                      |
 | StaffSavingFund                        | any staff account (`requireStaffAccount`, no group gate) |
+| MinistryPartnerReminders               | any staff account (`requireStaffAccount`, no group gate) |
 | MpdSupervisorReport                    | `supervisesStaff` (no group gate)                        |
 
 **MpdSupervisorReport gates on supervision, not a staff group.**
@@ -74,13 +75,9 @@ page's `UserTypeAccess`, and the same flag on the nav item. Register any future
 non-group gate the same way: a standalone check inside `UserTypeAccess` applies
 to all ~20 pages that wrap it and skips `developerBypass`.
 
-⚠️ **MinistryPartnerReminders** has no `UserTypeAccess` page guard — nav
-visibility + `blockImpersonatingNonDevelopers` only. Direct-URL access isn't
-blocked at the page level, but that's UX-only: read data is authorized
-server-side (`ministryPartnerReminders` scopes to the user's own account lists).
-MpdSupervisorReport now has the page guard, but it is still UX-only for the same
-reason — it shows _other_ staff's data, so server-side scoping is what actually
-protects it, and account-list scoping alone would be the wrong check.
+⚠️ **MpdSupervisorReport**'s page guard is UX-only — it shows _other_ staff's
+data, so server-side scoping is what actually protects it, and account-list
+scoping alone would be the wrong check.
 
 ## GraphQL routing
 
@@ -178,11 +175,19 @@ Three patterns — know which one a form uses before adding a field:
   are dropped. Adding a field here means updating that mapping, not just the form.
 - **Explicit modal CRUD** — SavingsFundTransfer persists through its transfer
   modals + mutations, not autosave.
-- **One-off mutation on an explicit Save** — MpdSupervisorReport's
-  `GeographicLocationSelect` is the only instance: a supervisor picks a location
-  for someone else and presses Save, which runs
-  `updateManagedStaffGeographicLocation`. Deliberately not autosave — the record
-  belongs to another person, so a stray dropdown change must not write.
+- **One-off mutation on an explicit Save** — two location pickers, both
+  deliberately not autosave because a stray dropdown change must not write:
+  - MpdSupervisorReport's `GeographicLocationSelect`: a supervisor picks a
+    location for someone else and presses Save, which runs
+    `updateManagedStaffGeographicLocation`. The record belongs to another person.
+  - AdditionalSalaryRequest's `SetLocationModal`: a user without a location on
+    their cap sets their own once, through `updateUserGeographicLocation`. The
+    one-time limit needs no flag. With an approved SCR, the cap reports that
+    SCR's location, and a blank one reports as "None" (the SCR form shows blank
+    as "None"), so the alert never shows. Without one, it reads the primary
+    account list's location, so a null `calculations.geographicLocation` means
+    there's no SCR and no saved location. Once the modal saves, the refetched
+    cap has a location and the alert goes away.
 
 Note the finalize step is separate from persistence: NSO autosaves each field but
 has a distinct `Complete` mutation, and the request forms autosave a draft but

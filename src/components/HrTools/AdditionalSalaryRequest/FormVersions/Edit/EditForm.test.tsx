@@ -1,5 +1,9 @@
 import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
-import { createRenderFormComponent, setupMockContext } from '../testUtils';
+import {
+  createRenderFormComponent,
+  defaultMockContextValue,
+  setupMockContext,
+} from '../testUtils';
 import { EditForm } from './EditForm';
 
 jest.mock('../../Shared/AdditionalSalaryRequestContext', () => {
@@ -90,6 +94,23 @@ describe('EditForm', () => {
 
     expect(queryByText('Total Salary Requested')).not.toBeInTheDocument();
     expect(queryByText('Approval Process')).not.toBeInTheDocument();
+  });
+
+  it('shows the missing location alert when the cap has no location', async () => {
+    const { findByText } = renderComponent({
+      contextOverrides: {
+        calculations: {
+          ...defaultMockContextValue.calculations,
+          geographicLocation: null,
+        },
+      },
+    });
+
+    expect(
+      await findByText(
+        /Your cap may be inaccurate because your location isn't set/,
+      ),
+    ).toBeInTheDocument();
   });
 
   it('handles missing user gracefully', () => {

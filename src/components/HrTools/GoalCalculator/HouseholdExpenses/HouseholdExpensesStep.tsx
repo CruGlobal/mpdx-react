@@ -39,11 +39,8 @@ const Instructions: React.FC = () => {
               Total&quot;.
             </li>
           </ul>
-          For additional guidance, check out{' '}
-          <Link href="https://www.ramseysolutions.com/budgeting/useful-forms">
-            these resources from Ramsey Solutions
-          </Link>
-          .
+          For additional guidance, the Cru Stewardship Team is available to help
+          at <Link href="mailto:Stewardship@cru.org">Stewardship@cru.org</Link>.
         </Trans>
       </Typography>
     </InstructionsWrapper>

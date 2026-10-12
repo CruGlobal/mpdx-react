@@ -148,6 +148,37 @@ describe('PrintTables', () => {
     ).toBeInTheDocument();
   });
 
+  it('counts the pending transactions in a partly pending rollup', async () => {
+    const member = {
+      id: '1',
+      fundType: 'Primary',
+      transactedAt: '2025-01-15',
+      category: StaffExpenseCategoryEnum.Donation,
+      displayCategory: 'Donation',
+      amount: 125,
+    };
+    const { findByRole } = render(
+      <TestComponent
+        tableProps={{
+          type: ReportType.Income,
+          transactions: [
+            {
+              ...monthlyRollup,
+              groupedTransactions: [
+                { ...member, isPending: true },
+                { ...member, id: '2', isPending: false },
+              ],
+            },
+          ],
+        }}
+      />,
+    );
+
+    expect(
+      await findByRole('cell', { name: 'Donations (1 of 2 Pending)' }),
+    ).toBeInTheDocument();
+  });
+
   it('renders empty table message when no transactions', async () => {
     const { getByText } = render(
       <PrintTables

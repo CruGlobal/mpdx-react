@@ -15,6 +15,7 @@ import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetA
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 import { useFormUserInfo } from '../../Shared/useFormUserInfo';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
+import { MissingLocationAlert } from '../../SharedComponents/MissingLocationAlert';
 import { SpouseComponent } from '../../SharedComponents/SpouseComponent';
 import { ValidationAlert } from '../../SharedComponents/ValidationAlert';
 import { ApprovalProcess } from '../../SubmitModalAccordions/ApprovalProcess/ApprovalProcess';
@@ -34,19 +35,22 @@ export const NewForm: React.FC = () => {
   return (
     <Stack gap={4} padding={4} width={mainContentWidth}>
       <Typography variant="h4">{t('Complete the Form')}</Typography>
-      {hcmLoading ? (
-        <NameDisplaySkeleton showContent />
-      ) : (
-        <NameDisplay
-          names={name ?? ''}
-          titleOne={t('Primary Account Balance')}
-          amountOne={primaryAccountBalance}
-          titleTwo={t('Your Maximum Allowable Salary (CAP)')}
-          amountTwo={individualCap}
-          spouseComponent={<SpouseComponent />}
-          showContent
-        />
-      )}
+      <Stack gap={0.5}>
+        {hcmLoading ? (
+          <NameDisplaySkeleton showContent />
+        ) : (
+          <NameDisplay
+            names={name ?? ''}
+            titleOne={t('Primary Account Balance')}
+            amountOne={primaryAccountBalance}
+            titleTwo={t('Your Maximum Allowable Salary (CAP)')}
+            amountTwo={individualCap}
+            spouseComponent={<SpouseComponent />}
+            showContent
+          />
+        )}
+        <MissingLocationAlert />
+      </Stack>
 
       <Typography variant="body1" paragraph>
         <Trans t={t}>

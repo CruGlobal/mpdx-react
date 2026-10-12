@@ -152,24 +152,16 @@ describe('useNavPages', () => {
     );
   });
 
-  it('shows only Partner Reminders in the HR Tools tab when reports are disabled', async () => {
+  it('hides the HR Tools tab when reports are disabled', async () => {
     mockSession({ developer: false });
 
-    const { result, waitFor } = renderHook(() => useNavPages(false), {
+    const { result, waitForNextUpdate } = renderHook(() => useNavPages(false), {
       wrapper: makeWrapper(UserTypeEnum.UsStaff, 'false'),
     });
+    await waitForNextUpdate();
 
-    await waitFor(() =>
-      expect(result.current.navPages.map((page) => page.id)).toContain(
-        'hr-tools-page',
-      ),
+    expect(result.current.navPages.map((page) => page.id)).not.toContain(
+      'hr-tools-page',
     );
-
-    const hrToolsPage = result.current.navPages.find(
-      (page) => page.id === 'hr-tools-page',
-    );
-    expect(hrToolsPage?.items?.map((item) => item.id)).toEqual([
-      'partnerReminders',
-    ]);
   });
 });

@@ -22,7 +22,7 @@ import theme from 'src/theme';
 import Preferences from './preferences.page';
 
 const accountListId = 'account-list-1';
-const geographicLocationName = /^Geographic Location/;
+const defaultLocationMultiplierName = /^Default Location Multiplier/;
 
 const mockEnqueue = jest.fn();
 const mutationSpy = jest.fn();
@@ -299,7 +299,7 @@ describe('Preferences page', () => {
         ),
       ).toBeInTheDocument();
 
-      // Geographic Location
+      // Default Location Multiplier
       const skipButton = getByRole('button', { name: 'Skip Step' });
       userEvent.click(skipButton);
       expect(
@@ -307,7 +307,7 @@ describe('Preferences page', () => {
       ).toBeInTheDocument();
       expect(
         await findByText(
-          'This should be the major city within 50 miles of you. If none apply, leave this blank.',
+          'This should be the major city within 50 miles of you. If none apply, select "None."',
         ),
       ).toBeInTheDocument();
 
@@ -347,7 +347,7 @@ describe('Preferences page', () => {
       expect(await findByText("Let's set your locale!")).toBeInTheDocument();
       await waitFor(() =>
         expect(
-          queryByRole('button', { name: geographicLocationName }),
+          queryByRole('button', { name: defaultLocationMultiplierName }),
         ).not.toBeInTheDocument(),
       );
 
@@ -363,7 +363,7 @@ describe('Preferences page', () => {
     }, 15000);
   });
 
-  it('hides the Geographic Location accordion when reports are disabled', async () => {
+  it('hides the Default Location Multiplier accordion when reports are disabled', async () => {
     const { findByRole, queryByRole } = render(
       <MocksProviders canUserExportData={false} reportsDisabled>
         <Preferences />
@@ -372,11 +372,11 @@ describe('Preferences page', () => {
 
     expect(await findByRole('button', { name: 'Home Country' })).toBeVisible();
     expect(
-      queryByRole('button', { name: geographicLocationName }),
+      queryByRole('button', { name: defaultLocationMultiplierName }),
     ).not.toBeInTheDocument();
   });
 
-  it('shows the Geographic Location accordion when reports are enabled', async () => {
+  it('shows the Default Location Multiplier accordion when reports are enabled', async () => {
     const { findByRole } = render(
       <MocksProviders canUserExportData={false}>
         <Preferences />
@@ -384,7 +384,7 @@ describe('Preferences page', () => {
     );
 
     expect(
-      await findByRole('button', { name: geographicLocationName }),
+      await findByRole('button', { name: defaultLocationMultiplierName }),
     ).toBeVisible();
   });
 
@@ -405,7 +405,7 @@ describe('Preferences page', () => {
       );
 
       expect(
-        await findByRole('button', { name: geographicLocationName }),
+        await findByRole('button', { name: defaultLocationMultiplierName }),
       ).toBeVisible();
     });
 
@@ -423,7 +423,7 @@ describe('Preferences page', () => {
         await findByRole('button', { name: 'Home Country' }),
       ).toBeVisible();
       expect(
-        queryByRole('button', { name: geographicLocationName }),
+        queryByRole('button', { name: defaultLocationMultiplierName }),
       ).not.toBeInTheDocument();
     });
 
@@ -441,7 +441,7 @@ describe('Preferences page', () => {
         await findByRole('button', { name: 'Home Country' }),
       ).toBeVisible();
       expect(
-        queryByRole('button', { name: geographicLocationName }),
+        queryByRole('button', { name: defaultLocationMultiplierName }),
       ).not.toBeInTheDocument();
     });
   });

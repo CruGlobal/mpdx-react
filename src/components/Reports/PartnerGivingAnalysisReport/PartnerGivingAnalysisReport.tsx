@@ -3,13 +3,13 @@ import { Box } from '@mui/material';
 import { useGridApiRef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import { Panel } from 'pages/accountLists/[accountListId]/reports/helpers';
+import { useStaffAccountIdQuery } from 'src/components/HrTools/Shared/StaffAccountId.generated';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
 import { ListHeader, PageEnum } from 'src/components/Shared/Header/ListHeader';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
-import { useStaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import { useUrlFilters } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
 import { PartnerGivingAnalysisFilterSetInput } from 'src/graphql/types.generated';
 import { useGetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
@@ -84,8 +84,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     pageInfo: data?.partnerGivingAnalysis.pageInfo,
   });
 
-  const { data: staffAccountData, loading: staffAccountLoading } =
-    useStaffAccountQuery();
+  const { data: staffAccountIdData } = useStaffAccountIdQuery();
 
   const contacts = data?.partnerGivingAnalysis.nodes ?? [];
 
@@ -148,7 +147,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
         selectedIds={ids}
       />
 
-      {!staffAccountLoading && staffAccountData?.staffAccount?.id ? (
+      {staffAccountIdData?.user.staffAccountId ? (
         <BalanceCard
           donationPeriodTotalSum={
             data?.partnerGivingAnalysis?.donationPeriodTotalSum

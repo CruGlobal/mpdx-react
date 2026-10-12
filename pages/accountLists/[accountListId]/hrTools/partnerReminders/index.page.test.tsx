@@ -75,14 +75,20 @@ describe('Partner Reminders Report Page', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('renders even though there is no staff account', async () => {
-    const { findByRole } = render(
+  it('renders no staff account page when no staff account', async () => {
+    const { findByText, getByText, queryByRole } = render(
       <Components userType={UserTypeEnum.UsStaff} staffAccountId={null} />,
     );
 
     expect(
-      await findByRole('heading', { name: /online reminder system/i }),
+      await findByText(/access to this feature is limited/i),
     ).toBeInTheDocument();
+    expect(
+      getByText(/our records show that you do not have a staff account/i),
+    ).toBeInTheDocument();
+    expect(
+      queryByRole('heading', { name: /online reminder system/i }),
+    ).not.toBeInTheDocument();
   });
 
   it('renders limited access page when user group is not US or hybrid staff', async () => {

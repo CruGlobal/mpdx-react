@@ -26,7 +26,6 @@ export function useHrToolsNavItems(): {
     userLoading,
   } = useIneligibleByGroup();
   const developerBypass = useDeveloperBypass();
-  // Partner Reminders is live in production; every other HR Tool is still disabled
   const { reportsDisabled } = useReportsDisabled();
   const { impersonating, isImpersonatorDeveloper } = useRequiredSession();
   // Non-developer impersonators must never see the supervisor report (MPDX-10066).
@@ -116,8 +115,7 @@ export function useHrToolsNavItems(): {
       {
         id: 'partnerReminders',
         title: t('Ministry Partner Reminders'),
-        // TODO (MPDX-9822): Once HCM goes live, add has no staff account gate back
-        hideItem: false,
+        hideItem: reportsDisabled || hasNoStaffAccount,
       },
       {
         id: 'mpdSupervisorReport',
