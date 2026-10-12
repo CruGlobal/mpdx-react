@@ -93,11 +93,9 @@ const twoTeams: ManagedStaffTeamsQuery['managedStaffTeams'] = [
 ];
 
 let setDepartmentFn: (value: string | null) => void;
-let setSearchFn: (value: string) => void;
 const Controls: React.FC = () => {
-  const { setDepartment, setSearch } = useMpdSupervisorReport();
+  const { setDepartment } = useMpdSupervisorReport();
   setDepartmentFn = setDepartment;
-  setSearchFn = setSearch;
   return null;
 };
 
@@ -307,28 +305,15 @@ describe('TeamSummary', () => {
     expect(await findByRole('button', { name: /City/ })).toBeInTheDocument();
   });
 
-  it('keeps the cards on screen, marked busy, while a new filter loads', async () => {
-    const { findByRole, getByRole } = renderSummary();
+  it('hides the old cards while a new filter loads', async () => {
+    const { findByRole, queryByRole } = renderSummary();
     await findByRole('region', { name: 'Teams' });
 
     act(() => {
-      setSearchFn('Anton');
+      setDepartmentFn('US City');
     });
 
-    // Never unmounted: the region is still there straight after the change
-    const region = getByRole('region', { name: 'Teams' });
-    expect(region).toBeInTheDocument();
-    await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
-        name: 'Anton',
-        teamNames: null,
-      }),
-    );
-    await waitFor(() =>
-      expect(getByRole('region', { name: 'Teams' })).toHaveAttribute(
-        'aria-busy',
-        'false',
-      ),
-    );
+    expect(queryByRole('region', { name: 'Teams' })).not.toBeInTheDocument();
+    expect(await findByRole('region', { name: 'Teams' })).toBeInTheDocument();
   });
 });

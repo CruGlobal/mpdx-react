@@ -282,7 +282,20 @@ export const MpdSupervisorReportProvider: React.FC<{
     refetch().catch(() => undefined);
   }, [refetch]);
 
-  const filterRequired = useMemo(() => filterRequiredFromError(error), [error]);
+  // Apollo clears the error while a new filter loads, so keep the last answer
+  // until the API says whether the new filter still matches too many.
+  const settledFilterRequired = useMemo(
+    () => filterRequiredFromError(error),
+    [error],
+  );
+  const [lastFilterRequired, setLastFilterRequired] =
+    useState<FilterRequired | null>(null);
+  useEffect(() => {
+    if (!loading) {
+      setLastFilterRequired(settledFilterRequired);
+    }
+  }, [loading, settledFilterRequired]);
+  const filterRequired = loading ? lastFilterRequired : settledFilterRequired;
 
   const activeFilterCount =
     (team ? 1 : 0) +

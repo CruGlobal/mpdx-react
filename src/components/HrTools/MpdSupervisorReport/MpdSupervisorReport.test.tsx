@@ -222,6 +222,30 @@ describe('MpdSupervisorReport', () => {
         queryByRole('button', { name: 'Open filters' }),
       ).not.toBeInTheDocument();
     });
+
+    it('keeps the message and shows progress while a new filter loads', async () => {
+      const { findByRole, getByRole, queryByRole } = renderReport({
+        mocks: filterGuard(false),
+        withFilters: true,
+      });
+      await findByRole('heading', { name: /too many to list at once/ });
+
+      userEvent.click(getByRole('combobox', { name: 'Person type' }));
+      userEvent.click(await findByRole('option', { name: 'Employee - Staff' }));
+
+      expect(
+        getByRole('progressbar', { name: 'Refreshing staff' }),
+      ).toBeInTheDocument();
+      expect(
+        getByRole('heading', { name: /too many to list at once/ }),
+      ).toBeInTheDocument();
+      expect(queryByRole('region', { name: 'Teams' })).not.toBeInTheDocument();
+      await waitFor(() =>
+        expect(
+          queryByRole('progressbar', { name: 'Refreshing staff' }),
+        ).not.toBeInTheDocument(),
+      );
+    });
   });
 
   describe('applied filters', () => {
@@ -409,6 +433,29 @@ describe('MpdSupervisorReport', () => {
     await waitFor(() =>
       expect(pageRequests().length).toBeGreaterThan(requestsBeforeRetry),
     );
+  });
+
+  it('waits for every page before showing the rows', async () => {
+    const firstPage = managedStaffMock(staff);
+    firstPage.managedStaff.pageInfo = {
+      endCursor: 'cursor-1',
+      hasNextPage: true,
+    };
+    const { getByTestId, queryByText } = renderReport({
+      mocks: {
+        ManagedStaff: {
+          managedStaff: (_root: unknown, args: { after?: string | null }) =>
+            args.after ? new Promise(() => {}) : firstPage.managedStaff,
+        },
+      },
+    });
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {}),
+    );
+    await act(() => new Promise((resolve) => setTimeout(resolve, 100)));
+    expect(getByTestId('infinite-list-skeleton-loading')).toBeInTheDocument();
+    expect(queryByText('John Smith')).not.toBeInTheDocument();
   });
 
   it('counts people, not rows, when a spouse pair is merged', async () => {

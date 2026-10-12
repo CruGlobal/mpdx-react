@@ -146,20 +146,11 @@ export const TeamSummary: React.FC = () => {
   // Identical to the roster query while no team is selected, so Apollo serves
   // it from the same cache entry; with a team selected it is the one extra
   // request that keeps the other teams' counts whole.
-  const {
-    data: latestData,
-    previousData,
-    error,
-    loading,
-    fetchMore,
-  } = useManagedStaffQuery({
+  const { data, error, loading, fetchMore } = useManagedStaffQuery({
     context: { suppressErrorCodes: ['FILTER_REQUIRED'] },
     variables: { ...queryVariables, teamNames: null },
     skip: teamCount < 2 || !!filterRequired,
   });
-  // Keep the last cards on screen, dimmed, while a new filter loads instead
-  // of blinking them out and back in
-  const data = latestData ?? previousData;
   const pageInfo = data?.managedStaff.pageInfo;
   // Every page must be in before the counts mean anything. A page that fails
   // just hides the strip; the list's own alert reports the failure.
@@ -225,8 +216,8 @@ export const TeamSummary: React.FC = () => {
     teamCount < 2 ||
     filterRequired ||
     filterRequiredFromError(error) ||
-    (loading && !previousData) ||
-    (loadingPages && !previousData) ||
+    !data ||
+    loadingPages ||
     pageError ||
     summary.length === 0
   ) {
@@ -237,10 +228,10 @@ export const TeamSummary: React.FC = () => {
     <Box
       component="section"
       aria-label={t('Teams')}
-      aria-busy={loading || loadingPages}
+      aria-busy={loading}
       sx={{
         mb: 2,
-        opacity: loading || loadingPages ? 0.6 : 1,
+        opacity: loading ? 0.6 : 1,
         transition: 'opacity 150ms',
       }}
     >
