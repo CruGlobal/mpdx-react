@@ -577,13 +577,13 @@ describe('MpdSupervisorReport', () => {
     expect(key).toHaveTextContent('No data');
   });
 
-  it('renders the How this report works button in the header', async () => {
+  it('labels the How this report works button in the header', async () => {
     const { findByRole } = renderReport();
 
     // Opening the legend is covered by ReportLegendPanel.test.tsx
     expect(
       await findByRole('button', { name: 'How this report works' }),
-    ).toBeInTheDocument();
+    ).toHaveTextContent('How this report works');
   });
 
   it('explains a fiscal quarter header on hover', async () => {

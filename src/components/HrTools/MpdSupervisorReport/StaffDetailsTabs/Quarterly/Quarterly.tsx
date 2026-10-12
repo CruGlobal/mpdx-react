@@ -21,7 +21,10 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { DynamicComponentPlaceholder } from 'src/components/DynamicPlaceholders/DynamicComponentPlaceholder';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
-import { QuarterlyPayrollHistory } from 'src/graphql/types.generated';
+import {
+  MpdUserPersonTypeEnum,
+  QuarterlyPayrollHistory,
+} from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { monthYearFormat } from 'src/lib/intlFormat';
 import {
@@ -40,10 +43,12 @@ const emptyHistory: QuarterlyPayrollHistory = {
 
 interface StaffTabQuarterlyProps {
   staffAccountId: string;
+  userPersonType: MpdUserPersonTypeEnum | null;
 }
 
 export const StaffTabQuarterly: React.FC<StaffTabQuarterlyProps> = ({
   staffAccountId,
+  userPersonType,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -52,7 +57,7 @@ export const StaffTabQuarterly: React.FC<StaffTabQuarterlyProps> = ({
   // The query defaults to the 24-month range, which is the eight quarters this
   // tab shows.
   const { data, loading, error } = useQuarterlyPayrollHistoryQuery({
-    variables: { staffAccountId },
+    variables: { staffAccountId, userPersonType },
   });
   const quarterHistory = data?.quarterlyPayrollHistory ?? emptyHistory;
   const { startingQuarter } = quarterHistory;
