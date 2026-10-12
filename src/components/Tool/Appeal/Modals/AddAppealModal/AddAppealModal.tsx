@@ -12,7 +12,7 @@ import { FilterOption } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import AddAppealForm, {
   ContactExclusion,
-  contactExclusions,
+  getContactExclusions,
 } from '../../InitialPage/AddAppealForm/AddAppealForm';
 
 interface AddAppealModalProps {
@@ -61,8 +61,8 @@ export const AddAppealModal: React.FC<AddAppealModalProps> = ({
     if (!isEndOfYearAsk) {
       return appealExcludes;
     }
-    return contactExclusions;
-  }, [appealExcludes, isEndOfYearAsk]);
+    return getContactExclusions(t);
+  }, [appealExcludes, isEndOfYearAsk, t]);
 
   const handleSubmit = async () => {
     if (formRef.current) {
