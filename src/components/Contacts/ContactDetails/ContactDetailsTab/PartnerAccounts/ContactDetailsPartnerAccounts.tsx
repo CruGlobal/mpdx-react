@@ -1,14 +1,13 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useMemo, useState } from 'react';
 import Add from '@mui/icons-material/Add';
 import Delete from '@mui/icons-material/Delete';
 import { Box, IconButton, TextField, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
-import { useTranslation } from 'react-i18next';
+import { TFunction, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { ActionButton } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
-import i18n from 'src/lib/i18n';
 import { ContactDetailsTabDocument } from '../ContactDetailsTab.generated';
 import { useUpdateContactOtherMutation } from '../Other/EditContactOtherModal/EditContactOther.generated';
 import { ContactDetailLoadingPlaceHolder } from '../StyledComponents';
@@ -18,11 +17,12 @@ import {
 } from './ContactPartnerAccounts.generated';
 import { useDeleteDonorAccountMutation } from './DeleteDonorAccount.generated';
 
-const newPartnerAccountSchema = yup.object({
-  accountNumber: yup.string().required(i18n.t('Account Number is required')),
-});
+const getNewPartnerAccountSchema = (t: TFunction) =>
+  yup.object({
+    accountNumber: yup.string().required(t('Account Number is required')),
+  });
 
-type Attributes = yup.InferType<typeof newPartnerAccountSchema>;
+type Attributes = yup.InferType<ReturnType<typeof getNewPartnerAccountSchema>>;
 
 const ContactPartnerAccountsContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(1, 1, 1, 5),
@@ -72,6 +72,10 @@ export const ContactDetailsPartnerAccounts: React.FC<
     variables: { accountListId },
   });
   const { t } = useTranslation();
+  const newPartnerAccountSchema = useMemo(
+    () => getNewPartnerAccountSchema(t),
+    [t],
+  );
   const { enqueueSnackbar } = useSnackbar();
 
   const deleteContactDonorAccount = async (id: string) => {
