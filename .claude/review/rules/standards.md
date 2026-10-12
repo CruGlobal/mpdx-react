@@ -112,7 +112,7 @@ Crowdin), `bundle-analyzer`, and `staging-api-block`.
       `import/newline-after-import`, `import/no-useless-path-segments`, and member `sort-imports` are
       all errors. Just run `yarn lint`.
 
-### **Localization (i18n)** — four rules ESLint enforces mechanically
+### **Localization (i18n)** — five rules ESLint enforces mechanically
 
 `.eslintrc.js` has `no-restricted-syntax` selectors for each of these; violating them fails
 `yarn lint:ci`.
@@ -127,6 +127,10 @@ Crowdin), `bundle-analyzer`, and `staging-api-block`.
 - [ ] **`<Trans>` must receive `t={t}`** and must **not** receive `i18nKey` — `yarn extract` writes the
       id as its own value when `i18nKey` is present, so the English never reaches `translation.json`.
       Let the children be the key
+- [ ] **Interpolate inside `<Trans>` with `{{ name }}`** plus `values={{ name }}`. A bare `{name}`
+      child is spliced in by value at runtime while `yarn extract` writes the literal `{name}` into
+      the key, so every non-English locale falls back to English. Only `{{ name }}`, string
+      literals like `{' '}`, and comments may appear as expression children
 - [ ] New keys land in `public/locales/en/…` via `yarn extract`; the `translations` CI job runs it on
       every PR and uploads to Crowdin only on merges to `main`
 
