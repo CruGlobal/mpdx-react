@@ -21,7 +21,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { DateTime } from 'luxon';
 import { useSession } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
-import { useTranslation } from 'react-i18next';
+import { TFunction, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import {
   CancelButton,
@@ -39,7 +39,6 @@ import { usePhaseData } from 'src/hooks/usePhaseData';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { dispatch } from 'src/lib/analytics';
-import i18n from 'src/lib/i18n';
 import { getValueFromIdValue } from 'src/lib/phases/getValueFromIdValue';
 import { inPersonActivityTypes } from 'src/lib/phases/taskActivityTypes';
 import { nullableDateTime } from 'src/lib/yupHelpers';
@@ -72,24 +71,25 @@ import { possibleNextActions } from '../possibleNextActions';
 import { possiblePartnerStatus } from '../possiblePartnerStatus';
 import { possibleResults } from '../possibleResults';
 
-const taskSchema = yup.object({
-  taskPhase: yup.mixed<PhaseEnum>().required(),
-  activityType: yup.mixed<ActivityTypeEnum>().required(),
-  subject: yup.string().required(i18n.t('Task Name is required')),
-  contactIds: yup.array().of(yup.string().required()).default([]),
-  completedAt: nullableDateTime(),
-  userId: yup.string().nullable(),
-  tagList: yup.array().of(yup.string().required()).default([]),
-  displayResult: yup.mixed<DisplayResultEnum>().nullable(),
-  result: yup.mixed<ResultEnum>().nullable(),
-  changeContactStatus: yup.boolean(),
-  nextAction: yup.mixed<ActivityTypeEnum>().nullable(),
-  // These field schemas should ideally be string().defined(), but Formik thinks the form is invalid
-  // when those fields fields are blank for some reason, and we need to allow blank values
-  location: yup.string(),
-  comment: yup.string(),
-});
-type Attributes = yup.InferType<typeof taskSchema>;
+const getTaskSchema = (t: TFunction) =>
+  yup.object({
+    taskPhase: yup.mixed<PhaseEnum>().required(),
+    activityType: yup.mixed<ActivityTypeEnum>().required(),
+    subject: yup.string().required(t('Task Name is required')),
+    contactIds: yup.array().of(yup.string().required()).default([]),
+    completedAt: nullableDateTime(),
+    userId: yup.string().nullable(),
+    tagList: yup.array().of(yup.string().required()).default([]),
+    displayResult: yup.mixed<DisplayResultEnum>().nullable(),
+    result: yup.mixed<ResultEnum>().nullable(),
+    changeContactStatus: yup.boolean(),
+    nextAction: yup.mixed<ActivityTypeEnum>().nullable(),
+    // These field schemas should ideally be string().defined(), but Formik thinks the form is invalid
+    // when those fields fields are blank for some reason, and we need to allow blank values
+    location: yup.string(),
+    comment: yup.string(),
+  });
+type Attributes = yup.InferType<ReturnType<typeof getTaskSchema>>;
 
 interface Props {
   accountListId: string;
@@ -109,6 +109,7 @@ const TaskModalLogForm = ({
 }: Props): ReactElement => {
   const session = useSession();
   const { t } = useTranslation();
+  const taskSchema = useMemo(() => getTaskSchema(t), [t]);
   const [showMore, setShowMore] = useState(false);
   const [resultSelected, setResultSelected] = useState<
     DisplayResultEnum | ResultEnum | null
