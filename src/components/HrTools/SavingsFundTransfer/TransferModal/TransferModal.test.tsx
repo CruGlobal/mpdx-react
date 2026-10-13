@@ -867,6 +867,36 @@ describe('TransferModal', () => {
       );
     });
 
+    it('should warn but not hard-block editing a one-time transfer beyond the available balance', async () => {
+      const transfer: TransferModalData['transfer'] = {
+        id: 'transfer-id',
+        transferFrom: 'Staff Account',
+        transferTo: 'Staff Savings',
+        amount: 500,
+        schedule: ScheduleEnum.OneTime,
+        transferDate: DateTime.fromISO('2024-11-01'),
+        endDate: null,
+        note: 'note',
+      };
+
+      const { getByRole, findByRole, queryByText } = render(
+        <Components transfer={transfer} type={TransferTypeEnum.Edit} />,
+      );
+
+      const amountField = getByRole('spinbutton', { name: /amount/i });
+      userEvent.clear(amountField);
+      userEvent.type(amountField, '16000');
+      userEvent.tab();
+
+      expect(await findByRole('alert')).toBeInTheDocument();
+      expect(
+        queryByText(/Amount cannot exceed the available balance/i),
+      ).not.toBeInTheDocument();
+      await waitFor(() =>
+        expect(getByRole('button', { name: /submit/i })).not.toBeDisabled(),
+      );
+    });
+
     it('should warn but still allow a new recurring transfer over the available balance', async () => {
       const { getByRole, getByLabelText, findByRole } = render(<Components />);
 
