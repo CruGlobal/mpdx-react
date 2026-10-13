@@ -119,11 +119,12 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
     expandedRows,
     toggleRow,
   } = useMpdSupervisorReport();
+  const allPagesLoaded = !hasNextPage || !!loadMoreError;
 
   // Every row covers the same four quarters, so the first one labels the header.
   const quarterHeaders = useMemo(
     () =>
-      staffMembers.length
+      allPagesLoaded && staffMembers.length
         ? buildQuarterChips(staffMembers[0].quarterlyHealth).map(
             ({ fiscalYear, quarter, averagePayroll }) => {
               const { start, end } = getQuarterMonthRange(fiscalYear, quarter);
@@ -150,7 +151,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
             },
           )
         : [],
-    [staffMembers, t, locale],
+    [allPagesLoaded, staffMembers, t, locale],
   );
 
   return (
@@ -183,7 +184,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
               <Typography variant="h5">{title}</Typography>
               <ReportLegendButton />
             </Box>
-            {!filterRequired && (
+            {!filterRequired && allPagesLoaded && (
               <Typography
                 variant="body2"
                 color="text.secondary"
@@ -294,6 +295,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
           {filterRequired ? (
             <FilterRequiredState
               filterRequired={filterRequired}
+              loading={staffLoading}
               // The toggle would close an already-open panel
               onOpenFilters={
                 panelOpen === Panel.Filters ? undefined : onFilterListToggle
@@ -312,8 +314,8 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
             </Alert>
           ) : (
             <InfiniteList
-              loading={staffLoading}
-              data={staffMembers}
+              loading={staffLoading || !allPagesLoaded}
+              data={allPagesLoaded ? staffMembers : []}
               disableHover
               style={{ height: '100%' }}
               itemContent={(_index, item: StaffRow) => (

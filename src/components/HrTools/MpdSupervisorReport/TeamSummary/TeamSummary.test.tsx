@@ -1,4 +1,5 @@
 import React from 'react';
+import { DefaultOptions } from '@apollo/client';
 import { ThemeProvider } from '@mui/material/styles';
 import { act, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -93,17 +94,16 @@ const twoTeams: ManagedStaffTeamsQuery['managedStaffTeams'] = [
 ];
 
 let setDepartmentFn: (value: string | null) => void;
-let setSearchFn: (value: string) => void;
 const Controls: React.FC = () => {
-  const { setDepartment, setSearch } = useMpdSupervisorReport();
+  const { setDepartment } = useMpdSupervisorReport();
   setDepartmentFn = setDepartment;
-  setSearchFn = setSearch;
   return null;
 };
 
 const renderSummary = (
   teams: ManagedStaffTeamsQuery['managedStaffTeams'] = twoTeams,
   mocks: ApolloErgonoMockMap = {},
+  defaultOptions?: DefaultOptions,
 ) =>
   render(
     <TestRouter>
@@ -124,6 +124,7 @@ const renderSummary = (
             } as ApolloErgonoMockMap
           }
           onCall={mutationSpy}
+          defaultOptions={defaultOptions}
         >
           <MpdSupervisorReportProvider>
             <Controls />
@@ -174,6 +175,31 @@ describe('TeamSummary', () => {
     const city = within(region).getByRole('button', { name: /City/ });
     expect(city).toHaveTextContent('1 staff');
     expect(city).toHaveTextContent('Ungraded (1)');
+  });
+
+  it('orders the badges like the bar, worst first, then ungraded', async () => {
+    const cityRed = managedStaffMember({
+      ...campusRed,
+      firstName: 'Eli',
+      personNumber: '5',
+      staffAccountId: 'a5',
+      teams: cityGreen.teams,
+    });
+    const { findByRole } = renderSummary(twoTeams, {
+      ManagedStaff: managedStaffMock([
+        campusRed,
+        cityGreen,
+        cityYellow,
+        cityBlue,
+        cityRed,
+      ]),
+    });
+
+    const region = await findByRole('region', { name: 'Teams' });
+    const city = within(region).getByRole('button', { name: /City/ });
+    expect(city).toHaveTextContent(
+      /At risk \(1\).*Needs attention \(1\).*On track \(1\).*Ungraded \(1\)/,
+    );
   });
 
   it('starts open and collapses the cards from its heading', async () => {
@@ -307,22 +333,43 @@ describe('TeamSummary', () => {
     expect(await findByRole('button', { name: /City/ })).toBeInTheDocument();
   });
 
-  it('keeps the cards on screen, marked busy, while a new filter loads', async () => {
-    const { findByRole, getByRole } = renderSummary();
+  it('hides the old cards while a new filter loads', async () => {
+    const { findByRole, queryByRole } = renderSummary();
     await findByRole('region', { name: 'Teams' });
 
     act(() => {
-      setSearchFn('Anton');
+      setDepartmentFn('US City');
     });
 
-    // Never unmounted: the region is still there straight after the change
-    const region = getByRole('region', { name: 'Teams' });
-    expect(region).toBeInTheDocument();
-    await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
-        name: 'Anton',
-        teamNames: null,
-      }),
+    expect(queryByRole('region', { name: 'Teams' })).not.toBeInTheDocument();
+    expect(await findByRole('region', { name: 'Teams' })).toBeInTheDocument();
+  });
+
+  it('marks cached cards busy while they refresh', async () => {
+    // The app's defaults, which show cached cards while a request refreshes them
+    const { findByRole, getByRole } = renderSummary(
+      twoTeams,
+      {},
+      {
+        watchQuery: {
+          fetchPolicy: 'cache-and-network',
+          notifyOnNetworkStatusChange: true,
+        },
+      },
+    );
+    await findByRole('region', { name: 'Teams' });
+    act(() => {
+      setDepartmentFn('US City');
+    });
+    await findByRole('region', { name: 'Teams' });
+
+    act(() => {
+      setDepartmentFn(null);
+    });
+
+    expect(getByRole('region', { name: 'Teams' })).toHaveAttribute(
+      'aria-busy',
+      'true',
     );
     await waitFor(() =>
       expect(getByRole('region', { name: 'Teams' })).toHaveAttribute(
