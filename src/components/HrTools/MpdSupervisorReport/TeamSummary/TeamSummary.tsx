@@ -11,10 +11,7 @@ import {
   filterRequiredFromError,
   useMpdSupervisorReport,
 } from '../MpdSupervisorReportContext';
-import {
-  healthStatusLabel,
-  healthStatusOrder,
-} from '../ReportLegend/legendCopy';
+import { healthStatusLabel } from '../ReportLegend/legendCopy';
 import {
   TeamSummaryRow,
   healthColor,
@@ -26,6 +23,11 @@ const gradedStatuses = [
   MpdHealthStatusEnum.Red,
   MpdHealthStatusEnum.Yellow,
   MpdHealthStatusEnum.Green,
+];
+const badgeStatuses = [
+  ...gradedStatuses,
+  MpdHealthStatusEnum.Blue,
+  MpdHealthStatusEnum.Gray,
 ];
 
 interface TeamCardProps {
@@ -70,7 +72,7 @@ const TeamCard: React.FC<TeamCardProps> = ({ team, selected, onToggle }) => {
         </Typography>
       </Box>
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-        {healthStatusOrder
+        {badgeStatuses
           .filter((status) => team.counts[status] > 0)
           .map((status) => {
             const { bg, color } = healthColor(theme, status);
@@ -132,8 +134,14 @@ const TeamCard: React.FC<TeamCardProps> = ({ team, selected, onToggle }) => {
  */
 export const TeamSummary: React.FC = () => {
   const { t } = useTranslation();
-  const { queryVariables, team, department, setTeam, filterRequired } =
-    useMpdSupervisorReport();
+  const {
+    queryVariables,
+    team,
+    department,
+    setTeam,
+    filterRequired,
+    staffLoading,
+  } = useMpdSupervisorReport();
   const {
     data: teamsData,
     error: teamsError,
@@ -146,20 +154,11 @@ export const TeamSummary: React.FC = () => {
   // Identical to the roster query while no team is selected, so Apollo serves
   // it from the same cache entry; with a team selected it is the one extra
   // request that keeps the other teams' counts whole.
-  const {
-    data: latestData,
-    previousData,
-    error,
-    loading,
-    fetchMore,
-  } = useManagedStaffQuery({
+  const { data, error, loading, fetchMore } = useManagedStaffQuery({
     context: { suppressErrorCodes: ['FILTER_REQUIRED'] },
     variables: { ...queryVariables, teamNames: null },
-    skip: teamCount < 2 || !!filterRequired,
+    skip: teamCount < 2 || (!!filterRequired && !staffLoading),
   });
-  // Keep the last cards on screen, dimmed, while a new filter loads instead
-  // of blinking them out and back in
-  const data = latestData ?? previousData;
   const pageInfo = data?.managedStaff.pageInfo;
   // Every page must be in before the counts mean anything. A page that fails
   // just hides the strip; the list's own alert reports the failure.
@@ -225,8 +224,8 @@ export const TeamSummary: React.FC = () => {
     teamCount < 2 ||
     filterRequired ||
     filterRequiredFromError(error) ||
-    (loading && !previousData) ||
-    (loadingPages && !previousData) ||
+    !data ||
+    loadingPages ||
     pageError ||
     summary.length === 0
   ) {
@@ -237,10 +236,10 @@ export const TeamSummary: React.FC = () => {
     <Box
       component="section"
       aria-label={t('Teams')}
-      aria-busy={loading || loadingPages}
+      aria-busy={loading}
       sx={{
         mb: 2,
-        opacity: loading || loadingPages ? 0.6 : 1,
+        opacity: loading ? 0.6 : 1,
         transition: 'opacity 150ms',
       }}
     >

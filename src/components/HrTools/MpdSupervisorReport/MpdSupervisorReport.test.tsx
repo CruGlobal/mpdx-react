@@ -1,4 +1,5 @@
 import React from 'react';
+import { DefaultOptions } from '@apollo/client';
 import { ThemeProvider } from '@mui/material/styles';
 import { act, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -76,6 +77,7 @@ interface RenderOptions {
   withFilters?: boolean;
   /** Overrides the default mocks, e.g. to make an operation throw. */
   mocks?: ApolloErgonoMockMap;
+  defaultOptions?: DefaultOptions;
 }
 
 const renderReport = ({
@@ -83,6 +85,7 @@ const renderReport = ({
   managedStaff = managedStaffMock(staff),
   withFilters = false,
   mocks = {},
+  defaultOptions,
 }: RenderOptions = {}) =>
   render(
     <TestRouter>
@@ -112,6 +115,7 @@ const renderReport = ({
                 } as ApolloErgonoMockMap
               }
               onCall={mutationSpy}
+              defaultOptions={defaultOptions}
             >
               <MpdSupervisorReportProvider>
                 <MpdSupervisorReport
@@ -221,6 +225,78 @@ describe('MpdSupervisorReport', () => {
       expect(
         queryByRole('button', { name: 'Open filters' }),
       ).not.toBeInTheDocument();
+    });
+
+    it('keeps the message and shows progress while a new filter loads', async () => {
+      const { findByRole, getByRole, queryByRole } = renderReport({
+        mocks: filterGuard(false),
+        withFilters: true,
+      });
+      await findByRole('heading', { name: /too many to list at once/ });
+
+      userEvent.click(getByRole('combobox', { name: 'Person type' }));
+      userEvent.click(await findByRole('option', { name: 'Employee - Staff' }));
+
+      expect(
+        getByRole('progressbar', { name: 'Refreshing staff' }),
+      ).toBeInTheDocument();
+      expect(
+        getByRole('heading', { name: /too many to list at once/ }),
+      ).toBeInTheDocument();
+      expect(queryByRole('region', { name: 'Teams' })).not.toBeInTheDocument();
+      await waitFor(() =>
+        expect(
+          queryByRole('progressbar', { name: 'Refreshing staff' }),
+        ).not.toBeInTheDocument(),
+      );
+    });
+
+    it('loads the team summary with the list once a filter fits', async () => {
+      const { findByRole, getByRole, queryByRole } = renderReport({
+        withFilters: true,
+        // The app's defaults, which send a request even for a cached query
+        defaultOptions: {
+          watchQuery: {
+            fetchPolicy: 'cache-and-network',
+            notifyOnNetworkStatusChange: true,
+          },
+        },
+        mocks: {
+          ManagedStaff: {
+            managedStaff: (
+              _root: unknown,
+              args: { userPersonTypes?: string[] | null },
+            ) => {
+              if (!args.userPersonTypes) {
+                throw new GraphQLError('228 staff are in reach', {
+                  extensions: {
+                    code: 'FILTER_REQUIRED',
+                    count: 228,
+                    filtered: false,
+                  },
+                });
+              }
+              return managedStaffMock(staff).managedStaff;
+            },
+          },
+        },
+      });
+      await findByRole('heading', { name: /too many to list at once/ });
+
+      userEvent.click(getByRole('combobox', { name: 'Person type' }));
+      userEvent.click(await findByRole('option', { name: 'Employee - Staff' }));
+
+      await findByRole('region', { name: 'Teams' });
+      expect(
+        queryByRole('heading', { name: /too many to list at once/ }),
+      ).not.toBeInTheDocument();
+      await act(() => new Promise((resolve) => setTimeout(resolve, 100)));
+      // The summary shares the list's request instead of sending its own after it
+      expect(
+        managedStaffOperations().filter(
+          ({ variables }) => variables.userPersonTypes,
+        ),
+      ).toHaveLength(1);
     });
   });
 
@@ -409,6 +485,29 @@ describe('MpdSupervisorReport', () => {
     await waitFor(() =>
       expect(pageRequests().length).toBeGreaterThan(requestsBeforeRetry),
     );
+  });
+
+  it('waits for every page before showing the rows', async () => {
+    const firstPage = managedStaffMock(staff);
+    firstPage.managedStaff.pageInfo = {
+      endCursor: 'cursor-1',
+      hasNextPage: true,
+    };
+    const { getByTestId, queryByText } = renderReport({
+      mocks: {
+        ManagedStaff: {
+          managedStaff: (_root: unknown, args: { after?: string | null }) =>
+            args.after ? new Promise(() => {}) : firstPage.managedStaff,
+        },
+      },
+    });
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {}),
+    );
+    await act(() => new Promise((resolve) => setTimeout(resolve, 100)));
+    expect(getByTestId('infinite-list-skeleton-loading')).toBeInTheDocument();
+    expect(queryByText('John Smith')).not.toBeInTheDocument();
   });
 
   it('counts people, not rows, when a spouse pair is merged', async () => {

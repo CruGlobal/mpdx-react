@@ -64,7 +64,6 @@ interface ConsumerResult {
   loadMoreError: ApolloError | undefined;
   staffMembers: StaffRow[];
   loadedCount: number;
-  staffComplete: boolean;
   queryVariables: ManagedStaffQueryVariables;
   expandedRows: ReadonlySet<string>;
   toggleRow: (personNumber: string) => void;
@@ -405,7 +404,7 @@ describe('rows', () => {
     expect(consumerResult.loadedCount).toBe(2);
   });
 
-  it('loads every page by itself and reports when the result is complete', async () => {
+  it('loads every page by itself', async () => {
     const page1 = managedStaffMock([john]);
     page1.managedStaff.pageInfo = { endCursor: 'cursor-1', hasNextPage: true };
     const page2 = managedStaffMock([
@@ -422,10 +421,11 @@ describe('rows', () => {
       },
     });
 
-    await waitFor(() => expect(consumerResult.staffComplete).toBe(true));
-    expect(
-      consumerResult.staffMembers.map(({ firstName }) => firstName),
-    ).toEqual(['John', 'Zoe']);
+    await waitFor(() =>
+      expect(
+        consumerResult.staffMembers.map(({ firstName }) => firstName),
+      ).toEqual(['John', 'Zoe']),
+    );
   });
 
   it('exposes the variables the roster query runs with', async () => {
@@ -531,7 +531,6 @@ describe('managed staff query variables', () => {
       );
       expect(consumerResult.staffMembers).toHaveLength(1);
       expect(consumerResult.staffError).toBeUndefined();
-      expect(consumerResult.staffComplete).toBe(false);
       // A failed page is not retried in a loop
       await act(() => new Promise((resolve) => setTimeout(resolve, 50)));
       expect(pageRequests()).toHaveLength(1);
