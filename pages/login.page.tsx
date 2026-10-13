@@ -5,12 +5,12 @@ import SubjectIcon from '@mui/icons-material/Subject';
 import { Button, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { getSession, signIn } from 'next-auth/react';
+import { useTranslation } from 'react-i18next';
 import BaseLayout from 'src/components/Layouts/Basic';
 import Loading from 'src/components/Loading';
 import Welcome from 'src/components/Welcome';
 import { extractCookie } from 'src/lib/extractCookie';
 import { getAppName } from 'src/lib/getAppName';
-import i18n from 'src/lib/i18n';
 import { getQueryParam } from 'src/lib/queryParam';
 
 const SignUpBox = styled('div')(({ theme }) => ({
@@ -18,19 +18,24 @@ const SignUpBox = styled('div')(({ theme }) => ({
 }));
 
 export interface LoginProps {
-  signInButtonText: string;
   signInAuthProviderId: string;
   immediateSignIn: boolean;
   isOkta: boolean;
 }
 
 const Login = ({
-  signInButtonText,
   signInAuthProviderId,
   immediateSignIn,
   isOkta,
 }: LoginProps): ReactElement => {
+  const { t } = useTranslation();
   const appName = getAppName();
+
+  const signInButtonText = isOkta
+    ? t('Sign In')
+    : t('Sign In with {{authProviderName}}', {
+        authProviderName: process.env.API_OAUTH_VISIBLE_NAME,
+      });
 
   useEffect(() => {
     if (immediateSignIn) {
@@ -101,12 +106,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
   const authProvider = process.env.AUTH_PROVIDER;
 
-  const signInButtonText =
-    authProvider === 'OKTA'
-      ? i18n.t('Sign In')
-      : i18n.t(`Sign In with {{authProviderName}}`, {
-          authProviderName: process.env.API_OAUTH_VISIBLE_NAME,
-        });
   const signInAuthProviderId = authProvider?.toLowerCase()?.replace(/_/g, '');
 
   const redirectCookie = extractCookie(
@@ -137,7 +136,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
-      signInButtonText,
       signInAuthProviderId,
       immediateSignIn,
       isOkta: authProvider === 'OKTA',

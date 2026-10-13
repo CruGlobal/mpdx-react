@@ -63,12 +63,17 @@ describe('Login - API_OAUTH', () => {
     )) as GetServerSidePropsReturn;
 
     expect(props).toEqual({
-      signInButtonText: 'Sign In with Third-party oAuth',
       signInAuthProviderId: 'apioauth',
       immediateSignIn: false,
       isOkta: false,
     });
     expect(redirect).toBeUndefined();
+
+    const { getByRole } = render(<Components props={props} />);
+
+    expect(
+      getByRole('button', { name: 'Sign In with Third-party oAuth' }),
+    ).toBeInTheDocument();
   });
 
   it('should immediate Sign In if cookie present', async () => {
@@ -79,7 +84,6 @@ describe('Login - API_OAUTH', () => {
     )) as GetServerSidePropsReturn;
 
     expect(props).toEqual({
-      signInButtonText: 'Sign In with Third-party oAuth',
       signInAuthProviderId: 'apioauth',
       immediateSignIn: true,
       isOkta: false,
@@ -124,7 +128,6 @@ describe('Login - API_OAUTH', () => {
     const { queryByText } = render(
       <Components
         props={{
-          signInButtonText: 'Sign In with SSO',
           signInAuthProviderId: 'apioauth',
           immediateSignIn: false,
           isOkta: false,
