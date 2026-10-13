@@ -131,8 +131,6 @@ export interface MpdSupervisorReportContextValue {
   loadMoreError: ApolloError | undefined;
   /** The variables the roster query runs with, for queries that mirror it */
   queryVariables: ManagedStaffQueryVariables;
-  /** Every page of the current result has arrived */
-  staffComplete: boolean;
   hasNextPage: boolean;
   loadMore: () => void;
   refetchStaff: () => void;
@@ -399,7 +397,6 @@ export const MpdSupervisorReportProvider: React.FC<{
       filterRequired,
       loadMoreError,
       queryVariables,
-      staffComplete: !!data && !loading && !pageInfo?.hasNextPage,
       hasNextPage: pageInfo?.hasNextPage ?? false,
       loadMore,
       refetchStaff,

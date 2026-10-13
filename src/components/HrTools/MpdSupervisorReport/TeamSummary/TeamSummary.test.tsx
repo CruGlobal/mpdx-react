@@ -1,4 +1,5 @@
 import React from 'react';
+import { DefaultOptions } from '@apollo/client';
 import { ThemeProvider } from '@mui/material/styles';
 import { act, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -102,6 +103,7 @@ const Controls: React.FC = () => {
 const renderSummary = (
   teams: ManagedStaffTeamsQuery['managedStaffTeams'] = twoTeams,
   mocks: ApolloErgonoMockMap = {},
+  defaultOptions?: DefaultOptions,
 ) =>
   render(
     <TestRouter>
@@ -122,6 +124,7 @@ const renderSummary = (
             } as ApolloErgonoMockMap
           }
           onCall={mutationSpy}
+          defaultOptions={defaultOptions}
         >
           <MpdSupervisorReportProvider>
             <Controls />
@@ -340,5 +343,39 @@ describe('TeamSummary', () => {
 
     expect(queryByRole('region', { name: 'Teams' })).not.toBeInTheDocument();
     expect(await findByRole('region', { name: 'Teams' })).toBeInTheDocument();
+  });
+
+  it('marks cached cards busy while they refresh', async () => {
+    // The app's defaults, which show cached cards while a request refreshes them
+    const { findByRole, getByRole } = renderSummary(
+      twoTeams,
+      {},
+      {
+        watchQuery: {
+          fetchPolicy: 'cache-and-network',
+          notifyOnNetworkStatusChange: true,
+        },
+      },
+    );
+    await findByRole('region', { name: 'Teams' });
+    act(() => {
+      setDepartmentFn('US City');
+    });
+    await findByRole('region', { name: 'Teams' });
+
+    act(() => {
+      setDepartmentFn(null);
+    });
+
+    expect(getByRole('region', { name: 'Teams' })).toHaveAttribute(
+      'aria-busy',
+      'true',
+    );
+    await waitFor(() =>
+      expect(getByRole('region', { name: 'Teams' })).toHaveAttribute(
+        'aria-busy',
+        'false',
+      ),
+    );
   });
 });

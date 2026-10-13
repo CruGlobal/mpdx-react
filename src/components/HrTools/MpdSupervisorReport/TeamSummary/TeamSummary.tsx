@@ -134,8 +134,14 @@ const TeamCard: React.FC<TeamCardProps> = ({ team, selected, onToggle }) => {
  */
 export const TeamSummary: React.FC = () => {
   const { t } = useTranslation();
-  const { queryVariables, team, department, setTeam, filterRequired } =
-    useMpdSupervisorReport();
+  const {
+    queryVariables,
+    team,
+    department,
+    setTeam,
+    filterRequired,
+    staffLoading,
+  } = useMpdSupervisorReport();
   const {
     data: teamsData,
     error: teamsError,
@@ -151,7 +157,7 @@ export const TeamSummary: React.FC = () => {
   const { data, error, loading, fetchMore } = useManagedStaffQuery({
     context: { suppressErrorCodes: ['FILTER_REQUIRED'] },
     variables: { ...queryVariables, teamNames: null },
-    skip: teamCount < 2 || !!filterRequired,
+    skip: teamCount < 2 || (!!filterRequired && !staffLoading),
   });
   const pageInfo = data?.managedStaff.pageInfo;
   // Every page must be in before the counts mean anything. A page that fails

@@ -30,7 +30,6 @@ export const FilterRequiredState: React.FC<FilterRequiredStateProps> = ({
     >
       <Box sx={{ opacity: loading ? 0.6 : 1, transition: 'opacity 150ms' }}>
         <FilterListIcon sx={{ fontSize: 40, color: 'text.disabled' }} />
-        {/* `total`, not `count`: the number is always above the cap, so no plural forms */}
         <Typography variant="h6" component="h2" sx={{ mt: 1 }}>
           {filtered
             ? t('{{total}} staff match — still too many to list at once.', {
