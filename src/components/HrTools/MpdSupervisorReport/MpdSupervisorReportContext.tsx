@@ -131,8 +131,6 @@ export interface MpdSupervisorReportContextValue {
   loadMoreError: ApolloError | undefined;
   /** The variables the roster query runs with, for queries that mirror it */
   queryVariables: ManagedStaffQueryVariables;
-  /** Every page of the current result has arrived */
-  staffComplete: boolean;
   hasNextPage: boolean;
   loadMore: () => void;
   refetchStaff: () => void;
@@ -282,7 +280,20 @@ export const MpdSupervisorReportProvider: React.FC<{
     refetch().catch(() => undefined);
   }, [refetch]);
 
-  const filterRequired = useMemo(() => filterRequiredFromError(error), [error]);
+  // Apollo clears the error while a new filter loads, so keep the last answer
+  // until the API says whether the new filter still matches too many.
+  const settledFilterRequired = useMemo(
+    () => filterRequiredFromError(error),
+    [error],
+  );
+  const [lastFilterRequired, setLastFilterRequired] =
+    useState<FilterRequired | null>(null);
+  useEffect(() => {
+    if (!loading) {
+      setLastFilterRequired(settledFilterRequired);
+    }
+  }, [loading, settledFilterRequired]);
+  const filterRequired = loading ? lastFilterRequired : settledFilterRequired;
 
   const activeFilterCount =
     (team ? 1 : 0) +
@@ -386,7 +397,6 @@ export const MpdSupervisorReportProvider: React.FC<{
       filterRequired,
       loadMoreError,
       queryVariables,
-      staffComplete: !!data && !loading && !pageInfo?.hasNextPage,
       hasNextPage: pageInfo?.hasNextPage ?? false,
       loadMore,
       refetchStaff,
