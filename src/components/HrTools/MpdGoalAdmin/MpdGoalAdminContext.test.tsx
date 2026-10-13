@@ -1,5 +1,5 @@
 import React from 'react';
-import { Operation } from '@apollo/client';
+import { Operation, useApolloClient } from '@apollo/client';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import {
@@ -29,15 +29,17 @@ import {
   goalsAdminUserMock,
   noAssignableCoachesMock,
   noCohortsMock,
+  onlyEmptyCohortsMock,
   runAndSentMock,
   trainingCosts,
+  withEmptyCohortMock,
 } from './mpdGoalAdminMocks';
 
 const mutationSpy = jest.fn();
 
 const makeWrapper = (
   mocks: {
-    cohorts?: NewStaffCohortsQuery;
+    cohorts?: DeepPartialMock<NewStaffCohortsQuery>;
     attendees?:
       | NewStaffCohortAttendeesQuery
       | ((operation: Operation) => NewStaffCohortAttendeesQuery);
@@ -45,6 +47,7 @@ const makeWrapper = (
     coaches?: NewStaffCohortAssignableCoachesQuery;
     assignCoach?: AssignCoachToNewStaffCohortAttendeeMutation;
     user?: DeepPartialMock<GetUserQuery>;
+    query?: Record<string, string>;
   } = {},
 ): React.FC<{ children: React.ReactNode }> =>
   function Wrapper({ children }) {
@@ -71,7 +74,7 @@ const makeWrapper = (
         }}
         onCall={mutationSpy}
       >
-        <TestRouter>
+        <TestRouter router={mocks.query && { query: mocks.query }}>
           <MpdGoalAdminProvider>{children}</MpdGoalAdminProvider>
         </TestRouter>
       </GqlMockedProvider>
@@ -492,5 +495,166 @@ describe('MpdGoalAdminContext', () => {
       expect(result.current.selectedCohort?.id).toBe('fall-nso-2026'),
     );
     expect(result.current.isGoalsAdmin).toBe(false);
+  });
+
+  describe('cohorts without visible attendees', () => {
+    it('hides them from a coordinator and defaults to the first remaining one', async () => {
+      const { result } = renderContext({
+        user: coordinatorUserMock,
+        cohorts: withEmptyCohortMock,
+      });
+
+      await waitFor(() =>
+        expect(result.current.selectedCohortId).toBe('fall-nso-2026'),
+      );
+      expect(result.current.cohorts.map(({ id }) => id)).toEqual([
+        'fall-nso-2026',
+        'spring-nso-2027',
+      ]);
+      expect(result.current.noVisibleCohorts).toBe(false);
+    });
+
+    it('falls back to the first remaining cohort when the URL names a hidden one', async () => {
+      const { result } = renderContext({
+        user: coordinatorUserMock,
+        cohorts: withEmptyCohortMock,
+        query: { cohortId: 'winter-nso-2026' },
+      });
+
+      await waitFor(() =>
+        expect(result.current.selectedCohortId).toBe('fall-nso-2026'),
+      );
+    });
+
+    it('moves a coordinator off the selected cohort once it empties', async () => {
+      const { result } = renderHook(
+        () => ({ context: useMpdGoalAdmin(), client: useApolloClient() }),
+        { wrapper: makeWrapper({ user: coordinatorUserMock }) },
+      );
+      await waitFor(() =>
+        expect(result.current.context.selectedCohortId).toBe('fall-nso-2026'),
+      );
+
+      // Stands in for a refetch after its attendees are reassigned away.
+      act(() => {
+        result.current.client.cache.modify({
+          id: 'NewStaffCohort:fall-nso-2026',
+          fields: { trainingSize: () => 0 },
+        });
+      });
+
+      await waitFor(() =>
+        expect(result.current.context.selectedCohortId).toBe('spring-nso-2027'),
+      );
+      expect(result.current.context.cohorts.map(({ id }) => id)).toEqual([
+        'spring-nso-2027',
+      ]);
+    });
+
+    it('clears the selection when every cohort a coordinator can see empties', async () => {
+      const { result } = renderHook(
+        () => ({ context: useMpdGoalAdmin(), client: useApolloClient() }),
+        { wrapper: makeWrapper({ user: coordinatorUserMock }) },
+      );
+      await waitFor(() =>
+        expect(result.current.context.selectedCohortId).toBe('fall-nso-2026'),
+      );
+
+      act(() => {
+        ['fall-nso-2026', 'spring-nso-2027'].forEach((id) =>
+          result.current.client.cache.modify({
+            id: `NewStaffCohort:${id}`,
+            fields: { trainingSize: () => 0 },
+          }),
+        );
+      });
+
+      await waitFor(() =>
+        expect(result.current.context.selectedCohortId).toBe(''),
+      );
+      expect(result.current.context.noVisibleCohorts).toBe(true);
+    });
+
+    it('never reports no visible cohorts while still loading', async () => {
+      const renders: Array<{ loading: boolean; noVisibleCohorts: boolean }> =
+        [];
+      const { result } = renderHook(
+        () => {
+          const context = useMpdGoalAdmin();
+          renders.push({
+            loading: context.loading,
+            noVisibleCohorts: context.noVisibleCohorts,
+          });
+          return context;
+        },
+        {
+          wrapper: makeWrapper({
+            user: coordinatorUserMock,
+            cohorts: onlyEmptyCohortsMock,
+          }),
+        },
+      );
+
+      await waitFor(() => expect(result.current.noVisibleCohorts).toBe(true));
+      expect(renders[0]).toEqual({ loading: true, noVisibleCohorts: false });
+      expect(
+        renders.filter(
+          ({ loading, noVisibleCohorts }) => loading && noVisibleCohorts,
+        ),
+      ).toHaveLength(0);
+    });
+
+    it('reports no visible cohorts when a coordinator has none with their staff', async () => {
+      const { result } = renderContext({
+        user: coordinatorUserMock,
+        cohorts: onlyEmptyCohortsMock,
+      });
+
+      await waitFor(() => expect(result.current.noVisibleCohorts).toBe(true));
+      expect(result.current.cohorts).toHaveLength(0);
+      expect(result.current.selectedCohortId).toBe('');
+      expect(result.current.loading).toBe(false);
+    });
+
+    it('keeps every cohort for an admin, who enters costs before attendees arrive', async () => {
+      const { result } = renderContext({ cohorts: withEmptyCohortMock });
+
+      await waitFor(() =>
+        expect(result.current.selectedCohortId).toBe('winter-nso-2026'),
+      );
+      expect(result.current.cohorts).toHaveLength(3);
+      expect(result.current.noVisibleCohorts).toBe(false);
+    });
+
+    it('does not report no visible cohorts when the cohorts query fails', async () => {
+      const { result } = renderContext({
+        user: coordinatorUserMock,
+        cohorts: {
+          newStaffCohorts: () => {
+            throw new Error('Not authorized');
+          },
+        } as unknown as DeepPartialMock<NewStaffCohortsQuery>,
+      });
+
+      await waitFor(() => expect(result.current.error).toBeDefined());
+      expect(result.current.noVisibleCohorts).toBe(false);
+    });
+
+    it('treats a failed user load as an unknown role and reports its error', async () => {
+      const { result } = renderContext({
+        user: {
+          user: () => {
+            throw new Error('User failed');
+          },
+        } as unknown as DeepPartialMock<GetUserQuery>,
+      });
+
+      await waitFor(() =>
+        expect(result.current.error?.message).toContain('User failed'),
+      );
+      await waitFor(() => expect(result.current.loading).toBe(false));
+      expect(result.current.noVisibleCohorts).toBe(false);
+      expect(result.current.cohorts).toHaveLength(0);
+    });
   });
 });
