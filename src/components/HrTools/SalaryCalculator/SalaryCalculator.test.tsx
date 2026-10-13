@@ -90,6 +90,30 @@ describe('SalaryCalculator', () => {
     );
   });
 
+  it('shows the load error instead of the step when the HCM query fails with a non-unavailable error', async () => {
+    const mutationSpy = jest.fn();
+    const { findByRole, queryByRole } = render(
+      <SalaryCalculatorTestWrapper hcmError onCall={mutationSpy}>
+        <SalaryCalculator />
+      </SalaryCalculatorTestWrapper>,
+    );
+
+    const alert = await findByRole('alert');
+    expect(alert).toHaveTextContent(
+      'Your Salary Calculation could not be loaded. Please try again later.',
+    );
+    expect(queryByRole('button', { name: 'Continue' })).not.toBeInTheDocument();
+
+    userEvent.click(within(alert).getByRole('button', { name: 'Try Again' }));
+    await waitFor(() =>
+      expect(
+        mutationSpy.mock.calls
+          .map(([{ operation }]) => operation)
+          .filter((operation) => operation.operationName === 'Hcm'),
+      ).toHaveLength(2),
+    );
+  });
+
   describe('view mode', () => {
     it('renders sidebar closed', async () => {
       const { queryByRole, findByLabelText } = render(

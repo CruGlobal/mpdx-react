@@ -210,6 +210,7 @@ describe('NewSalaryCalculatorLanding', () => {
   it.each([
     ['calculation query', 'calculationError', 'LandingSalaryCalculations'],
     ['account balance', 'balanceError', 'AccountBalance'],
+    ['HCM query (non-unavailable error)', 'hcmError', 'Hcm'],
   ] as const)(
     'shows the load error instead of the salary information when the %s fails',
     async (_, failingQuery, operationName) => {

@@ -107,8 +107,15 @@ export const SalaryCalculatorProvider: React.FC<
   );
 
   const refetchCalculation = useCallback(() => {
+    // hcmError here is any Hcm query failure other than HCM_UNAVAILABLE (that case is handled by
+    // hcmUnavailable/refetchHcm above) - e.g. HCM_PERSON_NOT_FOUND, which isn't recoverable by
+    // retrying but should still surface as a load error instead of silently rendering the form
+    // with no HCM data (which previously made every HCM-backed autosave fail silently).
+    if (hcmError && !hcmUnavailable) {
+      refetchHcmQuery().catch(() => {});
+    }
     refetchCalculationQuery().catch(() => {});
-  }, [refetchCalculationQuery]);
+  }, [hcmError, hcmUnavailable, refetchHcmQuery, refetchCalculationQuery]);
 
   const { trackMutation, isMutating } = useTrackMutation();
 
@@ -149,7 +156,8 @@ export const SalaryCalculatorProvider: React.FC<
       calculation,
       hcmUnavailable,
       refetchHcm,
-      calculationError: !!calculationQueryError,
+      calculationError:
+        !!calculationQueryError || (!!hcmError && !hcmUnavailable),
       refetchCalculation,
       isMutating,
       trackMutation,
@@ -165,6 +173,7 @@ export const SalaryCalculatorProvider: React.FC<
     isDrawerOpen,
     toggleDrawer,
     hcmData,
+    hcmError,
     hcmUnavailable,
     refetchHcm,
     calculationQueryError,
