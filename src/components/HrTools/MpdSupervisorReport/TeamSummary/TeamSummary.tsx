@@ -11,10 +11,7 @@ import {
   filterRequiredFromError,
   useMpdSupervisorReport,
 } from '../MpdSupervisorReportContext';
-import {
-  healthStatusLabel,
-  healthStatusOrder,
-} from '../ReportLegend/legendCopy';
+import { healthStatusLabel } from '../ReportLegend/legendCopy';
 import {
   TeamSummaryRow,
   healthColor,
@@ -26,6 +23,11 @@ const gradedStatuses = [
   MpdHealthStatusEnum.Red,
   MpdHealthStatusEnum.Yellow,
   MpdHealthStatusEnum.Green,
+];
+const badgeStatuses = [
+  ...gradedStatuses,
+  MpdHealthStatusEnum.Blue,
+  MpdHealthStatusEnum.Gray,
 ];
 
 interface TeamCardProps {
@@ -70,7 +72,7 @@ const TeamCard: React.FC<TeamCardProps> = ({ team, selected, onToggle }) => {
         </Typography>
       </Box>
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-        {healthStatusOrder
+        {badgeStatuses
           .filter((status) => team.counts[status] > 0)
           .map((status) => {
             const { bg, color } = healthColor(theme, status);

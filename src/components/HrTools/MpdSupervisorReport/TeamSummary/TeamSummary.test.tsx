@@ -174,6 +174,31 @@ describe('TeamSummary', () => {
     expect(city).toHaveTextContent('Ungraded (1)');
   });
 
+  it('orders the badges like the bar, worst first, then ungraded', async () => {
+    const cityRed = managedStaffMember({
+      ...campusRed,
+      firstName: 'Eli',
+      personNumber: '5',
+      staffAccountId: 'a5',
+      teams: cityGreen.teams,
+    });
+    const { findByRole } = renderSummary(twoTeams, {
+      ManagedStaff: managedStaffMock([
+        campusRed,
+        cityGreen,
+        cityYellow,
+        cityBlue,
+        cityRed,
+      ]),
+    });
+
+    const region = await findByRole('region', { name: 'Teams' });
+    const city = within(region).getByRole('button', { name: /City/ });
+    expect(city).toHaveTextContent(
+      /At risk \(1\).*Needs attention \(1\).*On track \(1\).*Ungraded \(1\)/,
+    );
+  });
+
   it('starts open and collapses the cards from its heading', async () => {
     const { findByRole, getByRole, queryByRole } = renderSummary();
     const toggle = await findByRole('button', { name: 'Teams (2)' });
