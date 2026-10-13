@@ -17,11 +17,10 @@ import {
 } from '@mui/material';
 import { Form, Formik } from 'formik';
 import { DateTime } from 'luxon';
-import { useTranslation } from 'react-i18next';
+import { TFunction, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { CustomDateField } from 'src/components/Shared/DateTimePickers/CustomDateField';
 import { Fund, StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
-import i18n from 'src/lib/i18n';
 import { useReportsStaffExpensesQuery } from '../../StaffExpenseReport/GetStaffExpense.generated';
 import { DateRange } from '../../StaffExpenseReport/Helpers/StaffReportEnum';
 import {
@@ -58,7 +57,7 @@ export interface Filters {
   categories: string[] | null;
 }
 
-export const getValidationSchema = (currentTime: DateTime) =>
+export const getValidationSchema = (t: TFunction, currentTime: DateTime) =>
   yup.object({
     selectedDateRange: yup.mixed().nullable(),
     startDate: yup
@@ -66,7 +65,7 @@ export const getValidationSchema = (currentTime: DateTime) =>
       .nullable()
       .test(
         'start-date-validation',
-        i18n.t('Start date must be earlier than or equal to end date'),
+        t('Start date must be earlier than or equal to end date'),
         function (value) {
           const { endDate } = this.parent;
           if (!value || !endDate) {
@@ -78,7 +77,7 @@ export const getValidationSchema = (currentTime: DateTime) =>
       )
       .test(
         'start-date-not-future-without-end',
-        i18n.t(
+        t(
           'Select an end date when the start date is later than the month being viewed',
         ),
         function (value) {
@@ -95,7 +94,7 @@ export const getValidationSchema = (currentTime: DateTime) =>
       .nullable()
       .test(
         'end-date-validation',
-        i18n.t('End date must be later than or equal to start date'),
+        t('End date must be later than or equal to start date'),
         function (value) {
           const { startDate } = this.parent;
           if (!value || !startDate) {
@@ -176,8 +175,8 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   );
 
   const validationSchema = useMemo(
-    () => getValidationSchema(currentTime),
-    [currentTime],
+    () => getValidationSchema(t, currentTime),
+    [t, currentTime],
   );
 
   const handleClose = () => {
