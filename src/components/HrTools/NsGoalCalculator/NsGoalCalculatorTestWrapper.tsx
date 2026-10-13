@@ -43,6 +43,7 @@ export const defaultGoalCalculationMock = gqlMock<
       maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Married,
       spouseJoining: true,
       ministryLocation: 'Lake Hart',
+      newStaffCohortAttendee: { goalSentAt: null },
     },
   },
 });
