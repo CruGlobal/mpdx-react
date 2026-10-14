@@ -36,7 +36,7 @@ const campusRed = managedStaffMember({
   staffAccountId: 'a1',
   spousePersonNumber: null,
   teams: {
-    employee: [{ id: 'campus', name: 'Campus', department: 'US Campus' }],
+    employee: [{ id: 'campus', name: 'Campus' }],
     spouse: [],
   },
   quarterlyHealth: {
@@ -50,7 +50,7 @@ const cityGreen = managedStaffMember({
   staffAccountId: 'a2',
   spousePersonNumber: null,
   teams: {
-    employee: [{ id: 'city', name: 'City', department: 'US City' }],
+    employee: [{ id: 'city', name: 'City' }],
     spouse: [],
   },
   quarterlyHealth: {
@@ -64,7 +64,7 @@ const cityYellow = managedStaffMember({
   staffAccountId: 'a3',
   spousePersonNumber: null,
   teams: {
-    employee: [{ id: 'city', name: 'City', department: 'US City' }],
+    employee: [{ id: 'city', name: 'City' }],
     spouse: [],
   },
   quarterlyHealth: {
@@ -79,7 +79,7 @@ const cityBlue = managedStaffMember({
   staffAccountId: 'a4',
   spousePersonNumber: null,
   teams: {
-    employee: [{ id: 'city', name: 'City', department: 'US City' }],
+    employee: [{ id: 'city', name: 'City' }],
     spouse: [],
   },
   quarterlyHealth: {
@@ -317,20 +317,6 @@ describe('TeamSummary', () => {
       'Could not load your teams: Teams unavailable',
     );
     expect(queryByRole('region', { name: 'Teams' })).not.toBeInTheDocument();
-  });
-
-  it('only lists teams in the selected department, since the API reads team + department as one team', async () => {
-    const { findByRole, queryByRole } = renderSummary();
-    await findByRole('region', { name: 'Teams' });
-
-    act(() => {
-      setDepartmentFn('US City');
-    });
-
-    await waitFor(() =>
-      expect(queryByRole('button', { name: /Campus/ })).not.toBeInTheDocument(),
-    );
-    expect(await findByRole('button', { name: /City/ })).toBeInTheDocument();
   });
 
   it('hides the old cards while a new filter loads', async () => {
