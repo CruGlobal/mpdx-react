@@ -44,7 +44,7 @@ describe('ExpensesPieChart', () => {
   it('shows the legend labels', async () => {
     const { getByText, findByText } = render(<TestComponent />);
 
-    expect(await findByText('Ministry')).toBeInTheDocument();
+    expect(await findByText('Staff Expenses')).toBeInTheDocument();
     expect(getByText('Healthcare')).toBeInTheDocument();
     expect(getByText('Assessment')).toBeInTheDocument();
     expect(getByText('Benefits')).toBeInTheDocument();

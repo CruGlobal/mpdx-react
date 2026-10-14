@@ -12,7 +12,7 @@ describe('useExpenseCategories', () => {
       useExpenseCategories(mockData.expenses),
     );
 
-    expect(result.current.ministryTotal).toBe(2124);
+    expect(result.current.staffExpenseTotal).toBe(2124);
     expect(result.current.healthcareTotal).toBe(1933);
     expect(result.current.assessmentTotal).toBe(13779);
     expect(result.current.benefitsTotal).toBe(2400);
@@ -31,8 +31,9 @@ describe('useExpenseCategories', () => {
       ...mockData.expenses,
       {
         id: '7',
-        description: 'Ministry Reimbursements',
-        category: StaffExpenseCategoryEnum.MinistryReimbursement,
+        description: 'Staff Expense - Out of Pocket',
+        category: StaffExpenseCategoryEnum.StaffExpense,
+        subCategory: StaffExpensesSubCategoryEnum.OutOfPocket,
         monthly: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12],
         average: 1,
         total: 12,
@@ -41,7 +42,7 @@ describe('useExpenseCategories', () => {
 
     rerender({ data: newData });
 
-    expect(result.current.ministryTotal).toBe(2136);
+    expect(result.current.staffExpenseTotal).toBe(2136);
     expect(result.current.healthcareTotal).toBe(1933);
     expect(result.current.assessmentTotal).toBe(13779);
     expect(result.current.benefitsTotal).toBe(2400);
@@ -50,7 +51,7 @@ describe('useExpenseCategories', () => {
     expect(result.current.expensesTotal).toBe(20981);
   });
 
-  it('counts the healthcare debit card as Healthcare and other Staff Expense as Other', () => {
+  it('counts the healthcare debit card as Healthcare and other Staff Expense as Staff Expenses', () => {
     const staffExpenseRow = {
       category: StaffExpenseCategoryEnum.StaffExpense,
       monthly: [],
@@ -82,7 +83,8 @@ describe('useExpenseCategories', () => {
     );
 
     expect(result.current.healthcareTotal).toBe(200);
-    expect(result.current.otherTotal).toBe(75);
+    expect(result.current.staffExpenseTotal).toBe(75);
+    expect(result.current.otherTotal).toBe(0);
     expect(result.current.expensesTotal).toBe(275);
   });
 });
