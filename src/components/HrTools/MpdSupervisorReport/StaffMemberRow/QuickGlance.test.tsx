@@ -37,13 +37,22 @@ describe('QuickGlance', () => {
     expect(glance).not.toHaveTextContent('Payroll started');
   });
 
+  it("shows the person's own department, even when they are on no team", () => {
+    const { getByTestId } = renderGlance(
+      managedStaffMember({
+        department: 'Campus Namestan',
+        teams: { employee: [], spouse: [] },
+      }),
+    );
+    expect(getByTestId('quick-glance')).toHaveTextContent(
+      'DepartmentCampus Namestan',
+    );
+  });
+
   it('shows the placeholder for each missing field', () => {
     const { getByTestId } = renderGlance(
       managedStaffMember({
-        teams: {
-          employee: [{ id: 't', name: 'Team', department: null }],
-          spouse: [],
-        },
+        department: null,
         geographicLocation: null,
         newStaffMonthlySalary: null,
         tenure: null,
@@ -192,24 +201,27 @@ describe('QuickGlance', () => {
       healthcareDependentsCount: 2,
       peopleGroupSupportType: PeopleGroupSupportTypeEnum.Designation,
       secaStatus: SecaStatusEnum.Optout,
+      department: 'US City',
       teams: {
-        employee: [{ id: 'city', name: 'City', department: 'US City' }],
+        employee: [{ id: 'city', name: 'City' }],
         spouse: [],
       },
     });
     const pair: StaffRow = { ...managedStaffMember(), partner };
 
-    it('lists both person numbers, both departments and the partner as spouse', () => {
+    it('lists both person numbers and the partner as spouse', () => {
       const { getByTestId } = renderGlance(pair);
       const glance = getByTestId('quick-glance');
       expect(glance).toHaveTextContent('Person numbers10000001 & 10000002');
-      expect(glance).toHaveTextContent('DepartmentUS Campus, US City');
       expect(glance).toHaveTextContent('SpouseJane Smith');
     });
 
     it('shows the per-person HR fields on a line per spouse', () => {
       const { getByTestId, getByText } = renderGlance(pair);
       const glance = getByTestId('quick-glance');
+      expect(glance).toHaveTextContent(
+        'DepartmentJohn: US CampusJane: US City',
+      );
       expect(glance).toHaveTextContent('TenureJohn: 6 yearsJane: 3 years');
       expect(glance).toHaveTextContent(
         'Support typeJohn: Supported RMOJane: Designation',
@@ -218,6 +230,16 @@ describe('QuickGlance', () => {
       // Each person's value is its own line
       expect(getByText('John: 6 years').tagName).toBe('SPAN');
       expect(getByText('Jane: 3 years').tagName).toBe('SPAN');
+    });
+
+    it('shows the placeholder for a partner with no department', () => {
+      const { getByTestId } = renderGlance({
+        ...pair,
+        partner: { ...partner, department: null },
+      });
+      expect(getByTestId('quick-glance')).toHaveTextContent(
+        'DepartmentJohn: US CampusJane: —',
+      );
     });
 
     it('shows one healthcare dependents count for the household', () => {

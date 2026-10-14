@@ -83,13 +83,6 @@ export const QuickGlance: React.FC<QuickGlanceProps> = ({ row }) => {
   const grossSalary = quarterlyHealth?.monthlyGrossSalary ?? null;
   const grossWarning = grossSalaryWarning(t, formatCurrency, row);
   const newStaffSalaryApplies = hasNewStaffSalary(row.userPersonType);
-  const departments = [
-    ...new Set(
-      [...row.teams.employee, ...(partner?.teams.employee ?? [])]
-        .map(({ department }) => department)
-        .filter((department): department is string => !!department),
-    ),
-  ];
   const startingQuarter = quarterlyHealth?.startingQuarter;
   const spouseName = getRowSpouseName(row);
 
@@ -142,7 +135,7 @@ export const QuickGlance: React.FC<QuickGlanceProps> = ({ row }) => {
       <Detail label={t('Staff account')} value={row.staffAccountId} />
       <Detail
         label={t('Department')}
-        value={departments.join(', ') || pendingField}
+        value={perPerson(({ department }) => department)}
       />
       <Detail
         label={t('Geographic location')}
