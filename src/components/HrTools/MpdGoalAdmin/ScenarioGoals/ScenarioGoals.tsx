@@ -1,6 +1,6 @@
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
@@ -18,6 +18,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  TableSortLabel,
   Typography,
 } from '@mui/material';
 import { uniqBy } from 'lodash';
@@ -25,15 +26,22 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { isCalculationComplete } from 'src/components/HrTools/NsGoalCalculator/GoalSettings/goalSettingsCompletion';
 import { DisabledReasonTooltip } from 'src/components/HrTools/Shared/DisabledReasonTooltip';
+import { SearchField } from 'src/components/HrTools/Shared/SearchField/SearchField';
 import { scenarioGoalSendBlockedReason } from 'src/components/HrTools/Shared/SendScenarioGoal/sendScenarioGoalHelpers';
 import { useSendScenarioGoal } from 'src/components/HrTools/Shared/SendScenarioGoal/useSendScenarioGoal';
 import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
+import { NewStaffGoalCalculationSortEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useDebouncedValue } from 'src/hooks/useDebounce';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import { StatusChip } from '../../Shared/StatusChip';
-import { DEFAULT_ROWS_PER_PAGE, scenarioGoalUrl } from '../mpdGoalAdminHelpers';
+import {
+  DEFAULT_ROWS_PER_PAGE,
+  scenarioGoalUrl,
+  searchDebounceMs,
+} from '../mpdGoalAdminHelpers';
 import {
   NewStaffScenarioGoalsQuery,
   useCreateNewStaffScenarioGoalMutation,
@@ -48,6 +56,16 @@ type ScenarioGoalNode =
 const scenarioGoalName = (node: ScenarioGoalNode): string =>
   [node.firstName, node.lastName].filter(Boolean).join(' ');
 
+type NameSort =
+  | NewStaffGoalCalculationSortEnum.LastNameAsc
+  | NewStaffGoalCalculationSortEnum.LastNameDesc;
+
+// Only the Name column sorts; the API's default (newest first) applies when it's off.
+const nextNameSort = (current: NameSort | null): NameSort =>
+  current === NewStaffGoalCalculationSortEnum.LastNameAsc
+    ? NewStaffGoalCalculationSortEnum.LastNameDesc
+    : NewStaffGoalCalculationSortEnum.LastNameAsc;
+
 export const ScenarioGoals: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -61,8 +79,26 @@ export const ScenarioGoals: React.FC = () => {
     null,
   );
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [nameSort, setNameSort] = useState<NameSort | null>(null);
 
-  const { data, error, fetchMore } = useNewStaffScenarioGoalsQuery();
+  const debouncedSearch = useDebouncedValue(search, searchDebounceMs).trim();
+  const searchPending = search.trim() !== debouncedSearch;
+  const nameSortDirection =
+    nameSort === NewStaffGoalCalculationSortEnum.LastNameDesc ? 'desc' : 'asc';
+
+  // Only the debounced search needs an effect; the sort resets the page on click.
+  useEffect(() => {
+    setPage(0);
+  }, [debouncedSearch]);
+
+  const { data, previousData, error, fetchMore } =
+    useNewStaffScenarioGoalsQuery({
+      variables: {
+        search: debouncedSearch || null,
+        sortBy: nameSort,
+      },
+    });
   const { loading } = useFetchAllPages({
     fetchMore,
     error,
@@ -104,9 +140,11 @@ export const ScenarioGoals: React.FC = () => {
     ? scenarioGoalName(deleteTarget) || t('this scenario goal')
     : '';
 
+  // Keep the previous rows on screen through a search or sort refetch.
+  const visibleData = data ?? previousData;
   const rows = useMemo(
-    () => uniqBy(data?.newStaffScenarioGoals.nodes ?? [], 'id'),
-    [data?.newStaffScenarioGoals.nodes],
+    () => uniqBy(visibleData?.newStaffScenarioGoals.nodes ?? [], 'id'),
+    [visibleData?.newStaffScenarioGoals.nodes],
   );
   const safePage = Math.min(
     page,
@@ -153,6 +191,8 @@ export const ScenarioGoals: React.FC = () => {
         </Button>
       </Box>
 
+      <SearchField value={search} onChange={setSearch} sx={{ mb: 2 }} />
+
       {/* The scenario queries are creator-scoped, so a failure here is a real
           error rather than an empty list. */}
       {error ? (
@@ -162,7 +202,18 @@ export const ScenarioGoals: React.FC = () => {
           <Table size="small" aria-label={t('Scenario goals')}>
             <TableHead>
               <TableRow>
-                <TableCell>{t('Name')}</TableCell>
+                <TableCell sortDirection={nameSort ? nameSortDirection : false}>
+                  <TableSortLabel
+                    active={nameSort !== null}
+                    direction={nameSortDirection}
+                    onClick={() => {
+                      setNameSort(nextNameSort(nameSort));
+                      setPage(0);
+                    }}
+                  >
+                    {t('Name')}
+                  </TableSortLabel>
+                </TableCell>
                 <TableCell>{t('Ministry')}</TableCell>
                 <TableCell>{t('Campus Division')}</TableCell>
                 <TableCell>{t('MPD Goal')}</TableCell>
@@ -210,7 +261,7 @@ export const ScenarioGoals: React.FC = () => {
                         <IconButton
                           size="small"
                           aria-label={t('Email {{name}}', { name })}
-                          disabled={Boolean(sendBlockedReason)}
+                          disabled={Boolean(sendBlockedReason) || searchPending}
                           onClick={() => requestSend(row)}
                         >
                           <MailOutlineIcon fontSize="small" />
@@ -219,6 +270,7 @@ export const ScenarioGoals: React.FC = () => {
                       <IconButton
                         size="small"
                         aria-label={t('Delete {{name}}', { name })}
+                        disabled={searchPending}
                         onClick={() => {
                           setDeleteTarget(row);
                           setDeleteOpen(true);
@@ -261,9 +313,11 @@ export const ScenarioGoals: React.FC = () => {
           <CircularProgress aria-label={t('Loading scenario goals')} />
         </Box>
       ) : (
-        <Box sx={{ textAlign: 'center', mt: 4 }}>
+        <Box role="status" sx={{ textAlign: 'center', mt: 4 }}>
           <Typography color="text.secondary">
-            {t('No scenario goals yet. Create one to get started.')}
+            {debouncedSearch
+              ? t('No scenario goals match your search.')
+              : t('No scenario goals yet. Create one to get started.')}
           </Typography>
         </Box>
       )}
