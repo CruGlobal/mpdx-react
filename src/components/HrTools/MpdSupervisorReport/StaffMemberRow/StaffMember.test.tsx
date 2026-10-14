@@ -12,10 +12,9 @@ import { StaffMember } from './StaffMember';
 const member = managedStaffMember({
   firstName: 'Brooke',
   lastName: 'Butler',
+  department: 'US FamilyLife',
   teams: {
-    employee: [
-      { id: 'team-1', name: 'FamilyLife', department: 'US FamilyLife' },
-    ],
+    employee: [{ id: 'team-1', name: 'FamilyLife' }],
     spouse: [],
   },
 });
@@ -62,7 +61,7 @@ describe('StaffMember', () => {
       personNumber: '10000002',
       spousePersonNumber: member.personNumber,
       teams: {
-        employee: [{ id: 'team-2', name: 'City', department: 'US City' }],
+        employee: [{ id: 'team-2', name: 'City' }],
         spouse: [],
       },
     });
@@ -208,8 +207,8 @@ describe('StaffMember', () => {
       managedStaffMember({
         teams: {
           employee: [
-            { id: 'team-1', name: 'Campus', department: null },
-            { id: 'team-2', name: 'Cru City', department: null },
+            { id: 'team-1', name: 'Campus' },
+            { id: 'team-2', name: 'Cru City' },
           ],
           spouse: [],
         },

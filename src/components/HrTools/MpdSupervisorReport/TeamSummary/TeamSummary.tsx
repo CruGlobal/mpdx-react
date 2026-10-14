@@ -134,14 +134,8 @@ const TeamCard: React.FC<TeamCardProps> = ({ team, selected, onToggle }) => {
  */
 export const TeamSummary: React.FC = () => {
   const { t } = useTranslation();
-  const {
-    queryVariables,
-    team,
-    department,
-    setTeam,
-    filterRequired,
-    staffLoading,
-  } = useMpdSupervisorReport();
+  const { queryVariables, team, setTeam, filterRequired, staffLoading } =
+    useMpdSupervisorReport();
   const {
     data: teamsData,
     error: teamsError,
@@ -174,25 +168,9 @@ export const TeamSummary: React.FC = () => {
     }
   }, [pageInfo?.hasNextPage, pageInfo?.endCursor, pageError, fetchMore]);
   const loadingPages = !!pageInfo?.hasNextPage;
-  // With a department selected, only that department's teams: the API reads
-  // team + department as "a team matching both", so a card for a team from
-  // another department would filter to nobody.
-  const teamsInDepartment = useMemo(() => {
-    if (!department) {
-      return null;
-    }
-    return new Set(
-      teamsData?.managedStaffTeams
-        .filter(({ departments }) => departments.includes(department))
-        .map(({ name }) => name),
-    );
-  }, [teamsData, department]);
   const summary = useMemo(
-    () =>
-      summarizeTeams(mergeSpouseRows(data?.managedStaff.nodes ?? [])).filter(
-        ({ name }) => !teamsInDepartment || teamsInDepartment.has(name),
-      ),
-    [data, teamsInDepartment],
+    () => summarizeTeams(mergeSpouseRows(data?.managedStaff.nodes ?? [])),
+    [data],
   );
 
   if (teamsError && !teamsData) {

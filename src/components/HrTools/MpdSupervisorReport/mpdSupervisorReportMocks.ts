@@ -6,6 +6,7 @@ import {
   SecaStatusEnum,
 } from 'src/graphql/types.generated';
 import { ManagedStaffQuery } from './ManagedStaff.generated';
+import { ManagedStaffDepartmentsQuery } from './ManagedStaffDepartments.generated';
 import { ManagedStaffTeamsQuery } from './ManagedStaffTeams.generated';
 import { ManagedStaffMember } from './helpers';
 
@@ -20,6 +21,7 @@ const baseMember: ManagedStaffMember = {
   spouseStaffAccountId: '1000000002',
   newStaffMonthlySalary: 2500,
   geographicLocation: 'Orlando, FL',
+  department: 'US Campus',
   assignmentCategoryGroup: MpdAssignmentCategoryGroupEnum.FullTime,
   userPersonType: MpdUserPersonTypeEnum.EmployeeStaff,
   tenure: 6,
@@ -27,7 +29,7 @@ const baseMember: ManagedStaffMember = {
   peopleGroupSupportType: PeopleGroupSupportTypeEnum.SupportedRmo,
   secaStatus: SecaStatusEnum.Seca,
   teams: {
-    employee: [{ id: 'team-1', name: 'Campus', department: 'US Campus' }],
+    employee: [{ id: 'team-1', name: 'Campus' }],
     spouse: [],
   },
   quarterlyHealth: {
@@ -72,6 +74,14 @@ export const managedStaffTeamsMock = (
     { name: 'Unassigned', departments: [] },
   ],
 ): ManagedStaffTeamsQuery => ({ managedStaffTeams });
+
+export const managedStaffDepartmentsMock = (
+  managedStaffDepartments: ManagedStaffDepartmentsQuery['managedStaffDepartments'] = [
+    'Campus Namestan',
+    'Cru Military',
+    'US Technology',
+  ],
+): ManagedStaffDepartmentsQuery => ({ managedStaffDepartments });
 
 export const managedStaffMock = (
   nodes: ManagedStaffMember[] = [managedStaffMember()],
