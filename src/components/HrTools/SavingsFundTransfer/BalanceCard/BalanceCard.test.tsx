@@ -228,7 +228,7 @@ describe('BalanceCard', () => {
     });
   });
 
-  it('should disable transfer from button when current balance goes beyond deficit limit', async () => {
+  it('should disable transfer from button when the fund has no available balance', async () => {
     const { findByRole } = render(
       <Components
         fund={{
