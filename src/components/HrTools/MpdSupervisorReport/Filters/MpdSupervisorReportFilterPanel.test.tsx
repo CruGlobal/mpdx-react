@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { act, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import {
@@ -9,12 +10,16 @@ import {
   MpdUserPersonTypeEnum,
 } from 'src/graphql/types.generated';
 import theme from 'src/theme';
+import { ManagedStaffDepartmentsQuery } from '../ManagedStaffDepartments.generated';
 import { ManagedStaffTeamsQuery } from '../ManagedStaffTeams.generated';
 import {
   MpdSupervisorReportProvider,
   useMpdSupervisorReport,
 } from '../MpdSupervisorReportContext';
-import { managedStaffTeamsMock } from '../mpdSupervisorReportMocks';
+import {
+  managedStaffDepartmentsMock,
+  managedStaffTeamsMock,
+} from '../mpdSupervisorReportMocks';
 import { MpdSupervisorReportFilterPanel } from './MpdSupervisorReportFilterPanel';
 
 const onClose = jest.fn();
@@ -22,11 +27,22 @@ const onClose = jest.fn();
 const Wrapper: React.FC<{
   children: React.ReactNode;
   teams?: ManagedStaffTeamsQuery['managedStaffTeams'];
-}> = ({ children, teams }) => (
+  departments?: ManagedStaffDepartmentsQuery['managedStaffDepartments'];
+  mocks?: ApolloErgonoMockMap;
+}> = ({ children, teams, departments, mocks }) => (
   <TestRouter>
     <ThemeProvider theme={theme}>
-      <GqlMockedProvider<{ ManagedStaffTeams: ManagedStaffTeamsQuery }>
-        mocks={{ ManagedStaffTeams: managedStaffTeamsMock(teams) }}
+      <GqlMockedProvider<{
+        ManagedStaffTeams: ManagedStaffTeamsQuery;
+        ManagedStaffDepartments: ManagedStaffDepartmentsQuery;
+      }>
+        mocks={
+          {
+            ManagedStaffTeams: managedStaffTeamsMock(teams),
+            ManagedStaffDepartments: managedStaffDepartmentsMock(departments),
+            ...mocks,
+          } as ApolloErgonoMockMap
+        }
       >
         <MpdSupervisorReportProvider>{children}</MpdSupervisorReportProvider>
       </GqlMockedProvider>
@@ -301,8 +317,29 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
       return view;
     };
 
-    it('is disabled until the teams arrive', () => {
+    it('is disabled until the departments arrive', () => {
       const { getByRole } = renderWithConsumer();
+      expect(getByRole('combobox', { name: 'Department' })).toBeDisabled();
+    });
+
+    it('stays disabled without breaking the team filter when the departments fail to load', async () => {
+      const { getByRole } = render(
+        <Wrapper
+          mocks={{
+            ManagedStaffDepartments: {
+              managedStaffDepartments: () => {
+                throw new Error('Departments unavailable');
+              },
+            },
+          }}
+        >
+          <MpdSupervisorReportFilterPanel onClose={onClose} />
+        </Wrapper>,
+      );
+
+      await waitFor(() =>
+        expect(getByRole('combobox', { name: 'Team' })).not.toBeDisabled(),
+      );
       expect(getByRole('combobox', { name: 'Department' })).toBeDisabled();
     });
 
@@ -314,21 +351,20 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
       );
     });
 
-    it('lists each department once, sorted, across every team', async () => {
+    it('lists every department, including one with no team', async () => {
       const { getAllByRole } = await openDepartmentSelect();
 
       const names = getAllByRole('option').map((option) => option.textContent);
-      expect(names).toEqual(['Cru Military', 'US Technology']);
+      expect(names).toEqual([
+        'Campus Namestan',
+        'Cru Military',
+        'US Technology',
+      ]);
     });
 
     it('orders numbered departments correctly', async () => {
       const { getByRole, getAllByRole, findByRole } = render(
-        <Wrapper
-          teams={[
-            { name: 'Central Team', departments: ['Cohort 10', 'Cohort 2'] },
-            { name: 'Delivery Team', departments: ['Cohort 1'] },
-          ]}
-        >
+        <Wrapper departments={['Cohort 10', 'Cohort 2', 'Cohort 1']}>
           <MpdSupervisorReportFilterPanel onClose={onClose} />
           <FilterContextConsumer />
         </Wrapper>,
@@ -360,7 +396,27 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
       expect(names).toEqual(['Central Team']);
     });
 
-    it('narrows the department options to those holding the chosen team', async () => {
+    it('says no team is available when the chosen department has no team', async () => {
+      const { getByRole, findByRole } = await openDepartmentSelect();
+
+      userEvent.click(getByRole('option', { name: 'Campus Namestan' }));
+
+      expect(
+        await findByRole('combobox', { name: 'No team available' }),
+      ).toBeDisabled();
+    });
+
+    it('keeps the Team label when the chosen department has teams', async () => {
+      const { getByRole } = await openDepartmentSelect();
+
+      userEvent.click(getByRole('option', { name: 'Cru Military' }));
+
+      await waitFor(() =>
+        expect(getByRole('combobox', { name: 'Team' })).not.toBeDisabled(),
+      );
+    });
+
+    it('narrows the department options to those of the staff on the chosen team', async () => {
       const { getByRole, getAllByRole } = await chooseTeam(
         'Solution Delivery Team',
       );

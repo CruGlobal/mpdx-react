@@ -18,6 +18,7 @@ import {
   MpdAssignmentCategoryGroupEnum,
   MpdUserPersonTypeEnum,
 } from 'src/graphql/types.generated';
+import { useManagedStaffDepartmentsQuery } from '../ManagedStaffDepartments.generated';
 import { useManagedStaffTeamsQuery } from '../ManagedStaffTeams.generated';
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
 import {
@@ -106,10 +107,15 @@ export const MpdSupervisorReportFilterPanel: React.FC<
   } = useMpdSupervisorReport();
 
   const { data: teamsData } = useManagedStaffTeamsQuery();
+  const { data: departmentsData } = useManagedStaffDepartmentsQuery();
 
   const allTeams = useMemo(
     () => teamsData?.managedStaffTeams ?? [],
     [teamsData],
+  );
+  const allDepartments = useMemo(
+    () => departmentsData?.managedStaffDepartments ?? [],
+    [departmentsData],
   );
 
   const teamOptions = useMemo(
@@ -125,14 +131,13 @@ export const MpdSupervisorReportFilterPanel: React.FC<
 
   const departmentOptions = useMemo(
     () =>
-      [
-        ...new Set(
-          allTeams
-            .filter(({ name }) => !team || name === team)
-            .flatMap(({ departments }) => departments),
-        ),
-      ].sort((a, b) => a.localeCompare(b, undefined, { numeric: true })),
-    [allTeams, team],
+      (team
+        ? (allTeams.find(({ name }) => name === team)?.departments ?? [])
+        : allDepartments
+      )
+        .slice()
+        .sort((a, b) => a.localeCompare(b, undefined, { numeric: true })),
+    [allDepartments, allTeams, team],
   );
 
   const handleQuickFilter = (filterId: MpdSupervisorReportQuickFilterEnum) => {
@@ -212,7 +217,11 @@ export const MpdSupervisorReportFilterPanel: React.FC<
         </Stack>
 
         <FilterAutocomplete
-          label={t('Team')}
+          label={
+            teamsData && department && !teamOptions.length
+              ? t('No team available')
+              : t('Team')
+          }
           placeholder={t('All teams')}
           value={team}
           onChange={setTeam}

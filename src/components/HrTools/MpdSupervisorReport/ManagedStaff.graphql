@@ -30,6 +30,7 @@ query ManagedStaff(
       spousePersonNumber
       spouseStaffAccountId
       geographicLocation
+      department
       assignmentCategoryGroup
       userPersonType
       tenure
@@ -40,12 +41,10 @@ query ManagedStaff(
         employee {
           id
           name
-          department
         }
         spouse {
           id
           name
-          department
         }
       }
       newStaffMonthlySalary
