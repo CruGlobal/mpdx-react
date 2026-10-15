@@ -624,6 +624,29 @@ describe('StaffExpenseReport', () => {
     expect(getByText('December 2019')).toBeInTheDocument();
   });
 
+  it('disables month navigation while a chosen month is loading', async () => {
+    const { findByText, getByRole } = render(<TestComponent />);
+
+    // Let the initial load finish before navigating, same as a real user would.
+    await findByText('Ending Balance (All Accounts): $4,000.00');
+
+    const prevButton = getByRole('button', { name: 'Previous Month' });
+    const nextButton = getByRole('button', { name: 'Next Month' });
+    expect(prevButton).not.toBeDisabled();
+
+    userEvent.click(prevButton);
+
+    // The new month's data hasn't resolved yet. Both buttons stay disabled so
+    // that further clicks can't pile more overlapping requests on top of the
+    // one already in flight (that pile-up is what the rage clicks behind
+    // safety-net monitor 312883915 were caused by).
+    expect(prevButton).toBeDisabled();
+    expect(nextButton).toBeDisabled();
+
+    await waitFor(() => expect(prevButton).not.toBeDisabled());
+    expect(nextButton).not.toBeDisabled();
+  });
+
   it('correctly displays totals for income and expenses', async () => {
     const { getAllByRole, queryByRole } = render(<TestComponent />);
 

@@ -178,6 +178,20 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 
   const loading = reportLoading || hcmLoading;
 
+  // Rage/error clicks on the month navigation (safety-net monitor 312883915) traced back to
+  // users clicking Previous/Next Month repeatedly while a slow report fetch was still in
+  // flight: each click fired another request on top of the one(s) already pending, so the
+  // report took even longer to settle. Guard against that pile-up once the report has loaded
+  // at least once. The guard is skipped on the very first load so the initial render (which is
+  // always "loading") does not lock out navigation before the user has seen any data.
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
+  useEffect(() => {
+    if (!loading) {
+      setHasLoadedOnce(true);
+    }
+  }, [loading]);
+  const isNavigatingMonths = hasLoadedOnce && loading;
+
   const handlePrint = () => window.print();
 
   const timeTitle = time.toJSDate().toLocaleDateString(locale, {
@@ -439,6 +453,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                       startIcon={<ChevronLeftIcon />}
                       size="small"
                       onClick={setPrevMonth}
+                      disabled={isNavigatingMonths}
                     >
                       {t('Previous Month')}
                     </Button>
@@ -448,7 +463,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                       endIcon={<ChevronRightIcon />}
                       size="small"
                       onClick={setNextMonth}
-                      disabled={hasNext}
+                      disabled={isNavigatingMonths || hasNext}
                     >
                       {t('Next Month')}
                     </Button>
