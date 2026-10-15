@@ -76,6 +76,24 @@ describe('MonthlyCommitment', () => {
     );
   });
 
+  it('renders a title and description', () => {
+    const { getByText } = render(<TestComponent />);
+
+    expect(getByText('Monthly Commitments')).toBeInTheDocument();
+    expect(
+      getByText(/These are commitments entered in MPDX, not actual gifts/),
+    ).toBeInTheDocument();
+  });
+
+  it('renders the title when MPD info is missing', () => {
+    const { getByText } = render(<TestComponent mpdInfo={{}} />);
+
+    expect(getByText('Monthly Commitments')).toBeInTheDocument();
+    expect(
+      getByText('MPD info not set up on account list'),
+    ).toBeInTheDocument();
+  });
+
   it('renders with missing data', async () => {
     const { findByTestId } = render(<TestComponent missingData />);
 
