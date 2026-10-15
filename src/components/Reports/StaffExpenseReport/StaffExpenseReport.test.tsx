@@ -618,8 +618,12 @@ describe('StaffExpenseReport', () => {
     await waitFor(() => expect(onNavListToggle).toHaveBeenCalled());
   });
 
-  it('updates the time filter', () => {
+  it('updates the time filter once loaded', async () => {
     const { getByRole, getByText } = render(<TestComponent />);
+    expect(getByRole('button', { name: 'Previous Month' })).toBeDisabled();
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Previous Month' })).toBeEnabled(),
+    );
     userEvent.click(getByRole('button', { name: 'Previous Month' }));
     expect(getByText('December 2019')).toBeInTheDocument();
   });
