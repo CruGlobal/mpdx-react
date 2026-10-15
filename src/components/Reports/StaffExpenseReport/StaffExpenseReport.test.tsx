@@ -628,6 +628,24 @@ describe('StaffExpenseReport', () => {
     expect(getByText('December 2019')).toBeInTheDocument();
   });
 
+  it('disables month navigation while a chosen month is loading', async () => {
+    const { findByText, getByRole } = render(<TestComponent />);
+
+    await findByText('Ending Balance (All Accounts): $4,000.00');
+
+    const prevButton = getByRole('button', { name: 'Previous Month' });
+    const nextButton = getByRole('button', { name: 'Next Month' });
+    expect(prevButton).not.toBeDisabled();
+
+    userEvent.click(prevButton);
+
+    expect(prevButton).toBeDisabled();
+    expect(nextButton).toBeDisabled();
+
+    await waitFor(() => expect(prevButton).not.toBeDisabled());
+    expect(nextButton).not.toBeDisabled();
+  });
+
   it('correctly displays totals for income and expenses', async () => {
     const { getAllByRole, queryByRole } = render(<TestComponent />);
 
