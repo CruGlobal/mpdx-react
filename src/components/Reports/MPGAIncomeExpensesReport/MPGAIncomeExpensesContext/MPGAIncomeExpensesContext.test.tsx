@@ -35,7 +35,7 @@ function TestConsumer() {
     totals: {
       income,
       expenses,
-      ministry,
+      staffExpense,
       healthcare,
       assessment,
       benefits,
@@ -48,7 +48,7 @@ function TestConsumer() {
     <div>
       <div data-testid="income">{income}</div>
       <div data-testid="expenses">{expenses}</div>
-      <div data-testid="ministry">{ministry}</div>
+      <div data-testid="staffExpense">{staffExpense}</div>
       <div data-testid="healthcare">{healthcare}</div>
       <div data-testid="assessment">{assessment}</div>
       <div data-testid="benefits">{benefits}</div>
@@ -149,7 +149,7 @@ describe('MPGAIncomeExpensesContext', () => {
       expect(getByTestId('income')).toHaveTextContent('108856'),
     );
     expect(getByTestId('expenses')).toHaveTextContent('20969');
-    expect(getByTestId('ministry')).toHaveTextContent('2124');
+    expect(getByTestId('staffExpense')).toHaveTextContent('2124');
     expect(getByTestId('healthcare')).toHaveTextContent('1933');
     expect(getByTestId('assessment')).toHaveTextContent('13779');
     expect(getByTestId('benefits')).toHaveTextContent('2400');

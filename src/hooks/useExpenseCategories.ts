@@ -11,7 +11,7 @@ const sum = (rows: DataFields[]): number => {
 
 export function useExpenseCategories(data: DataFields[]) {
   return useMemo(() => {
-    const ministry: DataFields[] = [];
+    const staffExpense: DataFields[] = [];
     const healthcare: DataFields[] = [];
     const assessment: DataFields[] = [];
     const benefits: DataFields[] = [];
@@ -20,9 +20,6 @@ export function useExpenseCategories(data: DataFields[]) {
 
     data.forEach((item) => {
       switch (item.category) {
-        case StaffExpenseCategoryEnum.MinistryReimbursement:
-          ministry.push(item);
-          break;
         case StaffExpenseCategoryEnum.HealthcareReimbursement:
           healthcare.push(item);
           break;
@@ -38,7 +35,7 @@ export function useExpenseCategories(data: DataFields[]) {
         case StaffExpenseCategoryEnum.StaffExpense:
           (item.subCategory === StaffExpensesSubCategoryEnum.PaCard
             ? healthcare
-            : other
+            : staffExpense
           ).push(item);
           break;
         default:
@@ -46,7 +43,7 @@ export function useExpenseCategories(data: DataFields[]) {
       }
     });
 
-    const ministryTotal = sum(ministry);
+    const staffExpenseTotal = sum(staffExpense);
 
     const healthcareTotal = sum(healthcare);
 
@@ -59,7 +56,7 @@ export function useExpenseCategories(data: DataFields[]) {
     const otherTotal = sum(other);
 
     const expensesTotal =
-      ministryTotal +
+      staffExpenseTotal +
       healthcareTotal +
       assessmentTotal +
       benefitsTotal +
@@ -67,7 +64,7 @@ export function useExpenseCategories(data: DataFields[]) {
       otherTotal;
 
     return {
-      ministryTotal,
+      staffExpenseTotal,
       healthcareTotal,
       assessmentTotal,
       benefitsTotal,
