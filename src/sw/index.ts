@@ -1,5 +1,6 @@
 import { Serwist } from 'serwist';
 import { CACHE_PREFIX } from 'src/lib/serviceWorker/cacheNames';
+import { runtimeCaching } from './runtimeCaching';
 import type { PrecacheEntry, SerwistGlobalConfig } from 'serwist';
 
 declare const self: ServiceWorkerGlobalScope &
@@ -13,7 +14,7 @@ const serwist = new Serwist({
   skipWaiting: true,
   clientsClaim: false,
   navigationPreload: false,
-  runtimeCaching: [],
+  runtimeCaching,
 });
 
 serwist.addEventListeners();
