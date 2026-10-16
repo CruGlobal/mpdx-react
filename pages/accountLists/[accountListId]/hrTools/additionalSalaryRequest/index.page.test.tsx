@@ -1,3 +1,4 @@
+import { ApolloCache } from '@apollo/client';
 import { ThemeProvider } from '@mui/material/styles';
 import { waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -19,6 +20,7 @@ import {
   UsStaffGroupEnum,
   UserTypeEnum,
 } from 'src/graphql/types.generated';
+import { createCache } from 'src/lib/apollo/cache';
 import theme from 'src/theme';
 import AdditionalSalaryRequestPage, { getServerSideProps } from './index.page';
 
@@ -34,6 +36,8 @@ interface TestComponentProps {
   hcmUnavailableCalls?: number;
   requestUnavailableCalls?: number;
   requestError?: boolean;
+  isSpouse?: boolean;
+  cache?: ApolloCache<object>;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -43,10 +47,19 @@ const TestComponent: React.FC<TestComponentProps> = ({
   hcmUnavailableCalls = 0,
   requestUnavailableCalls = 0,
   requestError = false,
+  isSpouse = false,
+  cache,
 }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
-      <TestRouter router={{ query: { accountListId: 'account-list-1' } }}>
+      <TestRouter
+        router={{
+          query: {
+            accountListId: 'account-list-1',
+            ...(isSpouse && { isSpouse: 'true' }),
+          },
+        }}
+      >
         <GqlMockedProvider<{
           GetUser: GetUserQuery;
           Hcm: HcmQuery;
@@ -90,6 +103,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
             }),
           }}
           onCall={mutationSpy}
+          cache={cache}
         >
           <AdditionalSalaryRequestPage />
         </GqlMockedProvider>
@@ -211,6 +225,29 @@ describe('AdditionalSalaryRequest page', () => {
               operation.operationName === 'AdditionalSalaryRequest',
           ),
       ).toHaveLength(2),
+    );
+  });
+
+  it('starts over at the first step when switching to the spouse', async () => {
+    // Share one cache so the rerender acts like a shallow route change
+    const cache = createCache();
+    const { findByRole, queryByRole, rerender } = render(
+      <TestComponent cache={cache} />,
+    );
+
+    userEvent.click(await findByRole('button', { name: /continue/i }));
+    expect(await findByRole('button', { name: /back/i })).toBeInTheDocument();
+
+    rerender(<TestComponent cache={cache} isSpouse />);
+
+    expect(
+      await findByRole('button', { name: /continue/i }),
+    ).toBeInTheDocument();
+    expect(queryByRole('button', { name: /back/i })).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('AdditionalSalaryRequest', {
+        isSpouse: true,
+      }),
     );
   });
 
