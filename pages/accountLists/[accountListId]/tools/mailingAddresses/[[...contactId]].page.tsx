@@ -1,24 +1,24 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
-import FixMailingAddresses from 'src/components/Tool/FixMailingAddresses/FixMailingAddresses';
+import MailingAddresses from 'src/components/Tool/MailingAddresses/MailingAddresses';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { ToolsWrapper } from '../../ToolsWrapper';
+import { ToolsWrapper } from '../ToolsWrapper';
 
-const FixMailingAddressesPage: React.FC = () => {
+const MailingAddressesPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
 
   return (
     <ToolsWrapper
-      pageTitle={t('Fix Mailing Addresses')}
-      selectedMenuId="fixMailingAddresses"
+      pageTitle={t('Mailing Addresses')}
+      selectedMenuId="mailingAddresses"
     >
-      <FixMailingAddresses accountListId={accountListId} />
+      <MailingAddresses accountListId={accountListId} />
     </ToolsWrapper>
   );
 };
 
 export const getServerSideProps = ensureSessionAndAccountList;
 
-export default FixMailingAddressesPage;
+export default MailingAddressesPage;

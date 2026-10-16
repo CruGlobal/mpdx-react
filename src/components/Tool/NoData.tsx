@@ -33,7 +33,7 @@ const getTextMap = (t: TFunction): { [key: string]: ToolText } => ({
     ),
     icon: mdiCurrencyUsd,
   },
-  fixMailingAddresses: {
+  mailingAddresses: {
     primaryText: t('No contacts with mailing addresses need attention'),
     secondaryText: t(
       'Contacts with new addresses or multiple primary mailing addresses will appear here.',
