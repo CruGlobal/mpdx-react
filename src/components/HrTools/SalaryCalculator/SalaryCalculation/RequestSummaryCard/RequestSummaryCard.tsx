@@ -15,11 +15,12 @@ import {
   useTheme,
 } from '@mui/material';
 import { DateTime } from 'luxon';
-import { Trans, useTranslation } from 'react-i18next';
+import { TFunction, Trans, useTranslation } from 'react-i18next';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import {
   ProgressiveApprovalTierEnum,
   ProgressiveApprovalTierReasonEnum,
+  SecaStatusEnum,
 } from 'src/graphql/types.generated';
 import { progressiveApprovalsLink } from '../../../AdditionalSalaryRequest/Shared/pdfLinks';
 import { YtdAsrTooltip } from '../../../Shared/YtdAsrTooltip';
@@ -57,6 +58,32 @@ const SummaryTable = styled(Table)(({ theme }) => ({
   },
 }));
 
+/**
+ * Explains why a person's SECA line is zero. HCM's SECA status drives this
+ * note, not the estimated SECA amount: the estimate is also zero when HCM has
+ * no status on file or the year's salary table is missing, and neither of
+ * those means the person opted out.
+ */
+const getSecaNote = (
+  secaStatus: SecaStatusEnum | null | undefined,
+  name: string | null | undefined,
+  t: TFunction,
+): string | null => {
+  switch (secaStatus) {
+    case SecaStatusEnum.Seca:
+      return null;
+    case SecaStatusEnum.Optout:
+      return t('{{ name }} has opted out of SECA', { name });
+    case SecaStatusEnum.Fica:
+      return t('{{ name }} pays FICA instead of SECA', { name });
+    default:
+      return t(
+        'HCM has no SECA status on file for {{ name }}, so no SECA is included and the cap may be too low. Contact HR or Payroll to fix it.',
+        { name },
+      );
+  }
+};
+
 export const RequestSummaryCard: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -77,6 +104,21 @@ export const RequestSummaryCard: React.FC = () => {
   const calcs = calculation?.calculations;
   const spouseCalcs = calculation?.spouseCalculations;
   const hasSpouse = !!hcmSpouse && !!spouseCalcs;
+
+  const secaNote = hcmUser
+    ? getSecaNote(
+        hcmUser.staffInfo.secaStatus,
+        hcmUser.staffInfo.preferredName,
+        t,
+      )
+    : null;
+  const spouseSecaNote = hasSpouse
+    ? getSecaNote(
+        hcmSpouse.staffInfo.secaStatus,
+        hcmSpouse.staffInfo.preferredName,
+        t,
+      )
+    : null;
 
   const combinedSalary =
     (calculation?.salary ?? 0) +
@@ -256,19 +298,9 @@ export const RequestSummaryCard: React.FC = () => {
               <TableRow>
                 <TableCell component="th" scope="row">
                   {t('SECA and Related Federal Taxes')}
-                  {calcs?.secaEstimatedFraction === 0 && (
-                    <span className="explanation">
-                      {t('{{ name }} has opted out of SECA', {
-                        name: hcmUser?.staffInfo.preferredName,
-                      })}
-                    </span>
-                  )}
-                  {spouseCalcs?.secaEstimatedFraction === 0 && (
-                    <span className="explanation">
-                      {t('{{ name }} has opted out of SECA', {
-                        name: hcmSpouse?.staffInfo.preferredName,
-                      })}
-                    </span>
+                  {secaNote && <span className="explanation">{secaNote}</span>}
+                  {spouseSecaNote && (
+                    <span className="explanation">{spouseSecaNote}</span>
                   )}
                 </TableCell>
                 <TableCell>{formatCurrency(calcs?.requestedSeca)}</TableCell>
