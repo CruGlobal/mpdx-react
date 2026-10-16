@@ -1,4 +1,5 @@
 import { PropsWithChildren } from 'react';
+import { ApolloClient } from '@apollo/client';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -6,9 +7,12 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import * as Types from 'src/graphql/types.generated';
+import { signOutAndClear } from 'src/lib/clearSessionData';
 import theme from 'src/theme';
 import { ConnectOrganization } from './ConnectOrganization';
 import { GetOrganizationsQuery } from './Organizations.generated';
+
+jest.mock('src/lib/clearSessionData');
 
 const accountListId = 'account-list-1';
 const contactId = 'contact-1';
@@ -274,6 +278,34 @@ describe('Connect Organization', () => {
         name: /contact your donation services team to request access\./i,
       }),
     ).toBeInTheDocument();
+  });
+
+  it('clears session data before signing out from the ministry warning', async () => {
+    const { findByText, findByRole, getByRole } = render(
+      <Components>
+        <GqlMockedProvider<{
+          GetOrganizations: GetOrganizationsQuery;
+        }>
+          mocks={{
+            GetOrganizations: {
+              organizations: GetOrganizationsMock,
+            },
+          }}
+        >
+          <ConnectOrganization onDone={onDone} />
+        </GqlMockedProvider>
+      </Components>,
+    );
+
+    userEvent.click(getByRole('combobox'));
+    userEvent.click(await findByRole('option', { name: 'ministryName' }));
+    userEvent.click(await findByText(/click here to log out of/i));
+
+    await waitFor(() =>
+      expect(signOutAndClear).toHaveBeenCalledWith(expect.any(ApolloClient), {
+        callbackUrl: 'signOut',
+      }),
+    );
   });
 
   it('should select Login Organization and add it.', async () => {
