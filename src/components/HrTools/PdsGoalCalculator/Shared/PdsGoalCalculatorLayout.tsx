@@ -6,6 +6,7 @@ import { useAutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { PanelLayout } from '../../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { PanelTypeEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
+import { MoveToCurrentYearButton } from '../MoveToCurrentYear/MoveToCurrentYearButton';
 import { PdsGoalCalculatorStepEnum } from '../PdsGoalCalculatorHelper';
 import { usePdsGoalCalculator } from './PdsGoalCalculatorContext';
 import { isSetupComplete } from './pdsCompletion';
@@ -80,11 +81,12 @@ export const PdsGoalCalculatorLayout: React.FC<
             </Alert>
           )}
           {isPastYear && !constants.unavailable && (
-            <Alert severity="info" sx={{ mb: 2 }}>
-              {t(
-                'This goal uses {{year}} rates. To use {{currentYear}} rates, create a new goal.',
-                { year: calculationsYear, currentYear },
-              )}
+            <Alert
+              severity="info"
+              sx={{ mb: 2 }}
+              action={<MoveToCurrentYearButton />}
+            >
+              {t('This goal uses {{year}} rates.', { year: calculationsYear })}
             </Alert>
           )}
           {mainContent}
