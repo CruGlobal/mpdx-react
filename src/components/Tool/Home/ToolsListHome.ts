@@ -68,7 +68,9 @@ export const getToolsListHome = (t: TFunction): ToolItem[] => [
   },
   {
     tool: t('Mailing Addresses'),
-    desc: t('Set the correct primary mailing address for each contact'),
+    desc: t(
+      'Confirm primary mailing addresses and view change history for each contact',
+    ),
     icon: mdiMap,
     id: 'mailingAddresses',
     url: 'mailingAddresses',
