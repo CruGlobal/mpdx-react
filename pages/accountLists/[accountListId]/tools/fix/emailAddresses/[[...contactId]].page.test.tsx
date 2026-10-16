@@ -6,7 +6,7 @@ import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { mockInvalidEmailAddressesResponse } from 'src/components/Tool/FixEmailAddresses/FixEmailAddressesMocks';
-import { InvalidAddressesQuery } from 'src/components/Tool/MailingAddresses/GetInvalidAddresses.generated';
+import { InvalidAddressesQuery } from 'src/components/Tool/MailingAddresses/ConfirmAddresses/GetInvalidAddresses.generated';
 import theme from 'src/theme';
 import FixEmailAddressesPage from './[[...contactId]].page';
 

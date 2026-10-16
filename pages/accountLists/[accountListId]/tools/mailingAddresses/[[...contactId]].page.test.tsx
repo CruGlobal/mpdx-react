@@ -4,8 +4,8 @@ import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { InvalidAddressesQuery } from 'src/components/Tool/MailingAddresses/GetInvalidAddresses.generated';
-import { mockInvalidAddressesResponse } from 'src/components/Tool/MailingAddresses/MailingAddressesMock';
+import { mockInvalidAddressesResponse } from 'src/components/Tool/MailingAddresses/ConfirmAddresses/ConfirmAddressesMock';
+import { InvalidAddressesQuery } from 'src/components/Tool/MailingAddresses/ConfirmAddresses/GetInvalidAddresses.generated';
 import theme from 'src/theme';
 import MailingAddressesPage from './[[...contactId]].page';
 
