@@ -67,6 +67,20 @@ const getTomorrow = (): DateTime => {
 const minimumTransferDate = (schedule: ScheduleEnum): DateTime =>
   schedule === ScheduleEnum.OneTime ? getToday() : getTomorrow();
 
+// Only a brand-new one-time transfer dated today debits the account
+// immediately — the single case the form hard-blocks (MPDX-10004). Everything
+// else (recurring setups, edits, future-dated one-times) processes later
+// against a future balance, so the form warns instead and SAA enforces the
+// limit when the money actually moves (MPDX-10155).
+const isImmediateOneTime = (
+  schedule: ScheduleEnum | undefined,
+  isExistingTransfer: boolean | undefined,
+  transferDate: DateTime | null | undefined,
+): boolean =>
+  schedule === ScheduleEnum.OneTime &&
+  !isExistingTransfer &&
+  !(transferDate?.isValid && transferDate.startOf('day') > getToday());
+
 const buildDefaultNote = (
   lastName: string,
   transferTo: string,
@@ -160,20 +174,17 @@ const transferSchema = (locale: string, funds: FundFieldsFragment[]) =>
       .required(i18n.t('Amount is required'))
       .min(0.01, i18n.t('Amount must be at least $0.01'))
       .test('within-available-balance', function (value) {
-        const { transferFrom, schedule, isEditing } = this.parent as {
+        const { transferFrom, schedule, isEditing, transferDate } = this
+          .parent as {
           transferFrom?: string;
           schedule?: ScheduleEnum;
           isEditing?: boolean;
+          transferDate?: DateTime | null;
         };
         if (typeof value !== 'number' || Number.isNaN(value)) {
           return true;
         }
-        // Only a new one-time transfer debits the account immediately, so
-        // only it is hard-blocked (MPDX-10004). A recurring setup's payments
-        // happen in the future against future balances — the form shows a
-        // non-blocking warning instead, and each payment is enforced when it
-        // is processed.
-        if (schedule !== ScheduleEnum.OneTime || isEditing) {
+        if (!isImmediateOneTime(schedule, isEditing, transferDate)) {
           return true;
         }
         const fund = funds.find((fund) => fund.fundType === transferFrom);
@@ -362,15 +373,25 @@ export const TransferModal: React.FC<TransferModalProps> = ({
           const locale = useLocale();
 
           const fund = funds.find((f) => f.fundType === transferFrom);
-          // New one-time transfers over the balance are hard-blocked by the
-          // schema; recurring setups and edits only warn, since their
-          // payments process in the future against future balances.
-          const projected = fund ? fund.endBalance - amount : null;
+          // Editing a pending transfer replaces an amount the API-computed
+          // available balance has already netted out, so add the saved amount
+          // back before subtracting the new one. The local fallback nets
+          // nothing, so there is nothing to add back there.
+          const savedAmount =
+            !isNew && typeof fund?.availableBalance === 'number'
+              ? (data.transfer.amount ?? 0)
+              : 0;
+          // What would remain available after this transfer — same figure the
+          // schema's hard-block checks against, so the warning and the block
+          // can never contradict each other.
+          const projected = fund
+            ? availableBalance(fund) + savedAmount - amount
+            : null;
           const showOverdraftWarning =
             !!fund &&
             projected !== null &&
-            !(isNew && schedule === ScheduleEnum.OneTime) &&
-            toCents(amount) > toCents(availableBalance(fund));
+            !isImmediateOneTime(schedule, !isNew, transferDate) &&
+            toCents(amount) > toCents(availableBalance(fund) + savedAmount);
 
           return (
             <form onSubmit={handleSubmit} noValidate>
@@ -672,7 +693,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                 {showOverdraftWarning && (
                   <Alert severity="warning">
                     {t(
-                      "This amount is greater than your {{ fund }} account's available balance. If you proceed, the account's projected balance will be ",
+                      "This amount is greater than your {{ fund }} account's available balance. If you proceed, the account's projected available balance will be ",
                       {
                         fund: fund.fundType,
                       },
@@ -683,7 +704,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                       })}
                     </strong>
                     {t(
-                      ' after the first scheduled payment is processed. Payments that would cause a negative balance may not be processed.',
+                      ' after the first scheduled payment is processed. Payments that exceed the available balance may not be processed.',
                     )}
                   </Alert>
                 )}

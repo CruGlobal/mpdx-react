@@ -53,4 +53,5 @@ fragment FundFields on Fund {
   fundType
   endBalance
   deficitLimit
+  availableBalance
 }
