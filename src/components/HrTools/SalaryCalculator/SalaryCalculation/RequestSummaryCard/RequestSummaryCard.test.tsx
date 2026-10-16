@@ -38,17 +38,10 @@ const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
     },
   };
 
-// Pin the SECA status so the SECA row note only appears in the tests that ask for it
-const defaultHcmPerson: SalaryCalculatorTestWrapperProps['hcmUser'] = {
-  staffInfo: { secaStatus: SecaStatusEnum.Seca },
-};
-
 const TestComponent: React.FC<SalaryCalculatorTestWrapperProps> = (props) => (
   <SalaryCalculatorTestWrapper
     {...props}
     salaryRequestMock={merge({}, defaultSalaryMock, props.salaryRequestMock)}
-    hcmUser={merge({}, defaultHcmPerson, props.hcmUser)}
-    hcmSpouse={merge({}, defaultHcmPerson, props.hcmSpouse)}
   >
     <RequestSummaryCard />
   </SalaryCalculatorTestWrapper>
@@ -367,6 +360,10 @@ This may affect your selected effective date.',
           <TestComponent
             hcmUser={{ staffInfo: { secaStatus: SecaStatusEnum.Optout } }}
             hcmSpouse={{ staffInfo: { secaStatus: SecaStatusEnum.Optout } }}
+            salaryRequestMock={{
+              calculations: { requestedSeca: 0 },
+              spouseCalculations: { requestedSeca: 0 },
+            }}
           />,
         );
 
@@ -380,6 +377,7 @@ This may affect your selected effective date.',
         const { findByText, queryByText } = render(
           <TestComponent
             hcmUser={{ staffInfo: { secaStatus: SecaStatusEnum.Fica } }}
+            salaryRequestMock={{ calculations: { requestedSeca: 0 } }}
           />,
         );
 
@@ -393,7 +391,10 @@ This may affect your selected effective date.',
 
       it('warns when HCM has no SECA status on file', async () => {
         const { findByText } = render(
-          <TestComponent hcmUser={{ staffInfo: { secaStatus: null } }} />,
+          <TestComponent
+            hcmUser={{ staffInfo: { secaStatus: null } }}
+            salaryRequestMock={{ calculations: { requestedSeca: 0 } }}
+          />,
         );
 
         expect(
@@ -416,9 +417,25 @@ This may affect your selected effective date.',
           />,
         );
 
-        await findByRole('table');
+        // The HCM data, not just the calculation, has to be on screen before the note could show
+        await findByRole('columnheader', { name: 'Jane' });
         expect(queryByText(/opted out of SECA/)).not.toBeInTheDocument();
         expect(queryByText(/no SECA status/)).not.toBeInTheDocument();
+      });
+
+      it('stays silent when a non-SECA status arrives with a non-zero SECA amount', async () => {
+        const { findByRole, getByText, queryByText } = render(
+          <TestComponent
+            hcmUser={{ staffInfo: { secaStatus: SecaStatusEnum.Optout } }}
+            hcmSpouse={{ staffInfo: { secaStatus: SecaStatusEnum.Fica } }}
+          />,
+        );
+
+        await findByRole('columnheader', { name: 'Jane' });
+        expect(getByText('$10,002.00')).toBeInTheDocument();
+        expect(getByText('$20,002.00')).toBeInTheDocument();
+        expect(queryByText(/opted out of SECA/)).not.toBeInTheDocument();
+        expect(queryByText(/pays FICA/)).not.toBeInTheDocument();
       });
     });
   });

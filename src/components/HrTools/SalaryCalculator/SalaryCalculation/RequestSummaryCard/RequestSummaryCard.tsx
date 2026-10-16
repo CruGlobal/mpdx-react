@@ -15,12 +15,11 @@ import {
   useTheme,
 } from '@mui/material';
 import { DateTime } from 'luxon';
-import { TFunction, Trans, useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import {
   ProgressiveApprovalTierEnum,
   ProgressiveApprovalTierReasonEnum,
-  SecaStatusEnum,
 } from 'src/graphql/types.generated';
 import { progressiveApprovalsLink } from '../../../AdditionalSalaryRequest/Shared/pdfLinks';
 import { YtdAsrTooltip } from '../../../Shared/YtdAsrTooltip';
@@ -32,6 +31,7 @@ import { CardTitle } from './CardTitle';
 import { Category } from './Category';
 import { Distribution } from './Distribution';
 import { Legend } from './Legend';
+import { getSecaNote } from './getSecaNote';
 
 const SummaryTable = styled(Table)(({ theme }) => ({
   'tr.total': {
@@ -58,32 +58,6 @@ const SummaryTable = styled(Table)(({ theme }) => ({
   },
 }));
 
-/**
- * Explains why a person's SECA line is zero. HCM's SECA status drives this
- * note, not the estimated SECA amount: the estimate is also zero when HCM has
- * no status on file or the year's salary table is missing, and neither of
- * those means the person opted out.
- */
-const getSecaNote = (
-  secaStatus: SecaStatusEnum | null | undefined,
-  name: string | null | undefined,
-  t: TFunction,
-): string | null => {
-  switch (secaStatus) {
-    case SecaStatusEnum.Seca:
-      return null;
-    case SecaStatusEnum.Optout:
-      return t('{{ name }} has opted out of SECA', { name });
-    case SecaStatusEnum.Fica:
-      return t('{{ name }} pays FICA instead of SECA', { name });
-    default:
-      return t(
-        'HCM has no SECA status on file for {{ name }}, so no SECA is included and the cap may be too low. Contact HR or Payroll to fix it.',
-        { name },
-      );
-  }
-};
-
 export const RequestSummaryCard: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -107,15 +81,21 @@ export const RequestSummaryCard: React.FC = () => {
 
   const secaNote = hcmUser
     ? getSecaNote(
-        hcmUser.staffInfo.secaStatus,
-        hcmUser.staffInfo.preferredName,
+        {
+          secaStatus: hcmUser.staffInfo.secaStatus,
+          name: hcmUser.staffInfo.preferredName,
+          requestedSeca: calcs?.requestedSeca,
+        },
         t,
       )
     : null;
   const spouseSecaNote = hasSpouse
     ? getSecaNote(
-        hcmSpouse.staffInfo.secaStatus,
-        hcmSpouse.staffInfo.preferredName,
+        {
+          secaStatus: hcmSpouse.staffInfo.secaStatus,
+          name: hcmSpouse.staffInfo.preferredName,
+          requestedSeca: spouseCalcs.requestedSeca,
+        },
         t,
       )
     : null;
