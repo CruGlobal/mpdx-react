@@ -119,7 +119,7 @@ enum ModalEnum {
   Edit = 'Edit',
 }
 
-const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
+const MailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
   const { classes } = useStyles();
   const { t } = useTranslation();
   const [showEditAddressModal, setShowEditAddressModal] = useState(false);
@@ -382,7 +382,7 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
 
           {!loading && data && (
             <React.Fragment>
-              {!totalContacts && <NoData tool="fixMailingAddresses" />}
+              {!totalContacts && <NoData tool="mailingAddresses" />}
               {!!totalContacts && (
                 <>
                   <Grid size={12}>
@@ -507,4 +507,4 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
   );
 };
 
-export default FixMailingAddresses;
+export default MailingAddresses;

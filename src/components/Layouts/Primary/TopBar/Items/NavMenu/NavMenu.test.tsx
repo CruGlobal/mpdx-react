@@ -158,7 +158,7 @@ describe('NavMenu', () => {
     expectMenuItems(getByRole, [
       'Appeals',
       'Fix Commitment Info',
-      'Fix Mailing Addresses',
+      'Mailing Addresses',
       'Fix Send Newsletter',
       'Merge Contacts',
       'Fix Email Addresses',

@@ -4,10 +4,10 @@ import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { mockInvalidAddressesResponse } from 'src/components/Tool/FixMailingAddresses/FixMailingAddressesMock';
-import { InvalidAddressesQuery } from 'src/components/Tool/FixMailingAddresses/GetInvalidAddresses.generated';
+import { InvalidAddressesQuery } from 'src/components/Tool/MailingAddresses/GetInvalidAddresses.generated';
+import { mockInvalidAddressesResponse } from 'src/components/Tool/MailingAddresses/MailingAddressesMock';
 import theme from 'src/theme';
-import FixMailingAddressesPage from './[[...contactId]].page';
+import MailingAddressesPage from './[[...contactId]].page';
 
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -24,7 +24,7 @@ const accountListId = 'account-list-1';
 const contactId = 'contactId';
 const router = {
   pathname:
-    '/accountLists/[accountListId]/tools/fix/mailingAddresses/[[...contactId]]',
+    '/accountLists/[accountListId]/tools/mailingAddresses/[[...contactId]]',
   query: { accountListId },
   isReady: true,
 };
@@ -37,14 +37,14 @@ const Components = ({ mocks }: { mocks: ApolloErgonoMockMap }) => (
         mocks={mocks}
       >
         <SnackbarProvider>
-          <FixMailingAddressesPage />
+          <MailingAddressesPage />
         </SnackbarProvider>
       </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>
 );
 
-describe('FixMailingAddressesPage', () => {
+describe('MailingAddressesPage', () => {
   it('should render contact link correctly', async () => {
     const { findByRole } = render(
       <Components
@@ -62,7 +62,7 @@ describe('FixMailingAddressesPage', () => {
 
     expect(contactName).toHaveAttribute(
       'href',
-      `/accountLists/${accountListId}/tools/fix/mailingAddresses/${contactId}`,
+      `/accountLists/${accountListId}/tools/mailingAddresses/${contactId}`,
     );
   });
 });

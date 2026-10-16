@@ -36,8 +36,8 @@ import { getAppName } from 'src/lib/getAppName';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { isEditableSource, sourceToStr } from 'src/lib/sourceHelper';
 import theme from '../../../theme';
-import { HandleSingleConfirmProps, emptyAddress } from './FixMailingAddresses';
 import { ContactAddressFragment } from './GetInvalidAddresses.generated';
+import { HandleSingleConfirmProps, emptyAddress } from './MailingAddresses';
 
 const ContactHeader = styled(CardHeader)(() => ({
   '.MuiCardHeader-action': {

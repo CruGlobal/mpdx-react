@@ -61,11 +61,11 @@ export function useToolsNavItems(): ToolsGroup[] {
           url: 'fix/commitmentInfo',
         },
         {
-          tool: t('Fix Mailing Addresses'),
+          tool: t('Mailing Addresses'),
           desc: t('Set the correct primary mailing address for each contact'),
           icon: mdiMap,
-          id: 'fixMailingAddresses',
-          url: 'fix/mailingAddresses',
+          id: 'mailingAddresses',
+          url: 'mailingAddresses',
         },
         {
           tool: t('Fix Send Newsletter'),
