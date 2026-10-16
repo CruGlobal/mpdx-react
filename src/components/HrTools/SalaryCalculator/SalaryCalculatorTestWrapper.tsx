@@ -10,6 +10,7 @@ import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   MinistersHousingIneligibilityReasonEnum,
   SalaryRequestStatusEnum,
+  SecaStatusEnum,
   UsStaffGroupEnum,
   UserTypeEnum,
 } from 'src/graphql/types.generated';
@@ -38,6 +39,7 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
           preferredName: 'John',
           lastName: 'Doe',
           personNumber: '000123456',
+          secaStatus: SecaStatusEnum.Seca,
           city: 'Miami',
           country: 'US',
           state: 'FL',
@@ -72,6 +74,7 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
           preferredName: 'Jane',
           lastName: 'Doe',
           personNumber: '000789123',
+          secaStatus: SecaStatusEnum.Seca,
           tenure: 1000,
           primaryPhoneNumber: '555-0124',
           emailAddress: 'jane.doe@example.com',
