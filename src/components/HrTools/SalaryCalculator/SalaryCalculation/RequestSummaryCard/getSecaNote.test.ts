@@ -59,4 +59,24 @@ describe('getSecaNote', () => {
       ),
     ).toBe('John has opted out of SECA');
   });
+
+  it('treats a missing amount as zero', () => {
+    const optedOut = { name: 'John', secaStatus: SecaStatusEnum.Optout };
+
+    expect(getSecaNote({ ...optedOut, requestedSeca: null }, t)).toBe(
+      'John has opted out of SECA',
+    );
+    expect(getSecaNote({ ...optedOut, requestedSeca: undefined }, t)).toBe(
+      'John has opted out of SECA',
+    );
+  });
+
+  it('stays silent for a status this app does not know yet', () => {
+    // A future SecaStatusEnum member is a code gap, not an HCM gap, so it must
+    // not send staff to HR. The cast stands in for a value the server could
+    // add before this app's enum is regenerated.
+    const unknownStatus = 'SOMETHING_NEW' as SecaStatusEnum;
+
+    expect(getSecaNote({ ...john, secaStatus: unknownStatus }, t)).toBeNull();
+  });
 });
