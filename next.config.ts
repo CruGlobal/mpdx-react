@@ -161,6 +161,18 @@ const config: NextConfig = {
   // imports from node_modules for packages listed in transpilePackages.
   transpilePackages: ['@mui/x-data-grid'],
 
+  headers: async () => [
+    {
+      source: '/sw.js',
+      headers: [
+        {
+          key: 'Cache-Control',
+          value: 'no-cache, no-store, must-revalidate',
+        },
+      ],
+    },
+  ],
+
   redirects: async () => [
     {
       source: '/accountLists/:accountListId/settings',
