@@ -2,9 +2,13 @@ import { Box, Typography } from '@mui/material';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { getFundIcon } from '../../Helper/TransferIcons';
+import { availableBalance } from '../../Helper/availableBalance';
 import { FundFieldsFragment } from '../../ReportsSavingsFund.generated';
 
-type Fund = Pick<FundFieldsFragment, 'fundType' | 'endBalance'>;
+type Fund = Pick<
+  FundFieldsFragment,
+  'fundType' | 'endBalance' | 'availableBalance' | 'deficitLimit'
+>;
 
 interface FundInfoDisplayProps {
   fund?: Fund;
@@ -16,6 +20,10 @@ export const FundInfoDisplay: React.FC<FundInfoDisplayProps> = ({ fund }) => {
   if (!fund) {
     return null;
   }
+
+  // Show the same figure the transfer form validates against, so the menu
+  // never advertises more than a transfer would actually allow.
+  const available = availableBalance(fund);
 
   return (
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -32,13 +40,13 @@ export const FundInfoDisplay: React.FC<FundInfoDisplayProps> = ({ fund }) => {
         </Typography>
         <Typography
           component="span"
-          sx={{ color: fund.endBalance < 0 ? 'error.main' : 'text.primary' }}
+          sx={{ color: available < 0 ? 'error.main' : 'text.primary' }}
         >
-          {fund.endBalance < 0 ? ' (' : ' '}
-          {currencyFormat(Math.abs(fund.endBalance), 'USD', locale, {
+          {available < 0 ? ' (' : ' '}
+          {currencyFormat(Math.abs(available), 'USD', locale, {
             showTrailingZeros: true,
           })}
-          {fund.endBalance < 0 ? ')' : ' available'}
+          {available < 0 ? ')' : ' available'}
         </Typography>
       </Box>
     </Box>

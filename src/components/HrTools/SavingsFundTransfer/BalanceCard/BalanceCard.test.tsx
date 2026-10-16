@@ -24,6 +24,7 @@ const defaultFund = {
   fundType: 'Primary',
   endBalance: 15000,
   deficitLimit: 0,
+  availableBalance: null,
 };
 
 interface ComponentsProps {
