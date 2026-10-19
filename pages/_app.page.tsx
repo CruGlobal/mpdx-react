@@ -1,7 +1,7 @@
 import { NextPage } from 'next';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
-import React, { ReactElement, useMemo } from 'react';
+import React, { ReactElement, useEffect, useMemo } from 'react';
 import { ApolloProvider } from '@apollo/client';
 import createEmotionCache from '@emotion/cache';
 import { CacheProvider } from '@emotion/react';
@@ -36,6 +36,7 @@ import makeClient from 'src/lib/apollo/client';
 import { suppressedErrorPatterns } from 'src/lib/error';
 import i18n from 'src/lib/i18n';
 import { addGraphQLErrorsToRollbarItem } from 'src/lib/rollbar';
+import { registerServiceWorker } from 'src/lib/serviceWorker/register';
 import theme from 'src/theme';
 import './helpjuice.css';
 import './print.css';
@@ -109,6 +110,10 @@ const App = ({
   };
 
   const emotionCache = createEmotionCache({ key: 'css' });
+
+  useEffect(() => {
+    registerServiceWorker();
+  }, []);
 
   if (!session && !nonAuthenticatedPages.has(router.pathname)) {
     throw new Error(

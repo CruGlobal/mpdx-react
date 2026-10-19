@@ -2,7 +2,6 @@ import type { NextConfig } from 'next';
 import bundleAnalyzer from '@next/bundle-analyzer';
 import withPlugins from 'next-compose-plugins';
 import withOptimizedImages from 'next-optimized-images';
-import withPWA from 'next-pwa';
 
 if (process.env.secrets && process.env.secrets !== '{}') {
   process.env.JWT_SECRET = JSON.parse(process.env.secrets).JWT_SECRET;
@@ -190,15 +189,6 @@ const config: NextConfig = {
 };
 
 module.exports = withPlugins([
-  [
-    withPWA,
-    {
-      pwa: {
-        dest: 'public',
-        disable: !prod,
-      },
-    },
-  ],
   withOptimizedImages,
   // Workaround @next/bundle-analyzer not playing nicely with next-compose-plugins
   // https://github.com/cyrilwanner/next-compose-plugins/issues/26
