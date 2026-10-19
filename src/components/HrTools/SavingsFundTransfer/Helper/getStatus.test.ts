@@ -20,7 +20,6 @@ const mockData: Transactions[] = [
       destinationFundTypeName: 'Savings',
     },
     recurringTransfer: null,
-    failedCount: 0,
     baseAmount: 100,
   },
   {
@@ -43,7 +42,6 @@ const mockData: Transactions[] = [
       active: true,
       failures: [],
     },
-    failedCount: 0,
     baseAmount: 200,
   },
   {
@@ -66,7 +64,6 @@ const mockData: Transactions[] = [
       active: true,
       failures: [],
     },
-    failedCount: 0,
     baseAmount: 300,
   },
   {
@@ -89,7 +86,6 @@ const mockData: Transactions[] = [
       active: true,
       failures: [],
     },
-    failedCount: 0,
     baseAmount: 400,
   },
 ];
@@ -186,7 +182,6 @@ describe('createTable', () => {
           },
         ],
       },
-      failedCount: 1,
       baseAmount: 50,
     };
 

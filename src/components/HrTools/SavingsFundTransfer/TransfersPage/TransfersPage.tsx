@@ -177,7 +177,6 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
             tx.recurringTransfer?.amount ??
             tx.scheduledTransfer?.amount ??
             0,
-          failedCount: 0,
           summarizedTransfers: null,
           historyTruncated: false,
         };
@@ -216,8 +215,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
       note: tx.transaction?.description ?? '',
       actions: shouldShowActions() === false ? 'edit-delete' : '',
       recurringId: tx.recurringTransfer?.id ?? null,
-      baseAmount: tx.baseAmount,
-      failedCount: tx.failedCount,
+      recurringAmount: tx.recurringTransfer?.amount,
       summarizedTransfers: tx.summarizedTransfers,
       failures: tx.recurringTransfer?.failures ?? null,
       historyTruncated: tx.historyTruncated,

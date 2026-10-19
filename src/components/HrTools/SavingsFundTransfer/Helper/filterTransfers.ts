@@ -1,5 +1,9 @@
 import { DateTime } from 'luxon';
-import { Transactions } from 'src/components/HrTools/SavingsFundTransfer/mockData';
+import {
+  StatusEnum,
+  Transactions,
+} from 'src/components/HrTools/SavingsFundTransfer/mockData';
+import { getStatusLabel } from './getStatus';
 
 // index is the position of the summarized transfer in the filtered array
 // transactions is a map of transaction IDs to the original transaction objects
@@ -17,15 +21,30 @@ export function filteredTransfers(
   const filtered: Transactions[] = [];
   const upcoming: Transactions[] = [];
   const summary = new Map<string, Summary>();
+  const upcomingRecurringIds = new Set<string>();
+  const pushUpcoming = (transfer: Transactions) => {
+    const recurringId = transfer.recurringTransfer?.id;
+    // SAA can list a schedule as both a failure-only row and an upcoming row.
+    if (recurringId) {
+      if (upcomingRecurringIds.has(recurringId)) {
+        return;
+      }
+      upcomingRecurringIds.add(recurringId);
+    }
+    upcoming.push(transfer);
+  };
 
   for (const transfer of transfers) {
     const { transaction, recurringTransfer } = transfer;
 
     if (!transaction) {
-      // A recurring transfer that only failed in the window has no transaction but belongs in history.
       if (!recurringTransfer?.failures.length) {
-        upcoming.push(transfer);
+        pushUpcoming(transfer);
         continue;
+      }
+      // A recurring transfer that only failed in the window still runs, and its failures belong in history.
+      if (getStatusLabel(transfer) === StatusEnum.Ongoing) {
+        pushUpcoming(transfer);
       }
     } else if (transaction.amount <= 0) {
       // A transfer will create a positive and negative transaction. Filter out the negative ones.
@@ -64,7 +83,6 @@ export function filteredTransfers(
 
     transferRow.historyTruncated =
       !!recurring && recurring.recurringStart.startOf('day') < windowStart;
-    transferRow.failedCount = recurring?.failures.length ?? 0;
     transferRow.summarizedTransfers = transactions;
   }
 

@@ -32,7 +32,6 @@ const mockTransactions: Transactions[] = [
     },
     recurringTransfer: null,
     baseAmount: 2500,
-    failedCount: 0,
   },
   {
     transaction: {
@@ -58,7 +57,6 @@ const mockTransactions: Transactions[] = [
       failures: [novemberFailure],
     },
     baseAmount: 20,
-    failedCount: 0,
   },
   {
     transaction: {
@@ -84,7 +82,6 @@ const mockTransactions: Transactions[] = [
       failures: [novemberFailure],
     },
     baseAmount: 20,
-    failedCount: 0,
   },
   {
     transaction: {
@@ -103,7 +100,6 @@ const mockTransactions: Transactions[] = [
     },
     recurringTransfer: null,
     baseAmount: -10,
-    failedCount: 0,
   },
   {
     transaction: {
@@ -129,7 +125,6 @@ const mockTransactions: Transactions[] = [
       failures: [novemberFailure],
     },
     baseAmount: 20,
-    failedCount: 0,
   },
   {
     transaction: null,
@@ -147,7 +142,6 @@ const mockTransactions: Transactions[] = [
       failures: [],
     },
     baseAmount: 10,
-    failedCount: 0,
   },
   {
     transaction: null,
@@ -164,7 +158,6 @@ const mockTransactions: Transactions[] = [
       description: 'Conference fee',
     },
     baseAmount: 400,
-    failedCount: 0,
   },
 ];
 
@@ -204,7 +197,6 @@ const makeRecurringTransactions = ({
         transfer,
         recurringTransfer,
         baseAmount: 20,
-        failedCount: 0,
       },
     ];
   }
@@ -222,7 +214,6 @@ const makeRecurringTransactions = ({
     transfer,
     recurringTransfer,
     baseAmount: 20,
-    failedCount: 0,
   }));
 };
 
@@ -288,14 +279,6 @@ describe('filteredTransfers', () => {
     expect(negativeAmountTransfer).toBeUndefined();
   });
 
-  it('should count the failures the API reports for recurring transfers', () => {
-    const { filtered } = filteredTransfers(mockTransactions, historyStart);
-    const recurringTransfer = filtered.find(
-      (tx) => tx.recurringTransfer?.id === '1',
-    );
-    expect(recurringTransfer?.failedCount).toBe(1);
-  });
-
   it('should not infer failures from months with no transaction', () => {
     const { filtered } = filteredTransfers(
       makeRecurringTransactions({
@@ -306,7 +289,7 @@ describe('filteredTransfers', () => {
       historyStart,
     );
     expect(filtered).toHaveLength(1);
-    expect(filtered[0].failedCount).toBe(0);
+    expect(filtered[0].recurringTransfer?.failures).toHaveLength(0);
   });
 
   it('should count December and February failures around a successful January', () => {
@@ -328,7 +311,7 @@ describe('filteredTransfers', () => {
     );
     expect(filtered).toHaveLength(1);
     expect(filtered[0].transaction?.amount).toBe(60);
-    expect(filtered[0].failedCount).toBe(2);
+    expect(filtered[0].recurringTransfer?.failures).toHaveLength(2);
     expect(
       filtered[0].recurringTransfer?.failures.map((failure) =>
         failure.occurrence.toISODate(),
@@ -344,16 +327,47 @@ describe('filteredTransfers', () => {
       failures: [makeFailure('2023-11-15'), makeFailure('2023-12-15')],
     });
 
-    it('should go to history instead of upcoming', () => {
+    it('should stay in upcoming while ongoing and also go to history', () => {
       const { filtered, upcoming } = filteredTransfers(
         neverSucceeded,
         historyStart,
       );
-      expect(upcoming).toHaveLength(0);
+      expect(upcoming).toHaveLength(1);
+      expect(upcoming[0].recurringTransfer?.id).toBe('8');
       expect(filtered).toHaveLength(1);
       expect(filtered[0].transaction).toBeNull();
-      expect(filtered[0].failedCount).toBe(2);
+      expect(filtered[0].recurringTransfer?.failures).toHaveLength(2);
       expect(filtered[0].summarizedTransfers?.size).toBe(0);
+    });
+
+    it('should only go to history once stopped', () => {
+      const { filtered, upcoming } = filteredTransfers(
+        makeRecurringTransactions({
+          id: '8',
+          recurringStart: '2023-11-15',
+          active: false,
+          dates: [],
+          failures: [makeFailure('2023-11-15')],
+        }),
+        historyStart,
+      );
+      expect(upcoming).toHaveLength(0);
+      expect(filtered).toHaveLength(1);
+    });
+
+    it('should not duplicate the upcoming row SAA also sends for the same recurring transfer', () => {
+      const { upcoming } = filteredTransfers(
+        [
+          ...neverSucceeded,
+          ...makeRecurringTransactions({
+            id: '8',
+            recurringStart: '2023-11-15',
+            dates: [],
+          }),
+        ],
+        historyStart,
+      );
+      expect(upcoming).toHaveLength(1);
     });
 
     it('should merge into the same row as transactions for the same recurring transfer', () => {
@@ -370,7 +384,7 @@ describe('filteredTransfers', () => {
       expect(filtered).toHaveLength(1);
       expect(filtered[0].transaction?.amount).toBe(20);
       expect(filtered[0].summarizedTransfers?.size).toBe(1);
-      expect(filtered[0].failedCount).toBe(2);
+      expect(filtered[0].recurringTransfer?.failures).toHaveLength(2);
     });
   });
 

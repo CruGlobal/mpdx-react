@@ -24,8 +24,7 @@ const mockTransfer: Transfers = {
   note: 'Test transfer',
   actions: 'edit-delete',
   recurringId: '1',
-  baseAmount: 10,
-  failedCount: 1,
+  recurringAmount: 15,
   summarizedTransfers: new Map([
     [
       '2',
@@ -50,7 +49,6 @@ const mockTransfer: Transfers = {
           failures: [],
         },
         baseAmount: 10,
-        failedCount: 0,
         summarizedTransfers: null,
       },
     ],
@@ -77,7 +75,6 @@ const mockTransfer: Transfers = {
           failures: [],
         },
         baseAmount: 10,
-        failedCount: 0,
         summarizedTransfers: null,
       },
     ],
@@ -104,7 +101,6 @@ const mockTransfer: Transfers = {
           failures: [],
         },
         baseAmount: 10,
-        failedCount: 0,
         summarizedTransfers: null,
       },
     ],
@@ -202,6 +198,15 @@ describe('FailedTransferModal', () => {
       'The fund did not have enough available balance.',
       '',
     ]);
+  });
+
+  it('shows the recurring transfer amount for a failed month', () => {
+    const { getByRole } = render(<TestComponent />);
+
+    const amounts = Array.from(
+      getByRole('table').querySelectorAll('tbody tr'),
+    ).map((row) => row.querySelectorAll('td')[0].textContent);
+    expect(amounts).toEqual(['$10.00', '$10.00', '$15.00', '$10.00']);
   });
 
   it('shows a row and reason for each failed month', () => {

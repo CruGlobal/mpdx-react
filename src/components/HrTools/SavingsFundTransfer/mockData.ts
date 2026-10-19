@@ -91,7 +91,6 @@ export interface Transactions {
   recurringTransfer?: RecurringTransfer | null;
   scheduledTransfer?: ScheduledTransfer | null;
   baseAmount: number;
-  failedCount?: number;
   summarizedTransfers?: Map<string, Transactions> | null;
   historyTruncated?: boolean;
 }
@@ -110,8 +109,7 @@ export interface Transfers {
   note?: string;
   actions?: string;
   recurringId?: string | null;
-  baseAmount?: number;
-  failedCount?: number;
+  recurringAmount?: number;
   summarizedTransfers?: Map<string, Transactions> | null;
   failures?: RecurringTransferFailure[] | null;
   historyTruncated?: boolean;

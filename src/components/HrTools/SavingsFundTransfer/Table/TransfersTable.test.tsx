@@ -404,7 +404,6 @@ describe('TransferHistoryTable', () => {
           {
             ...mockHistory[1],
             amount: 0,
-            failedCount: 2,
             summarizedTransfers: new Map(),
             failures: [
               {

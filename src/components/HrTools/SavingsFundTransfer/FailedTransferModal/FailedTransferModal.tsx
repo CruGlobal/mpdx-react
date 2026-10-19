@@ -33,27 +33,24 @@ export const getFailureReason = (
   t: TFunction,
   reasonCode: SavingsFundTransferFailureReasonCode,
 ): string => {
-  const reasons: Record<SavingsFundTransferFailureReasonCode, string> = {
-    [SavingsFundTransferFailureReasonCode.InactiveAccount]: t(
-      'The staff account was inactive.',
-    ),
-    [SavingsFundTransferFailureReasonCode.InsufficientFunds]: t(
-      'The fund did not have enough available balance.',
-    ),
-    [SavingsFundTransferFailureReasonCode.MissingFundType]: t(
-      'One of the funds does not exist on the staff account.',
-    ),
-    [SavingsFundTransferFailureReasonCode.NotAttempted]: t(
-      'The retry window ended before it could go through.',
-    ),
-    [SavingsFundTransferFailureReasonCode.Other]: t(
-      'Something went wrong while processing the transfer.',
-    ),
-    [SavingsFundTransferFailureReasonCode.SettledPeriod]: t(
-      'The transfer date was in a period that had already closed.',
-    ),
-  };
-  return reasons[reasonCode];
+  switch (reasonCode) {
+    case SavingsFundTransferFailureReasonCode.InactiveAccount:
+      return t('The staff account was inactive.');
+    case SavingsFundTransferFailureReasonCode.InsufficientFunds:
+      return t('The fund did not have enough available balance.');
+    case SavingsFundTransferFailureReasonCode.MissingFundType:
+      return t('One of the funds does not exist on the staff account.');
+    case SavingsFundTransferFailureReasonCode.NotAttempted:
+      return t('The retry window ended before it could go through.');
+    case SavingsFundTransferFailureReasonCode.Other:
+      return t('Something went wrong while processing the transfer.');
+    case SavingsFundTransferFailureReasonCode.SettledPeriod:
+      return t('The transfer date was in a period that had already closed.');
+    default: {
+      const unhandled: never = reasonCode;
+      return unhandled;
+    }
+  }
 };
 
 interface FailedTransferModalProps {
@@ -81,7 +78,7 @@ export const FailedTransferModal: React.FC<FailedTransferModalProps> = ({
     }
     transfer.failures?.forEach((failure) => {
       results.push({
-        amount: transfer.baseAmount || 0,
+        amount: transfer.recurringAmount ?? 0,
         status: StatusEnum.Failed,
         transferDate: failure.occurrence,
         reason: getFailureReason(t, failure.reasonCode),
