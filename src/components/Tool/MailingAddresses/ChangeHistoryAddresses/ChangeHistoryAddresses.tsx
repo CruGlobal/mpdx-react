@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { AddressChangeSummary } from './AddressChangeSummary/AddressChangeSummary';
+import { AddressChangeTable } from './AddressChangeTable/AddressChangeTable';
 import { AddressFilters } from './AddressFilters/AddressFilters';
+import { mockAddressChanges } from './ChangeHistoryAddressesMock';
 import { ExportCsvButton } from './ExportCsvButton/ExportCsvButton';
-import { DateRange } from './helpers';
+import { DateRange, isAutomaticChange } from './helpers';
 
 interface ChangeHistoryAddressesProps {
   accountListId: string;
@@ -14,6 +17,13 @@ export const ChangeHistoryAddresses: React.FC<
 > = () => {
   const { t } = useTranslation();
   const [dateRange, setDateRange] = useState<DateRange | null>(null);
+
+  const addressChanges = mockAddressChanges;
+  const partnerCount = new Set(addressChanges.map(({ contactId }) => contactId))
+    .size;
+  const automaticCount = addressChanges.filter(({ source }) =>
+    isAutomaticChange(source),
+  ).length;
 
   return (
     <Box>
@@ -41,6 +51,18 @@ export const ChangeHistoryAddresses: React.FC<
           onDateRangeChange={setDateRange}
         />
         <ExportCsvButton />
+      </Box>
+      <Box sx={{ mt: 2 }}>
+        <AddressChangeSummary
+          changeCount={addressChanges.length}
+          partnerCount={partnerCount}
+          automaticCount={automaticCount}
+          dateRange={dateRange}
+        />
+        <AddressChangeTable
+          addressChanges={addressChanges}
+          onHistoryClick={() => {}}
+        />
       </Box>
     </Box>
   );

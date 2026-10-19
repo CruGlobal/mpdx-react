@@ -1,6 +1,11 @@
 import { DateTime } from 'luxon';
 import { TFunction } from 'react-i18next';
-import { ContactFilterPartnerEnum } from 'src/graphql/types.generated';
+import {
+  Address,
+  AddressChange,
+  ContactFilterPartnerEnum,
+} from 'src/graphql/types.generated';
+import { manualSourceValue, sourceToStr } from 'src/lib/sourceHelper';
 
 export const formatPartnerFilter = (
   partner: ContactFilterPartnerEnum,
@@ -38,3 +43,48 @@ export interface DateRange {
   startDate: DateTime | null;
   endDate: DateTime | null;
 }
+
+export type AddressChangeRow = Omit<AddressChange, 'previousAddress'> & {
+  previousAddress?: Pick<
+    Address,
+    'street' | 'city' | 'state' | 'postalCode'
+  > | null;
+};
+
+const usDonationServicesSources = ['Siebel', 'US Donation System', 'US'];
+
+export const formatAddress = ({
+  street,
+  city,
+  state,
+  postalCode,
+}: Pick<Address, 'street' | 'city' | 'state' | 'postalCode'>): string =>
+  [
+    street?.replace(/\n/g, ', '),
+    city,
+    [state, postalCode].filter(Boolean).join(' '),
+  ]
+    .filter(Boolean)
+    .join(', ');
+
+export const isAutomaticChange = (source: string): boolean =>
+  source !== manualSourceValue;
+
+export const formatChangeMadeBy = (
+  { source, createdByUserId, createdByUserName }: AddressChangeRow,
+  currentUserId: string | undefined,
+  t: TFunction,
+): string => {
+  if (isAutomaticChange(source)) {
+    const sourceName = usDonationServicesSources.includes(source)
+      ? t('US Donation Services')
+      : sourceToStr(t, source);
+    return t('Automatic update from {{source}}', { source: sourceName });
+  }
+  const appName = sourceToStr(t, source);
+  if (createdByUserId && createdByUserId === currentUserId) {
+    return t('You, in {{appName}}', { appName });
+  }
+  const name = createdByUserName ?? t('Unknown user');
+  return t('{{name}}, in {{appName}}', { name, appName });
+};
