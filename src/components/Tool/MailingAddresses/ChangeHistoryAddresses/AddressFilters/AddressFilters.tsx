@@ -1,25 +1,50 @@
 import React from 'react';
-import { Box, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import {
+  Box,
+  FormControl,
+  InputLabel,
+  ListSubheader,
+  MenuItem,
+  Select,
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { ContactFilterPartnerEnum } from 'src/graphql/types.generated';
+import { manualSourceValue, sourceToStr } from 'src/lib/sourceHelper';
 import {
   ContactFilterChangedDuringEnum,
   DateRange,
+  MadeByOption,
   formatChangedDuringFilter,
   formatPartnerFilter,
+  groupMadeByOptions,
 } from '../helpers';
 import { CustomDateRangeModal } from './CustomDateRangeModal/CustomDateRangeModal';
 
 interface AddressFiltersProps {
   dateRange: DateRange | null;
   onDateRangeChange: (dateRange: DateRange) => void;
+  madeBy: string | null;
+  madeByOptions: MadeByOption[];
+  onMadeByChange: (madeBy: string | null) => void;
 }
 
 export const AddressFilters: React.FC<AddressFiltersProps> = ({
   dateRange,
   onDateRangeChange,
+  madeBy,
+  madeByOptions,
+  onMadeByChange,
 }) => {
   const { t } = useTranslation();
+  const { data: userData } = useGetUserQuery();
+  const currentUserId = userData?.user.id;
+
+  const { automatic: automaticOptions, mpdx: mpdxOptions } = groupMadeByOptions(
+    madeByOptions,
+    currentUserId,
+    t,
+  );
   const [customDateRangeOpen, setCustomDateRangeOpen] = React.useState(false);
 
   const handleClose = () => setCustomDateRangeOpen(false);
@@ -69,11 +94,30 @@ export const AddressFilters: React.FC<AddressFiltersProps> = ({
         <Select
           labelId="change-made-by-filter-label"
           label={t('Change made by')}
+          value={madeBy ?? ''}
+          onChange={(event) => onMadeByChange(event.target.value || null)}
         >
-          {/* TODO: Replace this with actual options for "Change msade by" filter */}
-          <MenuItem key="temporary-option" value="temporary-option">
-            {t('Temporary option')}
-          </MenuItem>
+          <MenuItem value="">{t('Anyone')}</MenuItem>
+          {automaticOptions.length > 0 && (
+            <ListSubheader>{t('Automatic')}</ListSubheader>
+          )}
+          {automaticOptions.map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
+          {mpdxOptions.length > 0 && (
+            <ListSubheader>
+              {t('In {{appName}}', {
+                appName: sourceToStr(t, manualSourceValue),
+              })}
+            </ListSubheader>
+          )}
+          {mpdxOptions.map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
         </Select>
       </FormControl>
       {customDateRangeOpen && (

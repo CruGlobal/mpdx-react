@@ -1,6 +1,7 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
@@ -14,27 +15,36 @@ import { AddressChangeTable } from './AddressChangeTable';
 
 const accountListId = 'account-list-1';
 const onHistoryClick = jest.fn();
+const onEndReached = jest.fn();
 
-const TestComponent: React.FC = () => (
+const TestComponent: React.FC<{ loadingMore?: boolean }> = ({
+  loadingMore = false,
+}) => (
   <ThemeProvider theme={theme}>
-    <TestRouter
-      router={{
-        query: { accountListId },
-        pathname:
-          '/accountLists/[accountListId]/tools/mailingAddresses/[[...contactId]]',
-      }}
+    <VirtuosoMockContext.Provider
+      value={{ viewportHeight: 1000, itemHeight: 100 }}
     >
-      <GqlMockedProvider<{ GetUser: GetUserQuery }>
-        mocks={{ GetUser: { user: { id: currentUserId } } }}
+      <TestRouter
+        router={{
+          query: { accountListId },
+          pathname:
+            '/accountLists/[accountListId]/tools/mailingAddresses/[[...contactId]]',
+        }}
       >
-        <ContactPanelProvider>
-          <AddressChangeTable
-            addressChanges={mockAddressChanges}
-            onHistoryClick={onHistoryClick}
-          />
-        </ContactPanelProvider>
-      </GqlMockedProvider>
-    </TestRouter>
+        <GqlMockedProvider<{ GetUser: GetUserQuery }>
+          mocks={{ GetUser: { user: { id: currentUserId } } }}
+        >
+          <ContactPanelProvider>
+            <AddressChangeTable
+              addressChanges={mockAddressChanges}
+              loadingMore={loadingMore}
+              onEndReached={onEndReached}
+              onHistoryClick={onHistoryClick}
+            />
+          </ContactPanelProvider>
+        </GqlMockedProvider>
+      </TestRouter>
+    </VirtuosoMockContext.Provider>
   </ThemeProvider>
 );
 
@@ -100,5 +110,18 @@ describe('AddressChangeTable', () => {
     );
 
     expect(onHistoryClick).toHaveBeenCalledWith(mockAddressChanges[1]);
+  });
+
+  it('asks for more rows when scrolled to the end', async () => {
+    await renderTable();
+
+    expect(onEndReached).toHaveBeenCalled();
+  });
+
+  it('shows a spinner while more rows load', async () => {
+    const { findByText, getByTestId } = render(<TestComponent loadingMore />);
+    await findByText('You, in MPDX');
+
+    expect(getByTestId('loading-more')).toBeInTheDocument();
   });
 });

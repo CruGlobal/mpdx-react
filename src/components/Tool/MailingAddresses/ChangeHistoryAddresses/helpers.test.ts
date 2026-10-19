@@ -1,9 +1,15 @@
+import { AddressChangeMadeByEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
-import { mockAddressChanges } from './ChangeHistoryAddressesMock';
+import {
+  mockAddressChangeHistory,
+  mockAddressChanges,
+} from './ChangeHistoryAddressesMock';
 import {
   AddressChangeRow,
   formatAddress,
   formatChangeMadeBy,
+  formatMadeByOption,
+  groupMadeByOptions,
   isAutomaticChange,
 } from './helpers';
 
@@ -13,8 +19,7 @@ const addressChange = (
   overrides: Partial<AddressChangeRow>,
 ): AddressChangeRow => ({
   ...mockAddressChanges[0],
-  createdByUserId: null,
-  createdByUserName: null,
+  createdByUser: null,
   ...overrides,
 });
 
@@ -69,8 +74,7 @@ describe('isAutomaticChange', () => {
 describe('formatChangeMadeBy', () => {
   it.each([
     ['Siebel', 'Automatic update from US Donation Services'],
-    ['US Donation System', 'Automatic update from US Donation Services'],
-    ['US', 'Automatic update from US Donation Services'],
+    ['US Donation System', 'Automatic update from US Donation System'],
     ['DataServer', 'Automatic update from DonorHub'],
   ])('labels %s changes as "%s"', (source, label) => {
     expect(
@@ -83,8 +87,11 @@ describe('formatChangeMadeBy', () => {
       formatChangeMadeBy(
         addressChange({
           source: 'MPDX',
-          createdByUserId: currentUserId,
-          createdByUserName: 'Test User',
+          createdByUser: {
+            id: currentUserId,
+            firstName: 'Test',
+            lastName: 'User',
+          },
         }),
         currentUserId,
         i18n.t,
@@ -97,8 +104,7 @@ describe('formatChangeMadeBy', () => {
       formatChangeMadeBy(
         addressChange({
           source: 'MPDX',
-          createdByUserId: 'user-2',
-          createdByUserName: 'Jane Smith',
+          createdByUser: { id: 'user-2', firstName: 'Jane', lastName: 'Smith' },
         }),
         currentUserId,
         i18n.t,
@@ -114,5 +120,67 @@ describe('formatChangeMadeBy', () => {
         i18n.t,
       ),
     ).toBe('Unknown user, in MPDX');
+  });
+});
+
+describe('formatMadeByOption', () => {
+  const option = (type: AddressChangeMadeByEnum) =>
+    mockAddressChangeHistory.madeByOptions.find(
+      (madeByOption) => madeByOption.type === type,
+    )!;
+
+  it('names raw sources the way the rest of the app does', () => {
+    expect(
+      formatMadeByOption(
+        option(AddressChangeMadeByEnum.Source),
+        currentUserId,
+        i18n.t,
+      ),
+    ).toBe('US Donation Services');
+  });
+
+  it('labels the current user as "You" and other users by name', () => {
+    const [otherUser, currentUser] =
+      mockAddressChangeHistory.madeByOptions.filter(
+        (madeByOption) => madeByOption.type === AddressChangeMadeByEnum.User,
+      );
+
+    expect(formatMadeByOption(currentUser, currentUserId, i18n.t)).toBe('You');
+    expect(formatMadeByOption(otherUser, currentUserId, i18n.t)).toBe(
+      'Jane Smith',
+    );
+  });
+
+  it('uses its own translated label for unknown users', () => {
+    expect(
+      formatMadeByOption(
+        { ...option(AddressChangeMadeByEnum.UnknownUser), label: 'unknown' },
+        currentUserId,
+        i18n.t,
+      ),
+    ).toBe('Unknown user');
+  });
+});
+
+describe('groupMadeByOptions', () => {
+  it('splits sources from people and labels each one', () => {
+    expect(
+      groupMadeByOptions(
+        mockAddressChangeHistory.madeByOptions,
+        currentUserId,
+        i18n.t,
+      ),
+    ).toEqual({
+      automatic: [
+        { value: 'source:Siebel', label: 'US Donation Services' },
+        { value: 'source:DataServer', label: 'DonorHub' },
+        { value: 'source:US Donation System', label: 'US Donation System' },
+      ],
+      mpdx: [
+        { value: 'user:user-2', label: 'Jane Smith' },
+        { value: 'user:user-1', label: 'You' },
+        { value: 'unknown_user', label: 'Unknown user' },
+      ],
+    });
   });
 });

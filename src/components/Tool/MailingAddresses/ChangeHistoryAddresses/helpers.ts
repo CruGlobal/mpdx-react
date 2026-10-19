@@ -1,11 +1,13 @@
+import { partition } from 'lodash';
 import { DateTime } from 'luxon';
 import { TFunction } from 'react-i18next';
 import {
   Address,
-  AddressChange,
+  AddressChangeMadeByEnum,
   ContactFilterPartnerEnum,
 } from 'src/graphql/types.generated';
 import { manualSourceValue, sourceToStr } from 'src/lib/sourceHelper';
+import { AddressChangeHistoryQuery } from './AddressChangeHistory.generated';
 
 export const formatPartnerFilter = (
   partner: ContactFilterPartnerEnum,
@@ -44,14 +46,28 @@ export interface DateRange {
   endDate: DateTime | null;
 }
 
-export type AddressChangeRow = Omit<AddressChange, 'previousAddress'> & {
-  previousAddress?: Pick<
-    Address,
-    'street' | 'city' | 'state' | 'postalCode'
-  > | null;
-};
+export type AddressChangeRow =
+  AddressChangeHistoryQuery['addressChangeHistory']['nodes'][number];
 
-const usDonationServicesSources = ['Siebel', 'US Donation System', 'US'];
+export type MadeByOption =
+  AddressChangeHistoryQuery['addressChangeHistory']['madeByOptions'][number];
+
+export const formatMadeByOption = (
+  option: MadeByOption,
+  currentUserId: string | undefined,
+  t: TFunction,
+): string => {
+  if (option.type === AddressChangeMadeByEnum.Source) {
+    return sourceToStr(t, option.label);
+  }
+  if (option.type === AddressChangeMadeByEnum.UnknownUser) {
+    return t('Unknown user');
+  }
+  if (option.user && option.user.id === currentUserId) {
+    return t('You');
+  }
+  return option.label;
+};
 
 export const formatAddress = ({
   street,
@@ -71,20 +87,47 @@ export const isAutomaticChange = (source: string): boolean =>
   source !== manualSourceValue;
 
 export const formatChangeMadeBy = (
-  { source, createdByUserId, createdByUserName }: AddressChangeRow,
+  { source, createdByUser }: Pick<AddressChangeRow, 'source' | 'createdByUser'>,
   currentUserId: string | undefined,
   t: TFunction,
 ): string => {
   if (isAutomaticChange(source)) {
-    const sourceName = usDonationServicesSources.includes(source)
-      ? t('US Donation Services')
-      : sourceToStr(t, source);
-    return t('Automatic update from {{source}}', { source: sourceName });
+    return t('Automatic update from {{source}}', {
+      source: sourceToStr(t, source),
+    });
   }
   const appName = sourceToStr(t, source);
-  if (createdByUserId && createdByUserId === currentUserId) {
+  if (createdByUser && createdByUser.id === currentUserId) {
     return t('You, in {{appName}}', { appName });
   }
-  const name = createdByUserName ?? t('Unknown user');
+  const name =
+    [createdByUser?.firstName, createdByUser?.lastName]
+      .filter(Boolean)
+      .join(' ') || t('Unknown user');
   return t('{{name}}, in {{appName}}', { name, appName });
+};
+
+interface MadeByMenuItem {
+  value: string;
+  label: string;
+}
+
+export const groupMadeByOptions = (
+  options: MadeByOption[],
+  currentUserId: string | undefined,
+  t: TFunction,
+): { automatic: MadeByMenuItem[]; mpdx: MadeByMenuItem[] } => {
+  const toMenuItem = (option: MadeByOption): MadeByMenuItem => ({
+    value: option.id,
+    label: formatMadeByOption(option, currentUserId, t),
+  });
+  const [sourceOptions, mpdxOptions] = partition(
+    options,
+    (option) => option.type === AddressChangeMadeByEnum.Source,
+  );
+
+  return {
+    automatic: sourceOptions.map(toMenuItem),
+    mpdx: mpdxOptions.map(toMenuItem),
+  };
 };

@@ -1,30 +1,44 @@
 import React, { useState } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, CircularProgress, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { AddressChangeEmptyState } from './AddressChangeEmptyState/AddressChangeEmptyState';
+import { useAddressChangeHistoryQuery } from './AddressChangeHistory.generated';
 import { AddressChangeSummary } from './AddressChangeSummary/AddressChangeSummary';
 import { AddressChangeTable } from './AddressChangeTable/AddressChangeTable';
 import { AddressFilters } from './AddressFilters/AddressFilters';
-import { mockAddressChanges } from './ChangeHistoryAddressesMock';
 import { ExportCsvButton } from './ExportCsvButton/ExportCsvButton';
-import { DateRange, isAutomaticChange } from './helpers';
+import { DateRange } from './helpers';
 
 interface ChangeHistoryAddressesProps {
   accountListId: string;
 }
 
-export const ChangeHistoryAddresses: React.FC<
-  ChangeHistoryAddressesProps
-> = () => {
+export const ChangeHistoryAddresses: React.FC<ChangeHistoryAddressesProps> = ({
+  accountListId,
+}) => {
   const { t } = useTranslation();
   const [dateRange, setDateRange] = useState<DateRange | null>(null);
+  const [madeBy, setMadeBy] = useState<string | null>(null);
 
-  const addressChanges = mockAddressChanges;
-  const partnerCount = new Set(addressChanges.map(({ contactId }) => contactId))
-    .size;
-  const automaticCount = addressChanges.filter(({ source }) =>
-    isAutomaticChange(source),
-  ).length;
+  const { data, previousData, loading, fetchMore } =
+    useAddressChangeHistoryQuery({
+      variables: {
+        accountListId,
+        startDate: dateRange?.startDate?.toISODate() ?? undefined,
+        endDate: dateRange?.endDate?.toISODate() ?? undefined,
+        madeBy: madeBy ? [madeBy] : undefined,
+      },
+    });
+  const history = data?.addressChangeHistory;
+
+  const loadMore = () => {
+    if (!loading && history?.pageInfo.hasNextPage) {
+      fetchMore({ variables: { after: history.pageInfo.endCursor } });
+    }
+  };
+  const addressChanges = history?.nodes ?? [];
+  const madeByOptions =
+    (data ?? previousData)?.addressChangeHistory.madeByOptions ?? [];
 
   return (
     <Box>
@@ -50,25 +64,36 @@ export const ChangeHistoryAddresses: React.FC<
         <AddressFilters
           dateRange={dateRange}
           onDateRangeChange={setDateRange}
+          madeBy={madeBy}
+          madeByOptions={madeByOptions}
+          onMadeByChange={setMadeBy}
         />
         <ExportCsvButton disabled={!addressChanges.length} />
       </Box>
       <Box sx={{ mt: 2 }}>
-        {addressChanges.length ? (
+        {loading && !data ? (
+          <Box display="flex" justifyContent="center" p={3}>
+            <CircularProgress data-testid="loading" />
+          </Box>
+        ) : history?.totalCount ? (
           <>
             <AddressChangeSummary
-              changeCount={addressChanges.length}
-              partnerCount={partnerCount}
-              automaticCount={automaticCount}
+              changeCount={history.totalCount}
+              partnerCount={history.contactIds.length}
+              automaticCount={history.automaticCount}
               dateRange={dateRange}
             />
             <AddressChangeTable
               addressChanges={addressChanges}
+              loadingMore={loading}
+              onEndReached={loadMore}
               onHistoryClick={() => {}}
             />
           </>
         ) : (
-          <AddressChangeEmptyState filtered={!!dateRange} />
+          history && (
+            <AddressChangeEmptyState filtered={!!dateRange || !!madeBy} />
+          )
         )}
       </Box>
     </Box>

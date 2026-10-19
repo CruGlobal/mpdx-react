@@ -1,9 +1,9 @@
 import {
-  Address,
-  AddressChange,
-  AddressChangeConnection,
+  AddressChangeMadeByEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
+import { AddressChangeHistoryQuery } from './AddressChangeHistory.generated';
+import { AddressChangeRow } from './helpers';
 
 export const currentUserId = 'user-1';
 export const otherUserId = 'user-2';
@@ -14,25 +14,16 @@ const previousAddress = (
   city: string,
   state: string,
   postalCode: string,
-  country: string,
-  source: string,
-): Address => ({
+): AddressChangeRow['previousAddress'] => ({
   __typename: 'Address',
   id,
   street,
   city,
   state,
   postalCode,
-  country,
-  source,
-  historic: true,
-  primaryMailingAddress: false,
-  validValues: true,
-  createdAt: '2024-01-01T00:00:00Z',
-  updatedAt: '2024-01-01T00:00:00Z',
 });
 
-export const mockAddressChanges: AddressChange[] = [
+export const mockAddressChanges: AddressChangeRow[] = [
   {
     __typename: 'AddressChange',
     id: 'address-change-1',
@@ -47,16 +38,13 @@ export const mockAddressChanges: AddressChange[] = [
     country: 'United States',
     source: 'Siebel',
     date: '2026-09-30',
-    createdByUserId: null,
-    createdByUserName: null,
+    createdByUser: null,
     previousAddress: previousAddress(
       'previous-address-1',
       '98 Lake St',
       'Seattle',
       'WA',
       '98109',
-      'United States',
-      'Siebel',
     ),
   },
   {
@@ -73,16 +61,13 @@ export const mockAddressChanges: AddressChange[] = [
     country: 'Canada',
     source: 'DataServer',
     date: '2026-09-12',
-    createdByUserId: null,
-    createdByUserName: null,
+    createdByUser: null,
     previousAddress: previousAddress(
       'previous-address-2',
       '12 Elm Rd',
       'Burnaby',
       'BC',
       'V5H 1A1',
-      'Canada',
-      'DataServer',
     ),
   },
   {
@@ -99,16 +84,18 @@ export const mockAddressChanges: AddressChange[] = [
     country: 'United States',
     source: 'MPDX',
     date: '2026-08-03',
-    createdByUserId: currentUserId,
-    createdByUserName: 'Test User',
+    createdByUser: {
+      __typename: 'UserScopedToAccountList',
+      id: currentUserId,
+      firstName: 'Test',
+      lastName: 'User',
+    },
     previousAddress: previousAddress(
       'previous-address-3',
       '550 14th Ave W',
       'Vancouver',
       'BC',
       'V5Z 1P6',
-      'Canada',
-      'MPDX',
     ),
   },
   {
@@ -125,16 +112,13 @@ export const mockAddressChanges: AddressChange[] = [
     country: 'Canada',
     source: 'DataServer',
     date: '2026-06-18',
-    createdByUserId: null,
-    createdByUserName: null,
+    createdByUser: null,
     previousAddress: previousAddress(
       'previous-address-4',
       '301 Granite Way',
       'Bedrock',
       'BC',
       'V0N 1B0',
-      'Canada',
-      'DataServer',
     ),
   },
   {
@@ -151,16 +135,18 @@ export const mockAddressChanges: AddressChange[] = [
     country: 'Canada',
     source: 'MPDX',
     date: '2026-03-02',
-    createdByUserId: otherUserId,
-    createdByUserName: 'Jane Smith',
+    createdByUser: {
+      __typename: 'UserScopedToAccountList',
+      id: otherUserId,
+      firstName: 'Jane',
+      lastName: 'Smith',
+    },
     previousAddress: previousAddress(
       'previous-address-5',
       '22 Pine Cres',
       'Burnaby',
       'BC',
       'V5G 2K8',
-      'Canada',
-      'MPDX',
     ),
   },
   {
@@ -177,28 +163,65 @@ export const mockAddressChanges: AddressChange[] = [
     country: 'United States',
     source: 'US Donation System',
     date: '2025-12-09',
-    createdByUserId: null,
-    createdByUserName: null,
+    createdByUser: null,
     previousAddress: null,
   },
 ];
 
-export const mockAddressChangeHistory: AddressChangeConnection = {
-  __typename: 'AddressChangeConnection',
-  nodes: mockAddressChanges,
-  edges: mockAddressChanges.map((node) => ({
-    __typename: 'AddressChangeEdge',
-    cursor: node.id,
-    node,
-  })),
-  contactIds: mockAddressChanges.map((change) => change.contactId),
-  pageInfo: {
-    __typename: 'PageInfo',
-    endCursor: mockAddressChanges[mockAddressChanges.length - 1].id,
-    hasNextPage: false,
-    hasPreviousPage: false,
-    startCursor: mockAddressChanges[0].id,
-  },
-  totalCount: mockAddressChanges.length,
-  totalPageCount: 1,
-};
+export const mockAddressChangeHistory: AddressChangeHistoryQuery['addressChangeHistory'] =
+  {
+    __typename: 'AddressChangeConnection',
+    nodes: mockAddressChanges,
+    contactIds: mockAddressChanges.map((change) => change.contactId),
+    pageInfo: {
+      __typename: 'PageInfo',
+      endCursor: null,
+      hasNextPage: false,
+    },
+    totalCount: mockAddressChanges.length,
+    automaticCount: 4,
+    madeByOptions: [
+      {
+        __typename: 'AddressChangeMadeByOption',
+        id: 'source:Siebel',
+        type: AddressChangeMadeByEnum.Source,
+        label: 'Siebel',
+        user: null,
+      },
+      {
+        __typename: 'AddressChangeMadeByOption',
+        id: 'source:DataServer',
+        type: AddressChangeMadeByEnum.Source,
+        label: 'DataServer',
+        user: null,
+      },
+      {
+        __typename: 'AddressChangeMadeByOption',
+        id: 'source:US Donation System',
+        type: AddressChangeMadeByEnum.Source,
+        label: 'US Donation System',
+        user: null,
+      },
+      {
+        __typename: 'AddressChangeMadeByOption',
+        id: `user:${otherUserId}`,
+        type: AddressChangeMadeByEnum.User,
+        label: 'Jane Smith',
+        user: { __typename: 'UserScopedToAccountList', id: otherUserId },
+      },
+      {
+        __typename: 'AddressChangeMadeByOption',
+        id: `user:${currentUserId}`,
+        type: AddressChangeMadeByEnum.User,
+        label: 'Test User',
+        user: { __typename: 'UserScopedToAccountList', id: currentUserId },
+      },
+      {
+        __typename: 'AddressChangeMadeByOption',
+        id: 'unknown_user',
+        type: AddressChangeMadeByEnum.UnknownUser,
+        label: 'Unknown user',
+        user: null,
+      },
+    ],
+  };
