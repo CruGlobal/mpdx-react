@@ -172,11 +172,6 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                 ),
               }
             : null,
-          baseAmount:
-            tx.transaction?.amount ??
-            tx.recurringTransfer?.amount ??
-            tx.scheduledTransfer?.amount ??
-            0,
           summarizedTransfers: null,
           historyTruncated: false,
         };

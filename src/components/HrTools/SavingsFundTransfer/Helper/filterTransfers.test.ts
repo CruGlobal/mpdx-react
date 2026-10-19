@@ -31,7 +31,6 @@ const mockTransactions: Transactions[] = [
       destinationFundTypeName: 'Savings',
     },
     recurringTransfer: null,
-    baseAmount: 2500,
   },
   {
     transaction: {
@@ -56,7 +55,6 @@ const mockTransactions: Transactions[] = [
       active: true,
       failures: [novemberFailure],
     },
-    baseAmount: 20,
   },
   {
     transaction: {
@@ -81,7 +79,6 @@ const mockTransactions: Transactions[] = [
       active: true,
       failures: [novemberFailure],
     },
-    baseAmount: 20,
   },
   {
     transaction: {
@@ -99,7 +96,6 @@ const mockTransactions: Transactions[] = [
       destinationFundTypeName: 'Savings',
     },
     recurringTransfer: null,
-    baseAmount: -10,
   },
   {
     transaction: {
@@ -124,7 +120,6 @@ const mockTransactions: Transactions[] = [
       active: true,
       failures: [novemberFailure],
     },
-    baseAmount: 20,
   },
   {
     transaction: null,
@@ -141,7 +136,6 @@ const mockTransactions: Transactions[] = [
       active: true,
       failures: [],
     },
-    baseAmount: 10,
   },
   {
     transaction: null,
@@ -157,7 +151,6 @@ const mockTransactions: Transactions[] = [
       transactedAt: DateTime.fromISO('2024-02-01'),
       description: 'Conference fee',
     },
-    baseAmount: 400,
   },
 ];
 
@@ -196,7 +189,6 @@ const makeRecurringTransactions = ({
         subCategory: null,
         transfer,
         recurringTransfer,
-        baseAmount: 20,
       },
     ];
   }
@@ -213,7 +205,6 @@ const makeRecurringTransactions = ({
     },
     transfer,
     recurringTransfer,
-    baseAmount: 20,
   }));
 };
 

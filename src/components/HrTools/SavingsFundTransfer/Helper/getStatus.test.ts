@@ -20,7 +20,6 @@ const mockData: Transactions[] = [
       destinationFundTypeName: 'Savings',
     },
     recurringTransfer: null,
-    baseAmount: 100,
   },
   {
     transaction: {
@@ -42,7 +41,6 @@ const mockData: Transactions[] = [
       active: true,
       failures: [],
     },
-    baseAmount: 200,
   },
   {
     transaction: {
@@ -64,7 +62,6 @@ const mockData: Transactions[] = [
       active: true,
       failures: [],
     },
-    baseAmount: 300,
   },
   {
     transaction: {
@@ -86,7 +83,6 @@ const mockData: Transactions[] = [
       active: true,
       failures: [],
     },
-    baseAmount: 400,
   },
 ];
 
@@ -182,7 +178,6 @@ describe('createTable', () => {
           },
         ],
       },
-      baseAmount: 50,
     };
 
     it('should return ongoing status while still active', () => {

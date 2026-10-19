@@ -46,7 +46,7 @@ export const FailedTransferModal: React.FC<FailedTransferModalProps> = ({
     if (transfer.summarizedTransfers) {
       transfer.summarizedTransfers.forEach((tx) => {
         results.push({
-          amount: tx.baseAmount,
+          amount: tx.transaction?.amount ?? 0,
           status: StatusEnum.Complete,
           transferDate: tx.transaction?.transactedAt,
         });

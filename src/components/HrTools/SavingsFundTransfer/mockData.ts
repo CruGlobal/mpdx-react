@@ -90,7 +90,6 @@ export interface Transactions {
   transfer: Transfer;
   recurringTransfer?: RecurringTransfer | null;
   scheduledTransfer?: ScheduledTransfer | null;
-  baseAmount: number;
   summarizedTransfers?: Map<string, Transactions> | null;
   historyTruncated?: boolean;
 }
