@@ -1,5 +1,8 @@
 import React from 'react';
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
+import { AddressFilters } from './AddressFilters/AddressFilters';
+import { ExportCsvButton } from './ExportCsvButton/ExportCsvButton';
 
 interface ChangeHistoryAddressesProps {
   accountListId: string;
@@ -7,6 +10,33 @@ interface ChangeHistoryAddressesProps {
 
 export const ChangeHistoryAddresses: React.FC<
   ChangeHistoryAddressesProps
-> = ({}) => {
-  return <div>{<Typography>Change history content goes here</Typography>}</div>;
+> = () => {
+  const { t } = useTranslation();
+
+  return (
+    <Box>
+      <Box sx={{ mb: 2 }}>
+        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+          {t('Address changes')}
+        </Typography>
+        <Typography color="text.secondary">
+          {t(
+            'Every address change for your partners, including automatic updates from US Donation Services and DonorHub.',
+          )}
+        </Typography>
+        <Typography color="text.secondary">
+          {t('Check here before you send a newsletter or make calls.')}
+        </Typography>
+      </Box>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
+        <AddressFilters />
+        <ExportCsvButton />
+      </Box>
+    </Box>
+  );
 };
