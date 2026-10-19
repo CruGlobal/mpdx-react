@@ -327,47 +327,16 @@ describe('filteredTransfers', () => {
       failures: [makeFailure('2023-11-15'), makeFailure('2023-12-15')],
     });
 
-    it('should stay in upcoming while ongoing and also go to history', () => {
+    it('should go to history instead of upcoming', () => {
       const { filtered, upcoming } = filteredTransfers(
         neverSucceeded,
         historyStart,
       );
-      expect(upcoming).toHaveLength(1);
-      expect(upcoming[0].recurringTransfer?.id).toBe('8');
+      expect(upcoming).toHaveLength(0);
       expect(filtered).toHaveLength(1);
       expect(filtered[0].transaction).toBeNull();
       expect(filtered[0].recurringTransfer?.failures).toHaveLength(2);
       expect(filtered[0].summarizedTransfers?.size).toBe(0);
-    });
-
-    it('should only go to history once stopped', () => {
-      const { filtered, upcoming } = filteredTransfers(
-        makeRecurringTransactions({
-          id: '8',
-          recurringStart: '2023-11-15',
-          active: false,
-          dates: [],
-          failures: [makeFailure('2023-11-15')],
-        }),
-        historyStart,
-      );
-      expect(upcoming).toHaveLength(0);
-      expect(filtered).toHaveLength(1);
-    });
-
-    it('should not duplicate the upcoming row SAA also sends for the same recurring transfer', () => {
-      const { upcoming } = filteredTransfers(
-        [
-          ...neverSucceeded,
-          ...makeRecurringTransactions({
-            id: '8',
-            recurringStart: '2023-11-15',
-            dates: [],
-          }),
-        ],
-        historyStart,
-      );
-      expect(upcoming).toHaveLength(1);
     });
 
     it('should merge into the same row as transactions for the same recurring transfer', () => {

@@ -328,6 +328,7 @@ describe('TransfersPage', () => {
   it('requests transfer history from the start of the month one year ago', async () => {
     render(<Components />);
 
+    // SAA would default to this same window; sending it lets the page flag truncated history.
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('ReportsSavingsFundTransfer', {
         transactedAtStart: '2023-01-01',
@@ -397,7 +398,7 @@ describe('TransfersPage', () => {
     ]);
   });
 
-  it('shows an ongoing recurring transfer that never succeeded in upcoming and in history with its failures', async () => {
+  it('shows a recurring transfer that never succeeded in history with its failures', async () => {
     const neverSucceeded = [
       {
         transaction: null,
@@ -422,19 +423,12 @@ describe('TransfersPage', () => {
         scheduledTransfer: null,
       },
     ];
-    const { findAllByRole, findByRole } = render(
+    const { findAllByRole, findByRole, getByText } = render(
       <Components transfers={neverSucceeded} />,
     );
 
-    const [upcomingTable, historyTable] = await findAllByRole(
-      'grid',
-      {},
-      { timeout: 10000 },
-    );
-    expect(
-      within(upcomingTable).getByRole('row', { name: /Dec 15, 2023/ }).dataset
-        .id,
-    ).toBe('recurring-5');
+    const [historyTable] = await findAllByRole('grid', {}, { timeout: 10000 });
+    expect(getByText('Upcoming Transfers not available')).toBeInTheDocument();
 
     const row = within(historyTable).getByRole('row', {
       name: /Dec 15, 2023/,
