@@ -26,4 +26,14 @@ export const suppressedErrorPatterns = [
   // NOISE_EXCLUSION_CLAUSE's `-@error.type:AbortError`.
   'The user aborted a request.',
   'signal is aborted without reason',
+  // "ResizeObserver loop completed with undelivered notifications" /
+  // "ResizeObserver loop limit exceeded" — a benign browser quirk triggered by
+  // layout changes (closing a row, a modal resizing, etc.), not an
+  // application bug. Already excluded from the errorImpact RUM monitor's
+  // query (see scripts/safety-nets/lib/signals.ts NOISE_EXCLUSION_CLAUSE),
+  // but that clause only applies to `@type:error` events — it was missing
+  // here, so a burst of these on a low-traffic page could still get
+  // correlated to clicks as error_click frustration events and skew the
+  // frustration-by-page monitor.
+  'ResizeObserver',
 ];
