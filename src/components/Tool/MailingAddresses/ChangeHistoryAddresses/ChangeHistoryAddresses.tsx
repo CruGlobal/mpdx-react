@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { ContactFilterPartnerEnum } from 'src/graphql/types.generated';
 import { AddressChangeEmptyState } from './AddressChangeEmptyState/AddressChangeEmptyState';
 import { useAddressChangeHistoryQuery } from './AddressChangeHistory.generated';
 import { AddressChangeSummary } from './AddressChangeSummary/AddressChangeSummary';
 import { AddressChangeTable } from './AddressChangeTable/AddressChangeTable';
 import { AddressFilters } from './AddressFilters/AddressFilters';
 import { ExportCsvButton } from './ExportCsvButton/ExportCsvButton';
-import { DateRange } from './helpers';
+import {
+  ContactFilterChangedDuringEnum,
+  DateRange,
+  getChangedDuringRange,
+} from './helpers';
 
 interface ChangeHistoryAddressesProps {
   accountListId: string;
@@ -17,13 +22,26 @@ export const ChangeHistoryAddresses: React.FC<ChangeHistoryAddressesProps> = ({
   accountListId,
 }) => {
   const { t } = useTranslation();
-  const [dateRange, setDateRange] = useState<DateRange | null>(null);
+  const [partners, setPartners] = useState<ContactFilterPartnerEnum | null>(
+    null,
+  );
+  const [changedDuring, setChangedDuring] =
+    useState<ContactFilterChangedDuringEnum | null>(null);
+  const [customRange, setCustomRange] = useState<DateRange | null>(null);
   const [madeBy, setMadeBy] = useState<string | null>(null);
+  const dateRange = getChangedDuringRange(changedDuring, customRange);
+  const filtered = !!partners || !!dateRange || !!madeBy;
+
+  const handleCustomRangeChange = (range: DateRange) => {
+    setCustomRange(range);
+    setChangedDuring(ContactFilterChangedDuringEnum.Custom);
+  };
 
   const { data, previousData, loading, fetchMore } =
     useAddressChangeHistoryQuery({
       variables: {
         accountListId,
+        partners: partners ?? undefined,
         startDate: dateRange?.startDate?.toISODate() ?? undefined,
         endDate: dateRange?.endDate?.toISODate() ?? undefined,
         madeBy: madeBy ? [madeBy] : undefined,
@@ -62,8 +80,12 @@ export const ChangeHistoryAddresses: React.FC<ChangeHistoryAddressesProps> = ({
         }}
       >
         <AddressFilters
-          dateRange={dateRange}
-          onDateRangeChange={setDateRange}
+          partners={partners}
+          onPartnersChange={setPartners}
+          changedDuring={changedDuring}
+          onChangedDuringChange={setChangedDuring}
+          dateRange={customRange}
+          onDateRangeChange={handleCustomRangeChange}
           madeBy={madeBy}
           madeByOptions={madeByOptions}
           onMadeByChange={setMadeBy}
@@ -91,9 +113,7 @@ export const ChangeHistoryAddresses: React.FC<ChangeHistoryAddressesProps> = ({
             />
           </>
         ) : (
-          history && (
-            <AddressChangeEmptyState filtered={!!dateRange || !!madeBy} />
-          )
+          history && <AddressChangeEmptyState filtered={filtered} />
         )}
       </Box>
     </Box>

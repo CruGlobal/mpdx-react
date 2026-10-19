@@ -51,7 +51,9 @@ export const AddressChangeSummary: React.FC<AddressChangeSummaryProps> = ({
         {t('{{changes}} for {{partners}}', { changes, partners })}
       </Typography>
       {dateRangeText && (
-        <Typography variant="body2">{dateRangeText}</Typography>
+        <Typography variant="body2" color="mpdxBlue.main">
+          {dateRangeText}
+        </Typography>
       )}
       <Box display="flex" alignItems="center" gap={0.5} color="mpdxBlue.main">
         <SyncIcon fontSize="small" />

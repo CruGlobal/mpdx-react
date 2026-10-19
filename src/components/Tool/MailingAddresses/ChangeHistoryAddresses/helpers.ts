@@ -46,6 +46,29 @@ export interface DateRange {
   endDate: DateTime | null;
 }
 
+const changedDuringMonths: Partial<
+  Record<ContactFilterChangedDuringEnum, number>
+> = {
+  [ContactFilterChangedDuringEnum.Last3Months]: 3,
+  [ContactFilterChangedDuringEnum.Last6Months]: 6,
+  [ContactFilterChangedDuringEnum.Last12Months]: 12,
+};
+
+export const getChangedDuringRange = (
+  changedDuring: ContactFilterChangedDuringEnum | null,
+  customRange: DateRange | null,
+): DateRange | null => {
+  if (changedDuring === ContactFilterChangedDuringEnum.Custom) {
+    return customRange;
+  }
+  const months = changedDuring && changedDuringMonths[changedDuring];
+  if (!months) {
+    return null;
+  }
+  const today = DateTime.now().startOf('day');
+  return { startDate: today.minus({ months }), endDate: today };
+};
+
 export type AddressChangeRow =
   AddressChangeHistoryQuery['addressChangeHistory']['nodes'][number];
 

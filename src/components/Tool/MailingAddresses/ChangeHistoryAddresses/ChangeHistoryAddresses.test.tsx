@@ -3,6 +3,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Settings } from 'luxon';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -59,9 +60,25 @@ const emptyHistory: History = {
 };
 
 describe('ChangeHistoryAddresses', () => {
+  const nowMillis = Settings.now;
   beforeEach(() => {
     matchMediaMock({ pointer: 'fine' });
+    Settings.now = () => new Date(2026, 9, 14, 15).valueOf();
   });
+  afterEach(() => {
+    Settings.now = nowMillis;
+  });
+
+  const pickOption = async (
+    { getByRole, findByRole }: ReturnType<typeof render>,
+    select: string,
+    option: string,
+  ) => {
+    userEvent.click(getByRole('combobox', { name: select }));
+    userEvent.click(
+      within(await findByRole('listbox')).getByRole('option', { name: option }),
+    );
+  };
 
   it('shows a spinner, then the summary from the server totals', async () => {
     const { getByTestId, findByText } = render(
@@ -177,5 +194,72 @@ describe('ChangeHistoryAddresses', () => {
     expect(
       await findByText('No address changes match your filters'),
     ).toBeInTheDocument();
+  });
+
+  it('sends the partner and changed during filters together', async () => {
+    const utils = render(<TestComponent />);
+    await utils.findByText('4 were automatic');
+
+    await pickOption(utils, 'Partner', 'Lost Partners');
+    await pickOption(utils, 'Changed during', 'Last 3 Months');
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('AddressChangeHistory', {
+        accountListId,
+        partners: 'LOST',
+        startDate: '2026-07-14',
+        endDate: '2026-10-14',
+      }),
+    );
+  });
+
+  it('keeps the previous choice when the custom range is cancelled', async () => {
+    const utils = render(<TestComponent />);
+    await utils.findByText('4 were automatic');
+
+    await pickOption(utils, 'Changed during', 'Last 3 Months');
+    await pickOption(utils, 'Changed during', 'Custom Date Range');
+    userEvent.click(utils.getByRole('button', { name: 'Cancel' }));
+
+    expect(
+      utils.getByRole('combobox', { name: 'Changed during' }),
+    ).toHaveTextContent('Last 3 Months');
+  });
+
+  it('shows the default choice in each filter', async () => {
+    const { getByRole, findByText } = render(<TestComponent />);
+    await findByText('4 were automatic');
+
+    expect(getByRole('combobox', { name: 'Partner' })).toHaveTextContent(
+      'All partners',
+    );
+    expect(getByRole('combobox', { name: 'Changed during' })).toHaveTextContent(
+      'Any time',
+    );
+    expect(getByRole('combobox', { name: 'Change made by' })).toHaveTextContent(
+      'Anyone',
+    );
+  });
+
+  it('stops sending a filter once it is cleared', async () => {
+    const utils = render(<TestComponent />);
+    await utils.findByText('4 were automatic');
+
+    await pickOption(utils, 'Partner', 'Lost Partners');
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('AddressChangeHistory', {
+        partners: 'LOST',
+      }),
+    );
+    mutationSpy.mockClear();
+    await pickOption(utils, 'Partner', 'All partners');
+
+    expect(utils.getByRole('combobox', { name: 'Partner' })).toHaveTextContent(
+      'All partners',
+    );
+    expect(await utils.findByText('4 were automatic')).toBeInTheDocument();
+    expect(mutationSpy).not.toHaveGraphqlOperation('AddressChangeHistory', {
+      partners: '',
+    });
   });
 });

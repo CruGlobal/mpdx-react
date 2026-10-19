@@ -22,6 +22,12 @@ import {
 import { CustomDateRangeModal } from './CustomDateRangeModal/CustomDateRangeModal';
 
 interface AddressFiltersProps {
+  partners: ContactFilterPartnerEnum | null;
+  onPartnersChange: (partners: ContactFilterPartnerEnum | null) => void;
+  changedDuring: ContactFilterChangedDuringEnum | null;
+  onChangedDuringChange: (
+    changedDuring: ContactFilterChangedDuringEnum | null,
+  ) => void;
   dateRange: DateRange | null;
   onDateRangeChange: (dateRange: DateRange) => void;
   madeBy: string | null;
@@ -30,6 +36,10 @@ interface AddressFiltersProps {
 }
 
 export const AddressFilters: React.FC<AddressFiltersProps> = ({
+  partners,
+  onPartnersChange,
+  changedDuring,
+  onChangedDuringChange,
   dateRange,
   onDateRangeChange,
   madeBy,
@@ -56,8 +66,18 @@ export const AddressFilters: React.FC<AddressFiltersProps> = ({
   return (
     <Box display="flex" gap={2} flex={1} minWidth={0}>
       <FormControl size="small" sx={{ flex: 1, minWidth: 0 }}>
-        <InputLabel id="partner-filter-label">{t('Partner')}</InputLabel>
-        <Select labelId="partner-filter-label" label={t('Partner')}>
+        <InputLabel shrink id="partner-filter-label">
+          {t('Partner')}
+        </InputLabel>
+        <Select<ContactFilterPartnerEnum | ''>
+          labelId="partner-filter-label"
+          displayEmpty
+          notched
+          label={t('Partner')}
+          value={partners ?? ''}
+          onChange={(event) => onPartnersChange(event.target.value || null)}
+        >
+          <MenuItem value="">{t('All partners')}</MenuItem>
           {Object.values(ContactFilterPartnerEnum).map((partner) => (
             <MenuItem key={partner} value={partner}>
               {formatPartnerFilter(partner, t)}
@@ -66,33 +86,46 @@ export const AddressFilters: React.FC<AddressFiltersProps> = ({
         </Select>
       </FormControl>
       <FormControl size="small" sx={{ flex: 1, minWidth: 0 }}>
-        <InputLabel id="changed-during-filter-label">
+        <InputLabel shrink id="changed-during-filter-label">
           {t('Changed during')}
         </InputLabel>
-        <Select
+        <Select<ContactFilterChangedDuringEnum | ''>
           labelId="changed-during-filter-label"
+          displayEmpty
+          notched
           label={t('Changed during')}
+          value={changedDuring ?? ''}
           onChange={(event) => {
-            if (event.target.value === ContactFilterChangedDuringEnum.Custom) {
-              setCustomDateRangeOpen(true);
+            const value = event.target.value;
+            if (value !== ContactFilterChangedDuringEnum.Custom) {
+              onChangedDuringChange(value || null);
             }
           }}
         >
-          {Object.values(ContactFilterChangedDuringEnum).map(
-            (changedDuring) => (
-              <MenuItem key={changedDuring} value={changedDuring}>
-                {formatChangedDuringFilter(changedDuring, t)}
-              </MenuItem>
-            ),
-          )}
+          <MenuItem value="">{t('Any time')}</MenuItem>
+          {Object.values(ContactFilterChangedDuringEnum).map((option) => (
+            <MenuItem
+              key={option}
+              value={option}
+              onClick={
+                option === ContactFilterChangedDuringEnum.Custom
+                  ? () => setCustomDateRangeOpen(true)
+                  : undefined
+              }
+            >
+              {formatChangedDuringFilter(option, t)}
+            </MenuItem>
+          ))}
         </Select>
       </FormControl>
       <FormControl size="small" sx={{ flex: 1, minWidth: 0 }}>
-        <InputLabel id="change-made-by-filter-label">
+        <InputLabel shrink id="change-made-by-filter-label">
           {t('Change made by')}
         </InputLabel>
         <Select
           labelId="change-made-by-filter-label"
+          displayEmpty
+          notched
           label={t('Change made by')}
           value={madeBy ?? ''}
           onChange={(event) => onMadeByChange(event.target.value || null)}

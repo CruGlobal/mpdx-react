@@ -1,6 +1,7 @@
 query AddressChangeHistory(
   $accountListId: ID!
   $after: String
+  $partners: ContactFilterPartnerEnum
   $startDate: ISO8601Date
   $endDate: ISO8601Date
   $madeBy: [ID!]
@@ -8,6 +9,7 @@ query AddressChangeHistory(
   addressChangeHistory(
     accountListId: $accountListId
     after: $after
+    partners: $partners
     first: 50
     startDate: $startDate
     endDate: $endDate
