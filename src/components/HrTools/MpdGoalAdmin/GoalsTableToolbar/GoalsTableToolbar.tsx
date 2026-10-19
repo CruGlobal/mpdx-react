@@ -1,19 +1,10 @@
 import React, { useState } from 'react';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import SearchIcon from '@mui/icons-material/Search';
-import {
-  Box,
-  Button,
-  InputAdornment,
-  Menu,
-  MenuItem,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box, Button, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { AssignCoachModal } from '../../Shared/AssignCoach/AssignCoachModal';
+import { SearchField } from '../../Shared/SearchField/SearchField';
 import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import { PrintCohortGoalsButton } from '../PrintCohortGoalsButton/PrintCohortGoalsButton';
 import { RunAndSendModal } from '../RunAndSendModal/RunAndSendModal';
@@ -83,21 +74,7 @@ export const GoalsTableToolbar: React.FC = () => {
       justifyContent="space-between"
       sx={{ mb: 2 }}
     >
-      <TextField
-        value={search}
-        onChange={(event) => setSearch(event.target.value)}
-        label={t('Search')}
-        placeholder={t('Name, email, etc...')}
-        size="small"
-        sx={{ minWidth: { xs: '100%', sm: 260 } }}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon fontSize="small" />
-            </InputAdornment>
-          ),
-        }}
-      />
+      <SearchField value={search} onChange={setSearch} />
 
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         {hasSelection && (
