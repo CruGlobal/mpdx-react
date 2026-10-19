@@ -4,11 +4,10 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
-import { TFunction } from 'react-i18next';
 import { SavingsFundTransferFailureReasonCode } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { ScheduleEnum, StatusEnum, Transfers } from '../mockData';
-import { FailedTransferModal, getFailureReason } from './FailedTransferModal';
+import { FailedTransferModal } from './FailedTransferModal';
 
 const handleClose = jest.fn();
 
@@ -246,38 +245,5 @@ describe('FailedTransferModal', () => {
       'href',
       'mailto:HR@cru.org',
     );
-  });
-
-  describe('getFailureReason', () => {
-    const t = ((key: string) => key) as TFunction;
-
-    it.each([
-      [
-        SavingsFundTransferFailureReasonCode.InsufficientFunds,
-        'The fund did not have enough available balance.',
-      ],
-      [
-        SavingsFundTransferFailureReasonCode.InactiveAccount,
-        'The staff account was inactive.',
-      ],
-      [
-        SavingsFundTransferFailureReasonCode.SettledPeriod,
-        'The transfer date was in a period that had already closed.',
-      ],
-      [
-        SavingsFundTransferFailureReasonCode.MissingFundType,
-        'One of the funds does not exist on the staff account.',
-      ],
-      [
-        SavingsFundTransferFailureReasonCode.Other,
-        'Something went wrong while processing the transfer.',
-      ],
-      [
-        SavingsFundTransferFailureReasonCode.NotAttempted,
-        'The retry window ended before it could go through.',
-      ],
-    ])('translates reason code %s', (reasonCode, expected) => {
-      expect(getFailureReason(t, reasonCode)).toBe(expected);
-    });
   });
 });

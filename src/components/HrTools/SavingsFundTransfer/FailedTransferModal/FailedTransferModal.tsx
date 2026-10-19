@@ -13,12 +13,12 @@ import {
   Typography,
 } from '@mui/material';
 import { DateTime } from 'luxon';
-import { TFunction, Trans, useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { CancelButton } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/Shared/Modal/Modal';
-import { SavingsFundTransferFailureReasonCode } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { getLocalizedFailureReason } from '../Helper/getLocalizedFailureReason';
 import { chipStyle } from '../Table/Row/createTableRowHelper';
 import { StatusEnum, Transfers } from '../mockData';
 
@@ -28,30 +28,6 @@ interface FailedTransfers {
   transferDate: DateTime | undefined;
   reason?: string;
 }
-
-export const getFailureReason = (
-  t: TFunction,
-  reasonCode: SavingsFundTransferFailureReasonCode,
-): string => {
-  switch (reasonCode) {
-    case SavingsFundTransferFailureReasonCode.InactiveAccount:
-      return t('The staff account was inactive.');
-    case SavingsFundTransferFailureReasonCode.InsufficientFunds:
-      return t('The fund did not have enough available balance.');
-    case SavingsFundTransferFailureReasonCode.MissingFundType:
-      return t('One of the funds does not exist on the staff account.');
-    case SavingsFundTransferFailureReasonCode.NotAttempted:
-      return t('The retry window ended before it could go through.');
-    case SavingsFundTransferFailureReasonCode.Other:
-      return t('Something went wrong while processing the transfer.');
-    case SavingsFundTransferFailureReasonCode.SettledPeriod:
-      return t('The transfer date was in a period that had already closed.');
-    default: {
-      const unhandled: never = reasonCode;
-      return unhandled;
-    }
-  }
-};
 
 interface FailedTransferModalProps {
   handleClose: () => void;
@@ -81,7 +57,7 @@ export const FailedTransferModal: React.FC<FailedTransferModalProps> = ({
         amount: transfer.recurringAmount ?? 0,
         status: StatusEnum.Failed,
         transferDate: failure.occurrence,
-        reason: getFailureReason(t, failure.reasonCode),
+        reason: getLocalizedFailureReason(t, failure.reasonCode),
       });
     });
     return results;

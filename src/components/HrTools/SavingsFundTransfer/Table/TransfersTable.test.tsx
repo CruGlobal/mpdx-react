@@ -421,9 +421,12 @@ describe('TransferHistoryTable', () => {
       />,
     );
 
-    userEvent.click(await findByTitle('Failed Transfers'));
+    const failedIcon = await findByTitle('Failed Transfers');
+    const badge = failedIcon.closest<HTMLElement>('.MuiBadge-root')!;
+    expect(within(badge).getByText('2')).toBeInTheDocument();
+
+    userEvent.click(failedIcon);
     expect(await findByTestId('failed-modal')).toBeInTheDocument();
     expect(getByText('$0.00')).toBeInTheDocument();
-    expect(getByText('2')).toBeInTheDocument();
   });
 });
