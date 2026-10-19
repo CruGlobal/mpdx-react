@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { AddressChangeEmptyState } from './AddressChangeEmptyState/AddressChangeEmptyState';
 import { AddressChangeSummary } from './AddressChangeSummary/AddressChangeSummary';
 import { AddressChangeTable } from './AddressChangeTable/AddressChangeTable';
 import { AddressFilters } from './AddressFilters/AddressFilters';
@@ -50,19 +51,25 @@ export const ChangeHistoryAddresses: React.FC<
           dateRange={dateRange}
           onDateRangeChange={setDateRange}
         />
-        <ExportCsvButton />
+        <ExportCsvButton disabled={!addressChanges.length} />
       </Box>
       <Box sx={{ mt: 2 }}>
-        <AddressChangeSummary
-          changeCount={addressChanges.length}
-          partnerCount={partnerCount}
-          automaticCount={automaticCount}
-          dateRange={dateRange}
-        />
-        <AddressChangeTable
-          addressChanges={addressChanges}
-          onHistoryClick={() => {}}
-        />
+        {addressChanges.length ? (
+          <>
+            <AddressChangeSummary
+              changeCount={addressChanges.length}
+              partnerCount={partnerCount}
+              automaticCount={automaticCount}
+              dateRange={dateRange}
+            />
+            <AddressChangeTable
+              addressChanges={addressChanges}
+              onHistoryClick={() => {}}
+            />
+          </>
+        ) : (
+          <AddressChangeEmptyState filtered={!!dateRange} />
+        )}
       </Box>
     </Box>
   );
