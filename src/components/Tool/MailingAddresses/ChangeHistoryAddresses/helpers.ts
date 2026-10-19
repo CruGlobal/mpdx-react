@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import { TFunction } from 'react-i18next';
 import { ContactFilterPartnerEnum } from 'src/graphql/types.generated';
 
@@ -32,3 +33,8 @@ export const formatChangedDuringFilter = (
   };
   return labels[changedDuring];
 };
+
+export interface DateRange {
+  startDate: DateTime | null;
+  endDate: DateTime | null;
+}

@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { AddressFilters } from './AddressFilters/AddressFilters';
 import { ExportCsvButton } from './ExportCsvButton/ExportCsvButton';
+import { DateRange } from './helpers';
 
 interface ChangeHistoryAddressesProps {
   accountListId: string;
@@ -12,6 +13,7 @@ export const ChangeHistoryAddresses: React.FC<
   ChangeHistoryAddressesProps
 > = () => {
   const { t } = useTranslation();
+  const [dateRange, setDateRange] = useState<DateRange | null>(null);
 
   return (
     <Box>
@@ -34,7 +36,10 @@ export const ChangeHistoryAddresses: React.FC<
           alignItems: 'center',
         }}
       >
-        <AddressFilters />
+        <AddressFilters
+          dateRange={dateRange}
+          onDateRangeChange={setDateRange}
+        />
         <ExportCsvButton />
       </Box>
     </Box>

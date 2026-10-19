@@ -4,12 +4,29 @@ import { useTranslation } from 'react-i18next';
 import { ContactFilterPartnerEnum } from 'src/graphql/types.generated';
 import {
   ContactFilterChangedDuringEnum,
+  DateRange,
   formatChangedDuringFilter,
   formatPartnerFilter,
 } from '../helpers';
+import { CustomDateRangeModal } from './CustomDateRangeModal/CustomDateRangeModal';
 
-export const AddressFilters: React.FC = () => {
+interface AddressFiltersProps {
+  dateRange: DateRange | null;
+  onDateRangeChange: (dateRange: DateRange) => void;
+}
+
+export const AddressFilters: React.FC<AddressFiltersProps> = ({
+  dateRange,
+  onDateRangeChange,
+}) => {
   const { t } = useTranslation();
+  const [customDateRangeOpen, setCustomDateRangeOpen] = React.useState(false);
+
+  const handleClose = () => setCustomDateRangeOpen(false);
+  const handleApply = (range: DateRange) => {
+    onDateRangeChange(range);
+    setCustomDateRangeOpen(false);
+  };
 
   return (
     <Box display="flex" gap={2} flex={1} minWidth={0}>
@@ -30,6 +47,11 @@ export const AddressFilters: React.FC = () => {
         <Select
           labelId="changed-during-filter-label"
           label={t('Changed during')}
+          onChange={(event) => {
+            if (event.target.value === ContactFilterChangedDuringEnum.Custom) {
+              setCustomDateRangeOpen(true);
+            }
+          }}
         >
           {Object.values(ContactFilterChangedDuringEnum).map(
             (changedDuring) => (
@@ -48,12 +70,19 @@ export const AddressFilters: React.FC = () => {
           labelId="change-made-by-filter-label"
           label={t('Change made by')}
         >
-          {/* TODO: Replace this with actual options for "Change made by" filter */}
+          {/* TODO: Replace this with actual options for "Change msade by" filter */}
           <MenuItem key="temporary-option" value="temporary-option">
             {t('Temporary option')}
           </MenuItem>
         </Select>
       </FormControl>
+      {customDateRangeOpen && (
+        <CustomDateRangeModal
+          initialRange={dateRange}
+          handleClose={handleClose}
+          handleApply={handleApply}
+        />
+      )}
     </Box>
   );
 };
