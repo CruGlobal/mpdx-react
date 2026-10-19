@@ -7,6 +7,7 @@ import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { SavingsFundTransferFailureReasonCode } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import {
   ScheduleEnum,
@@ -381,5 +382,49 @@ describe('TransferHistoryTable', () => {
 
       expect(row.historyTruncated).toBe(true);
     });
+
+    it('carries the API failures through to the row the failed modal reads', () => {
+      const failures = [
+        {
+          occurrence: DateTime.fromISO('2023-12-15'),
+          reasonCode: SavingsFundTransferFailureReasonCode.InsufficientFunds,
+        },
+      ];
+      const row = CreateTransferRows({ ...mockHistory[1], failures });
+
+      expect(row.failures).toEqual(failures);
+      expect(CreateTransferRows(mockHistory[1]).failures).toBeNull();
+    });
+  });
+
+  it('opens the failed transfer modal for a row with failures and no completed transfers', async () => {
+    const { findByTitle, findByTestId, getByText } = render(
+      <TestComponent
+        history={[
+          {
+            ...mockHistory[1],
+            amount: 0,
+            failedCount: 2,
+            summarizedTransfers: new Map(),
+            failures: [
+              {
+                occurrence: DateTime.fromISO('2023-12-15'),
+                reasonCode:
+                  SavingsFundTransferFailureReasonCode.InsufficientFunds,
+              },
+              {
+                occurrence: DateTime.fromISO('2024-02-15'),
+                reasonCode: SavingsFundTransferFailureReasonCode.NotAttempted,
+              },
+            ],
+          },
+        ]}
+      />,
+    );
+
+    userEvent.click(await findByTitle('Failed Transfers'));
+    expect(await findByTestId('failed-modal')).toBeInTheDocument();
+    expect(getByText('$0.00')).toBeInTheDocument();
+    expect(getByText('2')).toBeInTheDocument();
   });
 });

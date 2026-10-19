@@ -1,22 +1,15 @@
 import { DateTime } from 'luxon';
 import { Transactions } from 'src/components/HrTools/SavingsFundTransfer/mockData';
-import { monthsUntilOccurrenceOnOrAfter } from './monthsUntilOccurrenceOnOrAfter';
 
 // index is the position of the summarized transfer in the filtered array
-// seenMonths is a set of months that have been seen for the recurring transfer
 // transactions is a map of transaction IDs to the original transaction objects
 interface Summary {
   index: number;
-  seenMonths: Set<string>;
   transactions: Map<string, Transactions>;
 }
 
-// Transfer history contains multiple transactions for recurring transfers.
-// This hook summarizes those recurring transfers into a single transaction with the total amount.
-// It also identifies any missed transfers and includes them as separate transactions with a failed status.
-//
-// historyStart is the start of the window the page requested the transfers for. Months before it
-// have no rows even when they ran, so the missed-month scan must not begin before it (MPDX-10044).
+// Collapses each recurring transfer into one history row with its total and SAA-reported failures.
+// historyStart is the start of the requested window; recurring transfers that began earlier are flagged as truncated.
 export function filteredTransfers(
   transfers: Transactions[],
   historyStart: DateTime,
@@ -26,89 +19,52 @@ export function filteredTransfers(
   const summary = new Map<string, Summary>();
 
   for (const transfer of transfers) {
-    // If there's no transaction, it's an upcoming transfer.
-    if (!transfer.transaction) {
-      upcoming.push(transfer);
+    const { transaction, recurringTransfer } = transfer;
+
+    if (!transaction) {
+      // A recurring transfer that only failed in the window has no transaction but belongs in history.
+      if (!recurringTransfer?.failures.length) {
+        upcoming.push(transfer);
+        continue;
+      }
+    } else if (transaction.amount <= 0) {
+      // A transfer will create a positive and negative transaction. Filter out the negative ones.
       continue;
     }
 
-    // A transfer will create a positive and negative transaction. Filter out the negative ones.
-    if (transfer.transaction.amount <= 0) {
-      continue;
-    }
-
-    // If it's a one-time transfer, just add it to the filtered list.
-    if (!transfer.recurringTransfer) {
+    if (!recurringTransfer) {
       filtered.push(transfer);
       continue;
     }
 
-    const key = transfer.recurringTransfer.id;
-    const item = summary.get(key);
-
-    const transactedAt = transfer.transaction.transactedAt;
-
+    let item = summary.get(recurringTransfer.id);
     if (!item) {
-      filtered.push({ ...transfer, transaction: { ...transfer.transaction } });
-      const idx = filtered.length - 1;
-      summary.set(key, {
-        index: idx,
-        seenMonths: new Set([`${transactedAt.year}-${transactedAt.month}`]),
-        transactions: new Map([[transfer.transaction.id, transfer]]),
-      });
-    } else {
-      // Already filtered out non-existing transactions, so it is safe to assume the transaction is valid.
-      filtered[item.index].transaction!.amount += transfer.transaction.amount;
-      item.seenMonths.add(`${transactedAt.year}-${transactedAt.month}`);
-      item.transactions.set(transfer.transaction.id, transfer);
+      filtered.push({ ...transfer, transaction: null });
+      item = { index: filtered.length - 1, transactions: new Map() };
+      summary.set(recurringTransfer.id, item);
+    }
+
+    if (transaction) {
+      const row = filtered[item.index];
+      row.transaction = row.transaction
+        ? {
+            ...row.transaction,
+            amount: row.transaction.amount + transaction.amount,
+          }
+        : { ...transaction };
+      item.transactions.set(transaction.id, transfer);
     }
   }
 
-  const currentDate = DateTime.local().startOf('day');
   const windowStart = historyStart.startOf('day');
 
-  for (const [, item] of summary) {
-    const { index, seenMonths, transactions } = item;
+  for (const [, { index, transactions }] of summary) {
     const transferRow = filtered[index];
-
     const recurring = transferRow.recurringTransfer;
-    const start = recurring?.recurringStart.startOf('day');
-    const recurringEnd = recurring?.recurringEnd?.startOf('day') ?? null;
-    let end: DateTime = DateTime.min(recurringEnd ?? currentDate, currentDate);
 
-    // A transfer stopped before its end date creates no transactions after the
-    // stop, so only look for missed months through its last actual transaction.
-    const stoppedEarly =
-      recurring?.active === false &&
-      (!recurringEnd || recurringEnd > currentDate);
-    if (stoppedEarly) {
-      const lastTransactedAt = DateTime.max(
-        ...[...transactions.values()].map((tx) => tx.transaction!.transactedAt),
-      ).startOf('day');
-      end = DateTime.min(end, lastTransactedAt);
-    }
-
-    // An invalid DateTime compares false against everything, which would keep the scan
-    // below from ever failing its `current <= end` check, so bail out before it starts.
-    if (!start?.isValid || !end.isValid || !windowStart.isValid) {
-      continue;
-    }
-
-    transferRow.missingMonths = [];
-    transferRow.historyTruncated = start < windowStart;
-
-    // Add whole months to the start so an end-of-month day does not drift once clamped.
-    let months = monthsUntilOccurrenceOnOrAfter(start, windowStart);
-    let current = start.plus({ months });
-    while (current <= end) {
-      const key = `${current.year}-${current.month}`;
-      if (!seenMonths.has(key)) {
-        transferRow.missingMonths.push(current);
-      }
-      current = start.plus({ months: ++months });
-    }
-
-    transferRow.failedCount = transferRow.missingMonths.length;
+    transferRow.historyTruncated =
+      !!recurring && recurring.recurringStart.startOf('day') < windowStart;
+    transferRow.failedCount = recurring?.failures.length ?? 0;
     transferRow.summarizedTransfers = transactions;
   }
 

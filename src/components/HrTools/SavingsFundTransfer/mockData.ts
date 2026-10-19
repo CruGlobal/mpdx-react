@@ -1,4 +1,5 @@
 import { DateTime } from 'luxon';
+import { SavingsFundTransferFailureReasonCode } from 'src/graphql/types.generated';
 
 export enum ScheduleEnum {
   OneTime = 'oneTime',
@@ -49,12 +50,19 @@ export interface SubCategory {
   id: string;
   name: string;
 }
+
+export interface RecurringTransferFailure {
+  occurrence: DateTime;
+  reasonCode: SavingsFundTransferFailureReasonCode;
+}
+
 export interface RecurringTransfer {
   id: string;
   amount: number;
   recurringStart: DateTime;
   recurringEnd: DateTime | null;
   active: boolean;
+  failures: RecurringTransferFailure[];
 }
 
 export interface ScheduledTransfer {
@@ -85,7 +93,6 @@ export interface Transactions {
   baseAmount: number;
   failedCount?: number;
   summarizedTransfers?: Map<string, Transactions> | null;
-  missingMonths?: DateTime[] | null;
   historyTruncated?: boolean;
 }
 
@@ -106,7 +113,7 @@ export interface Transfers {
   baseAmount?: number;
   failedCount?: number;
   summarizedTransfers?: Map<string, Transactions> | null;
-  missingMonths?: DateTime[] | null;
+  failures?: RecurringTransferFailure[] | null;
   historyTruncated?: boolean;
 }
 

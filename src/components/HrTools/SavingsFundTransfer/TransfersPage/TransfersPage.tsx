@@ -105,10 +105,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
   const { data: staffAccountData, error: staffAccountError } =
     useStaffAccountQuery();
 
-  // The page shows about a year of history. SAA would default to this same window if none were
-  // sent, but sending it explicitly lets the missed-month scan know where the fetched history
-  // begins, so a recurring transfer that started earlier is not shown as failed for months that
-  // have no rows (MPDX-10044).
+  // Sent explicitly so the page knows where the fetched history begins (MPDX-10044).
   const historyStart = useMemo(
     () => DateTime.local().minus({ years: 1 }).startOf('month'),
     [],
@@ -158,6 +155,10 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                 recurringEnd: tx.recurringTransfer.recurringEnd
                   ? DateTime.fromISO(tx.recurringTransfer.recurringEnd)
                   : null,
+                failures: tx.recurringTransfer.failures.map((failure) => ({
+                  occurrence: DateTime.fromISO(failure.occurrence),
+                  reasonCode: failure.reasonCode,
+                })),
               }
             : null,
           scheduledTransfer: tx.scheduledTransfer
@@ -178,7 +179,6 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
             0,
           failedCount: 0,
           summarizedTransfers: null,
-          missingMonths: null,
           historyTruncated: false,
         };
       }),
@@ -198,7 +198,11 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
     };
 
     return {
-      id: tx.transaction?.id ?? crypto.randomUUID(),
+      id:
+        tx.transaction?.id ??
+        (tx.recurringTransfer
+          ? `recurring-${tx.recurringTransfer.id}`
+          : crypto.randomUUID()),
       transferFrom: tx.transfer.sourceFundTypeName,
       transferTo: tx.transfer.destinationFundTypeName,
       amount: tx.transaction?.amount ?? 0,
@@ -215,7 +219,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
       baseAmount: tx.baseAmount,
       failedCount: tx.failedCount,
       summarizedTransfers: tx.summarizedTransfers,
-      missingMonths: tx.missingMonths,
+      failures: tx.recurringTransfer?.failures ?? null,
       historyTruncated: tx.historyTruncated,
     };
   });

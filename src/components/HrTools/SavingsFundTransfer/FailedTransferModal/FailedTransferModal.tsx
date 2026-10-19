@@ -13,9 +13,10 @@ import {
   Typography,
 } from '@mui/material';
 import { DateTime } from 'luxon';
-import { Trans, useTranslation } from 'react-i18next';
+import { TFunction, Trans, useTranslation } from 'react-i18next';
 import { CancelButton } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/Shared/Modal/Modal';
+import { SavingsFundTransferFailureReasonCode } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { chipStyle } from '../Table/Row/createTableRowHelper';
@@ -25,7 +26,35 @@ interface FailedTransfers {
   amount: number;
   status: StatusEnum;
   transferDate: DateTime | undefined;
+  reason?: string;
 }
+
+export const getFailureReason = (
+  t: TFunction,
+  reasonCode: SavingsFundTransferFailureReasonCode,
+): string => {
+  const reasons: Record<SavingsFundTransferFailureReasonCode, string> = {
+    [SavingsFundTransferFailureReasonCode.InactiveAccount]: t(
+      'The staff account was inactive.',
+    ),
+    [SavingsFundTransferFailureReasonCode.InsufficientFunds]: t(
+      'The fund did not have enough available balance.',
+    ),
+    [SavingsFundTransferFailureReasonCode.MissingFundType]: t(
+      'One of the funds does not exist on the staff account.',
+    ),
+    [SavingsFundTransferFailureReasonCode.NotAttempted]: t(
+      'The retry window ended before it could go through.',
+    ),
+    [SavingsFundTransferFailureReasonCode.Other]: t(
+      'Something went wrong while processing the transfer.',
+    ),
+    [SavingsFundTransferFailureReasonCode.SettledPeriod]: t(
+      'The transfer date was in a period that had already closed.',
+    ),
+  };
+  return reasons[reasonCode];
+};
 
 interface FailedTransferModalProps {
   handleClose: () => void;
@@ -50,15 +79,14 @@ export const FailedTransferModal: React.FC<FailedTransferModalProps> = ({
         });
       });
     }
-    if (transfer.missingMonths) {
-      transfer.missingMonths.forEach((month) => {
-        results.push({
-          amount: transfer.baseAmount || 0,
-          status: StatusEnum.Failed,
-          transferDate: month,
-        });
+    transfer.failures?.forEach((failure) => {
+      results.push({
+        amount: transfer.baseAmount || 0,
+        status: StatusEnum.Failed,
+        transferDate: failure.occurrence,
+        reason: getFailureReason(t, failure.reasonCode),
       });
-    }
+    });
     return results;
   })();
 
@@ -84,6 +112,7 @@ export const FailedTransferModal: React.FC<FailedTransferModalProps> = ({
                 <TableCell>{t('Amount')}</TableCell>
                 <TableCell>{t('Status')}</TableCell>
                 <TableCell>{t('Transfer Date')}</TableCell>
+                <TableCell>{t('Reason')}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -118,6 +147,7 @@ export const FailedTransferModal: React.FC<FailedTransferModalProps> = ({
                   <TableCell>
                     {transfer.transferDate.toFormat('MMM d, yyyy')}
                   </TableCell>
+                  <TableCell>{transfer.reason}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

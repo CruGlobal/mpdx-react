@@ -51,7 +51,7 @@ export const CreateTransferRows = (history: Transfers): Transfers => ({
   failedCount: history.failedCount,
   baseAmount: history.baseAmount,
   summarizedTransfers: history.summarizedTransfers ?? null,
-  missingMonths: history.missingMonths ?? null,
+  failures: history.failures ?? null,
   historyTruncated: history.historyTruncated ?? false,
 });
 
