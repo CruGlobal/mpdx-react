@@ -132,7 +132,7 @@ export const AddressFilters: React.FC<AddressFiltersProps> = ({
           notched
           label={t('Change made by')}
           value={madeBy ?? ''}
-          onChange={(event) => onMadeByChange(event.target.value)}
+          onChange={(event) => onMadeByChange(event.target.value || null)}
         >
           <MenuItem value="">{t('Anyone')}</MenuItem>
           {automaticOptions.length > 0 && (

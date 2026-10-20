@@ -71,7 +71,7 @@ describe('AddressChangeTable', () => {
       'href',
       `/accountLists/${accountListId}/tools/mailingAddresses/contact-1`,
     );
-    expect(row.getByText('Partner - Financial')).toBeInTheDocument();
+    expect(row.getByText('(10001) · Partner - Financial')).toBeInTheDocument();
     expect(
       row.getByText('2125 6th Ave W, Seattle, WA 98119'),
     ).toBeInTheDocument();

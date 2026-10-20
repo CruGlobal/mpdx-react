@@ -124,11 +124,18 @@ export const AddressChangeTable: React.FC<AddressChangeTableProps> = ({
               >
                 {addressChange.partnerName}
               </Link>
-              {addressChange.partnerStatus && (
-                <Typography variant="body2" color="text.secondary">
-                  {getLocalizedContactStatus(addressChange.partnerStatus)}
-                </Typography>
-              )}
+              <Typography variant="body2" color="text.secondary">
+                {[
+                  addressChange.donorAccountNumbers &&
+                    t('({{donorAccountNumbers}})', {
+                      donorAccountNumbers: addressChange.donorAccountNumbers,
+                    }),
+                  addressChange.partnerStatus &&
+                    getLocalizedContactStatus(addressChange.partnerStatus),
+                ]
+                  .filter(Boolean)
+                  .join(' · ')}
+              </Typography>
             </TableCell>
             <TableCell>
               <Typography variant="body2">
