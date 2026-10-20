@@ -1,3 +1,4 @@
+import { StrictMode } from 'react';
 import { act, render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import { OfflineIndicator } from './OfflineIndicator';
@@ -28,8 +29,19 @@ const TestComponent: React.FC = () => (
   </SnackbarProvider>
 );
 
+// Snackbar transitions chain timers (hide, then exit), so advance in steps
+// for each one to get scheduled and run
+const advanceTimersInSteps = (ms: number) => {
+  for (let elapsed = 0; elapsed < ms; elapsed += 250) {
+    act(() => {
+      jest.advanceTimersByTime(250);
+    });
+  }
+};
+
 describe('OfflineIndicator', () => {
   afterEach(() => {
+    jest.useRealTimers();
     jest.restoreAllMocks();
   });
 
@@ -46,6 +58,25 @@ describe('OfflineIndicator', () => {
     const { findByText } = render(<TestComponent />);
 
     expect(await findByText(offlineMessage)).toBeInTheDocument();
+  });
+
+  it('shows one notice and clears it under StrictMode', async () => {
+    jest.useFakeTimers();
+    setOnline(false);
+    // StrictMode runs effects twice in dev, which must not leave an extra notice behind
+    const { findByText, getAllByText, queryByText } = render(
+      <StrictMode>
+        <TestComponent />
+      </StrictMode>,
+    );
+
+    expect(await findByText(offlineMessage)).toBeInTheDocument();
+    advanceTimersInSteps(3_000);
+    expect(getAllByText(offlineMessage)).toHaveLength(1);
+
+    goOnline();
+    advanceTimersInSteps(3_000);
+    expect(queryByText(offlineMessage)).not.toBeInTheDocument();
   });
 
   it('shows the notice when the connection drops', async () => {
@@ -66,11 +97,8 @@ describe('OfflineIndicator', () => {
     expect(await findByText(offlineMessage)).toBeInTheDocument();
 
     // Longer than notistack's default 5 second auto hide
-    act(() => {
-      jest.advanceTimersByTime(30_000);
-    });
+    advanceTimersInSteps(30_000);
     expect(getByText(offlineMessage)).toBeInTheDocument();
-    jest.useRealTimers();
   });
 
   it('hides the notice and shows a toast when the connection comes back', async () => {
@@ -88,15 +116,20 @@ describe('OfflineIndicator', () => {
     );
   });
 
-  it('shows only one notice when the offline event fires twice', async () => {
+  it('shows the notice again when the connection drops right after coming back', async () => {
+    jest.useFakeTimers();
     setOnline(true);
     const { findByText, getAllByText } = render(<TestComponent />);
 
     goOffline();
+    expect(await findByText(offlineMessage)).toBeInTheDocument();
+
+    // Drop again while the first notice is still closing
     goOnline();
     goOffline();
 
-    expect(await findByText(offlineMessage)).toBeInTheDocument();
+    // Wait out the first notice's exit transition
+    advanceTimersInSteps(3_000);
     expect(getAllByText(offlineMessage)).toHaveLength(1);
   });
 });
