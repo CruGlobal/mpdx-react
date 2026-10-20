@@ -21,9 +21,15 @@ import {
 } from '../helpers';
 import { CustomDateRangeModal } from './CustomDateRangeModal/CustomDateRangeModal';
 
+const partnerOptions = [
+  ContactFilterPartnerEnum.GaveOneOrMore,
+  ContactFilterPartnerEnum.GaveLastTwoYears,
+  ContactFilterPartnerEnum.Lost,
+];
+
 interface AddressFiltersProps {
-  partners: ContactFilterPartnerEnum | null;
-  onPartnersChange: (partners: ContactFilterPartnerEnum | null) => void;
+  partners: ContactFilterPartnerEnum;
+  onPartnersChange: (partners: ContactFilterPartnerEnum) => void;
   changedDuring: ContactFilterChangedDuringEnum | null;
   onChangedDuringChange: (
     changedDuring: ContactFilterChangedDuringEnum | null,
@@ -69,16 +75,14 @@ export const AddressFilters: React.FC<AddressFiltersProps> = ({
         <InputLabel shrink id="partner-filter-label">
           {t('Partner')}
         </InputLabel>
-        <Select<ContactFilterPartnerEnum | ''>
+        <Select<ContactFilterPartnerEnum>
           labelId="partner-filter-label"
-          displayEmpty
           notched
           label={t('Partner')}
-          value={partners ?? ''}
-          onChange={(event) => onPartnersChange(event.target.value || null)}
+          value={partners}
+          onChange={(event) => onPartnersChange(event.target.value)}
         >
-          <MenuItem value="">{t('All partners')}</MenuItem>
-          {Object.values(ContactFilterPartnerEnum).map((partner) => (
+          {partnerOptions.map((partner) => (
             <MenuItem key={partner} value={partner}>
               {formatPartnerFilter(partner, t)}
             </MenuItem>
@@ -128,7 +132,7 @@ export const AddressFilters: React.FC<AddressFiltersProps> = ({
           notched
           label={t('Change made by')}
           value={madeBy ?? ''}
-          onChange={(event) => onMadeByChange(event.target.value || null)}
+          onChange={(event) => onMadeByChange(event.target.value)}
         >
           <MenuItem value="">{t('Anyone')}</MenuItem>
           {automaticOptions.length > 0 && (

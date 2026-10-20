@@ -231,7 +231,7 @@ describe('ChangeHistoryAddresses', () => {
     await findByText('4 were automatic');
 
     expect(getByRole('combobox', { name: 'Partner' })).toHaveTextContent(
-      'All partners',
+      'Gave One or More Gifts',
     );
     expect(getByRole('combobox', { name: 'Changed during' })).toHaveTextContent(
       'Any time',
@@ -245,21 +245,21 @@ describe('ChangeHistoryAddresses', () => {
     const utils = render(<TestComponent />);
     await utils.findByText('4 were automatic');
 
-    await pickOption(utils, 'Partner', 'Lost Partners');
+    await pickOption(utils, 'Change made by', 'DonorHub');
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('AddressChangeHistory', {
-        partners: 'LOST',
+        madeBy: ['source:DataServer'],
       }),
     );
     mutationSpy.mockClear();
-    await pickOption(utils, 'Partner', 'All partners');
+    await pickOption(utils, 'Change made by', 'Anyone');
 
-    expect(utils.getByRole('combobox', { name: 'Partner' })).toHaveTextContent(
-      'All partners',
-    );
+    expect(
+      utils.getByRole('combobox', { name: 'Change made by' }),
+    ).toHaveTextContent('Anyone');
     expect(await utils.findByText('4 were automatic')).toBeInTheDocument();
     expect(mutationSpy).not.toHaveGraphqlOperation('AddressChangeHistory', {
-      partners: '',
+      madeBy: [''],
     });
   });
 });

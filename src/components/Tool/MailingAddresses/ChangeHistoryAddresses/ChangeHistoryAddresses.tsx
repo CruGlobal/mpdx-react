@@ -24,8 +24,8 @@ export const ChangeHistoryAddresses: React.FC<ChangeHistoryAddressesProps> = ({
   accountListId,
 }) => {
   const { t } = useTranslation();
-  const [partners, setPartners] = useState<ContactFilterPartnerEnum | null>(
-    null,
+  const [partners, setPartners] = useState(
+    ContactFilterPartnerEnum.GaveOneOrMore,
   );
   const [changedDuring, setChangedDuring] =
     useState<ContactFilterChangedDuringEnum | null>(null);
@@ -33,7 +33,10 @@ export const ChangeHistoryAddresses: React.FC<ChangeHistoryAddressesProps> = ({
   const [madeBy, setMadeBy] = useState<string | null>(null);
   const [historyContactId, setHistoryContactId] = useState<string | null>(null);
   const dateRange = getChangedDuringRange(changedDuring, customRange);
-  const filtered = !!partners || !!dateRange || !!madeBy;
+  const filtered =
+    partners !== ContactFilterPartnerEnum.GaveOneOrMore ||
+    !!dateRange ||
+    !!madeBy;
 
   const handleCustomRangeChange = (range: DateRange) => {
     setCustomRange(range);
@@ -44,7 +47,7 @@ export const ChangeHistoryAddresses: React.FC<ChangeHistoryAddressesProps> = ({
     useAddressChangeHistoryQuery({
       variables: {
         accountListId,
-        partners: partners ?? undefined,
+        partners,
         startDate: dateRange?.startDate?.toISODate() ?? undefined,
         endDate: dateRange?.endDate?.toISODate() ?? undefined,
         madeBy: madeBy ? [madeBy] : undefined,
