@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "start": "concurrently 'next dev' 'yarn gql:w' --kill-others",
-    "build": "next build && NODE_ENV=production NO_UPDATE_NOTIFIER=1 serwist build serwist.config.mjs",
+    "build": "next build && yarn build:serwist",
     "build:analyze": "ANALYZE=true yarn build",
-    "build:amplify": "AMPLIFY_NEXTJS_EXPERIMENTAL_TRACE=true next build && NODE_ENV=production NO_UPDATE_NOTIFIER=1 serwist build serwist.config.mjs",
+    "build:amplify": "AMPLIFY_NEXTJS_EXPERIMENTAL_TRACE=true next build && yarn build:serwist",
+    "build:serwist": "NODE_ENV=production NO_UPDATE_NOTIFIER=1 serwist build serwist.config.mjs",
     "datadog:sourcemaps": "datadog-ci sourcemaps upload .next/static --service=mpdx-react --release-version=$GIT_COMMIT_SHA --minified-path-prefix=/_next/static",
     "serve": "next start",
     "disable-telemetry": "next telemetry disable",
