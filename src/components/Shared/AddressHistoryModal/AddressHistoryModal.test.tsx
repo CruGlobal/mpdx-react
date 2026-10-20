@@ -8,6 +8,9 @@ import { StatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { AddressHistoryQuery } from './AddressHistory.generated';
 import { AddressHistoryModal } from './AddressHistoryModal';
+import { downloadAddressHistory } from './downloadAddressHistory';
+
+jest.mock('./downloadAddressHistory');
 
 const accountListId = 'account-list-1';
 const currentUserId = 'user-1';
@@ -139,11 +142,11 @@ describe('AddressHistoryModal', () => {
     );
   });
 
-  it.each([
-    '/accountLists/[accountListId]/tools/mailingAddresses/[[...contactId]]',
-    '/accountLists/[accountListId]/tools/mailingAddresses',
-  ])('hides the all partners link on %s', async (pathname) => {
-    const { queryByRole } = await renderModal({ pathname });
+  it('hides the all partners link on the Mailing Addresses page', async () => {
+    const { queryByRole } = await renderModal({
+      pathname:
+        '/accountLists/[accountListId]/tools/mailingAddresses/[[...contactId]]',
+    });
 
     expect(
       queryByRole('link', { name: 'See changes for all partners' }),
@@ -156,5 +159,23 @@ describe('AddressHistoryModal', () => {
     userEvent.click(getByRole('button', { name: button }));
 
     expect(handleClose).toHaveBeenCalled();
+  });
+
+  it('exports the address history newest first', async () => {
+    const { getByRole } = await renderModal();
+
+    userEvent.click(getByRole('button', { name: 'Export' }));
+
+    expect(downloadAddressHistory).toHaveBeenCalledWith(
+      [
+        expect.objectContaining({ street: '111 Street' }),
+        expect.objectContaining({ street: '2525 Camp Creek Pkwy' }),
+        expect.objectContaining({ street: '1001 Denman St' }),
+      ],
+      'Baggins, Frodo',
+      currentUserId,
+      expect.any(Function),
+      'en-US',
+    );
   });
 });

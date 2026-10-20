@@ -9,6 +9,7 @@ import { AddressChangeSummary } from './AddressChangeSummary/AddressChangeSummar
 import { AddressChangeTable } from './AddressChangeTable/AddressChangeTable';
 import { AddressFilters } from './AddressFilters/AddressFilters';
 import { ExportCsvButton } from './ExportCsvButton/ExportCsvButton';
+import { useExportAddressChanges } from './ExportCsvButton/useExportAddressChanges';
 import {
   ContactFilterChangedDuringEnum,
   DateRange,
@@ -39,7 +40,7 @@ export const ChangeHistoryAddresses: React.FC<ChangeHistoryAddressesProps> = ({
     setChangedDuring(ContactFilterChangedDuringEnum.Custom);
   };
 
-  const { data, previousData, loading, fetchMore } =
+  const { data, previousData, loading, error, fetchMore } =
     useAddressChangeHistoryQuery({
       variables: {
         accountListId,
@@ -50,6 +51,12 @@ export const ChangeHistoryAddresses: React.FC<ChangeHistoryAddressesProps> = ({
       },
     });
   const history = data?.addressChangeHistory;
+
+  const { exporting, startExport } = useExportAddressChanges({
+    history,
+    fetchMore,
+    error,
+  });
 
   const loadMore = () => {
     if (!loading && history?.pageInfo.hasNextPage) {
@@ -92,7 +99,11 @@ export const ChangeHistoryAddresses: React.FC<ChangeHistoryAddressesProps> = ({
           madeByOptions={madeByOptions}
           onMadeByChange={setMadeBy}
         />
-        <ExportCsvButton disabled={!addressChanges.length} />
+        <ExportCsvButton
+          disabled={!addressChanges.length}
+          exporting={exporting}
+          onClick={startExport}
+        />
       </Box>
       <Box sx={{ mt: 2 }}>
         {loading && !data ? (

@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import React, { useId, useMemo } from 'react';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import CloseIcon from '@mui/icons-material/Close';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PersonIcon from '@mui/icons-material/Person';
 import SyncIcon from '@mui/icons-material/Sync';
@@ -30,6 +31,7 @@ import {
   formatChangeMadeBy,
   isAutomaticChange,
 } from './addressHistoryHelpers';
+import { downloadAddressHistory } from './downloadAddressHistory';
 
 interface AddressHistoryModalProps {
   accountListId: string;
@@ -189,6 +191,22 @@ export const AddressHistoryModal: React.FC<AddressHistoryModalProps> = ({
           </Link>
         )}
         <Box flex={1} />
+        <Button
+          variant="outlined"
+          startIcon={<FileDownloadIcon />}
+          disabled={!addresses.length}
+          onClick={() =>
+            downloadAddressHistory(
+              addresses,
+              contact?.name ?? '',
+              userData?.user.id,
+              t,
+              locale,
+            )
+          }
+        >
+          <b>{t('Export')}</b>
+        </Button>
         <Button onClick={handleClose} variant="contained">
           <b>{t('Done')}</b>
         </Button>
