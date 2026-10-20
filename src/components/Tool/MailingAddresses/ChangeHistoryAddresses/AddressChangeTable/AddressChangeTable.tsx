@@ -19,18 +19,18 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { TableVirtuoso, TableVirtuosoProps } from 'react-virtuoso';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
+import {
+  formatAddress,
+  formatChangeMadeBy,
+  isAutomaticChange,
+} from 'src/components/Shared/AddressHistoryModal/addressHistoryHelpers';
 import { useContactPanel } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { multiPageHeaderHeight } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { dateFormat } from 'src/lib/intlFormat';
-import {
-  AddressChangeRow,
-  formatAddress,
-  formatChangeMadeBy,
-  isAutomaticChange,
-} from '../helpers';
+import { AddressChangeRow } from '../helpers';
 
 const Scroller = forwardRef<
   HTMLDivElement,

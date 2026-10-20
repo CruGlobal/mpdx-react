@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import CreateIcon from '@mui/icons-material/Create';
+import HistoryIcon from '@mui/icons-material/History';
 import LocationOn from '@mui/icons-material/LocationOn';
 import { Box, Button, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { AddressHistoryModal } from 'src/components/Shared/AddressHistoryModal/AddressHistoryModal';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat';
 import { sourceToStr } from 'src/lib/sourceHelper';
@@ -97,10 +99,15 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
 
   const [showContactDetailTabMoreOpen, setShowContactDetailTabMoreOpen] =
     useState(false);
+  const [historyModalOpen, setHistoryModalOpen] = useState(false);
   return (
     <>
       <Box sx={{ position: 'relative' }}>
         <Box sx={{ position: 'absolute', right: 2, top: 2 }}>
+          <AddButton onClick={() => setHistoryModalOpen(true)} sx={{ mr: 0 }}>
+            <HistoryIcon sx={{ color: 'info.main', mr: 0.5 }} />
+            <AddText variant="subtitle1">{t('History')}</AddText>
+          </AddButton>
           <AddButton onClick={() => setAddAddressModalOpen(true)}>
             <AddIcon />
             <AddText variant="subtitle1">{t('Add Address')}</AddText>
@@ -241,6 +248,13 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
           contact={data}
           accountListId={accountListId}
           handleClose={() => setEditMailingModalOpen(false)}
+        />
+      )}
+      {historyModalOpen && (
+        <AddressHistoryModal
+          accountListId={accountListId}
+          contactId={id}
+          handleClose={() => setHistoryModalOpen(false)}
         />
       )}
     </>

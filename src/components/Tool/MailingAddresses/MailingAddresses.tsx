@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useRouter } from 'next/router';
+import React from 'react';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
@@ -6,6 +7,7 @@ import { Box, Tab } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useGetToolNotificationsQuery } from 'src/components/Layouts/Primary/TopBar/Items/NavMenu/GetToolNotifcations.generated';
+import { getQueryParam } from 'src/lib/queryParam';
 import { ChangeHistoryAddresses } from './ChangeHistoryAddresses/ChangeHistoryAddresses';
 import { ConfirmAddresses } from './ConfirmAddresses/ConfirmAddresses';
 import { MailingAddressesTabKey } from './MailingAddressesTabKey';
@@ -27,9 +29,11 @@ interface Props {
 
 const MailingAddresses: React.FC<Props> = ({ accountListId }) => {
   const { t } = useTranslation();
-  const [selectedTab, setSelectedTab] = useState(
-    MailingAddressesTabKey.Confirm,
-  );
+  const router = useRouter();
+  const selectedTab =
+    getQueryParam(router.query, 'mailingTab') === MailingAddressesTabKey.History
+      ? MailingAddressesTabKey.History
+      : MailingAddressesTabKey.Confirm;
 
   const { data: toolNotificationsData } = useGetToolNotificationsQuery({
     variables: { accountListId },
@@ -39,9 +43,16 @@ const MailingAddresses: React.FC<Props> = ({ accountListId }) => {
 
   const handleTabChange = (
     _event: React.SyntheticEvent,
-    newValue: MailingAddressesTabKey,
+    tab: MailingAddressesTabKey,
   ) => {
-    setSelectedTab(newValue);
+    router.push(
+      {
+        pathname: router.pathname,
+        query: { ...router.query, mailingTab: tab },
+      },
+      undefined,
+      { shallow: true },
+    );
   };
 
   return (

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { AddressHistoryModal } from 'src/components/Shared/AddressHistoryModal/AddressHistoryModal';
 import { ContactFilterPartnerEnum } from 'src/graphql/types.generated';
 import { AddressChangeEmptyState } from './AddressChangeEmptyState/AddressChangeEmptyState';
 import { useAddressChangeHistoryQuery } from './AddressChangeHistory.generated';
@@ -29,6 +30,7 @@ export const ChangeHistoryAddresses: React.FC<ChangeHistoryAddressesProps> = ({
     useState<ContactFilterChangedDuringEnum | null>(null);
   const [customRange, setCustomRange] = useState<DateRange | null>(null);
   const [madeBy, setMadeBy] = useState<string | null>(null);
+  const [historyContactId, setHistoryContactId] = useState<string | null>(null);
   const dateRange = getChangedDuringRange(changedDuring, customRange);
   const filtered = !!partners || !!dateRange || !!madeBy;
 
@@ -109,13 +111,20 @@ export const ChangeHistoryAddresses: React.FC<ChangeHistoryAddressesProps> = ({
               addressChanges={addressChanges}
               loadingMore={loading}
               onEndReached={loadMore}
-              onHistoryClick={() => {}}
+              onHistoryClick={({ contactId }) => setHistoryContactId(contactId)}
             />
           </>
         ) : (
           history && <AddressChangeEmptyState filtered={filtered} />
         )}
       </Box>
+      {historyContactId && (
+        <AddressHistoryModal
+          accountListId={accountListId}
+          contactId={historyContactId}
+          handleClose={() => setHistoryContactId(null)}
+        />
+      )}
     </Box>
   );
 };

@@ -149,4 +149,27 @@ describe('ContactDetailsTabMailing', () => {
     );
     expect(getByTextInTestId('Orlando, FL 32832')).toBeInTheDocument();
   });
+
+  it('opens the address history', async () => {
+    const { getByRole, findByRole } = render(
+      <TestRouter router={router}>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider>
+            <ContactDetailProvider>
+              <ContactDetailsTabMailing
+                accountListId={accountListId}
+                data={data}
+              />
+            </ContactDetailProvider>
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </TestRouter>,
+    );
+
+    userEvent.click(getByRole('button', { name: 'History' }));
+
+    expect(
+      within(await findByRole('dialog')).getByText('Address History'),
+    ).toBeInTheDocument();
+  });
 });
