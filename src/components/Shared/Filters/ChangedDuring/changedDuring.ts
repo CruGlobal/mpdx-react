@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon';
 import { TFunction } from 'react-i18next';
 import { DateRangeInput } from 'src/graphql/types.generated';
+import { dateFormat } from 'src/lib/intlFormat';
 
 export enum ContactFilterChangedDuringEnum {
   Last3Months = 'Last3Months',
@@ -84,4 +85,35 @@ export const getChangedDuringOption = (
     },
   );
   return preset ?? ContactFilterChangedDuringEnum.Custom;
+};
+
+export const formatAddressChangedFilter = (
+  range: DateRangeInput,
+  t: TFunction,
+  locale: string,
+): string => {
+  const presetLabels: Partial<Record<ContactFilterChangedDuringEnum, string>> =
+    {
+      [ContactFilterChangedDuringEnum.Last3Months]: t(
+        'Address changed in the last 3 months',
+      ),
+      [ContactFilterChangedDuringEnum.Last6Months]: t(
+        'Address changed in the last 6 months',
+      ),
+      [ContactFilterChangedDuringEnum.Last12Months]: t(
+        'Address changed in the last 12 months',
+      ),
+    };
+  const option = getChangedDuringOption(range);
+  const { startDate, endDate } = fromDateRangeInput(range);
+  const start = dateFormat(startDate, locale);
+  const end = dateFormat(endDate, locale);
+  return (
+    (option && presetLabels[option]) ??
+    (start && end
+      ? t('Address changed between {{start}} and {{end}}', { start, end })
+      : start
+        ? t('Address changed since {{start}}', { start })
+        : t('Address changed through {{end}}', { end }))
+  );
 };

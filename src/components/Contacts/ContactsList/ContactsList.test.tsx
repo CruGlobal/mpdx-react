@@ -92,7 +92,7 @@ beforeEach(() => {
 
 describe('ContactsList', () => {
   it('shows each address change while the address changed filter is on', async () => {
-    const { findByText } = render(
+    const { findByText, getByRole } = render(
       <TestComponent
         filters={{ addressChanged: { min: '2026-01-01', max: '2026-10-14' } }}
       />,
@@ -101,12 +101,14 @@ describe('ContactsList', () => {
     expect(
       await findByText('Address changed Aug 3 · automatic'),
     ).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Clear' })).toBeInTheDocument();
   });
 
   it('hides address changes without the filter', async () => {
-    const { findByText, queryByText } = render(<TestComponent />);
+    const { findByText, queryByRole, queryByText } = render(<TestComponent />);
 
     expect(await findByText('Baggins, Frodo')).toBeInTheDocument();
     expect(queryByText(/Address changed/)).not.toBeInTheDocument();
+    expect(queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
   });
 });

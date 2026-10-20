@@ -1,6 +1,8 @@
 import { DateTime, Settings } from 'luxon';
+import i18n from 'src/lib/i18n';
 import {
   ContactFilterChangedDuringEnum,
+  formatAddressChangedFilter,
   fromDateRangeInput,
   getChangedDuringOption,
   getChangedDuringRange,
@@ -98,6 +100,33 @@ describe('getChangedDuringOption', () => {
   ])('treats any other range as custom', (range) => {
     expect(getChangedDuringOption(range)).toBe(
       ContactFilterChangedDuringEnum.Custom,
+    );
+  });
+});
+
+describe('formatAddressChangedFilter', () => {
+  const nowMillis = Settings.now;
+  beforeEach(() => {
+    Settings.now = () => new Date(2026, 9, 14, 15).valueOf();
+  });
+  afterEach(() => {
+    Settings.now = nowMillis;
+  });
+
+  it.each([
+    [
+      { min: '2025-10-14', max: '2026-10-14' },
+      'Address changed in the last 12 months',
+    ],
+    [
+      { min: '2026-01-01', max: '2026-02-01' },
+      'Address changed between Jan 1, 2026 and Feb 1, 2026',
+    ],
+    [{ min: '2026-01-01' }, 'Address changed since Jan 1, 2026'],
+    [{ max: '2026-02-01' }, 'Address changed through Feb 1, 2026'],
+  ])('describes %o as "%s"', (range, description) => {
+    expect(formatAddressChangedFilter(range, i18n.t, 'en-US')).toBe(
+      description,
     );
   });
 });
