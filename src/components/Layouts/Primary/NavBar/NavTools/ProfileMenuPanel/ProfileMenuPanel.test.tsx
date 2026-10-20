@@ -1,14 +1,17 @@
 import React from 'react';
+import { ApolloClient } from '@apollo/client';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { signOut } from 'next-auth/react';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { TestSetupProvider } from 'src/components/Setup/SetupProvider';
+import { signOutAndClear } from 'src/lib/clearSessionData';
 import theme from 'src/theme';
 import { getTopBarMock } from '../../../TopBar/TopBar.mock';
 import { ProfileMenuPanel } from './ProfileMenuPanel';
+
+jest.mock('src/lib/clearSessionData');
 
 const router = {
   isReady: true,
@@ -81,11 +84,15 @@ describe('ProfileMenuPanelForNavBar', () => {
     );
   });
 
-  it('Ensure Sign Out is called with callback', () => {
+  it('Ensure Sign Out is called with callback', async () => {
     const { getByRole } = render(<TestComponent />);
 
     userEvent.click(getByRole('button', { name: 'Sign Out' }));
-    expect(signOut).toHaveBeenCalledWith({ callbackUrl: 'signOut' });
+    await waitFor(() =>
+      expect(signOutAndClear).toHaveBeenCalledWith(expect.any(ApolloClient), {
+        callbackUrl: 'signOut',
+      }),
+    );
   });
 
   it('hides links during the setup tour', async () => {
