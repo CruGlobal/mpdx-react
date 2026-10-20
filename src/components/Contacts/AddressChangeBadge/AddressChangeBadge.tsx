@@ -5,12 +5,14 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { isAutomaticChange } from 'src/components/Shared/AddressHistoryModal/addressHistoryHelpers';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
+import { Address } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatWithoutYear } from 'src/lib/intlFormat';
-import { ContactRowFragment } from './ContactRow.generated';
 
 interface AddressChangeBadgeProps {
-  addressChange: NonNullable<ContactRowFragment['latestAddressChange']>;
+  addressChange: Pick<Address, 'startDate' | 'createdAt' | 'source'> & {
+    createdByUser?: Pick<NonNullable<Address['createdByUser']>, 'id'> | null;
+  };
 }
 
 export const AddressChangeBadge: React.FC<AddressChangeBadgeProps> = ({

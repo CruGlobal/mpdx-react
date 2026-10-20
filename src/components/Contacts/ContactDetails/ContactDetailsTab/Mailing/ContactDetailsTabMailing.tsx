@@ -6,6 +6,7 @@ import { Box, Button, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { AddressChangeBadge } from 'src/components/Contacts/AddressChangeBadge/AddressChangeBadge';
 import { AddressHistoryModal } from 'src/components/Shared/AddressHistoryModal/AddressHistoryModal';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat';
@@ -165,6 +166,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                   )}
                   )
                 </Typography>
+                <AddressChangeBadge addressChange={primaryAddress} />
               </>
             )}
             {/* Show More Section */}
@@ -206,6 +208,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                     )}
                     )
                   </Typography>
+                  <AddressChangeBadge addressChange={address} />
                 </ContactDetailsMailingTextContainer>
               ))}
             {nonPrimaryAddresses.length > 0 && (

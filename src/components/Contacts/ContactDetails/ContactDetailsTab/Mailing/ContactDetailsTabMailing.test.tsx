@@ -172,4 +172,32 @@ describe('ContactDetailsTabMailing', () => {
       within(await findByRole('dialog')).getByText('Address History'),
     ).toBeInTheDocument();
   });
+
+  it('shows who changed each address and when', async () => {
+    const { findByText, getByText, getByTestId } = render(
+      <TestRouter router={router}>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider>
+            <ContactDetailProvider>
+              <ContactDetailsTabMailing
+                accountListId={accountListId}
+                data={data}
+              />
+            </ContactDetailProvider>
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </TestRouter>,
+    );
+
+    expect(
+      await findByText('Address changed Jan 1 · unknown user'),
+    ).toBeInTheDocument();
+
+    userEvent.click(getByText('Show 1 More'));
+    expect(
+      within(getByTestId('NonPrimaryAddresses')).getByText(
+        'Address changed Jan 30 · unknown user',
+      ),
+    ).toBeInTheDocument();
+  });
 });
