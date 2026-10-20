@@ -41,12 +41,10 @@ const makeClient = (apiToken: string) => {
         const errors = Array.isArray(graphQLErrors) ? graphQLErrors : [];
         errors.forEach((graphQLError) => {
           if (graphQLError?.extensions?.code === 'AUTHENTICATION_ERROR') {
-            void (async () => {
-              await signOutAndClear(client, {
-                redirect: true,
-                callbackUrl: 'signOut',
-              });
-            })();
+            signOutAndClear(client, {
+              redirect: true,
+              callbackUrl: 'signOut',
+            });
           } else if (isAccountListNotFoundError(graphQLError)) {
             client
               .query<GetDefaultAccountQuery>({
