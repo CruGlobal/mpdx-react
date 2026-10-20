@@ -116,6 +116,11 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
           attributes: createAccountAttributes,
         },
       },
+      // A rejected username/password is guidance this form already renders
+      // itself below, not an application failure, so only that code skips the
+      // global toast + Datadog report; any other error still toasts and
+      // reaches monitoring.
+      context: { suppressErrorCodes: ['INVALID'] },
       refetchQueries: ['GetUsersOrganizationsAccounts'],
       onError: () => {
         enqueueSnackbar(t('Invalid username or password.'), {
