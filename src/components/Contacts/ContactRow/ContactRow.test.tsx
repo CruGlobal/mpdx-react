@@ -53,13 +53,6 @@ const contactMock = {
     street: '1111 Test Street',
     updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
   },
-  latestAddressChange: {
-    id: 'address-1',
-    startDate: '2026-08-03',
-    createdAt: '2026-01-01T00:00:00Z',
-    source: 'Siebel',
-    createdByUser: null,
-  },
   starred: false,
   status: null,
   uncompletedTasksCount: 0,
@@ -74,6 +67,13 @@ jest.mock('../../../hooks/useTaskModal');
 const openTaskModal = jest.fn();
 const toggleSelectionById = jest.fn();
 const isRowChecked = jest.fn();
+
+const addressChange = {
+  startDate: '2026-08-03',
+  createdAt: '2026-01-01T00:00:00Z',
+  source: 'Siebel',
+  createdByUser: null,
+};
 
 const Components: React.FC<{ showAddressChange?: boolean }> = ({
   showAddressChange,
@@ -93,7 +93,7 @@ const Components: React.FC<{ showAddressChange?: boolean }> = ({
           <ContactPanelProvider>
             <ContactRow
               contact={contact}
-              showAddressChange={showAddressChange}
+              addressChange={showAddressChange ? addressChange : undefined}
             />
           </ContactPanelProvider>
         </ContactsContext.Provider>

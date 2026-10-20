@@ -27,7 +27,7 @@ interface Props {
   accountListId: string;
 }
 
-const MailingAddresses: React.FC<Props> = ({ accountListId }) => {
+export const MailingAddresses: React.FC<Props> = ({ accountListId }) => {
   const { t } = useTranslation();
   const router = useRouter();
   const selectedTab =
@@ -90,5 +90,3 @@ const MailingAddresses: React.FC<Props> = ({ accountListId }) => {
     </TabContext>
   );
 };
-
-export default MailingAddresses;

@@ -137,6 +137,8 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
           ? { ids: ids.length ? ids : undefined }
           : contactsFilters,
       first: viewMode === TableViewModeEnum.Map ? 20000 : 25,
+      includeAddressChange:
+        viewMode !== TableViewModeEnum.Map && !!contactsFilters.addressChanged,
     },
   });
   const { data, fetchMore } = contactsQueryResult;

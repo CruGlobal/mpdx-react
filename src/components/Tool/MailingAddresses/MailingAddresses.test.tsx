@@ -10,7 +10,7 @@ import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider
 import theme from 'src/theme';
 import { AddressChangeHistoryQuery } from './ChangeHistoryAddresses/AddressChangeHistory.generated';
 import { mockAddressChangeHistory } from './ChangeHistoryAddresses/ChangeHistoryAddressesMock';
-import MailingAddresses from './MailingAddresses';
+import { MailingAddresses } from './MailingAddresses';
 
 const accountListId = 'account-list-1';
 const pathname =

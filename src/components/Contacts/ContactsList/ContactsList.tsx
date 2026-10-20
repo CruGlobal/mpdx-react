@@ -38,7 +38,9 @@ export const ContactsList: React.FC = () => {
             key={contact.id}
             contact={contact}
             useTopMargin={index === 0}
-            showAddressChange={addressChangedFiltered}
+            addressChange={
+              addressChangedFiltered ? contact.latestAddressChange : undefined
+            }
           />
         )}
         groupBy={(item) => ({ label: item.name[0].toUpperCase() })}

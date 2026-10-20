@@ -9,7 +9,7 @@ import { Address } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatWithoutYear } from 'src/lib/intlFormat';
 
-interface AddressChangeBadgeProps {
+export interface AddressChangeBadgeProps {
   addressChange: Pick<Address, 'startDate' | 'createdAt' | 'source'> & {
     createdByUser?: Pick<NonNullable<Address['createdByUser']>, 'id'> | null;
   };

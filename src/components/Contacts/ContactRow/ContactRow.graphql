@@ -13,15 +13,6 @@ fragment ContactRow on Contact {
     source
     createdAt
   }
-  latestAddressChange {
-    id
-    startDate
-    createdAt
-    source
-    createdByUser {
-      id
-    }
-  }
   status
   pledgeAmount
   pledgeFrequency
