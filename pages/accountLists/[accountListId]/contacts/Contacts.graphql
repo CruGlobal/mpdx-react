@@ -3,6 +3,7 @@ query Contacts(
   $contactsFilters: ContactFilterSetInput
   $after: String
   $first: Int
+  $includeAddressChange: Boolean = false
 ) {
   contacts(
     accountListId: $accountListId
@@ -14,6 +15,15 @@ query Contacts(
       id
       avatar
       contactPhase
+      latestAddressChange @include(if: $includeAddressChange) {
+        id
+        startDate
+        createdAt
+        source
+        createdByUser {
+          id
+        }
+      }
       ...ContactRow
     }
     totalCount

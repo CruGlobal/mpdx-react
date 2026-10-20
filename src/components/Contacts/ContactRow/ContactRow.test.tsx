@@ -68,7 +68,16 @@ const openTaskModal = jest.fn();
 const toggleSelectionById = jest.fn();
 const isRowChecked = jest.fn();
 
-const Components = () => (
+const addressChange = {
+  startDate: '2026-08-03',
+  createdAt: '2026-01-01T00:00:00Z',
+  source: 'Siebel',
+  createdByUser: null,
+};
+
+const Components: React.FC<{ showAddressChange?: boolean }> = ({
+  showAddressChange,
+}) => (
   <TestRouter router={router}>
     <GqlMockedProvider>
       <ThemeProvider theme={theme}>
@@ -82,7 +91,10 @@ const Components = () => (
           }
         >
           <ContactPanelProvider>
-            <ContactRow contact={contact} />
+            <ContactRow
+              contact={contact}
+              addressChange={showAddressChange ? addressChange : undefined}
+            />
           </ContactPanelProvider>
         </ContactsContext.Provider>
       </ThemeProvider>
@@ -154,5 +166,17 @@ describe('ContactsRow', () => {
       'href',
       `/accountLists/${accountListId}/contacts/${contact.id}`,
     );
+  });
+
+  it('shows the latest address change when asked to', () => {
+    const { getByText } = render(<Components showAddressChange />);
+
+    expect(getByText('Address changed Aug 3 · automatic')).toBeInTheDocument();
+  });
+
+  it('hides the latest address change by default', () => {
+    const { queryByText } = render(<Components />);
+
+    expect(queryByText(/Address changed/)).not.toBeInTheDocument();
   });
 });

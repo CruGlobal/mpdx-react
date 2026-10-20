@@ -21,6 +21,9 @@ fragment ContactMailing on Contact {
       street
       createdAt
       startDate
+      createdByUser {
+        id
+      }
     }
   }
   greeting

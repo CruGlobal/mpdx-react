@@ -439,6 +439,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                       startIcon={<ChevronLeftIcon />}
                       size="small"
                       onClick={setPrevMonth}
+                      disabled={loading}
                     >
                       {t('Previous Month')}
                     </Button>
@@ -448,7 +449,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                       endIcon={<ChevronRightIcon />}
                       size="small"
                       onClick={setNextMonth}
-                      disabled={hasNext}
+                      disabled={hasNext || loading}
                     >
                       {t('Next Month')}
                     </Button>

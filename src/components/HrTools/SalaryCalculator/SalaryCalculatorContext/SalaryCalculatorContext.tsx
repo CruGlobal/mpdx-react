@@ -44,6 +44,8 @@ export interface SalaryCalculatorContextType {
   hcmSpouse: HcmQuery['hcm'][number] | null;
   hasSpouse: boolean;
   calculation: SalaryCalculationQuery['salaryRequest'] | null;
+  /** Whether the HCM data is still loading. The steps render before it arrives. */
+  hcmLoading: boolean;
   hcmUnavailable: boolean;
   refetchHcm: () => Promise<unknown>;
   calculationError: boolean;
@@ -95,6 +97,7 @@ export const SalaryCalculatorProvider: React.FC<
 
   const {
     data: hcmData,
+    loading: hcmLoading,
     error: hcmError,
     refetch: refetchHcmQuery,
   } = useHcmQuery({
@@ -147,6 +150,7 @@ export const SalaryCalculatorProvider: React.FC<
       hcmSpouse: eligibleSpouse,
       hasSpouse: !!eligibleSpouse,
       calculation,
+      hcmLoading,
       hcmUnavailable,
       refetchHcm,
       calculationError: !!calculationQueryError,
@@ -165,6 +169,7 @@ export const SalaryCalculatorProvider: React.FC<
     isDrawerOpen,
     toggleDrawer,
     hcmData,
+    hcmLoading,
     hcmUnavailable,
     refetchHcm,
     calculationQueryError,

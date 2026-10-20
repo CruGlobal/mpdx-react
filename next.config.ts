@@ -181,6 +181,11 @@ const config: NextConfig = {
       permanent: true,
     },
     {
+      source: '/accountLists/:accountListId/tools/fix/mailingAddresses/:path*',
+      destination: '/accountLists/:accountListId/tools/mailingAddresses/:path*',
+      permanent: true,
+    },
+    {
       source: '/accountLists/:accountListId/reports/salaryCalculator/:path*',
       destination:
         '/accountLists/:accountListId/hrTools/salaryCalculator/:path*',

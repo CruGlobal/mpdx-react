@@ -165,7 +165,7 @@ const transferSchema = (locale: string, funds: FundFieldsFragment[]) =>
           schedule?: ScheduleEnum;
           isEditing?: boolean;
         };
-        if (typeof value !== 'number') {
+        if (typeof value !== 'number' || Number.isNaN(value)) {
           return true;
         }
         // Only a new one-time transfer debits the account immediately, so

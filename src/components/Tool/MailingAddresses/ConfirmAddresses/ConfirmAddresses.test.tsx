@@ -9,19 +9,19 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { CreateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/CreateContactAddress.generated';
 import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import theme from 'src/theme';
-import FixMailingAddresses from './FixMailingAddresses';
+import { ConfirmAddresses } from './ConfirmAddresses';
 import {
   mockInvalidAddressesResponse,
   mpdxSourcedAddress,
   siebelSourcedAddress,
-} from './FixMailingAddressesMock';
+} from './ConfirmAddressesMock';
 import { InvalidAddressesQuery } from './GetInvalidAddresses.generated';
 
 const accountListId = 'account-list-1';
 const contactId = 'contactId';
 const router = {
   pathname:
-    '/accountLists/[accountListId]/tools/fix/mailingAddresses/[[...contactId]]',
+    '/accountLists/[accountListId]/tools/mailingAddresses/[[...contactId]]',
   query: { accountListId },
 };
 
@@ -58,7 +58,7 @@ const Components = ({
           onCall={onCall}
         >
           <ContactPanelProvider>
-            <FixMailingAddresses accountListId={accountListId} />
+            <ConfirmAddresses accountListId={accountListId} />
           </ContactPanelProvider>
         </GqlMockedProvider>
       </ThemeProvider>
@@ -66,7 +66,7 @@ const Components = ({
   </SnackbarProvider>
 );
 
-describe('FixMailingAddresses', () => {
+describe('ConfirmAddresses', () => {
   it('should show noData component', async () => {
     const { queryByTestId, getByText } = render(
       <Components
@@ -491,7 +491,7 @@ describe('FixMailingAddresses', () => {
     const contactName = await findByRole('link', { name: 'Baggins, Frodo' });
     expect(contactName).toHaveAttribute(
       'href',
-      `/accountLists/${accountListId}/tools/fix/mailingAddresses/${contactId}`,
+      `/accountLists/${accountListId}/tools/mailingAddresses/${contactId}`,
     );
   });
 

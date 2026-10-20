@@ -24,9 +24,9 @@ import {
   sourceToStr,
   sourcesMatch,
 } from 'src/lib/sourceHelper';
-import theme from '../../../theme';
-import NoData from '../NoData';
-import { ToolsGridContainer } from '../styledComponents';
+import theme from '../../../../theme';
+import NoData from '../../NoData';
+import { ToolsGridContainer } from '../../styledComponents';
 import Contact from './Contact';
 import {
   ContactAddressFragment,
@@ -119,7 +119,7 @@ enum ModalEnum {
   Edit = 'Edit',
 }
 
-const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
+export const ConfirmAddresses: React.FC<Props> = ({ accountListId }: Props) => {
   const { classes } = useStyles();
   const { t } = useTranslation();
   const [showEditAddressModal, setShowEditAddressModal] = useState(false);
@@ -371,7 +371,7 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
     <Box className={classes.outer} data-testid="Home">
       <Box className={classes.outer}>
         <ToolsGridContainer container spacing={3}>
-          {loading && !data && (
+          {loading && (
             <Box className={classes.outer}>
               <CircularProgress
                 data-testid="loading"
@@ -382,7 +382,7 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
 
           {!loading && data && (
             <React.Fragment>
-              {!totalContacts && <NoData tool="fixMailingAddresses" />}
+              {!totalContacts && <NoData tool="mailingAddresses" />}
               {!!totalContacts && (
                 <>
                   <Grid size={12}>
@@ -506,5 +506,3 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
     </Box>
   );
 };
-
-export default FixMailingAddresses;
