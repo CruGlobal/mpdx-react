@@ -2,6 +2,11 @@ import React, { useState } from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { AddressHistoryModal } from 'src/components/Shared/AddressHistoryModal/AddressHistoryModal';
+import {
+  ContactFilterChangedDuringEnum,
+  DateRange,
+  getChangedDuringRange,
+} from 'src/components/Shared/Filters/ChangedDuring/changedDuring';
 import { ContactFilterPartnerEnum } from 'src/graphql/types.generated';
 import { AddressChangeEmptyState } from './AddressChangeEmptyState/AddressChangeEmptyState';
 import { useAddressChangeHistoryQuery } from './AddressChangeHistory.generated';
@@ -10,11 +15,6 @@ import { AddressChangeTable } from './AddressChangeTable/AddressChangeTable';
 import { AddressFilters } from './AddressFilters/AddressFilters';
 import { ExportCsvButton } from './ExportCsvButton/ExportCsvButton';
 import { useExportAddressChanges } from './ExportCsvButton/useExportAddressChanges';
-import {
-  ContactFilterChangedDuringEnum,
-  DateRange,
-  getChangedDuringRange,
-} from './helpers';
 
 interface ChangeHistoryAddressesProps {
   accountListId: string;

@@ -8,18 +8,19 @@ import {
   Select,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { ChangedDuringSelect } from 'src/components/Shared/Filters/ChangedDuring/ChangedDuringSelect';
+import {
+  ContactFilterChangedDuringEnum,
+  DateRange,
+} from 'src/components/Shared/Filters/ChangedDuring/changedDuring';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { ContactFilterPartnerEnum } from 'src/graphql/types.generated';
 import { manualSourceValue, sourceToStr } from 'src/lib/sourceHelper';
 import {
-  ContactFilterChangedDuringEnum,
-  DateRange,
   MadeByOption,
-  formatChangedDuringFilter,
   formatPartnerFilter,
   groupMadeByOptions,
 } from '../helpers';
-import { CustomDateRangeModal } from './CustomDateRangeModal/CustomDateRangeModal';
 
 const partnerOptions = [
   ContactFilterPartnerEnum.GaveOneOrMore,
@@ -61,13 +62,6 @@ export const AddressFilters: React.FC<AddressFiltersProps> = ({
     currentUserId,
     t,
   );
-  const [customDateRangeOpen, setCustomDateRangeOpen] = React.useState(false);
-
-  const handleClose = () => setCustomDateRangeOpen(false);
-  const handleApply = (range: DateRange) => {
-    onDateRangeChange(range);
-    setCustomDateRangeOpen(false);
-  };
 
   return (
     <Box display="flex" gap={2} flex={1} minWidth={0}>
@@ -93,34 +87,15 @@ export const AddressFilters: React.FC<AddressFiltersProps> = ({
         <InputLabel shrink id="changed-during-filter-label">
           {t('Changed during')}
         </InputLabel>
-        <Select<ContactFilterChangedDuringEnum | ''>
+        <ChangedDuringSelect
           labelId="changed-during-filter-label"
-          displayEmpty
           notched
           label={t('Changed during')}
-          value={changedDuring ?? ''}
-          onChange={(event) => {
-            const value = event.target.value;
-            if (value !== ContactFilterChangedDuringEnum.Custom) {
-              onChangedDuringChange(value || null);
-            }
-          }}
-        >
-          <MenuItem value="">{t('Any time')}</MenuItem>
-          {Object.values(ContactFilterChangedDuringEnum).map((option) => (
-            <MenuItem
-              key={option}
-              value={option}
-              onClick={
-                option === ContactFilterChangedDuringEnum.Custom
-                  ? () => setCustomDateRangeOpen(true)
-                  : undefined
-              }
-            >
-              {formatChangedDuringFilter(option, t)}
-            </MenuItem>
-          ))}
-        </Select>
+          value={changedDuring}
+          customRange={dateRange}
+          onChange={onChangedDuringChange}
+          onCustomRangeApply={onDateRangeChange}
+        />
       </FormControl>
       <FormControl size="small" sx={{ flex: 1, minWidth: 0 }}>
         <InputLabel shrink id="change-made-by-filter-label">
@@ -157,13 +132,6 @@ export const AddressFilters: React.FC<AddressFiltersProps> = ({
           ))}
         </Select>
       </FormControl>
-      {customDateRangeOpen && (
-        <CustomDateRangeModal
-          initialRange={dateRange}
-          handleClose={handleClose}
-          handleApply={handleApply}
-        />
-      )}
     </Box>
   );
 };

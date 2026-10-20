@@ -7,7 +7,7 @@ import { DateTime } from 'luxon';
 import matchMediaMock from '__tests__/util/matchMediaMock';
 import { UserPreferenceContext } from 'src/components/User/Preferences/UserPreferenceProvider';
 import theme from 'src/theme';
-import { DateRange } from '../../helpers';
+import { DateRange } from '../changedDuring';
 import { CustomDateRangeModal } from './CustomDateRangeModal';
 
 const handleApply = jest.fn();

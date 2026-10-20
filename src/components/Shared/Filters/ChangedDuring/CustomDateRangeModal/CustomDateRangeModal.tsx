@@ -15,7 +15,7 @@ import { TFunction, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { CustomDateField } from 'src/components/Shared/DateTimePickers/CustomDateField';
 import { nullableDateTime } from 'src/lib/yupHelpers';
-import { DateRange } from '../../helpers';
+import { DateRange } from '../changedDuring';
 
 interface CustomDateRangeModalProps {
   initialRange: DateRange | null;

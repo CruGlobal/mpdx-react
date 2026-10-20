@@ -53,6 +53,13 @@ const contactMock = {
     street: '1111 Test Street',
     updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
   },
+  latestAddressChange: {
+    id: 'address-1',
+    startDate: '2026-08-03',
+    createdAt: '2026-01-01T00:00:00Z',
+    source: 'Siebel',
+    createdByUser: null,
+  },
   starred: false,
   status: null,
   uncompletedTasksCount: 0,
@@ -68,7 +75,9 @@ const openTaskModal = jest.fn();
 const toggleSelectionById = jest.fn();
 const isRowChecked = jest.fn();
 
-const Components = () => (
+const Components: React.FC<{ showAddressChange?: boolean }> = ({
+  showAddressChange,
+}) => (
   <TestRouter router={router}>
     <GqlMockedProvider>
       <ThemeProvider theme={theme}>
@@ -82,7 +91,10 @@ const Components = () => (
           }
         >
           <ContactPanelProvider>
-            <ContactRow contact={contact} />
+            <ContactRow
+              contact={contact}
+              showAddressChange={showAddressChange}
+            />
           </ContactPanelProvider>
         </ContactsContext.Provider>
       </ThemeProvider>
@@ -154,5 +166,17 @@ describe('ContactsRow', () => {
       'href',
       `/accountLists/${accountListId}/contacts/${contact.id}`,
     );
+  });
+
+  it('shows the latest address change when asked to', () => {
+    const { getByText } = render(<Components showAddressChange />);
+
+    expect(getByText('Address changed Aug 3 · automatic')).toBeInTheDocument();
+  });
+
+  it('hides the latest address change by default', () => {
+    const { queryByText } = render(<Components />);
+
+    expect(queryByText(/Address changed/)).not.toBeInTheDocument();
   });
 });

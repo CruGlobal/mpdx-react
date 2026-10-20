@@ -2,9 +2,9 @@ import React from 'react';
 import SyncIcon from '@mui/icons-material/Sync';
 import { Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { DateRange } from 'src/components/Shared/Filters/ChangedDuring/changedDuring';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat';
-import { DateRange } from '../helpers';
 
 interface AddressChangeSummaryProps {
   changeCount: number;

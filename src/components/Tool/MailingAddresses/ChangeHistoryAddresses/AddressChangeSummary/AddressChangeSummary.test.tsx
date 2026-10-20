@@ -1,8 +1,8 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { DateTime } from 'luxon';
+import { DateRange } from 'src/components/Shared/Filters/ChangedDuring/changedDuring';
 import theme from 'src/theme';
-import { DateRange } from '../helpers';
 import { AddressChangeSummary } from './AddressChangeSummary';
 
 const TestComponent: React.FC<{ dateRange?: DateRange | null }> = ({

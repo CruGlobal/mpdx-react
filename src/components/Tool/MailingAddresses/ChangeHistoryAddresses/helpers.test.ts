@@ -1,13 +1,7 @@
-import { DateTime, Settings } from 'luxon';
 import { AddressChangeMadeByEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import { mockAddressChangeHistory } from './ChangeHistoryAddressesMock';
-import {
-  ContactFilterChangedDuringEnum,
-  formatMadeByOption,
-  getChangedDuringRange,
-  groupMadeByOptions,
-} from './helpers';
+import { formatMadeByOption, groupMadeByOptions } from './helpers';
 
 const currentUserId = 'user-1';
 
@@ -70,41 +64,5 @@ describe('groupMadeByOptions', () => {
         { value: 'unknown_user', label: 'Unknown user' },
       ],
     });
-  });
-});
-
-describe('getChangedDuringRange', () => {
-  const nowMillis = Settings.now;
-  beforeEach(() => {
-    Settings.now = () => new Date(2026, 9, 14, 15).valueOf();
-  });
-  afterEach(() => {
-    Settings.now = nowMillis;
-  });
-
-  it.each([
-    [ContactFilterChangedDuringEnum.Last3Months, '2026-07-14'],
-    [ContactFilterChangedDuringEnum.Last6Months, '2026-04-14'],
-    [ContactFilterChangedDuringEnum.Last12Months, '2025-10-14'],
-  ])('turns %s into a range ending today', (changedDuring, startDate) => {
-    const range = getChangedDuringRange(changedDuring, null);
-
-    expect(range?.startDate?.toISODate()).toBe(startDate);
-    expect(range?.endDate?.toISODate()).toBe('2026-10-14');
-  });
-
-  it('uses the custom range for Custom', () => {
-    const customRange = {
-      startDate: DateTime.local(2026, 1, 1),
-      endDate: null,
-    };
-
-    expect(
-      getChangedDuringRange(ContactFilterChangedDuringEnum.Custom, customRange),
-    ).toBe(customRange);
-  });
-
-  it('returns no range when nothing is chosen', () => {
-    expect(getChangedDuringRange(null, null)).toBeNull();
   });
 });

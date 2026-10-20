@@ -8,12 +8,14 @@ import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import NullState from 'src/components/Shared/Filters/NullState/NullState';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
+import { useUrlFilters } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
 import { ContactRow } from '../ContactRow/ContactRow';
 
 export const ContactsList: React.FC = () => {
   const {
     contactsQueryResult: { data, loading, fetchMore },
   } = React.useContext(ContactsContext) as ContactsType;
+  const { activeFilters } = useUrlFilters();
 
   return (
     <InfiniteList
@@ -25,6 +27,7 @@ export const ContactsList: React.FC = () => {
           key={contact.id}
           contact={contact}
           useTopMargin={index === 0}
+          showAddressChange={!!activeFilters.addressChanged}
         />
       )}
       groupBy={(item) => ({ label: item.name[0].toUpperCase() })}

@@ -22,6 +22,7 @@ import { ContactPartnershipStatus } from '../ContactPartnershipStatus/ContactPar
 import { ContactUncompletedTasksCount } from '../ContactUncompletedTasksCount/ContactUncompletedTasksCount';
 import { preloadContactsRightPanel } from '../ContactsRightPanel/DynamicContactsRightPanel';
 import { StarContactIconButton } from '../StarContactIconButton/StarContactIconButton';
+import { AddressChangeBadge } from './AddressChangeBadge';
 import { ContactRowFragment } from './ContactRow.generated';
 
 // When making changes in this file, also check to see if you don't need to make changes to the below file
@@ -47,9 +48,14 @@ export const ListItemButton = styled(ButtonBase)(({ theme }) => ({
 interface Props {
   contact: ContactRowFragment;
   useTopMargin?: boolean;
+  showAddressChange?: boolean;
 }
 
-export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
+export const ContactRow: React.FC<Props> = ({
+  contact,
+  useTopMargin,
+  showAddressChange,
+}) => {
   const {
     accountListId,
     isRowChecked: isChecked,
@@ -67,6 +73,7 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
     pledgeFrequency,
     pledgeReceived,
     primaryAddress,
+    latestAddressChange,
     starred,
     status,
     uncompletedTasksCount,
@@ -141,6 +148,11 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
               )
             }
           />
+          {showAddressChange && latestAddressChange && (
+            <Box sx={{ mb: 2 }}>
+              <AddressChangeBadge addressChange={latestAddressChange} />
+            </Box>
+          )}
         </Grid>
         <Grid
           size={{
