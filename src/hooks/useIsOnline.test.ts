@@ -1,4 +1,6 @@
+import { createElement } from 'react';
 import { act, renderHook } from '@testing-library/react-hooks';
+import { renderToString } from 'react-dom/server';
 import { useIsOnline } from './useIsOnline';
 
 const setOnline = (online: boolean) => {
@@ -47,6 +49,18 @@ describe('useIsOnline', () => {
 
     goOnline();
     expect(result.current).toBe(true);
+  });
+
+  it('reports online during server rendering without reading navigator', () => {
+    // The server has no navigator, and _app renders this hook on every page,
+    // so server rendering must never touch it
+    jest.spyOn(navigator, 'onLine', 'get').mockImplementation(() => {
+      throw new Error('navigator.onLine read during server rendering');
+    });
+    const Status = () =>
+      createElement('span', null, useIsOnline() ? 'online' : 'offline');
+
+    expect(renderToString(createElement(Status))).toBe('<span>online</span>');
   });
 
   it('stops listening after unmount', () => {
