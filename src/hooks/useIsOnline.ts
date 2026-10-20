@@ -11,7 +11,6 @@ const subscribe = (onStoreChange: () => void): (() => void) => {
 
 const getSnapshot = (): boolean => navigator.onLine;
 
-// The server can't know the browser's connection, so assume online until hydration
 const getServerSnapshot = (): boolean => true;
 
 // navigator.onLine is only reliable when it is false. A true value means the
