@@ -101,11 +101,6 @@ const config: NextConfig = {
   },
   reactStrictMode: true,
   webpack: (config) => {
-    config.experiments = {
-      ...config.experiments,
-      topLevelAwait: true,
-    };
-
     config.module.rules.push(
       {
         test: /\.mjs$/,
