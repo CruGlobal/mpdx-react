@@ -7,20 +7,24 @@ import TestRouter from '__tests__/util/TestRouter';
 import theme from '../../theme';
 import { RouterGuard } from './RouterGuard';
 
+const push = jest.fn();
+
 interface TestComponentProps {
   pathname: string;
+  isReady?: boolean;
   children: string;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   pathname,
+  isReady = true,
   children,
 }) => {
   const router = {
     pathname,
-    query: { accountListId: 'accountListId' },
-    isReady: true,
-    push: jest.fn(),
+    query: isReady ? { accountListId: 'accountListId' } : {},
+    isReady,
+    push,
   };
 
   return (
@@ -61,6 +65,49 @@ describe('RouterGuard', () => {
         expect(queryByText('Authed route')).not.toBeInTheDocument(),
       );
       expect(getByTestId('LoadingIndicator')).toBeInTheDocument();
+    });
+
+    it('should render loading indicator until the router is ready', () => {
+      (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
+        data: session,
+        status: 'authenticated',
+        update: () => Promise.resolve(null),
+      });
+
+      const { queryByText, getByTestId, rerender } = render(
+        <TestComponent pathname="/authRoute" isReady={false}>
+          Authed route
+        </TestComponent>,
+      );
+
+      expect(queryByText('Authed route')).not.toBeInTheDocument();
+      expect(getByTestId('LoadingIndicator')).toBeInTheDocument();
+
+      rerender(
+        <TestComponent pathname="/authRoute">Authed route</TestComponent>,
+      );
+
+      expect(queryByText('Authed route')).toBeInTheDocument();
+    });
+
+    it('should redirect to the login page when unauthenticated', () => {
+      (useSession as jest.MockedFn<typeof useSession>).mockImplementation(
+        (options) => {
+          options?.onUnauthenticated?.();
+          return {
+            data: null,
+            status: 'loading',
+            update: () => Promise.resolve(null),
+          };
+        },
+      );
+
+      render(<TestComponent pathname="/authRoute">Authed route</TestComponent>);
+
+      expect(push).toHaveBeenCalledWith({
+        pathname: '/login',
+        query: { redirect: window.location.href },
+      });
     });
 
     it('should reauthenticate with token expires', async () => {

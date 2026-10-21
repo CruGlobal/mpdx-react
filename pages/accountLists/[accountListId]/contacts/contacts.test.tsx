@@ -13,8 +13,9 @@ import {
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import theme from 'src/theme';
 import { ContactsQuery } from './Contacts.generated';
-import Contacts from './[[...contactId]].page';
+import * as ContactsPageModule from './[[...contactId]].page';
 
+const Contacts = ContactsPageModule.default;
 const accountListId = 'account-list-1';
 
 const router = {
@@ -73,6 +74,12 @@ jest.mock('notistack', () => ({
     };
   },
 }));
+
+// getServerSideProps would make client navigation here fetch /_next/data,
+// which fails offline
+it('should not have getServerSideProps', () => {
+  expect(ContactsPageModule).not.toHaveProperty('getServerSideProps');
+});
 
 it('should render list of people', async () => {
   const { findByTestId, getByText } = render(

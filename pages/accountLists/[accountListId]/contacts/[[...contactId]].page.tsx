@@ -1,7 +1,6 @@
 import Head from 'next/head';
 import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import {
   ContactsContext,
   ContactsType,
@@ -64,6 +63,6 @@ const ContactsPage: React.FC = () => (
   </ContactsWrapper>
 );
 
+// No getServerSideProps so that client navigation here works offline:
+// RouterGuard and DefaultAccountListRedirect handle the session and "_" checks
 export default ContactsPage;
-
-export const getServerSideProps = ensureSessionAndAccountList;
