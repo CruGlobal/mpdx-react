@@ -54,9 +54,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
               <TableCell sx={{ fontWeight: 'bold', width: '70%' }}>
                 {t('Category')}
               </TableCell>
-              <TableCell
-                sx={{ fontWeight: 'bold', width: '30%', textAlign: 'center' }}
-              >
+              <TableCell sx={{ fontWeight: 'bold', width: '30%' }}>
                 {t('Amount')}
               </TableCell>
             </TableRow>
@@ -71,7 +69,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
                   </Typography>
                 </TableCell>
 
-                <TableCell sx={{ width: '30%', textAlign: 'center' }}>
+                <TableCell sx={{ width: '30%' }}>
                   {pageType === PageEnum.View ? (
                     currencyFormat(Number(values[key]) || 0, currency, locale)
                   ) : (
@@ -84,11 +82,6 @@ export const AdditionalSalaryRequest: React.FC = () => {
                         inputMode: 'decimal',
                       }}
                       placeholder={currencyFormat(0, currency, locale)}
-                      sx={{
-                        '& .MuiInputBase-input': {
-                          textAlign: 'center',
-                        },
-                      }}
                     />
                   )}
                 </TableCell>
@@ -102,7 +95,6 @@ export const AdditionalSalaryRequest: React.FC = () => {
                 sx={{
                   width: '30%',
                   fontWeight: 'bold',
-                  textAlign: 'center',
                   outline: totalError ? '2px solid red' : 'none',
                 }}
                 data-testid="total-amount"
