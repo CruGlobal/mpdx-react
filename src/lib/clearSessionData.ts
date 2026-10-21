@@ -1,5 +1,10 @@
 import { ApolloClient } from '@apollo/client';
 import { signOut } from 'next-auth/react';
+import {
+  pauseCachePersistence,
+  purgeCachePersistence,
+} from './apollo/persistence/cachePersistence';
+import { broadcastSessionEnded } from './apollo/persistence/sessionChannel';
 import { addDatadogError, clearDatadogUser } from './dataDog';
 import { shouldKeepOnSignOut } from './serviceWorker/cacheNames';
 
@@ -34,10 +39,12 @@ export const clearSessionData = async (
   client: ApolloClient<unknown>,
 ): Promise<void> => {
   await attempt('clearDatadogUser', clearDatadogUser);
-  // MPDX-10169 adds the persistor purge here.
+  await attempt('pauseCachePersistence', pauseCachePersistence);
   await attempt('localStorage', () => window.localStorage.clear());
   await attempt('clearStore', () => client.clearStore());
+  await attempt('purgeCachePersistence', purgeCachePersistence);
   await attempt('caches', clearCaches);
+  await attempt('broadcast', broadcastSessionEnded);
 };
 
 /**
