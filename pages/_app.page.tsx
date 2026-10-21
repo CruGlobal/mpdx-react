@@ -25,6 +25,7 @@ import { GlobalStyles } from 'src/components/GlobalStyles/GlobalStyles';
 import { Helpjuice } from 'src/components/Helpjuice/Helpjuice';
 import PrimaryLayout from 'src/components/Layouts/Primary';
 import Loading from 'src/components/Loading';
+import { OfflineIndicator } from 'src/components/OfflineIndicator/OfflineIndicator';
 import { RouterGuard } from 'src/components/RouterGuard/RouterGuard';
 import { SetupProvider } from 'src/components/Setup/SetupProvider';
 import { SnackbarUtilsConfigurator } from 'src/components/Snackbar/Snackbar';
@@ -211,6 +212,7 @@ const App = ({
                           </RouterGuard>
                         )}
                         <Loading />
+                        <OfflineIndicator />
                       </SnackbarProvider>
                     </LocalizationProvider>
                   </ThemeProvider>
