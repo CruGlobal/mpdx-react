@@ -4,6 +4,7 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Settings } from 'luxon';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { removeTagsFromFilters } from 'pages/accountLists/[accountListId]/tasks/sanitizeFilters';
@@ -23,6 +24,7 @@ import {
   UserOptionFragment,
 } from './FilterPanel.generated';
 import {
+  filterPanelAddressChangedMock,
   filterPanelDefaultMock,
   filterPanelFeaturedMock,
   filterPanelNoteSearchMock,
@@ -982,6 +984,113 @@ describe('FilterPanel', () => {
       );
 
       expect(queryByRole('button', { name: /^Tags/ })).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Address Changed', () => {
+    const nowMillis = Settings.now;
+    const last12Months = { min: '2025-10-14', max: '2026-10-14' };
+
+    beforeEach(() => {
+      Settings.now = () => new Date(2026, 9, 14, 15).valueOf();
+    });
+    afterEach(() => {
+      Settings.now = nowMillis;
+    });
+
+    const renderAddressChanged = async (
+      initialFilters: ContactFilterSetInput = {},
+    ) => {
+      const utils = render(
+        <TestComponent
+          filters={[filterPanelAddressChangedMock]}
+          savedFilters={[]}
+          defaultExpandedFilterGroups={new Set(['Contact Location'])}
+          initialFilters={initialFilters}
+        />,
+      );
+      await utils.findByRole('combobox', { name: 'Address Changed' });
+      return utils;
+    };
+
+    const pickChangedDuring = async (
+      { getByRole, findByRole }: ReturnType<typeof render>,
+      option: string,
+    ) => {
+      userEvent.click(getByRole('combobox', { name: 'Address Changed' }));
+      userEvent.click(
+        within(await findByRole('listbox')).getByRole('option', {
+          name: option,
+        }),
+      );
+    };
+
+    const savedFilters = () =>
+      deserializeFilters(routerReplace.mock.lastCall[0].query.filters);
+
+    it('starts on any time with automatic updates included', async () => {
+      const { getByRole, getByText } = await renderAddressChanged();
+
+      expect(
+        getByRole('combobox', { name: 'Address Changed' }),
+      ).toHaveTextContent('Any time');
+      expect(
+        getByRole('checkbox', { name: 'Include automatic updates' }),
+      ).toBeChecked();
+      expect(
+        getByRole('checkbox', { name: 'Include automatic updates' }),
+      ).toBeDisabled();
+      expect(getByText('New')).toBeInTheDocument();
+    });
+
+    it('saves a preset as a date range', async () => {
+      const utils = await renderAddressChanged();
+
+      await pickChangedDuring(utils, 'Last 12 Months');
+
+      expect(savedFilters()).toEqual({ addressChanged: last12Months });
+    });
+
+    it('only saves automatic updates when they are excluded', async () => {
+      const { getByRole } = await renderAddressChanged({
+        addressChanged: last12Months,
+      });
+
+      expect(
+        getByRole('combobox', { name: 'Address Changed' }),
+      ).toHaveTextContent('Last 12 Months');
+      userEvent.click(
+        getByRole('checkbox', { name: 'Include automatic updates' }),
+      );
+
+      expect(savedFilters()).toEqual({
+        addressChanged: last12Months,
+        addressChangedIncludeAutomatic: false,
+      });
+    });
+
+    it('clears both filters on any time', async () => {
+      const utils = await renderAddressChanged({
+        addressChanged: last12Months,
+        addressChangedIncludeAutomatic: false,
+      });
+
+      expect(
+        utils.getByRole('checkbox', { name: 'Include automatic updates' }),
+      ).not.toBeChecked();
+      await pickChangedDuring(utils, 'Any time');
+
+      expect(routerReplace.mock.lastCall[0].query.filters).toBeUndefined();
+    });
+
+    it('shows a saved range that is not a preset as custom', async () => {
+      const { getByRole } = await renderAddressChanged({
+        addressChanged: { min: '2026-01-01', max: '2026-02-01' },
+      });
+
+      expect(
+        getByRole('combobox', { name: 'Address Changed' }),
+      ).toHaveTextContent('Custom Date Range');
     });
   });
 });

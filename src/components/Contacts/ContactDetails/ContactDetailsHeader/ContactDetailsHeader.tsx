@@ -212,6 +212,7 @@ export const ContactDetailsHeader: React.FC<Props> = ({
       <HeaderSectionWrap>
         <Box flex={1}>
           <ContactHeaderAddressSection
+            accountListId={accountListId}
             loading={loading}
             contact={data?.contact}
           />

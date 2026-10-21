@@ -1,0 +1,25 @@
+query AddressHistory($accountListId: ID!, $contactId: ID!) {
+  contact(accountListId: $accountListId, id: $contactId) {
+    id
+    name
+    status
+    addresses(first: 25) {
+      nodes {
+        id
+        street
+        city
+        state
+        postalCode
+        source
+        changeDate
+        createdAt
+        primaryMailingAddress
+        createdByUser {
+          id
+          firstName
+          lastName
+        }
+      }
+    }
+  }
+}
