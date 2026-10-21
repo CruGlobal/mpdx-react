@@ -1,6 +1,6 @@
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
 import { DateTime } from 'luxon';
+import { render } from '__tests__/util/testingLibraryReactMock';
 import { DateRange } from 'src/components/Shared/Filters/ChangedDuring/changedDuring';
 import theme from 'src/theme';
 import { AddressChangeSummary } from './AddressChangeSummary';
@@ -27,6 +27,22 @@ describe('AddressChangeSummary', () => {
 
     expect(getByText('6 address changes for 5 partners')).toBeInTheDocument();
     expect(getByText('4 were automatic')).toBeInTheDocument();
+  });
+
+  it('uses singular English for counts of one', () => {
+    const { getByText } = render(
+      <ThemeProvider theme={theme}>
+        <AddressChangeSummary
+          changeCount={1}
+          partnerCount={1}
+          automaticCount={1}
+          dateRange={null}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(getByText('1 address change for 1 partner')).toBeInTheDocument();
+    expect(getByText('1 was automatic')).toBeInTheDocument();
   });
 
   it.each([

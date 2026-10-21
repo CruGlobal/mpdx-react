@@ -51,12 +51,8 @@ export const ContactHeaderAddressSection = ({
       </ContactHeaderSection>
     );
   } else if (envelope && primaryAddress) {
-    const { street, city, state, postalCode, startDate, createdAt } =
-      primaryAddress;
-    const changedDate = dateFormat(
-      DateTime.fromISO(startDate ?? createdAt),
-      locale,
-    );
+    const { street, city, state, postalCode, changeDate } = primaryAddress;
+    const changedDate = dateFormat(DateTime.fromISO(changeDate), locale);
 
     if (street && city && postalCode) {
       const additionalOptions = state ? `${state}+${postalCode}` : postalCode;

@@ -3,6 +3,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { GraphQLError } from 'graphql';
 import { Settings } from 'luxon';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
@@ -20,11 +21,14 @@ import {
 
 const accountListId = 'account-list-1';
 const mutationSpy = jest.fn();
+let loadCount = 0;
 
 type History = AddressChangeHistoryQuery['addressChangeHistory'];
 
-const TestComponent: React.FC<{ history?: History }> = ({
+// failingCall: which AddressChangeHistory request (1 = first load, 2 = the next page) fails once
+const TestComponent: React.FC<{ history?: History; failingCall?: number }> = ({
   history = mockAddressChangeHistory,
+  failingCall,
 }) => (
   <ThemeProvider theme={theme}>
     <UserPreferenceContext.Provider value={{ locale: 'en-US' }}>
@@ -36,7 +40,15 @@ const TestComponent: React.FC<{ history?: History }> = ({
             <GqlMockedProvider
               mocks={{
                 GetUser: { user: { id: currentUserId } },
-                AddressChangeHistory: { addressChangeHistory: history },
+                AddressChangeHistory: {
+                  addressChangeHistory: () => {
+                    // Throwing makes that load fail
+                    if (++loadCount === failingCall) {
+                      throw new GraphQLError('Address changes failed');
+                    }
+                    return history;
+                  },
+                },
               }}
               onCall={mutationSpy}
             >
@@ -62,6 +74,7 @@ const emptyHistory: History = {
 describe('ChangeHistoryAddresses', () => {
   const nowMillis = Settings.now;
   beforeEach(() => {
+    loadCount = 0;
     matchMediaMock({ pointer: 'fine' });
     Settings.now = () => new Date(2026, 9, 14, 15).valueOf();
   });
@@ -100,6 +113,66 @@ describe('ChangeHistoryAddresses', () => {
     expect(await findByText('40 were automatic')).toBeInTheDocument();
   });
 
+  it('shows an inline retry when loading the next page fails', async () => {
+    const { findByText, getByRole, queryByText } = render(
+      <TestComponent
+        failingCall={2}
+        history={{
+          ...mockAddressChangeHistory,
+          pageInfo: { endCursor: 'cursor-1', hasNextPage: true },
+        }}
+      />,
+    );
+
+    expect(
+      await findByText('Unable to load more address changes.'),
+    ).toBeInTheDocument();
+    expect(queryByText('4 were automatic')).toBeInTheDocument();
+
+    mutationSpy.mockClear();
+    userEvent.click(getByRole('button', { name: 'Retry' }));
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('AddressChangeHistory', {
+        after: 'cursor-1',
+      }),
+    );
+    await waitFor(() =>
+      expect(
+        queryByText('Unable to load more address changes.'),
+      ).not.toBeInTheDocument(),
+    );
+  });
+
+  it('does not show an old page failure on results for new filters', async () => {
+    // The API's cursors are offsets, so every first page ends at the same cursor
+    const utils = render(
+      <TestComponent
+        failingCall={2}
+        history={{
+          ...mockAddressChangeHistory,
+          pageInfo: { endCursor: 'cursor-1', hasNextPage: true },
+        }}
+      />,
+    );
+    await utils.findByText('Unable to load more address changes.');
+
+    await pickOption(utils, 'Partner', 'Lost Partners');
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('AddressChangeHistory', {
+        partners: 'LOST',
+      }),
+    );
+    // Wait until the new results are showing, not the loading gap before them
+    await waitFor(() =>
+      expect(utils.queryByTestId('loading')).not.toBeInTheDocument(),
+    );
+    expect(await utils.findByText('4 were automatic')).toBeInTheDocument();
+    expect(
+      utils.queryByText('Unable to load more address changes.'),
+    ).not.toBeInTheDocument();
+  });
+
   it('loads the next page when the table reaches the end', async () => {
     render(
       <TestComponent
@@ -118,11 +191,37 @@ describe('ChangeHistoryAddresses', () => {
     );
   });
 
-  it('shows the empty state when there are no changes', async () => {
+  it('shows an error with a retry that loads the changes when the first load fails', async () => {
+    const { findByText, getByRole, queryByTestId, queryByText } = render(
+      <TestComponent failingCall={1} />,
+    );
+
+    expect(
+      await findByText('Unable to load address changes.'),
+    ).toBeInTheDocument();
+    expect(queryByTestId('address-changes-null-state')).not.toBeInTheDocument();
+
+    userEvent.click(getByRole('button', { name: 'Retry' }));
+    expect(await findByText('4 were automatic')).toBeInTheDocument();
+    expect(
+      queryByText('Unable to load address changes.'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows the empty state when there are no changes at any time', async () => {
+    const utils = render(<TestComponent history={emptyHistory} />);
+    await pickOption(utils, 'Changed during', 'Any time');
+
+    expect(
+      await utils.findByText('No address changes available yet'),
+    ).toBeInTheDocument();
+  });
+
+  it('says the default date range is filtering when it finds nothing', async () => {
     const { findByText } = render(<TestComponent history={emptyHistory} />);
 
     expect(
-      await findByText('No address changes available yet'),
+      await findByText('No address changes in the last 12 months'),
     ).toBeInTheDocument();
   });
 
@@ -179,9 +278,9 @@ describe('ChangeHistoryAddresses', () => {
   });
 
   it('shows the filtered empty state when a filter matches nothing', async () => {
-    const { getByRole, findByRole, findByText } = render(
-      <TestComponent history={emptyHistory} />,
-    );
+    const utils = render(<TestComponent history={emptyHistory} />);
+    const { getByRole, findByRole, findByText } = utils;
+    await pickOption(utils, 'Changed during', 'Any time');
     await findByText('No address changes available yet');
 
     userEvent.click(getByRole('combobox', { name: 'Change made by' }));
@@ -234,10 +333,21 @@ describe('ChangeHistoryAddresses', () => {
       'Gave One or More Gifts',
     );
     expect(getByRole('combobox', { name: 'Changed during' })).toHaveTextContent(
-      'Any time',
+      'Last 12 Months',
     );
     expect(getByRole('combobox', { name: 'Change made by' })).toHaveTextContent(
       'Anyone',
+    );
+  });
+
+  it('loads the last 12 months by default', async () => {
+    render(<TestComponent />);
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('AddressChangeHistory', {
+        startDate: '2025-10-14',
+        endDate: '2026-10-14',
+      }),
     );
   });
 

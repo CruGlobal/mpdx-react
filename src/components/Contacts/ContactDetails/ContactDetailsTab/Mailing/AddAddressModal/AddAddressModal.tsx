@@ -14,6 +14,8 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { AddressLocationSelect } from 'src/common/Selects/AddressLocationSelect';
+import { latestAddressChangeRefetch } from 'src/components/Contacts/AddressChangeBadge/latestAddressChangeRefetch';
+import { evictAddressChangeHistory } from 'src/components/Shared/AddressHistoryModal/addressHistoryHelpers';
 import {
   CancelButton,
   SubmitButton,
@@ -69,6 +71,7 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
           ...attributes,
         },
       },
+      refetchQueries: latestAddressChangeRefetch(accountListId, contactId),
       update: (cache, { data: createdAddressData }) => {
         if (handleUpdateCache) {
           handleUpdateCache(cache, {
@@ -104,6 +107,7 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
             cache.writeQuery({ ...query, data });
           }
         }
+        evictAddressChangeHistory(cache);
       },
     });
     const newAddressId = response.data?.createAddress?.address?.id;

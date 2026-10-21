@@ -5,6 +5,7 @@ import { DeepPartial } from 'ts-essentials';
 import {
   ProgressiveApprovalTierEnum,
   ProgressiveApprovalTierReasonEnum,
+  SecaStatusEnum,
 } from 'src/graphql/types.generated';
 import { SalaryCalculationQuery } from '../../SalaryCalculatorContext/SalaryCalculation.generated';
 import {
@@ -353,20 +354,89 @@ This may affect your selected effective date.',
       expect(queryByTestId('YtdAsrTooltip')).not.toBeInTheDocument();
     });
 
-    it('shows SECA opt-out text', async () => {
-      const { findByText, getByText } = render(
-        <TestComponent
-          salaryRequestMock={{
-            calculations: { secaEstimatedFraction: 0 },
-            spouseCalculations: { secaEstimatedFraction: 0 },
-          }}
-        />,
-      );
+    describe('SECA note', () => {
+      it('says who opted out of SECA', async () => {
+        const { findByText, getByText } = render(
+          <TestComponent
+            hcmUser={{ staffInfo: { secaStatus: SecaStatusEnum.Optout } }}
+            hcmSpouse={{ staffInfo: { secaStatus: SecaStatusEnum.Optout } }}
+            salaryRequestMock={{
+              calculations: { requestedSeca: 0 },
+              spouseCalculations: { requestedSeca: 0 },
+            }}
+          />,
+        );
 
-      expect(
-        await findByText('John has opted out of SECA'),
-      ).toBeInTheDocument();
-      expect(getByText('Jane has opted out of SECA')).toBeInTheDocument();
+        expect(
+          await findByText('John has opted out of SECA'),
+        ).toBeInTheDocument();
+        expect(getByText('Jane has opted out of SECA')).toBeInTheDocument();
+      });
+
+      it('says who pays FICA instead of SECA', async () => {
+        const { findByText, queryByText } = render(
+          <TestComponent
+            hcmUser={{ staffInfo: { secaStatus: SecaStatusEnum.Fica } }}
+            salaryRequestMock={{ calculations: { requestedSeca: 0 } }}
+          />,
+        );
+
+        expect(
+          await findByText('John pays FICA instead of SECA'),
+        ).toBeInTheDocument();
+        expect(
+          queryByText(/Jane/, { selector: 'span' }),
+        ).not.toBeInTheDocument();
+      });
+
+      it('warns when HCM has no SECA status on file', async () => {
+        const { findByText } = render(
+          <TestComponent
+            hcmUser={{ staffInfo: { secaStatus: null } }}
+            salaryRequestMock={{ calculations: { requestedSeca: 0 } }}
+          />,
+        );
+
+        expect(
+          await findByText(
+            'HCM has no SECA status on file for John, so no SECA is included and the cap may be too low. Contact HR or Payroll to fix it.',
+          ),
+        ).toBeInTheDocument();
+      });
+
+      it('does not call a SECA payer opted out when the estimate is zero', async () => {
+        const { findByRole, queryByText } = render(
+          <TestComponent
+            salaryRequestMock={{
+              calculations: { secaEstimatedFraction: 0, requestedSeca: 0 },
+              spouseCalculations: {
+                secaEstimatedFraction: 0,
+                requestedSeca: 0,
+              },
+            }}
+          />,
+        );
+
+        // The HCM data, not just the calculation, has to be on screen before the note could show
+        await findByRole('columnheader', { name: 'Jane' });
+        expect(queryByText(/opted out of SECA/)).not.toBeInTheDocument();
+        expect(queryByText(/no SECA status/)).not.toBeInTheDocument();
+      });
+
+      it('stays silent when a non-SECA status arrives with a non-zero SECA amount', async () => {
+        const { findByRole, getByText, queryByText } = render(
+          <TestComponent
+            hcmUser={{ staffInfo: { secaStatus: SecaStatusEnum.Optout } }}
+            hcmSpouse={{ staffInfo: { secaStatus: SecaStatusEnum.Fica } }}
+          />,
+        );
+
+        await findByRole('columnheader', { name: 'Jane' });
+        expect(getByText('$10,002.00')).toBeInTheDocument();
+        expect(getByText('$20,002.00')).toBeInTheDocument();
+        expect(queryByText(/opted out of SECA/)).not.toBeInTheDocument();
+        expect(queryByText(/pays FICA/)).not.toBeInTheDocument();
+      });
     });
   });
 

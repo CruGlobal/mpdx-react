@@ -1599,6 +1599,7 @@ describe('PersonModal', () => {
                 region: 'some region',
                 source: 'some source',
                 createdAt: '2023-01-01T00:00:00.000Z',
+                changeDate: '2020-01-01',
               },
             ],
           },

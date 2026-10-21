@@ -17,8 +17,7 @@ query Contacts(
       contactPhase
       latestAddressChange @include(if: $includeAddressChange) {
         id
-        startDate
-        createdAt
+        changeDate
         source
         createdByUser {
           id

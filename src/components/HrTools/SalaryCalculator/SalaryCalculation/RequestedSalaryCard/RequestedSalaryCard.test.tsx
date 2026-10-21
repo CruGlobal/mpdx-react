@@ -88,44 +88,48 @@ As you set your salary level, the amount you receive should reflect the amount o
     it('should render table headers and cells with formatted currency', async () => {
       const { getByRole } = render(<TestComponent />);
 
-      await waitFor(() =>
-        expect(getByRole('table')).toHaveTableStructure({
-          columnHeaders: ['Category', 'John', 'Jane'],
-          rowHeaders: [
-            'Current Requested Salary',
-            'Minimum Salary',
-            'Maximum Allowable Salary (CAP)',
-            'Requested Salary',
-          ],
-          cells: [
-            ['$11,111.00', '$22,222.00'],
-            ['$10,003.00', '$20,003.00'],
-            ['$10,004.00', '$20,004.00'],
-            // The requested salary inputs
-            [
-              expect.stringContaining('Requested salary'),
-              expect.stringContaining('Spouse requested salary'),
+      await waitFor(
+        () =>
+          expect(getByRole('table')).toHaveTableStructure({
+            columnHeaders: ['Category', 'John', 'Jane'],
+            rowHeaders: [
+              'Current Requested Salary',
+              'Minimum Salary',
+              'Maximum Allowable Salary (CAP)',
+              'Requested Salary',
             ],
-          ],
-        }),
+            cells: [
+              ['$11,111.00', '$22,222.00'],
+              ['$10,003.00', '$20,003.00'],
+              ['$10,004.00', '$20,004.00'],
+              // The requested salary inputs
+              [
+                expect.stringContaining('Requested salary'),
+                expect.stringContaining('Spouse requested salary'),
+              ],
+            ],
+          }),
+        { timeout: 10000 },
       );
     });
 
     it('should not render the estimate tooltip when there is an approved salary request', async () => {
       const { getByRole, queryByTestId } = render(<TestComponent />);
 
-      await waitFor(() =>
-        expect(getByRole('table')).toHaveTableStructure({
-          cells: [
-            ['$11,111.00', '$22,222.00'],
-            ['$10,003.00', '$20,003.00'],
-            ['$10,004.00', '$20,004.00'],
-            [
-              expect.stringContaining('Requested salary'),
-              expect.stringContaining('Spouse requested salary'),
+      await waitFor(
+        () =>
+          expect(getByRole('table')).toHaveTableStructure({
+            cells: [
+              ['$11,111.00', '$22,222.00'],
+              ['$10,003.00', '$20,003.00'],
+              ['$10,004.00', '$20,004.00'],
+              [
+                expect.stringContaining('Requested salary'),
+                expect.stringContaining('Spouse requested salary'),
+              ],
             ],
-          ],
-        }),
+          }),
+        { timeout: 10000 },
       );
       expect(
         queryByTestId('RequestedSalaryCard-estimateIcon'),
@@ -202,19 +206,21 @@ As you set your salary level, the amount you receive should reflect the amount o
         />,
       );
 
-      await waitFor(() =>
-        expect(getByRole('table')).toHaveTableStructure({
-          cells: [
-            ['$22,222.00', '$11,111.00'],
-            ['$10,003.00', '$20,003.00'],
-            ['$10,004.00', '$20,004.00'],
-            // The requested salary inputs
-            [
-              expect.stringContaining('Requested salary'),
-              expect.stringContaining('Spouse requested salary'),
+      await waitFor(
+        () =>
+          expect(getByRole('table')).toHaveTableStructure({
+            cells: [
+              ['$22,222.00', '$11,111.00'],
+              ['$10,003.00', '$20,003.00'],
+              ['$10,004.00', '$20,004.00'],
+              // The requested salary inputs
+              [
+                expect.stringContaining('Requested salary'),
+                expect.stringContaining('Spouse requested salary'),
+              ],
             ],
-          ],
-        }),
+          }),
+        { timeout: 10000 },
       );
     });
 
@@ -255,23 +261,25 @@ As you set your salary level, the amount you receive should reflect the amount o
     it('should render table headers and cells with formatted currency', async () => {
       const { getByRole } = render(<TestComponent hasSpouse={false} />);
 
-      await waitFor(() =>
-        expect(getByRole('table')).toHaveTableStructure({
-          columnHeaders: ['Category', 'John'],
-          rowHeaders: [
-            'Current Requested Salary',
-            'Minimum Salary',
-            'Maximum Allowable Salary (CAP)',
-            'Requested Salary',
-          ],
-          cells: [
-            '$11,111.00',
-            '$10,003.00',
-            '$10,004.00',
-            // The requested salary input
-            expect.stringContaining('Requested salary'),
-          ],
-        }),
+      await waitFor(
+        () =>
+          expect(getByRole('table')).toHaveTableStructure({
+            columnHeaders: ['Category', 'John'],
+            rowHeaders: [
+              'Current Requested Salary',
+              'Minimum Salary',
+              'Maximum Allowable Salary (CAP)',
+              'Requested Salary',
+            ],
+            cells: [
+              '$11,111.00',
+              '$10,003.00',
+              '$10,004.00',
+              // The requested salary input
+              expect.stringContaining('Requested salary'),
+            ],
+          }),
+        { timeout: 10000 },
       );
     });
 

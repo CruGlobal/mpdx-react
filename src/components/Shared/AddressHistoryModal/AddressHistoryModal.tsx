@@ -8,6 +8,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PersonIcon from '@mui/icons-material/Person';
 import SyncIcon from '@mui/icons-material/Sync';
 import {
+  Alert,
   Box,
   Button,
   CircularProgress,
@@ -53,9 +54,13 @@ export const AddressHistoryModal: React.FC<AddressHistoryModalProps> = ({
   const locale = useLocale();
   const { getLocalizedContactStatus } = useLocalizedConstants();
   const { data: userData } = useGetUserQuery();
-  const { data, loading } = useAddressHistoryQuery({
+  const { data, loading, error, refetch } = useAddressHistoryQuery({
     variables: { accountListId, contactId },
   });
+  const retry = () =>
+    refetch().catch(() => {
+      // Nothing to add: the error link already reports the failure, and `error` keeps the Alert up
+    });
 
   const contact = data?.contact;
   const addresses = useMemo(
@@ -63,9 +68,22 @@ export const AddressHistoryModal: React.FC<AddressHistoryModalProps> = ({
       (contact?.addresses.nodes ?? [])
         .map((address) => ({
           ...address,
-          changedAt: DateTime.fromISO(address.startDate ?? address.createdAt),
+          changedAt: DateTime.fromISO(address.changeDate),
         }))
-        .sort((a, b) => b.changedAt.toMillis() - a.changedAt.toMillis()),
+        // Newest first, in the same order the API uses to pick each contact's latest change
+        .sort(
+          (a, b) =>
+            b.changedAt.toMillis() - a.changedAt.toMillis() ||
+            DateTime.fromISO(b.createdAt).toMillis() -
+              DateTime.fromISO(a.createdAt).toMillis() ||
+            // Plain comparison matches Postgres' byte order for lowercase uuids
+            (b.id > a.id ? 1 : b.id < a.id ? -1 : 0),
+        )
+        // Sorted newest first, so each address replaced the next older one
+        .map((address, index, sorted) => ({
+          ...address,
+          previous: sorted[index + 1],
+        })),
     [contact],
   );
   const primaryAddress = addresses.find(
@@ -105,6 +123,17 @@ export const AddressHistoryModal: React.FC<AddressHistoryModalProps> = ({
           <Box display="flex" justifyContent="center" p={2}>
             <CircularProgress data-testid="loading" />
           </Box>
+        ) : error && !data ? (
+          <Alert
+            severity="error"
+            action={
+              <Button color="inherit" size="small" onClick={retry}>
+                {t('Retry')}
+              </Button>
+            }
+          >
+            {t('Unable to load address history.')}
+          </Alert>
         ) : (
           <>
             {primaryAddress && (
@@ -164,6 +193,11 @@ export const AddressHistoryModal: React.FC<AddressHistoryModalProps> = ({
                   <Typography variant="body2">
                     {formatAddress(address)}
                   </Typography>
+                  {address.previous && (
+                    <Typography variant="body2" color="text.secondary">
+                      {t('Was:')} {formatAddress(address.previous)}
+                    </Typography>
+                  )}
                   <Typography variant="caption" color="text.secondary">
                     {formatChangeMadeBy(address, userData?.user.id, t)}
                   </Typography>

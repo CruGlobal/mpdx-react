@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Settings } from 'luxon';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
@@ -69,8 +70,7 @@ const toggleSelectionById = jest.fn();
 const isRowChecked = jest.fn();
 
 const addressChange = {
-  startDate: '2026-08-03',
-  createdAt: '2026-01-01T00:00:00Z',
+  changeDate: '2026-08-03',
   source: 'Siebel',
   createdByUser: null,
 };
@@ -102,7 +102,14 @@ const Components: React.FC<{ showAddressChange?: boolean }> = ({
   </TestRouter>
 );
 
+const nowMillis = Settings.now;
+afterEach(() => {
+  Settings.now = nowMillis;
+});
+
 beforeEach(() => {
+  // The address change chip leaves the year off for changes in the current year
+  Settings.now = () => new Date(2026, 9, 21).valueOf();
   (useTaskModal as jest.Mock).mockReturnValue({
     openTaskModal,
     preloadTaskModal: jest.fn(),

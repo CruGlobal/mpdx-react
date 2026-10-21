@@ -37,6 +37,7 @@ const data: ContactMailingFragment = {
         street: '100 Lake Hart Dr',
         createdAt: new Date(2023, 0, 1).toISOString(),
         startDate: null,
+        changeDate: '2023-01-01',
       },
       {
         id: 'address-2',
@@ -53,6 +54,7 @@ const data: ContactMailingFragment = {
         street: '101 Lake Hart Dr',
         createdAt: new Date(2023, 0, 2).toISOString(),
         startDate: new Date(2023, 0, 30).toISOString(),
+        changeDate: '2023-01-30',
       },
     ],
   },
@@ -173,7 +175,7 @@ describe('ContactDetailsTabMailing', () => {
     ).toBeInTheDocument();
   });
 
-  it('shows who changed each address and when', async () => {
+  it('shows who changed the primary address and when, and only for the primary', async () => {
     const { findByText, getByText, getByTestId } = render(
       <TestRouter router={router}>
         <ThemeProvider theme={theme}>
@@ -190,14 +192,12 @@ describe('ContactDetailsTabMailing', () => {
     );
 
     expect(
-      await findByText('Address changed Jan 1 · unknown user'),
+      await findByText('Address changed Jan 1, 2023 · unknown user'),
     ).toBeInTheDocument();
 
     userEvent.click(getByText('Show 1 More'));
     expect(
-      within(getByTestId('NonPrimaryAddresses')).getByText(
-        'Address changed Jan 30 · unknown user',
-      ),
-    ).toBeInTheDocument();
+      within(getByTestId('NonPrimaryAddresses')).queryByText(/Address changed/),
+    ).not.toBeInTheDocument();
   });
 });

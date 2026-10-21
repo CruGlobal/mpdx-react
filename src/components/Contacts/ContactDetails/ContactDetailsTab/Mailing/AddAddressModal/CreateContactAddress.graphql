@@ -20,6 +20,10 @@ mutation CreateContactAddress(
       street
       createdAt
       startDate
+      changeDate
+      createdByUser {
+        id
+      }
       sourceDonorAccount {
         id
         accountNumber

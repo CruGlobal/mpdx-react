@@ -1,5 +1,6 @@
+import { ApolloCache } from '@apollo/client';
 import { TFunction } from 'react-i18next';
-import { Address, UserScopedToAccountList } from 'src/graphql/types.generated';
+import { Address, AddressCreator } from 'src/graphql/types.generated';
 import { manualSourceValue, sourceToStr } from 'src/lib/sourceHelper';
 
 export type AddressParts = Pick<
@@ -9,10 +10,7 @@ export type AddressParts = Pick<
 
 export interface AddressAuthor {
   source: string;
-  createdByUser?: Pick<
-    UserScopedToAccountList,
-    'id' | 'firstName' | 'lastName'
-  > | null;
+  createdByUser?: Pick<AddressCreator, 'id' | 'firstName' | 'lastName'> | null;
 }
 
 export const formatAddress = ({
@@ -51,4 +49,12 @@ export const formatChangeMadeBy = (
       .filter(Boolean)
       .join(' ') || t('Unknown user');
   return t('{{name}}, in {{appName}}', { name, appName });
+};
+
+// The change history comes from every contact's addresses, so drop it when one changes and Apollo refetches it
+export const evictAddressChangeHistory = (
+  cache: ApolloCache<unknown>,
+): void => {
+  cache.evict({ fieldName: 'addressChangeHistory' });
+  cache.gc();
 };

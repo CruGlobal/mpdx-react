@@ -208,7 +208,6 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                     )}
                     )
                   </Typography>
-                  <AddressChangeBadge addressChange={address} />
                 </ContactDetailsMailingTextContainer>
               ))}
             {nonPrimaryAddresses.length > 0 && (

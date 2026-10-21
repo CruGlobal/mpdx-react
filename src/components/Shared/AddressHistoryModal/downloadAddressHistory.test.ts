@@ -15,6 +15,12 @@ const addresses: HistoryAddress[] = [
     source: 'MPDX',
     createdByUser: { id: 'user-1', firstName: 'Test', lastName: 'User' },
     changedAt: DateTime.local(2024, 6, 13),
+    previous: {
+      street: '1001 Denman St',
+      city: 'Vancouver',
+      state: 'BC',
+      postalCode: 'V6G 2M4',
+    },
   },
   {
     street: '1001 Denman St',
@@ -28,19 +34,21 @@ const addresses: HistoryAddress[] = [
 ];
 
 describe('createAddressHistoryCsv', () => {
-  it('builds a row per address with the date, address, and who made it', () => {
+  it('builds a row per address with the date, address, the one it replaced, and who made it', () => {
     expect(
       createAddressHistoryCsv(addresses, 'user-1', i18n.t, 'en-US'),
     ).toEqual([
-      ['Date', 'Address', 'Made by'],
+      ['Date', 'Address', 'Previous Address', 'Made by'],
       [
         'Jun 13, 2024',
         '2525 Camp Creek Pkwy, College Park, GA 30337',
+        '1001 Denman St, Vancouver, BC V6G 2M4',
         'You, in MPDX',
       ],
       [
         'Jan 22, 2018',
         '1001 Denman St, Vancouver, BC V6G 2M4',
+        '',
         'Automatic update from DonorHub',
       ],
     ]);

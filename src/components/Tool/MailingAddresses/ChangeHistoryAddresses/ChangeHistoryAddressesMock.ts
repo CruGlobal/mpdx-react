@@ -85,7 +85,7 @@ export const mockAddressChanges: AddressChangeRow[] = [
     source: 'MPDX',
     date: '2026-08-03',
     createdByUser: {
-      __typename: 'UserScopedToAccountList',
+      __typename: 'AddressCreator',
       id: currentUserId,
       firstName: 'Test',
       lastName: 'User',
@@ -136,7 +136,7 @@ export const mockAddressChanges: AddressChangeRow[] = [
     source: 'MPDX',
     date: '2026-03-02',
     createdByUser: {
-      __typename: 'UserScopedToAccountList',
+      __typename: 'AddressCreator',
       id: otherUserId,
       firstName: 'Jane',
       lastName: 'Smith',
@@ -207,14 +207,14 @@ export const mockAddressChangeHistory: AddressChangeHistoryQuery['addressChangeH
         id: `user:${otherUserId}`,
         type: AddressChangeMadeByEnum.User,
         label: 'Jane Smith',
-        user: { __typename: 'UserScopedToAccountList', id: otherUserId },
+        user: { __typename: 'AddressCreator', id: otherUserId },
       },
       {
         __typename: 'AddressChangeMadeByOption',
         id: `user:${currentUserId}`,
         type: AddressChangeMadeByEnum.User,
         label: 'Test User',
-        user: { __typename: 'UserScopedToAccountList', id: currentUserId },
+        user: { __typename: 'AddressCreator', id: currentUserId },
       },
       {
         __typename: 'AddressChangeMadeByOption',

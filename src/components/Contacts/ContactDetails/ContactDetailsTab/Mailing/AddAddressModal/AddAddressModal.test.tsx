@@ -4,7 +4,12 @@ import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { placePromise, setupMocks } from '__tests__/util/googlePlacesMock';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import {
+  ContactDetailsTabDocument,
+  ContactDetailsTabQuery,
+} from 'src/components/Contacts/ContactDetails/ContactDetailsTab/ContactDetailsTab.generated';
+import { createCache } from 'src/lib/apollo/cache';
 import theme from '../../../../../../theme';
 import { AddAddressModal } from './AddAddressModal';
 
@@ -110,6 +115,82 @@ describe('AddAddressModal', () => {
 
     userEvent.type(getByRole('textbox', { name: 'City' }), 'City');
     await waitFor(() => expect(saveButton).not.toBeDisabled());
+  });
+
+  it("adds the new address to the contact's cached details with every field they need", async () => {
+    const cache = createCache();
+    const variables = { accountListId, contactId };
+    cache.writeQuery({
+      query: ContactDetailsTabDocument,
+      variables,
+      data: gqlMock<ContactDetailsTabQuery, typeof variables>(
+        ContactDetailsTabDocument,
+        { variables, mocks: { contact: { id: contactId } } },
+      ),
+    });
+    const consoleError = jest.spyOn(console, 'error').mockImplementation();
+    const { getByRole, getByText } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider cache={cache}>
+            <AddAddressModal
+              accountListId={accountListId}
+              contactId={contactId}
+              handleClose={handleClose}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+
+    userEvent.type(getByRole('combobox', { name: 'Street' }), '1 New St');
+    userEvent.click(getByText('Save'));
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Address added successfully', {
+        variant: 'success',
+      }),
+    );
+
+    // A missing field leaves the cache incomplete, so Apollo refetches the contact's queries
+    const missingFields = consoleError.mock.calls
+      .map(([message]) => String(message))
+      .filter((message) => message.includes('Missing field'));
+    expect(missingFields).toEqual([]);
+    consoleError.mockRestore();
+  });
+
+  it("refreshes the contact's address change chip and the change history", async () => {
+    const cache = createCache();
+    const evict = jest.spyOn(cache, 'evict');
+    const mutationSpy = jest.fn();
+    const { getByRole, getByText } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider cache={cache} onCall={mutationSpy}>
+            <AddAddressModal
+              accountListId={accountListId}
+              contactId={contactId}
+              handleClose={handleClose}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+
+    userEvent.type(getByRole('combobox', { name: 'Street' }), '1 New St');
+    userEvent.click(getByText('Save'));
+
+    // Refetch just this contact's latest change: evicting it would reload the whole contacts list
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ContactLatestAddressChange', {
+        accountListId,
+        contactId,
+      }),
+    );
+    expect(evict).toHaveBeenCalledWith({ fieldName: 'addressChangeHistory' });
+    expect(evict).not.toHaveBeenCalledWith(
+      expect.objectContaining({ fieldName: 'latestAddressChange' }),
+    );
   });
 
   it('should create contact address', async () => {
@@ -248,8 +329,9 @@ describe('AddAddressModal', () => {
     expect(operation.variables.accountListId).toEqual(accountListId);
     expect(operation.variables.attributes.street).toEqual(newStreet);
 
-    const { operation: operation2 } = mutationSpy.mock.calls[1][0];
-    expect(operation2.variables.primaryAddressId).not.toBeNull();
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('SetContactPrimaryAddress'),
+    );
   }, 30000);
 
   it('should not set new address as primary if it is unchecked', async () => {
@@ -278,6 +360,6 @@ describe('AddAddressModal', () => {
       }),
     );
 
-    expect(mutationSpy).toHaveBeenCalledTimes(1);
+    expect(mutationSpy).not.toHaveGraphqlOperation('SetContactPrimaryAddress');
   }, 30000);
 });
