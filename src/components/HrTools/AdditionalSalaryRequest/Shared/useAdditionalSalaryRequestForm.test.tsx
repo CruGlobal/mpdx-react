@@ -439,6 +439,14 @@ describe('useAdditionalSalaryRequestForm', () => {
           'Exceeds account balance plus deficit limit.',
         );
       });
+
+      it('rejects a $0 total', async () => {
+        const errors = await validateBackpay('0');
+
+        expect(errors.totalAdditionalSalaryRequested).toBe(
+          'Enter an amount in at least one category before submitting.',
+        );
+      });
     });
 
     it('should validate adoption max amount of $15,000', async () => {
@@ -881,6 +889,7 @@ describe('useAdditionalSalaryRequestForm', () => {
             ...defaultFormValues,
             phoneNumber: '555-123-4567',
             emailAddress: 'test@example.com',
+            currentYearSalaryNotReceived: '100',
           }),
         {
           wrapper: TestWrapper,
@@ -914,6 +923,7 @@ describe('useAdditionalSalaryRequestForm', () => {
             ...defaultFormValues,
             phoneNumber: '555-123-4567',
             emailAddress: 'test@example.com',
+            currentYearSalaryNotReceived: '100',
           }),
         {
           wrapper: ({ children }) => (

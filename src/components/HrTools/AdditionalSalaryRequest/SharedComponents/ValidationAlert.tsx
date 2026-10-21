@@ -4,6 +4,7 @@ import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
+import { getTotal } from '../Shared/Helper/getTotal';
 
 export const ValidationAlert: React.FC = () => {
   const { t } = useTranslation();
@@ -69,9 +70,13 @@ export const ValidationAlert: React.FC = () => {
         )}
         {errors.totalAdditionalSalaryRequested && (
           <li>
-            {t(
-              'Your total additional salary requested exceeds your account balance.',
-            )}
+            {getTotal(values) > 0
+              ? t(
+                  'Your total additional salary requested exceeds your account balance.',
+                )
+              : t(
+                  'Enter an amount in at least one category before submitting.',
+                )}
           </li>
         )}
       </ul>
