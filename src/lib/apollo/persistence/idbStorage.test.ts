@@ -3,7 +3,7 @@ import 'fake-indexeddb/auto';
 import { IDBObjectStore, forceCloseDatabase } from 'fake-indexeddb';
 import { openDB } from 'idb';
 import { addDatadogError } from 'src/lib/dataDog';
-import { createIdbStorage } from './idbStorage';
+import { CacheOwner, createIdbStorage } from './idbStorage';
 
 jest.mock('src/lib/dataDog');
 
@@ -48,6 +48,37 @@ describe('createIdbStorage', () => {
     await store.setOwner({ userId: 'user-1', version: 1 });
     expect(await store.getItem('cache')).toBe('before');
     expect(await store.getOwner()).toBeNull();
+  });
+
+  it.each([
+    ['another user', { userId: 'user-2', version: 1 }],
+    ['an old version', { userId: 'user-1', version: 0 }],
+  ])(
+    'stops writing once %s owns the store',
+    async (_, otherOwner: CacheOwner) => {
+      const name = nextDb();
+      const store = createIdbStorage(name);
+      const otherTab = createIdbStorage(name);
+      store.bindOwner({ userId: 'user-1', version: 1 });
+      await otherTab.setOwner(otherOwner);
+
+      await store.setItem('cache', 'stale');
+      expect(await otherTab.getItem('cache')).toBeNull();
+
+      await otherTab.setOwner({ userId: 'user-1', version: 1 });
+      await store.setItem('cache', 'later');
+      expect(await otherTab.getItem('cache')).toBeNull();
+    },
+  );
+
+  it('writes when the bound owner still owns the store', async () => {
+    const store = createIdbStorage(nextDb());
+    store.bindOwner({ userId: 'user-1', version: 1 });
+    await store.setOwner({ userId: 'user-1', version: 1 });
+
+    await store.setItem('cache', 'mine');
+
+    expect(await store.getItem('cache')).toBe('mine');
   });
 
   it('reports a failed write instead of rejecting', async () => {

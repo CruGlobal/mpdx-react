@@ -13,6 +13,11 @@ export interface CacheOwner {
 export interface PersistedCacheStore extends PersistentStorage<string> {
   getOwner(): Promise<CacheOwner | null>;
   setOwner(owner: CacheOwner): Promise<void>;
+  /**
+   * Only write the cache while the stored owner matches this one. On a
+   * mismatch (another user signed in from another tab) writes stop for good.
+   */
+  bindOwner(owner: CacheOwner): void;
   clear(): Promise<void>;
   disable(): Promise<void>;
 }
@@ -20,6 +25,7 @@ export interface PersistedCacheStore extends PersistentStorage<string> {
 export const createIdbStorage = (dbName = 'mpdx'): PersistedCacheStore => {
   let dbPromise: ReturnType<typeof openDatabase> | undefined;
   let disabled = false;
+  let boundOwner: CacheOwner | undefined;
   const pendingWrites = new Set<Promise<unknown>>();
 
   const openDatabase = () =>
@@ -57,6 +63,29 @@ export const createIdbStorage = (dbName = 'mpdx'): PersistedCacheStore => {
     return ((await db.get(storeName, key)) as T | undefined) ?? null;
   };
 
+  const disable = async () => {
+    disabled = true;
+    await Promise.allSettled(pendingWrites);
+  };
+
+  const write = async (key: string, value: string) => {
+    const db = await getDb();
+    if (!boundOwner) {
+      await db.put(storeName, value, key);
+      return;
+    }
+    const owner = boundOwner;
+    const tx = db.transaction(storeName, 'readwrite');
+    const stored = (await tx.store.get(ownerKey)) as CacheOwner | undefined;
+    if (stored?.userId === owner.userId && stored.version === owner.version) {
+      await tx.store.put(value, key);
+    } else {
+      // Not awaited: disable() waits for pending writes, including this one
+      void disable();
+    }
+    await tx.done;
+  };
+
   return {
     getItem: (key) => read<string>(key),
 
@@ -65,8 +94,7 @@ export const createIdbStorage = (dbName = 'mpdx'): PersistedCacheStore => {
     setItem: (key, value) =>
       trackWrite(async () => {
         try {
-          const db = await getDb();
-          await db.put(storeName, value, key);
+          await write(key, value);
         } catch (error) {
           addDatadogError(error, {
             mpdxErrorType: 'cache_persistence',
@@ -88,6 +116,10 @@ export const createIdbStorage = (dbName = 'mpdx'): PersistedCacheStore => {
         await db.put(storeName, owner, ownerKey);
       }),
 
+    bindOwner: (owner) => {
+      boundOwner = owner;
+    },
+
     clear: async () => {
       const db = await getDb();
       const tx = db.transaction(storeName, 'readwrite');
@@ -98,9 +130,6 @@ export const createIdbStorage = (dbName = 'mpdx'): PersistedCacheStore => {
       ]);
     },
 
-    disable: async () => {
-      disabled = true;
-      await Promise.allSettled(pendingWrites);
-    },
+    disable,
   };
 };

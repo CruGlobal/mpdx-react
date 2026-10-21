@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import {
   ApolloCache,
   NormalizedCacheObject,
@@ -44,24 +44,38 @@ export const CacheRestoreGate: React.FC<{ children: React.ReactNode }> = ({
     impersonating,
   );
 
+  // A different user means this page's cache belongs to someone else
+  const initialUserId = useRef(userID);
+  const userChanged = userID !== initialUserId.current;
+
   useEffect(() => {
-    if (impersonating) {
+    if (impersonating || userChanged) {
       void stopCachePersistence();
     }
-  }, [impersonating]);
+  }, [impersonating, userChanged]);
+
+  const clearStore = useCallback(() => {
+    client.clearStore().catch((error) =>
+      addDatadogError(error, {
+        mpdxErrorType: 'cache_persistence',
+        step: 'clearStore',
+      }),
+    );
+  }, [client]);
+
+  useEffect(() => {
+    if (userChanged) {
+      clearStore();
+    }
+  }, [userChanged, clearStore]);
 
   useEffect(
     () =>
       onSessionEnded(() => {
         void stopCachePersistence();
-        client.clearStore().catch((error) =>
-          addDatadogError(error, {
-            mpdxErrorType: 'cache_persistence',
-            step: 'clearStore',
-          }),
-        );
+        clearStore();
       }),
-    [client],
+    [clearStore],
   );
 
   // eslint-disable-next-line react/jsx-no-useless-fragment

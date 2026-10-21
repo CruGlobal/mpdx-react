@@ -58,6 +58,7 @@ const createStore = (
     setOwner: jest.fn(async (owner: CacheOwner) => {
       data.set('owner', owner);
     }),
+    bindOwner: jest.fn(),
     clear: jest.fn(async () => {
       data.delete('cache');
       data.delete('owner');
@@ -116,6 +117,13 @@ describe('createCachePersistence', () => {
       userId: 'user-1',
       version: 1,
     });
+    expect(store.bindOwner).toHaveBeenCalledWith({
+      userId: 'user-1',
+      version: 1,
+    });
+    expect(store.bindOwner.mock.invocationCallOrder[0]).toBeLessThan(
+      store.setOwner.mock.invocationCallOrder[0],
+    );
     expect(store.clear).not.toHaveBeenCalled();
 
     writeUser(cache, 'Updated');

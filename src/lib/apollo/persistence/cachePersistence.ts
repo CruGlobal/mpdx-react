@@ -113,6 +113,7 @@ export const createCachePersistence = (
         cache.restore(JSON.parse(data));
       }
 
+      storage.bindOwner(owner);
       await storage.setOwner(owner);
       if (cancelled()) {
         return;

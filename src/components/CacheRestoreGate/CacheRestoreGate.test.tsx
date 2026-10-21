@@ -156,6 +156,39 @@ describe('CacheRestoreGate', () => {
     );
   });
 
+  it('stops persistence and clears the store when the user changes', async () => {
+    const clearStore = jest.spyOn(client, 'clearStore');
+    const { findByText, rerender } = render(<TestComponent />);
+    expect(await findByText('children')).toBeInTheDocument();
+
+    mockUseSession.mockReturnValue({
+      status: 'authenticated',
+      data: { ...session, user: { ...session.user, userID: 'user-2' } },
+      update: () => Promise.resolve(null),
+    });
+    rerender(<TestComponent />);
+
+    await waitFor(() => expect(mockStop).toHaveBeenCalled());
+    expect(clearStore).toHaveBeenCalled();
+  });
+
+  it('keeps persisting when rerendered for the same user', async () => {
+    const clearStore = jest.spyOn(client, 'clearStore');
+    const { findByText, rerender } = render(<TestComponent />);
+    expect(await findByText('children')).toBeInTheDocument();
+
+    mockUseSession.mockReturnValue({
+      status: 'authenticated',
+      data: { ...session, user: { ...session.user } },
+      update: () => Promise.resolve(null),
+    });
+    rerender(<TestComponent />);
+    expect(await findByText('children')).toBeInTheDocument();
+
+    expect(mockStop).not.toHaveBeenCalled();
+    expect(clearStore).not.toHaveBeenCalled();
+  });
+
   it('unsubscribes from session-ended messages on unmount', async () => {
     const { findByText, unmount } = render(<TestComponent />);
     expect(await findByText('children')).toBeInTheDocument();
