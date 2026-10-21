@@ -1,8 +1,8 @@
 import { ThemeProvider } from '@mui/material/styles';
-import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { render, within } from '__tests__/util/testingLibraryReactMock';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { StatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
@@ -44,12 +44,36 @@ const address = (
   createdByUser,
 });
 
+const defaultAddresses = [
+  address('1', '1001 Denman St', 'DataServer', {
+    startDate: '2018-01-22',
+  }),
+  address('2', '2525 Camp Creek Pkwy', 'MPDX', {
+    startDate: '2024-06-13',
+    primaryMailingAddress: true,
+    createdByUser: {
+      id: 'user-2',
+      firstName: 'Pedro',
+      lastName: 'Pérez',
+    },
+  }),
+  address('3', '111 Street', 'MPDX', {
+    createdAt: '2025-03-24T12:00:00Z',
+    createdByUser: {
+      id: currentUserId,
+      firstName: 'Test',
+      lastName: 'User',
+    },
+  }),
+];
+
 const contactsPathname =
   '/accountLists/[accountListId]/contacts/[[...contactId]]';
 
-const TestComponent: React.FC<{ pathname?: string }> = ({
-  pathname = contactsPathname,
-}) => (
+const TestComponent: React.FC<{
+  pathname?: string;
+  addresses?: ReturnType<typeof address>[];
+}> = ({ pathname = contactsPathname, addresses = defaultAddresses }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={{ pathname }}>
       <GqlMockedProvider<{
@@ -62,30 +86,7 @@ const TestComponent: React.FC<{ pathname?: string }> = ({
             contact: {
               name: 'Baggins, Frodo',
               status: StatusEnum.PartnerFinancial,
-              addresses: {
-                nodes: [
-                  address('1', '1001 Denman St', 'DataServer', {
-                    startDate: '2018-01-22',
-                  }),
-                  address('2', '2525 Camp Creek Pkwy', 'MPDX', {
-                    startDate: '2024-06-13',
-                    primaryMailingAddress: true,
-                    createdByUser: {
-                      id: 'user-2',
-                      firstName: 'Pedro',
-                      lastName: 'Pérez',
-                    },
-                  }),
-                  address('3', '111 Street', 'MPDX', {
-                    createdAt: '2025-03-24T12:00:00Z',
-                    createdByUser: {
-                      id: currentUserId,
-                      firstName: 'Test',
-                      lastName: 'User',
-                    },
-                  }),
-                ],
-              },
+              addresses: { nodes: addresses },
             },
           },
         }}
@@ -100,7 +101,9 @@ const TestComponent: React.FC<{ pathname?: string }> = ({
   </ThemeProvider>
 );
 
-const renderModal = async (props: { pathname?: string } = {}) => {
+const renderModal = async (
+  props: React.ComponentProps<typeof TestComponent> = {},
+) => {
   const utils = render(<TestComponent {...props} />);
   await utils.findByText('Baggins, Frodo · Partner - Financial');
   return utils;
@@ -114,6 +117,19 @@ describe('AddressHistoryModal', () => {
       getByText('Current primary address').parentElement,
     ).toHaveTextContent('2525 Camp Creek Pkwy, College Park, GA 30337');
     expect(getByText('3 changes since Jan 2018')).toBeInTheDocument();
+  });
+
+  it('uses singular English for one change', async () => {
+    const { getByText } = await renderModal({
+      addresses: [
+        address('1', '1001 Denman St', 'DataServer', {
+          startDate: '2018-01-22',
+          primaryMailingAddress: true,
+        }),
+      ],
+    });
+
+    expect(getByText('1 change since Jan 2018')).toBeInTheDocument();
   });
 
   it('lists every address newest first with who made the change', async () => {
