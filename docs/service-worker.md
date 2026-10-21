@@ -12,7 +12,7 @@ The worker is built from `src/sw/index.ts`. It stores the app's static build fil
 - The serwist step forces `NODE_ENV=production`, so the precache list is always built (in development mode Serwist leaves it empty).
 - `serwist.config.mjs` at the repo root holds the settings. It uses `serwist()` from `@serwist/next/config`, and `serwist build` bundles `src/sw/index.ts` with esbuild and adds the precache list.
 - Precache files are everything in `.next/static`, plus `public/icons`, `public/images` and `public/manifest.json` (`globPatterns`).
-- Source maps (`.map`) are left out. `public/locales` is left out on purpose because precaching every language is about 7MB. Page HTML is left out too (`precachePrerendered: false`).
+- Source maps (`.map`) are left out. `public/locales` is left out on purpose because precaching every language is about 7MB. Page HTML is left out too (`precachePrerendered: false`). The one exception is the offline page (see below).
 - `yarn start` (`next dev`) never builds or registers a worker. `register.ts` only registers in production builds.
 - The worker is written to `public/sw.js`. That file is generated, so do not commit it.
 - `skipWaiting` is `true`, so a new worker takes over open tabs as soon as it installs. Page HTML is never cached and Next's static files have hashed names, so open tabs keep working. A tab still running the old build loads any old-build files it hasn't fetched yet from the network. `clientsClaim` is `false` because it only matters for the first install, when there's nothing to take over from.
@@ -31,6 +31,15 @@ The first runtime rule in `src/sw/runtimeCaching.ts` uses `isNetworkOnly` from `
 - All page navigations (the HTML)
 
 This data is donor and financial data, so it must never be cached.
+
+### Offline page
+
+When a page load fails because there is no network, the worker shows `/offline` instead of the browser's error page. The address bar keeps the page the user asked for, so the Retry button just reloads it.
+
+- The page is `pages/offline.page.tsx`. It has no data fetching, so Next builds it to static HTML with no user data. Keep it that way, because the worker precaches that HTML (`.next/server/pages/offline.html` in `globPatterns`).
+- `/offline` is in `nonAuthenticatedPages` in `pages/_app.page.tsx`, so it renders without a session.
+- `src/sw/fallbacks.ts` only serves it for page loads (`request.mode === 'navigate'`). Failed API and data requests still fail.
+- Translations are not precached, so the page shows English when offline until MPDX-10176.
 
 ### The keep list and sign-out
 

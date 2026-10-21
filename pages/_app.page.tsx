@@ -109,7 +109,7 @@ const GraphQLProviders: React.FC<{
   );
 };
 
-const nonAuthenticatedPages = new Set(['/login', '/404', '/500']);
+const nonAuthenticatedPages = new Set(['/login', '/404', '/500', '/offline']);
 
 const rollbarConfig: Rollbar.Configuration = {
   accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
