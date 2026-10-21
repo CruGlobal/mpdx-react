@@ -71,23 +71,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
                   </Typography>
                 </TableCell>
 
-                <TableCell
-                  sx={{
-                    width: '30%',
-                    textAlign: 'center',
-                    border:
-                      [
-                        'adoption',
-                        'childrenCollegeEducation',
-                        'housingDownPayment',
-                        'autoPurchase',
-                      ].includes(key) &&
-                      errors[key as keyof CompleteFormValues] &&
-                      values[key] !== null
-                        ? '2px solid red'
-                        : '',
-                  }}
-                >
+                <TableCell sx={{ width: '30%', textAlign: 'center' }}>
                   {pageType === PageEnum.View ? (
                     currencyFormat(Number(values[key]) || 0, currency, locale)
                   ) : (
