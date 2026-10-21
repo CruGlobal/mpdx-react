@@ -12,6 +12,7 @@ const buildFund = (
   fundType: 'Staff Account',
   endBalance: 15000,
   deficitLimit: 0,
+  availableBalance: null,
   ...overrides,
 });
 
@@ -32,6 +33,18 @@ describe('minimumAllowedBalance', () => {
 });
 
 describe('availableBalance', () => {
+  it('prefers the API-computed value when present', () => {
+    expect(
+      availableBalance(
+        buildFund({ availableBalance: 400, deficitLimit: 1000 }),
+      ),
+    ).toBe(400);
+  });
+
+  it('falls back to the local math when the API value is null', () => {
+    expect(availableBalance(buildFund({ deficitLimit: 1000 }))).toBe(16000);
+  });
+
   it('is the end balance when there is no deficit limit', () => {
     expect(availableBalance(buildFund())).toBe(15000);
   });

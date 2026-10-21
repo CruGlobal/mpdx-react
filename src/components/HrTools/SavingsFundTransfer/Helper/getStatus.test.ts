@@ -1,4 +1,5 @@
 import { DateTime } from 'luxon';
+import { SavingsFundTransferFailureReasonCode } from 'src/graphql/types.generated';
 import { Transactions } from '../mockData';
 import { getStatusLabel } from './getStatus';
 
@@ -19,8 +20,6 @@ const mockData: Transactions[] = [
       destinationFundTypeName: 'Savings',
     },
     recurringTransfer: null,
-    failedCount: 0,
-    baseAmount: 100,
   },
   {
     transaction: {
@@ -40,9 +39,8 @@ const mockData: Transactions[] = [
       recurringStart: DateTime.fromISO('2022-10-01'),
       recurringEnd: DateTime.fromISO('2023-01-01'),
       active: true,
+      failures: [],
     },
-    failedCount: 0,
-    baseAmount: 200,
   },
   {
     transaction: {
@@ -62,9 +60,8 @@ const mockData: Transactions[] = [
       recurringStart: DateTime.fromISO('2022-01-01'),
       recurringEnd: null,
       active: true,
+      failures: [],
     },
-    failedCount: 0,
-    baseAmount: 300,
   },
   {
     transaction: {
@@ -84,9 +81,8 @@ const mockData: Transactions[] = [
       recurringStart: DateTime.fromISO('2023-11-01'),
       recurringEnd: DateTime.fromISO('2024-12-31'),
       active: true,
+      failures: [],
     },
-    failedCount: 0,
-    baseAmount: 400,
   },
 ];
 
@@ -159,5 +155,45 @@ describe('createTable', () => {
       },
     };
     expect(getStatusLabel(transfer)).toBe('ended');
+  });
+
+  describe('recurring transfer that never succeeded', () => {
+    const neverSucceeded: Transactions = {
+      transaction: null,
+      subCategory: null,
+      transfer: {
+        sourceFundTypeName: 'Primary',
+        destinationFundTypeName: 'Savings',
+      },
+      recurringTransfer: {
+        id: '4',
+        amount: 50,
+        recurringStart: DateTime.fromISO('2023-10-15'),
+        recurringEnd: null,
+        active: true,
+        failures: [
+          {
+            occurrence: DateTime.fromISO('2023-10-15'),
+            reasonCode: SavingsFundTransferFailureReasonCode.InsufficientFunds,
+          },
+        ],
+      },
+    };
+
+    it('should return ongoing status while still active', () => {
+      expect(getStatusLabel(neverSucceeded)).toBe('ongoing');
+    });
+
+    it('should return stopped status once inactive', () => {
+      expect(
+        getStatusLabel({
+          ...neverSucceeded,
+          recurringTransfer: {
+            ...neverSucceeded.recurringTransfer!,
+            active: false,
+          },
+        }),
+      ).toBe('stopped');
+    });
   });
 });

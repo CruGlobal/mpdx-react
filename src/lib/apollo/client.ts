@@ -2,16 +2,12 @@ import router from 'next/router';
 import { ApolloClient, from } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
 import { LocalStorageWrapper, persistCache } from 'apollo3-cache-persist';
-import { signOut } from 'next-auth/react';
 import {
   GetDefaultAccountDocument,
   GetDefaultAccountQuery,
 } from 'pages/api/getDefaultAccount.generated';
-import {
-  clearDatadogUser,
-  reportGraphQLError,
-  reportNetworkError,
-} from 'src/lib/dataDog';
+import { signOutAndClear } from 'src/lib/clearSessionData';
+import { reportGraphQLError, reportNetworkError } from 'src/lib/dataDog';
 import snackNotifications from '../../components/Snackbar/Snackbar';
 import { dispatch } from '../analytics';
 import {
@@ -45,9 +41,9 @@ const makeClient = (apiToken: string) => {
         const errors = Array.isArray(graphQLErrors) ? graphQLErrors : [];
         errors.forEach((graphQLError) => {
           if (graphQLError?.extensions?.code === 'AUTHENTICATION_ERROR') {
-            signOut({ redirect: true, callbackUrl: 'signOut' }).then(() => {
-              clearDatadogUser();
-              client.clearStore();
+            signOutAndClear(client, {
+              redirect: true,
+              callbackUrl: 'signOut',
             });
           } else if (isAccountListNotFoundError(graphQLError)) {
             client

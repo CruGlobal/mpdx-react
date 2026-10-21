@@ -33,5 +33,5 @@
     "next.config.ts",
     "crowdin/sort-translations.js"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "src/sw"]
 }

@@ -31,6 +31,7 @@ import { CardTitle } from './CardTitle';
 import { Category } from './Category';
 import { Distribution } from './Distribution';
 import { Legend } from './Legend';
+import { getSecaNote } from './getSecaNote';
 
 const SummaryTable = styled(Table)(({ theme }) => ({
   'tr.total': {
@@ -77,6 +78,27 @@ export const RequestSummaryCard: React.FC = () => {
   const calcs = calculation?.calculations;
   const spouseCalcs = calculation?.spouseCalculations;
   const hasSpouse = !!hcmSpouse && !!spouseCalcs;
+
+  const secaNote = hcmUser
+    ? getSecaNote(
+        {
+          secaStatus: hcmUser.staffInfo.secaStatus,
+          name: hcmUser.staffInfo.preferredName,
+          requestedSeca: calcs?.requestedSeca,
+        },
+        t,
+      )
+    : null;
+  const spouseSecaNote = hasSpouse
+    ? getSecaNote(
+        {
+          secaStatus: hcmSpouse.staffInfo.secaStatus,
+          name: hcmSpouse.staffInfo.preferredName,
+          requestedSeca: spouseCalcs.requestedSeca,
+        },
+        t,
+      )
+    : null;
 
   const combinedSalary =
     (calculation?.salary ?? 0) +
@@ -256,19 +278,9 @@ export const RequestSummaryCard: React.FC = () => {
               <TableRow>
                 <TableCell component="th" scope="row">
                   {t('SECA and Related Federal Taxes')}
-                  {calcs?.secaEstimatedFraction === 0 && (
-                    <span className="explanation">
-                      {t('{{ name }} has opted out of SECA', {
-                        name: hcmUser?.staffInfo.preferredName,
-                      })}
-                    </span>
-                  )}
-                  {spouseCalcs?.secaEstimatedFraction === 0 && (
-                    <span className="explanation">
-                      {t('{{ name }} has opted out of SECA', {
-                        name: hcmSpouse?.staffInfo.preferredName,
-                      })}
-                    </span>
+                  {secaNote && <span className="explanation">{secaNote}</span>}
+                  {spouseSecaNote && (
+                    <span className="explanation">{spouseSecaNote}</span>
                   )}
                 </TableCell>
                 <TableCell>{formatCurrency(calcs?.requestedSeca)}</TableCell>
