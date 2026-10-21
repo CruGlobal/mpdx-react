@@ -8814,15 +8814,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-fetch@npm:3.1.5, cross-fetch@npm:^3.1.5":
-  version: 3.1.5
-  resolution: "cross-fetch@npm:3.1.5"
-  dependencies:
-    node-fetch: "npm:2.6.7"
-  checksum: 10/5d101a3b1e6cb172f0e5e8168cbc927eeff2ef915f33ceef50fed85441df870e1fdff195b56eca36fae8b78ddba5d8e913b8927f73d11b19d27e96301438cd30
-  languageName: node
-  linkType: hard
-
 "cross-fetch@npm:4.0.0":
   version: 4.0.0
   resolution: "cross-fetch@npm:4.0.0"
@@ -8838,6 +8829,15 @@ __metadata:
   dependencies:
     node-fetch: "npm:^2.6.12"
   checksum: 10/ac8c4ca87d2ac0e17a19b6a293a67ee8934881aee5ec9a5a8323c30e9a9a60a0f5291d3c0d633ec2a2f970cbc60978d628804dfaf03add92d7e720b6d37f392c
+  languageName: node
+  linkType: hard
+
+"cross-fetch@npm:^3.1.5":
+  version: 3.1.5
+  resolution: "cross-fetch@npm:3.1.5"
+  dependencies:
+    node-fetch: "npm:2.6.7"
+  checksum: 10/5d101a3b1e6cb172f0e5e8168cbc927eeff2ef915f33ceef50fed85441df870e1fdff195b56eca36fae8b78ddba5d8e913b8927f73d11b19d27e96301438cd30
   languageName: node
   linkType: hard
 
@@ -12108,12 +12108,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next-http-backend@npm:^1.4.4":
-  version: 1.4.4
-  resolution: "i18next-http-backend@npm:1.4.4"
-  dependencies:
-    cross-fetch: "npm:3.1.5"
-  checksum: 10/4105752e90b657951ce933500dcb64ff70c4623bb8814b784aa16ff6f6ac2cc5e3e6a07a293ea5ef732ad2be3105e3c638926dad6e06e23f99fad39e42cb1c55
+"i18next-http-backend@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "i18next-http-backend@npm:4.0.2"
+  checksum: 10/74a596938612fe331f4f65af3b5dafc69d84fd50feb60fc25a914344e046c3079ade8903e989399ec5c3780026787a063f8c8d20bdb90216887a94a499921f78
   languageName: node
   linkType: hard
 
@@ -14972,7 +14970,7 @@ __metadata:
     husky: "npm:^8.0.1"
     i18next: "npm:^21.9.2"
     i18next-browser-languagedetector: "npm:^6.1.5"
-    i18next-http-backend: "npm:^1.4.4"
+    i18next-http-backend: "npm:^4.0.2"
     i18next-parser: "npm:^9.0.2"
     idb: "npm:^8"
     isomorphic-fetch: "npm:^3.0.0"
