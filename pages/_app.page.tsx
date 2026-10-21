@@ -81,6 +81,10 @@ const GraphQLProviders: React.FC<{
 
 const nonAuthenticatedPages = new Set(['/login', '/404', '/500']);
 
+// Created once so App re-renders don't hand the cache restore Suspense
+// boundary new props, which makes React drop the server HTML
+const emotionCache = createEmotionCache({ key: 'css' });
+
 const App = ({
   Component,
   pageProps,
@@ -115,7 +119,35 @@ const App = ({
     transform: addGraphQLErrorsToRollbarItem,
   };
 
-  const emotionCache = createEmotionCache({ key: 'css' });
+  const localeText = useMemo(
+    () => ({
+      cancelButtonLabel: t('Cancel'),
+      clearButtonLabel: t('Clear'),
+      okButtonLabel: t('OK'),
+      todayButtonLabel: t('Today'),
+    }),
+    [t],
+  );
+
+  const pageContent = useMemo(
+    () => (
+      <TaskModalProvider>
+        <Layout>
+          <SnackbarUtilsConfigurator />
+          <Helpjuice />
+          <Announcements />
+          <Box
+            sx={(theme) => ({
+              fontFamily: theme.typography.fontFamily,
+            })}
+          >
+            <Component {...pageProps} key={router.route} />
+          </Box>
+        </Layout>
+      </TaskModalProvider>
+    ),
+    [Layout, Component, pageProps, router.route],
+  );
 
   useEffect(() => {
     registerServiceWorker();
@@ -126,23 +158,6 @@ const App = ({
       'A session was not provided via page props. Make sure that getServerSideProps for this page returns the session in its props.',
     );
   }
-
-  const pageContent = (
-    <TaskModalProvider>
-      <Layout>
-        <SnackbarUtilsConfigurator />
-        <Helpjuice />
-        <Announcements />
-        <Box
-          sx={(theme) => ({
-            fontFamily: theme.typography.fontFamily,
-          })}
-        >
-          <Component {...pageProps} key={router.route} />
-        </Box>
-      </Layout>
-    </TaskModalProvider>
-  );
 
   return (
     <>
@@ -198,12 +213,7 @@ const App = ({
                   <ThemeProvider theme={theme}>
                     <LocalizationProvider
                       dateAdapter={AdapterLuxon}
-                      localeText={{
-                        cancelButtonLabel: t('Cancel'),
-                        clearButtonLabel: t('Clear'),
-                        okButtonLabel: t('OK'),
-                        todayButtonLabel: t('Today'),
-                      }}
+                      localeText={localeText}
                     >
                       <SnackbarProvider maxSnack={3}>
                         <GlobalStyles />
