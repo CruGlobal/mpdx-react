@@ -1,7 +1,7 @@
 import { NextPage } from 'next';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
-import React, { ReactElement, useEffect, useMemo } from 'react';
+import React, { ReactElement, Suspense, useEffect, useMemo } from 'react';
 import { ApolloProvider } from '@apollo/client';
 import createEmotionCache from '@emotion/cache';
 import { CacheProvider } from '@emotion/react';
@@ -20,6 +20,7 @@ import { SnackbarProvider } from 'notistack';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 import Rollbar from 'rollbar';
 import { Announcements } from 'src/components/Announcements/Announcements';
+import { CacheRestoreGate } from 'src/components/CacheRestoreGate/CacheRestoreGate';
 import DataDog from 'src/components/DataDog/DataDog';
 import { GlobalStyles } from 'src/components/GlobalStyles/GlobalStyles';
 import { Helpjuice } from 'src/components/Helpjuice/Helpjuice';
@@ -65,11 +66,15 @@ const GraphQLProviders: React.FC<{
 
   return (
     <ApolloProvider client={client}>
-      <SetupProvider>
-        <UserPreferenceProvider>
-          <TaskModalProvider>{children}</TaskModalProvider>
-        </UserPreferenceProvider>
-      </SetupProvider>
+      <Suspense fallback={<Loading loading />}>
+        <CacheRestoreGate>
+          <SetupProvider>
+            <UserPreferenceProvider>
+              <TaskModalProvider>{children}</TaskModalProvider>
+            </UserPreferenceProvider>
+          </SetupProvider>
+        </CacheRestoreGate>
+      </Suspense>
     </ApolloProvider>
   );
 };
