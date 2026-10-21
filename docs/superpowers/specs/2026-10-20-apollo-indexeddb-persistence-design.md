@@ -111,6 +111,13 @@ builder's choice). Built only when `typeof window !== 'undefined'` and
   impersonation change never persists again until it is reloaded.
 - `purge()` must delete the stored entry even in a tab where persistence never started
   (for example an impersonating tab), so storage is cleared regardless.
+- `purge()` gives up after the same 3 seconds and rejects, so a stuck IndexedDB can't
+  keep sign-out from reaching `signOut`. `stop()` still never rejects; it reports.
+- Each tab closes its database connection when another tab needs to upgrade it
+  (`blocking` handler), so an upgrade is never stuck behind an open tab.
+- **Owner-checked writes.** Once the owner is tagged, each cache write reads the stored
+  owner in the same transaction and only writes if it still matches. On a mismatch
+  (another user signed in from another tab) the tab stops writing for good.
 
 ### Gate: Suspense boundary in `GraphQLProviders`
 
@@ -133,9 +140,14 @@ builder's choice). Built only when `typeof window !== 'undefined'` and
   navigation rather than a full load, where the spinner may flash briefly. Keep
   `GraphQLProviders`' parents from updating during the first render where it's cheap to
   do so (stable props, no state set on mount).
+  - `App` re-renders when translations load. The emotion cache is created once at
+    module level, and the date picker labels and page content are memoized, so those
+    re-renders don't hand the boundary new props.
 - If `impersonating` becomes true while mounted, call `stopCachePersistence()` from an
   effect (defense in depth; the impersonation start path already runs
   `clearSessionData`).
+- If the session's `userID` changes from the one the gate first rendered with, it does
+  the same, plus `client.clearStore()`.
 
 ### Sign-out helper: `src/lib/clearSessionData.ts`
 
@@ -162,6 +174,10 @@ and purge comes after it.
   `stopCachePersistence()` and `client.clearStore()` for its own client. It does not
   re-run `clearSessionData` (no rebroadcast loops) and does not navigate; the tab's next
   request will hit the normal auth error handling.
+- The persistence module also listens, from the moment `startCachePersistence` begins.
+  The gate's listener only starts once the restore finishes, so without this a sign-out
+  during the restore would be missed. On the message it runs `stopCachePersistence()`,
+  which aborts a restore in progress before it tags the owner or resumes.
 - This covers impersonation start/stop too, because those paths call `clearSessionData`.
   Impersonation through the handoff cookie in `pages/login.page.tsx` doesn't call
   `clearSessionData`; it's covered by the start-time purge and the hook's check when
