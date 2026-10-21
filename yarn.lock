@@ -10714,6 +10714,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fake-indexeddb@npm:^6":
+  version: 6.2.6
+  resolution: "fake-indexeddb@npm:6.2.6"
+  checksum: 10/224a417520970e79a8a8e45c1fd80a5474b5c6cea821649aff00782212150218de84973251fc496e5c8fb73b61d8d9a50a4bd237e50002b1c21cd6c376e117a8
+  languageName: node
+  linkType: hard
+
 "fast-decode-uri-component@npm:^1.0.1":
   version: 1.0.1
   resolution: "fast-decode-uri-component@npm:1.0.1"
@@ -12186,6 +12193,13 @@ __metadata:
   version: 8.0.3
   resolution: "idb@npm:8.0.3"
   checksum: 10/e2beccb0be7c6af562a5e92b209363358571a770aecdc68e891d1141d994d8f1e8f34b79dafa309ed7467d0f4df2b7b4c15f67cfd0611100282bfc3d85f9c73c
+  languageName: node
+  linkType: hard
+
+"idb@npm:^8":
+  version: 8.0.4
+  resolution: "idb@npm:8.0.4"
+  checksum: 10/c7bc0fbfe2cb20a884f5415ff7e51b25c1b6acdf744d24a291bb43282477a04496a2fd471918083e5247271ead58653a8797a830b09b0ddda1b6aea9485870d5
   languageName: node
   linkType: hard
 
@@ -14955,6 +14969,7 @@ __metadata:
     eslint-plugin-jsx-a11y: "npm:^6.6.1"
     eslint-plugin-prettier: "npm:^4.2.1"
     eslint-plugin-react: "npm:^7.31.8"
+    fake-indexeddb: "npm:^6"
     formidable: "npm:^3.5.4"
     formik: "npm:^2.2.9"
     framer-motion: "npm:^7.3.6"
@@ -14966,6 +14981,7 @@ __metadata:
     i18next-browser-languagedetector: "npm:^6.1.5"
     i18next-http-backend: "npm:^1.4.4"
     i18next-parser: "npm:^9.0.2"
+    idb: "npm:^8"
     isomorphic-fetch: "npm:^3.0.0"
     jest: "npm:^29.0.3"
     jest-environment-jsdom: "npm:^29.0.3"

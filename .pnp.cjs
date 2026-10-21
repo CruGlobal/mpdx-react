@@ -98,6 +98,7 @@ const RAW_RUNTIME_STATE =
           ["eslint-plugin-jsx-a11y", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:6.6.1"],\
           ["eslint-plugin-prettier", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.2.1"],\
           ["eslint-plugin-react", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:7.31.8"],\
+          ["fake-indexeddb", "npm:6.2.6"],\
           ["formidable", "npm:3.5.4"],\
           ["formik", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.2.9"],\
           ["framer-motion", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:7.3.6"],\
@@ -112,6 +113,7 @@ const RAW_RUNTIME_STATE =
           ["i18next-browser-languagedetector", "npm:6.1.5"],\
           ["i18next-http-backend", "npm:1.4.4"],\
           ["i18next-parser", "npm:9.0.2"],\
+          ["idb", "npm:8.0.4"],\
           ["isomorphic-fetch", "npm:3.0.0"],\
           ["jest", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:29.0.3"],\
           ["jest-environment-jsdom", "npm:29.0.3"],\
@@ -14097,6 +14099,15 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["fake-indexeddb", [\
+      ["npm:6.2.6", {\
+        "packageLocation": "./.yarn/cache/fake-indexeddb-npm-6.2.6-96919db317-224a417520.zip/node_modules/fake-indexeddb/",\
+        "packageDependencies": [\
+          ["fake-indexeddb", "npm:6.2.6"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["fast-decode-uri-component", [\
       ["npm:1.0.1", {\
         "packageLocation": "./.yarn/cache/fast-decode-uri-component-npm-1.0.1-578ba9fecf-4b6ed26974.zip/node_modules/fast-decode-uri-component/",\
@@ -15741,6 +15752,13 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/idb-npm-8.0.3-e9b0a844f6-e2beccb0be.zip/node_modules/idb/",\
         "packageDependencies": [\
           ["idb", "npm:8.0.3"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["npm:8.0.4", {\
+        "packageLocation": "./.yarn/cache/idb-npm-8.0.4-25ccc38691-c7bc0fbfe2.zip/node_modules/idb/",\
+        "packageDependencies": [\
+          ["idb", "npm:8.0.4"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -18845,6 +18863,7 @@ const RAW_RUNTIME_STATE =
           ["eslint-plugin-jsx-a11y", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:6.6.1"],\
           ["eslint-plugin-prettier", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.2.1"],\
           ["eslint-plugin-react", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:7.31.8"],\
+          ["fake-indexeddb", "npm:6.2.6"],\
           ["formidable", "npm:3.5.4"],\
           ["formik", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.2.9"],\
           ["framer-motion", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:7.3.6"],\
@@ -18859,6 +18878,7 @@ const RAW_RUNTIME_STATE =
           ["i18next-browser-languagedetector", "npm:6.1.5"],\
           ["i18next-http-backend", "npm:1.4.4"],\
           ["i18next-parser", "npm:9.0.2"],\
+          ["idb", "npm:8.0.4"],\
           ["isomorphic-fetch", "npm:3.0.0"],\
           ["jest", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:29.0.3"],\
           ["jest-environment-jsdom", "npm:29.0.3"],\
