@@ -8,12 +8,8 @@ import { CacheProvider } from '@emotion/react';
 import { Box, StyledEngineProvider } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import {
-  LocalizationProviderProps,
-  LocalizationProvider as RawLocalizationProvider,
-} from '@mui/x-date-pickers/LocalizationProvider';
+import { LocalizationProvider as RawLocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { ErrorBoundary, Provider } from '@rollbar/react';
-import { DateTime } from 'luxon';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 import { SnackbarProvider } from 'notistack';
@@ -47,13 +43,32 @@ export type PageWithLayout = NextPage & {
   layout?: React.FC;
 };
 
-// Wrapper for LocalizationProvider that adds the user's preferred locale
-const LocalizationProvider = (
-  props: LocalizationProviderProps<DateTime, string>,
-): JSX.Element => {
+// Wrapper for LocalizationProvider that adds translated button labels and the
+// user's preferred locale
+const LocalizationProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const { t } = useTranslation();
   const locale = useLocale();
+  const localeText = useMemo(
+    () => ({
+      cancelButtonLabel: t('Cancel'),
+      clearButtonLabel: t('Clear'),
+      okButtonLabel: t('OK'),
+      todayButtonLabel: t('Today'),
+    }),
+    [t],
+  );
 
-  return <RawLocalizationProvider {...props} adapterLocale={locale} />;
+  return (
+    <RawLocalizationProvider
+      dateAdapter={AdapterLuxon}
+      localeText={localeText}
+      adapterLocale={locale}
+    >
+      {children}
+    </RawLocalizationProvider>
+  );
 };
 
 // This provider contains all components and providers that depend on having an Apollo client or a valid session
@@ -68,11 +83,15 @@ const GraphQLProviders: React.FC<{
     <ApolloProvider client={client}>
       <Suspense fallback={<Loading loading />}>
         <CacheRestoreGate>
-          <SetupProvider>
-            <UserPreferenceProvider>
-              <TaskModalProvider>{children}</TaskModalProvider>
-            </UserPreferenceProvider>
-          </SetupProvider>
+          {/* Below the gate because its labels change when translations load,
+              and any context change above the gate drops the server HTML */}
+          <LocalizationProvider>
+            <SetupProvider>
+              <UserPreferenceProvider>
+                <TaskModalProvider>{children}</TaskModalProvider>
+              </UserPreferenceProvider>
+            </SetupProvider>
+          </LocalizationProvider>
         </CacheRestoreGate>
       </Suspense>
     </ApolloProvider>
@@ -81,9 +100,66 @@ const GraphQLProviders: React.FC<{
 
 const nonAuthenticatedPages = new Set(['/login', '/404', '/500']);
 
-// Created once so App re-renders don't hand the cache restore Suspense
-// boundary new props, which makes React drop the server HTML
 const emotionCache = createEmotionCache({ key: 'css' });
+
+const rollbarConfig: Rollbar.Configuration = {
+  accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
+  environment: `react_${process.env.NODE_ENV}`,
+  codeVersion: process.env.GIT_COMMIT_SHA,
+  captureUncaught: true,
+  captureUnhandledRejections: true,
+  payload: {
+    client: {
+      javascript: {
+        code_version: process.env.GIT_COMMIT_SHA,
+      },
+    },
+  },
+  enabled: Boolean(process.env.ROLLBAR_ACCESS_TOKEN),
+  checkIgnore: (_, args) => {
+    const message = args[0];
+    return (
+      typeof message === 'string' &&
+      suppressedErrorPatterns.some((pattern) => message.includes(pattern))
+    );
+  },
+  transform: addGraphQLErrorsToRollbarItem,
+};
+
+// Memoized because a context change above the cache restore Suspense boundary
+// while it hydrates makes React drop the server HTML, and Rollbar's Provider
+// hands down a new context value every time it renders
+const AppProviders = React.memo(function AppProviders({
+  session,
+  children,
+}: {
+  session?: Session;
+  children: React.ReactNode;
+}) {
+  return (
+    <Provider config={rollbarConfig}>
+      <ErrorBoundary>
+        <SessionProvider session={session}>
+          <I18nextProvider i18n={i18n}>
+            <StyledEngineProvider injectFirst>
+              <CacheProvider value={emotionCache}>
+                <ThemeProvider theme={theme}>
+                  <SnackbarProvider maxSnack={3}>
+                    <GlobalStyles />
+                    {children}
+                    <Loading />
+                    <OfflineIndicator />
+                  </SnackbarProvider>
+                </ThemeProvider>
+              </CacheProvider>
+            </StyledEngineProvider>
+          </I18nextProvider>
+          <DataDog />
+        </SessionProvider>
+      </ErrorBoundary>
+    </Provider>
+  );
+});
 
 const App = ({
   Component,
@@ -92,42 +168,9 @@ const App = ({
 }: AppProps<{
   session?: Session;
 }>): ReactElement => {
-  const { t } = useTranslation();
   const Layout = (Component as PageWithLayout).layout || PrimaryLayout;
   const { session } = pageProps;
-  const rollbarConfig: Rollbar.Configuration = {
-    accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
-    environment: `react_${process.env.NODE_ENV}`,
-    codeVersion: process.env.GIT_COMMIT_SHA,
-    captureUncaught: true,
-    captureUnhandledRejections: true,
-    payload: {
-      client: {
-        javascript: {
-          code_version: process.env.GIT_COMMIT_SHA,
-        },
-      },
-    },
-    enabled: Boolean(process.env.ROLLBAR_ACCESS_TOKEN),
-    checkIgnore: (_, args) => {
-      const message = args[0];
-      return (
-        typeof message === 'string' &&
-        suppressedErrorPatterns.some((pattern) => message.includes(pattern))
-      );
-    },
-    transform: addGraphQLErrorsToRollbarItem,
-  };
-
-  const localeText = useMemo(
-    () => ({
-      cancelButtonLabel: t('Cancel'),
-      clearButtonLabel: t('Clear'),
-      okButtonLabel: t('OK'),
-      todayButtonLabel: t('Today'),
-    }),
-    [t],
-  );
+  const isPublicPage = nonAuthenticatedPages.has(router.pathname);
 
   const pageContent = useMemo(
     () => (
@@ -149,11 +192,26 @@ const App = ({
     [Layout, Component, pageProps, router.route],
   );
 
+  // On the login page and error pages, the user isn't authenticated and
+  // doesn't have an API token, so don't include the session or Apollo
+  // providers because they require an API token
+  const content = useMemo(
+    () =>
+      isPublicPage ? (
+        <LocalizationProvider>{pageContent}</LocalizationProvider>
+      ) : (
+        <RouterGuard>
+          <GraphQLProviders>{pageContent}</GraphQLProviders>
+        </RouterGuard>
+      ),
+    [isPublicPage, pageContent],
+  );
+
   useEffect(() => {
     registerServiceWorker();
   }, []);
 
-  if (!session && !nonAuthenticatedPages.has(router.pathname)) {
+  if (!session && !isPublicPage) {
     throw new Error(
       'A session was not provided via page props. Make sure that getServerSideProps for this page returns the session in its props.',
     );
@@ -204,40 +262,7 @@ const App = ({
         />
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
       </Head>
-      <Provider config={rollbarConfig}>
-        <ErrorBoundary>
-          <SessionProvider session={session}>
-            <I18nextProvider i18n={i18n}>
-              <StyledEngineProvider injectFirst>
-                <CacheProvider value={emotionCache}>
-                  <ThemeProvider theme={theme}>
-                    <LocalizationProvider
-                      dateAdapter={AdapterLuxon}
-                      localeText={localeText}
-                    >
-                      <SnackbarProvider maxSnack={3}>
-                        <GlobalStyles />
-                        {/* On the login page and error pages, the user isn't not authenticated and doesn't have an API token,
-                              so don't include the session or Apollo providers because they require an API token */}
-                        {nonAuthenticatedPages.has(router.pathname) ? (
-                          pageContent
-                        ) : (
-                          <RouterGuard>
-                            <GraphQLProviders>{pageContent}</GraphQLProviders>
-                          </RouterGuard>
-                        )}
-                        <Loading />
-                        <OfflineIndicator />
-                      </SnackbarProvider>
-                    </LocalizationProvider>
-                  </ThemeProvider>
-                </CacheProvider>
-              </StyledEngineProvider>
-            </I18nextProvider>
-            <DataDog />
-          </SessionProvider>
-        </ErrorBoundary>
-      </Provider>
+      <AppProviders session={session}>{content}</AppProviders>
     </>
   );
 };

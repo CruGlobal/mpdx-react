@@ -140,9 +140,15 @@ builder's choice). Built only when `typeof window !== 'undefined'` and
   navigation rather than a full load, where the spinner may flash briefly. Keep
   `GraphQLProviders`' parents from updating during the first render where it's cheap to
   do so (stable props, no state set on mount).
-  - `App` re-renders when translations load. The emotion cache is created once at
-    module level, and the date picker labels and page content are memoized, so those
-    re-renders don't hand the boundary new props.
+  - React counts any new context value above the boundary, even one nothing inside
+    reads. Rollbar's `Provider` hands down a new value every time it renders, so the
+    providers above `GraphQLProviders` live in a memoized `AppProviders` component
+    whose props (the session and memoized page content) don't change between renders.
+    The emotion cache and Rollbar config are created once at module level.
+  - The date picker `LocalizationProvider` sits under the gate (and around the page on
+    the login and error pages) because its labels change when translations load. That
+    also means `App` no longer uses `useTranslation`, so loading translations doesn't
+    re-render it.
 - If `impersonating` becomes true while mounted, call `stopCachePersistence()` from an
   effect (defense in depth; the impersonation start path already runs
   `clearSessionData`).
