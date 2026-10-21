@@ -2,8 +2,14 @@ import { InMemoryCache, gql } from '@apollo/client';
 import { addDatadogError } from 'src/lib/dataDog';
 import { createCachePersistence } from './cachePersistence';
 import { CacheOwner } from './idbStorage';
+import { onSessionEnded } from './sessionChannel';
 
 jest.mock('src/lib/dataDog');
+jest.mock('./sessionChannel');
+
+const mockOnSessionEnded = onSessionEnded as jest.MockedFn<
+  typeof onSessionEnded
+>;
 
 const query = gql`
   query TestUser {
@@ -289,6 +295,35 @@ describe('createCachePersistence', () => {
     expect(store.setItem).not.toHaveBeenCalled();
   });
 
+  it('stops when another tab ends the session mid-restore', async () => {
+    const store = createStore({ owner: currentOwner });
+    const read = deferred<string | null>();
+    store.getItem.mockReturnValueOnce(read.promise);
+    const persistence = createCachePersistence(store, 3000);
+
+    const started = persistence.start({
+      cache,
+      userId: 'user-1',
+      impersonating: false,
+    });
+    await advance(0);
+    expect(store.getItem).toHaveBeenCalled();
+
+    mockOnSessionEnded.mock.calls[0][0]();
+    read.resolve(storedCache);
+    await expect(started).resolves.toBeUndefined();
+
+    expect(store.disable).toHaveBeenCalled();
+    expect(store.clear).toHaveBeenCalled();
+    expect(store.setOwner).not.toHaveBeenCalled();
+    expect(cache.extract()).toEqual({});
+
+    writeUser(cache, 'Updated');
+    await advance(1000);
+
+    expect(store.setItem).not.toHaveBeenCalled();
+  });
+
   it('ignores start() after stop()', async () => {
     const store = createStore({ cache: storedCache, owner: currentOwner });
     const persistence = createCachePersistence(store, 3000);
@@ -332,6 +367,7 @@ describe('createCachePersistence', () => {
     expect(second).toBe(first);
     await first;
     expect(store.getOwner).toHaveBeenCalledTimes(1);
+    expect(mockOnSessionEnded).toHaveBeenCalledTimes(1);
   });
 
   it('does nothing without a store', async () => {
@@ -340,6 +376,7 @@ describe('createCachePersistence', () => {
     await expect(
       persistence.start({ cache, userId: 'user-1', impersonating: false }),
     ).resolves.toBeUndefined();
+    expect(mockOnSessionEnded).not.toHaveBeenCalled();
     expect(() => persistence.pause()).not.toThrow();
     await expect(persistence.purge()).resolves.toBeUndefined();
     await expect(persistence.stop()).resolves.toBeUndefined();

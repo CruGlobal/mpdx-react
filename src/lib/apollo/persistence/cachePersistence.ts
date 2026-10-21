@@ -2,6 +2,7 @@ import { ApolloCache, NormalizedCacheObject } from '@apollo/client';
 import { CachePersistor } from 'apollo3-cache-persist';
 import { addDatadogError } from 'src/lib/dataDog';
 import { PersistedCacheStore, createIdbStorage } from './idbStorage';
+import { onSessionEnded } from './sessionChannel';
 
 /** Bump when a type policy or merge function changes in a way old data would break */
 export const CACHE_VERSION = 1;
@@ -123,6 +124,11 @@ export const createCachePersistence = (
   };
 
   const start = (options: StartCachePersistenceOptions): Promise<void> => {
+    if (!startPromise && store) {
+      // Subscribed here rather than in the gate, whose effects don't run until
+      // the restore finishes, so a sign-out elsewhere aborts the restore
+      onSessionEnded(() => void stop());
+    }
     startPromise ??= store
       ? restoreWithTimeout(store, options)
       : Promise.resolve();
