@@ -2,6 +2,8 @@ import { PersistentStorage } from 'apollo3-cache-persist';
 import { openDB } from 'idb';
 import { addDatadogError } from 'src/lib/dataDog';
 
+export const CACHE_KEY = 'cache';
+
 const storeName = 'apollo-cache';
 const ownerKey = 'owner';
 
@@ -124,7 +126,7 @@ export const createIdbStorage = (dbName = 'mpdx'): PersistedCacheStore => {
       const db = await getDb();
       const tx = db.transaction(storeName, 'readwrite');
       await Promise.all([
-        tx.store.delete('cache'),
+        tx.store.delete(CACHE_KEY),
         tx.store.delete(ownerKey),
         tx.done,
       ]);

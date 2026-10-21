@@ -1,7 +1,7 @@
 import { ApolloCache, NormalizedCacheObject } from '@apollo/client';
 import { CachePersistor } from 'apollo3-cache-persist';
 import { addDatadogError } from 'src/lib/dataDog';
-import { PersistedCacheStore, createIdbStorage } from './idbStorage';
+import { CACHE_KEY, PersistedCacheStore, createIdbStorage } from './idbStorage';
 import { onSessionEnded } from './sessionChannel';
 
 /** Bump when a type policy or merge function changes in a way old data would break */
@@ -9,7 +9,6 @@ export const CACHE_VERSION = 1;
 export const RESTORE_TIMEOUT_MS = 3000;
 
 const legacyStorageKey = 'apollo-cache-persist';
-const cacheKey = 'cache';
 
 export interface StartCachePersistenceOptions {
   cache: ApolloCache<NormalizedCacheObject>;
@@ -90,7 +89,7 @@ export const createCachePersistence = (
         cache,
         storage,
         maxSize: false,
-        key: cacheKey,
+        key: CACHE_KEY,
       });
       persistor.pause();
 
@@ -105,7 +104,7 @@ export const createCachePersistence = (
 
       // Read and apply the data here instead of persistor.restore() so a read
       // that finishes after the timeout never touches the live cache
-      const data = await storage.getItem(cacheKey);
+      const data = await storage.getItem(CACHE_KEY);
       if (cancelled()) {
         return;
       }
