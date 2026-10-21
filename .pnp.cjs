@@ -113,7 +113,7 @@ const RAW_RUNTIME_STATE =
           ["i18next-browser-languagedetector", "npm:6.1.5"],\
           ["i18next-http-backend", "npm:1.4.4"],\
           ["i18next-parser", "npm:9.0.2"],\
-          ["idb", "npm:8.0.4"],\
+          ["idb", "npm:8.0.3"],\
           ["isomorphic-fetch", "npm:3.0.0"],\
           ["jest", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:29.0.3"],\
           ["jest-environment-jsdom", "npm:29.0.3"],\
@@ -15754,13 +15754,6 @@ const RAW_RUNTIME_STATE =
           ["idb", "npm:8.0.3"]\
         ],\
         "linkType": "HARD"\
-      }],\
-      ["npm:8.0.4", {\
-        "packageLocation": "./.yarn/cache/idb-npm-8.0.4-25ccc38691-c7bc0fbfe2.zip/node_modules/idb/",\
-        "packageDependencies": [\
-          ["idb", "npm:8.0.4"]\
-        ],\
-        "linkType": "HARD"\
       }]\
     ]],\
     ["identifier-regex", [\
@@ -18878,7 +18871,7 @@ const RAW_RUNTIME_STATE =
           ["i18next-browser-languagedetector", "npm:6.1.5"],\
           ["i18next-http-backend", "npm:1.4.4"],\
           ["i18next-parser", "npm:9.0.2"],\
-          ["idb", "npm:8.0.4"],\
+          ["idb", "npm:8.0.3"],\
           ["isomorphic-fetch", "npm:3.0.0"],\
           ["jest", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:29.0.3"],\
           ["jest-environment-jsdom", "npm:29.0.3"],\

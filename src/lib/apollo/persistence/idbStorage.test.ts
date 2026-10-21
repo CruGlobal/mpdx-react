@@ -34,8 +34,14 @@ describe('createIdbStorage', () => {
 
   it('ignores writes after disable() and waits for in-progress writes', async () => {
     const store = createIdbStorage(nextDb());
-    const inFlight = store.setItem('cache', 'before');
+    let written = false;
+    const inFlight = Promise.resolve(store.setItem('cache', 'before')).then(
+      () => {
+        written = true;
+      },
+    );
     await store.disable();
+    expect(written).toBe(true);
     await inFlight;
     await store.setItem('cache', 'after');
     await store.setOwner({ userId: 'user-1', version: 1 });
