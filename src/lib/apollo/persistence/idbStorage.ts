@@ -27,6 +27,14 @@ export const createIdbStorage = (dbName = 'mpdx'): PersistedCacheStore => {
       upgrade: (db) => {
         db.createObjectStore(storeName);
       },
+      // Otherwise another tab's upgrade waits on this connection forever
+      blocking: (_currentVersion, _blockedVersion, event) => {
+        (event.target as IDBDatabase).close();
+        dbPromise = undefined;
+      },
+      terminated: () => {
+        dbPromise = undefined;
+      },
     });
 
   const getDb = () => (dbPromise ??= openDatabase());

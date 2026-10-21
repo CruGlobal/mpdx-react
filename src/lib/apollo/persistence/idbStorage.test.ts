@@ -1,6 +1,7 @@
 import { deserialize, serialize } from 'v8';
 import 'fake-indexeddb/auto';
-import { IDBObjectStore } from 'fake-indexeddb';
+import { IDBObjectStore, forceCloseDatabase } from 'fake-indexeddb';
+import { openDB } from 'idb';
 import { addDatadogError } from 'src/lib/dataDog';
 import { createIdbStorage } from './idbStorage';
 
@@ -60,6 +61,32 @@ describe('createIdbStorage', () => {
       mpdxErrorType: 'cache_persistence',
       step: 'write',
     });
+  });
+
+  it('closes its connection when another tab needs to upgrade', async () => {
+    const name = nextDb();
+    const store = createIdbStorage(name);
+    await store.getItem('cache');
+
+    const upgrade = openDB(name, 2).then((db) => {
+      db.close();
+      return 'upgraded';
+    });
+    const hung = new Promise((resolve) => setTimeout(resolve, 200, 'hung'));
+
+    expect(await Promise.race([upgrade, hung])).toBe('upgraded');
+  });
+
+  it('reopens its connection after the browser closes it', async () => {
+    const openSpy = jest.spyOn(indexedDB, 'open');
+    const store = createIdbStorage(nextDb());
+    await store.setItem('cache', '{"a":1}');
+
+    forceCloseDatabase(openSpy.mock.results[0].value.result);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    await store.clear();
+    expect(await store.getItem('cache')).toBeNull();
   });
 
   it('rejects reads when the database cannot open', async () => {

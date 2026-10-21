@@ -37,13 +37,30 @@ export const createCachePersistence = (
     persistor?.pause();
   };
 
+  const clearStore = async (storage: PersistedCacheStore) => {
+    // Wait for any write in progress so it can't land after the clear
+    await storage.disable();
+    await storage.clear();
+  };
+
+  // IndexedDB can hang (e.g. an upgrade blocked by another tab), which must
+  // not keep sign-out from reaching signOut()
   const purge = async () => {
     if (!store) {
       return;
     }
-    // Wait for any write in progress so it can't land after the clear
-    await store.disable();
-    await store.clear();
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const timeout = new Promise<never>((_, reject) => {
+      timer = setTimeout(
+        () => reject(new Error('Apollo cache purge timed out')),
+        timeoutMs,
+      );
+    });
+    try {
+      await Promise.race([clearStore(store), timeout]);
+    } finally {
+      clearTimeout(timer);
+    }
   };
 
   const stop = async () => {

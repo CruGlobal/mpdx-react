@@ -349,6 +349,58 @@ describe('createCachePersistence', () => {
     );
   });
 
+  it('purge() rejects when clearing the store never finishes', async () => {
+    const store = createStore();
+    store.clear.mockReturnValueOnce(new Promise(() => {}));
+    const persistence = createCachePersistence(store, 3000);
+
+    const purged = persistence.purge().catch((error: unknown) => error);
+    await advance(3000);
+
+    expect(await purged).toEqual(new Error('Apollo cache purge timed out'));
+  });
+
+  it('purge() rejects when clearing the store fails', async () => {
+    const error = new Error('clear failed');
+    const store = createStore();
+    store.clear.mockRejectedValueOnce(error);
+    const persistence = createCachePersistence(store, 3000);
+
+    await expect(persistence.purge()).rejects.toThrow(error);
+  });
+
+  it('purge() leaves no timer behind once it finishes', async () => {
+    const persistence = createCachePersistence(createStore(), 3000);
+
+    await persistence.purge();
+
+    expect(jest.getTimerCount()).toBe(0);
+  });
+
+  it('stop() resolves and reports when clearing the store fails', async () => {
+    const error = new Error('clear failed');
+    const store = createStore();
+    store.clear.mockRejectedValueOnce(error);
+    const persistence = createCachePersistence(store, 3000);
+
+    await expect(persistence.stop()).resolves.toBeUndefined();
+
+    expect(addDatadogError).toHaveBeenCalledWith(error, {
+      mpdxErrorType: 'cache_persistence',
+      step: 'stop',
+    });
+  });
+
+  it('reports nothing once a successful start() is past the timeout', async () => {
+    const store = createStore({ cache: storedCache, owner: currentOwner });
+    const persistence = createCachePersistence(store, 3000);
+
+    await persistence.start({ cache, userId: 'user-1', impersonating: false });
+    await advance(3000);
+
+    expect(addDatadogError).not.toHaveBeenCalled();
+  });
+
   it('returns the same promise for every start() call', async () => {
     const store = createStore({ cache: storedCache, owner: currentOwner });
     const persistence = createCachePersistence(store, 3000);
