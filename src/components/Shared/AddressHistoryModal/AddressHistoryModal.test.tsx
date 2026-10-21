@@ -21,12 +21,12 @@ const address = (
   street: string,
   source: string,
   {
-    startDate = null,
+    changeDate = '2020-01-01',
     createdAt = '2020-01-01T00:00:00Z',
     primaryMailingAddress = false,
     createdByUser = null,
   }: {
-    startDate?: string | null;
+    changeDate?: string;
     createdAt?: string;
     primaryMailingAddress?: boolean;
     createdByUser?: { id: string; firstName: string; lastName: string } | null;
@@ -38,7 +38,7 @@ const address = (
   state: 'GA',
   postalCode: '30337',
   source,
-  startDate,
+  changeDate,
   createdAt,
   primaryMailingAddress,
   createdByUser,
@@ -46,10 +46,10 @@ const address = (
 
 const defaultAddresses = [
   address('1', '1001 Denman St', 'DataServer', {
-    startDate: '2018-01-22',
+    changeDate: '2018-01-22',
   }),
   address('2', '2525 Camp Creek Pkwy', 'MPDX', {
-    startDate: '2024-06-13',
+    changeDate: '2024-06-13',
     primaryMailingAddress: true,
     createdByUser: {
       id: 'user-2',
@@ -58,7 +58,7 @@ const defaultAddresses = [
     },
   }),
   address('3', '111 Street', 'MPDX', {
-    createdAt: '2025-03-24T12:00:00Z',
+    changeDate: '2025-03-24',
     createdByUser: {
       id: currentUserId,
       firstName: 'Test',
@@ -123,7 +123,7 @@ describe('AddressHistoryModal', () => {
     const { getByText } = await renderModal({
       addresses: [
         address('1', '1001 Denman St', 'DataServer', {
-          startDate: '2018-01-22',
+          changeDate: '2018-01-22',
           primaryMailingAddress: true,
         }),
       ],
@@ -132,7 +132,7 @@ describe('AddressHistoryModal', () => {
     expect(getByText('1 change since Jan 2018')).toBeInTheDocument();
   });
 
-  it('lists every address newest first with who made the change', async () => {
+  it('lists every address newest first with the one it replaced and who made the change', async () => {
     const { getByRole } = await renderModal();
     const dialog = within(getByRole('dialog'));
 
@@ -141,8 +141,8 @@ describe('AddressHistoryModal', () => {
       .map((date) => date.parentElement?.textContent);
 
     expect(rowText).toEqual([
-      'Mar 24, 2025111 Street, College Park, GA 30337You, in MPDX',
-      'Jun 13, 20242525 Camp Creek Pkwy, College Park, GA 30337Pedro Pérez, in MPDX',
+      'Mar 24, 2025111 Street, College Park, GA 30337Was: 2525 Camp Creek Pkwy, College Park, GA 30337You, in MPDX',
+      'Jun 13, 20242525 Camp Creek Pkwy, College Park, GA 30337Was: 1001 Denman St, College Park, GA 30337Pedro Pérez, in MPDX',
       'Jan 22, 20181001 Denman St, College Park, GA 30337Automatic update from DonorHub',
     ]);
   });
@@ -175,6 +175,27 @@ describe('AddressHistoryModal', () => {
     userEvent.click(getByRole('button', { name: button }));
 
     expect(handleClose).toHaveBeenCalled();
+  });
+
+  it('breaks a same-day tie by when each address was added, across a clock change', async () => {
+    // 1:10am PST is later than 1:40am PDT on the night the clocks fall back
+    const { getByRole } = await renderModal({
+      addresses: [
+        address('1', 'Added First', 'MPDX', {
+          changeDate: '2026-11-01',
+          createdAt: '2026-11-01T01:40:00-07:00',
+        }),
+        address('2', 'Added Second', 'MPDX', {
+          changeDate: '2026-11-01',
+          createdAt: '2026-11-01T01:10:00-08:00',
+        }),
+      ],
+    });
+
+    const streets = within(getByRole('dialog'))
+      .getAllByText(/^Added (First|Second), College Park/)
+      .map((element) => element.textContent?.split(',')[0]);
+    expect(streets).toEqual(['Added Second', 'Added First']);
   });
 
   it('exports the address history newest first', async () => {

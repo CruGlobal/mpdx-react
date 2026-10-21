@@ -7,25 +7,26 @@ import { isAutomaticChange } from 'src/components/Shared/AddressHistoryModal/add
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { Address } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateFormatWithoutYear } from 'src/lib/intlFormat';
+import { dateFormat, dateFormatWithoutYear } from 'src/lib/intlFormat';
 
 export interface AddressChangeBadgeProps {
-  addressChange: Pick<Address, 'startDate' | 'createdAt' | 'source'> & {
+  addressChange: Pick<Address, 'changeDate' | 'source'> & {
     createdByUser?: Pick<NonNullable<Address['createdByUser']>, 'id'> | null;
   };
 }
 
 export const AddressChangeBadge: React.FC<AddressChangeBadgeProps> = ({
-  addressChange: { startDate, createdAt, source, createdByUser },
+  addressChange: { changeDate, source, createdByUser },
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const { data } = useGetUserQuery();
 
-  const date = dateFormatWithoutYear(
-    DateTime.fromISO(startDate ?? createdAt),
-    locale,
-  );
+  const changedOn = DateTime.fromISO(changeDate);
+  const date =
+    changedOn.year === DateTime.now().year
+      ? dateFormatWithoutYear(changedOn, locale)
+      : dateFormat(changedOn, locale);
   const madeBy = isAutomaticChange(source)
     ? t('automatic')
     : !createdByUser

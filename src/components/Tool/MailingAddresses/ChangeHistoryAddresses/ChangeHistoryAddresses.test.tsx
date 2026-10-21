@@ -118,11 +118,20 @@ describe('ChangeHistoryAddresses', () => {
     );
   });
 
-  it('shows the empty state when there are no changes', async () => {
+  it('shows the empty state when there are no changes at any time', async () => {
+    const utils = render(<TestComponent history={emptyHistory} />);
+    await pickOption(utils, 'Changed during', 'Any time');
+
+    expect(
+      await utils.findByText('No address changes available yet'),
+    ).toBeInTheDocument();
+  });
+
+  it('says the default date range is filtering when it finds nothing', async () => {
     const { findByText } = render(<TestComponent history={emptyHistory} />);
 
     expect(
-      await findByText('No address changes available yet'),
+      await findByText('No address changes match your filters'),
     ).toBeInTheDocument();
   });
 
@@ -179,9 +188,9 @@ describe('ChangeHistoryAddresses', () => {
   });
 
   it('shows the filtered empty state when a filter matches nothing', async () => {
-    const { getByRole, findByRole, findByText } = render(
-      <TestComponent history={emptyHistory} />,
-    );
+    const utils = render(<TestComponent history={emptyHistory} />);
+    const { getByRole, findByRole, findByText } = utils;
+    await pickOption(utils, 'Changed during', 'Any time');
     await findByText('No address changes available yet');
 
     userEvent.click(getByRole('combobox', { name: 'Change made by' }));
@@ -234,10 +243,21 @@ describe('ChangeHistoryAddresses', () => {
       'Gave One or More Gifts',
     );
     expect(getByRole('combobox', { name: 'Changed during' })).toHaveTextContent(
-      'Any time',
+      'Last 12 Months',
     );
     expect(getByRole('combobox', { name: 'Change made by' })).toHaveTextContent(
       'Anyone',
+    );
+  });
+
+  it('loads the last 12 months by default', async () => {
+    render(<TestComponent />);
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('AddressChangeHistory', {
+        startDate: '2025-10-14',
+        endDate: '2026-10-14',
+      }),
     );
   });
 

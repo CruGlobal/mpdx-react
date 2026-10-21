@@ -9,7 +9,6 @@ fragment ContactHeaderAddress on Contact {
     state
     postalCode
     country
-    startDate
-    createdAt
+    changeDate
   }
 }

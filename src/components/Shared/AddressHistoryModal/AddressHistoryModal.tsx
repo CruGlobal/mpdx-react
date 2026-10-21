@@ -63,9 +63,16 @@ export const AddressHistoryModal: React.FC<AddressHistoryModalProps> = ({
       (contact?.addresses.nodes ?? [])
         .map((address) => ({
           ...address,
-          changedAt: DateTime.fromISO(address.startDate ?? address.createdAt),
+          changedAt: DateTime.fromISO(address.changeDate),
         }))
-        .sort((a, b) => b.changedAt.toMillis() - a.changedAt.toMillis()),
+        // Newest first, in the same order the API uses to pick each contact's latest change
+        .sort(
+          (a, b) =>
+            b.changedAt.toMillis() - a.changedAt.toMillis() ||
+            DateTime.fromISO(b.createdAt).toMillis() -
+              DateTime.fromISO(a.createdAt).toMillis() ||
+            b.id.localeCompare(a.id),
+        ),
     [contact],
   );
   const primaryAddress = addresses.find(
@@ -140,7 +147,7 @@ export const AddressHistoryModal: React.FC<AddressHistoryModalProps> = ({
                 })}
               </Typography>
             )}
-            {addresses.map((address) => (
+            {addresses.map((address, index) => (
               <Box
                 key={address.id}
                 display="grid"
@@ -164,6 +171,11 @@ export const AddressHistoryModal: React.FC<AddressHistoryModalProps> = ({
                   <Typography variant="body2">
                     {formatAddress(address)}
                   </Typography>
+                  {addresses[index + 1] && (
+                    <Typography variant="body2" color="text.secondary">
+                      {t('Was:')} {formatAddress(addresses[index + 1])}
+                    </Typography>
+                  )}
                   <Typography variant="caption" color="text.secondary">
                     {formatChangeMadeBy(address, userData?.user.id, t)}
                   </Typography>

@@ -28,7 +28,9 @@ export const ChangeHistoryAddresses: React.FC<ChangeHistoryAddressesProps> = ({
     ContactFilterPartnerEnum.GaveOneOrMore,
   );
   const [changedDuring, setChangedDuring] =
-    useState<ContactFilterChangedDuringEnum | null>(null);
+    useState<ContactFilterChangedDuringEnum | null>(
+      ContactFilterChangedDuringEnum.Last12Months,
+    );
   const [customRange, setCustomRange] = useState<DateRange | null>(null);
   const [madeBy, setMadeBy] = useState<string | null>(null);
   const [historyContactId, setHistoryContactId] = useState<string | null>(null);

@@ -28,8 +28,7 @@ const contact = {
     mocks: { name: 'Baggins, Frodo' },
   }),
   latestAddressChange: {
-    startDate: '2026-08-03',
-    createdAt: '2026-01-01T00:00:00Z',
+    changeDate: '2026-08-03',
     source: 'Siebel',
     createdByUser: null,
   },
@@ -100,7 +99,7 @@ describe('ContactsList', () => {
     );
 
     expect(
-      await findByText('Address changed Aug 3 · automatic'),
+      await findByText('Address changed Aug 3, 2026 · automatic'),
     ).toBeInTheDocument();
     expect(getByRole('button', { name: 'Clear' })).toBeInTheDocument();
   });

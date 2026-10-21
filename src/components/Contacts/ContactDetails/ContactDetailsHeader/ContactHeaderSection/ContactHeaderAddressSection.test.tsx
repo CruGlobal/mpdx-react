@@ -44,49 +44,38 @@ describe('ContactHeaderAddressSection', () => {
     ).toBeInTheDocument();
   });
 
-  it.each([
-    ['the start date', '2024-06-13', '2020-01-01T00:00:00Z'],
-    [
-      'the created date when there is no start date',
-      null,
-      '2024-06-13T12:00:00Z',
-    ],
-  ])(
-    'shows when the address changed using %s and opens its history',
-    async (_, startDate, createdAt) => {
-      const { getByRole, findByRole } = render(
-        <ThemeProvider theme={theme}>
-          <TestRouter>
-            <GqlMockedProvider>
-              <ContactHeaderAddressSection
-                accountListId="account-list-1"
-                loading={false}
-                contact={{
-                  ...contact,
-                  primaryAddress: {
-                    id: 'address-1',
-                    street: '2525 Camp Creek Pkwy',
-                    city: 'College Park',
-                    state: 'GA',
-                    postalCode: '30337',
-                    country: 'United States',
-                    startDate,
-                    createdAt,
-                  },
-                }}
-              />
-            </GqlMockedProvider>
-          </TestRouter>
-        </ThemeProvider>,
-      );
+  it('shows when the address changed and opens its history', async () => {
+    const { getByRole, findByRole } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter>
+          <GqlMockedProvider>
+            <ContactHeaderAddressSection
+              accountListId="account-list-1"
+              loading={false}
+              contact={{
+                ...contact,
+                primaryAddress: {
+                  id: 'address-1',
+                  street: '2525 Camp Creek Pkwy',
+                  city: 'College Park',
+                  state: 'GA',
+                  postalCode: '30337',
+                  country: 'United States',
+                  changeDate: '2024-06-13',
+                },
+              }}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
 
-      userEvent.click(
-        getByRole('button', { name: 'Changed Jun 13, 2024 · See history' }),
-      );
+    userEvent.click(
+      getByRole('button', { name: 'Changed Jun 13, 2024 · See history' }),
+    );
 
-      expect(
-        within(await findByRole('dialog')).getByText('Address History'),
-      ).toBeInTheDocument();
-    },
-  );
+    expect(
+      within(await findByRole('dialog')).getByText('Address History'),
+    ).toBeInTheDocument();
+  });
 });
