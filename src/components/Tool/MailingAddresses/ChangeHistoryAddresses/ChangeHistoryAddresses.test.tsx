@@ -131,7 +131,7 @@ describe('ChangeHistoryAddresses', () => {
     const { findByText } = render(<TestComponent history={emptyHistory} />);
 
     expect(
-      await findByText('No address changes match your filters'),
+      await findByText('No address changes in the last 12 months'),
     ).toBeInTheDocument();
   });
 

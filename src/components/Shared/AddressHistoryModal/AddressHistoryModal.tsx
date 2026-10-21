@@ -71,7 +71,8 @@ export const AddressHistoryModal: React.FC<AddressHistoryModalProps> = ({
             b.changedAt.toMillis() - a.changedAt.toMillis() ||
             DateTime.fromISO(b.createdAt).toMillis() -
               DateTime.fromISO(a.createdAt).toMillis() ||
-            b.id.localeCompare(a.id),
+            // Plain comparison matches Postgres' byte order for lowercase uuids
+            (b.id > a.id ? 1 : b.id < a.id ? -1 : 0),
         ),
     [contact],
   );

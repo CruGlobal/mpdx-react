@@ -27,10 +27,12 @@ export const createAddressHistoryCsv = (
   t: TFunction,
   locale: string,
 ): string[][] => [
-  [t('Date'), t('Address'), t('Made by')],
-  ...addresses.map((address) => [
+  [t('Date'), t('Address'), t('Previous Address'), t('Made by')],
+  // Newest first, so each address replaced the one after it
+  ...addresses.map((address, index) => [
     dateFormat(address.changedAt, locale),
     formatAddress(address),
+    addresses[index + 1] ? formatAddress(addresses[index + 1]) : '',
     formatChangeMadeBy(address, currentUserId, t),
   ]),
 ];

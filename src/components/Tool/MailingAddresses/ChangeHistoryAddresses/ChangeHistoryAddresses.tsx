@@ -8,7 +8,10 @@ import {
   getChangedDuringRange,
 } from 'src/components/Shared/Filters/ChangedDuring/changedDuring';
 import { ContactFilterPartnerEnum } from 'src/graphql/types.generated';
-import { AddressChangeEmptyState } from './AddressChangeEmptyState/AddressChangeEmptyState';
+import {
+  AddressChangeEmptyState,
+  AddressChangeFilter,
+} from './AddressChangeEmptyState/AddressChangeEmptyState';
 import { useAddressChangeHistoryQuery } from './AddressChangeHistory.generated';
 import { AddressChangeSummary } from './AddressChangeSummary/AddressChangeSummary';
 import { AddressChangeTable } from './AddressChangeTable/AddressChangeTable';
@@ -35,10 +38,15 @@ export const ChangeHistoryAddresses: React.FC<ChangeHistoryAddressesProps> = ({
   const [madeBy, setMadeBy] = useState<string | null>(null);
   const [historyContactId, setHistoryContactId] = useState<string | null>(null);
   const dateRange = getChangedDuringRange(changedDuring, customRange);
-  const filtered =
-    partners !== ContactFilterPartnerEnum.GaveOneOrMore ||
-    !!dateRange ||
-    !!madeBy;
+  const otherFilters =
+    partners !== ContactFilterPartnerEnum.GaveOneOrMore || !!madeBy;
+  const emptyStateFilter: AddressChangeFilter =
+    otherFilters ||
+    (dateRange && changedDuring !== ContactFilterChangedDuringEnum.Last12Months)
+      ? 'other'
+      : dateRange
+        ? 'defaultRange'
+        : 'none';
 
   const handleCustomRangeChange = (range: DateRange) => {
     setCustomRange(range);
@@ -131,7 +139,7 @@ export const ChangeHistoryAddresses: React.FC<ChangeHistoryAddressesProps> = ({
             />
           </>
         ) : (
-          history && <AddressChangeEmptyState filtered={filtered} />
+          history && <AddressChangeEmptyState filter={emptyStateFilter} />
         )}
       </Box>
       {historyContactId && (

@@ -181,11 +181,12 @@ describe('AddressHistoryModal', () => {
     // 1:10am PST is later than 1:40am PDT on the night the clocks fall back
     const { getByRole } = await renderModal({
       addresses: [
-        address('1', 'Added First', 'MPDX', {
+        // Ids sort the opposite way, so only the createdAt tiebreak can pass this
+        address('2', 'Added First', 'MPDX', {
           changeDate: '2026-11-01',
           createdAt: '2026-11-01T01:40:00-07:00',
         }),
-        address('2', 'Added Second', 'MPDX', {
+        address('1', 'Added Second', 'MPDX', {
           changeDate: '2026-11-01',
           createdAt: '2026-11-01T01:10:00-08:00',
         }),
