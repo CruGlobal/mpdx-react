@@ -39,7 +39,7 @@ export const AddressChangeEmptyState: React.FC<
   const [title, text] = messages[filter];
 
   return (
-    <NullStateBox data-testid="address-changes-null-state">
+    <NullStateBox data-testid="address-changes-null-state" role="status">
       <Icon path={mdiHistory} size={1.5} />
       <Typography variant="h5">{title}</Typography>
       <Typography my={1}>{text}</Typography>

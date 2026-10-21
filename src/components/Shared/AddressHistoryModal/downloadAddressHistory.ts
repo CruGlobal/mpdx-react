@@ -10,7 +10,7 @@ import {
 } from './addressHistoryHelpers';
 
 export type HistoryAddress = AddressParts &
-  AddressAuthor & { changedAt: DateTime };
+  AddressAuthor & { changedAt: DateTime; previous?: AddressParts };
 
 export const downloadCsv = (rows: string[][], title: string): void => {
   const link = document.createElement('a');
@@ -28,11 +28,10 @@ export const createAddressHistoryCsv = (
   locale: string,
 ): string[][] => [
   [t('Date'), t('Address'), t('Previous Address'), t('Made by')],
-  // Newest first, so each address replaced the one after it
-  ...addresses.map((address, index) => [
+  ...addresses.map((address) => [
     dateFormat(address.changedAt, locale),
     formatAddress(address),
-    addresses[index + 1] ? formatAddress(addresses[index + 1]) : '',
+    address.previous ? formatAddress(address.previous) : '',
     formatChangeMadeBy(address, currentUserId, t),
   ]),
 ];

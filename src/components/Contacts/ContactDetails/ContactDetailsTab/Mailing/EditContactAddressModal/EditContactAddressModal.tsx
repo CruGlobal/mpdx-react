@@ -17,6 +17,8 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { AddressLocationSelect } from 'src/common/Selects/AddressLocationSelect';
+import { latestAddressChangeRefetch } from 'src/components/Contacts/AddressChangeBadge/latestAddressChangeRefetch';
+import { evictAddressChangeHistory } from 'src/components/Shared/AddressHistoryModal/addressHistoryHelpers';
 import {
   CancelButton,
   DeleteButton,
@@ -86,6 +88,8 @@ export const EditContactAddressModal: React.FC<
           ...attributes,
         },
       },
+      refetchQueries: latestAddressChangeRefetch(accountListId, contactId),
+      update: evictAddressChangeHistory,
     });
     // updateContactAddress doesn't set support setting the primaryMailingAddress field, so if
     // that field changes, then use the setContactPrimaryAddress mutation to update it
@@ -111,6 +115,7 @@ export const EditContactAddressModal: React.FC<
           id: address.id,
           accountListId,
         },
+        refetchQueries: latestAddressChangeRefetch(accountListId, contactId),
         update: (cache) => {
           const deletedAddressId = address.id;
           if (handleUpdateCacheOnDelete) {
@@ -143,6 +148,7 @@ export const EditContactAddressModal: React.FC<
               cache.writeQuery({ ...query, data });
             }
           }
+          evictAddressChangeHistory(cache);
           enqueueSnackbar(t('Address deleted successfully'), {
             variant: 'success',
           });

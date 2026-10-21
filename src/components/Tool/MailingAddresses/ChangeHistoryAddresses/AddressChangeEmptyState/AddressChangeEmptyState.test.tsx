@@ -32,6 +32,11 @@ describe('AddressChangeEmptyState', () => {
       expect(getByTestId('address-changes-null-state')).toHaveTextContent(
         title + text,
       );
+      // Announced to screen readers when it replaces the spinner
+      expect(getByTestId('address-changes-null-state')).toHaveAttribute(
+        'role',
+        'status',
+      );
     },
   );
 });

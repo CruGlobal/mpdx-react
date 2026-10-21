@@ -7,7 +7,7 @@ import { useExportAddressChanges } from './useExportAddressChanges';
 
 jest.mock('./downloadAddressChanges');
 
-const fetchMore = jest.fn();
+const fetchMore = jest.fn().mockResolvedValue({});
 const firstPage = {
   ...mockAddressChangeHistory,
   pageInfo: { endCursor: 'cursor-1', hasNextPage: true },
@@ -51,6 +51,17 @@ describe('useExportAddressChanges', () => {
       expect.any(Function),
       'en-US',
     );
+  });
+
+  it('stops exporting without downloading when fetching a page rejects', async () => {
+    // A rejected fetchMore never sets the query's error
+    fetchMore.mockRejectedValueOnce(new Error('Page 2 failed'));
+    const { result } = renderExport();
+
+    act(() => result.current.startExport());
+
+    await waitFor(() => expect(result.current.exporting).toBe(false));
+    expect(downloadAddressChanges).not.toHaveBeenCalled();
   });
 
   it('stops exporting without downloading when a page fails to load', async () => {

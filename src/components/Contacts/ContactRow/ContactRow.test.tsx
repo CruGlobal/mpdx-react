@@ -102,6 +102,11 @@ const Components: React.FC<{ showAddressChange?: boolean }> = ({
   </TestRouter>
 );
 
+const nowMillis = Settings.now;
+afterEach(() => {
+  Settings.now = nowMillis;
+});
+
 beforeEach(() => {
   // The address change chip leaves the year off for changes in the current year
   Settings.now = () => new Date(2026, 9, 21).valueOf();

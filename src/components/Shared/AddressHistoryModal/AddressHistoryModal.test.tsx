@@ -1,5 +1,6 @@
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
+import { GraphQLError } from 'graphql';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, within } from '__tests__/util/testingLibraryReactMock';
@@ -70,10 +71,17 @@ const defaultAddresses = [
 const contactsPathname =
   '/accountLists/[accountListId]/contacts/[[...contactId]]';
 
+let loadCount = 0;
+
 const TestComponent: React.FC<{
   pathname?: string;
   addresses?: ReturnType<typeof address>[];
-}> = ({ pathname = contactsPathname, addresses = defaultAddresses }) => (
+  failing?: boolean;
+}> = ({
+  pathname = contactsPathname,
+  addresses = defaultAddresses,
+  failing = false,
+}) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={{ pathname }}>
       <GqlMockedProvider<{
@@ -83,11 +91,17 @@ const TestComponent: React.FC<{
         mocks={{
           GetUser: { user: { id: currentUserId } },
           AddressHistory: {
-            contact: {
-              name: 'Baggins, Frodo',
-              status: StatusEnum.PartnerFinancial,
-              addresses: { nodes: addresses },
-            },
+            contact: (() => {
+              // The mock calls a function in place of a value; throwing makes that load fail
+              if (failing && loadCount++ === 0) {
+                throw new GraphQLError('Address history failed');
+              }
+              return {
+                name: 'Baggins, Frodo',
+                status: StatusEnum.PartnerFinancial,
+                addresses: { nodes: addresses },
+              };
+            }) as unknown as AddressHistoryQuery['contact'],
           },
         }}
       >
@@ -110,6 +124,28 @@ const renderModal = async (
 };
 
 describe('AddressHistoryModal', () => {
+  beforeEach(() => {
+    loadCount = 0;
+  });
+
+  it('shows an error with a retry that loads the history when the first load fails', async () => {
+    const { findByText, getByRole, queryByText } = render(
+      <TestComponent failing />,
+    );
+
+    expect(
+      await findByText('Unable to load address history.'),
+    ).toBeInTheDocument();
+
+    userEvent.click(getByRole('button', { name: 'Retry' }));
+    expect(
+      await findByText('Baggins, Frodo · Partner - Financial'),
+    ).toBeInTheDocument();
+    expect(
+      queryByText('Unable to load address history.'),
+    ).not.toBeInTheDocument();
+  });
+
   it('shows the current primary address and how many changes since when', async () => {
     const { getByText } = await renderModal();
 

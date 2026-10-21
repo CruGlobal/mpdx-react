@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { placePromise, setupMocks } from '__tests__/util/googlePlacesMock';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import { createCache } from 'src/lib/apollo/cache';
 import theme from '../../../../../../theme';
 import {
   ContactMailingFragment,
@@ -219,9 +220,10 @@ describe('EditContactAddressModal', () => {
     expect(operation.variables.attributes.metroArea).toEqual(newMetroArea);
     expect(operation.variables.attributes.historic).toEqual(false);
 
-    const { operation: operation2 } = mutationSpy.mock.calls[1][0];
-    expect(operation2.variables.primaryAddressId).toEqual(
-      mockContact.addresses.nodes[0].id,
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('SetContactPrimaryAddress', {
+        primaryAddressId: mockContact.addresses.nodes[0].id,
+      }),
     );
   }, 80000);
 
@@ -299,8 +301,75 @@ describe('EditContactAddressModal', () => {
       }),
     );
 
-    expect(mutationSpy).toHaveBeenCalledTimes(1);
+    expect(mutationSpy).not.toHaveGraphqlOperation('SetContactPrimaryAddress');
   }, 30000);
+
+  describe("refreshes the contact's address change chip and the change history", () => {
+    const renderWithCache = () => {
+      const cache = createCache();
+      const evict = jest.spyOn(cache, 'evict');
+      const mutationSpy = jest.fn();
+      const utils = render(
+        <SnackbarProvider>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider cache={cache} onCall={mutationSpy}>
+              <EditContactAddressModal
+                contactId={contactId}
+                accountListId={accountListId}
+                handleClose={handleClose}
+                address={mockContact.addresses.nodes[0]}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </SnackbarProvider>,
+      );
+      return { ...utils, evict, mutationSpy };
+    };
+    it('after an edit', async () => {
+      const { getByRole, getByText, evict, mutationSpy } = renderWithCache();
+
+      const street = getByRole('combobox', { name: 'Street' });
+      userEvent.clear(street);
+      userEvent.type(street, '1 Changed St');
+      userEvent.click(getByText('Save'));
+
+      // Refetch just this contact's latest change: evicting it would reload the whole contacts list
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation(
+          'ContactLatestAddressChange',
+          {
+            accountListId,
+            contactId,
+          },
+        ),
+      );
+      expect(evict).toHaveBeenCalledWith({ fieldName: 'addressChangeHistory' });
+      expect(evict).not.toHaveBeenCalledWith(
+        expect.objectContaining({ fieldName: 'latestAddressChange' }),
+      );
+    }, 30000);
+
+    it('after a delete', async () => {
+      const { getByTestId, evict, mutationSpy } = renderWithCache();
+
+      userEvent.click(getByTestId('modal-delete-button'));
+
+      // Refetch just this contact's latest change: evicting it would reload the whole contacts list
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation(
+          'ContactLatestAddressChange',
+          {
+            accountListId,
+            contactId,
+          },
+        ),
+      );
+      expect(evict).toHaveBeenCalledWith({ fieldName: 'addressChangeHistory' });
+      expect(evict).not.toHaveBeenCalledWith(
+        expect.objectContaining({ fieldName: 'latestAddressChange' }),
+      );
+    });
+  });
 
   it('should handle delete click', async () => {
     const { getByText, getByTestId } = render(

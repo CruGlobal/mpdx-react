@@ -15,6 +15,12 @@ const addresses: HistoryAddress[] = [
     source: 'MPDX',
     createdByUser: { id: 'user-1', firstName: 'Test', lastName: 'User' },
     changedAt: DateTime.local(2024, 6, 13),
+    previous: {
+      street: '1001 Denman St',
+      city: 'Vancouver',
+      state: 'BC',
+      postalCode: 'V6G 2M4',
+    },
   },
   {
     street: '1001 Denman St',

@@ -21,6 +21,9 @@ mutation CreateContactAddress(
       createdAt
       startDate
       changeDate
+      createdByUser {
+        id
+      }
       sourceDonorAccount {
         id
         accountNumber

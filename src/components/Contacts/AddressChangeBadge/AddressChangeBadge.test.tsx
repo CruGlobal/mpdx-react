@@ -29,8 +29,12 @@ const renderBadge = (overrides = {}) =>
   );
 
 describe('AddressChangeBadge', () => {
+  const nowMillis = Settings.now;
   beforeEach(() => {
     Settings.now = () => new Date(2026, 9, 21).valueOf();
+  });
+  afterEach(() => {
+    Settings.now = nowMillis;
   });
 
   it.each([

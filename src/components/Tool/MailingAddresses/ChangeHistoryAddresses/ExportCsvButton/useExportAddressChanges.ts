@@ -29,7 +29,13 @@ export const useExportAddressChanges = ({
   const [exporting, setExporting] = useState(false);
 
   useFetchAllPages({
-    fetchMore,
+    // A rejected page never sets the query's error, so stop here or the export never ends.
+    // The global error link already shows and reports the failure. The cast is safe because
+    // useFetchAllPages ignores fetchMore's result, which is undefined after a failure here.
+    fetchMore: ((options) =>
+      fetchMore(options).catch(() => {
+        setExporting(false);
+      })) as typeof fetchMore,
     error,
     pageInfo: exporting ? history?.pageInfo : undefined,
   });
