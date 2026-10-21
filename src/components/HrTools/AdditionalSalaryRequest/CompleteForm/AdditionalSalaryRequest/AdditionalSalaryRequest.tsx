@@ -28,11 +28,15 @@ export const AdditionalSalaryRequest: React.FC = () => {
 
   const { pageType } = useAdditionalSalaryRequest();
   const categories = useCompleteFormCategories();
-  const { values, errors } = useFormikContext<CompleteFormValues>();
+  const { values, errors, submitCount } =
+    useFormikContext<CompleteFormValues>();
 
   const { total } = useSalaryCalculations({
     values,
   });
+  // A new form starts at $0, so only flag that once the user tries to submit
+  const totalError =
+    (total > 0 || submitCount > 0) && errors.totalAdditionalSalaryRequested;
 
   return (
     <StepCard
@@ -90,16 +94,14 @@ export const AdditionalSalaryRequest: React.FC = () => {
                     <AutosaveCustomTextField
                       fullWidth
                       size="small"
-                      variant="standard"
+                      variant="outlined"
                       fieldName={key as keyof CompleteFormValues}
                       InputProps={{
-                        disableUnderline: true,
                         inputMode: 'decimal',
                       }}
                       placeholder={currencyFormat(0, currency, locale)}
                       sx={{
                         '& .MuiInputBase-input': {
-                          padding: 0,
                           textAlign: 'center',
                         },
                       }}
@@ -117,16 +119,14 @@ export const AdditionalSalaryRequest: React.FC = () => {
                   width: '30%',
                   fontWeight: 'bold',
                   textAlign: 'center',
-                  outline: errors.totalAdditionalSalaryRequested
-                    ? '2px solid red'
-                    : 'none',
+                  outline: totalError ? '2px solid red' : 'none',
                 }}
                 data-testid="total-amount"
               >
                 {currencyFormat(total, currency, locale)}
-                {errors.totalAdditionalSalaryRequested && (
+                {totalError && (
                   <Typography variant="body2" color="error">
-                    {errors.totalAdditionalSalaryRequested}
+                    {totalError}
                   </Typography>
                 )}
               </TableCell>
