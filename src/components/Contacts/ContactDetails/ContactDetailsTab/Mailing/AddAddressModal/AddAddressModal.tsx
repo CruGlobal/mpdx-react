@@ -55,7 +55,7 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
     useCreateContactAddressMutation();
   const [setContactPrimaryAddress, { loading: settingPrimaryAddress }] =
     useSetContactPrimaryAddressMutation();
-  const { update } = useUpdateCache(contactId);
+  const { update } = useUpdateCache();
   const refetchPrimaryAddressChange = useRefetchPrimaryAddressChange(
     accountListId,
     contactId,

@@ -72,7 +72,7 @@ export const EditContactAddressModal: React.FC<
     useDeleteContactAddressMutation();
   const [setContactPrimaryAddress, { loading: settingPrimaryAddress }] =
     useSetContactPrimaryAddressMutation();
-  const { update } = useUpdateCache(contactId);
+  const { update } = useUpdateCache();
   const refetchPrimaryAddressChange = useRefetchPrimaryAddressChange(
     accountListId,
     contactId,
