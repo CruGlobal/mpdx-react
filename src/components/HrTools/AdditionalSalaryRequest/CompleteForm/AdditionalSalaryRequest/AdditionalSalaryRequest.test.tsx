@@ -63,6 +63,17 @@ describe('AdditionalSalaryRequest', () => {
       expect(getByText('Moving Expense')).toBeInTheDocument();
     });
 
+    it('names each amount input by its category', () => {
+      const { getAllByRole, getByRole } = render(<TestWrapper />);
+
+      const inputs = getAllByRole('textbox');
+      expect(inputs).toHaveLength(14);
+      inputs.forEach((input) => {
+        expect(input).toHaveAccessibleName();
+      });
+      expect(getByRole('textbox', { name: 'Adoption' })).toBeInTheDocument();
+    });
+
     it('displays Total Additional Salary Requested section', () => {
       const { getByText, getByTestId } = render(<TestWrapper />);
 
