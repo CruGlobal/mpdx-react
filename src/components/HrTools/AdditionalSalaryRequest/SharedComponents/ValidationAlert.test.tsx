@@ -12,6 +12,7 @@ import {
   useAdditionalSalaryRequest,
 } from '../Shared/AdditionalSalaryRequestContext';
 import { defaultCompleteFormValues } from '../Shared/CompleteForm.mock';
+import { getTotal } from '../Shared/Helper/getTotal';
 import { ValidationAlert } from './ValidationAlert';
 
 jest.mock('../Shared/AdditionalSalaryRequestContext', () => {
@@ -62,6 +63,13 @@ const createValidationSchema = () =>
     emailAddress: yup.string(),
     totalAdditionalSalaryRequested: yup
       .number()
+      .test(
+        'total-above-zero',
+        'Enter an amount in at least one category before submitting.',
+        function () {
+          return getTotal(this.parent as CompleteFormValues) > 0;
+        },
+      )
       .test(
         'total-within-remaining-allowable-salary',
         'Exceeds account balance plus deficit limit.',
@@ -151,6 +159,7 @@ describe('ValidationAlert', () => {
     const validValues: CompleteFormValues = {
       ...defaultCompleteFormValues,
       phoneNumber: '407-555-1234',
+      movingExpense: '100',
     };
 
     const { queryByRole, findByRole } = renderComponent({
@@ -239,6 +248,7 @@ describe('ValidationAlert', () => {
       initialValues: {
         ...defaultCompleteFormValues,
         phoneNumber: '555-1234',
+        movingExpense: '1000000',
         totalAdditionalSalaryRequested: '1000000',
       },
       submitOnMount: true,
@@ -250,5 +260,23 @@ describe('ValidationAlert', () => {
         'Your total additional salary requested exceeds your account balance.',
       ),
     ).toBeInTheDocument();
+  });
+
+  it('asks for an amount instead of the balance message when the total is $0', async () => {
+    const { findByText, queryByText } = renderComponent({
+      initialValues: { ...defaultCompleteFormValues, phoneNumber: '555-1234' },
+      submitOnMount: true,
+    });
+
+    expect(
+      await findByText(
+        'Enter an amount in at least one category before submitting.',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      queryByText(
+        'Your total additional salary requested exceeds your account balance.',
+      ),
+    ).not.toBeInTheDocument();
   });
 });
