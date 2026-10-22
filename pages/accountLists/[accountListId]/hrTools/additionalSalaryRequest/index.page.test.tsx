@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
@@ -38,7 +39,9 @@ interface TestComponentProps {
   requestError?: boolean;
   isSpouse?: boolean;
   cache?: ApolloCache<object>;
-  latestRequest?: AdditionalSalaryRequestQuery['latestAdditionalSalaryRequest'];
+  latestRequest?: DeepPartial<
+    AdditionalSalaryRequestQuery['latestAdditionalSalaryRequest']
+  >;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -272,7 +275,7 @@ describe('AdditionalSalaryRequest page', () => {
       autoPurchase: 0,
       expensesNotApprovedWithin90Days: 0,
       totalAdditionalSalaryRequested: 0,
-    } as AdditionalSalaryRequestQuery['latestAdditionalSalaryRequest'];
+    };
     const { findByRole, findByText, queryByText } = render(
       <TestComponent latestRequest={zeroRequest} />,
     );

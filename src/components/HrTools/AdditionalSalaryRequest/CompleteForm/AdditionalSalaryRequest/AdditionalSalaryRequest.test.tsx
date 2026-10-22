@@ -64,12 +64,15 @@ describe('AdditionalSalaryRequest', () => {
     });
 
     it('names each amount input by its category and asks for a decimal keypad', () => {
-      const { getByRole } = render(<TestWrapper />);
+      const { getAllByRole, getByRole } = render(<TestWrapper />);
 
-      expect(getByRole('textbox', { name: 'Adoption' })).toHaveAttribute(
-        'inputmode',
-        'decimal',
-      );
+      const inputs = getAllByRole('textbox');
+      expect(inputs).toHaveLength(14);
+      inputs.forEach((input) => {
+        expect(input).toHaveAccessibleName();
+        expect(input).toHaveAttribute('inputmode', 'decimal');
+      });
+      expect(getByRole('textbox', { name: 'Adoption' })).toBeInTheDocument();
     });
 
     it('displays Total Additional Salary Requested section', () => {
