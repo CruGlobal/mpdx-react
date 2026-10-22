@@ -1,11 +1,14 @@
-# This sets Contact.primaryAddress, so it must select every field its readers do (ContactRow, ContactHeaderAddress),
-# or those queries find the new address incomplete and reload from the network.
+# This sets Contact.primaryAddress, so it spreads every reader's address fields. A reader whose fields are missing
+# finds the new address incomplete and reloads its whole query from the network.
 query ContactPrimaryAddressChange($accountListId: ID!, $contactId: ID!) {
   contact(accountListId: $accountListId, id: $contactId) {
     id
+    ...ContactHeaderAddress
     primaryAddress {
       ...ContactRowAddress
       ...AddressChangeFields
+      ...ContactPrimaryAddress
+      ...BasicAddressInfo
     }
   }
 }
