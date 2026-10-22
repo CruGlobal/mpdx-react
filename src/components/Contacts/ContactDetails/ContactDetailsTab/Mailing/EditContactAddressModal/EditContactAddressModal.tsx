@@ -17,7 +17,7 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { AddressLocationSelect } from 'src/common/Selects/AddressLocationSelect';
-import { primaryAddressChangeRefetch } from 'src/components/Contacts/AddressChangeBadge/primaryAddressChangeRefetch';
+import { useRefetchPrimaryAddressChange } from 'src/components/Contacts/AddressChangeBadge/useRefetchPrimaryAddressChange';
 import { evictAddressChangeHistory } from 'src/components/Shared/AddressHistoryModal/addressHistoryHelpers';
 import {
   CancelButton,
@@ -73,40 +73,41 @@ export const EditContactAddressModal: React.FC<
   const [setContactPrimaryAddress, { loading: settingPrimaryAddress }] =
     useSetContactPrimaryAddressMutation();
   const { update } = useUpdateCache(contactId);
+  const refetchPrimaryAddressChange = useRefetchPrimaryAddressChange(
+    accountListId,
+    contactId,
+  );
 
   const onSubmit = async ({
     primaryMailingAddress,
     street,
     ...attributes
   }: AddressSchema) => {
-    const primaryChanged =
-      address.primaryMailingAddress !== primaryMailingAddress;
-    await updateContactAddress({
-      variables: {
-        accountListId,
-        attributes: {
-          id: address.id,
-          street: street ?? '',
-          ...attributes,
-        },
-      },
-      // When the primary changes, refetch after that mutation instead, or this can return the old primary
-      refetchQueries: primaryChanged
-        ? []
-        : primaryAddressChangeRefetch(accountListId, contactId),
-      update: evictAddressChangeHistory,
-    });
-    // updateContactAddress doesn't set support setting the primaryMailingAddress field, so if
-    // that field changes, then use the setContactPrimaryAddress mutation to update it
-    if (primaryChanged) {
-      await setContactPrimaryAddress({
+    try {
+      await updateContactAddress({
         variables: {
-          contactId,
-          primaryAddressId: primaryMailingAddress ? address.id : null,
+          accountListId,
+          attributes: {
+            id: address.id,
+            street: street ?? '',
+            ...attributes,
+          },
         },
-        refetchQueries: primaryAddressChangeRefetch(accountListId, contactId),
-        update,
+        update: evictAddressChangeHistory,
       });
+      // updateContactAddress doesn't set support setting the primaryMailingAddress field, so if
+      // that field changes, then use the setContactPrimaryAddress mutation to update it
+      if (address.primaryMailingAddress !== primaryMailingAddress) {
+        await setContactPrimaryAddress({
+          variables: {
+            contactId,
+            primaryAddressId: primaryMailingAddress ? address.id : null,
+          },
+          update,
+        });
+      }
+    } finally {
+      refetchPrimaryAddressChange();
     }
     enqueueSnackbar(t('Address updated successfully'), {
       variant: 'success',
@@ -116,50 +117,53 @@ export const EditContactAddressModal: React.FC<
 
   const deleteContactAddress = async (): Promise<void> => {
     if (address) {
-      await deleteAddress({
-        variables: {
-          id: address.id,
-          accountListId,
-        },
-        refetchQueries: primaryAddressChangeRefetch(accountListId, contactId),
-        update: (cache) => {
-          const deletedAddressId = address.id;
-          if (handleUpdateCacheOnDelete) {
-            handleUpdateCacheOnDelete(cache, { deletedAddressId });
-          } else {
-            const query = {
-              query: ContactDetailsTabDocument,
-              variables: {
-                accountListId,
-                contactId,
-              },
-            };
-
-            const dataFromCache =
-              cache.readQuery<ContactDetailsTabQuery>(query);
-
-            if (dataFromCache) {
-              const data = {
-                ...dataFromCache,
-                contact: {
-                  ...dataFromCache.contact,
-                  addresses: {
-                    ...dataFromCache.contact.addresses,
-                    nodes: dataFromCache.contact.addresses.nodes.filter(
-                      (address) => address.id !== deletedAddressId,
-                    ),
-                  },
+      try {
+        await deleteAddress({
+          variables: {
+            id: address.id,
+            accountListId,
+          },
+          update: (cache) => {
+            const deletedAddressId = address.id;
+            if (handleUpdateCacheOnDelete) {
+              handleUpdateCacheOnDelete(cache, { deletedAddressId });
+            } else {
+              const query = {
+                query: ContactDetailsTabDocument,
+                variables: {
+                  accountListId,
+                  contactId,
                 },
               };
-              cache.writeQuery({ ...query, data });
+
+              const dataFromCache =
+                cache.readQuery<ContactDetailsTabQuery>(query);
+
+              if (dataFromCache) {
+                const data = {
+                  ...dataFromCache,
+                  contact: {
+                    ...dataFromCache.contact,
+                    addresses: {
+                      ...dataFromCache.contact.addresses,
+                      nodes: dataFromCache.contact.addresses.nodes.filter(
+                        (address) => address.id !== deletedAddressId,
+                      ),
+                    },
+                  },
+                };
+                cache.writeQuery({ ...query, data });
+              }
             }
-          }
-          evictAddressChangeHistory(cache);
-          enqueueSnackbar(t('Address deleted successfully'), {
-            variant: 'success',
-          });
-        },
-      });
+            evictAddressChangeHistory(cache);
+            enqueueSnackbar(t('Address deleted successfully'), {
+              variant: 'success',
+            });
+          },
+        });
+      } finally {
+        refetchPrimaryAddressChange();
+      }
     }
     handleClose();
   };

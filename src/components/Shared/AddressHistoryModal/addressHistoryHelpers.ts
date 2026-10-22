@@ -44,11 +44,12 @@ export const formatChangeMadeBy = (
   if (createdByUser && createdByUser.id === currentUserId) {
     return t('You, in {{appName}}', { appName });
   }
-  const name =
-    [createdByUser?.firstName, createdByUser?.lastName]
-      .filter(Boolean)
-      .join(' ') || t('Unknown user');
-  return t('{{name}}, in {{appName}}', { name, appName });
+  const name = [createdByUser?.firstName, createdByUser?.lastName]
+    .filter(Boolean)
+    .join(' ');
+  return name
+    ? t('{{name}}, in {{appName}}', { name, appName })
+    : t('In {{appName}}', { appName });
 };
 
 // The change history comes from every contact's addresses, so drop it when one changes and Apollo refetches it

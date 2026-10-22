@@ -196,6 +196,43 @@ describe('AddAddressModal', () => {
     );
   });
 
+  it('refreshes the chip even when making the new address primary fails', async () => {
+    const mutationSpy = jest.fn();
+    const { getByRole, getByText } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider
+            onCall={mutationSpy}
+            mocks={{
+              SetContactPrimaryAddress: () => {
+                throw new Error('Server Error');
+              },
+            }}
+          >
+            <AddAddressModal
+              accountListId={accountListId}
+              contactId={contactId}
+              handleClose={handleClose}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+
+    userEvent.type(getByRole('combobox', { name: 'Street' }), '1 New St');
+    userEvent.click(getByText('Save'));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'ContactPrimaryAddressChange',
+        {
+          accountListId,
+          contactId,
+        },
+      ),
+    );
+  });
+
   it('should create contact address', async () => {
     const mutationSpy = jest.fn();
     const newStreet = '4321 Neat Street';

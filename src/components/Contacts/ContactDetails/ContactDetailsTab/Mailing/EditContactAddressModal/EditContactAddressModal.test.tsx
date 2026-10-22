@@ -158,6 +158,44 @@ describe('EditContactAddressModal', () => {
     await waitFor(() => expect(saveButton).not.toBeDisabled());
   });
 
+  it('refreshes the chip even when changing the primary address fails', async () => {
+    const mutationSpy = jest.fn();
+    const { getByText, getByLabelText } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider
+            onCall={mutationSpy}
+            mocks={{
+              SetContactPrimaryAddress: () => {
+                throw new Error('Server Error');
+              },
+            }}
+          >
+            <EditContactAddressModal
+              contactId={contactId}
+              accountListId={accountListId}
+              handleClose={handleClose}
+              address={mockContact.addresses.nodes[0]}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+
+    userEvent.click(getByLabelText('Primary'));
+    userEvent.click(getByText('Save'));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'ContactPrimaryAddressChange',
+        {
+          accountListId,
+          contactId,
+        },
+      ),
+    );
+  });
+
   it('should edit contact address', async () => {
     const mutationSpy = jest.fn();
     const newStreet = '4321 Neat Street';

@@ -21,22 +21,22 @@ export function useUpdateCache(contactId: string) {
         id: `Address:${address.id}`,
         fragment: PrimaryMailingAddressFragmentDoc,
         data: {
+          __typename: 'Address',
           primaryMailingAddress: address.primaryMailingAddress,
         },
       });
     });
     // Also update the contact's primaryMailingAddress relation
-    const primaryAddressId = addresses.find(
+    const primaryAddress = addresses.find(
       (address) => address.primaryMailingAddress,
     );
     cache.writeFragment({
       id: `Contact:${contactId}`,
       fragment: ContactPrimaryAddressRelationFragmentDoc,
       data: {
-        primaryAddress: primaryAddressId
-          ? {
-              id: primaryAddressId,
-            }
+        __typename: 'Contact',
+        primaryAddress: primaryAddress
+          ? { __typename: 'Address', id: primaryAddress.id }
           : null,
       },
     });

@@ -103,13 +103,13 @@ describe('formatChangeMadeBy', () => {
     ).toBe('Jane Smith, in MPDX');
   });
 
-  it('falls back when the user is unknown', () => {
+  it('names only the app when no user was recorded', () => {
     expect(
       formatChangeMadeBy(
         addressChange({ source: 'MPDX' }),
         currentUserId,
         i18n.t,
       ),
-    ).toBe('Unknown user, in MPDX');
+    ).toBe('In MPDX');
   });
 });

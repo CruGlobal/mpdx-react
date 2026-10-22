@@ -10,8 +10,8 @@ fragment AddressChangeFields on Address {
 query ContactPrimaryAddressChange($accountListId: ID!, $contactId: ID!) {
   contact(accountListId: $accountListId, id: $contactId) {
     id
-    ...ContactRow
     primaryAddress {
+      ...ContactRowAddress
       ...AddressChangeFields
     }
   }
