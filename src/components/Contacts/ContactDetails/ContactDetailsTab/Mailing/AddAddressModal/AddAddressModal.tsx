@@ -14,7 +14,7 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { AddressLocationSelect } from 'src/common/Selects/AddressLocationSelect';
-import { latestAddressChangeRefetch } from 'src/components/Contacts/AddressChangeBadge/latestAddressChangeRefetch';
+import { primaryAddressChangeRefetch } from 'src/components/Contacts/AddressChangeBadge/primaryAddressChangeRefetch';
 import { evictAddressChangeHistory } from 'src/components/Shared/AddressHistoryModal/addressHistoryHelpers';
 import {
   CancelButton,
@@ -71,7 +71,10 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
           ...attributes,
         },
       },
-      refetchQueries: latestAddressChangeRefetch(accountListId, contactId),
+      // A new primary is refetched after it is set instead, or this can return the old primary
+      refetchQueries: primaryMailingAddress
+        ? []
+        : primaryAddressChangeRefetch(accountListId, contactId),
       update: (cache, { data: createdAddressData }) => {
         if (handleUpdateCache) {
           handleUpdateCache(cache, {
@@ -117,6 +120,7 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
           contactId,
           primaryAddressId: newAddressId,
         },
+        refetchQueries: primaryAddressChangeRefetch(accountListId, contactId),
         update,
       });
     }

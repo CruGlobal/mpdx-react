@@ -27,7 +27,7 @@ const contact = {
   ...gqlMock<ContactRowFragment>(ContactRowFragmentDoc, {
     mocks: { name: 'Baggins, Frodo' },
   }),
-  latestAddressChange: {
+  addressChange: {
     changeDate: '2026-08-03',
     source: 'Siebel',
     createdByUser: null,
@@ -91,7 +91,7 @@ beforeEach(() => {
 });
 
 describe('ContactsList', () => {
-  it('shows each address change while the address changed filter is on', async () => {
+  it("shows each primary address's change while the address changed filter is on", async () => {
     const { findByText, getByRole } = render(
       <TestComponent
         filters={{ addressChanged: { min: '2026-01-01', max: '2026-10-14' } }}

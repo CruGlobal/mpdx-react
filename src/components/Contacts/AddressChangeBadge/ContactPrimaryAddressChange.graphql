@@ -1,0 +1,18 @@
+fragment AddressChangeFields on Address {
+  id
+  changeDate
+  source
+  createdByUser {
+    id
+  }
+}
+
+query ContactPrimaryAddressChange($accountListId: ID!, $contactId: ID!) {
+  contact(accountListId: $accountListId, id: $contactId) {
+    id
+    ...ContactRow
+    primaryAddress {
+      ...AddressChangeFields
+    }
+  }
+}

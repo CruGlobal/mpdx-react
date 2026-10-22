@@ -225,6 +225,17 @@ describe('EditContactAddressModal', () => {
         primaryAddressId: mockContact.addresses.nodes[0].id,
       }),
     );
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ContactPrimaryAddressChange'),
+    );
+
+    // The refetch must follow the primary switch, or it can return the old primary address
+    const operations = mutationSpy.mock.calls.map(
+      ([{ operation }]) => operation.operationName,
+    );
+    expect(operations.indexOf('ContactPrimaryAddressChange')).toBeGreaterThan(
+      operations.indexOf('SetContactPrimaryAddress'),
+    );
   }, 80000);
 
   it('handles chosen address predictions', async () => {
@@ -333,10 +344,10 @@ describe('EditContactAddressModal', () => {
       userEvent.type(street, '1 Changed St');
       userEvent.click(getByText('Save'));
 
-      // Refetch just this contact's latest change: evicting it would reload the whole contacts list
+      // Refetch just this contact's primary address: evicting it would reload the whole contacts list
       await waitFor(() =>
         expect(mutationSpy).toHaveGraphqlOperation(
-          'ContactLatestAddressChange',
+          'ContactPrimaryAddressChange',
           {
             accountListId,
             contactId,
@@ -345,7 +356,7 @@ describe('EditContactAddressModal', () => {
       );
       expect(evict).toHaveBeenCalledWith({ fieldName: 'addressChangeHistory' });
       expect(evict).not.toHaveBeenCalledWith(
-        expect.objectContaining({ fieldName: 'latestAddressChange' }),
+        expect.objectContaining({ fieldName: 'primaryAddress' }),
       );
     }, 30000);
 
@@ -354,10 +365,10 @@ describe('EditContactAddressModal', () => {
 
       userEvent.click(getByTestId('modal-delete-button'));
 
-      // Refetch just this contact's latest change: evicting it would reload the whole contacts list
+      // Refetch just this contact's primary address: evicting it would reload the whole contacts list
       await waitFor(() =>
         expect(mutationSpy).toHaveGraphqlOperation(
-          'ContactLatestAddressChange',
+          'ContactPrimaryAddressChange',
           {
             accountListId,
             contactId,
@@ -366,7 +377,7 @@ describe('EditContactAddressModal', () => {
       );
       expect(evict).toHaveBeenCalledWith({ fieldName: 'addressChangeHistory' });
       expect(evict).not.toHaveBeenCalledWith(
-        expect.objectContaining({ fieldName: 'latestAddressChange' }),
+        expect.objectContaining({ fieldName: 'primaryAddress' }),
       );
     });
   });

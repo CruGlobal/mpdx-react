@@ -39,7 +39,7 @@ export const ContactsList: React.FC = () => {
             contact={contact}
             useTopMargin={index === 0}
             addressChange={
-              addressChangedFiltered ? contact.latestAddressChange : undefined
+              addressChangedFiltered ? contact.addressChange : undefined
             }
           />
         )}
