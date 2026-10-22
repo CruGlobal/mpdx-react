@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { GraphQLError } from 'graphql';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { VirtuosoMockContext } from 'react-virtuoso';
@@ -93,7 +94,13 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const Components = ({ router = defaultRouter }: { router?: object }) => (
+const Components = ({
+  router = defaultRouter,
+  appealError,
+}: {
+  router?: object;
+  appealError?: GraphQLError;
+}) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
       <DndProvider backend={HTML5Backend}>
@@ -104,7 +111,13 @@ const Components = ({ router = defaultRouter }: { router?: object }) => (
         }>
           mocks={{
             AppealsContacts: mockResponse,
-            Appeal: mockAppealResponse,
+            Appeal: appealError
+              ? {
+                  appeal: () => {
+                    throw appealError;
+                  },
+                }
+              : mockAppealResponse,
             ContactFilters: {
               userOptions: [],
             },
@@ -239,6 +252,38 @@ describe('AppealsDetailsPage', () => {
         expect(
           queryByRole('complementary', { name: 'Filter' }),
         ).not.toBeInTheDocument(),
+      );
+    });
+  });
+
+  describe('Appeal not found', () => {
+    it('redirects to the appeals list instead of leaving a broken page', async () => {
+      const routerPush = jest.fn();
+
+      render(
+        <Components
+          router={{
+            ...defaultRouter,
+            query: { ...defaultRouter.query, appealId: ['1', 'list'] },
+            push: routerPush,
+          }}
+          appealError={
+            new GraphQLError('Appeal with id=1 not found', {
+              extensions: { code: 'NOT_FOUND' },
+            })
+          }
+        />,
+      );
+
+      await waitFor(() =>
+        expect(routerPush).toHaveBeenCalledWith(
+          `/accountLists/${accountListId}/tools/appeals`,
+        ),
+      );
+
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'That appeal could not be found. It may have already been deleted.',
+        { variant: 'error' },
       );
     });
   });

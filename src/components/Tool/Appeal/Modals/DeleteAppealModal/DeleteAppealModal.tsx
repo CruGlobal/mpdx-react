@@ -53,6 +53,10 @@ export const DeleteAppealModal: React.FC<DeleteAppealModalProps> = ({
           id: appealId,
         },
       },
+      // The appeal may already be gone (a stale page, another tab deleting
+      // it first, ...); that is handled below instead of the global
+      // toast/report, same as the load of the appeal itself.
+      context: { suppressErrorCodes: ['NOT_FOUND'] },
       update: (cache) => {
         cache.evict({ id: `Appeal:${appealId}` });
         cache.gc();
@@ -63,7 +67,18 @@ export const DeleteAppealModal: React.FC<DeleteAppealModalProps> = ({
           variant: 'success',
         });
       },
-      onError: () => {
+      onError: (error) => {
+        const alreadyGone = error.graphQLErrors.some(
+          (graphQLError) => graphQLError.extensions?.code === 'NOT_FOUND',
+        );
+        if (alreadyGone) {
+          enqueueSnackbar(
+            t('That appeal no longer exists. It may have already been deleted.'),
+            { variant: 'error' },
+          );
+          push(`/accountLists/${accountListId}/tools/appeals`);
+          return;
+        }
         enqueueSnackbar(t('There was an error trying to delete the appeal.'), {
           variant: 'error',
         });
