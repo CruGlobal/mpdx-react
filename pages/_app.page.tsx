@@ -24,6 +24,7 @@ import { Helpjuice } from 'src/components/Helpjuice/Helpjuice';
 import PrimaryLayout from 'src/components/Layouts/Primary';
 import Loading from 'src/components/Loading';
 import { OfflineIndicator } from 'src/components/OfflineIndicator/OfflineIndicator';
+import { RefetchOnReconnect } from 'src/components/RefetchOnReconnect/RefetchOnReconnect';
 import { RouterGuard } from 'src/components/RouterGuard/RouterGuard';
 import { SetupProvider } from 'src/components/Setup/SetupProvider';
 import { SnackbarUtilsConfigurator } from 'src/components/Snackbar/Snackbar';
@@ -82,6 +83,7 @@ const GraphQLProviders: React.FC<{
 
   return (
     <ApolloProvider client={client}>
+      <RefetchOnReconnect />
       <Suspense fallback={<Loading loading />}>
         <CacheRestoreGate>
           <DefaultAccountListRedirect>
