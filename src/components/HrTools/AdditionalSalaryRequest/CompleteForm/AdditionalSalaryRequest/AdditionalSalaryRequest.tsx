@@ -78,12 +78,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
                       size="small"
                       variant="outlined"
                       fieldName={key as keyof CompleteFormValues}
-                      slotProps={{
-                        htmlInput: {
-                          inputMode: 'decimal',
-                          'aria-label': label,
-                        },
-                      }}
+                      slotProps={{ htmlInput: { 'aria-label': label } }}
                       placeholder={currencyFormat(0, currency, locale)}
                     />
                   )}
