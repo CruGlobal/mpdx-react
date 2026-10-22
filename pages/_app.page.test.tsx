@@ -17,13 +17,7 @@ jest.mock('@rollbar/react', () => ({
   ErrorBoundary: ({ children }: { children: React.ReactNode }) => children,
 }));
 
-jest.mock('next-auth/react', () => ({
-  useSession: () => ({
-    status: 'authenticated',
-    data: jest.requireActual('__tests__/fixtures/session').session,
-  }),
-  SessionProvider: ({ children }: { children: React.ReactNode }) => children,
-}));
+jest.mock('next-auth/react', () => jest.requireActual('next-auth/react'));
 
 // Stays suspended, like a cache restore that hasn't finished
 jest.mock('src/components/CacheRestoreGate/CacheRestoreGate', () => ({
@@ -32,7 +26,13 @@ jest.mock('src/components/CacheRestoreGate/CacheRestoreGate', () => ({
   },
 }));
 
-jest.mock('src/components/DataDog/DataDog', () => () => null);
+// DataDog renders inside SessionProvider, so it doubles as a probe of the session
+jest.mock(
+  'src/components/DataDog/DataDog',
+  () => () =>
+    jest.requireActual('next-auth/react').useSession().data?.user.name ??
+    'No session',
+);
 jest.mock('src/lib/serviceWorker/register', () => ({
   registerServiceWorker: jest.fn(),
 }));
@@ -40,9 +40,15 @@ jest.mock('src/lib/serviceWorker/register', () => ({
 const Page = Object.assign(() => <div>Page</div>, { layout: passThrough });
 
 const router = { pathname: '/accountLists', route: '/accountLists' };
-const pageProps = { session };
+const pagePropsWithSession = { session };
 
-const TestComponent: React.FC = () => (
+interface TestComponentProps {
+  pageProps?: { session?: typeof session };
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({
+  pageProps = pagePropsWithSession,
+}) => (
   <TestRouter router={router}>
     <App
       Component={Page}
@@ -62,5 +68,15 @@ describe('App', () => {
     rerender(<TestComponent />);
 
     expect(mockProviderRender).toHaveBeenCalledTimes(1);
+  });
+
+  // Client navigation from a page with getServerSideProps to one without it
+  it('keeps the session when the next page does not provide one', () => {
+    const { getByText, rerender } = render(<TestComponent />);
+    expect(getByText('First Last')).toBeInTheDocument();
+
+    rerender(<TestComponent pageProps={{}} />);
+
+    expect(getByText('First Last')).toBeInTheDocument();
   });
 });
