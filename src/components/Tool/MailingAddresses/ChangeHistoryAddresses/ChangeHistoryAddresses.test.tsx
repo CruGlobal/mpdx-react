@@ -273,7 +273,7 @@ describe('ChangeHistoryAddresses', () => {
       'In MPDX',
       'Jane Smith',
       'You',
-      'Unknown user',
+      'Not recorded (before Nov 2026)',
     ]);
   });
 

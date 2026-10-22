@@ -8,6 +8,7 @@ import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { Address } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat, dateFormatWithoutYear } from 'src/lib/intlFormat';
+import { sourceToStr } from 'src/lib/sourceHelper';
 
 export interface AddressChangeBadgeProps {
   addressChange: Pick<Address, 'changeDate' | 'source'> & {
@@ -30,7 +31,7 @@ export const AddressChangeBadge: React.FC<AddressChangeBadgeProps> = ({
   const madeBy = isAutomaticChange(source)
     ? t('automatic')
     : !createdByUser
-      ? t('unknown user')
+      ? t('in {{appName}}', { appName: sourceToStr(t, source) })
       : createdByUser.id === data?.user.id
         ? t('by you')
         : t('other user');

@@ -40,7 +40,7 @@ describe('AddressChangeBadge', () => {
   it.each([
     ['by you', { createdByUser: { id: currentUserId } }],
     ['other user', { createdByUser: { id: 'user-2' } }],
-    ['unknown user', {}],
+    ['in MPDX', {}],
     ['automatic', { source: 'Siebel' }],
   ])('labels the change as %s', async (madeBy, overrides) => {
     const { findByText } = renderBadge(overrides);
@@ -54,7 +54,7 @@ describe('AddressChangeBadge', () => {
     const { findByText } = renderBadge({ changeDate: '2024-06-13' });
 
     expect(
-      await findByText('Address changed Jun 13, 2024 · unknown user'),
+      await findByText('Address changed Jun 13, 2024 · in MPDX'),
     ).toBeInTheDocument();
   });
 });

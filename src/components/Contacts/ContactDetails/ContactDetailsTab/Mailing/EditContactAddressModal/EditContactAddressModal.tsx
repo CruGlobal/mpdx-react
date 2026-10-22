@@ -17,7 +17,7 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { AddressLocationSelect } from 'src/common/Selects/AddressLocationSelect';
-import { latestAddressChangeRefetch } from 'src/components/Contacts/AddressChangeBadge/latestAddressChangeRefetch';
+import { useRefetchPrimaryAddressChange } from 'src/components/Contacts/AddressChangeBadge/useRefetchPrimaryAddressChange';
 import { evictAddressChangeHistory } from 'src/components/Shared/AddressHistoryModal/addressHistoryHelpers';
 import {
   CancelButton,
@@ -72,35 +72,47 @@ export const EditContactAddressModal: React.FC<
     useDeleteContactAddressMutation();
   const [setContactPrimaryAddress, { loading: settingPrimaryAddress }] =
     useSetContactPrimaryAddressMutation();
-  const { update } = useUpdateCache(contactId);
+  const { update } = useUpdateCache();
+  const refetchPrimaryAddressChange = useRefetchPrimaryAddressChange(
+    accountListId,
+    contactId,
+  );
 
   const onSubmit = async ({
     primaryMailingAddress,
     street,
     ...attributes
   }: AddressSchema) => {
-    await updateContactAddress({
-      variables: {
-        accountListId,
-        attributes: {
-          id: address.id,
-          street: street ?? '',
-          ...attributes,
-        },
-      },
-      refetchQueries: latestAddressChangeRefetch(accountListId, contactId),
-      update: evictAddressChangeHistory,
-    });
-    // updateContactAddress doesn't set support setting the primaryMailingAddress field, so if
-    // that field changes, then use the setContactPrimaryAddress mutation to update it
-    if (address.primaryMailingAddress !== primaryMailingAddress) {
-      await setContactPrimaryAddress({
+    // Refetch only once the address itself saved: a failed save changed nothing, and its error is already shown
+    let addressSaved = false;
+    try {
+      await updateContactAddress({
         variables: {
-          contactId,
-          primaryAddressId: primaryMailingAddress ? address.id : null,
+          accountListId,
+          attributes: {
+            id: address.id,
+            street: street ?? '',
+            ...attributes,
+          },
         },
-        update,
+        update: evictAddressChangeHistory,
       });
+      addressSaved = true;
+      // updateContactAddress doesn't set support setting the primaryMailingAddress field, so if
+      // that field changes, then use the setContactPrimaryAddress mutation to update it
+      if (address.primaryMailingAddress !== primaryMailingAddress) {
+        await setContactPrimaryAddress({
+          variables: {
+            contactId,
+            primaryAddressId: primaryMailingAddress ? address.id : null,
+          },
+          update,
+        });
+      }
+    } finally {
+      if (addressSaved) {
+        refetchPrimaryAddressChange();
+      }
     }
     enqueueSnackbar(t('Address updated successfully'), {
       variant: 'success',
@@ -115,7 +127,6 @@ export const EditContactAddressModal: React.FC<
           id: address.id,
           accountListId,
         },
-        refetchQueries: latestAddressChangeRefetch(accountListId, contactId),
         update: (cache) => {
           const deletedAddressId = address.id;
           if (handleUpdateCacheOnDelete) {
@@ -154,6 +165,7 @@ export const EditContactAddressModal: React.FC<
           });
         },
       });
+      refetchPrimaryAddressChange();
     }
     handleClose();
   };

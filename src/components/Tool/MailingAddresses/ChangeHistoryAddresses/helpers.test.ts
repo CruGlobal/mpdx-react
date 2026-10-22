@@ -40,7 +40,7 @@ describe('formatMadeByOption', () => {
         currentUserId,
         i18n.t,
       ),
-    ).toBe('Unknown user');
+    ).toBe('Not recorded (before Nov 2026)');
   });
 });
 
@@ -61,7 +61,7 @@ describe('groupMadeByOptions', () => {
       mpdx: [
         { value: 'user:user-2', label: 'Jane Smith' },
         { value: 'user:user-1', label: 'You' },
-        { value: 'unknown_user', label: 'Unknown user' },
+        { value: 'unknown_user', label: 'Not recorded (before Nov 2026)' },
       ],
     });
   });

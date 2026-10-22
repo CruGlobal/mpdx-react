@@ -180,16 +180,95 @@ describe('AddAddressModal', () => {
     userEvent.type(getByRole('combobox', { name: 'Street' }), '1 New St');
     userEvent.click(getByText('Save'));
 
-    // Refetch just this contact's latest change: evicting it would reload the whole contacts list
+    // Refetch just this contact's primary address: evicting it would reload the whole contacts list
     await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('ContactLatestAddressChange', {
-        accountListId,
-        contactId,
-      }),
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'ContactPrimaryAddressChange',
+        {
+          accountListId,
+          contactId,
+        },
+      ),
     );
     expect(evict).toHaveBeenCalledWith({ fieldName: 'addressChangeHistory' });
     expect(evict).not.toHaveBeenCalledWith(
-      expect.objectContaining({ fieldName: 'latestAddressChange' }),
+      expect.objectContaining({ fieldName: 'primaryAddress' }),
+    );
+  });
+
+  it('refreshes the chip even when making the new address primary fails', async () => {
+    const mutationSpy = jest.fn();
+    const { getByRole, getByText } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider
+            onCall={mutationSpy}
+            mocks={{
+              SetContactPrimaryAddress: () => {
+                throw new Error('Server Error');
+              },
+            }}
+          >
+            <AddAddressModal
+              accountListId={accountListId}
+              contactId={contactId}
+              handleClose={handleClose}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+
+    userEvent.type(getByRole('combobox', { name: 'Street' }), '1 New St');
+    userEvent.click(getByText('Save'));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'ContactPrimaryAddressChange',
+        {
+          accountListId,
+          contactId,
+        },
+      ),
+    );
+
+    expect(mockEnqueue).not.toHaveBeenCalledWith(
+      'Address added successfully',
+      expect.anything(),
+    );
+    expect(handleClose).not.toHaveBeenCalled();
+  });
+
+  it("doesn't refresh the chip when saving the address fails", async () => {
+    const mutationSpy = jest.fn();
+    const failingSave = jest.fn(() => {
+      throw new Error('Server Error');
+    });
+    const { getByRole, getByText } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider
+            onCall={mutationSpy}
+            mocks={{ CreateContactAddress: failingSave }}
+          >
+            <AddAddressModal
+              accountListId={accountListId}
+              contactId={contactId}
+              handleClose={handleClose}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+
+    userEvent.type(getByRole('combobox', { name: 'Street' }), '1 New St');
+    userEvent.click(getByText('Save'));
+
+    await waitFor(() => expect(failingSave).toHaveBeenCalled());
+    // Its error is already shown; a refetch would fail the same way and show it twice
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    expect(mutationSpy).not.toHaveGraphqlOperation(
+      'ContactPrimaryAddressChange',
     );
   });
 
@@ -330,7 +409,15 @@ describe('AddAddressModal', () => {
     expect(operation.variables.attributes.street).toEqual(newStreet);
 
     await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('SetContactPrimaryAddress'),
+      expect(mutationSpy).toHaveGraphqlOperation('ContactPrimaryAddressChange'),
+    );
+
+    // The refetch must follow the primary switch, or it can return the old primary address
+    const operations = mutationSpy.mock.calls.map(
+      ([{ operation }]) => operation.operationName,
+    );
+    expect(operations.indexOf('ContactPrimaryAddressChange')).toBeGreaterThan(
+      operations.indexOf('SetContactPrimaryAddress'),
     );
   }, 30000);
 

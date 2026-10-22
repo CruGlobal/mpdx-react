@@ -192,7 +192,7 @@ describe('ContactDetailsTabMailing', () => {
     );
 
     expect(
-      await findByText('Address changed Jan 1, 2023 · unknown user'),
+      await findByText('Address changed Jan 1, 2023 · in MPDX'),
     ).toBeInTheDocument();
 
     userEvent.click(getByText('Show 1 More'));

@@ -14,7 +14,7 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { AddressLocationSelect } from 'src/common/Selects/AddressLocationSelect';
-import { latestAddressChangeRefetch } from 'src/components/Contacts/AddressChangeBadge/latestAddressChangeRefetch';
+import { useRefetchPrimaryAddressChange } from 'src/components/Contacts/AddressChangeBadge/useRefetchPrimaryAddressChange';
 import { evictAddressChangeHistory } from 'src/components/Shared/AddressHistoryModal/addressHistoryHelpers';
 import {
   CancelButton,
@@ -55,70 +55,83 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
     useCreateContactAddressMutation();
   const [setContactPrimaryAddress, { loading: settingPrimaryAddress }] =
     useSetContactPrimaryAddressMutation();
-  const { update } = useUpdateCache(contactId);
+  const { update } = useUpdateCache();
+  const refetchPrimaryAddressChange = useRefetchPrimaryAddressChange(
+    accountListId,
+    contactId,
+  );
 
   const onSubmit = async ({
     primaryMailingAddress,
     street,
     ...attributes
   }: AddressSchema) => {
-    const response = await createContactAddress({
-      variables: {
-        accountListId,
-        attributes: {
-          contactId,
-          street: street ?? '',
-          ...attributes,
+    // Refetch only once the address itself saved: a failed save changed nothing, and its error is already shown
+    let addressSaved = false;
+    try {
+      const response = await createContactAddress({
+        variables: {
+          accountListId,
+          attributes: {
+            contactId,
+            street: street ?? '',
+            ...attributes,
+          },
         },
-      },
-      refetchQueries: latestAddressChangeRefetch(accountListId, contactId),
-      update: (cache, { data: createdAddressData }) => {
-        if (handleUpdateCache) {
-          handleUpdateCache(cache, {
-            createAddress: {
-              address: createdAddressData?.createAddress?.address,
-              contactId,
-            },
-          });
-        } else {
-          const query = {
-            query: ContactDetailsTabDocument,
-            variables: {
-              accountListId,
-              contactId,
-            },
-          };
-          const dataFromCache = cache.readQuery<ContactDetailsTabQuery>(query);
-
-          if (dataFromCache) {
-            const data = {
-              ...dataFromCache,
-              contact: {
-                ...dataFromCache.contact,
-                addresses: {
-                  ...dataFromCache.contact.addresses,
-                  nodes: [
-                    ...dataFromCache.contact.addresses.nodes,
-                    { ...createdAddressData?.createAddress?.address },
-                  ],
-                },
+        update: (cache, { data: createdAddressData }) => {
+          if (handleUpdateCache) {
+            handleUpdateCache(cache, {
+              createAddress: {
+                address: createdAddressData?.createAddress?.address,
+                contactId,
+              },
+            });
+          } else {
+            const query = {
+              query: ContactDetailsTabDocument,
+              variables: {
+                accountListId,
+                contactId,
               },
             };
-            cache.writeQuery({ ...query, data });
+            const dataFromCache =
+              cache.readQuery<ContactDetailsTabQuery>(query);
+
+            if (dataFromCache) {
+              const data = {
+                ...dataFromCache,
+                contact: {
+                  ...dataFromCache.contact,
+                  addresses: {
+                    ...dataFromCache.contact.addresses,
+                    nodes: [
+                      ...dataFromCache.contact.addresses.nodes,
+                      { ...createdAddressData?.createAddress?.address },
+                    ],
+                  },
+                },
+              };
+              cache.writeQuery({ ...query, data });
+            }
           }
-        }
-        evictAddressChangeHistory(cache);
-      },
-    });
-    const newAddressId = response.data?.createAddress?.address?.id;
-    if (primaryMailingAddress && newAddressId) {
-      await setContactPrimaryAddress({
-        variables: {
-          contactId,
-          primaryAddressId: newAddressId,
+          evictAddressChangeHistory(cache);
         },
-        update,
       });
+      addressSaved = true;
+      const newAddressId = response.data?.createAddress?.address?.id;
+      if (primaryMailingAddress && newAddressId) {
+        await setContactPrimaryAddress({
+          variables: {
+            contactId,
+            primaryAddressId: newAddressId,
+          },
+          update,
+        });
+      }
+    } finally {
+      if (addressSaved) {
+        refetchPrimaryAddressChange();
+      }
     }
     enqueueSnackbar(t('Address added successfully'), {
       variant: 'success',
