@@ -83,6 +83,8 @@ export const EditContactAddressModal: React.FC<
     street,
     ...attributes
   }: AddressSchema) => {
+    // Refetch only once the address itself saved: a failed save changed nothing, and its error is already shown
+    let addressSaved = false;
     try {
       await updateContactAddress({
         variables: {
@@ -95,6 +97,7 @@ export const EditContactAddressModal: React.FC<
         },
         update: evictAddressChangeHistory,
       });
+      addressSaved = true;
       // updateContactAddress doesn't set support setting the primaryMailingAddress field, so if
       // that field changes, then use the setContactPrimaryAddress mutation to update it
       if (address.primaryMailingAddress !== primaryMailingAddress) {
@@ -107,7 +110,9 @@ export const EditContactAddressModal: React.FC<
         });
       }
     } finally {
-      refetchPrimaryAddressChange();
+      if (addressSaved) {
+        refetchPrimaryAddressChange();
+      }
     }
     enqueueSnackbar(t('Address updated successfully'), {
       variant: 'success',
@@ -117,53 +122,50 @@ export const EditContactAddressModal: React.FC<
 
   const deleteContactAddress = async (): Promise<void> => {
     if (address) {
-      try {
-        await deleteAddress({
-          variables: {
-            id: address.id,
-            accountListId,
-          },
-          update: (cache) => {
-            const deletedAddressId = address.id;
-            if (handleUpdateCacheOnDelete) {
-              handleUpdateCacheOnDelete(cache, { deletedAddressId });
-            } else {
-              const query = {
-                query: ContactDetailsTabDocument,
-                variables: {
-                  accountListId,
-                  contactId,
+      await deleteAddress({
+        variables: {
+          id: address.id,
+          accountListId,
+        },
+        update: (cache) => {
+          const deletedAddressId = address.id;
+          if (handleUpdateCacheOnDelete) {
+            handleUpdateCacheOnDelete(cache, { deletedAddressId });
+          } else {
+            const query = {
+              query: ContactDetailsTabDocument,
+              variables: {
+                accountListId,
+                contactId,
+              },
+            };
+
+            const dataFromCache =
+              cache.readQuery<ContactDetailsTabQuery>(query);
+
+            if (dataFromCache) {
+              const data = {
+                ...dataFromCache,
+                contact: {
+                  ...dataFromCache.contact,
+                  addresses: {
+                    ...dataFromCache.contact.addresses,
+                    nodes: dataFromCache.contact.addresses.nodes.filter(
+                      (address) => address.id !== deletedAddressId,
+                    ),
+                  },
                 },
               };
-
-              const dataFromCache =
-                cache.readQuery<ContactDetailsTabQuery>(query);
-
-              if (dataFromCache) {
-                const data = {
-                  ...dataFromCache,
-                  contact: {
-                    ...dataFromCache.contact,
-                    addresses: {
-                      ...dataFromCache.contact.addresses,
-                      nodes: dataFromCache.contact.addresses.nodes.filter(
-                        (address) => address.id !== deletedAddressId,
-                      ),
-                    },
-                  },
-                };
-                cache.writeQuery({ ...query, data });
-              }
+              cache.writeQuery({ ...query, data });
             }
-            evictAddressChangeHistory(cache);
-            enqueueSnackbar(t('Address deleted successfully'), {
-              variant: 'success',
-            });
-          },
-        });
-      } finally {
-        refetchPrimaryAddressChange();
-      }
+          }
+          evictAddressChangeHistory(cache);
+          enqueueSnackbar(t('Address deleted successfully'), {
+            variant: 'success',
+          });
+        },
+      });
+      refetchPrimaryAddressChange();
     }
     handleClose();
   };

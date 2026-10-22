@@ -194,6 +194,45 @@ describe('EditContactAddressModal', () => {
         },
       ),
     );
+
+    expect(mockEnqueue).not.toHaveBeenCalledWith(
+      'Address updated successfully',
+      expect.anything(),
+    );
+    expect(handleClose).not.toHaveBeenCalled();
+  });
+
+  it("doesn't refresh the chip when saving the address fails", async () => {
+    const mutationSpy = jest.fn();
+    const failingSave = jest.fn(() => {
+      throw new Error('Server Error');
+    });
+    const { getByText } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider
+            onCall={mutationSpy}
+            mocks={{ UpdateContactAddress: failingSave }}
+          >
+            <EditContactAddressModal
+              contactId={contactId}
+              accountListId={accountListId}
+              handleClose={handleClose}
+              address={mockContact.addresses.nodes[0]}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+
+    userEvent.click(getByText('Save'));
+
+    await waitFor(() => expect(failingSave).toHaveBeenCalled());
+    // Its error is already shown; a refetch would fail the same way and show it twice
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    expect(mutationSpy).not.toHaveGraphqlOperation(
+      'ContactPrimaryAddressChange',
+    );
   });
 
   it('should edit contact address', async () => {

@@ -66,6 +66,8 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
     street,
     ...attributes
   }: AddressSchema) => {
+    // Refetch only once the address itself saved: a failed save changed nothing, and its error is already shown
+    let addressSaved = false;
     try {
       const response = await createContactAddress({
         variables: {
@@ -115,6 +117,7 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
           evictAddressChangeHistory(cache);
         },
       });
+      addressSaved = true;
       const newAddressId = response.data?.createAddress?.address?.id;
       if (primaryMailingAddress && newAddressId) {
         await setContactPrimaryAddress({
@@ -126,7 +129,9 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
         });
       }
     } finally {
-      refetchPrimaryAddressChange();
+      if (addressSaved) {
+        refetchPrimaryAddressChange();
+      }
     }
     enqueueSnackbar(t('Address added successfully'), {
       variant: 'success',

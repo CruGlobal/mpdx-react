@@ -1,3 +1,5 @@
+# This sets Contact.primaryAddress, so it must select every field its readers do (ContactRow, ContactHeaderAddress),
+# or those queries find the new address incomplete and reload from the network.
 query ContactPrimaryAddressChange($accountListId: ID!, $contactId: ID!) {
   contact(accountListId: $accountListId, id: $contactId) {
     id

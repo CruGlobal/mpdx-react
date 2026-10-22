@@ -231,6 +231,45 @@ describe('AddAddressModal', () => {
         },
       ),
     );
+
+    expect(mockEnqueue).not.toHaveBeenCalledWith(
+      'Address added successfully',
+      expect.anything(),
+    );
+    expect(handleClose).not.toHaveBeenCalled();
+  });
+
+  it("doesn't refresh the chip when saving the address fails", async () => {
+    const mutationSpy = jest.fn();
+    const failingSave = jest.fn(() => {
+      throw new Error('Server Error');
+    });
+    const { getByRole, getByText } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider
+            onCall={mutationSpy}
+            mocks={{ CreateContactAddress: failingSave }}
+          >
+            <AddAddressModal
+              accountListId={accountListId}
+              contactId={contactId}
+              handleClose={handleClose}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+
+    userEvent.type(getByRole('combobox', { name: 'Street' }), '1 New St');
+    userEvent.click(getByText('Save'));
+
+    await waitFor(() => expect(failingSave).toHaveBeenCalled());
+    // Its error is already shown; a refetch would fail the same way and show it twice
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    expect(mutationSpy).not.toHaveGraphqlOperation(
+      'ContactPrimaryAddressChange',
+    );
   });
 
   it('should create contact address', async () => {
