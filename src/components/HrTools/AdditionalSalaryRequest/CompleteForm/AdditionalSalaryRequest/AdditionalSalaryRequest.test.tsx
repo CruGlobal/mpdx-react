@@ -63,6 +63,15 @@ describe('AdditionalSalaryRequest', () => {
       expect(getByText('Moving Expense')).toBeInTheDocument();
     });
 
+    it('names each amount input by its category and asks for a decimal keypad', () => {
+      const { getByRole } = render(<TestWrapper />);
+
+      expect(getByRole('textbox', { name: 'Adoption' })).toHaveAttribute(
+        'inputmode',
+        'decimal',
+      );
+    });
+
     it('displays Total Additional Salary Requested section', () => {
       const { getByText, getByTestId } = render(<TestWrapper />);
 

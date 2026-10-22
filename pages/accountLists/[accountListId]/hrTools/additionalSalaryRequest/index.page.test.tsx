@@ -38,6 +38,7 @@ interface TestComponentProps {
   requestError?: boolean;
   isSpouse?: boolean;
   cache?: ApolloCache<object>;
+  latestRequest?: AdditionalSalaryRequestQuery['latestAdditionalSalaryRequest'];
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -49,6 +50,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   requestError = false,
   isSpouse = false,
   cache,
+  latestRequest = { status: AsrStatusEnum.ApprovedAndPaid },
 }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
@@ -82,9 +84,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
               ),
             },
             AdditionalSalaryRequest: {
-              latestAdditionalSalaryRequest: {
-                status: AsrStatusEnum.ApprovedAndPaid,
-              },
+              latestAdditionalSalaryRequest: latestRequest,
             },
             ...(requestError && {
               AdditionalSalaryRequest: {
@@ -249,6 +249,46 @@ describe('AdditionalSalaryRequest page', () => {
         isSpouse: true,
       }),
     );
+  });
+
+  it('keeps the submit confirmation closed for a $0 request', async () => {
+    const zeroRequest = {
+      id: 'asr-1',
+      status: AsrStatusEnum.InProgress,
+      phoneNumber: '4075551234',
+      emailAddress: 'staff@cru.org',
+      currentYearSalaryNotReceived: 0,
+      previousYearSalaryNotReceived: 0,
+      additionalSalaryWithinMax: 0,
+      adoption: 0,
+      counselingNonMedical: 0,
+      healthcareExpensesExceedingLimit: 0,
+      babysittingMinistryEvents: 0,
+      childrenMinistryTripExpenses: 0,
+      childrenCollegeEducation: 0,
+      movingExpense: 0,
+      seminary: 0,
+      housingDownPayment: 0,
+      autoPurchase: 0,
+      expensesNotApprovedWithin90Days: 0,
+      totalAdditionalSalaryRequested: 0,
+    } as AdditionalSalaryRequestQuery['latestAdditionalSalaryRequest'];
+    const { findByRole, findByText, queryByText } = render(
+      <TestComponent latestRequest={zeroRequest} />,
+    );
+
+    userEvent.click(await findByRole('button', { name: /continue/i }));
+    userEvent.click(await findByRole('button', { name: /submit/i }));
+
+    expect(
+      await findByText(
+        'Enter an amount in at least one category before submitting.',
+        { selector: 'li' },
+      ),
+    ).toBeInTheDocument();
+    expect(
+      queryByText('Are you ready to submit your Additional Salary Request?'),
+    ).not.toBeInTheDocument();
   });
 
   it('should show limited access if user does not have access to page', async () => {
