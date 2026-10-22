@@ -1,7 +1,13 @@
 import { NextPage } from 'next';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
-import React, { ReactElement, Suspense, useEffect, useMemo } from 'react';
+import React, {
+  ReactElement,
+  Suspense,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { ApolloProvider } from '@apollo/client';
 import createEmotionCache from '@emotion/cache';
 import { CacheProvider } from '@emotion/react';
@@ -100,8 +106,6 @@ const GraphQLProviders: React.FC<{
 
 const nonAuthenticatedPages = new Set(['/login', '/404', '/500']);
 
-const emotionCache = createEmotionCache({ key: 'css' });
-
 const rollbarConfig: Rollbar.Configuration = {
   accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
   environment: `react_${process.env.NODE_ENV}`,
@@ -136,6 +140,8 @@ const AppProviders = React.memo(function AppProviders({
   session?: Session;
   children: React.ReactNode;
 }) {
+  const [emotionCache] = useState(() => createEmotionCache({ key: 'css' }));
+
   return (
     <Provider config={rollbarConfig}>
       <ErrorBoundary>
