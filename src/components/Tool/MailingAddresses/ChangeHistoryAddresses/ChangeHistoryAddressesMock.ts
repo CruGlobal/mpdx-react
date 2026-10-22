@@ -197,13 +197,6 @@ export const mockAddressChangeHistory: AddressChangeHistoryQuery['addressChangeH
       },
       {
         __typename: 'AddressChangeMadeByOption',
-        id: 'source:US Donation System',
-        type: AddressChangeMadeByEnum.Source,
-        label: 'US Donation System',
-        user: null,
-      },
-      {
-        __typename: 'AddressChangeMadeByOption',
         id: `user:${otherUserId}`,
         type: AddressChangeMadeByEnum.User,
         label: 'Jane Smith',

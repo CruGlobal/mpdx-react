@@ -27,6 +27,14 @@ export const formatAddress = ({
     .filter(Boolean)
     .join(', ');
 
+// Other names the API uses for Siebel, the US donation system: Address#merge writes 'US' for a merged address with a
+// remote id, and the NetSuite import writes 'US Donation System'. Change history shows them as one source, but other
+// tools keep them apart, because their source pickers act on each raw value.
+const siebelAliases = ['US', 'US Donation System'];
+
+const changeSourceToStr = (t: TFunction, source: string): string =>
+  sourceToStr(t, siebelAliases.includes(source) ? 'Siebel' : source);
+
 export const isAutomaticChange = (source: string): boolean =>
   source !== manualSourceValue;
 
@@ -37,7 +45,7 @@ export const formatChangeMadeBy = (
 ): string => {
   if (isAutomaticChange(source)) {
     return t('Automatic update from {{source}}', {
-      source: sourceToStr(t, source),
+      source: changeSourceToStr(t, source),
     });
   }
   const appName = sourceToStr(t, source);

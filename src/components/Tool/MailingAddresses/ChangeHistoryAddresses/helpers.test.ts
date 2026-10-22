@@ -56,7 +56,6 @@ describe('groupMadeByOptions', () => {
       automatic: [
         { value: 'source:Siebel', label: 'US Donation Services' },
         { value: 'source:DataServer', label: 'DonorHub' },
-        { value: 'source:US Donation System', label: 'US Donation System' },
       ],
       mpdx: [
         { value: 'user:user-2', label: 'Jane Smith' },

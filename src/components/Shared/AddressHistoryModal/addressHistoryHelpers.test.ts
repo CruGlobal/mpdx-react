@@ -54,7 +54,7 @@ describe('isAutomaticChange', () => {
     expect(isAutomaticChange('MPDX')).toBe(false);
   });
 
-  it.each(['Siebel', 'US Donation System', 'DataServer'])(
+  it.each(['Siebel', 'US', 'US Donation System', 'DataServer'])(
     'treats %s changes as automatic',
     (source) => {
       expect(isAutomaticChange(source)).toBe(true);
@@ -65,7 +65,8 @@ describe('isAutomaticChange', () => {
 describe('formatChangeMadeBy', () => {
   it.each([
     ['Siebel', 'Automatic update from US Donation Services'],
-    ['US Donation System', 'Automatic update from US Donation System'],
+    ['US', 'Automatic update from US Donation Services'],
+    ['US Donation System', 'Automatic update from US Donation Services'],
     ['DataServer', 'Automatic update from DonorHub'],
   ])('labels %s changes as "%s"', (source, label) => {
     expect(

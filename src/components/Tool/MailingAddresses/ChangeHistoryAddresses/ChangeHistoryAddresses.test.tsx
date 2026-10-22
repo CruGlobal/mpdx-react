@@ -269,7 +269,6 @@ describe('ChangeHistoryAddresses', () => {
       'Automatic',
       'US Donation Services',
       'DonorHub',
-      'US Donation System',
       'In MPDX',
       'Jane Smith',
       'You',
@@ -349,6 +348,13 @@ describe('ChangeHistoryAddresses', () => {
         endDate: '2026-10-14',
       }),
     );
+  });
+
+  it('labels a NetSuite US Donation System change like Siebel', async () => {
+    const { findByRole } = render(<TestComponent />);
+
+    const row = await findByRole('row', { name: /Doe, John and Jane/ });
+    expect(row).toHaveTextContent('Automatic update from US Donation Services');
   });
 
   it('stops sending a filter once it is cleared', async () => {

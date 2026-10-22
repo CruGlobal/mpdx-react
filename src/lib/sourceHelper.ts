@@ -13,9 +13,6 @@ export const sourceToStr = (
   switch (source) {
     case 'Siebel':
       return t('US Donation Services');
-    // Address#merge in the API labels a merged address 'US' when it carries a US donation system id
-    case 'US':
-      return t('US Donation System');
     case 'DataServer':
       return t('DonorHub');
     case 'MPDX':

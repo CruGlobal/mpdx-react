@@ -7,9 +7,6 @@ describe('Sources-Helpers', () => {
     it('should convert Siebel', () => {
       expect(sourceToStr(t, 'Siebel')).toBe('US Donation Services');
     });
-    it('should convert US', () => {
-      expect(sourceToStr(t, 'US')).toBe('US Donation System');
-    });
     it('should convert DataServer', () => {
       expect(sourceToStr(t, 'DataServer')).toBe('DonorHub');
     });
