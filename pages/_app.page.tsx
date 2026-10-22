@@ -24,11 +24,13 @@ import Rollbar from 'rollbar';
 import { Announcements } from 'src/components/Announcements/Announcements';
 import { CacheRestoreGate } from 'src/components/CacheRestoreGate/CacheRestoreGate';
 import DataDog from 'src/components/DataDog/DataDog';
+import { DefaultAccountListRedirect } from 'src/components/DefaultAccountListRedirect/DefaultAccountListRedirect';
 import { GlobalStyles } from 'src/components/GlobalStyles/GlobalStyles';
 import { Helpjuice } from 'src/components/Helpjuice/Helpjuice';
 import PrimaryLayout from 'src/components/Layouts/Primary';
 import Loading from 'src/components/Loading';
 import { OfflineIndicator } from 'src/components/OfflineIndicator/OfflineIndicator';
+import { RefetchOnReconnect } from 'src/components/RefetchOnReconnect/RefetchOnReconnect';
 import { RouterGuard } from 'src/components/RouterGuard/RouterGuard';
 import { SetupProvider } from 'src/components/Setup/SetupProvider';
 import { SnackbarUtilsConfigurator } from 'src/components/Snackbar/Snackbar';
@@ -87,17 +89,20 @@ const GraphQLProviders: React.FC<{
 
   return (
     <ApolloProvider client={client}>
+      <RefetchOnReconnect />
       <Suspense fallback={<Loading loading />}>
         <CacheRestoreGate>
-          {/* Below the gate because its labels change when translations load,
-              and any context change above the gate drops the server HTML */}
-          <LocalizationProvider>
-            <SetupProvider>
-              <UserPreferenceProvider>
-                <TaskModalProvider>{children}</TaskModalProvider>
-              </UserPreferenceProvider>
-            </SetupProvider>
-          </LocalizationProvider>
+          <DefaultAccountListRedirect>
+            {/* Below the gate because its labels change when translations load,
+                and any context change above the gate drops the server HTML */}
+            <LocalizationProvider>
+              <SetupProvider>
+                <UserPreferenceProvider>
+                  <TaskModalProvider>{children}</TaskModalProvider>
+                </UserPreferenceProvider>
+              </SetupProvider>
+            </LocalizationProvider>
+          </DefaultAccountListRedirect>
         </CacheRestoreGate>
       </Suspense>
     </ApolloProvider>
@@ -216,12 +221,6 @@ const App = ({
   useEffect(() => {
     registerServiceWorker();
   }, []);
-
-  if (!session && !isPublicPage) {
-    throw new Error(
-      'A session was not provided via page props. Make sure that getServerSideProps for this page returns the session in its props.',
-    );
-  }
 
   return (
     <>

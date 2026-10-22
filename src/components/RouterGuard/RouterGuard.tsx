@@ -9,7 +9,7 @@ interface Props {
 }
 
 export const RouterGuard: React.FC<Props> = ({ children = null }) => {
-  const { push } = useRouter();
+  const { push, isReady } = useRouter();
 
   const session = useSession({
     required: true,
@@ -27,7 +27,9 @@ export const RouterGuard: React.FC<Props> = ({ children = null }) => {
     }
   }, [session]);
 
-  return session.status === 'authenticated' ? (
+  // Pages without getServerSideProps are prerendered, so their route params
+  // aren't available until the router is ready
+  return session.status === 'authenticated' && isReady ? (
     children
   ) : (
     <Box
