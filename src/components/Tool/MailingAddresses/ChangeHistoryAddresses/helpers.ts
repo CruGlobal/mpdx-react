@@ -34,7 +34,7 @@ export const formatMadeByOption = (
     return sourceToStr(t, option.label);
   }
   if (option.type === AddressChangeMadeByEnum.UnknownUser) {
-    return t('Unknown user');
+    return t('Not recorded (before Nov 2026)');
   }
   if (option.user && option.user.id === currentUserId) {
     return t('You');
