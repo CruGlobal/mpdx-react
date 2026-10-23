@@ -43,6 +43,7 @@ export const createIdbStorage = (dbName = 'mpdx'): PersistedCacheStore => {
   let disabled = false;
   let boundOwner: CacheOwner | undefined;
   let lastWriteLanded = false;
+  let writeSequence = 0;
   const pendingWrites = new Set<Promise<unknown>>();
 
   const openDatabase = () =>
@@ -146,11 +147,20 @@ export const createIdbStorage = (dbName = 'mpdx'): PersistedCacheStore => {
     // The persistor calls this without awaiting, so failures are reported
     // instead of rejecting
     setItem: (key, value) => {
+      // An older write can finish after a newer one, so only the newest may
+      // set the flag
+      const sequence = ++writeSequence;
       lastWriteLanded = false;
       return trackWrite(async () => {
         try {
-          lastWriteLanded = await write(key, value);
+          const landed = await write(key, value);
+          if (sequence === writeSequence) {
+            lastWriteLanded = landed;
+          }
         } catch (error) {
+          if (sequence === writeSequence) {
+            lastWriteLanded = false;
+          }
           addDatadogError(error, {
             mpdxErrorType: 'cache_persistence',
             step: 'write',
