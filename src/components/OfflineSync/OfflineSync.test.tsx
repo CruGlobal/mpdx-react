@@ -182,10 +182,55 @@ describe('OfflineSync', () => {
     const { rerender } = render(<TestComponent />);
     await runIdle();
 
+    accountListId = 'b';
+    setMocks();
     rerender(<TestComponent />);
     await runIdle();
 
-    expect(runOfflineSync).toHaveBeenCalledTimes(1);
+    accountListId = 'a';
+    setMocks();
+    rerender(<TestComponent />);
+    await runIdle();
+
+    expect(runOfflineSync).toHaveBeenCalledTimes(2);
+    expect(
+      (runOfflineSync as jest.Mock).mock.calls.map(
+        ([args]) => args.accountListId,
+      ),
+    ).toEqual(['a', 'b']);
+  });
+
+  it('frees the account list when its run finishes', async () => {
+    const { rerender } = render(<TestComponent />);
+    await runIdle();
+
+    accountListId = 'b';
+    setMocks();
+    rerender(<TestComponent />);
+    await runIdle();
+
+    accountListId = 'a';
+    setMocks();
+    rerender(<TestComponent />);
+    await runIdle();
+
+    expect(
+      (runOfflineSync as jest.Mock).mock.calls.map(
+        ([args]) => args.accountListId,
+      ),
+    ).toEqual(['a', 'b', 'a']);
+  });
+
+  it('cancels a pending idle callback when eligibility is lost before it fires', async () => {
+    const { rerender } = render(<TestComponent />);
+
+    online = false;
+    setMocks();
+    rerender(<TestComponent />);
+    await runIdle();
+
+    expect(window.cancelIdleCallback).toHaveBeenCalled();
+    expect(runOfflineSync).not.toHaveBeenCalled();
   });
 
   it('cancels the pending idle callback on unmount', async () => {
