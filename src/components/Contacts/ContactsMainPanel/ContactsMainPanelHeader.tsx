@@ -60,6 +60,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
     setViewMode,
     selectedIds,
     offlineMode,
+    cachedContacts,
   } = React.useContext(ContactsContext) as ContactsType;
   const isOnline = useIsOnline();
   const router = useRouter();
@@ -88,7 +89,11 @@ export const ContactsMainPanelHeader: React.FC = () => {
       toggleFilterPanel={toggleFilterPanel}
       onCheckAllItems={toggleSelectAll}
       contactsView={viewMode}
-      totalItems={contactsQueryResult.data?.contacts.totalCount}
+      totalItems={
+        offlineMode
+          ? cachedContacts.length
+          : contactsQueryResult.data?.contacts.totalCount
+      }
       headerCheckboxState={selectionType}
       selectedIds={selectedIds}
       showShowingCount={viewMode === TableViewModeEnum.List}
@@ -101,11 +106,17 @@ export const ContactsMainPanelHeader: React.FC = () => {
               sx={{ marginLeft: 1 }}
             />
           )}
-          {!isOnline && !offlineMode && cachedAvailable === true && (
-            <ViewSettingsButton variant="outlined" onClick={showCachedContacts}>
-              {t('Show Cached Contacts')}
-            </ViewSettingsButton>
-          )}
+          {!isOnline &&
+            !offlineMode &&
+            cachedAvailable === true &&
+            viewMode === TableViewModeEnum.List && (
+              <ViewSettingsButton
+                variant="outlined"
+                onClick={showCachedContacts}
+              >
+                {t('Show Cached Contacts')}
+              </ViewSettingsButton>
+            )}
           {viewMode === TableViewModeEnum.Flows && (
             <ViewSettingsButton
               LinkComponent={NextLink}

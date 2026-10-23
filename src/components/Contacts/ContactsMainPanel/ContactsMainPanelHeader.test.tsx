@@ -31,11 +31,13 @@ const setOnline = (online: boolean) =>
 
 interface TestComponentProps {
   offlineMode?: boolean;
+  viewMode?: TableViewModeEnum;
   router?: Partial<NextRouter>;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   offlineMode = false,
+  viewMode = TableViewModeEnum.List,
   router,
 }) => (
   <TestRouter
@@ -54,14 +56,15 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 value={
                   {
                     accountListId: 'account-list-1',
-                    contactsQueryResult: {
-                      data: { contacts: { totalCount: 10 } },
-                    },
+                    contactsQueryResult: offlineMode
+                      ? { data: undefined }
+                      : { data: { contacts: { totalCount: 10 } } },
+                    cachedContacts: [{ id: 'contact-1' }, { id: 'contact-2' }],
                     toggleFilterPanel,
                     toggleSelectAll: jest.fn(),
                     selectionType: ListHeaderCheckBoxState.Partial,
                     filterPanelOpen: false,
-                    viewMode: TableViewModeEnum.List,
+                    viewMode,
                     setViewMode: jest.fn(),
                     selectedIds: ['contact-1'],
                     offlineMode,
@@ -169,6 +172,33 @@ describe('ContactsMainPanelHeader', () => {
         );
       },
     );
+
+    it.each([TableViewModeEnum.Flows, TableViewModeEnum.Map])(
+      'hides the button in %s view',
+      (viewMode) => {
+        setOnline(false);
+        mockAvailable.mockReturnValue(true);
+        const { queryByRole } = render(<TestComponent viewMode={viewMode} />);
+
+        expect(
+          queryByRole('button', { name: 'Show Cached Contacts' }),
+        ).not.toBeInTheDocument();
+      },
+    );
+
+    it('shows the cached contact count in offline mode', () => {
+      setOnline(false);
+      const { getByTestId } = render(<TestComponent offlineMode />);
+
+      expect(getByTestId('showing-text')).toHaveTextContent('Showing 2');
+    });
+
+    it('shows the live total count outside offline mode', () => {
+      setOnline(true);
+      const { getByTestId } = render(<TestComponent />);
+
+      expect(getByTestId('showing-text')).toHaveTextContent('Showing 10');
+    });
 
     it('pushes offline=true without filters when clicked', () => {
       setOnline(false);
