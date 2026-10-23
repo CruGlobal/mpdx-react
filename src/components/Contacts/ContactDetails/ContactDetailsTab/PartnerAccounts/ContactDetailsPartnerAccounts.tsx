@@ -8,6 +8,7 @@ import { useSnackbar } from 'notistack';
 import { TFunction, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { ActionButton } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import { useIsOnline } from 'src/hooks/useIsOnline';
 import { ContactDetailsTabDocument } from '../ContactDetailsTab.generated';
 import { useUpdateContactOtherMutation } from '../Other/EditContactOtherModal/EditContactOther.generated';
 import { ContactDetailLoadingPlaceHolder } from '../StyledComponents';
@@ -70,6 +71,7 @@ export const ContactDetailsPartnerAccounts: React.FC<
     variables: { accountListId },
   });
   const { t } = useTranslation();
+  const isOnline = useIsOnline();
   const newPartnerAccountSchema = useMemo(
     () => getNewPartnerAccountSchema(t),
     [t],
@@ -131,7 +133,7 @@ export const ContactDetailsPartnerAccounts: React.FC<
     </>
   ) : (
     <ContactPartnerAccountsContainer>
-      <ActionButton onClick={() => setShowForm(!showForm)}>
+      <ActionButton onClick={() => setShowForm(!showForm)} disabled={!isOnline}>
         <Add />
         {t('Add Partner Account')}
       </ActionButton>
@@ -167,7 +169,7 @@ export const ContactDetailsPartnerAccounts: React.FC<
               <IconButton
                 aria-label={t('Submit')}
                 type="submit"
-                disabled={isSubmitting || !isValid || updating}
+                disabled={isSubmitting || !isValid || updating || !isOnline}
               >
                 <Add />
               </IconButton>
@@ -208,6 +210,7 @@ export const ContactDetailsPartnerAccounts: React.FC<
             <IconButton
               aria-label={t('Delete')}
               aria-describedby={nameId}
+              disabled={!isOnline}
               onClick={() =>
                 deleteContactDonorAccount(donorAccount.donorAccount.id)
               }

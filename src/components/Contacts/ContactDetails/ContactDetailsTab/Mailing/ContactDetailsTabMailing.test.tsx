@@ -3,6 +3,7 @@ import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { mockNavigatorOnline } from '__tests__/util/mockNavigatorOnline';
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import theme from '../../../../../theme';
 import { ContactDetailProvider } from '../../ContactDetailContext';
@@ -58,7 +59,32 @@ const data: ContactMailingFragment = {
   },
 };
 
+const setOnline = mockNavigatorOnline();
+
 describe('ContactDetailsTabMailing', () => {
+  it('disables the add and edit address buttons while offline', () => {
+    setOnline(false);
+    const { getByRole, getAllByRole } = render(
+      <TestRouter router={router}>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider>
+            <ContactDetailProvider>
+              <ContactDetailsTabMailing
+                accountListId={accountListId}
+                data={data}
+              />
+            </ContactDetailProvider>
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </TestRouter>,
+    );
+
+    expect(getByRole('button', { name: 'Add Address' })).toBeDisabled();
+    getAllByRole('button', { name: 'Edit Address' }).forEach((button) =>
+      expect(button).toBeDisabled(),
+    );
+  });
+
   it('shows address createdAt date', () => {
     const { getByText } = render(
       <TestRouter router={router}>

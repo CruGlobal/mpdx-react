@@ -7,6 +7,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { mockNavigatorOnline } from '__tests__/util/mockNavigatorOnline';
 import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import theme from 'src/theme';
 import { ContactDetailProvider } from '../ContactDetailContext';
@@ -85,7 +86,31 @@ const TestComponent: React.FC<TestComponentProps> = ({
   </SnackbarProvider>
 );
 
+const setOnline = mockNavigatorOnline();
+
 describe('ContactDetails', () => {
+  it('requests no duplicates while offline', async () => {
+    setOnline(false);
+    render(<TestComponent />);
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('GetContactDetailsHeader', {
+        accountListId,
+        contactId,
+        loadDuplicate: false,
+      }),
+    );
+  });
+
+  it('disables the edit partnership button while offline', async () => {
+    setOnline(false);
+    const { findByRole } = render(<TestComponent />);
+
+    expect(
+      await findByRole('button', { name: 'Edit Partnership Info' }),
+    ).toBeDisabled();
+  });
+
   it('should show loading state', async () => {
     const { getByTestId } = render(<TestComponent />);
 

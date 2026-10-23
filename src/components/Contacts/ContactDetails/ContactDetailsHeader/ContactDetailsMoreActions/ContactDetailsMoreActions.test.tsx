@@ -6,6 +6,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { mockNavigatorOnline } from '__tests__/util/mockNavigatorOnline';
 import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { StatusEnum } from 'src/graphql/types.generated';
@@ -50,7 +51,33 @@ beforeEach(() => {
   });
 });
 
+const setOnline = mockNavigatorOnline();
+
 describe('ContactDetailsMoreActions', () => {
+  it('disables the more actions button while offline', () => {
+    setOnline(false);
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider>
+              <ContactPanelProvider>
+                <ContactDetailProvider>
+                  <ContactDetailsMoreActions
+                    status={StatusEnum.AskInFuture}
+                    contactId={contactId}
+                  />
+                </ContactDetailProvider>
+              </ContactPanelProvider>
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+
+    expect(getByRole('button', { name: 'More Actions' })).toBeDisabled();
+  });
+
   it('opens the referrals modal', async () => {
     const { getByRole, getByText, queryAllByText } = render(
       <SnackbarProvider>

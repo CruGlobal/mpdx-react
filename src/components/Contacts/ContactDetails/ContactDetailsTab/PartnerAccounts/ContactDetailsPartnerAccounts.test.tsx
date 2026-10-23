@@ -6,6 +6,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { mockNavigatorOnline } from '__tests__/util/mockNavigatorOnline';
 import { createCache } from 'src/lib/apollo/cache';
 import theme from '../../../../../theme';
 import { ContactDetailProvider } from '../../ContactDetailContext';
@@ -45,6 +46,8 @@ jest.mock('notistack', () => ({
     };
   },
 }));
+
+const setOnline = mockNavigatorOnline();
 
 const ContactDonorAccountsMock: ContactDonorAccountsQuery = {
   contact: {
@@ -153,6 +156,36 @@ describe('ContactDetailsPartnerAccounts', () => {
         fragment,
       })?.displayName,
     ).toBe('Donor Name');
+  });
+
+  it('disables the add and delete buttons while offline', async () => {
+    setOnline(false);
+    const { getByRole, findByText, getAllByRole } = render(<Components />);
+
+    expect(await findByText('accountNumber-1')).toBeInTheDocument();
+
+    expect(getByRole('button', { name: 'Add Partner Account' })).toBeDisabled();
+    getAllByRole('button', { name: 'Delete' }).forEach((button) =>
+      expect(button).toBeDisabled(),
+    );
+  });
+
+  it('disables the submit button while offline', async () => {
+    const { getByRole, findByText } = render(<Components />);
+
+    expect(await findByText('accountNumber-1')).toBeInTheDocument();
+    userEvent.click(getByRole('button', { name: 'Add Partner Account' }));
+    userEvent.type(
+      getByRole('textbox', { name: 'Account Number' }),
+      'new-account',
+    );
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Submit' })).toBeEnabled(),
+    );
+
+    setOnline(false);
+
+    expect(getByRole('button', { name: 'Submit' })).toBeDisabled();
   });
 
   it('should render new donor account form', async () => {

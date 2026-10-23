@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { ContactFiltersDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { ContactTagIcon, ContactTagInput } from 'src/components/Tags/Tags';
+import { useIsOnline } from 'src/hooks/useIsOnline';
 import {
   useGetContactTagListQuery,
   useUpdateContactTagsMutation,
@@ -48,6 +49,7 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
+  const isOnline = useIsOnline();
   const [updateContactTags, { loading: updating }] =
     useUpdateContactTagsMutation();
 
@@ -154,7 +156,7 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
         <ContactTagChip
           key={tag}
           label={tag}
-          disabled={updating}
+          disabled={updating || !isOnline}
           onDelete={() => handleTagDelete(tag)}
           title={t('Remove')}
         />
@@ -180,6 +182,7 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
                 autoHighlight
                 fullWidth
                 loading={loading}
+                disabled={!isOnline}
                 filterSelectedOptions
                 value={tagList}
                 options={unusedTags || []}
@@ -196,7 +199,9 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
                 }
               />
               {tagList.length > 0 && (
-                <SaveButton type="submit">{t('save')}</SaveButton>
+                <SaveButton type="submit" disabled={!isOnline}>
+                  {t('save')}
+                </SaveButton>
               )}
             </Box>
           </form>
