@@ -269,4 +269,44 @@ describe('ContactDetailsPartnerAccounts', () => {
       donorAccountId: 'account1',
     });
   });
+
+  describe('refreshes the partner account list', () => {
+    const donorAccountsRequests = () =>
+      mutationSpy.mock.calls
+        .map((call) => call[0].operation)
+        .filter(
+          (operation) => operation.operationName === 'ContactDonorAccounts',
+        );
+
+    it('after adding a partner account', async () => {
+      const { findByText, getByRole } = render(<Components />);
+
+      expect(await findByText('accountNumber-1')).toBeInTheDocument();
+      userEvent.click(getByRole('button', { name: 'Add Partner Account' }));
+      userEvent.type(
+        getByRole('textbox', { name: 'Account Number' }),
+        'new-account',
+      );
+      userEvent.click(getByRole('button', { name: 'Submit' }));
+
+      await waitFor(() => expect(donorAccountsRequests()).toHaveLength(2));
+      expect(donorAccountsRequests()[1].variables).toEqual({
+        accountListId,
+        contactId,
+      });
+    });
+
+    it('after deleting a partner account', async () => {
+      const { findByText, getAllByRole } = render(<Components />);
+
+      expect(await findByText('accountNumber-1')).toBeInTheDocument();
+      userEvent.click(getAllByRole('button', { name: 'Delete' })[0]);
+
+      await waitFor(() => expect(donorAccountsRequests()).toHaveLength(2));
+      expect(donorAccountsRequests()[1].variables).toEqual({
+        accountListId,
+        contactId,
+      });
+    });
+  });
 });

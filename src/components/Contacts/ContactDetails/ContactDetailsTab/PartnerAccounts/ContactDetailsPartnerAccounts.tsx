@@ -13,6 +13,7 @@ import { ContactDetailsTabDocument } from '../ContactDetailsTab.generated';
 import { useUpdateContactOtherMutation } from '../Other/EditContactOtherModal/EditContactOther.generated';
 import { ContactDetailLoadingPlaceHolder } from '../StyledComponents';
 import {
+  ContactDonorAccountsDocument,
   useContactDonorAccountsQuery,
   useGetAccountListSalaryOrganizationQuery,
 } from './ContactPartnerAccounts.generated';
@@ -92,6 +93,13 @@ export const ContactDetailsPartnerAccounts: React.FC<
             contactId,
           },
         },
+        {
+          query: ContactDonorAccountsDocument,
+          variables: {
+            accountListId,
+            contactId,
+          },
+        },
       ],
     });
     enqueueSnackbar(t('Partner account deleted!'), { variant: 'success' });
@@ -114,6 +122,13 @@ export const ContactDetailsPartnerAccounts: React.FC<
       refetchQueries: [
         {
           query: ContactDetailsTabDocument,
+          variables: {
+            accountListId,
+            contactId,
+          },
+        },
+        {
+          query: ContactDonorAccountsDocument,
           variables: {
             accountListId,
             contactId,
