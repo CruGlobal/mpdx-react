@@ -17,6 +17,7 @@ The worker is built from `src/sw/index.ts`. It stores the app's static build fil
 - The worker is written to `public/sw.js`. That file is generated, so do not commit it.
 - `skipWaiting` is `true`, so a new worker takes over open tabs as soon as it installs. Page HTML is never cached and Next's static files have hashed names, so open tabs keep working. A tab still running the old build loads any old-build files it hasn't fetched yet from the network. `clientsClaim` is `false` because it only matters for the first install, when there's nothing to take over from.
 - Turn `skipWaiting` off and add a user-driven reload prompt (MPDX-10164) before the worker caches pages or other files that can change without changing their URL.
+- The offline page is the one exception, and it is safe with `skipWaiting` on. It is only ever shown as a full page load, and the same worker install precaches it together with the hashed files it uses, so it never mixes files from two builds.
 - The cache name is `mpdx-precache-v2-<scope URL>`. The `mpdx` part is `CACHE_PREFIX` in `src/lib/serviceWorker/cacheNames.ts`.
 - `/sw.js` is served with `Cache-Control: no-cache, no-store, must-revalidate` (see `headers` in `next.config.ts`). Browsers must always check for a new worker.
 - The app registers the worker in `src/lib/serviceWorker/register.ts`. It creates one `@serwist/window` instance for `/sw.js`, calls `register()` on it and returns it. Later calls return the same instance.

@@ -16,7 +16,6 @@ const serwist = new Serwist({
   clientsClaim: false,
   navigationPreload: false,
   runtimeCaching,
-  // Shows the offline page when a page load fails
   fallbacks: { entries: fallbackEntries },
 });
 
