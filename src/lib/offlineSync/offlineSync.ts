@@ -2,6 +2,7 @@ import { ApolloClient, DocumentNode } from '@apollo/client';
 import { print } from 'graphql';
 import {
   flushCachePersistence,
+  isCachePersistenceRunning,
   readSyncRecord,
   writeSyncRecord,
 } from 'src/lib/apollo/persistence/cachePersistence';
@@ -119,6 +120,10 @@ export const runOfflineSync = async ({
 
   if (signal.aborted) {
     return 'aborted';
+  }
+  // Otherwise the sync would download every page only for the flush to fail
+  if (!isCachePersistenceRunning()) {
+    return 'skipped';
   }
 
   try {

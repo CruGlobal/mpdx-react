@@ -7,6 +7,7 @@ import {
 import { gql } from 'graphql-tag';
 import {
   flushCachePersistence,
+  isCachePersistenceRunning,
   readSyncRecord,
   writeSyncRecord,
 } from 'src/lib/apollo/persistence/cachePersistence';
@@ -27,6 +28,9 @@ const mockRead = readSyncRecord as jest.MockedFn<typeof readSyncRecord>;
 const mockWrite = writeSyncRecord as jest.MockedFn<typeof writeSyncRecord>;
 const mockFlush = flushCachePersistence as jest.MockedFn<
   typeof flushCachePersistence
+>;
+const mockIsRunning = isCachePersistenceRunning as jest.MockedFn<
+  typeof isCachePersistenceRunning
 >;
 
 const fragmentA = gql`
@@ -140,6 +144,7 @@ describe('runOfflineSync', () => {
     mockRead.mockResolvedValue(null);
     mockWrite.mockResolvedValue();
     mockFlush.mockResolvedValue(true);
+    mockIsRunning.mockReturnValue(true);
     run.mockResolvedValue(undefined);
     stubLocks(undefined);
   });
@@ -242,6 +247,14 @@ describe('runOfflineSync', () => {
       }),
     ).toBe('aborted');
     expect(await runSync()).toBe('completed');
+  });
+
+  it('skips without running when cache persistence is not running', async () => {
+    mockIsRunning.mockReturnValue(false);
+
+    expect(await runSync()).toBe('skipped');
+    expect(run).not.toHaveBeenCalled();
+    expect(mockWrite).not.toHaveBeenCalled();
   });
 
   it('does not record when flush returns false', async () => {
