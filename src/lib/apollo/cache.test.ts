@@ -1,4 +1,4 @@
-import { InMemoryCache } from '@apollo/client';
+import { InMemoryCache, gql } from '@apollo/client';
 import { gqlMock } from '__tests__/util/graphqlMocking';
 import {
   GetNotificationsDocument,
@@ -77,5 +77,48 @@ describe('cache', () => {
 
     // Ensure that the last value written wins
     expect(readCache(cache)?.userNotifications.unreadCount).toBe(0);
+  });
+
+  it('contact(id) reads a contact written by another query', () => {
+    const cache = createCache();
+
+    cache.writeQuery({
+      query: gql`
+        query ContactsList($accountListId: ID!) {
+          contacts(accountListId: $accountListId) {
+            nodes {
+              __typename
+              id
+              name
+            }
+          }
+        }
+      `,
+      variables: { accountListId: 'account-list-1' },
+      data: {
+        contacts: {
+          __typename: 'ContactConnection',
+          nodes: [
+            { __typename: 'Contact', id: 'contact-1', name: 'Doe, John' },
+          ],
+        },
+      },
+    });
+
+    expect(
+      cache.readQuery({
+        query: gql`
+          query ContactName($accountListId: ID!, $contactId: ID!) {
+            contact(accountListId: $accountListId, id: $contactId) {
+              id
+              name
+            }
+          }
+        `,
+        variables: { accountListId: 'account-list-1', contactId: 'contact-1' },
+      }),
+    ).toEqual({
+      contact: { __typename: 'Contact', id: 'contact-1', name: 'Doe, John' },
+    });
   });
 });
