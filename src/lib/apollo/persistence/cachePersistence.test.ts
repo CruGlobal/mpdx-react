@@ -66,9 +66,13 @@ const createStore = (
       data.set(`sync:${key}`, record);
     }),
     bindOwner: jest.fn(),
+    didLastWriteLand: jest.fn(() => true),
     clear: jest.fn(async () => {
       data.delete('cache');
       data.delete('owner');
+      [...data.keys()]
+        .filter((key) => key.startsWith('sync:'))
+        .forEach((key) => data.delete(key));
     }),
     disable: jest.fn(async () => {}),
   };
@@ -485,6 +489,37 @@ describe('createCachePersistence', () => {
       'cache',
       expect.stringContaining('Flushed'),
     );
+  });
+
+  it('flush returns false and writes nothing while restore is running', async () => {
+    const store = createStore({ owner: currentOwner });
+    const read = deferred<string | null>();
+    store.getItem.mockReturnValueOnce(read.promise);
+    const persistence = createCachePersistence(store, 3000);
+
+    const started = persistence.start({
+      cache,
+      userId: 'user-1',
+      impersonating: false,
+    });
+    await advance(0);
+    expect(store.getItem).toHaveBeenCalled();
+
+    await expect(persistence.flush()).resolves.toBe(false);
+    expect(store.setItem).not.toHaveBeenCalled();
+
+    read.resolve(storedCache);
+    await started;
+    await expect(persistence.flush()).resolves.toBe(true);
+  });
+
+  it('flush returns false when the cache write did not land', async () => {
+    const store = createStore({ cache: storedCache, owner: currentOwner });
+    store.didLastWriteLand.mockReturnValue(false);
+    const persistence = createCachePersistence(store, 3000);
+    await persistence.start({ cache, userId: 'user-1', impersonating: false });
+
+    await expect(persistence.flush()).resolves.toBe(false);
   });
 
   it('flush returns false before start() and after stop()', async () => {

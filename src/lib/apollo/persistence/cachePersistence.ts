@@ -37,8 +37,13 @@ export const createCachePersistence = (
   const cancelled = () => stopped || timedOut;
   let restoredSize: number | undefined;
 
+  // True only between resume() and pause(), the span in which the live cache
+  // is restored and the owner is bound
+  let running = false;
+
   const pause = () => {
     stopped = true;
+    running = false;
     persistor?.pause();
   };
 
@@ -125,6 +130,7 @@ export const createCachePersistence = (
         return;
       }
       persistor.resume();
+      running = true;
     } catch (error) {
       report(error, 'start');
       await stop();
@@ -169,11 +175,11 @@ export const createCachePersistence = (
   };
 
   const flush = async (): Promise<boolean> => {
-    if (cancelled() || !persistor) {
+    if (cancelled() || !running || !persistor || !store) {
       return false;
     }
     await persistor.persist();
-    return true;
+    return !cancelled() && store.didLastWriteLand();
   };
 
   const readSyncRecord = async (key: string): Promise<SyncRecord | null> =>

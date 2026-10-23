@@ -29,6 +29,11 @@ export interface PersistedCacheStore extends PersistentStorage<string> {
    * mismatch (another user signed in from another tab) writes stop for good.
    */
   bindOwner(owner: CacheOwner): void;
+  /**
+   * Whether the most recent setItem actually stored its value. setItem itself
+   * resolves either way.
+   */
+  didLastWriteLand(): boolean;
   clear(): Promise<void>;
   disable(): Promise<void>;
 }
@@ -37,6 +42,7 @@ export const createIdbStorage = (dbName = 'mpdx'): PersistedCacheStore => {
   let dbPromise: ReturnType<typeof openDatabase> | undefined;
   let disabled = false;
   let boundOwner: CacheOwner | undefined;
+  let lastWriteLanded = false;
   const pendingWrites = new Set<Promise<unknown>>();
 
   const openDatabase = () =>
@@ -84,22 +90,26 @@ export const createIdbStorage = (dbName = 'mpdx'): PersistedCacheStore => {
     await Promise.allSettled(pendingWrites);
   };
 
-  const write = async (key: string, value: string) => {
+  // Resolves to whether the value was actually stored
+  const write = async (key: string, value: string): Promise<boolean> => {
     const db = await getDb();
     if (!boundOwner) {
       await db.put(storeName, value, key);
-      return;
+      return true;
     }
     const owner = boundOwner;
     const tx = db.transaction(storeName, 'readwrite');
     const stored = (await tx.store.get(ownerKey)) as CacheOwner | undefined;
+    let landed = false;
     if (stored?.userId === owner.userId && stored.version === owner.version) {
       await tx.store.put(value, key);
+      landed = true;
     } else {
       // Not awaited: disable() waits for pending writes, including this one
       void disable();
     }
     await tx.done;
+    return landed;
   };
 
   const writeSyncRecord = async (key: string, record: SyncRecord) => {
@@ -135,17 +145,21 @@ export const createIdbStorage = (dbName = 'mpdx'): PersistedCacheStore => {
 
     // The persistor calls this without awaiting, so failures are reported
     // instead of rejecting
-    setItem: (key, value) =>
-      trackWrite(async () => {
+    setItem: (key, value) => {
+      lastWriteLanded = false;
+      return trackWrite(async () => {
         try {
-          await write(key, value);
+          lastWriteLanded = await write(key, value);
         } catch (error) {
           addDatadogError(error, {
             mpdxErrorType: 'cache_persistence',
             step: 'write',
           });
         }
-      }),
+      });
+    },
+
+    didLastWriteLand: () => lastWriteLanded,
 
     removeItem: async (key) => {
       const db = await getDb();
