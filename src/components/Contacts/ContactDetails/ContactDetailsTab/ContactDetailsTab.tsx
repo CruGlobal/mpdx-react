@@ -144,6 +144,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           <ContactDetailsPartnerAccounts
             contactId={contactId}
             accountListId={accountListId}
+            contactName={data?.contact.name}
           />
         </ContactDetailSectionContainer>
         <Divider />
