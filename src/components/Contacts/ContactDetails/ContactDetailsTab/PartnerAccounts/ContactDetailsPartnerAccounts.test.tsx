@@ -1,10 +1,12 @@
 import React from 'react';
+import { ApolloCache, NormalizedCacheObject, gql } from '@apollo/client';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { createCache } from 'src/lib/apollo/cache';
 import theme from '../../../../../theme';
 import { ContactDetailProvider } from '../../ContactDetailContext';
 import { ContactDetailsPartnerAccounts } from './ContactDetailsPartnerAccounts';
@@ -12,6 +14,7 @@ import {
   ContactDonorAccountsQuery,
   GetAccountListSalaryOrganizationQuery,
 } from './ContactPartnerAccounts.generated';
+import { partnerAccountLabel } from './partnerAccountLabel';
 
 const accountListId = 'account-list-1';
 const contactId = 'contact-1';
@@ -52,7 +55,6 @@ const ContactDonorAccountsMock: ContactDonorAccountsQuery = {
           id: 'donor1',
           donorAccount: {
             id: 'account1',
-            displayName: 'donor-1',
             accountNumber: 'accountNumber-1',
             organization: {
               id: 'org1',
@@ -64,7 +66,6 @@ const ContactDonorAccountsMock: ContactDonorAccountsQuery = {
           id: 'donor2',
           donorAccount: {
             id: 'account2',
-            displayName: 'donor-2',
             accountNumber: 'accountNumber-2',
             organization: {
               id: 'org2',
@@ -77,7 +78,13 @@ const ContactDonorAccountsMock: ContactDonorAccountsQuery = {
   },
 };
 
-const Components = () => (
+const contactName = 'Smith, John';
+
+const Components = ({
+  cache,
+}: {
+  cache?: ApolloCache<NormalizedCacheObject>;
+}) => (
   <SnackbarProvider>
     <TestRouter router={router}>
       <GqlMockedProvider<{
@@ -91,12 +98,14 @@ const Components = () => (
           },
         }}
         onCall={mutationSpy}
+        cache={cache}
       >
         <ThemeProvider theme={theme}>
           <ContactDetailProvider>
             <ContactDetailsPartnerAccounts
               contactId={contactId}
               accountListId={accountListId}
+              contactName={contactName}
             />
           </ContactDetailProvider>
         </ThemeProvider>
@@ -114,6 +123,36 @@ describe('ContactDetailsPartnerAccounts', () => {
 
     expect(getAllByText('Account Number:')).toHaveLength(2);
     expect(getAllByText('Account Name:')).toHaveLength(2);
+    expect(
+      getByText(partnerAccountLabel(contactName, 'accountNumber-1')),
+    ).toBeInTheDocument();
+    expect(
+      getByText(partnerAccountLabel(contactName, 'accountNumber-2')),
+    ).toBeInTheDocument();
+  });
+
+  it('loading partner accounts does not change displayName elsewhere', async () => {
+    const cache = createCache();
+    const fragment = gql`
+      fragment DonorAccountName on DonorAccount {
+        displayName
+      }
+    `;
+    cache.writeFragment({
+      id: 'DonorAccount:account1',
+      fragment,
+      data: { __typename: 'DonorAccount', displayName: 'Donor Name' },
+    });
+
+    const { findByText } = render(<Components cache={cache} />);
+
+    expect(await findByText('accountNumber-1')).toBeInTheDocument();
+    expect(
+      cache.readFragment<{ displayName: string }>({
+        id: 'DonorAccount:account1',
+        fragment,
+      })?.displayName,
+    ).toBe('Donor Name');
   });
 
   it('should render new donor account form', async () => {

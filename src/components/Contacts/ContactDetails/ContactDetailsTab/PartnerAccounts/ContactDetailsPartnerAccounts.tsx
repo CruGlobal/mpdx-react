@@ -16,6 +16,7 @@ import {
   useGetAccountListSalaryOrganizationQuery,
 } from './ContactPartnerAccounts.generated';
 import { useDeleteDonorAccountMutation } from './DeleteDonorAccount.generated';
+import { partnerAccountLabel } from './partnerAccountLabel';
 
 const getNewPartnerAccountSchema = (t: TFunction) =>
   yup.object({
@@ -51,17 +52,14 @@ const PartnerAccountTextLabel = styled(Typography)(({ theme }) => ({
 interface ContactDetailsPartnerAccountsProps {
   accountListId: string;
   contactId: string;
+  contactName: string | null | undefined;
 }
 
 export const ContactDetailsPartnerAccounts: React.FC<
   ContactDetailsPartnerAccountsProps
-> = ({ accountListId, contactId }) => {
-  // The API returns different results for displayName when using Contacts vs Donations.
-  // Because of this we use the fetchPolicy: 'no-cache' to ensure we don't override the displayName elsewhere.
-  // This is also why I have removed the partnerAccount query from the rest of the ContactDetailsTab queries.
+> = ({ accountListId, contactId, contactName }) => {
   const { data } = useContactDonorAccountsQuery({
     variables: { accountListId, contactId },
-    fetchPolicy: 'no-cache',
   });
 
   const [deleteDonorAccount] = useDeleteDonorAccountMutation();
@@ -200,7 +198,10 @@ export const ContactDetailsPartnerAccounts: React.FC<
                   {t('Account Name:')}
                 </PartnerAccountTextLabel>
                 <Typography variant="body2" id={nameId}>
-                  {donorAccount.donorAccount.displayName}
+                  {partnerAccountLabel(
+                    contactName,
+                    donorAccount.donorAccount.accountNumber,
+                  )}
                 </Typography>
               </PartnerAccountTextContainer>
             </Box>
