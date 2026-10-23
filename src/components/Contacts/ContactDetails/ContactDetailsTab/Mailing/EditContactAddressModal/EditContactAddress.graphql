@@ -29,6 +29,10 @@ mutation UpdateContactAddress(
       street
       createdAt
       startDate
+      changeDate
+      createdByUser {
+        id
+      }
     }
   }
 }

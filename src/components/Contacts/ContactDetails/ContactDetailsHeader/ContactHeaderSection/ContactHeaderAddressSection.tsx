@@ -1,14 +1,20 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useState } from 'react';
+import HistoryIcon from '@mui/icons-material/History';
 import LocationOn from '@mui/icons-material/LocationOn';
 import { Box, Link, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { AddressHistoryModal } from 'src/components/Shared/AddressHistoryModal/AddressHistoryModal';
+import { useLocale } from 'src/hooks/useLocale';
+import { dateFormat } from 'src/lib/intlFormat';
 import theme from '../../../../../theme';
 import { ContactHeaderAddressFragment } from './ContactHeaderAddress.generated';
 import { ContactHeaderSection } from './ContactHeaderSection';
 import { TextSkeleton } from './styledComponents/TextSkeleton';
 
 interface Props {
+  accountListId: string;
   loading: boolean;
   contact?: ContactHeaderAddressFragment;
 }
@@ -25,10 +31,13 @@ const StyledAddressTypography = styled(Typography)(() => ({
 }));
 
 export const ContactHeaderAddressSection = ({
+  accountListId,
   loading,
   contact,
 }: Props): ReactElement => {
   const { t } = useTranslation();
+  const locale = useLocale();
+  const [historyModalOpen, setHistoryModalOpen] = useState(false);
 
   const envelope = contact?.envelopeGreeting;
   const primaryAddress = contact?.primaryAddress;
@@ -42,7 +51,8 @@ export const ContactHeaderAddressSection = ({
       </ContactHeaderSection>
     );
   } else if (envelope && primaryAddress) {
-    const { street, city, state, postalCode } = primaryAddress;
+    const { street, city, state, postalCode, changeDate } = primaryAddress;
+    const changedDate = dateFormat(DateTime.fromISO(changeDate), locale);
 
     if (street && city && postalCode) {
       const additionalOptions = state ? `${state}+${postalCode}` : postalCode;
@@ -74,6 +84,26 @@ export const ContactHeaderAddressSection = ({
               {t('Google Maps')}
             </Link>
           </Box>
+          <Link
+            component="button"
+            onClick={() => setHistoryModalOpen(true)}
+            underline="hover"
+            variant="body2"
+            display="flex"
+            alignItems="center"
+            gap={0.5}
+            mt={1}
+          >
+            <HistoryIcon fontSize="small" />
+            {t('Changed {{date}} · See history', { date: changedDate })}
+          </Link>
+          {historyModalOpen && (
+            <AddressHistoryModal
+              accountListId={accountListId}
+              contactId={contact.id}
+              handleClose={() => setHistoryModalOpen(false)}
+            />
+          )}
         </ContactHeaderSection>
       );
     }

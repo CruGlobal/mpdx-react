@@ -95,6 +95,7 @@ export const createCache = () =>
         fields: {
           accountLists: paginationFieldPolicy,
           accountListPledges: paginationFieldPolicy,
+          addressChangeHistory: paginationFieldPolicy,
           appeals: paginationFieldPolicy,
           coachingAccountListPledges: paginationFieldPolicy,
           coachingAccountLists: paginationFieldPolicy,

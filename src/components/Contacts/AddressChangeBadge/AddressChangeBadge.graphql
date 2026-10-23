@@ -1,0 +1,8 @@
+fragment AddressChangeFields on Address {
+  id
+  changeDate
+  source
+  createdByUser {
+    id
+  }
+}

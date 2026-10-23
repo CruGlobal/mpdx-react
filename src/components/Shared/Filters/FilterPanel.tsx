@@ -29,6 +29,7 @@ import {
   ContactFilterPledgeReceivedEnum,
   ContactFilterSetInput,
   ContactFilterStatusEnum,
+  DateRangeInput,
   FilterGroup,
   PartnerGivingAnalysisFilterSetInput,
   ResultEnum,
@@ -38,6 +39,7 @@ import { convertStatus } from 'src/lib/functions/convertContactStatus';
 import { DeleteFilterModal } from './DeleteFilterModal/DeleteFilterModal';
 import { FilterList } from './FilterList';
 import { FilterListItem } from './FilterListItem';
+import { FilterListItemAddressChanged } from './FilterListItemAddressChanged';
 import { FilterListItemShowAll } from './FilterListItemShowAll';
 import {
   FilterPanelGroupFragment,
@@ -165,6 +167,21 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
       setActiveFilters(newFilters);
     }
   };
+  const updateAddressChangedFilter = (
+    range: DateRangeInput | undefined,
+    includeAutomatic: boolean,
+  ) => {
+    const newFilters: FilterInput = { ...selectedFilters };
+    delete newFilters.addressChanged;
+    delete newFilters.addressChangedIncludeAutomatic;
+    if (range) {
+      newFilters.addressChanged = range;
+      if (!includeAutomatic) {
+        newFilters.addressChangedIncludeAutomatic = false;
+      }
+    }
+    setActiveFilters(newFilters);
+  };
   const clearSelectedFilter = () => {
     setActiveFilters({});
   };
@@ -189,6 +206,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     ([key, value]) =>
       !defaultFilters.includes(key) &&
       !key.includes('reverse') &&
+      key !== 'addressChangedIncludeAutomatic' &&
       value !== null &&
       !(Array.isArray(value) && filter.length === 0),
   ).length;
@@ -719,6 +737,23 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                                     ? (filterValue as ContactFilterNotesInput)
                                         .wildcardNoteSearch
                                     : filterValue;
+
+                                  if (filterKey === 'address_changed') {
+                                    return (
+                                      <FilterListItemAddressChanged
+                                        key={filterKeyCamel}
+                                        title={filter.title}
+                                        value={
+                                          selectedFilters.addressChanged as DateRangeInput
+                                        }
+                                        includeAutomatic={
+                                          selectedFilters.addressChangedIncludeAutomatic !==
+                                          false
+                                        }
+                                        onUpdate={updateAddressChangedFilter}
+                                      />
+                                    );
+                                  }
 
                                   return (
                                     <FilterListItem

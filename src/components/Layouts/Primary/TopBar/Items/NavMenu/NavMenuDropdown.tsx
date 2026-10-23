@@ -144,6 +144,14 @@ export const NavMenuDropdown: React.FC<NavMenuDropdownProps> = ({
                                 : classes.whiteText,
                             )}
                             primary={tool.title}
+                            secondary={tool.subtitle}
+                            slotProps={{
+                              secondary: {
+                                color: 'inherit',
+                                variant: 'caption',
+                                lineHeight: 1.2,
+                              },
+                            }}
                           />
                           {!loading && needsAttention && (
                             <Box

@@ -1,6 +1,10 @@
 import React from 'react';
-import { render } from '@testing-library/react';
-import { gqlMock } from '__tests__/util/graphqlMocking';
+import { ThemeProvider } from '@mui/material/styles';
+import { render, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import theme from 'src/theme';
 import {
   ContactDetailsHeaderFragment,
   ContactDetailsHeaderFragmentDoc,
@@ -15,7 +19,11 @@ const contact = gqlMock<ContactDetailsHeaderFragment>(
 describe('ContactHeaderAddressSection', () => {
   it('should show loading state', async () => {
     const { queryByText } = render(
-      <ContactHeaderAddressSection loading={true} contact={undefined} />,
+      <ContactHeaderAddressSection
+        accountListId="account-list-1"
+        loading={true}
+        contact={undefined}
+      />,
     );
 
     expect(queryByText(contact.primaryAddress?.street || '')).toBeNull();
@@ -23,12 +31,51 @@ describe('ContactHeaderAddressSection', () => {
 
   it('should render with contact details', async () => {
     const { queryByText } = render(
-      <ContactHeaderAddressSection loading={false} contact={contact} />,
+      <ContactHeaderAddressSection
+        accountListId="account-list-1"
+        loading={false}
+        contact={contact}
+      />,
     );
 
     expect(queryByText(contact.envelopeGreeting || '')).toBeInTheDocument();
     expect(
       queryByText(contact.primaryAddress?.street || ''),
+    ).toBeInTheDocument();
+  });
+
+  it('shows when the address changed and opens its history', async () => {
+    const { getByRole, findByRole } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter>
+          <GqlMockedProvider>
+            <ContactHeaderAddressSection
+              accountListId="account-list-1"
+              loading={false}
+              contact={{
+                ...contact,
+                primaryAddress: {
+                  id: 'address-1',
+                  street: '2525 Camp Creek Pkwy',
+                  city: 'College Park',
+                  state: 'GA',
+                  postalCode: '30337',
+                  country: 'United States',
+                  changeDate: '2024-06-13',
+                },
+              }}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    userEvent.click(
+      getByRole('button', { name: 'Changed Jun 13, 2024 · See history' }),
+    );
+
+    expect(
+      within(await findByRole('dialog')).getByText('Address History'),
     ).toBeInTheDocument();
   });
 });
