@@ -1,6 +1,7 @@
 import { ParsedUrlQuery } from 'node:querystring';
 import { useRouter } from 'next/router';
-import React, { useMemo } from 'react';
+import React, { SetStateAction, useCallback, useMemo } from 'react';
+import { omit } from 'lodash';
 import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
@@ -25,17 +26,39 @@ interface Props {
 }
 
 export const ContactsWrapper: React.FC<Props> = ({ children }) => {
-  const { query } = useRouter();
+  const router = useRouter();
+  const { query } = router;
 
   const offlineMode = useOfflineMode();
 
-  const [preferredViewMode, setViewMode, { loading: userOptionsLoading }] =
-    useUserPreference({
-      key: 'contacts_view',
-      defaultValue: getQueryViewMode(query),
-    });
+  const [
+    preferredViewMode,
+    setPreferredViewMode,
+    { loading: userOptionsLoading },
+  ] = useUserPreference({
+    key: 'contacts_view',
+    defaultValue: getQueryViewMode(query),
+  });
   // Offline mode only supports the list, but the saved preference stays untouched
   const viewMode = offlineMode ? TableViewModeEnum.List : preferredViewMode;
+
+  const setViewMode = useCallback(
+    (newViewModeArg: SetStateAction<TableViewModeEnum>) => {
+      const newViewMode =
+        typeof newViewModeArg === 'function'
+          ? newViewModeArg(viewMode)
+          : newViewModeArg;
+      if (offlineMode && newViewMode !== TableViewModeEnum.List) {
+        router.replace(
+          { pathname: router.pathname, query: omit(query, 'offline') },
+          undefined,
+          { shallow: true },
+        );
+      }
+      setPreferredViewMode(newViewMode);
+    },
+    [offlineMode, viewMode, query, setPreferredViewMode],
+  );
 
   const [filterPanelOpen, setFilterPanelOpen] = useUserPreference({
     key: 'contact_filters_collapse',
@@ -49,7 +72,7 @@ export const ContactsWrapper: React.FC<Props> = ({ children }) => {
 
   return (
     <ContactPanelProvider contactIdPrefix={contactIdPrefix}>
-      <UrlFiltersProvider>
+      <UrlFiltersProvider offlineMode={offlineMode}>
         <ContactsProvider
           filterPanelOpen={filterPanelOpen}
           setFilterPanelOpen={setFilterPanelOpen}

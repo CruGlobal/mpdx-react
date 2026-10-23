@@ -12,6 +12,7 @@ import {
   PageEnum,
   TableViewModeEnum,
 } from 'src/components/Shared/Header/ListHeader';
+import { useIsOnline } from 'src/hooks/useIsOnline';
 import {
   ContactsContext,
   ContactsType,
@@ -48,10 +49,14 @@ export const ContactsMainPanelHeader: React.FC = () => {
     viewMode,
     setViewMode,
     selectedIds,
+    offlineMode,
   } = React.useContext(ContactsContext) as ContactsType;
+  const isOnline = useIsOnline();
 
   return (
     <ListHeader
+      filtersDisabled={!isOnline}
+      hideSelection={offlineMode}
       page={PageEnum.Contact}
       filterPanelOpen={filterPanelOpen}
       toggleFilterPanel={toggleFilterPanel}
@@ -86,13 +91,13 @@ export const ContactsMainPanelHeader: React.FC = () => {
             </ToggleButton>
             <ToggleButton
               value={TableViewModeEnum.Flows}
-              disabled={viewMode === TableViewModeEnum.Flows}
+              disabled={!isOnline || viewMode === TableViewModeEnum.Flows}
             >
               <ViewColumnIcon titleAccess={t('Column Workflow View')} />
             </ToggleButton>
             <ToggleButton
               value={TableViewModeEnum.Map}
-              disabled={viewMode === TableViewModeEnum.Map}
+              disabled={!isOnline || viewMode === TableViewModeEnum.Map}
             >
               <MapIcon titleAccess={t('Map View')} />
             </ToggleButton>

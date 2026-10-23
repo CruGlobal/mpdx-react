@@ -81,6 +81,10 @@ interface ListHeaderProps {
   massDeselectAll?: () => void;
   showShowingCount?: boolean;
   isExcludedAppealPage?: boolean;
+  /** Disables the filter toggle, search, starred filter, and actions menu */
+  filtersDisabled?: boolean;
+  /** Hides the select-all checkbox, the selected count, and the actions menu */
+  hideSelection?: boolean;
 }
 
 export const ListHeader: React.FC<ListHeaderProps> = ({
@@ -97,16 +101,20 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   massDeselectAll,
   showShowingCount = false,
   isExcludedAppealPage = false,
+  filtersDisabled = false,
+  hideSelection = false,
 }) => {
   const { isOpen: contactPanelOpen } = useContactPanel();
   const { searchTerm, setSearchTerm, starred, setStarred } = useUrlFilters();
 
   const { t } = useTranslation();
 
+  const visibleSelectedIds = hideSelection ? [] : selectedIds;
+
   return (
     <HeaderWrap contactPanelOpen={contactPanelOpen}>
       <HeaderWrapInner style={{ marginRight: 8 }}>
-        {contactsView !== TableViewModeEnum.Map && (
+        {contactsView !== TableViewModeEnum.Map && !hideSelection && (
           <StyledCheckbox
             name="check all"
             checked={headerCheckboxState === ListHeaderCheckBoxState.Checked}
@@ -121,7 +129,11 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         {page === PageEnum.Appeal && leftButtonGroup && (
           <Box>{leftButtonGroup}</Box>
         )}
-        <FilterButton onClick={toggleFilterPanel} panelOpen={filterPanelOpen}>
+        <FilterButton
+          onClick={toggleFilterPanel}
+          panelOpen={filterPanelOpen}
+          disabled={filtersDisabled}
+        >
           {contactsView === TableViewModeEnum.Map ? (
             <ViewList titleAccess={t('Toggle Contact List')} />
           ) : (
@@ -136,6 +148,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
             page === PageEnum.Task ? t('Search Tasks') : t('Search Contacts')
           }
           page={page}
+          disabled={filtersDisabled}
         />
         <ItemsShowingText
           data-testid="showing-text"
@@ -147,11 +160,11 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         </ItemsShowingText>
       </HeaderWrapInner>
       <HeaderWrapInner style={{ marginLeft: 8 }}>
-        {!!selectedIds.length && (
+        {!!visibleSelectedIds.length && (
           <ItemsShowingText
             sx={{ marginRight: 2, display: { xs: 'none', sm: 'block' } }}
           >
-            {t('{{count}} Selected', { count: selectedIds.length })}
+            {t('{{count}} Selected', { count: visibleSelectedIds.length })}
           </ItemsShowingText>
         )}
         {(page === PageEnum.Contact || page === PageEnum.Appeal) && (
@@ -159,9 +172,10 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
             filterPanelOpen={filterPanelOpen}
             buttonGroup={buttonGroup}
             contactsView={contactsView}
-            selectedIds={selectedIds}
+            selectedIds={visibleSelectedIds}
             page={page}
             isExcludedAppealPage={isExcludedAppealPage}
+            disabled={filtersDisabled}
           />
         )}
         {page === PageEnum.Report && (
@@ -170,8 +184,9 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
               filterPanelOpen={filterPanelOpen}
               buttonGroup={buttonGroup}
               contactsView={contactsView}
-              selectedIds={selectedIds}
+              selectedIds={visibleSelectedIds}
               page={page}
+              disabled={filtersDisabled}
             />
           </Box>
         )}
@@ -194,6 +209,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
             <StarFilterButton
               starredFilter={starred}
               toggleStarredFilter={setStarred}
+              disabled={filtersDisabled}
             />
           </Box>
         )}

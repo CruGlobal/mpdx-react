@@ -249,6 +249,121 @@ describe('useUrlFilters', () => {
     });
   });
 
+  describe('offline mode', () => {
+    const offlineQuery = {
+      offline: 'true',
+      filters: '{"status":["PARTNER_FINANCIAL"]}',
+    };
+
+    const OfflineWrapper: React.FC<{
+      offlineMode?: boolean;
+      children?: React.ReactNode;
+    }> = ({ offlineMode = true, children }) => (
+      <TestRouter router={{ ...router, query: offlineQuery }}>
+        <UrlFiltersProvider offlineMode={offlineMode}>
+          {children}
+        </UrlFiltersProvider>
+      </TestRouter>
+    );
+
+    beforeEach(() => {
+      jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('ignores URL filters in offline mode', () => {
+      const { result } = renderHook(() => useUrlFilters(), {
+        wrapper: OfflineWrapper,
+      });
+
+      expect(result.current.combinedFilters).toEqual({ wildcardSearch: '' });
+    });
+
+    it('drops the filters but keeps offline mode on start', () => {
+      renderHook(() => useUrlFilters(), { wrapper: OfflineWrapper });
+
+      expect(replace).toHaveBeenCalledWith(
+        { pathname, query: { offline: 'true' } },
+        undefined,
+        { shallow: true },
+      );
+    });
+
+    it('leaves offline mode on a filter change', () => {
+      const { result } = renderHook(() => useUrlFilters(), {
+        wrapper: OfflineWrapper,
+      });
+
+      act(() => {
+        result.current.setActiveFilters({ starred: true });
+      });
+
+      expect(replace).toHaveBeenLastCalledWith(
+        { pathname, query: { filters: '{"starred":true}' } },
+        undefined,
+        { shallow: true },
+      );
+    });
+
+    it('leaves offline mode when starred is toggled', () => {
+      const { result } = renderHook(() => useUrlFilters(), {
+        wrapper: OfflineWrapper,
+      });
+      replace.mockClear();
+
+      act(() => {
+        result.current.setStarred(true);
+      });
+
+      expect(result.current.starred).toBe(true);
+      expect(replace).toHaveBeenCalledWith({ pathname, query: {} }, undefined, {
+        shallow: true,
+      });
+    });
+
+    it('leaves offline mode on a search', () => {
+      const { result } = renderHook(() => useUrlFilters(), {
+        wrapper: OfflineWrapper,
+      });
+      replace.mockClear();
+
+      act(() => {
+        result.current.setSearchTerm('Smith');
+      });
+      expect(replace).not.toHaveBeenCalled();
+
+      act(() => {
+        jest.advanceTimersByTime(500);
+      });
+
+      expect(replace).toHaveBeenCalledWith(
+        { pathname, query: { searchTerm: 'Smith' } },
+        undefined,
+        { shallow: true },
+      );
+    });
+
+    it('keeps offline in the URL outside of offline mode', () => {
+      const { result } = renderHook(() => useUrlFilters(), {
+        wrapper: OfflineWrapper,
+        initialProps: { offlineMode: false },
+      });
+
+      expect(result.current.activeFilters).toEqual({
+        status: ['PARTNER_FINANCIAL'],
+      });
+
+      act(() => {
+        result.current.setStarred(true);
+      });
+
+      expect(replace).not.toHaveBeenCalled();
+    });
+  });
+
   it('should default filters to defaultFilters', () => {
     const { result } = renderHook(() => useUrlFilters(), {
       wrapper: Wrapper,
