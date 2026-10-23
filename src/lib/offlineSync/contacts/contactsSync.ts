@@ -36,7 +36,11 @@ export const contactsSync: OfflineSyncDefinition = {
         variables: { ...contactsSyncVariables(accountListId), after },
         fetchPolicy: 'network-only',
         // Batching would give this query its own batch key, which starves the other key's batch
-        context: { doNotBatch: true, fetchOptions: { signal } },
+        context: {
+          doNotBatch: true,
+          suppressErrors: true,
+          fetchOptions: { signal },
+        },
       });
       const { endCursor, hasNextPage } = data.contacts.pageInfo;
       after = hasNextPage ? (endCursor ?? undefined) : undefined;

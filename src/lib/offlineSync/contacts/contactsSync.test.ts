@@ -111,6 +111,15 @@ describe('contactsSync', () => {
     contexts.forEach((context) => expect(context.doNotBatch).toBe(true));
   });
 
+  it('suppresses error toasts because the sync reports its own errors', async () => {
+    const { client, contexts } = makeClient(twoPages);
+
+    await runSync(client);
+
+    expect(contexts).toHaveLength(2);
+    contexts.forEach((context) => expect(context.suppressErrors).toBe(true));
+  });
+
   it('a new sync replaces the merged list', async () => {
     const { client } = makeClient([
       {
