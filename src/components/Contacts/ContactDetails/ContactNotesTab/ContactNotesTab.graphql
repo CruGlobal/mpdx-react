@@ -23,6 +23,7 @@ mutation UpdateContactNotes(
   ) {
     contact {
       id
+      notes
       notesSavedAt
     }
   }

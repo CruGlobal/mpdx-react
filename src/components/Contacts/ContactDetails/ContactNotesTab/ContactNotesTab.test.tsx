@@ -1,5 +1,9 @@
 import React from 'react';
-import { ApolloCache, NormalizedCacheObject } from '@apollo/client';
+import {
+  ApolloCache,
+  DefaultOptions,
+  NormalizedCacheObject,
+} from '@apollo/client';
 import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
@@ -12,7 +16,15 @@ import { ContactNotesTab } from './ContactNotesTab';
 import {
   GetContactNotesDocument,
   GetContactNotesQuery,
+  UpdateContactNotesMutation,
 } from './ContactNotesTab.generated';
+
+const mockUseUpdateContactNotesMutation = jest.fn();
+jest.mock('./ContactNotesTab.generated', () => ({
+  ...jest.requireActual('./ContactNotesTab.generated'),
+  useUpdateContactNotesMutation: (...args: unknown[]) =>
+    mockUseUpdateContactNotesMutation(...args),
+}));
 
 const mockEnqueue = jest.fn();
 
@@ -30,6 +42,13 @@ jest.mock('notistack', () => ({
 const setOnline = mockNavigatorOnline();
 
 describe('ContactNotesTab', () => {
+  beforeEach(() => {
+    mockUseUpdateContactNotesMutation.mockImplementation(
+      jest.requireActual('./ContactNotesTab.generated')
+        .useUpdateContactNotesMutation,
+    );
+  });
+
   afterEach(() => {
     jest.useRealTimers();
   });
@@ -89,6 +108,47 @@ describe('ContactNotesTab', () => {
     await waitFor(() => expect(updateCalls()).toHaveLength(1));
     expect(updateCalls()[0][0].operation.variables.notes).toBe('abc');
     expect(input).toBeEnabled();
+  });
+
+  it('waits for a save to finish before sending the next one', async () => {
+    const saves: Array<{ notes: string; finish: () => void }> = [];
+    mockUseUpdateContactNotesMutation.mockReturnValue([
+      ({ variables }: { variables: { notes: string } }) =>
+        new Promise<void>((resolve) =>
+          saves.push({ notes: variables.notes, finish: resolve }),
+        ),
+    ]);
+    const { getByPlaceholderText } = render(
+      <TestRouter>
+        <SnackbarProvider>
+          <GqlMockedProvider<{ GetContactNotes: GetContactNotesQuery }>
+            mocks={{
+              GetContactNotes: { contact: { id: 'abc', notes: '' } },
+            }}
+          >
+            <ContactDetailProvider>
+              <ContactNotesTab accountListId="123" contactId="abc" />
+            </ContactDetailProvider>
+          </GqlMockedProvider>
+        </SnackbarProvider>
+      </TestRouter>,
+    );
+    const input = getByPlaceholderText('Add contact notes');
+    await waitFor(() => expect(input).toBeEnabled());
+    jest.useFakeTimers();
+    for (const text of ['a', 'b', 'c']) {
+      userEvent.type(input, text);
+      await act(async () => {
+        jest.advanceTimersByTime(500);
+      });
+    }
+    expect(saves.map(({ notes }) => notes)).toEqual(['a']);
+
+    await act(async () => saves[0].finish());
+    expect(saves.map(({ notes }) => notes)).toEqual(['a', 'abc']);
+
+    await act(async () => saves[1].finish());
+    expect(saves).toHaveLength(2);
   });
 
   describe('switching contacts', () => {
@@ -216,6 +276,35 @@ describe('ContactNotesTab', () => {
       ).not.toContain('abcx');
     });
 
+    it('shows the notes again when returning to an edited contact', () => {
+      const cache = createCache();
+      ['A', 'B'].forEach((contactId) =>
+        cache.writeQuery({
+          query: GetContactNotesDocument,
+          variables: { contactId, accountListId: '123' },
+          data: {
+            contact: {
+              __typename: 'Contact',
+              id: contactId,
+              notes: `${contactId} notes`,
+              notesSavedAt: null,
+            },
+          },
+        }),
+      );
+      const { getByPlaceholderText, rerender } = render(
+        <TestComponent contactId="A" cache={cache} />,
+      );
+      const input = getByPlaceholderText('Add contact notes');
+      userEvent.type(input, ' x');
+
+      rerender(<TestComponent contactId="B" cache={cache} />);
+      expect(input).toHaveValue('B notes');
+
+      rerender(<TestComponent contactId="A" cache={cache} />);
+      expect(input).toHaveValue('A notes');
+    });
+
     it('retries a failed save after reconnecting', async () => {
       failFirstSave.mockImplementationOnce(() => {
         throw new Error('network');
@@ -234,6 +323,107 @@ describe('ContactNotesTab', () => {
         contactId: 'A',
         notes: 'abc',
       });
+    });
+  });
+
+  describe('saved notes', () => {
+    // Match the app client so a cached result is followed by a network result
+    const defaultOptions: DefaultOptions = {
+      watchQuery: { fetchPolicy: 'cache-and-network' },
+    };
+    const TestComponent: React.FC<{
+      cache: ApolloCache<NormalizedCacheObject>;
+      savedNotes: string;
+    }> = ({ cache, savedNotes }) => (
+      <TestRouter>
+        <SnackbarProvider>
+          <GqlMockedProvider<{
+            GetContactNotes: GetContactNotesQuery;
+            UpdateContactNotes: UpdateContactNotesMutation;
+          }>
+            cache={cache}
+            defaultOptions={defaultOptions}
+            mocks={{
+              GetContactNotes: { contact: { id: 'abc', notes: 'old' } },
+              UpdateContactNotes: {
+                updateContact: { contact: { id: 'abc', notes: savedNotes } },
+              },
+            }}
+          >
+            <ContactDetailProvider>
+              <ContactNotesTab accountListId="123" contactId="abc" />
+            </ContactDetailProvider>
+          </GqlMockedProvider>
+        </SnackbarProvider>
+      </TestRouter>
+    );
+    const cachedNotes = (cache: ApolloCache<NormalizedCacheObject>) =>
+      cache.readQuery<GetContactNotesQuery>({
+        query: GetContactNotesDocument,
+        variables: { contactId: 'abc', accountListId: '123' },
+      })?.contact.notes;
+    const cacheWithNotes = (notes: string) => {
+      const cache = createCache();
+      cache.writeQuery({
+        query: GetContactNotesDocument,
+        variables: { contactId: 'abc', accountListId: '123' },
+        data: {
+          contact: {
+            __typename: 'Contact',
+            id: 'abc',
+            notes,
+            notesSavedAt: null,
+          },
+        },
+      });
+      return cache;
+    };
+
+    it('replaces stale cached notes with the network result before an edit', async () => {
+      const { getByPlaceholderText } = render(
+        <TestComponent cache={cacheWithNotes('stale')} savedNotes="old" />,
+      );
+      const input = getByPlaceholderText('Add contact notes');
+      expect(input).toHaveValue('stale');
+
+      await waitFor(() => expect(input).toHaveValue('old'));
+    });
+
+    it('keeps text typed over cached notes when the network result arrives', async () => {
+      const cache = cacheWithNotes('stale');
+      const { getByPlaceholderText } = render(
+        <TestComponent cache={cache} savedNotes="stale x" />,
+      );
+      const input = getByPlaceholderText('Add contact notes');
+      userEvent.type(input, ' x');
+
+      await waitFor(() => expect(cachedNotes(cache)).toBe('old'));
+      expect(input).toHaveValue('stale x');
+    });
+
+    it('stores the saved notes in the cache', async () => {
+      const cache = createCache();
+      const { getByPlaceholderText } = render(
+        <TestComponent cache={cache} savedNotes="old new" />,
+      );
+      const input = getByPlaceholderText('Add contact notes');
+      await waitFor(() => expect(input).toHaveValue('old'));
+      userEvent.type(input, ' new');
+
+      await waitFor(() => expect(cachedNotes(cache)).toBe('old new'));
+    });
+
+    it('keeps text typed after the save started when the save finishes', async () => {
+      const cache = createCache();
+      const { getByPlaceholderText } = render(
+        <TestComponent cache={cache} savedNotes="old n" />,
+      );
+      const input = getByPlaceholderText('Add contact notes');
+      await waitFor(() => expect(input).toHaveValue('old'));
+      userEvent.type(input, ' new');
+
+      await waitFor(() => expect(cachedNotes(cache)).toBe('old n'));
+      expect(input).toHaveValue('old new');
     });
   });
 
