@@ -184,6 +184,32 @@ describe('createIdbStorage', () => {
     expect(store.didLastWriteLand()).toBe(false);
   });
 
+  it('ignores an earlier write that lands after the latest write failed', async () => {
+    const realPut = IDBObjectStore.prototype.put;
+    let puts = 0;
+    jest.spyOn(IDBObjectStore.prototype, 'put').mockImplementation(function (
+      this: IDBObjectStore,
+      ...args: Parameters<IDBObjectStore['put']>
+    ) {
+      puts += 1;
+      if (puts === 2) {
+        throw new DOMException('full', 'QuotaExceededError');
+      }
+      return realPut.apply(this, args);
+    });
+    const store = createIdbStorage(nextDb());
+
+    const order: string[] = [];
+    const write = async (value: string) => {
+      await store.setItem('cache', value);
+      order.push(value);
+    };
+    await Promise.all([write('earlier'), write('latest')]);
+
+    expect(order).toEqual(['latest', 'earlier']);
+    expect(store.didLastWriteLand()).toBe(false);
+  });
+
   it('reports a failed write instead of rejecting', async () => {
     const error = new DOMException('full', 'QuotaExceededError');
     jest.spyOn(IDBObjectStore.prototype, 'put').mockImplementationOnce(() => {
