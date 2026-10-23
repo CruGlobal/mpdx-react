@@ -21,7 +21,7 @@ interface Page {
 }
 
 const makeClient = (
-  pages: Page[],
+  pages: Array<Page | Error>,
   onRequest?: (variables: OfflineContactsQueryVariables) => void,
 ) => {
   const requests: OfflineContactsQueryVariables[] = [];
@@ -34,6 +34,10 @@ const makeClient = (
         contexts.push(operation.getContext());
         onRequest?.(variables);
         const page = pages[requests.length - 1];
+        if (page instanceof Error) {
+          observer.error(page);
+          return;
+        }
         observer.next({
           data: gqlMock<OfflineContactsQuery, OfflineContactsQueryVariables>(
             operation.query,
@@ -137,6 +141,129 @@ describe('contactsSync', () => {
     expect(readSyncedIds(client)).toEqual(['contact-3']);
   });
 
+  describe('re-syncing over a complete list', () => {
+    const resyncFirstPage: Page = {
+      ids: ['contact-4'],
+      endCursor: 'cursor-3',
+      hasNextPage: true,
+    };
+
+    it('leaves the previous list intact when aborted between pages', async () => {
+      const controller = new AbortController();
+      const { client, requests } = makeClient(
+        [...twoPages, resyncFirstPage],
+        () => {
+          if (requests.length === 3) {
+            controller.abort();
+          }
+        },
+      );
+
+      await runSync(client);
+      await runSync(client, controller.signal);
+
+      expect(requests).toHaveLength(3);
+      expect(readSyncedIds(client)).toEqual([
+        'contact-1',
+        'contact-2',
+        'contact-3',
+      ]);
+    });
+
+    it('leaves the previous list intact when a later page fails', async () => {
+      const { client } = makeClient([
+        ...twoPages,
+        resyncFirstPage,
+        new Error('network'),
+      ]);
+
+      await runSync(client);
+      await expect(runSync(client)).rejects.toThrow('network');
+
+      expect(readSyncedIds(client)).toEqual([
+        'contact-1',
+        'contact-2',
+        'contact-3',
+      ]);
+    });
+
+    it('replaces the list once every page has loaded', async () => {
+      const { client } = makeClient([
+        ...twoPages,
+        resyncFirstPage,
+        { ids: ['contact-5'], endCursor: 'cursor-4', hasNextPage: false },
+      ]);
+
+      await runSync(client);
+      await runSync(client);
+
+      expect(readSyncedIds(client)).toEqual(['contact-4', 'contact-5']);
+    });
+  });
+
+  describe('contacts changed during the sync', () => {
+    const contactId = (id: string) => `Contact:${id}`;
+
+    it('keeps an edit made after its page loaded', async () => {
+      const { client, requests } = makeClient(twoPages, () => {
+        if (requests.length === 2) {
+          client.cache.modify({
+            id: contactId('contact-1'),
+            fields: { notes: () => 'edited during sync' },
+          });
+        }
+      });
+
+      await runSync(client);
+
+      const synced = client.cache.readQuery<
+        OfflineContactsQuery,
+        OfflineContactsQueryVariables
+      >({
+        query: OfflineContactsDocument,
+        variables: contactsSyncVariables(accountListId),
+      });
+      expect(
+        synced?.contacts.nodes.find(({ id }) => id === 'contact-1')?.notes,
+      ).toBe('edited during sync');
+    });
+
+    it('leaves out a contact removed after its page loaded', async () => {
+      const { client, requests } = makeClient(twoPages, () => {
+        if (requests.length === 2) {
+          client.cache.evict({ id: contactId('contact-1') });
+        }
+      });
+
+      await runSync(client);
+
+      expect(readSyncedIds(client)).toEqual(['contact-2', 'contact-3']);
+    });
+
+    it('caches loaded contacts even when a later page fails', async () => {
+      const { client } = makeClient([twoPages[0], new Error('network')]);
+
+      await expect(runSync(client)).rejects.toThrow('network');
+
+      expect(
+        client.cache.extract()[contactId('contact-1')],
+      ).not.toBeUndefined();
+      expect(readSyncedIds(client)).toBeUndefined();
+    });
+  });
+
+  it('notifies watched queries once per page and once for the list', async () => {
+    const { client } = makeClient(twoPages);
+    const broadcastWatches = jest.spyOn(
+      client.cache as unknown as { broadcastWatches: () => void },
+      'broadcastWatches',
+    );
+
+    await runSync(client);
+
+    expect(broadcastWatches).toHaveBeenCalledTimes(3);
+  });
+
   it('stops between pages when aborted', async () => {
     const controller = new AbortController();
     const { client, requests } = makeClient(twoPages, () => controller.abort());
@@ -144,6 +271,7 @@ describe('contactsSync', () => {
     await runSync(client, controller.signal);
 
     expect(requests).toHaveLength(1);
+    expect(readSyncedIds(client)).toBeUndefined();
   });
 
   it('details read from synced data', async () => {

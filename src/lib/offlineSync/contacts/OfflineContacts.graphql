@@ -11,18 +11,22 @@ query OfflineContacts(
     first: $first
   ) {
     nodes {
-      id
-      avatar
-      contactPhase
-      ...ContactRow
-      ...ContactDetailsHeader
-      ...ContactDetailsTabContact
-      ...ContactPartnerAccounts
-      ...ContactNotes
+      ...OfflineContact
     }
     pageInfo {
       endCursor
       hasNextPage
     }
   }
+}
+
+fragment OfflineContact on Contact {
+  id
+  avatar
+  contactPhase
+  ...ContactRow
+  ...ContactDetailsHeader
+  ...ContactDetailsTabContact
+  ...ContactPartnerAccounts
+  ...ContactNotes
 }
