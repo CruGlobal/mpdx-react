@@ -37,9 +37,18 @@ export const ContactNotesTab: React.FC<Props> = ({
     ContactDetailContext,
   ) as ContactDetailsType;
 
+  // Seed the field once per contact. A later save also updates the notes, and
+  // would otherwise replace text typed while it was in flight.
+  const seededContactId = useRef<string | null>(null);
   useEffect(() => {
+    if (seededContactId.current === contactId) {
+      return;
+    }
     setNotes(data?.contact.notes ?? '');
-  }, [contactId, data?.contact.notes]);
+    if (data) {
+      seededContactId.current = contactId;
+    }
+  }, [contactId, data]);
 
   const isOnline = useIsOnline();
   const isOnlineRef = useRef(isOnline);

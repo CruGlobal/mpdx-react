@@ -12,6 +12,7 @@ import { ContactNotesTab } from './ContactNotesTab';
 import {
   GetContactNotesDocument,
   GetContactNotesQuery,
+  UpdateContactNotesMutation,
 } from './ContactNotesTab.generated';
 
 const mockEnqueue = jest.fn();
@@ -229,6 +230,64 @@ describe('ContactNotesTab', () => {
         contactId: 'A',
         notes: 'abc',
       });
+    });
+  });
+
+  describe('saved notes', () => {
+    const TestComponent: React.FC<{
+      cache: ApolloCache<NormalizedCacheObject>;
+      savedNotes: string;
+    }> = ({ cache, savedNotes }) => (
+      <TestRouter>
+        <SnackbarProvider>
+          <GqlMockedProvider<{
+            GetContactNotes: GetContactNotesQuery;
+            UpdateContactNotes: UpdateContactNotesMutation;
+          }>
+            cache={cache}
+            mocks={{
+              GetContactNotes: { contact: { id: 'abc', notes: 'old' } },
+              UpdateContactNotes: {
+                updateContact: { contact: { id: 'abc', notes: savedNotes } },
+              },
+            }}
+          >
+            <ContactDetailProvider>
+              <ContactNotesTab accountListId="123" contactId="abc" />
+            </ContactDetailProvider>
+          </GqlMockedProvider>
+        </SnackbarProvider>
+      </TestRouter>
+    );
+    const cachedNotes = (cache: ApolloCache<NormalizedCacheObject>) =>
+      cache.readQuery<GetContactNotesQuery>({
+        query: GetContactNotesDocument,
+        variables: { contactId: 'abc', accountListId: '123' },
+      })?.contact.notes;
+
+    it('stores the saved notes in the cache', async () => {
+      const cache = createCache();
+      const { getByPlaceholderText } = render(
+        <TestComponent cache={cache} savedNotes="old new" />,
+      );
+      const input = getByPlaceholderText('Add contact notes');
+      await waitFor(() => expect(input).toHaveValue('old'));
+      userEvent.type(input, ' new');
+
+      await waitFor(() => expect(cachedNotes(cache)).toBe('old new'));
+    });
+
+    it('keeps text typed after the save started when the save finishes', async () => {
+      const cache = createCache();
+      const { getByPlaceholderText } = render(
+        <TestComponent cache={cache} savedNotes="old n" />,
+      );
+      const input = getByPlaceholderText('Add contact notes');
+      await waitFor(() => expect(input).toHaveValue('old'));
+      userEvent.type(input, ' new');
+
+      await waitFor(() => expect(cachedNotes(cache)).toBe('old n'));
+      expect(input).toHaveValue('old new');
     });
   });
 
