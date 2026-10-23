@@ -46,7 +46,9 @@ export const StaffExpenseReportPage: React.FC = () => {
       <UserTypeAccess
         requireStaffAccount={!staffAccountId}
         requireUserGroups={
-          staffAccountId ? RequiredUserGroupEnum.MpdSupervisor : undefined
+          staffAccountId
+            ? RequiredUserGroupEnum.MpdSupervisor
+            : RequiredUserGroupEnum.StaffAccount
         }
       >
         <StaffExpenseReportPageWrapper>
