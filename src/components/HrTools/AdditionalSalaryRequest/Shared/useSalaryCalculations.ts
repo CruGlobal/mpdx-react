@@ -125,19 +125,17 @@ export const useSalaryCalculations = ({
       spouseGrossAnnualSalary + spouseTotalThisYear;
 
     // Exceeding cap calculations
-    const isMarried = !!spouse;
+    const spouseCanSplit = !!spouse?.asrEit.asrEligibility;
     // Backpay does not count against the cap, so a request with nothing else in it
     // cannot exceed the cap or need splitting, even when the base salary is already over
     const addsToCap = nonBackpayTotal > 0;
     const exceedsCap = addsToCap && requestedAnnualSalary > individualCap;
     const spouseExceedsCap =
-      isMarried &&
       spouseIndividualCap !== null &&
       spouseRequestedAnnualSalary > spouseIndividualCap;
     // Within $5 of cap but not over — treat as "at cap"
     // e.g. an ASR of $19,998 with a cap of $20,000 is considered at cap
     const spouseAtCap =
-      isMarried &&
       spouseIndividualCap !== null &&
       !spouseExceedsCap &&
       spouseRequestedAnnualSalary >= spouseIndividualCap - AT_CAP_TOLERANCE;
@@ -145,10 +143,14 @@ export const useSalaryCalculations = ({
       !exceedsCap && requestedAnnualSalary >= individualCap - AT_CAP_TOLERANCE;
 
     const userSplitAsr =
-      exceedsCap && isMarried && !spouseAtCap && !spouseExceedsCap;
+      exceedsCap && spouseCanSplit && !spouseAtCap && !spouseExceedsCap;
     // Only show spouse split when user has room to increase (not at/over cap)
     const spouseSplitAsr =
-      addsToCap && !exceedsCap && !userAtCap && isMarried && spouseExceedsCap;
+      addsToCap &&
+      !exceedsCap &&
+      !userAtCap &&
+      spouseCanSplit &&
+      spouseExceedsCap;
 
     const splitAsr = userSplitAsr || spouseSplitAsr;
     const splitAsrType: 'user' | 'spouse' | null = userSplitAsr
@@ -159,18 +161,18 @@ export const useSalaryCalculations = ({
     const additionalApproval =
       !!requestData?.latestAdditionalSalaryRequest?.progressiveApprovalTier;
 
-    const hasSpouseCap = isMarried && spouseIndividualCap !== null;
-    const spouseCap = hasSpouseCap
-      ? {
-          requestedAnnualSalary: spouseRequestedAnnualSalary,
-          individualCap: spouseIndividualCap,
-          remainingCap: getRemainingCap({
-            currentSalaryCap: spouseIndividualCap,
-            grossAnnualSalary: spouseGrossAnnualSalary,
-            ytdAsrAmount: spouseTotalThisYear,
-          }),
-        }
-      : null;
+    const spouseCap =
+      spouseIndividualCap !== null
+        ? {
+            requestedAnnualSalary: spouseRequestedAnnualSalary,
+            individualCap: spouseIndividualCap,
+            remainingCap: getRemainingCap({
+              currentSalaryCap: spouseIndividualCap,
+              grossAnnualSalary: spouseGrossAnnualSalary,
+              ytdAsrAmount: spouseTotalThisYear,
+            }),
+          }
+        : null;
 
     return {
       total,

@@ -255,6 +255,7 @@ describe('StepList', () => {
           staffInfo: {
             preferredName: 'Jane',
           },
+          asrEit: { asrEligibility: true },
         },
       } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
@@ -300,6 +301,7 @@ describe('StepList', () => {
           staffInfo: {
             preferredName: 'John',
           },
+          asrEit: { asrEligibility: true },
         },
       } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
