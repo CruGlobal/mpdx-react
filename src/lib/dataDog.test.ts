@@ -1,5 +1,6 @@
 import {
   accountListIdsStorageKey,
+  addDatadogAction,
   addDatadogError,
   clearDatadogUser,
   reportGraphQLError,
@@ -21,6 +22,7 @@ describe('Datadog', () => {
       setUser: jest.fn(),
       clearUser: jest.fn(),
       addError: jest.fn(),
+      addAction: jest.fn(),
       onReady: jest.fn((callback: () => void) => callback()),
     };
     process.env.DATADOG_CONFIGURED = 'true';
@@ -134,6 +136,22 @@ describe('Datadog', () => {
       addDatadogError(new Error('Boom'));
 
       expect(window.DD_RUM.addError).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('addDatadogAction', () => {
+    it('addDatadogAction forwards to DD_RUM.addAction', () => {
+      addDatadogAction('x', { a: 1 });
+
+      expect(window.DD_RUM.addAction).toHaveBeenCalledWith('x', { a: 1 });
+    });
+
+    it('does nothing when Datadog is not configured', () => {
+      process.env.DATADOG_CONFIGURED = 'false';
+
+      addDatadogAction('x');
+
+      expect(window.DD_RUM.addAction).not.toHaveBeenCalled();
     });
   });
 

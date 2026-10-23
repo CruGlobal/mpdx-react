@@ -1,6 +1,6 @@
 import { ApolloCache, NormalizedCacheObject } from '@apollo/client';
 import { CachePersistor } from 'apollo3-cache-persist';
-import { addDatadogError } from 'src/lib/dataDog';
+import { addDatadogAction, addDatadogError } from 'src/lib/dataDog';
 import { CACHE_KEY, PersistedCacheStore, createIdbStorage } from './idbStorage';
 import { onSessionEnded } from './sessionChannel';
 
@@ -30,6 +30,8 @@ export const createCachePersistence = (
   let stopped = false;
   let timedOut = false;
   const cancelled = () => stopped || timedOut;
+  let restoredSize: number | undefined;
+  let restoreFailed = false;
 
   const pause = () => {
     stopped = true;
@@ -105,6 +107,7 @@ export const createCachePersistence = (
       // Read and apply the data here instead of persistor.restore() so a read
       // that finishes after the timeout never touches the live cache
       const data = await storage.getItem(CACHE_KEY);
+      restoredSize = data?.length;
       if (cancelled()) {
         return;
       }
@@ -119,6 +122,7 @@ export const createCachePersistence = (
       }
       persistor.resume();
     } catch (error) {
+      restoreFailed = true;
       report(error, 'start');
       await stop();
     }
@@ -128,6 +132,7 @@ export const createCachePersistence = (
     storage: PersistedCacheStore,
     options: StartCachePersistenceOptions,
   ) => {
+    const startedAt = performance.now();
     let timer: ReturnType<typeof setTimeout> | undefined;
     const timeout = new Promise<void>((resolve) => {
       timer = setTimeout(() => {
@@ -138,6 +143,15 @@ export const createCachePersistence = (
     });
     await Promise.race([restore(storage, options), timeout]);
     clearTimeout(timer);
+
+    if (timedOut || restoredSize !== undefined) {
+      addDatadogAction('cache_restore', {
+        durationMs: performance.now() - startedAt,
+        sizeBytes: restoredSize,
+        timedOut,
+        failed: restoreFailed,
+      });
+    }
   };
 
   const start = (options: StartCachePersistenceOptions): Promise<void> => {
