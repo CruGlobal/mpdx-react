@@ -250,9 +250,10 @@ describe('ListHeader', () => {
         <Components totalItems={50} filtersDisabled />,
       );
 
-      expect(
-        getByRole('button', { name: 'Toggle Filter Panel' }),
-      ).toBeDisabled();
+      const filterToggle = getByRole('button', { name: 'Toggle Filter Panel' });
+      expect(filterToggle).not.toBeDisabled();
+      userEvent.click(filterToggle);
+      expect(toggleFilterPanel).toHaveBeenCalled();
       expect(getByRole('textbox')).toBeDisabled();
       expect(getByTestId('star-filter-button')).toBeDisabled();
       expect(getByRole('button', { name: 'Actions' })).toBeDisabled();

@@ -630,13 +630,14 @@ describe('FilterPanel', () => {
           />,
         );
 
-        const panel = getByTestId('FilterPanel');
-        expect(panel).not.toHaveAttribute('inert');
-        expect(panel).not.toHaveAttribute('aria-disabled');
+        const body = getByTestId('FilterPanelBody');
+        expect(body).not.toHaveAttribute('inert');
+        expect(body).not.toHaveAttribute('aria-disabled');
+        expect(getByRole('button', { name: 'Save' })).not.toBeDisabled();
         expect(getByRole('button', { name: 'Clear All' })).not.toBeDisabled();
       });
 
-      it('disables the whole panel', () => {
+      it('disables the panel body but keeps the close button', () => {
         const { getByRole, getByTestId, getByText } = render(
           <TestComponent
             filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
@@ -646,15 +647,18 @@ describe('FilterPanel', () => {
           />,
         );
 
-        const panel = getByTestId('FilterPanel');
-        expect(panel).toHaveAttribute('inert');
-        expect(panel).toHaveAttribute('aria-disabled', 'true');
+        const body = getByTestId('FilterPanelBody');
+        expect(body).toHaveAttribute('inert');
+        expect(body).toHaveAttribute('aria-disabled', 'true');
+        expect(getByTestId('FilterPanel')).not.toHaveAttribute('inert');
         expect(() => userEvent.click(getByText('Saved Filters'))).toThrow(
           /pointer-events set to "none"/,
         );
-        expect(
-          getByRole('button', { name: 'Clear All', hidden: true }),
-        ).toBeDisabled();
+        expect(getByRole('button', { name: 'Save' })).toBeDisabled();
+        expect(getByRole('button', { name: 'Clear All' })).toBeDisabled();
+
+        userEvent.click(getByTestId('FilterPanelClose'));
+        expect(onClose).toHaveBeenCalled();
       });
 
       it('disables only Clear All', () => {
@@ -667,7 +671,7 @@ describe('FilterPanel', () => {
           />,
         );
 
-        expect(getByTestId('FilterPanel')).not.toHaveAttribute('inert');
+        expect(getByTestId('FilterPanelBody')).not.toHaveAttribute('inert');
         expect(getByRole('button', { name: 'Clear All' })).toBeDisabled();
       });
     });

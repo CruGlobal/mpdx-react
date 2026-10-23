@@ -20,6 +20,7 @@ import { ContactsMainPanelHeader } from './ContactsMainPanelHeader';
 
 const accountListId = 'account-list-1';
 const setViewMode = jest.fn();
+const toggleFilterPanel = jest.fn();
 
 const router = {
   query: { accountListId },
@@ -51,7 +52,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                     contactsQueryResult: {
                       data: { contacts: { totalCount: 5 } },
                     },
-                    toggleFilterPanel: jest.fn(),
+                    toggleFilterPanel,
                     toggleSelectAll: jest.fn(),
                     selectionType: ListHeaderCheckBoxState.Partial,
                     filterPanelOpen: false,
@@ -115,13 +116,16 @@ describe('ContactsMainPanelHeader', () => {
       expect(getByRole('button', { name: 'Map View' })).not.toBeDisabled();
     });
 
-    it('disables the filters, actions, Flows, and Map offline', () => {
+    it('disables search, starred, actions, Flows, and Map offline but not the filter toggle', () => {
       setOnline(false);
       const { getByRole, getByTestId } = render(<TestComponent />);
 
-      expect(
-        getByRole('button', { name: 'Toggle Filter Panel' }),
-      ).toBeDisabled();
+      const filterToggle = getByRole('button', {
+        name: 'Toggle Filter Panel',
+      });
+      expect(filterToggle).not.toBeDisabled();
+      userEvent.click(filterToggle);
+      expect(toggleFilterPanel).toHaveBeenCalled();
       expect(getByRole('textbox')).toBeDisabled();
       expect(getByTestId('star-filter-button')).toBeDisabled();
       expect(getByRole('button', { name: 'Actions' })).toBeDisabled();
