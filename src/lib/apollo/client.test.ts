@@ -3,13 +3,15 @@ import { waitFor } from '@testing-library/react';
 import { HcmDocument } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import snackNotifications from 'src/components/Snackbar/Snackbar';
 import { signOutAndClear } from 'src/lib/clearSessionData';
-import { reportNetworkError } from 'src/lib/dataDog';
+import { reportGraphQLError, reportNetworkError } from 'src/lib/dataDog';
+import { dispatch } from '../analytics';
 import makeClient from './client';
 
 jest.mock('next-auth/react');
 jest.mock('src/lib/clearSessionData');
 jest.mock('src/components/Snackbar/Snackbar');
 jest.mock('src/lib/dataDog');
+jest.mock('../analytics');
 
 let mockNetworkError: Error | undefined;
 let mockResult: FetchResult | undefined;
@@ -83,6 +85,39 @@ describe('makeClient error link', () => {
         callbackUrl: 'signOut',
       }),
     );
+  });
+
+  it('does not show or report a network error when suppressErrors is set', async () => {
+    mockNetworkError = makeServerError({ errors: { title: 'Down' } });
+
+    await expect(
+      makeClient('token').query({
+        query: HcmDocument,
+        variables: { personNumber: null },
+        context: { suppressErrors: true },
+      }),
+    ).rejects.toThrow();
+
+    expect(snackNotifications.error).not.toHaveBeenCalled();
+    expect(reportNetworkError).not.toHaveBeenCalled();
+    expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  it('does not show or report a GraphQL error when suppressErrors is set', async () => {
+    mockResult = {
+      errors: [{ message: 'HCM failed' }] as unknown as FetchResult['errors'],
+    };
+
+    await expect(
+      makeClient('token').query({
+        query: HcmDocument,
+        variables: { personNumber: null },
+        context: { suppressErrors: true },
+      }),
+    ).rejects.toThrow();
+
+    expect(snackNotifications.error).not.toHaveBeenCalled();
+    expect(reportGraphQLError).not.toHaveBeenCalled();
   });
 
   it('still shows each error when the response errors are an array', async () => {
