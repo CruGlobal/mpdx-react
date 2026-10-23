@@ -22,7 +22,11 @@ export const contactsSync: OfflineSyncDefinition = {
   type: CONTACTS_SYNC_TYPE,
   document: OfflineContactsDocument,
   intervalMs: CONTACTS_SYNC_INTERVAL_MS,
+  // Pages stay out of the cache until the last one arrives, so an interrupted
+  // re-sync can't replace a complete list with a partial one
   run: async ({ client, accountListId, signal }) => {
+    const nodes: OfflineContactsQuery['contacts']['nodes'] = [];
+    let endCursor: string | null = null;
     let after: string | undefined;
     do {
       if (signal.aborted) {
@@ -34,7 +38,7 @@ export const contactsSync: OfflineSyncDefinition = {
       >({
         query: OfflineContactsDocument,
         variables: { ...contactsSyncVariables(accountListId), after },
-        fetchPolicy: 'network-only',
+        fetchPolicy: 'no-cache',
         // Batching would give this query its own batch key, which starves the other key's batch
         context: {
           doNotBatch: true,
@@ -42,8 +46,28 @@ export const contactsSync: OfflineSyncDefinition = {
           fetchOptions: { signal },
         },
       });
-      const { endCursor, hasNextPage } = data.contacts.pageInfo;
-      after = hasNextPage ? (endCursor ?? undefined) : undefined;
+      nodes.push(...data.contacts.nodes);
+      const { pageInfo } = data.contacts;
+      endCursor = pageInfo.endCursor ?? null;
+      after = pageInfo.hasNextPage ? (endCursor ?? undefined) : undefined;
     } while (after);
+
+    if (signal.aborted) {
+      return;
+    }
+    client.cache.writeQuery<
+      OfflineContactsQuery,
+      OfflineContactsQueryVariables
+    >({
+      query: OfflineContactsDocument,
+      variables: contactsSyncVariables(accountListId),
+      data: {
+        contacts: {
+          __typename: 'ContactConnection',
+          nodes,
+          pageInfo: { __typename: 'PageInfo', endCursor, hasNextPage: false },
+        },
+      },
+    });
   },
 };
