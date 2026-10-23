@@ -81,7 +81,7 @@ interface ListHeaderProps {
   massDeselectAll?: () => void;
   showShowingCount?: boolean;
   isExcludedAppealPage?: boolean;
-  /** Disables the filter toggle, search, starred filter, and actions menu */
+  /** Disables the search, starred filter, and actions menu */
   filtersDisabled?: boolean;
   /** Hides the select-all checkbox, the selected count, and the actions menu */
   hideSelection?: boolean;
@@ -129,11 +129,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         {page === PageEnum.Appeal && leftButtonGroup && (
           <Box>{leftButtonGroup}</Box>
         )}
-        <FilterButton
-          onClick={toggleFilterPanel}
-          panelOpen={filterPanelOpen}
-          disabled={filtersDisabled}
-        >
+        <FilterButton onClick={toggleFilterPanel} panelOpen={filterPanelOpen}>
           {contactsView === TableViewModeEnum.Map ? (
             <ViewList titleAccess={t('Toggle Contact List')} />
           ) : (

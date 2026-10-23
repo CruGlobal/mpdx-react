@@ -123,6 +123,12 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
     setLeavingOfflineMode(false);
   }, [query, offlineMode]);
 
+  useEffect(() => {
+    if (offlineMode) {
+      setStarred(false);
+    }
+  }, [offlineMode]);
+
   const leaveOfflineMode = () => {
     if (offlineMode) {
       setLeavingOfflineMode(true);

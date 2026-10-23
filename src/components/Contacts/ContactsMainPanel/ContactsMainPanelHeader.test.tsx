@@ -1,6 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -16,6 +17,8 @@ import {
   ContactsType,
 } from '../ContactsContext/ContactsContext';
 import { ContactsMainPanelHeader } from './ContactsMainPanelHeader';
+
+const toggleFilterPanel = jest.fn();
 
 const setOnline = (online: boolean) =>
   jest.spyOn(navigator, 'onLine', 'get').mockReturnValue(online);
@@ -45,7 +48,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                     contactsQueryResult: {
                       data: { contacts: { totalCount: 10 } },
                     },
-                    toggleFilterPanel: jest.fn(),
+                    toggleFilterPanel,
                     toggleSelectAll: jest.fn(),
                     selectionType: ListHeaderCheckBoxState.Partial,
                     filterPanelOpen: false,
@@ -84,11 +87,14 @@ describe('ContactsMainPanelHeader', () => {
     expect(getByRole('button', { name: 'Map View' })).not.toBeDisabled();
   });
 
-  it('disables the filters, actions, Flows, and Map offline', () => {
+  it('disables search, starred, actions, Flows, and Map offline but not the filter toggle', () => {
     setOnline(false);
     const { getByRole, getByTestId } = render(<TestComponent />);
 
-    expect(getByRole('button', { name: 'Toggle Filter Panel' })).toBeDisabled();
+    const filterToggle = getByRole('button', { name: 'Toggle Filter Panel' });
+    expect(filterToggle).not.toBeDisabled();
+    userEvent.click(filterToggle);
+    expect(toggleFilterPanel).toHaveBeenCalled();
     expect(getByRole('textbox')).toBeDisabled();
     expect(getByTestId('star-filter-button')).toBeDisabled();
     expect(getByRole('button', { name: 'Actions' })).toBeDisabled();

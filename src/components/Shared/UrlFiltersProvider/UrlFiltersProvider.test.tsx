@@ -346,6 +346,23 @@ describe('useUrlFilters', () => {
       );
     });
 
+    it('resets starred on entering offline mode', () => {
+      const { result, rerender } = renderHook(() => useUrlFilters(), {
+        wrapper: OfflineWrapper,
+        initialProps: { offlineMode: false },
+      });
+
+      act(() => {
+        result.current.setStarred(true);
+      });
+      expect(result.current.combinedFilters).toMatchObject({ starred: true });
+
+      rerender({ offlineMode: true });
+
+      expect(result.current.starred).toBe(false);
+      expect(result.current.combinedFilters).toEqual({ wildcardSearch: '' });
+    });
+
     it('keeps offline in the URL outside of offline mode', () => {
       const { result } = renderHook(() => useUrlFilters(), {
         wrapper: OfflineWrapper,
