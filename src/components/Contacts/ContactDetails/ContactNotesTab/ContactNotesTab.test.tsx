@@ -1,13 +1,18 @@
 import React from 'react';
+import { ApolloCache, NormalizedCacheObject } from '@apollo/client';
 import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { mockNavigatorOnline } from '__tests__/util/mockNavigatorOnline';
+import { createCache } from 'src/lib/apollo/cache';
 import { ContactDetailProvider } from '../ContactDetailContext';
 import { ContactNotesTab } from './ContactNotesTab';
-import { GetContactNotesQuery } from './ContactNotesTab.generated';
+import {
+  GetContactNotesDocument,
+  GetContactNotesQuery,
+} from './ContactNotesTab.generated';
 
 const mockEnqueue = jest.fn();
 
@@ -89,10 +94,14 @@ describe('ContactNotesTab', () => {
   describe('switching contacts', () => {
     const mutationSpy = jest.fn();
     const failFirstSave = jest.fn();
-    const TestComponent: React.FC<{ contactId: string }> = ({ contactId }) => (
+    const TestComponent: React.FC<{
+      contactId: string;
+      cache?: ApolloCache<NormalizedCacheObject>;
+    }> = ({ contactId, cache }) => (
       <TestRouter>
         <SnackbarProvider>
           <GqlMockedProvider<{ GetContactNotes: GetContactNotesQuery }>
+            cache={cache}
             mocks={{
               GetContactNotes: { contact: { notes: '' } },
               UpdateContactNotes: () => failFirstSave(),
@@ -164,6 +173,47 @@ describe('ContactNotesTab', () => {
           ['B', 'bbb'],
         ]),
       );
+    });
+
+    it('resets the field to the new contact notes when both have the same notes', async () => {
+      const cache = createCache();
+      ['A', 'B'].forEach((contactId) =>
+        cache.writeQuery({
+          query: GetContactNotesDocument,
+          variables: { contactId, accountListId: '123' },
+          data: {
+            contact: {
+              __typename: 'Contact',
+              id: contactId,
+              notes: '',
+              notesSavedAt: null,
+            },
+          },
+        }),
+      );
+      const { getByPlaceholderText, rerender } = render(
+        <TestComponent contactId="A" cache={cache} />,
+      );
+      const input = getByPlaceholderText('Add contact notes');
+      userEvent.type(input, 'abc');
+
+      // B's notes are already cached, so they are available immediately
+      rerender(<TestComponent contactId="B" cache={cache} />);
+
+      expect(input).toHaveValue('');
+      userEvent.type(input, 'x');
+
+      await waitFor(() =>
+        expect(
+          updateCalls().some(
+            ({ variables }) =>
+              variables.contactId === 'B' && variables.notes === 'x',
+          ),
+        ).toBe(true),
+      );
+      expect(
+        updateCalls().map(({ variables }) => variables.notes),
+      ).not.toContain('abcx');
     });
 
     it('retries a failed save after reconnecting', async () => {
