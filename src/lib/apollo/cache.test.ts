@@ -51,6 +51,19 @@ const writeCache = (
   });
 };
 
+const readContactName = (cache: InMemoryCache, contactId: string) =>
+  cache.readQuery({
+    query: gql`
+      query ContactName($accountListId: ID!, $contactId: ID!) {
+        contact(accountListId: $accountListId, id: $contactId) {
+          id
+          name
+        }
+      }
+    `,
+    variables: { accountListId: 'account-list-1', contactId },
+  });
+
 describe('cache', () => {
   it('handles concurrent queries to the same page list', () => {
     const cache = createCache();
@@ -105,20 +118,12 @@ describe('cache', () => {
       },
     });
 
-    expect(
-      cache.readQuery({
-        query: gql`
-          query ContactName($accountListId: ID!, $contactId: ID!) {
-            contact(accountListId: $accountListId, id: $contactId) {
-              id
-              name
-            }
-          }
-        `,
-        variables: { accountListId: 'account-list-1', contactId: 'contact-1' },
-      }),
-    ).toEqual({
+    expect(readContactName(cache, 'contact-1')).toEqual({
       contact: { __typename: 'Contact', id: 'contact-1', name: 'Doe, John' },
     });
+  });
+
+  it('contact(id) reads null for a contact that is not cached', () => {
+    expect(readContactName(createCache(), 'contact-1')).toBeNull();
   });
 });
