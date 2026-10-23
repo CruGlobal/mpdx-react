@@ -12,6 +12,7 @@ export enum RequiredUserGroupEnum {
   NsGoalCalc = 'nsGoalCalc',
   PdsGoalCalc = 'pdsGoalCalc',
   MpdSupervisor = 'mpdSupervisor',
+  StaffAccount = 'staffAccount',
   NewStaffCohorts = 'newStaffCohorts',
 }
 
@@ -43,10 +44,11 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     inNsGoalCalcIneligibleGroup,
     inPdsGoalCalcIneligibleGroup,
     inMpdSupervisorIneligibleGroup,
+    inStaffAccountIneligibleGroup,
     canViewNewStaffCohorts,
     userType,
     hasNoStaffAccount,
-    userLoading,
+    userPending,
     userError,
   } = useIneligibleByGroup();
   const developerBypass = useDeveloperBypass();
@@ -59,6 +61,7 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     [RequiredUserGroupEnum.NsGoalCalc]: inNsGoalCalcIneligibleGroup,
     [RequiredUserGroupEnum.PdsGoalCalc]: inPdsGoalCalcIneligibleGroup,
     [RequiredUserGroupEnum.MpdSupervisor]: inMpdSupervisorIneligibleGroup,
+    [RequiredUserGroupEnum.StaffAccount]: inStaffAccountIneligibleGroup,
     [RequiredUserGroupEnum.NewStaffCohorts]: !canViewNewStaffCohorts,
   };
 
@@ -80,13 +83,17 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     return <LimitedAccess userGroupError />;
   }
 
-  if (userLoading && !userType) {
+  if (userPending) {
     return <Loading loading />;
   }
 
   if (limitedAccess && !developerBypass) {
     return (
       <LimitedAccess
+        noStaffAccount={
+          requireUserGroups === RequiredUserGroupEnum.StaffAccount &&
+          inStaffAccountIneligibleGroup
+        }
         notSupervisor={
           requireUserGroups === RequiredUserGroupEnum.MpdSupervisor
         }
