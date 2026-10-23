@@ -72,6 +72,31 @@ const withExclusiveKey = async (
   }
 };
 
+// Apollo 3.7 never settles a query whose request was aborted, which would hold
+// the lock until the page closes
+const runUntilAborted = async (
+  run: Promise<void>,
+  signal: AbortSignal,
+): Promise<void> => {
+  let onAbort: (() => void) | undefined;
+  const aborted = new Promise<never>((_, reject) => {
+    onAbort = () => reject(new Error('Offline sync aborted'));
+    // run may have aborted synchronously, before this listener existed
+    if (signal.aborted) {
+      onAbort();
+    } else {
+      signal.addEventListener('abort', onAbort, { once: true });
+    }
+  });
+  try {
+    await Promise.race([run, aborted]);
+  } finally {
+    if (onAbort) {
+      signal.removeEventListener('abort', onAbort);
+    }
+  }
+};
+
 export const runOfflineSync = async ({
   definition,
   client,
@@ -92,6 +117,10 @@ export const runOfflineSync = async ({
   const isDue = async () =>
     isSyncDue(await readSyncRecord(key), version, intervalMs, now());
 
+  if (signal.aborted) {
+    return 'aborted';
+  }
+
   try {
     if (!(await isDue())) {
       return 'skipped';
@@ -102,7 +131,10 @@ export const runOfflineSync = async ({
         return 'skipped';
       }
 
-      await definition.run({ client, accountListId, signal });
+      await runUntilAborted(
+        definition.run({ client, accountListId, signal }),
+        signal,
+      );
       if (signal.aborted) {
         return 'aborted';
       }

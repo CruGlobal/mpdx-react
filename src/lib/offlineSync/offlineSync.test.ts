@@ -1,4 +1,9 @@
-import { ApolloClient } from '@apollo/client';
+import {
+  ApolloClient,
+  ApolloLink,
+  InMemoryCache,
+  Observable,
+} from '@apollo/client';
 import { gql } from 'graphql-tag';
 import {
   flushCachePersistence,
@@ -188,6 +193,55 @@ describe('runOfflineSync', () => {
     expect(await runSync(controller.signal)).toBe('aborted');
     expect(mockWrite).not.toHaveBeenCalled();
     expect(addDatadogError).not.toHaveBeenCalled();
+  });
+
+  it('returns aborted without running when already aborted', async () => {
+    const controller = new AbortController();
+    controller.abort();
+
+    expect(await runSync(controller.signal)).toBe('aborted');
+    expect(mockRead).not.toHaveBeenCalled();
+    expect(run).not.toHaveBeenCalled();
+  });
+
+  it('releases the guard when aborted while run never settles', async () => {
+    const controller = new AbortController();
+    run.mockImplementationOnce(() => {
+      controller.abort();
+      return new Promise(() => {});
+    });
+
+    expect(await runSync(controller.signal)).toBe('aborted');
+    expect(mockWrite).not.toHaveBeenCalled();
+    expect(addDatadogError).not.toHaveBeenCalled();
+    expect(await runSync()).toBe('completed');
+  });
+
+  it('releases the guard when an Apollo request in flight is aborted', async () => {
+    const controller = new AbortController();
+    const hangingClient = new ApolloClient({
+      cache: new InMemoryCache(),
+      link: new ApolloLink(() => new Observable(() => {})),
+    });
+    run.mockImplementationOnce(({ client: runClient }) => {
+      const query = runClient.query({
+        query: queryWith(fragmentA),
+        context: { fetchOptions: { signal: controller.signal } },
+      });
+      controller.abort();
+      return query;
+    });
+
+    expect(
+      await runOfflineSync({
+        definition,
+        client: hangingClient,
+        accountListId: 'a',
+        signal: controller.signal,
+        now: () => now,
+      }),
+    ).toBe('aborted');
+    expect(await runSync()).toBe('completed');
   });
 
   it('does not record when flush returns false', async () => {
