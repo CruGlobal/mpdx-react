@@ -1,3 +1,4 @@
+import { NextRouter } from 'next/router';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -11,6 +12,7 @@ import {
   TableViewModeEnum,
 } from 'src/components/Shared/Header/ListHeader';
 import { UrlFiltersProvider } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
+import { useCachedContactsAvailable } from 'src/hooks/useCachedContactsAvailable';
 import theme from 'src/theme';
 import {
   ContactsContext,
@@ -18,14 +20,13 @@ import {
 } from '../ContactsContext/ContactsContext';
 import { ContactsMainPanelHeader } from './ContactsMainPanelHeader';
 
+jest.mock('src/hooks/useCachedContactsAvailable');
+
+const mockAvailable = useCachedContactsAvailable as jest.Mock;
+
 const accountListId = 'account-list-1';
 const setViewMode = jest.fn();
 const toggleFilterPanel = jest.fn();
-
-const router = {
-  query: { accountListId },
-  isReady: true,
-};
 
 const setOnline = (online: boolean) =>
   jest.spyOn(navigator, 'onLine', 'get').mockReturnValue(online);
@@ -33,15 +34,19 @@ const setOnline = (online: boolean) =>
 interface TestComponentProps {
   viewMode?: TableViewModeEnum;
   offlineMode?: boolean;
+  router?: Partial<NextRouter>;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   viewMode = TableViewModeEnum.List,
   offlineMode = false,
+  router,
 }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
-      <TestRouter router={router}>
+      <TestRouter
+        router={{ query: { accountListId }, isReady: true, ...router }}
+      >
         <GqlMockedProvider>
           <UrlFiltersProvider>
             <ContactPanelProvider>
@@ -238,6 +243,81 @@ describe('ContactsMainPanelHeader', () => {
         'aria-disabled',
         'true',
       );
+    });
+  });
+
+  describe('cached contacts', () => {
+    const combinations = [true, false].flatMap((online) =>
+      [true, false].flatMap((offlineMode) =>
+        [true, false, undefined].map((available) => ({
+          online,
+          offlineMode,
+          available,
+        })),
+      ),
+    );
+
+    it.each(combinations)(
+      'button visibility for %o',
+      ({ online, offlineMode, available }) => {
+        setOnline(online);
+        mockAvailable.mockReturnValue(available);
+        const { queryByRole } = render(
+          <TestComponent offlineMode={offlineMode} />,
+        );
+
+        const shouldShow = !online && !offlineMode && available === true;
+        expect(!!queryByRole('button', { name: 'Show Cached Contacts' })).toBe(
+          shouldShow,
+        );
+      },
+    );
+
+    it('pushes offline=true without filters when clicked', () => {
+      setOnline(false);
+      mockAvailable.mockReturnValue(true);
+      const push = jest.fn();
+      const { getByRole } = render(
+        <TestComponent
+          router={{
+            pathname: '/contacts',
+            query: {
+              accountListId: 'a',
+              filters: '{"starred":true}',
+              searchTerm: 'abc',
+            },
+            push,
+          }}
+        />,
+      );
+
+      userEvent.click(getByRole('button', { name: 'Show Cached Contacts' }));
+
+      expect(push).toHaveBeenCalledWith(
+        {
+          pathname: '/contacts',
+          query: { accountListId: 'a', offline: 'true' },
+        },
+        undefined,
+        { shallow: true },
+      );
+    });
+
+    it.each([true, false])(
+      'shows the indicator in offline mode (online=%s)',
+      (online) => {
+        setOnline(online);
+        const { getByText } = render(<TestComponent offlineMode />);
+
+        expect(getByText('Showing cached contacts')).toBeInTheDocument();
+      },
+    );
+
+    it('hides the indicator outside offline mode', () => {
+      setOnline(true);
+      const { queryByText } = render(<TestComponent />);
+
+      expect(queryByText('Showing cached contacts')).not.toBeInTheDocument();
     });
   });
 });

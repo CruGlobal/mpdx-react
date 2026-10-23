@@ -6,9 +6,11 @@ import { ContactsProvider } from 'src/components/Contacts/ContactsContext/Contac
 import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
 import { UrlFiltersProvider } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useFilterPanelOpen } from 'src/hooks/useFilterPanelOpen';
 import { useOfflineMode } from 'src/hooks/useOfflineMode';
 import { useUserPreference } from 'src/hooks/useUserPreference';
+import { useAutoOfflineMode } from './useAutoOfflineMode';
 
 // Extract the initial view mode from the URL
 const getQueryViewMode = (query: ParsedUrlQuery): TableViewModeEnum => {
@@ -30,6 +32,8 @@ export const ContactsWrapper: React.FC<Props> = ({ children }) => {
   const router = useRouter();
   const { query } = router;
 
+  const accountListId = useAccountListId();
+  useAutoOfflineMode(accountListId);
   const offlineMode = useOfflineMode();
 
   const [
