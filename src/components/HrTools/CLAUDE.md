@@ -63,7 +63,7 @@ The table below is an orientation aid — verify against each tool's
 | GoalCalculator (MPD)                   | SeniorStaff                                              |
 | NsGoalCalculator + NsoMpdQuestionnaire | NewStaff                                                 |
 | PdsGoalCalculator                      | PaidWithDesignation                                      |
-| StaffSavingFund                        | any staff account (`requireStaffAccount`, no group gate) |
+| StaffSavingFund                        | staff account, not PaidWithDesignation (`StaffAccount`)  |
 | MinistryPartnerReminders               | any staff account (`requireStaffAccount`, no group gate) |
 | MpdSupervisorReport                    | `supervisesStaff` (no group gate)                        |
 
