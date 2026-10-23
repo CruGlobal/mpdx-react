@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { mockNavigatorOnline } from '__tests__/util/mockNavigatorOnline';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import theme from '../../../../../theme';
 import { ContactTags } from './ContactTags';
@@ -25,7 +26,55 @@ jest.mock('notistack', () => ({
   },
 }));
 
+const setOnline = mockNavigatorOnline();
+
 describe('ContactTags', () => {
+  it('disables the tag controls while offline', () => {
+    setOnline(false);
+    const { getByPlaceholderText, getByText } = render(
+      <SnackbarProvider>
+        <GqlMockedProvider>
+          <ThemeProvider theme={theme}>
+            <ContactTags
+              accountListId={accountListId}
+              contactId={contactId}
+              contactTags={contactTags}
+            />
+          </ThemeProvider>
+        </GqlMockedProvider>
+      </SnackbarProvider>,
+    );
+
+    expect(getByPlaceholderText('add tag')).toBeDisabled();
+    expect(getByText('tag1').closest('.MuiChip-root')).toHaveClass(
+      'Mui-disabled',
+    );
+  });
+
+  it('disables the save button while offline', async () => {
+    const { getByPlaceholderText, getByRole } = render(
+      <SnackbarProvider>
+        <GqlMockedProvider>
+          <ThemeProvider theme={theme}>
+            <ContactTags
+              accountListId={accountListId}
+              contactId={contactId}
+              contactTags={contactTags}
+            />
+          </ThemeProvider>
+        </GqlMockedProvider>
+      </SnackbarProvider>,
+    );
+    userEvent.type(getByPlaceholderText('add tag'), 'tag4{enter}');
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'save' })).toBeEnabled(),
+    );
+
+    setOnline(false);
+
+    expect(getByRole('button', { name: 'save' })).toBeDisabled();
+  });
+
   it('should render with tags', () => {
     const { getByText } = render(
       <SnackbarProvider>

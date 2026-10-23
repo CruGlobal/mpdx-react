@@ -36,11 +36,18 @@ interface TasksMassActionsDropdownProps {
   selectedIdCount: number;
   massDeselectAll?: () => void;
   selectedIds: string[];
+  disabled?: boolean;
 }
 
 export const TasksMassActionsDropdown: React.FC<
   TasksMassActionsDropdownProps
-> = ({ buttonGroup, selectedIdCount, massDeselectAll, selectedIds }) => {
+> = ({
+  buttonGroup,
+  selectedIdCount,
+  massDeselectAll,
+  selectedIds,
+  disabled,
+}) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const accountListId = useAccountListId();
@@ -123,7 +130,7 @@ export const TasksMassActionsDropdown: React.FC<
           <MassActionsDropdown
             handleClick={handleClick}
             open={open}
-            disabled={selectedIds.length === 0}
+            disabled={selectedIds.length === 0 || disabled}
           >
             {t('Actions')}
           </MassActionsDropdown>

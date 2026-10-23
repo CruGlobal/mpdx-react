@@ -5,6 +5,7 @@ import { Box, Button, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { useIsOnline } from 'src/hooks/useIsOnline';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat';
 import { sourceToStr } from 'src/lib/sourceHelper';
@@ -75,6 +76,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const isOnline = useIsOnline();
   const { addresses, id } = data;
   const {
     editingAddressId,
@@ -101,7 +103,10 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
     <>
       <Box sx={{ position: 'relative' }}>
         <Box sx={{ position: 'absolute', right: 2, top: 2 }}>
-          <AddButton onClick={() => setAddAddressModalOpen(true)}>
+          <AddButton
+            onClick={() => setAddAddressModalOpen(true)}
+            disabled={!isOnline}
+          >
             <AddIcon />
             <AddText variant="subtitle1">{t('Add Address')}</AddText>
           </AddButton>
@@ -126,6 +131,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                       setEditingAddressId(primaryAddress.id);
                     }}
                     aria-label={t('Edit Address')}
+                    disabled={!isOnline}
                   >
                     <AddressEditIcon />
                   </AddressEditIconContainer>
@@ -179,6 +185,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                         setEditingAddressId(address.id);
                       }}
                       aria-label={t('Edit Address')}
+                      disabled={!isOnline}
                     >
                       <AddressEditIcon />
                     </AddressEditIconContainer>

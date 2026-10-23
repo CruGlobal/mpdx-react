@@ -16,6 +16,7 @@ import { SearchBox } from 'src/components/Shared/SearchBox/SearchBox';
 import { StyledCheckbox } from 'src/components/Shared/styledComponents/StyledCheckbox';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
+import { useIsOnline } from 'src/hooks/useIsOnline';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { ContactTaskRow } from './ContactTaskRow/ContactTaskRow';
@@ -160,6 +161,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
   const { openTaskModal, preloadTaskModal } = useTaskModal();
 
   const { t } = useTranslation();
+  const isOnline = useIsOnline();
 
   useEffect(() => {
     if (!infiniteListRef.current) {
@@ -185,6 +187,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
                 })
               }
               onMouseEnter={() => preloadTaskModal(TaskModalEnum.Add)}
+              disabled={!isOnline}
             >
               <AddTaskButtonIcon />
               <TaskButtonText>{t('add task')}</TaskButtonText>
@@ -201,6 +204,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
                 })
               }
               onMouseEnter={() => preloadTaskModal(TaskModalEnum.Log)}
+              disabled={!isOnline}
             >
               <LogTaskButtonIcon />
               <TaskButtonText>{t('log task')}</TaskButtonText>
@@ -209,6 +213,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
               buttonGroup={null}
               selectedIds={ids}
               massDeselectAll={deselectAll}
+              disabled={!isOnline}
               selectedIdCount={
                 selectionType === ListHeaderCheckBoxState.Checked
                   ? taskCount

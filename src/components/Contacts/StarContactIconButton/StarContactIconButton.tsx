@@ -1,6 +1,7 @@
 import React from 'react';
 import { IconButton, IconButtonProps } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useIsOnline } from 'src/hooks/useIsOnline';
 import { StarredItemIcon } from '../../Shared/StarredItemIcon/StarredItemIcon';
 import { useSetContactStarredMutation } from './SetContactStarred.generated';
 
@@ -19,9 +20,11 @@ export const StarContactIconButton: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
   const [setContactStarred] = useSetContactStarredMutation();
+  const isOnline = useIsOnline();
 
   return (
     <IconButton
+      disabled={!isOnline}
       aria-label={isStarred ? t('Remove star') : t('Add star')}
       size={size}
       onClick={(event) => {

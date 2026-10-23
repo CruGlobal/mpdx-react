@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Divider, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { useIsOnline } from 'src/hooks/useIsOnline';
 import {
   ContactDetailContext,
   ContactDetailsType,
@@ -51,6 +52,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
   });
 
   const { t } = useTranslation();
+  const isOnline = useIsOnline();
 
   const { editOtherModalOpen, setEditOtherModalOpen } = React.useContext(
     ContactDetailContext,
@@ -117,6 +119,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
               <IconButton
                 onClick={() => setEditOtherModalOpen(true)}
                 aria-label={t('Edit')}
+                disabled={!isOnline}
                 style={{ marginLeft: 5 }}
               >
                 <EditIcon titleAccess={t('Edit')} data-testid="Edit Other" />
