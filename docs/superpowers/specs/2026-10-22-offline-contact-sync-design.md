@@ -202,7 +202,8 @@ says "cached contacts" (button, indicator), never "offline contacts".
 - Disabled: filter panel, search, starred toggle, Flows and Map buttons, and Clear Filters.
 - No row checkboxes and no Actions menu at all, even after reconnecting. Select-all loads ids
   with `GetIdsForMassSelection` using the URL filters, which don't match the offline list.
-- Any filters or search term in the URL are ignored.
+- Any filters or search term in the URL are ignored and dropped from the URL as soon as
+  offline mode starts.
 - Opening a contact keeps `?offline=true` in the URL, so closing the panel returns to the
   offline list.
 - `?offline=true` with no finished sync shows the offline list anyway, which may be empty,
