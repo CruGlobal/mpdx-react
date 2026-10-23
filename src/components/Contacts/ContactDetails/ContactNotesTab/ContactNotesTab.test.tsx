@@ -80,6 +80,108 @@ describe('ContactNotesTab', () => {
     expect(input).toBeEnabled();
   });
 
+  describe('switching contacts', () => {
+    const mutationSpy = jest.fn();
+    const failFirstSave = jest.fn();
+    const TestComponent: React.FC<{ contactId: string }> = ({ contactId }) => (
+      <TestRouter>
+        <SnackbarProvider>
+          <GqlMockedProvider<{ GetContactNotes: GetContactNotesQuery }>
+            mocks={{
+              GetContactNotes: { contact: { notes: '' } },
+              UpdateContactNotes: () => failFirstSave(),
+            }}
+            onCall={mutationSpy}
+          >
+            <ContactDetailProvider>
+              <ContactNotesTab accountListId="123" contactId={contactId} />
+            </ContactDetailProvider>
+          </GqlMockedProvider>
+        </SnackbarProvider>
+      </TestRouter>
+    );
+    const updateCalls = () =>
+      mutationSpy.mock.calls
+        .map(([{ operation }]) => operation)
+        .filter(({ operationName }) => operationName === 'UpdateContactNotes');
+
+    beforeEach(() => {
+      mutationSpy.mockClear();
+      failFirstSave.mockReset();
+    });
+
+    it('saves notes typed offline onto the original contact', async () => {
+      const { getByPlaceholderText, rerender } = render(
+        <TestComponent contactId="A" />,
+      );
+      const input = getByPlaceholderText('Add contact notes');
+      await waitFor(() => expect(input).toBeEnabled());
+      userEvent.type(input, 'abc');
+      setOnline(false);
+      rerender(<TestComponent contactId="B" />);
+      setOnline(true);
+
+      await waitFor(() => expect(updateCalls()).toHaveLength(1));
+      expect(updateCalls()[0].variables).toMatchObject({
+        contactId: 'A',
+        notes: 'abc',
+      });
+    });
+
+    it('saves each contact its own text when switching within the debounce', async () => {
+      const { getByPlaceholderText, rerender } = render(
+        <TestComponent contactId="A" />,
+      );
+      const input = getByPlaceholderText('Add contact notes');
+      await waitFor(() => expect(input).toBeEnabled());
+      userEvent.type(input, 'aaa');
+      rerender(<TestComponent contactId="B" />);
+      // Wait for B's notes to load so they don't reset the field mid-typing
+      await waitFor(() =>
+        expect(
+          mutationSpy.mock.calls.some(
+            ([{ operation }]) =>
+              operation.operationName === 'GetContactNotes' &&
+              operation.variables.contactId === 'B',
+          ),
+        ).toBe(true),
+      );
+      userEvent.type(input, 'bbb');
+
+      await waitFor(() => expect(updateCalls()).toHaveLength(2));
+      const saved = updateCalls().map(({ variables }) => [
+        variables.contactId,
+        variables.notes,
+      ]);
+      expect(saved).toEqual(
+        expect.arrayContaining([
+          ['A', 'aaa'],
+          ['B', 'bbb'],
+        ]),
+      );
+    });
+
+    it('retries a failed save after reconnecting', async () => {
+      failFirstSave.mockImplementationOnce(() => {
+        throw new Error('network');
+      });
+      const { getByPlaceholderText } = render(<TestComponent contactId="A" />);
+      const input = getByPlaceholderText('Add contact notes');
+      await waitFor(() => expect(input).toBeEnabled());
+      userEvent.type(input, 'abc');
+
+      await waitFor(() => expect(failFirstSave).toHaveBeenCalledTimes(1));
+      setOnline(false);
+      setOnline(true);
+
+      await waitFor(() => expect(updateCalls()).toHaveLength(1));
+      expect(updateCalls()[0].variables).toMatchObject({
+        contactId: 'A',
+        notes: 'abc',
+      });
+    });
+  });
+
   it('saves new note', async () => {
     const mutationSpy = jest.fn();
     const note = 'cool new note!';

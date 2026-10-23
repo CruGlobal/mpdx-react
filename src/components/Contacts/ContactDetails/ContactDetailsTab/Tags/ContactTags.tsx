@@ -190,7 +190,7 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
                   <ContactTagInput
                     {...params}
                     placeholder={t('add tag')}
-                    disabled={isSubmitting || updating}
+                    disabled={params.disabled || isSubmitting || updating}
                     size="small"
                   />
                 )}
