@@ -39,7 +39,7 @@ export const ContactNotesTab: React.FC<Props> = ({
 
   useEffect(() => {
     setNotes(data?.contact.notes ?? '');
-  }, [data?.contact.notes]);
+  }, [contactId, data?.contact.notes]);
 
   const isOnline = useIsOnline();
   const isOnlineRef = useRef(isOnline);
