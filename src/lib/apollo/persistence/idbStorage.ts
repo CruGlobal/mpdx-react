@@ -5,6 +5,7 @@ import { addDatadogError } from 'src/lib/dataDog';
 export const CACHE_KEY = 'cache';
 
 const storeName = 'apollo-cache';
+const syncStoreName = 'offline-sync';
 const ownerKey = 'owner';
 
 export interface CacheOwner {
@@ -12,9 +13,17 @@ export interface CacheOwner {
   version: number;
 }
 
+export interface SyncRecord {
+  syncedAt: number;
+  version: string;
+}
+
 export interface PersistedCacheStore extends PersistentStorage<string> {
   getOwner(): Promise<CacheOwner | null>;
   setOwner(owner: CacheOwner): Promise<void>;
+  getSyncRecord(key: string): Promise<SyncRecord | null>;
+  /** Like cache writes, but skipped when no owner is bound */
+  setSyncRecord(key: string, record: SyncRecord): Promise<void>;
   /**
    * Only write the cache while the stored owner matches this one. On a
    * mismatch (another user signed in from another tab) writes stop for good.
@@ -31,9 +40,14 @@ export const createIdbStorage = (dbName = 'mpdx'): PersistedCacheStore => {
   const pendingWrites = new Set<Promise<unknown>>();
 
   const openDatabase = () =>
-    openDB(dbName, 1, {
-      upgrade: (db) => {
-        db.createObjectStore(storeName);
+    openDB(dbName, 2, {
+      upgrade: (db, oldVersion) => {
+        if (oldVersion < 1) {
+          db.createObjectStore(storeName);
+        }
+        if (oldVersion < 2) {
+          db.createObjectStore(syncStoreName);
+        }
       },
       // Otherwise another tab's upgrade waits on this connection forever
       blocking: (_currentVersion, _blockedVersion, event) => {
@@ -88,8 +102,36 @@ export const createIdbStorage = (dbName = 'mpdx'): PersistedCacheStore => {
     await tx.done;
   };
 
+  const writeSyncRecord = async (key: string, record: SyncRecord) => {
+    if (!boundOwner) {
+      return;
+    }
+    const owner = boundOwner;
+    const db = await getDb();
+    const tx = db.transaction([storeName, syncStoreName], 'readwrite');
+    const stored = (await tx.objectStore(storeName).get(ownerKey)) as
+      | CacheOwner
+      | undefined;
+    if (stored?.userId === owner.userId && stored.version === owner.version) {
+      await tx.objectStore(syncStoreName).put(record, key);
+    } else {
+      void disable();
+    }
+    await tx.done;
+  };
+
   return {
     getItem: (key) => read<string>(key),
+
+    getSyncRecord: async (key) => {
+      const db = await getDb();
+      return (
+        ((await db.get(syncStoreName, key)) as SyncRecord | undefined) ?? null
+      );
+    },
+
+    setSyncRecord: (key, record) =>
+      trackWrite(() => writeSyncRecord(key, record)),
 
     // The persistor calls this without awaiting, so failures are reported
     // instead of rejecting
@@ -124,10 +166,12 @@ export const createIdbStorage = (dbName = 'mpdx'): PersistedCacheStore => {
 
     clear: async () => {
       const db = await getDb();
-      const tx = db.transaction(storeName, 'readwrite');
+      const tx = db.transaction([storeName, syncStoreName], 'readwrite');
+      const cacheStore = tx.objectStore(storeName);
       await Promise.all([
-        tx.store.delete(CACHE_KEY),
-        tx.store.delete(ownerKey),
+        cacheStore.delete(CACHE_KEY),
+        cacheStore.delete(ownerKey),
+        tx.objectStore(syncStoreName).clear(),
         tx.done,
       ]);
     },

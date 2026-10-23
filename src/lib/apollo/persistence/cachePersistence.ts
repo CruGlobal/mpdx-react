@@ -1,7 +1,12 @@
 import { ApolloCache, NormalizedCacheObject } from '@apollo/client';
 import { CachePersistor } from 'apollo3-cache-persist';
 import { addDatadogAction, addDatadogError } from 'src/lib/dataDog';
-import { CACHE_KEY, PersistedCacheStore, createIdbStorage } from './idbStorage';
+import {
+  CACHE_KEY,
+  PersistedCacheStore,
+  SyncRecord,
+  createIdbStorage,
+} from './idbStorage';
 import { onSessionEnded } from './sessionChannel';
 
 /** Bump when a type policy or merge function changes in a way old data would break */
@@ -163,7 +168,33 @@ export const createCachePersistence = (
     return startPromise;
   };
 
-  return { start, pause, purge, stop };
+  const flush = async (): Promise<boolean> => {
+    if (cancelled() || !persistor) {
+      return false;
+    }
+    await persistor.persist();
+    return true;
+  };
+
+  const readSyncRecord = async (key: string): Promise<SyncRecord | null> =>
+    store ? store.getSyncRecord(key) : null;
+
+  const writeSyncRecord = async (
+    key: string,
+    record: SyncRecord,
+  ): Promise<void> => {
+    await store?.setSyncRecord(key, record);
+  };
+
+  return {
+    start,
+    pause,
+    purge,
+    stop,
+    flush,
+    readSyncRecord,
+    writeSyncRecord,
+  };
 };
 
 const appStore =
@@ -179,3 +210,6 @@ export const startCachePersistence = appPersistence.start;
 export const pauseCachePersistence = appPersistence.pause;
 export const purgeCachePersistence = appPersistence.purge;
 export const stopCachePersistence = appPersistence.stop;
+export const flushCachePersistence = appPersistence.flush;
+export const readSyncRecord = appPersistence.readSyncRecord;
+export const writeSyncRecord = appPersistence.writeSyncRecord;
