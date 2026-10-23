@@ -29,6 +29,7 @@ import { Helpjuice } from 'src/components/Helpjuice/Helpjuice';
 import PrimaryLayout from 'src/components/Layouts/Primary';
 import Loading from 'src/components/Loading';
 import { OfflineIndicator } from 'src/components/OfflineIndicator/OfflineIndicator';
+import { OfflineSync } from 'src/components/OfflineSync/OfflineSync';
 import { RefetchOnReconnect } from 'src/components/RefetchOnReconnect/RefetchOnReconnect';
 import { RouterGuard } from 'src/components/RouterGuard/RouterGuard';
 import { SetupProvider } from 'src/components/Setup/SetupProvider';
@@ -93,15 +94,18 @@ const GraphQLProviders: React.FC<{
       <Suspense fallback={<Loading loading />}>
         <CacheRestoreGate>
           <DefaultAccountListRedirect>
-            {/* Below the gate because its labels change when translations load,
-                and any context change above the gate drops the server HTML */}
-            <LocalizationProvider>
-              <SetupProvider>
-                <UserPreferenceProvider>
-                  <TaskModalProvider>{children}</TaskModalProvider>
-                </UserPreferenceProvider>
-              </SetupProvider>
-            </LocalizationProvider>
+            <>
+              <OfflineSync />
+              {/* Below the gate because its labels change when translations load,
+                  and any context change above the gate drops the server HTML */}
+              <LocalizationProvider>
+                <SetupProvider>
+                  <UserPreferenceProvider>
+                    <TaskModalProvider>{children}</TaskModalProvider>
+                  </UserPreferenceProvider>
+                </SetupProvider>
+              </LocalizationProvider>
+            </>
           </DefaultAccountListRedirect>
         </CacheRestoreGate>
       </Suspense>
