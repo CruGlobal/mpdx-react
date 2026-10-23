@@ -42,6 +42,21 @@ describe('AccountItem', () => {
     expect(getByText(defaultAccount.name as string)).toBeInTheDocument();
   });
 
+  it('shows the balance', () => {
+    const { getByText } = render(<Components />);
+
+    expect(getByText('CA$3,500')).toBeInTheDocument();
+  });
+
+  it('shows no amount when the balance is hidden', () => {
+    const { queryByText } = render(
+      <Components account={{ ...defaultAccount, balance: undefined }} />,
+    );
+
+    expect(queryByText('CA$3,500')).not.toBeInTheDocument();
+    expect(queryByText('Test Account')).toBeInTheDocument();
+  });
+
   it('should be check event called', async () => {
     const { getByRole } = render(<Components />);
 
