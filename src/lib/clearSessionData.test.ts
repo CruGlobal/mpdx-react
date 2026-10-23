@@ -7,7 +7,11 @@ import {
 import { broadcastSessionEnded } from './apollo/persistence/sessionChannel';
 import { clearSessionData, signOutAndClear } from './clearSessionData';
 import { addDatadogError, clearDatadogUser } from './dataDog';
-import { CACHE_PREFIX, shouldKeepOnSignOut } from './serviceWorker/cacheNames';
+import {
+  CACHE_PREFIX,
+  TRANSLATIONS_CACHE,
+  shouldKeepOnSignOut,
+} from './serviceWorker/cacheNames';
 
 jest.mock('src/lib/dataDog');
 jest.mock('src/lib/apollo/persistence/cachePersistence');
@@ -45,7 +49,12 @@ describe('clearSessionData', () => {
 
   it('clears Datadog, localStorage, the Apollo store and non-kept caches', async () => {
     window.localStorage.setItem('apollo-cache-persist', '{}');
-    keys.mockResolvedValue([precacheName, runtimeName, 'other']);
+    keys.mockResolvedValue([
+      precacheName,
+      TRANSLATIONS_CACHE,
+      runtimeName,
+      'other',
+    ]);
     await clearSessionData(client);
     expect(clearDatadogUser).toHaveBeenCalled();
     expect(window.localStorage.length).toBe(0);
@@ -186,6 +195,7 @@ describe('signOutAndClear', () => {
 describe('shouldKeepOnSignOut', () => {
   it.each([
     [precacheName, true],
+    [TRANSLATIONS_CACHE, true],
     [runtimeName, false],
     ['serwist-precache-v2-https://mpdx.org/', false],
   ])('%s -> %s', (name, keep) => expect(shouldKeepOnSignOut(name)).toBe(keep));
