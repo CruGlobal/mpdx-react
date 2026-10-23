@@ -44,26 +44,41 @@ export const ContactNotesTab: React.FC<Props> = ({
   const isOnline = useIsOnline();
   const isOnlineRef = useRef(isOnline);
   isOnlineRef.current = isOnline;
-  const pendingNotes = useRef<string | null>(null);
+  // Unsaved notes keyed by contact, each with the account list it was typed in,
+  // so text is never saved onto a different contact than it was typed for
+  const pendingNotes = useRef(
+    new Map<string, { accountListId: string; notes: string }>(),
+  );
 
   const saveNotes = useCallback(async () => {
-    if (pendingNotes.current === null || !isOnlineRef.current) {
+    if (!isOnlineRef.current) {
       return;
     }
-    const notes = pendingNotes.current;
-    pendingNotes.current = null;
-    await updateNotes({
-      variables: {
-        contactId,
-        accountListId,
-        notes,
-      },
-    });
-    enqueueSnackbar(t('Notes successfully saved.'), {
-      variant: 'success',
-      preventDuplicate: true,
-    });
-  }, [contactId, accountListId]);
+    const entries = [...pendingNotes.current];
+    pendingNotes.current.clear();
+    await Promise.all(
+      entries.map(async ([contactId, entry]) => {
+        try {
+          await updateNotes({
+            variables: {
+              contactId,
+              accountListId: entry.accountListId,
+              notes: entry.notes,
+            },
+          });
+          enqueueSnackbar(t('Notes successfully saved.'), {
+            variant: 'success',
+            preventDuplicate: true,
+          });
+        } catch {
+          // Keep the text so it is retried, unless newer text was typed
+          if (!pendingNotes.current.has(contactId)) {
+            pendingNotes.current.set(contactId, entry);
+          }
+        }
+      }),
+    );
+  }, []);
 
   const handleSetNotes = useCallback(debounce(saveNotes, 500), [saveNotes]);
 
@@ -76,7 +91,7 @@ export const ContactNotesTab: React.FC<Props> = ({
 
   const handleChange = (notes: string) => {
     setNotes(notes);
-    pendingNotes.current = notes;
+    pendingNotes.current.set(contactId, { accountListId, notes });
     handleSetNotes();
   };
 
