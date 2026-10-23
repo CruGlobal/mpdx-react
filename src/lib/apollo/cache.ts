@@ -112,7 +112,9 @@ export const createCache = () =>
           partnerGivingAnalysis: paginationFieldPolicy,
           // A refresh returns the same household, so it replaces the cached read every page shows
           hcm: { keyArgs: ['effectiveDate', 'personNumber'] },
-          // Read a contact already cached by another query, such as the offline contacts sync
+          // Read a contact already cached by another query, such as the offline contacts sync.
+          // accountListId is ignored because contact ids are globally unique, and cache-and-network
+          // still refetches while online.
           contact: {
             read: (_, { args, toReference }) =>
               args?.id &&

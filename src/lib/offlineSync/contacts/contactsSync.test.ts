@@ -25,11 +25,13 @@ const makeClient = (
   onRequest?: (variables: OfflineContactsQueryVariables) => void,
 ) => {
   const requests: OfflineContactsQueryVariables[] = [];
+  const contexts: Record<string, unknown>[] = [];
   const link = new ApolloLink(
     (operation) =>
       new Observable((observer) => {
         const variables = operation.variables as OfflineContactsQueryVariables;
         requests.push(variables);
+        contexts.push(operation.getContext());
         onRequest?.(variables);
         const page = pages[requests.length - 1];
         observer.next({
@@ -53,7 +55,7 @@ const makeClient = (
       }),
   );
   const client = new ApolloClient({ cache: createCache(), link });
-  return { client, requests };
+  return { client, requests, contexts };
 };
 
 const twoPages: Page[] = [
@@ -98,6 +100,15 @@ describe('contactsSync', () => {
       'contact-2',
       'contact-3',
     ]);
+  });
+
+  it('skips batching so its abort signal does not get its own batch key', async () => {
+    const { client, contexts } = makeClient(twoPages);
+
+    await runSync(client);
+
+    expect(contexts).toHaveLength(2);
+    contexts.forEach((context) => expect(context.doNotBatch).toBe(true));
   });
 
   it('a new sync replaces the merged list', async () => {
