@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 
 export const StatusPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mpdxGrayLight.main,
-  height: 300,
+  minHeight: 300,
   margin: 'auto',
   padding: theme.spacing(2),
   textAlign: 'center',

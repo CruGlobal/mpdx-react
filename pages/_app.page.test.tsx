@@ -39,24 +39,28 @@ jest.mock('src/lib/serviceWorker/register', () => ({
 
 const Page = Object.assign(() => <div>Page</div>, { layout: passThrough });
 
-const router = { pathname: '/accountLists', route: '/accountLists' };
 const pagePropsWithSession = { session };
 
 interface TestComponentProps {
   pageProps?: { session?: typeof session };
+  route?: string;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   pageProps = pagePropsWithSession,
-}) => (
-  <TestRouter router={router}>
-    <App
-      Component={Page}
-      pageProps={pageProps}
-      router={router as unknown as AppProps['router']}
-    />
-  </TestRouter>
-);
+  route = '/accountLists',
+}) => {
+  const router = { pathname: route, route };
+  return (
+    <TestRouter router={router}>
+      <App
+        Component={Page}
+        pageProps={pageProps}
+        router={router as unknown as AppProps['router']}
+      />
+    </TestRouter>
+  );
+};
 
 describe('App', () => {
   // A context change above the cache restore Suspense boundary while it
@@ -78,5 +82,19 @@ describe('App', () => {
     rerender(<TestComponent pageProps={{}} />);
 
     expect(getByText('First Last')).toBeInTheDocument();
+  });
+
+  // The service worker shows this page offline, so it must skip the login
+  // guard and the cache restore gate like the other public pages
+  it('renders the offline page without waiting for the cache restore gate', () => {
+    const { getByText } = render(<TestComponent route="/offline" />);
+
+    expect(getByText('Page')).toBeInTheDocument();
+  });
+
+  it('holds a signed-in page behind the cache restore gate', () => {
+    const { queryByText } = render(<TestComponent />);
+
+    expect(queryByText('Page')).not.toBeInTheDocument();
   });
 });
