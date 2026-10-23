@@ -1,5 +1,6 @@
 import { Serwist } from 'serwist';
 import { CACHE_PREFIX } from 'src/lib/serviceWorker/cacheNames';
+import { fallbackEntries } from './fallbacks';
 import { runtimeCaching } from './runtimeCaching';
 import type { PrecacheEntry, SerwistGlobalConfig } from 'serwist';
 
@@ -15,6 +16,7 @@ const serwist = new Serwist({
   clientsClaim: false,
   navigationPreload: false,
   runtimeCaching,
+  fallbacks: { entries: fallbackEntries },
 });
 
 serwist.addEventListeners();

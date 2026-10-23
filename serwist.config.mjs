@@ -11,6 +11,8 @@ export default await serwist({
     'public/icons/**/*',
     'public/images/**/*',
     'public/manifest.json',
+    // The offline page is the one page that is safe to precache. It is static and has no user data.
+    '.next/server/pages/offline.html',
   ],
   globIgnores: ['**/*.map'],
   manifestTransforms: [
