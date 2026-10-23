@@ -112,6 +112,15 @@ export const createCache = () =>
           partnerGivingAnalysis: paginationFieldPolicy,
           // A refresh returns the same household, so it replaces the cached read every page shows
           hcm: { keyArgs: ['effectiveDate', 'personNumber'] },
+          // Read a contact already cached by another query, such as the offline contacts sync
+          contact: {
+            read: (_, { args, toReference }) =>
+              args?.id &&
+              toReference({
+                __typename: 'Contact',
+                id: args.id,
+              }),
+          },
           // When loading a user option, look it up from the cache by its key
           userOption: {
             read: (_, { args, toReference }) =>
