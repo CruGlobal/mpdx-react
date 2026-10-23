@@ -25,6 +25,7 @@ import {
   PageEnum,
   TableViewModeEnum,
 } from 'src/components/Shared/Header/ListHeader';
+import { useIsOnline } from 'src/hooks/useIsOnline';
 import {
   ContactsContext,
   ContactsType,
@@ -75,23 +76,28 @@ export const ContactsMainPanelHeader: React.FC = () => {
     viewMode,
     setViewMode,
     selectedIds,
+    offlineMode,
   } = React.useContext(ContactsContext) as ContactsType;
+  const isOnline = useIsOnline();
 
   const viewOptions = [
     {
       value: TableViewModeEnum.List,
       label: t('List View'),
       Icon: BulletedListIcon,
+      onlineOnly: false,
     },
     {
       value: TableViewModeEnum.Flows,
       label: t('Column Workflow View'),
       Icon: ViewColumnIcon,
+      onlineOnly: true,
     },
     {
       value: TableViewModeEnum.Map,
       label: t('Map View'),
       Icon: MapIcon,
+      onlineOnly: true,
     },
   ];
   const CurrentViewIcon = viewOptions.find(
@@ -122,10 +128,11 @@ export const ContactsMainPanelHeader: React.FC = () => {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        {viewOptions.map(({ value, label, Icon }) => (
+        {viewOptions.map(({ value, label, Icon, onlineOnly }) => (
           <MenuItem
             key={value}
             selected={viewMode === value}
+            disabled={onlineOnly && !isOnline}
             onClick={() => {
               setViewMode(value);
               closeViewMenu();
@@ -152,6 +159,8 @@ export const ContactsMainPanelHeader: React.FC = () => {
 
   return (
     <ListHeader
+      filtersDisabled={!isOnline}
+      hideSelection={offlineMode}
       page={PageEnum.Contact}
       filterPanelOpen={filterPanelOpen}
       toggleFilterPanel={toggleFilterPanel}
@@ -182,11 +191,11 @@ export const ContactsMainPanelHeader: React.FC = () => {
                 value={viewMode}
                 onChange={(_event, value) => setViewMode(value)}
               >
-                {viewOptions.map(({ value, label, Icon }) => (
+                {viewOptions.map(({ value, label, Icon, onlineOnly }) => (
                   <ToggleButton
                     key={value}
                     value={value}
-                    disabled={viewMode === value}
+                    disabled={(onlineOnly && !isOnline) || viewMode === value}
                   >
                     <Icon titleAccess={label} />
                   </ToggleButton>

@@ -111,6 +111,9 @@ export interface FilterPanelProps {
   preDefinedFilters?: UserOptionFragment[];
   onClose: () => void;
   showSaveButton?: boolean;
+  /** Blocks interaction with the whole panel */
+  disabled?: boolean;
+  clearAllDisabled?: boolean;
 }
 
 export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
@@ -120,6 +123,8 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   preDefinedFilters,
   onClose,
   showSaveButton = true,
+  disabled = false,
+  clearAllDisabled = false,
   ...boxProps
 }) => {
   const theme = useTheme();
@@ -571,7 +576,16 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     Object.keys(removeTagsFromFilters(selectedFilters)).length === 0;
 
   return (
-    <Box {...boxProps}>
+    <Box
+      data-testid="FilterPanel"
+      {...boxProps}
+      {...(disabled && {
+        // React 18 doesn't know the inert attribute, so it must be a string
+        inert: '',
+        'aria-disabled': true,
+        sx: { pointerEvents: 'none', opacity: 0.5 },
+      })}
+    >
       <div style={{ overflow: 'hidden' }}>
         <Slide in direction="right" appear={false} mountOnEnter unmountOnExit>
           <div>
@@ -613,7 +627,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 style={{
                   marginInlineStart: theme.spacing(showSaveButton ? 2 : -1),
                 }}
-                disabled={noSelectedFilters}
+                disabled={noSelectedFilters || disabled || clearAllDisabled}
                 onClick={clearFilters}
               >
                 {t('Clear All')}

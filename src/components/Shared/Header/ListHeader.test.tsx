@@ -61,6 +61,8 @@ interface ComponentsProps {
   buttonGroup?: ReactElement;
   totalItems?: number;
   showShowingCount?: boolean;
+  filtersDisabled?: boolean;
+  hideSelection?: boolean;
 }
 
 const router = {
@@ -81,6 +83,8 @@ const Components = ({
   buttonGroup,
   totalItems,
   showShowingCount,
+  filtersDisabled,
+  hideSelection,
 }: ComponentsProps) => (
   <TestRouter
     router={{
@@ -110,6 +114,8 @@ const Components = ({
                 buttonGroup={buttonGroup}
                 totalItems={totalItems}
                 showShowingCount={showShowingCount}
+                filtersDisabled={filtersDisabled}
+                hideSelection={hideSelection}
                 {...mockedProps}
               />
             </UrlFiltersProvider>
@@ -224,6 +230,51 @@ describe('ListHeader', () => {
     ).toBeInTheDocument();
     expect(getByTestId('star-filter-button')).toBeInTheDocument();
     expect(getByTestId('showing-text')).toBeInTheDocument();
+  });
+
+  describe('offline', () => {
+    it('enables the filter controls and actions by default', () => {
+      const { getByRole, getByTestId } = render(<Components totalItems={50} />);
+
+      expect(
+        getByRole('button', { name: 'Toggle Filter Panel' }),
+      ).not.toBeDisabled();
+      expect(getByRole('textbox')).not.toBeDisabled();
+      expect(getByTestId('star-filter-button')).not.toBeDisabled();
+      expect(getByRole('button', { name: 'Actions' })).not.toBeDisabled();
+      expect(getByRole('checkbox')).toBeInTheDocument();
+    });
+
+    it('disables the filter controls and actions when filters are disabled', () => {
+      const { getByRole, getByTestId } = render(
+        <Components totalItems={50} filtersDisabled />,
+      );
+
+      expect(
+        getByRole('button', { name: 'Toggle Filter Panel' }),
+      ).toBeDisabled();
+      expect(getByRole('textbox')).toBeDisabled();
+      expect(getByTestId('star-filter-button')).toBeDisabled();
+      expect(getByRole('button', { name: 'Actions' })).toBeDisabled();
+      expect(getByRole('checkbox')).not.toBeDisabled();
+    });
+
+    it('hides the selection controls but keeps the button group', () => {
+      const { getByTestId, queryByRole, queryByText } = render(
+        <Components
+          totalItems={50}
+          contactsView={TableViewModeEnum.List}
+          buttonGroup={<ButtonGroup />}
+          hideSelection
+        />,
+      );
+
+      expect(queryByRole('checkbox')).not.toBeInTheDocument();
+      expect(queryByText('Actions')).not.toBeInTheDocument();
+      expect(queryByText('1 Selected')).not.toBeInTheDocument();
+      expect(getByTestId('list-button')).toBeInTheDocument();
+      expect(getByTestId('star-filter-button')).not.toBeDisabled();
+    });
   });
 
   describe('Task', () => {

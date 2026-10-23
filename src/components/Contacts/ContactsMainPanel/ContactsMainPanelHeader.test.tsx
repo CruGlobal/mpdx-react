@@ -26,12 +26,17 @@ const router = {
   isReady: true,
 };
 
+const setOnline = (online: boolean) =>
+  jest.spyOn(navigator, 'onLine', 'get').mockReturnValue(online);
+
 interface TestComponentProps {
   viewMode?: TableViewModeEnum;
+  offlineMode?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   viewMode = TableViewModeEnum.List,
+  offlineMode = false,
 }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
@@ -48,11 +53,12 @@ const TestComponent: React.FC<TestComponentProps> = ({
                     },
                     toggleFilterPanel: jest.fn(),
                     toggleSelectAll: jest.fn(),
-                    selectionType: ListHeaderCheckBoxState.Unchecked,
+                    selectionType: ListHeaderCheckBoxState.Partial,
                     filterPanelOpen: false,
                     viewMode,
                     setViewMode,
-                    selectedIds: [],
+                    selectedIds: ['contact-1'],
+                    offlineMode,
                   } as unknown as ContactsType
                 }
               >
@@ -67,6 +73,10 @@ const TestComponent: React.FC<TestComponentProps> = ({
 );
 
 describe('ContactsMainPanelHeader', () => {
+  beforeEach(() => {
+    setOnline(true);
+  });
+
   describe('on desktop', () => {
     beforeEach(() => {
       matchMediaMock({ width: '1024px' });
@@ -86,6 +96,69 @@ describe('ContactsMainPanelHeader', () => {
       expect(
         queryByRole('button', { name: 'Change View' }),
       ).not.toBeInTheDocument();
+    });
+
+    it('enables every control online', () => {
+      setOnline(true);
+      const { getByRole, getByTestId } = render(<TestComponent />);
+
+      expect(
+        getByRole('button', { name: 'Toggle Filter Panel' }),
+      ).not.toBeDisabled();
+      expect(getByRole('textbox')).not.toBeDisabled();
+      expect(getByTestId('star-filter-button')).not.toBeDisabled();
+      expect(getByRole('button', { name: 'Actions' })).not.toBeDisabled();
+      expect(getByRole('checkbox')).toBeInTheDocument();
+      expect(
+        getByRole('button', { name: 'Column Workflow View' }),
+      ).not.toBeDisabled();
+      expect(getByRole('button', { name: 'Map View' })).not.toBeDisabled();
+    });
+
+    it('disables the filters, actions, Flows, and Map offline', () => {
+      setOnline(false);
+      const { getByRole, getByTestId } = render(<TestComponent />);
+
+      expect(
+        getByRole('button', { name: 'Toggle Filter Panel' }),
+      ).toBeDisabled();
+      expect(getByRole('textbox')).toBeDisabled();
+      expect(getByTestId('star-filter-button')).toBeDisabled();
+      expect(getByRole('button', { name: 'Actions' })).toBeDisabled();
+      expect(getByRole('checkbox')).toBeInTheDocument();
+      expect(
+        getByRole('button', { name: 'Column Workflow View' }),
+      ).toBeDisabled();
+      expect(getByRole('button', { name: 'Map View' })).toBeDisabled();
+    });
+
+    it('hides the selection controls in offline mode', () => {
+      setOnline(true);
+      const { getByRole, queryByRole, queryByText } = render(
+        <TestComponent offlineMode />,
+      );
+
+      expect(queryByRole('checkbox')).not.toBeInTheDocument();
+      expect(queryByText('Actions')).not.toBeInTheDocument();
+      expect(
+        getByRole('button', { name: 'Toggle Filter Panel' }),
+      ).not.toBeDisabled();
+      expect(
+        getByRole('button', { name: 'Column Workflow View' }),
+      ).not.toBeDisabled();
+      expect(getByRole('button', { name: 'Map View' })).not.toBeDisabled();
+    });
+
+    it('hides the selection controls and disables the rest offline in offline mode', () => {
+      setOnline(false);
+      const { getByRole, queryByRole, queryByText } = render(
+        <TestComponent offlineMode />,
+      );
+
+      expect(queryByRole('checkbox')).not.toBeInTheDocument();
+      expect(queryByText('Actions')).not.toBeInTheDocument();
+      expect(getByRole('textbox')).toBeDisabled();
+      expect(getByRole('button', { name: 'Map View' })).toBeDisabled();
     });
   });
 
@@ -144,6 +217,23 @@ describe('ContactsMainPanelHeader', () => {
       expect(
         queryByRole('menuitem', { name: 'View Settings' }),
       ).not.toBeInTheDocument();
+    });
+
+    it('disables Flows and Map in the menu offline', async () => {
+      setOnline(false);
+      const { findByRole, getByRole } = render(<TestComponent />);
+
+      userEvent.click(await findByRole('button', { name: 'Change View' }));
+      expect(getByRole('menuitem', { name: 'List View' })).not.toHaveAttribute(
+        'aria-disabled',
+      );
+      expect(
+        getByRole('menuitem', { name: 'Column Workflow View' }),
+      ).toHaveAttribute('aria-disabled', 'true');
+      expect(getByRole('menuitem', { name: 'Map View' })).toHaveAttribute(
+        'aria-disabled',
+        'true',
+      );
     });
   });
 });

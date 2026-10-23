@@ -61,6 +61,7 @@ interface ContactsMassActionsDropdownProps {
   selectedIds: string[];
   page: PageEnum;
   isExcludedAppealPage?: boolean;
+  disabled?: boolean;
 }
 
 export const ContactsMassActionsDropdown: React.FC<
@@ -72,6 +73,7 @@ export const ContactsMassActionsDropdown: React.FC<
   selectedIds,
   page,
   isExcludedAppealPage = false,
+  disabled = false,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -131,7 +133,11 @@ export const ContactsMassActionsDropdown: React.FC<
     <>
       {contactsView !== TableViewModeEnum.Map && selectedIds?.length > 0 && (
         <>
-          <MassActionsDropdown handleClick={handleClick} open={open}>
+          <MassActionsDropdown
+            handleClick={handleClick}
+            open={open}
+            disabled={disabled}
+          >
             {filterPanelOpen && contactPanelOpen ? <MoreHoriz /> : t('Actions')}
           </MassActionsDropdown>
           <Menu

@@ -10,17 +10,20 @@ const StarIconWrap = styled(Box)(({ theme }) => ({
 interface StarFilterButtonProps {
   starredFilter: boolean;
   toggleStarredFilter: (starred: boolean) => void;
+  disabled?: boolean;
 }
 
 export const StarFilterButton: React.FC<StarFilterButtonProps> = ({
   starredFilter,
   toggleStarredFilter,
+  disabled = false,
 }) => {
   return (
     <StarIconWrap>
       <IconButton
         data-testid="star-filter-button"
         onClick={() => toggleStarredFilter(!starredFilter)}
+        disabled={disabled}
       >
         <StarredItemIcon isStarred={starredFilter} />
       </IconButton>

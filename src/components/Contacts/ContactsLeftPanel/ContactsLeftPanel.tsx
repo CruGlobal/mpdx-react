@@ -1,5 +1,6 @@
 import React from 'react';
 import { DynamicFilterPanel } from 'src/components/Shared/Filters/DynamicFilterPanel';
+import { useIsOnline } from 'src/hooks/useIsOnline';
 import { TableViewModeEnum } from '../../Shared/Header/ListHeader';
 import {
   ContactsContext,
@@ -19,7 +20,9 @@ export const ContactsLeftPanel: React.FC = () => {
     selected,
     setSelected,
     viewMode,
+    offlineMode,
   } = React.useContext(ContactsContext) as ContactsType;
+  const isOnline = useIsOnline();
 
   return viewMode === TableViewModeEnum.Map ? (
     <DynamicContactsMapPanel
@@ -35,6 +38,8 @@ export const ContactsLeftPanel: React.FC = () => {
       preDefinedFilters={preDefinedFilters}
       savedFilters={savedFilters}
       onClose={toggleFilterPanel}
+      disabled={!isOnline}
+      clearAllDisabled={offlineMode}
     />
   ) : null;
 };
