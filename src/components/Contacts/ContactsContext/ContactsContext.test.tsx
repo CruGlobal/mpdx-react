@@ -7,9 +7,12 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
+import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { useUrlFilters } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
+import { StatusEnum } from 'src/graphql/types.generated';
 import { GetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
+import { contactsSyncVariables } from 'src/lib/offlineSync/contacts/contactsSync';
 import theme from '../../../theme';
 import { TableViewModeEnum } from '../../Shared/Header/ListHeader';
 import {
@@ -22,6 +25,15 @@ const accountListId = 'account-list-1';
 const contactId = '00000000-0000-0000-0000-000000000000';
 const push = jest.fn();
 const mutationSpy = jest.fn();
+
+const mockUseOfflineContactsQuery = jest.fn();
+jest.mock('src/lib/offlineSync/contacts/OfflineContacts.generated', () => ({
+  ...jest.requireActual(
+    'src/lib/offlineSync/contacts/OfflineContacts.generated',
+  ),
+  useOfflineContactsQuery: (...args: unknown[]) =>
+    mockUseOfflineContactsQuery(...args),
+}));
 
 const mockEnqueue = jest.fn();
 
@@ -138,6 +150,13 @@ const TestRenderContactsFilters: React.FC = () => {
 };
 
 describe('ContactsPageContext', () => {
+  beforeEach(() => {
+    mockUseOfflineContactsQuery.mockReturnValue({
+      data: undefined,
+      loading: false,
+    });
+  });
+
   it('has a contact id and switches from list to flows', async () => {
     const { getByText, findByText } = render(
       <TestWrapper contactId={['list', contactId]}>
@@ -271,5 +290,85 @@ describe('ContactsPageContext', () => {
     await waitFor(() =>
       expect(queryByTestId('savedfilters-testid')).not.toBeInTheDocument(),
     );
+  });
+
+  describe('offline mode', () => {
+    const cachedNodes = [
+      {
+        id: 'c1',
+        name: 'Active, Partner',
+        status: StatusEnum.PartnerFinancial,
+      },
+      { id: 'c2', name: 'Gone, Not', status: StatusEnum.NotInterested },
+      { id: 'c3', name: 'None, Status', status: null },
+    ];
+
+    const CachedContacts: React.FC = () => {
+      const { offlineMode, cachedContacts, cachedContactsLoading } = useContext(
+        ContactsContext,
+      ) as ContactsType;
+      return (
+        <div>
+          <div data-testid="offline">{String(offlineMode)}</div>
+          <div data-testid="loading">{String(cachedContactsLoading)}</div>
+          <div data-testid="ids">
+            {cachedContacts.map((c) => c.id).join(',')}
+          </div>
+        </div>
+      );
+    };
+
+    const renderOffline = () =>
+      render(
+        <ThemeProvider theme={theme}>
+          <TestRouter
+            router={{
+              query: { accountListId, offline: 'true' },
+              pathname:
+                '/accountLists/[accountListId]/contacts/[[...contactId]]',
+              isReady: true,
+              push,
+            }}
+          >
+            <GqlMockedProvider onCall={mutationSpy}>
+              <ContactsWrapper>
+                <CachedContacts />
+              </ContactsWrapper>
+            </GqlMockedProvider>
+          </TestRouter>
+        </ThemeProvider>,
+      );
+
+    beforeEach(() => {
+      mutationSpy.mockClear();
+      mockUseOfflineContactsQuery.mockReturnValue({
+        data: { contacts: { nodes: cachedNodes } },
+        loading: false,
+      });
+    });
+
+    it('reads the synced contacts from the cache only and skips live queries', async () => {
+      const { findByTestId } = renderOffline();
+
+      await waitFor(async () =>
+        expect(await findByTestId('ids')).toHaveTextContent('c1,c3'),
+      );
+      expect(mockUseOfflineContactsQuery).toHaveBeenCalledWith(
+        expect.objectContaining({
+          variables: contactsSyncVariables(accountListId),
+          fetchPolicy: 'cache-only',
+        }),
+      );
+      expect(await findByTestId('offline')).toHaveTextContent('true');
+      expect(mutationSpy).not.toHaveGraphqlOperation('Contacts');
+      expect(mutationSpy).not.toHaveGraphqlOperation('GetIdsForMassSelection');
+    });
+
+    it('keeps every contact when no phases are cached', async () => {
+      (useApiConstants as jest.Mock).mockReturnValue({ phases: [] });
+      const { findByTestId } = renderOffline();
+
+      expect(await findByTestId('ids')).toHaveTextContent('c1,c2,c3');
+    });
   });
 });

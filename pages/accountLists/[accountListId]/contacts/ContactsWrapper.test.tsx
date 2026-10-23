@@ -10,6 +10,10 @@ import {
   ContactDetailContext,
   ContactDetailProvider,
 } from 'src/components/Contacts/ContactDetails/ContactDetailContext';
+import {
+  ContactsContext,
+  ContactsType,
+} from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { FilterPanel } from 'src/components/Shared/Filters/FilterPanel';
 import {
   filterPanelDefaultMock,
@@ -17,6 +21,7 @@ import {
   savedFiltersMock,
 } from 'src/components/Shared/Filters/FilterPanel.mocks';
 import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
+import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
 import theme from 'src/theme';
 import { ContactsWrapper } from './ContactsWrapper';
 
@@ -113,6 +118,43 @@ describe('ContactsWrapper', () => {
     userEvent.click(getByText('Saved Filters'));
     expect(routerReplace).toHaveBeenCalled();
   });
+});
+
+it('shows the list and keeps the saved view mode in offline mode', async () => {
+  const mutationSpy = jest.fn();
+  const ViewMode: React.FC = () => {
+    const { viewMode } = React.useContext(ContactsContext) as ContactsType;
+    return <div data-testid="view-mode">{viewMode}</div>;
+  };
+
+  const { findByTestId } = render(
+    <ThemeProvider theme={theme}>
+      <TestRouter
+        router={{
+          pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
+          query: { accountListId: 'account-list-1', offline: 'true' },
+          isReady: true,
+        }}
+      >
+        <GqlMockedProvider<{ UserOption: UserOptionQuery }>
+          mocks={{
+            UserOption: {
+              userOption: { key: 'contacts_view', value: 'flows' },
+            },
+          }}
+          onCall={mutationSpy}
+        >
+          <ContactsWrapper>
+            <ViewMode />
+          </ContactsWrapper>
+        </GqlMockedProvider>
+      </TestRouter>
+    </ThemeProvider>,
+  );
+
+  await waitFor(() => expect(mutationSpy).toHaveGraphqlOperation('UserOption'));
+  expect(await findByTestId('view-mode')).toHaveTextContent('list');
+  expect(mutationSpy).not.toHaveGraphqlOperation('UpdateUserOption');
 });
 
 it('updates personId in URL when a different person is selected', async () => {

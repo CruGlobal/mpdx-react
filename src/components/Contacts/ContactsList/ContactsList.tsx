@@ -13,22 +13,27 @@ import { ContactRow } from '../ContactRow/ContactRow';
 export const ContactsList: React.FC = () => {
   const {
     contactsQueryResult: { data, loading, fetchMore },
+    offlineMode,
+    cachedContacts,
+    cachedContactsLoading,
   } = React.useContext(ContactsContext) as ContactsType;
 
   return (
     <InfiniteList
-      loading={loading}
-      data={data?.contacts?.nodes ?? []}
+      loading={offlineMode ? cachedContactsLoading : loading}
+      data={offlineMode ? cachedContacts : (data?.contacts?.nodes ?? [])}
       style={{ height: `calc(100vh - ${navBarHeight} - ${headerHeight})` }}
       itemContent={(index, contact) => (
         <ContactRow
           key={contact.id}
           contact={contact}
           useTopMargin={index === 0}
+          hideCheckbox={offlineMode}
         />
       )}
       groupBy={(item) => ({ label: item.name[0].toUpperCase() })}
       endReached={() =>
+        !offlineMode &&
         data?.contacts?.pageInfo.hasNextPage &&
         fetchMore({
           variables: {
@@ -40,7 +45,11 @@ export const ContactsList: React.FC = () => {
         <Box width="75%" margin="auto" mt={2}>
           <NullState
             page="contact"
-            totalCount={data?.allContacts.totalCount || 0}
+            totalCount={
+              offlineMode
+                ? cachedContacts.length
+                : data?.allContacts.totalCount || 0
+            }
           />
         </Box>
       }

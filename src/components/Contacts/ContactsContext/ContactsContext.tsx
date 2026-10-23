@@ -14,8 +14,13 @@ import {
 } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { coordinatesFromContacts } from 'pages/accountLists/[accountListId]/contacts/helpers';
 import { useUrlFilters } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
+import { PhaseEnum } from 'src/graphql/types.generated';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { useLocale } from 'src/hooks/useLocale';
+import { useOfflineMode } from 'src/hooks/useOfflineMode';
+import { useOfflineContactsQuery } from 'src/lib/offlineSync/contacts/OfflineContacts.generated';
+import { contactsSyncVariables } from 'src/lib/offlineSync/contacts/contactsSync';
 import { useAccountListId } from '../../../hooks/useAccountListId';
 import { useMassSelection } from '../../../hooks/useMassSelection';
 import { UserOptionFragment } from '../../Shared/Filters/FilterPanel.generated';
@@ -23,6 +28,7 @@ import {
   ListHeaderCheckBoxState,
   TableViewModeEnum,
 } from '../../Shared/Header/ListHeader';
+import { ContactRowFragment } from '../ContactRow/ContactRow.generated';
 import { Coordinates } from '../ContactsMap/coordinates';
 
 export type ContactsType = {
@@ -48,6 +54,9 @@ export type ContactsType = {
   selectedIds: string[];
   deselectAll: () => void;
   userOptionsLoading: boolean;
+  offlineMode: boolean;
+  cachedContacts: ContactRowFragment[];
+  cachedContactsLoading: boolean;
 };
 
 export const ContactsContext = React.createContext<ContactsType | null>(null);
@@ -95,6 +104,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
 }) => {
   const locale = useLocale();
   const accountListId = useAccountListId();
+  const offlineMode = useOfflineMode();
 
   const { combinedFilters: contactsFilters } = useUrlFilters();
 
@@ -106,6 +116,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
         accountListId,
         contactsFilters,
       },
+      skip: offlineMode,
     });
   // When the next batch of contact ids is loading, use the previous batch of contact ids in the
   // meantime to avoid throwing out the selected contact ids.
@@ -138,12 +149,30 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
           : contactsFilters,
       first: viewMode === TableViewModeEnum.Map ? 20000 : 25,
     },
+    skip: offlineMode,
   });
   const { data, fetchMore } = contactsQueryResult;
+
+  const { data: offlineData, loading: cachedContactsLoading } =
+    useOfflineContactsQuery({
+      variables: contactsSyncVariables(accountListId),
+      fetchPolicy: 'cache-only',
+      skip: !offlineMode,
+    });
+  const { getContactStatusesByPhase } = useContactPartnershipStatuses();
+  const cachedContacts = useMemo(() => {
+    // The sync only fetched active contacts, but their status may have changed since then
+    const inactiveStatuses = getContactStatusesByPhase(PhaseEnum.Archive);
+    return (offlineData?.contacts.nodes ?? []).filter(
+      (contact) =>
+        !contact.status || !inactiveStatuses.includes(contact.status),
+    );
+  }, [offlineData, getContactStatusesByPhase]);
 
   // Load all pages of contacts on the map view
   useEffect(() => {
     if (
+      !offlineMode &&
       viewMode === TableViewModeEnum.Map &&
       data?.contacts.pageInfo.hasNextPage
     ) {
@@ -216,6 +245,9 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
       viewMode,
       setViewMode,
       userOptionsLoading,
+      offlineMode,
+      cachedContacts,
+      cachedContactsLoading,
     }),
     [
       accountListId,
@@ -239,6 +271,9 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
       viewMode,
       setViewMode,
       userOptionsLoading,
+      offlineMode,
+      cachedContacts,
+      cachedContactsLoading,
     ],
   );
 

@@ -5,6 +5,7 @@ import { ContactsProvider } from 'src/components/Contacts/ContactsContext/Contac
 import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
 import { UrlFiltersProvider } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
+import { useOfflineMode } from 'src/hooks/useOfflineMode';
 import { useUserPreference } from 'src/hooks/useUserPreference';
 
 // Extract the initial view mode from the URL
@@ -26,11 +27,15 @@ interface Props {
 export const ContactsWrapper: React.FC<Props> = ({ children }) => {
   const { query } = useRouter();
 
-  const [viewMode, setViewMode, { loading: userOptionsLoading }] =
+  const offlineMode = useOfflineMode();
+
+  const [preferredViewMode, setViewMode, { loading: userOptionsLoading }] =
     useUserPreference({
       key: 'contacts_view',
       defaultValue: getQueryViewMode(query),
     });
+  // Offline mode only supports the list, but the saved preference stays untouched
+  const viewMode = offlineMode ? TableViewModeEnum.List : preferredViewMode;
 
   const [filterPanelOpen, setFilterPanelOpen] = useUserPreference({
     key: 'contact_filters_collapse',
