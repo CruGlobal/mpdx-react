@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import { signIn, useSession } from 'next-auth/react';
 import { SnackbarProvider } from 'notistack';
 import { session } from '__tests__/fixtures/session';
@@ -120,6 +120,46 @@ describe('RouterGuard', () => {
       render(<TestComponent pathname="/authRoute">Authed route</TestComponent>);
 
       await waitFor(() => expect(signIn).toHaveBeenCalledWith('okta'));
+    });
+
+    describe('offline', () => {
+      let onLine: jest.SpyInstance<boolean, []>;
+
+      beforeEach(() => {
+        onLine = jest.spyOn(navigator, 'onLine', 'get').mockReturnValue(false);
+        (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
+          data: { ...session, expires: '2019-01-01T00:00:00Z' },
+          status: 'authenticated',
+          update: () => Promise.resolve(null),
+        });
+      });
+
+      afterEach(() => {
+        onLine.mockRestore();
+      });
+
+      it('keeps an expired session on the page while offline', async () => {
+        const { findByText } = render(
+          <TestComponent pathname="/authRoute">Authed route</TestComponent>,
+        );
+
+        expect(await findByText('Authed route')).toBeInTheDocument();
+        expect(signIn).not.toHaveBeenCalled();
+      });
+
+      it('reauthenticates an expired session once back online', async () => {
+        render(
+          <TestComponent pathname="/authRoute">Authed route</TestComponent>,
+        );
+        expect(signIn).not.toHaveBeenCalled();
+
+        onLine.mockReturnValue(true);
+        act(() => {
+          window.dispatchEvent(new Event('online'));
+        });
+
+        await waitFor(() => expect(signIn).toHaveBeenCalledWith('okta'));
+      });
     });
   });
 });

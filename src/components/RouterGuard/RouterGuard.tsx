@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { DateTime } from 'luxon';
 import { signIn, useSession } from 'next-auth/react';
+import { useIsOnline } from 'src/hooks/useIsOnline';
 
 interface Props {
   children?: React.ReactElement;
@@ -18,14 +19,17 @@ export const RouterGuard: React.FC<Props> = ({ children = null }) => {
     },
   });
 
+  const isOnline = useIsOnline();
+
   useEffect(() => {
     if (
+      isOnline &&
       session.status === 'authenticated' &&
       DateTime.now().toISO() > session.data.expires
     ) {
       signIn('okta');
     }
-  }, [session]);
+  }, [session, isOnline]);
 
   // Pages without getServerSideProps are prerendered, so their route params
   // aren't available until the router is ready
