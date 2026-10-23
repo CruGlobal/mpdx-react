@@ -177,6 +177,9 @@ export const createCachePersistence = (
     return startPromise;
   };
 
+  const isRunning = (): boolean =>
+    running && !cancelled() && !!persistor && !!store;
+
   const flush = async (): Promise<boolean> => {
     if (cancelled() || !running || !persistor || !store) {
       return false;
@@ -200,6 +203,7 @@ export const createCachePersistence = (
     pause,
     purge,
     stop,
+    isRunning,
     flush,
     readSyncRecord,
     writeSyncRecord,
@@ -219,6 +223,7 @@ export const startCachePersistence = appPersistence.start;
 export const pauseCachePersistence = appPersistence.pause;
 export const purgeCachePersistence = appPersistence.purge;
 export const stopCachePersistence = appPersistence.stop;
+export const isCachePersistenceRunning = appPersistence.isRunning;
 export const flushCachePersistence = appPersistence.flush;
 export const readSyncRecord = appPersistence.readSyncRecord;
 export const writeSyncRecord = appPersistence.writeSyncRecord;

@@ -548,6 +548,46 @@ describe('createCachePersistence', () => {
     await expect(persistence.flush()).resolves.toBe(false);
   });
 
+  it('isRunning is true only once restore finishes and until stop()', async () => {
+    const store = createStore({ cache: storedCache, owner: currentOwner });
+    const persistence = createCachePersistence(store, 3000);
+    expect(persistence.isRunning()).toBe(false);
+
+    await persistence.start({ cache, userId: 'user-1', impersonating: false });
+    expect(persistence.isRunning()).toBe(true);
+
+    await persistence.stop();
+    expect(persistence.isRunning()).toBe(false);
+  });
+
+  it('isRunning is false after the restore times out', async () => {
+    const store = createStore({ owner: currentOwner });
+    const read = deferred<string | null>();
+    store.getItem.mockReturnValueOnce(read.promise);
+    const persistence = createCachePersistence(store, 3000);
+
+    const started = persistence.start({
+      cache,
+      userId: 'user-1',
+      impersonating: false,
+    });
+    await advance(3000);
+    await started;
+    read.resolve(storedCache);
+    await advance(0);
+
+    expect(persistence.isRunning()).toBe(false);
+  });
+
+  it('isRunning is false while impersonating', async () => {
+    const store = createStore({ cache: storedCache, owner: currentOwner });
+    const persistence = createCachePersistence(store, 3000);
+
+    await persistence.start({ cache, userId: 'user-1', impersonating: true });
+
+    expect(persistence.isRunning()).toBe(false);
+  });
+
   it('every reset path clears sync records', async () => {
     const mismatched = createStore({
       cache: storedCache,
@@ -582,6 +622,7 @@ describe('createCachePersistence', () => {
   it('does nothing without a store', async () => {
     const persistence = createCachePersistence(null, 3000);
     await expect(persistence.flush()).resolves.toBe(false);
+    expect(persistence.isRunning()).toBe(false);
     await expect(persistence.readSyncRecord('a')).resolves.toBeNull();
     await expect(
       persistence.writeSyncRecord('a', { syncedAt: 1, version: 'v' }),
