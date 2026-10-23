@@ -47,9 +47,14 @@ export const ListItemButton = styled(ButtonBase)(({ theme }) => ({
 interface Props {
   contact: ContactRowFragment;
   useTopMargin?: boolean;
+  hideCheckbox?: boolean;
 }
 
-export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
+export const ContactRow: React.FC<Props> = ({
+  contact,
+  useTopMargin,
+  hideCheckbox,
+}) => {
   const {
     accountListId,
     isRowChecked: isChecked,
@@ -87,14 +92,16 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
       })}
       data-testid="rowButton"
     >
-      <ListItemIcon>
-        <StyledCheckbox
-          checked={isChecked(contact.id)}
-          color="secondary"
-          onClick={(event) => event.stopPropagation()}
-          onChange={() => onContactCheckToggle(contact.id)}
-        />
-      </ListItemIcon>
+      {!hideCheckbox && (
+        <ListItemIcon>
+          <StyledCheckbox
+            checked={isChecked(contact.id)}
+            color="secondary"
+            onClick={(event) => event.stopPropagation()}
+            onChange={() => onContactCheckToggle(contact.id)}
+          />
+        </ListItemIcon>
+      )}
       <Grid container alignItems="center" sx={{ width: '100%' }}>
         <Grid
           style={{ paddingRight: 16 }}
