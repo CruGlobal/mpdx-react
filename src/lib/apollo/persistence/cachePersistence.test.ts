@@ -1,6 +1,6 @@
 import { InMemoryCache, gql } from '@apollo/client';
-import { addDatadogError } from 'src/lib/dataDog';
-import { createCachePersistence } from './cachePersistence';
+import { addDatadogAction, addDatadogError } from 'src/lib/dataDog';
+import { RESTORE_TIMEOUT_MS, createCachePersistence } from './cachePersistence';
 import { CacheOwner } from './idbStorage';
 import { onSessionEnded } from './sessionChannel';
 
@@ -407,6 +407,42 @@ describe('createCachePersistence', () => {
     await advance(3000);
 
     expect(addDatadogError).not.toHaveBeenCalled();
+  });
+
+  it('logs restore duration and size', async () => {
+    const store = createStore({ cache: storedCache, owner: currentOwner });
+    const persistence = createCachePersistence(store, 3000);
+
+    await persistence.start({ cache, userId: 'user-1', impersonating: false });
+
+    expect(addDatadogAction).toHaveBeenCalledTimes(1);
+    expect(addDatadogAction).toHaveBeenCalledWith('cache_restore', {
+      durationMs: expect.any(Number),
+      sizeBytes: storedCache.length,
+      timedOut: false,
+    });
+  });
+
+  it('logs a timed-out restore', async () => {
+    const store = createStore({ owner: currentOwner });
+    store.getItem.mockReturnValueOnce(new Promise(() => {}));
+    const persistence = createCachePersistence(store, 3000);
+
+    persistence.start({ cache, userId: 'user-1', impersonating: false });
+    await advance(RESTORE_TIMEOUT_MS);
+
+    expect(addDatadogAction).toHaveBeenCalledWith(
+      'cache_restore',
+      expect.objectContaining({ timedOut: true }),
+    );
+  });
+
+  it('does not log when nothing is stored', async () => {
+    const persistence = createCachePersistence(createStore(), 3000);
+
+    await persistence.start({ cache, userId: 'user-1', impersonating: false });
+
+    expect(addDatadogAction).not.toHaveBeenCalled();
   });
 
   it('returns the same promise for every start() call', async () => {
