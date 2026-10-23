@@ -157,6 +157,33 @@ describe('createIdbStorage', () => {
     expect(await store.getSyncRecord('x')).toBeNull();
   });
 
+  it('reports whether the last write landed', async () => {
+    const name = nextDb();
+    const store = createIdbStorage(name);
+    const otherTab = createIdbStorage(name);
+    const owner = { userId: 'user-1', version: 1 };
+    await store.setOwner(owner);
+    store.bindOwner(owner);
+
+    await store.setItem('cache', 'mine');
+    expect(store.didLastWriteLand()).toBe(true);
+
+    await otherTab.setOwner({ userId: 'user-2', version: 1 });
+    await store.setItem('cache', 'stale');
+    expect(store.didLastWriteLand()).toBe(false);
+  });
+
+  it('reports a failed write as not landed', async () => {
+    jest.spyOn(IDBObjectStore.prototype, 'put').mockImplementationOnce(() => {
+      throw new DOMException('full', 'QuotaExceededError');
+    });
+    const store = createIdbStorage(nextDb());
+
+    await store.setItem('cache', 'x');
+
+    expect(store.didLastWriteLand()).toBe(false);
+  });
+
   it('reports a failed write instead of rejecting', async () => {
     const error = new DOMException('full', 'QuotaExceededError');
     jest.spyOn(IDBObjectStore.prototype, 'put').mockImplementationOnce(() => {
