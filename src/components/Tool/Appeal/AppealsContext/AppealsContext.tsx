@@ -62,6 +62,9 @@ export interface AppealsType
     | 'setViewMode'
     | 'getContactHrefObject'
     | 'userOptionsLoading'
+    | 'offlineMode'
+    | 'cachedContacts'
+    | 'cachedContactsLoading'
   > {
   selectMultipleIds: (ids: string[]) => void;
   deselectMultipleIds: (ids: string[]) => void;

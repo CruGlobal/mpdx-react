@@ -4,13 +4,33 @@ import { waitFor } from '@testing-library/dom';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { mockNavigatorOnline } from '__tests__/util/mockNavigatorOnline';
 import theme from '../../../theme';
 import { StarContactIconButton } from './StarContactIconButton';
 
 const accountListId = 'abc';
 const contactId = '1';
 
+const setOnline = mockNavigatorOnline();
+
 describe('StarTaskIconButton', () => {
+  it('disables the star button while offline', () => {
+    setOnline(false);
+    const { getByRole } = render(
+      <GqlMockedProvider>
+        <ThemeProvider theme={theme}>
+          <StarContactIconButton
+            accountListId={accountListId}
+            contactId={contactId}
+            isStarred={false}
+          />
+        </ThemeProvider>
+      </GqlMockedProvider>,
+    );
+
+    expect(getByRole('button', { name: 'Add star' })).toBeDisabled();
+  });
+
   it('renders not starred', async () => {
     const { getByRole, queryByTestId } = render(
       <GqlMockedProvider>

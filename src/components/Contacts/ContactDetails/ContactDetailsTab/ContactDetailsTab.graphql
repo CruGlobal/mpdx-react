@@ -1,17 +1,21 @@
 query ContactDetailsTab($accountListId: ID!, $contactId: ID!) {
   contact(accountListId: $accountListId, id: $contactId) {
-    id
-    name
-    tagList
-    user {
-      firstName
-      lastName
-    }
-    #TODO add Magazine
-    ...ContactPeople
-    ...ContactOther
-    ...ContactMailing
+    ...ContactDetailsTabContact
   }
+}
+
+fragment ContactDetailsTabContact on Contact {
+  id
+  name
+  tagList
+  user {
+    firstName
+    lastName
+  }
+  #TODO add Magazine
+  ...ContactPeople
+  ...ContactOther
+  ...ContactMailing
 }
 
 mutation DeleteContact($accountListId: ID!, $contactId: ID!) {

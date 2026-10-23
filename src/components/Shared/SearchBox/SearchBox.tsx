@@ -15,6 +15,7 @@ export interface SearchBoxProps {
   showContactSearchIcon: boolean;
   page?: PageEnum;
   toolTipText?: string;
+  disabled?: boolean;
 }
 
 const SearchInput = styled(TextField)(() => ({
@@ -30,6 +31,7 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
   showContactSearchIcon,
   page,
   toolTipText,
+  disabled = false,
 }) => {
   const { t } = useTranslation();
   const [currentSearchTerm, setSearchTerm] = useState(searchTerm ?? '');
@@ -63,6 +65,7 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
         onChange={(e) => handleOnChange(e.target.value)}
         placeholder={placeholder ?? t('Search')}
         value={currentSearchTerm}
+        disabled={disabled}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">

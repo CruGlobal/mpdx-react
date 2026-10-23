@@ -25,6 +25,7 @@ import Modal from 'src/components/Shared/Modal/Modal';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { StatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useIsOnline } from 'src/hooks/useIsOnline';
 import useTaskModal from 'src/hooks/useTaskModal';
 import {
   ContactDetailContext,
@@ -73,6 +74,7 @@ export const ContactDetailsMoreActions: React.FC<
   const { openTaskModal, preloadTaskModal } = useTaskModal();
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const isOnline = useIsOnline();
   const { closePanel: onClose } = useContactPanel();
 
   const {
@@ -203,6 +205,7 @@ export const ContactDetailsMoreActions: React.FC<
         aria-label={t('More Actions')}
         aria-controls="more-actions"
         aria-haspopup="menu"
+        disabled={!isOnline}
         onClick={(event) => setAnchorEl(event.currentTarget)}
       >
         <MoreButtonIcon titleAccess={t('More Actions')} />

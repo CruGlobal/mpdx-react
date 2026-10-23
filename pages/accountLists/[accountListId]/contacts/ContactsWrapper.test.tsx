@@ -10,13 +10,19 @@ import {
   ContactDetailContext,
   ContactDetailProvider,
 } from 'src/components/Contacts/ContactDetails/ContactDetailContext';
+import {
+  ContactsContext,
+  ContactsType,
+} from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { FilterPanel } from 'src/components/Shared/Filters/FilterPanel';
 import {
   filterPanelDefaultMock,
   filterPanelFeaturedMock,
   savedFiltersMock,
 } from 'src/components/Shared/Filters/FilterPanel.mocks';
+import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
 import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
+import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
 import theme from 'src/theme';
 import { ContactsWrapper } from './ContactsWrapper';
 
@@ -112,6 +118,143 @@ describe('ContactsWrapper', () => {
     });
     userEvent.click(getByText('Saved Filters'));
     expect(routerReplace).toHaveBeenCalled();
+  });
+});
+
+it('shows the list and keeps the saved view mode in offline mode', async () => {
+  const mutationSpy = jest.fn();
+  const ViewMode: React.FC = () => {
+    const { viewMode } = React.useContext(ContactsContext) as ContactsType;
+    return <div data-testid="view-mode">{viewMode}</div>;
+  };
+
+  const { findByTestId } = render(
+    <ThemeProvider theme={theme}>
+      <TestRouter
+        router={{
+          pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
+          query: { accountListId: 'account-list-1', offline: 'true' },
+          isReady: true,
+        }}
+      >
+        <GqlMockedProvider<{ UserOption: UserOptionQuery }>
+          mocks={{
+            UserOption: {
+              userOption: { key: 'contacts_view', value: 'flows' },
+            },
+          }}
+          onCall={mutationSpy}
+        >
+          <ContactsWrapper>
+            <ViewMode />
+          </ContactsWrapper>
+        </GqlMockedProvider>
+      </TestRouter>
+    </ThemeProvider>,
+  );
+
+  await waitFor(() => expect(mutationSpy).toHaveGraphqlOperation('UserOption'));
+  expect(await findByTestId('view-mode')).toHaveTextContent('list');
+  expect(mutationSpy).not.toHaveGraphqlOperation('UpdateUserOption');
+});
+
+describe('picking a view in offline mode', () => {
+  const ViewModeButtons: React.FC = () => {
+    const { setViewMode } = React.useContext(ContactsContext) as ContactsType;
+    return (
+      <>
+        <button onClick={() => setViewMode(TableViewModeEnum.Map)}>Map</button>
+        <button onClick={() => setViewMode(TableViewModeEnum.List)}>
+          List
+        </button>
+      </>
+    );
+  };
+
+  const renderOffline = (offline: string | undefined) => {
+    const routerReplace = jest.fn();
+    const mutationSpy = jest.fn();
+    const utils = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter
+          router={{
+            pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
+            query: { accountListId: 'account-list-1', offline },
+            replace: routerReplace,
+            isReady: true,
+          }}
+        >
+          <GqlMockedProvider<{ UserOption: UserOptionQuery }>
+            mocks={{
+              UserOption: {
+                userOption: { key: 'contacts_view', value: 'list' },
+              },
+            }}
+            onCall={mutationSpy}
+          >
+            <ContactsWrapper>
+              <ViewModeButtons />
+            </ContactsWrapper>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+    return { ...utils, routerReplace, mutationSpy };
+  };
+
+  it('removes offline from the URL when picking Map', async () => {
+    const { getByRole, routerReplace, mutationSpy } = renderOffline('true');
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UserOption'),
+    );
+    routerReplace.mockClear();
+    userEvent.click(getByRole('button', { name: 'Map' }));
+
+    expect(routerReplace).toHaveBeenCalledWith(
+      {
+        pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
+        query: { accountListId: 'account-list-1' },
+      },
+      undefined,
+      { shallow: true },
+    );
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOption', {
+        key: 'contacts_view',
+        value: 'map',
+      }),
+    );
+  });
+
+  it('keeps offline mode when picking List', async () => {
+    const { getByRole, routerReplace, mutationSpy } = renderOffline('true');
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UserOption'),
+    );
+    routerReplace.mockClear();
+    userEvent.click(getByRole('button', { name: 'List' }));
+
+    expect(routerReplace).not.toHaveBeenCalled();
+  });
+
+  it('does not touch the URL outside of offline mode', async () => {
+    const { getByRole, routerReplace, mutationSpy } = renderOffline(undefined);
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UserOption'),
+    );
+    routerReplace.mockClear();
+    userEvent.click(getByRole('button', { name: 'Map' }));
+
+    expect(routerReplace).not.toHaveBeenCalled();
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOption', {
+        key: 'contacts_view',
+        value: 'map',
+      }),
+    );
   });
 });
 

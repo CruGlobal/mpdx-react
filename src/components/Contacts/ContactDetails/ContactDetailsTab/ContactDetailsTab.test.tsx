@@ -10,6 +10,7 @@ import { SnackbarProvider } from 'notistack';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { mockNavigatorOnline } from '__tests__/util/mockNavigatorOnline';
 import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import theme from '../../../../theme';
 import { ContactDetailProvider } from '../ContactDetailContext';
@@ -124,6 +125,8 @@ jest.mock('notistack', () => ({
   },
 }));
 
+const setOnline = mockNavigatorOnline();
+
 // TODO: Many of these tests are useless because there is never any element with the text "Loading"
 describe('ContactDetailTab', () => {
   it('should open edit person modal', async () => {
@@ -160,6 +163,13 @@ describe('ContactDetailTab', () => {
     await waitFor(() => expect(getAllByText('Add Address').length).toBe(2));
   });
 
+  it('disables editing the other details while offline', async () => {
+    setOnline(false);
+    const { findByRole } = render(<TestComponent />);
+
+    expect(await findByRole('button', { name: 'Edit' })).toBeDisabled();
+  });
+
   describe('merge people', () => {
     const mocksMultiplePeople = cloneDeep(mocks);
     mocksMultiplePeople?.ContactDetailsTab?.contact?.people?.nodes?.push(
@@ -180,6 +190,17 @@ describe('ContactDetailTab', () => {
         ...dates,
       },
     );
+
+    it('disables the merge people button while offline', async () => {
+      setOnline(false);
+      const { findByRole } = render(
+        <TestComponent mocks={mocksMultiplePeople} />,
+      );
+
+      expect(
+        await findByRole('button', { name: 'Merge People' }),
+      ).toBeDisabled();
+    });
 
     it('should hide merge person button when there are fewer than two people', async () => {
       const { queryByRole, findByRole } = render(<TestComponent />);

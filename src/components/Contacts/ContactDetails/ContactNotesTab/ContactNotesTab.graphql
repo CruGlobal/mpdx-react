@@ -1,9 +1,13 @@
 query GetContactNotes($contactId: ID!, $accountListId: ID!) {
   contact(id: $contactId, accountListId: $accountListId) {
-    id
-    notes
-    notesSavedAt
+    ...ContactNotes
   }
+}
+
+fragment ContactNotes on Contact {
+  id
+  notes
+  notesSavedAt
 }
 
 mutation UpdateContactNotes(
@@ -19,6 +23,7 @@ mutation UpdateContactNotes(
   ) {
     contact {
       id
+      notes
       notesSavedAt
     }
   }

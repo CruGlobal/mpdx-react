@@ -6,6 +6,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import { mockNavigatorOnline } from '__tests__/util/mockNavigatorOnline';
 import {
   render,
   waitFor,
@@ -115,6 +116,8 @@ const data = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc, {
   },
 });
 
+const setOnline = mockNavigatorOnline();
+
 describe('ContactDetailsTabPeople', () => {
   describe('ContactTags', () => {
     it('should render with tags', async () => {
@@ -140,6 +143,27 @@ describe('ContactDetailsTabPeople', () => {
       expect(img).toHaveAttribute('src', 'https://cru.org/assets/avatar.jpg');
       expect(img).toHaveAttribute('alt', 'Test Person');
     });
+  });
+
+  it('disables the edit and add person buttons while offline', async () => {
+    setOnline(false);
+    const { findAllByLabelText, getByRole } = render(
+      <TestRouter router={router}>
+        <GqlMockedProvider>
+          <ThemeProvider theme={theme}>
+            <ContactDetailProvider>
+              <ContactDetailsTabPeople
+                accountListId={accountListId}
+                data={data}
+              />
+            </ContactDetailProvider>
+          </ThemeProvider>
+        </GqlMockedProvider>
+      </TestRouter>,
+    );
+
+    expect((await findAllByLabelText('Edit Icon'))[0]).toBeDisabled();
+    expect(getByRole('button', { name: 'Add Person' })).toBeDisabled();
   });
 
   it('should open up the person modal', async () => {

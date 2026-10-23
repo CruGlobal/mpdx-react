@@ -8,14 +8,17 @@ import { useSnackbar } from 'notistack';
 import { TFunction, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { ActionButton } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import { useIsOnline } from 'src/hooks/useIsOnline';
 import { ContactDetailsTabDocument } from '../ContactDetailsTab.generated';
 import { useUpdateContactOtherMutation } from '../Other/EditContactOtherModal/EditContactOther.generated';
 import { ContactDetailLoadingPlaceHolder } from '../StyledComponents';
 import {
+  ContactDonorAccountsDocument,
   useContactDonorAccountsQuery,
   useGetAccountListSalaryOrganizationQuery,
 } from './ContactPartnerAccounts.generated';
 import { useDeleteDonorAccountMutation } from './DeleteDonorAccount.generated';
+import { partnerAccountLabel } from './partnerAccountLabel';
 
 const getNewPartnerAccountSchema = (t: TFunction) =>
   yup.object({
@@ -51,17 +54,14 @@ const PartnerAccountTextLabel = styled(Typography)(({ theme }) => ({
 interface ContactDetailsPartnerAccountsProps {
   accountListId: string;
   contactId: string;
+  contactName: string | null | undefined;
 }
 
 export const ContactDetailsPartnerAccounts: React.FC<
   ContactDetailsPartnerAccountsProps
-> = ({ accountListId, contactId }) => {
-  // The API returns different results for displayName when using Contacts vs Donations.
-  // Because of this we use the fetchPolicy: 'no-cache' to ensure we don't override the displayName elsewhere.
-  // This is also why I have removed the partnerAccount query from the rest of the ContactDetailsTab queries.
+> = ({ accountListId, contactId, contactName }) => {
   const { data } = useContactDonorAccountsQuery({
     variables: { accountListId, contactId },
-    fetchPolicy: 'no-cache',
   });
 
   const [deleteDonorAccount] = useDeleteDonorAccountMutation();
@@ -72,6 +72,7 @@ export const ContactDetailsPartnerAccounts: React.FC<
     variables: { accountListId },
   });
   const { t } = useTranslation();
+  const isOnline = useIsOnline();
   const newPartnerAccountSchema = useMemo(
     () => getNewPartnerAccountSchema(t),
     [t],
@@ -87,6 +88,13 @@ export const ContactDetailsPartnerAccounts: React.FC<
       refetchQueries: [
         {
           query: ContactDetailsTabDocument,
+          variables: {
+            accountListId,
+            contactId,
+          },
+        },
+        {
+          query: ContactDonorAccountsDocument,
           variables: {
             accountListId,
             contactId,
@@ -119,6 +127,13 @@ export const ContactDetailsPartnerAccounts: React.FC<
             contactId,
           },
         },
+        {
+          query: ContactDonorAccountsDocument,
+          variables: {
+            accountListId,
+            contactId,
+          },
+        },
       ],
     });
     setShowForm(false);
@@ -133,7 +148,7 @@ export const ContactDetailsPartnerAccounts: React.FC<
     </>
   ) : (
     <ContactPartnerAccountsContainer>
-      <ActionButton onClick={() => setShowForm(!showForm)}>
+      <ActionButton onClick={() => setShowForm(!showForm)} disabled={!isOnline}>
         <Add />
         {t('Add Partner Account')}
       </ActionButton>
@@ -169,7 +184,7 @@ export const ContactDetailsPartnerAccounts: React.FC<
               <IconButton
                 aria-label={t('Submit')}
                 type="submit"
-                disabled={isSubmitting || !isValid || updating}
+                disabled={isSubmitting || !isValid || updating || !isOnline}
               >
                 <Add />
               </IconButton>
@@ -200,13 +215,17 @@ export const ContactDetailsPartnerAccounts: React.FC<
                   {t('Account Name:')}
                 </PartnerAccountTextLabel>
                 <Typography variant="body2" id={nameId}>
-                  {donorAccount.donorAccount.displayName}
+                  {partnerAccountLabel(
+                    contactName,
+                    donorAccount.donorAccount.accountNumber,
+                  )}
                 </Typography>
               </PartnerAccountTextContainer>
             </Box>
             <IconButton
               aria-label={t('Delete')}
               aria-describedby={nameId}
+              disabled={!isOnline}
               onClick={() =>
                 deleteContactDonorAccount(donorAccount.donorAccount.id)
               }

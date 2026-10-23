@@ -68,7 +68,7 @@ const openTaskModal = jest.fn();
 const toggleSelectionById = jest.fn();
 const isRowChecked = jest.fn();
 
-const Components = () => (
+const Components = ({ hideCheckbox }: { hideCheckbox?: boolean }) => (
   <TestRouter router={router}>
     <GqlMockedProvider>
       <ThemeProvider theme={theme}>
@@ -82,7 +82,7 @@ const Components = () => (
           }
         >
           <ContactPanelProvider>
-            <ContactRow contact={contact} />
+            <ContactRow contact={contact} hideCheckbox={hideCheckbox} />
           </ContactPanelProvider>
         </ContactsContext.Provider>
       </ThemeProvider>
@@ -130,6 +130,12 @@ describe('ContactsRow', () => {
     expect(checkbox).not.toBeChecked();
     userEvent.click(checkbox);
     expect(checkbox).toBeChecked();
+  });
+
+  it('hides the checkbox', () => {
+    const { queryByRole } = render(<Components hideCheckbox />);
+
+    expect(queryByRole('checkbox')).not.toBeInTheDocument();
   });
 
   it('should open log task modal', async () => {

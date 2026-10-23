@@ -74,6 +74,8 @@ interface TestComponentProps {
   savedFilters: UserOptionFragment[];
   preDefinedFilters?: UserOptionFragment[];
   initialFilters?: ContactFilterSetInput & TaskFilterSetInput;
+  disabled?: boolean;
+  clearAllDisabled?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -82,6 +84,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
   savedFilters,
   preDefinedFilters = [],
   initialFilters = {},
+  disabled,
+  clearAllDisabled,
 }) => (
   <TestRouter
     router={{
@@ -109,6 +113,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 savedFilters={savedFilters}
                 preDefinedFilters={preDefinedFilters}
                 onClose={onClose}
+                disabled={disabled}
+                clearAllDisabled={clearAllDisabled}
               />
             </ContactsProvider>
           </UrlFiltersProvider>
@@ -608,6 +614,66 @@ describe('FilterPanel', () => {
 
       userEvent.click(getByText('Clear All'));
       expect(routerReplace.mock.lastCall[0].query.filters).toBeUndefined();
+    });
+
+    describe('offline', () => {
+      const initialFilters = {
+        status: [ContactFilterStatusEnum.ContactForAppointment],
+      };
+
+      it('is enabled by default', () => {
+        const { getByRole, getByTestId } = render(
+          <TestComponent
+            filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+            savedFilters={[savedFiltersMock]}
+            initialFilters={initialFilters}
+          />,
+        );
+
+        const body = getByTestId('FilterPanelBody');
+        expect(body).not.toHaveAttribute('inert');
+        expect(body).not.toHaveAttribute('aria-disabled');
+        expect(getByRole('button', { name: 'Save' })).not.toBeDisabled();
+        expect(getByRole('button', { name: 'Clear All' })).not.toBeDisabled();
+      });
+
+      it('disables the panel body but keeps the close button', () => {
+        const { getByRole, getByTestId, getByText } = render(
+          <TestComponent
+            filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+            savedFilters={[savedFiltersMock]}
+            initialFilters={initialFilters}
+            disabled
+          />,
+        );
+
+        const body = getByTestId('FilterPanelBody');
+        expect(body).toHaveAttribute('inert');
+        expect(body).toHaveAttribute('aria-disabled', 'true');
+        expect(getByTestId('FilterPanel')).not.toHaveAttribute('inert');
+        expect(() => userEvent.click(getByText('Saved Filters'))).toThrow(
+          /pointer-events set to "none"/,
+        );
+        expect(getByRole('button', { name: 'Save' })).toBeDisabled();
+        expect(getByRole('button', { name: 'Clear All' })).toBeDisabled();
+
+        userEvent.click(getByTestId('FilterPanelClose'));
+        expect(onClose).toHaveBeenCalled();
+      });
+
+      it('disables only Clear All', () => {
+        const { getByRole, getByTestId } = render(
+          <TestComponent
+            filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+            savedFilters={[savedFiltersMock]}
+            initialFilters={initialFilters}
+            clearAllDisabled
+          />,
+        );
+
+        expect(getByTestId('FilterPanelBody')).not.toHaveAttribute('inert');
+        expect(getByRole('button', { name: 'Clear All' })).toBeDisabled();
+      });
     });
 
     it('no filters', async () => {

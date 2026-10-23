@@ -15,6 +15,7 @@ import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useContactPanel } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { StatusEnum } from 'src/graphql/types.generated';
+import { useIsOnline } from 'src/hooks/useIsOnline';
 import theme from '../../../../theme';
 import { StarContactIconButton } from '../../StarContactIconButton/StarContactIconButton';
 import { EditIcon } from '../ContactDetailsTab/StyledComponents';
@@ -84,14 +85,16 @@ export const ContactDetailsHeader: React.FC<Props> = ({
   contactDetailsLoaded,
 }: Props) => {
   const { pathname } = useRouter();
+  const isOnline = useIsOnline();
   const { data } = useGetContactDetailsHeaderQuery({
     variables: {
       accountListId,
       contactId,
       // Don't show the duplicate banner on the merge contacts page
       loadDuplicate:
+        isOnline &&
         pathname !==
-        '/accountLists/[accountListId]/tools/merge/contacts/[[...contactId]]',
+          '/accountLists/[accountListId]/tools/merge/contacts/[[...contactId]]',
     },
   });
   const loading = !data;
@@ -182,6 +185,7 @@ export const ContactDetailsHeader: React.FC<Props> = ({
               <IconButton
                 onClick={() => setEditPartnershipModalOpen(true)}
                 aria-label={t('Edit Partnership Info')}
+                disabled={!isOnline}
               >
                 <EditIcon
                   titleAccess={t('Edit Partnership Info')}
