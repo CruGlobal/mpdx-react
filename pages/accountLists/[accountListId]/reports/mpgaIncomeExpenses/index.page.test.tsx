@@ -11,7 +11,7 @@ import {
 } from '__tests__/util/windowResizeObserver';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
-import { UserTypeEnum } from 'src/graphql/types.generated';
+import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import MPGAReportPage, { getServerSideProps } from './index.page';
 
@@ -21,6 +21,7 @@ const personNumber = '000000111';
 
 interface ComponentProps {
   userType?: UserTypeEnum;
+  usStaffGroup?: UsStaffGroupEnum;
   staffAccountId?: string | null;
   supervisesStaff?: boolean;
   viewedStaffAccountId?: string;
@@ -29,6 +30,7 @@ interface ComponentProps {
 
 const Components = ({
   userType = UserTypeEnum.UsStaff,
+  usStaffGroup = UsStaffGroupEnum.SeniorStaff,
   staffAccountId = '12345',
   supervisesStaff = false,
   viewedStaffAccountId,
@@ -50,7 +52,9 @@ const Components = ({
         GetUser: GetUserQuery;
       }>
         mocks={{
-          GetUser: { user: { userType, staffAccountId, supervisesStaff } },
+          GetUser: {
+            user: { userType, usStaffGroup, staffAccountId, supervisesStaff },
+          },
         }}
         onCall={mutationSpy}
       >
@@ -133,7 +137,35 @@ describe('MPGA Report Page', () => {
     ).toBeInTheDocument();
   });
 
+  it('blocks paid with designation staff from their own report', async () => {
+    const { findByText } = render(
+      <Components
+        userType={UserTypeEnum.UsStaff}
+        usStaffGroup={UsStaffGroupEnum.PaidWithDesignation}
+      />,
+    );
+
+    expect(
+      await findByText('Access to this feature is limited.'),
+    ).toBeInTheDocument();
+  });
+
   describe('supervisor view', () => {
+    it('lets a paid with designation supervisor view a staff report', async () => {
+      const { findByText } = render(
+        <Components
+          userType={UserTypeEnum.UsStaff}
+          usStaffGroup={UsStaffGroupEnum.PaidWithDesignation}
+          supervisesStaff
+          viewedStaffAccountId={id}
+        />,
+      );
+
+      expect(
+        await findByText(/ministry partner giving analysis/i),
+      ).toBeInTheDocument();
+    });
+
     it('lets a supervisor without their own staff account view a staff report', async () => {
       const { findByText } = render(
         <Components
