@@ -1,7 +1,7 @@
 import {
-  getEffectiveEligibility,
   getHousingKind,
   getMhiEligibility,
+  getSalaryEffectiveEligibility,
 } from './housingAllowance';
 
 const italianHcm = {
@@ -37,23 +37,43 @@ describe('getMhiEligibility', () => {
   });
 });
 
-describe('getEffectiveEligibility', () => {
+describe('getSalaryEffectiveEligibility', () => {
   it('uses MHI flag for Italian staff', () => {
-    expect(getEffectiveEligibility(italianHcm)).toBe(true);
-  });
-
-  it('uses MHA flag for non-Italian staff', () => {
-    expect(getEffectiveEligibility(usHcm)).toBe(true);
     expect(
-      getEffectiveEligibility({
-        staffInfo: { country: 'US' },
-        mhaEit: { mhaEligibility: false },
+      getSalaryEffectiveEligibility({
+        staffInfo: { country: 'IT' },
+        mhaSalaryEit: { mhaEligibility: false },
+        mhiEit: { mhiEligibility: true },
+      }),
+    ).toBe(true);
+    expect(
+      getSalaryEffectiveEligibility({
+        staffInfo: { country: 'IT' },
+        mhaSalaryEit: { mhaEligibility: true },
         mhiEit: { mhiEligibility: false },
       }),
     ).toBe(false);
   });
 
+  it('uses the salary MHA flag, not mhaEit, for non-Italian staff', () => {
+    const boardApprovedWithoutIbs = {
+      staffInfo: { country: 'US' },
+      mhaEit: { mhaEligibility: false },
+      mhaSalaryEit: { mhaEligibility: true },
+      mhiEit: { mhiEligibility: false },
+    };
+    const ibsWithoutBoardApproval = {
+      staffInfo: { country: 'US' },
+      mhaEit: { mhaEligibility: true },
+      mhaSalaryEit: { mhaEligibility: false },
+      mhiEit: { mhiEligibility: false },
+    };
+
+    expect(getSalaryEffectiveEligibility(boardApprovedWithoutIbs)).toBe(true);
+    expect(getSalaryEffectiveEligibility(ibsWithoutBoardApproval)).toBe(false);
+  });
+
   it('returns false when hcm is null', () => {
-    expect(getEffectiveEligibility(null)).toBe(false);
+    expect(getSalaryEffectiveEligibility(null)).toBe(false);
   });
 });

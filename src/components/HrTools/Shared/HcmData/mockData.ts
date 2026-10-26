@@ -37,12 +37,18 @@ const noMhaAndNoException: HcmQuery['hcm'][number] = {
   staffInfo: johnDoe,
   mhaRequest: {
     currentApprovedOverallAmount: null,
+    salaryApprovedOverallAmount: null,
     currentTakenAmount: null,
     boardApprovedOnDate: null,
   },
   mhaEit: {
     mhaEligibility: true,
     ineligibilityReasonCode: null,
+  },
+  mhaSalaryEit: {
+    mhaEligibility: false,
+    ineligibilityReasonCode:
+      MinistersHousingIneligibilityReasonEnum.MissingBoardApprovedOnDate,
   },
   mhiEit: {
     mhiEligibility: false,
@@ -81,8 +87,13 @@ const mhaAndNoException: HcmQuery['hcm'][number] = {
   ...noMhaAndNoException,
   mhaRequest: {
     currentApprovedOverallAmount: 15000,
+    salaryApprovedOverallAmount: 15000,
     currentTakenAmount: 10000,
     boardApprovedOnDate: '2026-06-01',
+  },
+  mhaSalaryEit: {
+    mhaEligibility: true,
+    ineligibilityReasonCode: null,
   },
 };
 
@@ -92,6 +103,10 @@ const italianMhiEligible: HcmQuery['hcm'][number] = {
   ...noMhaAndNoException,
   staffInfo: { ...johnDoe, country: 'IT' },
   mhaEit: {
+    mhaEligibility: false,
+    ineligibilityReasonCode: MinistersHousingIneligibilityReasonEnum.ItalyMhi,
+  },
+  mhaSalaryEit: {
     mhaEligibility: false,
     ineligibilityReasonCode: MinistersHousingIneligibilityReasonEnum.ItalyMhi,
   },

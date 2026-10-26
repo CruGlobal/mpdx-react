@@ -17,7 +17,11 @@ import {
 import { Trans, useTranslation } from 'react-i18next';
 import { getHousingKind } from 'src/components/Reports/Shared/HousingAllowance/housingAllowance';
 import { MinistersHousingIneligibilityReasonEnum } from 'src/graphql/types.generated';
-import { getIneligibilityReason, getMhiReason } from './eligibilityReasons';
+import {
+  EligibilityBasis,
+  getIneligibilityReason,
+  getMhiReason,
+} from './eligibilityReasons';
 
 const StyledTable = styled(Table)(({ theme }) => ({
   tableLayout: 'fixed',
@@ -51,6 +55,7 @@ interface EligibilityStatusTableProps {
   spouseIneligibilityReasonCode?: MinistersHousingIneligibilityReasonEnum | null;
   spouseMhiIneligibilityReasonCode?: MinistersHousingIneligibilityReasonEnum | null;
   compact?: boolean;
+  basis?: EligibilityBasis;
 }
 
 export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
@@ -67,6 +72,7 @@ export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
   spouseIneligibilityReasonCode,
   spouseMhiIneligibilityReasonCode,
   compact = false,
+  basis = 'ibs',
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -111,6 +117,7 @@ export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
                 userEligible,
                 userCountry ?? null,
                 userIneligibilityReasonCode ?? null,
+                basis,
               )}
             </TableCell>
             {hasSpouse && (
@@ -120,6 +127,7 @@ export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
                   spouseEligible ?? false,
                   spouseCountry ?? null,
                   spouseIneligibilityReasonCode ?? null,
+                  basis,
                 )}
               </TableCell>
             )}
@@ -181,14 +189,24 @@ export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
                 Any changes will only apply to the approved staff member.
               </Trans>
             )}{' '}
-            <Trans t={t}>
-              Once approved, when you calculate your salary, you will see the
-              approved amount that can be applied to your salary. If you believe
-              this is incorrect, or would like to complete the required IBS
-              courses, please contact Personnel Records at{' '}
-              <Link href="tel:4078262230">(407) 826-2230</Link> or{' '}
-              <Link href="mailto:MHA@cru.org">MHA@cru.org</Link>.
-            </Trans>
+            {basis === 'boardApproval' ? (
+              <Trans t={t}>
+                Once approved, when you calculate your salary, you will see the
+                approved amount that can be applied to your salary. If you
+                believe this is incorrect, please contact Personnel Records at{' '}
+                <Link href="tel:4078262230">(407) 826-2230</Link> or{' '}
+                <Link href="mailto:MHA@cru.org">MHA@cru.org</Link>.
+              </Trans>
+            ) : (
+              <Trans t={t}>
+                Once approved, when you calculate your salary, you will see the
+                approved amount that can be applied to your salary. If you
+                believe this is incorrect, or would like to complete the
+                required IBS courses, please contact Personnel Records at{' '}
+                <Link href="tel:4078262230">(407) 826-2230</Link> or{' '}
+                <Link href="mailto:MHA@cru.org">MHA@cru.org</Link>.
+              </Trans>
+            )}
           </Typography>
         </Box>
       )}
