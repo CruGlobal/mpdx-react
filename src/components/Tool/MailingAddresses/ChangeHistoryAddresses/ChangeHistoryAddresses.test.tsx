@@ -329,7 +329,7 @@ describe('ChangeHistoryAddresses', () => {
     await findByText('4 were automatic');
 
     expect(getByRole('combobox', { name: 'Partner' })).toHaveTextContent(
-      'Gave One or More Gifts',
+      'All Partners',
     );
     expect(getByRole('combobox', { name: 'Changed during' })).toHaveTextContent(
       'Last 12 Months',

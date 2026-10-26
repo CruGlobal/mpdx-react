@@ -1,7 +1,14 @@
-import { AddressChangeMadeByEnum } from 'src/graphql/types.generated';
+import {
+  AddressChangeMadeByEnum,
+  ContactFilterPartnerEnum,
+} from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import { mockAddressChangeHistory } from './ChangeHistoryAddressesMock';
-import { formatMadeByOption, groupMadeByOptions } from './helpers';
+import {
+  formatMadeByOption,
+  formatPartnerFilter,
+  groupMadeByOptions,
+} from './helpers';
 
 const currentUserId = 'user-1';
 
@@ -63,5 +70,15 @@ describe('groupMadeByOptions', () => {
         { value: 'unknown_user', label: 'Not recorded (before Nov 2026)' },
       ],
     });
+  });
+});
+
+describe('formatPartnerFilter', () => {
+  it.each([
+    [ContactFilterPartnerEnum.GaveOneOrMore, 'All Partners'],
+    [ContactFilterPartnerEnum.GaveLastTwoYears, 'Gave in the Last 2 Years'],
+    [ContactFilterPartnerEnum.Lost, 'Lost Partners'],
+  ])('labels %s as "%s"', (partner, label) => {
+    expect(formatPartnerFilter(partner, i18n.t)).toBe(label);
   });
 });

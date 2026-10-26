@@ -12,7 +12,8 @@ export const formatPartnerFilter = (
   t: TFunction,
 ): string => {
   const labels: Record<ContactFilterPartnerEnum, string> = {
-    [ContactFilterPartnerEnum.GaveOneOrMore]: t('Gave One or More Gifts'),
+    // Everyone who has given: the API's AddressChangeHistory::ALL_PARTNERS, so this filter adds nothing to it
+    [ContactFilterPartnerEnum.GaveOneOrMore]: t('All Partners'),
     [ContactFilterPartnerEnum.GaveLastTwoYears]: t('Gave in the Last 2 Years'),
     [ContactFilterPartnerEnum.Lost]: t('Lost Partners'),
   };
