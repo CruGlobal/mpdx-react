@@ -573,6 +573,25 @@ describe('ConfirmAddresses', () => {
       await waitFor(() => expect(queryByText(name)).not.toBeInTheDocument());
     });
 
+    it('drops the change history so it reloads with the confirmed primary', async () => {
+      const cache = new InMemoryCache();
+      const evict = jest.spyOn(cache, 'evict');
+      const { getAllByRole, queryByTestId } = render(
+        <Components cache={cache} mocks={mockInvalidAddressesResponse} />,
+      );
+      await waitFor(() =>
+        expect(queryByTestId('loading')).not.toBeInTheDocument(),
+      );
+
+      userEvent.click(getAllByRole('button', { name: 'Confirm' })[0]);
+
+      await waitFor(() =>
+        expect(evict).toHaveBeenCalledWith({
+          fieldName: 'addressChangeHistory',
+        }),
+      );
+    });
+
     it('should disable the button while confirming', async () => {
       const mutationSpy = jest.fn();
       const { getAllByRole, findByRole, queryByTestId } = render(
