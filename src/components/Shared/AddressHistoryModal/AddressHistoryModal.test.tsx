@@ -171,6 +171,13 @@ describe('AddressHistoryModal', () => {
     expect(getByText('1 change since Jan 2018')).toBeInTheDocument();
   });
 
+  it('says so when no change was logged', async () => {
+    const { getByText, getByRole } = await renderModal({ changes: [] });
+
+    expect(getByText('No address changes yet.')).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Export' })).toBeDisabled();
+  });
+
   it('lists every change newest first with the address it replaced and who made it', async () => {
     const { getByRole } = await renderModal();
     const dialog = within(getByRole('dialog'));

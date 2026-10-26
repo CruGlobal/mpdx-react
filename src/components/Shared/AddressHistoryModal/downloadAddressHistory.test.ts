@@ -1,12 +1,13 @@
 import i18n from 'src/lib/i18n';
+import { AddressHistoryChangeFragment } from './AddressHistory.generated';
 import {
-  HistoryAddress,
   createAddressHistoryCsv,
   downloadAddressHistory,
 } from './downloadAddressHistory';
 
-const addresses: HistoryAddress[] = [
+const changes: AddressHistoryChangeFragment[] = [
   {
+    id: 'change-2',
     street: '2525 Camp Creek Pkwy',
     city: 'College Park',
     state: 'GA',
@@ -15,6 +16,7 @@ const addresses: HistoryAddress[] = [
     createdByUser: { id: 'user-1', firstName: 'Test', lastName: 'User' },
     date: '2024-06-13',
     previousAddress: {
+      id: 'address-1',
       street: '1001 Denman St',
       city: 'Vancouver',
       state: 'BC',
@@ -22,6 +24,7 @@ const addresses: HistoryAddress[] = [
     },
   },
   {
+    id: 'change-1',
     street: '1001 Denman St',
     city: 'Vancouver',
     state: 'BC',
@@ -35,23 +38,23 @@ const addresses: HistoryAddress[] = [
 
 describe('createAddressHistoryCsv', () => {
   it('builds a row per address with the date, address, the one it replaced, and who made it', () => {
-    expect(
-      createAddressHistoryCsv(addresses, 'user-1', i18n.t, 'en-US'),
-    ).toEqual([
-      ['Date', 'Address', 'Previous Address', 'Made by'],
+    expect(createAddressHistoryCsv(changes, 'user-1', i18n.t, 'en-US')).toEqual(
       [
-        'Jun 13, 2024',
-        '2525 Camp Creek Pkwy, College Park, GA 30337',
-        '1001 Denman St, Vancouver, BC V6G 2M4',
-        'You, in MPDX',
+        ['Date', 'Address', 'Previous Address', 'Made by'],
+        [
+          'Jun 13, 2024',
+          '2525 Camp Creek Pkwy, College Park, GA 30337',
+          '1001 Denman St, Vancouver, BC V6G 2M4',
+          'You, in MPDX',
+        ],
+        [
+          'Jan 22, 2018',
+          '1001 Denman St, Vancouver, BC V6G 2M4',
+          '',
+          'Automatic update from DonorHub',
+        ],
       ],
-      [
-        'Jan 22, 2018',
-        '1001 Denman St, Vancouver, BC V6G 2M4',
-        '',
-        'Automatic update from DonorHub',
-      ],
-    ]);
+    );
   });
 });
 
@@ -64,7 +67,7 @@ describe('downloadAddressHistory', () => {
     const removeChild = jest.spyOn(document.body, 'removeChild');
 
     downloadAddressHistory(
-      addresses,
+      changes,
       'Baggins, Frodo',
       'user-1',
       i18n.t,

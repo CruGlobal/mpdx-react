@@ -2,15 +2,8 @@ import { DateTime } from 'luxon';
 import { buildURI } from 'react-csv/lib/core';
 import { TFunction } from 'react-i18next';
 import { dateFormat } from 'src/lib/intlFormat';
-import {
-  AddressAuthor,
-  AddressParts,
-  formatAddress,
-  formatChangeMadeBy,
-} from './addressHistoryHelpers';
-
-export type HistoryAddress = AddressParts &
-  AddressAuthor & { date: string; previousAddress?: AddressParts | null };
+import { AddressHistoryChangeFragment } from './AddressHistory.generated';
+import { formatAddress, formatChangeMadeBy } from './addressHistoryHelpers';
 
 export const downloadCsv = (rows: string[][], title: string): void => {
   const link = document.createElement('a');
@@ -22,28 +15,28 @@ export const downloadCsv = (rows: string[][], title: string): void => {
 };
 
 export const createAddressHistoryCsv = (
-  addresses: HistoryAddress[],
+  changes: AddressHistoryChangeFragment[],
   currentUserId: string | undefined,
   t: TFunction,
   locale: string,
 ): string[][] => [
   [t('Date'), t('Address'), t('Previous Address'), t('Made by')],
-  ...addresses.map((address) => [
-    dateFormat(DateTime.fromISO(address.date), locale),
-    formatAddress(address),
-    address.previousAddress ? formatAddress(address.previousAddress) : '',
-    formatChangeMadeBy(address, currentUserId, t),
+  ...changes.map((change) => [
+    dateFormat(DateTime.fromISO(change.date), locale),
+    formatAddress(change),
+    change.previousAddress ? formatAddress(change.previousAddress) : '',
+    formatChangeMadeBy(change, currentUserId, t),
   ]),
 ];
 
 export const downloadAddressHistory = (
-  addresses: HistoryAddress[],
+  changes: AddressHistoryChangeFragment[],
   contactName: string,
   currentUserId: string | undefined,
   t: TFunction,
   locale: string,
 ): void =>
   downloadCsv(
-    createAddressHistoryCsv(addresses, currentUserId, t, locale),
+    createAddressHistoryCsv(changes, currentUserId, t, locale),
     t('Address History - {{name}}', { name: contactName }),
   );

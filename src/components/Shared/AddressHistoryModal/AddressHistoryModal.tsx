@@ -134,17 +134,17 @@ export const AddressHistoryModal: React.FC<AddressHistoryModalProps> = ({
                 </Box>
               </Box>
             )}
-            {oldestChange && (
-              <Typography variant="body2" color="text.secondary" my={2}>
-                {t('{{count}} changes since {{date}}', {
-                  count: changes.length,
-                  date: DateTime.fromISO(oldestChange).toLocaleString(
-                    { month: 'short', year: 'numeric' },
-                    { locale },
-                  ),
-                })}
-              </Typography>
-            )}
+            <Typography variant="body2" color="text.secondary" my={2}>
+              {oldestChange
+                ? t('{{count}} changes since {{date}}', {
+                    count: changes.length,
+                    date: DateTime.fromISO(oldestChange).toLocaleString(
+                      { month: 'short', year: 'numeric' },
+                      { locale },
+                    ),
+                  })
+                : t('No address changes yet.')}
+            </Typography>
             {changes.map((change) => (
               <Box
                 key={change.id}
