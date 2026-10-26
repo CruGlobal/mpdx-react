@@ -174,6 +174,23 @@ describe('AddressHistoryModal', () => {
     expect(getByText('2 changes since May 2010')).toBeInTheDocument();
   });
 
+  it('keeps the order the changes were logged, even when an older start date dates one earlier', async () => {
+    const { getByRole } = await renderModal({
+      changes: [
+        change('2', '111 Street', 'MPDX', {
+          date: '2010-05-01',
+          previousStreet: '1001 Denman St',
+        }),
+        change('1', '1001 Denman St', 'DataServer', { date: '2018-01-22' }),
+      ],
+    });
+
+    const dates = within(getByRole('dialog'))
+      .getAllByText(/^[A-Z][a-z]{2} \d{1,2}, \d{4}$/)
+      .map((date) => date.textContent);
+    expect(dates).toEqual(['May 1, 2010', 'Jan 22, 2018']);
+  });
+
   it('uses singular English for one change', async () => {
     const { getByText } = await renderModal({
       changes: [

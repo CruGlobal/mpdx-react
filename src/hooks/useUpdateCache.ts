@@ -3,9 +3,10 @@ import {
   PrimaryMailingAddressFragmentDoc,
   SetContactPrimaryAddressMutation,
 } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/SetPrimaryAddress.generated';
+import { evictAddressChangeHistory } from 'src/components/Shared/AddressHistoryModal/addressHistoryHelpers';
 
 // This hook provides an Apollo cache update function for the setContactPrimaryAddress mutation
-// used by the add address and edit address modals. The contact's primaryAddress is left to their refetch: pointing it
+// used by the add address and edit address modals and by Create Multiple Contacts. The contact's primaryAddress is left to their refetch: pointing it
 // at an address the cache only partly knows would make the Contacts list reload every page.
 export function useUpdateCache() {
   const update: MutationUpdaterFunction<
@@ -26,6 +27,8 @@ export function useUpdateCache() {
         },
       });
     });
+    // The new primary was logged as a change
+    evictAddressChangeHistory(cache);
   };
 
   return { update };

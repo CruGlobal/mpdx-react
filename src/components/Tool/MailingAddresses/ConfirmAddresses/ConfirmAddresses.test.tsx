@@ -635,6 +635,39 @@ describe('ConfirmAddresses', () => {
       await waitFor(() => expect(queryByText(name)).not.toBeInTheDocument());
     });
 
+    it('reloads the contact when the old primary was demoted but the new one failed', async () => {
+      const mutationSpy = jest.fn();
+      let saves = 0;
+      const { getAllByRole, findAllByTestId, queryByTestId } = render(
+        <Components
+          onCall={mutationSpy}
+          mocks={{
+            ...switchableMocks,
+            // The first save demotes the old primary; the second, the new primary, fails
+            UpdateContactAddress: () => {
+              if (saves++ === 1) {
+                throw new Error('Server Error');
+              }
+              return {};
+            },
+          }}
+        />,
+      );
+      await waitFor(() =>
+        expect(queryByTestId('loading')).not.toBeInTheDocument(),
+      );
+
+      userEvent.click((await findAllByTestId('contactStarIcon'))[0]);
+      userEvent.click(getAllByRole('button', { name: 'Confirm' })[0]);
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation(
+          'ContactPrimaryAddressChange',
+          { contactId: 'contactId' },
+        ),
+      );
+    });
+
     it('drops the change history when a new primary is confirmed', async () => {
       const cache = new InMemoryCache();
       const evict = jest.spyOn(cache, 'evict');

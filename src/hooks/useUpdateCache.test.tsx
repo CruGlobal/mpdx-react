@@ -41,6 +41,15 @@ const runUpdate = (cache: ReturnType<typeof createCache>) => {
 };
 
 describe('useUpdateCache', () => {
+  it('drops the change history, which the new primary just added to', () => {
+    const cache = createCache();
+    const evict = jest.spyOn(cache, 'evict');
+
+    runUpdate(cache);
+
+    expect(evict).toHaveBeenCalledWith({ fieldName: 'addressChangeHistory' });
+  });
+
   it('marks which address is primary', () => {
     const cache = createCache();
 

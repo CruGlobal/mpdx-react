@@ -34,6 +34,7 @@ import {
   SubmitButton,
 } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import { PersonCreateInput, StatusEnum } from 'src/graphql/types.generated';
+import { useUpdateCache } from 'src/hooks/useUpdateCache';
 import theme from '../../../../../../../../theme';
 import { useCreateContactMutation } from '../CreateContact/CreateContact.generated';
 
@@ -139,7 +140,10 @@ export const CreateMultipleContacts = ({
   const [createContact] = useCreateContactMutation();
   const [createPerson] = useCreatePersonMutation();
   const [createAddress] = useCreateContactAddressMutation();
-  const [setPrimaryAddress] = useSetContactPrimaryAddressMutation();
+  const { update: updatePrimaryAddressCache } = useUpdateCache();
+  const [setPrimaryAddress] = useSetContactPrimaryAddressMutation({
+    update: updatePrimaryAddressCache,
+  });
 
   const onSubmit = async (attributes: ContactTable) => {
     const filteredContacts = attributes.contacts.filter(
