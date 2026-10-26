@@ -196,6 +196,51 @@ describe('CreateMultipleContacts', () => {
       });
     }, 20000);
 
+    it('drops the change history even when setting a primary fails', async () => {
+      const cache = createCache();
+      const evict = jest.spyOn(cache, 'evict');
+      const { getByText, getAllByRole } = render(
+        <ThemeProvider theme={theme}>
+          <SnackbarProvider>
+            <TestRouter router={router}>
+              <GqlMockedProvider<CreateContactMocks>
+                cache={cache}
+                mocks={{
+                  CreateContact: {
+                    createContact: { contact: { id: 'contact-1' } },
+                  },
+                  CreateContactAddress: {
+                    createAddress: { address: { id: 'address-1' } },
+                  },
+                  SetContactPrimaryAddress: () => {
+                    throw new Error('Server Error');
+                  },
+                }}
+              >
+                <CreateMultipleContacts
+                  accountListId={accountListId}
+                  handleClose={handleClose}
+                  rows={3}
+                />
+              </GqlMockedProvider>
+            </TestRouter>
+          </SnackbarProvider>
+        </ThemeProvider>,
+      );
+
+      userEvent.type(getAllByRole('textbox', { name: 'First' })[0], first);
+      userEvent.type(getAllByRole('textbox', { name: 'Last' })[0], last);
+      userEvent.type(getAllByRole('combobox')[0], address);
+      await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
+      userEvent.click(getByText('Save'));
+
+      await waitFor(() =>
+        expect(evict).toHaveBeenCalledWith({
+          fieldName: 'addressChangeHistory',
+        }),
+      );
+    }, 20000);
+
     it('creates one referral', async () => {
       const { getByRole, getAllByRole } = render(
         <ThemeProvider theme={theme}>

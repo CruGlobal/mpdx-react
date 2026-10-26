@@ -247,9 +247,10 @@ export const CreateMultipleContacts = ({
           }
           return contactId;
         }),
-      );
-      // Each new primary was logged as a change
-      evictAddressChangeHistory(client.cache);
+      ).finally(() => {
+        // Each new primary was logged as a change, even if another contact then failed
+        evictAddressChangeHistory(client.cache);
+      });
 
       enqueueSnackbar(
         createdContacts.length > 1
