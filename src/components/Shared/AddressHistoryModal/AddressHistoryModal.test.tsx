@@ -161,6 +161,21 @@ describe('AddressHistoryModal', () => {
     expect(getByText('3 changes since Jan 2018')).toBeInTheDocument();
   });
 
+  it('counts changes since the earliest date, even when it is not the last row', async () => {
+    // Logged last, but dated by an older start date
+    const { getByText } = await renderModal({
+      changes: [
+        change('2', '111 Street', 'MPDX', {
+          date: '2010-05-01',
+          previousStreet: '1001 Denman St',
+        }),
+        change('1', '1001 Denman St', 'DataServer', { date: '2018-01-22' }),
+      ],
+    });
+
+    expect(getByText('2 changes since May 2010')).toBeInTheDocument();
+  });
+
   it('uses singular English for one change', async () => {
     const { getByText } = await renderModal({
       changes: [

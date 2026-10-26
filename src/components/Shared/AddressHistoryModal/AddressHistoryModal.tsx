@@ -65,7 +65,8 @@ export const AddressHistoryModal: React.FC<AddressHistoryModalProps> = ({
   const contact = data?.contact;
   const changes = contact?.addressChanges ?? [];
   const primaryAddress = contact?.primaryAddress;
-  const oldestChange = changes[changes.length - 1]?.date;
+  // Changes come in logged order, and a start date can date one earlier than the rows below it
+  const oldestChange = changes.map((change) => change.date).sort()[0];
 
   return (
     <Dialog
