@@ -1,7 +1,7 @@
 import {
+  getBoardApprovalEligibility,
   getHousingKind,
   getMhiEligibility,
-  getSalaryEffectiveEligibility,
 } from './housingAllowance';
 
 const italianHcm = {
@@ -37,19 +37,19 @@ describe('getMhiEligibility', () => {
   });
 });
 
-describe('getSalaryEffectiveEligibility', () => {
+describe('getBoardApprovalEligibility', () => {
   it('uses MHI flag for Italian staff', () => {
     expect(
-      getSalaryEffectiveEligibility({
+      getBoardApprovalEligibility({
         staffInfo: { country: 'IT' },
-        mhaSalaryEit: { mhaEligibility: false },
+        mhaBoardApproval: { mhaEligibility: false },
         mhiEit: { mhiEligibility: true },
       }),
     ).toBe(true);
     expect(
-      getSalaryEffectiveEligibility({
+      getBoardApprovalEligibility({
         staffInfo: { country: 'IT' },
-        mhaSalaryEit: { mhaEligibility: true },
+        mhaBoardApproval: { mhaEligibility: true },
         mhiEit: { mhiEligibility: false },
       }),
     ).toBe(false);
@@ -59,21 +59,21 @@ describe('getSalaryEffectiveEligibility', () => {
     const boardApprovedWithoutIbs = {
       staffInfo: { country: 'US' },
       mhaEit: { mhaEligibility: false },
-      mhaSalaryEit: { mhaEligibility: true },
+      mhaBoardApproval: { mhaEligibility: true },
       mhiEit: { mhiEligibility: false },
     };
     const ibsWithoutBoardApproval = {
       staffInfo: { country: 'US' },
       mhaEit: { mhaEligibility: true },
-      mhaSalaryEit: { mhaEligibility: false },
+      mhaBoardApproval: { mhaEligibility: false },
       mhiEit: { mhiEligibility: false },
     };
 
-    expect(getSalaryEffectiveEligibility(boardApprovedWithoutIbs)).toBe(true);
-    expect(getSalaryEffectiveEligibility(ibsWithoutBoardApproval)).toBe(false);
+    expect(getBoardApprovalEligibility(boardApprovedWithoutIbs)).toBe(true);
+    expect(getBoardApprovalEligibility(ibsWithoutBoardApproval)).toBe(false);
   });
 
   it('returns false when hcm is null', () => {
-    expect(getSalaryEffectiveEligibility(null)).toBe(false);
+    expect(getBoardApprovalEligibility(null)).toBe(false);
   });
 });

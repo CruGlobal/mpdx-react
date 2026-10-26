@@ -53,7 +53,7 @@ query Hcm(
       mhaEligibility
       ineligibilityReasonCode
     }
-    mhaSalaryEit {
+    mhaBoardApproval {
       mhaEligibility
       ineligibilityReasonCode
     }
@@ -67,7 +67,7 @@ query Hcm(
     }
     mhaRequest {
       currentApprovedOverallAmount
-      salaryApprovedOverallAmount
+      boardApprovedOverallAmount
       currentTakenAmount
       boardApprovedOnDate
     }

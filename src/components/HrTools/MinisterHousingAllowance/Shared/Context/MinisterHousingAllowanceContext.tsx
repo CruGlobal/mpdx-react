@@ -54,6 +54,8 @@ export type ContextType = {
   spousePreferredName: string;
   userEligibleForMHA: boolean;
   spouseEligibleForMHA: boolean;
+  userBoardApprovedForMHA: boolean;
+  spouseBoardApprovedForMHA: boolean;
   userApprovedOverallAmount: number | null;
   spouseApprovedOverallAmount: number | null;
   userTakenAmount: number | null;
@@ -198,6 +200,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
     [spouseHcmData],
   );
 
+  // IBS based: decides who may start, duplicate or submit a new MHA request
   const userEligibleForMHA = useMemo(
     () => userHcmData?.mhaEit?.mhaEligibility ?? false,
     [userHcmData],
@@ -208,13 +211,25 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
     [spouseHcmData],
   );
 
+  // Board approval based: whether the person has an MHA now. A board approval
+  // date of any age counts, even when the IBS certification has expired.
+  const userBoardApprovedForMHA = useMemo(
+    () => userHcmData?.mhaBoardApproval?.mhaEligibility ?? false,
+    [userHcmData],
+  );
+
+  const spouseBoardApprovedForMHA = useMemo(
+    () => spouseHcmData?.mhaBoardApproval?.mhaEligibility ?? false,
+    [spouseHcmData],
+  );
+
   const userApprovedOverallAmount = useMemo(
-    () => userHcmData?.mhaRequest.currentApprovedOverallAmount ?? null,
+    () => userHcmData?.mhaRequest.boardApprovedOverallAmount ?? null,
     [userHcmData],
   );
 
   const spouseApprovedOverallAmount = useMemo(
-    () => spouseHcmData?.mhaRequest.currentApprovedOverallAmount ?? null,
+    () => spouseHcmData?.mhaRequest.boardApprovedOverallAmount ?? null,
     [spouseHcmData],
   );
 
@@ -258,6 +273,8 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       spousePreferredName,
       userEligibleForMHA,
       spouseEligibleForMHA,
+      userBoardApprovedForMHA,
+      spouseBoardApprovedForMHA,
       userApprovedOverallAmount,
       spouseApprovedOverallAmount,
       userTakenAmount,
@@ -292,6 +309,8 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       spousePreferredName,
       userEligibleForMHA,
       spouseEligibleForMHA,
+      userBoardApprovedForMHA,
+      spouseBoardApprovedForMHA,
       userApprovedOverallAmount,
       spouseApprovedOverallAmount,
       userTakenAmount,

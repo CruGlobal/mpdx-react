@@ -46,6 +46,8 @@ export const MinisterHousingAllowanceReport = () => {
     spousePreferredName,
     userEligibleForMHA,
     spouseEligibleForMHA,
+    userBoardApprovedForMHA,
+    spouseBoardApprovedForMHA,
     userHcmData,
     spouseHcmData,
     userApprovedOverallAmount,
@@ -114,21 +116,26 @@ export const MinisterHousingAllowanceReport = () => {
 
   const hasNoRequests = !requests.length;
 
+  // Starting a new request needs the IBS certification (eitherPersonEligible);
+  // an MHA someone already has rests on the board approval (eitherPersonApproved)
   const eitherPersonEligible = userEligibleForMHA || spouseEligibleForMHA;
+  const eitherPersonApproved =
+    userBoardApprovedForMHA || spouseBoardApprovedForMHA;
+  const showApprovedMha = eitherPersonEligible || eitherPersonApproved;
 
   // MHAs approved before the MPDX launch only exist in HCM
   const isHcmApprovedOnly =
     hasNoRequests &&
-    ((userEligibleForMHA && (userApprovedOverallAmount ?? 0) > 0) ||
-      (spouseEligibleForMHA && (spouseApprovedOverallAmount ?? 0) > 0));
+    ((userBoardApprovedForMHA && (userApprovedOverallAmount ?? 0) > 0) ||
+      (spouseBoardApprovedForMHA && (spouseApprovedOverallAmount ?? 0) > 0));
 
   const hasCurrentBoardApprovedMha =
     currentRequest?.status === MhaStatusEnum.BoardApproved;
   const showNewRequestButton =
     eitherPersonEligible && !hasBlockingRequest && !hasCurrentBoardApprovedMha;
 
-  const showCurrentRequest = eitherPersonEligible && currentRequest;
-  const showPreviousRequests = eitherPersonEligible && previousApprovedRequest;
+  const showCurrentRequest = showApprovedMha && currentRequest;
+  const showPreviousRequests = showApprovedMha && previousApprovedRequest;
 
   const anyoneIneligible =
     !userEligibleForMHA || (isMarried && !spouseEligibleForMHA);
@@ -191,6 +198,7 @@ export const MinisterHousingAllowanceReport = () => {
                         isPending={false}
                         isEditable={false}
                         isHcmApprovedOnly
+                        canRequestNewMha={eitherPersonEligible}
                       />
                     </Box>
                     <CurrentBoardApproved
@@ -207,13 +215,14 @@ export const MinisterHousingAllowanceReport = () => {
                     <Box mt={2}>{eligibilityStatusTable}</Box>
                   </>
                 ) : (
-                  eitherPersonEligible && (
+                  showApprovedMha && (
                     <Box mb={2}>
                       <EligibleDisplay
                         isPending={isCurrentRequestPending}
                         isEditable={
                           currentRequest.status === MhaStatusEnum.ActionRequired
                         }
+                        canRequestNewMha={eitherPersonEligible}
                       />
                     </Box>
                   )

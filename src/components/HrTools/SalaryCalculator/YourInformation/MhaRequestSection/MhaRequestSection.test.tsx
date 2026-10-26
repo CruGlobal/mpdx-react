@@ -73,7 +73,7 @@ describe('MhaRequestSection', () => {
     const { findByText } = render(
       <TestComponent
         hcmUser={{
-          mhaSalaryEit: { mhaEligibility: false },
+          mhaBoardApproval: { mhaEligibility: false },
         }}
       />,
     );
@@ -92,13 +92,13 @@ describe('MhaRequestSection', () => {
               ineligibilityReasonCode:
                 MinistersHousingIneligibilityReasonEnum.IbsCertificationExpired,
             },
-            mhaSalaryEit: {
+            mhaBoardApproval: {
               mhaEligibility: true,
               ineligibilityReasonCode: null,
             },
             mhaRequest: {
               currentApprovedOverallAmount: 0,
-              salaryApprovedOverallAmount: 18000,
+              boardApprovedOverallAmount: 18000,
             },
           }}
         />,
@@ -117,14 +117,14 @@ describe('MhaRequestSection', () => {
           hasSpouse={false}
           hcmUser={{
             mhaEit: { mhaEligibility: true, ineligibilityReasonCode: null },
-            mhaSalaryEit: {
+            mhaBoardApproval: {
               mhaEligibility: false,
               ineligibilityReasonCode:
                 MinistersHousingIneligibilityReasonEnum.MissingBoardApprovedOnDate,
             },
             mhaRequest: {
               currentApprovedOverallAmount: 20000,
-              salaryApprovedOverallAmount: 0,
+              boardApprovedOverallAmount: 0,
             },
           }}
         />,
@@ -149,10 +149,13 @@ describe('MhaRequestSection', () => {
             ineligibilityReasonCode:
               MinistersHousingIneligibilityReasonEnum.IbsCertificationExpired,
           },
-          mhaSalaryEit: { mhaEligibility: true, ineligibilityReasonCode: null },
+          mhaBoardApproval: {
+            mhaEligibility: true,
+            ineligibilityReasonCode: null,
+          },
         }}
         hcmSpouse={{
-          mhaSalaryEit: {
+          mhaBoardApproval: {
             mhaEligibility: false,
             ineligibilityReasonCode:
               MinistersHousingIneligibilityReasonEnum.MissingBoardApprovedOnDate,
@@ -179,10 +182,10 @@ describe('MhaRequestSection', () => {
       const { findByTestId } = render(
         <TestComponent
           hcmUser={{
-            mhaRequest: { salaryApprovedOverallAmount: 0 },
+            mhaRequest: { boardApprovedOverallAmount: 0 },
           }}
           hcmSpouse={{
-            mhaRequest: { salaryApprovedOverallAmount: 0 },
+            mhaRequest: { boardApprovedOverallAmount: 0 },
           }}
         />,
       );
@@ -194,10 +197,10 @@ describe('MhaRequestSection', () => {
       const { findByTestId } = render(
         <TestComponent
           hcmUser={{
-            mhaRequest: { salaryApprovedOverallAmount: 0 },
+            mhaRequest: { boardApprovedOverallAmount: 0 },
           }}
           hcmSpouse={{
-            mhaRequest: { salaryApprovedOverallAmount: 20000 },
+            mhaRequest: { boardApprovedOverallAmount: 20000 },
           }}
         />,
       );
@@ -209,10 +212,10 @@ describe('MhaRequestSection', () => {
       const { queryByTestId, findByTestId } = render(
         <TestComponent
           hcmUser={{
-            mhaRequest: { salaryApprovedOverallAmount: 20000 },
+            mhaRequest: { boardApprovedOverallAmount: 20000 },
           }}
           hcmSpouse={{
-            mhaRequest: { salaryApprovedOverallAmount: 20000 },
+            mhaRequest: { boardApprovedOverallAmount: 20000 },
           }}
         />,
       );
@@ -225,7 +228,7 @@ describe('MhaRequestSection', () => {
   describe('MHI labeling for Italian users', () => {
     const italianUser = {
       staffInfo: { country: 'IT' },
-      mhaSalaryEit: {
+      mhaBoardApproval: {
         mhaEligibility: false,
         ineligibilityReasonCode:
           MinistersHousingIneligibilityReasonEnum.ItalyMhi,
@@ -251,7 +254,7 @@ describe('MhaRequestSection', () => {
         <TestComponent
           hcmUser={{
             ...italianUser,
-            mhaRequest: { salaryApprovedOverallAmount: 0 },
+            mhaRequest: { boardApprovedOverallAmount: 0 },
           }}
           hasSpouse={false}
         />,
@@ -271,7 +274,7 @@ describe('MhaRequestSection', () => {
     it('uses MHI wording when only the Italian spouse field renders (mixed couple)', async () => {
       const { findByText, queryByText } = render(
         <TestComponent
-          hcmUser={{ mhaSalaryEit: { mhaEligibility: false } }}
+          hcmUser={{ mhaBoardApproval: { mhaEligibility: false } }}
           hcmSpouse={italianUser}
         />,
       );

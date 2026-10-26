@@ -122,7 +122,7 @@ describe('useMhaRequestData', () => {
   it('hides user fields when user is not eligible', async () => {
     const { result } = renderHook(() => useMhaRequestData(), {
       wrapper: createWrapper({
-        hcmUser: { mhaSalaryEit: { mhaEligibility: false } },
+        hcmUser: { mhaBoardApproval: { mhaEligibility: false } },
       }),
     });
 
@@ -137,7 +137,7 @@ describe('useMhaRequestData', () => {
   it('hides spouse fields when spouse is not eligible', async () => {
     const { result } = renderHook(() => useMhaRequestData(), {
       wrapper: createWrapper({
-        hcmSpouse: { mhaSalaryEit: { mhaEligibility: false } },
+        hcmSpouse: { mhaBoardApproval: { mhaEligibility: false } },
       }),
     });
 
@@ -158,10 +158,13 @@ describe('useMhaRequestData', () => {
             ineligibilityReasonCode:
               MinistersHousingIneligibilityReasonEnum.IbsCertificationExpired,
           },
-          mhaSalaryEit: { mhaEligibility: true, ineligibilityReasonCode: null },
+          mhaBoardApproval: {
+            mhaEligibility: true,
+            ineligibilityReasonCode: null,
+          },
           mhaRequest: {
             currentApprovedOverallAmount: 0,
-            salaryApprovedOverallAmount: 18000,
+            boardApprovedOverallAmount: 18000,
           },
         },
         hasSpouse: false,
@@ -184,14 +187,14 @@ describe('useMhaRequestData', () => {
       wrapper: createWrapper({
         hcmUser: {
           mhaEit: { mhaEligibility: true, ineligibilityReasonCode: null },
-          mhaSalaryEit: {
+          mhaBoardApproval: {
             mhaEligibility: false,
             ineligibilityReasonCode:
               MinistersHousingIneligibilityReasonEnum.MissingBoardApprovedOnDate,
           },
           mhaRequest: {
             currentApprovedOverallAmount: 20000,
-            salaryApprovedOverallAmount: 0,
+            boardApprovedOverallAmount: 0,
           },
         },
         hasSpouse: false,
@@ -217,7 +220,7 @@ describe('useMhaRequestData', () => {
         hcmUser: {
           mhaRequest: {
             currentApprovedOverallAmount: 20000,
-            salaryApprovedOverallAmount: null,
+            boardApprovedOverallAmount: null,
           },
         },
         hasSpouse: false,
@@ -240,7 +243,7 @@ describe('useMhaRequestData', () => {
             ineligibilityReasonCode:
               MinistersHousingIneligibilityReasonEnum.IbsCertificationExpired,
           },
-          mhaSalaryEit: {
+          mhaBoardApproval: {
             mhaEligibility: false,
             ineligibilityReasonCode:
               MinistersHousingIneligibilityReasonEnum.PersonType,
@@ -257,7 +260,7 @@ describe('useMhaRequestData', () => {
             ineligibilityReasonCode:
               MinistersHousingIneligibilityReasonEnum.MissingIbsCertificationDate,
           },
-          mhaSalaryEit: {
+          mhaBoardApproval: {
             mhaEligibility: false,
             ineligibilityReasonCode:
               MinistersHousingIneligibilityReasonEnum.SupportType,
@@ -294,8 +297,8 @@ describe('useMhaRequestData', () => {
   it('hides both fields when neither is eligible', async () => {
     const { result } = renderHook(() => useMhaRequestData(), {
       wrapper: createWrapper({
-        hcmUser: { mhaSalaryEit: { mhaEligibility: false } },
-        hcmSpouse: { mhaSalaryEit: { mhaEligibility: false } },
+        hcmUser: { mhaBoardApproval: { mhaEligibility: false } },
+        hcmSpouse: { mhaBoardApproval: { mhaEligibility: false } },
       }),
     });
 
@@ -310,7 +313,7 @@ describe('useMhaRequestData', () => {
   it('shows no MHA message when user has no MHA request', async () => {
     const { result } = renderHook(() => useMhaRequestData(), {
       wrapper: createWrapper({
-        hcmUser: { mhaRequest: { salaryApprovedOverallAmount: 0 } },
+        hcmUser: { mhaRequest: { boardApprovedOverallAmount: 0 } },
       }),
     });
 
@@ -325,8 +328,8 @@ describe('useMhaRequestData', () => {
   it('shows no MHA message for both when neither has MHA request', async () => {
     const { result } = renderHook(() => useMhaRequestData(), {
       wrapper: createWrapper({
-        hcmUser: { mhaRequest: { salaryApprovedOverallAmount: 0 } },
-        hcmSpouse: { mhaRequest: { salaryApprovedOverallAmount: 0 } },
+        hcmUser: { mhaRequest: { boardApprovedOverallAmount: 0 } },
+        hcmSpouse: { mhaRequest: { boardApprovedOverallAmount: 0 } },
       }),
     });
 
@@ -354,7 +357,7 @@ describe('useMhaRequestData', () => {
   it('hides user fields when user is ineligible and no spouse exists', async () => {
     const { result } = renderHook(() => useMhaRequestData(), {
       wrapper: createWrapper({
-        hcmUser: { mhaSalaryEit: { mhaEligibility: false } },
+        hcmUser: { mhaBoardApproval: { mhaEligibility: false } },
         hasSpouse: false,
       }),
     });
@@ -372,7 +375,7 @@ describe('useMhaRequestData', () => {
       wrapper: createWrapper({
         hcmUser: {
           staffInfo: { country: 'IT' },
-          mhaSalaryEit: { mhaEligibility: false },
+          mhaBoardApproval: { mhaEligibility: false },
           mhiEit: { mhiEligibility: true },
         },
         hasSpouse: false,
@@ -392,7 +395,7 @@ describe('useMhaRequestData', () => {
       wrapper: createWrapper({
         hcmUser: {
           staffInfo: { country: 'IT' },
-          mhaSalaryEit: { mhaEligibility: false },
+          mhaBoardApproval: { mhaEligibility: false },
           mhiEit: { mhiEligibility: true },
         },
         hasSpouse: false,
@@ -419,11 +422,11 @@ describe('useMhaRequestData', () => {
       wrapper: createWrapper({
         hcmUser: {
           staffInfo: { country: 'US' },
-          mhaSalaryEit: { mhaEligibility: true },
+          mhaBoardApproval: { mhaEligibility: true },
         },
         hcmSpouse: {
           staffInfo: { country: 'IT' },
-          mhaSalaryEit: { mhaEligibility: false },
+          mhaBoardApproval: { mhaEligibility: false },
           mhiEit: { mhiEligibility: true },
         },
         salaryRequestMock: { mhaAmount: 12000, spouseMhaAmount: 12000 },

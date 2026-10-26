@@ -8,9 +8,9 @@ type ReasonCopy = Partial<
   Record<MinistersHousingIneligibilityReasonEnum, string>
 >;
 
-// What MHA eligibility rests on: the MHA Request form checks the IBS
+// What MHA eligibility rests on: requesting a new MHA checks the IBS
 // certification (mhaEit), the Salary Calculator checks the Board approval date
-// (mhaSalaryEit).
+// (mhaBoardApproval).
 export type EligibilityBasis = 'ibs' | 'boardApproval';
 
 export const getIneligibilityReason = (

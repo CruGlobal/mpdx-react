@@ -7,8 +7,8 @@ type HcmForMhi = {
   mhiEit: { mhiEligibility: boolean };
 };
 
-type HcmForSalaryHousing = HcmForMhi & {
-  mhaSalaryEit: { mhaEligibility: boolean };
+type HcmForBoardApproval = HcmForMhi & {
+  mhaBoardApproval: { mhaEligibility: boolean };
 };
 
 // Italian staff apply for MHI; everyone else applies for MHA.
@@ -18,11 +18,12 @@ export const getHousingKind = (country: string | null): HousingKind =>
 export const getMhiEligibility = (hcm: HcmForMhi | null): boolean =>
   hcm?.mhiEit.mhiEligibility ?? false;
 
-// The Salary Calculator gates MHA on the board approval date (mhaSalaryEit),
-// not on the IBS certification behind mhaEit that the MHA Request form uses.
-export const getSalaryEffectiveEligibility = (
-  hcm: HcmForSalaryHousing | null,
+// Whether someone has an MHA (or MHI) now. MHA rests on the board approval date
+// (mhaBoardApproval), not on the IBS certification behind mhaEit, which only
+// decides who may request a new MHA.
+export const getBoardApprovalEligibility = (
+  hcm: HcmForBoardApproval | null,
 ): boolean =>
   getHousingKind(hcm?.staffInfo.country ?? null) === 'MHI'
     ? getMhiEligibility(hcm)
-    : (hcm?.mhaSalaryEit.mhaEligibility ?? false);
+    : (hcm?.mhaBoardApproval.mhaEligibility ?? false);
