@@ -1,10 +1,17 @@
 import { ApolloClient } from '@apollo/client';
 import { signOut } from 'next-auth/react';
+import {
+  pauseCachePersistence,
+  purgeCachePersistence,
+} from './apollo/persistence/cachePersistence';
+import { broadcastSessionEnded } from './apollo/persistence/sessionChannel';
 import { clearSessionData, signOutAndClear } from './clearSessionData';
 import { addDatadogError, clearDatadogUser } from './dataDog';
 import { CACHE_PREFIX, shouldKeepOnSignOut } from './serviceWorker/cacheNames';
 
 jest.mock('src/lib/dataDog');
+jest.mock('src/lib/apollo/persistence/cachePersistence');
+jest.mock('src/lib/apollo/persistence/sessionChannel');
 
 // Serwist names caches `${cacheId}-${id}-${scope}`, and src/sw/index.ts passes CACHE_PREFIX as cacheId.
 const precacheName = `${CACHE_PREFIX}-precache-v2-https://mpdx.org/`;
@@ -97,6 +104,52 @@ describe('clearSessionData', () => {
     await expect(clearSessionData(client)).resolves.toBeUndefined();
     expect(clearStore).toHaveBeenCalled();
   });
+
+  it('pauses persistence before clearing the store and purges after', async () => {
+    await clearSessionData(client);
+    const order = (fn: unknown) =>
+      (fn as jest.Mock).mock.invocationCallOrder[0];
+    expect(order(pauseCachePersistence)).toBeLessThan(order(clearStore));
+    expect(order(purgeCachePersistence)).toBeGreaterThan(order(clearStore));
+    expect(broadcastSessionEnded).toHaveBeenCalled();
+  });
+
+  it.each([
+    [
+      'pauseCachePersistence',
+      () =>
+        (pauseCachePersistence as jest.Mock).mockImplementationOnce(() => {
+          throw new Error('x');
+        }),
+    ],
+    [
+      'purgeCachePersistence',
+      () =>
+        (purgeCachePersistence as jest.Mock).mockRejectedValueOnce(
+          new Error('x'),
+        ),
+    ],
+    [
+      'broadcast',
+      () =>
+        (broadcastSessionEnded as jest.Mock).mockImplementationOnce(() => {
+          throw new Error('x');
+        }),
+    ],
+  ])(
+    'reports a failing %s step and still runs the rest',
+    async (step, fail) => {
+      keys.mockResolvedValue([runtimeName]);
+      fail();
+      await clearSessionData(client);
+      expect(addDatadogError).toHaveBeenCalledWith(expect.any(Error), {
+        mpdxErrorType: 'clear_session_data',
+        step,
+      });
+      expect(clearStore).toHaveBeenCalled();
+      expect(deleteCache).toHaveBeenCalled();
+    },
+  );
 });
 
 describe('signOutAndClear', () => {

@@ -12,6 +12,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useIneligibleByGroup } from 'src/hooks/useIneligibleByGroup';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from '../../../lib/intlFormat';
 import AnimatedBox from '../../AnimatedBox';
@@ -45,6 +46,7 @@ const Balance = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const accountListId = useAccountListId();
+  const { hasNoAccountBalance, userPending } = useIneligibleByGroup();
 
   return (
     <>
@@ -55,14 +57,24 @@ const Balance = ({
       </Box>
       <AnimatedCard className={classes.card}>
         <CardContent className={classes.cardContent}>
-          <Typography variant="h5" data-testid="BalanceTypography">
-            {loading || balance === undefined ? (
-              <Skeleton variant="text" />
-            ) : (
-              currencyFormat(balance, currencyCode, locale)
-            )}
-          </Typography>
-          <Typography>{t('It may take a few days to update.')}</Typography>
+          {hasNoAccountBalance ? (
+            <Typography>
+              {t(
+                'Your designation is not connected to a staff account, so there is no account balance to show.',
+              )}
+            </Typography>
+          ) : (
+            <>
+              <Typography variant="h5" data-testid="BalanceTypography">
+                {loading || userPending || balance === undefined ? (
+                  <Skeleton variant="text" />
+                ) : (
+                  currencyFormat(balance, currencyCode, locale)
+                )}
+              </Typography>
+              <Typography>{t('It may take a few days to update.')}</Typography>
+            </>
+          )}
         </CardContent>
         <CardActions>
           <Button

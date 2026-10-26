@@ -36,7 +36,8 @@ const setupContext = (opts: {
   mockUseAdditionalSalaryRequest.mockReturnValue({
     traditional403bPercentage: 0.12,
     roth403bPercentage: 0.1,
-    spouse: spouseCap !== null ? {} : undefined,
+    spouse:
+      spouseCap !== null ? { asrEit: { asrEligibility: true } } : undefined,
     requestData: {
       latestAdditionalSalaryRequest: {
         calculations: {

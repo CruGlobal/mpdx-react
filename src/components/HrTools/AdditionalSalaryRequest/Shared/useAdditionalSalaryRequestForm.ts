@@ -148,6 +148,13 @@ export const useAdditionalSalaryRequestForm = (
         totalAdditionalSalaryRequested: yup
           .number()
           .test(
+            'total-above-zero',
+            t('Enter an amount in at least one category before submitting.'),
+            function () {
+              return getTotal(this.parent as CompleteFormValues) > 0;
+            },
+          )
+          .test(
             'total-within-remaining-allowable-salary',
             t('Exceeds account balance plus deficit limit.'),
             function () {

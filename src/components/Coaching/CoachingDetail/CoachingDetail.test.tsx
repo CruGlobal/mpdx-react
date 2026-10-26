@@ -9,6 +9,8 @@ import {
   afterTestResizeObserver,
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
+import { UsStaffGroupEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { AccountListTypeEnum, CoachingDetail } from './CoachingDetail';
 import { LevelOfEffortQuery } from './LevelOfEffort/LevelOfEffort.generated';
@@ -40,11 +42,13 @@ const router = {
 interface TestComponentProps {
   accountListType?: AccountListTypeEnum;
   monthlyGoal?: number | null;
+  usStaffGroup?: UsStaffGroupEnum;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   accountListType = AccountListTypeEnum.Coaching,
   monthlyGoal = null,
+  usStaffGroup = UsStaffGroupEnum.SeniorStaff,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
@@ -57,8 +61,10 @@ const TestComponent: React.FC<TestComponentProps> = ({
         LoadAccountListCoachingNeeds: LoadAccountListCoachingNeedsQuery;
         LevelOfEffort: LevelOfEffortQuery;
         NewStaffGoalExists: NewStaffGoalExistsQuery;
+        GetUser: GetUserQuery;
       }>
         mocks={{
+          GetUser: { user: { usStaffGroup, spouseUsStaffGroup: null } },
           NewStaffGoalExists: {
             newStaffGoalCalculation: { id: 'goal-calculation-1' },
           },
@@ -66,6 +72,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
             coachingAccountList: {
               name: 'John Doe Account',
               currency: 'USD',
+              balance: 1000,
               monthlyGoal,
               users: {
                 nodes: [
@@ -79,6 +86,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
             accountList: {
               name: 'John Doe Account',
               currency: 'USD',
+              balance: 1000,
               monthlyGoal,
               users: {
                 nodes: [
@@ -159,6 +167,39 @@ describe('LoadCoachingDetail', () => {
       ).toBeVisible();
       expect(getByText('Monthly $0')).toBeVisible();
       expect(getByText('Monthly Giving')).toBeVisible();
+    });
+  });
+
+  describe('balance for paid with designation staff', () => {
+    it('is explained on their own account list', async () => {
+      const { findByText, getByTestId } = render(
+        <TestComponent
+          accountListType={AccountListTypeEnum.Own}
+          usStaffGroup={UsStaffGroupEnum.PaidWithDesignation}
+        />,
+      );
+
+      expect(
+        await findByText(
+          'Your designation is not connected to a staff account, so there is no account balance to show.',
+        ),
+      ).toBeInTheDocument();
+      expect(getByTestId('Balance')).not.toHaveTextContent('$1,000');
+    });
+
+    it('still shows on an account list they coach', async () => {
+      const { getByTestId, findByRole, queryByText } = render(
+        <TestComponent
+          accountListType={AccountListTypeEnum.Coaching}
+          usStaffGroup={UsStaffGroupEnum.PaidWithDesignation}
+        />,
+      );
+
+      await findByRole('heading', { name: 'John Doe Account' });
+      expect(getByTestId('Balance')).toHaveTextContent('Balance: $1,000');
+      expect(
+        queryByText(/not connected to a staff account/),
+      ).not.toBeInTheDocument();
     });
   });
 
