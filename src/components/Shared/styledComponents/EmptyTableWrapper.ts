@@ -4,7 +4,6 @@ import { styled } from '@mui/material/styles';
 export const EmptyTableWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mpdxGrayLight.main,
   height: 300,
-  minWidth: 700,
   maxWidth: '97%',
   margin: 'auto',
   padding: 4,
@@ -12,4 +11,7 @@ export const EmptyTableWrapper = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   justifyContent: 'center',
   alignItems: 'center',
+  [theme.breakpoints.up('md')]: {
+    minWidth: 700,
+  },
 }));
