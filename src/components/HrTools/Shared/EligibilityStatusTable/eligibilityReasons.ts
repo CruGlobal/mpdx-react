@@ -22,7 +22,7 @@ export const getIneligibilityReason = (
 ): string => {
   if (eligible) {
     return basis === 'boardApproval'
-      ? t('MHA was Board approved within the last 10 years')
+      ? t('MHA has been Board approved')
       : t('Completed the required IBS courses');
   }
   const mustUseMhiForm = t('Must complete an MHI form instead');
@@ -53,9 +53,6 @@ export const getIneligibilityReason = (
     ),
     [MinistersHousingIneligibilityReasonEnum.MissingIbsCertificationDate]: t(
       'IBS certification date is missing from your records',
-    ),
-    [MinistersHousingIneligibilityReasonEnum.BoardApprovalExpired]: t(
-      'Board approval is more than 10 years old',
     ),
     [MinistersHousingIneligibilityReasonEnum.MissingBoardApprovedOnDate]: t(
       'Board approval date is missing from your records',

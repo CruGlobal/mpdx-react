@@ -111,7 +111,7 @@ describe('MhaRequestSection', () => {
       expect(queryByText('Ineligible')).not.toBeInTheDocument();
     });
 
-    it('hides the fields and shows the reason when the board approval has expired', async () => {
+    it('hides the fields and shows the reason when there is no board approval date', async () => {
       const { findByRole, queryByTestId } = render(
         <TestComponent
           hasSpouse={false}
@@ -120,7 +120,7 @@ describe('MhaRequestSection', () => {
             mhaSalaryEit: {
               mhaEligibility: false,
               ineligibilityReasonCode:
-                MinistersHousingIneligibilityReasonEnum.BoardApprovalExpired,
+                MinistersHousingIneligibilityReasonEnum.MissingBoardApprovedOnDate,
             },
             mhaRequest: {
               currentApprovedOverallAmount: 20000,
@@ -132,7 +132,7 @@ describe('MhaRequestSection', () => {
 
       expect(
         await findByRole('cell', {
-          name: 'Board approval is more than 10 years old',
+          name: 'Board approval date is missing from your records',
         }),
       ).toBeInTheDocument();
       expect(queryByTestId('current-mha-staff')).not.toBeInTheDocument();
@@ -155,7 +155,7 @@ describe('MhaRequestSection', () => {
           mhaSalaryEit: {
             mhaEligibility: false,
             ineligibilityReasonCode:
-              MinistersHousingIneligibilityReasonEnum.BoardApprovalExpired,
+              MinistersHousingIneligibilityReasonEnum.MissingBoardApprovedOnDate,
           },
         }}
       />,
@@ -163,7 +163,7 @@ describe('MhaRequestSection', () => {
 
     expect(
       await findByRole('cell', {
-        name: 'MHA was Board approved within the last 10 years',
+        name: 'MHA has been Board approved',
       }),
     ).toBeInTheDocument();
     expect(

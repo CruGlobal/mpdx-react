@@ -71,10 +71,6 @@ describe('EligibilityStatusTable', () => {
       'IBS certification date is missing from your records',
     ],
     [
-      MinistersHousingIneligibilityReasonEnum.BoardApprovalExpired,
-      'Board approval is more than 10 years old',
-    ],
-    [
       MinistersHousingIneligibilityReasonEnum.MissingBoardApprovedOnDate,
       'Board approval date is missing from your records',
     ],
@@ -279,22 +275,22 @@ describe('EligibilityStatusTable', () => {
           spouseEligible={false}
           spouseCountry="US"
           spouseIneligibilityReasonCode={
-            MinistersHousingIneligibilityReasonEnum.BoardApprovalExpired
+            MinistersHousingIneligibilityReasonEnum.MissingBoardApprovedOnDate
           }
           basis="boardApproval"
         />,
       );
 
       expect(
-        getByRole('cell', {
-          name: 'MHA was Board approved within the last 10 years',
-        }),
+        getByRole('cell', { name: 'MHA has been Board approved' }),
       ).toBeInTheDocument();
       expect(
         queryByRole('cell', { name: 'Completed the required IBS courses' }),
       ).not.toBeInTheDocument();
       expect(
-        getByRole('cell', { name: 'Board approval is more than 10 years old' }),
+        getByRole('cell', {
+          name: 'Board approval date is missing from your records',
+        }),
       ).toBeInTheDocument();
       expect(getByTestId('eligibility-contact-info')).not.toHaveTextContent(
         /IBS/,

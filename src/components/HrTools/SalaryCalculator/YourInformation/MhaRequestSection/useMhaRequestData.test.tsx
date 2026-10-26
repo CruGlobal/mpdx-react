@@ -187,7 +187,7 @@ describe('useMhaRequestData', () => {
           mhaSalaryEit: {
             mhaEligibility: false,
             ineligibilityReasonCode:
-              MinistersHousingIneligibilityReasonEnum.BoardApprovalExpired,
+              MinistersHousingIneligibilityReasonEnum.MissingBoardApprovedOnDate,
           },
           mhaRequest: {
             currentApprovedOverallAmount: 20000,
@@ -207,7 +207,7 @@ describe('useMhaRequestData', () => {
     expect(result.current.anyIneligible).toBe(true);
     expect(result.current.approvedAmount).toBe('$0');
     expect(result.current.userIneligibilityReasonCode).toBe(
-      MinistersHousingIneligibilityReasonEnum.BoardApprovalExpired,
+      MinistersHousingIneligibilityReasonEnum.MissingBoardApprovedOnDate,
     );
   });
 
