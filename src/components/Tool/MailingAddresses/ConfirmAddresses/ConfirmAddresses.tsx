@@ -186,11 +186,8 @@ export const ConfirmAddresses: React.FC<Props> = ({ accountListId }: Props) => {
   const handleSingleConfirm = useCallback(
     async ({ id, name }: HandleSingleConfirmProps) => {
       let errorOccurred = false;
-      let primaryChanged = false;
+      let primarySaved = false;
       const addressesData = addressesState[id]?.addresses || [];
-      const loadedPrimaryId = data?.contacts.nodes
-        .find((contact) => contact.id === id)
-        ?.addresses.nodes.find((address) => address.primaryMailingAddress)?.id;
 
       for (let idx = 0; idx < addressesData.length; idx++) {
         const address = addressesData[idx];
@@ -205,12 +202,10 @@ export const ConfirmAddresses: React.FC<Props> = ({ accountListId }: Props) => {
             },
           },
           update(cache) {
-            // Only a new primary logs a change. No gc here: bulk confirm runs this once per contact.
-            if (
-              address.primaryMailingAddress &&
-              address.id !== loadedPrimaryId
-            ) {
-              primaryChanged = true;
+            // The server decides whether a primary save logs a change, so drop the history either way. No gc here:
+            // bulk confirm runs this once per contact.
+            if (address.primaryMailingAddress) {
+              primarySaved = true;
               evictAddressChangeHistory(cache, { gc: false });
             }
             if (idx === addressesData.length - 1 && !errorOccurred) {
@@ -224,8 +219,8 @@ export const ConfirmAddresses: React.FC<Props> = ({ accountListId }: Props) => {
       }
 
       if (errorOccurred) {
-        // The contact stays listed, so reload its change log for the new primary that did save
-        if (primaryChanged) {
+        // The contact stays listed, so reload its change log in case the primary that did save logged a change
+        if (primarySaved) {
           refetchPrimaryAddressChange(id);
         }
         enqueueSnackbar(t('Error updating contact {{name}}', { name }), {
@@ -242,7 +237,6 @@ export const ConfirmAddresses: React.FC<Props> = ({ accountListId }: Props) => {
     },
     [
       addressesState,
-      data,
       updateAddress,
       refetchPrimaryAddressChange,
       accountListId,

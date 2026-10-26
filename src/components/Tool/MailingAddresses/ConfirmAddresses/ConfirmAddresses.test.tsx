@@ -655,7 +655,7 @@ describe('ConfirmAddresses', () => {
       );
     });
 
-    it('keeps the change history when the primary stays the same', async () => {
+    it('drops the change history whenever a primary is saved, since cached flags can be stale', async () => {
       const cache = new InMemoryCache();
       const evict = jest.spyOn(cache, 'evict');
       const { getAllByRole, queryByTestId } = render(
@@ -673,7 +673,7 @@ describe('ConfirmAddresses', () => {
           expect.anything(),
         ),
       );
-      expect(evict).not.toHaveBeenCalledWith({
+      expect(evict).toHaveBeenCalledWith({
         fieldName: 'addressChangeHistory',
       });
     });

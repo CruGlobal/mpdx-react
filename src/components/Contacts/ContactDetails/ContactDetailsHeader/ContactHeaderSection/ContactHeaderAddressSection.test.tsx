@@ -79,8 +79,8 @@ describe('ContactHeaderAddressSection', () => {
     ).toBeInTheDocument();
   });
 
-  it('hides the history link when no change was logged', () => {
-    const { getByText, queryByRole } = render(
+  it('still links to the history when no change was logged', () => {
+    const { getByText, getByRole } = render(
       <ContactHeaderAddressSection
         accountListId="account-list-1"
         loading={false}
@@ -100,6 +100,6 @@ describe('ContactHeaderAddressSection', () => {
     );
 
     expect(getByText('2525 Camp Creek Pkwy')).toBeInTheDocument();
-    expect(queryByRole('button', { name: /See history/ })).toBeNull();
+    expect(getByRole('button', { name: 'See history' })).toBeInTheDocument();
   });
 });

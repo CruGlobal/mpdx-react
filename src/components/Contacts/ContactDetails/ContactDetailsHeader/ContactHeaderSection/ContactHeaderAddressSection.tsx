@@ -84,23 +84,23 @@ export const ContactHeaderAddressSection = ({
               {t('Google Maps')}
             </Link>
           </Box>
-          {changeDate && (
-            <Link
-              component="button"
-              onClick={() => setHistoryModalOpen(true)}
-              underline="hover"
-              variant="body2"
-              display="flex"
-              alignItems="center"
-              gap={0.5}
-              mt={1}
-            >
-              <HistoryIcon fontSize="small" />
-              {t('Changed {{date}} · See history', {
-                date: dateFormat(DateTime.fromISO(changeDate), locale),
-              })}
-            </Link>
-          )}
+          <Link
+            component="button"
+            onClick={() => setHistoryModalOpen(true)}
+            underline="hover"
+            variant="body2"
+            display="flex"
+            alignItems="center"
+            gap={0.5}
+            mt={1}
+          >
+            <HistoryIcon fontSize="small" />
+            {changeDate
+              ? t('Changed {{date}} · See history', {
+                  date: dateFormat(DateTime.fromISO(changeDate), locale),
+                })
+              : t('See history')}
+          </Link>
           {historyModalOpen && (
             <AddressHistoryModal
               accountListId={accountListId}
