@@ -1,10 +1,16 @@
 import React, { useContext } from 'react';
+import {
+  ApolloClient,
+  ApolloLink,
+  InMemoryCache,
+  Observable,
+} from '@apollo/client';
 import { Box, Button, Typography } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import { ContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
@@ -13,7 +19,15 @@ import { useUrlFilters } from 'src/components/Shared/UrlFiltersProvider/UrlFilte
 import { StatusEnum } from 'src/graphql/types.generated';
 import { GetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
-import { contactsSyncVariables } from 'src/lib/offlineSync/contacts/contactsSync';
+import { createCache } from 'src/lib/apollo/cache';
+import {
+  OfflineContactsQuery,
+  OfflineContactsQueryVariables,
+} from 'src/lib/offlineSync/contacts/OfflineContacts.generated';
+import {
+  contactsSync,
+  contactsSyncVariables,
+} from 'src/lib/offlineSync/contacts/contactsSync';
 import theme from '../../../theme';
 import { TableViewModeEnum } from '../../Shared/Header/ListHeader';
 import {
@@ -322,7 +336,7 @@ describe('ContactsPageContext', () => {
       );
     };
 
-    const renderOffline = () =>
+    const renderOffline = (cache?: InMemoryCache) =>
       render(
         <ThemeProvider theme={theme}>
           <TestRouter
@@ -334,7 +348,7 @@ describe('ContactsPageContext', () => {
               push,
             }}
           >
-            <GqlMockedProvider onCall={mutationSpy}>
+            <GqlMockedProvider onCall={mutationSpy} cache={cache}>
               <ContactsWrapper>
                 <CachedContacts />
               </ContactsWrapper>
@@ -366,6 +380,48 @@ describe('ContactsPageContext', () => {
       expect(getByTestId('offline')).toHaveTextContent('true');
       expect(mutationSpy).not.toHaveGraphqlOperation('Contacts');
       expect(mutationSpy).not.toHaveGraphqlOperation('GetIdsForMassSelection');
+    });
+
+    it('reads the contacts the sync wrote once the cache is persisted and restored', async () => {
+      mockUseOfflineContactsQuery.mockImplementation(
+        jest.requireActual(
+          'src/lib/offlineSync/contacts/OfflineContacts.generated',
+        ).useOfflineContactsQuery,
+      );
+      const syncCache = createCache();
+      const client = new ApolloClient({
+        cache: syncCache,
+        link: new ApolloLink((operation) =>
+          Observable.of({
+            data: gqlMock<OfflineContactsQuery, OfflineContactsQueryVariables>(
+              operation.query,
+              {
+                variables: operation.variables as OfflineContactsQueryVariables,
+                mocks: {
+                  contacts: {
+                    nodes: cachedNodes,
+                    pageInfo: { hasNextPage: false },
+                  },
+                },
+              },
+            ),
+          }),
+        ),
+      });
+      await contactsSync.run({
+        client,
+        accountListId,
+        signal: new AbortController().signal,
+      });
+      const restoredCache = createCache();
+      restoredCache.restore(JSON.parse(JSON.stringify(syncCache.extract())));
+
+      const { getByTestId } = renderOffline(restoredCache);
+
+      await waitFor(() =>
+        expect(getByTestId('ids')).toHaveTextContent('c1,c3'),
+      );
+      expect(mutationSpy).not.toHaveGraphqlOperation('OfflineContacts');
     });
 
     it('keeps every contact when no phases are cached', async () => {
