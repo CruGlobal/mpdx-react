@@ -189,7 +189,7 @@ describe('AddressHistoryModal', () => {
   it('says so when no change was logged', async () => {
     const { getByText, getByRole } = await renderModal({ changes: [] });
 
-    expect(getByText('No address changes yet.')).toBeInTheDocument();
+    expect(getByText('No address changes available yet')).toBeInTheDocument();
     expect(getByRole('button', { name: 'Export' })).toBeDisabled();
   });
 

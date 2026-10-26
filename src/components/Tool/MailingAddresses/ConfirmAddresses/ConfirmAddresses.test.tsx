@@ -538,6 +538,42 @@ describe('ConfirmAddresses', () => {
       expect(getByText(name)).toBeInTheDocument();
     });
 
+    it('drops the change history when the primary saves but a later address fails', async () => {
+      const cache = new InMemoryCache();
+      const evict = jest.spyOn(cache, 'evict');
+      let saves = 0;
+      const { getAllByRole, queryByTestId } = render(
+        <Components
+          cache={cache}
+          mocks={{
+            InvalidAddresses: {
+              ...mockInvalidAddressesResponse.InvalidAddresses,
+            },
+            // The first address saved is the primary
+            UpdateContactAddress: () => {
+              if (saves++ > 0) {
+                throw new Error('Server Error');
+              }
+              return {};
+            },
+          }}
+        />,
+      );
+      await waitFor(() =>
+        expect(queryByTestId('loading')).not.toBeInTheDocument(),
+      );
+
+      userEvent.click(getAllByRole('button', { name: 'Confirm' })[0]);
+
+      await waitFor(() =>
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          `Error updating contact ${name}`,
+          expect.anything(),
+        ),
+      );
+      expect(evict).toHaveBeenCalledWith({ fieldName: 'addressChangeHistory' });
+    });
+
     it('should handle success and remove contact', async () => {
       const {
         getAllByRole,

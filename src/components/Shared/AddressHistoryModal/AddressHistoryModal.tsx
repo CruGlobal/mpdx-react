@@ -144,7 +144,7 @@ export const AddressHistoryModal: React.FC<AddressHistoryModalProps> = ({
                       { locale },
                     ),
                   })
-                : t('No address changes yet.')}
+                : t('No address changes available yet')}
             </Typography>
             {changes.map((change) => (
               <Box
