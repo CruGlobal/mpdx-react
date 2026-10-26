@@ -17,54 +17,59 @@ const accountListId = 'account-list-1';
 const currentUserId = 'user-1';
 const handleClose = jest.fn();
 
-const address = (
-  id: string,
-  street: string,
-  source: string,
-  {
-    changeDate = '2020-01-01',
-    createdAt = '2020-01-01T00:00:00Z',
-    primaryMailingAddress = false,
-    createdByUser = null,
-  }: {
-    changeDate?: string;
-    createdAt?: string;
-    primaryMailingAddress?: boolean;
-    createdByUser?: { id: string; firstName: string; lastName: string } | null;
-  } = {},
-) => ({
-  id,
+const parts = (street: string) => ({
   street,
   city: 'College Park',
   state: 'GA',
   postalCode: '30337',
-  source,
-  changeDate,
-  createdAt,
-  primaryMailingAddress,
-  createdByUser,
 });
 
-const defaultAddresses = [
-  address('1', '1001 Denman St', 'DataServer', {
-    changeDate: '2018-01-22',
+const change = (
+  id: string,
+  street: string,
+  source: string,
+  {
+    date = '2020-01-01',
+    previousStreet = null,
+    createdByUser = null,
+  }: {
+    date?: string;
+    previousStreet?: string | null;
+    createdByUser?: { id: string; firstName: string; lastName: string } | null;
+  } = {},
+) => ({
+  id,
+  ...parts(street),
+  source,
+  date,
+  createdByUser,
+  previousAddress: previousStreet
+    ? { id: `address-${previousStreet}`, ...parts(previousStreet) }
+    : null,
+});
+
+// The API lists changes newest first
+const defaultChanges = [
+  change('3', '111 Street', 'MPDX', {
+    date: '2025-03-24',
+    previousStreet: '2525 Camp Creek Pkwy',
+    createdByUser: {
+      id: currentUserId,
+      firstName: 'Test',
+      lastName: 'User',
+    },
   }),
-  address('2', '2525 Camp Creek Pkwy', 'MPDX', {
-    changeDate: '2024-06-13',
-    primaryMailingAddress: true,
+  change('2', '2525 Camp Creek Pkwy', 'MPDX', {
+    date: '2024-06-13',
+    previousStreet: '1001 Denman St',
     createdByUser: {
       id: 'user-2',
       firstName: 'Pedro',
       lastName: 'Pérez',
     },
   }),
-  address('3', '111 Street', 'MPDX', {
-    changeDate: '2025-03-24',
-    createdByUser: {
-      id: currentUserId,
-      firstName: 'Test',
-      lastName: 'User',
-    },
+  change('1', '1001 Denman St', 'DataServer', {
+    date: '2018-01-22',
   }),
 ];
 
@@ -75,11 +80,11 @@ let loadCount = 0;
 
 const TestComponent: React.FC<{
   pathname?: string;
-  addresses?: ReturnType<typeof address>[];
+  changes?: ReturnType<typeof change>[];
   failing?: boolean;
 }> = ({
   pathname = contactsPathname,
-  addresses = defaultAddresses,
+  changes = defaultChanges,
   failing = false,
 }) => (
   <ThemeProvider theme={theme}>
@@ -99,7 +104,8 @@ const TestComponent: React.FC<{
               return {
                 name: 'Baggins, Frodo',
                 status: StatusEnum.PartnerFinancial,
-                addresses: { nodes: addresses },
+                primaryAddress: { id: 'address-111', ...parts('111 Street') },
+                addressChanges: changes,
               };
             }) as unknown as AddressHistoryQuery['contact'],
           },
@@ -151,24 +157,21 @@ describe('AddressHistoryModal', () => {
 
     expect(
       getByText('Current primary address').parentElement,
-    ).toHaveTextContent('2525 Camp Creek Pkwy, College Park, GA 30337');
+    ).toHaveTextContent('111 Street, College Park, GA 30337');
     expect(getByText('3 changes since Jan 2018')).toBeInTheDocument();
   });
 
   it('uses singular English for one change', async () => {
     const { getByText } = await renderModal({
-      addresses: [
-        address('1', '1001 Denman St', 'DataServer', {
-          changeDate: '2018-01-22',
-          primaryMailingAddress: true,
-        }),
+      changes: [
+        change('1', '1001 Denman St', 'DataServer', { date: '2018-01-22' }),
       ],
     });
 
     expect(getByText('1 change since Jan 2018')).toBeInTheDocument();
   });
 
-  it('lists every address newest first with the one it replaced and who made the change', async () => {
+  it('lists every change newest first with the address it replaced and who made it', async () => {
     const { getByRole } = await renderModal();
     const dialog = within(getByRole('dialog'));
 
@@ -213,26 +216,29 @@ describe('AddressHistoryModal', () => {
     expect(handleClose).toHaveBeenCalled();
   });
 
-  it('breaks a same-day tie by when each address was added, across a clock change', async () => {
-    // 1:10am PST is later than 1:40am PDT on the night the clocks fall back
+  it('shows a switch back to an earlier address as its own change', async () => {
     const { getByRole } = await renderModal({
-      addresses: [
-        // Ids sort the opposite way, so only the createdAt tiebreak can pass this
-        address('2', 'Added First', 'MPDX', {
-          changeDate: '2026-11-01',
-          createdAt: '2026-11-01T01:40:00-07:00',
+      changes: [
+        change('3', '1001 Denman St', 'MPDX', {
+          date: '2025-03-24',
+          previousStreet: '2525 Camp Creek Pkwy',
         }),
-        address('1', 'Added Second', 'MPDX', {
-          changeDate: '2026-11-01',
-          createdAt: '2026-11-01T01:10:00-08:00',
+        change('2', '2525 Camp Creek Pkwy', 'MPDX', {
+          date: '2024-06-13',
+          previousStreet: '1001 Denman St',
         }),
+        change('1', '1001 Denman St', 'DataServer', { date: '2018-01-22' }),
       ],
     });
 
-    const streets = within(getByRole('dialog'))
-      .getAllByText(/^Added (First|Second), College Park/)
-      .map((element) => element.textContent?.split(',')[0]);
-    expect(streets).toEqual(['Added Second', 'Added First']);
+    const rowText = within(getByRole('dialog'))
+      .getAllByText(/^[A-Z][a-z]{2} \d{1,2}, \d{4}$/)
+      .map((date) => date.parentElement?.textContent);
+    expect(rowText).toEqual([
+      'Mar 24, 20251001 Denman St, College Park, GA 30337Was: 2525 Camp Creek Pkwy, College Park, GA 30337In MPDX',
+      'Jun 13, 20242525 Camp Creek Pkwy, College Park, GA 30337Was: 1001 Denman St, College Park, GA 30337In MPDX',
+      'Jan 22, 20181001 Denman St, College Park, GA 30337Automatic update from DonorHub',
+    ]);
   });
 
   it('exports the address history newest first', async () => {

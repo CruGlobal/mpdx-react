@@ -51,8 +51,8 @@ export const ContactHeaderAddressSection = ({
       </ContactHeaderSection>
     );
   } else if (envelope && primaryAddress) {
-    const { street, city, state, postalCode, changeDate } = primaryAddress;
-    const changedDate = dateFormat(DateTime.fromISO(changeDate), locale);
+    const { street, city, state, postalCode } = primaryAddress;
+    const changeDate = contact.latestAddressChange?.date;
 
     if (street && city && postalCode) {
       const additionalOptions = state ? `${state}+${postalCode}` : postalCode;
@@ -84,19 +84,23 @@ export const ContactHeaderAddressSection = ({
               {t('Google Maps')}
             </Link>
           </Box>
-          <Link
-            component="button"
-            onClick={() => setHistoryModalOpen(true)}
-            underline="hover"
-            variant="body2"
-            display="flex"
-            alignItems="center"
-            gap={0.5}
-            mt={1}
-          >
-            <HistoryIcon fontSize="small" />
-            {t('Changed {{date}} · See history', { date: changedDate })}
-          </Link>
+          {changeDate && (
+            <Link
+              component="button"
+              onClick={() => setHistoryModalOpen(true)}
+              underline="hover"
+              variant="body2"
+              display="flex"
+              alignItems="center"
+              gap={0.5}
+              mt={1}
+            >
+              <HistoryIcon fontSize="small" />
+              {t('Changed {{date}} · See history', {
+                date: dateFormat(DateTime.fromISO(changeDate), locale),
+              })}
+            </Link>
+          )}
           {historyModalOpen && (
             <AddressHistoryModal
               accountListId={accountListId}

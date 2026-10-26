@@ -60,7 +60,7 @@ export const formatChangeMadeBy = (
     : t('In {{appName}}', { appName });
 };
 
-// The change history comes from every contact's addresses, so drop it when one changes and Apollo refetches it
+// The change history comes from every contact's primary changes, so drop it when one changes and Apollo refetches it
 export const evictAddressChangeHistory = (
   cache: ApolloCache<unknown>,
 ): void => {

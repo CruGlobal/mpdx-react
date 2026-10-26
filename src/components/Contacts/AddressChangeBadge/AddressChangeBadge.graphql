@@ -1,6 +1,6 @@
-fragment AddressChangeFields on Address {
+fragment AddressChangeFields on AddressChange {
   id
-  changeDate
+  date
   source
   createdByUser {
     id

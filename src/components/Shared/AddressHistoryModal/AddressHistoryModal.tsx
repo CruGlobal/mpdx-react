@@ -1,6 +1,6 @@
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
-import React, { useId, useMemo } from 'react';
+import React, { useId } from 'react';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import CloseIcon from '@mui/icons-material/Close';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
@@ -63,33 +63,9 @@ export const AddressHistoryModal: React.FC<AddressHistoryModalProps> = ({
     });
 
   const contact = data?.contact;
-  const addresses = useMemo(
-    () =>
-      (contact?.addresses.nodes ?? [])
-        .map((address) => ({
-          ...address,
-          changedAt: DateTime.fromISO(address.changeDate),
-        }))
-        // Newest first, in the same order the API uses to pick each contact's latest change
-        .sort(
-          (a, b) =>
-            b.changedAt.toMillis() - a.changedAt.toMillis() ||
-            DateTime.fromISO(b.createdAt).toMillis() -
-              DateTime.fromISO(a.createdAt).toMillis() ||
-            // Plain comparison matches Postgres' byte order for lowercase uuids
-            (b.id > a.id ? 1 : b.id < a.id ? -1 : 0),
-        )
-        // Sorted newest first, so each address replaced the next older one
-        .map((address, index, sorted) => ({
-          ...address,
-          previous: sorted[index + 1],
-        })),
-    [contact],
-  );
-  const primaryAddress = addresses.find(
-    (address) => address.primaryMailingAddress,
-  );
-  const oldestChange = addresses[addresses.length - 1]?.changedAt;
+  const changes = contact?.addressChanges ?? [];
+  const primaryAddress = contact?.primaryAddress;
+  const oldestChange = changes[changes.length - 1]?.date;
 
   return (
     <Dialog
@@ -161,17 +137,17 @@ export const AddressHistoryModal: React.FC<AddressHistoryModalProps> = ({
             {oldestChange && (
               <Typography variant="body2" color="text.secondary" my={2}>
                 {t('{{count}} changes since {{date}}', {
-                  count: addresses.length,
-                  date: oldestChange.toLocaleString(
+                  count: changes.length,
+                  date: DateTime.fromISO(oldestChange).toLocaleString(
                     { month: 'short', year: 'numeric' },
                     { locale },
                   ),
                 })}
               </Typography>
             )}
-            {addresses.map((address) => (
+            {changes.map((change) => (
               <Box
-                key={address.id}
+                key={change.id}
                 display="grid"
                 gridTemplateColumns="110px 24px 1fr"
                 columnGap={2}
@@ -180,10 +156,10 @@ export const AddressHistoryModal: React.FC<AddressHistoryModalProps> = ({
                 borderColor="divider"
               >
                 <Typography variant="body2" fontWeight="bold">
-                  {dateFormat(address.changedAt, locale)}
+                  {dateFormat(DateTime.fromISO(change.date), locale)}
                 </Typography>
                 <Box color="text.secondary">
-                  {isAutomaticChange(address.source) ? (
+                  {isAutomaticChange(change.source) ? (
                     <SyncIcon fontSize="small" />
                   ) : (
                     <PersonIcon fontSize="small" />
@@ -191,15 +167,15 @@ export const AddressHistoryModal: React.FC<AddressHistoryModalProps> = ({
                 </Box>
                 <Box>
                   <Typography variant="body2">
-                    {formatAddress(address)}
+                    {formatAddress(change)}
                   </Typography>
-                  {address.previous && (
+                  {change.previousAddress && (
                     <Typography variant="body2" color="text.secondary">
-                      {t('Was:')} {formatAddress(address.previous)}
+                      {t('Was:')} {formatAddress(change.previousAddress)}
                     </Typography>
                   )}
                   <Typography variant="caption" color="text.secondary">
-                    {formatChangeMadeBy(address, userData?.user.id, t)}
+                    {formatChangeMadeBy(change, userData?.user.id, t)}
                   </Typography>
                 </Box>
               </Box>
@@ -228,10 +204,10 @@ export const AddressHistoryModal: React.FC<AddressHistoryModalProps> = ({
         <Button
           variant="outlined"
           startIcon={<FileDownloadIcon />}
-          disabled={!addresses.length}
+          disabled={!changes.length}
           onClick={() =>
             downloadAddressHistory(
-              addresses,
+              changes,
               contact?.name ?? '',
               userData?.user.id,
               t,

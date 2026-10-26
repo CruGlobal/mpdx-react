@@ -31,6 +31,5 @@ fragment ContactAddress on Address {
   location
   createdAt
   startDate
-  changeDate
   historic
 }

@@ -78,7 +78,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { addresses, id } = data;
+  const { addresses, id, latestAddressChange } = data;
   const {
     editingAddressId,
     setEditingAddressId,
@@ -166,7 +166,9 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                   )}
                   )
                 </Typography>
-                <AddressChangeBadge addressChange={primaryAddress} />
+                {latestAddressChange && (
+                  <AddressChangeBadge addressChange={latestAddressChange} />
+                )}
               </>
             )}
             {/* Show More Section */}

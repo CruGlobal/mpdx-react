@@ -15,7 +15,7 @@ query Contacts(
       id
       avatar
       contactPhase
-      addressChange: primaryAddress @include(if: $includeAddressChange) {
+      latestAddressChange @include(if: $includeAddressChange) {
         ...AddressChangeFields
       }
       ...ContactRow

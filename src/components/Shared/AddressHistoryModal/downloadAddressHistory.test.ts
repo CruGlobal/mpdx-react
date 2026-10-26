@@ -1,4 +1,3 @@
-import { DateTime } from 'luxon';
 import i18n from 'src/lib/i18n';
 import {
   HistoryAddress,
@@ -14,8 +13,8 @@ const addresses: HistoryAddress[] = [
     postalCode: '30337',
     source: 'MPDX',
     createdByUser: { id: 'user-1', firstName: 'Test', lastName: 'User' },
-    changedAt: DateTime.local(2024, 6, 13),
-    previous: {
+    date: '2024-06-13',
+    previousAddress: {
       street: '1001 Denman St',
       city: 'Vancouver',
       state: 'BC',
@@ -29,7 +28,8 @@ const addresses: HistoryAddress[] = [
     postalCode: 'V6G 2M4',
     source: 'DataServer',
     createdByUser: null,
-    changedAt: DateTime.local(2018, 1, 22),
+    date: '2018-01-22',
+    previousAddress: null,
   },
 ];
 

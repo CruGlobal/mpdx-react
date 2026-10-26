@@ -70,7 +70,8 @@ const toggleSelectionById = jest.fn();
 const isRowChecked = jest.fn();
 
 const addressChange = {
-  changeDate: '2026-08-03',
+  id: 'change-1',
+  date: '2026-08-03',
   source: 'Siebel',
   createdByUser: null,
 };

@@ -9,8 +9,8 @@ import { AddressChangeBadge } from './AddressChangeBadge';
 const currentUserId = 'user-1';
 
 const addressChange = {
-  id: 'address-1',
-  changeDate: '2026-08-03',
+  id: 'change-1',
+  date: '2026-08-03',
   source: 'MPDX',
   createdByUser: null,
 };
@@ -51,7 +51,7 @@ describe('AddressChangeBadge', () => {
   });
 
   it('shows the year for a change before this year', async () => {
-    const { findByText } = renderBadge({ changeDate: '2024-06-13' });
+    const { findByText } = renderBadge({ date: '2024-06-13' });
 
     expect(
       await findByText('Address changed Jun 13, 2024 · in MPDX'),

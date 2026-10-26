@@ -3,23 +3,37 @@ query AddressHistory($accountListId: ID!, $contactId: ID!) {
     id
     name
     status
-    addresses(first: 25) {
-      nodes {
-        id
-        street
-        city
-        state
-        postalCode
-        source
-        changeDate
-        createdAt
-        primaryMailingAddress
-        createdByUser {
-          id
-          firstName
-          lastName
-        }
-      }
+    primaryAddress {
+      id
+      street
+      city
+      state
+      postalCode
     }
+    addressChanges {
+      ...AddressHistoryChange
+    }
+  }
+}
+
+fragment AddressHistoryChange on AddressChange {
+  id
+  date
+  street
+  city
+  state
+  postalCode
+  source
+  createdByUser {
+    id
+    firstName
+    lastName
+  }
+  previousAddress {
+    id
+    street
+    city
+    state
+    postalCode
   }
 }

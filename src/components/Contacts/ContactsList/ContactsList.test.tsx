@@ -27,8 +27,9 @@ const contact = {
   ...gqlMock<ContactRowFragment>(ContactRowFragmentDoc, {
     mocks: { name: 'Baggins, Frodo' },
   }),
-  addressChange: {
-    changeDate: '2026-08-03',
+  latestAddressChange: {
+    id: 'change-1',
+    date: '2026-08-03',
     source: 'Siebel',
     createdByUser: null,
   },

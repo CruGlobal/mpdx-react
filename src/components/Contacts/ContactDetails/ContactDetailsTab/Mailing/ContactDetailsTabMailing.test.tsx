@@ -37,7 +37,6 @@ const data: ContactMailingFragment = {
         street: '100 Lake Hart Dr',
         createdAt: new Date(2023, 0, 1).toISOString(),
         startDate: null,
-        changeDate: '2023-01-01',
       },
       {
         id: 'address-2',
@@ -54,9 +53,14 @@ const data: ContactMailingFragment = {
         street: '101 Lake Hart Dr',
         createdAt: new Date(2023, 0, 2).toISOString(),
         startDate: new Date(2023, 0, 30).toISOString(),
-        changeDate: '2023-01-30',
       },
     ],
+  },
+  latestAddressChange: {
+    id: 'change-1',
+    date: '2023-01-01',
+    source: 'MPDX',
+    createdByUser: null,
   },
 };
 

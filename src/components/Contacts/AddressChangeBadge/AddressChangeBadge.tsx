@@ -5,19 +5,17 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { isAutomaticChange } from 'src/components/Shared/AddressHistoryModal/addressHistoryHelpers';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
-import { Address } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat, dateFormatWithoutYear } from 'src/lib/intlFormat';
 import { sourceToStr } from 'src/lib/sourceHelper';
+import { AddressChangeFieldsFragment } from './AddressChangeBadge.generated';
 
 export interface AddressChangeBadgeProps {
-  addressChange: Pick<Address, 'changeDate' | 'source'> & {
-    createdByUser?: Pick<NonNullable<Address['createdByUser']>, 'id'> | null;
-  };
+  addressChange: AddressChangeFieldsFragment;
 }
 
 export const AddressChangeBadge: React.FC<AddressChangeBadgeProps> = ({
-  addressChange: { changeDate, source, createdByUser },
+  addressChange: { date: changeDate, source, createdByUser },
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();

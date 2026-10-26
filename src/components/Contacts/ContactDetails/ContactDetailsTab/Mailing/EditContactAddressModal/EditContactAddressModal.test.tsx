@@ -139,7 +139,6 @@ describe('EditContactAddressModal', () => {
                 state: '',
                 street: '123 Cool Street',
                 createdAt: '',
-                changeDate: '2020-01-01',
                 startDate: '',
               }}
             />

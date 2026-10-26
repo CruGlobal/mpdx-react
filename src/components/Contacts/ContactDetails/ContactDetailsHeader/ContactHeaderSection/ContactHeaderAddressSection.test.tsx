@@ -61,8 +61,8 @@ describe('ContactHeaderAddressSection', () => {
                   state: 'GA',
                   postalCode: '30337',
                   country: 'United States',
-                  changeDate: '2024-06-13',
                 },
+                latestAddressChange: { id: 'change-1', date: '2024-06-13' },
               }}
             />
           </GqlMockedProvider>
@@ -77,5 +77,29 @@ describe('ContactHeaderAddressSection', () => {
     expect(
       within(await findByRole('dialog')).getByText('Address History'),
     ).toBeInTheDocument();
+  });
+
+  it('hides the history link when no change was logged', () => {
+    const { getByText, queryByRole } = render(
+      <ContactHeaderAddressSection
+        accountListId="account-list-1"
+        loading={false}
+        contact={{
+          ...contact,
+          primaryAddress: {
+            id: 'address-1',
+            street: '2525 Camp Creek Pkwy',
+            city: 'College Park',
+            state: 'GA',
+            postalCode: '30337',
+            country: 'United States',
+          },
+          latestAddressChange: null,
+        }}
+      />,
+    );
+
+    expect(getByText('2525 Camp Creek Pkwy')).toBeInTheDocument();
+    expect(queryByRole('button', { name: /See history/ })).toBeNull();
   });
 });

@@ -109,7 +109,6 @@ export const emptyAddress: ContactAddressFragment = {
   primaryMailingAddress: false,
   historic: false,
   createdAt: '',
-  changeDate: '',
 };
 
 interface Props {
