@@ -668,6 +668,36 @@ describe('ConfirmAddresses', () => {
       );
     });
 
+    it('skips reloading the contact when no save went through', async () => {
+      const mutationSpy = jest.fn();
+      const { getAllByRole, queryByTestId } = render(
+        <Components
+          onCall={mutationSpy}
+          mocks={{
+            ...mockInvalidAddressesResponse,
+            UpdateContactAddress: () => {
+              throw new Error('Server Error');
+            },
+          }}
+        />,
+      );
+      await waitFor(() =>
+        expect(queryByTestId('loading')).not.toBeInTheDocument(),
+      );
+
+      userEvent.click(getAllByRole('button', { name: 'Confirm' })[0]);
+
+      await waitFor(() =>
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          `Error updating contact ${name}`,
+          expect.anything(),
+        ),
+      );
+      expect(mutationSpy).not.toHaveGraphqlOperation(
+        'ContactPrimaryAddressChange',
+      );
+    });
+
     it('drops the change history when a new primary is confirmed', async () => {
       const cache = new InMemoryCache();
       const evict = jest.spyOn(cache, 'evict');

@@ -11,6 +11,7 @@ import {
   ContactsType,
 } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { StatusEnum } from 'src/graphql/types.generated';
+import { createCache } from 'src/lib/apollo/cache';
 import theme from '../../../../theme';
 import { GetContactsForMergingQuery } from './MassActionsMerge.generated';
 import { MassActionsMergeModal } from './MassActionsMergeModal';
@@ -72,11 +73,12 @@ jest.mock('notistack', () => ({
 
 interface MassActionsMergeModalWrapperProps {
   mutationSpy?: () => void;
+  cache?: ReturnType<typeof createCache>;
 }
 
 const MassActionsMergeModalWrapper: React.FC<
   MassActionsMergeModalWrapperProps
-> = ({ mutationSpy }) => {
+> = ({ mutationSpy, cache }) => {
   return (
     <ThemeProvider theme={theme}>
       <TestRouter>
@@ -85,6 +87,7 @@ const MassActionsMergeModalWrapper: React.FC<
         }>
           mocks={mocks}
           onCall={mutationSpy}
+          cache={cache}
         >
           <ContactsWrapper>
             <MassActionsMergeModal
@@ -164,6 +167,25 @@ describe('MassActionsMergeModal', () => {
         ],
       },
     });
+  });
+
+  it('drops the change history, which may list the merged contact', async () => {
+    const cache = createCache();
+    const evict = jest.spyOn(cache, 'evict');
+    const { getByText, queryAllByTestId } = render(
+      <SnackbarProvider>
+        <MassActionsMergeModalWrapper cache={cache} />
+      </SnackbarProvider>,
+    );
+    await waitFor(() =>
+      expect(queryAllByTestId('MassActionsMergeModalContact')).toHaveLength(2),
+    );
+
+    userEvent.click(getByText('Merge'));
+
+    await waitFor(() =>
+      expect(evict).toHaveBeenCalledWith({ fieldName: 'addressChangeHistory' }),
+    );
   });
 
   it('calls function to deselect contacts when merge is complete', async () => {

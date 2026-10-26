@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import React, { ReactElement } from 'react';
+import { useApolloClient } from '@apollo/client';
 import {
   CircularProgress,
   DialogActions,
@@ -29,12 +30,12 @@ import {
 } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/StreetAutocomplete/StreetAutocomplete';
 import { useCreatePersonMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal.generated';
 import { ContactReferralTabDocument } from 'src/components/Contacts/ContactDetails/ContactReferralTab/ContactReferralTab.generated';
+import { evictAddressChangeHistory } from 'src/components/Shared/AddressHistoryModal/addressHistoryHelpers';
 import {
   CancelButton,
   SubmitButton,
 } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import { PersonCreateInput, StatusEnum } from 'src/graphql/types.generated';
-import { useUpdateCache } from 'src/hooks/useUpdateCache';
 import theme from '../../../../../../../../theme';
 import { useCreateContactMutation } from '../CreateContact/CreateContact.generated';
 
@@ -140,10 +141,8 @@ export const CreateMultipleContacts = ({
   const [createContact] = useCreateContactMutation();
   const [createPerson] = useCreatePersonMutation();
   const [createAddress] = useCreateContactAddressMutation();
-  const { update: updatePrimaryAddressCache } = useUpdateCache();
-  const [setPrimaryAddress] = useSetContactPrimaryAddressMutation({
-    update: updatePrimaryAddressCache,
-  });
+  const [setPrimaryAddress] = useSetContactPrimaryAddressMutation();
+  const client = useApolloClient();
 
   const onSubmit = async (attributes: ContactTable) => {
     const filteredContacts = attributes.contacts.filter(
@@ -249,6 +248,8 @@ export const CreateMultipleContacts = ({
           return contactId;
         }),
       );
+      // Each new primary was logged as a change
+      evictAddressChangeHistory(client.cache);
 
       enqueueSnackbar(
         createdContacts.length > 1

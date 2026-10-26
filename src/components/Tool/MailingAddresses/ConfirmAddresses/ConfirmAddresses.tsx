@@ -186,6 +186,7 @@ export const ConfirmAddresses: React.FC<Props> = ({ accountListId }: Props) => {
   const handleSingleConfirm = useCallback(
     async ({ id, name }: HandleSingleConfirmProps) => {
       let errorOccurred = false;
+      let anySaved = false;
       const addressesData = addressesState[id]?.addresses || [];
 
       for (let idx = 0; idx < addressesData.length; idx++) {
@@ -201,6 +202,7 @@ export const ConfirmAddresses: React.FC<Props> = ({ accountListId }: Props) => {
             },
           },
           update(cache) {
+            anySaved = true;
             // The server decides whether a primary save logs a change, so drop the history either way. No gc here:
             // bulk confirm runs this once per contact.
             if (address.primaryMailingAddress) {
@@ -218,7 +220,9 @@ export const ConfirmAddresses: React.FC<Props> = ({ accountListId }: Props) => {
 
       if (errorOccurred) {
         // The contact stays listed, and the saves that went through may have moved its primary
-        refetchPrimaryAddressChange(id);
+        if (anySaved) {
+          refetchPrimaryAddressChange(id);
+        }
         enqueueSnackbar(t('Error updating contact {{name}}', { name }), {
           variant: 'error',
           autoHideDuration: 7000,

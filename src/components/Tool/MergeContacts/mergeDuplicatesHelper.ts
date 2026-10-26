@@ -1,6 +1,7 @@
 import { TFunction } from 'i18next';
 import { ProviderContext } from 'notistack';
 import { MassActionsMergeMutationHookResult } from 'src/components/Contacts/MassActions/Merge/MassActionsMerge.generated';
+import { evictAddressChangeHistory } from 'src/components/Shared/AddressHistoryModal/addressHistoryHelpers';
 import { TypeEnum } from 'src/graphql/types.generated';
 import {
   MergePeopleBulkMutationHookResult,
@@ -68,6 +69,10 @@ export const bulkUpdateDuplicates = async (
             ? cache.evict({ id: `Contact:${contact.loserId}` })
             : cache.evict({ id: `Person:${contact.loserId}` });
         });
+        if (type === TypeEnum.Contact) {
+          // The change history may list a merged contact
+          evictAddressChangeHistory(cache, { gc: false });
+        }
         cache.gc();
       },
       onCompleted: (response) => {

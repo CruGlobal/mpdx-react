@@ -9,6 +9,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { CreateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/CreateContactAddress.generated';
 import { StatusEnum } from 'src/graphql/types.generated';
+import { createCache } from 'src/lib/apollo/cache';
 import theme from '../../../../../../../../theme';
 import { CreateContactMutation } from '../CreateContact/CreateContact.generated';
 import { CreateMultipleContacts } from './CreateMultipleContacts';
@@ -97,12 +98,15 @@ describe('CreateMultipleContacts', () => {
     const first3 = 'Cool';
 
     it('creates one contact', async () => {
+      const cache = createCache();
+      const evict = jest.spyOn(cache, 'evict');
       const { getByText, getAllByRole } = render(
         <ThemeProvider theme={theme}>
           <SnackbarProvider>
             <TestRouter router={router}>
               <GqlMockedProvider<CreateContactMocks>
                 onCall={mutationSpy}
+                cache={cache}
                 mocks={{
                   CreateContact: {
                     createContact: {
@@ -176,6 +180,12 @@ describe('CreateMultipleContacts', () => {
         contactId: 'contact-1',
         primaryAddressId: 'address-1',
       });
+      // Once for the whole batch, after every new primary was logged
+      expect(
+        evict.mock.calls.filter(
+          ([options]) => options.fieldName === 'addressChangeHistory',
+        ),
+      ).toHaveLength(1);
 
       expect(router.push).toHaveBeenCalledWith({
         pathname: '/accountLists/[accountListId]/contacts',
