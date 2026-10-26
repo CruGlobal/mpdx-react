@@ -16,7 +16,6 @@ const changes: AddressHistoryChangeFragment[] = [
     createdByUser: { id: 'user-1', firstName: 'Test', lastName: 'User' },
     date: '2024-06-13',
     previousAddress: {
-      id: 'address-1',
       street: '1001 Denman St',
       city: 'Vancouver',
       state: 'BC',

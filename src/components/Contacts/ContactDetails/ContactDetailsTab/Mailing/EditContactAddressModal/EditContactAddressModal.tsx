@@ -73,10 +73,8 @@ export const EditContactAddressModal: React.FC<
   const [setContactPrimaryAddress, { loading: settingPrimaryAddress }] =
     useSetContactPrimaryAddressMutation();
   const { update } = useUpdateCache();
-  const refetchPrimaryAddressChange = useRefetchPrimaryAddressChange(
-    accountListId,
-    contactId,
-  );
+  const refetchPrimaryAddressChange =
+    useRefetchPrimaryAddressChange(accountListId);
 
   const onSubmit = async ({
     primaryMailingAddress,
@@ -111,7 +109,7 @@ export const EditContactAddressModal: React.FC<
       }
     } finally {
       if (addressSaved) {
-        refetchPrimaryAddressChange();
+        refetchPrimaryAddressChange(contactId);
       }
     }
     enqueueSnackbar(t('Address updated successfully'), {
@@ -165,7 +163,7 @@ export const EditContactAddressModal: React.FC<
           });
         },
       });
-      refetchPrimaryAddressChange();
+      refetchPrimaryAddressChange(contactId);
     }
     handleClose();
   };

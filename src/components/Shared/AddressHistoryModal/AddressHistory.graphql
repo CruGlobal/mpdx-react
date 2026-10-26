@@ -30,7 +30,6 @@ fragment AddressHistoryChange on AddressChange {
     lastName
   }
   previousAddress {
-    id
     street
     city
     state

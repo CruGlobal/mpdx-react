@@ -9,14 +9,12 @@ export const currentUserId = 'user-1';
 export const otherUserId = 'user-2';
 
 const previousAddress = (
-  id: string,
   street: string,
   city: string,
   state: string,
   postalCode: string,
 ): AddressChangeRow['previousAddress'] => ({
-  __typename: 'Address',
-  id,
+  __typename: 'AddressChangePlace',
   street,
   city,
   state,
@@ -39,13 +37,7 @@ export const mockAddressChanges: AddressChangeRow[] = [
     source: 'Siebel',
     date: '2026-09-30',
     createdByUser: null,
-    previousAddress: previousAddress(
-      'previous-address-1',
-      '98 Lake St',
-      'Seattle',
-      'WA',
-      '98109',
-    ),
+    previousAddress: previousAddress('98 Lake St', 'Seattle', 'WA', '98109'),
   },
   {
     __typename: 'AddressChange',
@@ -62,13 +54,7 @@ export const mockAddressChanges: AddressChangeRow[] = [
     source: 'DataServer',
     date: '2026-09-12',
     createdByUser: null,
-    previousAddress: previousAddress(
-      'previous-address-2',
-      '12 Elm Rd',
-      'Burnaby',
-      'BC',
-      'V5H 1A1',
-    ),
+    previousAddress: previousAddress('12 Elm Rd', 'Burnaby', 'BC', 'V5H 1A1'),
   },
   {
     __typename: 'AddressChange',
@@ -91,7 +77,6 @@ export const mockAddressChanges: AddressChangeRow[] = [
       lastName: 'User',
     },
     previousAddress: previousAddress(
-      'previous-address-3',
       '550 14th Ave W',
       'Vancouver',
       'BC',
@@ -114,7 +99,6 @@ export const mockAddressChanges: AddressChangeRow[] = [
     date: '2026-06-18',
     createdByUser: null,
     previousAddress: previousAddress(
-      'previous-address-4',
       '301 Granite Way',
       'Bedrock',
       'BC',
@@ -142,7 +126,6 @@ export const mockAddressChanges: AddressChangeRow[] = [
       lastName: 'Smith',
     },
     previousAddress: previousAddress(
-      'previous-address-5',
       '22 Pine Cres',
       'Burnaby',
       'BC',

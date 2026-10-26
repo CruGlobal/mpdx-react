@@ -15,6 +15,7 @@ import {
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { useRefetchPrimaryAddressChange } from 'src/components/Contacts/AddressChangeBadge/useRefetchPrimaryAddressChange';
 import { DynamicAddAddressModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/DynamicAddAddressModal';
 import { DynamicEditContactAddressModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/DynamicEditContactAddressModal';
 import { useUpdateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/EditContactAddress.generated';
@@ -137,6 +138,8 @@ export const ConfirmAddresses: React.FC<Props> = ({ accountListId }: Props) => {
     variables: { accountListId },
   });
   const [updateAddress] = useUpdateContactAddressMutation();
+  const refetchPrimaryAddressChange =
+    useRefetchPrimaryAddressChange(accountListId);
   const { enqueueSnackbar } = useSnackbar();
   const [addressesState, setAddressesState] = useState({});
 
@@ -182,7 +185,11 @@ export const ConfirmAddresses: React.FC<Props> = ({ accountListId }: Props) => {
   const handleSingleConfirm = useCallback(
     async ({ id, name }: HandleSingleConfirmProps) => {
       let errorOccurred = false;
+      let primaryChanged = false;
       const addressesData = addressesState[id]?.addresses || [];
+      const loadedPrimaryId = data?.contacts.nodes
+        .find((contact) => contact.id === id)
+        ?.addresses.nodes.find((address) => address.primaryMailingAddress)?.id;
 
       for (let idx = 0; idx < addressesData.length; idx++) {
         const address = addressesData[idx];
@@ -197,8 +204,12 @@ export const ConfirmAddresses: React.FC<Props> = ({ accountListId }: Props) => {
             },
           },
           update(cache) {
-            // Saving a primary can log a change. No gc here: bulk confirm runs this once per contact.
-            if (address.primaryMailingAddress) {
+            // Only a new primary logs a change. No gc here: bulk confirm runs this once per contact.
+            if (
+              address.primaryMailingAddress &&
+              address.id !== loadedPrimaryId
+            ) {
+              primaryChanged = true;
               cache.evict({ fieldName: 'addressChangeHistory' });
             }
             if (idx === addressesData.length - 1 && !errorOccurred) {
@@ -212,6 +223,10 @@ export const ConfirmAddresses: React.FC<Props> = ({ accountListId }: Props) => {
       }
 
       if (errorOccurred) {
+        // The contact stays listed, so reload its change log for the new primary that did save
+        if (primaryChanged) {
+          refetchPrimaryAddressChange(id);
+        }
         enqueueSnackbar(t('Error updating contact {{name}}', { name }), {
           variant: 'error',
           autoHideDuration: 7000,
@@ -224,7 +239,15 @@ export const ConfirmAddresses: React.FC<Props> = ({ accountListId }: Props) => {
         return { success: true };
       }
     },
-    [addressesState, updateAddress, accountListId, enqueueSnackbar, t],
+    [
+      addressesState,
+      data,
+      updateAddress,
+      refetchPrimaryAddressChange,
+      accountListId,
+      enqueueSnackbar,
+      t,
+    ],
   );
 
   const handleBulkConfirm = useCallback(async () => {

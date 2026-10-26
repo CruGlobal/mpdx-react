@@ -34,7 +34,6 @@ query AddressChangeHistory(
         lastName
       }
       previousAddress {
-        id
         street
         city
         state

@@ -497,6 +497,25 @@ describe('ConfirmAddresses', () => {
 
   describe('handleSingleConfirm()', () => {
     const name = 'Baggins, Frodo';
+    // The second address can be made primary; Siebel addresses cannot
+    const [contact] =
+      mockInvalidAddressesResponse.InvalidAddresses.contacts.nodes;
+    const switchableMocks = {
+      InvalidAddresses: {
+        contacts: {
+          nodes: [
+            {
+              ...contact,
+              addresses: {
+                nodes: contact.addresses.nodes.map((address, index) =>
+                  index === 1 ? { ...address, source: 'TntImport' } : address,
+                ),
+              },
+            },
+          ],
+        },
+      },
+    };
     it('should handle error', async () => {
       const {
         getAllByRole,
@@ -538,20 +557,20 @@ describe('ConfirmAddresses', () => {
       expect(getByText(name)).toBeInTheDocument();
     });
 
-    it('drops the change history when the primary saves but a later address fails', async () => {
+    it('reloads the change log when a new primary saves but a later address fails', async () => {
       const cache = new InMemoryCache();
       const evict = jest.spyOn(cache, 'evict');
+      const mutationSpy = jest.fn();
       let saves = 0;
-      const { getAllByRole, queryByTestId } = render(
+      const { getAllByRole, findAllByTestId, queryByTestId } = render(
         <Components
           cache={cache}
+          onCall={mutationSpy}
           mocks={{
-            InvalidAddresses: {
-              ...mockInvalidAddressesResponse.InvalidAddresses,
-            },
-            // The first address saved is the primary
+            ...switchableMocks,
+            // The second address saved is the new primary; the third fails
             UpdateContactAddress: () => {
-              if (saves++ > 0) {
+              if (saves++ > 1) {
                 throw new Error('Server Error');
               }
               return {};
@@ -563,6 +582,7 @@ describe('ConfirmAddresses', () => {
         expect(queryByTestId('loading')).not.toBeInTheDocument(),
       );
 
+      userEvent.click((await findAllByTestId('contactStarIcon'))[0]);
       userEvent.click(getAllByRole('button', { name: 'Confirm' })[0]);
 
       await waitFor(() =>
@@ -572,6 +592,12 @@ describe('ConfirmAddresses', () => {
         ),
       );
       expect(evict).toHaveBeenCalledWith({ fieldName: 'addressChangeHistory' });
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation(
+          'ContactPrimaryAddressChange',
+          { contactId: 'contactId' },
+        ),
+      );
     });
 
     it('should handle success and remove contact', async () => {
@@ -609,7 +635,27 @@ describe('ConfirmAddresses', () => {
       await waitFor(() => expect(queryByText(name)).not.toBeInTheDocument());
     });
 
-    it('drops the change history so it reloads with the confirmed primary', async () => {
+    it('drops the change history when a new primary is confirmed', async () => {
+      const cache = new InMemoryCache();
+      const evict = jest.spyOn(cache, 'evict');
+      const { getAllByRole, findAllByTestId, queryByTestId } = render(
+        <Components cache={cache} mocks={switchableMocks} />,
+      );
+      await waitFor(() =>
+        expect(queryByTestId('loading')).not.toBeInTheDocument(),
+      );
+
+      userEvent.click((await findAllByTestId('contactStarIcon'))[0]);
+      userEvent.click(getAllByRole('button', { name: 'Confirm' })[0]);
+
+      await waitFor(() =>
+        expect(evict).toHaveBeenCalledWith({
+          fieldName: 'addressChangeHistory',
+        }),
+      );
+    });
+
+    it('keeps the change history when the primary stays the same', async () => {
       const cache = new InMemoryCache();
       const evict = jest.spyOn(cache, 'evict');
       const { getAllByRole, queryByTestId } = render(
@@ -622,10 +668,14 @@ describe('ConfirmAddresses', () => {
       userEvent.click(getAllByRole('button', { name: 'Confirm' })[0]);
 
       await waitFor(() =>
-        expect(evict).toHaveBeenCalledWith({
-          fieldName: 'addressChangeHistory',
-        }),
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          `Updated contact ${name}`,
+          expect.anything(),
+        ),
       );
+      expect(evict).not.toHaveBeenCalledWith({
+        fieldName: 'addressChangeHistory',
+      });
     });
 
     it('should disable the button while confirming', async () => {

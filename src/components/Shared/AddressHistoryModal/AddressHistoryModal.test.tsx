@@ -43,9 +43,7 @@ const change = (
   source,
   date,
   createdByUser,
-  previousAddress: previousStreet
-    ? { id: `address-${previousStreet}`, ...parts(previousStreet) }
-    : null,
+  previousAddress: previousStreet ? parts(previousStreet) : null,
 });
 
 // The API lists changes newest first
