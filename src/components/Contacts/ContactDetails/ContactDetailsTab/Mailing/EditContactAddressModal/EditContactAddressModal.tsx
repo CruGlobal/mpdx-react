@@ -93,7 +93,7 @@ export const EditContactAddressModal: React.FC<
             ...attributes,
           },
         },
-        update: evictAddressChangeHistory,
+        update: (cache) => evictAddressChangeHistory(cache),
       });
       addressSaved = true;
       // updateContactAddress doesn't set support setting the primaryMailingAddress field, so if

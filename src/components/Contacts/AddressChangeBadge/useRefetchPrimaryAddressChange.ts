@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useApolloClient } from '@apollo/client';
 import { ContactPrimaryAddressChangeDocument } from './ContactPrimaryAddressChange.generated';
 
@@ -7,14 +8,17 @@ import { ContactPrimaryAddressChangeDocument } from './ContactPrimaryAddressChan
 export const useRefetchPrimaryAddressChange = (accountListId: string) => {
   const client = useApolloClient();
 
-  return (contactId: string) => {
-    // A failure already reaches the user through the global error handler
-    client
-      .query({
-        query: ContactPrimaryAddressChangeDocument,
-        variables: { accountListId, contactId },
-        fetchPolicy: 'network-only',
-      })
-      .catch(() => undefined);
-  };
+  return useCallback(
+    (contactId: string) => {
+      // A failure already reaches the user through the global error handler
+      client
+        .query({
+          query: ContactPrimaryAddressChangeDocument,
+          variables: { accountListId, contactId },
+          fetchPolicy: 'network-only',
+        })
+        .catch(() => undefined);
+    },
+    [client, accountListId],
+  );
 };

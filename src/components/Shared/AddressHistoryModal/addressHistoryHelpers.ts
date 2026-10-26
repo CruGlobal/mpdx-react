@@ -63,7 +63,10 @@ export const formatChangeMadeBy = (
 // The change history comes from every contact's primary changes, so drop it when one changes and Apollo refetches it
 export const evictAddressChangeHistory = (
   cache: ApolloCache<unknown>,
+  { gc = true }: { gc?: boolean } = {},
 ): void => {
   cache.evict({ fieldName: 'addressChangeHistory' });
-  cache.gc();
+  if (gc) {
+    cache.gc();
+  }
 };

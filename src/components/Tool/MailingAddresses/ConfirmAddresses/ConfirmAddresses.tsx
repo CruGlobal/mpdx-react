@@ -19,6 +19,7 @@ import { useRefetchPrimaryAddressChange } from 'src/components/Contacts/AddressC
 import { DynamicAddAddressModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/DynamicAddAddressModal';
 import { DynamicEditContactAddressModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/DynamicEditContactAddressModal';
 import { useUpdateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/EditContactAddress.generated';
+import { evictAddressChangeHistory } from 'src/components/Shared/AddressHistoryModal/addressHistoryHelpers';
 import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
 import {
   manualSourceValue,
@@ -210,7 +211,7 @@ export const ConfirmAddresses: React.FC<Props> = ({ accountListId }: Props) => {
               address.id !== loadedPrimaryId
             ) {
               primaryChanged = true;
-              cache.evict({ fieldName: 'addressChangeHistory' });
+              evictAddressChangeHistory(cache, { gc: false });
             }
             if (idx === addressesData.length - 1 && !errorOccurred) {
               cache.evict({ id: `Contact:${id}` });
