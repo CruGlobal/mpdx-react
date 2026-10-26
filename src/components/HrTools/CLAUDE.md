@@ -195,8 +195,10 @@ has a distinct `Complete` mutation, and the request forms autosave a draft but
 
 ## Per-form domain gotchas
 
-- **MinisterHousingAllowance** — the online flow gates on **MHA eligibility only**
-  (`hcmData.mhaEit.mhaEligibility`). Italian/MHI staff fall out because their
+- **MinisterHousingAllowance** — the online flow gates new requests on
+  `hcmData.mhaNewRequest.mhaEligibility` (IBS certification, or an MHA the board
+  already approved); what it shows as approved uses `mhaBoardApproval` and
+  `mhaRequest.boardApprovedOverallAmount`. Italian/MHI staff fall out because their
   `mhaEligibility` is false — not via a country check; `staffInfo.country` only
   drives an informational note pointing them to the **paper MHI form**. There is
   no online MHI path. A new request is blocked while the current one is

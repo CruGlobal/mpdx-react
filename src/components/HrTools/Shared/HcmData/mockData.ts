@@ -50,6 +50,10 @@ const noMhaAndNoException: HcmQuery['hcm'][number] = {
     ineligibilityReasonCode:
       MinistersHousingIneligibilityReasonEnum.MissingBoardApprovedOnDate,
   },
+  mhaNewRequest: {
+    mhaEligibility: true,
+    ineligibilityReasonCode: null,
+  },
   mhiEit: {
     mhiEligibility: false,
     ineligibilityReasonCode:
@@ -81,6 +85,11 @@ const ineligibleAndNoException: HcmQuery['hcm'][number] = {
     ineligibilityReasonCode:
       MinistersHousingIneligibilityReasonEnum.NoIbsCertification,
   },
+  mhaNewRequest: {
+    mhaEligibility: false,
+    ineligibilityReasonCode:
+      MinistersHousingIneligibilityReasonEnum.NoIbsCertification,
+  },
 };
 
 const mhaAndNoException: HcmQuery['hcm'][number] = {
@@ -107,6 +116,10 @@ const italianMhiEligible: HcmQuery['hcm'][number] = {
     ineligibilityReasonCode: MinistersHousingIneligibilityReasonEnum.ItalyMhi,
   },
   mhaBoardApproval: {
+    mhaEligibility: false,
+    ineligibilityReasonCode: MinistersHousingIneligibilityReasonEnum.ItalyMhi,
+  },
+  mhaNewRequest: {
     mhaEligibility: false,
     ineligibilityReasonCode: MinistersHousingIneligibilityReasonEnum.ItalyMhi,
   },

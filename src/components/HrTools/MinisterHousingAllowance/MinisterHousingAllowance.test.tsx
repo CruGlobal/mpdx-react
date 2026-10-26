@@ -169,6 +169,11 @@ describe('MinisterHousingAllowanceReport', () => {
                 ineligibilityReasonCode:
                   MinistersHousingIneligibilityReasonEnum.NoIbsCertification,
               },
+              mhaNewRequest: {
+                mhaEligibility: false,
+                ineligibilityReasonCode:
+                  MinistersHousingIneligibilityReasonEnum.NoIbsCertification,
+              },
             },
           ]}
           mhaRequestsMock={[]}
@@ -190,6 +195,11 @@ describe('MinisterHousingAllowanceReport', () => {
             {
               ...marriedNoMhaNoException[0],
               mhaEit: {
+                mhaEligibility: false,
+                ineligibilityReasonCode:
+                  MinistersHousingIneligibilityReasonEnum.NoIbsCertification,
+              },
+              mhaNewRequest: {
                 mhaEligibility: false,
                 ineligibilityReasonCode:
                   MinistersHousingIneligibilityReasonEnum.NoIbsCertification,
@@ -240,41 +250,37 @@ describe('MinisterHousingAllowanceReport', () => {
     });
 
     it('shows the board approved MHA when the IBS certification has expired', async () => {
-      const { findByText, getByText, getByTestId, queryByText, queryByRole } =
-        render(
-          <TestComponent
-            hcmMock={[
-              {
-                ...singleMhaNoException[0],
-                mhaEit: {
-                  mhaEligibility: false,
-                  ineligibilityReasonCode:
-                    MinistersHousingIneligibilityReasonEnum.IbsCertificationExpired,
-                },
-                mhaRequest: {
-                  ...singleMhaNoException[0].mhaRequest,
-                  currentApprovedOverallAmount: 0,
-                },
+      const { findByText, getByText, getByRole, queryByTestId } = render(
+        <TestComponent
+          hcmMock={[
+            {
+              ...singleMhaNoException[0],
+              mhaEit: {
+                mhaEligibility: false,
+                ineligibilityReasonCode:
+                  MinistersHousingIneligibilityReasonEnum.IbsCertificationExpired,
               },
-            ]}
-            mhaRequestsMock={[]}
-          />,
-        );
+              mhaRequest: {
+                ...singleMhaNoException[0].mhaRequest,
+                currentApprovedOverallAmount: 0,
+              },
+            },
+          ]}
+          mhaRequestsMock={[]}
+        />,
+      );
 
       expect(
         await findByText('Current Board Approved MHA'),
       ).toBeInTheDocument();
       expect(getByText('$15,000.00')).toBeInTheDocument();
       expect(getByText('Approved on: 6/1/2026')).toBeInTheDocument();
+      // The board approval also lets them request a new MHA
+      expect(getByText(/click "request new mha"/i)).toBeInTheDocument();
       expect(
-        getByText('Our records indicate that you have an approved MHA amount.'),
+        getByRole('button', { name: 'Request New MHA' }),
       ).toBeInTheDocument();
-      // A new request still needs the IBS certification
-      expect(queryByText(/click "request new mha"/i)).not.toBeInTheDocument();
-      expect(
-        queryByRole('button', { name: 'Request New MHA' }),
-      ).not.toBeInTheDocument();
-      expect(getByTestId('eligibility-status-table')).toBeInTheDocument();
+      expect(queryByTestId('eligibility-status-table')).not.toBeInTheDocument();
     });
 
     it('shows the board approved MHA when only the spouse has one and no IBS certification', async () => {
@@ -284,6 +290,11 @@ describe('MinisterHousingAllowanceReport', () => {
             {
               ...marriedNoMhaNoException[0],
               mhaEit: {
+                mhaEligibility: false,
+                ineligibilityReasonCode:
+                  MinistersHousingIneligibilityReasonEnum.NoIbsCertification,
+              },
+              mhaNewRequest: {
                 mhaEligibility: false,
                 ineligibilityReasonCode:
                   MinistersHousingIneligibilityReasonEnum.NoIbsCertification,
@@ -309,8 +320,17 @@ describe('MinisterHousingAllowanceReport', () => {
       expect(getByRole('cell', { name: 'Jane' })).toBeInTheDocument();
       expect(queryByRole('cell', { name: 'John' })).not.toBeInTheDocument();
       expect(
-        queryByRole('button', { name: 'Request New MHA' }),
-      ).not.toBeInTheDocument();
+        getByRole('button', { name: 'Request New MHA' }),
+      ).toBeInTheDocument();
+      // John has neither; Jane qualifies only through the Board approval
+      expect(
+        getByRole('cell', {
+          name: 'Has not completed the required IBS courses',
+        }),
+      ).toBeInTheDocument();
+      expect(
+        getByRole('cell', { name: 'MHA has been Board approved' }),
+      ).toBeInTheDocument();
     });
 
     it('does not show the HCM approved MHA without a board approval date', async () => {

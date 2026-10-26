@@ -57,6 +57,10 @@ query Hcm(
       mhaEligibility
       ineligibilityReasonCode
     }
+    mhaNewRequest {
+      mhaEligibility
+      ineligibilityReasonCode
+    }
     mhiEit {
       mhiEligibility
       ineligibilityReasonCode

@@ -200,14 +200,15 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
     [spouseHcmData],
   );
 
-  // IBS based: decides who may start, duplicate or submit a new MHA request
+  // Who may start, duplicate or submit an MHA request: the IBS certification
+  // passes, or the person already has a board-approved MHA
   const userEligibleForMHA = useMemo(
-    () => userHcmData?.mhaEit?.mhaEligibility ?? false,
+    () => userHcmData?.mhaNewRequest?.mhaEligibility ?? false,
     [userHcmData],
   );
 
   const spouseEligibleForMHA = useMemo(
-    () => spouseHcmData?.mhaEit?.mhaEligibility ?? false,
+    () => spouseHcmData?.mhaNewRequest?.mhaEligibility ?? false,
     [spouseHcmData],
   );
 

@@ -67,6 +67,10 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
           mhaEligibility: true,
           ineligibilityReasonCode: null,
         },
+        mhaNewRequest: {
+          mhaEligibility: true,
+          ineligibilityReasonCode: null,
+        },
         mhiEit: {
           mhiEligibility: false,
           ineligibilityReasonCode:
@@ -99,6 +103,10 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
           ineligibilityReasonCode: null,
         },
         mhaBoardApproval: {
+          mhaEligibility: true,
+          ineligibilityReasonCode: null,
+        },
+        mhaNewRequest: {
           mhaEligibility: true,
           ineligibilityReasonCode: null,
         },

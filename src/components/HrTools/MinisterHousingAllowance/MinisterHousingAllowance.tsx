@@ -5,6 +5,7 @@ import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { EligibilityStatusTable } from 'src/components/HrTools/Shared/EligibilityStatusTable/EligibilityStatusTable';
+import { getEligibilityBasis } from 'src/components/HrTools/Shared/EligibilityStatusTable/eligibilityReasons';
 import Loading from 'src/components/Loading/Loading';
 import { Notification } from 'src/components/Notification/Notification';
 import { getMhiEligibility } from 'src/components/Reports/Shared/HousingAllowance/housingAllowance';
@@ -116,8 +117,8 @@ export const MinisterHousingAllowanceReport = () => {
 
   const hasNoRequests = !requests.length;
 
-  // Starting a new request needs the IBS certification (eitherPersonEligible);
-  // an MHA someone already has rests on the board approval (eitherPersonApproved)
+  // Who may start a new request (eitherPersonEligible: IBS, or an MHA the board
+  // already approved) vs. who has an MHA now (eitherPersonApproved)
   const eitherPersonEligible = userEligibleForMHA || spouseEligibleForMHA;
   const eitherPersonApproved =
     userBoardApprovedForMHA || spouseBoardApprovedForMHA;
@@ -154,10 +155,16 @@ export const MinisterHousingAllowanceReport = () => {
       spouseMhiEligibility={
         isMarried ? getMhiEligibility(spouseHcmData) : undefined
       }
-      userIneligibilityReasonCode={userHcmData?.mhaEit.ineligibilityReasonCode}
-      spouseIneligibilityReasonCode={
-        isMarried ? spouseHcmData?.mhaEit.ineligibilityReasonCode : undefined
+      userIneligibilityReasonCode={
+        userHcmData?.mhaNewRequest.ineligibilityReasonCode
       }
+      spouseIneligibilityReasonCode={
+        isMarried
+          ? spouseHcmData?.mhaNewRequest.ineligibilityReasonCode
+          : undefined
+      }
+      userBasis={getEligibilityBasis(userHcmData)}
+      spouseBasis={getEligibilityBasis(spouseHcmData)}
       userMhiIneligibilityReasonCode={
         userHcmData?.mhiEit.ineligibilityReasonCode
       }

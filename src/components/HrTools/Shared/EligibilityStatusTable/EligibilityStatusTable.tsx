@@ -56,6 +56,9 @@ interface EligibilityStatusTableProps {
   spouseMhiIneligibilityReasonCode?: MinistersHousingIneligibilityReasonEnum | null;
   compact?: boolean;
   basis?: EligibilityBasis;
+  // Per-person override of basis for the Reason row
+  userBasis?: EligibilityBasis;
+  spouseBasis?: EligibilityBasis;
 }
 
 export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
@@ -73,6 +76,8 @@ export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
   spouseMhiIneligibilityReasonCode,
   compact = false,
   basis = 'ibs',
+  userBasis = basis,
+  spouseBasis = basis,
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -117,7 +122,7 @@ export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
                 userEligible,
                 userCountry ?? null,
                 userIneligibilityReasonCode ?? null,
-                basis,
+                userBasis,
               )}
             </TableCell>
             {hasSpouse && (
@@ -127,7 +132,7 @@ export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
                   spouseEligible ?? false,
                   spouseCountry ?? null,
                   spouseIneligibilityReasonCode ?? null,
-                  basis,
+                  spouseBasis,
                 )}
               </TableCell>
             )}

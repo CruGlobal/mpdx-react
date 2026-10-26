@@ -13,6 +13,20 @@ type ReasonCopy = Partial<
 // (mhaBoardApproval).
 export type EligibilityBasis = 'ibs' | 'boardApproval';
 
+type HcmForNewRequest = {
+  mhaEit: { mhaEligibility: boolean };
+  mhaNewRequest: { mhaEligibility: boolean };
+};
+
+// Someone may request a new MHA through the IBS certification or through an MHA
+// the board already approved; name the Board approval when it is the only reason
+export const getEligibilityBasis = (
+  hcm: HcmForNewRequest | null,
+): EligibilityBasis =>
+  hcm?.mhaNewRequest.mhaEligibility && !hcm.mhaEit.mhaEligibility
+    ? 'boardApproval'
+    : 'ibs';
+
 export const getIneligibilityReason = (
   t: (key: string) => string,
   eligible: boolean,
