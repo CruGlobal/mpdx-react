@@ -98,6 +98,8 @@ export const ContactDetails: React.FC = () => {
         <ContactTabsWrapper>
           <ContactTabs
             onChange={handleChange}
+            variant="scrollable"
+            scrollButtons="auto"
             TabIndicatorProps={{ children: <span /> }}
           >
             <ContactTab value={ContactDetailTabEnum.Tasks} label={t('Tasks')} />

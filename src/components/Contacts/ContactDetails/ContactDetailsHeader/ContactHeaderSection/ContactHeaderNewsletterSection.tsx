@@ -46,7 +46,7 @@ export const ContactHeaderNewsletterSection = ({
   }
 
   return (
-    <ContactHeaderSection icon={<NewsletterIcon />}>
+    <ContactHeaderSection icon={<NewsletterIcon />} empty>
       <Typography variant="subtitle1">{'N/A'}</Typography>
     </ContactHeaderSection>
   );

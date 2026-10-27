@@ -34,7 +34,14 @@ export const ContactHeaderEmailSection = ({
   } else if (email) {
     return (
       <ContactHeaderSection icon={<EmailIcon />}>
-        <Typography variant="subtitle1" style={{ width: 'fit-content' }}>
+        <Typography
+          variant="subtitle1"
+          sx={{
+            width: 'fit-content',
+            maxWidth: '100%',
+            overflowWrap: 'anywhere',
+          }}
+        >
           <Link underline="hover" href={`mailto:${email}`} target="_blank">
             {email}
           </Link>
@@ -44,7 +51,7 @@ export const ContactHeaderEmailSection = ({
   }
 
   return (
-    <ContactHeaderSection icon={<EmailIcon />}>
+    <ContactHeaderSection icon={<EmailIcon />} empty>
       <Typography variant="subtitle1">{'N/A'}</Typography>
     </ContactHeaderSection>
   );
