@@ -12,6 +12,7 @@ import {
 import { ApolloError } from '@apollo/client';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { useDrawerOpenState } from 'src/components/HrTools/Shared/CalculationReports/PanelLayout/useDrawerOpenState';
 import {
   FormEnum,
   PageEnum,
@@ -244,7 +245,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
     [spouseHcmData],
   );
 
-  const [isDrawerOpen, setIsDrawerOpen] = useState(true);
+  const [isDrawerOpen, setIsDrawerOpen] = useDrawerOpenState();
   const toggleDrawer = useCallback(() => {
     setIsDrawerOpen((prev) => !prev);
   }, []);
