@@ -70,6 +70,10 @@ describe('EligibilityStatusTable', () => {
       MinistersHousingIneligibilityReasonEnum.MissingIbsCertificationDate,
       'IBS certification date is missing from your records',
     ],
+    [
+      MinistersHousingIneligibilityReasonEnum.MissingBoardApprovedOnDate,
+      'Board approval date is missing from your records',
+    ],
   ])('shows the reason for the %s code', (reasonCode, expectedText) => {
     const { getByRole } = render(
       <EligibilityStatusTable
@@ -258,6 +262,74 @@ describe('EligibilityStatusTable', () => {
     expect(
       queryByText(/Any changes will only apply to the approved staff member/),
     ).not.toBeInTheDocument();
+  });
+
+  describe('board approval basis', () => {
+    it('describes eligibility by the Board approval, not the IBS courses', () => {
+      const { getByRole, getByTestId, queryByRole } = render(
+        <EligibilityStatusTable
+          userPreferredName="John"
+          userEligible={true}
+          userCountry="US"
+          spousePreferredName="Jane"
+          spouseEligible={false}
+          spouseCountry="US"
+          spouseIneligibilityReasonCode={
+            MinistersHousingIneligibilityReasonEnum.MissingBoardApprovedOnDate
+          }
+          basis="boardApproval"
+        />,
+      );
+
+      expect(
+        getByRole('cell', { name: 'MHA has been Board approved' }),
+      ).toBeInTheDocument();
+      expect(
+        queryByRole('cell', { name: 'Completed the required IBS courses' }),
+      ).not.toBeInTheDocument();
+      expect(
+        getByRole('cell', {
+          name: 'Board approval date is missing from your records',
+        }),
+      ).toBeInTheDocument();
+      expect(getByTestId('eligibility-contact-info')).not.toHaveTextContent(
+        /IBS/,
+      );
+    });
+
+    it('falls back to Board approval copy for an unknown reason code', () => {
+      const { getByRole } = render(
+        <EligibilityStatusTable
+          userPreferredName="John"
+          userEligible={false}
+          userCountry="US"
+          basis="boardApproval"
+        />,
+      );
+
+      expect(
+        getByRole('cell', { name: 'No current MHA Board approval' }),
+      ).toBeInTheDocument();
+    });
+
+    it('keeps the IBS copy by default', () => {
+      const { getByRole, getByTestId } = render(
+        <EligibilityStatusTable
+          userPreferredName="John"
+          userEligible={true}
+          spousePreferredName="Jane"
+          spouseEligible={false}
+          spouseCountry="US"
+        />,
+      );
+
+      expect(
+        getByRole('cell', { name: 'Completed the required IBS courses' }),
+      ).toBeInTheDocument();
+      expect(getByTestId('eligibility-contact-info')).toHaveTextContent(
+        'or would like to complete the required IBS courses',
+      );
+    });
   });
 
   it('does not render spouse column when spousePreferredName is not provided', () => {

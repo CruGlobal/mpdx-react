@@ -5,18 +5,26 @@ export interface EligibleDisplayProps {
   isPending: boolean;
   isEditable: boolean;
   isHcmApprovedOnly?: boolean;
+  // False when nobody can start a new request (no current IBS certification),
+  // so the text must not point at the hidden request buttons
+  canRequestNewMha?: boolean;
 }
 
 export const EligibleDisplay: React.FC<EligibleDisplayProps> = ({
   isPending,
   isEditable,
   isHcmApprovedOnly,
+  canRequestNewMha = true,
 }) => {
   const { t } = useTranslation();
 
   return (
     <Box>
-      {isHcmApprovedOnly ? (
+      {isHcmApprovedOnly && !canRequestNewMha ? (
+        <p style={{ lineHeight: 1.5 }}>
+          {t('Our records indicate that you have an approved MHA amount.')}
+        </p>
+      ) : isHcmApprovedOnly ? (
         <Trans t={t}>
           <p style={{ lineHeight: 1.5 }}>
             Our records indicate that you have an approved MHA amount. If you
@@ -38,6 +46,14 @@ export const EligibleDisplay: React.FC<EligibleDisplayProps> = ({
             </Trans>
           )}
         </p>
+      ) : !canRequestNewMha ? (
+        <Trans t={t}>
+          <p style={{ lineHeight: 1.5 }}>
+            Our records indicate that you have an approved MHA amount. To view
+            your MHA amount, click on the &quot;View Current MHA&quot; button
+            below.
+          </p>
+        </Trans>
       ) : (
         <Trans t={t}>
           <p style={{ lineHeight: 1.5 }}>

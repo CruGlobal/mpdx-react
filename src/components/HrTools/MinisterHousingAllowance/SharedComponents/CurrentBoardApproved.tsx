@@ -142,16 +142,20 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
     spouseHcmData,
     userEligibleForMHA,
     spouseEligibleForMHA,
+    userBoardApprovedForMHA,
+    spouseBoardApprovedForMHA,
   } = useMinisterHousingAllowance();
   const requestId = request?.id;
 
   // MHAs approved before the MPDX launch only exist in HCM, so there is no
   // request to view, print, or duplicate
   const isHcmOnly = !request;
-  // Like the Salary Calculator, an HCM-only card skips ineligible people; the
-  // page shows the eligibility table instead
-  const showUserRow = !isHcmOnly || userEligibleForMHA;
-  const showSpouseRow = isMarried && (!isHcmOnly || spouseEligibleForMHA);
+  // An HCM-only card skips people without a board approval; the page shows the
+  // eligibility table instead
+  const showUserRow = !isHcmOnly || userBoardApprovedForMHA;
+  const showSpouseRow = isMarried && (!isHcmOnly || spouseBoardApprovedForMHA);
+  // Updating duplicates the request, which needs the IBS certification
+  const canUpdate = userEligibleForMHA || spouseEligibleForMHA;
 
   const { hrApprovedAt } = request?.requestAttributes || {};
   const userApprovedOn = isHcmOnly
@@ -209,7 +213,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
       linkOne={viewLink}
       linkTwoText={t('Update Current MHA')}
       handleLinkTwo={handleDuplicateRequest}
-      hideLinkTwoButton={hasOpenRequest}
+      hideLinkTwoButton={hasOpenRequest || !canUpdate}
       isRequest={false}
       hidePrint={isHcmOnly}
       hideActions={isHcmOnly}

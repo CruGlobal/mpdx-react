@@ -8,17 +8,43 @@ type ReasonCopy = Partial<
   Record<MinistersHousingIneligibilityReasonEnum, string>
 >;
 
+// What MHA eligibility rests on: requesting a new MHA checks the IBS
+// certification (mhaEit), the Salary Calculator checks the Board approval date
+// (mhaBoardApproval).
+export type EligibilityBasis = 'ibs' | 'boardApproval';
+
+type HcmForNewRequest = {
+  mhaEit: { mhaEligibility: boolean };
+  mhaNewRequest: { mhaEligibility: boolean };
+};
+
+// Someone may request a new MHA through the IBS certification or through an MHA
+// the board already approved; name the Board approval when it is the only reason
+export const getEligibilityBasis = (
+  hcm: HcmForNewRequest | null,
+): EligibilityBasis =>
+  hcm?.mhaNewRequest.mhaEligibility && !hcm.mhaEit.mhaEligibility
+    ? 'boardApproval'
+    : 'ibs';
+
 export const getIneligibilityReason = (
   t: (key: string) => string,
   eligible: boolean,
   country: string | null,
   reasonCode: MinistersHousingIneligibilityReasonEnum | null,
+  basis: EligibilityBasis = 'ibs',
 ): string => {
   if (eligible) {
-    return t('Completed the required IBS courses');
+    return basis === 'boardApproval'
+      ? t('MHA has been Board approved')
+      : t('Completed the required IBS courses');
   }
   const mustUseMhiForm = t('Must complete an MHI form instead');
   const noIbsCourses = t('Has not completed the required IBS courses');
+  const notBasisMet =
+    basis === 'boardApproval'
+      ? t('No current MHA Board approval')
+      : noIbsCourses;
   const reasonCopy: ReasonCopy = {
     [MinistersHousingIneligibilityReasonEnum.PersonType]: t(
       'Staff type is not eligible for MHA',
@@ -42,11 +68,14 @@ export const getIneligibilityReason = (
     [MinistersHousingIneligibilityReasonEnum.MissingIbsCertificationDate]: t(
       'IBS certification date is missing from your records',
     ),
+    [MinistersHousingIneligibilityReasonEnum.MissingBoardApprovedOnDate]: t(
+      'Board approval date is missing from your records',
+    ),
   };
   // Fall back to the country-based guess when the API predates the reason code
   // (null) or sends a code this client does not know yet
   const fallbackCopy =
-    getHousingKind(country) === 'MHI' ? mustUseMhiForm : noIbsCourses;
+    getHousingKind(country) === 'MHI' ? mustUseMhiForm : notBasisMet;
   const copy = reasonCode ? reasonCopy[reasonCode] : undefined;
   return copy ?? fallbackCopy;
 };
