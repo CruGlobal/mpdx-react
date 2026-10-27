@@ -2,8 +2,19 @@ import { ParsedUrlQueryInput } from 'querystring';
 import Head from 'next/head';
 import React, { useEffect, useMemo, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
+import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import { Box, Button, ButtonGroup } from '@mui/material';
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  Theme,
+  useMediaQuery,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -65,6 +76,14 @@ const TaskHeaderButton = styled(Button)(({ theme }) => ({
   fontWeight: 600,
   marginRight: theme.spacing(1),
   marginLeft: theme.spacing(1),
+}));
+
+const TaskMenuButton = styled(Button)(({ theme }) => ({
+  color: theme.palette.info.main,
+  minWidth: 0,
+  marginRight: theme.spacing(1),
+  paddingLeft: theme.spacing(1),
+  paddingRight: theme.spacing(0.5),
 }));
 
 const TaskFilterTabsWrapper = styled(Box)({
@@ -218,6 +237,92 @@ const PageContent: React.FC = () => {
   } = useMassSelection(allTaskIds);
   //#endregion
 
+  const isMobile = useMediaQuery(
+    (theme: Theme) => theme.breakpoints.down('sm'),
+    { noSsr: true },
+  );
+  const [taskMenuAnchor, setTaskMenuAnchor] = useState<HTMLElement | null>(
+    null,
+  );
+  const closeTaskMenu = () => setTaskMenuAnchor(null);
+
+  const taskButtons = [
+    {
+      view: TaskModalEnum.Add,
+      shortLabel: t('Add'),
+      label: t('Add Task'),
+      Icon: TaskAddIcon,
+    },
+    {
+      view: TaskModalEnum.Log,
+      shortLabel: t('Log'),
+      label: t('Log Task'),
+      Icon: TaskCheckIcon,
+    },
+  ];
+
+  // On phones the Actions button that appears with a selection doesn't fit
+  // next to Add and Log, so they collapse into one menu button
+  const taskButtonGroup =
+    isMobile && ids.length > 0 ? (
+      <>
+        <TaskMenuButton
+          aria-label={t('Add or Log Task')}
+          aria-haspopup="menu"
+          aria-expanded={!!taskMenuAnchor}
+          onClick={(event) => setTaskMenuAnchor(event.currentTarget)}
+        >
+          <TaskAddIcon />
+          <ArrowDropDown />
+        </TaskMenuButton>
+        <Menu
+          anchorEl={taskMenuAnchor}
+          open={!!taskMenuAnchor}
+          onClose={closeTaskMenu}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        >
+          {taskButtons.map(({ view, label, Icon }) => (
+            <MenuItem
+              key={view}
+              onClick={() => {
+                closeTaskMenu();
+                openTaskModal({ view });
+              }}
+              onMouseEnter={() => preloadTaskModal(view)}
+            >
+              <ListItemIcon>
+                <Icon />
+              </ListItemIcon>
+              <ListItemText>{label}</ListItemText>
+            </MenuItem>
+          ))}
+        </Menu>
+      </>
+    ) : (
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
+        {taskButtons.map(({ view, shortLabel, label, Icon }) => (
+          <TaskHeaderButton
+            key={view}
+            onClick={() => openTaskModal({ view })}
+            onMouseEnter={() => preloadTaskModal(view)}
+            variant="text"
+            startIcon={<Icon />}
+          >
+            <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+              {shortLabel}
+            </Box>
+            <Box sx={{ display: { xs: 'none', sm: 'block' } }}>{label}</Box>
+          </TaskHeaderButton>
+        ))}
+      </Box>
+    );
+
   //#region JSX
   return (
     <>
@@ -251,45 +356,7 @@ const PageContent: React.FC = () => {
                   massDeselectAll={deselectAll}
                   showShowingCount
                   selectedIds={ids}
-                  buttonGroup={
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <TaskHeaderButton
-                        onClick={() =>
-                          openTaskModal({ view: TaskModalEnum.Add })
-                        }
-                        onMouseEnter={() => preloadTaskModal(TaskModalEnum.Add)}
-                        variant="text"
-                        startIcon={<TaskAddIcon />}
-                      >
-                        <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
-                          {t('Add')}
-                        </Box>
-                        <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-                          {t('Add Task')}
-                        </Box>
-                      </TaskHeaderButton>
-                      <TaskHeaderButton
-                        onClick={() =>
-                          openTaskModal({ view: TaskModalEnum.Log })
-                        }
-                        onMouseEnter={() => preloadTaskModal(TaskModalEnum.Log)}
-                        variant="text"
-                        startIcon={<TaskCheckIcon />}
-                      >
-                        <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
-                          {t('Log')}
-                        </Box>
-                        <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-                          {t('Log Task')}
-                        </Box>
-                      </TaskHeaderButton>
-                    </Box>
-                  }
+                  buttonGroup={taskButtonGroup}
                 />
                 <Box>
                   <TaskFilterTabsWrapper>

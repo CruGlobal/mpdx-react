@@ -450,6 +450,7 @@
     "Add New Comment": "Add New Comment",
     "Add New Donation": "Add New Donation",
     "Add New Task": "Add New Task",
+    "Add or Log Task": "Add or Log Task",
     "Add Organization Account": "Add Organization Account",
     "Add organizations that sync donation information with this {{appName}} account. That\n          organization will have the ability to manage or delete your account. Removing an\n          organization will not remove past information, but will prevent future donations\n          and contacts from syncing.": "Add organizations that sync donation information with this {{appName}} account. That\n          organization will have the ability to manage or delete your account. Removing an\n          organization will not remove past information, but will prevent future donations\n          and contacts from syncing.",
     "Add Partner Account": "Add Partner Account",

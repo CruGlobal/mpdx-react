@@ -6,6 +6,7 @@ import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import matchMediaMock from '__tests__/util/matchMediaMock';
+import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { GetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
@@ -75,7 +76,11 @@ const MocksProviders: React.FC<MocksProvidersProps> = ({
   return (
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
-        <GqlMockedProvider<{ Tasks: TasksQuery; UserOption: UserOptionQuery }>
+        <GqlMockedProvider<{
+          Tasks: TasksQuery;
+          GetTaskIdsForMassSelection: GetTaskIdsForMassSelectionQuery;
+          UserOption: UserOptionQuery;
+        }>
           mocks={{
             Tasks: {
               tasks: {
@@ -83,6 +88,9 @@ const MocksProviders: React.FC<MocksProvidersProps> = ({
                 pageInfo: { hasNextPage: false },
                 totalCount: 20,
               },
+            },
+            GetTaskIdsForMassSelection: {
+              tasks: { nodes: [{ id: task.id }] },
             },
             ...(savedFiltersOpen && {
               UserOption: {
@@ -147,6 +155,49 @@ describe('tasks page', () => {
       // The mock link reports operations after a tick, so let any save arrive first
       await act(() => new Promise((resolve) => setTimeout(resolve)));
       expect(mutationSpy).not.toHaveGraphqlOperation('UpdateUserOption');
+    });
+  });
+
+  describe('add and log buttons', () => {
+    it('collapse into a menu on phones while tasks are selected', async () => {
+      matchMediaMock({ width: '390px' });
+      const { findByRole, findByTestId, getByRole, queryByRole } = render(
+        <MocksProviders>
+          <Tasks />
+        </MocksProviders>,
+      );
+
+      expect(
+        await findByRole('button', { name: /Log Task/ }),
+      ).toBeInTheDocument();
+      userEvent.click(await findByTestId('task-row'));
+      expect(await findByRole('button', { name: 'Actions' })).toBeVisible();
+      expect(queryByRole('button', { name: /^Log/ })).not.toBeInTheDocument();
+
+      userEvent.click(getByRole('button', { name: 'Add or Log Task' }));
+      userEvent.click(getByRole('menuitem', { name: 'Log Task' }));
+      expect(openTaskModal).toHaveBeenCalledWith({ view: TaskModalEnum.Log });
+
+      userEvent.click(getByRole('button', { name: 'Add or Log Task' }));
+      userEvent.click(getByRole('menuitem', { name: 'Add Task' }));
+      expect(openTaskModal).toHaveBeenCalledWith({ view: TaskModalEnum.Add });
+    });
+
+    it('stay as separate buttons on larger screens while tasks are selected', async () => {
+      const { findByRole, findByTestId, getByRole, queryByRole } = render(
+        <MocksProviders>
+          <Tasks />
+        </MocksProviders>,
+      );
+
+      userEvent.click(await findByTestId('task-row'));
+      expect(await findByRole('button', { name: 'Actions' })).toBeVisible();
+      expect(
+        queryByRole('button', { name: 'Add or Log Task' }),
+      ).not.toBeInTheDocument();
+
+      userEvent.click(getByRole('button', { name: /Log Task/ }));
+      expect(openTaskModal).toHaveBeenCalledWith({ view: TaskModalEnum.Log });
     });
   });
 
