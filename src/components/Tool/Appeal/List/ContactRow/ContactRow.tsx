@@ -61,6 +61,10 @@ const ContactRowActions = styled(Box)(() => ({
   display: 'flex',
   alignItems: 'center',
   paddingRight: theme.spacing(2),
+  // Touch users can't hover, so show the actions whenever a touchscreen is available
+  '@media (any-pointer: coarse)': {
+    opacity: 1,
+  },
 }));
 
 export const handleClickWithCallback = (
@@ -156,7 +160,7 @@ export const ContactRow: React.FC<Props> = ({
           <Grid
             style={{ paddingRight: 16 }}
             display={'flex'}
-            size={isExcludedContact ? 5 : 6}
+            size={{ xs: 12, sm: isExcludedContact ? 5 : 6 }}
           >
             <ListItemIcon>
               <StyledCheckbox
@@ -168,16 +172,23 @@ export const ContactRow: React.FC<Props> = ({
             </ListItemIcon>
             <ListItemText
               primary={
-                <Typography component="span" variant="h6" noWrap>
-                  <Box component="span" display="flex" alignItems="center">
-                    {name}
-                  </Box>
+                <Typography
+                  component="span"
+                  variant="h6"
+                  display="block"
+                  noWrap
+                >
+                  {name}
                 </Typography>
               }
             />
           </Grid>
           {isExcludedContact && (
-            <Grid display={'flex'} size={3}>
+            <Grid
+              display={'flex'}
+              size={{ xs: 12, sm: 3 }}
+              sx={{ pl: { xs: 7, sm: 0 } }}
+            >
               <Box>
                 <Box
                   display="flex"
@@ -199,7 +210,8 @@ export const ContactRow: React.FC<Props> = ({
           <Grid
             display={'flex'}
             style={{ justifyContent: 'space-between' }}
-            size={isExcludedContact ? 4 : 6}
+            size={{ xs: 12, sm: isExcludedContact ? 4 : 6 }}
+            sx={{ pl: { xs: 7, sm: 0 }, pb: { xs: 1, sm: 0 } }}
           >
             <Box
               display="flex"

@@ -14,6 +14,7 @@ import theme from 'src/theme';
 import {
   AppealHeaderInfo,
   appealHeaderInfoHeight,
+  appealHeaderInfoMobileHeight,
 } from '../../AppealDetails/AppealHeaderInfo/AppealHeaderInfo';
 import { AppealQuery } from '../../AppealDetails/AppealsMainPanel/AppealInfo.generated';
 import {
@@ -115,7 +116,7 @@ export const ContactsList: React.FC<ContactsListProps> = ({
       <Grid container alignItems="center" className={classes.headerContainer}>
         <Grid
           className={classes.contactHeader}
-          size={isExcludedContact ? 5 : 6}
+          size={{ xs: 12, sm: isExcludedContact ? 5 : 6 }}
         >
           <Typography variant="subtitle1" fontWeight={800}>
             {t('Contact')}
@@ -128,13 +129,18 @@ export const ContactsList: React.FC<ContactsListProps> = ({
               paddingLeft: '0px',
             }}
             size={3}
+            sx={{ display: { xs: 'none', sm: 'block' } }}
           >
             <Typography variant="subtitle1" fontWeight={800}>
               {t('Reason')}
             </Typography>
           </Grid>
         )}
-        <Grid className={classes.givingHeader} size={isExcludedContact ? 4 : 6}>
+        <Grid
+          className={classes.givingHeader}
+          size={isExcludedContact ? 4 : 6}
+          sx={{ display: { xs: 'none', sm: 'block' } }}
+        >
           <Box justifyContent={contactPanelOpen ? 'flex-end' : undefined}>
             <Box>
               <Typography variant="subtitle1" fontWeight={800}>
@@ -144,43 +150,50 @@ export const ContactsList: React.FC<ContactsListProps> = ({
           </Box>
         </Grid>
       </Grid>
-      <InfiniteList
-        loading={loading}
-        data={data?.contacts?.nodes ?? []}
-        style={{
-          height: `calc(100vh - ${navBarHeight} - ${headerHeight} - ${appealHeaderInfoHeight})`,
+      <Box
+        sx={{
+          height: {
+            xs: `calc(100vh - ${navBarHeight} - ${headerHeight} - ${appealHeaderInfoMobileHeight})`,
+            sm: `calc(100vh - ${navBarHeight} - ${headerHeight} - ${appealHeaderInfoHeight})`,
+          },
         }}
-        itemContent={(index, contact) => (
-          <ContactRow
-            key={contact.id}
-            contact={contact}
-            appealStatus={appealStatus}
-            useTopMargin={index === 0}
-            excludedContacts={
-              excludedContacts?.appeal?.excludedAppealContacts ?? []
-            }
-          />
-        )}
-        groupBy={(item) => ({ label: item.name[0].toUpperCase() })}
-        endReached={() =>
-          data?.contacts?.pageInfo.hasNextPage &&
-          fetchMore({
-            variables: {
-              after: data.contacts?.pageInfo.endCursor,
-            },
-          })
-        }
-        EmptyPlaceholder={
-          <Box width="75%" margin="auto" mt={2}>
-            <NullState
-              page="contact"
-              totalCount={data?.contacts.totalCount || 0}
-              title={nullStateTitle}
-              paragraph={''}
+      >
+        <InfiniteList
+          loading={loading}
+          data={data?.contacts?.nodes ?? []}
+          style={{ height: '100%' }}
+          itemContent={(index, contact) => (
+            <ContactRow
+              key={contact.id}
+              contact={contact}
+              appealStatus={appealStatus}
+              useTopMargin={index === 0}
+              excludedContacts={
+                excludedContacts?.appeal?.excludedAppealContacts ?? []
+              }
             />
-          </Box>
-        }
-      />
+          )}
+          groupBy={(item) => ({ label: item.name[0].toUpperCase() })}
+          endReached={() =>
+            data?.contacts?.pageInfo.hasNextPage &&
+            fetchMore({
+              variables: {
+                after: data.contacts?.pageInfo.endCursor,
+              },
+            })
+          }
+          EmptyPlaceholder={
+            <Box width="75%" margin="auto" mt={2}>
+              <NullState
+                page="contact"
+                totalCount={data?.contacts.totalCount || 0}
+                title={nullStateTitle}
+                paragraph={''}
+              />
+            </Box>
+          }
+        />
+      </Box>
     </>
   );
 };
