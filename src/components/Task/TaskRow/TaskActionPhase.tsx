@@ -6,6 +6,8 @@ import { ActivityData } from 'src/hooks/usePhaseData';
 
 export const SubjectWrapOuter = styled(ButtonBase)(({ theme }) => ({
   width: 'fit-content',
+  maxWidth: '100%',
+  minHeight: 24,
   alignItems: 'center',
   marginRight: theme.spacing(1),
   display: 'flex',
@@ -41,7 +43,8 @@ const TaskType = styled(Typography)(({ theme }) => ({
   whiteSpace: 'nowrap',
   fontWeight: 400,
   marginRight: theme.spacing(0.5),
-  display: 'flex',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
 }));
 
 interface TaskActionPhaseProps {
