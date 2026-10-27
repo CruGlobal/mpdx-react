@@ -3,15 +3,7 @@ fragment ContactRow on Contact {
   avatar
   name
   primaryAddress {
-    id
-    street
-    city
-    state
-    postalCode
-    country
-    geo
-    source
-    createdAt
+    ...ContactRowAddress
   }
   status
   pledgeAmount
@@ -24,4 +16,16 @@ fragment ContactRow on Contact {
   starred
   uncompletedTasksCount
   ...CelebrationItems
+}
+
+fragment ContactRowAddress on Address {
+  id
+  street
+  city
+  state
+  postalCode
+  country
+  geo
+  source
+  createdAt
 }

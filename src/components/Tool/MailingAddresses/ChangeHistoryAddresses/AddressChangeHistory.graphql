@@ -1,0 +1,59 @@
+query AddressChangeHistory(
+  $accountListId: ID!
+  $after: String
+  $partners: ContactFilterPartnerEnum
+  $startDate: ISO8601Date
+  $endDate: ISO8601Date
+  $madeBy: [ID!]
+) {
+  addressChangeHistory(
+    accountListId: $accountListId
+    after: $after
+    partners: $partners
+    first: 50
+    startDate: $startDate
+    endDate: $endDate
+    madeBy: $madeBy
+  ) {
+    nodes {
+      id
+      contactId
+      partnerName
+      partnerStatus
+      donorAccountNumbers
+      street
+      city
+      state
+      postalCode
+      country
+      source
+      date
+      createdByUser {
+        id
+        firstName
+        lastName
+      }
+      previousAddress {
+        street
+        city
+        state
+        postalCode
+      }
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+    totalCount
+    automaticCount
+    contactIds
+    madeByOptions {
+      id
+      type
+      label
+      user {
+        id
+      }
+    }
+  }
+}

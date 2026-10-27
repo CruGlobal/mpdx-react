@@ -67,11 +67,13 @@ export const getToolsListHome = (t: TFunction): ToolItem[] => [
     url: 'fix/emailAddresses',
   },
   {
-    tool: t('Fix Mailing Addresses'),
-    desc: t('Set the correct primary mailing address for each contact'),
+    tool: t('Mailing Addresses'),
+    desc: t(
+      'Confirm primary mailing addresses and view change history for each contact',
+    ),
     icon: mdiMap,
-    id: 'fixMailingAddresses',
-    url: 'fix/mailingAddresses',
+    id: 'mailingAddresses',
+    url: 'mailingAddresses',
   },
   {
     tool: t('Fix Phone Numbers'),

@@ -1,0 +1,20 @@
+# This sets Contact.primaryAddress, so it spreads every reader's address fields. A reader whose fields are missing
+# finds the new address incomplete and reloads its whole query from the network. It also reloads the change log the
+# chips, the header and the History pop-up read.
+query ContactPrimaryAddressChange($accountListId: ID!, $contactId: ID!) {
+  contact(accountListId: $accountListId, id: $contactId) {
+    id
+    ...ContactHeaderAddress
+    primaryAddress {
+      ...ContactRowAddress
+      ...ContactPrimaryAddress
+      ...BasicAddressInfo
+    }
+    latestAddressChange {
+      ...AddressChangeFields
+    }
+    addressChanges {
+      ...AddressHistoryChange
+    }
+  }
+}

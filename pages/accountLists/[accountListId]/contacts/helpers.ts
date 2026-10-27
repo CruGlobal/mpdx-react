@@ -52,9 +52,9 @@ export const getRedirectPathname = ({
     pathname = `/accountLists/${accountListId}/reports/donations`;
   } else if (
     routerPathname ===
-    '/accountLists/[accountListId]/tools/fix/mailingAddresses/[[...contactId]]'
+    '/accountLists/[accountListId]/tools/mailingAddresses/[[...contactId]]'
   ) {
-    pathname = `/accountLists/${accountListId}/tools/fix/mailingAddresses`;
+    pathname = `/accountLists/${accountListId}/tools/mailingAddresses`;
   } else if (
     routerPathname ===
     '/accountLists/[accountListId]/tools/fix/commitmentInfo/[[...contactId]]'
