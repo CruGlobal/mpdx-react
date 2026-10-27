@@ -12,6 +12,7 @@ import {
   ContactsType,
   parseSavedFilters,
 } from 'src/components/Contacts/ContactsContext/ContactsContext';
+import { useLeftPanelOverlays } from 'src/components/Layouts/useLeftPanelOverlays';
 import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
 import { useUrlFilters } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
 import { ContactFilterSetInput } from 'src/graphql/types.generated';
@@ -117,14 +118,21 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
   );
 
   const { searchTerm, combinedFilters } = useUrlFilters();
+  const isMobile = useLeftPanelOverlays();
 
   //User options for display view
   useEffect(() => {
     if (viewMode === TableViewModeEnum.List) {
-      setFilterPanelOpen(true);
       setListAppealStatus(AppealStatusEnum.Asked);
     }
   }, [viewMode]);
+
+  // The appeal panel covers most of a small screen, so it only opens by itself on larger screens
+  useEffect(() => {
+    if (viewMode === TableViewModeEnum.List) {
+      setFilterPanelOpen(!isMobile);
+    }
+  }, [viewMode, isMobile]);
 
   const defaultFilters = useMemo(
     () => ({

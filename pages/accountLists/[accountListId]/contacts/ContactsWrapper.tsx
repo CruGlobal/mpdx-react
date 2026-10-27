@@ -5,6 +5,7 @@ import { ContactsProvider } from 'src/components/Contacts/ContactsContext/Contac
 import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
 import { UrlFiltersProvider } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
+import { useFilterPanelOpen } from 'src/hooks/useFilterPanelOpen';
 import { useUserPreference } from 'src/hooks/useUserPreference';
 
 // Extract the initial view mode from the URL
@@ -32,10 +33,9 @@ export const ContactsWrapper: React.FC<Props> = ({ children }) => {
       defaultValue: getQueryViewMode(query),
     });
 
-  const [filterPanelOpen, setFilterPanelOpen] = useUserPreference({
-    key: 'contact_filters_collapse',
-    defaultValue: false,
-  });
+  const [filterPanelOpen, setFilterPanelOpen] = useFilterPanelOpen(
+    'contact_filters_collapse',
+  );
 
   const contactIdPrefix = useMemo(
     () => (viewMode === TableViewModeEnum.List ? [] : [viewMode]),

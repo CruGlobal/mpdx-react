@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
+import { useCloseLeftPanelWhenOverlaid } from 'src/components/Layouts/useLeftPanelOverlays';
 import Loading from 'src/components/Loading';
 import { PartnerGivingAnalysisReport } from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReport';
 import {
@@ -38,6 +39,8 @@ const PageContent: React.FC = () => {
   const accountListId = useAccountListId();
   const { isOpen } = useContactPanel();
   const [panelOpen, setPanelOpen] = useState<Panel | null>(Panel.Filters);
+  // The filters cover most of a small screen, so they start closed there
+  useCloseLeftPanelWhenOverlaid(() => setPanelOpen(null));
 
   const handleNavListToggle = () => {
     setPanelOpen(panelOpen === Panel.Navigation ? null : Panel.Navigation);
@@ -101,6 +104,7 @@ const PageContent: React.FC = () => {
         ) : undefined
       }
       leftOpen={panelOpen !== null}
+      onLeftClose={() => setPanelOpen(null)}
       leftWidth="290px"
       mainContent={
         <PartnerGivingAnalysisReport
