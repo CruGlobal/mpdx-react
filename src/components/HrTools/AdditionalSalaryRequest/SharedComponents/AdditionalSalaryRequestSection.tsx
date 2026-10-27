@@ -24,7 +24,7 @@ export const AdditionalSalaryRequestSection: React.FC<
   };
 
   return (
-    <Stack direction="column" width={mainContentWidth}>
+    <Stack direction="column" width="100%" maxWidth={mainContentWidth}>
       <Box pb={4}>
         <Stack direction="row" gap={2} alignItems="center">
           {title && <Typography variant="h4">{title}</Typography>}
