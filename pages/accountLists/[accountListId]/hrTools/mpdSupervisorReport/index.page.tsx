@@ -1,6 +1,5 @@
 import Head from 'next/head';
-import React, { useEffect, useState } from 'react';
-import { Theme, useMediaQuery } from '@mui/material';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 // The filter panel renders immediately on load (it defaults to open), so it
@@ -16,6 +15,7 @@ import {
 import { ReportLegendPanel } from 'src/components/HrTools/MpdSupervisorReport/ReportLegend/ReportLegendPanel';
 import { StaffMemberDrawer } from 'src/components/HrTools/MpdSupervisorReport/StaffMemberDrawer/StaffMemberDrawer';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
+import { useCloseLeftPanelWhenOverlaid } from 'src/components/Layouts/useLeftPanelOverlays';
 import { multiPageHeaderHeight } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import {
   MultiPageMenu,
@@ -33,16 +33,8 @@ const MpdSupervisorReportContent: React.FC = () => {
   const { t } = useTranslation();
   const { isOpen, legendOpen } = useMpdSupervisorReport();
   const [panelOpen, setPanelOpen] = useState<Panel | null>(Panel.Filters);
-  const isMobile = useMediaQuery((theme: Theme) =>
-    theme.breakpoints.down('md'),
-  );
-
   // The filters cover most of a small screen, so they start closed there
-  useEffect(() => {
-    if (isMobile) {
-      setPanelOpen(null);
-    }
-  }, [isMobile]);
+  useCloseLeftPanelWhenOverlaid(() => setPanelOpen(null));
 
   const handleNavListToggle = () => {
     setPanelOpen(panelOpen === Panel.Navigation ? null : Panel.Navigation);

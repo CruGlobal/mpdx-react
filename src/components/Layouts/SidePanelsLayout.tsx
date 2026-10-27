@@ -1,6 +1,10 @@
 import { ElementType, FC, ReactElement, useEffect } from 'react';
-import { Backdrop, Box, CSSObject, Theme, useMediaQuery } from '@mui/material';
+import { Backdrop, Box, CSSObject } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import {
+  leftPanelOverlayBreakpoint,
+  useLeftPanelOverlays,
+} from './useLeftPanelOverlays';
 
 interface ToolbarMixin extends CSSObject {
   minHeight: number;
@@ -59,7 +63,7 @@ const LeftPanelWrapper = styled(FullHeightBox)(({ theme }) => ({
   borderRight: `1px solid ${theme.palette.mpdxGrayLight.main}`,
   left: 0,
   background: theme.palette.common.white,
-  [theme.breakpoints.down('md')]: {
+  [theme.breakpoints.down(leftPanelOverlayBreakpoint)]: {
     transition: 'transform ease-in-out 225ms',
     background: theme.palette.common.white,
     position: 'absolute',
@@ -124,9 +128,7 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
   rightOpen = false,
   headerHeight = '0px',
 }) => {
-  const isMobile = useMediaQuery((theme: Theme) =>
-    theme.breakpoints.down('md'),
-  );
+  const isMobile = useLeftPanelOverlays();
   const showBackdrop = isMobile && leftOpen && !!onLeftClose;
 
   useEffect(() => {

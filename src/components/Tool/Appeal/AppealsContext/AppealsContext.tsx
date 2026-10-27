@@ -6,13 +6,13 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { Theme, useMediaQuery } from '@mui/material';
 import { useContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import {
   ContactsContextProps,
   ContactsType,
   parseSavedFilters,
 } from 'src/components/Contacts/ContactsContext/ContactsContext';
+import { useLeftPanelOverlays } from 'src/components/Layouts/useLeftPanelOverlays';
 import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
 import { useUrlFilters } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
 import { ContactFilterSetInput } from 'src/graphql/types.generated';
@@ -118,9 +118,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
   );
 
   const { searchTerm, combinedFilters } = useUrlFilters();
-  const isMobile = useMediaQuery((theme: Theme) =>
-    theme.breakpoints.down('md'),
-  );
+  const isMobile = useLeftPanelOverlays();
 
   //User options for display view
   useEffect(() => {

@@ -1,11 +1,11 @@
 import Head from 'next/head';
-import React, { useEffect, useMemo, useState } from 'react';
-import { Theme, useMediaQuery } from '@mui/material';
+import React, { useMemo, useState } from 'react';
 import { sortBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
+import { useCloseLeftPanelWhenOverlaid } from 'src/components/Layouts/useLeftPanelOverlays';
 import Loading from 'src/components/Loading';
 import { PartnerGivingAnalysisReport } from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReport';
 import {
@@ -39,16 +39,8 @@ const PageContent: React.FC = () => {
   const accountListId = useAccountListId();
   const { isOpen } = useContactPanel();
   const [panelOpen, setPanelOpen] = useState<Panel | null>(Panel.Filters);
-  const isMobile = useMediaQuery((theme: Theme) =>
-    theme.breakpoints.down('md'),
-  );
-
   // The filters cover most of a small screen, so they start closed there
-  useEffect(() => {
-    if (isMobile) {
-      setPanelOpen(null);
-    }
-  }, [isMobile]);
+  useCloseLeftPanelWhenOverlaid(() => setPanelOpen(null));
 
   const handleNavListToggle = () => {
     setPanelOpen(panelOpen === Panel.Navigation ? null : Panel.Navigation);

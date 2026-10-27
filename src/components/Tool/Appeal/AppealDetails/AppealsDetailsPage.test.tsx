@@ -7,6 +7,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import matchMediaMock from '__tests__/util/matchMediaMock';
 import { ContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import { ListHeaderCheckBoxState } from 'src/components/Shared/Header/ListHeader';
@@ -204,6 +205,35 @@ describe('AppealsDetailsPage', () => {
       expect(
         await findByRole('heading', { name: /export to csv/i }),
       ).toBeInTheDocument();
+    });
+
+    it('should start closed on small screens and close from the backdrop', async () => {
+      matchMediaMock({ width: '390px' });
+      const { findByRole, getByTestId, queryByRole } = render(
+        <Components
+          router={{
+            ...defaultRouter,
+            query: {
+              ...defaultRouter.query,
+              appealId: ['1', 'list'],
+            },
+          }}
+        />,
+      );
+
+      userEvent.click(
+        await findByRole('img', { name: /toggle filter panel/i }),
+      );
+      expect(
+        await findByRole('heading', { name: /export to csv/i }),
+      ).toBeInTheDocument();
+
+      userEvent.click(getByTestId('SidePanelsLayoutBackdrop'));
+      await waitFor(() =>
+        expect(
+          queryByRole('heading', { name: /export to csv/i }),
+        ).not.toBeInTheDocument(),
+      );
     });
 
     it('should open and close on Flows view', async () => {

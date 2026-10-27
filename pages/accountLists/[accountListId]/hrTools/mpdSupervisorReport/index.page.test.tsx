@@ -71,18 +71,23 @@ describe('MPD Supervisor Page', () => {
     expect(heading[0]).toBeInTheDocument();
   });
 
-  it('should start with the filters closed on small screens', async () => {
+  it('should start with the filters closed on small screens and close them from the backdrop', async () => {
     matchMediaMock({ width: '390px' });
-    const { findAllByRole, getByTestId } = render(<Components />);
+    const { findAllByRole, getByRole, getByTestId } = render(<Components />);
 
     expect(
       (await findAllByRole('heading', { name: /mpd supervisor report/i }))[0],
     ).toBeInTheDocument();
+    const leftPanel = getByTestId('SidePanelsLayoutLeftPanel');
     await waitFor(() =>
-      expect(getByTestId('SidePanelsLayoutLeftPanel')).toHaveStyle(
-        'transform: translate(-100%)',
-      ),
+      expect(leftPanel).toHaveStyle('transform: translate(-100%)'),
     );
+
+    userEvent.click(getByRole('button', { name: 'Toggle Filters Panel' }));
+    expect(leftPanel).toHaveStyle('transform: none');
+
+    userEvent.click(getByTestId('SidePanelsLayoutBackdrop'));
+    expect(leftPanel).toHaveStyle('transform: translate(-100%)');
   });
 
   it('should open and close menu', async () => {

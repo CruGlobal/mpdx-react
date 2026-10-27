@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useState } from 'react';
-import { Theme, useMediaQuery } from '@mui/material';
+import { useLeftPanelOverlays } from 'src/components/Layouts/useLeftPanelOverlays';
 import { useUserPreference } from './useUserPreference';
 
 /**
@@ -10,9 +10,7 @@ import { useUserPreference } from './useUserPreference';
 export const useFilterPanelOpen = (
   key: string,
 ): [boolean, Dispatch<SetStateAction<boolean>>] => {
-  const isMobile = useMediaQuery((theme: Theme) =>
-    theme.breakpoints.down('md'),
-  );
+  const isMobile = useLeftPanelOverlays();
   const [savedOpen, setSavedOpen] = useUserPreference({
     key,
     defaultValue: false,
