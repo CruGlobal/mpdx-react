@@ -111,6 +111,7 @@ describe('ContactsMap', () => {
   afterEach(() => {
     // @ts-expect-error Clean up the fake Google Maps API
     delete window.google;
+    document.getElementById('helpjuice-widget')?.remove();
   });
 
   it('renders loading spinner until map loads', () => {
@@ -139,6 +140,24 @@ describe('ContactsMap', () => {
     const loadingSpinner = getByRole('progressbar');
     expect(loadingSpinner).toBeInTheDocument();
     waitForElementToBeRemoved(loadingSpinner);
+  });
+
+  it('moves the Helpjuice beacon left of the zoom buttons and restores it on unmount', () => {
+    const beacon = document.createElement('div');
+    beacon.id = 'helpjuice-widget';
+    beacon.className = 'bottomRight';
+    beacon.style.setProperty('right', '80px');
+    beacon.style.setProperty('--widget-right', '60px');
+    document.body.appendChild(beacon);
+
+    const { unmount } = render(<TestComponent mapData={firstPage} />);
+    expect(beacon.style.getPropertyValue('right')).toBe('120px');
+    expect(beacon.style.getPropertyPriority('right')).toBe('important');
+    expect(beacon.style.getPropertyValue('--widget-right')).toBe('120px');
+
+    unmount();
+    expect(beacon.style.getPropertyValue('right')).toBe('80px');
+    expect(beacon.style.getPropertyValue('--widget-right')).toBe('60px');
   });
 
   it('fits the map to the contacts as more pages load', () => {
