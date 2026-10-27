@@ -1,5 +1,6 @@
 import Head from 'next/head';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Theme, useMediaQuery } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 // The filter panel renders immediately on load (it defaults to open), so it
@@ -32,6 +33,16 @@ const MpdSupervisorReportContent: React.FC = () => {
   const { t } = useTranslation();
   const { isOpen, legendOpen } = useMpdSupervisorReport();
   const [panelOpen, setPanelOpen] = useState<Panel | null>(Panel.Filters);
+  const isMobile = useMediaQuery((theme: Theme) =>
+    theme.breakpoints.down('md'),
+  );
+
+  // The filters cover most of a small screen, so they start closed there
+  useEffect(() => {
+    if (isMobile) {
+      setPanelOpen(null);
+    }
+  }, [isMobile]);
 
   const handleNavListToggle = () => {
     setPanelOpen(panelOpen === Panel.Navigation ? null : Panel.Navigation);
@@ -57,6 +68,7 @@ const MpdSupervisorReportContent: React.FC = () => {
         ) : undefined
       }
       leftOpen={panelOpen !== null}
+      onLeftClose={() => setPanelOpen(null)}
       leftWidth="290px"
       // The right panel holds either the staff member drawer or the legend;
       // the context keeps them mutually exclusive.

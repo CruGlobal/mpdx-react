@@ -6,6 +6,7 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import matchMediaMock from '__tests__/util/matchMediaMock';
 import { ContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import { GetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
@@ -85,7 +86,7 @@ const AppealStatusFilterTestComponent: React.FC<
 );
 
 const TestRender: React.FC = () => {
-  const { viewMode, setViewMode, appealId } = useContext(
+  const { viewMode, setViewMode, appealId, filterPanelOpen } = useContext(
     AppealsContext,
   ) as AppealsType;
   return (
@@ -94,6 +95,7 @@ const TestRender: React.FC = () => {
         <>
           <Typography>appealId: {appealId}</Typography>
           <Typography>{viewMode}</Typography>
+          <Typography>filterPanelOpen: {String(filterPanelOpen)}</Typography>
           <Button onClick={() => setViewMode(TableViewModeEnum.List)}>
             List Button
           </Button>
@@ -214,6 +216,30 @@ describe('ContactsPageContext', () => {
         { shallow: true },
       ),
     );
+  });
+
+  describe('filter panel in list view', () => {
+    it('opens by itself on larger screens', async () => {
+      const { findByText } = render(
+        <AppealStatusFilterTestComponent
+          query={{ appealId: [appealId, 'list'] }}
+        />,
+      );
+
+      expect(await findByText('filterPanelOpen: true')).toBeInTheDocument();
+    });
+
+    it('stays closed on small screens', async () => {
+      matchMediaMock({ width: '390px' });
+      const { findByText, getByText } = render(
+        <AppealStatusFilterTestComponent
+          query={{ appealId: [appealId, 'list'] }}
+        />,
+      );
+
+      expect(await findByText('list')).toBeInTheDocument();
+      expect(getByText('filterPanelOpen: false')).toBeInTheDocument();
+    });
   });
 
   describe('activeFilters.appealStatus', () => {

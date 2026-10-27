@@ -3,8 +3,9 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import matchMediaMock from '__tests__/util/matchMediaMock';
 import { mockSession } from '__tests__/util/mockSession';
-import { render } from '__tests__/util/testingLibraryReactMock';
+import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import {
   afterTestResizeObserver,
   beforeTestResizeObserver,
@@ -68,6 +69,20 @@ describe('MPD Supervisor Page', () => {
       name: /mpd supervisor report/i,
     });
     expect(heading[0]).toBeInTheDocument();
+  });
+
+  it('should start with the filters closed on small screens', async () => {
+    matchMediaMock({ width: '390px' });
+    const { findAllByRole, getByTestId } = render(<Components />);
+
+    expect(
+      (await findAllByRole('heading', { name: /mpd supervisor report/i }))[0],
+    ).toBeInTheDocument();
+    await waitFor(() =>
+      expect(getByTestId('SidePanelsLayoutLeftPanel')).toHaveStyle(
+        'transform: translate(-100%)',
+      ),
+    );
   });
 
   it('should open and close menu', async () => {

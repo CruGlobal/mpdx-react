@@ -1,5 +1,6 @@
 import Head from 'next/head';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Theme, useMediaQuery } from '@mui/material';
 import { sortBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
@@ -38,6 +39,16 @@ const PageContent: React.FC = () => {
   const accountListId = useAccountListId();
   const { isOpen } = useContactPanel();
   const [panelOpen, setPanelOpen] = useState<Panel | null>(Panel.Filters);
+  const isMobile = useMediaQuery((theme: Theme) =>
+    theme.breakpoints.down('md'),
+  );
+
+  // The filters cover most of a small screen, so they start closed there
+  useEffect(() => {
+    if (isMobile) {
+      setPanelOpen(null);
+    }
+  }, [isMobile]);
 
   const handleNavListToggle = () => {
     setPanelOpen(panelOpen === Panel.Navigation ? null : Panel.Navigation);
@@ -101,6 +112,7 @@ const PageContent: React.FC = () => {
         ) : undefined
       }
       leftOpen={panelOpen !== null}
+      onLeftClose={() => setPanelOpen(null)}
       leftWidth="290px"
       mainContent={
         <PartnerGivingAnalysisReport

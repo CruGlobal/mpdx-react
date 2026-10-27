@@ -6,6 +6,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { Theme, useMediaQuery } from '@mui/material';
 import { useContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import {
   ContactsContextProps,
@@ -117,14 +118,23 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
   );
 
   const { searchTerm, combinedFilters } = useUrlFilters();
+  const isMobile = useMediaQuery((theme: Theme) =>
+    theme.breakpoints.down('md'),
+  );
 
   //User options for display view
   useEffect(() => {
     if (viewMode === TableViewModeEnum.List) {
-      setFilterPanelOpen(true);
       setListAppealStatus(AppealStatusEnum.Asked);
     }
   }, [viewMode]);
+
+  // The appeal panel covers most of a small screen, so it only opens by itself on larger screens
+  useEffect(() => {
+    if (viewMode === TableViewModeEnum.List) {
+      setFilterPanelOpen(!isMobile);
+    }
+  }, [viewMode, isMobile]);
 
   const defaultFilters = useMemo(
     () => ({

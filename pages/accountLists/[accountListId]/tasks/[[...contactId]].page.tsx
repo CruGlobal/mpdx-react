@@ -33,9 +33,9 @@ import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { TaskRow } from 'src/components/Task/TaskRow/TaskRow';
 import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useFilterPanelOpen } from 'src/hooks/useFilterPanelOpen';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import useTaskModal from 'src/hooks/useTaskModal';
-import { useUserPreference } from 'src/hooks/useUserPreference';
 import { getAppName } from 'src/lib/getAppName';
 import {
   TaskFilterTabsTypes,
@@ -116,10 +116,9 @@ const PageContent: React.FC = () => {
     setActiveFilters,
     combinedFilters: tasksFilter,
   } = useUrlFilters();
-  const [filterPanelOpen, setFilterPanelOpen] = useUserPreference({
-    key: 'tasks_filters_collapse',
-    defaultValue: false,
-  });
+  const [filterPanelOpen, setFilterPanelOpen] = useFilterPanelOpen(
+    'tasks_filters_collapse',
+  );
 
   //#region Filters
 
@@ -223,6 +222,7 @@ const PageContent: React.FC = () => {
               ) : undefined
             }
             leftOpen={filterPanelOpen}
+            onLeftClose={() => setFilterPanelOpen(false)}
             leftWidth="290px"
             mainContent={
               <>

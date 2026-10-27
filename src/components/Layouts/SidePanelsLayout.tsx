@@ -1,5 +1,5 @@
-import { ElementType, FC, ReactElement } from 'react';
-import { Box, CSSObject, Theme, useMediaQuery } from '@mui/material';
+import { ElementType, FC, ReactElement, useEffect } from 'react';
+import { Backdrop, Box, CSSObject, Theme, useMediaQuery } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 interface ToolbarMixin extends CSSObject {
@@ -67,6 +67,11 @@ const LeftPanelWrapper = styled(FullHeightBox)(({ theme }) => ({
   },
 }));
 
+const LeftPanelBackdrop = styled(Backdrop)({
+  position: 'absolute',
+  zIndex: 715, // Must be between RightPanelWrapper and LeftPanelWrapper
+});
+
 const RightPanelWrapper = styled(FullHeightBox)(({ theme, headerHeight }) => {
   const toolbar = theme.mixins.toolbar as ToolbarMixin;
   return {
@@ -95,6 +100,9 @@ interface SidePanelsLayoutProps {
   leftPanel?: ReactElement;
   leftWidth: string;
   leftOpen: boolean;
+  // On small screens the left panel covers the content, so tapping outside it or pressing Escape
+  // calls this to close it
+  onLeftClose?: () => void;
   mainContent: ReactElement;
   rightPanel?: ReactElement;
   rightWidth?: string;
@@ -109,6 +117,7 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
   leftPanel,
   leftWidth,
   leftOpen,
+  onLeftClose,
   mainContent,
   rightPanel,
   rightWidth,
@@ -118,9 +127,29 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('md'),
   );
+  const showBackdrop = isMobile && leftOpen && !!onLeftClose;
+
+  useEffect(() => {
+    if (!showBackdrop) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onLeftClose?.();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [showBackdrop, onLeftClose]);
 
   return (
     <OuterWrapper>
+      <LeftPanelBackdrop
+        open={showBackdrop}
+        onClick={onLeftClose}
+        data-testid="SidePanelsLayoutBackdrop"
+      />
       <ExpandingContent open={rightOpen}>
         <CollapsibleWrapper justifyContent="flex-end">
           <LeftPanelWrapper

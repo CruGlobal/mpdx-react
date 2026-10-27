@@ -20,9 +20,8 @@ import { ContactsWrapper } from './ContactsWrapper';
 
 const Contacts: React.FC = () => {
   const { t } = useTranslation();
-  const { accountListId, filterPanelOpen, viewMode } = useContext(
-    ContactsContext,
-  ) as ContactsType;
+  const { accountListId, filterPanelOpen, setFilterPanelOpen, viewMode } =
+    useContext(ContactsContext) as ContactsType;
   const appName = getAppName();
   const { isOpen } = useContactPanel();
 
@@ -43,6 +42,7 @@ const Contacts: React.FC = () => {
         <SidePanelsLayout
           leftPanel={<ContactsLeftPanel />}
           leftOpen={filterPanelOpen}
+          onLeftClose={() => setFilterPanelOpen(false)}
           leftWidth="290px"
           mainContent={<ContactsMainPanel />}
           rightPanel={<DynamicContactsRightPanel />}
