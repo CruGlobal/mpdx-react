@@ -54,7 +54,7 @@ const TaskRowWrapper = styled(Box, {
 const ContactRowButton = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'useTopMargin',
 })<{ useTopMargin?: boolean }>(({ useTopMargin }) => ({
-  height: '56px',
+  minHeight: '56px',
   width: '100%',
   display: 'flex',
   flexDirection: 'row',
