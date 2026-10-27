@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useMemo, useState } from 'react';
+import { useDrawerOpenState } from '../../Shared/CalculationReports/PanelLayout/useDrawerOpenState';
 import { NewStaffGoalCalculationQuery } from '../GoalSettings/NewStaffGoalCalculation.generated';
 import { NsGoalCalculatorStepEnum } from '../NsGoalCalculatorHelper';
 import { NsGoalCalculatorStep, useSteps } from './useSteps';
@@ -38,7 +39,7 @@ interface Props {
 export const NsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const steps = useSteps();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(true);
+  const [isDrawerOpen, setIsDrawerOpen] = useDrawerOpenState();
 
   const currentStep = steps[currentIndex];
 

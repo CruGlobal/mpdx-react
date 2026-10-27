@@ -90,7 +90,12 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
             )}
           </Stack>
           <Divider orientation="vertical" flexItem />
-          <StyledSidebar open={true} aria-label={sidebarAriaLabel}>
+          {/* No toggle closes this sidebar, so on phones it would always cover the page */}
+          <StyledSidebar
+            open={true}
+            aria-label={sidebarAriaLabel}
+            sx={{ display: { xs: 'none', sm: 'block' } }}
+          >
             {sidebarTitle &&
               (hasCurrentRequestPending ? (
                 <Box
@@ -115,7 +120,11 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
                 <SidebarTitle variant="h6">{sidebarTitle}</SidebarTitle>
               ))}
           </StyledSidebar>
-          <Divider orientation="vertical" flexItem />
+          <Divider
+            orientation="vertical"
+            flexItem
+            sx={{ display: { xs: 'none', sm: 'block' } }}
+          />
           <MainContent className="main-content" ref={mainContentRef}>
             {hcmSyncStatus && <HcmSyncBodyStatus {...hcmSyncStatus} />}
             {mainContent}

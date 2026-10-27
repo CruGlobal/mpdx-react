@@ -19,6 +19,7 @@ import {
 } from 'src/hooks/useGoalCalculatorConstants';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { getQueryParam } from 'src/lib/queryParam';
+import { useDrawerOpenState } from '../../Shared/CalculationReports/PanelLayout/useDrawerOpenState';
 import {
   GoalCalculatorReportEnum,
   GoalCalculatorStepEnum,
@@ -178,7 +179,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     useState<GoalCalculatorReportEnum>(GoalCalculatorReportEnum.MpdGoal);
   const [rightPanelContent, setRightPanelContent] =
     useState<JSX.Element | null>(null);
-  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(true);
+  const [isDrawerOpen, setIsDrawerOpen] = useDrawerOpenState();
   const { trackMutation: trackMutationPromise, isMutating } =
     useTrackMutation();
 

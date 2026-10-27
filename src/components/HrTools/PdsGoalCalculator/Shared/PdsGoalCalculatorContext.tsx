@@ -18,6 +18,7 @@ import {
 } from 'src/graphql/types.generated';
 import { UseGoalCalculatorConstantsResult } from 'src/hooks/useGoalCalculatorConstants';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
+import { useDrawerOpenState } from '../../Shared/CalculationReports/PanelLayout/useDrawerOpenState';
 import { safeProgressRatio } from '../../Shared/helpers/safeProgressRatio';
 import {
   PdsGoalCalculationFieldsFragment,
@@ -125,7 +126,7 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   );
   const [rightPanelContent, setRightPanelContent] =
     useState<React.ReactNode>(null);
-  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(true);
+  const [isDrawerOpen, setIsDrawerOpen] = useDrawerOpenState();
   const { trackMutation, isMutating } = useTrackMutation();
 
   const [savingFieldCounts, setSavingFieldCounts] = useState<
