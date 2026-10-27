@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { Theme, useMediaQuery } from '@mui/material';
 
-// Below this breakpoint SidePanelsLayout's left panel covers the main content
 export const leftPanelOverlayBreakpoint = 'md';
 
 /**

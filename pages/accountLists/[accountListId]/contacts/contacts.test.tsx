@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
@@ -134,6 +134,8 @@ it('should close the filters from the backdrop on small screens without saving',
 
   userEvent.click(getByTestId('SidePanelsLayoutBackdrop'));
   expect(leftPanel).toHaveStyle('transform: translate(-100%)');
+  // The mock link reports operations after a tick, so let any save arrive first
+  await act(() => new Promise((resolve) => setTimeout(resolve)));
   expect(mutationSpy).not.toHaveGraphqlOperation('UpdateUserOption');
 });
 
