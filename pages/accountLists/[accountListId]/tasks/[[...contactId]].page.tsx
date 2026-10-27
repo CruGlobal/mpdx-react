@@ -67,9 +67,24 @@ const TaskHeaderButton = styled(Button)(({ theme }) => ({
   marginLeft: theme.spacing(1),
 }));
 
+const TaskFilterTabsWrapper = styled(Box)({
+  height: buttonBarHeight,
+  overflowX: 'auto',
+  overflowY: 'hidden',
+  // A classic scrollbar would eat into the fixed row height and clip the buttons
+  scrollbarWidth: 'none',
+  '&::-webkit-scrollbar': {
+    display: 'none',
+  },
+});
+
 const TaskCurrentHistoryButtonGroup = styled(ButtonGroup)(({ theme }) => ({
   margin: theme.spacing(1),
   color: theme.palette.primary.contrastText,
+  '& .MuiButton-root': {
+    flexShrink: 0,
+    whiteSpace: 'nowrap',
+  },
 }));
 
 const TaskCheckIcon = styled(CheckCircleOutlineIcon)(({ theme }) => ({
@@ -277,26 +292,28 @@ const PageContent: React.FC = () => {
                   }
                 />
                 <Box>
-                  <TaskCurrentHistoryButtonGroup
-                    variant="outlined"
-                    size="small"
-                    sx={{
-                      // Subtract out one unit of margin for both the top and the bottom
-                      height: `calc(${buttonBarHeight} - ${theme.spacing(2)})`,
-                    }}
-                  >
-                    {taskFiltersTabs.map((tab) => (
-                      <Button
-                        variant={
-                          taskType === tab.name ? 'contained' : 'outlined'
-                        }
-                        onClick={() => setTaskTypeFilter(tab.name)}
-                        key={`btn-${tab.name}`}
-                      >
-                        {tab.uiName}
-                      </Button>
-                    ))}
-                  </TaskCurrentHistoryButtonGroup>
+                  <TaskFilterTabsWrapper>
+                    <TaskCurrentHistoryButtonGroup
+                      variant="outlined"
+                      size="small"
+                      sx={{
+                        // Subtract out one unit of margin for both the top and the bottom
+                        height: `calc(${buttonBarHeight} - ${theme.spacing(2)})`,
+                      }}
+                    >
+                      {taskFiltersTabs.map((tab) => (
+                        <Button
+                          variant={
+                            taskType === tab.name ? 'contained' : 'outlined'
+                          }
+                          onClick={() => setTaskTypeFilter(tab.name)}
+                          key={`btn-${tab.name}`}
+                        >
+                          {tab.uiName}
+                        </Button>
+                      ))}
+                    </TaskCurrentHistoryButtonGroup>
+                  </TaskFilterTabsWrapper>
                   <InfiniteList
                     data-foo="bar"
                     loading={loading}
