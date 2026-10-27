@@ -398,7 +398,7 @@ describe('AppealsDetailsPage', () => {
         return true;
       });
 
-      const { findByRole, unmount } = render(
+      const { findByText, unmount } = render(
         <Components
           router={appealRouter(routerPush)}
           mocks={{
@@ -409,10 +409,10 @@ describe('AppealsDetailsPage', () => {
       );
       unmountPage = unmount;
 
+      userEvent.click(await findByText('Permanently Delete Appeal'));
       userEvent.click(
-        await findByRole('button', { name: 'Permanently Delete Appeal' }),
+        await findByText('Delete Appeal', { selector: 'button' }),
       );
-      userEvent.click(await findByRole('button', { name: 'Delete Appeal' }));
 
       await waitFor(() =>
         expect(mockEnqueue).toHaveBeenCalledWith(
