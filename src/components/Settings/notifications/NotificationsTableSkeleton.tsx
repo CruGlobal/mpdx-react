@@ -27,7 +27,7 @@ export const NotificationsTableSkeleton: React.FC = () => {
   return (
     <TableContainer component={Paper} sx={{ maxHeight: 600 }}>
       <Table
-        sx={{ minWidth: 700 }}
+        sx={{ minWidth: { sm: 700 } }}
         stickyHeader
         aria-label="Notifications table"
         data-testid="skeleton-notifications"
