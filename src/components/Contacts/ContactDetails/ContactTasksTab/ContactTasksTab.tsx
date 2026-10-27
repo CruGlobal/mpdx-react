@@ -90,6 +90,19 @@ const PlaceholderActionBar = styled(Box)(({ theme }) => ({
   width: 111,
   margin: theme.spacing(2),
   backgroundColor: theme.palette.background.paper,
+  [theme.breakpoints.down('sm')]: {
+    display: 'none',
+  },
+}));
+
+const SearchItemsWrap = styled(HeaderItemsWrap)(({ theme }) => ({
+  [theme.breakpoints.down('sm')]: {
+    flex: 1,
+    minWidth: 0,
+    '& .MuiTextField-root': {
+      flex: 1,
+    },
+  },
 }));
 
 interface ContactTasksTabProps {
@@ -218,7 +231,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
           </HeaderItemsWrap>
         </HeaderRow>
         <HeaderRow mb={1}>
-          <HeaderItemsWrap>
+          <SearchItemsWrap>
             <StyledCheckbox
               checked={selectionType === ListHeaderCheckBoxState.Checked}
               color="secondary"
@@ -236,7 +249,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
                 {t('{{count}} Selected', { count: ids.length })}
               </Typography>
             )}
-          </HeaderItemsWrap>
+          </SearchItemsWrap>
           <HeaderItemsWrap>
             <PlaceholderActionBar />
             <StarFilterButton
