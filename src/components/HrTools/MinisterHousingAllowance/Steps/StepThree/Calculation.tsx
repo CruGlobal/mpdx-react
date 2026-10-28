@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { OpenInNew } from '@mui/icons-material';
 import PrintIcon from '@mui/icons-material/Print';
 import {
   Alert,
@@ -8,7 +7,6 @@ import {
   FormControl,
   FormControlLabel,
   FormHelperText,
-  Link,
   SvgIcon,
   Typography,
 } from '@mui/material';
@@ -32,13 +30,12 @@ import { phoneNumber } from 'src/lib/yupHelpers';
 import { useSubmitMinistryHousingAllowanceRequestMutation } from '../../MinisterHousingAllowance.generated';
 import { hasPopulatedValues } from '../../Shared/Context/Helper/hasPopulatedValues';
 import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousingAllowanceContext';
+import { ExpensesClaimLink } from '../../SharedComponents/ExpensesClaimLink';
 import { CostOfHome } from './CalcComponents/CostOfHome';
 import { EndingSection } from './CalcComponents/EndingSection';
 import { FairRentalValue } from './CalcComponents/FairRentalValue';
 import { PersonInfo } from './CalcComponents/PersonInfo';
 import { RequestSummaryCard } from './CalcComponents/RequestSummaryCard';
-
-// TODO: get correct link for "What expenses can I claim on my MHA?"
 
 interface CalculationProps {
   boardApprovedAt: string | null;
@@ -295,13 +292,7 @@ export const Calculation: React.FC<CalculationProps> = ({
             )}
             <SimpleScreenOnly>
               <Box sx={{ mt: 2, mb: 3 }}>
-                <OpenInNew
-                  fontSize="medium"
-                  sx={{ verticalAlign: 'middle', opacity: 0.56 }}
-                />{' '}
-                <Link component="button" type="button">
-                  What expenses can I claim on my MHA?
-                </Link>
+                <ExpensesClaimLink />
               </Box>
             </SimpleScreenOnly>
             {isViewPage && (
