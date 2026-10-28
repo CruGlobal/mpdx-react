@@ -23,8 +23,10 @@ const goOnline = () => {
   });
 };
 
-const TestComponent: React.FC = () => (
-  <SnackbarProvider>
+const TestComponent: React.FC<{ preventDuplicate?: boolean }> = ({
+  preventDuplicate,
+}) => (
+  <SnackbarProvider preventDuplicate={preventDuplicate}>
     <OfflineIndicator />
   </SnackbarProvider>
 );
@@ -129,6 +131,23 @@ describe('OfflineIndicator', () => {
     goOffline();
 
     // Wait out the first notice's exit transition
+    advanceTimersInSteps(3_000);
+    expect(getAllByText(offlineMessage)).toHaveLength(1);
+  });
+
+  it('shows the notice again after a quick reconnect when the provider prevents duplicates', async () => {
+    jest.useFakeTimers();
+    setOnline(true);
+    const { findByText, getAllByText } = render(
+      <TestComponent preventDuplicate />,
+    );
+
+    goOffline();
+    expect(await findByText(offlineMessage)).toBeInTheDocument();
+
+    goOnline();
+    goOffline();
+
     advanceTimersInSteps(3_000);
     expect(getAllByText(offlineMessage)).toHaveLength(1);
   });
