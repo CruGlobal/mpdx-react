@@ -7,7 +7,8 @@ export const MinisterHousingAllowanceReportSkeleton: React.FC = () => {
     <>
       <Skeleton
         variant="rounded"
-        width={mainContentWidth}
+        width="100%"
+        sx={{ maxWidth: mainContentWidth }}
         height={35}
         style={{
           marginBottom: '16px',
@@ -15,7 +16,8 @@ export const MinisterHousingAllowanceReportSkeleton: React.FC = () => {
       />
       <Skeleton
         variant="rounded"
-        width={mainContentWidth}
+        width="100%"
+        sx={{ maxWidth: mainContentWidth }}
         height={75}
         style={{
           marginBottom: '16px',
@@ -23,7 +25,8 @@ export const MinisterHousingAllowanceReportSkeleton: React.FC = () => {
       />
       <Skeleton
         variant="rounded"
-        width={mainContentWidth}
+        width="100%"
+        sx={{ maxWidth: mainContentWidth }}
         height={110}
         style={{
           marginBottom: '16px',
@@ -31,7 +34,8 @@ export const MinisterHousingAllowanceReportSkeleton: React.FC = () => {
       />
       <Skeleton
         variant="rounded"
-        width={mainContentWidth}
+        width="100%"
+        sx={{ maxWidth: mainContentWidth }}
         height={300}
         style={{
           marginBottom: '16px',
