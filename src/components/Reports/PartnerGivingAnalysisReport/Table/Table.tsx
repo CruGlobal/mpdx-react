@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Box } from '@mui/material';
+import { Box, Theme, useMediaQuery } from '@mui/material';
 import {
   GridApi,
   GridColDef,
@@ -41,6 +41,17 @@ export const createTableRow = (data: Row, t: TFunction): TableData => ({
   lastDonationCurrency: data.lastDonationCurrency ?? null,
 });
 
+// Flex columns shrink to fit a phone screen and cut off their values, so on
+// phones keep each column at its full width and let the grid scroll sideways
+const useFullWidthColumnsOnPhones = (columns: GridColDef[]): GridColDef[] => {
+  const isMobile = useMediaQuery((theme: Theme) =>
+    theme.breakpoints.down('sm'),
+  );
+  return isMobile
+    ? columns.map((column) => ({ ...column, minWidth: column.width }))
+    : columns;
+};
+
 const CustomFooter: React.FC = () => {
   return (
     <GridFooterContainer>
@@ -75,7 +86,7 @@ export const PartnerGivingAnalysisTable: React.FC<
     totalDonations,
   } = usePopulateTableRows(onSelectOne, isRowChecked);
 
-  const columns: GridColDef[] = [
+  const columns = useFullWidthColumnsOnPhones([
     {
       field: 'checkbox',
       headerName: '',
@@ -152,7 +163,7 @@ export const PartnerGivingAnalysisTable: React.FC<
       flex: 1,
       renderCell: totalDonations,
     },
-  ];
+  ]);
 
   return (
     <Box
