@@ -186,14 +186,18 @@ export const MinisterHousingAllowanceReport = () => {
       sidebarTitle={t('Your MHA')}
       hasCurrentRequestPending={isCurrentRequestPending}
       mainContent={
-        <Container sx={{ ml: 5 }}>
+        <Container sx={{ ml: { xs: 0, sm: 5 } }}>
           {requestsError ? (
             <Notification type="error" message={requestsError.message} />
           ) : loading ? (
             <MinisterHousingAllowanceReportSkeleton />
           ) : (
             <>
-              <Stack direction="column" width={mainContentWidth}>
+              <Stack
+                direction="column"
+                width="100%"
+                maxWidth={mainContentWidth}
+              >
                 <Box mb={2}>
                   <Typography variant="h5">{t('Your MHA')}</Typography>
                 </Box>
@@ -256,7 +260,12 @@ export const MinisterHousingAllowanceReport = () => {
                 </Button>
               )}
               {showPreviousRequests && (
-                <Stack direction="column" width={mainContentWidth} mt={4}>
+                <Stack
+                  direction="column"
+                  width="100%"
+                  maxWidth={mainContentWidth}
+                  mt={4}
+                >
                   <CurrentBoardApproved
                     request={previousApprovedRequest}
                     hasOpenRequest={isCurrentRequestPending}

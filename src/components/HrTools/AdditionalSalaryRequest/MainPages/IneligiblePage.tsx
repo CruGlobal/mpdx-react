@@ -9,11 +9,11 @@ export const IneligiblePage: React.FC = () => {
   const reason = user?.asrEit?.ineligibilityReason;
 
   return (
-    <Container sx={{ ml: 5, mt: 3 }}>
+    <Container sx={{ ml: { xs: 0, sm: 5 }, mt: 3 }}>
       <Typography sx={{ mb: 2 }} variant="h5">
         {t('Form Unavailable')}
       </Typography>
-      <Typography sx={{ lineHeight: 1.5, width: mainContentWidth }}>
+      <Typography sx={{ lineHeight: 1.5, maxWidth: mainContentWidth }}>
         {reason}
       </Typography>
     </Container>

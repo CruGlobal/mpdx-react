@@ -34,7 +34,13 @@ export const EditForm: React.FC = () => {
   });
 
   return (
-    <Stack gap={4} padding={4} width={mainContentWidth}>
+    <Stack
+      gap={4}
+      py={4}
+      px={{ xs: 0, sm: 4 }}
+      width="100%"
+      maxWidth={mainContentWidth}
+    >
       <Typography variant="h4">{t('Edit Your Request')}</Typography>
       <Stack gap={0.5}>
         {hcmLoading ? (

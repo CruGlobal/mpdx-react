@@ -59,7 +59,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
       isSidebarOpen={isDrawerOpen}
       sidebarAriaLabel={t('Additional Salary Request Sections')}
       mainContent={
-        <Container sx={{ ml: 5 }}>
+        <Container sx={{ ml: { xs: 0, sm: 5 } }}>
           {requestLoading ? (
             <AdditionalSalaryRequestSkeleton />
           ) : (
@@ -68,7 +68,8 @@ export const AdditionalSalaryRequest: React.FC = () => {
               sx={{
                 gap: theme.spacing(4),
               }}
-              width={mainContentWidth}
+              width="100%"
+              maxWidth={mainContentWidth}
             >
               <EligibleDisplay />
 
