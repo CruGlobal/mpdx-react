@@ -17,6 +17,7 @@ import {
   TextField,
   Tooltip,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
 import { Formik } from 'formik';
 import { DateTime } from 'luxon';
@@ -276,8 +277,15 @@ const TaskModalForm = ({
 
   const activityRef = useRef<HTMLInputElement | null>(null);
   const firstFocusRef = useRef<HTMLInputElement | null>(null);
+  // On phones, focusing Task Type opens its list over the form and pops up the keyboard
+  const isPhone = useMediaQuery(theme.breakpoints.down('sm'), { noSsr: true });
   useEffect(() => {
-    if (!task && firstFocusRef.current && !defaultValues?.activityType) {
+    if (
+      !isPhone &&
+      !task &&
+      firstFocusRef.current &&
+      !defaultValues?.activityType
+    ) {
       const timerId = setTimeout(() => firstFocusRef.current?.focus(), 500);
       return () => clearTimeout(timerId);
     }

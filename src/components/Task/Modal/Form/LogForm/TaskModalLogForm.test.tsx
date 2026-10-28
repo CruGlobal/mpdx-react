@@ -7,6 +7,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import matchMediaMock from '__tests__/util/matchMediaMock';
 import { AssigneeOptionsQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
@@ -602,6 +603,42 @@ describe('TaskModalLogForm', () => {
       expect(getByRole('textbox', { name: 'Subject' })).toHaveValue(
         'Phone Call To Follow Up',
       );
+    });
+  });
+
+  describe('Task Type autofocus', () => {
+    const TestComponent: React.FC = () => (
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <SnackbarProvider>
+          <TestRouter router={router}>
+            <GqlMockedProvider>
+              <TaskModalLogForm
+                accountListId={accountListId}
+                onClose={jest.fn()}
+              />
+            </GqlMockedProvider>
+          </TestRouter>
+        </SnackbarProvider>
+      </LocalizationProvider>
+    );
+
+    it('focuses Task Type on desktop', async () => {
+      matchMediaMock({ width: '1024px' });
+      const { getByRole, findByRole } = render(<TestComponent />);
+
+      await waitFor(() =>
+        expect(getByRole('combobox', { name: 'Task Type' })).toHaveFocus(),
+      );
+      expect(await findByRole('listbox')).toBeInTheDocument();
+    });
+
+    it('does not focus Task Type or open its list on phones', async () => {
+      matchMediaMock({ width: '390px' });
+      const { getByRole, queryByRole } = render(<TestComponent />);
+
+      await new Promise((resolve) => setTimeout(resolve, 600));
+      expect(getByRole('combobox', { name: 'Task Type' })).not.toHaveFocus();
+      expect(queryByRole('listbox')).not.toBeInTheDocument();
     });
   });
 });

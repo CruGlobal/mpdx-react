@@ -15,6 +15,7 @@ import {
   Grid,
   Switch,
   TextField,
+  useMediaQuery,
 } from '@mui/material';
 import { Formik } from 'formik';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -42,6 +43,7 @@ import { dispatch } from 'src/lib/analytics';
 import { getValueFromIdValue } from 'src/lib/phases/getValueFromIdValue';
 import { inPersonActivityTypes } from 'src/lib/phases/taskActivityTypes';
 import { nullableDateTime } from 'src/lib/yupHelpers';
+import theme from 'src/theme';
 import { DateTimeFieldPair } from '../../../../Shared/DateTimePickers/DateTimeFieldPair';
 import { TaskModalEnum } from '../../TaskModal';
 import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
@@ -138,7 +140,12 @@ const TaskModalLogForm = ({
   const { update } = useUpdateTasksQueries();
   const activityRef = useRef<HTMLInputElement | null>(null);
   const firstFocusRef = useRef<HTMLInputElement | null>(null);
+  // On phones, focusing Task Type opens its list over the form and pops up the keyboard
+  const isPhone = useMediaQuery(theme.breakpoints.down('sm'), { noSsr: true });
   useEffect(() => {
+    if (isPhone) {
+      return;
+    }
     const timerId = setTimeout(() => firstFocusRef.current?.focus(), 500);
     return () => clearTimeout(timerId);
   }, []);

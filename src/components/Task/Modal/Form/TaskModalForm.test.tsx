@@ -7,6 +7,7 @@ import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import matchMediaMock from '__tests__/util/matchMediaMock';
 import { AssigneeOptionsQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
 import { ActivityTypeEnum, PhaseEnum } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
@@ -592,6 +593,27 @@ describe('TaskModalForm', () => {
       expect(getByRole('textbox', { name: 'Subject' })).toHaveValue(
         'Follow Up In Person',
       );
+    });
+  });
+
+  describe('Task Type autofocus', () => {
+    it('focuses Task Type on desktop', async () => {
+      matchMediaMock({ width: '1024px' });
+      const { getByRole, findByRole } = render(<TestComponent />);
+
+      await waitFor(() =>
+        expect(getByRole('combobox', { name: 'Task Type' })).toHaveFocus(),
+      );
+      expect(await findByRole('listbox')).toBeInTheDocument();
+    });
+
+    it('does not focus Task Type or open its list on phones', async () => {
+      matchMediaMock({ width: '390px' });
+      const { getByRole, queryByRole } = render(<TestComponent />);
+
+      await new Promise((resolve) => setTimeout(resolve, 600));
+      expect(getByRole('combobox', { name: 'Task Type' })).not.toHaveFocus();
+      expect(queryByRole('listbox')).not.toBeInTheDocument();
     });
   });
 });
