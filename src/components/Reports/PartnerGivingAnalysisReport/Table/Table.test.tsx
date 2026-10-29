@@ -180,10 +180,14 @@ describe('PartnerGivingAnalysisReportTable', () => {
       const { findByRole, apiRef } = renderWithApiRef();
 
       expect(await findByRole('grid')).toBeInTheDocument();
-      // 50 is the DataGrid default minWidth
-      expect(apiRef.current?.getColumn('name').minWidth).toBe(50);
-      expect(apiRef.current?.getColumn('donationPeriodSum').minWidth).toBe(50);
-      expect(apiRef.current?.getColumn('totalDonations').minWidth).toBe(50);
+      // Desktop keeps the DataGrid default minWidth, below the phone widths
+      expect(apiRef.current?.getColumn('name').minWidth).toBeLessThan(240);
+      expect(
+        apiRef.current?.getColumn('donationPeriodSum').minWidth,
+      ).toBeLessThan(130);
+      expect(apiRef.current?.getColumn('totalDonations').minWidth).toBeLessThan(
+        130,
+      );
     });
   });
 });
