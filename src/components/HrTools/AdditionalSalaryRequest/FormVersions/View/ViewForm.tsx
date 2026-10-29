@@ -30,7 +30,7 @@ export const ViewForm: React.FC = () => {
     hcmLoading,
   } = useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
-  const { name, primaryAccountBalance } = useFormUserInfo();
+  const { name, primaryAccountBalance, remainingCap } = useFormUserInfo();
   const individualCap = calculations?.currentSalaryCap ?? 0;
 
   const { exceedsCap } = useSalaryCalculations({
@@ -76,7 +76,7 @@ export const ViewForm: React.FC = () => {
     >
       <Typography variant="h4">{t('View Your Request')}</Typography>
       {hcmLoading ? (
-        <NameDisplaySkeleton showContent />
+        <NameDisplaySkeleton showContent columns={3} />
       ) : (
         <NameDisplay
           names={name ?? ''}
@@ -84,6 +84,8 @@ export const ViewForm: React.FC = () => {
           amountOne={primaryAccountBalance}
           titleTwo={t('Your Maximum Allowable Salary (CAP)')}
           amountTwo={individualCap}
+          titleThree={t('Remaining Allowable Salary')}
+          amountThree={remainingCap}
           spouseComponent={<SpouseComponent />}
           showContent
         />

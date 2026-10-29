@@ -18,6 +18,8 @@ describe('useFormUserInfo', () => {
         latestAdditionalSalaryRequest: {
           calculations: {
             currentSalaryCap: 100000,
+            grossAnnualSalary: 60000,
+            ytdAsrAmount: 15000,
             staffAccountBalance: 40000,
             availableStaffAccountBalance: 45000,
           },
@@ -41,6 +43,7 @@ describe('useFormUserInfo', () => {
     expect(result.current.email).toBe('john.doe@example.com');
     expect(result.current.primaryAccountBalance).toBe(40000);
     expect(result.current.availableAccountBalance).toBe(45000);
+    expect(result.current.remainingCap).toBe(25000);
   });
 
   it('defaults balances to 0 when calculations are undefined', () => {
@@ -61,6 +64,7 @@ describe('useFormUserInfo', () => {
 
     expect(result.current.primaryAccountBalance).toBe(0);
     expect(result.current.availableAccountBalance).toBe(0);
+    expect(result.current.remainingCap).toBe(0);
   });
 
   it('handles undefined user gracefully', () => {
