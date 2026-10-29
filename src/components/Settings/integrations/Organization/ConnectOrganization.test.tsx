@@ -175,6 +175,7 @@ describe('Connect Organization', () => {
   });
 
   it('should not call onDone when adding the account fails', async () => {
+    const mutationSpy = jest.fn();
     const { getByText, getByRole, findByRole } = render(
       <Components>
         <GqlMockedProvider<{
@@ -188,6 +189,7 @@ describe('Connect Organization', () => {
               throw new Error('Server Error');
             },
           }}
+          onCall={mutationSpy}
         >
           <ConnectOrganization onDone={onDone} />
         </GqlMockedProvider>
@@ -209,6 +211,17 @@ describe('Connect Organization', () => {
       ),
     );
     expect(onDone).not.toHaveBeenCalled();
+
+    // The form already shows its own "Invalid username or password." message
+    // above, so a rejected INVALID credential check should skip the global
+    // error toast + Datadog report rather than double-reporting it.
+    const createAccountCall = mutationSpy.mock.calls.find(
+      ([{ operation }]) =>
+        operation.operationName === 'CreateOrganizationAccount',
+    );
+    expect(
+      createAccountCall?.[0].operation.getContext().suppressErrorCodes,
+    ).toEqual(['INVALID']);
   });
 
   it('allows offline Organization to be added if disableNewUsers is null', async () => {
