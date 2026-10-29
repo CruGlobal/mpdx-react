@@ -79,12 +79,19 @@ export interface UrlFiltersProviderProps {
    */
   sanitizeFilters?: (filters: Filter) => Filter;
 
+  /**
+   * Offline mode ignores the URL filters and search term, and any filter change leaves offline
+   * mode by removing `offline` from the URL.
+   */
+  offlineMode?: boolean;
+
   children: ReactNode;
 }
 
 export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
   sanitizeFilters,
   defaultFilters: defaultInitialFilters = {},
+  offlineMode = false,
   children,
 }) => {
   const router = useRouter();
@@ -94,24 +101,62 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
     [JSON.stringify(router.query)],
   );
 
+  const getUrlFilters = (): DefaultFilters =>
+    offlineMode ? {} : (getQueryFilters(query) ?? defaultInitialFilters);
+  const getUrlSearchTerm = (): string =>
+    offlineMode ? '' : (getQueryParam(query, 'searchTerm') ?? '');
+
   // Extract the initial filters from the URL
-  const [activeFilters, setActiveFilters] = useState<DefaultFilters>(
-    () => getQueryFilters(query) ?? defaultInitialFilters,
-  );
-  const [searchTerm, setSearchTerm] = useState(
-    getQueryParam(query, 'searchTerm') ?? '',
-  );
+  const [activeFilters, setActiveFilters] =
+    useState<DefaultFilters>(getUrlFilters);
+  const [searchTerm, setSearchTerm] = useState(getUrlSearchTerm);
 
   // The starred filter is not added to the URL
   const [starred, setStarred] = useState(false);
 
+  const [leavingOfflineMode, setLeavingOfflineMode] = useState(false);
+
   // Update the filters and search term when the URL changes
   useEffect(() => {
-    setActiveFilters(getQueryFilters(query) ?? defaultInitialFilters);
-    setSearchTerm(getQueryParam(query, 'searchTerm') ?? '');
-  }, [query]);
+    setActiveFilters(getUrlFilters());
+    setSearchTerm(getUrlSearchTerm());
+    setLeavingOfflineMode(false);
+  }, [query, offlineMode]);
 
-  const setSearchTermDebounced = useDebouncedCallback(setSearchTerm, 500);
+  useEffect(() => {
+    if (offlineMode) {
+      setStarred(false);
+    }
+  }, [offlineMode]);
+
+  const leaveOfflineMode = () => {
+    if (offlineMode) {
+      setLeavingOfflineMode(true);
+    }
+  };
+
+  const changeActiveFilters = useCallback(
+    (newFilters: DefaultFilters) => {
+      leaveOfflineMode();
+      setActiveFilters(newFilters);
+    },
+    [offlineMode],
+  );
+
+  const changeSearchTerm = (newSearchTerm: string) => {
+    leaveOfflineMode();
+    setSearchTerm(newSearchTerm);
+  };
+
+  const changeStarred = useCallback(
+    (newStarred: boolean) => {
+      leaveOfflineMode();
+      setStarred(newStarred);
+    },
+    [offlineMode],
+  );
+
+  const setSearchTermDebounced = useDebouncedCallback(changeSearchTerm, 500);
 
   const clearFilters = useCallback(() => {
     setActiveFilters({});
@@ -128,7 +173,12 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
     // Omit the filters and searchTerm from the previous query because we don't want them in the URL
     // if they are empty and Next.js will still add them to the URL query even if they are undefined.
     // i.e. { filters: undefined, searchTerm: '' } results in a querystring of ?filters=&searchTerm=
-    const urlQuery = omit(query, ['filters', 'searchTerm']);
+    const urlQuery = omit(
+      query,
+      leavingOfflineMode
+        ? ['filters', 'searchTerm', 'offline']
+        : ['filters', 'searchTerm'],
+    );
 
     const sanitizedFilters = sanitizeFilters
       ? sanitizeFilters(activeFilters)
@@ -143,7 +193,8 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
     // Avoid an infinite loop by only updating the URL if the query has actually changed
     if (
       urlQuery.filters !== query.filters ||
-      urlQuery.searchTerm !== query.searchTerm
+      urlQuery.searchTerm !== query.searchTerm ||
+      urlQuery.offline !== query.offline
     ) {
       router.replace(
         {
@@ -154,7 +205,7 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
         { shallow: true },
       );
     }
-  }, [activeFilters, searchTerm]);
+  }, [activeFilters, searchTerm, leavingOfflineMode]);
 
   const combinedFilters = useMemo(
     () => ({
@@ -168,17 +219,19 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
   const contextValue = useMemo(
     () => ({
       activeFilters,
-      setActiveFilters,
+      setActiveFilters: changeActiveFilters,
       isFiltered,
       searchTerm,
       setSearchTerm: setSearchTermDebounced,
       starred,
-      setStarred,
+      setStarred: changeStarred,
       clearFilters,
       combinedFilters,
     }),
     [
       activeFilters,
+      changeActiveFilters,
+      changeStarred,
       isFiltered,
       searchTerm,
       setSearchTermDebounced,

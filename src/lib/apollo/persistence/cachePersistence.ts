@@ -1,7 +1,12 @@
 import { ApolloCache, NormalizedCacheObject } from '@apollo/client';
 import { CachePersistor } from 'apollo3-cache-persist';
-import { addDatadogError } from 'src/lib/dataDog';
-import { CACHE_KEY, PersistedCacheStore, createIdbStorage } from './idbStorage';
+import { addDatadogAction, addDatadogError } from 'src/lib/dataDog';
+import {
+  CACHE_KEY,
+  PersistedCacheStore,
+  SyncRecord,
+  createIdbStorage,
+} from './idbStorage';
 import { onSessionEnded } from './sessionChannel';
 
 /** Bump when a type policy or merge function changes in a way old data would break */
@@ -30,9 +35,16 @@ export const createCachePersistence = (
   let stopped = false;
   let timedOut = false;
   const cancelled = () => stopped || timedOut;
+  let restoredSize: number | undefined;
+  let restoreFailed = false;
+
+  // True only between resume() and pause(), the span in which the live cache
+  // is restored and the owner is bound
+  let running = false;
 
   const pause = () => {
     stopped = true;
+    running = false;
     persistor?.pause();
   };
 
@@ -105,6 +117,7 @@ export const createCachePersistence = (
       // Read and apply the data here instead of persistor.restore() so a read
       // that finishes after the timeout never touches the live cache
       const data = await storage.getItem(CACHE_KEY);
+      restoredSize = data?.length;
       if (cancelled()) {
         return;
       }
@@ -118,7 +131,9 @@ export const createCachePersistence = (
         return;
       }
       persistor.resume();
+      running = true;
     } catch (error) {
+      restoreFailed = true;
       report(error, 'start');
       await stop();
     }
@@ -128,6 +143,7 @@ export const createCachePersistence = (
     storage: PersistedCacheStore,
     options: StartCachePersistenceOptions,
   ) => {
+    const startedAt = performance.now();
     let timer: ReturnType<typeof setTimeout> | undefined;
     const timeout = new Promise<void>((resolve) => {
       timer = setTimeout(() => {
@@ -138,6 +154,15 @@ export const createCachePersistence = (
     });
     await Promise.race([restore(storage, options), timeout]);
     clearTimeout(timer);
+
+    if (timedOut || restoredSize !== undefined) {
+      addDatadogAction('cache_restore', {
+        durationMs: performance.now() - startedAt,
+        sizeBytes: restoredSize,
+        timedOut,
+        failed: restoreFailed,
+      });
+    }
   };
 
   const start = (options: StartCachePersistenceOptions): Promise<void> => {
@@ -152,7 +177,37 @@ export const createCachePersistence = (
     return startPromise;
   };
 
-  return { start, pause, purge, stop };
+  const isRunning = (): boolean =>
+    running && !cancelled() && !!persistor && !!store;
+
+  const flush = async (): Promise<boolean> => {
+    if (cancelled() || !running || !persistor || !store) {
+      return false;
+    }
+    await persistor.persist();
+    return !cancelled() && store.didLastWriteLand();
+  };
+
+  const readSyncRecord = async (key: string): Promise<SyncRecord | null> =>
+    store ? store.getSyncRecord(key) : null;
+
+  const writeSyncRecord = async (
+    key: string,
+    record: SyncRecord,
+  ): Promise<void> => {
+    await store?.setSyncRecord(key, record);
+  };
+
+  return {
+    start,
+    pause,
+    purge,
+    stop,
+    isRunning,
+    flush,
+    readSyncRecord,
+    writeSyncRecord,
+  };
 };
 
 const appStore =
@@ -168,3 +223,7 @@ export const startCachePersistence = appPersistence.start;
 export const pauseCachePersistence = appPersistence.pause;
 export const purgeCachePersistence = appPersistence.purge;
 export const stopCachePersistence = appPersistence.stop;
+export const isCachePersistenceRunning = appPersistence.isRunning;
+export const flushCachePersistence = appPersistence.flush;
+export const readSyncRecord = appPersistence.readSyncRecord;
+export const writeSyncRecord = appPersistence.writeSyncRecord;

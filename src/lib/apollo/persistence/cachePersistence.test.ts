@@ -1,7 +1,7 @@
 import { InMemoryCache, gql } from '@apollo/client';
-import { addDatadogError } from 'src/lib/dataDog';
-import { createCachePersistence } from './cachePersistence';
-import { CacheOwner } from './idbStorage';
+import { addDatadogAction, addDatadogError } from 'src/lib/dataDog';
+import { RESTORE_TIMEOUT_MS, createCachePersistence } from './cachePersistence';
+import { CacheOwner, SyncRecord } from './idbStorage';
 import { onSessionEnded } from './sessionChannel';
 
 jest.mock('src/lib/dataDog');
@@ -58,10 +58,21 @@ const createStore = (
     setOwner: jest.fn(async (owner: CacheOwner) => {
       data.set('owner', owner);
     }),
+    getSyncRecord: jest.fn(
+      async (key: string) =>
+        (data.get(`sync:${key}`) as SyncRecord | undefined) ?? null,
+    ),
+    setSyncRecord: jest.fn(async (key: string, record: SyncRecord) => {
+      data.set(`sync:${key}`, record);
+    }),
     bindOwner: jest.fn(),
+    didLastWriteLand: jest.fn(() => true),
     clear: jest.fn(async () => {
       data.delete('cache');
       data.delete('owner');
+      [...data.keys()]
+        .filter((key) => key.startsWith('sync:'))
+        .forEach((key) => data.delete(key));
     }),
     disable: jest.fn(async () => {}),
   };
@@ -409,6 +420,57 @@ describe('createCachePersistence', () => {
     expect(addDatadogError).not.toHaveBeenCalled();
   });
 
+  it('logs restore duration and size', async () => {
+    const store = createStore({ cache: storedCache, owner: currentOwner });
+    const persistence = createCachePersistence(store, 3000);
+
+    await persistence.start({ cache, userId: 'user-1', impersonating: false });
+
+    expect(addDatadogAction).toHaveBeenCalledTimes(1);
+    expect(addDatadogAction).toHaveBeenCalledWith('cache_restore', {
+      durationMs: expect.any(Number),
+      sizeBytes: storedCache.length,
+      timedOut: false,
+      failed: false,
+    });
+  });
+
+  it('logs a restore whose stored cache is not JSON as failed', async () => {
+    const store = createStore({ cache: 'not json', owner: currentOwner });
+    const persistence = createCachePersistence(store, 3000);
+
+    await persistence.start({ cache, userId: 'user-1', impersonating: false });
+
+    expect(addDatadogAction).toHaveBeenCalledWith('cache_restore', {
+      durationMs: expect.any(Number),
+      sizeBytes: 'not json'.length,
+      timedOut: false,
+      failed: true,
+    });
+  });
+
+  it('logs a timed-out restore', async () => {
+    const store = createStore({ owner: currentOwner });
+    store.getItem.mockReturnValueOnce(new Promise(() => {}));
+    const persistence = createCachePersistence(store, 3000);
+
+    persistence.start({ cache, userId: 'user-1', impersonating: false });
+    await advance(RESTORE_TIMEOUT_MS);
+
+    expect(addDatadogAction).toHaveBeenCalledWith(
+      'cache_restore',
+      expect.objectContaining({ timedOut: true }),
+    );
+  });
+
+  it('does not log when nothing is stored', async () => {
+    const persistence = createCachePersistence(createStore(), 3000);
+
+    await persistence.start({ cache, userId: 'user-1', impersonating: false });
+
+    expect(addDatadogAction).not.toHaveBeenCalled();
+  });
+
   it('returns the same promise for every start() call', async () => {
     const store = createStore({ cache: storedCache, owner: currentOwner });
     const persistence = createCachePersistence(store, 3000);
@@ -430,8 +492,141 @@ describe('createCachePersistence', () => {
     expect(mockOnSessionEnded).toHaveBeenCalledTimes(1);
   });
 
+  it('flush persists the cache and returns true once started', async () => {
+    const store = createStore({ cache: storedCache, owner: currentOwner });
+    const persistence = createCachePersistence(store, 3000);
+    await persistence.start({ cache, userId: 'user-1', impersonating: false });
+
+    writeUser(cache, 'Flushed');
+
+    await expect(persistence.flush()).resolves.toBe(true);
+    expect(store.setItem).toHaveBeenCalledWith(
+      'cache',
+      expect.stringContaining('Flushed'),
+    );
+  });
+
+  it('flush returns false and writes nothing while restore is running', async () => {
+    const store = createStore({ owner: currentOwner });
+    const read = deferred<string | null>();
+    store.getItem.mockReturnValueOnce(read.promise);
+    const persistence = createCachePersistence(store, 3000);
+
+    const started = persistence.start({
+      cache,
+      userId: 'user-1',
+      impersonating: false,
+    });
+    await advance(0);
+    expect(store.getItem).toHaveBeenCalled();
+
+    await expect(persistence.flush()).resolves.toBe(false);
+    expect(store.setItem).not.toHaveBeenCalled();
+
+    read.resolve(storedCache);
+    await started;
+    await expect(persistence.flush()).resolves.toBe(true);
+  });
+
+  it('flush returns false when the cache write did not land', async () => {
+    const store = createStore({ cache: storedCache, owner: currentOwner });
+    store.didLastWriteLand.mockReturnValue(false);
+    const persistence = createCachePersistence(store, 3000);
+    await persistence.start({ cache, userId: 'user-1', impersonating: false });
+
+    await expect(persistence.flush()).resolves.toBe(false);
+  });
+
+  it('flush returns false before start() and after stop()', async () => {
+    const store = createStore({ cache: storedCache, owner: currentOwner });
+    const persistence = createCachePersistence(store, 3000);
+    await expect(persistence.flush()).resolves.toBe(false);
+
+    await persistence.start({ cache, userId: 'user-1', impersonating: false });
+    await persistence.stop();
+
+    await expect(persistence.flush()).resolves.toBe(false);
+  });
+
+  it('isRunning is true only once restore finishes and until stop()', async () => {
+    const store = createStore({ cache: storedCache, owner: currentOwner });
+    const persistence = createCachePersistence(store, 3000);
+    expect(persistence.isRunning()).toBe(false);
+
+    await persistence.start({ cache, userId: 'user-1', impersonating: false });
+    expect(persistence.isRunning()).toBe(true);
+
+    await persistence.stop();
+    expect(persistence.isRunning()).toBe(false);
+  });
+
+  it('isRunning is false after the restore times out', async () => {
+    const store = createStore({ owner: currentOwner });
+    const read = deferred<string | null>();
+    store.getItem.mockReturnValueOnce(read.promise);
+    const persistence = createCachePersistence(store, 3000);
+
+    const started = persistence.start({
+      cache,
+      userId: 'user-1',
+      impersonating: false,
+    });
+    await advance(3000);
+    await started;
+    read.resolve(storedCache);
+    await advance(0);
+
+    expect(persistence.isRunning()).toBe(false);
+  });
+
+  it('isRunning is false while impersonating', async () => {
+    const store = createStore({ cache: storedCache, owner: currentOwner });
+    const persistence = createCachePersistence(store, 3000);
+
+    await persistence.start({ cache, userId: 'user-1', impersonating: true });
+
+    expect(persistence.isRunning()).toBe(false);
+  });
+
+  it('every reset path clears sync records', async () => {
+    const mismatched = createStore({
+      cache: storedCache,
+      owner: { userId: 'user-2', version: 1 },
+    });
+    await createCachePersistence(mismatched, 3000).start({
+      cache,
+      userId: 'user-1',
+      impersonating: false,
+    });
+    expect(mismatched.clear).toHaveBeenCalled();
+
+    const stopped = createStore();
+    await createCachePersistence(stopped, 3000).stop();
+    expect(stopped.clear).toHaveBeenCalled();
+
+    const purged = createStore();
+    await createCachePersistence(purged, 3000).purge();
+    expect(purged.clear).toHaveBeenCalled();
+  });
+
+  it('reads and writes sync records through the store', async () => {
+    const store = createStore();
+    const persistence = createCachePersistence(store, 3000);
+    const record = { syncedAt: 1, version: 'v' };
+
+    await persistence.writeSyncRecord('contacts:a', record);
+
+    expect(await persistence.readSyncRecord('contacts:a')).toEqual(record);
+  });
+
   it('does nothing without a store', async () => {
     const persistence = createCachePersistence(null, 3000);
+    await expect(persistence.flush()).resolves.toBe(false);
+    expect(persistence.isRunning()).toBe(false);
+    await expect(persistence.readSyncRecord('a')).resolves.toBeNull();
+    await expect(
+      persistence.writeSyncRecord('a', { syncedAt: 1, version: 'v' }),
+    ).resolves.toBeUndefined();
 
     await expect(
       persistence.start({ cache, userId: 'user-1', impersonating: false }),

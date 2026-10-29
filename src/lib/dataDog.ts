@@ -16,6 +16,7 @@ declare global {
       setUser: (user: DatadogUser) => void;
       clearUser: () => void;
       addError: (error: unknown, context?: Record<string, unknown>) => void;
+      addAction: (name: string, context?: Record<string, unknown>) => void;
       onReady: (callback: () => void) => void;
     };
     __reportedErrors?: WeakSet<object>;
@@ -93,6 +94,13 @@ export const addDatadogError = (
   context?: Record<string, unknown>,
 ): void => {
   whenDatadogReady(() => window.DD_RUM.addError(error, context));
+};
+
+export const addDatadogAction = (
+  name: string,
+  context?: Record<string, unknown>,
+): void => {
+  whenDatadogReady(() => window.DD_RUM.addAction(name, context));
 };
 
 export const reportGraphQLError = (

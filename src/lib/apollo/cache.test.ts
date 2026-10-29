@@ -1,4 +1,4 @@
-import { InMemoryCache } from '@apollo/client';
+import { InMemoryCache, gql } from '@apollo/client';
 import { gqlMock } from '__tests__/util/graphqlMocking';
 import {
   GetNotificationsDocument,
@@ -51,6 +51,19 @@ const writeCache = (
   });
 };
 
+const readContactName = (cache: InMemoryCache, contactId: string) =>
+  cache.readQuery({
+    query: gql`
+      query ContactName($accountListId: ID!, $contactId: ID!) {
+        contact(accountListId: $accountListId, id: $contactId) {
+          id
+          name
+        }
+      }
+    `,
+    variables: { accountListId: 'account-list-1', contactId },
+  });
+
 describe('cache', () => {
   it('handles concurrent queries to the same page list', () => {
     const cache = createCache();
@@ -77,5 +90,40 @@ describe('cache', () => {
 
     // Ensure that the last value written wins
     expect(readCache(cache)?.userNotifications.unreadCount).toBe(0);
+  });
+
+  it('contact(id) reads a contact written by another query', () => {
+    const cache = createCache();
+
+    cache.writeQuery({
+      query: gql`
+        query ContactsList($accountListId: ID!) {
+          contacts(accountListId: $accountListId) {
+            nodes {
+              __typename
+              id
+              name
+            }
+          }
+        }
+      `,
+      variables: { accountListId: 'account-list-1' },
+      data: {
+        contacts: {
+          __typename: 'ContactConnection',
+          nodes: [
+            { __typename: 'Contact', id: 'contact-1', name: 'Doe, John' },
+          ],
+        },
+      },
+    });
+
+    expect(readContactName(cache, 'contact-1')).toEqual({
+      contact: { __typename: 'Contact', id: 'contact-1', name: 'Doe, John' },
+    });
+  });
+
+  it('contact(id) reads null for a contact that is not cached', () => {
+    expect(readContactName(createCache(), 'contact-1')).toBeNull();
   });
 });

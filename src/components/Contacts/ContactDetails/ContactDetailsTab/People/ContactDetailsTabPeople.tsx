@@ -17,6 +17,7 @@ import {
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { MergePeopleModal } from 'src/components/Contacts/MassActions/MergePeople/MergePeopleModal';
+import { useIsOnline } from 'src/hooks/useIsOnline';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFromParts } from 'src/lib/intlFormat';
 import { RingIcon } from '../../../RingIcon';
@@ -90,6 +91,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const isOnline = useIsOnline();
 
   const {
     editPersonModalOpen,
@@ -127,7 +129,10 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
   const { primaryPerson, people, id } = data;
 
   const addPersonButton = (
-    <AddButton onClick={() => setCreatePersonModalOpen(true)}>
+    <AddButton
+      onClick={() => setCreatePersonModalOpen(true)}
+      disabled={!isOnline}
+    >
       <AddIcon />
       <AddText variant="subtitle1">{t('Add Person')}</AddText>
     </AddButton>
@@ -190,6 +195,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
             <ContactEditIconContainer
               onClick={() => openPersonModal(person.id)}
               aria-label={t('Edit Icon')}
+              disabled={!isOnline}
             >
               <EditIcon />
             </ContactEditIconContainer>
@@ -317,7 +323,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
             <AddButton
               onClick={() => setMergePeopleModalOpen(true)}
               variant="contained"
-              disabled={selectedPeople.length < 2}
+              disabled={selectedPeople.length < 2 || !isOnline}
             >
               <Grid container alignItems="center">
                 <MergePeopleIcon sx={{ color: 'unset' }} />
@@ -328,7 +334,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
             </AddButton>
           </>
         ) : (
-          <AddButton onClick={() => setSelecting(true)}>
+          <AddButton onClick={() => setSelecting(true)} disabled={!isOnline}>
             <Grid container alignItems="center">
               <MergePeopleIcon />
               <AddText variant="subtitle1">{t('Merge People')}</AddText>

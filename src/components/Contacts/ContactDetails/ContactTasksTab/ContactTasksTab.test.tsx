@@ -5,6 +5,7 @@ import { DateTime } from 'luxon';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { mockNavigatorOnline } from '__tests__/util/mockNavigatorOnline';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { PhaseEnum } from 'src/graphql/types.generated';
 import useTaskModal from '../../../../hooks/useTaskModal';
@@ -59,6 +60,8 @@ const contactPhaseMock = {
   ContactPhase: { contact: { contactPhase: phase } },
 };
 
+const setOnline = mockNavigatorOnline();
+
 describe('ContactTasksTab', () => {
   it('default', async () => {
     const querySpy = jest.fn();
@@ -92,6 +95,44 @@ describe('ContactTasksTab', () => {
         getByText(response.data.tasks.nodes[0].subject),
       ).toBeInTheDocument(),
     );
+  });
+
+  it('disables the task buttons and mass actions while offline', async () => {
+    setOnline(false);
+    const { getByRole, getAllByRole, queryByTestId } = render(
+      <TestRouter router={router}>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider>
+            <VirtuosoMockContext.Provider
+              value={{ viewportHeight: 300, itemHeight: 100 }}
+            >
+              <ContactTasksTab
+                accountListId={accountListId}
+                contactId={contactId}
+                contactDetailsLoaded={false}
+              />
+            </VirtuosoMockContext.Provider>
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </TestRouter>,
+    );
+    await waitFor(() =>
+      expect(
+        queryByTestId('infinite-list-skeleton-loading'),
+      ).not.toBeInTheDocument(),
+    );
+
+    expect(getByRole('button', { name: 'add task' })).toBeDisabled();
+    expect(getByRole('button', { name: 'log task' })).toBeDisabled();
+
+    userEvent.click(getAllByRole('checkbox')[0]);
+    expect(
+      (
+        TasksMassActionsDropdown as jest.MockedFn<
+          typeof TasksMassActionsDropdown
+        >
+      ).mock.lastCall?.[0].disabled,
+    ).toBe(true);
   });
 
   it('loading', async () => {

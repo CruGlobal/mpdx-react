@@ -1571,6 +1571,7 @@ describe('PersonModal', () => {
 
       const data: ContactDetailsTabQuery = {
         contact: {
+          __typename: 'Contact',
           id: contactId,
           name: 'Person, Test',
           tagList: ['tag1', 'tag2', 'tag3'],

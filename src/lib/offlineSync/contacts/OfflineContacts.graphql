@@ -1,0 +1,32 @@
+query OfflineContacts(
+  $accountListId: ID!
+  $contactsFilters: ContactFilterSetInput
+  $after: String
+  $first: Int
+) {
+  contacts(
+    accountListId: $accountListId
+    contactsFilter: $contactsFilters
+    after: $after
+    first: $first
+  ) {
+    nodes {
+      ...OfflineContact
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+  }
+}
+
+fragment OfflineContact on Contact {
+  id
+  avatar
+  contactPhase
+  ...ContactRow
+  ...ContactDetailsHeader
+  ...ContactDetailsTabContact
+  ...ContactPartnerAccounts
+  ...ContactNotes
+}

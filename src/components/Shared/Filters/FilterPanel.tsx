@@ -111,6 +111,9 @@ export interface FilterPanelProps {
   preDefinedFilters?: UserOptionFragment[];
   onClose: () => void;
   showSaveButton?: boolean;
+  /** Blocks interaction with the whole panel */
+  disabled?: boolean;
+  clearAllDisabled?: boolean;
 }
 
 export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
@@ -120,6 +123,8 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   preDefinedFilters,
   onClose,
   showSaveButton = true,
+  disabled = false,
+  clearAllDisabled = false,
   ...boxProps
 }) => {
   const theme = useTheme();
@@ -571,7 +576,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     Object.keys(removeTagsFromFilters(selectedFilters)).length === 0;
 
   return (
-    <Box {...boxProps}>
+    <Box data-testid="FilterPanel" {...boxProps}>
       <div style={{ overflow: 'hidden' }}>
         <Slide in direction="right" appear={false} mountOnEnter unmountOnExit>
           <div>
@@ -603,7 +608,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               {showSaveButton && (
                 <LinkButton
                   style={{ marginInlineStart: theme.spacing(-1) }}
-                  disabled={noSelectedFilters}
+                  disabled={noSelectedFilters || disabled}
                   onClick={() => setSaveFilterModalOpen(true)}
                 >
                   {t('Save')}
@@ -613,151 +618,161 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 style={{
                   marginInlineStart: theme.spacing(showSaveButton ? 2 : -1),
                 }}
-                disabled={noSelectedFilters}
+                disabled={noSelectedFilters || disabled || clearAllDisabled}
                 onClick={clearFilters}
               >
                 {t('Clear All')}
               </LinkButton>
             </FilterHeader>
-            {tagsFilters.some((filter) => filter.value !== '--any--') && (
-              <FilterPanelTagsSection
-                filterOptions={tagsFilters}
-                selectedFilters={selectedFilters}
-                onSelectedFiltersChanged={setActiveFilters}
-              />
-            )}
-            <StyledFilterList dense sx={{ paddingY: 0 }}>
-              {filters?.length === 0 ? (
-                <ListItem data-testid="NoFiltersState">
-                  <ListItemText
-                    primary={t('No Filters Found')}
-                    primaryTypographyProps={{ variant: 'subtitle1' }}
-                  />
-                </ListItem>
-              ) : (
-                <>
-                  {preDefinedFilters && preDefinedFilters.length > 0 && (
-                    <FlatAccordion>
-                      <AccordionSummary expandIcon={<ExpandMore />}>
-                        <Typography>{t('Predefined Filters')}</Typography>
-                      </AccordionSummary>
-                      <AccordionDetails sx={{ p: 0 }}>
-                        <StyledFilterList dense sx={{ paddingY: 0 }}>
-                          <FilterList
-                            filters={preDefinedFilters}
-                            onFilterSelect={setSelectedSavedFilter}
-                            onFilterDelete={handleDeleteSavedFilter}
-                          />
-                        </StyledFilterList>
-                      </AccordionDetails>
-                    </FlatAccordion>
-                  )}
+            <Box
+              data-testid="FilterPanelBody"
+              {...(disabled && {
+                // React 18 doesn't know the inert attribute, so it must be a string
+                inert: '',
+                'aria-disabled': true,
+                sx: { pointerEvents: 'none', opacity: 0.5 },
+              })}
+            >
+              {tagsFilters.some((filter) => filter.value !== '--any--') && (
+                <FilterPanelTagsSection
+                  filterOptions={tagsFilters}
+                  selectedFilters={selectedFilters}
+                  onSelectedFiltersChanged={setActiveFilters}
+                />
+              )}
+              <StyledFilterList dense sx={{ paddingY: 0 }}>
+                {filters?.length === 0 ? (
+                  <ListItem data-testid="NoFiltersState">
+                    <ListItemText
+                      primary={t('No Filters Found')}
+                      primaryTypographyProps={{ variant: 'subtitle1' }}
+                    />
+                  </ListItem>
+                ) : (
+                  <>
+                    {preDefinedFilters && preDefinedFilters.length > 0 && (
+                      <FlatAccordion>
+                        <AccordionSummary expandIcon={<ExpandMore />}>
+                          <Typography>{t('Predefined Filters')}</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails sx={{ p: 0 }}>
+                          <StyledFilterList dense sx={{ paddingY: 0 }}>
+                            <FilterList
+                              filters={preDefinedFilters}
+                              onFilterSelect={setSelectedSavedFilter}
+                              onFilterDelete={handleDeleteSavedFilter}
+                            />
+                          </StyledFilterList>
+                        </AccordionDetails>
+                      </FlatAccordion>
+                    )}
 
-                  {savedFilters.length > 0 && (
-                    <FlatAccordion>
-                      <AccordionSummary expandIcon={<ExpandMore />}>
-                        <Typography>{t('Saved Filters')}</Typography>
-                      </AccordionSummary>
-                      <AccordionDetails sx={{ p: 0 }}>
-                        <StyledFilterList dense sx={{ paddingY: 0 }}>
-                          <FilterList
-                            filters={savedFilters}
-                            onFilterSelect={setSelectedSavedFilter}
-                            onFilterDelete={handleDeleteSavedFilter}
-                          />
-                        </StyledFilterList>
-                      </AccordionDetails>
-                    </FlatAccordion>
-                  )}
+                    {savedFilters.length > 0 && (
+                      <FlatAccordion>
+                        <AccordionSummary expandIcon={<ExpandMore />}>
+                          <Typography>{t('Saved Filters')}</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails sx={{ p: 0 }}>
+                          <StyledFilterList dense sx={{ paddingY: 0 }}>
+                            <FilterList
+                              filters={savedFilters}
+                              onFilterSelect={setSelectedSavedFilter}
+                              onFilterDelete={handleDeleteSavedFilter}
+                            />
+                          </StyledFilterList>
+                        </AccordionDetails>
+                      </FlatAccordion>
+                    )}
 
-                  {filters
-                    ?.filter(
-                      (filter) => filter?.filters[0]?.filterKey !== 'tags',
-                    )
-                    ?.map((group) => {
-                      const selectedOptions = getOptionsSelected(group);
-                      const groupName = renameFilterNames(group.name);
-                      return (
-                        <Collapse
-                          key={group.name}
-                          in={showAll || isGroupVisible(group)}
-                          data-testid="FilterGroup"
-                        >
-                          <FlatAccordion
-                            TransitionProps={{ unmountOnExit: true }}
-                            defaultExpanded={defaultExpandedFilterGroups.has(
-                              group.name,
-                            )}
+                    {filters
+                      ?.filter(
+                        (filter) => filter?.filters[0]?.filterKey !== 'tags',
+                      )
+                      ?.map((group) => {
+                        const selectedOptions = getOptionsSelected(group);
+                        const groupName = renameFilterNames(group.name);
+                        return (
+                          <Collapse
+                            key={group.name}
+                            in={showAll || isGroupVisible(group)}
+                            data-testid="FilterGroup"
                           >
-                            <AccordionSummary expandIcon={<ExpandMore />}>
-                              <Typography>
-                                {groupName}
-                                {selectedOptions.length > 0
-                                  ? ` (${selectedOptions.length})`
-                                  : ''}
-                              </Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                              <StyledFilterList dense>
-                                {group.filters.map((filter) => {
-                                  const { filterKey } = filter;
-                                  const filterKeyCamel = snakeToCamel(
-                                    filterKey,
-                                  ) as FilterKey;
-
-                                  const reverseFiltersKey =
-                                    reverseFiltersMap.get(
+                            <FlatAccordion
+                              TransitionProps={{ unmountOnExit: true }}
+                              defaultExpanded={defaultExpandedFilterGroups.has(
+                                group.name,
+                              )}
+                            >
+                              <AccordionSummary expandIcon={<ExpandMore />}>
+                                <Typography>
+                                  {groupName}
+                                  {selectedOptions.length > 0
+                                    ? ` (${selectedOptions.length})`
+                                    : ''}
+                                </Typography>
+                              </AccordionSummary>
+                              <AccordionDetails>
+                                <StyledFilterList dense>
+                                  {group.filters.map((filter) => {
+                                    const { filterKey } = filter;
+                                    const filterKeyCamel = snakeToCamel(
                                       filterKey,
                                     ) as FilterKey;
 
-                                  const filterValue =
-                                    selectedFilters[filterKeyCamel] || '';
+                                    const reverseFiltersKey =
+                                      reverseFiltersMap.get(
+                                        filterKey,
+                                      ) as FilterKey;
 
-                                  const FilterListItemValue = (
-                                    filterValue as ContactFilterNotesInput
-                                  ).wildcardNoteSearch
-                                    ? (filterValue as ContactFilterNotesInput)
-                                        .wildcardNoteSearch
-                                    : filterValue;
+                                    const filterValue =
+                                      selectedFilters[filterKeyCamel] || '';
 
-                                  return (
-                                    <FilterListItem
-                                      key={filterKeyCamel}
-                                      filter={filter}
-                                      value={FilterListItemValue}
-                                      onUpdate={(value) =>
-                                        updateSelectedFilter(
-                                          filterKeyCamel,
-                                          value,
-                                        )
-                                      }
-                                      reverseSelected={
-                                        !!selectedFilters[reverseFiltersKey]
-                                      }
-                                      onReverseFilter={() =>
-                                        updateSelectedFilter(
-                                          reverseFiltersKey,
-                                          !selectedFilters[reverseFiltersKey],
-                                        )
-                                      }
-                                    />
-                                  );
-                                })}
-                              </StyledFilterList>
-                            </AccordionDetails>
-                          </FlatAccordion>
-                        </Collapse>
-                      );
-                    })}
-                  {filters?.some((g) => !isGroupVisible(g)) ? (
-                    <FilterListItemShowAll
-                      showAll={showAll}
-                      onToggle={() => setShowAll(!showAll)}
-                    />
-                  ) : null}
-                </>
-              )}
-            </StyledFilterList>
+                                    const FilterListItemValue = (
+                                      filterValue as ContactFilterNotesInput
+                                    ).wildcardNoteSearch
+                                      ? (filterValue as ContactFilterNotesInput)
+                                          .wildcardNoteSearch
+                                      : filterValue;
+
+                                    return (
+                                      <FilterListItem
+                                        key={filterKeyCamel}
+                                        filter={filter}
+                                        value={FilterListItemValue}
+                                        onUpdate={(value) =>
+                                          updateSelectedFilter(
+                                            filterKeyCamel,
+                                            value,
+                                          )
+                                        }
+                                        reverseSelected={
+                                          !!selectedFilters[reverseFiltersKey]
+                                        }
+                                        onReverseFilter={() =>
+                                          updateSelectedFilter(
+                                            reverseFiltersKey,
+                                            !selectedFilters[reverseFiltersKey],
+                                          )
+                                        }
+                                      />
+                                    );
+                                  })}
+                                </StyledFilterList>
+                              </AccordionDetails>
+                            </FlatAccordion>
+                          </Collapse>
+                        );
+                      })}
+                    {filters?.some((g) => !isGroupVisible(g)) ? (
+                      <FilterListItemShowAll
+                        showAll={showAll}
+                        onToggle={() => setShowAll(!showAll)}
+                      />
+                    ) : null}
+                  </>
+                )}
+              </StyledFilterList>
+            </Box>
           </div>
         </Slide>
       </div>
