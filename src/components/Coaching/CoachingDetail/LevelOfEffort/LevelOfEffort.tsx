@@ -5,7 +5,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableRow,
 } from '@mui/material';
 import { toLower } from 'lodash';
@@ -17,6 +16,7 @@ import { usePhaseData } from 'src/hooks/usePhaseData';
 import { snakeToCamel } from 'src/lib/snakeToCamel';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { CoachingPeriodEnum } from '../CoachingDetail';
+import { ScrollableTableContainer } from '../ScrollableTableContainer/ScrollableTableContainer';
 import { getMonthOrWeekDateRange } from '../helpers';
 import {
   AlignedTableCell,
@@ -107,7 +107,7 @@ export const LevelOfEffort: React.FC<LevelOfEffortProps> = ({
         {loading ? (
           <MultilineSkeleton lines={24} />
         ) : (
-          <TableContainer sx={{ minWidth: 600 }}>
+          <ScrollableTableContainer>
             <Table size="small" aria-label={t('activity summary table')}>
               <TableBody>
                 <HeaderRow role="rowheader">
@@ -314,7 +314,7 @@ export const LevelOfEffort: React.FC<LevelOfEffortProps> = ({
                   })}
               </TableBody>
             </Table>
-          </TableContainer>
+          </ScrollableTableContainer>
         )}
       </ContentContainer>
     </AnimatedCard>

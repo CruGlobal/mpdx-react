@@ -4,7 +4,6 @@ import {
   CardHeader,
   Table,
   TableBody,
-  TableContainer,
   TableHead,
   TableRow,
 } from '@mui/material';
@@ -17,6 +16,7 @@ import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { AccountListTypeEnum } from '../CoachingDetail';
+import { ScrollableTableContainer } from '../ScrollableTableContainer/ScrollableTableContainer';
 import {
   AlignedTableCell,
   ContentContainer,
@@ -133,7 +133,7 @@ export const OutstandingCommitments: React.FC<OutstandingCommitmentsProps> = ({
         {loading && !accountListData ? (
           <MultilineSkeleton lines={8} />
         ) : (
-          <TableContainer sx={{ minWidth: 600 }}>
+          <ScrollableTableContainer>
             <Table size="small" data-testid="OutstandingCommitment">
               <TableHead>
                 <TableRow>
@@ -179,7 +179,7 @@ export const OutstandingCommitments: React.FC<OutstandingCommitmentsProps> = ({
                 ))}
               </TableBody>
             </Table>
-          </TableContainer>
+          </ScrollableTableContainer>
         )}
       </ContentContainer>
     </AnimatedCard>
