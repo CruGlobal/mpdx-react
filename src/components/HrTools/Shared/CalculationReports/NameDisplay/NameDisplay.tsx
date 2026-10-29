@@ -15,8 +15,10 @@ interface NameDisplayProps {
   showContent?: boolean;
   titleOne?: string;
   titleTwo?: string;
+  titleThree?: string;
   amountOne?: number | null;
   amountTwo?: number | null;
+  amountThree?: number | null;
   spouseComponent?: React.ReactNode;
 }
 
@@ -25,13 +27,23 @@ export const NameDisplay: React.FC<NameDisplayProps> = ({
   showContent,
   titleOne,
   titleTwo,
+  titleThree,
   amountOne,
   amountTwo,
+  amountThree,
   spouseComponent,
 }) => {
   const locale = useLocale();
   const theme = useTheme();
   const currency = 'USD';
+  const columns = [
+    { title: titleOne, amount: amountOne, testId: 'amount-one' },
+    { title: titleTwo, amount: amountTwo, testId: 'amount-two' },
+    ...(titleThree
+      ? [{ title: titleThree, amount: amountThree, testId: 'amount-three' }]
+      : []),
+  ];
+  const threeColumns = columns.length === 3;
   const title = (
     <Box
       sx={{
@@ -52,42 +64,31 @@ export const NameDisplay: React.FC<NameDisplayProps> = ({
         {showContent && (
           <CardContent>
             <Grid container spacing={theme.spacing(2)}>
-              <Grid size={6}>
-                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                  {titleOne?.toUpperCase()}
-                </Typography>
-              </Grid>
-              <Grid size={6}>
-                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                  {titleTwo?.toUpperCase()}
-                </Typography>
-              </Grid>
-            </Grid>
-            <Grid container spacing={theme.spacing(2)}>
-              <Grid size={6}>
-                <Typography
-                  variant="h3"
-                  fontWeight="bold"
-                  sx={{ color: 'primary.main' }}
-                  data-testid="amount-one"
+              {columns.map(({ title, amount, testId }) => (
+                <Grid
+                  key={testId}
+                  size={threeColumns ? { xs: 12, sm: 4 } : 6}
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                  }}
                 >
-                  {currencyFormat(amountOne || 0, currency, locale, {
-                    showTrailingZeros: true,
-                  })}
-                </Typography>
-              </Grid>
-              <Grid size={6}>
-                <Typography
-                  variant="h3"
-                  fontWeight="bold"
-                  sx={{ color: 'primary.main' }}
-                  data-testid="amount-two"
-                >
-                  {currencyFormat(amountTwo || 0, currency, locale, {
-                    showTrailingZeros: true,
-                  })}
-                </Typography>
-              </Grid>
+                  <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                    {title?.toUpperCase()}
+                  </Typography>
+                  <Typography
+                    variant={threeColumns ? 'h5' : 'h3'}
+                    fontWeight="bold"
+                    sx={{ color: 'primary.main' }}
+                    data-testid={testId}
+                  >
+                    {currencyFormat(amount || 0, currency, locale, {
+                      showTrailingZeros: true,
+                    })}
+                  </Typography>
+                </Grid>
+              ))}
             </Grid>
           </CardContent>
         )}

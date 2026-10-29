@@ -8,6 +8,15 @@ describe('NameDisplaySkeleton', () => {
     expect(getByTestId('name-display-skeleton-amounts')).toBeInTheDocument();
   });
 
+  it('renders three amount columns when asked', () => {
+    const { getByTestId } = render(
+      <NameDisplaySkeleton showContent columns={3} />,
+    );
+    expect(
+      getByTestId('name-display-skeleton-amounts').firstElementChild?.children,
+    ).toHaveLength(3);
+  });
+
   it('renders only the header without showContent', () => {
     const { getByTestId, queryByTestId } = render(<NameDisplaySkeleton />);
     expect(getByTestId('name-display-skeleton')).toBeInTheDocument();

@@ -54,6 +54,8 @@ describe('NewForm', () => {
       expect(getByTestId('amount-one')).toHaveTextContent('$40,000.00');
       // currentSalaryCap: value on backend
       expect(getByTestId('amount-two')).toHaveTextContent('$100,000.00');
+      // cap minus gross salary and ASRs already requested this year
+      expect(getByTestId('amount-three')).toHaveTextContent('$55,000.00');
     });
 
     it('handles missing calculations data gracefully', () => {

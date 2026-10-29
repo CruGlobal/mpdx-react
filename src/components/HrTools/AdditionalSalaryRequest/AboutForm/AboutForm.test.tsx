@@ -121,6 +121,7 @@ describe('AboutForm', () => {
     expect(
       await findByText(/Your Maximum Allowable Salary \(CAP\)/i),
     ).toBeInTheDocument();
+    expect(await findByText('REMAINING ALLOWABLE SALARY')).toBeInTheDocument();
   });
 
   it('should hide financial data when no request has been created yet', async () => {
@@ -144,6 +145,7 @@ describe('AboutForm', () => {
     expect(
       queryByText(/Your Maximum Allowable Salary \(CAP\)/i),
     ).not.toBeInTheDocument();
+    expect(queryByText('REMAINING ALLOWABLE SALARY')).not.toBeInTheDocument();
   });
 
   it('should link to the Progressive Approvals document', () => {

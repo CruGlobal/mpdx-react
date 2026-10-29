@@ -50,6 +50,34 @@ describe('NameDisplay', () => {
     expect(getByText('$20,000.00')).toBeInTheDocument();
   });
 
+  it('renders a third column when titleThree is given', () => {
+    const { getByText, getByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <NameDisplay
+          names="Doe, John"
+          showContent
+          titleOne={titleOne}
+          titleTwo={titleTwo}
+          titleThree="Title Three"
+          amountOne={1000}
+          amountTwo={20000}
+          amountThree={5000}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(getByText('TITLE THREE')).toBeInTheDocument();
+    expect(getByTestId('amount-three')).toHaveTextContent('$5,000.00');
+  });
+
+  it('omits the third column without titleThree', () => {
+    const { queryByTestId } = render(
+      <TestComponent names="Doe, John" showContent />,
+    );
+
+    expect(queryByTestId('amount-three')).not.toBeInTheDocument();
+  });
+
   it('renders spouseComponent when provided', () => {
     const { getByTestId, getByText } = render(
       <TestComponent
