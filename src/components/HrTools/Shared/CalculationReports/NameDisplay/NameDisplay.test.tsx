@@ -1,7 +1,7 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import theme from 'src/theme';
-import { NameDisplay } from './NameDisplay';
+import { NameDisplay, columnLayout } from './NameDisplay';
 
 const titleOne = 'Title One';
 const titleTwo = 'Title Two';
@@ -89,5 +89,18 @@ describe('NameDisplay', () => {
     expect(getByText('Doe, John')).toBeInTheDocument();
     expect(getByTestId('spouse-component')).toBeInTheDocument();
     expect(getByText('Spouse Info')).toBeInTheDocument();
+  });
+});
+
+describe('columnLayout', () => {
+  it('stacks three columns on phones and shrinks the amounts', () => {
+    expect(columnLayout(3)).toEqual({
+      size: { xs: 12, sm: 4 },
+      amountVariant: 'h5',
+    });
+  });
+
+  it('keeps two side-by-side columns at full size', () => {
+    expect(columnLayout(2)).toEqual({ size: 6, amountVariant: 'h3' });
   });
 });
