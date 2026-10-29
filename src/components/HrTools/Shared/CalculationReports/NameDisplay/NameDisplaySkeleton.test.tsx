@@ -9,12 +9,10 @@ describe('NameDisplaySkeleton', () => {
   });
 
   it('renders three amount columns when asked', () => {
-    const { getByTestId } = render(
+    const { getAllByTestId } = render(
       <NameDisplaySkeleton showContent columns={3} />,
     );
-    expect(
-      getByTestId('name-display-skeleton-amounts').firstElementChild?.children,
-    ).toHaveLength(3);
+    expect(getAllByTestId('name-display-skeleton-column')).toHaveLength(3);
   });
 
   it('renders only the header without showContent', () => {

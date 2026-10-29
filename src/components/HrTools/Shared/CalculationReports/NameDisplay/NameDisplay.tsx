@@ -10,6 +10,11 @@ import {
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 
+export const columnLayout = (columns: number) =>
+  columns === 3
+    ? { size: { xs: 12, sm: 4 }, amountVariant: 'h5' as const }
+    : { size: 6, amountVariant: 'h3' as const };
+
 interface NameDisplayProps {
   names: string;
   showContent?: boolean;
@@ -43,7 +48,7 @@ export const NameDisplay: React.FC<NameDisplayProps> = ({
       ? [{ title: titleThree, amount: amountThree, testId: 'amount-three' }]
       : []),
   ];
-  const threeColumns = columns.length === 3;
+  const { size, amountVariant } = columnLayout(columns.length);
   const title = (
     <Box
       sx={{
@@ -64,10 +69,10 @@ export const NameDisplay: React.FC<NameDisplayProps> = ({
         {showContent && (
           <CardContent>
             <Grid container spacing={theme.spacing(2)}>
-              {columns.map(({ title, amount, testId }) => (
+              {columns.map(({ title: columnTitle, amount, testId }) => (
                 <Grid
                   key={testId}
-                  size={threeColumns ? { xs: 12, sm: 4 } : 6}
+                  size={size}
                   sx={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -75,10 +80,10 @@ export const NameDisplay: React.FC<NameDisplayProps> = ({
                   }}
                 >
                   <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                    {title?.toUpperCase()}
+                    {columnTitle?.toUpperCase()}
                   </Typography>
                   <Typography
-                    variant={threeColumns ? 'h5' : 'h3'}
+                    variant={amountVariant}
                     fontWeight="bold"
                     sx={{ color: 'primary.main' }}
                     data-testid={testId}
