@@ -34,6 +34,15 @@ describe('EditForm', () => {
     expect(getByText('Doe, John')).toBeInTheDocument();
   });
 
+  it('shows a three-column skeleton until HCM loads', () => {
+    const { getAllByTestId, queryByTestId } = renderComponent({
+      contextOverrides: { hcmLoading: true },
+    });
+
+    expect(getAllByTestId('name-display-skeleton-column')).toHaveLength(3);
+    expect(queryByTestId('amount-three')).not.toBeInTheDocument();
+  });
+
   it('displays financial balances from context', () => {
     const { getByTestId } = renderComponent();
 
