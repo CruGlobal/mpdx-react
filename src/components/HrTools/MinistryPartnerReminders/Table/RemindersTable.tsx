@@ -18,7 +18,7 @@ import { headerHeight } from 'src/components/Shared/Header/ListHeader';
 import { MinistryPartnerReminderFrequencyEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { ReminderData } from '../mockData';
-import { RemindersTableRow } from './RemindersTableRow';
+import { RemindersTableRow, hideOnPhone } from './RemindersTableRow';
 
 const tableVirtuosoPadding = '62px';
 
@@ -65,7 +65,10 @@ export const RemindersTable: React.FC<RemindersTableProps> = ({
         <Table
           {...props}
           sx={{
-            '& .MuiTableCell-root': { borderBottom: 'none' },
+            '& .MuiTableCell-root': {
+              borderBottom: 'none',
+              paddingX: { xs: 1, sm: 2 },
+            },
             '& .MuiTableCell-head': {
               position: 'sticky',
               top: 0,
@@ -74,7 +77,7 @@ export const RemindersTable: React.FC<RemindersTableProps> = ({
               boxShadow: (t) => `inset 0 -1px 0 ${t.palette.divider}`,
             },
             tableLayout: 'fixed',
-            minWidth: 730,
+            minWidth: { sm: 730 },
           }}
         />
       ),
@@ -138,10 +141,16 @@ export const RemindersTable: React.FC<RemindersTableProps> = ({
       components={TableComponents}
       fixedHeaderContent={() => (
         <TableRow>
-          <TableCell sx={{ width: '35%' }}>{t('Ministry Partner')}</TableCell>
-          <TableCell sx={{ width: '20%' }}>{t('Last Gift')}</TableCell>
-          <TableCell sx={{ width: '20%' }}>{t('Last Reminder')}</TableCell>
-          <TableCell id="status-col" sx={{ width: '25%' }}>
+          <TableCell sx={{ width: { sm: '35%' } }}>
+            {t('Ministry Partner')}
+          </TableCell>
+          <TableCell sx={{ width: '20%', ...hideOnPhone }}>
+            {t('Last Gift')}
+          </TableCell>
+          <TableCell sx={{ width: '20%', ...hideOnPhone }}>
+            {t('Last Reminder')}
+          </TableCell>
+          <TableCell id="status-col" sx={{ width: { xs: 160, sm: '25%' } }}>
             {t('Reminder Status')}
           </TableCell>
         </TableRow>
