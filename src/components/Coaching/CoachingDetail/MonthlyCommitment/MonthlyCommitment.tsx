@@ -128,8 +128,8 @@ export const MonthlyCommitment: React.FC<MonthlyCommitmentProps> = ({
           </Typography>
         )}
       </Box>
-      <CardContent sx={{ overflowX: 'scroll' }}>
-        <ResponsiveContainer minWidth={600}>
+      <CardContent>
+        <ResponsiveContainer>
           {loading ? (
             <>
               <Skeleton variant="text" />
@@ -175,14 +175,14 @@ export const MonthlyCommitment: React.FC<MonthlyCommitmentProps> = ({
                 name={t('Received')}
                 dataKey="received"
                 stackId={1}
-                barSize={30}
+                maxBarSize={30}
                 fill={theme.palette.mpdxGreen.main}
               />
               <Bar
                 name={t('Committed')}
                 dataKey="committed"
                 stackId={1}
-                barSize={30}
+                maxBarSize={30}
                 fill={theme.palette.progressBarOrange.main}
               />
             </BarChart>
