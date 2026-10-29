@@ -26,11 +26,11 @@ describe('Tool-NoData', () => {
     expect(getByTestId('fixCommitmentInfo-null-state')).toBeInTheDocument();
   });
 
-  it('render text for fix mailing addresses tool', () => {
+  it('render text for mailing addresses tool', () => {
     const { getByText, getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper>
-          <NoData tool="fixMailingAddresses" />
+          <NoData tool="mailingAddresses" />
         </TestWrapper>
       </ThemeProvider>,
     );
@@ -43,7 +43,7 @@ describe('Tool-NoData', () => {
         'Contacts with new addresses or multiple primary mailing addresses will appear here.',
       ),
     ).toBeInTheDocument();
-    expect(getByTestId('fixMailingAddresses-null-state')).toBeInTheDocument();
+    expect(getByTestId('mailingAddresses-null-state')).toBeInTheDocument();
   });
 
   it('render text for fix send newsletter tool', () => {

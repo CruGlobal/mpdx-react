@@ -11,6 +11,7 @@ import {
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { evictAddressChangeHistory } from 'src/components/Shared/AddressHistoryModal/addressHistoryHelpers';
 import {
   CancelButton,
   SubmitButton,
@@ -77,7 +78,8 @@ export const MassActionsMergeModal: React.FC<MassActionsMergeModalProps> = ({
         winnersAndLosers.forEach((contact) => {
           cache.evict({ id: `Contact:${contact.loserId}` });
         });
-        cache.gc();
+        // The change history may list a merged contact
+        evictAddressChangeHistory(cache);
       },
     });
     enqueueSnackbar(t('Contacts merged!'), {

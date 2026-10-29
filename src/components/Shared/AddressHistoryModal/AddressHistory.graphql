@@ -1,0 +1,38 @@
+query AddressHistory($accountListId: ID!, $contactId: ID!) {
+  contact(accountListId: $accountListId, id: $contactId) {
+    id
+    name
+    status
+    primaryAddress {
+      id
+      street
+      city
+      state
+      postalCode
+    }
+    addressChanges {
+      ...AddressHistoryChange
+    }
+  }
+}
+
+fragment AddressHistoryChange on AddressChange {
+  id
+  date
+  street
+  city
+  state
+  postalCode
+  source
+  createdByUser {
+    id
+    firstName
+    lastName
+  }
+  previousAddress {
+    street
+    city
+    state
+    postalCode
+  }
+}

@@ -9,6 +9,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { CreateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/CreateContactAddress.generated';
 import { StatusEnum } from 'src/graphql/types.generated';
+import { createCache } from 'src/lib/apollo/cache';
 import theme from '../../../../../../../../theme';
 import { CreateContactMutation } from '../CreateContact/CreateContact.generated';
 import { CreateMultipleContacts } from './CreateMultipleContacts';
@@ -97,12 +98,15 @@ describe('CreateMultipleContacts', () => {
     const first3 = 'Cool';
 
     it('creates one contact', async () => {
+      const cache = createCache();
+      const evict = jest.spyOn(cache, 'evict');
       const { getByText, getAllByRole } = render(
         <ThemeProvider theme={theme}>
           <SnackbarProvider>
             <TestRouter router={router}>
               <GqlMockedProvider<CreateContactMocks>
                 onCall={mutationSpy}
+                cache={cache}
                 mocks={{
                   CreateContact: {
                     createContact: {
@@ -176,6 +180,12 @@ describe('CreateMultipleContacts', () => {
         contactId: 'contact-1',
         primaryAddressId: 'address-1',
       });
+      // Once for the one new primary
+      expect(
+        evict.mock.calls.filter(
+          ([options]) => options.fieldName === 'addressChangeHistory',
+        ),
+      ).toHaveLength(1);
 
       expect(router.push).toHaveBeenCalledWith({
         pathname: '/accountLists/[accountListId]/contacts',
@@ -183,6 +193,58 @@ describe('CreateMultipleContacts', () => {
           accountListId,
           filters: JSON.stringify({ ids: ['contact-1'] }),
         },
+      });
+    }, 20000);
+
+    it('drops the change history when another contact fails', async () => {
+      const cache = createCache();
+      const evict = jest.spyOn(cache, 'evict');
+      let primaryCalls = 0;
+      const { getByText, getAllByRole } = render(
+        <ThemeProvider theme={theme}>
+          <SnackbarProvider>
+            <TestRouter router={router}>
+              <GqlMockedProvider<CreateContactMocks>
+                cache={cache}
+                mocks={{
+                  CreateContact: {
+                    createContact: { contact: { id: 'contact-1' } },
+                  },
+                  CreateContactAddress: {
+                    createAddress: { address: { id: 'address-1' } },
+                  },
+                  SetContactPrimaryAddress: () => {
+                    primaryCalls += 1;
+                    if (primaryCalls > 1) {
+                      throw new Error('Server Error');
+                    }
+                    return { setContactPrimaryAddress: { addresses: [] } };
+                  },
+                }}
+              >
+                <CreateMultipleContacts
+                  accountListId={accountListId}
+                  handleClose={handleClose}
+                  rows={3}
+                />
+              </GqlMockedProvider>
+            </TestRouter>
+          </SnackbarProvider>
+        </ThemeProvider>,
+      );
+
+      // Each row has an address combobox and a status combobox
+      [0, 1].forEach((row) => {
+        userEvent.type(getAllByRole('textbox', { name: 'First' })[row], first);
+        userEvent.type(getAllByRole('textbox', { name: 'Last' })[row], last);
+        userEvent.type(getAllByRole('combobox')[row * 2], address);
+      });
+      await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
+      userEvent.click(getByText('Save'));
+
+      await waitFor(() => expect(primaryCalls).toBe(2));
+      expect(evict).toHaveBeenCalledWith({
+        fieldName: 'addressChangeHistory',
       });
     }, 20000);
 

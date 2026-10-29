@@ -56,6 +56,12 @@ const data: ContactMailingFragment = {
       },
     ],
   },
+  latestAddressChange: {
+    id: 'change-1',
+    date: '2023-01-01',
+    source: 'MPDX',
+    createdByUser: null,
+  },
 };
 
 describe('ContactDetailsTabMailing', () => {
@@ -148,5 +154,54 @@ describe('ContactDetailsTabMailing', () => {
       getByTestId('NonPrimaryAddresses'),
     );
     expect(getByTextInTestId('Orlando, FL 32832')).toBeInTheDocument();
+  });
+
+  it('opens the address history', async () => {
+    const { getByRole, findByRole } = render(
+      <TestRouter router={router}>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider>
+            <ContactDetailProvider>
+              <ContactDetailsTabMailing
+                accountListId={accountListId}
+                data={data}
+              />
+            </ContactDetailProvider>
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </TestRouter>,
+    );
+
+    userEvent.click(getByRole('button', { name: 'History' }));
+
+    expect(
+      within(await findByRole('dialog')).getByText('Address History'),
+    ).toBeInTheDocument();
+  });
+
+  it('shows who changed the primary address and when, and only for the primary', async () => {
+    const { findByText, getByText, getByTestId } = render(
+      <TestRouter router={router}>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider>
+            <ContactDetailProvider>
+              <ContactDetailsTabMailing
+                accountListId={accountListId}
+                data={data}
+              />
+            </ContactDetailProvider>
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </TestRouter>,
+    );
+
+    expect(
+      await findByText('Address changed Jan 1, 2023 · in MPDX'),
+    ).toBeInTheDocument();
+
+    userEvent.click(getByText('Show 1 More'));
+    expect(
+      within(getByTestId('NonPrimaryAddresses')).queryByText(/Address changed/),
+    ).not.toBeInTheDocument();
   });
 });
