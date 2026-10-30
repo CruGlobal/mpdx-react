@@ -46,6 +46,18 @@ const InputRow = styled(TableRow)(() => ({
   '&:last-child .MuiTableCell-root': {
     borderBottom: 'none',
   },
+  // On phones each row becomes a stacked card of labeled fields
+  [theme.breakpoints.down('sm')]: {
+    flexDirection: 'column',
+    padding: theme.spacing(2, 0),
+    borderBottom: `2px solid ${theme.palette.grey[400]}`,
+    '&:last-child': {
+      borderBottom: 'none',
+    },
+    '& .MuiTableCell-root': {
+      borderBottom: 'none',
+    },
+  },
 }));
 
 const InputCell = styled(TableCell)(() => ({
@@ -56,6 +68,25 @@ const InputCell = styled(TableCell)(() => ({
   },
   [theme.breakpoints.down('md')]: {
     minWidth: '100px',
+  },
+  [theme.breakpoints.down('sm')]: {
+    flex: 'none',
+    width: 'auto',
+    minWidth: 0,
+    padding: theme.spacing(0.5, 2),
+    '&[data-label]::before': {
+      content: 'attr(data-label)',
+      display: 'block',
+      fontWeight: 'bold',
+      marginBottom: theme.spacing(0.5),
+    },
+  },
+}));
+
+const HeaderRow = styled(TableRow)(() => ({
+  display: 'flex',
+  [theme.breakpoints.down('sm')]: {
+    display: 'none',
   },
 }));
 
@@ -294,7 +325,7 @@ export const CreateMultipleContacts = ({
             <TableContainer>
               <Table>
                 <TableHead>
-                  <TableRow sx={{ display: 'flex' }}>
+                  <HeaderRow>
                     <InputCell align="left">{t('First')}</InputCell>
                     <InputCell align="left">{t('Spouse')}</InputCell>
                     <InputCell align="left">{t('Last')}</InputCell>
@@ -302,7 +333,7 @@ export const CreateMultipleContacts = ({
                     <InputCell align="left">{t('Phone')}</InputCell>
                     <InputCell align="left">{t('Email')}</InputCell>
                     <InputCell align="left">{t('Status')}</InputCell>
-                  </TableRow>
+                  </HeaderRow>
                 </TableHead>
                 <TableBody>
                   <FieldArray
@@ -310,7 +341,7 @@ export const CreateMultipleContacts = ({
                     render={() =>
                       contacts.map((contact, index) => (
                         <InputRow key={index}>
-                          <InputCell>
+                          <InputCell data-label={t('First')}>
                             <Field name="firstName">
                               {({ field }: FieldProps) => (
                                 <TextField
@@ -333,7 +364,7 @@ export const CreateMultipleContacts = ({
                               )}
                             </Field>
                           </InputCell>
-                          <InputCell>
+                          <InputCell data-label={t('Spouse')}>
                             <Field name="spouseName">
                               {({ field }: FieldProps) => (
                                 <TextField
@@ -356,7 +387,7 @@ export const CreateMultipleContacts = ({
                               )}
                             </Field>
                           </InputCell>
-                          <InputCell>
+                          <InputCell data-label={t('Last')}>
                             <Field name="lastName">
                               {({ field }: FieldProps) => (
                                 <TextField
@@ -379,7 +410,7 @@ export const CreateMultipleContacts = ({
                               )}
                             </Field>
                           </InputCell>
-                          <InputCell>
+                          <InputCell data-label={t('Street Address')}>
                             <Field name="address">
                               {({ field }: FieldProps) => (
                                 <StreetAutocomplete
@@ -406,7 +437,7 @@ export const CreateMultipleContacts = ({
                               )}
                             </Field>
                           </InputCell>
-                          <InputCell>
+                          <InputCell data-label={t('Phone')}>
                             <Field name="phone">
                               {({ field }: FieldProps) => (
                                 <TextField
@@ -429,7 +460,7 @@ export const CreateMultipleContacts = ({
                               )}
                             </Field>
                           </InputCell>
-                          <InputCell>
+                          <InputCell data-label={t('Email')}>
                             <Field name="email">
                               {({ field }: FieldProps) => (
                                 <TextField
@@ -452,7 +483,7 @@ export const CreateMultipleContacts = ({
                               )}
                             </Field>
                           </InputCell>
-                          <InputCell>
+                          <InputCell data-label={t('Status')}>
                             <FormControl size="small" fullWidth>
                               <ContactStatusSelect
                                 role="listbox"
