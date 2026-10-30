@@ -180,9 +180,17 @@ describe('GoalsTable', () => {
     );
   });
 
+  it('renders a scroll hint above the table for phones', () => {
+    const { getByText } = renderTable();
+    expect(
+      getByText('Scroll sideways to see goal status, coach, and actions.'),
+    ).toBeInTheDocument();
+  });
+
   it('renders an empty placeholder for zero rows', () => {
-    const { getByText } = renderTable([]);
+    const { getByText, queryByText } = renderTable([]);
     expect(getByText('No goals found')).toBeInTheDocument();
+    expect(queryByText(/Scroll sideways/)).not.toBeInTheDocument();
   });
 
   it('renders a placeholder, not $0.00, for a row with no goal calculation', () => {

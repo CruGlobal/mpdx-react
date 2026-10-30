@@ -8,7 +8,9 @@ import {
   Menu,
   MenuItem,
   Stack,
+  SxProps,
   TextField,
+  Theme,
   Typography,
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
@@ -19,6 +21,19 @@ import { PrintCohortGoalsButton } from '../PrintCohortGoalsButton/PrintCohortGoa
 import { RunAndSendModal } from '../RunAndSendModal/RunAndSendModal';
 import { RunAndSendTooltip } from '../RunAndSendTooltip';
 import { useRunAndSendFlow } from '../useRunAndSendFlow';
+
+// On phones the buttons wrap onto full-width rows instead of each label wrapping.
+const actionsSx: SxProps<Theme> = (theme) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: 2,
+  [theme.breakpoints.down('sm')]: {
+    flexWrap: 'wrap',
+    '& > .MuiTypography-root': { flexBasis: '100%' },
+    '& > *': { flexGrow: 1 },
+    '& .MuiButton-root': { width: '100%', whiteSpace: 'nowrap' },
+  },
+});
 
 export const GoalsTableToolbar: React.FC = () => {
   const { t } = useTranslation();
@@ -99,7 +114,7 @@ export const GoalsTableToolbar: React.FC = () => {
         }}
       />
 
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+      <Box sx={actionsSx}>
         {hasSelection && (
           <Typography variant="body2" color="text.secondary">
             {t('{{count}} selected', { count: selectedCount })}
