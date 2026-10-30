@@ -77,6 +77,9 @@ const StyledCardsBox = styled(Box)({
   gap: theme.spacing(4),
 });
 
+// Extra room on phones to scroll the page arrows above the help button.
+const tablesSx = { mt: 2, mb: { xs: 8, sm: 3 } };
+
 export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
   const { t } = useTranslation();
   const [modalData, setModalData] = useState<TransferModalData | null>(null);
@@ -344,8 +347,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                 ))
               )}
             </Box>
-            {/* Extra room on phones to scroll the page arrows above the help button. */}
-            <SimpleScreenOnly sx={{ mt: 2, mb: { xs: 8, sm: 3 } }}>
+            <SimpleScreenOnly sx={tablesSx}>
               <Box sx={{ mb: 3 }}>
                 <TransfersTable
                   history={upcomingTransfers}
