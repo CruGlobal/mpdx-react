@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { ArrowForward, Cancel, Edit, StopCircle } from '@mui/icons-material';
 import PriorityHigh from '@mui/icons-material/PriorityHigh';
 import {
@@ -34,6 +34,29 @@ type Options = {
   t: TFunction;
   locale: string;
 };
+
+interface ActionButtonProps {
+  label: string;
+  onClick: () => void;
+  children: React.ReactNode;
+}
+
+const ActionButton: React.FC<ActionButtonProps> = ({
+  label,
+  onClick,
+  children,
+}) => (
+  <IconButton
+    aria-label={label}
+    title={label}
+    onClick={(event) => {
+      event.stopPropagation();
+      onClick();
+    }}
+  >
+    {children}
+  </IconButton>
+);
 
 export function populateTransferRows(options: Options) {
   const {
@@ -111,12 +134,12 @@ export function populateTransferRows(options: Options) {
               },
             }}
           >
-            <IconButton>
-              <PriorityHigh
-                sx={{ color: 'error.main' }}
-                titleAccess={t('Failed Transfers')}
-                onClick={() => handleFailedTransferOpen(row)}
-              />
+            <IconButton
+              aria-label={t('Failed Transfers')}
+              title={t('Failed Transfers')}
+              onClick={() => handleFailedTransferOpen(row)}
+            >
+              <PriorityHigh sx={{ color: 'error.main' }} />
             </IconButton>
           </Badge>
         ) : null}
@@ -202,90 +225,56 @@ export function populateTransferRows(options: Options) {
   };
 
   const actions: RenderCell = ({ row }) => {
-    if (row.actions === 'edit-delete') {
-      return type === TableTypeEnum.Upcoming ? (
+    if (row.actions !== 'edit-delete') {
+      return (
+        <Typography variant="body2" noWrap>
+          {row.actions}
+        </Typography>
+      );
+    }
+
+    if (type === TableTypeEnum.Upcoming) {
+      return (
         <>
-          <IconButton>
-            <Edit
-              titleAccess={t('Edit')}
-              onClick={() => handleEditModalOpen(row)}
-            />
-          </IconButton>
-          <IconButton>
-            <Cancel
-              titleAccess={t('Cancel Transfer')}
-              onClick={() => {
-                handleDeleteModalOpen(row);
-              }}
-              sx={{ color: 'error.main' }}
-            />
-          </IconButton>
-        </>
-      ) : row.endDate ? (
-        <>
-          <IconButton
-            title={t('Edit End Date')}
-            onClick={(event) => {
-              event.stopPropagation();
-              handleCalendarOpen(row);
-            }}
+          <ActionButton
+            label={t('Edit')}
+            onClick={() => handleEditModalOpen(row)}
           >
-            <Icon
-              className="material-symbols-outlined"
-              sx={{
-                fontSize: 24,
-                color: 'mpdxGrayMedium',
-              }}
-            >
-              edit_calendar
-            </Icon>
-          </IconButton>
-          <IconButton>
-            <StopCircle
-              titleAccess={t('Stop Transfer')}
-              sx={{ color: 'error.main' }}
-              onClick={() => {
-                handleDeleteModalOpen(row);
-              }}
-            />
-          </IconButton>
-        </>
-      ) : (
-        <>
-          <IconButton
-            title={t('Add End Date')}
-            onClick={(event) => {
-              event.stopPropagation();
-              handleCalendarOpen(row);
-            }}
+            <Edit />
+          </ActionButton>
+          <ActionButton
+            label={t('Cancel Transfer')}
+            onClick={() => handleDeleteModalOpen(row)}
           >
-            <Icon
-              className="material-symbols-outlined"
-              sx={{
-                fontSize: 24,
-                color: 'mpdxGrayMedium',
-              }}
-            >
-              calendar_add_on
-            </Icon>
-          </IconButton>
-          <IconButton>
-            <StopCircle
-              titleAccess={t('Stop Transfer')}
-              sx={{ color: 'error.main' }}
-              onClick={() => {
-                handleDeleteModalOpen(row);
-              }}
-            />
-          </IconButton>
+            <Cancel sx={{ color: 'error.main' }} />
+          </ActionButton>
         </>
       );
     }
 
     return (
-      <Typography variant="body2" noWrap>
-        {row.actions}
-      </Typography>
+      <>
+        <ActionButton
+          label={row.endDate ? t('Edit End Date') : t('Add End Date')}
+          onClick={() => handleCalendarOpen(row)}
+        >
+          <Icon
+            className="material-symbols-outlined"
+            sx={{
+              fontSize: 24,
+              color: 'mpdxGrayMedium',
+            }}
+          >
+            {row.endDate ? 'edit_calendar' : 'calendar_add_on'}
+          </Icon>
+        </ActionButton>
+        <ActionButton
+          label={t('Stop Transfer')}
+          onClick={() => handleDeleteModalOpen(row)}
+        >
+          <StopCircle sx={{ color: 'error.main' }} />
+        </ActionButton>
+      </>
     );
   };
 
