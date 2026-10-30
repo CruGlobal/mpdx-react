@@ -22,6 +22,7 @@ import { useSnackbar } from 'notistack';
 import { TFunction, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { CustomDateField } from 'src/components/Shared/DateTimePickers/CustomDateField';
+import { DialogForm } from 'src/components/Shared/Forms/DialogForm';
 import {
   CancelButton,
   SubmitButton,
@@ -362,7 +363,6 @@ export const TransferModal: React.FC<TransferModalProps> = ({
           isValid,
           touched,
           errors,
-          handleSubmit,
           handleChange,
           setFieldValue,
           setFieldTouched,
@@ -394,7 +394,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
             toCents(amount) > toCents(availableBalance(fund) + savedAmount);
 
           return (
-            <form onSubmit={handleSubmit} noValidate>
+            <DialogForm noValidate>
               <DialogContent dividers>
                 <Box sx={{ mb: 3 }}>
                   <Typography variant="h6" gutterBottom>
@@ -726,7 +726,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                     : t('Submit')}
                 </SubmitButton>
               </DialogActions>
-            </form>
+            </DialogForm>
           );
         }}
       </Formik>
