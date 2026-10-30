@@ -101,13 +101,17 @@ export const HouseholdExpensesHeader: React.FC = () => {
     }
   };
 
+  // setDirectInput's mutation failure is already surfaced via the global
+  // Apollo error link; catch it here too so a rejection doesn't also surface
+  // as an unhandled promise rejection, which RUM attaches to the triggering
+  // click as a frustration signal (safety net monitor 312883915).
   const handleUsePaycheck = () => {
-    setDirectInput(null);
+    setDirectInput(null).catch(() => {});
     setEditing(false);
   };
 
   const handleUseCategoriesTotal = () => {
-    setDirectInput(categoriesTotal);
+    setDirectInput(categoriesTotal).catch(() => {});
     setEditing(false);
   };
 
@@ -117,7 +121,7 @@ export const HouseholdExpensesHeader: React.FC = () => {
   };
 
   const handleDirectInputSave = () => {
-    setDirectInput(directInputFieldValue);
+    setDirectInput(directInputFieldValue).catch(() => {});
     setEditing(false);
   };
 
