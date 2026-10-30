@@ -32,5 +32,10 @@ export const StyledFundDataGrid = styled(DataGrid)(({ theme }) => ({
       {
         backgroundColor: theme.palette.mpdxGrayLight.main,
       },
+    // The solid background would otherwise hide the row's hover tint.
+    '.MuiDataGrid-row:hover .MuiDataGrid-cell[data-field="actions"]': {
+      backgroundColor: theme.palette.background.paper,
+      backgroundImage: `linear-gradient(${theme.palette.action.hover}, ${theme.palette.action.hover})`,
+    },
   },
 }));

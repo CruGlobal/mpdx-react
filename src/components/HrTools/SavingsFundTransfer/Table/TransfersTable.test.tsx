@@ -35,7 +35,17 @@ jest.mock('notistack', () => ({
 }));
 
 jest.mock('../DeleteTransferModal/DynamicDeleteTransferModal', () => ({
-  DynamicDeleteTransferModal: () => <div data-testid="delete-modal" />,
+  DynamicDeleteTransferModal: ({
+    transfer,
+    type,
+  }: {
+    transfer: Transfers;
+    type: string;
+  }) => (
+    <div data-testid="delete-modal">
+      {transfer.id} {type}
+    </div>
+  ),
 }));
 
 jest.mock('../FailedTransferModal/DynamicFailedTransferModal', () => ({
@@ -427,8 +437,7 @@ describe('TransferHistoryTable', () => {
     const failedButton = await findByRole('button', {
       name: 'Failed Transfers',
     });
-    const badge = failedButton.closest<HTMLElement>('.MuiBadge-root')!;
-    expect(within(badge).getByText('2')).toBeInTheDocument();
+    expect(getByText('2', { selector: '.MuiBadge-badge' })).toBeInTheDocument();
 
     userEvent.click(failedButton);
     expect(await findByTestId('failed-modal')).toBeInTheDocument();
@@ -459,19 +468,39 @@ describe('TransferHistoryTable', () => {
       expect(await findByTestId('delete-modal')).toBeInTheDocument();
     });
 
-    it('opens the edit modal and the cancel modal for an upcoming transfer', async () => {
-      const { findAllByRole, getAllByRole, findByTestId } = render(
+    it('opens the edit modal with the clicked transfer', async () => {
+      const { findAllByRole } = render(
         <TestComponent type={TableTypeEnum.Upcoming} />,
       );
 
       const [editButton] = await findAllByRole('button', { name: 'Edit' });
+      const rowId = editButton.closest('[role="row"]')?.getAttribute('data-id');
       userEvent.click(editButton);
+
       expect(handleOpenMock).toHaveBeenCalledWith(
-        expect.objectContaining({ type: TransferTypeEnum.Edit }),
+        expect.objectContaining({
+          type: TransferTypeEnum.Edit,
+          transfer: expect.objectContaining({ id: rowId }),
+        }),
+      );
+    });
+
+    it('opens the cancel modal with the clicked transfer', async () => {
+      const { findAllByRole, findByTestId } = render(
+        <TestComponent type={TableTypeEnum.Upcoming} />,
       );
 
-      userEvent.click(getAllByRole('button', { name: 'Cancel Transfer' })[0]);
-      expect(await findByTestId('delete-modal')).toBeInTheDocument();
+      const [cancelButton] = await findAllByRole('button', {
+        name: 'Cancel Transfer',
+      });
+      const rowId = cancelButton
+        .closest('[role="row"]')
+        ?.getAttribute('data-id');
+      userEvent.click(cancelButton);
+
+      expect(await findByTestId('delete-modal')).toHaveTextContent(
+        `${rowId} cancel`,
+      );
     });
   });
 });
