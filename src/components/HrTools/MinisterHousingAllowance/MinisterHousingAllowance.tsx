@@ -14,6 +14,7 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { PanelTypeEnum } from '../Shared/CalculationReports/Shared/sharedTypes';
+import { pageContainerSx } from '../Shared/pageContainerSx';
 import { EligibleDisplay } from './MainPages/EligibleDisplay';
 import { NoRequestsDisplay } from './MainPages/NoRequestsDisplay';
 import {
@@ -25,9 +26,6 @@ import { useMinisterHousingAllowance } from './Shared/Context/MinisterHousingAll
 import { getRequestUrl } from './Shared/Helper/getRequestUrl';
 import { CurrentBoardApproved } from './SharedComponents/CurrentBoardApproved';
 import { CurrentRequest } from './SharedComponents/CurrentRequest';
-
-// width auto lets the box fit beside the margin instead of overflowing.
-const containerSx = { ml: { xs: 0, sm: 5 }, width: 'auto' };
 
 export const mainContentWidth = theme.spacing(85);
 
@@ -189,7 +187,7 @@ export const MinisterHousingAllowanceReport = () => {
       sidebarTitle={t('Your MHA')}
       hasCurrentRequestPending={isCurrentRequestPending}
       mainContent={
-        <Container sx={containerSx}>
+        <Container sx={pageContainerSx}>
           {requestsError ? (
             <Notification type="error" message={requestsError.message} />
           ) : loading ? (
