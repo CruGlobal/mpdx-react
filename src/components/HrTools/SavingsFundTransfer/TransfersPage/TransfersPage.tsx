@@ -344,7 +344,8 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                 ))
               )}
             </Box>
-            <SimpleScreenOnly sx={{ mt: 2, mb: 3 }}>
+            {/* Extra room on phones to scroll the page arrows above the help button. */}
+            <SimpleScreenOnly sx={{ mt: 2, mb: { xs: 8, sm: 3 } }}>
               <Box sx={{ mb: 3 }}>
                 <TransfersTable
                   history={upcomingTransfers}

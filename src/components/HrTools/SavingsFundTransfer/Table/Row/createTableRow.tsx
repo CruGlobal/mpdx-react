@@ -111,12 +111,12 @@ export function populateTransferRows(options: Options) {
               },
             }}
           >
-            <IconButton>
-              <PriorityHigh
-                sx={{ color: 'error.main' }}
-                titleAccess={t('Failed Transfers')}
-                onClick={() => handleFailedTransferOpen(row)}
-              />
+            <IconButton
+              aria-label={t('Failed Transfers')}
+              title={t('Failed Transfers')}
+              onClick={() => handleFailedTransferOpen(row)}
+            >
+              <PriorityHigh sx={{ color: 'error.main' }} />
             </IconButton>
           </Badge>
         ) : null}
@@ -205,20 +205,19 @@ export function populateTransferRows(options: Options) {
     if (row.actions === 'edit-delete') {
       return type === TableTypeEnum.Upcoming ? (
         <>
-          <IconButton>
-            <Edit
-              titleAccess={t('Edit')}
-              onClick={() => handleEditModalOpen(row)}
-            />
+          <IconButton
+            aria-label={t('Edit')}
+            title={t('Edit')}
+            onClick={() => handleEditModalOpen(row)}
+          >
+            <Edit />
           </IconButton>
-          <IconButton>
-            <Cancel
-              titleAccess={t('Cancel Transfer')}
-              onClick={() => {
-                handleDeleteModalOpen(row);
-              }}
-              sx={{ color: 'error.main' }}
-            />
+          <IconButton
+            aria-label={t('Cancel Transfer')}
+            title={t('Cancel Transfer')}
+            onClick={() => handleDeleteModalOpen(row)}
+          >
+            <Cancel sx={{ color: 'error.main' }} />
           </IconButton>
         </>
       ) : row.endDate ? (
@@ -240,14 +239,12 @@ export function populateTransferRows(options: Options) {
               edit_calendar
             </Icon>
           </IconButton>
-          <IconButton>
-            <StopCircle
-              titleAccess={t('Stop Transfer')}
-              sx={{ color: 'error.main' }}
-              onClick={() => {
-                handleDeleteModalOpen(row);
-              }}
-            />
+          <IconButton
+            aria-label={t('Stop Transfer')}
+            title={t('Stop Transfer')}
+            onClick={() => handleDeleteModalOpen(row)}
+          >
+            <StopCircle sx={{ color: 'error.main' }} />
           </IconButton>
         </>
       ) : (
@@ -269,14 +266,12 @@ export function populateTransferRows(options: Options) {
               calendar_add_on
             </Icon>
           </IconButton>
-          <IconButton>
-            <StopCircle
-              titleAccess={t('Stop Transfer')}
-              sx={{ color: 'error.main' }}
-              onClick={() => {
-                handleDeleteModalOpen(row);
-              }}
-            />
+          <IconButton
+            aria-label={t('Stop Transfer')}
+            title={t('Stop Transfer')}
+            onClick={() => handleDeleteModalOpen(row)}
+          >
+            <StopCircle sx={{ color: 'error.main' }} />
           </IconButton>
         </>
       );

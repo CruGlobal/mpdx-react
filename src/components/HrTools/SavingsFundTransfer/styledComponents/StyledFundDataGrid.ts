@@ -11,4 +11,26 @@ export const StyledFundDataGrid = styled(DataGrid)(({ theme }) => ({
     textOverflow: 'ellipsis',
     alignContent: 'center',
   },
+  // On phones the table scrolls sideways, so keep the Actions column pinned
+  // to the right edge where it can always be tapped.
+  [theme.breakpoints.down('sm')]: {
+    '.MuiDataGrid-columnHeader[data-field="actions"], .MuiDataGrid-cell[data-field="actions"]':
+      {
+        position: 'sticky',
+        right: 0,
+        // Same layers the grid uses for its own pinned columns.
+        zIndex: 30,
+        backgroundColor: theme.palette.background.paper,
+        // A shadow instead of a border, so the two buttons still fit the cell.
+        boxShadow: `inset 2px 0 0 ${theme.palette.grey[400]}`,
+      },
+    // Keeps the other columns' separator lines from drawing over the header.
+    '.MuiDataGrid-columnHeader[data-field="actions"]': {
+      zIndex: 40,
+    },
+    '.MuiDataGrid-row:nth-of-type(2n + 1) .MuiDataGrid-cell[data-field="actions"]':
+      {
+        backgroundColor: theme.palette.mpdxGrayLight.main,
+      },
+  },
 }));

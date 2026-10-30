@@ -13,6 +13,7 @@ import {
   ScheduleEnum,
   StatusEnum,
   TableTypeEnum,
+  TransferTypeEnum,
   Transfers,
   mockData,
 } from '../mockData';
@@ -56,10 +57,12 @@ const mockHistory: Transfers[] = [
 
 interface TestComponentProps {
   history?: Transfers[];
+  type?: TableTypeEnum;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   history = mockHistory,
+  type = TableTypeEnum.History,
 }) => {
   return (
     <SnackbarProvider>
@@ -68,7 +71,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
           <GqlMockedProvider onCall={mutationSpy}>
             <TransfersTable
               history={history}
-              type={TableTypeEnum.History}
+              type={type}
               emptyPlaceholder={<span>Empty Table</span>}
               handleOpenTransferModal={handleOpenMock}
             />
@@ -139,7 +142,7 @@ describe('TransferHistoryTable', () => {
       within(actionCell).getByRole('button', { name: 'Add End Date' }),
     ).toBeInTheDocument();
     expect(
-      within(actionCell).getByRole('img', { name: 'Stop Transfer' }),
+      within(actionCell).getByRole('button', { name: 'Stop Transfer' }),
     ).toBeInTheDocument();
   });
 
@@ -199,7 +202,7 @@ describe('TransferHistoryTable', () => {
       const { getByRole, findByRole } = render(<TestComponent />);
 
       const iconRow = getByRole('row', {
-        name: 'Savings Account Arrow Primary Account $2,500.00 One Time pending Sep 26, 2023 Reimbursements Stop Transfer',
+        name: 'Savings Account Arrow Primary Account $2,500.00 One Time pending Sep 26, 2023 Reimbursements',
       });
       const cells = within(iconRow).getAllByRole('gridcell');
       const actionCell = cells[8];
@@ -217,7 +220,7 @@ describe('TransferHistoryTable', () => {
       const { getByRole, findByRole } = render(<TestComponent />);
 
       const iconRow = getByRole('row', {
-        name: 'Savings Account Arrow Primary Account $2,500.00 One Time pending Sep 26, 2023 Reimbursements Stop Transfer',
+        name: 'Savings Account Arrow Primary Account $2,500.00 One Time pending Sep 26, 2023 Reimbursements',
       });
       const cells = within(iconRow).getAllByRole('gridcell');
       const actionCell = cells[8];
@@ -243,7 +246,7 @@ describe('TransferHistoryTable', () => {
     const { getByRole, findByRole, findByText } = render(<TestComponent />);
 
     const iconRow = getByRole('row', {
-      name: 'Primary Account Arrow Savings Account $1,200.00 Monthly ongoing Sep 25, 2023 Sep 25, 2025 Long-term savings Stop Transfer',
+      name: 'Primary Account Arrow Savings Account $1,200.00 Monthly ongoing Sep 25, 2023 Sep 25, 2025 Long-term savings',
     });
     const cells = within(iconRow).getAllByRole('gridcell');
     const actionCell = cells[8];
@@ -273,7 +276,7 @@ describe('TransferHistoryTable', () => {
     const { getByRole, findByRole } = render(<TestComponent />);
 
     const iconRow = getByRole('row', {
-      name: 'Primary Account Arrow Savings Account $1,200.00 Monthly ongoing Sep 25, 2023 Sep 25, 2025 Long-term savings Stop Transfer',
+      name: 'Primary Account Arrow Savings Account $1,200.00 Monthly ongoing Sep 25, 2023 Sep 25, 2025 Long-term savings',
     });
     const cells = within(iconRow).getAllByRole('gridcell');
     const actionCell = cells[8];
@@ -398,7 +401,7 @@ describe('TransferHistoryTable', () => {
   });
 
   it('opens the failed transfer modal for a row with failures and no completed transfers', async () => {
-    const { findByTitle, findByTestId, getByText } = render(
+    const { findByRole, findByTestId, getByText } = render(
       <TestComponent
         history={[
           {
@@ -421,12 +424,54 @@ describe('TransferHistoryTable', () => {
       />,
     );
 
-    const failedIcon = await findByTitle('Failed Transfers');
-    const badge = failedIcon.closest<HTMLElement>('.MuiBadge-root')!;
+    const failedButton = await findByRole('button', {
+      name: 'Failed Transfers',
+    });
+    const badge = failedButton.closest<HTMLElement>('.MuiBadge-root')!;
     expect(within(badge).getByText('2')).toBeInTheDocument();
 
-    userEvent.click(failedIcon);
+    userEvent.click(failedButton);
     expect(await findByTestId('failed-modal')).toBeInTheDocument();
     expect(getByText('$0.00')).toBeInTheDocument();
+  });
+
+  describe('action buttons', () => {
+    it('opens the stop modal when the Stop Transfer button is tapped outside the icon', async () => {
+      const { findAllByRole, findByTestId } = render(<TestComponent />);
+
+      const [stopButton] = await findAllByRole('button', {
+        name: 'Stop Transfer',
+      });
+      userEvent.click(stopButton);
+
+      expect(await findByTestId('delete-modal')).toBeInTheDocument();
+    });
+
+    it('opens the stop modal from the keyboard', async () => {
+      const { findAllByRole, findByTestId } = render(<TestComponent />);
+
+      const [stopButton] = await findAllByRole('button', {
+        name: 'Stop Transfer',
+      });
+      stopButton.focus();
+      userEvent.keyboard('{Enter}');
+
+      expect(await findByTestId('delete-modal')).toBeInTheDocument();
+    });
+
+    it('opens the edit modal and the cancel modal for an upcoming transfer', async () => {
+      const { findAllByRole, getAllByRole, findByTestId } = render(
+        <TestComponent type={TableTypeEnum.Upcoming} />,
+      );
+
+      const [editButton] = await findAllByRole('button', { name: 'Edit' });
+      userEvent.click(editButton);
+      expect(handleOpenMock).toHaveBeenCalledWith(
+        expect.objectContaining({ type: TransferTypeEnum.Edit }),
+      );
+
+      userEvent.click(getAllByRole('button', { name: 'Cancel Transfer' })[0]);
+      expect(await findByTestId('delete-modal')).toBeInTheDocument();
+    });
   });
 });
