@@ -6,6 +6,7 @@ import { useSnackbar } from 'notistack';
 import { TFunction, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useCreatePersonMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal.generated';
+import { DialogForm } from 'src/components/Shared/Forms/DialogForm';
 import {
   CancelButton,
   SubmitButton,
@@ -129,13 +130,12 @@ const CreateContact = ({
         values: { name },
         handleChange,
         handleBlur,
-        handleSubmit,
         isSubmitting,
         isValid,
         errors,
         touched,
       }): ReactElement => (
-        <form onSubmit={handleSubmit} noValidate>
+        <DialogForm noValidate>
           <DialogContent dividers>
             <Grid container>
               <Grid size={12}>
@@ -166,7 +166,7 @@ const CreateContact = ({
               {t('Save')}
             </SubmitButton>
           </DialogActions>
-        </form>
+        </DialogForm>
       )}
     </Formik>
   );

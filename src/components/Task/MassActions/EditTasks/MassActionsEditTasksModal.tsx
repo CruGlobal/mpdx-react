@@ -13,6 +13,7 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { DateTimeFieldPair } from 'src/components/Shared/DateTimePickers/DateTimeFieldPair';
+import { DialogForm } from 'src/components/Shared/Forms/DialogForm';
 import {
   CancelButton,
   SubmitButton,
@@ -151,7 +152,6 @@ export const MassActionsEditTasksModal: React.FC<
             body,
           },
           handleChange,
-          handleSubmit,
           handleBlur,
           setFieldValue,
           isSubmitting,
@@ -159,7 +159,7 @@ export const MassActionsEditTasksModal: React.FC<
           touched,
           errors,
         }): ReactElement => (
-          <form onSubmit={handleSubmit} noValidate data-testid="EditTasksModal">
+          <DialogForm noValidate data-testid="EditTasksModal">
             <DialogContent dividers>
               <IncompleteWarning
                 selectedIdCount={selectedIdCount}
@@ -293,7 +293,7 @@ export const MassActionsEditTasksModal: React.FC<
                 {t('Save')}
               </SubmitButton>
             </DialogActions>
-          </form>
+          </DialogForm>
         )}
       </Formik>
     </Modal>
