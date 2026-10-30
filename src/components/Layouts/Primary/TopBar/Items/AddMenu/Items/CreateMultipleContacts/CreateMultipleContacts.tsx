@@ -48,8 +48,11 @@ const InputRow = styled(TableRow)(() => ({
   // On phones each row becomes a stacked card of labeled fields
   [theme.breakpoints.down('sm')]: {
     flexDirection: 'column',
-    padding: theme.spacing(1, 0),
-    borderBottom: `1px solid ${theme.palette.divider}`,
+    padding: theme.spacing(2, 0),
+    borderBottom: `2px solid ${theme.palette.grey[400]}`,
+    '&:last-child': {
+      borderBottom: 'none',
+    },
     '& .MuiTableCell-root': {
       borderBottom: 'none',
     },
