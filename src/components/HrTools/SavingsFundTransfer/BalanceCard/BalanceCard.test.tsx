@@ -309,6 +309,43 @@ describe('BalanceCard', () => {
         await findByRole('button', { name: /transfer from/i }),
       ).toBeDisabled();
     });
+
+    it('enables transfer from when the API has money available below the floor', async () => {
+      const { findByRole } = render(
+        <Components
+          fund={{
+            ...defaultFund,
+            endBalance: -1000,
+            deficitLimit: 1000,
+            availableBalance: 200,
+          }}
+        />,
+      );
+
+      expect(
+        await findByRole('button', { name: /transfer from/i }),
+      ).toBeEnabled();
+    });
+
+    it('disables transfer from for less than a cent available', async () => {
+      const { findByRole } = render(
+        <Components fund={{ ...defaultFund, availableBalance: 0.004 }} />,
+      );
+
+      expect(
+        await findByRole('button', { name: /transfer from/i }),
+      ).toBeDisabled();
+    });
+
+    it('enables transfer from for one cent available', async () => {
+      const { findByRole } = render(
+        <Components fund={{ ...defaultFund, availableBalance: 0.01 }} />,
+      );
+
+      expect(
+        await findByRole('button', { name: /transfer from/i }),
+      ).toBeEnabled();
+    });
   });
 
   describe('HR-managed funds', () => {
