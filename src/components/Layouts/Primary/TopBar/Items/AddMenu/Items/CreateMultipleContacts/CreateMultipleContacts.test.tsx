@@ -56,6 +56,37 @@ describe('CreateMultipleContacts', () => {
     expect(queryByText('Email')).toBeInTheDocument();
   });
 
+  it('labels each field cell for the stacked phone layout', () => {
+    const { getAllByRole } = render(
+      <ThemeProvider theme={theme}>
+        <SnackbarProvider>
+          <TestRouter router={router}>
+            <GqlMockedProvider>
+              <CreateMultipleContacts
+                accountListId={accountListId}
+                handleClose={handleClose}
+                rows={1}
+              />
+            </GqlMockedProvider>
+          </TestRouter>
+        </SnackbarProvider>
+      </ThemeProvider>,
+    );
+    const bodyRow = getAllByRole('row')[1];
+    const labels = Array.from(bodyRow.querySelectorAll('td')).map((cell) =>
+      cell.getAttribute('data-label'),
+    );
+    expect(labels).toEqual([
+      'First',
+      'Spouse',
+      'Last',
+      'Street Address',
+      'Phone',
+      'Email',
+      'Status',
+    ]);
+  });
+
   it('closes menu', () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
