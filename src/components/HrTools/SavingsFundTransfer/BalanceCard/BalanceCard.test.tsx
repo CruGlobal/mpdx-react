@@ -310,7 +310,7 @@ describe('BalanceCard', () => {
       ).toBeDisabled();
     });
 
-    it('enables transfer from when the API has money available below the floor', async () => {
+    it('enables transfer from when the API has money available at the bottom of the deficit', async () => {
       const { findByRole } = render(
         <Components
           fund={{
