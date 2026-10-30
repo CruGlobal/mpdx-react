@@ -10,6 +10,10 @@ export const ToolsGridContainer = styled(Grid)(({ theme }) => ({
   // every breakpoint or the container collapses to content width inside the
   // tools' centering flex Container
   width: '100%',
+  [theme.breakpoints.down('sm')]: {
+    paddingLeft: 0,
+    paddingRight: 0,
+  },
 }));
 
 export const LoadingBox = styled(Box)(() => ({

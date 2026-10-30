@@ -42,6 +42,7 @@ import { ContactAddressFragment } from './GetInvalidAddresses.generated';
 const ContactHeader = styled(CardHeader)(() => ({
   '.MuiCardHeader-action': {
     alignSelf: 'center',
+    marginLeft: theme.spacing(1),
   },
 }));
 
