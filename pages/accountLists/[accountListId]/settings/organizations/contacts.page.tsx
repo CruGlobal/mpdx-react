@@ -7,7 +7,6 @@ import {
   TextField,
   Tooltip,
 } from '@mui/material';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { Contacts } from 'src/components/Settings/Organization/Contacts/Contacts';
@@ -24,7 +23,6 @@ import { OrganizationsContextProvider } from './OrganizationsContext';
 const OrganizationsContacts = (): ReactElement => {
   const { t } = useTranslation();
   const [search, setSearch] = useState('');
-  const isNarrowScreen = useMediaQuery('(max-width:600px)');
   const [selectedOrganization, setSelectedOrganization] = useState<
     SettingsOrganizationFragment | null | undefined
   >();
@@ -58,7 +56,12 @@ const OrganizationsContacts = (): ReactElement => {
           </HeaderAndDropdown>
         )}
         {organizations?.length && (
-          <HeaderAndDropdown>
+          <HeaderAndDropdown
+            sx={{
+              flexDirection: { xs: 'column', sm: 'row' },
+              alignItems: { xs: 'stretch', sm: 'center' },
+            }}
+          >
             <Box>
               {selectedOrganization && (
                 <Tooltip
@@ -72,8 +75,9 @@ const OrganizationsContacts = (): ReactElement => {
                     onChange={(e) => setSearch(e.target.value)}
                     fullWidth
                     inputProps={{ 'aria-label': 'Search Contacts' }}
-                    style={{
-                      width: isNarrowScreen ? '150px' : '250px',
+                    sx={{
+                      width: { xs: '100%', sm: 250 },
+                      mb: { xs: 2, sm: 0 },
                     }}
                     InputProps={{
                       startAdornment: (
@@ -88,9 +92,7 @@ const OrganizationsContacts = (): ReactElement => {
             </Box>
             <Box>
               <OrganizationAutocomplete
-                style={{
-                  width: isNarrowScreen ? '150px' : '350px',
-                }}
+                sx={{ width: { xs: '100%', sm: 350 } }}
                 autoHighlight
                 organizations={organizations}
                 textFieldLabel={t('Filter by Organization')}
