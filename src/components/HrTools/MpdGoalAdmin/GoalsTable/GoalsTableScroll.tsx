@@ -13,6 +13,8 @@ const pinnedCells =
 /** On phones, pins the checkbox and Name columns while the rest scroll sideways. */
 const PinnedColumnsContainer = styled(TableContainer)(({ theme }) => ({
   [theme.breakpoints.down('sm')]: {
+    // Room to scroll the page controls up above the help button in the corner.
+    marginBottom: theme.spacing(8),
     '.MuiTableCell-root': {
       paddingLeft: theme.spacing(1),
       paddingRight: theme.spacing(1),
