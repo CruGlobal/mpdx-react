@@ -3,4 +3,7 @@ import { styled } from '@mui/material/styles';
 
 export const LargeButton = styled(Button)(({ theme }) => ({
   fontSize: theme.spacing(4),
+  [theme.breakpoints.down('sm')]: {
+    fontSize: theme.spacing(3),
+  },
 }));
