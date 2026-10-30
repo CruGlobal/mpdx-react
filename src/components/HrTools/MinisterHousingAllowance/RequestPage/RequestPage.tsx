@@ -25,7 +25,8 @@ import { Calculation } from '../Steps/StepThree/Calculation';
 import { RentOwn } from '../Steps/StepTwo/RentOwn';
 
 const permissionDeniedWidth = theme.spacing(100);
-const containerSx = { ml: { xs: 0, sm: 5 } };
+// width auto lets the box fit beside the margin instead of overflowing.
+const containerSx = { ml: { xs: 0, sm: 5 }, width: 'auto' };
 
 export interface FormValues {
   rentOrOwn: MhaRentOrOwnEnum | undefined;

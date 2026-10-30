@@ -10,6 +10,9 @@ import { EligibleDisplay } from './MainPages/EligibleDisplay';
 import { useAdditionalSalaryRequest } from './Shared/AdditionalSalaryRequestContext';
 import { CurrentRequest } from './SharedComponents/CurrentRequest';
 
+// width auto lets the box fit beside the margin instead of overflowing.
+const containerSx = { ml: { xs: 0, sm: 5 }, width: 'auto' };
+
 export const mainContentWidth = theme.spacing(85);
 
 export interface CompleteFormValues {
@@ -59,7 +62,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
       isSidebarOpen={isDrawerOpen}
       sidebarAriaLabel={t('Additional Salary Request Sections')}
       mainContent={
-        <Container sx={{ ml: { xs: 0, sm: 5 } }}>
+        <Container sx={containerSx}>
           {requestLoading ? (
             <AdditionalSalaryRequestSkeleton />
           ) : (

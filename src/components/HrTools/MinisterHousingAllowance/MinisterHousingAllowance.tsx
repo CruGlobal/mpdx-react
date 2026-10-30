@@ -26,6 +26,9 @@ import { getRequestUrl } from './Shared/Helper/getRequestUrl';
 import { CurrentBoardApproved } from './SharedComponents/CurrentBoardApproved';
 import { CurrentRequest } from './SharedComponents/CurrentRequest';
 
+// width auto lets the box fit beside the margin instead of overflowing.
+const containerSx = { ml: { xs: 0, sm: 5 }, width: 'auto' };
+
 export const mainContentWidth = theme.spacing(85);
 
 export const MinisterHousingAllowanceReport = () => {
@@ -186,7 +189,7 @@ export const MinisterHousingAllowanceReport = () => {
       sidebarTitle={t('Your MHA')}
       hasCurrentRequestPending={isCurrentRequestPending}
       mainContent={
-        <Container sx={{ ml: { xs: 0, sm: 5 } }}>
+        <Container sx={containerSx}>
           {requestsError ? (
             <Notification type="error" message={requestsError.message} />
           ) : loading ? (
