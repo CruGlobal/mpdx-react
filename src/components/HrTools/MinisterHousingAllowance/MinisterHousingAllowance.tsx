@@ -14,6 +14,7 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { PanelTypeEnum } from '../Shared/CalculationReports/Shared/sharedTypes';
+import { pageContainerSx } from '../Shared/pageContainerSx';
 import { EligibleDisplay } from './MainPages/EligibleDisplay';
 import { NoRequestsDisplay } from './MainPages/NoRequestsDisplay';
 import {
@@ -186,7 +187,7 @@ export const MinisterHousingAllowanceReport = () => {
       sidebarTitle={t('Your MHA')}
       hasCurrentRequestPending={isCurrentRequestPending}
       mainContent={
-        <Container sx={{ ml: { xs: 0, sm: 5 } }}>
+        <Container sx={pageContainerSx}>
           {requestsError ? (
             <Notification type="error" message={requestsError.message} />
           ) : loading ? (
