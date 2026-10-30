@@ -35,6 +35,11 @@ const PinnedColumnsContainer = styled(TableContainer)(({ theme }) => ({
       minWidth: 120,
       boxShadow: `inset -1px 0 0 ${theme.palette.divider}`,
     },
+    // Keeps rows per page and the page controls in view while the table scrolls.
+    '.MuiTablePagination-root': {
+      position: 'sticky',
+      left: 0,
+    },
     // The pinned cells' solid background would otherwise hide the row tint.
     [`.MuiTableRow-hover:hover > .MuiTableCell-root:nth-of-type(-n + 2)`]: {
       backgroundImage: `linear-gradient(${theme.palette.action.hover}, ${theme.palette.action.hover})`,
