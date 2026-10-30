@@ -10,6 +10,7 @@ import {
   getIconColorForFundType,
   getIconForFundType,
 } from '../../../Reports/StaffExpenseReport/Helpers/fundTypeHelpers';
+import { availableBalance, toCents } from '../Helper/availableBalance';
 import { isHrManagedFund } from '../Helper/isHrManagedFund';
 import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
 import { TransferModalData } from '../mockData';
@@ -129,7 +130,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
         ) : (
           <Button
             onClick={handleTransferFrom}
-            disabled={fund.endBalance <= fund.deficitLimit}
+            disabled={toCents(availableBalance(fund)) <= 0}
             fullWidth
           >
             <Outbox fontSize="small" sx={{ mr: 0.5 }} />

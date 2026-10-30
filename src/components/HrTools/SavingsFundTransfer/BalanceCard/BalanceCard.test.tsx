@@ -246,6 +246,71 @@ describe('BalanceCard', () => {
     expect(transferFromButton).toBeDisabled();
   });
 
+  describe('deficit limit', () => {
+    // SAA stores the limit as a magnitude, so both signs mean the same floor
+    it.each([1000, -1000])(
+      'enables transfer from for a positive balance under a %s limit',
+      async (deficitLimit) => {
+        const { findByRole } = render(
+          <Components
+            fund={{ ...defaultFund, endBalance: 800, deficitLimit }}
+          />,
+        );
+
+        expect(
+          await findByRole('button', { name: /transfer from/i }),
+        ).toBeEnabled();
+      },
+    );
+
+    it.each([1000, -1000])(
+      'enables transfer from for a balance inside the allowed %s deficit',
+      async (deficitLimit) => {
+        const { findByRole } = render(
+          <Components
+            fund={{ ...defaultFund, endBalance: -500, deficitLimit }}
+          />,
+        );
+
+        expect(
+          await findByRole('button', { name: /transfer from/i }),
+        ).toBeEnabled();
+      },
+    );
+
+    it.each([1000, -1000])(
+      'disables transfer from at the bottom of the allowed %s deficit',
+      async (deficitLimit) => {
+        const { findByRole } = render(
+          <Components
+            fund={{ ...defaultFund, endBalance: -1000, deficitLimit }}
+          />,
+        );
+
+        expect(
+          await findByRole('button', { name: /transfer from/i }),
+        ).toBeDisabled();
+      },
+    );
+
+    it('uses the API available balance when it is set', async () => {
+      const { findByRole } = render(
+        <Components
+          fund={{
+            ...defaultFund,
+            endBalance: 5000,
+            deficitLimit: 1000,
+            availableBalance: 0,
+          }}
+        />,
+      );
+
+      expect(
+        await findByRole('button', { name: /transfer from/i }),
+      ).toBeDisabled();
+    });
+  });
+
   describe('HR-managed funds', () => {
     it.each([FundTypeEnum.ReturnTravel, FundTypeEnum.ReEntry])(
       'shows the %s balance with an HR Services note instead of a transfer button',
