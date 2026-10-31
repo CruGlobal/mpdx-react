@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import MenuSharp from '@mui/icons-material/MenuSharp';
 import { Box, IconButton, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
+import { useDrawerOpenState } from '../../Shared/CalculationReports/PanelLayout/useDrawerOpenState';
 import { GoalSettingsForm, GoalSettingsFormProps } from './GoalSettingsForm';
 import { GoalSettingsNavigationProvider } from './GoalSettingsNavigationContext';
 import { GoalSettingsPresentContent } from './GoalSettingsPresentContent';
@@ -60,11 +61,18 @@ export type GoalSettingsViewProps = GoalSettingsFormProps & {
 export const GoalSettingsView: React.FC<GoalSettingsViewProps> = (props) => {
   const { t } = useTranslation();
   const { view } = useGoalSettingsView();
-  const [isNavCollapsed, setIsNavCollapsed] = useState(false);
+  const [isNavOpen, setIsNavOpen] = useDrawerOpenState();
+  const isNavCollapsed = !isNavOpen;
   const sidebarRef = useRef<HTMLDivElement>(null);
   const expandButtonRef = useRef<HTMLButtonElement>(null);
   const collapseButtonRef = useRef<HTMLButtonElement>(null);
-  const prevCollapsedRef = useRef(isNavCollapsed);
+  // Only move focus when the user toggles the nav, not when it closes itself
+  // on phones after mounting.
+  const moveFocusRef = useRef(false);
+  const toggleNav = (open: boolean) => {
+    moveFocusRef.current = true;
+    setIsNavOpen(open);
+  };
   const isScenario = 'scenarioGoalId' in props;
   const goalSource: GoalSettingsFormProps = isScenario
     ? { scenarioGoalId: props.scenarioGoalId }
@@ -75,10 +83,10 @@ export const GoalSettingsView: React.FC<GoalSettingsViewProps> = (props) => {
     if (sidebarRef.current) {
       sidebarRef.current.inert = isNavCollapsed;
     }
-    if (prevCollapsedRef.current === isNavCollapsed) {
+    if (!moveFocusRef.current) {
       return;
     }
-    prevCollapsedRef.current = isNavCollapsed;
+    moveFocusRef.current = false;
     if (isNavCollapsed) {
       expandButtonRef.current?.focus();
     } else {
@@ -125,7 +133,7 @@ export const GoalSettingsView: React.FC<GoalSettingsViewProps> = (props) => {
             <IconButton
               ref={expandButtonRef}
               aria-label={t('Show navigation')}
-              onClick={() => setIsNavCollapsed(false)}
+              onClick={() => toggleNav(true)}
             >
               <MenuSharp />
             </IconButton>
@@ -138,7 +146,7 @@ export const GoalSettingsView: React.FC<GoalSettingsViewProps> = (props) => {
         >
           <GoalSettingsSidebar
             isScenario={isScenario}
-            onCollapse={() => setIsNavCollapsed(true)}
+            onCollapse={() => toggleNav(false)}
             collapseButtonRef={collapseButtonRef}
           />
         </Sidebar>
