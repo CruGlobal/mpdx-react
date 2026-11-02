@@ -127,7 +127,7 @@ export const GoalsTableToolbar: React.FC = () => {
               onClick={() => {
                 setMenuAnchorEl(null);
                 openRunAndSend(
-                  t('Run and Send Selected Complete MPD Goals?'),
+                  t('Run and Send Selected Ready MPD Goals?'),
                   selectedRows,
                 );
               }}
@@ -153,7 +153,7 @@ export const GoalsTableToolbar: React.FC = () => {
               disabled={loading || !!error || blocked}
               onClick={() =>
                 openRunAndSend(
-                  t('Run and Send All Complete MPD Goals?'),
+                  t('Run and Send All Ready MPD Goals?'),
                   filteredRows,
                 )
               }

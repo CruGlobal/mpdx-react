@@ -183,7 +183,7 @@ describe('GoalsTableToolbar', () => {
     const { getByRole } = await renderLoaded();
     userEvent.click(getByRole('button', { name: 'Run and Send All' }));
     expect(getByRole('dialog')).toHaveTextContent(
-      'Run and Send All Complete MPD Goals?',
+      'Run and Send All Ready MPD Goals?',
     );
   });
 
@@ -212,9 +212,7 @@ describe('GoalsTableToolbar', () => {
     userEvent.click(getByRole('menuitem', { name: 'Run & Send Selected' }));
 
     const dialog = getByRole('dialog');
-    expect(dialog).toHaveTextContent(
-      'Run and Send Selected Complete MPD Goals?',
-    );
+    expect(dialog).toHaveTextContent('Run and Send Selected Ready MPD Goals?');
     expect(dialog).toHaveTextContent('1 of the 2 MPD goals cannot be sent.');
     expect(dialog).toHaveTextContent('Continue with 1 out of 2 MPD goals');
 

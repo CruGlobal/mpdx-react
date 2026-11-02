@@ -236,9 +236,9 @@ describe('familyStatusLabel', () => {
 
 describe('goalStatusLabel', () => {
   it.each([
-    [NewStaffCohortAttendeeGoalStatusEnum.Complete, 'Complete'],
+    [NewStaffCohortAttendeeGoalStatusEnum.Complete, 'Ready to Send'],
     [NewStaffCohortAttendeeGoalStatusEnum.Sent, 'Sent'],
-    [NewStaffCohortAttendeeGoalStatusEnum.Incomplete, 'Incomplete'],
+    [NewStaffCohortAttendeeGoalStatusEnum.Incomplete, 'Not Ready'],
   ])('labels %s as "%s"', (status, label) => {
     expect(goalStatusLabel(status, t)).toBe(label);
   });

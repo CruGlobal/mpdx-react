@@ -277,7 +277,7 @@ describe('GoalsTable', () => {
     expect(ctx.selectedRowIds.has('row-3')).toBe(true);
   });
 
-  it('blocks the row action for a goal that is not Complete', async () => {
+  it('blocks the row action for a goal that is not Ready to Send', async () => {
     const { getAllByRole, findByRole } = await renderLoadedTable();
     const button = getAllByRole('button', { name: /Actions for/ })[1];
     expect(button).toBeDisabled();

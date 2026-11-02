@@ -160,7 +160,7 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
             <TableCell>{t('Ministry')}</TableCell>
             <TableCell>{t('Campus Division')}</TableCell>
             <TableCell>{t('MPD Goal')}</TableCell>
-            <TableCell>{t('Goal Status')}</TableCell>
+            <TableCell>{t('Send Status')}</TableCell>
             <TableCell>{t('Family Status')}</TableCell>
             <TableCell>{t('Coach')}</TableCell>
             <TableCell>{t('Coordinators')}</TableCell>

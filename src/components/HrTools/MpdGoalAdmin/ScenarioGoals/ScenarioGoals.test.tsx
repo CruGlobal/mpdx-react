@@ -197,11 +197,19 @@ describe('ScenarioGoals', () => {
           'Cru Campus',
           'Orlando, FL',
           '$5,000',
-          'Complete',
+          'Calculation Complete',
           '8/1/2026',
           '',
         ],
-        ['Untitled scenario', '—', '—', '$0', 'Incomplete', '8/15/2026', ''],
+        [
+          'Untitled scenario',
+          '—',
+          '—',
+          '$0',
+          'Calculation Incomplete',
+          '8/15/2026',
+          '',
+        ],
       ],
     });
   });

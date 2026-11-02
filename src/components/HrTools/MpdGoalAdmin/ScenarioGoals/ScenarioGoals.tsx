@@ -248,9 +248,15 @@ export const ScenarioGoals: React.FC = () => {
                     </TableCell>
                     <TableCell>
                       {isCalculationComplete(row) ? (
-                        <StatusChip color="success" label={t('Complete')} />
+                        <StatusChip
+                          color="success"
+                          label={t('Calculation Complete')}
+                        />
                       ) : (
-                        <StatusChip color="warning" label={t('Incomplete')} />
+                        <StatusChip
+                          color="warning"
+                          label={t('Calculation Incomplete')}
+                        />
                       )}
                     </TableCell>
                     <TableCell>

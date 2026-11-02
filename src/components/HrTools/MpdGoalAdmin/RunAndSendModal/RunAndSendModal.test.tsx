@@ -41,7 +41,7 @@ const setup = (
     <ThemeProvider theme={theme}>
       <RunAndSendModal
         open
-        title="Run and Send All Complete MPD Goals?"
+        title="Run and Send All Ready MPD Goals?"
         rows={rows}
         sending={false}
         onClose={onClose}
@@ -56,9 +56,7 @@ const setup = (
 describe('RunAndSendModal', () => {
   it('summarizes the sendable and incomplete goals', () => {
     const { getByText } = setup();
-    expect(
-      getByText('Run and Send All Complete MPD Goals?'),
-    ).toBeInTheDocument();
+    expect(getByText('Run and Send All Ready MPD Goals?')).toBeInTheDocument();
     expect(
       getByText('1 of the 3 MPD goals cannot be sent.'),
     ).toBeInTheDocument();
