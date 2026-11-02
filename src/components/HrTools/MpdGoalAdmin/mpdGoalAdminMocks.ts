@@ -172,6 +172,7 @@ const attendee = (
   id,
   accountListId: `account-list-${id}`,
   displayName,
+  cohortName: 'Fall NSO 2026',
   familyStatus: NewStaffQuestionnaireMaritalStatusEnum.Married,
   subministry: 'CMCH01',
   goalStatus: NewStaffCohortAttendeeGoalStatusEnum.Complete,

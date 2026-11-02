@@ -167,6 +167,7 @@ describe('attendeeToRow', () => {
       id: 'row-3',
       accountListId: 'account-list-row-3',
       name: 'Sam Smith',
+      cohortName: 'Fall NSO 2026',
       ministry: 'Campus',
       subministry: 'CMCH01',
       mpdGoal: 4200,

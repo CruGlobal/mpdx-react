@@ -121,6 +121,7 @@ describe('MpdGoalAdminContext', () => {
       id: 'row-1',
       accountListId: 'account-list-row-1',
       name: 'John & Jane Doe',
+      cohortName: 'Fall NSO 2026',
       ministry: 'Campus',
       subministry: 'CMCH01',
       mpdGoal: 6430.25,
