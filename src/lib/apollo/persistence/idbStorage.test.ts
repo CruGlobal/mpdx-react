@@ -1,0 +1,131 @@
+import { deserialize, serialize } from 'v8';
+import 'fake-indexeddb/auto';
+import { IDBObjectStore, forceCloseDatabase } from 'fake-indexeddb';
+import { openDB } from 'idb';
+import { addDatadogError } from 'src/lib/dataDog';
+import { CacheOwner, createIdbStorage } from './idbStorage';
+
+jest.mock('src/lib/dataDog');
+
+// jsdom does not provide structuredClone, which fake-indexeddb calls when
+// storing values
+if (typeof globalThis.structuredClone === 'undefined') {
+  globalThis.structuredClone = <T>(value: T): T =>
+    deserialize(serialize(value));
+}
+
+let dbCount = 0;
+const nextDb = () => `test-${dbCount++}`;
+
+describe('createIdbStorage', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('round-trips the cache and owner, and clear() removes both', async () => {
+    const store = createIdbStorage(nextDb());
+    await store.setItem('cache', '{"a":1}');
+    await store.setOwner({ userId: 'user-1', version: 1 });
+    expect(await store.getItem('cache')).toBe('{"a":1}');
+    expect(await store.getOwner()).toEqual({ userId: 'user-1', version: 1 });
+    await store.clear();
+    expect(await store.getItem('cache')).toBeNull();
+    expect(await store.getOwner()).toBeNull();
+  });
+
+  it('ignores writes after disable() and waits for in-progress writes', async () => {
+    const store = createIdbStorage(nextDb());
+    let written = false;
+    const inFlight = Promise.resolve(store.setItem('cache', 'before')).then(
+      () => {
+        written = true;
+      },
+    );
+    await store.disable();
+    expect(written).toBe(true);
+    await inFlight;
+    await store.setItem('cache', 'after');
+    await store.setOwner({ userId: 'user-1', version: 1 });
+    expect(await store.getItem('cache')).toBe('before');
+    expect(await store.getOwner()).toBeNull();
+  });
+
+  it.each([
+    ['another user', { userId: 'user-2', version: 1 }],
+    ['an old version', { userId: 'user-1', version: 0 }],
+  ])(
+    'stops writing once %s owns the store',
+    async (_, otherOwner: CacheOwner) => {
+      const name = nextDb();
+      const store = createIdbStorage(name);
+      const otherTab = createIdbStorage(name);
+      store.bindOwner({ userId: 'user-1', version: 1 });
+      await otherTab.setOwner(otherOwner);
+
+      await store.setItem('cache', 'stale');
+      expect(await otherTab.getItem('cache')).toBeNull();
+
+      await otherTab.setOwner({ userId: 'user-1', version: 1 });
+      await store.setItem('cache', 'later');
+      expect(await otherTab.getItem('cache')).toBeNull();
+    },
+  );
+
+  it('writes when the bound owner still owns the store', async () => {
+    const store = createIdbStorage(nextDb());
+    store.bindOwner({ userId: 'user-1', version: 1 });
+    await store.setOwner({ userId: 'user-1', version: 1 });
+
+    await store.setItem('cache', 'mine');
+
+    expect(await store.getItem('cache')).toBe('mine');
+  });
+
+  it('reports a failed write instead of rejecting', async () => {
+    const error = new DOMException('full', 'QuotaExceededError');
+    jest.spyOn(IDBObjectStore.prototype, 'put').mockImplementationOnce(() => {
+      throw error;
+    });
+    const store = createIdbStorage(nextDb());
+    await expect(store.setItem('cache', 'x')).resolves.toBeUndefined();
+    expect(addDatadogError).toHaveBeenCalledWith(error, {
+      mpdxErrorType: 'cache_persistence',
+      step: 'write',
+    });
+  });
+
+  it('closes its connection when another tab needs to upgrade', async () => {
+    const name = nextDb();
+    const store = createIdbStorage(name);
+    await store.getItem('cache');
+
+    const upgrade = openDB(name, 2).then((db) => {
+      db.close();
+      return 'upgraded';
+    });
+    const hung = new Promise((resolve) => setTimeout(resolve, 200, 'hung'));
+
+    expect(await Promise.race([upgrade, hung])).toBe('upgraded');
+  });
+
+  it('reopens its connection after the browser closes it', async () => {
+    const openSpy = jest.spyOn(indexedDB, 'open');
+    const store = createIdbStorage(nextDb());
+    await store.setItem('cache', '{"a":1}');
+
+    forceCloseDatabase(openSpy.mock.results[0].value.result);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    await store.clear();
+    expect(await store.getItem('cache')).toBeNull();
+  });
+
+  it('rejects reads when the database cannot open', async () => {
+    jest.spyOn(indexedDB, 'open').mockImplementationOnce(() => {
+      throw new DOMException('blocked', 'SecurityError');
+    });
+    await expect(createIdbStorage(nextDb()).getItem('cache')).rejects.toThrow(
+      'blocked',
+    );
+  });
+});

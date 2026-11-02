@@ -8,13 +8,14 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
+import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import AddAppealForm, {
   AddAppealFormProps,
   buildExclusionFilter,
   buildInclusionFilter,
   calculateGoal,
-  contactExclusions,
+  getContactExclusions,
 } from './AddAppealForm';
 import { ContactTagsQuery } from './AddAppealForm.generated';
 import { contactTagsMock } from './AddAppealFormMocks';
@@ -460,7 +461,7 @@ describe('AddAppealForm', () => {
     });
 
     describe('buildExclusionFilter', () => {
-      contactExclusions;
+      const contactExclusions = getContactExclusions(i18n.t);
 
       it('should return an empty object', async () => {
         expect(buildExclusionFilter([])).toStrictEqual({});

@@ -14,6 +14,8 @@ import {
 import AppealProgressBar from '../AppealProgressBar/AppealProgressBar';
 
 export const appealHeaderInfoHeight = theme.spacing(9);
+// Below sm the progress bar stacks under the name and goal
+export const appealHeaderInfoMobileHeight = theme.spacing(18);
 
 const HeaderBarContactWrap = styled(Box)(() => ({
   flex: 1,
@@ -41,7 +43,10 @@ const AppealInfoContainer = styled(Box)(() => ({
 }));
 
 const GridContainer = styled(Grid)(() => ({
-  height: appealHeaderInfoHeight,
+  height: appealHeaderInfoMobileHeight,
+  [theme.breakpoints.up('sm')]: {
+    height: appealHeaderInfoHeight,
+  },
   paddingLeft: theme.spacing(2),
   paddingRight: theme.spacing(2),
   borderBottom: `1px solid ${theme.palette.mpdxGrayLight.main}`,

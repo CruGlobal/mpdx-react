@@ -45,6 +45,9 @@ const useStyles = makeStyles()(() => ({
     [theme.breakpoints.down('sm')]: {
       backgroundColor: 'white',
       width: '100%',
+      height: 'auto',
+      // The card hides overflow, so without this it gets squeezed and clips its details
+      flexShrink: 0,
       overflow: 'initial',
     },
   },
@@ -113,7 +116,8 @@ const IconWrapper = styled(Box)(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    height: '100%',
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
   },
   [theme.breakpoints.up('sm')]: {
     display: 'flex',

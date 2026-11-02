@@ -3,6 +3,7 @@ import { Stack, Typography } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { Trans, useTranslation } from 'react-i18next';
 import { NameDisplay } from 'src/components/HrTools/Shared/CalculationReports/NameDisplay/NameDisplay';
+import { NameDisplaySkeleton } from 'src/components/HrTools/Shared/CalculationReports/NameDisplay/NameDisplaySkeleton';
 import {
   CompleteFormValues,
   mainContentWidth,
@@ -14,6 +15,7 @@ import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetA
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 import { useFormUserInfo } from '../../Shared/useFormUserInfo';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
+import { MissingLocationAlert } from '../../SharedComponents/MissingLocationAlert';
 import { SpouseComponent } from '../../SharedComponents/SpouseComponent';
 import { ValidationAlert } from '../../SharedComponents/ValidationAlert';
 import { ApprovalProcess } from '../../SubmitModalAccordions/ApprovalProcess/ApprovalProcess';
@@ -21,7 +23,7 @@ import { TotalSalaryRequested } from '../../SubmitModalAccordions/TotalSalaryReq
 
 export const EditForm: React.FC = () => {
   const { t } = useTranslation();
-  const { calculations } = useAdditionalSalaryRequest();
+  const { calculations, hcmLoading } = useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
 
   const { name, primaryAccountBalance } = useFormUserInfo();
@@ -32,17 +34,30 @@ export const EditForm: React.FC = () => {
   });
 
   return (
-    <Stack gap={4} padding={4} width={mainContentWidth}>
+    <Stack
+      gap={4}
+      py={4}
+      px={{ xs: 0, sm: 4 }}
+      width="100%"
+      maxWidth={mainContentWidth}
+    >
       <Typography variant="h4">{t('Edit Your Request')}</Typography>
-      <NameDisplay
-        names={name ?? ''}
-        titleOne={t('Primary Account Balance')}
-        amountOne={primaryAccountBalance}
-        titleTwo={t('Your Maximum Allowable Salary (CAP)')}
-        amountTwo={individualCap}
-        spouseComponent={<SpouseComponent />}
-        showContent
-      />
+      <Stack gap={0.5}>
+        {hcmLoading ? (
+          <NameDisplaySkeleton showContent />
+        ) : (
+          <NameDisplay
+            names={name ?? ''}
+            titleOne={t('Primary Account Balance')}
+            amountOne={primaryAccountBalance}
+            titleTwo={t('Your Maximum Allowable Salary (CAP)')}
+            amountTwo={individualCap}
+            spouseComponent={<SpouseComponent />}
+            showContent
+          />
+        )}
+        <MissingLocationAlert />
+      </Stack>
       <Typography variant="body1" paragraph>
         <Trans t={t}>
           Please enter the desired dollar amounts for the appropriate categories

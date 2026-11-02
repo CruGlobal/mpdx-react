@@ -83,7 +83,6 @@ describe('Login - OKTA', () => {
       )) as GetServerSidePropsReturn;
 
       expect(props).toEqual({
-        signInButtonText: 'Sign In',
         signInAuthProviderId: 'okta',
         immediateSignIn: false,
         isOkta: true,
@@ -103,7 +102,6 @@ describe('Login - OKTA', () => {
       )) as GetServerSidePropsReturn;
 
       expect(props).toEqual({
-        signInButtonText: 'Sign In',
         signInAuthProviderId: 'okta',
         immediateSignIn: false,
         isOkta: true,
@@ -119,7 +117,6 @@ describe('Login - OKTA', () => {
       )) as GetServerSidePropsReturn;
 
       expect(props).toEqual({
-        signInButtonText: 'Sign In',
         signInAuthProviderId: 'okta',
         immediateSignIn: true,
         isOkta: true,
@@ -182,7 +179,6 @@ describe('Login - OKTA', () => {
     const { getByText } = render(
       <Components
         props={{
-          signInButtonText: 'Sign In',
           signInAuthProviderId: 'okta',
           immediateSignIn: false,
           isOkta: true,

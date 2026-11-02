@@ -46,6 +46,10 @@ const Container = styled(Box)(() => ({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
+  [theme.breakpoints.down('sm')]: {
+    paddingLeft: 0,
+    paddingRight: 0,
+  },
 }));
 
 const SourceSelect = styled(Select)(() => ({

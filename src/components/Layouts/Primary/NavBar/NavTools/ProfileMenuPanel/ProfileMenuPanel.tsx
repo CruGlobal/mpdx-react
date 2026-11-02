@@ -6,7 +6,6 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ChevronRight from '@mui/icons-material/ChevronRight';
 import { Box, Button, Drawer, List } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { signOut } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
 import { OauthLink } from 'src/components/OauthLink/OauthLink';
 import { useSetupContext } from 'src/components/Setup/SetupProvider';
@@ -16,7 +15,7 @@ import {
 } from 'src/components/Shared/Links/Links';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useNavPages } from 'src/hooks/useNavPages';
-import { clearDatadogUser } from 'src/lib/dataDog';
+import { signOutAndClear } from 'src/lib/clearSessionData';
 import theme from 'src/theme';
 import { useGetTopBarQuery } from '../../../TopBar/GetTopBar.generated';
 import { LeafListItem, Title } from '../../StyledComponents';
@@ -198,12 +197,9 @@ export const ProfileMenuPanel: React.FC = () => {
           <Button
             variant="outlined"
             color="secondary"
-            onClick={() =>
-              signOut({ callbackUrl: 'signOut' }).then(() => {
-                clearDatadogUser();
-                client.clearStore();
-              })
-            }
+            onClick={async () => {
+              await signOutAndClear(client, { callbackUrl: 'signOut' });
+            }}
           >
             {t('Sign Out')}
           </Button>

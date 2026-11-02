@@ -97,7 +97,13 @@ export const useAutoSave = <Value extends string | number>({
         setTouched(true);
         const { parsedValue, errorMessage } = parseValue(newValue);
         if (errorMessage === null && parsedValue !== value) {
-          saveValue(parsedValue);
+          // saveValue's mutation failures are already surfaced to the user
+          // and reported to Datadog by the global Apollo error link. Catch
+          // the rejection here anyway so it doesn't also become an unhandled
+          // promise rejection, which RUM would otherwise attach to this
+          // click/change as a frustration signal (error_click) on top of the
+          // error the user already saw.
+          saveValue(parsedValue).catch(() => {});
         }
       }
     },
@@ -108,7 +114,9 @@ export const useAutoSave = <Value extends string | number>({
 
       setTouched(true);
       if (!saveOnChange && errorMessage === null && parsedValue !== value) {
-        saveValue(parsedValue);
+        // See the comment in onChange above: avoid an unhandled rejection on
+        // top of the error already shown via the global Apollo error link.
+        saveValue(parsedValue).catch(() => {});
       }
     },
     disabled,

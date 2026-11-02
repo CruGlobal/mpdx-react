@@ -48,7 +48,9 @@ const MPGAReportPage: React.FC = () => {
       <UserTypeAccess
         requireStaffAccount={!staffAccountId}
         requireUserGroups={
-          staffAccountId ? RequiredUserGroupEnum.MpdSupervisor : undefined
+          staffAccountId
+            ? RequiredUserGroupEnum.MpdSupervisor
+            : RequiredUserGroupEnum.StaffAccount
         }
       >
         <MPGAReportPageWrapper>

@@ -42,9 +42,11 @@ fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
     currentSalaryCap
     combinedCap
     staffAccountBalance
+    availableStaffAccountBalance
     ytdAsrAmount
     grossAnnualSalary
     outstandingSalaryRequest
+    geographicLocation
   }
   spouseCalculations {
     currentSalaryCap

@@ -9,6 +9,7 @@ import { SubmitModal } from 'src/components/HrTools/Shared/CalculationReports/Su
 import { useAutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useApplyGoalAndLocation } from 'src/hooks/useApplyGoalAndLocation';
+import { useCaps } from '../SalaryCalculation/useCaps';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { useDeleteSalaryCalculation } from '../Shared/useDeleteSalaryCalculation';
 import { useSubmitSalaryCalculationMutation } from './SubmitSalaryCalculation.generated';
@@ -159,6 +160,11 @@ export const StepNavigation: React.FC = () => {
   const theme = useTheme();
   const { currentIndex, steps, editing } = useSalaryCalculator();
   const { allValid } = useAutosaveForm();
+  const { splitCapExceeded } = useCaps();
+  // The server rejects split caps that exceed the combined cap, so block the user once they reach
+  // the Your Information step, where the cap fields explain the problem. The Effective Date step
+  // comes before those fields, so leave it alone to let the user reach them.
+  const canProceed = allValid && !(splitCapExceeded && currentIndex >= 1);
 
   // We don't want to render navigation if on view mode or the receipt step
   if (!editing || currentIndex === steps.length - 1) {
@@ -172,9 +178,9 @@ export const StepNavigation: React.FC = () => {
       <Stack direction="row" spacing={theme.spacing(1)}>
         <BackButton />
         {currentIndex === 3 ? (
-          <SubmitButton disabled={!allValid} />
+          <SubmitButton disabled={!canProceed} />
         ) : (
-          <ContinueButton disabled={!allValid} />
+          <ContinueButton disabled={!canProceed} />
         )}
       </Stack>
     </Box>

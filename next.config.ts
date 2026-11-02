@@ -2,7 +2,6 @@ import type { NextConfig } from 'next';
 import bundleAnalyzer from '@next/bundle-analyzer';
 import withPlugins from 'next-compose-plugins';
 import withOptimizedImages from 'next-optimized-images';
-import withPWA from 'next-pwa';
 
 if (process.env.secrets && process.env.secrets !== '{}') {
   process.env.JWT_SECRET = JSON.parse(process.env.secrets).JWT_SECRET;
@@ -102,11 +101,6 @@ const config: NextConfig = {
   },
   reactStrictMode: true,
   webpack: (config) => {
-    config.experiments = {
-      ...config.experiments,
-      topLevelAwait: true,
-    };
-
     config.module.rules.push(
       {
         test: /\.mjs$/,
@@ -162,25 +156,46 @@ const config: NextConfig = {
   // imports from node_modules for packages listed in transpilePackages.
   transpilePackages: ['@mui/x-data-grid'],
 
+  headers: async () => [
+    {
+      source: '/sw.js',
+      headers: [
+        {
+          key: 'Cache-Control',
+          value: 'no-cache, no-store, must-revalidate',
+        },
+      ],
+    },
+  ],
+
   redirects: async () => [
     {
       source: '/accountLists/:accountListId/settings',
       destination: '/accountLists/:accountListId/settings/preferences',
       permanent: true,
     },
+    {
+      source: '/accountLists/:accountListId/reports/housingAllowance/:path*',
+      destination: '/accountLists/:accountListId/hrTools/mhaCalculator/:path*',
+      permanent: true,
+    },
+    {
+      source:
+        '/accountLists/:accountListId/reports/additionalSalaryRequest/:path*',
+      destination:
+        '/accountLists/:accountListId/hrTools/additionalSalaryRequest/:path*',
+      permanent: true,
+    },
+    {
+      source: '/accountLists/:accountListId/reports/salaryCalculator/:path*',
+      destination:
+        '/accountLists/:accountListId/hrTools/salaryCalculator/:path*',
+      permanent: true,
+    },
   ],
 };
 
 module.exports = withPlugins([
-  [
-    withPWA,
-    {
-      pwa: {
-        dest: 'public',
-        disable: !prod,
-      },
-    },
-  ],
   withOptimizedImages,
   // Workaround @next/bundle-analyzer not playing nicely with next-compose-plugins
   // https://github.com/cyrilwanner/next-compose-plugins/issues/26

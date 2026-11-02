@@ -288,7 +288,7 @@ describe('Summary', () => {
 
       expect(
         await findByText(
-          'Your geographic location will be updated to Miami, FL in your account settings.',
+          'Your default location multiplier will be updated to Miami, FL in your account settings.',
         ),
       ).toBeInTheDocument();
 
@@ -327,7 +327,7 @@ describe('Summary', () => {
       await waitFor(() =>
         expect(
           queryByText(
-            'Your geographic location will be updated to Miami, FL in your account settings.',
+            'Your default location multiplier will be updated to Miami, FL in your account settings.',
           ),
         ).not.toBeInTheDocument(),
       );

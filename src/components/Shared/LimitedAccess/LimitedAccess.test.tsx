@@ -40,7 +40,10 @@ describe('LimitedAccess', () => {
     expect(
       getByText(/our records show that you do not have a staff account/i),
     ).toBeInTheDocument();
-    expect(getByRole('link', { name: 'support@mpdx.org' })).toBeInTheDocument();
+    expect(getByRole('link', { name: 'support@mpdx.org' })).toHaveAttribute(
+      'href',
+      'mailto:support@mpdx.org',
+    );
 
     const button = getByRole('link', { name: 'Back to Dashboard' });
     expect(button).toBeInTheDocument();

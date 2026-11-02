@@ -18,6 +18,7 @@ import { CancelButton } from 'src/components/Shared/Modal/ActionButtons/ActionBu
 import Modal from 'src/components/Shared/Modal/Modal';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { getLocalizedFailureReason } from '../Helper/getLocalizedFailureReason';
 import { chipStyle } from '../Table/Row/createTableRowHelper';
 import { StatusEnum, Transfers } from '../mockData';
 
@@ -25,6 +26,7 @@ interface FailedTransfers {
   amount: number;
   status: StatusEnum;
   transferDate: DateTime | undefined;
+  reason?: string;
 }
 
 interface FailedTransferModalProps {
@@ -44,21 +46,20 @@ export const FailedTransferModal: React.FC<FailedTransferModalProps> = ({
     if (transfer.summarizedTransfers) {
       transfer.summarizedTransfers.forEach((tx) => {
         results.push({
-          amount: tx.baseAmount,
+          amount: tx.transaction?.amount ?? 0,
           status: StatusEnum.Complete,
           transferDate: tx.transaction?.transactedAt,
         });
       });
     }
-    if (transfer.missingMonths) {
-      transfer.missingMonths.forEach((month) => {
-        results.push({
-          amount: transfer.baseAmount || 0,
-          status: StatusEnum.Failed,
-          transferDate: month,
-        });
+    transfer.failures?.forEach((failure) => {
+      results.push({
+        amount: transfer.recurringAmount ?? 0,
+        status: StatusEnum.Failed,
+        transferDate: failure.occurrence,
+        reason: getLocalizedFailureReason(t, failure.reasonCode),
       });
-    }
+    });
     return results;
   })();
 
@@ -84,6 +85,7 @@ export const FailedTransferModal: React.FC<FailedTransferModalProps> = ({
                 <TableCell>{t('Amount')}</TableCell>
                 <TableCell>{t('Status')}</TableCell>
                 <TableCell>{t('Transfer Date')}</TableCell>
+                <TableCell>{t('Reason')}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -118,6 +120,7 @@ export const FailedTransferModal: React.FC<FailedTransferModalProps> = ({
                   <TableCell>
                     {transfer.transferDate.toFormat('MMM d, yyyy')}
                   </TableCell>
+                  <TableCell>{transfer.reason}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

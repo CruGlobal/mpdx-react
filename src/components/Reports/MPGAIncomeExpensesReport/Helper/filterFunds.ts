@@ -113,6 +113,7 @@ export function addRowPerSubcategory({
         id,
         description,
         category: category.category,
+        subCategory: subcategory.subCategory,
         monthly,
         average: subcategory.averagePerMonth,
         total: subcategory.total,
@@ -125,6 +126,8 @@ export function addRowPerSubcategory({
 
 interface AddCombinedRowProps extends AddRowProps {
   household?: HouseholdMember[];
+  /** Labels and tags the row with this subcategory when it is the only one combined. */
+  subCategory?: StaffExpensesSubCategoryEnum;
 }
 
 /** One person's share of a combined category, split by sign into income and expense rows. */
@@ -221,6 +224,7 @@ export function addCombinedSubcategoryRow({
   incomeData,
   expenseData,
   household = [],
+  subCategory,
 }: AddCombinedRowProps) {
   const monthCount = category.breakdownByMonth.length;
   const reader = splitsPerPerson(category, household)
@@ -280,9 +284,10 @@ export function addCombinedSubcategoryRow({
     });
   });
 
-  const categoryLabel =
-    getPluralizedDescription(category.category, t) ||
-    getLocalizedCategory(category.category, t);
+  const categoryLabel = subCategory
+    ? `${getLocalizedCategory(category.category, t)} - ${getLocalizedSubCategory(subCategory, t)}`
+    : getPluralizedDescription(category.category, t) ||
+      getLocalizedCategory(category.category, t);
   // Naming a person is only worth the noise once the report holds someone besides the reader.
   const namePeople = people.size > 1;
   // A person number HCM does not list belongs to neither spouse, so the household cannot name it.
@@ -309,6 +314,7 @@ export function addCombinedSubcategoryRow({
           id,
           description,
           category: category.category,
+          subCategory,
           person,
           transactions,
           monthly,
@@ -331,6 +337,40 @@ export function addCombinedSubcategoryRow({
       accumulator.expenseTransactions,
     );
   });
+}
+
+/**
+ * The expense totals count the healthcare debit card as Healthcare, so a combined Staff Expense
+ * row leaves the card out and the card gets a combined row of its own.
+ */
+export function addCombinedRows(props: AddCombinedRowProps) {
+  const { baseId, category } = props;
+  if (category.category !== StaffExpenseCategoryEnum.StaffExpense) {
+    addCombinedSubcategoryRow(props);
+    return;
+  }
+
+  const isPaCard = (subcategory: Categories['subcategories'][number]) =>
+    subcategory.subCategory === StaffExpensesSubCategoryEnum.PaCard;
+  const paCard = category.subcategories.filter(isPaCard);
+  const rest = category.subcategories.filter(
+    (subcategory) => !isPaCard(subcategory),
+  );
+
+  if (rest.length) {
+    addCombinedSubcategoryRow({
+      ...props,
+      category: { ...category, subcategories: rest },
+    });
+  }
+  if (paCard.length) {
+    addCombinedSubcategoryRow({
+      ...props,
+      baseId: `${baseId}-${StaffExpensesSubCategoryEnum.PaCard}`,
+      category: { ...category, subcategories: paCard },
+      subCategory: StaffExpensesSubCategoryEnum.PaCard,
+    });
+  }
 }
 
 // Checked or unchecked category with no subcategories: use the category-level rollup

@@ -59,6 +59,10 @@ const mockContextValue = {
   toggleDrawer: jest.fn(),
   requestData: null,
   requestError: undefined,
+  hcmLoading: false,
+  hcmUnavailable: false,
+  refetchHcm: jest.fn(),
+  refetchRequest: jest.fn(),
   pageType: PageEnum.New,
   setPageType: jest.fn(),
   pendingPrint: false,
@@ -251,6 +255,7 @@ describe('StepList', () => {
           staffInfo: {
             preferredName: 'Jane',
           },
+          asrEit: { asrEligibility: true },
         },
       } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
@@ -296,6 +301,7 @@ describe('StepList', () => {
           staffInfo: {
             preferredName: 'John',
           },
+          asrEit: { asrEligibility: true },
         },
       } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
