@@ -2639,6 +2639,7 @@
     "Print": "Print",
     "Print All": "Print All",
     "Print Matching": "Print Matching",
+    "Print MPD Goal Calculation": "Print MPD Goal Calculation",
     "Print Support Needs Presentation": "Print Support Needs Presentation",
     "Printed {{printed}} MPD goals. {{count}} households have no MPD goal calculation yet and were left out._one": "Printed {{printed}} MPD goals. {{count}} household has no MPD goal calculation yet and was left out.",
     "Printed {{printed}} MPD goals. {{count}} households have no MPD goal calculation yet and were left out._other": "Printed {{printed}} MPD goals. {{count}} households have no MPD goal calculation yet and were left out.",

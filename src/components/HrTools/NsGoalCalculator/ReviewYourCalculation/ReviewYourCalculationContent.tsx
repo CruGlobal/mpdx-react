@@ -1,9 +1,10 @@
 import React from 'react';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { Alert, Box, Stack, Typography } from '@mui/material';
+import { Alert, Box, Divider, Stack, Typography } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
 import { NsGoalCalculation } from '../Shared/NsGoalCalculatorContext';
+import { PrintGoalControls } from '../Shared/PrintGoalControls';
 import { AccountBalanceCard } from './AccountBalanceCard';
 import { GoalSummaryCard } from './GoalSummaryCard';
 import { MonthlyNeedsCard } from './MonthlyNeedsCard';
@@ -40,13 +41,17 @@ export const ReviewYourCalculationContent: React.FC<
     <Stack spacing={3}>
       <Typography variant="h6">{t('Review Your Calculation')}</Typography>
 
-      <Typography variant="body1">
+      <Typography variant="body1" className="print-hidden">
         <Trans t={t}>
           Please review your MPD Goal Calculation and contact your coach if you
           have questions. If everything looks good, continue to “Presenting your
           Goal”.
         </Trans>
       </Typography>
+
+      <PrintGoalControls buttonLabel={t('Print MPD Goal Calculation')} />
+
+      <Divider className="print-hidden" />
 
       <GoalSummaryCard
         monthlyGoal={goalCalculation.calculations.monthlyGoal}

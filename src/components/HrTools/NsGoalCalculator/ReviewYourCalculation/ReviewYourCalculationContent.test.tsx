@@ -1,5 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import {
   NsGoalCalculatorTestWrapper,
   defaultGoalCalculation,
@@ -35,5 +36,22 @@ describe('ReviewYourCalculationContent', () => {
     );
 
     expect(await findByText('Continue')).toBeInTheDocument();
+  });
+
+  it('prints when the print button is clicked', async () => {
+    const printSpy = jest.spyOn(window, 'print').mockImplementation(() => {});
+    const { findByRole } = render(
+      <NsGoalCalculatorTestWrapper>
+        <ReviewYourCalculationContent
+          goalCalculation={defaultGoalCalculation}
+        />
+      </NsGoalCalculatorTestWrapper>,
+    );
+
+    userEvent.click(
+      await findByRole('button', { name: 'Print MPD Goal Calculation' }),
+    );
+
+    expect(printSpy).toHaveBeenCalled();
   });
 });
