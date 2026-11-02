@@ -217,7 +217,7 @@ export const ScenarioGoals: React.FC = () => {
                 <TableCell>{t('Ministry')}</TableCell>
                 <TableCell>{t('Campus Division')}</TableCell>
                 <TableCell>{t('MPD Goal')}</TableCell>
-                <TableCell>{t('Goal Status')}</TableCell>
+                <TableCell>{t('Calculation Status')}</TableCell>
                 <TableCell>{t('Created')}</TableCell>
                 <TableCell>{t('Actions')}</TableCell>
               </TableRow>

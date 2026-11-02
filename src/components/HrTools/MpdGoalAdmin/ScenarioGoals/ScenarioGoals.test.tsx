@@ -187,7 +187,7 @@ describe('ScenarioGoals', () => {
         'Ministry',
         'Campus Division',
         'MPD Goal',
-        'Goal Status',
+        'Calculation Status',
         'Created',
         'Actions',
       ],
