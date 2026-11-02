@@ -1,9 +1,18 @@
 import { DateTime, Settings } from 'luxon';
-import { Transactions } from 'src/components/HrTools/SavingsFundTransfer/mockData';
+import {
+  RecurringTransferFailure,
+  Transactions,
+} from 'src/components/HrTools/SavingsFundTransfer/mockData';
+import { SavingsFundTransferFailureReasonCode } from 'src/graphql/types.generated';
 import { filteredTransfers } from './filterTransfers';
 
-// Earlier than every fixture below, so the window never clips a scan unless a test wants it to.
+// Earlier than every fixture below, so history is never truncated unless a test wants it to.
 const historyStart = DateTime.fromISO('2023-01-01');
+
+const novemberFailure: RecurringTransferFailure = {
+  occurrence: DateTime.fromISO('2023-11-15'),
+  reasonCode: SavingsFundTransferFailureReasonCode.InsufficientFunds,
+};
 
 const mockTransactions: Transactions[] = [
   {
@@ -22,8 +31,6 @@ const mockTransactions: Transactions[] = [
       destinationFundTypeName: 'Savings',
     },
     recurringTransfer: null,
-    baseAmount: 2500,
-    failedCount: 0,
   },
   {
     transaction: {
@@ -46,9 +53,8 @@ const mockTransactions: Transactions[] = [
       recurringStart: DateTime.fromISO('2023-09-15'),
       recurringEnd: DateTime.fromISO('2023-12-15'),
       active: true,
+      failures: [novemberFailure],
     },
-    baseAmount: 20,
-    failedCount: 0,
   },
   {
     transaction: {
@@ -71,9 +77,8 @@ const mockTransactions: Transactions[] = [
       recurringStart: DateTime.fromISO('2023-09-15'),
       recurringEnd: DateTime.fromISO('2023-12-15'),
       active: true,
+      failures: [novemberFailure],
     },
-    baseAmount: 20,
-    failedCount: 0,
   },
   {
     transaction: {
@@ -91,8 +96,6 @@ const mockTransactions: Transactions[] = [
       destinationFundTypeName: 'Savings',
     },
     recurringTransfer: null,
-    baseAmount: -10,
-    failedCount: 0,
   },
   {
     transaction: {
@@ -115,9 +118,8 @@ const mockTransactions: Transactions[] = [
       recurringStart: DateTime.fromISO('2023-09-15'),
       recurringEnd: DateTime.fromISO('2023-12-15'),
       active: true,
+      failures: [novemberFailure],
     },
-    baseAmount: 20,
-    failedCount: 0,
   },
   {
     transaction: null,
@@ -132,9 +134,8 @@ const mockTransactions: Transactions[] = [
       recurringStart: DateTime.fromISO('2024-04-15'),
       recurringEnd: DateTime.fromISO('2024-07-15'),
       active: true,
+      failures: [],
     },
-    baseAmount: 10,
-    failedCount: 0,
   },
   {
     transaction: null,
@@ -150,8 +151,6 @@ const mockTransactions: Transactions[] = [
       transactedAt: DateTime.fromISO('2024-02-01'),
       description: 'Conference fee',
     },
-    baseAmount: 400,
-    failedCount: 0,
   },
 ];
 
@@ -162,12 +161,14 @@ const makeRecurringTransactions = ({
   recurringEnd = null,
   active = true,
   dates,
+  failures = [],
 }: {
   id: string;
   recurringStart: string;
   recurringEnd?: string | null;
   active?: boolean;
   dates: string[];
+  failures?: RecurringTransferFailure[];
 }): Transactions[] => {
   const recurringTransfer = {
     id,
@@ -175,7 +176,22 @@ const makeRecurringTransactions = ({
     recurringStart: DateTime.fromISO(recurringStart),
     recurringEnd: recurringEnd ? DateTime.fromISO(recurringEnd) : null,
     active,
+    failures,
   };
+  const transfer = {
+    sourceFundTypeName: 'Primary',
+    destinationFundTypeName: 'Savings',
+  };
+  if (!dates.length) {
+    return [
+      {
+        transaction: null,
+        subCategory: null,
+        transfer,
+        recurringTransfer,
+      },
+    ];
+  }
   return dates.map((date, index) => ({
     transaction: {
       id: `${id}-${index}`,
@@ -187,17 +203,20 @@ const makeRecurringTransactions = ({
       id: '1',
       name: 'deposit',
     },
-    transfer: {
-      sourceFundTypeName: 'Primary',
-      destinationFundTypeName: 'Savings',
-    },
+    transfer,
     recurringTransfer,
-    baseAmount: 20,
-    failedCount: 0,
   }));
 };
 
-describe('useFilteredTransfers', () => {
+const makeFailure = (
+  occurrence: string,
+  reasonCode: SavingsFundTransferFailureReasonCode = SavingsFundTransferFailureReasonCode.InsufficientFunds,
+): RecurringTransferFailure => ({
+  occurrence: DateTime.fromISO(occurrence),
+  reasonCode,
+});
+
+describe('filteredTransfers', () => {
   beforeEach(() => {
     Settings.now = () => Date.parse('2024-01-15');
   });
@@ -231,6 +250,7 @@ describe('useFilteredTransfers', () => {
       (tx) => tx.recurringTransfer?.id === '1',
     );
     expect(recurringTransfer?.transaction?.amount).toBe(60);
+    expect(recurringTransfer?.summarizedTransfers?.size).toBe(3);
   });
 
   it('should include one-time transfers', () => {
@@ -245,265 +265,125 @@ describe('useFilteredTransfers', () => {
   it('should exclude transfers with zero or negative amounts', () => {
     const { filtered } = filteredTransfers(mockTransactions, historyStart);
     const negativeAmountTransfer = filtered.find(
-      (tx) => tx.transaction!.amount < 0,
+      (tx) => (tx.transaction?.amount ?? 0) < 0,
     );
     expect(negativeAmountTransfer).toBeUndefined();
   });
 
-  it('should correctly calculate failedCount for recurring transfers', () => {
-    const { filtered } = filteredTransfers(mockTransactions, historyStart);
-    const recurringTransfer = filtered.find(
-      (tx) => tx.recurringTransfer?.id === '1',
-    );
-    expect(recurringTransfer?.failedCount).toBe(1);
-  });
-
-  it('should find missing months for recurring transfers', () => {
-    const { filtered } = filteredTransfers(mockTransactions, historyStart);
-    const recurringTransfer = filtered.find(
-      (tx) => tx.recurringTransfer?.id === '1',
-    );
-    expect(
-      recurringTransfer?.missingMonths?.map((month) => month.toISODate()),
-    ).toEqual(['2023-11-15']);
-  });
-
-  describe('stopped recurring transfers', () => {
-    // Started in September, ran September and November, then stopped.
-    const makeStoppedTransactions = (recurringEnd: string | null) =>
+  it('should not infer failures from months with no transaction', () => {
+    const { filtered } = filteredTransfers(
       makeRecurringTransactions({
         id: '3',
         recurringStart: '2023-09-15',
-        recurringEnd,
-        active: false,
-        dates: ['2023-09-15', '2023-11-15'],
-      });
+        dates: ['2023-09-15', '2024-01-15'],
+      }),
+      historyStart,
+    );
+    expect(filtered).toHaveLength(1);
+    expect(filtered[0].recurringTransfer?.failures).toHaveLength(0);
+  });
 
-    it('should not count months after the last transaction as missing when stopped with no end date', () => {
-      const { filtered } = filteredTransfers(
-        makeStoppedTransactions(null),
-        historyStart,
-      );
-      const stoppedTransfer = filtered.find(
-        (tx) => tx.recurringTransfer?.id === '3',
-      );
-      expect(
-        stoppedTransfer?.missingMonths?.map((month) => month.toISODate()),
-      ).toEqual(['2023-10-15']);
-      expect(stoppedTransfer?.failedCount).toBe(1);
+  it('should count December and February failures around a successful January', () => {
+    Settings.now = () => Date.parse('2025-03-20');
+    const { filtered } = filteredTransfers(
+      makeRecurringTransactions({
+        id: '7',
+        recurringStart: '2024-11-15',
+        dates: ['2024-11-15', '2025-01-15', '2025-03-15'],
+        failures: [
+          makeFailure('2024-12-15'),
+          makeFailure(
+            '2025-02-15',
+            SavingsFundTransferFailureReasonCode.NotAttempted,
+          ),
+        ],
+      }),
+      historyStart,
+    );
+    expect(filtered).toHaveLength(1);
+    expect(filtered[0].transaction?.amount).toBe(60);
+    expect(filtered[0].recurringTransfer?.failures).toHaveLength(2);
+    expect(
+      filtered[0].recurringTransfer?.failures.map((failure) =>
+        failure.occurrence.toISODate(),
+      ),
+    ).toEqual(['2024-12-15', '2025-02-15']);
+  });
+
+  describe('recurring transfer that never succeeded', () => {
+    const neverSucceeded = makeRecurringTransactions({
+      id: '8',
+      recurringStart: '2023-11-15',
+      dates: [],
+      failures: [makeFailure('2023-11-15'), makeFailure('2023-12-15')],
     });
 
-    it('should not count months after the last transaction as missing when stopped before a future end date', () => {
-      const { filtered } = filteredTransfers(
-        makeStoppedTransactions('2024-06-15'),
+    it('should go to history instead of upcoming', () => {
+      const { filtered, upcoming } = filteredTransfers(
+        neverSucceeded,
         historyStart,
       );
-      const stoppedTransfer = filtered.find(
-        (tx) => tx.recurringTransfer?.id === '3',
-      );
-      expect(
-        stoppedTransfer?.missingMonths?.map((month) => month.toISODate()),
-      ).toEqual(['2023-10-15']);
-      expect(stoppedTransfer?.failedCount).toBe(1);
+      expect(upcoming).toHaveLength(0);
+      expect(filtered).toHaveLength(1);
+      expect(filtered[0].transaction).toBeNull();
+      expect(filtered[0].recurringTransfer?.failures).toHaveLength(2);
+      expect(filtered[0].summarizedTransfers?.size).toBe(0);
     });
 
-    it('should scan through the end date for inactive transfers that ended naturally', () => {
-      const { filtered } = filteredTransfers(
-        makeStoppedTransactions('2023-12-15'),
-        historyStart,
-      );
-      const endedTransfer = filtered.find(
-        (tx) => tx.recurringTransfer?.id === '3',
-      );
-      expect(
-        endedTransfer?.missingMonths?.map((month) => month.toISODate()),
-      ).toEqual(['2023-10-15', '2023-12-15']);
-      expect(endedTransfer?.failedCount).toBe(2);
-    });
-
-    it('should scan through the end date when a stopped transfer ends today', () => {
-      const { filtered } = filteredTransfers(
-        makeStoppedTransactions('2024-01-15'),
-        historyStart,
-      );
-      const endedTransfer = filtered.find(
-        (tx) => tx.recurringTransfer?.id === '3',
-      );
-      expect(
-        endedTransfer?.missingMonths?.map((month) => month.toISODate()),
-      ).toEqual(['2023-10-15', '2023-12-15', '2024-01-15']);
-      expect(endedTransfer?.failedCount).toBe(3);
+    it('should merge into the same row as transactions for the same recurring transfer', () => {
+      const withLaterSuccess = [
+        ...neverSucceeded,
+        ...makeRecurringTransactions({
+          id: '8',
+          recurringStart: '2023-11-15',
+          dates: ['2024-01-15'],
+          failures: neverSucceeded[0].recurringTransfer!.failures,
+        }),
+      ];
+      const { filtered } = filteredTransfers(withLaterSuccess, historyStart);
+      expect(filtered).toHaveLength(1);
+      expect(filtered[0].transaction?.amount).toBe(20);
+      expect(filtered[0].summarizedTransfers?.size).toBe(1);
+      expect(filtered[0].recurringTransfer?.failures).toHaveLength(2);
     });
   });
 
-  describe('invalid dates', () => {
-    // Every comparison against an invalid DateTime is false, so the scan's `current > end`
-    // exit would never fire; the row has to be skipped before the scan starts.
-    it('should report no missed months when recurringStart cannot be parsed', () => {
-      const { filtered } = filteredTransfers(
-        makeRecurringTransactions({
-          id: '5',
-          recurringStart: '2023-13-01',
-          dates: ['2023-10-15', '2023-12-15'],
-        }),
-        historyStart,
-      );
-      const invalidStart = filtered.find(
-        (tx) => tx.recurringTransfer?.id === '5',
-      );
-      expect(invalidStart?.missingMonths ?? []).toHaveLength(0);
-      expect(invalidStart?.failedCount).toBe(0);
-    });
-
-    it('should report no missed months when a stopped transfer has an unparseable transaction date', () => {
-      const { filtered } = filteredTransfers(
-        makeRecurringTransactions({
-          id: '6',
-          recurringStart: '2023-09-15',
-          active: false,
-          dates: ['2023-09-15', 'not-a-date'],
-        }),
-        historyStart,
-      );
-      const invalidEnd = filtered.find(
-        (tx) => tx.recurringTransfer?.id === '6',
-      );
-      expect(invalidEnd?.missingMonths ?? []).toHaveLength(0);
-      expect(invalidEnd?.failedCount).toBe(0);
-    });
+  it('should keep a recurring transfer with no transaction and no failures in upcoming', () => {
+    const { filtered, upcoming } = filteredTransfers(
+      makeRecurringTransactions({
+        id: '9',
+        recurringStart: '2024-02-15',
+        dates: [],
+      }),
+      historyStart,
+    );
+    expect(filtered).toHaveLength(0);
+    expect(upcoming).toHaveLength(1);
   });
 
   describe('history window', () => {
-    // The page only requests about the last year of transactions, so a long-running recurring
-    // transfer has no rows before the window even when every month ran successfully.
-    const makeLongRunningTransactions = (
-      dates: string[],
-      recurringStart = '2022-06-15',
-    ) => makeRecurringTransactions({ id: '4', recurringStart, dates });
-
-    it('should not count months before the history window as missing, and flag the history as truncated', () => {
+    it('should flag the history as truncated when the recurring transfer started before the window', () => {
       const { filtered } = filteredTransfers(
-        makeLongRunningTransactions([
-          '2023-01-15',
-          '2023-02-15',
-          '2023-03-15',
-          '2023-04-15',
-          '2023-05-15',
-          '2023-06-15',
-          '2023-07-15',
-          '2023-08-15',
-          '2023-09-15',
-          '2023-10-15',
-          '2023-11-15',
-          '2023-12-15',
-          '2024-01-15',
-        ]),
+        makeRecurringTransactions({
+          id: '4',
+          recurringStart: '2022-06-15',
+          dates: ['2023-01-15'],
+        }),
         historyStart,
       );
-      const longRunning = filtered.find(
-        (tx) => tx.recurringTransfer?.id === '4',
-      );
-      expect(longRunning?.missingMonths).toEqual([]);
-      expect(longRunning?.failedCount).toBe(0);
-      expect(longRunning?.historyTruncated).toBe(true);
+      expect(filtered[0].historyTruncated).toBe(true);
     });
 
-    it('should still flag a missed month inside the history window', () => {
+    it('should not flag the history as truncated when the recurring transfer started inside the window', () => {
       const { filtered } = filteredTransfers(
-        makeLongRunningTransactions([
-          '2023-01-15',
-          '2023-02-15',
-          '2023-03-15',
-          '2023-04-15',
-          '2023-05-15',
-          '2023-06-15',
-          '2023-07-15',
-          '2023-08-15',
-          '2023-09-15',
-          '2023-10-15',
-          '2023-12-15',
-          '2024-01-15',
-        ]),
+        makeRecurringTransactions({
+          id: '4',
+          recurringStart: '2023-09-15',
+          dates: ['2023-10-15'],
+        }),
         historyStart,
       );
-      const longRunning = filtered.find(
-        (tx) => tx.recurringTransfer?.id === '4',
-      );
-      expect(
-        longRunning?.missingMonths?.map((month) => month.toISODate()),
-      ).toEqual(['2023-11-15']);
-      expect(longRunning?.failedCount).toBe(1);
-    });
-
-    it('should keep the recurring day of month when the first scanned month is missing', () => {
-      const { filtered } = filteredTransfers(
-        makeLongRunningTransactions(
-          [
-            '2023-02-20',
-            '2023-03-20',
-            '2023-04-20',
-            '2023-05-20',
-            '2023-06-20',
-            '2023-07-20',
-            '2023-08-20',
-            '2023-09-20',
-            '2023-10-20',
-            '2023-11-20',
-            '2023-12-20',
-            '2024-01-20',
-          ],
-          '2022-06-20',
-        ),
-        historyStart,
-      );
-      const longRunning = filtered.find(
-        (tx) => tx.recurringTransfer?.id === '4',
-      );
-      expect(
-        longRunning?.missingMonths?.map((month) => month.toISODate()),
-      ).toEqual(['2023-01-20']);
-    });
-
-    it('should keep an end-of-month schedule on the last day of each month', () => {
-      const { filtered } = filteredTransfers(
-        makeLongRunningTransactions(
-          [
-            '2023-01-31',
-            '2023-02-28',
-            '2023-04-30',
-            '2023-05-31',
-            '2023-06-30',
-            '2023-07-31',
-            '2023-08-31',
-            '2023-09-30',
-            '2023-10-31',
-            '2023-11-30',
-            '2023-12-31',
-          ],
-          '2022-01-31',
-        ),
-        historyStart,
-      );
-      const longRunning = filtered.find(
-        (tx) => tx.recurringTransfer?.id === '4',
-      );
-      expect(
-        longRunning?.missingMonths?.map((month) => month.toISODate()),
-      ).toEqual(['2023-03-31']);
-    });
-
-    it('should scan from recurringStart, and not flag the history as truncated, when it is inside the window', () => {
-      const { filtered } = filteredTransfers(
-        makeLongRunningTransactions(['2023-10-15', '2024-01-15'], '2023-09-15'),
-        historyStart,
-      );
-      const longRunning = filtered.find(
-        (tx) => tx.recurringTransfer?.id === '4',
-      );
-      expect(
-        longRunning?.missingMonths?.map((month) => month.toISODate()),
-      ).toEqual(['2023-09-15', '2023-11-15', '2023-12-15']);
-      expect(longRunning?.historyTruncated).toBe(false);
+      expect(filtered[0].historyTruncated).toBe(false);
     });
   });
 });

@@ -1,10 +1,15 @@
 import Head from 'next/head';
 import React, { useState } from 'react';
+import { Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { NewSalaryCalculatorLanding } from 'src/components/HrTools/SalaryCalculator/Landing/NewSalaryCalculationLanding/NewSalaryCalculatorLanding';
 import { PendingSalaryCalculationLanding } from 'src/components/HrTools/SalaryCalculator/Landing/PendingSalaryCalculationLanding/PendingSalaryCalculationLanding';
 import { useLandingData } from 'src/components/HrTools/SalaryCalculator/Landing/useLandingData';
+import {
+  HcmSyncBodyStatus,
+  HcmSyncHeaderStatus,
+} from 'src/components/HrTools/Shared/HcmSyncStatus/HcmSyncStatus';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import {
   HeaderTypeEnum,
@@ -58,7 +63,11 @@ const SalaryCalculatorPage: React.FC = () => {
                 onNavListToggle={handleNavListToggle}
                 title={t('Salary Calculation Form')}
                 headerType={HeaderTypeEnum.HrTools}
+                titleExtra={<HcmSyncHeaderStatus />}
               />
+              <Box sx={{ px: 2, pt: 2 }}>
+                <HcmSyncBodyStatus />
+              </Box>
 
               {shouldShowPending ? (
                 <PendingSalaryCalculationLanding />

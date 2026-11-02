@@ -39,9 +39,6 @@ const ContactDetailsWrapper = styled(Box)(({}) => ({
 const TabPanelNoBottomPadding = styled(TabPanel)(({ theme }) => ({
   paddingBottom: '0px',
   paddingInline: theme.spacing(2),
-  '@media (max-width:500px)': {
-    paddingInline: theme.spacing(0.5),
-  },
 }));
 
 const ContactTabsWrapper = styled(Box)(({}) => ({
@@ -98,6 +95,8 @@ export const ContactDetails: React.FC = () => {
         <ContactTabsWrapper>
           <ContactTabs
             onChange={handleChange}
+            variant="scrollable"
+            scrollButtons="auto"
             TabIndicatorProps={{ children: <span /> }}
           >
             <ContactTab value={ContactDetailTabEnum.Tasks} label={t('Tasks')} />

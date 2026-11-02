@@ -11,6 +11,10 @@ import {
   iconPanelWidth,
 } from 'src/components/HrTools/Shared/CalculationReports/Shared/styledComponents/PanelLayoutStyles';
 import { Steps } from 'src/components/HrTools/Shared/CalculationReports/StepsList/StepsList';
+import {
+  HcmSyncBodyStatus,
+  useHcmSyncStatusPlacement,
+} from 'src/components/HrTools/Shared/HcmSyncStatus/HcmSyncStatus';
 import theme from 'src/theme';
 import { PanelTypeEnum } from '../Shared/sharedTypes';
 import { BackArrow } from './BackArrow';
@@ -64,6 +68,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
 }) => {
   const isLastStep = steps ? currentIndex === steps.length - 1 : false;
   const mainContentRef = useRef<HTMLDivElement>(null);
+  const hcmSyncStatus = useHcmSyncStatusPlacement();
 
   useEffect(() => {
     if (mainContentRef.current) {
@@ -85,7 +90,12 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
             )}
           </Stack>
           <Divider orientation="vertical" flexItem />
-          <StyledSidebar open={true} aria-label={sidebarAriaLabel}>
+          {/* No toggle closes this sidebar, so on phones it would always cover the page */}
+          <StyledSidebar
+            open={true}
+            aria-label={sidebarAriaLabel}
+            sx={{ display: { xs: 'none', sm: 'block' } }}
+          >
             {sidebarTitle &&
               (hasCurrentRequestPending ? (
                 <Box
@@ -110,8 +120,13 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
                 <SidebarTitle variant="h6">{sidebarTitle}</SidebarTitle>
               ))}
           </StyledSidebar>
-          <Divider orientation="vertical" flexItem />
+          <Divider
+            orientation="vertical"
+            flexItem
+            sx={{ display: { xs: 'none', sm: 'block' } }}
+          />
           <MainContent className="main-content" ref={mainContentRef}>
+            {hcmSyncStatus && <HcmSyncBodyStatus {...hcmSyncStatus} />}
             {mainContent}
           </MainContent>
         </>
@@ -184,6 +199,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
             </>
           )}
           <MainContent className="main-content" ref={mainContentRef}>
+            {hcmSyncStatus && <HcmSyncBodyStatus {...hcmSyncStatus} />}
             {mainContent}
           </MainContent>
         </>

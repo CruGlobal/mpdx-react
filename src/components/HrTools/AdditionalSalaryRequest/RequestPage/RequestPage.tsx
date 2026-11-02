@@ -130,7 +130,7 @@ const MainContent: React.FC = () => {
             FormComponent={pageType === PageEnum.New ? NewForm : EditForm}
           />
           {!reviewPage && (
-            <Stack direction="column" width={mainContentWidth}>
+            <Stack direction="column" width="100%" maxWidth={mainContentWidth}>
               <DirectionButtons
                 formTitle={t('Additional Salary Request')}
                 overrideTitle={overrideTitle}

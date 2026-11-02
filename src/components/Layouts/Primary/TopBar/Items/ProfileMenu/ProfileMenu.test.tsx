@@ -1,21 +1,24 @@
 import { NextRouter } from 'next/router';
 import React from 'react';
+import { ApolloClient } from '@apollo/client';
 import { MockedResponse } from '@apollo/client/testing';
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import fetchMock from 'jest-fetch-mock';
-import { signOut } from 'next-auth/react';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { mockSession } from '__tests__/util/mockSession';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import { TestSetupProvider } from 'src/components/Setup/SetupProvider';
+import { clearSessionData, signOutAndClear } from 'src/lib/clearSessionData';
 import theme from '../../../../../../theme';
 import {
   getTopBarMock,
   getTopBarMockWithMultipleAccountLists,
 } from '../../TopBar.mock';
 import ProfileMenu from './ProfileMenu';
+
+jest.mock('src/lib/clearSessionData');
 
 const mockEnqueue = jest.fn();
 
@@ -205,7 +208,11 @@ describe('ProfileMenu', () => {
     );
     await waitFor(() => expect(getByText(/sign out/i)).toBeInTheDocument());
     userEvent.click(getByText(/sign out/i));
-    expect(signOut).toHaveBeenCalledWith({ callbackUrl: 'signOut' });
+    await waitFor(() =>
+      expect(signOutAndClear).toHaveBeenCalledWith(expect.any(ApolloClient), {
+        callbackUrl: 'signOut',
+      }),
+    );
   });
 
   it('hides links during the setup tour', async () => {
@@ -267,6 +274,23 @@ describe('ProfileMenu while Impersonating', () => {
     await waitFor(() =>
       expect(window.location.href).toEqual('/api/stop-impersonating'),
     );
+  });
+
+  it('clears session data before stopping impersonation', async () => {
+    const { getByTestId, getByText } = render(<TestComponent />);
+    await waitFor(() =>
+      expect(getByText('Impersonating John Smith')).toBeInTheDocument(),
+    );
+    userEvent.click(getByTestId('profileMenuButton'));
+    await waitFor(() =>
+      expect(getByText(/stop impersonating/i)).toBeInTheDocument(),
+    );
+    userEvent.click(getByText(/stop impersonating/i));
+
+    await waitFor(() =>
+      expect(window.location.href).toMatch(/\/api\/stop-impersonating$/),
+    );
+    expect(clearSessionData).toHaveBeenCalled();
   });
 });
 //eslint-disable-next-line jest/no-commented-out-tests

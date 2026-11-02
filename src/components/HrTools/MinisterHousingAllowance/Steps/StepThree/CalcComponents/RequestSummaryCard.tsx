@@ -86,9 +86,9 @@ export const RequestSummaryCard: React.FC<RequestSummaryCardProps> = ({
                 </Typography>
                 <Box sx={{ color: 'text.secondary' }}>
                   <Trans t={t} values={{ above }}>
-                    This is calculated from your {above} responses and is the
-                    lower of the Annual Fair Rental Value or the Annual Cost of
-                    Providing a Home.
+                    This is calculated from your {{ above }} responses and is
+                    the lower of the Annual Fair Rental Value or the Annual Cost
+                    of Providing a Home.
                   </Trans>
                 </Box>
               </TableCell>

@@ -198,7 +198,7 @@ describe('Announcements', () => {
     ])(
       'should open create appeal modal on the $type',
       async ({ announcement }) => {
-        const { findByRole, getByText } = render(
+        const { findByRole, getByRole, getByText } = render(
           <TestComponent announcement={announcement} />,
         );
 
@@ -224,6 +224,9 @@ describe('Announcements', () => {
         await waitFor(() => {
           expect(getByText('Add Appeal')).toBeInTheDocument();
         });
+        expect(getByRole('textbox', { name: 'Name' })).toHaveValue(
+          '2020 End of Year Ask',
+        );
       },
     );
 

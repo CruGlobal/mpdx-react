@@ -110,6 +110,8 @@ export const createCache = () =>
           tasks: paginationFieldPolicy,
           userNotifications: paginationFieldPolicy,
           partnerGivingAnalysis: paginationFieldPolicy,
+          // A refresh returns the same household, so it replaces the cached read every page shows
+          hcm: { keyArgs: ['effectiveDate', 'personNumber'] },
           // When loading a user option, look it up from the cache by its key
           userOption: {
             read: (_, { args, toReference }) =>

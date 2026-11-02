@@ -326,7 +326,10 @@ describe('PdsGoalCalculator', () => {
 
     it('shows a success snackbar with the formatted monthly goal on completion', async () => {
       const { findByRole, findByText } = render(
-        <PdsGoalCalculatorTestWrapper calculationMock={simpleFormMock}>
+        <PdsGoalCalculatorTestWrapper
+          calculationMock={simpleFormMock}
+          accountGeographicLocation="None"
+        >
           <PdsGoalCalculator />
         </PdsGoalCalculatorTestWrapper>,
       );
@@ -406,7 +409,7 @@ describe('PdsGoalCalculator', () => {
         await findByText(
           `Successfully updated your monthly goal to $${EXPECTED_MONTHLY_GOAL.toLocaleString(
             'en-US',
-          )} and geographic location to Miami, FL!`,
+          )} and default location multiplier to Miami, FL!`,
         ),
       ).toBeInTheDocument();
     });

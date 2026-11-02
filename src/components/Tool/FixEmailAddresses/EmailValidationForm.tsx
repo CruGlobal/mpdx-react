@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import {
   Box,
   FormControl,
@@ -12,11 +13,10 @@ import { styled } from '@mui/material/styles';
 import clsx from 'clsx';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
-import { useTranslation } from 'react-i18next';
+import { TFunction, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
 import { AddIcon } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/StyledComponents';
-import i18n from 'src/lib/i18n';
 import { useEmailAddressesMutation } from './AddEmailAddress.generated';
 import {
   GetInvalidEmailAddressesDocument,
@@ -65,23 +65,25 @@ interface EmailValidationFormProps {
   accountListId: string;
 }
 
-const validationSchema = yup.object({
-  email: yup
-    .string()
-    .email(i18n.t('Invalid Email Address Format'))
-    .required(i18n.t('Please enter a valid email address')),
-  isPrimary: yup.bool().default(false),
-  updatedAt: yup.string(),
-  source: yup.string(),
-  personId: yup.string(),
-  isValid: yup.bool().default(false),
-});
+const getValidationSchema = (t: TFunction) =>
+  yup.object({
+    email: yup
+      .string()
+      .email(t('Invalid Email Address Format'))
+      .required(t('Please enter a valid email address')),
+    isPrimary: yup.bool().default(false),
+    updatedAt: yup.string(),
+    source: yup.string(),
+    personId: yup.string(),
+    isValid: yup.bool().default(false),
+  });
 
 const EmailValidationForm = ({
   personId,
   accountListId,
 }: EmailValidationFormProps) => {
   const { t } = useTranslation();
+  const validationSchema = useMemo(() => getValidationSchema(t), [t]);
   const [emailAddressesMutation] = useEmailAddressesMutation();
   const { enqueueSnackbar } = useSnackbar();
   const { classes } = useStyles();

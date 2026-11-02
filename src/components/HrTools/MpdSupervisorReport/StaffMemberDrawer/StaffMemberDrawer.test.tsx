@@ -5,7 +5,10 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { MpdAssignmentCategoryGroupEnum } from 'src/graphql/types.generated';
+import {
+  MpdAssignmentCategoryGroupEnum,
+  MpdUserPersonTypeEnum,
+} from 'src/graphql/types.generated';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
 import { UpdateStaffGeographicLocationMutation } from '../GeographicLocationSelect/UpdateStaffGeographicLocation.generated';
@@ -30,6 +33,8 @@ const geographicConstants = {
     mpdGoalMiscConstants: [],
   },
 };
+
+const mutationSpy = jest.fn();
 
 const benchmarkWarning = 'MPD health cannot be graded without both benchmarks.';
 
@@ -82,6 +87,7 @@ const renderDrawer = ({
                 },
               },
             }}
+            onCall={mutationSpy}
           >
             <MpdSupervisorReportProvider>
               <Opener />
@@ -111,6 +117,15 @@ describe('StaffMemberDrawer', () => {
     expect(getByText('John Smith')).toBeInTheDocument();
     expect(getByText('10000001')).toBeInTheDocument();
     expect(getByText('1000000001')).toBeInTheDocument();
+  });
+
+  it('keeps the quarter chips in view in the drawer header', () => {
+    const { getByText } = renderDrawer();
+    openMember(memberWithSpouse);
+    expect(getByText('FQ3 26, on track')).toBeInTheDocument();
+    expect(getByText('FQ2 26, at risk')).toBeInTheDocument();
+    // FQ2's average is the only $2,200.00 in the drawer
+    expect(getByText('$2,200.00')).toBeInTheDocument();
   });
 
   it('renders the spouse name and identifiers', () => {
@@ -159,7 +174,8 @@ describe('StaffMemberDrawer', () => {
     openMember(memberWithSpouse);
     expect(getByText('MPD Health Benchmark:')).toBeInTheDocument();
     expect(getByText('Monthly Gross Salary')).toBeInTheDocument();
-    expect(getByText('$4,500.00')).toBeInTheDocument();
+    // The header's quarter chips can show the same amount, so match the detail
+    expect(getByText('$4,500.00', { selector: 'p' })).toBeInTheDocument();
     expect(getByText('New Staff Monthly Salary')).toBeInTheDocument();
     expect(getByText('$2,500.00')).toBeInTheDocument();
   });
@@ -215,7 +231,7 @@ describe('StaffMemberDrawer', () => {
     const { getByText, queryByText } = renderDrawer();
     openMember(managedStaffMember({ newStaffMonthlySalary: null }));
     expect(queryByText('$2,500.00')).not.toBeInTheDocument();
-    expect(getByText('$4,500.00')).toBeInTheDocument();
+    expect(getByText('$4,500.00', { selector: 'p' })).toBeInTheDocument();
   });
 
   it('warns that health cannot be graded without the gross salary', () => {
@@ -240,11 +256,100 @@ describe('StaffMemberDrawer', () => {
     expect(queryByText(benchmarkWarning)).not.toBeInTheDocument();
   });
 
+  describe('interns, part-time field staff and volunteers', () => {
+    const grossOnlyWarning =
+      'MPD health cannot be graded without the Monthly Gross Salary.';
+
+    it.each([
+      MpdUserPersonTypeEnum.EmployeePtfs,
+      MpdUserPersonTypeEnum.NonworkerVolunteer,
+    ])('never warns about benchmarks for %s', (userPersonType) => {
+      const { getByText, queryByRole } = renderDrawer();
+      openMember(
+        managedStaffMember({
+          userPersonType,
+          newStaffMonthlySalary: null,
+          quarterlyHealth: { monthlyGrossSalary: null, completedQuarters: [] },
+        }),
+      );
+      expect(getByText('MPD Health Benchmark:')).toBeInTheDocument();
+      expect(queryByRole('alert')).not.toBeInTheDocument();
+    });
+
+    it('does not warn an intern who has a gross salary', () => {
+      const { queryByRole } = renderDrawer();
+      openMember(
+        managedStaffMember({
+          userPersonType: MpdUserPersonTypeEnum.EmployeeUsIntern,
+          newStaffMonthlySalary: null,
+        }),
+      );
+      expect(queryByRole('alert')).not.toBeInTheDocument();
+    });
+
+    it('warns an intern only about the missing gross salary', () => {
+      const { getByRole } = renderDrawer();
+      openMember(
+        managedStaffMember({
+          userPersonType: MpdUserPersonTypeEnum.EmployeeUsIntern,
+          newStaffMonthlySalary: null,
+          quarterlyHealth: { monthlyGrossSalary: null, completedQuarters: [] },
+        }),
+      );
+      expect(getByRole('alert')).toHaveTextContent(grossOnlyWarning);
+    });
+
+    it('shows N/A for the New Staff Monthly Salary and explains why', async () => {
+      const { findByRole, getByRole, getByText, queryByText } = renderDrawer();
+      openMember(
+        managedStaffMember({
+          userPersonType: MpdUserPersonTypeEnum.NonworkerVolunteer,
+        }),
+      );
+      expect(getByText('N/A')).toBeInTheDocument();
+      expect(queryByText('$2,500.00')).not.toBeInTheDocument();
+
+      const icon = getByRole('img', {
+        name: 'Why New Staff Monthly Salary does not apply',
+      });
+      userEvent.hover(icon);
+      expect(await findByRole('tooltip')).toHaveTextContent(
+        "Interns, part-time field staff and volunteers aren't measured against the New Staff Monthly Salary.",
+      );
+    });
+
+    it('does not flag a gross salary below the New Staff salary', () => {
+      const { getByText, queryByLabelText } = renderDrawer();
+      openMember(
+        managedStaffMember({
+          userPersonType: MpdUserPersonTypeEnum.EmployeePtfs,
+          newStaffMonthlySalary: 5000,
+        }),
+      );
+      expect(getByText('$4,500.00', { selector: 'p' })).toBeInTheDocument();
+      expect(queryByLabelText(/below the New Staff/)).not.toBeInTheDocument();
+    });
+  });
+
   it('shows the selected member saved geographic location', async () => {
     const { findByRole } = renderDrawer();
     openMember(memberWithSpouse);
     const input = await findByRole('combobox', { name: 'Geographic Location' });
     await waitFor(() => expect(input).toHaveValue('Orlando, FL (6%)'));
+  });
+
+  it.each([
+    MpdUserPersonTypeEnum.EmployeeUsIntern,
+    MpdUserPersonTypeEnum.EmployeePtfs,
+    MpdUserPersonTypeEnum.NonworkerVolunteer,
+  ])('hides the geographic multiplier for %s', (userPersonType) => {
+    const { getByText, queryByRole, queryByText } = renderDrawer();
+    openMember(managedStaffMember({ userPersonType }));
+    expect(getByText('N/A')).toBeInTheDocument();
+    expect(queryByText('Geographic Multiplier:')).not.toBeInTheDocument();
+    expect(
+      queryByRole('combobox', { name: 'Geographic Location' }),
+    ).not.toBeInTheDocument();
   });
 
   it('updates the new staff monthly salary after saving a location', async () => {
@@ -391,6 +496,24 @@ describe('StaffMemberDrawer', () => {
     expect(getByRole('tab', { name: 'Monthly Summary' })).toHaveAttribute(
       'aria-selected',
       'false',
+    );
+  });
+
+  it("grades the Quarterly tab against the member's person type", async () => {
+    const { getByRole } = renderDrawer();
+    openMember(
+      managedStaffMember({
+        staffAccountId: '1000000009',
+        userPersonType: MpdUserPersonTypeEnum.NonworkerVolunteer,
+      }),
+    );
+    userEvent.click(getByRole('tab', { name: 'Quarterly' }));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('QuarterlyPayrollHistory', {
+        staffAccountId: '1000000009',
+        userPersonType: MpdUserPersonTypeEnum.NonworkerVolunteer,
+      }),
     );
   });
 

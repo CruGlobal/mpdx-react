@@ -1,5 +1,6 @@
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
+import { MinistersHousingIneligibilityReasonEnum } from 'src/graphql/types.generated';
 import {
   SalaryCalculatorTestWrapper,
   SalaryCalculatorTestWrapperProps,
@@ -121,7 +122,7 @@ describe('useMhaRequestData', () => {
   it('hides user fields when user is not eligible', async () => {
     const { result } = renderHook(() => useMhaRequestData(), {
       wrapper: createWrapper({
-        hcmUser: { mhaEit: { mhaEligibility: false } },
+        hcmUser: { mhaBoardApproval: { mhaEligibility: false } },
       }),
     });
 
@@ -136,7 +137,7 @@ describe('useMhaRequestData', () => {
   it('hides spouse fields when spouse is not eligible', async () => {
     const { result } = renderHook(() => useMhaRequestData(), {
       wrapper: createWrapper({
-        hcmSpouse: { mhaEit: { mhaEligibility: false } },
+        hcmSpouse: { mhaBoardApproval: { mhaEligibility: false } },
       }),
     });
 
@@ -148,11 +149,156 @@ describe('useMhaRequestData', () => {
     expect(result.current.showSpouseFields).toBe(false);
   });
 
+  it('shows fields from the salary eligibility and amount when the MHA Request eligibility fails', async () => {
+    const { result } = renderHook(() => useMhaRequestData(), {
+      wrapper: createWrapper({
+        hcmUser: {
+          mhaEit: {
+            mhaEligibility: false,
+            ineligibilityReasonCode:
+              MinistersHousingIneligibilityReasonEnum.IbsCertificationExpired,
+          },
+          mhaBoardApproval: {
+            mhaEligibility: true,
+            ineligibilityReasonCode: null,
+          },
+          mhaRequest: {
+            currentApprovedOverallAmount: 0,
+            boardApprovedOverallAmount: 18000,
+          },
+        },
+        hasSpouse: false,
+      }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.approvedAmount).toBe('$18,000');
+    });
+
+    expect(result.current.userEligible).toBe(true);
+    expect(result.current.showUserFields).toBe(true);
+    expect(result.current.anyIneligible).toBe(false);
+    expect(result.current.anyEligibleWithoutApprovedMha).toBe(false);
+    expect(result.current.userIneligibilityReasonCode).toBeNull();
+  });
+
+  it('hides fields when the salary eligibility fails even though the MHA Request eligibility passes', async () => {
+    const { result } = renderHook(() => useMhaRequestData(), {
+      wrapper: createWrapper({
+        hcmUser: {
+          mhaEit: { mhaEligibility: true, ineligibilityReasonCode: null },
+          mhaBoardApproval: {
+            mhaEligibility: false,
+            ineligibilityReasonCode:
+              MinistersHousingIneligibilityReasonEnum.MissingBoardApprovedOnDate,
+          },
+          mhaRequest: {
+            currentApprovedOverallAmount: 20000,
+            boardApprovedOverallAmount: 0,
+          },
+        },
+        hasSpouse: false,
+      }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.userPreferredName).toBe('John');
+    });
+
+    expect(result.current.userEligible).toBe(false);
+    expect(result.current.showUserFields).toBe(false);
+    expect(result.current.anyIneligible).toBe(true);
+    expect(result.current.approvedAmount).toBe('$0');
+    expect(result.current.userIneligibilityReasonCode).toBe(
+      MinistersHousingIneligibilityReasonEnum.MissingBoardApprovedOnDate,
+    );
+  });
+
+  it('treats a salary-eligible person with no salary amount as having no approved MHA', async () => {
+    const { result } = renderHook(() => useMhaRequestData(), {
+      wrapper: createWrapper({
+        hcmUser: {
+          mhaRequest: {
+            currentApprovedOverallAmount: 20000,
+            boardApprovedOverallAmount: null,
+          },
+        },
+        hasSpouse: false,
+      }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.anyEligibleWithoutApprovedMha).toBe(true);
+    });
+
+    expect(result.current.showUserFields).toBe(false);
+  });
+
+  it('returns each person\u2019s own MHA and MHI ineligibility reason codes', async () => {
+    const { result } = renderHook(() => useMhaRequestData(), {
+      wrapper: createWrapper({
+        hcmUser: {
+          mhaEit: {
+            mhaEligibility: false,
+            ineligibilityReasonCode:
+              MinistersHousingIneligibilityReasonEnum.IbsCertificationExpired,
+          },
+          mhaBoardApproval: {
+            mhaEligibility: false,
+            ineligibilityReasonCode:
+              MinistersHousingIneligibilityReasonEnum.PersonType,
+          },
+          mhiEit: {
+            mhiEligibility: false,
+            ineligibilityReasonCode:
+              MinistersHousingIneligibilityReasonEnum.AssignmentStatus,
+          },
+        },
+        hcmSpouse: {
+          mhaEit: {
+            mhaEligibility: false,
+            ineligibilityReasonCode:
+              MinistersHousingIneligibilityReasonEnum.MissingIbsCertificationDate,
+          },
+          mhaBoardApproval: {
+            mhaEligibility: false,
+            ineligibilityReasonCode:
+              MinistersHousingIneligibilityReasonEnum.SupportType,
+          },
+          mhiEit: {
+            mhiEligibility: false,
+            ineligibilityReasonCode:
+              MinistersHousingIneligibilityReasonEnum.NoIbsCertification,
+          },
+        },
+      }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.userPreferredName).toBe('John');
+    });
+
+    // Distinct codes prove nothing is crossed between user and spouse, between
+    // the MHA and MHI results, or from the MHA Request form's mhaEit result
+    expect(result.current.userIneligibilityReasonCode).toBe(
+      MinistersHousingIneligibilityReasonEnum.PersonType,
+    );
+    expect(result.current.userMhiIneligibilityReasonCode).toBe(
+      MinistersHousingIneligibilityReasonEnum.AssignmentStatus,
+    );
+    expect(result.current.spouseIneligibilityReasonCode).toBe(
+      MinistersHousingIneligibilityReasonEnum.SupportType,
+    );
+    expect(result.current.spouseMhiIneligibilityReasonCode).toBe(
+      MinistersHousingIneligibilityReasonEnum.NoIbsCertification,
+    );
+  });
+
   it('hides both fields when neither is eligible', async () => {
     const { result } = renderHook(() => useMhaRequestData(), {
       wrapper: createWrapper({
-        hcmUser: { mhaEit: { mhaEligibility: false } },
-        hcmSpouse: { mhaEit: { mhaEligibility: false } },
+        hcmUser: { mhaBoardApproval: { mhaEligibility: false } },
+        hcmSpouse: { mhaBoardApproval: { mhaEligibility: false } },
       }),
     });
 
@@ -167,7 +313,7 @@ describe('useMhaRequestData', () => {
   it('shows no MHA message when user has no MHA request', async () => {
     const { result } = renderHook(() => useMhaRequestData(), {
       wrapper: createWrapper({
-        hcmUser: { mhaRequest: { currentApprovedOverallAmount: 0 } },
+        hcmUser: { mhaRequest: { boardApprovedOverallAmount: 0 } },
       }),
     });
 
@@ -182,8 +328,8 @@ describe('useMhaRequestData', () => {
   it('shows no MHA message for both when neither has MHA request', async () => {
     const { result } = renderHook(() => useMhaRequestData(), {
       wrapper: createWrapper({
-        hcmUser: { mhaRequest: { currentApprovedOverallAmount: 0 } },
-        hcmSpouse: { mhaRequest: { currentApprovedOverallAmount: 0 } },
+        hcmUser: { mhaRequest: { boardApprovedOverallAmount: 0 } },
+        hcmSpouse: { mhaRequest: { boardApprovedOverallAmount: 0 } },
       }),
     });
 
@@ -211,7 +357,7 @@ describe('useMhaRequestData', () => {
   it('hides user fields when user is ineligible and no spouse exists', async () => {
     const { result } = renderHook(() => useMhaRequestData(), {
       wrapper: createWrapper({
-        hcmUser: { mhaEit: { mhaEligibility: false } },
+        hcmUser: { mhaBoardApproval: { mhaEligibility: false } },
         hasSpouse: false,
       }),
     });
@@ -229,7 +375,7 @@ describe('useMhaRequestData', () => {
       wrapper: createWrapper({
         hcmUser: {
           staffInfo: { country: 'IT' },
-          mhaEit: { mhaEligibility: false },
+          mhaBoardApproval: { mhaEligibility: false },
           mhiEit: { mhiEligibility: true },
         },
         hasSpouse: false,
@@ -249,7 +395,7 @@ describe('useMhaRequestData', () => {
       wrapper: createWrapper({
         hcmUser: {
           staffInfo: { country: 'IT' },
-          mhaEit: { mhaEligibility: false },
+          mhaBoardApproval: { mhaEligibility: false },
           mhiEit: { mhiEligibility: true },
         },
         hasSpouse: false,
@@ -276,11 +422,11 @@ describe('useMhaRequestData', () => {
       wrapper: createWrapper({
         hcmUser: {
           staffInfo: { country: 'US' },
-          mhaEit: { mhaEligibility: true },
+          mhaBoardApproval: { mhaEligibility: true },
         },
         hcmSpouse: {
           staffInfo: { country: 'IT' },
-          mhaEit: { mhaEligibility: false },
+          mhaBoardApproval: { mhaEligibility: false },
           mhiEit: { mhiEligibility: true },
         },
         salaryRequestMock: { mhaAmount: 12000, spouseMhaAmount: 12000 },

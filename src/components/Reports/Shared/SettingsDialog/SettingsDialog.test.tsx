@@ -10,6 +10,7 @@ import {
   StaffExpenseCategoryEnum,
   StaffExpensesSubCategoryEnum,
 } from 'src/graphql/types.generated';
+import i18n from 'src/lib/i18n';
 import { ReportsStaffExpensesQuery } from '../../StaffExpenseReport/GetStaffExpense.generated';
 import { DateRange } from '../../StaffExpenseReport/Helpers/StaffReportEnum';
 import {
@@ -260,7 +261,7 @@ describe('SettingsDialog', () => {
 
   it('rejects a start date after the viewed month when no end date is set', async () => {
     await expect(
-      getValidationSchema(DateTime.fromISO('2019-06-01')).validateAt(
+      getValidationSchema(i18n.t, DateTime.fromISO('2019-06-01')).validateAt(
         'startDate',
         {
           startDate: DateTime.fromISO('2019-09-01'),
@@ -274,7 +275,7 @@ describe('SettingsDialog', () => {
 
   it('accepts a start date within the viewed month when no end date is set', async () => {
     await expect(
-      getValidationSchema(DateTime.fromISO('2019-06-01')).validateAt(
+      getValidationSchema(i18n.t, DateTime.fromISO('2019-06-01')).validateAt(
         'startDate',
         {
           startDate: DateTime.fromISO('2019-06-30'),

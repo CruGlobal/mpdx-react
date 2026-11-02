@@ -19,6 +19,7 @@ import {
 } from 'src/hooks/useGoalCalculatorConstants';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { getQueryParam } from 'src/lib/queryParam';
+import { useDrawerOpenState } from '../../Shared/CalculationReports/PanelLayout/useDrawerOpenState';
 import {
   GoalCalculatorReportEnum,
   GoalCalculatorStepEnum,
@@ -127,7 +128,17 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const previousDefaultTypeRef = useRef<DefaultTypeEnum | null>(null);
   const [defaultTypeChanged, setDefaultTypeChanged] = useState(false);
 
+  const goalLoaded = !!goalCalculationResult.data;
+
   useEffect(() => {
+    // Until the goal loads, defaultType is derived from the SingleField
+    // fallback, not from the goal. Seeding the tracker with that guess would
+    // make the loaded value register as a change and reset predefined line
+    // items to the New Staff reference amounts.
+    if (!goalLoaded) {
+      return;
+    }
+
     const previousDefaultType = previousDefaultTypeRef.current;
 
     if (previousDefaultType && previousDefaultType !== defaultType) {
@@ -135,7 +146,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     }
 
     previousDefaultTypeRef.current = defaultType;
-  }, [defaultType]);
+  }, [defaultType, goalLoaded]);
 
   const clearDefaultTypeChanged = useCallback(() => {
     setDefaultTypeChanged(false);
@@ -168,7 +179,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     useState<GoalCalculatorReportEnum>(GoalCalculatorReportEnum.MpdGoal);
   const [rightPanelContent, setRightPanelContent] =
     useState<JSX.Element | null>(null);
-  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(true);
+  const [isDrawerOpen, setIsDrawerOpen] = useDrawerOpenState();
   const { trackMutation: trackMutationPromise, isMutating } =
     useTrackMutation();
 

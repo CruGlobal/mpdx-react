@@ -48,10 +48,9 @@ export const CreateTransferRows = (history: Transfers): Transfers => ({
   note: history.note ?? '',
   actions: history.actions ?? '',
   recurringId: history.recurringId ?? '',
-  failedCount: history.failedCount,
-  baseAmount: history.baseAmount,
+  recurringAmount: history.recurringAmount,
   summarizedTransfers: history.summarizedTransfers ?? null,
-  missingMonths: history.missingMonths ?? null,
+  failures: history.failures ?? null,
   historyTruncated: history.historyTruncated ?? false,
 });
 

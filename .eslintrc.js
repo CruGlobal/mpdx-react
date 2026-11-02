@@ -101,6 +101,13 @@ module.exports = {
         message:
           '<Trans> must be passed a t={t} prop from useTranslation() so it resolves keys against the component i18n instance.',
       },
+      // `yarn extract` writes `{name}` into the key literally, but at runtime the value is spliced in, so the lookup misses.
+      {
+        selector:
+          ":matches(JSXElement[openingElement.name.name='Trans'], JSXElement[openingElement.name.name='Trans'] JSXElement) > JSXExpressionContainer > .expression:not(Literal, TemplateLiteral[expressions.length=0], ObjectExpression[properties.length=1], JSXEmptyExpression)",
+        message:
+          'Only `{{ name }}` interpolation (with `values={{ name }}`) or string literals like `{" "}` may appear inside <Trans>. Other expressions make the extracted key differ from the runtime key, so non-English locales fall back to English.',
+      },
     ],
     'react/jsx-no-useless-fragment': 'error',
     'react/prop-types': 'off',

@@ -17,8 +17,14 @@ interface UseCapsResult {
   /** The sum of the users' requested year-to-date gross salaries, which includes ASRs */
   combinedYtdGross: number;
 
-  /** The sum of the users' effective caps */
+  /** The sum of the users' effective caps, limited to their combined cap */
   combinedEffectiveCap: number;
+
+  /**
+   * Whether the couple chose to manually split their combined cap but the chosen caps add up to
+   * more than the combined cap. The server refuses to submit these requests.
+   */
+  splitCapExceeded: boolean;
 
   /** The person whose salary is over their effective cap */
   overCapPerson: OverCapPerson | null;
@@ -36,8 +42,20 @@ export const useCaps = (): UseCapsResult => {
     (calcs?.requestedGross ?? 0) + (spouseCalcs?.requestedGross ?? 0);
   const combinedYtdGross =
     (calcs?.requestedYtdGross ?? 0) + (spouseCalcs?.requestedYtdGross ?? 0);
-  const combinedEffectiveCap =
+  const summedEffectiveCaps =
     (calcs?.effectiveCap ?? 0) + (spouseCalcs?.effectiveCap ?? 0);
+  // Each effective cap is only limited by that person's own caps, so their sum can exceed the
+  // combined cap when a couple's manually chosen caps add up to more than the combined cap
+  const combinedEffectiveCap =
+    typeof calcs?.combinedCap === 'number'
+      ? Math.min(summedEffectiveCaps, calcs.combinedCap)
+      : summedEffectiveCaps;
+
+  const splitCapExceeded =
+    !!calculation?.splitCapRequired &&
+    !!calculation.manuallySplitCap &&
+    (calculation.salaryCap ?? 0) + (calculation.spouseSalaryCap ?? 0) >
+      (calcs?.combinedCap ?? 0);
 
   const overCapPerson =
     reason === ProgressiveApprovalTierReasonEnum.OverUserCap && calcs
@@ -57,6 +75,7 @@ export const useCaps = (): UseCapsResult => {
     combinedGross,
     combinedYtdGross,
     combinedEffectiveCap,
+    splitCapExceeded,
     overCapPerson,
   };
 };

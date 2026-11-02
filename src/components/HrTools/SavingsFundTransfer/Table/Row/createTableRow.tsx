@@ -80,7 +80,7 @@ export function populateTransferRows(options: Options) {
   };
 
   const amount: RenderCell = ({ row }) => {
-    const failed = row.failedCount && row.failedCount > 0;
+    const failedCount = row.failures?.length ?? 0;
     return (
       <Box
         sx={{
@@ -94,9 +94,9 @@ export function populateTransferRows(options: Options) {
             showTrailingZeros: true,
           })}
         </Typography>
-        {failed ? (
+        {failedCount > 0 ? (
           <Badge
-            badgeContent={row.failedCount}
+            badgeContent={failedCount}
             overlap="circular"
             anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             color="error"

@@ -1,8 +1,9 @@
 query AccountBalance {
-  reportsStaffExpenses {
+  reportsStaffExpenses(fundTypes: ["Primary"]) {
     funds {
       id
-      total
+      fundType
+      endBalance
     }
   }
 }

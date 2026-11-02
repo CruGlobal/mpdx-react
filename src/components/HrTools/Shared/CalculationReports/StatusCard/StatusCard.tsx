@@ -122,13 +122,20 @@ export const StatusCard: React.FC<StatusCardProps> = ({
       <CardContent sx={{ ...styling }}>{children}</CardContent>
       <Divider />
       {!hideActions && (
-        <Box sx={{ p: 2 }}>
+        <Box
+          sx={{
+            p: 2,
+            display: { xs: 'flex', sm: 'block' },
+            flexDirection: 'column',
+            gap: 1,
+          }}
+        >
           <Button
             component={linkOne ? NextLink : 'button'}
             href={linkOne}
             onClick={handleLinkOne}
             variant={isRequest ? 'contained' : 'outlined'}
-            sx={{ px: 2, py: 1, mr: 1 }}
+            sx={{ px: 2, py: 1, mr: { sm: 1 } }}
           >
             {linkOneText}
           </Button>
@@ -144,7 +151,7 @@ export const StatusCard: React.FC<StatusCardProps> = ({
             </Button>
           )}
           {isRequest && (
-            <Box sx={{ float: 'right' }}>
+            <Box sx={{ float: { sm: 'right' } }}>
               <Tooltip
                 title={
                   disableCancel
@@ -152,13 +159,18 @@ export const StatusCard: React.FC<StatusCardProps> = ({
                     : ''
                 }
               >
-                <span data-testid="cancel-button-wrapper">
+                <Box
+                  component="span"
+                  data-testid="cancel-button-wrapper"
+                  sx={{ display: { xs: 'block', sm: 'inline' } }}
+                >
                   <Button
                     sx={{
                       color: 'error.light',
                       px: 2,
                       py: 1,
                       fontWeight: 'bold',
+                      width: { xs: '100%', sm: 'auto' },
                     }}
                     disabled={disableCancel}
                     onClick={() => setOpenCancel(true)}
@@ -166,7 +178,7 @@ export const StatusCard: React.FC<StatusCardProps> = ({
                     <Cancel sx={{ mr: 0.5 }} />
                     {t('Cancel Request')}
                   </Button>
-                </span>
+                </Box>
               </Tooltip>
             </Box>
           )}

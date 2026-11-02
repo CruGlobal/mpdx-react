@@ -1,8 +1,6 @@
-import Link from 'next/link';
 import { Box, Button, Container, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import theme from 'src/theme';
 import { getLimitedText } from './getLimitedText';
 
 interface LimitedAccessProps {
@@ -19,18 +17,8 @@ export const LimitedAccess: React.FC<LimitedAccessProps> = ({
   const { t } = useTranslation();
   const accountListId = useAccountListId();
 
-  const link = (
-    <Link
-      href="mailto:support@mpdx.org"
-      style={{ color: theme.palette.primary.main, fontWeight: 'bold' }}
-    >
-      support@mpdx.org
-    </Link>
-  );
-
   const { title, content } = getLimitedText({
     t,
-    link,
     noStaffAccount,
     userGroupError,
     notSupervisor,

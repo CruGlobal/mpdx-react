@@ -1,4 +1,5 @@
 import { TFunction } from 'react-i18next';
+import { MpdUserPersonTypeEnum } from 'src/graphql/types.generated';
 
 export enum MpdSupervisorReportQuickFilterEnum {
   AllPeople = 'allPeople',
@@ -53,3 +54,30 @@ export const quickFilterDescription = (
 };
 
 export const ALL_TYPES = 'all';
+
+export const userPersonTypeGroups: MpdUserPersonTypeEnum[][] = [
+  [
+    MpdUserPersonTypeEnum.EmployeeStaff,
+    MpdUserPersonTypeEnum.EmployeePtfs,
+    MpdUserPersonTypeEnum.EmployeeUsIntern,
+    MpdUserPersonTypeEnum.EmployeeInternationalIntern,
+    MpdUserPersonTypeEnum.EmployeeNationalStaffExpat,
+    MpdUserPersonTypeEnum.EmployeeStaffNonRmoSpouse,
+  ],
+  [
+    MpdUserPersonTypeEnum.NonworkerStaff,
+    MpdUserPersonTypeEnum.NonworkerNationalStaff,
+    MpdUserPersonTypeEnum.NonworkerNmbhr,
+    MpdUserPersonTypeEnum.NonworkerStaffEmeritus,
+    MpdUserPersonTypeEnum.NonworkerVolunteer,
+  ],
+  [
+    MpdUserPersonTypeEnum.PendingStaff,
+    MpdUserPersonTypeEnum.PendingPtfs,
+    MpdUserPersonTypeEnum.PendingUsIntern,
+    MpdUserPersonTypeEnum.PendingInternationalIntern,
+    MpdUserPersonTypeEnum.PendingStaffNonRmoSpouse,
+  ],
+];
+
+export const userPersonTypeOptions = userPersonTypeGroups.flat();

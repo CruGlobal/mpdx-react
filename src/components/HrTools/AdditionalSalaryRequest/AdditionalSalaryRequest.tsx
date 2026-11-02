@@ -1,11 +1,11 @@
 import { Container, Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { Notification } from 'src/components/Notification/Notification';
 import { ElectionType403bEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { useIconPanelItems } from '../Shared/CalculationReports/PanelLayout/useIconPanelItems';
 import { PanelTypeEnum } from '../Shared/CalculationReports/Shared/sharedTypes';
+import { pageContainerSx } from '../Shared/pageContainerSx';
 import { AdditionalSalaryRequestSkeleton } from './AdditionalSalaryRequestSkeleton';
 import { EligibleDisplay } from './MainPages/EligibleDisplay';
 import { useAdditionalSalaryRequest } from './Shared/AdditionalSalaryRequestContext';
@@ -42,7 +42,6 @@ export const AdditionalSalaryRequest: React.FC = () => {
     toggleDrawer,
     steps,
     currentIndex,
-    requestError,
     requestData,
     loading: requestLoading,
   } = useAdditionalSalaryRequest();
@@ -61,10 +60,8 @@ export const AdditionalSalaryRequest: React.FC = () => {
       isSidebarOpen={isDrawerOpen}
       sidebarAriaLabel={t('Additional Salary Request Sections')}
       mainContent={
-        <Container sx={{ ml: 5 }}>
-          {requestError ? (
-            <Notification type="error" message={requestError.message} />
-          ) : requestLoading ? (
+        <Container sx={pageContainerSx}>
+          {requestLoading ? (
             <AdditionalSalaryRequestSkeleton />
           ) : (
             <Stack
@@ -72,7 +69,8 @@ export const AdditionalSalaryRequest: React.FC = () => {
               sx={{
                 gap: theme.spacing(4),
               }}
-              width={mainContentWidth}
+              width="100%"
+              maxWidth={mainContentWidth}
             >
               <EligibleDisplay />
 

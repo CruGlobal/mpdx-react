@@ -6,6 +6,7 @@ import { SnackbarProvider } from 'notistack';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import matchMediaMock from '__tests__/util/matchMediaMock';
 import { PartnerGivingAnalysisQuery } from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysis.generated';
 import theme from 'src/theme';
 import { ContactFiltersQuery } from '../../contacts/Contacts.generated';
@@ -139,6 +140,24 @@ describe('partnerGivingAnalysis page', () => {
 
     userEvent.click(getByRole('button', { name: 'Toggle Filter Panel' }));
     expect(leftPanel).toHaveStyle('transform: none');
+  });
+
+  it('starts with the filters closed on small screens and closes them from the backdrop', async () => {
+    matchMediaMock({ width: '390px' });
+    const { findByRole, getByTestId } = render(<TestingComponent />);
+
+    const leftPanel = getByTestId('SidePanelsLayoutLeftPanel');
+    await waitFor(() =>
+      expect(leftPanel).toHaveStyle('transform: translate(-100%)'),
+    );
+
+    userEvent.click(
+      await findByRole('button', { name: 'Toggle Filter Panel' }),
+    );
+    expect(leftPanel).toHaveStyle('transform: none');
+
+    userEvent.click(getByTestId('SidePanelsLayoutBackdrop'));
+    expect(leftPanel).toHaveStyle('transform: translate(-100%)');
   });
 
   it('changes the URL when a contact is selected', async () => {

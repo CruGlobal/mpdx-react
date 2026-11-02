@@ -59,7 +59,7 @@ export const Summary: React.FC = () => {
       {geographicLocationChanged && (
         <Alert severity="info" sx={{ mt: 2 }}>
           {t(
-            'Your geographic location will be updated to {{geographicLocation}} in your account settings.',
+            'Your default location multiplier will be updated to {{geographicLocation}} in your account settings.',
             { geographicLocation: normalizedGeographicLocation },
           )}
         </Alert>

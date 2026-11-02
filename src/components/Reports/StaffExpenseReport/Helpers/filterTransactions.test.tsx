@@ -889,6 +889,48 @@ describe('filterTransactions', () => {
     expect(additionalSalary?.displayCategory).toBe('Additional Salary');
     expect(additionalSalary?.displayCategory).not.toContain(' - ');
   });
+
+  describe('pending transactions', () => {
+    const today = DateTime.fromISO('2025-01-20');
+
+    it('marks only transactions dated after today as pending', () => {
+      const result = filterTransactions({
+        ...baseParams,
+        filters: { ...baseFilters, categories: [] },
+        today,
+      });
+
+      expect(
+        result.map(({ transactedAt, isPending }) => [transactedAt, isPending]),
+      ).toEqual([
+        ['2025-01-24', true],
+        ['2025-01-20', false],
+        ['2025-01-10', false],
+      ]);
+    });
+
+    it('marks a rollup pending when any of its transactions are', () => {
+      const [additionalSalary] = filterTransactions({ ...baseParams, today })
+        .filter(isGroupedTransaction)
+        .filter(
+          (row) => row.category === StaffExpenseCategoryEnum.AdditionalSalary,
+        );
+
+      expect(additionalSalary.isPending).toBe(true);
+      expect(
+        additionalSalary.groupedTransactions.map(({ isPending }) => isPending),
+      ).toEqual([false, true]);
+    });
+
+    it('marks nothing pending once today has passed every transaction', () => {
+      const result = filterTransactions({
+        ...baseParams,
+        today: DateTime.fromISO('2025-01-31'),
+      });
+
+      expect(result.some(({ isPending }) => isPending)).toBe(false);
+    });
+  });
 });
 
 describe('getAvailableCategories', () => {

@@ -254,6 +254,58 @@ describe('useGoalCalculatorConstants', () => {
     );
   });
 
+  it('sorts geographic locations alphabetically after None', async () => {
+    const { result } = renderHook(() => useGoalCalculatorConstants(), {
+      wrapper: ({ children }: { children: ReactElement }) => (
+        <GqlMockedProvider<{
+          GoalCalculatorConstants: GoalCalculatorConstantsQuery;
+        }>
+          mocks={{
+            GoalCalculatorConstants: {
+              constant: {
+                ...mockData.constant,
+                mpdGoalGeographicConstants: [
+                  {
+                    __typename: 'MpdGoalGeographicConstant' as const,
+                    id: 'b6a1f0de-4c1e-4f7a-9d3b-2c8e5f1a7b90',
+                    location: 'Seattle, WA',
+                    percentageMultiplier: 0.2,
+                  },
+                  {
+                    __typename: 'MpdGoalGeographicConstant' as const,
+                    id: '32818f68-59f7-4a06-83c6-6d286ec29bbf',
+                    location: 'Atlanta, GA',
+                    percentageMultiplier: 0.12,
+                  },
+                  {
+                    __typename: 'MpdGoalGeographicConstant' as const,
+                    id: 'd1097a97-2a16-4c48-9ab5-5121d8ca129e',
+                    location: 'None',
+                    percentageMultiplier: 0,
+                  },
+                  {
+                    __typename: 'MpdGoalGeographicConstant' as const,
+                    id: 'e4c7a2b1-8f3d-4a6e-b5c9-1d2f3a4b5c6d',
+                    location: 'Boston, MA',
+                    percentageMultiplier: 0.18,
+                  },
+                ],
+              },
+            },
+          }}
+        >
+          {children}
+        </GqlMockedProvider>
+      ),
+    });
+    // None stays first; the rest sort alphabetically
+    await waitFor(() =>
+      expect(
+        Array.from(result.current.goalGeographicConstantMap.keys()),
+      ).toEqual(['None', 'Atlanta, GA', 'Boston, MA', 'Seattle, WA']),
+    );
+  });
+
   it('should format data correctly', async () => {
     const { result } = renderHook(() => useGoalCalculatorConstants(), {
       wrapper: ({ children }: { children: ReactElement }) => (

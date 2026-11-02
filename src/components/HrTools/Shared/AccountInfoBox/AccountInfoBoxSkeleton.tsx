@@ -16,21 +16,10 @@ const StyledSkeletonBox = styled(Box)(({ theme }) => ({
   borderRadius: theme.spacing(0.5),
 }));
 
-interface AccountInfoBoxSkeletonProps {
-  hasOverallBalance?: boolean;
-}
-
-export const AccountInfoBoxSkeleton: React.FC<AccountInfoBoxSkeletonProps> = ({
-  hasOverallBalance,
-}) => (
+export const AccountInfoBoxSkeleton: React.FC = () => (
   <StyledAccountInfoContainer data-testid="account-info">
     <Skeleton variant="text" data-testid="name-skeleton">
       <StyledSkeletonBox />
     </Skeleton>
-    {hasOverallBalance && (
-      <Skeleton variant="text" data-testid="overall-balance-skeleton">
-        <StyledSkeletonBox />
-      </Skeleton>
-    )}
   </StyledAccountInfoContainer>
 );
