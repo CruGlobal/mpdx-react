@@ -138,16 +138,18 @@ describe('MinistryDetails', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('asks for the city once the empty location field is touched', () => {
-    const { getByRole, getByText } = render(<TestComponent />);
+  it('asks for the city once the empty location field is touched', async () => {
+    const { getByRole, findByText } = render(<TestComponent />);
 
-    getByRole('textbox', {
-      name: 'What city is your expected ministry assignment in?',
-    }).focus();
+    userEvent.click(
+      getByRole('textbox', {
+        name: 'What city is your expected ministry assignment in?',
+      }),
+    );
     userEvent.tab();
 
     expect(
-      getByText('Please enter the city of your assignment'),
+      await findByText('Please enter the city of your assignment'),
     ).toBeInTheDocument();
   });
 
