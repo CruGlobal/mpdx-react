@@ -36,11 +36,9 @@ import {
   attendeeToRow,
   cohortNodeToCohort,
   parseMpdGoalAdminTab,
+  searchDebounceMs,
   trainingCostsToAttributes,
 } from './mpdGoalAdminHelpers';
-
-/** Matches the debounce the contacts search uses, so typing isn't a query per keystroke. */
-export const searchDebounceMs = 500;
 
 export interface MpdGoalAdminContextValue {
   activeTab: MpdGoalAdminTabEnum;
