@@ -85,23 +85,23 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
     }
   };
 
-  const handleValidation = async ({
+  const handleValidation = ({
     tagList,
   }: {
     tagList: string[] & never[];
-  }): Promise<void> => {
-    for (let i = 0; i < tagList.length; i++) {
-      if (contactTags.includes(tagList[i])) {
-        enqueueSnackbar(
-          t('Cannot add duplicate tags, duplicate tag has been removed'),
-          {
-            variant: 'error',
-          },
-        );
-        tagList.pop();
-      }
+  }): void => {
+    const duplicateTags = tagList.filter((tag) => contactTags.includes(tag));
+    if (!duplicateTags.length) {
+      return;
     }
-    return;
+
+    enqueueSnackbar(
+      t('Cannot add duplicate tags, duplicate tag has been removed'),
+      {
+        variant: 'error',
+      },
+    );
+    duplicateTags.forEach((tag) => tagList.splice(tagList.indexOf(tag), 1));
   };
 
   const onSubmit = async (
@@ -119,11 +119,13 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
       (tag) => !contactTagsList?.accountList.contactTagList.includes(tag),
     );
 
+    const updatedTagList = [...new Set([...contactTags, ...tagList])];
+
     const { data } = await updateContactTags({
       variables: {
         accountListId,
         contactId,
-        tagList: [...contactTags, ...tagList],
+        tagList: updatedTagList,
       },
       refetchQueries: newTag ? [ContactFiltersDocument] : [],
       optimisticResponse: {
@@ -132,7 +134,7 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
           contact: {
             __typename: 'Contact',
             id: contactId,
-            tagList: [...contactTags, ...tagList],
+            tagList: updatedTagList,
           },
         },
       },

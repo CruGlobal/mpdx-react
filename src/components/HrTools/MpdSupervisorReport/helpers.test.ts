@@ -1,18 +1,46 @@
 import { TFunction } from 'i18next';
 import {
   CompletedQuarterPayroll,
+  MpdAssignmentCategoryGroupEnum,
   MpdHealthStatusEnum,
+  MpdUserPersonTypeEnum,
+  PeopleGroupSupportTypeEnum,
   StartingQuarterPayroll,
 } from 'src/graphql/types.generated';
+import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import {
+  userPersonTypeGroups,
+  userPersonTypeOptions,
+} from './Filters/mpdSupervisorReportFilters';
+import {
+  GradingGroupEnum,
   buildQuarterChips,
+  countPeople,
   getInitials,
+  getLocalizedAssignmentCategoryGroup,
+  getLocalizedSupportType,
+  getLocalizedUserPersonTypeGroup,
+  getLocalizedUserPersonTypeName,
   getQuarterLabel,
+  getQuarterMonthRange,
+  getRowInitials,
+  getRowName,
+  getRowSpouseName,
+  getRowTeamNames,
+  gradingGroup,
+  grossSalaryWarning,
+  hasNewStaffSalary,
   healthColor,
   healthLabel,
+  latestQuarterStatus,
+  mergeSpouseRows,
+  missingBenchmarkMessage,
+  pendingField,
   quarterAmountLabel,
+  summarizeTeams,
 } from './helpers';
+import { managedStaffMember } from './mpdSupervisorReportMocks';
 
 const t = ((key: string) => key) as unknown as TFunction;
 
@@ -70,6 +98,13 @@ describe('healthColor', () => {
       color: theme.palette.chipGrayDark.main,
     });
   });
+
+  it('returns blue palette colors for Blue', () => {
+    expect(healthColor(theme, MpdHealthStatusEnum.Blue)).toEqual({
+      bg: theme.palette.chipBlueLight.main,
+      color: theme.palette.chipBlueDark.main,
+    });
+  });
 });
 
 describe('getQuarterLabel', () => {
@@ -79,14 +114,242 @@ describe('getQuarterLabel', () => {
   });
 });
 
+describe('getQuarterMonthRange', () => {
+  it('starts Q1 in September of the previous calendar year', () => {
+    expect(getQuarterMonthRange(2026, 1)).toEqual({
+      start: { year: 2025, month: 9 },
+      end: { year: 2025, month: 11 },
+    });
+  });
+
+  it('rolls Q2 over from December into the fiscal year', () => {
+    expect(getQuarterMonthRange(2026, 2)).toEqual({
+      start: { year: 2025, month: 12 },
+      end: { year: 2026, month: 2 },
+    });
+  });
+
+  it('covers March to May for Q3', () => {
+    expect(getQuarterMonthRange(2026, 3)).toEqual({
+      start: { year: 2026, month: 3 },
+      end: { year: 2026, month: 5 },
+    });
+  });
+
+  it('covers June to August for Q4', () => {
+    expect(getQuarterMonthRange(2026, 4)).toEqual({
+      start: { year: 2026, month: 6 },
+      end: { year: 2026, month: 8 },
+    });
+  });
+});
+
 describe('healthLabel', () => {
   it.each([
     [MpdHealthStatusEnum.Green, 'on track'],
     [MpdHealthStatusEnum.Red, 'at risk'],
     [MpdHealthStatusEnum.Yellow, 'needs attention'],
     [MpdHealthStatusEnum.Gray, 'no data'],
+    [MpdHealthStatusEnum.Blue, 'ungraded'],
   ])('maps %s to "%s"', (health, expected) => {
     expect(healthLabel(t, health)).toBe(expected);
+  });
+});
+
+describe('getLocalizedAssignmentCategoryGroup', () => {
+  it.each([
+    [MpdAssignmentCategoryGroupEnum.FullTime, 'Full time'],
+    [MpdAssignmentCategoryGroupEnum.PartTime, 'Part time'],
+  ])('maps %s to "%s"', (group, expected) => {
+    expect(getLocalizedAssignmentCategoryGroup(t, group)).toBe(expected);
+  });
+
+  it('falls back to the placeholder for a group the client enum does not know', () => {
+    expect(
+      getLocalizedAssignmentCategoryGroup(
+        t,
+        'ON_CALL' as MpdAssignmentCategoryGroupEnum,
+      ),
+    ).toBe(pendingField);
+  });
+});
+
+describe('getLocalizedUserPersonTypeName', () => {
+  it.each([
+    [MpdUserPersonTypeEnum.EmployeeStaff, 'Employee - Staff'],
+    [MpdUserPersonTypeEnum.EmployeePtfs, 'Employee - PTFS'],
+    [MpdUserPersonTypeEnum.EmployeeUsIntern, 'Employee - US Intern'],
+    [
+      MpdUserPersonTypeEnum.EmployeeInternationalIntern,
+      'Employee - International Intern',
+    ],
+    [
+      MpdUserPersonTypeEnum.EmployeeNationalStaffExpat,
+      'Employee - National Staff (Expat)',
+    ],
+    [
+      MpdUserPersonTypeEnum.EmployeeStaffNonRmoSpouse,
+      'Employee - Staff - non-RMO Spouse',
+    ],
+    [MpdUserPersonTypeEnum.NonworkerStaff, 'Non-worker - Staff'],
+    [
+      MpdUserPersonTypeEnum.NonworkerNationalStaff,
+      'Non-worker - National Staff',
+    ],
+    [MpdUserPersonTypeEnum.NonworkerNmbhr, 'Non-worker - NMBHR'],
+    [
+      MpdUserPersonTypeEnum.NonworkerStaffEmeritus,
+      'Non-worker - Staff Emeritus',
+    ],
+    [MpdUserPersonTypeEnum.NonworkerVolunteer, 'Non-worker - Volunteer'],
+    [MpdUserPersonTypeEnum.PendingStaff, 'Pending - Staff'],
+    [MpdUserPersonTypeEnum.PendingPtfs, 'Pending - PTFS'],
+    [MpdUserPersonTypeEnum.PendingUsIntern, 'Pending - US Intern'],
+    [
+      MpdUserPersonTypeEnum.PendingInternationalIntern,
+      'Pending - International Intern',
+    ],
+    [
+      MpdUserPersonTypeEnum.PendingStaffNonRmoSpouse,
+      'Pending - Staff - non-RMO Spouse',
+    ],
+  ])('maps %s to "%s"', (type, expected) => {
+    expect(getLocalizedUserPersonTypeName(i18n.t, type)).toBe(expected);
+  });
+});
+
+describe('userPersonTypeGroups', () => {
+  it('lists every person type exactly once', () => {
+    expect([...userPersonTypeOptions].sort()).toEqual(
+      Object.values(MpdUserPersonTypeEnum).sort(),
+    );
+  });
+
+  it('gives each group one label of its own', () => {
+    const labels = userPersonTypeGroups.map((types) => [
+      ...new Set(types.map((type) => getLocalizedUserPersonTypeGroup(t, type))),
+    ]);
+
+    labels.forEach((groupLabels) => expect(groupLabels).toHaveLength(1));
+    expect(new Set(labels.flat()).size).toBe(userPersonTypeGroups.length);
+  });
+});
+
+describe('person type grading', () => {
+  const interns = [
+    MpdUserPersonTypeEnum.EmployeeUsIntern,
+    MpdUserPersonTypeEnum.EmployeeInternationalIntern,
+    MpdUserPersonTypeEnum.PendingUsIntern,
+    MpdUserPersonTypeEnum.PendingInternationalIntern,
+  ];
+  const ungraded = [
+    MpdUserPersonTypeEnum.EmployeePtfs,
+    MpdUserPersonTypeEnum.PendingPtfs,
+    MpdUserPersonTypeEnum.NonworkerVolunteer,
+  ];
+  const graded = Object.values(MpdUserPersonTypeEnum).filter(
+    (type) => !interns.includes(type) && !ungraded.includes(type),
+  );
+
+  it.each(interns)('treats %s as an intern', (type) => {
+    expect(gradingGroup(type)).toBe(GradingGroupEnum.GrossSalaryOnly);
+    expect(hasNewStaffSalary(type)).toBe(false);
+  });
+
+  it.each(ungraded)('treats %s as ungraded', (type) => {
+    expect(gradingGroup(type)).toBe(GradingGroupEnum.Ungraded);
+    expect(hasNewStaffSalary(type)).toBe(false);
+  });
+
+  it.each(graded)('measures %s against the New Staff salary', (type) => {
+    expect(gradingGroup(type)).toBe(GradingGroupEnum.Graded);
+    expect(hasNewStaffSalary(type)).toBe(true);
+  });
+
+  it('measures a member with no person type against the New Staff salary', () => {
+    expect(hasNewStaffSalary(null)).toBe(true);
+    expect(hasNewStaffSalary(undefined)).toBe(true);
+    expect(gradingGroup(null)).toBe(GradingGroupEnum.Graded);
+    expect(gradingGroup(undefined)).toBe(GradingGroupEnum.Graded);
+  });
+});
+
+describe('missingBenchmarkMessage', () => {
+  const bothBenchmarks = 'MPD health cannot be graded without both benchmarks.';
+  const grossOnly =
+    'MPD health cannot be graded without the Monthly Gross Salary.';
+  const member = (
+    userPersonType: MpdUserPersonTypeEnum,
+    monthlyGrossSalary: number | null,
+    newStaffMonthlySalary: number | null,
+  ) => ({
+    userPersonType,
+    newStaffMonthlySalary,
+    quarterlyHealth: { monthlyGrossSalary, completedQuarters: [] },
+  });
+
+  it('needs both benchmarks for staff', () => {
+    const staff = MpdUserPersonTypeEnum.EmployeeStaff;
+    expect(missingBenchmarkMessage(t, member(staff, 4500, 2500))).toBeNull();
+    expect(missingBenchmarkMessage(t, member(staff, null, 2500))).toBe(
+      bothBenchmarks,
+    );
+    expect(missingBenchmarkMessage(t, member(staff, 4500, null))).toBe(
+      bothBenchmarks,
+    );
+  });
+
+  it('treats a missing New Staff salary like a null one', () => {
+    expect(
+      missingBenchmarkMessage(t, {
+        ...member(MpdUserPersonTypeEnum.EmployeeStaff, 4500, null),
+        newStaffMonthlySalary: undefined,
+      }),
+    ).toBe(bothBenchmarks);
+  });
+
+  it('needs only the gross salary for interns', () => {
+    const intern = MpdUserPersonTypeEnum.EmployeeUsIntern;
+    expect(missingBenchmarkMessage(t, member(intern, 4500, null))).toBeNull();
+    expect(missingBenchmarkMessage(t, member(intern, null, null))).toBe(
+      grossOnly,
+    );
+  });
+
+  it.each([
+    MpdUserPersonTypeEnum.EmployeePtfs,
+    MpdUserPersonTypeEnum.NonworkerVolunteer,
+  ])('never warns for %s, who are not graded', (type) => {
+    expect(missingBenchmarkMessage(t, member(type, null, null))).toBeNull();
+  });
+});
+
+describe('grossSalaryWarning', () => {
+  const formatCurrency = (value: number) => `$${value.toFixed(2)}`;
+  const belowBenchmark = (userPersonType: MpdUserPersonTypeEnum) => ({
+    userPersonType,
+    newStaffMonthlySalary: 5000,
+    quarterlyHealth: { monthlyGrossSalary: 4500, completedQuarters: [] },
+  });
+
+  it('warns staff whose gross salary is below the New Staff salary', () => {
+    expect(
+      grossSalaryWarning(
+        t,
+        formatCurrency,
+        belowBenchmark(MpdUserPersonTypeEnum.EmployeeStaff),
+      ),
+    ).not.toBeNull();
+  });
+
+  it.each([
+    MpdUserPersonTypeEnum.EmployeeUsIntern,
+    MpdUserPersonTypeEnum.EmployeePtfs,
+    MpdUserPersonTypeEnum.NonworkerVolunteer,
+  ])('never warns %s, who have no New Staff salary', (type) => {
+    expect(
+      grossSalaryWarning(t, formatCurrency, belowBenchmark(type)),
+    ).toBeNull();
   });
 });
 
@@ -121,6 +384,12 @@ describe('quarterAmountLabel', () => {
     ).toBe('$3200.00');
   });
 
+  it('shows a zero for a blue quarter, since its payroll is real', () => {
+    expect(label({ averagePayroll: 0, status: MpdHealthStatusEnum.Blue })).toBe(
+      '$0.00',
+    );
+  });
+
   it('prefers Partial over the gray dash when both apply', () => {
     expect(
       label({ averagePayroll: null, status: MpdHealthStatusEnum.Gray }),
@@ -144,21 +413,21 @@ describe('buildQuarterChips', () => {
     },
   ];
 
-  it('returns completed quarters as-is when there is no starting quarter', () => {
+  it('returns completed quarters newest first when there is no starting quarter', () => {
     expect(
       buildQuarterChips({ monthlyGrossSalary: 0, completedQuarters }),
     ).toEqual([
-      {
-        fiscalYear: 2025,
-        quarter: 4,
-        status: MpdHealthStatusEnum.Yellow,
-        averagePayroll: 4013.42,
-      },
       {
         fiscalYear: 2026,
         quarter: 1,
         status: MpdHealthStatusEnum.Green,
         averagePayroll: 4548.05,
+      },
+      {
+        fiscalYear: 2025,
+        quarter: 4,
+        status: MpdHealthStatusEnum.Yellow,
+        averagePayroll: 4013.42,
       },
     ]);
   });
@@ -184,7 +453,7 @@ describe('buildQuarterChips', () => {
     });
   });
 
-  it('sorts the starting quarter into chronological order even when it falls in the middle', () => {
+  it('sorts the starting quarter into newest-first order even when it falls in the middle', () => {
     const startingQuarter: StartingQuarterPayroll = {
       fiscalYear: 2025,
       quarter: 3,
@@ -199,6 +468,368 @@ describe('buildQuarterChips', () => {
 
     expect(
       chips.map(({ fiscalYear, quarter }) => `${fiscalYear}-${quarter}`),
-    ).toEqual(['2025-3', '2025-4', '2026-1']);
+    ).toEqual(['2026-1', '2025-4', '2025-3']);
+  });
+});
+
+const team = (name: string) => ({
+  id: name.toLowerCase(),
+  name,
+  department: 'US Campus',
+});
+const quarter = (
+  fiscalYear: number,
+  q: number,
+  status: MpdHealthStatusEnum,
+) => ({
+  fiscalYear,
+  quarter: q,
+  averagePayroll: 1000,
+  status,
+});
+const withQuarters = (
+  overrides: Parameters<typeof managedStaffMember>[0],
+  quarters: ReturnType<typeof quarter>[],
+) =>
+  managedStaffMember({
+    ...overrides,
+    quarterlyHealth: { monthlyGrossSalary: 4500, completedQuarters: quarters },
+  });
+
+const john = managedStaffMember({
+  firstName: 'John',
+  lastName: 'Smith',
+  personNumber: '1',
+  spousePersonNumber: '2',
+  spouseFirstName: 'Jane',
+  spouseLastName: 'Smith',
+  teams: { employee: [team('Campus')], spouse: [team('Campus'), team('City')] },
+});
+const jane = managedStaffMember({
+  firstName: 'Jane',
+  lastName: 'Smith',
+  personNumber: '2',
+  spousePersonNumber: '1',
+  spouseFirstName: 'John',
+  spouseLastName: 'Smith',
+  teams: { employee: [team('Campus'), team('City')], spouse: [team('Campus')] },
+});
+const alice = managedStaffMember({
+  firstName: 'Alice',
+  lastName: 'Jones',
+  personNumber: '3',
+  staffAccountId: '1000000003',
+  spousePersonNumber: '99',
+  spouseFirstName: 'Bob',
+  spouseLastName: 'Jones',
+  teams: { employee: [team('City')], spouse: [] },
+});
+
+describe('mergeSpouseRows', () => {
+  it('folds a spouse pair into one row in the first position', () => {
+    const rows = mergeSpouseRows([alice, john, jane]);
+    expect(rows.map(({ personNumber }) => personNumber)).toEqual(['3', '1']);
+    expect(rows[1].partner?.personNumber).toBe('2');
+  });
+
+  it('leaves a row alone when the spouse is not in the list', () => {
+    const rows = mergeSpouseRows([alice]);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].partner).toBeUndefined();
+  });
+
+  it('keeps HCM-linked spouses apart when they hold separate staff accounts', () => {
+    // Each has their own health figures, so each keeps their own row
+    const separate = managedStaffMember({ ...jane, staffAccountId: 'other' });
+    const rows = mergeSpouseRows([john, separate]);
+    expect(rows).toHaveLength(2);
+    expect(rows[0].partner).toBeUndefined();
+    expect(getRowSpouseName(rows[0])).toBe('Jane Smith');
+  });
+
+  it('merges two people who share a staff account without a spouse link', () => {
+    const anton = managedStaffMember({
+      firstName: 'Anton',
+      lastName: 'Capo',
+      personNumber: '7',
+      staffAccountId: 'joint',
+      spousePersonNumber: null,
+      spouseFirstName: null,
+    });
+    const artjola = managedStaffMember({
+      firstName: 'Artjola',
+      lastName: 'Capo',
+      personNumber: '8',
+      staffAccountId: 'joint',
+      spousePersonNumber: null,
+      spouseFirstName: null,
+    });
+    const rows = mergeSpouseRows([anton, artjola, alice]);
+    expect(rows.map(getRowName)).toEqual([
+      'Anton & Artjola Capo',
+      'Alice Jones',
+    ]);
+  });
+
+  it('never absorbs the same person twice', () => {
+    const third = managedStaffMember({
+      firstName: 'Jim',
+      personNumber: '9',
+      staffAccountId: john.staffAccountId,
+      spousePersonNumber: null,
+    });
+    const rows = mergeSpouseRows([john, jane, third]);
+    expect(rows).toHaveLength(2);
+    expect(rows[1].partner).toBeUndefined();
+  });
+
+  it('keeps spouses on a shared account apart when they are graded differently', () => {
+    const ptfsJane = managedStaffMember({
+      ...jane,
+      userPersonType: MpdUserPersonTypeEnum.EmployeePtfs,
+    });
+    const rows = mergeSpouseRows([john, ptfsJane]);
+    expect(rows.map(({ personNumber }) => personNumber)).toEqual(['1', '2']);
+    expect(rows.every(({ partner }) => partner === undefined)).toBe(true);
+    expect(rows.map(getRowSpouseName)).toEqual(['Jane Smith', 'John Smith']);
+  });
+
+  it('keeps an intern apart from a staff spouse on a shared account', () => {
+    const internJane = managedStaffMember({
+      ...jane,
+      userPersonType: MpdUserPersonTypeEnum.EmployeeUsIntern,
+    });
+    expect(mergeSpouseRows([john, internJane])).toHaveLength(2);
+  });
+
+  it('merges spouses whose person types differ but are graded the same', () => {
+    const nonRmoJane = managedStaffMember({
+      ...jane,
+      userPersonType: MpdUserPersonTypeEnum.EmployeeStaffNonRmoSpouse,
+    });
+    const rows = mergeSpouseRows([john, nonRmoJane]);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].partner?.personNumber).toBe('2');
+  });
+
+  it('merges an ungraded couple', () => {
+    const rows = mergeSpouseRows([
+      managedStaffMember({
+        ...john,
+        userPersonType: MpdUserPersonTypeEnum.EmployeePtfs,
+      }),
+      managedStaffMember({
+        ...jane,
+        userPersonType: MpdUserPersonTypeEnum.NonworkerVolunteer,
+      }),
+    ]);
+    expect(rows).toHaveLength(1);
+  });
+
+  it('unions the team names for display', () => {
+    const [row] = mergeSpouseRows([john, jane]);
+    expect(getRowTeamNames(row)).toEqual(['Campus', 'City']);
+  });
+});
+
+describe('getRowName', () => {
+  it('joins both first names before a shared last name', () => {
+    expect(getRowName({ ...john, partner: jane })).toBe('John & Jane Smith');
+  });
+
+  it('uses both full names when the last names differ', () => {
+    expect(getRowName({ ...john, partner: { ...jane, lastName: 'Doe' } })).toBe(
+      'John Smith & Jane Doe',
+    );
+  });
+
+  it('is the full name for a single member', () => {
+    expect(getRowName(alice)).toBe('Alice Jones');
+  });
+});
+
+describe('getRowInitials', () => {
+  it('uses both first initials for a pair', () => {
+    expect(getRowInitials({ ...john, partner: jane })).toBe('JJ');
+  });
+
+  it('uses first and last initials for a single member', () => {
+    expect(getRowInitials(alice)).toBe('AJ');
+  });
+});
+
+describe('countPeople', () => {
+  it('counts a merged pair as two people', () => {
+    expect(countPeople([{ ...john, partner: jane }, alice])).toBe(3);
+  });
+});
+
+describe('latestQuarterStatus', () => {
+  it('takes the newest completed quarter', () => {
+    const member = withQuarters({}, [
+      quarter(2026, 1, MpdHealthStatusEnum.Green),
+      quarter(2026, 3, MpdHealthStatusEnum.Red),
+      quarter(2025, 4, MpdHealthStatusEnum.Yellow),
+    ]);
+    expect(latestQuarterStatus(member)).toBe(MpdHealthStatusEnum.Red);
+  });
+
+  it('is no data without a completed quarter', () => {
+    expect(latestQuarterStatus(withQuarters({}, []))).toBe(
+      MpdHealthStatusEnum.Gray,
+    );
+  });
+});
+
+describe('summarizeTeams', () => {
+  const red = (overrides: Parameters<typeof managedStaffMember>[0]) =>
+    withQuarters(overrides, [quarter(2026, 3, MpdHealthStatusEnum.Red)]);
+  const green = (overrides: Parameters<typeof managedStaffMember>[0]) =>
+    withQuarters(overrides, [quarter(2026, 3, MpdHealthStatusEnum.Green)]);
+
+  it('counts people per latest-quarter status on each of their teams', () => {
+    const rows = mergeSpouseRows([
+      red({
+        personNumber: '1',
+        teams: { employee: [team('Campus'), team('City')], spouse: [] },
+      }),
+      green({
+        personNumber: '2',
+        teams: { employee: [team('City')], spouse: [] },
+      }),
+    ]);
+    expect(summarizeTeams(rows)).toEqual([
+      {
+        name: 'Campus',
+        staffCount: 1,
+        counts: { RED: 1, YELLOW: 0, GREEN: 0, GRAY: 0, BLUE: 0 },
+      },
+      {
+        name: 'City',
+        staffCount: 2,
+        counts: { RED: 1, YELLOW: 0, GREEN: 1, GRAY: 0, BLUE: 0 },
+      },
+    ]);
+  });
+
+  it('counts each spouse of a merged pair on their own teams', () => {
+    const rows = mergeSpouseRows([green(john), green(jane)]);
+    expect(rows).toHaveLength(1);
+    const summary = summarizeTeams(rows);
+    expect(summary.find(({ name }) => name === 'Campus')?.staffCount).toBe(2);
+    expect(summary.find(({ name }) => name === 'City')?.staffCount).toBe(1);
+  });
+
+  it('treats a member with no completed quarter as no data', () => {
+    const rows = [
+      withQuarters({ teams: { employee: [team('Campus')], spouse: [] } }, []),
+    ];
+    expect(summarizeTeams(rows)[0].counts.GRAY).toBe(1);
+  });
+
+  it('counts a member whose latest quarter is ungraded as blue', () => {
+    const rows = [
+      withQuarters({ teams: { employee: [team('Campus')], spouse: [] } }, [
+        quarter(2026, 3, MpdHealthStatusEnum.Blue),
+      ]),
+    ];
+    expect(summarizeTeams(rows)[0].counts).toEqual({
+      RED: 0,
+      YELLOW: 0,
+      GREEN: 0,
+      GRAY: 0,
+      BLUE: 1,
+    });
+  });
+
+  it('skips a member on no team', () => {
+    expect(
+      summarizeTeams([green({ teams: { employee: [], spouse: [] } })]),
+    ).toEqual([]);
+  });
+
+  it('breaks a tie on counts alphabetically', () => {
+    const rows = [
+      green({
+        personNumber: '1',
+        staffAccountId: 'a1',
+        teams: { employee: [team('Zeta')], spouse: [] },
+      }),
+      green({
+        personNumber: '2',
+        staffAccountId: 'a2',
+        teams: { employee: [team('Alpha')], spouse: [] },
+      }),
+    ];
+    expect(summarizeTeams(rows).map(({ name }) => name)).toEqual([
+      'Alpha',
+      'Zeta',
+    ]);
+  });
+
+  it('sorts the teams needing the most attention first', () => {
+    const rows = [
+      green({
+        personNumber: '1',
+        teams: { employee: [team('Alpha')], spouse: [] },
+      }),
+      withQuarters(
+        {
+          personNumber: '2',
+          staffAccountId: 'a2',
+          teams: { employee: [team('Beta')], spouse: [] },
+        },
+        [quarter(2026, 3, MpdHealthStatusEnum.Yellow)],
+      ),
+      red({
+        personNumber: '3',
+        teams: { employee: [team('Gamma')], spouse: [] },
+      }),
+    ];
+    expect(summarizeTeams(rows).map(({ name }) => name)).toEqual([
+      'Gamma',
+      'Beta',
+      'Alpha',
+    ]);
+  });
+});
+
+describe('getLocalizedSupportType', () => {
+  it('labels each support type and falls back to the placeholder', () => {
+    expect(
+      getLocalizedSupportType(t, PeopleGroupSupportTypeEnum.SupportedRmo),
+    ).toBe('Supported RMO');
+    expect(
+      getLocalizedSupportType(t, PeopleGroupSupportTypeEnum.SupportedNonRmo),
+    ).toBe('Supported non-RMO');
+    expect(
+      getLocalizedSupportType(t, PeopleGroupSupportTypeEnum.Designation),
+    ).toBe('Designation');
+    expect(getLocalizedSupportType(t, PeopleGroupSupportTypeEnum.None)).toBe(
+      'Not supported',
+    );
+    expect(getLocalizedSupportType(t, null)).toBe(pendingField);
+  });
+});
+
+describe('getRowSpouseName', () => {
+  it('names the merged partner', () => {
+    expect(getRowSpouseName({ ...john, partner: jane })).toBe('Jane Smith');
+  });
+
+  it('names an HCM-linked spouse who is not in the list', () => {
+    expect(getRowSpouseName(alice)).toBe('Bob Jones');
+  });
+
+  it("falls back to the member's last name when the spouse's is missing", () => {
+    expect(
+      getRowSpouseName(managedStaffMember({ ...alice, spouseLastName: null })),
+    ).toBe('Bob Jones');
+  });
+
+  it('is null without a spouse', () => {
+    expect(
+      getRowSpouseName(managedStaffMember({ ...alice, spouseFirstName: null })),
+    ).toBeNull();
   });
 });

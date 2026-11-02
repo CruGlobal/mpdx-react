@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon';
 import { ScheduleEnum, StatusEnum, Transfers } from '../mockData';
+import { monthsUntilOccurrenceOnOrAfter } from './monthsUntilOccurrenceOnOrAfter';
 
 // SAA does not report the next run, so derive it: monthly on the start day.
 export function getNextPaymentDate(transfer: Transfers): DateTime | null {
@@ -30,13 +31,9 @@ export function getNextPaymentDate(transfer: Transfers): DateTime | null {
     return null;
   }
 
-  // Add whole months to the start so an end-of-month day does not drift once clamped.
-  let months = Math.floor(today.diff(start, 'months').months);
-  let next = start.plus({ months });
-  while (next < today) {
-    months += 1;
-    next = start.plus({ months });
-  }
+  const next = start.plus({
+    months: monthsUntilOccurrenceOnOrAfter(start, today),
+  });
 
   if (endDate?.isValid && next > toViewerDate(endDate)) {
     return null;

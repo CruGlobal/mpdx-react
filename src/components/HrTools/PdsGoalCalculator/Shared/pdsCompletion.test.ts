@@ -21,6 +21,7 @@ const baseCalculation: PdsGoalCalculationFieldsFragment = {
   benefits: 1500,
   formType: null,
   updatedAt: '2026-01-01T00:00:00Z',
+  calculationsYear: 2026,
   averageHoursPerWeek: null,
   geographicLocation: null,
   ministryCellPhone: null,

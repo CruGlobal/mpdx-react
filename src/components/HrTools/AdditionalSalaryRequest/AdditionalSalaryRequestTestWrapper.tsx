@@ -15,6 +15,7 @@ import {
   AdditionalSalaryRequestProvider,
   getFieldConfig,
 } from './Shared/AdditionalSalaryRequestContext';
+import { getTotal } from './Shared/Helper/getTotal';
 
 interface AdditionalSalaryRequestTestWrapperProps {
   children?: React.ReactNode;
@@ -65,8 +66,15 @@ const validationSchema = yup.object({
   totalAdditionalSalaryRequested: yup
     .number()
     .test(
+      'total-above-zero',
+      'Enter an amount in at least one category before submitting.',
+      function () {
+        return getTotal(this.parent as CompleteFormValues) > 0;
+      },
+    )
+    .test(
       'total-within-remaining-allowable-salary',
-      'Exceeds account balance.',
+      'Exceeds account balance plus deficit limit.',
       function (value) {
         const individualCap = 17500.0;
         return (value || 0) <= individualCap;

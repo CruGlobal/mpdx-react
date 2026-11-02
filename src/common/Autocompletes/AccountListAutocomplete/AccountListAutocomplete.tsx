@@ -5,6 +5,7 @@ import {
   TextField,
   TextFieldProps,
 } from '@mui/material';
+import { filterOptionsByWords } from 'src/components/Shared/Autocomplete/filterOptionsByWords';
 import { AccountList } from 'src/graphql/types.generated';
 
 export type AccountListOption = Pick<AccountList, 'id' | 'name'>;
@@ -22,10 +23,10 @@ export const AccountListAutocomplete: React.FC<
     <Autocomplete
       fullWidth
       autoHighlight
+      filterOptions={filterOptionsByWords}
       {...props}
-      getOptionLabel={(account: AccountListOption): string =>
-        account?.name ?? ''
-      }
+      getOptionKey={(account) => account.id}
+      getOptionLabel={(account) => account.name ?? ''}
       renderInput={(params) => <TextField {...params} {...textFieldProps} />}
     />
   );

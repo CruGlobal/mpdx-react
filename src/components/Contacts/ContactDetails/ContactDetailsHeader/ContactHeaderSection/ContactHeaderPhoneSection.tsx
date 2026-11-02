@@ -57,7 +57,7 @@ export const ContactHeaderPhoneSection = ({
   }
 
   return (
-    <ContactHeaderSection icon={<PhoneIcon />}>
+    <ContactHeaderSection icon={<PhoneIcon />} empty>
       <Typography variant="subtitle1">{'N/A'}</Typography>
     </ContactHeaderSection>
   );

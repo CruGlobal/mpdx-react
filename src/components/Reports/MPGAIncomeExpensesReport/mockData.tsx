@@ -19,6 +19,7 @@ export interface SubcategoryBreakdown {
 
 export interface BreakdownTarget {
   category: StaffExpenseCategoryEnum;
+  person?: string;
   transactions: TransactionBreakdown[];
 }
 
@@ -26,6 +27,9 @@ export interface DataFields {
   id: string;
   description: string;
   category?: StaffExpenseCategoryEnum;
+  /** Set when the row holds a single subcategory. */
+  subCategory?: StaffExpensesSubCategoryEnum;
+  person?: string;
   transactions?: TransactionBreakdown[];
   monthly: number[];
   average: number;

@@ -11,7 +11,6 @@ import { NewStaffGoalCalculationQuery } from 'src/components/HrTools/NsGoalCalcu
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   NewStaffQuestionnaireMaritalStatusEnum,
-  UsStaffGroupEnum,
   UserTypeEnum,
 } from 'src/graphql/types.generated';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
@@ -28,12 +27,12 @@ const mockBlockImpersonatingNonDevelopers =
   >;
 
 interface TestComponentProps {
-  /** Senior Staff is the group the MPD goal tools are open to. */
-  usStaffGroup?: UsStaffGroupEnum;
+  /** The MPD Goals team and MPD coordinators are the only ones let in. */
+  canViewNewStaffCohorts?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
-  usStaffGroup = UsStaffGroupEnum.SeniorStaff,
+  canViewNewStaffCohorts = true,
 }) => (
   <TestRouter
     router={{
@@ -54,7 +53,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
             GetUser: {
               user: {
                 userType: UserTypeEnum.UsStaff,
-                usStaffGroup,
+                canViewNewStaffCohorts,
                 staffAccountId: 'staff-account-1',
               },
             },
@@ -91,9 +90,9 @@ describe('Scenario NsGoalCalculator page', () => {
     ).toBeInTheDocument();
   });
 
-  it("denies a user outside the admin table's group", async () => {
+  it('denies a user without goals-team or coordinator access', async () => {
     const { findByRole } = render(
-      <TestComponent usStaffGroup={UsStaffGroupEnum.NewStaff} />,
+      <TestComponent canViewNewStaffCohorts={false} />,
     );
 
     expect(

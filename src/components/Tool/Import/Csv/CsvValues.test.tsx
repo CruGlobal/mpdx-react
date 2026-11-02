@@ -290,6 +290,26 @@ describe('CsvValues', () => {
       expect(nextButton).not.toBeDisabled();
     });
 
+    it('should show an error toast when the save fails', async () => {
+      (save as jest.Mock).mockRejectedValue(new Error('Server unavailable'));
+
+      const { getByRole, findByText } = render(
+        <CsvValuesMockComponent
+          accountListId="wee"
+          setCurrentTab={setCurrentTab}
+        ></CsvValuesMockComponent>,
+      );
+      const nextButton = getByRole('button', { name: /next/i });
+      userEvent.click(nextButton);
+
+      expect(await findByText('Server unavailable')).toBeInTheDocument();
+      expect(setCurrentTab).not.toHaveBeenCalled();
+      await waitFor(() =>
+        expect(nextButton).toHaveAttribute('aria-busy', 'false'),
+      );
+      expect(nextButton).not.toBeDisabled();
+    });
+
     it('should send the user to the preview tab', async () => {
       const { getByRole } = render(
         <CsvValuesMockComponent

@@ -21,6 +21,11 @@ export const SalaryCapCard: React.FC = () => {
   const spouseCalcs = calculation?.spouseCalculations;
   const hasSpouse = !!hcmSpouse && !!spouseCalcs;
   const city = calculation?.location ?? t('None of these');
+  const formattedHardCap = formatCurrency(calcs?.hardCap);
+  const formattedSpouseHardCap = formatCurrency(spouseCalcs?.hardCap);
+  // Compare the displayed amounts so caps that differ below the shown precision
+  // don't produce a per-person sentence with two identical limits
+  const hardCapsMatch = formattedHardCap === formattedSpouseHardCap;
 
   return (
     <StepCard>
@@ -162,13 +167,28 @@ export const SalaryCapCard: React.FC = () => {
                 9. {t('Maximum Allowable Salary (CAP)')}
                 <span className="explanation">
                   {t('Line 7 × Line 8b')}
-                  <br />
-                  {t(
-                    'For a couple, the combined CAPs cannot exceed {{combinedCap}}, with neither individual exceeding {{hardCap}}.',
-                    {
-                      combinedCap: formatCurrency(calcs?.combinedCap),
-                      hardCap: formatCurrency(calcs?.hardCap),
-                    },
+                  {hasSpouse && (
+                    <>
+                      <br />
+                      {hardCapsMatch
+                        ? t(
+                            'For a couple, the combined CAPs cannot exceed {{combinedCap}}, with neither individual exceeding {{hardCap}}.',
+                            {
+                              combinedCap: formatCurrency(calcs?.combinedCap),
+                              hardCap: formattedHardCap,
+                            },
+                          )
+                        : t(
+                            'For a couple, the combined CAPs cannot exceed {{combinedCap}}, with {{name}} not exceeding {{hardCap}} and {{spouseName}} not exceeding {{spouseHardCap}}.',
+                            {
+                              combinedCap: formatCurrency(calcs?.combinedCap),
+                              name: hcmUser?.staffInfo.preferredName,
+                              hardCap: formattedHardCap,
+                              spouseName: hcmSpouse.staffInfo.preferredName,
+                              spouseHardCap: formattedSpouseHardCap,
+                            },
+                          )}
+                    </>
                   )}
                 </span>
               </TableCell>

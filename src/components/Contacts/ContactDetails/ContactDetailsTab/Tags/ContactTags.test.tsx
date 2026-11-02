@@ -87,7 +87,7 @@ describe('ContactTags', () => {
   });
 
   it('should delete the duplicate tag', async () => {
-    const { getByPlaceholderText } = render(
+    const { getByPlaceholderText, getAllByText, queryByText } = render(
       <SnackbarProvider>
         <GqlMockedProvider<{ UpdateContactTags: UpdateContactTagsMutation }>
           mocks={{
@@ -113,18 +113,52 @@ describe('ContactTags', () => {
       </SnackbarProvider>,
     );
     userEvent.type(getByPlaceholderText('add tag'), 'tag3{enter}');
-    await waitFor(() =>
-      expect(getByPlaceholderText('add tag')).toHaveValue(''),
-    );
-    userEvent.type(getByPlaceholderText('add tag'), '{enter}');
 
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith(
         'Cannot add duplicate tags, duplicate tag has been removed',
-        {
-          variant: 'error',
-        },
+        { variant: 'error' },
       ),
+    );
+    // The existing chip remains, but the one that was just entered is gone
+    expect(getAllByText('tag3')).toHaveLength(1);
+    expect(queryByText('save')).not.toBeInTheDocument();
+  });
+
+  it('should keep the other tags when one is a duplicate', async () => {
+    const mutationSpy = jest.fn();
+    const { getByPlaceholderText, getByText } = render(
+      <SnackbarProvider>
+        <GqlMockedProvider<{ UpdateContactTags: UpdateContactTagsMutation }>
+          onCall={mutationSpy}
+          addTypename={false}
+        >
+          <ThemeProvider theme={theme}>
+            <ContactTags
+              accountListId={accountListId}
+              contactId={contactId}
+              contactTags={contactTags}
+            />
+          </ThemeProvider>
+        </GqlMockedProvider>
+      </SnackbarProvider>,
+    );
+    userEvent.type(getByPlaceholderText('add tag'), 'tag3{enter}');
+    await waitFor(() =>
+      expect(getByPlaceholderText('add tag')).toHaveValue(''),
+    );
+    userEvent.type(getByPlaceholderText('add tag'), 'tag4{enter}');
+    await waitFor(() =>
+      expect(getByPlaceholderText('add tag')).toHaveValue(''),
+    );
+    userEvent.click(getByText('save'));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateContactTags', {
+        accountListId,
+        contactId,
+        tagList: [...contactTags, 'tag4'],
+      }),
     );
   });
 

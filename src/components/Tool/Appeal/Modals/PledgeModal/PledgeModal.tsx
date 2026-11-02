@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import {
   Alert,
   DialogActions,
@@ -15,7 +15,7 @@ import { Box, useMediaQuery } from '@mui/system';
 import { FastField, FieldProps, Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
-import { useTranslation } from 'react-i18next';
+import { TFunction, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { CurrencyAutocomplete } from 'src/components/Shared/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
@@ -28,7 +28,6 @@ import Modal from 'src/components/Shared/Modal/Modal';
 import { FormTextField } from 'src/components/Shared/styledComponents/FormTextField';
 import { LogFormLabel } from 'src/components/Shared/styledComponents/LogStyling';
 import { PledgeStatusEnum } from 'src/graphql/types.generated';
-import i18n from 'src/lib/i18n';
 import { requiredDateTime } from 'src/lib/yupHelpers';
 import {
   AppealStatusEnum,
@@ -52,27 +51,28 @@ interface PledgeModalProps {
   selectedAppealStatus?: AppealStatusEnum | null;
 }
 
-const CreatePledgeSchema = yup.object({
-  amount: yup
-    .number()
-    .typeError(i18n.t('Amount must be a valid number'))
-    .required(i18n.t('Amount is required'))
-    .test(
-      i18n.t('Is amount in valid currency format?'),
-      i18n.t('Amount must be in valid currency format'),
-      (amount) => /\$?[0-9][0-9.,]*/.test(amount as unknown as string),
-    )
-    .test(
-      i18n.t('Is positive?'),
-      i18n.t('Must use a positive number for amount'),
-      (value) => parseFloat(value as unknown as string) > 0,
-    ),
-  amountCurrency: yup.string().required(i18n.t('Currency is required')),
-  expectedDate: requiredDateTime(i18n.t('Expected Date is required')),
-  status: yup.string().required(i18n.t('Status is required')),
-});
+const getCreatePledgeSchema = (t: TFunction) =>
+  yup.object({
+    amount: yup
+      .number()
+      .typeError(t('Amount must be a valid number'))
+      .required(t('Amount is required'))
+      .test(
+        'is-valid-currency-format',
+        t('Amount must be in valid currency format'),
+        (amount) => /\$?[0-9][0-9.,]*/.test(amount as unknown as string),
+      )
+      .test(
+        'is-positive',
+        t('Must use a positive number for amount'),
+        (value) => parseFloat(value as unknown as string) > 0,
+      ),
+    amountCurrency: yup.string().required(t('Currency is required')),
+    expectedDate: requiredDateTime(t('Expected Date is required')),
+    status: yup.string().required(t('Status is required')),
+  });
 
-type Attributes = yup.InferType<typeof CreatePledgeSchema>;
+type Attributes = yup.InferType<ReturnType<typeof getCreatePledgeSchema>>;
 
 export const PledgeModal: React.FC<PledgeModalProps> = ({
   contact,
@@ -81,6 +81,7 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
   selectedAppealStatus,
 }) => {
   const { t } = useTranslation();
+  const CreatePledgeSchema = useMemo(() => getCreatePledgeSchema(t), [t]);
   const { enqueueSnackbar } = useSnackbar();
   const [createAccountListPledge] = useCreateAccountListPledgeMutation();
   const [updateAccountListPledge] = useUpdateAccountListPledgeMutation();

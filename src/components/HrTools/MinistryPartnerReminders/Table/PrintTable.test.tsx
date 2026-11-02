@@ -62,10 +62,7 @@ describe('PrintTable', () => {
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <GqlMockedProvider onCall={mutationSpy}>
-            <PrintTable
-              data={[]}
-              error={new Error('Designation account not found')}
-            />
+            <PrintTable data={[]} noDesignation />
           </GqlMockedProvider>
         </LocalizationProvider>
       </ThemeProvider>,

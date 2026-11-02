@@ -1,0 +1,6 @@
+query NewStaffQuestionnaireStatus($accountListId: ID!) {
+  newStaffQuestionnaire(accountListId: $accountListId) {
+    id
+    completed
+  }
+}

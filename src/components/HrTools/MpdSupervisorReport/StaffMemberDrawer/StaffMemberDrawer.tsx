@@ -1,13 +1,26 @@
 import React from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { Alert, Avatar, Box, IconButton, Tab, Typography } from '@mui/material';
+import {
+  Alert,
+  Avatar,
+  Box,
+  IconButton,
+  Tab,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { InfoTooltipIcon } from 'src/components/HrTools/Shared/InfoTooltipIcon';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import theme from 'src/theme';
 import { GeographicLocationSelect } from '../GeographicLocationSelect/GeographicLocationSelect';
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
+import {
+  newStaffSalaryNotApplicable,
+  newStaffSalaryTooltip,
+} from '../ReportLegend/legendCopy';
 import { DynamicMPGA, preloadMPGA } from '../StaffDetailsTabs/MPGA/DynamicMPGA';
 import {
   DynamicMonthlySummary,
@@ -24,21 +37,50 @@ import {
 import { StaffDetailTabEnum } from '../StaffDetailsTabs/StaffDetailTab';
 import { preloadStaffExpenseReport } from '../StaffDetailsTabs/StaffExpenseReport/DynamicStaffExpenseReport';
 import { StaffTabStaffExpenseReport } from '../StaffDetailsTabs/StaffExpenseReport/StaffExpenseReport';
-import { getInitials, pendingField } from '../helpers';
+import { GrossSalaryMarker } from '../StaffMemberRow/GrossSalaryMarker';
+import { FiscalYearQuarters } from '../StaffMemberRow/StaffMember';
+import {
+  buildQuarterChips,
+  getInitials,
+  getLocalizedAssignmentCategoryGroup,
+  grossSalaryWarning,
+  hasNewStaffSalary,
+  missingBenchmarkMessage,
+  pendingField,
+} from '../helpers';
 
 interface DetailRowProps {
   label: string;
   value: string;
+  /** Rendered inline after the label, e.g. an info tooltip icon */
+  labelAdornment?: React.ReactNode;
+  /** Rendered inline after the value, e.g. a warning marker */
+  valueAdornment?: React.ReactNode;
+  valueColor?: string;
 }
 
-const DetailRow: React.FC<DetailRowProps> = ({ label, value }) => (
+const DetailRow: React.FC<DetailRowProps> = ({
+  label,
+  value,
+  labelAdornment,
+  valueAdornment,
+  valueColor,
+}) => (
   <Box
     sx={{ display: 'flex', flexDirection: 'column', gap: 0.25, minWidth: 140 }}
   >
-    <Typography variant="caption" color="text.secondary">
-      {label}
-    </Typography>
-    <Typography variant="body2">{value}</Typography>
+    <Box display="flex" alignItems="center" gap={0.5}>
+      <Typography variant="caption" color="text.secondary">
+        {label}
+      </Typography>
+      {labelAdornment}
+    </Box>
+    <Box display="flex" alignItems="center" gap={0.5}>
+      <Typography variant="body2" color={valueColor}>
+        {value}
+      </Typography>
+      {valueAdornment}
+    </Box>
   </Box>
 );
 
@@ -103,14 +145,17 @@ export const StaffMemberDrawer: React.FC = () => {
     teams,
     newStaffMonthlySalary,
     quarterlyHealth,
+    assignmentCategoryGroup,
+    userPersonType,
   } = selectedMember;
   const initials = getInitials(firstName, lastName);
   const fullName = `${firstName} ${lastName}`;
   const team =
     teams.employee.map(({ name }) => name).join(', ') || pendingField;
   const monthlyGrossSalary = quarterlyHealth?.monthlyGrossSalary ?? null;
-  const missingBenchmark =
-    monthlyGrossSalary === null || newStaffMonthlySalary === null;
+  const benchmarkMessage = missingBenchmarkMessage(t, selectedMember);
+  const newStaffSalaryApplies = hasNewStaffSalary(userPersonType);
+  const grossWarning = grossSalaryWarning(t, formatCurrency, selectedMember);
 
   return (
     <Box
@@ -123,13 +168,19 @@ export const StaffMemberDrawer: React.FC = () => {
         width: '100%',
       })}
     >
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+      <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
         <Avatar sx={{ bgcolor: 'mpdxGrayLight.main', color: 'text.primary' }}>
           {initials}
         </Avatar>
-        <Typography variant="h6" id="right-panel-header" sx={{ flex: 1 }}>
-          {fullName}
-        </Typography>
+        <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <Typography variant="h6" id="right-panel-header">
+            {fullName}
+          </Typography>
+          {/* The drawer covers the row's chips, so the health context follows the person in */}
+          {quarterlyHealth && (
+            <FiscalYearQuarters quarters={buildQuarterChips(quarterlyHealth)} />
+          )}
+        </Box>
         <IconButton aria-label={t('Close')} onClick={closePanel} size="small">
           <CloseIcon />
         </IconButton>
@@ -137,7 +188,13 @@ export const StaffMemberDrawer: React.FC = () => {
       <StaffInfo>
         <DetailRow label={t('Person Number')} value={personNumber} />
         <DetailRow label={t('Staff Account Number')} value={staffAccountId} />
-        <DetailRow label={t('Employment Type')} value={pendingField} />
+        <DetailRow
+          label={t('Employment Type')}
+          value={getLocalizedAssignmentCategoryGroup(
+            t,
+            assignmentCategoryGroup,
+          )}
+        />
         <DetailRow label={t('Team')} value={team} />
       </StaffInfo>
 
@@ -169,14 +226,41 @@ export const StaffMemberDrawer: React.FC = () => {
           <StaffInfo>
             <DetailRow
               label={t('New Staff Monthly Salary')}
+              labelAdornment={
+                // describeChild announces the explanation as the icon's
+                // description while titleAccess stays its accessible name
+                <Tooltip
+                  title={
+                    newStaffSalaryApplies
+                      ? newStaffSalaryTooltip(t)
+                      : newStaffSalaryNotApplicable(t)
+                  }
+                  describeChild
+                >
+                  <InfoTooltipIcon
+                    tabIndex={0}
+                    titleAccess={
+                      newStaffSalaryApplies
+                        ? t('How New Staff Monthly Salary is calculated')
+                        : t('Why New Staff Monthly Salary does not apply')
+                    }
+                  />
+                </Tooltip>
+              }
               value={
-                newStaffMonthlySalary !== null
-                  ? formatCurrency(newStaffMonthlySalary)
-                  : pendingField
+                !newStaffSalaryApplies
+                  ? t('N/A')
+                  : newStaffMonthlySalary !== null
+                    ? formatCurrency(newStaffMonthlySalary)
+                    : pendingField
               }
             />
             <DetailRow
               label={t('Monthly Gross Salary')}
+              valueColor={grossWarning ? 'error.main' : undefined}
+              valueAdornment={
+                grossWarning && <GrossSalaryMarker warning={grossWarning} />
+              }
               value={
                 monthlyGrossSalary !== null
                   ? formatCurrency(monthlyGrossSalary)
@@ -184,39 +268,41 @@ export const StaffMemberDrawer: React.FC = () => {
               }
             />
           </StaffInfo>
-          {missingBenchmark && (
+          {benchmarkMessage && (
             <Alert severity="error" sx={{ width: 0, minWidth: '100%' }}>
-              {t('MPD health cannot be graded without both benchmarks.')}
+              {benchmarkMessage}
             </Alert>
           )}
         </Box>
 
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 1,
-            flex: 1,
-            minWidth: 260,
-          }}
-        >
-          <Typography variant="subtitle2" fontWeight="bold">
-            {t('Geographic Multiplier:')}
-          </Typography>
-          <GeographicLocationSelect
-            key={personNumber}
-            firstName={firstName}
-            personNumber={personNumber}
-            geographicLocation={geographicLocation}
-            onSaved={(geographicLocation, newStaffMonthlySalary) => {
-              updateSelectedMember(personNumber, {
-                geographicLocation,
-                newStaffMonthlySalary,
-              });
-              refetchStaff();
+        {newStaffSalaryApplies && (
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 1,
+              flex: 1,
+              minWidth: 260,
             }}
-          />
-        </Box>
+          >
+            <Typography variant="subtitle2" fontWeight="bold">
+              {t('Geographic Multiplier:')}
+            </Typography>
+            <GeographicLocationSelect
+              key={personNumber}
+              firstName={firstName}
+              personNumber={personNumber}
+              geographicLocation={geographicLocation}
+              onSaved={(geographicLocation, newStaffMonthlySalary) => {
+                updateSelectedMember(personNumber, {
+                  geographicLocation,
+                  newStaffMonthlySalary,
+                });
+                refetchStaff();
+              }}
+            />
+          </Box>
+        )}
       </StaffInfo>
 
       <TabContext value={selectedTabKey}>
@@ -254,13 +340,19 @@ export const StaffMemberDrawer: React.FC = () => {
           <DynamicMonthlySummary staffAccountId={staffAccountId} />
         </TabPanel>
         <TabPanel value={StaffDetailTabEnum.Quarterly}>
-          <DynamicQuarterly staffAccountId={staffAccountId} />
+          <DynamicQuarterly
+            staffAccountId={staffAccountId}
+            userPersonType={userPersonType ?? null}
+          />
         </TabPanel>
         <TabPanel value={StaffDetailTabEnum.Payroll}>
           <DynamicPayroll staffAccountId={staffAccountId} />
         </TabPanel>
         <TabPanel value={StaffDetailTabEnum.MPGAReport}>
-          <DynamicMPGA staffAccountId={staffAccountId} />
+          <DynamicMPGA
+            staffAccountId={staffAccountId}
+            personNumber={personNumber}
+          />
         </TabPanel>
         <TabPanel value={StaffDetailTabEnum.StaffExpenseReport}>
           <StaffTabStaffExpenseReport

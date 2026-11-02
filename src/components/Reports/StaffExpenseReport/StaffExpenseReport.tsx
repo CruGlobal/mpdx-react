@@ -8,6 +8,7 @@ import {
   Button,
   Container,
   Divider,
+  Skeleton,
   SvgIcon,
   Typography,
 } from '@mui/material';
@@ -16,16 +17,23 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useHcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import {
+  HcmSyncBodyStatus,
+  HcmSyncHeaderStatus,
+} from 'src/components/HrTools/Shared/HcmSyncStatus/HcmSyncStatus';
+import { LoadErrorAlert } from 'src/components/Shared/LoadErrorAlert/LoadErrorAlert';
+import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { useStaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import { Fund, UsStaffGroupEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { AccountInfoBox } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBox';
 import { AccountInfoBoxSkeleton } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBoxSkeleton';
 import { EmptyTable } from '../../HrTools/Shared/EmptyTable/EmptyTable';
+import { HouseholdMember } from '../Shared/Helpers/household';
 import { SettingsButtonGroup } from '../Shared/SettingsButtonGroup/SettingsButtonGroup';
 import {
   Filters,
@@ -42,11 +50,7 @@ import { BalanceCardList } from './BalanceCardList/BalanceCardList';
 import { ExportCsvButton } from './ExportCsvButton/ExportCsvButton';
 import { useReportsStaffExpensesQuery } from './GetStaffExpense.generated';
 import { ReportType } from './Helpers/StaffReportEnum';
-import {
-  HouseholdMember,
-  Transaction,
-  filterTransactions,
-} from './Helpers/filterTransactions';
+import { Transaction, filterTransactions } from './Helpers/filterTransactions';
 import {
   dateRangeToString,
   getFormattedDateString,
@@ -100,7 +104,12 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   // Person numbers tell the reader's payroll from their spouse's. HCM lists the reader first, then
   // their spouse. Held alongside the report data's own loading so salary is not rendered as one
   // household total and then split.
-  const { data: hcmData, loading: hcmLoading } = useHcmQuery({
+  const {
+    data: hcmData,
+    loading: hcmLoading,
+    error: hcmError,
+    refetch: refetchHcm,
+  } = useHcmQuery({
     variables: { personNumber },
     skip: isSupervisorView && !personNumber,
   });
@@ -137,14 +146,27 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
         'Re-Entry',
       ];
 
-  const { data, loading: reportLoading } = useReportsStaffExpensesQuery({
+  const {
+    data,
+    loading: reportLoading,
+    error: reportError,
+    refetch,
+  } = useReportsStaffExpensesQuery({
     variables: {
       fundTypes,
       staffAccountId,
       ...getStaffExpenseMonthRange(filters, time),
     },
-    skip: hcmLoading,
+    // Without HCM data the fund types and salary split would be wrong
+    skip: hcmLoading || !!hcmError,
   });
+
+  const loadError = hcmError ?? reportError;
+
+  const refetchReport = () => {
+    // The report reloads on its own once HCM succeeds
+    (hcmError ? refetchHcm() : refetch()).catch(() => {});
+  };
 
   const { data: accountData } = useStaffAccountQuery({
     skip: isSupervisorView,
@@ -316,6 +338,12 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
           onNavListToggle={onNavListToggle}
           title={title}
           headerType={HeaderTypeEnum.Report}
+          titleExtra={
+            <HcmSyncHeaderStatus
+              personNumber={personNumber}
+              skip={isSupervisorView && !personNumber}
+            />
+          }
         />
       </SimpleScreenOnly>
       {isSupervisorView && (
@@ -326,6 +354,12 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       )}
       <Box mt={2}>
         <Container>
+          <SimpleScreenOnly>
+            <HcmSyncBodyStatus
+              personNumber={personNumber}
+              skip={isSupervisorView && !personNumber}
+            />
+          </SimpleScreenOnly>
           <Box>
             <StyledHeaderBox>
               <SimplePrintOnly>
@@ -382,34 +416,104 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               )}
             </StyledHeaderBox>
             {loading ? (
-              <AccountInfoBoxSkeleton hasOverallBalance />
+              <AccountInfoBoxSkeleton />
             ) : (
-              <AccountInfoBox
-                name={accountName}
-                overallBalance={overallBalance}
-              />
+              // A supervisor's staff name comes from the failed report, so there is no name to show
+              !(isSupervisorView && loadError) && (
+                <AccountInfoBox name={accountName} />
+              )
             )}
             <SimpleScreenOnly>
-              <Box
-                display="flex"
-                flexWrap="wrap"
-                gap={2}
-                sx={{
-                  flexDirection: { xs: 'column', sm: 'row' },
-                }}
+              <Divider sx={{ my: 2 }} />
+              <StyledTimeNavBox>
+                {!isFilterDateSelected ? (
+                  <Typography variant="h6">{timeTitle}</Typography>
+                ) : (
+                  <Typography variant="h6">{filterTimeTitle}</Typography>
+                )}
+                {!isFilterDateSelected ? (
+                  <>
+                    <Button
+                      sx={{ ml: 'auto', maxHeight: 35 }}
+                      variant="contained"
+                      startIcon={<ChevronLeftIcon />}
+                      size="small"
+                      onClick={setPrevMonth}
+                      disabled={loading}
+                    >
+                      {t('Previous Month')}
+                    </Button>
+                    <Button
+                      sx={{ maxHeight: 35 }}
+                      variant="contained"
+                      endIcon={<ChevronRightIcon />}
+                      size="small"
+                      onClick={setNextMonth}
+                      disabled={hasNext || loading}
+                    >
+                      {t('Next Month')}
+                    </Button>
+                  </>
+                ) : null}
+              </StyledTimeNavBox>
+              <Divider sx={{ my: 2 }} />
+            </SimpleScreenOnly>
+            {!loadError && (
+              <Typography
+                variant="body1"
+                sx={{ mb: 2, fontWeight: 'bold' }}
+                data-testid="overall-balance"
               >
-                <BalanceCardList
-                  funds={allFunds}
-                  selectedFundType={selectedFundType}
-                  transferTotals={transferTotals}
-                  onCardClick={handleCardClick}
-                  loading={loading}
+                {loading ? (
+                  <Skeleton
+                    variant="text"
+                    data-testid="overall-balance-skeleton"
+                  >
+                    <Box
+                      component="span"
+                      sx={{ display: 'inline-block', width: 320, height: 24 }}
+                    />
+                  </Skeleton>
+                ) : (
+                  t('Ending Balance (All Accounts): {{balance}}', {
+                    balance: currencyFormat(overallBalance, 'USD', locale, {
+                      showTrailingZeros: true,
+                    }),
+                  })
+                )}
+              </Typography>
+            )}
+            <SimpleScreenOnly>
+              {loadError ? (
+                // The global Apollo error link already shows the error details in a snackbar
+                <LoadErrorAlert
+                  message={t(
+                    'The Staff Expense report could not be loaded. Please try again later.',
+                  )}
+                  onRetry={refetchReport}
                 />
-              </Box>
+              ) : (
+                <Box
+                  display="flex"
+                  flexWrap="wrap"
+                  gap={2}
+                  sx={{
+                    flexDirection: { xs: 'column', sm: 'row' },
+                  }}
+                >
+                  <BalanceCardList
+                    funds={allFunds}
+                    selectedFundType={selectedFundType}
+                    transferTotals={transferTotals}
+                    onCardClick={handleCardClick}
+                    loading={loading}
+                  />
+                </Box>
+              )}
             </SimpleScreenOnly>
             <SimplePrintOnly>
               <Box>
-                {selectedFundType && (
+                {selectedFundType && !loadError && (
                   <PrintHeader
                     icon={getIconForFundType(selectedFundType)}
                     iconColor={getIconColorForFundType(selectedFundType, theme)}
@@ -423,50 +527,6 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               </Box>
             </SimplePrintOnly>
           </Box>
-        </Container>
-      </Box>
-      <SimpleScreenOnly mt={2} mb={2}>
-        <Container>
-          <Divider />
-        </Container>
-      </SimpleScreenOnly>
-      <SimpleScreenOnly mt={2}>
-        <Container>
-          <StyledTimeNavBox>
-            {!isFilterDateSelected ? (
-              <Typography variant="h6">{timeTitle}</Typography>
-            ) : (
-              <Typography variant="h6">{filterTimeTitle}</Typography>
-            )}
-            {!isFilterDateSelected ? (
-              <>
-                <Button
-                  style={{ marginLeft: 'auto', maxHeight: 35 }}
-                  variant="contained"
-                  startIcon={<ChevronLeftIcon />}
-                  size="small"
-                  onClick={setPrevMonth}
-                >
-                  {t('Previous Month')}
-                </Button>
-                <Button
-                  style={{ maxHeight: 35 }}
-                  variant="contained"
-                  endIcon={<ChevronRightIcon />}
-                  size="small"
-                  onClick={setNextMonth}
-                  disabled={hasNext}
-                >
-                  {t('Next Month')}
-                </Button>
-              </>
-            ) : null}
-          </StyledTimeNavBox>
-        </Container>
-      </SimpleScreenOnly>
-      <Box mt={2} mb={2}>
-        <Container>
-          <Divider></Divider>
         </Container>
       </Box>
       <Box>

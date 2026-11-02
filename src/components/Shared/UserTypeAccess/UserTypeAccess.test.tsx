@@ -19,6 +19,7 @@ interface TestComponentProps {
   spouseUsStaffGroup?: UsStaffGroupEnum;
   staffAccountId?: string | null;
   supervisesStaff?: boolean;
+  canViewNewStaffCohorts?: boolean;
   requireUserGroups?: RequiredUserGroupEnum;
 }
 
@@ -30,6 +31,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   spouseUsStaffGroup = UsStaffGroupEnum.PartTimeFieldStaff,
   staffAccountId = id,
   supervisesStaff = true,
+  canViewNewStaffCohorts = true,
   requireUserGroups,
 }) => (
   <ThemeProvider theme={theme}>
@@ -45,6 +47,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
               spouseUsStaffGroup,
               staffAccountId,
               supervisesStaff,
+              canViewNewStaffCohorts,
             },
           },
         }}
@@ -190,6 +193,41 @@ describe('UserTypeAccess', () => {
     expect(await findByText('Test Content')).toBeInTheDocument();
   });
 
+  it('should render LimitedAccess when the user is ineligible for staff account tools', async () => {
+    const { findByRole } = render(
+      <TestComponent
+        requireUserGroups={RequiredUserGroupEnum.StaffAccount}
+        usStaffGroup={UsStaffGroupEnum.PaidWithDesignation}
+      />,
+    );
+    expect(
+      await findByRole('heading', {
+        name: 'Access to this feature is limited.',
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it('explains a missing staff account when the user is ineligible for staff account tools', async () => {
+    const { findByText } = render(
+      <TestComponent
+        requireUserGroups={RequiredUserGroupEnum.StaffAccount}
+        usStaffGroup={UsStaffGroupEnum.PaidWithDesignation}
+      />,
+    );
+    expect(
+      await findByText(
+        /our records show that you do not have a staff account/i,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('should render child component when user is eligible for staff account tools', async () => {
+    const { findByText } = render(
+      <TestComponent requireUserGroups={RequiredUserGroupEnum.StaffAccount} />,
+    );
+    expect(await findByText('Test Content')).toBeInTheDocument();
+  });
+
   it('should render LimitedAccess when the user supervises no staff', async () => {
     const { findByRole, getByText } = render(
       <TestComponent
@@ -213,6 +251,32 @@ describe('UserTypeAccess', () => {
       <TestComponent
         requireUserGroups={RequiredUserGroupEnum.MpdSupervisor}
         supervisesStaff
+      />,
+    );
+    expect(await findByText('Test Content')).toBeInTheDocument();
+  });
+
+  it('should render LimitedAccess when the user may not open the admin table', async () => {
+    const { findByRole } = render(
+      <TestComponent
+        requireUserGroups={RequiredUserGroupEnum.NewStaffCohorts}
+        canViewNewStaffCohorts={false}
+      />,
+    );
+
+    expect(
+      await findByRole('heading', {
+        name: 'Access to this feature is limited.',
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it('should render child component for the goals team and coordinators, whatever their group', async () => {
+    const { findByText } = render(
+      <TestComponent
+        requireUserGroups={RequiredUserGroupEnum.NewStaffCohorts}
+        canViewNewStaffCohorts
+        usStaffGroup={UsStaffGroupEnum.NewStaff}
       />,
     );
     expect(await findByText('Test Content')).toBeInTheDocument();

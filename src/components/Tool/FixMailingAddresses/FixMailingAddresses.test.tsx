@@ -1,6 +1,6 @@
 import { ApolloCache, InMemoryCache } from '@apollo/client';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
@@ -40,9 +40,11 @@ jest.mock('notistack', () => ({
 const Components = ({
   mocks,
   cache,
+  onCall,
 }: {
   mocks: ApolloErgonoMockMap;
   cache?: ApolloCache<object>;
+  onCall?: jest.Mock;
 }) => (
   <SnackbarProvider>
     <TestRouter router={router}>
@@ -53,6 +55,7 @@ const Components = ({
         }>
           mocks={mocks}
           cache={cache}
+          onCall={onCall}
         >
           <ContactPanelProvider>
             <FixMailingAddresses accountListId={accountListId} />
@@ -568,6 +571,43 @@ describe('FixMailingAddresses', () => {
       });
 
       await waitFor(() => expect(queryByText(name)).not.toBeInTheDocument());
+    });
+
+    it('should disable the button while confirming', async () => {
+      const mutationSpy = jest.fn();
+      const { getAllByRole, findByRole, queryByTestId } = render(
+        <Components
+          mocks={{
+            InvalidAddresses: {
+              ...mockInvalidAddressesResponse.InvalidAddresses,
+            },
+          }}
+          onCall={mutationSpy}
+        />,
+      );
+      await waitFor(() =>
+        expect(queryByTestId('loading')).not.toBeInTheDocument(),
+      );
+
+      userEvent.click(getAllByRole('button', { name: 'Confirm' })[0]);
+
+      const confirmingButton = await findByRole('button', {
+        name: 'Confirming...',
+      });
+      expect(confirmingButton).toBeDisabled();
+      fireEvent.click(confirmingButton);
+
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(`Updated contact ${name}`, {
+          variant: 'success',
+        });
+      });
+      expect(
+        mutationSpy.mock.calls.filter(
+          ([{ operation }]) =>
+            operation.operationName === 'UpdateContactAddress',
+        ),
+      ).toHaveLength(3);
     });
   });
 

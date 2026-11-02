@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { MPGAIncomeExpensesReportTestWrapper } from '../MPGAIncomeExpensesReportTestWrapper';
@@ -174,6 +175,30 @@ describe('TableCard', () => {
         within(dialog).getByText('Donation - Non Cash'),
       ).toBeInTheDocument();
       expect(within(dialog).queryByText('Donation')).not.toBeInTheDocument();
+    });
+
+    it('titles the modal with the person whose row was clicked', async () => {
+      const [row] = mockData.income;
+      const { findByRole } = render(
+        <TestComponent
+          rows={[
+            {
+              ...row,
+              id: 'salary-alex',
+              category: StaffExpenseCategoryEnum.Salary,
+              description: 'Salary (Alex)',
+              person: 'Alex',
+            },
+          ]}
+        />,
+      );
+
+      userEvent.click(await findByRole('button', { name: 'View breakdown' }));
+
+      const dialog = await findByRole('dialog');
+      expect(
+        within(dialog).getByText('Salary (Alex) Breakdown'),
+      ).toBeInTheDocument();
     });
 
     it('closes the modal', async () => {

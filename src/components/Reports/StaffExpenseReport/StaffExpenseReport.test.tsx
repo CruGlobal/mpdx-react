@@ -6,12 +6,16 @@ import {
   render,
   waitFor,
   waitForElementToBeRemoved,
+  within,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Settings } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  DeepPartialMock,
+  GqlMockedProvider,
+} from '__tests__/util/graphqlMocking';
 import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import {
@@ -32,6 +36,8 @@ interface TestComponentProps {
   staffAccountId?: string;
   staffName?: string;
   personNumber?: string;
+  failReportCall?: FailCall;
+  failHcmCall?: FailCall;
 }
 
 const salaryCategory = {
@@ -82,6 +88,37 @@ const router = {
   push,
 };
 
+const calls = { report: 0, hcm: 0 };
+beforeEach(() => {
+  calls.report = 0;
+  calls.hcm = 0;
+});
+
+type ReportMock = DeepPartialMock<
+  ReportsStaffExpensesQuery['reportsStaffExpenses']
+>;
+type HcmMock = DeepPartialMock<HcmQuery['hcm']>;
+
+type FailCall = (call: number) => boolean;
+const everyCall: FailCall = () => true;
+const firstCall: FailCall = (call) => call === 0;
+const secondCall: FailCall = (call) => call === 1;
+
+const failCallsWhen = <Result,>(
+  failCall: FailCall | undefined,
+  query: keyof typeof calls,
+  message: string,
+  result: Result,
+): Result =>
+  failCall
+    ? ((() => {
+        if (failCall(calls[query]++)) {
+          throw new Error(message);
+        }
+        return result;
+      }) as unknown as Result)
+    : result;
+
 const TestComponent: React.FC<TestComponentProps> = ({
   isEmpty,
   routerMonth,
@@ -90,6 +127,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
   staffAccountId = null,
   staffName,
   personNumber,
+  failReportCall,
+  failHcmCall,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter
@@ -112,140 +151,145 @@ const TestComponent: React.FC<TestComponentProps> = ({
             }>
               mocks={{
                 ReportsStaffExpenses: {
-                  reportsStaffExpenses: {
-                    name: staffName ?? 'Test Account',
-                    funds: isEmpty
-                      ? []
-                      : [
-                          {
-                            fundType: 'Primary',
-                            total: -500,
-                            startBalance: 1000,
-                            endBalance: 2000,
-                            categories: [
-                              ...(withSalary ? [salaryCategory] : []),
-                              {
-                                category: StaffExpenseCategoryEnum.Assessment,
-                                total: -300,
-                                averagePerMonth: -100,
-                                subcategories: [
-                                  {
-                                    subCategory:
-                                      StaffExpensesSubCategoryEnum.CreditCardFee,
-                                    total: -200,
-                                    averagePerMonth: -50,
-                                    breakdownByMonth: [
-                                      {
-                                        month: '2020-01-01',
-                                        total: -200,
-                                        transactions: [
-                                          {
-                                            id: 'transaction-1',
-                                            amount: -100,
-                                            transactedAt: '2020-01-15',
-                                            description: 'Star Wars Costume',
-                                          },
-                                          {
-                                            id: 'transaction-2',
-                                            amount: -100,
-                                            transactedAt: '2020-01-24',
-                                          },
+                  reportsStaffExpenses: failCallsWhen<ReportMock>(
+                    failReportCall,
+                    'report',
+                    'SAA is unavailable',
+                    {
+                      name: staffName ?? 'Test Account',
+                      funds: isEmpty
+                        ? []
+                        : [
+                            {
+                              fundType: 'Primary',
+                              total: -500,
+                              startBalance: 1000,
+                              endBalance: 2000,
+                              categories: [
+                                ...(withSalary ? [salaryCategory] : []),
+                                {
+                                  category: StaffExpenseCategoryEnum.Assessment,
+                                  total: -300,
+                                  averagePerMonth: -100,
+                                  subcategories: [
+                                    {
+                                      subCategory:
+                                        StaffExpensesSubCategoryEnum.CreditCardFee,
+                                      total: -200,
+                                      averagePerMonth: -50,
+                                      breakdownByMonth: [
+                                        {
+                                          month: '2020-01-01',
+                                          total: -200,
+                                          transactions: [
+                                            {
+                                              id: 'transaction-1',
+                                              amount: -100,
+                                              transactedAt: '2020-01-15',
+                                              description: 'Star Wars Costume',
+                                            },
+                                            {
+                                              id: 'transaction-2',
+                                              amount: -100,
+                                              transactedAt: '2020-01-24',
+                                            },
 
-                                          {
-                                            id: 'transaction-3',
-                                            amount: 50,
-                                            transactedAt: '2020-02-15',
-                                            description: 'Credit Card Fee',
-                                          },
-                                        ],
-                                      },
-                                      {
-                                        month: '2020-02-01',
-                                        total: -100,
-                                      },
-                                    ],
-                                  },
-                                  {
-                                    subCategory:
-                                      StaffExpensesSubCategoryEnum.CreditCardFee,
-                                    total: 150,
-                                    averagePerMonth: 75,
-                                    breakdownByMonth: [
-                                      {
-                                        month: '2020-01-01',
-                                        total: 50,
-                                      },
-                                      {
-                                        month: '2020-02-01',
-                                        total: 50,
-                                        transactions: [
-                                          {
-                                            id: 'transaction-3',
-                                            amount: 50,
-                                            transactedAt: '2020-02-15',
-                                            description: 'Credit Card Fee',
-                                          },
-                                        ],
-                                      },
-                                    ],
-                                  },
-                                ],
-                                breakdownByMonth: [
-                                  {
-                                    month: '2020-01-01',
-                                    total: -150,
-                                  },
-                                  {
-                                    month: '2020-02-01',
-                                    total: -150,
-                                  },
-                                ],
-                              },
-                            ],
-                          },
-                          {
-                            fundType: 'Savings',
-                            total: -100,
-                            startBalance: 1000,
-                            endBalance: 2000,
-                            categories: [
-                              {
-                                category: StaffExpenseCategoryEnum.Assessment,
-                                total: -100,
-                                averagePerMonth: -50,
-                                subcategories: [
-                                  {
-                                    subCategory:
-                                      StaffExpensesSubCategoryEnum.CreditCardFee,
-                                    total: -100,
-                                    averagePerMonth: -50,
-                                    breakdownByMonth: [
-                                      {
-                                        month: '2020-01-01',
-                                        total: -100,
-                                        transactions: [
-                                          {
-                                            id: 'transaction-savings-1',
-                                            amount: -100,
-                                            transactedAt: '2020-01-10',
-                                            description: 'Savings Expense',
-                                          },
-                                        ],
-                                      },
-                                    ],
-                                  },
-                                ],
-                                breakdownByMonth: [
-                                  {
-                                    month: '2020-01-01',
-                                    total: -100,
-                                  },
-                                ],
-                              },
-                            ],
-                          },
-                        ],
-                  },
+                                            {
+                                              id: 'transaction-3',
+                                              amount: 50,
+                                              transactedAt: '2020-02-15',
+                                              description: 'Credit Card Fee',
+                                            },
+                                          ],
+                                        },
+                                        {
+                                          month: '2020-02-01',
+                                          total: -100,
+                                        },
+                                      ],
+                                    },
+                                    {
+                                      subCategory:
+                                        StaffExpensesSubCategoryEnum.CreditCardFee,
+                                      total: 150,
+                                      averagePerMonth: 75,
+                                      breakdownByMonth: [
+                                        {
+                                          month: '2020-01-01',
+                                          total: 50,
+                                        },
+                                        {
+                                          month: '2020-02-01',
+                                          total: 50,
+                                          transactions: [
+                                            {
+                                              id: 'transaction-3',
+                                              amount: 50,
+                                              transactedAt: '2020-02-15',
+                                              description: 'Credit Card Fee',
+                                            },
+                                          ],
+                                        },
+                                      ],
+                                    },
+                                  ],
+                                  breakdownByMonth: [
+                                    {
+                                      month: '2020-01-01',
+                                      total: -150,
+                                    },
+                                    {
+                                      month: '2020-02-01',
+                                      total: -150,
+                                    },
+                                  ],
+                                },
+                              ],
+                            },
+                            {
+                              fundType: 'Savings',
+                              total: -100,
+                              startBalance: 1000,
+                              endBalance: 2000,
+                              categories: [
+                                {
+                                  category: StaffExpenseCategoryEnum.Assessment,
+                                  total: -100,
+                                  averagePerMonth: -50,
+                                  subcategories: [
+                                    {
+                                      subCategory:
+                                        StaffExpensesSubCategoryEnum.CreditCardFee,
+                                      total: -100,
+                                      averagePerMonth: -50,
+                                      breakdownByMonth: [
+                                        {
+                                          month: '2020-01-01',
+                                          total: -100,
+                                          transactions: [
+                                            {
+                                              id: 'transaction-savings-1',
+                                              amount: -100,
+                                              transactedAt: '2020-01-10',
+                                              description: 'Savings Expense',
+                                            },
+                                          ],
+                                        },
+                                      ],
+                                    },
+                                  ],
+                                  breakdownByMonth: [
+                                    {
+                                      month: '2020-01-01',
+                                      total: -100,
+                                    },
+                                  ],
+                                },
+                              ],
+                            },
+                          ],
+                    },
+                  ),
                 },
                 StaffAccount: {
                   staffAccount: {
@@ -255,22 +299,29 @@ const TestComponent: React.FC<TestComponentProps> = ({
                   },
                 },
                 Hcm: {
-                  hcm: [
-                    {
-                      usStaffGroup,
-                      staffInfo: {
-                        personNumber: '000000111',
-                        preferredName: 'Alex',
+                  hcm: failCallsWhen<HcmMock>(
+                    failHcmCall,
+                    'hcm',
+                    'HCM is unavailable',
+                    [
+                      {
+                        usStaffGroup,
+                        outOfSync: false,
+                        staffInfo: {
+                          personNumber: '000000111',
+                          preferredName: 'Alex',
+                        },
                       },
-                    },
-                    {
-                      usStaffGroup,
-                      staffInfo: {
-                        personNumber: '000000222',
-                        preferredName: 'Jordan',
+                      {
+                        usStaffGroup,
+                        outOfSync: false,
+                        staffInfo: {
+                          personNumber: '000000222',
+                          preferredName: 'Jordan',
+                        },
                       },
-                    },
-                  ],
+                    ],
+                  ),
                 },
               }}
               onCall={mutationSpy}
@@ -296,10 +347,27 @@ describe('StaffExpenseReport', () => {
 
     expect(getByRole('heading', { name: 'Report title' })).toBeInTheDocument();
     expect(await findByText('Test Account')).toBeInTheDocument();
-    expect(await findByText('$4,000.00')).toBeInTheDocument();
+    expect(
+      await findByText('Ending Balance (All Accounts): $4,000.00'),
+    ).toBeInTheDocument();
+  });
+
+  it('shows a skeleton for the overall balance while loading', async () => {
+    const { getByTestId, findByText, queryByTestId } = render(
+      <TestComponent />,
+    );
+
+    expect(getByTestId('overall-balance-skeleton')).toBeInTheDocument();
+    expect(
+      await findByText('Ending Balance (All Accounts): $4,000.00'),
+    ).toBeInTheDocument();
+    expect(queryByTestId('overall-balance-skeleton')).not.toBeInTheDocument();
   });
 
   it('names each salary row for the person HCM attributes it to', async () => {
+    // After payday, so the rows are not also marked pending
+    Settings.now = () => new Date(2020, 0, 31).valueOf();
+
     const { findByRole, getByRole } = render(<TestComponent withSalary />);
 
     expect(
@@ -307,6 +375,19 @@ describe('StaffExpenseReport', () => {
     ).toBeInTheDocument();
     expect(
       getByRole('gridcell', { name: 'Salary (Jordan)' }),
+    ).toBeInTheDocument();
+  });
+
+  it('marks salary dated after today as pending', async () => {
+    Settings.now = () => new Date(2020, 0, 10).valueOf();
+
+    const { findByRole, getByRole } = render(<TestComponent withSalary />);
+
+    expect(
+      await findByRole('gridcell', { name: 'Salary (Alex) Pending' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('gridcell', { name: 'Salary (Jordan) Pending' }),
     ).toBeInTheDocument();
   });
 
@@ -393,6 +474,127 @@ describe('StaffExpenseReport', () => {
     });
   });
 
+  describe('when the report fails to load', () => {
+    it('shows a friendly error instead of the empty report', async () => {
+      const { findByRole, getByTestId, queryByTestId } = render(
+        <TestComponent failReportCall={everyCall} />,
+      );
+
+      const alert = await findByRole('alert');
+      expect(alert).toHaveTextContent(
+        'The Staff Expense report could not be loaded. Please try again later.',
+      );
+      // The raw error is left to the global error snackbar.
+      expect(alert).not.toHaveTextContent('SAA is unavailable');
+      expect(getByTestId('name')).toHaveTextContent('Test Account');
+      expect(queryByTestId('overall-balance')).not.toBeInTheDocument();
+    });
+
+    it('loads the report when Try Again is clicked', async () => {
+      const { findByRole, findByText, queryByRole } = render(
+        <TestComponent failReportCall={firstCall} />,
+      );
+
+      const alert = await findByRole('alert');
+      userEvent.click(within(alert).getByRole('button', { name: 'Try Again' }));
+
+      expect(
+        await findByText('Ending Balance (All Accounts): $4,000.00'),
+      ).toBeInTheDocument();
+      expect(queryByRole('alert')).not.toBeInTheDocument();
+    });
+
+    it('keeps the error when Try Again fails too', async () => {
+      const { findByRole, getByRole } = render(
+        <TestComponent failReportCall={everyCall} />,
+      );
+
+      const alert = await findByRole('alert');
+      userEvent.click(within(alert).getByRole('button', { name: 'Try Again' }));
+
+      await waitFor(() => expect(calls.report).toBe(2));
+      expect(getByRole('alert')).toBeInTheDocument();
+    });
+
+    it('hides the previous month balances when the next month fails', async () => {
+      const { findByRole, findByText, getByRole, queryByTestId, queryByText } =
+        render(<TestComponent failReportCall={secondCall} />);
+
+      expect(
+        await findByText('Ending Balance (All Accounts): $4,000.00'),
+      ).toBeInTheDocument();
+      userEvent.click(getByRole('button', { name: 'Previous Month' }));
+
+      await findByRole('alert');
+      // The print header keeps the selected fund, so it would show zeroed balances
+      expect(queryByText(/Starting Balance/)).not.toBeInTheDocument();
+      expect(queryByTestId('overall-balance')).not.toBeInTheDocument();
+    });
+
+    it('loads the report when a different month is chosen', async () => {
+      const { findByRole, findByText, getByRole, queryByRole } = render(
+        <TestComponent failReportCall={firstCall} />,
+      );
+
+      await findByRole('alert');
+      userEvent.click(getByRole('button', { name: 'Previous Month' }));
+
+      expect(
+        await findByText('Ending Balance (All Accounts): $4,000.00'),
+      ).toBeInTheDocument();
+      expect(queryByRole('alert')).not.toBeInTheDocument();
+    });
+
+    it('hides the empty account info in supervisor view', async () => {
+      const { findByRole, queryByTestId } = render(
+        <TestComponent
+          staffAccountId={staffAccountId}
+          failReportCall={everyCall}
+        />,
+      );
+
+      await findByRole('alert');
+      expect(queryByTestId('account-info')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('when HCM fails to load', () => {
+    it('shows the error instead of loading forever', async () => {
+      const { findByRole, queryByTestId } = render(
+        <TestComponent failHcmCall={everyCall} />,
+      );
+
+      expect(await findByRole('alert')).toHaveTextContent(
+        'The Staff Expense report could not be loaded. Please try again later.',
+      );
+      expect(queryByTestId('overall-balance')).not.toBeInTheDocument();
+      expect(mutationSpy).not.toHaveGraphqlOperation('ReportsStaffExpenses');
+    });
+
+    it('loads HCM and the report when Try Again is clicked', async () => {
+      const { findByRole, findByText, queryByRole } = render(
+        <TestComponent failHcmCall={firstCall} />,
+      );
+
+      const alert = await findByRole('alert');
+      userEvent.click(within(alert).getByRole('button', { name: 'Try Again' }));
+
+      expect(
+        await findByText('Ending Balance (All Accounts): $4,000.00'),
+      ).toBeInTheDocument();
+      expect(queryByRole('alert')).not.toBeInTheDocument();
+      expect(calls.hcm).toBe(2);
+    });
+  });
+
+  it('shows a zero overall balance when the report has no funds', async () => {
+    const { findByText } = render(<TestComponent isEmpty={true} />);
+
+    expect(
+      await findByText('Ending Balance (All Accounts): $0.00'),
+    ).toBeInTheDocument();
+  });
+
   it('keeps the Report Settings button visible when there are no transactions', async () => {
     const { findByRole } = render(<TestComponent isEmpty={true} />);
 
@@ -416,10 +618,32 @@ describe('StaffExpenseReport', () => {
     await waitFor(() => expect(onNavListToggle).toHaveBeenCalled());
   });
 
-  it('updates the time filter', () => {
+  it('updates the time filter once loaded', async () => {
     const { getByRole, getByText } = render(<TestComponent />);
+    expect(getByRole('button', { name: 'Previous Month' })).toBeDisabled();
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Previous Month' })).toBeEnabled(),
+    );
     userEvent.click(getByRole('button', { name: 'Previous Month' }));
     expect(getByText('December 2019')).toBeInTheDocument();
+  });
+
+  it('disables month navigation while a chosen month is loading', async () => {
+    const { findByText, getByRole } = render(<TestComponent />);
+
+    await findByText('Ending Balance (All Accounts): $4,000.00');
+
+    const prevButton = getByRole('button', { name: 'Previous Month' });
+    const nextButton = getByRole('button', { name: 'Next Month' });
+    expect(prevButton).not.toBeDisabled();
+
+    userEvent.click(prevButton);
+
+    expect(prevButton).toBeDisabled();
+    expect(nextButton).toBeDisabled();
+
+    await waitFor(() => expect(prevButton).not.toBeDisabled());
+    expect(nextButton).not.toBeDisabled();
   });
 
   it('correctly displays totals for income and expenses', async () => {

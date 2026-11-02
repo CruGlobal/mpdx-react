@@ -124,29 +124,38 @@ describe('calculateOtherExpenses', () => {
       expect(result.benefits).toBe(0);
     });
 
-    it('calculates subtotal without workComp or benefits when status is null', () => {
+    it('calculates combinedSubtotal without workComp or benefits when status is null', () => {
       const result = calculateOtherExpenses(noStatus(), defaultConstants);
       // 5000 + 500 + 400 + 0 + 0
-      expect(result.subtotal).toBeCloseTo(5900);
+      expect(result.combinedSubtotal).toBeCloseTo(5900);
     });
   });
 
-  describe('subtotal', () => {
-    it('sums salarySubtotal + reimbursable + 403b + benefits for full-time', () => {
+  describe('otherSubtotal', () => {
+    it('sums only reimbursable + 403b + workComp + benefits, excluding salary', () => {
+      const result = calculateOtherExpenses(fullTime(), defaultConstants);
+      // 500 + 400 + 0 + 1500,
+      // with the 5000 salarySubtotal left out
+      expect(result.otherSubtotal).toBeCloseTo(2400);
+    });
+  });
+
+  describe('combinedSubtotal', () => {
+    it('sums salarySubtotal + otherSubtotal for full-time', () => {
       const result = calculateOtherExpenses(fullTime(), defaultConstants);
       // 5000 + 500 + 400 + 0 + 1500
-      expect(result.subtotal).toBeCloseTo(7400);
+      expect(result.combinedSubtotal).toBeCloseTo(7400);
     });
 
-    it('sums salarySubtotal + reimbursable + 403b + workComp for part-time', () => {
+    it('sums salarySubtotal + otherSubtotal for part-time', () => {
       const result = calculateOtherExpenses(partTime(), defaultConstants);
       // 5000 + 500 + 400 + 555 + 0
-      expect(result.subtotal).toBeCloseTo(6455);
+      expect(result.combinedSubtotal).toBeCloseTo(6455);
     });
   });
 
   describe('attrition', () => {
-    it('is 6% of subtotal', () => {
+    it('is 6% of combinedSubtotal', () => {
       const result = calculateOtherExpenses(fullTime(), defaultConstants);
       // 7400 * 0.06
       expect(result.attrition).toBeCloseTo(444);
@@ -154,7 +163,7 @@ describe('calculateOtherExpenses', () => {
   });
 
   describe('credit card fees', () => {
-    it('grosses up (subtotal + attrition) so that fees are `creditCardFeeRate` of the post-fees total', () => {
+    it('grosses up (combinedSubtotal + attrition) so that fees are `creditCardFeeRate` of the post-fees total', () => {
       const result = calculateOtherExpenses(fullTime(), defaultConstants);
       // (7400 + 444) / (1 - 0.06) - (7400 + 444) ≈ 500.68
       expect(result.creditCardFees).toBeCloseTo(500.68);
@@ -170,7 +179,7 @@ describe('calculateOtherExpenses', () => {
   });
 
   describe('assessment', () => {
-    it('grosses up (subtotal + attrition + creditCardFees) so that admin is `adminRate` of the post-admin total', () => {
+    it('grosses up (combinedSubtotal + attrition + creditCardFees) so that admin is `adminRate` of the post-admin total', () => {
       const result = calculateOtherExpenses(fullTime(), defaultConstants);
       // adminBase=7400+444+500.68=8344.68; assessment = adminBase/0.88 - adminBase ≈ 1137.91
       expect(result.assessment).toBeCloseTo(1137.91, 1);
@@ -192,7 +201,7 @@ describe('calculateOtherExpenses', () => {
       expect(result.fourOThreeBContributions).toBeCloseTo(400);
       expect(result.workComp).toBe(0);
       expect(result.benefits).toBe(1500);
-      expect(result.subtotal).toBeCloseTo(7400);
+      expect(result.combinedSubtotal).toBeCloseTo(7400);
       expect(result.attrition).toBeCloseTo(444);
       expect(result.creditCardFees).toBeCloseTo(500.68);
       expect(result.assessment).toBeCloseTo(1137.91, 1);
@@ -201,12 +210,12 @@ describe('calculateOtherExpenses', () => {
     it('produces correct totals for a part-time employee', () => {
       const result = calculateOtherExpenses(partTime(), defaultConstants);
       // reimbursable=500, 403b=400, workComp=555 (fixed), benefits=0
-      // subtotal=5000+500+400+555+0=6455
+      // combinedSubtotal=5000+500+400+555+0=6455
       // attrition=6455*0.06=387.30
       // creditCardFees=(6455+387.30)/(1-0.06)-(6455+387.30)≈436.74
       // adminBase=6455+387.30+436.74≈7279.04
       // assessment = adminBase/0.88 - adminBase ≈ 992.60
-      expect(result.subtotal).toBeCloseTo(6455);
+      expect(result.combinedSubtotal).toBeCloseTo(6455);
       expect(result.attrition).toBeCloseTo(387.3);
       expect(result.creditCardFees).toBeCloseTo(436.74, 1);
       expect(result.assessment).toBeCloseTo(992.6, 1);

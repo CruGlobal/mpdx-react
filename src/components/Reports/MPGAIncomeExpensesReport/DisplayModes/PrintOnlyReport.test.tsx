@@ -53,7 +53,9 @@ describe('PrintOnlyReport', () => {
       getByText(/no expenses data available in the last 12 months/i),
     ).toBeInTheDocument();
     expect(
-      getByText(/no balance data available in the last 12 months/i),
+      getByText(
+        /no primary account balance data available in the last 12 months/i,
+      ),
     ).toBeInTheDocument();
   });
 });

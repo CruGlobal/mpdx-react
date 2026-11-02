@@ -142,6 +142,75 @@ describe('MaxAllowableSection', () => {
       ).toBeInTheDocument();
     });
 
+    it('limits the spouse field to the spouse hard cap', async () => {
+      const { findByRole, findByText, getByRole } = render(
+        <TestComponent
+          salaryRequestMock={{ spouseCalculations: { hardCap: 70000 } }}
+        />,
+      );
+
+      userEvent.click(
+        await findByRole('checkbox', { name: /Check if you prefer to split/ }),
+      );
+
+      const spouseInput = getByRole('textbox', {
+        name: 'Jane Maximum Allowable Salary',
+      });
+      userEvent.clear(spouseInput);
+      userEvent.type(spouseInput, '75000');
+      spouseInput.blur();
+
+      expect(
+        await findByText(
+          'Maximum Allowable Salary must not exceed cap of $70,000',
+        ),
+      ).toBeInTheDocument();
+      expect(mutationSpy).not.toHaveGraphqlOperation(
+        'UpdateSalaryCalculation',
+        {
+          input: { attributes: { spouseSalaryCap: 75000 } },
+        },
+      );
+    });
+
+    it('shows a single limit when both hard caps match', async () => {
+      const { findByRole } = render(<TestComponent />);
+
+      expect(
+        await findByRole('cell', {
+          name: '$125,000 (with neither exceeding $80,000)',
+        }),
+      ).toBeInTheDocument();
+    });
+
+    it('shows a single limit when the hard caps differ by less than a dollar', async () => {
+      const { findByRole } = render(
+        <TestComponent
+          salaryRequestMock={{ spouseCalculations: { hardCap: 80000.4 } }}
+        />,
+      );
+
+      expect(
+        await findByRole('cell', {
+          name: '$125,000 (with neither exceeding $80,000)',
+        }),
+      ).toBeInTheDocument();
+    });
+
+    it("names each person's limit when the hard caps differ", async () => {
+      const { findByRole } = render(
+        <TestComponent
+          salaryRequestMock={{ spouseCalculations: { hardCap: 95000 } }}
+        />,
+      );
+
+      expect(
+        await findByRole('cell', {
+          name: '$125,000 (with John not exceeding $80,000 and Jane not exceeding $95,000)',
+        }),
+      ).toBeInTheDocument();
+    });
+
     it('warns when input total exceeds the cap', async () => {
       const { findByRole, getByRole } = render(<TestComponent />);
 

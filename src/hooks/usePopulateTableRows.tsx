@@ -34,9 +34,16 @@ export const usePopulateTableRows = (
         component={NextLink}
         href={buildContactUrl(row.id, ContactDetailTabEnum.Donations)}
         onMouseEnter={preloadContactsRightPanel}
-        style={{
+        sx={{
           whiteSpace: 'nowrap',
-          marginRight: theme.spacing(0.5),
+          mr: 0.5,
+          // 44px tall tap target on phones
+          [theme.breakpoints.down('sm')]: {
+            display: 'block',
+            lineHeight: '44px',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          },
         }}
       >
         {row.name}

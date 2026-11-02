@@ -2,6 +2,7 @@ import { ChangeEventHandler, useCallback, useMemo, useState } from 'react';
 import { Autocomplete, CircularProgress, TextField } from '@mui/material';
 import { debounce } from 'lodash';
 import { useTranslation } from 'react-i18next';
+import { filterOptionsByWords } from 'src/components/Shared/Autocomplete/filterOptionsByWords';
 import { useContactOptionsQuery } from './ContactsAutocomplete.generated';
 
 interface ContactsAutocompleteProps {
@@ -97,10 +98,13 @@ export const ContactsAutocomplete: React.FC<ContactsAutocompleteProps> = ({
       openOnFocus
       autoSelect
       disabled={disabled}
+      filterOptions={filterOptionsByWords}
       options={options
         .slice()
         .sort((a, b) => a.name.localeCompare(b.name))
         .map(({ id }) => id)}
+      // Override default MUI key: the option label
+      getOptionKey={(contactId) => contactId}
       getOptionLabel={(contactId) =>
         options.find(({ id }) => id === contactId)?.name ?? ''
       }

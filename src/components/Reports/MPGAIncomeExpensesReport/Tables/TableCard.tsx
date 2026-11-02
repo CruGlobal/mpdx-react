@@ -347,6 +347,7 @@ export const TableCard: React.FC<TableCardProps> = ({
           open
           onClose={() => setOpenBreakdownModal(null)}
           category={openBreakdownModal.category}
+          person={openBreakdownModal.person}
           transactions={openBreakdownModal.transactions}
         />
       )}

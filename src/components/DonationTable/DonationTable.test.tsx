@@ -77,6 +77,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
                             accountNumber: 'accountNumber-1',
                           },
                           paymentMethod: 'Check',
+                          motivation: 'Motivation 1',
+                          memo: 'Memo 1',
                           designationAccount: {
                             name: 'Tony Starks Account',
                             accountNumber: '111111',
@@ -100,6 +102,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
                             accountNumber: 'accountNumber-2',
                           },
                           paymentMethod: 'Credit Card',
+                          motivation: null,
+                          memo: null,
                           designationAccount: {
                             name: '',
                             accountNumber: '080808',
@@ -136,6 +140,10 @@ const TestComponent: React.FC<TestComponentProps> = ({
 );
 
 describe('DonationTable', () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+  });
+
   it('renders with data', async () => {
     const { getByRole, findByRole } = render(<TestComponent />);
 
@@ -332,5 +340,59 @@ describe('DonationTable', () => {
 
     expect(await findByText('Tony Starks Account')).toBeInTheDocument();
     expect(await findByText('080808')).toBeInTheDocument();
+  });
+
+  describe('motivation and memo columns', () => {
+    it('are hidden by default', async () => {
+      const { findByRole, queryByRole } = render(<TestComponent />);
+
+      expect(
+        await findByRole('gridcell', { name: 'Donor 1' }),
+      ).toBeInTheDocument();
+      expect(
+        queryByRole('columnheader', { name: 'Motivation' }),
+      ).not.toBeInTheDocument();
+      expect(
+        queryByRole('columnheader', { name: 'Memo' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('are hidden when the saved column visibility predates them', async () => {
+      window.localStorage.setItem(
+        'donation-table-visible-columns-',
+        JSON.stringify({ paymentMethod: false }),
+      );
+      const { findByRole, queryByRole } = render(<TestComponent />);
+
+      expect(
+        await findByRole('gridcell', { name: 'Donor 1' }),
+      ).toBeInTheDocument();
+      expect(
+        queryByRole('columnheader', { name: 'Method' }),
+      ).not.toBeInTheDocument();
+      expect(
+        queryByRole('columnheader', { name: 'Motivation' }),
+      ).not.toBeInTheDocument();
+      expect(
+        queryByRole('columnheader', { name: 'Memo' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('render when enabled in the saved column visibility', async () => {
+      window.localStorage.setItem(
+        'donation-table-visible-columns-',
+        JSON.stringify({ motivation: true, memo: true }),
+      );
+      const { findByRole, getByRole } = render(<TestComponent />);
+
+      expect(
+        await findByRole('columnheader', { name: 'Motivation' }),
+      ).toBeInTheDocument();
+      expect(getByRole('columnheader', { name: 'Memo' })).toBeInTheDocument();
+      expect(
+        getByRole('gridcell', { name: 'Motivation 1' }),
+      ).toBeInTheDocument();
+      expect(getByRole('gridcell', { name: 'Memo 1' })).toBeInTheDocument();
+    });
   });
 });

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Alert,
   Table,
@@ -32,7 +32,11 @@ export const StaffTabPayroll: React.FC<StaffTabPayrollProps> = ({
   const { data, loading, error } = useMonthlyPayrollHistoryQuery({
     variables: { staffAccountId },
   });
-  const payrollHistory = data?.monthlyPayrollHistory ?? [];
+
+  const tableRows = useMemo(
+    () => [...(data?.monthlyPayrollHistory ?? [])].reverse(),
+    [data?.monthlyPayrollHistory],
+  );
 
   if (loading) {
     return <DynamicComponentPlaceholder />;
@@ -60,18 +64,18 @@ export const StaffTabPayroll: React.FC<StaffTabPayrollProps> = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {payrollHistory.length === 0 ? (
+            {tableRows.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={4} align="center">
                   {t('No data available.')}
                 </TableCell>
               </TableRow>
             ) : (
-              payrollHistory.map((payroll, index) => {
+              tableRows.map((payroll, index) => {
                 const date = DateTime.fromISO(payroll.month ?? '');
 
                 return (
-                  <TableRow key={index}>
+                  <TableRow key={payroll.month ?? index}>
                     <TableCell>
                       {date.isValid
                         ? monthYearFormat(date.month, date.year, locale)

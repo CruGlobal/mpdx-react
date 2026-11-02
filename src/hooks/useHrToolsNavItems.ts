@@ -1,9 +1,12 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNewStaffQuestionnaireStatusQuery } from './NewStaffQuestionnaireStatus.generated';
+import { useAccountListId } from './useAccountListId';
 import { useDeveloperBypass } from './useDeveloperBypass';
 import { useIneligibleByGroup } from './useIneligibleByGroup';
 import { NavItems } from './useReportNavItems';
 import { useReportsDisabled } from './useReportsDisabled';
+import { useRequiredSession } from './useRequiredSession';
 
 export function useHrToolsNavItems(): {
   items: NavItems[];
@@ -18,12 +21,36 @@ export function useHrToolsNavItems(): {
     inNsGoalCalcIneligibleGroup,
     inPdsGoalCalcIneligibleGroup,
     inMpdSupervisorIneligibleGroup,
+    inStaffAccountIneligibleGroup,
+    canViewNewStaffCohorts,
     hasNoStaffAccount,
     userLoading,
   } = useIneligibleByGroup();
   const developerBypass = useDeveloperBypass();
-  // Partner Reminders is live in production; every other HR Tool is still disabled
   const { reportsDisabled } = useReportsDisabled();
+  const { impersonating, isImpersonatorDeveloper } = useRequiredSession();
+  // Non-developer impersonators must never see the supervisor report (MPDX-10066).
+  // Applied outside the developerBypass filter because session.developer reflects
+  // the impersonated user, not the impersonator.
+  const blockedImpersonation = !!impersonating && !isImpersonatorDeveloper;
+
+  const accountListId = useAccountListId();
+
+  // Only new staff are ever offered the questionnaire, so nobody else pays for this query.
+  const {
+    data: questionnaireData,
+    loading: questionnaireLoading,
+    error: questionnaireError,
+  } = useNewStaffQuestionnaireStatusQuery({
+    variables: { accountListId },
+    skip: userLoading || inNsGoalCalcIneligibleGroup,
+  });
+  const questionnaire = questionnaireData?.newStaffQuestionnaire;
+  const hasQuestionnaireToFillIn = !!questionnaire && !questionnaire.completed;
+  // A failed query must not hide the path to paperwork new staff still owe
+  const hideQuestionnaire = questionnaireError
+    ? false
+    : questionnaireLoading || !hasQuestionnaireToFillIn;
 
   const items = useMemo(() => {
     if (userLoading) {
@@ -39,7 +66,8 @@ export function useHrToolsNavItems(): {
       {
         id: 'staffSavingFund',
         title: t('Savings Fund Transfer'),
-        hideItem: reportsDisabled || hasNoStaffAccount,
+        hideItem:
+          reportsDisabled || hasNoStaffAccount || inStaffAccountIneligibleGroup,
       },
       {
         id: 'nsGoalCalculator',
@@ -55,7 +83,8 @@ export function useHrToolsNavItems(): {
         hideItem:
           reportsDisabled ||
           process.env.DISABLE_NS_GOAL_CALCULATOR === 'true' ||
-          inNsGoalCalcIneligibleGroup,
+          inNsGoalCalcIneligibleGroup ||
+          hideQuestionnaire,
       },
       {
         id: 'goalCalculator',
@@ -68,7 +97,7 @@ export function useHrToolsNavItems(): {
         hideItem:
           reportsDisabled ||
           process.env.DISABLE_MPD_GOAL_ADMIN === 'true' ||
-          inMpdGoalCalcIneligibleGroup,
+          !canViewNewStaffCohorts,
       },
       {
         id: 'mhaCalculator',
@@ -88,15 +117,18 @@ export function useHrToolsNavItems(): {
       {
         id: 'partnerReminders',
         title: t('Ministry Partner Reminders'),
-        // TODO (MPDX-9822): Once HCM goes live, add has no staff account gate back
-        hideItem: false,
+        hideItem: reportsDisabled || hasNoStaffAccount,
       },
       {
         id: 'mpdSupervisorReport',
         title: t('MPD Supervisor Report'),
         hideItem: reportsDisabled || inMpdSupervisorIneligibleGroup,
       },
-    ].filter((item) => developerBypass || !item.hideItem);
+    ]
+      .filter((item) => developerBypass || !item.hideItem)
+      .filter(
+        (item) => !(item.id === 'mpdSupervisorReport' && blockedImpersonation),
+      );
   }, [
     t,
     inAsrIneligibleGroup,
@@ -106,10 +138,14 @@ export function useHrToolsNavItems(): {
     inNsGoalCalcIneligibleGroup,
     inPdsGoalCalcIneligibleGroup,
     inMpdSupervisorIneligibleGroup,
+    inStaffAccountIneligibleGroup,
+    canViewNewStaffCohorts,
+    hideQuestionnaire,
     userLoading,
     hasNoStaffAccount,
     developerBypass,
     reportsDisabled,
+    blockedImpersonation,
   ]);
 
   return { items, loading: userLoading };

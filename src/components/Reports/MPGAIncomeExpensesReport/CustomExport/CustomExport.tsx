@@ -55,7 +55,7 @@ export const exportToCsv = (
   const title = {
     [ReportTypeEnum.Income]: 'MPGA Income Monthly Report',
     [ReportTypeEnum.Expenses]: 'MPGA Expenses Monthly Report',
-    [ReportTypeEnum.Balance]: 'MPGA Balance Monthly Report',
+    [ReportTypeEnum.Balance]: 'MPGA Primary Account Balance Monthly Report',
   }[reportType];
   const last12Months = months.map((month) => month.split(' ')[0]);
 

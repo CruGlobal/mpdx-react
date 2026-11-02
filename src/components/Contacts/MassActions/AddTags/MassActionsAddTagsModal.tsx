@@ -73,31 +73,31 @@ export const MassActionsAddTagsModal: React.FC<
     },
   });
 
-  const handleValidation = async (fields: Partial<ContactUpdateInput>) => {
-    const tags = fields.tagList ?? [];
-    let existingTags: string[] = [];
-    let contactNum = 0;
-    contactsForTags?.contacts.nodes.forEach((contact) => {
-      existingTags = [...existingTags, ...contact.tagList];
-      contactNum++;
-    });
-    for (let i = 0; i < tags?.length; i++) {
-      existingTags = [...existingTags, tags[i]];
-      const duplicates = existingTags.filter(
-        (item, index) => existingTags.indexOf(item) !== index,
-      );
-      if (duplicates.length === contactNum && duplicates.length > 0) {
-        enqueueSnackbar(t('All selected contacts already have this tag'), {
-          variant: 'error',
-        });
-        tags.pop();
-      }
+  const handleValidation = (fields: Partial<ContactUpdateInput>): void => {
+    const tags = fields.tagList;
+    const contacts = contactsForTags?.contacts.nodes;
+    if (!tags?.length || !contacts?.length) {
+      return;
     }
-    return;
+
+    const redundantTags = tags.filter((tag) =>
+      contacts.every((contact) => contact.tagList.includes(tag)),
+    );
+    if (!redundantTags.length) {
+      return;
+    }
+
+    const message = t('All selected contacts already have this tag');
+    enqueueSnackbar(message, { variant: 'error' });
+    redundantTags.forEach((tag) => tags.splice(tags.indexOf(tag), 1));
   };
 
   const onSubmit = async (fields: Partial<ContactUpdateInput>) => {
-    const tags = fields.tagList ?? [];
+    const tags = fields.tagList;
+    if (!tags?.length) {
+      return;
+    }
+
     const attributes =
       contactsForTags?.contacts.nodes.map((contact) => ({
         id: contact.id,

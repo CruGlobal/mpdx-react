@@ -105,8 +105,18 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
   const { data: staffAccountData, error: staffAccountError } =
     useStaffAccountQuery();
 
+  // Sent explicitly so the page knows where the fetched history begins (MPDX-10044).
+  const historyStart = useMemo(
+    () => DateTime.local().minus({ years: 1 }).startOf('month'),
+    [],
+  );
+
   const { data: reportData, loading: reportLoading } =
-    useReportsSavingsFundTransferQuery();
+    useReportsSavingsFundTransferQuery({
+      variables: {
+        transactedAtStart: historyStart.toISODate(),
+      },
+    });
   const { data: fundsData, error: fundsError } = useFundBalancesQuery({
     variables: {
       fundTypes,
@@ -145,6 +155,10 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                 recurringEnd: tx.recurringTransfer.recurringEnd
                   ? DateTime.fromISO(tx.recurringTransfer.recurringEnd)
                   : null,
+                failures: tx.recurringTransfer.failures.map((failure) => ({
+                  occurrence: DateTime.fromISO(failure.occurrence),
+                  reasonCode: failure.reasonCode,
+                })),
               }
             : null,
           scheduledTransfer: tx.scheduledTransfer
@@ -158,22 +172,16 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                 ),
               }
             : null,
-          baseAmount:
-            tx.transaction?.amount ??
-            tx.recurringTransfer?.amount ??
-            tx.scheduledTransfer?.amount ??
-            0,
-          failedCount: 0,
           summarizedTransfers: null,
-          missingMonths: null,
+          historyTruncated: false,
         };
       }),
     [reportData],
   );
 
   const { filtered, upcoming } = useMemo(
-    () => filteredTransfers(transactions),
-    [transactions],
+    () => filteredTransfers(transactions, historyStart),
+    [transactions, historyStart],
   );
 
   const transferHistory: Transfers[] = filtered.map((tx) => {
@@ -184,7 +192,11 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
     };
 
     return {
-      id: tx.transaction?.id ?? crypto.randomUUID(),
+      id:
+        tx.transaction?.id ??
+        (tx.recurringTransfer
+          ? `recurring-${tx.recurringTransfer.id}`
+          : crypto.randomUUID()),
       transferFrom: tx.transfer.sourceFundTypeName,
       transferTo: tx.transfer.destinationFundTypeName,
       amount: tx.transaction?.amount ?? 0,
@@ -198,10 +210,10 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
       note: tx.transaction?.description ?? '',
       actions: shouldShowActions() === false ? 'edit-delete' : '',
       recurringId: tx.recurringTransfer?.id ?? null,
-      baseAmount: tx.baseAmount,
-      failedCount: tx.failedCount,
+      recurringAmount: tx.recurringTransfer?.amount,
       summarizedTransfers: tx.summarizedTransfers,
-      missingMonths: tx.missingMonths,
+      failures: tx.recurringTransfer?.failures ?? null,
+      historyTruncated: tx.historyTruncated,
     };
   });
 

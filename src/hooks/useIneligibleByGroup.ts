@@ -27,12 +27,17 @@ const isInEligibleGroup = (
 
 export function useIneligibleByGroup() {
   const { data, loading: userLoading, error: userError } = useGetUserQuery();
+  // The default cache-and-network policy reports loading on every refetch, even
+  // with the user already cached, so only treat the user as unknown before then
+  const userPending = userLoading && !data;
 
   const usStaffGroup = getBaseGroup(data?.user.usStaffGroup);
   const spouseUsStaffGroup = getBaseGroup(data?.user.spouseUsStaffGroup);
   const userType = data?.user.userType;
   const hasNoStaffAccount = !data?.user.staffAccountId;
   const supervisesStaff = data?.user.supervisesStaff;
+  // A role rather than a group: the MPD Goals team and MPD coordinators only.
+  const canViewNewStaffCohorts = !!data?.user.canViewNewStaffCohorts;
 
   const { SeniorStaff, NewStaff, NationalExpat, PaidWithDesignation } =
     UsStaffGroupEnum;
@@ -62,6 +67,14 @@ export function useIneligibleByGroup() {
 
   const inMpdSupervisorIneligibleGroup = !supervisesStaff;
 
+  // Paid with designation staff have no active staff account, so tools and
+  // reports built on one would be empty
+  const inStaffAccountIneligibleGroup = usStaffGroup === PaidWithDesignation;
+  // The account list balance is real when the spouse is supported staff
+  const hasNoAccountBalance =
+    usStaffGroup === PaidWithDesignation &&
+    (!spouseUsStaffGroup || spouseUsStaffGroup === PaidWithDesignation);
+
   return useMemo(
     () => ({
       inAsrIneligibleGroup,
@@ -71,9 +84,13 @@ export function useIneligibleByGroup() {
       inNsGoalCalcIneligibleGroup,
       inPdsGoalCalcIneligibleGroup,
       inMpdSupervisorIneligibleGroup,
+      inStaffAccountIneligibleGroup,
+      hasNoAccountBalance,
+      canViewNewStaffCohorts,
       userType,
       hasNoStaffAccount,
       userLoading,
+      userPending,
       userError,
     }),
     [
@@ -84,9 +101,13 @@ export function useIneligibleByGroup() {
       inNsGoalCalcIneligibleGroup,
       inPdsGoalCalcIneligibleGroup,
       inMpdSupervisorIneligibleGroup,
+      inStaffAccountIneligibleGroup,
+      hasNoAccountBalance,
+      canViewNewStaffCohorts,
       userType,
       hasNoStaffAccount,
       userLoading,
+      userPending,
       userError,
     ],
   );

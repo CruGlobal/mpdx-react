@@ -3,7 +3,9 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { render } from '__tests__/util/testingLibraryReactMock';
+import matchMediaMock from '__tests__/util/matchMediaMock';
+import { mockSession } from '__tests__/util/mockSession';
+import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import {
   afterTestResizeObserver,
   beforeTestResizeObserver,
@@ -53,6 +55,7 @@ describe('MPD Supervisor Page', () => {
 
   afterEach(() => {
     afterTestResizeObserver();
+    mockSession({ developer: false });
   });
 
   it('uses blockImpersonatingNonDevelopers for server-side props', () => {
@@ -66,6 +69,25 @@ describe('MPD Supervisor Page', () => {
       name: /mpd supervisor report/i,
     });
     expect(heading[0]).toBeInTheDocument();
+  });
+
+  it('should start with the filters closed on small screens and close them from the backdrop', async () => {
+    matchMediaMock({ width: '390px' });
+    const { findAllByRole, getByRole, getByTestId } = render(<Components />);
+
+    expect(
+      (await findAllByRole('heading', { name: /mpd supervisor report/i }))[0],
+    ).toBeInTheDocument();
+    const leftPanel = getByTestId('SidePanelsLayoutLeftPanel');
+    await waitFor(() =>
+      expect(leftPanel).toHaveStyle('transform: translate(-100%)'),
+    );
+
+    userEvent.click(getByRole('button', { name: 'Toggle Filters Panel' }));
+    expect(leftPanel).toHaveStyle('transform: none');
+
+    userEvent.click(getByTestId('SidePanelsLayoutBackdrop'));
+    expect(leftPanel).toHaveStyle('transform: translate(-100%)');
   });
 
   it('should open and close menu', async () => {
@@ -92,6 +114,34 @@ describe('MPD Supervisor Page', () => {
   });
 
   it('should show limited access if the user supervises no staff', async () => {
+    const { findByText, queryByRole } = render(
+      <Components supervisesStaff={false} />,
+    );
+
+    expect(
+      await findByText(/our records show that you do not supervise any staff/i),
+    ).toBeInTheDocument();
+    expect(
+      queryByRole('heading', { name: /mpd supervisor report/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('should show the report outside a development env to a developer who supervises no staff', async () => {
+    process.env.DEVELOPMENT_ENV = 'false';
+    mockSession({ developer: true });
+
+    const { findAllByRole } = render(<Components supervisesStaff={false} />);
+
+    const heading = await findAllByRole('heading', {
+      name: /mpd supervisor report/i,
+    });
+    expect(heading[0]).toBeInTheDocument();
+  });
+
+  it('should show limited access outside a development env to a non-developer who supervises no staff', async () => {
+    process.env.DEVELOPMENT_ENV = 'false';
+    mockSession({ developer: false });
+
     const { findByText, queryByRole } = render(
       <Components supervisesStaff={false} />,
     );

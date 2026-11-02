@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "lib": ["esnext", "webworker"],
+    "types": ["@serwist/next/typings", "jest"]
+  },
+  "include": ["./**/*.ts", "../lib/serviceWorker/cacheNames.ts"],
+  "exclude": []
+}

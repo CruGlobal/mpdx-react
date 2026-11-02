@@ -6,6 +6,7 @@ import theme from 'src/theme';
 import { StaffTabMPGA } from './MPGA';
 
 const staffAccountId = '1000000001';
+const personNumber = '000000111';
 const accountListId = 'account-list-1';
 const router = { query: { accountListId }, isReady: true };
 
@@ -13,18 +14,21 @@ const renderMPGA = (staffAccountId: string) =>
   render(
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
-        <StaffTabMPGA staffAccountId={staffAccountId} />
+        <StaffTabMPGA
+          staffAccountId={staffAccountId}
+          personNumber={personNumber}
+        />
       </TestRouter>
     </ThemeProvider>,
   );
 
 describe('StaffTabMPGA', () => {
-  it('links to the staff member MPGA report', () => {
+  it('links to the staff member MPGA report with their person number', () => {
     const { getByRole } = renderMPGA(staffAccountId);
 
     expect(getByRole('link', { name: 'View MPGA Report' })).toHaveAttribute(
       'href',
-      `/accountLists/${accountListId}/reports/mpgaIncomeExpenses?staffAccountId=1000000001`,
+      `/accountLists/${accountListId}/reports/mpgaIncomeExpenses?staffAccountId=${staffAccountId}&personNumber=${personNumber}`,
     );
   });
 });

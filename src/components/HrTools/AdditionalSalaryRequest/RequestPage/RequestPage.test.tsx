@@ -456,6 +456,7 @@ describe('RequestPage', () => {
           preferredName: 'Jane',
           lastName: 'Doe',
         },
+        asrEit: { asrEligibility: true },
       },
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
@@ -501,6 +502,7 @@ describe('RequestPage', () => {
           preferredName: 'Jane',
           lastName: 'Doe',
         },
+        asrEit: { asrEligibility: true },
       },
       requestData: {
         latestAdditionalSalaryRequest: {
@@ -546,6 +548,65 @@ describe('RequestPage', () => {
     ).toBeInTheDocument();
     expect(
       getByText(/please complete the approval process section/i),
+    ).toBeInTheDocument();
+  });
+
+  it('sends an over-cap request to progressive approvals when the spouse cannot receive an ASR', async () => {
+    mockUseAdditionalSalaryRequest.mockReturnValue({
+      ...defaultMockContextValue,
+      currentIndex: 1,
+      currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
+      pageType: PageEnum.New,
+      spouse: {
+        staffInfo: {
+          preferredName: 'Jane',
+          lastName: 'Doe',
+        },
+        asrEit: { asrEligibility: false },
+      },
+      requestData: {
+        latestAdditionalSalaryRequest: {
+          calculations: {
+            grossAnnualSalary: 40000,
+            currentSalaryCap: 500,
+          },
+          spouseCalculations: {
+            grossAnnualSalary: 0,
+            currentSalaryCap: 50000,
+            ytdAsrAmount: 0,
+          },
+          progressiveApprovalTier: { id: 'tier-1' },
+          progressiveApprovalTierReason:
+            ProgressiveApprovalTierReasonEnum.OverUserCap,
+        },
+      },
+    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+    const validFormValues: CompleteFormValues = {
+      ...defaultCompleteFormValues,
+      additionalSalaryWithinMax: '1000',
+      phoneNumber: '123-456-7890',
+      emailAddress: 'test@example.com',
+      additionalInfo: 'Test additional info for exceeds cap',
+    };
+
+    const { getByRole, getByText, queryByText } = render(
+      <TestWrapper initialValues={validFormValues} />,
+    );
+
+    userEvent.click(getByRole('button', { name: /submit/i }));
+
+    await waitFor(() => {
+      expect(
+        getByText(/your request requires additional approval./i),
+      ).toBeInTheDocument();
+    });
+
+    expect(
+      queryByText(/you may make a separate request up to Jane's/i),
+    ).not.toBeInTheDocument();
+    expect(
+      getByRole('button', { name: /submit for approval/i }),
     ).toBeInTheDocument();
   });
 

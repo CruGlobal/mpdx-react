@@ -1,9 +1,11 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import matchMediaMock from '__tests__/util/matchMediaMock';
 import { ListHeaderCheckBoxState } from 'src/components/Shared/Header/ListHeader';
 import {
   PledgeFrequencyEnum,
@@ -13,8 +15,9 @@ import {
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import theme from 'src/theme';
 import { ContactsQuery } from './Contacts.generated';
-import Contacts from './[[...contactId]].page';
+import * as ContactsPageModule from './[[...contactId]].page';
 
+const Contacts = ContactsPageModule.default;
 const accountListId = 'account-list-1';
 
 const router = {
@@ -74,6 +77,12 @@ jest.mock('notistack', () => ({
   },
 }));
 
+// getServerSideProps would make client navigation here fetch /_next/data,
+// which fails offline
+it('should not have getServerSideProps', () => {
+  expect(ContactsPageModule).not.toHaveProperty('getServerSideProps');
+});
+
 it('should render list of people', async () => {
   const { findByTestId, getByText } = render(
     <ThemeProvider theme={theme}>
@@ -95,6 +104,39 @@ it('should render list of people', async () => {
 
   await waitFor(() => expect(getByText('Test Person')).toBeInTheDocument());
   expect(await findByTestId('rowButton')).toHaveTextContent(contact.name);
+});
+
+it('should close the filters from the backdrop on small screens without saving', async () => {
+  matchMediaMock({ width: '390px' });
+  const mutationSpy = jest.fn();
+  const { findByRole, getByTestId } = render(
+    <ThemeProvider theme={theme}>
+      <TestRouter router={router}>
+        <GqlMockedProvider<{ Contacts: ContactsQuery }>
+          mocks={{
+            Contacts: mockResponse,
+          }}
+          onCall={mutationSpy}
+        >
+          <VirtuosoMockContext.Provider
+            value={{ viewportHeight: 1000, itemHeight: 100 }}
+          >
+            <Contacts />
+          </VirtuosoMockContext.Provider>
+        </GqlMockedProvider>
+      </TestRouter>
+    </ThemeProvider>,
+  );
+
+  userEvent.click(await findByRole('img', { name: 'Toggle Filter Panel' }));
+  const leftPanel = getByTestId('SidePanelsLayoutLeftPanel');
+  expect(leftPanel).toHaveStyle('transform: none');
+
+  userEvent.click(getByTestId('SidePanelsLayoutBackdrop'));
+  expect(leftPanel).toHaveStyle('transform: translate(-100%)');
+  // The mock link reports operations after a tick, so let any save arrive first
+  await act(() => new Promise((resolve) => setTimeout(resolve)));
+  expect(mutationSpy).not.toHaveGraphqlOperation('UpdateUserOption');
 });
 
 it('should render contact link correctly', async () => {

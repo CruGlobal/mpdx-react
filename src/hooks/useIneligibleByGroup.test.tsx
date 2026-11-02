@@ -63,6 +63,13 @@ describe('useIneligibleByGroup', () => {
     expect(result.current.userLoading).toBe(false);
   });
 
+  it('reports userPending only until the first user arrives', async () => {
+    const { result } = renderUseIneligibleByGroup();
+
+    expect(result.current.userPending).toBe(true);
+    await waitFor(() => expect(result.current.userPending).toBe(false));
+  });
+
   it('passes through userType and hasNoStaffAccount', async () => {
     const { result } = renderUseIneligibleByGroup({
       userType: UserTypeEnum.UsStaff,
@@ -368,6 +375,70 @@ describe('useIneligibleByGroup', () => {
 
       await waitFor(() => expect(result.current.userLoading).toBe(false));
       expect(result.current.inMpdSupervisorIneligibleGroup).toBe(true);
+    });
+  });
+
+  describe('staff account tools eligibility', () => {
+    it('is ineligible for paid with designation staff', async () => {
+      const { result } = renderUseIneligibleByGroup({
+        usStaffGroup: UsStaffGroupEnum.PaidWithDesignation,
+        spouseUsStaffGroup: UsStaffGroupEnum.SeniorStaff,
+      });
+
+      await waitFor(() => expect(result.current.userLoading).toBe(false));
+      expect(result.current.inStaffAccountIneligibleGroup).toBe(true);
+    });
+
+    it('is eligible for other staff, even with a paid with designation spouse', async () => {
+      const { result } = renderUseIneligibleByGroup({
+        usStaffGroup: UsStaffGroupEnum.SeniorStaff,
+        spouseUsStaffGroup: UsStaffGroupEnum.PaidWithDesignation,
+      });
+
+      await waitFor(() => expect(result.current.userLoading).toBe(false));
+      expect(result.current.inStaffAccountIneligibleGroup).toBe(false);
+    });
+  });
+
+  describe('account balance', () => {
+    it('has none for paid with designation staff with no spouse', async () => {
+      const { result } = renderUseIneligibleByGroup({
+        usStaffGroup: UsStaffGroupEnum.PaidWithDesignation,
+        spouseUsStaffGroup: null,
+      });
+
+      await waitFor(() => expect(result.current.userLoading).toBe(false));
+      expect(result.current.hasNoAccountBalance).toBe(true);
+    });
+
+    it('has none when both spouses are paid with designation', async () => {
+      const { result } = renderUseIneligibleByGroup({
+        usStaffGroup: UsStaffGroupEnum.PaidWithDesignation,
+        spouseUsStaffGroup: UsStaffGroupEnum.PaidWithDesignation,
+      });
+
+      await waitFor(() => expect(result.current.userLoading).toBe(false));
+      expect(result.current.hasNoAccountBalance).toBe(true);
+    });
+
+    it('has one when the spouse is supported staff', async () => {
+      const { result } = renderUseIneligibleByGroup({
+        usStaffGroup: UsStaffGroupEnum.PaidWithDesignation,
+        spouseUsStaffGroup: UsStaffGroupEnum.SeniorStaffStint,
+      });
+
+      await waitFor(() => expect(result.current.userLoading).toBe(false));
+      expect(result.current.hasNoAccountBalance).toBe(false);
+    });
+
+    it('has one for supported staff', async () => {
+      const { result } = renderUseIneligibleByGroup({
+        usStaffGroup: UsStaffGroupEnum.SeniorStaff,
+        spouseUsStaffGroup: null,
+      });
+
+      await waitFor(() => expect(result.current.userLoading).toBe(false));
+      expect(result.current.hasNoAccountBalance).toBe(false);
     });
   });
 });

@@ -1,6 +1,7 @@
 import { Autocomplete, CircularProgress, TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useAssigneeOptionsQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
+import { filterOptionsByWords } from 'src/components/Shared/Autocomplete/filterOptionsByWords';
 
 interface AssigneeAutocompleteProps {
   accountListId: string;
@@ -25,7 +26,10 @@ export const AssigneeAutocomplete: React.FC<AssigneeAutocompleteProps> = ({
   return (
     <Autocomplete
       autoSelect
+      filterOptions={filterOptionsByWords}
       options={users.map(({ user }) => user.id)}
+      // Override default MUI key: the option label
+      getOptionKey={(userId) => userId}
       getOptionLabel={(userId) => {
         const user = users.find(({ user }) => user.id === userId)?.user;
         return user ? `${user.firstName} ${user.lastName}` : '';

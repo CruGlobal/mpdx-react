@@ -22,12 +22,10 @@ const router = {
 };
 interface ComponentProps {
   userType?: UserTypeEnum;
-  userOptionValue?: string;
 }
 
 const Components: React.FC<ComponentProps> = ({
   userType = UserTypeEnum.GlobalStaff,
-  userOptionValue = 'true',
 }) => (
   <LocalizationProvider dateAdapter={AdapterLuxon}>
     <SnackbarProvider>
@@ -44,7 +42,7 @@ const Components: React.FC<ComponentProps> = ({
                 user: { userType },
               },
               UserOption: {
-                userOption: { value: userOptionValue },
+                userOption: { value: 'true' },
               },
             }}
           >
@@ -76,22 +74,11 @@ describe('Financial Accounts Page', () => {
     expect(queryByRole('heading', { name: 'Reports' })).not.toBeInTheDocument();
   });
 
-  it('should show limited access if user does not have access to page', async () => {
+  it('should show page for a non-Cru user', async () => {
     const { findByText } = render(
       <Components userType={UserTypeEnum.NonCru} />,
     );
 
-    expect(
-      await findByText('Access to this feature is limited.'),
-    ).toBeInTheDocument();
-  });
-
-  it('should show page if user has not verified user type', async () => {
-    const { findByText } = render(
-      <Components userType={UserTypeEnum.NonCru} userOptionValue="" />,
-    );
-
-    expect(await findByText('Responsibility Centers')).toBeInTheDocument();
     expect(await findByText('Test Account')).toBeInTheDocument();
   });
 });

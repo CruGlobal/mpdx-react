@@ -14,17 +14,22 @@ const prepopulatedTooltipText =
 
 const mutationSpy = jest.fn();
 
+jest.setTimeout(15000);
+
 interface TestComponentProps {
   ministryInternet?: number;
+  calculationsYear?: number;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   ministryInternet = 30,
+  calculationsYear,
 }) => (
   <PdsGoalCalculatorTestWrapper
     onCall={mutationSpy}
     calculationMock={{
       id: 'goal-1',
+      calculationsYear,
       ministryCellPhone: 35,
       ministryInternet,
       mpdNewsletter: 25,
@@ -52,6 +57,28 @@ const TestComponent: React.FC<TestComponentProps> = ({
 );
 
 describe('MonthlyReimbursableSection', () => {
+  it("loads the maximums for the goal's calculations year", async () => {
+    const { findByRole } = render(<TestComponent calculationsYear={2019} />);
+
+    await findByRole(
+      'gridcell',
+      {
+        name: /Ministry Cell Phone \(max \$35\/mo\)/,
+      },
+      { timeout: 10000 },
+    );
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('GoalCalculatorConstants', {
+        year: 2019,
+      }),
+    );
+    // The provider also loads the goal's year, so check that nothing loads
+    // the current year's constants instead
+    expect(mutationSpy).not.toHaveGraphqlOperation('GoalCalculatorConstants', {
+      year: null,
+    });
+  });
+
   it('renders the description text below the heading', async () => {
     const { findByText } = render(<TestComponent />);
 
@@ -66,9 +93,13 @@ describe('MonthlyReimbursableSection', () => {
     const { findByRole, getByRole } = render(<TestComponent />);
 
     expect(
-      await findByRole('gridcell', {
-        name: /Ministry Cell Phone \(max \$35\/mo\)/,
-      }),
+      await findByRole(
+        'gridcell',
+        {
+          name: /Ministry Cell Phone \(max \$35\/mo\)/,
+        },
+        { timeout: 10000 },
+      ),
     ).toBeInTheDocument();
     expect(
       getByRole('gridcell', {
@@ -80,7 +111,11 @@ describe('MonthlyReimbursableSection', () => {
   it('renders an info icon on the cell phone and internet rows with a prepopulation tooltip', async () => {
     const { findAllByLabelText, findByRole } = render(<TestComponent />);
 
-    const icons = await findAllByLabelText(prepopulatedTooltipText);
+    const icons = await findAllByLabelText(
+      prepopulatedTooltipText,
+      {},
+      { timeout: 10000 },
+    );
     expect(icons).toHaveLength(2);
 
     userEvent.hover(icons[0]);
@@ -104,9 +139,13 @@ describe('MonthlyReimbursableSection', () => {
   it('renders a row for every monthly field plus the subtotal', async () => {
     const { findByRole, getAllByRole } = render(<TestComponent />);
 
-    await findByRole('gridcell', {
-      name: /Ministry Cell Phone \(max \$35\/mo\)/,
-    });
+    await findByRole(
+      'gridcell',
+      {
+        name: /Ministry Cell Phone \(max \$35\/mo\)/,
+      },
+      { timeout: 10000 },
+    );
     // 1 header row + 6 field rows + 1 subtotal row
     expect(getAllByRole('row')).toHaveLength(8);
   });

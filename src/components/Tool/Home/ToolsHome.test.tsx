@@ -4,9 +4,10 @@ import { render, waitFor } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetToolNotificationsQuery } from 'src/components/Layouts/Primary/TopBar/Items/NavMenu/GetToolNotifcations.generated';
+import i18n from 'src/lib/i18n';
 import theme from '../../../theme';
 import ToolsHome from './ToolsHome';
-import { ToolsListHome } from './ToolsListHome';
+import { getToolsListHome } from './ToolsListHome';
 
 const accountListId = 'account-list-1';
 
@@ -50,7 +51,7 @@ describe('ToolHome', () => {
     const { getByTestId, queryByText } = render(<TestComponent />);
 
     expect(getByTestId('Home')).toBeInTheDocument();
-    ToolsListHome.forEach((tool) => {
+    getToolsListHome(i18n.t).forEach((tool) => {
       expect(queryByText(tool.tool)).toBeInTheDocument();
       expect(queryByText(tool.desc)).toBeInTheDocument();
     });

@@ -39,7 +39,9 @@ export const NsStaffDetailsPage: React.FC = () => {
         )}`}</title>
       </Head>
       {staffAccountListId ? (
-        <UserTypeAccess requireUserGroups={RequiredUserGroupEnum.MpdGoalCalc}>
+        <UserTypeAccess
+          requireUserGroups={RequiredUserGroupEnum.NewStaffCohorts}
+        >
           <GoalSettingsView
             accountListId={staffAccountListId}
             returnUrl={mpdGoalAdminUrl(

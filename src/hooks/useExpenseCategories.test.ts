@@ -1,6 +1,9 @@
 import { renderHook } from '@testing-library/react';
 import { mockData } from 'src/components/Reports/MPGAIncomeExpensesReport/mockData';
-import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
+import {
+  StaffExpenseCategoryEnum,
+  StaffExpensesSubCategoryEnum,
+} from 'src/graphql/types.generated';
 import { useExpenseCategories } from './useExpenseCategories';
 
 describe('useExpenseCategories', () => {
@@ -45,5 +48,41 @@ describe('useExpenseCategories', () => {
     expect(result.current.salaryTotal).toBe(26);
     expect(result.current.otherTotal).toBe(707);
     expect(result.current.expensesTotal).toBe(20981);
+  });
+
+  it('counts the healthcare debit card as Healthcare and other Staff Expense as Other', () => {
+    const staffExpenseRow = {
+      category: StaffExpenseCategoryEnum.StaffExpense,
+      monthly: [],
+      average: 0,
+    };
+    const { result } = renderHook(() =>
+      useExpenseCategories([
+        {
+          ...staffExpenseRow,
+          id: 'pa-card',
+          description: 'Staff Expense - Healthcare Debit Card',
+          subCategory: StaffExpensesSubCategoryEnum.PaCard,
+          total: 200,
+        },
+        {
+          ...staffExpenseRow,
+          id: 'staff-expense',
+          description: 'Staff Expenses',
+          total: 50,
+        },
+        {
+          ...staffExpenseRow,
+          id: 'out-of-pocket',
+          description: 'Staff Expense - Out of Pocket',
+          subCategory: StaffExpensesSubCategoryEnum.OutOfPocket,
+          total: 25,
+        },
+      ]),
+    );
+
+    expect(result.current.healthcareTotal).toBe(200);
+    expect(result.current.otherTotal).toBe(75);
+    expect(result.current.expensesTotal).toBe(275);
   });
 });

@@ -50,6 +50,7 @@ const HeaderBar = styled(Box)(({}) => ({
 }));
 const HeaderBarContactWrap = styled(Box)(({}) => ({
   flex: 1,
+  minWidth: 0,
   display: 'flex',
   alignItems: 'center',
 }));
@@ -67,6 +68,7 @@ const PrimaryContactName = styled(Typography)(({}) => ({
   display: 'inline',
   marginLeft: 18,
   fontWeight: 'bold',
+  overflowWrap: 'anywhere',
 }));
 const CloseButtonIcon = styled(Close)(({}) => ({
   width: 24,
@@ -75,6 +77,12 @@ const CloseButtonIcon = styled(Close)(({}) => ({
 }));
 const HeaderSectionWrap = styled(Box)(({}) => ({
   display: 'flex',
+  '& > *': {
+    minWidth: 0,
+  },
+  [theme.breakpoints.down('sm')]: {
+    flexDirection: 'column',
+  },
 }));
 
 export const ContactDetailsHeader: React.FC<Props> = ({

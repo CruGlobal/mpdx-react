@@ -3,15 +3,18 @@ import { Link, List, ListItem, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import { NameDisplay } from '../../Shared/CalculationReports/NameDisplay/NameDisplay';
+import { NameDisplaySkeleton } from '../../Shared/CalculationReports/NameDisplay/NameDisplaySkeleton';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { getHeader } from '../Shared/Helper/getHeader';
 import { paperVersionLink, progressiveApprovalsLink } from '../Shared/pdfLinks';
 import { useFormUserInfo } from '../Shared/useFormUserInfo';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
+import { MissingLocationAlert } from '../SharedComponents/MissingLocationAlert';
 import { SpouseComponent } from '../SharedComponents/SpouseComponent';
 
 export const AboutForm: React.FC = () => {
-  const { currentIndex, requestData } = useAdditionalSalaryRequest();
+  const { currentIndex, requestData, hcmLoading } =
+    useAdditionalSalaryRequest();
   const { t } = useTranslation();
   const theme = useTheme();
 
@@ -84,15 +87,20 @@ export const AboutForm: React.FC = () => {
           of the Additional Salary request if you prefer.
         </Typography>
       </Trans>
-      <NameDisplay
-        names={name ?? ''}
-        titleOne={t('Primary Account Balance')}
-        amountOne={primaryAccountBalance}
-        titleTwo={t('Your Maximum Allowable Salary (CAP)')}
-        amountTwo={individualCap}
-        spouseComponent={<SpouseComponent />}
-        showContent={!!latestRequest}
-      />
+      {hcmLoading ? (
+        <NameDisplaySkeleton showContent={!!latestRequest} />
+      ) : (
+        <NameDisplay
+          names={name ?? ''}
+          titleOne={t('Primary Account Balance')}
+          amountOne={primaryAccountBalance}
+          titleTwo={t('Your Maximum Allowable Salary (CAP)')}
+          amountTwo={individualCap}
+          spouseComponent={<SpouseComponent />}
+          showContent={!!latestRequest}
+        />
+      )}
+      <MissingLocationAlert />
     </AdditionalSalaryRequestSection>
   );
 };

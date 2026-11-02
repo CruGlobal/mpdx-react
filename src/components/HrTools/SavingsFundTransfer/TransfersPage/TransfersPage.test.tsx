@@ -10,7 +10,10 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
-import { UsStaffGroupEnum } from 'src/graphql/types.generated';
+import {
+  SavingsFundTransferFailureReasonCode,
+  UsStaffGroupEnum,
+} from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { StaffSavingFundContext } from '../../StaffSavingFund/StaffSavingFundContext';
 import {
@@ -71,6 +74,7 @@ const mock = {
           recurringStart: '2023-09-30',
           recurringEnd: '2025-09-30',
           active: true,
+          failures: [],
         },
         scheduledTransfer: null,
       },
@@ -87,6 +91,7 @@ const mock = {
           recurringStart: '2024-05-30',
           recurringEnd: '2025-05-30',
           active: true,
+          failures: [],
         },
         scheduledTransfer: null,
       },
@@ -126,6 +131,7 @@ const mock = {
           recurringStart: '2023-10-05',
           recurringEnd: null,
           active: false,
+          failures: [],
         },
         scheduledTransfer: null,
       },
@@ -139,12 +145,14 @@ const mock = {
           fundType: 'Savings',
           endBalance: 25000,
           deficitLimit: 0,
+          availableBalance: null,
         },
         {
           id: '1',
           fundType: 'Primary',
           endBalance: 15000,
           deficitLimit: 0,
+          availableBalance: null,
         },
       ],
     },
@@ -169,12 +177,14 @@ const emptyMock = {
           fundType: 'Primary',
           endBalance: 15000,
           deficitLimit: 0,
+          availableBalance: null,
         },
         {
           id: '2',
           fundType: 'Savings',
           endBalance: 2500,
           deficitLimit: 0,
+          availableBalance: null,
         },
       ],
     },
@@ -210,9 +220,11 @@ jest.mock('notistack', () => ({
 const Components = ({
   title = 'Staff Savings Fund Transfers',
   usStaffGroup = UsStaffGroupEnum.SeniorStaff,
+  transfers,
 }: {
   title?: string;
   usStaffGroup?: UsStaffGroupEnum;
+  transfers?: ReportsSavingsFundTransferQuery['reportsSavingsFundTransfer'];
 }) => (
   <SnackbarProvider>
     <ThemeProvider theme={theme}>
@@ -224,7 +236,15 @@ const Components = ({
             FundBalances: FundBalancesQuery;
             GetUser: GetUserQuery;
           }>
-            mocks={{ ...mock, GetUser: { user: { usStaffGroup } } }}
+            mocks={{
+              ...mock,
+              ...(transfers && {
+                ReportsSavingsFundTransfer: {
+                  reportsSavingsFundTransfer: transfers,
+                },
+              }),
+              GetUser: { user: { usStaffGroup } },
+            }}
             onCall={mutationSpy}
           >
             <MockStaffSavingFundProvider>
@@ -303,6 +323,129 @@ describe('TransfersPage', () => {
     expect(tables.length).toBe(2);
 
     expect(within(tables[0]).getAllByRole('columnheader')).toHaveLength(9);
+  });
+
+  it('requests transfer history from the start of the month one year ago', async () => {
+    render(<Components />);
+
+    // SAA would default to this same window; sending it lets the page flag truncated history.
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ReportsSavingsFundTransfer', {
+        transactedAtStart: '2023-01-01',
+      }),
+    );
+  });
+
+  it('lists the failed months the API reports, with reasons, for a long-running recurring transfer', async () => {
+    // Started in 2022, so everything before the 2023-01-01 window start has no rows.
+    const recurringTransfer = {
+      id: '4',
+      amount: 50,
+      recurringStart: '2022-06-15',
+      recurringEnd: null,
+      active: true,
+      failures: [
+        {
+          occurrence: '2023-12-15',
+          reasonCode: SavingsFundTransferFailureReasonCode.InsufficientFunds,
+        },
+      ],
+    };
+    const longRunning = ['2023-11-15', '2024-01-15'].map((date, index) => ({
+      transaction: {
+        id: `long-${index}`,
+        amount: 50,
+        description: null,
+        transactedAt: `${date}T00:00:00+00:00`,
+      },
+      subCategory: { id: '1', name: 'deposit' },
+      transfer: {
+        sourceFundTypeName: 'Primary',
+        destinationFundTypeName: 'Savings',
+      },
+      recurringTransfer,
+      scheduledTransfer: null,
+    }));
+    const { findByTitle, findByRole } = render(
+      <Components transfers={longRunning} />,
+    );
+
+    userEvent.click(
+      await findByTitle('Failed Transfers', {}, { timeout: 10000 }),
+    );
+
+    const dialog = await findByRole('dialog');
+    expect(
+      within(dialog).getByText(
+        'Only the last year of transfer history is shown.',
+      ),
+    ).toBeInTheDocument();
+
+    const cells = within(dialog)
+      .getAllByRole('row')
+      .slice(1)
+      .map((row) =>
+        Array.from(row.querySelectorAll('td')).map((td) => td.textContent),
+      );
+    expect(cells.map((row) => [row[1]?.trim(), row[2], row[3]])).toEqual([
+      ['complete', 'Nov 15, 2023', ''],
+      [
+        'failed',
+        'Dec 15, 2023',
+        'The fund did not have enough available balance.',
+      ],
+      ['complete', 'Jan 15, 2024', ''],
+    ]);
+  });
+
+  it('shows a recurring transfer that never succeeded in history with its failures', async () => {
+    const neverSucceeded = [
+      {
+        transaction: null,
+        subCategory: null,
+        transfer: {
+          sourceFundTypeName: 'Primary',
+          destinationFundTypeName: 'Savings',
+        },
+        recurringTransfer: {
+          id: '5',
+          amount: 75,
+          recurringStart: '2023-12-15',
+          recurringEnd: null,
+          active: true,
+          failures: [
+            {
+              occurrence: '2023-12-15',
+              reasonCode: SavingsFundTransferFailureReasonCode.InactiveAccount,
+            },
+          ],
+        },
+        scheduledTransfer: null,
+      },
+    ];
+    const { findAllByRole, findByRole, getByText } = render(
+      <Components transfers={neverSucceeded} />,
+    );
+
+    const [historyTable] = await findAllByRole('grid', {}, { timeout: 10000 });
+    expect(getByText('Upcoming Transfers not available')).toBeInTheDocument();
+
+    const row = within(historyTable).getByRole('row', {
+      name: /Dec 15, 2023/,
+    });
+    expect(row.dataset.id).toBe('recurring-5');
+    expect(within(row).getByText('ongoing')).toBeInTheDocument();
+    expect(within(row).getByText('$0.00')).toBeInTheDocument();
+
+    userEvent.click(within(row).getByTitle('Failed Transfers'));
+
+    const dialog = await findByRole('dialog');
+    const rows = within(dialog).getAllByRole('row').slice(1);
+    expect(rows).toHaveLength(1);
+    expect(within(rows[0]).getByText('$75.00')).toBeInTheDocument();
+    expect(
+      within(rows[0]).getByText('The staff account was inactive.'),
+    ).toBeInTheDocument();
   });
 
   it.each([
