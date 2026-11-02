@@ -53,5 +53,6 @@ describe('ReviewYourCalculationContent', () => {
     );
 
     expect(printSpy).toHaveBeenCalled();
+    printSpy.mockRestore();
   });
 });

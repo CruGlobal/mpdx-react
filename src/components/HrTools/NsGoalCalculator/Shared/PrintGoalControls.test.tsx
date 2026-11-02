@@ -25,9 +25,10 @@ describe('PrintGoalControls', () => {
     userEvent.click(getByRole('button', { name: 'Print Goal' }));
 
     expect(printSpy).toHaveBeenCalled();
+    printSpy.mockRestore();
   });
 
-  it('hides the tips and the button when printing', () => {
+  it('marks the tips and the button as print-hidden', () => {
     const { getByRole } = render(
       <PrintGoalControls buttonLabel="Print Goal" />,
     );
