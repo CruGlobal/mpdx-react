@@ -66,7 +66,7 @@ export const VariantQuestions: React.FC = () => {
               },
             )}
             helperText={t(
-              "Requested salary is the same as net salary or take-home pay. The pre-filled amount is an estimate from {{spouseName}}'s current HCM salary. Please confirm it in HCM. Round to the nearest dollar.",
+              "Requested salary is the same as net salary or take-home pay. {{spouseName}}'s pre-filled amount is an estimate from their current HCM salary. Please confirm it in HCM. Round to the nearest dollar.",
               { spouseName },
             )}
             startAdornment={<CurrencyAdornment />}
