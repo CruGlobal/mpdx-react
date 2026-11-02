@@ -27,7 +27,7 @@ export interface GoalCompletionFields {
  * benefits plan, and marital status are required for the household.
  * Drives the Calculation Complete/Incomplete chips on the Scenario Goals table
  * and in the header. Must match the API's NewStaffGoalCalculation
- * REQUIRED_FOR_SEND, which also blocks Run & Send on these fields.
+ * REQUIRED_FOR_SEND and SPOUSE_REQUIRED_FOR_SEND, which block Run & Send.
  */
 export const isCalculationComplete = (
   calculation: GoalCompletionFields,
