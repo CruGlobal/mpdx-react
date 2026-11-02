@@ -162,11 +162,13 @@ describe('FinancialInformationSection', () => {
     ).toBeInTheDocument();
   });
 
-  it('explains that the requested salary is net salary', () => {
+  it('explains that the requested salary is net salary and defaults when blank', () => {
     const { getByText } = render(<TestComponent />);
 
     expect(
-      getByText('Requested salary is the same as net salary or take-home pay.'),
+      getByText(
+        'Requested salary is the same as net salary or take-home pay. Leave blank to use the default salary.',
+      ),
     ).toBeInTheDocument();
   });
 });

@@ -57,7 +57,7 @@ export const FinancialInformationSection: React.FC<
       <FieldRow
         label={t('Annual Requested Salary')}
         helperText={t(
-          'Requested salary is the same as net salary or take-home pay.',
+          'Requested salary is the same as net salary or take-home pay. Leave blank to use the default salary.',
         )}
       >
         <GoalSettingsNumberField
