@@ -2270,6 +2270,7 @@
     "No MPD goals are ready to print: {{count}} households have no MPD goal calculation yet._one": "No MPD goals are ready to print: {{count}} household has no MPD goal calculation yet.",
     "No MPD goals are ready to print: {{count}} households have no MPD goal calculation yet._other": "No MPD goals are ready to print: {{count}} households have no MPD goal calculation yet.",
     "No MPD goals are ready to print.": "No MPD goals are ready to print.",
+    "No MPD goals are ready to send.": "No MPD goals are ready to send.",
     "No MPD goals were eligible to send.": "No MPD goals were eligible to send.",
     "No new staff goal calculation exists for this account.": "No new staff goal calculation exists for this account.",
     "No notifications to show.": "No notifications to show.",

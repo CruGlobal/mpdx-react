@@ -6,6 +6,7 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
+import { NewStaffCohortAttendeeGoalStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import {
   AssignCoachToNewStaffCohortAttendeeMutation,
@@ -20,6 +21,7 @@ import {
 import {
   assignableCoachesMock,
   assignedCoachMock,
+  attendees,
   attendeesMock,
   cohortsMock,
   cohortsWithoutCostsMock,
@@ -76,8 +78,10 @@ const renderToolbar = ({
   assignCoach = assignedCoachMock(['row-1', 'row-2']),
   coaches = assignableCoachesMock,
   isGoalsAdmin = true,
+  attendeeNodes = attendees,
 }: {
   cohorts?: NewStaffCohortsQuery;
+  attendeeNodes?: typeof attendees;
   sentCount?: number;
   assignCoach?: AssignCoachToNewStaffCohortAttendeeMutation;
   coaches?: NewStaffCohortAssignableCoachesQuery;
@@ -98,7 +102,7 @@ const renderToolbar = ({
           mocks={{
             GetUser: isGoalsAdmin ? goalsAdminUserMock : coordinatorUserMock,
             NewStaffCohorts: cohorts,
-            NewStaffCohortAttendees: attendeesMock(),
+            NewStaffCohortAttendees: attendeesMock(attendeeNodes),
             RunAndSendNewStaffCohort: runAndSentMock(
               cohorts.newStaffCohorts.nodes[0].id,
               sentCount,
@@ -314,6 +318,54 @@ describe('GoalsTableToolbar', () => {
     expect(await findByRole('tooltip')).toHaveTextContent(
       'All inputs and per-training costs are required to run & send goals.',
     );
+  });
+
+  it('enables Run and Send All with no tooltip while a goal is ready to send', async () => {
+    const { getByRole, queryByRole } = await renderLoaded();
+    const button = getByRole('button', { name: 'Run and Send All' });
+    expect(button).toBeEnabled();
+
+    userEvent.hover(button);
+    expect(queryByRole('tooltip')).not.toBeInTheDocument();
+  });
+
+  it('disables Run and Send All when no goal is ready to send', async () => {
+    const { getByRole, findByRole } = renderToolbar({
+      attendeeNodes: attendees.map((node, index) => ({
+        ...node,
+        goalStatus:
+          index === 0
+            ? NewStaffCohortAttendeeGoalStatusEnum.Sent
+            : NewStaffCohortAttendeeGoalStatusEnum.Incomplete,
+      })),
+    });
+    await waitFor(() => expect(ctx.filteredRows).toHaveLength(3));
+    await waitFor(() => expect(ctx.loading).toBe(false));
+
+    const button = getByRole('button', { name: 'Run and Send All' });
+    expect(button).toBeDisabled();
+    userEvent.hover(button.parentElement as HTMLElement);
+    expect(await findByRole('tooltip')).toHaveTextContent(
+      'No MPD goals are ready to send.',
+    );
+  });
+
+  it('disables Run and Send All for an empty cohort', async () => {
+    const { getByRole } = renderToolbar({ attendeeNodes: [] });
+    await waitFor(() => expect(ctx.loading).toBe(false));
+
+    expect(getByRole('button', { name: 'Run and Send All' })).toBeDisabled();
+  });
+
+  it('disables Run & Send Selected when no selected goal is ready to send', async () => {
+    const { getByRole } = await renderLoaded();
+    // row-2 is the only Incomplete row.
+    act(() => ctx.toggleRow('row-2'));
+
+    userEvent.click(getByRole('button', { name: 'More Actions' }));
+    expect(
+      getByRole('menuitem', { name: 'Run & Send Selected' }),
+    ).toHaveAttribute('aria-disabled', 'true');
   });
 
   it('assigns a coach to every selected row from the menu', async () => {
