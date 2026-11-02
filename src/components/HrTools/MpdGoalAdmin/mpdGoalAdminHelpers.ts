@@ -67,6 +67,7 @@ export interface StaffGoalRow {
   /** The household's account list, which its Staff Details page is keyed by. */
   accountListId: string;
   name: string;
+  cohortName: string;
   ministry: string;
   /** OneApp sub-ministry, rendered as the table's Campus Division. */
   subministry: string;
@@ -188,6 +189,7 @@ export const attendeeToRow = (attendee: AttendeeNode): StaffGoalRow => ({
   id: attendee.id,
   accountListId: attendee.accountListId,
   name: attendee.displayName,
+  cohortName: attendee.cohortName,
   ministry: attendee.ministry?.name ?? '',
   subministry: attendee.subministry ?? '',
   // Absent until the questionnaire completes; the row still renders.

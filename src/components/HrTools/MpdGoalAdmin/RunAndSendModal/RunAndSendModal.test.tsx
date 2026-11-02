@@ -15,6 +15,7 @@ const makeRow = (
   id,
   accountListId: `account-list-${id}`,
   name,
+  cohortName: 'Fall NSO 2026',
   ministry: 'Campus',
   subministry: 'CMCH01',
   mpdGoal: 1000,
