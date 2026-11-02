@@ -171,4 +171,14 @@ describe('FinancialInformationSection', () => {
       ),
     ).toBeInTheDocument();
   });
+
+  it('notes that a senior staff spouse salary is an HCM estimate', () => {
+    const { getByText } = render(<TestComponent seniorStaff />);
+
+    expect(
+      getByText(
+        "Requested salary is the same as net salary or take-home pay. Jane's pre-filled amount is an estimate from their current HCM salary. Please confirm it in HCM. Leave blank to use the default salary.",
+      ),
+    ).toBeInTheDocument();
+  });
 });
