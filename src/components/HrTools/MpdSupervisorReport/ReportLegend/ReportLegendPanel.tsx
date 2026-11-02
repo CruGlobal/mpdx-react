@@ -79,6 +79,7 @@ const sampleAmounts: Record<MpdHealthStatusEnum, number | null> = {
   [MpdHealthStatusEnum.Green]: 4250,
   [MpdHealthStatusEnum.Yellow]: 3100,
   [MpdHealthStatusEnum.Red]: 1900,
+  [MpdHealthStatusEnum.Blue]: 2000,
   [MpdHealthStatusEnum.Gray]: null,
 };
 
@@ -94,9 +95,12 @@ export const ReportLegendPanel: React.FC = () => {
       'Payroll was at or above their Monthly Gross Salary (within $5).',
     ),
     [MpdHealthStatusEnum.Yellow]: t(
-      'Payroll was below their Monthly Gross Salary but at or above their New Staff Monthly Salary.',
+      'Payroll was below their Monthly Gross Salary but at or above their New Staff Monthly Salary. For interns, payroll was below their Monthly Gross Salary.',
     ),
     [MpdHealthStatusEnum.Red]: t('Payroll was below both benchmarks.'),
+    [MpdHealthStatusEnum.Blue]: t(
+      "Part-time field staff and volunteers aren't graded against salary benchmarks.",
+    ),
     [MpdHealthStatusEnum.Gray]: t(
       "The quarter can't be graded: a benchmark is missing, or the quarter is before or includes their first payroll (shown as Partial).",
     ),
@@ -148,7 +152,7 @@ export const ReportLegendPanel: React.FC = () => {
       <PanelContent>
         <Typography variant="body2" color="text.secondary">
           {t(
-            "Each chip is a staff member's average monthly payroll for a fiscal quarter, graded against two benchmarks: their Monthly Gross Salary and their New Staff Monthly Salary.",
+            "Each chip is a staff member's average monthly payroll for a fiscal quarter, graded against two benchmarks: their Monthly Gross Salary and their New Staff Monthly Salary. Interns are graded against their Monthly Gross Salary only, and part-time field staff and volunteers aren't graded.",
           )}
         </Typography>
 
@@ -199,8 +203,13 @@ export const ReportLegendPanel: React.FC = () => {
                 'The quarter in which payroll started. Open the staff member to see each of its months graded on its own.',
               )}
             </Term>
-            <Term term="-">
+            <Term term={t('- (dash)')}>
               {t("No payroll in a quarter that can't be graded.")}
+            </Term>
+            <Term term={t('Geographic location')}>
+              {t(
+                "Sets the cost-of-living multiplier in the New Staff Monthly Salary. It is stored on the staff member's own MPDX account list, so it can only be set for staff who have one; until then the report shows no location.",
+              )}
             </Term>
             <Term term={t('Monthly Gross Salary')}>
               {t(
@@ -209,13 +218,18 @@ export const ReportLegendPanel: React.FC = () => {
             </Term>
             <Term term={t('Sort order')}>
               {t(
-                'Staff with the highest share of red quarters come first, then the highest share of yellow, then those furthest below their benchmarks. Staff with no data are listed last.',
+                'Staff with the highest share of red quarters come first, then the highest share of yellow, then those furthest below their benchmarks. Ungraded staff come next, and staff with no data are listed last, each sorted alphabetically by last name.',
               )}
             </Term>
           </Box>
         </Section>
 
         <Section title={t('Filters')}>
+          <Typography variant="body2" sx={{ mb: 1 }}>
+            {t(
+              'Interns, part-time field staff and volunteers have no New Staff Monthly Salary, so these filters never include them.',
+            )}
+          </Typography>
           <Box component="dl" sx={{ m: 0 }}>
             {filters.map((filterId) => (
               <Term key={filterId} term={quickFilterLabel(t, filterId)}>
@@ -223,7 +237,7 @@ export const ReportLegendPanel: React.FC = () => {
               </Term>
             ))}
           </Box>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
             {t('The current month is never counted.')}
           </Typography>
         </Section>

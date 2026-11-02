@@ -80,4 +80,54 @@ describe('PdsGoalCard', () => {
     await findByText(name);
     expect(queryByText(expectedBadge)).toBeInTheDocument();
   });
+
+  // The test setup pins the current date to 2020
+  describe('calculations year chip', () => {
+    it('shows the year when the goal is from a past year', async () => {
+      const { findByText } = render(
+        <PdsGoalCalculatorTestWrapper
+          withProvider={false}
+          calculationsMock={{
+            nodes: [{ name: 'Old Goal', calculationsYear: 2019 }],
+          }}
+        >
+          <PdsGoalsList />
+        </PdsGoalCalculatorTestWrapper>,
+      );
+
+      expect(await findByText('2019')).toBeInTheDocument();
+    });
+
+    it('hides the year when the goal is from the current year', async () => {
+      const { findByText, queryByText } = render(
+        <PdsGoalCalculatorTestWrapper
+          withProvider={false}
+          calculationsMock={{
+            nodes: [{ name: 'New Goal', calculationsYear: 2020 }],
+          }}
+        >
+          <PdsGoalsList />
+        </PdsGoalCalculatorTestWrapper>,
+      );
+
+      await findByText('New Goal');
+      expect(queryByText('2020')).not.toBeInTheDocument();
+    });
+  });
+
+  it("flags the goal when its year's rates are unavailable", async () => {
+    const { findByText } = render(
+      <PdsGoalCalculatorTestWrapper
+        withProvider={false}
+        calculationsMock={{
+          nodes: [{ name: 'Old Goal', calculationsYear: 2019 }],
+        }}
+        constantsMock={{ mpdGoalBenefitsConstants: [] }}
+      >
+        <PdsGoalsList />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    expect(await findByText('Rates Unavailable')).toBeInTheDocument();
+  });
 });

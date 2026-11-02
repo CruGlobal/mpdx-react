@@ -141,6 +141,24 @@ describe('PdsSummaryTable', () => {
     ).toBeInTheDocument();
   });
 
+  it('shows Other Subtotal without the salary subtotal rolled in', async () => {
+    const { findByRole, getByRole } = render(
+      <PdsGoalCalculatorTestWrapper calculationMock={salariedFullTimeMock}>
+        <PdsSummaryTable supportRaised={0} />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    await findByRole('gridcell', { name: 'Other Subtotal' });
+
+    // 300 reimbursable floor + 0 403b + 0 work comp + 1500 benefits = 1800.
+    // Salary Subtotal (5400) is reported on line 1, so line 2 must not roll
+    // it in or the row would read $7,200.
+    const otherSubtotalRow = getByRole('gridcell', {
+      name: 'Other Subtotal',
+    }).parentElement;
+    expect(otherSubtotalRow).toHaveTextContent('$1,800');
+  });
+
   it('applies hierarchy classes to summary rows', async () => {
     const { findByRole, getByRole } = render(
       <PdsGoalCalculatorTestWrapper calculationMock={salariedFullTimeMock}>

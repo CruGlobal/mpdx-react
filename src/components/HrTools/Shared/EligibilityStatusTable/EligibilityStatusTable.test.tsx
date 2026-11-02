@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react';
+import { MinistersHousingIneligibilityReasonEnum } from 'src/graphql/types.generated';
 import { EligibilityStatusTable } from './EligibilityStatusTable';
 
 describe('EligibilityStatusTable', () => {
@@ -32,6 +33,112 @@ describe('EligibilityStatusTable', () => {
       }),
     ).toBeInTheDocument();
     expect(getByTestId('eligibility-contact-info')).toBeInTheDocument();
+  });
+
+  // userCountry is US for every row, so the ItalyMhi row also proves the API
+  // code takes precedence over the country-based guess
+  it.each([
+    [
+      MinistersHousingIneligibilityReasonEnum.PersonType,
+      'Staff type is not eligible for MHA',
+    ],
+    [
+      MinistersHousingIneligibilityReasonEnum.SupportType,
+      'Support type must be Supported RMO',
+    ],
+    [
+      MinistersHousingIneligibilityReasonEnum.AssignmentStatus,
+      'Assignment status must be payroll eligible',
+    ],
+    [
+      MinistersHousingIneligibilityReasonEnum.ItalyMhi,
+      'Must complete an MHI form instead',
+    ],
+    [
+      MinistersHousingIneligibilityReasonEnum.NoIbsCertification,
+      'Has not completed the required IBS courses',
+    ],
+    [
+      MinistersHousingIneligibilityReasonEnum.InvalidIbsCertification,
+      'IBS certification type is not valid for MHA',
+    ],
+    [
+      MinistersHousingIneligibilityReasonEnum.IbsCertificationExpired,
+      'IBS certification is more than 10 years old',
+    ],
+    [
+      MinistersHousingIneligibilityReasonEnum.MissingIbsCertificationDate,
+      'IBS certification date is missing from your records',
+    ],
+    [
+      MinistersHousingIneligibilityReasonEnum.MissingBoardApprovedOnDate,
+      'Board approval date is missing from your records',
+    ],
+  ])('shows the reason for the %s code', (reasonCode, expectedText) => {
+    const { getByRole } = render(
+      <EligibilityStatusTable
+        userPreferredName="John"
+        userEligible={false}
+        userCountry="US"
+        userIneligibilityReasonCode={reasonCode}
+      />,
+    );
+
+    expect(getByRole('cell', { name: expectedText })).toBeInTheDocument();
+  });
+
+  // The MHI Reason row renders for Italian users; codes map to MHI-specific copy
+  it.each([
+    [
+      MinistersHousingIneligibilityReasonEnum.PersonType,
+      'Staff type is not eligible for MHI',
+    ],
+    [
+      MinistersHousingIneligibilityReasonEnum.AssignmentStatus,
+      'Assignment status must be payroll eligible',
+    ],
+    [
+      MinistersHousingIneligibilityReasonEnum.InvalidIbsCertification,
+      'Does not satisfy the IBS Exception for Italy staff',
+    ],
+  ])('shows the MHI reason for the %s code', (reasonCode, expectedText) => {
+    const { getByRole } = render(
+      <EligibilityStatusTable
+        userPreferredName="Marco"
+        userEligible={false}
+        userCountry="IT"
+        userMhiEligibility={false}
+        userMhiIneligibilityReasonCode={reasonCode}
+      />,
+    );
+
+    expect(getByRole('cell', { name: expectedText })).toBeInTheDocument();
+  });
+
+  it('shows the reason from each spouse’s own reason code', () => {
+    const { getByRole } = render(
+      <EligibilityStatusTable
+        userPreferredName="John"
+        userEligible={false}
+        userCountry="US"
+        userIneligibilityReasonCode={
+          MinistersHousingIneligibilityReasonEnum.NoIbsCertification
+        }
+        spousePreferredName="Jane"
+        spouseEligible={false}
+        spouseCountry="US"
+        spouseIneligibilityReasonCode={
+          MinistersHousingIneligibilityReasonEnum.SupportType
+        }
+      />,
+    );
+
+    expect(
+      getByRole('cell', { name: 'Has not completed the required IBS courses' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('cell', { name: 'Support type must be Supported RMO' }),
+    ).toBeInTheDocument();
   });
 
   it('renders single ineligible user with MHI reason when country is Italy', () => {
@@ -155,6 +262,74 @@ describe('EligibilityStatusTable', () => {
     expect(
       queryByText(/Any changes will only apply to the approved staff member/),
     ).not.toBeInTheDocument();
+  });
+
+  describe('board approval basis', () => {
+    it('describes eligibility by the Board approval, not the IBS courses', () => {
+      const { getByRole, getByTestId, queryByRole } = render(
+        <EligibilityStatusTable
+          userPreferredName="John"
+          userEligible={true}
+          userCountry="US"
+          spousePreferredName="Jane"
+          spouseEligible={false}
+          spouseCountry="US"
+          spouseIneligibilityReasonCode={
+            MinistersHousingIneligibilityReasonEnum.MissingBoardApprovedOnDate
+          }
+          basis="boardApproval"
+        />,
+      );
+
+      expect(
+        getByRole('cell', { name: 'MHA has been Board approved' }),
+      ).toBeInTheDocument();
+      expect(
+        queryByRole('cell', { name: 'Completed the required IBS courses' }),
+      ).not.toBeInTheDocument();
+      expect(
+        getByRole('cell', {
+          name: 'Board approval date is missing from your records',
+        }),
+      ).toBeInTheDocument();
+      expect(getByTestId('eligibility-contact-info')).not.toHaveTextContent(
+        /IBS/,
+      );
+    });
+
+    it('falls back to Board approval copy for an unknown reason code', () => {
+      const { getByRole } = render(
+        <EligibilityStatusTable
+          userPreferredName="John"
+          userEligible={false}
+          userCountry="US"
+          basis="boardApproval"
+        />,
+      );
+
+      expect(
+        getByRole('cell', { name: 'No current MHA Board approval' }),
+      ).toBeInTheDocument();
+    });
+
+    it('keeps the IBS copy by default', () => {
+      const { getByRole, getByTestId } = render(
+        <EligibilityStatusTable
+          userPreferredName="John"
+          userEligible={true}
+          spousePreferredName="Jane"
+          spouseEligible={false}
+          spouseCountry="US"
+        />,
+      );
+
+      expect(
+        getByRole('cell', { name: 'Completed the required IBS courses' }),
+      ).toBeInTheDocument();
+      expect(getByTestId('eligibility-contact-info')).toHaveTextContent(
+        'or would like to complete the required IBS courses',
+      );
+    });
   });
 
   it('does not render spouse column when spousePreferredName is not provided', () => {

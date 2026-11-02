@@ -1,17 +1,12 @@
 import router from 'next/router';
 import { ApolloClient, from } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
-import { LocalStorageWrapper, persistCache } from 'apollo3-cache-persist';
-import { signOut } from 'next-auth/react';
 import {
   GetDefaultAccountDocument,
   GetDefaultAccountQuery,
 } from 'pages/api/getDefaultAccount.generated';
-import {
-  clearDatadogUser,
-  reportGraphQLError,
-  reportNetworkError,
-} from 'src/lib/dataDog';
+import { signOutAndClear } from 'src/lib/clearSessionData';
+import { reportGraphQLError, reportNetworkError } from 'src/lib/dataDog';
 import snackNotifications from '../../components/Snackbar/Snackbar';
 import { dispatch } from '../analytics';
 import {
@@ -20,27 +15,28 @@ import {
 } from './accountListRedirect';
 import { createCache } from './cache';
 import { batchLink, makeAuthLink } from './link';
+import {
+  SuppressErrorsContext,
+  isGraphQLErrorSuppressed,
+} from './suppressErrors';
 
 const cache = createCache();
-if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
-  await persistCache({
-    cache,
-    storage: new LocalStorageWrapper(window.localStorage),
-  });
-}
 
 const makeClient = (apiToken: string) => {
   const client = new ApolloClient({
     link: from([
       makeAuthLink(apiToken),
       onError(({ graphQLErrors, networkError, operation }) => {
-        const suppressErrors = operation.getContext().suppressErrors === true;
+        const suppressContext: SuppressErrorsContext = operation.getContext();
 
-        graphQLErrors?.forEach((graphQLError) => {
+        // Apollo passes a failed response's `errors` through unchecked, so it
+        // may not be an array. Throwing here would leave the query loading forever.
+        const errors = Array.isArray(graphQLErrors) ? graphQLErrors : [];
+        errors.forEach((graphQLError) => {
           if (graphQLError?.extensions?.code === 'AUTHENTICATION_ERROR') {
-            signOut({ redirect: true, callbackUrl: 'signOut' }).then(() => {
-              clearDatadogUser();
-              client.clearStore();
+            signOutAndClear(client, {
+              redirect: true,
+              callbackUrl: 'signOut',
             });
           } else if (isAccountListNotFoundError(graphQLError)) {
             client
@@ -57,7 +53,7 @@ const makeClient = (apiToken: string) => {
                   ),
                 );
               });
-          } else if (!suppressErrors) {
+          } else if (!isGraphQLErrorSuppressed(suppressContext, graphQLError)) {
             snackNotifications.error(graphQLError.message);
             reportGraphQLError(graphQLError, operation);
           }

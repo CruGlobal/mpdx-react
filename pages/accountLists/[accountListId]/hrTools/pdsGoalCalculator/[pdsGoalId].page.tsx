@@ -11,6 +11,10 @@ import {
   usePdsGoalCalculator,
 } from 'src/components/HrTools/PdsGoalCalculator/Shared/PdsGoalCalculatorContext';
 import { SavingStatus } from 'src/components/HrTools/Shared/CalculationReports/SavingStatus/SavingStatus';
+import {
+  HcmSyncHeaderStatus,
+  HcmSyncStatusProvider,
+} from 'src/components/HrTools/Shared/HcmSyncStatus/HcmSyncStatus';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import {
@@ -107,6 +111,7 @@ const PdsGoalCalculatorContent: React.FC<PdsGoalCalculatorContentProps> = ({
             isNavListOpen={isNavListOpen}
             onNavListToggle={onNavListToggle}
             title={t('Paid with Designation Support Goal Calculator')}
+            titleExtra={<HcmSyncHeaderStatus />}
             rightExtra={
               <SavingStatus
                 loading={calculationLoading}
@@ -117,7 +122,9 @@ const PdsGoalCalculatorContent: React.FC<PdsGoalCalculatorContentProps> = ({
             }
             headerType={HeaderTypeEnum.HrTools}
           />
-          <PdsGoalCalculator />
+          <HcmSyncStatusProvider>
+            <PdsGoalCalculator />
+          </HcmSyncStatusProvider>
         </>
       }
       rightPanel={rightPanel}

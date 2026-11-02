@@ -15,7 +15,7 @@ export const getUserType = (
       };
     case UserTypeEnum.GlobalStaff:
       return {
-        label: t('Cru Global Staff'),
+        label: t('CCCI International Staff'),
         sublabel: t(
           'Users in this group receive (mostly) non-US donations and are paid through our Global NetSuite system.',
         ),

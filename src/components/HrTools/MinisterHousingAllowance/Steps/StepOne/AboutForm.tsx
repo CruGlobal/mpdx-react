@@ -1,4 +1,3 @@
-import { OpenInNew } from '@mui/icons-material';
 import { Box, Link, List, ListItemText, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { Trans, useTranslation } from 'react-i18next';
@@ -9,6 +8,7 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousingAllowanceContext';
+import { ExpensesClaimLink } from '../../SharedComponents/ExpensesClaimLink';
 
 interface AboutFormProps {
   boardApprovedAt: string | null;
@@ -29,7 +29,6 @@ export const AboutForm: React.FC<AboutFormProps> = ({
   const isEdit = pageType === PageEnum.Edit;
 
   // TODO: "newRequestAboutForm" value needs to be added to translation files to see all values
-  // TODO: Get correct link for "What expenses can I claim on my MHA?"
 
   const nextYear = DateTime.now().year + 1;
 
@@ -90,26 +89,20 @@ export const AboutForm: React.FC<AboutFormProps> = ({
           </StyledListItem>
         </List>
       </Box>
-      <Trans t={t} values={{ boardDateFormatted, availableDateFormatted }}>
-        <Box sx={{ mt: 2 }}>
-          The next time the board will approve MHA Requests is {after} and your
-          approved annual MHA amount will appear on your{' '}
+      <Box sx={{ mt: 2 }}>
+        <Trans t={t} values={{ after, approval }}>
+          The next time the board will approve MHA Requests is {{ after }} and
+          your approved annual MHA amount will appear on your{' '}
           <Link href={salaryLink} target="_blank">
             Salary Calculation Form
           </Link>
-          {approval} Once approved by the board, keep a copy for your tax
+          {{ approval }} Once approved by the board, keep a copy for your tax
           records.
-        </Box>
-        <Box sx={{ mt: 4 }}>
-          <OpenInNew
-            fontSize="medium"
-            sx={{ verticalAlign: 'middle', opacity: 0.56 }}
-          />{' '}
-          <Link component="button" type="button">
-            What expenses can I claim on my MHA?
-          </Link>
-        </Box>
-      </Trans>
+        </Trans>
+      </Box>
+      <Box sx={{ mt: 4 }}>
+        <ExpensesClaimLink />
+      </Box>
       <DirectionButtons
         formTitle={t('MHA Request')}
         handleNextStep={handleNextStep}

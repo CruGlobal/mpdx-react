@@ -17,7 +17,7 @@ import {
 import { styled } from '@mui/material/styles';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
-import { useTranslation } from 'react-i18next';
+import { TFunction, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
@@ -26,7 +26,6 @@ import { SubmitButton } from 'src/components/Shared/Modal/ActionButtons/ActionBu
 import { MailchimpAccount } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';
-import i18n from 'src/lib/i18n';
 import {
   AccordionProps,
   StyledList,
@@ -43,12 +42,15 @@ import {
 } from './MailchimpAccount.generated';
 import { DeleteMailchimpAccountModal } from './Modals/DeleteMailchimpModal';
 
-const mailchimpSchema: yup.ObjectSchema<
+const getMailchimpSchema = (
+  t: TFunction,
+): yup.ObjectSchema<
   Pick<MailchimpAccount, 'autoLogCampaigns' | 'primaryListId'>
-> = yup.object({
-  autoLogCampaigns: yup.boolean().required(),
-  primaryListId: yup.string().required(i18n.t('A list is required')),
-});
+> =>
+  yup.object({
+    autoLogCampaigns: yup.boolean().required(),
+    primaryListId: yup.string().required(t('A list is required')),
+  });
 
 const StyledFormControlLabel = styled(FormControlLabel)(() => ({
   flex: '0 1 50%',
@@ -65,6 +67,7 @@ export const MailchimpAccordion: React.FC<AccordionProps> = ({
   disabled,
 }) => {
   const { t } = useTranslation();
+  const mailchimpSchema = useMemo(() => getMailchimpSchema(t), [t]);
   const [showSettings, setShowSettings] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { enqueueSnackbar } = useSnackbar();

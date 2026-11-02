@@ -1,12 +1,16 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { DeepPartial } from 'ts-essentials';
 import { AutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
 import {
   ProgressiveApprovalTierReasonEnum,
   UserPersonTypeEnum,
 } from 'src/graphql/types.generated';
-import { SalaryCalculationQuery } from '../../SalaryCalculatorContext/SalaryCalculation.generated';
+import {
+  CalculationFieldsFragment,
+  SalaryCalculationQuery,
+} from '../../SalaryCalculatorContext/SalaryCalculation.generated';
 import {
   EffectiveSalaryRequestMock,
   SalaryCalculatorTestWrapper,
@@ -14,7 +18,10 @@ import {
   hcmSpouseMock,
   hcmUserMock,
 } from '../../SalaryCalculatorTestWrapper';
-import { RequestedSalaryCard } from './RequestedSalaryCard';
+import {
+  RequestedSalaryCard,
+  estimateRequestedSalary,
+} from './RequestedSalaryCard';
 
 const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
   {
@@ -22,11 +29,15 @@ const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
       minimumRequiredSalary: 10002,
       minimumRequestedSalary: 10003,
       effectiveCap: 10004,
+      non403bFraction: 0.851,
+      secaEstimatedFraction: 0,
     },
     spouseCalculations: {
       minimumRequiredSalary: 20002,
       minimumRequestedSalary: 20003,
       effectiveCap: 20004,
+      non403bFraction: 0.9,
+      secaEstimatedFraction: 0.1,
     },
   };
 
@@ -77,17 +88,67 @@ As you set your salary level, the amount you receive should reflect the amount o
     it('should render table headers and cells with formatted currency', async () => {
       const { getByRole } = render(<TestComponent />);
 
+      await waitFor(
+        () =>
+          expect(getByRole('table')).toHaveTableStructure({
+            columnHeaders: ['Category', 'John', 'Jane'],
+            rowHeaders: [
+              'Current Requested Salary',
+              'Minimum Salary',
+              'Maximum Allowable Salary (CAP)',
+              'Requested Salary',
+            ],
+            cells: [
+              ['$11,111.00', '$22,222.00'],
+              ['$10,003.00', '$20,003.00'],
+              ['$10,004.00', '$20,004.00'],
+              // The requested salary inputs
+              [
+                expect.stringContaining('Requested salary'),
+                expect.stringContaining('Spouse requested salary'),
+              ],
+            ],
+          }),
+        { timeout: 10000 },
+      );
+    });
+
+    it('should not render the estimate tooltip when there is an approved salary request', async () => {
+      const { getByRole, queryByTestId } = render(<TestComponent />);
+
+      await waitFor(
+        () =>
+          expect(getByRole('table')).toHaveTableStructure({
+            cells: [
+              ['$11,111.00', '$22,222.00'],
+              ['$10,003.00', '$20,003.00'],
+              ['$10,004.00', '$20,004.00'],
+              [
+                expect.stringContaining('Requested salary'),
+                expect.stringContaining('Spouse requested salary'),
+              ],
+            ],
+          }),
+        { timeout: 10000 },
+      );
+      expect(
+        queryByTestId('RequestedSalaryCard-estimateIcon'),
+      ).not.toBeInTheDocument();
+    });
+
+    it('should render an estimate from HCM when there is no approved salary request', async () => {
+      const { getByRole, getAllByTestId, findByRole } = render(
+        <TestComponent effectiveSalaryRequestMock={null} />,
+      );
+
       await waitFor(() =>
         expect(getByRole('table')).toHaveTableStructure({
-          columnHeaders: ['Category', 'John', 'Jane'],
-          rowHeaders: [
-            'Current Requested Salary',
-            'Minimum Salary',
-            'Maximum Allowable Salary (CAP)',
-            'Requested Salary',
-          ],
           cells: [
-            ['$11,111.00', '$22,222.00'],
+            // 10001 * 0.851 / 1 = 8510.85 and 20001 * 0.9 / 1.1 = 16364.45
+            [
+              '$8,511Estimate - confirm in HCM',
+              '$16,364Estimate - confirm in HCM',
+            ],
             ['$10,003.00', '$20,003.00'],
             ['$10,004.00', '$20,004.00'],
             // The requested salary inputs
@@ -98,11 +159,23 @@ As you set your salary level, the amount you receive should reflect the amount o
           ],
         }),
       );
+      expect(getAllByTestId('RequestedSalaryCard-estimateIcon')).toHaveLength(
+        2,
+      );
+
+      userEvent.hover(getAllByTestId('RequestedSalaryCard-estimateIcon')[0]);
+      expect(await findByRole('tooltip')).toHaveTextContent(
+        'We could not find an approved salary request on file, so this is our best estimate based on your current salary and 403(b) contributions in HCM. Please check your current salary in HCM to confirm it.',
+      );
     });
 
-    it('should render a dash when there is no approved salary request', async () => {
-      const { getByRole } = render(
-        <TestComponent effectiveSalaryRequestMock={null} />,
+    it('should render a dash when there is no approved salary request or HCM salary', async () => {
+      const { getByRole, queryByTestId } = render(
+        <TestComponent
+          effectiveSalaryRequestMock={null}
+          hcmUser={{ currentSalary: { grossSalaryAmount: null } }}
+          hcmSpouse={{ currentSalary: { grossSalaryAmount: null } }}
+        />,
       );
 
       await waitFor(() =>
@@ -111,7 +184,6 @@ As you set your salary level, the amount you receive should reflect the amount o
             ['–', '–'],
             ['$10,003.00', '$20,003.00'],
             ['$10,004.00', '$20,004.00'],
-            // The requested salary inputs
             [
               expect.stringContaining('Requested salary'),
               expect.stringContaining('Spouse requested salary'),
@@ -119,6 +191,9 @@ As you set your salary level, the amount you receive should reflect the amount o
           ],
         }),
       );
+      expect(
+        queryByTestId('RequestedSalaryCard-estimateIcon'),
+      ).not.toBeInTheDocument();
     });
 
     it('swaps the requested salary when the spouse created the request', async () => {
@@ -131,19 +206,21 @@ As you set your salary level, the amount you receive should reflect the amount o
         />,
       );
 
-      await waitFor(() =>
-        expect(getByRole('table')).toHaveTableStructure({
-          cells: [
-            ['$22,222.00', '$11,111.00'],
-            ['$10,003.00', '$20,003.00'],
-            ['$10,004.00', '$20,004.00'],
-            // The requested salary inputs
-            [
-              expect.stringContaining('Requested salary'),
-              expect.stringContaining('Spouse requested salary'),
+      await waitFor(
+        () =>
+          expect(getByRole('table')).toHaveTableStructure({
+            cells: [
+              ['$22,222.00', '$11,111.00'],
+              ['$10,003.00', '$20,003.00'],
+              ['$10,004.00', '$20,004.00'],
+              // The requested salary inputs
+              [
+                expect.stringContaining('Requested salary'),
+                expect.stringContaining('Spouse requested salary'),
+              ],
             ],
-          ],
-        }),
+          }),
+        { timeout: 10000 },
       );
     });
 
@@ -184,41 +261,46 @@ As you set your salary level, the amount you receive should reflect the amount o
     it('should render table headers and cells with formatted currency', async () => {
       const { getByRole } = render(<TestComponent hasSpouse={false} />);
 
-      await waitFor(() =>
-        expect(getByRole('table')).toHaveTableStructure({
-          columnHeaders: ['Category', 'John'],
-          rowHeaders: [
-            'Current Requested Salary',
-            'Minimum Salary',
-            'Maximum Allowable Salary (CAP)',
-            'Requested Salary',
-          ],
-          cells: [
-            '$11,111.00',
-            '$10,003.00',
-            '$10,004.00',
-            // The requested salary input
-            expect.stringContaining('Requested salary'),
-          ],
-        }),
+      await waitFor(
+        () =>
+          expect(getByRole('table')).toHaveTableStructure({
+            columnHeaders: ['Category', 'John'],
+            rowHeaders: [
+              'Current Requested Salary',
+              'Minimum Salary',
+              'Maximum Allowable Salary (CAP)',
+              'Requested Salary',
+            ],
+            cells: [
+              '$11,111.00',
+              '$10,003.00',
+              '$10,004.00',
+              // The requested salary input
+              expect.stringContaining('Requested salary'),
+            ],
+          }),
+        { timeout: 10000 },
       );
     });
 
-    it('should render a dash when there is no approved salary request', async () => {
-      const { getByRole } = render(
+    it('should render an estimate from HCM when there is no approved salary request', async () => {
+      const { getByRole, getAllByTestId } = render(
         <TestComponent hasSpouse={false} effectiveSalaryRequestMock={null} />,
       );
 
       await waitFor(() =>
         expect(getByRole('table')).toHaveTableStructure({
           cells: [
-            '–',
+            '$8,511Estimate - confirm in HCM',
             '$10,003.00',
             '$10,004.00',
             // The requested salary input
             expect.stringContaining('Requested salary'),
           ],
         }),
+      );
+      expect(getAllByTestId('RequestedSalaryCard-estimateIcon')).toHaveLength(
+        1,
       );
     });
   });
@@ -275,5 +357,36 @@ As you set your salary level, the amount you receive should reflect the amount o
 
       await waitFor(() => expect(queryByRole('alert')).not.toBeInTheDocument());
     });
+  });
+});
+
+describe('estimateRequestedSalary', () => {
+  it('reverses the gross salary calculation', () => {
+    // Real HCM data: $45,997.65 gross with 14.9% Roth 403(b) and SECA opt out
+    expect(
+      estimateRequestedSalary(45997.65, {
+        non403bFraction: 0.851,
+        secaEstimatedFraction: 0,
+      } as CalculationFieldsFragment),
+    ).toBe(39144);
+  });
+
+  it('accounts for SECA', () => {
+    expect(
+      estimateRequestedSalary(11000, {
+        non403bFraction: 1,
+        secaEstimatedFraction: 0.1,
+      } as CalculationFieldsFragment),
+    ).toBe(10000);
+  });
+
+  it('returns null without a gross salary or calculations', () => {
+    expect(
+      estimateRequestedSalary(null, {
+        non403bFraction: 1,
+        secaEstimatedFraction: 0,
+      } as CalculationFieldsFragment),
+    ).toBeNull();
+    expect(estimateRequestedSalary(10000, null)).toBeNull();
   });
 });

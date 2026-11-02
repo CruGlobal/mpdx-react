@@ -2,16 +2,24 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
 import { merge, mergeWith } from 'lodash';
+import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import {
+  HcmDocument,
+  HcmQuery,
+  HcmQueryVariables,
+} from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { AutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   DesignationSupportFormType,
   DesignationSupportSalaryType,
   DesignationSupportStatus,
+  MpdGoalBenefitsConstantPlanEnum,
+  MpdGoalBenefitsConstantSizeEnum,
   MpdGoalMiscConstantCategoryEnum,
   MpdGoalMiscConstantLabelEnum,
 } from 'src/graphql/types.generated';
@@ -27,11 +35,6 @@ import {
   PdsGoalCalculationsQuery,
   PdsGoalCalculationsQueryVariables,
 } from './GoalsList/PdsGoalCalculations.generated';
-import {
-  HcmUserDocument,
-  HcmUserQuery,
-  HcmUserQueryVariables,
-} from './Shared/HCM.generated';
 import { PdsGoalCalculatorProvider } from './Shared/PdsGoalCalculatorContext';
 
 const calculationsDefault = gqlMock<
@@ -111,23 +114,20 @@ const calculationDefault = gqlMock<
   variables: { id: 'goal-1' },
 }).designationSupportCalculation;
 
-const hcmUserDefault = gqlMock<HcmUserQuery, HcmUserQueryVariables>(
-  HcmUserDocument,
-  {
-    mocks: {
-      hcm: [
-        {
-          fourOThreeB: {
-            currentTaxDeferredContributionPercentage: 0,
-            currentRothContributionPercentage: 0,
-          },
+const hcmUserDefault = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
+  mocks: {
+    hcm: [
+      {
+        fourOThreeB: {
+          currentTaxDeferredContributionPercentage: 0,
+          currentRothContributionPercentage: 0,
         },
-      ],
-    },
+      },
+    ],
   },
-);
+});
 
-export type HcmUserMock = DeepPartial<HcmUserQuery['hcm'][number]>;
+export type HcmUserMock = DeepPartial<HcmQuery['hcm'][number]>;
 export type GetUserMock = DeepPartial<GetUserQuery>;
 
 export type GoalCalculatorConstantsMock = DeepPartial<
@@ -179,6 +179,9 @@ export const PdsGoalCalculatorTestWrapper = <
   onCall,
   router,
 }: PdsGoalCalculatorTestWrapperProps<TExtraMocks>): React.ReactElement => {
+  // Read at render time so it matches the mocked Luxon clock from test setup
+  const currentYearMock = { calculationsYear: DateTime.local().year };
+
   return (
     <ThemeProvider theme={theme}>
       <TestRouter
@@ -192,7 +195,7 @@ export const PdsGoalCalculatorTestWrapper = <
             PdsGoalCalculations: PdsGoalCalculationsQuery;
             PdsGoalCalculation: PdsGoalCalculationQuery;
             GoalCalculatorConstants: GoalCalculatorConstantsQuery;
-            HcmUser: HcmUserQuery;
+            Hcm: HcmQuery;
             GetUser: GetUserQuery;
             AccountListSupportRaised: AccountListSupportRaisedQuery;
             AccountGeographicLocation: AccountGeographicLocationQuery;
@@ -210,6 +213,11 @@ export const PdsGoalCalculatorTestWrapper = <
                   designationSupportCalculations: merge(
                     {},
                     calculationsDefault,
+                    {
+                      nodes: calculationsDefault.nodes.map(
+                        () => currentYearMock,
+                      ),
+                    },
                     calculationsMock,
                   ),
                 },
@@ -217,10 +225,11 @@ export const PdsGoalCalculatorTestWrapper = <
                   designationSupportCalculation: merge(
                     {},
                     calculationDefault,
+                    currentYearMock,
                     calculationMock,
                   ),
                 },
-                HcmUser: {
+                Hcm: {
                   hcm:
                     hcmUserMock === null
                       ? []
@@ -241,7 +250,13 @@ export const PdsGoalCalculatorTestWrapper = <
                   constant: mergeWith(
                     {},
                     {
-                      mpdGoalBenefitsConstants: [],
+                      mpdGoalBenefitsConstants: [
+                        {
+                          size: MpdGoalBenefitsConstantSizeEnum.Single,
+                          plan: MpdGoalBenefitsConstantPlanEnum.Select,
+                          cost: 1204.45,
+                        },
+                      ],
                       mpdGoalGeographicConstants: [
                         {
                           location: 'None',

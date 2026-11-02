@@ -1,0 +1,217 @@
+import React from 'react';
+import { Box, Tooltip, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
+import { InfoTooltipIcon } from 'src/components/HrTools/Shared/InfoTooltipIcon';
+import { getLocalizedTaxStatus } from 'src/components/HrTools/Shared/getLocalizedTaxStatus';
+import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
+import {
+  geographicLocationNotApplicable,
+  newStaffSalaryNotApplicable,
+} from '../ReportLegend/legendCopy';
+import {
+  ManagedStaffMember,
+  StaffRow,
+  getLocalizedSupportType,
+  getQuarterLabel,
+  getRowSpouseName,
+  grossSalaryWarning,
+  hasNewStaffSalary,
+  pendingField,
+} from '../helpers';
+import { GrossSalaryMarker } from './GrossSalaryMarker';
+
+interface DetailProps {
+  label: string;
+  labelAdornment?: React.ReactNode;
+  value: React.ReactNode;
+  valueColor?: string;
+}
+
+const Detail: React.FC<DetailProps> = ({
+  label,
+  labelAdornment,
+  value,
+  valueColor,
+}) => (
+  <Box sx={{ display: 'flex', flexDirection: 'column', minWidth: 140 }}>
+    <Box display="flex" alignItems="center" gap={0.5}>
+      <Typography variant="caption" color="text.secondary">
+        {label}
+      </Typography>
+      {labelAdornment}
+    </Box>
+    <Typography
+      variant="body2"
+      color={valueColor}
+      component="div"
+      sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+    >
+      {value}
+    </Typography>
+  </Box>
+);
+
+interface ReasonTooltipProps {
+  reason: string;
+  reasonLabel: string;
+}
+
+const ReasonTooltip: React.FC<ReasonTooltipProps> = ({
+  reason,
+  reasonLabel,
+}) => (
+  <Tooltip title={reason} describeChild>
+    <InfoTooltipIcon tabIndex={0} titleAccess={reasonLabel} />
+  </Tooltip>
+);
+
+interface QuickGlanceProps {
+  row: StaffRow;
+}
+
+/**
+ * The extra details a row shows when expanded, without opening the drawer.
+ * A merged couple shares every health figure (both rows come from one staff
+ * account) and one healthcare dependents count (the API gives both spouses the
+ * household maximum). Tenure, support type and SECA are per person, so those
+ * name each spouse.
+ */
+export const QuickGlance: React.FC<QuickGlanceProps> = ({ row }) => {
+  const { t } = useTranslation();
+  const { formatCurrency } = useFormatters();
+  const { partner, quarterlyHealth, newStaffMonthlySalary } = row;
+  const grossSalary = quarterlyHealth?.monthlyGrossSalary ?? null;
+  const grossWarning = grossSalaryWarning(t, formatCurrency, row);
+  const newStaffSalaryApplies = hasNewStaffSalary(row.userPersonType);
+  const startingQuarter = quarterlyHealth?.startingQuarter;
+  const spouseName = getRowSpouseName(row);
+
+  // Per-person HR fields: one value, or one line per spouse for a merged row
+  const perPerson = (
+    format: (member: ManagedStaffMember) => string | number | null | undefined,
+  ): React.ReactNode => {
+    const show = (member: ManagedStaffMember) => format(member) ?? pendingField;
+    if (!partner) {
+      return String(show(row));
+    }
+    return (
+      <Box component="span" sx={{ display: 'flex', flexDirection: 'column' }}>
+        <span>
+          {row.firstName}: {show(row)}
+        </span>
+        <span>
+          {partner.firstName}: {show(partner)}
+        </span>
+      </Box>
+    );
+  };
+  const years = ({ tenure }: ManagedStaffMember) =>
+    tenure !== null && tenure !== undefined
+      ? t('{{count}} years', { count: tenure })
+      : null;
+
+  return (
+    <Box
+      data-testid="quick-glance"
+      sx={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: 2,
+        px: 4,
+        py: 1.5,
+        borderTop: '1px solid',
+        borderColor: 'divider',
+        bgcolor: 'action.hover',
+      }}
+    >
+      <Detail
+        label={partner ? t('Person numbers') : t('Person number')}
+        value={
+          partner
+            ? `${row.personNumber} & ${partner.personNumber}`
+            : row.personNumber
+        }
+      />
+      <Detail label={t('Staff account')} value={row.staffAccountId} />
+      <Detail
+        label={t('Department')}
+        value={perPerson(({ department }) => department)}
+      />
+      <Detail
+        label={t('Geographic location')}
+        labelAdornment={
+          !newStaffSalaryApplies && (
+            <ReasonTooltip
+              reason={geographicLocationNotApplicable(t)}
+              reasonLabel={t('Why geographic location does not apply')}
+            />
+          )
+        }
+        value={
+          newStaffSalaryApplies
+            ? (row.geographicLocation ?? pendingField)
+            : t('N/A')
+        }
+      />
+      <Detail
+        label={t('New Staff Monthly Salary')}
+        labelAdornment={
+          !newStaffSalaryApplies && (
+            <ReasonTooltip
+              reason={newStaffSalaryNotApplicable(t)}
+              reasonLabel={t('Why New Staff Monthly Salary does not apply')}
+            />
+          )
+        }
+        value={
+          !newStaffSalaryApplies
+            ? t('N/A')
+            : newStaffMonthlySalary !== null &&
+                newStaffMonthlySalary !== undefined
+              ? formatCurrency(newStaffMonthlySalary)
+              : pendingField
+        }
+      />
+      <Detail
+        label={t('Monthly Gross Salary')}
+        // Same treatment as the drawer: red value plus the warning marker
+        valueColor={grossWarning ? 'error.main' : undefined}
+        value={
+          <>
+            {grossSalary !== null ? formatCurrency(grossSalary) : pendingField}
+            {grossWarning && <GrossSalaryMarker warning={grossWarning} />}
+          </>
+        }
+      />
+      <Detail label={t('Tenure')} value={perPerson(years)} />
+      <Detail
+        label={t('Healthcare dependents')}
+        value={row.healthcareDependentsCount ?? pendingField}
+      />
+      <Detail
+        label={t('Support type')}
+        value={perPerson(({ peopleGroupSupportType }) =>
+          peopleGroupSupportType
+            ? getLocalizedSupportType(t, peopleGroupSupportType)
+            : null,
+        )}
+      />
+      <Detail
+        label={t('SECA')}
+        value={perPerson(({ secaStatus }) =>
+          getLocalizedTaxStatus(secaStatus, t),
+        )}
+      />
+      {spouseName && <Detail label={t('Spouse')} value={spouseName} />}
+      {startingQuarter && (
+        <Detail
+          label={t('Payroll started')}
+          value={getQuarterLabel(
+            startingQuarter.fiscalYear,
+            startingQuarter.quarter,
+          )}
+        />
+      )}
+    </Box>
+  );
+};

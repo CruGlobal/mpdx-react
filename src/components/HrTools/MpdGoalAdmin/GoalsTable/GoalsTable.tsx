@@ -12,7 +12,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TablePagination,
   TableRow,
@@ -44,6 +43,7 @@ import {
 } from '../mpdGoalAdminHelpers';
 import { useRunAndSendFlow } from '../useRunAndSendFlow';
 import { CoordinatorsCell } from './CoordinatorsCell';
+import { GoalsTableContainer } from './GoalsTableScroll';
 
 interface GoalStatusChipProps {
   status: GoalStatusEnum;
@@ -144,7 +144,7 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
   }
 
   return (
-    <TableContainer>
+    <GoalsTableContainer>
       <Table size="small" aria-label={t('MPD goals')}>
         <TableHead>
           <TableRow>
@@ -307,6 +307,6 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
           handleClose={() => setCoachRow(null)}
         />
       )}
-    </TableContainer>
+    </GoalsTableContainer>
   );
 };

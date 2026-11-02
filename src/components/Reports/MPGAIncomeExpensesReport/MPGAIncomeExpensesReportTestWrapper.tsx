@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
+import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
@@ -164,20 +165,22 @@ export const MPGAIncomeExpensesReportTestWrapper: React.FC<
   return (
     <ThemeProvider theme={theme}>
       <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <GqlMockedProvider<{
-          MPGATransactions: MpgaTransactionsQuery;
-          Hcm: HcmQuery;
-        }>
-          mocks={{ MPGATransactions: mpgaTransactions, Hcm: hcmMocks }}
-          onCall={onCall}
-        >
-          <MPGAIncomeExpensesReportProvider
-            staffAccountId={staffAccountId}
-            personNumber={personNumber}
+        <SnackbarProvider>
+          <GqlMockedProvider<{
+            MPGATransactions: MpgaTransactionsQuery;
+            Hcm: HcmQuery;
+          }>
+            mocks={{ MPGATransactions: mpgaTransactions, Hcm: hcmMocks }}
+            onCall={onCall}
           >
-            {children}
-          </MPGAIncomeExpensesReportProvider>
-        </GqlMockedProvider>
+            <MPGAIncomeExpensesReportProvider
+              staffAccountId={staffAccountId}
+              personNumber={personNumber}
+            >
+              {children}
+            </MPGAIncomeExpensesReportProvider>
+          </GqlMockedProvider>
+        </SnackbarProvider>
       </LocalizationProvider>
     </ThemeProvider>
   );

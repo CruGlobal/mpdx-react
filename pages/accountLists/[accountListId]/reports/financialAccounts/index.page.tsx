@@ -11,10 +11,7 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
-import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
-import { UserTypeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useReportsDisabled } from 'src/hooks/useReportsDisabled';
 import { getAppName } from 'src/lib/getAppName';
 
 const FinancialAccountsPage: React.FC = () => {
@@ -23,7 +20,6 @@ const FinancialAccountsPage: React.FC = () => {
   const appName = getAppName();
   const [navListOpen, setNavListOpen] = useState(false);
   const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
-  const { reportsDisabled } = useReportsDisabled();
 
   const handleNavListToggle = () => {
     setNavListOpen(!navListOpen);
@@ -35,37 +31,32 @@ const FinancialAccountsPage: React.FC = () => {
       </Head>
 
       {accountListId ? (
-        <UserTypeAccess
-          requiredUserType={UserTypeEnum.GlobalStaff}
-          alwaysAllow={reportsDisabled}
-        >
-          <Box sx={{ background: 'common.white' }}>
-            <SidePanelsLayout
-              headerHeight={headerHeight}
-              isScrollBox={false}
-              leftOpen={navListOpen}
-              leftWidth="290px"
-              mainContent={
-                <FinancialAccounts
-                  accountListId={accountListId}
-                  isNavListOpen={navListOpen}
-                  designationAccounts={designationAccounts}
-                  handleNavListToggle={handleNavListToggle}
-                />
-              }
-              leftPanel={
-                <MultiPageMenu
-                  isOpen={navListOpen}
-                  selectedId="financialAccounts"
-                  onClose={handleNavListToggle}
-                  designationAccounts={designationAccounts}
-                  setDesignationAccounts={setDesignationAccounts}
-                  navType={NavTypeEnum.Reports}
-                />
-              }
-            />
-          </Box>
-        </UserTypeAccess>
+        <Box sx={{ background: 'common.white' }}>
+          <SidePanelsLayout
+            headerHeight={headerHeight}
+            isScrollBox={false}
+            leftOpen={navListOpen}
+            leftWidth="290px"
+            mainContent={
+              <FinancialAccounts
+                accountListId={accountListId}
+                isNavListOpen={navListOpen}
+                designationAccounts={designationAccounts}
+                handleNavListToggle={handleNavListToggle}
+              />
+            }
+            leftPanel={
+              <MultiPageMenu
+                isOpen={navListOpen}
+                selectedId="financialAccounts"
+                onClose={handleNavListToggle}
+                designationAccounts={designationAccounts}
+                setDesignationAccounts={setDesignationAccounts}
+                navType={NavTypeEnum.Reports}
+              />
+            }
+          />
+        </Box>
       ) : (
         <Loading loading />
       )}

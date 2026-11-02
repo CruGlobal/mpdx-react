@@ -33,6 +33,7 @@ export const AutosaveAutocomplete: React.FC<AutosaveAutocompleteProps> = ({
   options,
   textFieldProps,
   emptyValue,
+  disabled,
   ...props
 }) => {
   const saveField = useSaveField();
@@ -48,8 +49,15 @@ export const AutosaveAutocomplete: React.FC<AutosaveAutocompleteProps> = ({
       // input is emptied
       disableClearable={emptyValue !== undefined}
       value={value}
-      onChange={(_, newValue) => saveField({ [fieldName]: newValue })}
-      disabled={!calculation}
+      // saveField's mutation failures are already surfaced to the user and
+      // reported to Datadog by the global Apollo error link. Catch the
+      // rejection here anyway so it doesn't also become an unhandled promise
+      // rejection, which RUM would otherwise attach to this selection as a
+      // frustration signal (error_click) on top of the error already shown.
+      onChange={(_, newValue) =>
+        saveField({ [fieldName]: newValue }).catch(() => {})
+      }
+      disabled={!calculation || disabled}
       size="small"
       renderInput={(params) => (
         <TextField

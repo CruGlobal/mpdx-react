@@ -1,14 +1,19 @@
 import { ThemeProvider } from '@mui/material/styles';
-import { render, within } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
+import {
+  MpdHealthStatusEnum,
+  MpdUserPersonTypeEnum,
+} from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { StaffTabQuarterly } from './Quarterly';
 import { QuarterlyPayrollHistoryQuery } from './QuarterlyPayrollHistory.generated';
 
 type QuarterHistory = QuarterlyPayrollHistoryQuery['quarterlyPayrollHistory'];
+
+const mutationSpy = jest.fn();
 
 const heading = 'Average monthly payroll per fiscal quarter · last 8 quarters';
 
@@ -39,6 +44,7 @@ const renderQuarterly = (
   quarterHistory: QuarterHistory,
   staffAccountId: string = '1000000001',
   mocks: ApolloErgonoMockMap = {},
+  userPersonType: MpdUserPersonTypeEnum | null = null,
 ) =>
   render(
     <ThemeProvider theme={theme}>
@@ -53,8 +59,12 @@ const renderQuarterly = (
             ...mocks,
           } as ApolloErgonoMockMap
         }
+        onCall={mutationSpy}
       >
-        <StaffTabQuarterly staffAccountId={staffAccountId} />
+        <StaffTabQuarterly
+          staffAccountId={staffAccountId}
+          userPersonType={userPersonType}
+        />
       </GqlMockedProvider>
     </ThemeProvider>,
   );
@@ -68,6 +78,22 @@ describe('StaffTabQuarterly', () => {
     });
 
     expect(await findByText(heading)).toBeInTheDocument();
+  });
+
+  it("grades the quarters against the staff member's person type", async () => {
+    renderQuarterly(
+      { monthlyGrossSalary: 4510.6, startingQuarter: null, completedQuarters },
+      '1000000001',
+      {},
+      MpdUserPersonTypeEnum.EmployeePtfs,
+    );
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('QuarterlyPayrollHistory', {
+        staffAccountId: '1000000001',
+        userPersonType: MpdUserPersonTypeEnum.EmployeePtfs,
+      }),
+    );
   });
 
   it('surfaces a query failure instead of an empty quarter window', async () => {

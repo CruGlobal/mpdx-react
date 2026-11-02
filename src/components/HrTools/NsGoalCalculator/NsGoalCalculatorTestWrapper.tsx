@@ -15,7 +15,7 @@ import {
 import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
-import { constantsMock } from '../GoalCalculator/GoalCalculatorTestWrapper';
+import { constantsMock as defaultConstantsMock } from '../GoalCalculator/GoalCalculatorTestWrapper';
 import { SendNewStaffScenarioGoalMutation } from '../Shared/SendScenarioGoal/SendScenarioGoal.generated';
 import {
   NewStaffGoalCalculationDocument,
@@ -71,6 +71,8 @@ export interface NsGoalCalculatorTestWrapperProps {
     | DeepPartialMock<NewStaffGoalCalculationQuery>
     | ApolloErgonoMockMap;
   previewMock?: DeepPartial<PreviewNewStaffGoalCalculationMutation>;
+  /** Overrides the GoalCalculatorConstants query response. */
+  constantsMock?: DeepPartialMock<GoalCalculatorConstantsQuery['constant']>;
   onCall?: ErgonoMockedProviderProps['onCall'];
   router?: Partial<NextRouter>;
 }
@@ -81,6 +83,7 @@ export const NsGoalCalculatorTestWrapper: React.FC<
   children,
   goalCalculationMock = defaultGoalCalculationMock,
   previewMock,
+  constantsMock = defaultConstantsMock,
   onCall,
   router = { query: { accountListId } },
 }) => (

@@ -1,5 +1,6 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { LandingTestWrapper } from '../NewSalaryCalculationLanding/LandingTestWrapper';
 import { PendingSalaryCalculationLanding } from './PendingSalaryCalculationLanding';
 
@@ -36,6 +37,40 @@ describe('PendingSalaryCalculationLanding', () => {
       'href',
       '/accountLists/account-list-1/hrTools/salaryCalculator/pending-calc-1?mode=view&print=true',
     );
+  });
+
+  describe('when HCM is unavailable', () => {
+    it('shows the heavy load alert instead of the request details', async () => {
+      const { findByRole, queryByRole } = render(
+        <LandingTestWrapper hasLatestCalculation hcmUnavailableCalls={Infinity}>
+          <PendingSalaryCalculationLanding />
+        </LandingTestWrapper>,
+      );
+
+      expect(await findByRole('alert')).toHaveTextContent(
+        'The system is currently under heavy load. Please try again in a few minutes.',
+      );
+      expect(
+        queryByRole('heading', { name: 'Current Salary Information' }),
+      ).not.toBeInTheDocument();
+      expect(queryByRole('link', { name: 'Print' })).not.toBeInTheDocument();
+    });
+
+    it('loads the request details when Try Again succeeds', async () => {
+      const { findByRole, queryByRole } = render(
+        <LandingTestWrapper hasLatestCalculation hcmUnavailableCalls={1}>
+          <PendingSalaryCalculationLanding />
+        </LandingTestWrapper>,
+      );
+
+      const alert = await findByRole('alert');
+      userEvent.click(within(alert).getByRole('button', { name: 'Try Again' }));
+
+      expect(
+        await findByRole('heading', { name: 'Current Salary Information' }),
+      ).toBeInTheDocument();
+      expect(queryByRole('alert')).not.toBeInTheDocument();
+    });
   });
 
   it('displays SalaryInformationCard', async () => {

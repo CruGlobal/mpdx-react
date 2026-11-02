@@ -3,6 +3,7 @@ fragment PdsGoalCalculationFields on DesignationSupportCalculation {
   formType
   name
   updatedAt
+  calculationsYear
   averageHoursPerWeek
   hoursWorkedPerWeek
   salaryOrHourly

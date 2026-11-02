@@ -73,3 +73,50 @@
   #helpjuice-widget-expanded.hj-shown {
   display: none !important;
 }
+
+/*
+ * On phones, use a smaller button tucked into the bottom right corner so it covers less of the
+ * page, and hide it while a dialog is open so it can't cover dialog buttons and fields. The
+ * trigger hangs below the widget's position, so bottom is the trigger size plus the gap.
+ */
+@media (max-width: 599.95px) {
+  #helpjuice-widget {
+    --trigger-size: 44px;
+    --trigger-gap: 16px;
+    --right-position: calc(var(--trigger-size) + var(--trigger-gap));
+    bottom: calc(var(--trigger-size) + var(--trigger-gap)) !important;
+  }
+
+  #helpjuice-widget.bottomRight a#helpjuice-widget-trigger {
+    width: var(--trigger-size) !important;
+    height: var(--trigger-size) !important;
+  }
+
+  #helpjuice-widget #helpjuice-widget-trigger svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  #helpjuice-widget.bottomRight.visible,
+  #helpjuice-widget.bottomRight:hover {
+    right: var(--right-position) !important;
+  }
+
+  /*
+   * Keep the popup inside the screen with an 8px margin on each side, and point its arrow at the
+   * trigger. Pages that move the widget with an inline right (like the contacts map) set
+   * --widget-right to match.
+   */
+  #helpjuice-widget.bottomRight #helpjuice-widget-expanded {
+    width: min(380px, 100vw - 16px) !important;
+    right: calc(8px - var(--widget-right, var(--right-position))) !important;
+  }
+
+  #helpjuice-widget.bottomRight #helpjuice-widget-expanded:after {
+    right: calc(var(--widget-right, var(--right-position)) - 34px) !important;
+  }
+
+  body:has(.MuiDialog-root:not(.MuiModal-hidden)) #helpjuice-widget {
+    display: none !important;
+  }
+}

@@ -3,14 +3,14 @@ import { renderHook } from '@testing-library/react-hooks';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { mockSession } from '__tests__/util/mockSession';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
-import { UserTypeEnum } from 'src/graphql/types.generated';
+import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
 import { UserOptionQuery } from './UserPreference.generated';
 import { useReportNavItems } from './useReportNavItems';
 
-// financialAccounts is gated to global staff, so it is hidden for this user unless a developer
+// staffExpense is gated to US and hybrid staff, so it is hidden for this user unless a developer
 // bypasses gating
 const user = {
-  userType: UserTypeEnum.UsStaff,
+  userType: UserTypeEnum.GlobalStaff,
   staffAccountId: 'staff-1',
 };
 
@@ -38,9 +38,7 @@ describe('useReportNavItems', () => {
     );
     await waitForNextUpdate();
 
-    expect(result.current.map((item) => item.id)).not.toContain(
-      'financialAccounts',
-    );
+    expect(result.current.map((item) => item.id)).not.toContain('staffExpense');
   });
 
   it('does not bypass gating for a non-developer in a development env', async () => {
@@ -53,9 +51,7 @@ describe('useReportNavItems', () => {
     );
     await waitForNextUpdate();
 
-    expect(result.current.map((item) => item.id)).not.toContain(
-      'financialAccounts',
-    );
+    expect(result.current.map((item) => item.id)).not.toContain('staffExpense');
   });
 
   it('shows gated items for a developer in a development env', async () => {
@@ -68,9 +64,7 @@ describe('useReportNavItems', () => {
     );
     await waitForNextUpdate();
 
-    expect(result.current.map((item) => item.id)).toContain(
-      'financialAccounts',
-    );
+    expect(result.current.map((item) => item.id)).toContain('staffExpense');
   });
 
   it('does not bypass gating for a developer outside a development env', async () => {
@@ -83,9 +77,7 @@ describe('useReportNavItems', () => {
     );
     await waitForNextUpdate();
 
-    expect(result.current.map((item) => item.id)).not.toContain(
-      'financialAccounts',
-    );
+    expect(result.current.map((item) => item.id)).not.toContain('staffExpense');
   });
 
   it('hides staff reports for a hybrid user with no staff account', async () => {
@@ -121,6 +113,70 @@ describe('useReportNavItems', () => {
     expect(ids).not.toContain('staffExpense');
     expect(ids).not.toContain('mpgaIncomeExpenses');
 
+    expect(ids).toContain('financialAccounts');
+  });
+
+  it('hides staff reports for paid with designation staff with a staff account', async () => {
+    const PaidWithDesignationWrapper = ({
+      children,
+    }: {
+      children: ReactElement;
+    }) => (
+      <GqlMockedProvider<{ GetUser: GetUserQuery; UserOption: UserOptionQuery }>
+        mocks={{
+          GetUser: {
+            user: {
+              userType: UserTypeEnum.UsStaff,
+              usStaffGroup: UsStaffGroupEnum.PaidWithDesignation,
+              staffAccountId: 'staff-1',
+            },
+          },
+          UserOption: {
+            userOption: { key: 'user_type_verified', value: 'true' },
+          },
+        }}
+      >
+        {children}
+      </GqlMockedProvider>
+    );
+
+    const { result, waitForNextUpdate } = renderHook(
+      () => useReportNavItems(),
+      { wrapper: PaidWithDesignationWrapper },
+    );
+    await waitForNextUpdate();
+
+    const ids = result.current.map((item) => item.id);
+    expect(ids).not.toContain('staffExpense');
+    expect(ids).not.toContain('mpgaIncomeExpenses');
+
+    expect(ids).toContain('donations');
+  });
+
+  it('shows responsibility centers for a non-Cru user', async () => {
+    const NonCruWrapper = ({ children }: { children: ReactElement }) => (
+      <GqlMockedProvider<{ GetUser: GetUserQuery; UserOption: UserOptionQuery }>
+        mocks={{
+          GetUser: {
+            user: { userType: UserTypeEnum.NonCru, staffAccountId: null },
+          },
+          UserOption: {
+            userOption: { key: 'user_type_verified', value: 'true' },
+          },
+        }}
+      >
+        {children}
+      </GqlMockedProvider>
+    );
+
+    const { result, waitForNextUpdate } = renderHook(
+      () => useReportNavItems(),
+      { wrapper: NonCruWrapper },
+    );
+    await waitForNextUpdate();
+
+    const ids = result.current.map((item) => item.id);
+    expect(ids).not.toContain('staffExpense');
     expect(ids).toContain('financialAccounts');
   });
 });

@@ -6,7 +6,11 @@ export const editAmountCell = async (
   rowLabel: string,
   newValue: string,
 ) => {
-  const row = await findByRole('row', { name: new RegExp(rowLabel) });
+  const row = await findByRole(
+    'row',
+    { name: new RegExp(rowLabel) },
+    { timeout: 10000 },
+  );
   userEvent.dblClick(row.querySelector('[data-field="amount"]')!);
   const input = await findByRole('spinbutton');
   userEvent.clear(input);

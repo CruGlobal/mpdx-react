@@ -33,6 +33,27 @@ describe('PersonalInformationSection', () => {
     ).toBeInTheDocument();
   });
 
+  it('shows a loading indicator over the table until HCM data loads', async () => {
+    const { findByRole, getByRole, queryByRole } = render(<TestComponent />);
+
+    expect(
+      await findByRole('progressbar', { name: 'Loading personal information' }),
+    ).toBeInTheDocument();
+    expect(getByRole('table')).toHaveAttribute('aria-busy', 'true');
+    expect(
+      getByRole('combobox', { name: 'Nearest Geographic Multiplier Location' }),
+    ).toBeDisabled();
+
+    expect(await findByRole('cell', { name: '4 years' })).toBeInTheDocument();
+    expect(
+      getByRole('combobox', { name: 'Nearest Geographic Multiplier Location' }),
+    ).toBeEnabled();
+    expect(
+      queryByRole('progressbar', { name: 'Loading personal information' }),
+    ).not.toBeInTheDocument();
+    expect(getByRole('table')).toHaveAttribute('aria-busy', 'false');
+  });
+
   it('should display category row headers', async () => {
     const { getByRole, findByRole } = render(<TestComponent />);
 
@@ -111,6 +132,7 @@ describe('PersonalInformationSection', () => {
     await waitFor(() => {
       expect(locationCombobox).toHaveValue('Miami, FL');
     });
+    await waitFor(() => expect(locationCombobox).toBeEnabled());
 
     userEvent.click(await findByRole('button', { name: 'Open' }));
 
@@ -133,6 +155,7 @@ describe('PersonalInformationSection', () => {
     await waitFor(() => {
       expect(locationCombobox).toHaveValue('Miami, FL');
     });
+    await waitFor(() => expect(locationCombobox).toBeEnabled());
 
     userEvent.clear(locationCombobox);
 
@@ -164,6 +187,7 @@ describe('PersonalInformationSection', () => {
     await waitFor(() => {
       expect(locationCombobox).toHaveValue('Miami, FL');
     });
+    await waitFor(() => expect(locationCombobox).toBeEnabled());
 
     userEvent.click(await findByRole('button', { name: 'Open' }));
     userEvent.click(await findByRole('option', { name: 'None' }));

@@ -9,12 +9,15 @@ import { AppealsMainPanel } from './AppealsMainPanel/AppealsMainPanel';
 
 const AppealsDetailsPage: React.FC = () => {
   const { isOpen } = useContactPanel();
-  const { filterPanelOpen } = useContext(AppealsContext) as AppealsType;
+  const { filterPanelOpen, setFilterPanelOpen } = useContext(
+    AppealsContext,
+  ) as AppealsType;
 
   return (
     <SidePanelsLayout
       leftPanel={<AppealsLeftPanel />}
       leftOpen={filterPanelOpen}
+      onLeftClose={() => setFilterPanelOpen(false)}
       leftWidth="290px"
       mainContent={<AppealsMainPanel />}
       rightPanel={isOpen ? <DynamicContactsRightPanel /> : undefined}

@@ -1,6 +1,7 @@
 import React, { forwardRef, useMemo } from 'react';
 import { ErrorOutline, HourglassDisabled } from '@mui/icons-material';
 import {
+  Link,
   Paper,
   Table,
   TableBody,
@@ -9,7 +10,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { TableVirtuoso, TableVirtuosoProps } from 'react-virtuoso';
 import { EmptyTable } from 'src/components/HrTools/Shared/EmptyTable/EmptyTable';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
@@ -17,7 +18,7 @@ import { headerHeight } from 'src/components/Shared/Header/ListHeader';
 import { MinistryPartnerReminderFrequencyEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { ReminderData } from '../mockData';
-import { RemindersTableRow } from './RemindersTableRow';
+import { RemindersTableRow, hideOnPhone } from './RemindersTableRow';
 
 const tableVirtuosoPadding = '62px';
 
@@ -44,18 +45,14 @@ Body.displayName = 'Body';
 
 interface RemindersTableProps {
   data: ReminderData[];
-  error?: Error | null;
+  noDesignation?: boolean;
 }
 
 export const RemindersTable: React.FC<RemindersTableProps> = ({
   data,
-  error,
+  noDesignation,
 }) => {
   const { t } = useTranslation();
-
-  const noDesignation = error?.message.includes(
-    'Designation account not found',
-  );
   const isEmpty = !data.length;
 
   const TableComponents: TableVirtuosoProps<
@@ -68,7 +65,10 @@ export const RemindersTable: React.FC<RemindersTableProps> = ({
         <Table
           {...props}
           sx={{
-            '& .MuiTableCell-root': { borderBottom: 'none' },
+            '& .MuiTableCell-root': {
+              borderBottom: 'none',
+              paddingX: { xs: 1, sm: 2 },
+            },
             '& .MuiTableCell-head': {
               position: 'sticky',
               top: 0,
@@ -77,7 +77,7 @@ export const RemindersTable: React.FC<RemindersTableProps> = ({
               boxShadow: (t) => `inset 0 -1px 0 ${t.palette.divider}`,
             },
             tableLayout: 'fixed',
-            minWidth: 730,
+            minWidth: { sm: 730 },
           }}
         />
       ),
@@ -109,11 +109,16 @@ export const RemindersTable: React.FC<RemindersTableProps> = ({
                   : t('No ministry partners found')
               }
               subtitle={
-                noDesignation
-                  ? t(
-                      'This account is not associated with a designation account number',
-                    )
-                  : t('Add a ministry partner to get started')
+                noDesignation ? (
+                  <Trans t={t}>
+                    This account is not associated with a designation account
+                    number. Please contact{' '}
+                    <Link href="mailto:HR@cru.org">HR@cru.org</Link> if this is
+                    incorrect.
+                  </Trans>
+                ) : (
+                  t('Add a ministry partner to get started')
+                )
               }
               icon={noDesignation ? ErrorOutline : HourglassDisabled}
             />
@@ -136,10 +141,16 @@ export const RemindersTable: React.FC<RemindersTableProps> = ({
       components={TableComponents}
       fixedHeaderContent={() => (
         <TableRow>
-          <TableCell sx={{ width: '35%' }}>{t('Ministry Partner')}</TableCell>
-          <TableCell sx={{ width: '20%' }}>{t('Last Gift')}</TableCell>
-          <TableCell sx={{ width: '20%' }}>{t('Last Reminder')}</TableCell>
-          <TableCell id="status-col" sx={{ width: '25%' }}>
+          <TableCell sx={{ width: { sm: '35%' } }}>
+            {t('Ministry Partner')}
+          </TableCell>
+          <TableCell sx={{ width: '20%', ...hideOnPhone }}>
+            {t('Last Gift')}
+          </TableCell>
+          <TableCell sx={{ width: '20%', ...hideOnPhone }}>
+            {t('Last Reminder')}
+          </TableCell>
+          <TableCell id="status-col" sx={{ width: { xs: 160, sm: '25%' } }}>
             {t('Reminder Status')}
           </TableCell>
         </TableRow>

@@ -5,6 +5,7 @@ import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { EligibilityStatusTable } from 'src/components/HrTools/Shared/EligibilityStatusTable/EligibilityStatusTable';
+import { getEligibilityBasis } from 'src/components/HrTools/Shared/EligibilityStatusTable/eligibilityReasons';
 import Loading from 'src/components/Loading/Loading';
 import { Notification } from 'src/components/Notification/Notification';
 import { getMhiEligibility } from 'src/components/Reports/Shared/HousingAllowance/housingAllowance';
@@ -13,6 +14,7 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { PanelTypeEnum } from '../Shared/CalculationReports/Shared/sharedTypes';
+import { pageContainerSx } from '../Shared/pageContainerSx';
 import { EligibleDisplay } from './MainPages/EligibleDisplay';
 import { NoRequestsDisplay } from './MainPages/NoRequestsDisplay';
 import {
@@ -46,8 +48,12 @@ export const MinisterHousingAllowanceReport = () => {
     spousePreferredName,
     userEligibleForMHA,
     spouseEligibleForMHA,
+    userBoardApprovedForMHA,
+    spouseBoardApprovedForMHA,
     userHcmData,
     spouseHcmData,
+    userApprovedOverallAmount,
+    spouseApprovedOverallAmount,
   } = useMinisterHousingAllowance();
 
   const [createMHA] = useCreateHousingAllowanceRequestMutation();
@@ -112,15 +118,62 @@ export const MinisterHousingAllowanceReport = () => {
 
   const hasNoRequests = !requests.length;
 
+  // Who may start a new request (eitherPersonEligible: IBS, or an MHA the board
+  // already approved) vs. who has an MHA now (eitherPersonApproved)
   const eitherPersonEligible = userEligibleForMHA || spouseEligibleForMHA;
+  const eitherPersonApproved =
+    userBoardApprovedForMHA || spouseBoardApprovedForMHA;
+  const showApprovedMha = eitherPersonEligible || eitherPersonApproved;
+
+  // MHAs approved before the MPDX launch only exist in HCM
+  const isHcmApprovedOnly =
+    hasNoRequests &&
+    ((userBoardApprovedForMHA && (userApprovedOverallAmount ?? 0) > 0) ||
+      (spouseBoardApprovedForMHA && (spouseApprovedOverallAmount ?? 0) > 0));
 
   const hasCurrentBoardApprovedMha =
     currentRequest?.status === MhaStatusEnum.BoardApproved;
   const showNewRequestButton =
     eitherPersonEligible && !hasBlockingRequest && !hasCurrentBoardApprovedMha;
 
-  const showCurrentRequest = eitherPersonEligible && currentRequest;
-  const showPreviousRequests = eitherPersonEligible && previousApprovedRequest;
+  const showCurrentRequest = showApprovedMha && currentRequest;
+  const showPreviousRequests = showApprovedMha && previousApprovedRequest;
+
+  const anyoneIneligible =
+    !userEligibleForMHA || (isMarried && !spouseEligibleForMHA);
+
+  const eligibilityStatusTable = (
+    <EligibilityStatusTable
+      userPreferredName={preferredName}
+      userEligible={userEligibleForMHA}
+      userCountry={userHcmData?.staffInfo.country ?? undefined}
+      spousePreferredName={isMarried ? spousePreferredName : undefined}
+      spouseEligible={isMarried ? spouseEligibleForMHA : undefined}
+      spouseCountry={
+        isMarried ? (spouseHcmData?.staffInfo.country ?? undefined) : undefined
+      }
+      userMhiEligibility={getMhiEligibility(userHcmData)}
+      spouseMhiEligibility={
+        isMarried ? getMhiEligibility(spouseHcmData) : undefined
+      }
+      userIneligibilityReasonCode={
+        userHcmData?.mhaNewRequest.ineligibilityReasonCode
+      }
+      spouseIneligibilityReasonCode={
+        isMarried
+          ? spouseHcmData?.mhaNewRequest.ineligibilityReasonCode
+          : undefined
+      }
+      userBasis={getEligibilityBasis(userHcmData)}
+      spouseBasis={getEligibilityBasis(spouseHcmData)}
+      userMhiIneligibilityReasonCode={
+        userHcmData?.mhiEit.ineligibilityReasonCode
+      }
+      spouseMhiIneligibilityReasonCode={
+        isMarried ? spouseHcmData?.mhiEit.ineligibilityReasonCode : undefined
+      }
+    />
+  );
 
   if (creatingRequest) {
     return <Loading loading />;
@@ -134,56 +187,54 @@ export const MinisterHousingAllowanceReport = () => {
       sidebarTitle={t('Your MHA')}
       hasCurrentRequestPending={isCurrentRequestPending}
       mainContent={
-        <Container sx={{ ml: 5 }}>
+        <Container sx={pageContainerSx}>
           {requestsError ? (
             <Notification type="error" message={requestsError.message} />
           ) : loading ? (
             <MinisterHousingAllowanceReportSkeleton />
           ) : (
             <>
-              <Stack direction="column" width={mainContentWidth}>
+              <Stack
+                direction="column"
+                width="100%"
+                maxWidth={mainContentWidth}
+              >
                 <Box mb={2}>
                   <Typography variant="h5">{t('Your MHA')}</Typography>
                 </Box>
 
-                {hasNoRequests ? (
+                {isHcmApprovedOnly ? (
                   <>
-                    <NoRequestsDisplay />
-                    <Box mt={2}>
-                      <EligibilityStatusTable
-                        userPreferredName={preferredName}
-                        userEligible={userEligibleForMHA}
-                        userCountry={
-                          userHcmData?.staffInfo.country ?? undefined
-                        }
-                        spousePreferredName={
-                          isMarried ? spousePreferredName : undefined
-                        }
-                        spouseEligible={
-                          isMarried ? spouseEligibleForMHA : undefined
-                        }
-                        spouseCountry={
-                          isMarried
-                            ? (spouseHcmData?.staffInfo.country ?? undefined)
-                            : undefined
-                        }
-                        userMhiEligibility={getMhiEligibility(userHcmData)}
-                        spouseMhiEligibility={
-                          isMarried
-                            ? getMhiEligibility(spouseHcmData)
-                            : undefined
-                        }
+                    <Box mb={2}>
+                      <EligibleDisplay
+                        isPending={false}
+                        isEditable={false}
+                        isHcmApprovedOnly
+                        canRequestNewMha={eitherPersonEligible}
                       />
                     </Box>
+                    <CurrentBoardApproved
+                      request={null}
+                      hasOpenRequest={false}
+                    />
+                    {anyoneIneligible && (
+                      <Box mt={2}>{eligibilityStatusTable}</Box>
+                    )}
+                  </>
+                ) : hasNoRequests ? (
+                  <>
+                    <NoRequestsDisplay />
+                    <Box mt={2}>{eligibilityStatusTable}</Box>
                   </>
                 ) : (
-                  eitherPersonEligible && (
+                  showApprovedMha && (
                     <Box mb={2}>
                       <EligibleDisplay
                         isPending={isCurrentRequestPending}
                         isEditable={
                           currentRequest.status === MhaStatusEnum.ActionRequired
                         }
+                        canRequestNewMha={eitherPersonEligible}
                       />
                     </Box>
                   )
@@ -210,7 +261,12 @@ export const MinisterHousingAllowanceReport = () => {
                 </Button>
               )}
               {showPreviousRequests && (
-                <Stack direction="column" width={mainContentWidth} mt={4}>
+                <Stack
+                  direction="column"
+                  width="100%"
+                  maxWidth={mainContentWidth}
+                  mt={4}
+                >
                   <CurrentBoardApproved
                     request={previousApprovedRequest}
                     hasOpenRequest={isCurrentRequestPending}

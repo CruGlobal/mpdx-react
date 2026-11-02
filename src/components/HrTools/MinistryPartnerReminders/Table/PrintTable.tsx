@@ -16,16 +16,15 @@ import { ReminderData } from '../mockData';
 
 interface PrintTableProps {
   data: ReminderData[];
-  error?: Error | null;
+  noDesignation?: boolean;
 }
 
-export const PrintTable: React.FC<PrintTableProps> = ({ data, error }) => {
+export const PrintTable: React.FC<PrintTableProps> = ({
+  data,
+  noDesignation,
+}) => {
   const { t } = useTranslation();
   const locale = useLocale();
-
-  const noDesignation = error?.message.includes(
-    'Designation account not found',
-  );
   const isEmpty = data.length === 0;
 
   return (

@@ -103,6 +103,8 @@ export interface DonationRow {
   designationAccount: string;
   paymentMethod: string | null;
   appealName: string | null;
+  motivation: string | null;
+  memo: string | null;
   rawDonation: DonationTableRowFragment;
 }
 
@@ -124,6 +126,8 @@ export const createDonationRow = (
     data.designationAccount.name || data.designationAccount.accountNumber,
   paymentMethod: data.paymentMethod ?? null,
   appealName: data.appeal?.name ?? null,
+  motivation: data.motivation ?? null,
+  memo: data.memo ?? null,
   rawDonation: data,
 });
 
@@ -244,6 +248,18 @@ export const DonationTable: React.FC<DonationTableProps> = ({
 
   const appeal: RenderCell = ({ row: donation }) => donation.appealName;
 
+  const motivation: RenderCell = ({ row }) => (
+    <Tooltip title={row.motivation ?? ''}>
+      <span>{row.motivation}</span>
+    </Tooltip>
+  );
+
+  const memo: RenderCell = ({ row }) => (
+    <Tooltip title={row.memo ?? ''}>
+      <span>{row.memo}</span>
+    </Tooltip>
+  );
+
   const edit: RenderCell = ({ row: donation }) => (
     <IconButton
       color="primary"
@@ -305,6 +321,20 @@ export const DonationTable: React.FC<DonationTableProps> = ({
       flex: 1,
       minWidth: 100,
       renderCell: appeal,
+    },
+    {
+      field: 'motivation',
+      headerName: t('Motivation'),
+      flex: 1.5,
+      minWidth: 120,
+      renderCell: motivation,
+    },
+    {
+      field: 'memo',
+      headerName: t('Memo'),
+      flex: 2,
+      minWidth: 150,
+      renderCell: memo,
     },
     {
       field: 'Edit',
@@ -377,6 +407,9 @@ export const DonationTable: React.FC<DonationTableProps> = ({
             paginationMode="server"
             columns={columns}
             columnVisibilityModel={{
+              // Hidden by default, including for users who already have saved column visibility
+              motivation: false,
+              memo: false,
               ...columnVisibility,
               foreignAmount: hasForeignDonations,
             }}

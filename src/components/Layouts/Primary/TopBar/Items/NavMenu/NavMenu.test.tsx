@@ -99,10 +99,12 @@ describe('NavMenu', () => {
   });
 
   it('renders Reports submenu items', async () => {
-    const { findByRole, getByRole, getByTestId, queryByRole } = render(
+    const { findByRole, getByRole, getByTestId } = render(
       <TestComponent mocks={defaultMocks} />,
     );
-    await findByRole('menuitem', { name: 'Reports' });
+    expect(
+      await findByRole('menuitem', { name: 'Reports' }),
+    ).toBeInTheDocument();
     userEvent.click(getByTestId('ReportMenuToggle'));
     expectMenuItems(getByRole, [
       'Donations',
@@ -111,12 +113,10 @@ describe('NavMenu', () => {
       'Staff Expense Report',
       'Income/Expense Analysis',
       'Designation Accounts',
+      'Responsibility Centers',
       'Expected Monthly Total',
       'Partner Giving Analysis',
     ]);
-    expect(
-      queryByRole('menuitem', { name: 'Responsibility Centers' }),
-    ).not.toBeInTheDocument();
   });
 
   it('renders HR Tools submenu items', async () => {
@@ -171,8 +171,8 @@ describe('NavMenu', () => {
     expect(getByTestId('appeals-false')).toBeInTheDocument();
   });
 
-  it('shows only Partner Reminders in HR Tools when user type not verified', async () => {
-    const { findByRole, getByRole, getByTestId, queryByRole } = render(
+  it('does not render HR Tools when user type not verified', async () => {
+    const { findByRole, queryByRole } = render(
       <TestComponent
         mocks={{
           ...defaultMocks,
@@ -191,19 +191,11 @@ describe('NavMenu', () => {
       />,
     );
 
-    await findByRole('menuitem', { name: 'HR Tools' });
-    userEvent.click(getByTestId('HrToolsMenuToggle'));
-
-    // Partner Reminders is live regardless of verification, so the tab still shows
     expect(
-      getByRole('menuitem', { name: 'Ministry Partner Reminders' }),
+      await findByRole('menuitem', { name: 'Coaching' }),
     ).toBeInTheDocument();
-
     expect(
-      queryByRole('menuitem', { name: 'Salary Calculation Form' }),
-    ).not.toBeInTheDocument();
-    expect(
-      queryByRole('menuitem', { name: 'MPD Goal Calculator' }),
+      queryByRole('menuitem', { name: 'HR Tools' }),
     ).not.toBeInTheDocument();
   });
 

@@ -9,11 +9,15 @@ import { SpouseComponent } from './SpouseComponent';
 const requestDataDefault = {
   latestAdditionalSalaryRequest: {
     calculations: {
-      currentSalaryCap: 1000,
+      currentSalaryCap: 50000,
+      grossAnnualSalary: 30000,
+      ytdAsrAmount: 2000,
       staffAccountBalance: 200,
     },
     spouseCalculations: {
-      currentSalaryCap: 10000,
+      currentSalaryCap: 60000,
+      grossAnnualSalary: 45000,
+      ytdAsrAmount: 5000,
       staffAccountBalance: 3000,
     },
   },
@@ -72,26 +76,29 @@ describe('SpouseComponent', () => {
   it('displays the remaining allowable salary amount', () => {
     const { getByText } = renderComponent({});
 
+    // 60,000 cap - (45,000 gross + 5,000 YTD ASRs).
     expect(
-      getByText('Up to their remaining allowable salary of $7,000'),
+      getByText('Up to their remaining allowable salary of $10,000'),
     ).toBeInTheDocument();
   });
 
-  it('calculates remaining salary correctly when values are provided', () => {
+  it('displays $0 when the spouse is already over their cap', () => {
     const { getByText } = renderComponent({
       requestData: {
         latestAdditionalSalaryRequest: {
           ...requestDataDefault.latestAdditionalSalaryRequest,
           spouseCalculations: {
-            currentSalaryCap: 15000,
-            staffAccountBalance: 5000,
+            currentSalaryCap: 40000,
+            grossAnnualSalary: 45000,
+            ytdAsrAmount: 5000,
+            staffAccountBalance: 3000,
           },
         },
       },
     });
 
     expect(
-      getByText('Up to their remaining allowable salary of $10,000'),
+      getByText('Up to their remaining allowable salary of $0'),
     ).toBeInTheDocument();
   });
 
@@ -150,8 +157,9 @@ describe('SpouseComponent', () => {
     it('uses userCalculations for remaining salary when isSpouse is true', () => {
       const { getByText } = renderComponent({ isSpouse: true });
 
+      // 50,000 cap - (30,000 gross + 2,000 YTD ASRs)
       expect(
-        getByText('Up to their remaining allowable salary of $800'),
+        getByText('Up to their remaining allowable salary of $18,000'),
       ).toBeInTheDocument();
     });
 
