@@ -164,6 +164,24 @@ describe('GoalsTable', () => {
     );
   });
 
+  it("shows each row's cohort in a Cohort column after Name", () => {
+    const { getAllByRole } = renderTable([
+      { ...rows[0], cohortName: 'Fall NSO 2026' },
+      { ...rows[1], cohortName: 'Spring NSO 2027' },
+    ]);
+    const headers = getAllByRole('columnheader').map(
+      (cell) => cell.textContent,
+    );
+    expect(headers.indexOf('Cohort')).toBe(headers.indexOf('Name') + 1);
+    const cohortCells = getAllByRole('row')
+      .slice(1)
+      .map(
+        (row) => within(row).getAllByRole('cell')[headers.indexOf('Cohort')],
+      );
+    expect(cohortCells[0]).toHaveTextContent('Fall NSO 2026');
+    expect(cohortCells[1]).toHaveTextContent('Spring NSO 2027');
+  });
+
   it('shows the OneApp sub-ministry under Campus Division', () => {
     const { getAllByRole } = renderTable([
       { ...rows[0], subministry: 'CMCH01' },
