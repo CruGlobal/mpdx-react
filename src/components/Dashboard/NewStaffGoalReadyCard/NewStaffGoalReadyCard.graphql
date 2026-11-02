@@ -1,0 +1,16 @@
+# A staff member's own goal is only returned once sent, so a result is the ready signal.
+query NewStaffGoalReady($accountListId: ID!) {
+  newStaffGoalCalculation(accountListId: $accountListId) {
+    id
+    # The acknowledgement stores these two figures so only a real change re-surfaces the card.
+    calculations {
+      monthlyGoal
+      specialNeedsTotal
+    }
+    # Present only for the goals team, whose read is not gated on the send.
+    newStaffCohortAttendee {
+      id
+      goalSentAt
+    }
+  }
+}
