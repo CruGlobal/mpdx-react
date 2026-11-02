@@ -161,4 +161,12 @@ describe('FinancialInformationSection', () => {
       getByText("Determines staff's cost-of-living multiplier"),
     ).toBeInTheDocument();
   });
+
+  it('explains that the requested salary is net salary', () => {
+    const { getByText } = render(<TestComponent />);
+
+    expect(
+      getByText('Requested salary is the same as net salary or take-home pay.'),
+    ).toBeInTheDocument();
+  });
 });

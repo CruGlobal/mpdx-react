@@ -65,7 +65,9 @@ export const VariantQuestions: React.FC = () => {
                 spouseName,
               },
             )}
-            helperText={t('Round to the nearest dollar.')}
+            helperText={t(
+              'Requested salary is the same as net salary or take-home pay. Round to the nearest dollar.',
+            )}
             startAdornment={<CurrencyAdornment />}
           />
           <NumberQuestion
