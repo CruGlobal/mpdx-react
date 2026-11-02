@@ -113,6 +113,13 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     variables: { personNumber },
     skip: isSupervisorView && !personNumber,
   });
+  // HCM has no staff group or household for someone it no longer knows, such as staff who have left,
+  // so their report loads with the base funds and no salary split. Any other HCM error blocks the
+  // report, because retrying can still bring the right fund types and split.
+  const hcmPersonNotFound = !!hcmError?.graphQLErrors.some(
+    ({ extensions }) => extensions?.code === 'HCM_PERSON_NOT_FOUND',
+  );
+  const hcmBlocksReport = !!hcmError && !hcmPersonNotFound;
   const household: HouseholdMember[] = useMemo(
     () =>
       hcmData?.hcm.map(({ staffInfo }) => ({
@@ -157,15 +164,14 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       staffAccountId,
       ...getStaffExpenseMonthRange(filters, time),
     },
-    // Without HCM data the fund types and salary split would be wrong
-    skip: hcmLoading || !!hcmError,
+    skip: hcmLoading || hcmBlocksReport,
   });
 
-  const loadError = hcmError ?? reportError;
+  const loadError = (hcmBlocksReport ? hcmError : undefined) ?? reportError;
 
   const refetchReport = () => {
     // The report reloads on its own once HCM succeeds
-    (hcmError ? refetchHcm() : refetch()).catch(() => {});
+    (hcmBlocksReport ? refetchHcm() : refetch()).catch(() => {});
   };
 
   const { data: accountData } = useStaffAccountQuery({

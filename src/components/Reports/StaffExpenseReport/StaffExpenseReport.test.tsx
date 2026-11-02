@@ -9,6 +9,7 @@ import {
   within,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { GraphQLError } from 'graphql';
 import { Settings } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
@@ -38,6 +39,7 @@ interface TestComponentProps {
   personNumber?: string;
   failReportCall?: FailCall;
   failHcmCall?: FailCall;
+  hcmPersonNotFound?: boolean;
 }
 
 const salaryCategory = {
@@ -129,6 +131,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   personNumber,
   failReportCall,
   failHcmCall,
+  hcmPersonNotFound = false,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter
@@ -299,29 +302,35 @@ const TestComponent: React.FC<TestComponentProps> = ({
                   },
                 },
                 Hcm: {
-                  hcm: failCallsWhen<HcmMock>(
-                    failHcmCall,
-                    'hcm',
-                    'HCM is unavailable',
-                    [
-                      {
-                        usStaffGroup,
-                        outOfSync: false,
-                        staffInfo: {
-                          personNumber: '000000111',
-                          preferredName: 'Alex',
-                        },
-                      },
-                      {
-                        usStaffGroup,
-                        outOfSync: false,
-                        staffInfo: {
-                          personNumber: '000000222',
-                          preferredName: 'Jordan',
-                        },
-                      },
-                    ],
-                  ),
+                  hcm: hcmPersonNotFound
+                    ? ((() => {
+                        throw new GraphQLError('HCM person not found', {
+                          extensions: { code: 'HCM_PERSON_NOT_FOUND' },
+                        });
+                      }) as unknown as HcmMock)
+                    : failCallsWhen<HcmMock>(
+                        failHcmCall,
+                        'hcm',
+                        'HCM is unavailable',
+                        [
+                          {
+                            usStaffGroup,
+                            outOfSync: false,
+                            staffInfo: {
+                              personNumber: '000000111',
+                              preferredName: 'Alex',
+                            },
+                          },
+                          {
+                            usStaffGroup,
+                            outOfSync: false,
+                            staffInfo: {
+                              personNumber: '000000222',
+                              preferredName: 'Jordan',
+                            },
+                          },
+                        ],
+                      ),
                 },
               }}
               onCall={mutationSpy}
@@ -584,6 +593,29 @@ describe('StaffExpenseReport', () => {
       ).toBeInTheDocument();
       expect(queryByRole('alert')).not.toBeInTheDocument();
       expect(calls.hcm).toBe(2);
+    });
+
+    describe('because HCM has no record of the person', () => {
+      it('loads the report instead of the error', async () => {
+        const { findByText, queryByRole } = render(
+          <TestComponent hcmPersonNotFound />,
+        );
+
+        expect(
+          await findByText('Ending Balance (All Accounts): $4,000.00'),
+        ).toBeInTheDocument();
+        expect(queryByRole('alert')).not.toBeInTheDocument();
+      });
+
+      it('requests only the base fund types', async () => {
+        render(<TestComponent hcmPersonNotFound />);
+
+        await waitFor(() =>
+          expect(mutationSpy).toHaveGraphqlOperation('ReportsStaffExpenses', {
+            fundTypes: ['Primary', 'Savings', 'Staff Conference Savings'],
+          }),
+        );
+      });
     });
   });
 
