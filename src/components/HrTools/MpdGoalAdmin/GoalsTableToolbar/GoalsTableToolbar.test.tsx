@@ -392,14 +392,17 @@ describe('GoalsTableToolbar', () => {
   });
 
   it('disables Run & Send Selected when no selected goal is ready to send', async () => {
-    const { getByRole } = await renderLoaded();
+    const { getByRole, findByRole } = await renderLoaded();
     // row-2 is the only Incomplete row.
     act(() => ctx.toggleRow('row-2'));
 
     userEvent.click(getByRole('button', { name: 'More Actions' }));
-    expect(
-      getByRole('menuitem', { name: 'Run & Send Selected' }),
-    ).toHaveAttribute('aria-disabled', 'true');
+    const item = getByRole('menuitem', { name: 'Run & Send Selected' });
+    expect(item).toHaveAttribute('aria-disabled', 'true');
+    userEvent.hover(item.parentElement as HTMLElement);
+    expect(await findByRole('tooltip')).toHaveTextContent(
+      'No MPD goals are ready to send.',
+    );
   });
 
   it('assigns a coach to every selected row from the menu', async () => {

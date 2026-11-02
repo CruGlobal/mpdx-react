@@ -126,18 +126,23 @@ export const GoalsTableToolbar: React.FC = () => {
           onClose={() => setMenuAnchorEl(null)}
         >
           {isGoalsAdmin && (
-            <MenuItem
-              disabled={blocked || nothingToSendSelected}
-              onClick={() => {
-                setMenuAnchorEl(null);
-                openRunAndSend(
-                  t('Run and Send Selected Complete MPD Goals?'),
-                  selectedRows,
-                );
-              }}
+            <RunAndSendTooltip
+              show={blocked || nothingToSendSelected}
+              title={blocked ? undefined : t('No MPD goals are ready to send.')}
             >
-              {t('Run & Send Selected')}
-            </MenuItem>
+              <MenuItem
+                disabled={blocked || nothingToSendSelected}
+                onClick={() => {
+                  setMenuAnchorEl(null);
+                  openRunAndSend(
+                    t('Run and Send Selected Complete MPD Goals?'),
+                    selectedRows,
+                  );
+                }}
+              >
+                {t('Run & Send Selected')}
+              </MenuItem>
+            </RunAndSendTooltip>
           )}
           <MenuItem
             onClick={() => {
