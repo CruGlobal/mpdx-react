@@ -350,6 +350,40 @@ describe('GoalsTableToolbar', () => {
     );
   });
 
+  it('disables Run and Send All when the search hides every ready goal', async () => {
+    const { getByRole, findByRole } = await renderLoaded();
+    // row-2 is the only Incomplete row, so this search leaves nothing to send.
+    userEvent.type(getByRole('textbox', { name: 'Search' }), 'Everts');
+    await waitFor(() => expect(ctx.filteredRows).toHaveLength(1));
+    await waitFor(() => expect(ctx.loading).toBe(false));
+
+    const button = getByRole('button', { name: 'Run and Send All' });
+    expect(button).toBeDisabled();
+    userEvent.hover(button.parentElement as HTMLElement);
+    expect(await findByRole('tooltip')).toHaveTextContent(
+      'No MPD goals are ready to send.',
+    );
+  });
+
+  it('shows the missing-costs tooltip over the nothing-to-send one', async () => {
+    const { getByRole, findByRole } = renderToolbar({
+      cohorts: cohortsWithoutCostsMock,
+      attendeeNodes: attendees.map((node) => ({
+        ...node,
+        goalStatus: NewStaffCohortAttendeeGoalStatusEnum.Incomplete,
+      })),
+    });
+    await waitFor(() => expect(ctx.filteredRows).toHaveLength(3));
+    await waitFor(() => expect(ctx.loading).toBe(false));
+
+    const button = getByRole('button', { name: 'Run and Send All' });
+    expect(button).toBeDisabled();
+    userEvent.hover(button.parentElement as HTMLElement);
+    expect(await findByRole('tooltip')).toHaveTextContent(
+      'All inputs and per-training costs are required to run & send goals.',
+    );
+  });
+
   it('disables Run and Send All for an empty cohort', async () => {
     const { getByRole } = renderToolbar({ attendeeNodes: [] });
     await waitFor(() => expect(ctx.loading).toBe(false));
