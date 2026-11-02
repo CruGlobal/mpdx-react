@@ -238,15 +238,14 @@ describe('ScenarioGoals', () => {
     });
   });
 
-  it('does not claim success when sending fails', async () => {
-    const { findByRole, getByRole, queryByRole, queryByText } =
-      renderScenarioGoals({
-        SendNewStaffScenarioGoal: {
-          sendNewStaffScenarioGoal: () => {
-            throw new Error('Send failed');
-          },
+  it('keeps the send dialog open and does not claim success when sending fails', async () => {
+    const { findByRole, getByRole, queryByText } = renderScenarioGoals({
+      SendNewStaffScenarioGoal: {
+        sendNewStaffScenarioGoal: () => {
+          throw new Error('Send failed');
         },
-      });
+      },
+    });
 
     userEvent.click(await findByRole('button', { name: 'Email John Doe' }));
     userEvent.click(getByRole('button', { name: 'Send Worksheet' }));
@@ -256,8 +255,10 @@ describe('ScenarioGoals', () => {
         id: 'scenario-1',
       }),
     );
-    // The dialog only closes once the send settles, so by now a toast would have appeared.
-    await waitFor(() => expect(queryByRole('dialog')).not.toBeInTheDocument());
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Send Worksheet' })).toBeEnabled(),
+    );
+    expect(getByRole('dialog')).toBeInTheDocument();
     expect(
       queryByText('Support goals worksheet sent to john@example.com.'),
     ).not.toBeInTheDocument();

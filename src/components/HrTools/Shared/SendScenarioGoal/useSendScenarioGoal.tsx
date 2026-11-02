@@ -20,9 +20,11 @@ export const useSendScenarioGoal = (): SendScenarioGoalFlow => {
   const [sendScenarioGoal] = useSendNewStaffScenarioGoalMutation();
   const [isOpen, setIsOpen] = useState(false);
   const [target, setTarget] = useState<SendableScenarioGoal | null>(null);
+  const [requestId, setRequestId] = useState(0);
 
   const requestSend = (goal: SendableScenarioGoal) => {
     setTarget(goal);
+    setRequestId((id) => id + 1);
     setIsOpen(true);
   };
 
@@ -35,6 +37,12 @@ export const useSendScenarioGoal = (): SendScenarioGoalFlow => {
     });
     const sentTo = data?.sendNewStaffScenarioGoal?.sentTo;
     if (!sentTo?.length) {
+      enqueueSnackbar(
+        t('No email addresses were given, so nothing was sent.'),
+        {
+          variant: 'info',
+        },
+      );
       return;
     }
     enqueueSnackbar(
@@ -50,6 +58,7 @@ export const useSendScenarioGoal = (): SendScenarioGoalFlow => {
     dialogProps: {
       isOpen,
       goal: target,
+      requestId,
       onSend: handleSend,
       handleClose: () => setIsOpen(false),
     },

@@ -3,6 +3,7 @@ import { Button } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { SendNewStaffScenarioGoalMutation } from './SendScenarioGoal.generated';
@@ -206,9 +207,82 @@ describe('useSendScenarioGoal', () => {
 
     await userEvent.click(sendButton);
 
-    // The dialog only closes once the send settles, so by now a toast would have appeared.
     await waitFor(() => expect(queryByRole('dialog')).not.toBeInTheDocument());
-    expect(mutationSpy).toHaveGraphqlOperation('SendNewStaffScenarioGoal');
+    expect(mockEnqueue).toHaveBeenCalledWith(
+      'No email addresses were given, so nothing was sent.',
+      { variant: 'info' },
+    );
+    expect(mockEnqueue).not.toHaveBeenCalledWith(
+      expect.stringContaining('worksheet sent'),
+      expect.anything(),
+    );
+  });
+
+  it('keeps the dialog and its addresses when the send fails', async () => {
+    const utils = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider
+          mocks={
+            {
+              SendNewStaffScenarioGoal: {
+                sendNewStaffScenarioGoal: () => {
+                  throw new Error('Send failed');
+                },
+              },
+            } as ApolloErgonoMockMap
+          }
+          onCall={mutationSpy}
+        >
+          <Harness goal={defaultGoal} />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+    await userEvent.click(utils.getByRole('button', { name: 'Send' }));
+    const dialog = await utils.findByRole('dialog');
+    await userEvent.type(
+      within(dialog).getByRole('combobox', { name: 'Email addresses' }),
+      'coach@example.com{enter}',
+    );
+    await userEvent.click(
+      within(dialog).getByRole('button', { name: 'Send Worksheet' }),
+    );
+
+    await waitFor(() =>
+      expect(
+        within(dialog).getByRole('button', { name: 'Send Worksheet' }),
+      ).toBeEnabled(),
+    );
+    expect(within(dialog).getByText('coach@example.com')).toBeInTheDocument();
     expect(mockEnqueue).not.toHaveBeenCalled();
+  });
+
+  it('does not flag an address that is still being typed', async () => {
+    const { dialog, input, sendButton } = await openDialog();
+
+    await userEvent.type(input, 'r');
+
+    expect(
+      within(dialog).getByText(
+        'Press Enter or type a comma after each address.',
+      ),
+    ).toBeInTheDocument();
+    expect(sendButton).toBeEnabled();
+  });
+
+  it('starts over from the scenario addresses each time it opens', async () => {
+    const { dialog, input, getByRole, findByRole } = await openDialog();
+
+    await userEvent.type(input, 'coach@example.com{enter}');
+    await userEvent.click(
+      within(dialog).getByRole('button', { name: 'Cancel' }),
+    );
+    // Reopen while the exit transition still has the page hidden behind the old dialog.
+    await userEvent.click(getByRole('button', { name: 'Send', hidden: true }));
+
+    const reopened = await findByRole('dialog');
+    expect(
+      within(reopened).queryByText('coach@example.com'),
+    ).not.toBeInTheDocument();
+    expect(within(reopened).getByText('jane@example.com')).toBeInTheDocument();
   });
 });

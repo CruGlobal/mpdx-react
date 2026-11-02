@@ -108,7 +108,15 @@ describe('isValidEmailAddress', () => {
     },
   );
 
-  it.each(['', 'jane', 'jane@', '@example.com'])('rejects "%s"', (address) => {
+  it.each([
+    '',
+    'jane',
+    'jane@',
+    '@example.com',
+    'coach@localhost',
+    'a..b@example.com',
+    'a@x.com,b@y.com',
+  ])('rejects "%s" like the API\'s strict check', (address) => {
     expect(isValidEmailAddress(address)).toBe(false);
   });
 });
