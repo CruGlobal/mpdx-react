@@ -689,8 +689,8 @@ describe('GoalSettingsForm', () => {
         <TestComponent goalCalculationMock={completeMock} />,
       );
 
-      expect(await findByText('Complete')).toBeInTheDocument();
-      expect(queryByText('Incomplete')).not.toBeInTheDocument();
+      expect(await findByText('Calculation Complete')).toBeInTheDocument();
+      expect(queryByText('Calculation Incomplete')).not.toBeInTheDocument();
     });
 
     it('shows an Incomplete chip when a required field is missing', async () => {
@@ -705,8 +705,8 @@ describe('GoalSettingsForm', () => {
         />,
       );
 
-      expect(await findByText('Incomplete')).toBeInTheDocument();
-      expect(queryByText('Complete')).not.toBeInTheDocument();
+      expect(await findByText('Calculation Incomplete')).toBeInTheDocument();
+      expect(queryByText('Calculation Complete')).not.toBeInTheDocument();
     });
 
     it('keeps the Complete chip when the benefits plan is unset', async () => {
@@ -722,8 +722,8 @@ describe('GoalSettingsForm', () => {
         />,
       );
 
-      expect(await findByText('Complete')).toBeInTheDocument();
-      expect(queryByText('Incomplete')).not.toBeInTheDocument();
+      expect(await findByText('Calculation Complete')).toBeInTheDocument();
+      expect(queryByText('Calculation Incomplete')).not.toBeInTheDocument();
     });
 
     it('shows an Incomplete chip when the spouse required fields are missing', async () => {
@@ -738,8 +738,8 @@ describe('GoalSettingsForm', () => {
         />,
       );
 
-      expect(await findByText('Incomplete')).toBeInTheDocument();
-      expect(queryByText('Complete')).not.toBeInTheDocument();
+      expect(await findByText('Calculation Incomplete')).toBeInTheDocument();
+      expect(queryByText('Calculation Complete')).not.toBeInTheDocument();
     });
 
     it('flips to Complete when the last required field is filled', async () => {
@@ -754,14 +754,14 @@ describe('GoalSettingsForm', () => {
         />,
       );
 
-      expect(await findByText('Incomplete')).toBeInTheDocument();
+      expect(await findByText('Calculation Incomplete')).toBeInTheDocument();
 
       const tenure = await findByRole('spinbutton', {
         name: 'Full Time Years on Staff — John',
       });
       userEvent.type(tenure, '4');
 
-      expect(await findByText('Complete')).toBeInTheDocument();
+      expect(await findByText('Calculation Complete')).toBeInTheDocument();
     });
   });
 

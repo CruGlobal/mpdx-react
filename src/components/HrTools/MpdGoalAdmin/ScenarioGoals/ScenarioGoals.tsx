@@ -217,7 +217,7 @@ export const ScenarioGoals: React.FC = () => {
                 <TableCell>{t('Ministry')}</TableCell>
                 <TableCell>{t('Campus Division')}</TableCell>
                 <TableCell>{t('MPD Goal')}</TableCell>
-                <TableCell>{t('Goal Status')}</TableCell>
+                <TableCell>{t('Calculation Status')}</TableCell>
                 <TableCell>{t('Created')}</TableCell>
                 <TableCell>{t('Actions')}</TableCell>
               </TableRow>
@@ -248,9 +248,15 @@ export const ScenarioGoals: React.FC = () => {
                     </TableCell>
                     <TableCell>
                       {isCalculationComplete(row) ? (
-                        <StatusChip color="success" label={t('Complete')} />
+                        <StatusChip
+                          color="success"
+                          label={t('Calculation Complete')}
+                        />
                       ) : (
-                        <StatusChip color="warning" label={t('Incomplete')} />
+                        <StatusChip
+                          color="warning"
+                          label={t('Calculation Incomplete')}
+                        />
                       )}
                     </TableCell>
                     <TableCell>

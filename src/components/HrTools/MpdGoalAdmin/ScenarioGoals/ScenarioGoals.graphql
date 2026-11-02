@@ -19,7 +19,7 @@ query NewStaffScenarioGoals(
       emailAddress
       spouseEmailAddress
       createdAt
-      # Drives the Goal Status chip; see goalSettingsCompletion.
+      # Drives the Calculation Status chip; see goalSettingsCompletion.
       maritalStatus
       calculationsYear
       age
