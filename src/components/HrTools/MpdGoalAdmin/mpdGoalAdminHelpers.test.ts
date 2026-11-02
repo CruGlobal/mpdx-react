@@ -189,6 +189,13 @@ describe('attendeeToRow', () => {
     ).toBe('2026-08-10T15:40:00Z');
   });
 
+  it("carries the attendee's own cohort name", () => {
+    expect(
+      attendeeToRow({ ...attendeeComplete, cohortName: 'Spring NSO 2027' })
+        .cohortName,
+    ).toBe('Spring NSO 2027');
+  });
+
   it('keeps the goal null when there is no calculation yet', () => {
     expect(attendeeToRow(attendeeWithoutGoal).mpdGoal).toBeNull();
   });
