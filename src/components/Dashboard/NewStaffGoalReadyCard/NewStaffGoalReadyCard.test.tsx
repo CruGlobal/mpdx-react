@@ -1,18 +1,26 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { GetUserQuery } from 'src/components/User/GetUser.generated';
+import {
+  GetUserDocument,
+  GetUserQuery,
+} from 'src/components/User/GetUser.generated';
 import { UsStaffGroupEnum } from 'src/graphql/types.generated';
 import {
   UpdateUserOptionMutation,
+  UserOptionDocument,
   UserOptionQuery,
 } from 'src/hooks/UserPreference.generated';
+import { createCache } from 'src/lib/apollo/cache';
 import theme from 'src/theme';
 import { NewStaffGoalReadyCard } from './NewStaffGoalReadyCard';
-import { NewStaffGoalReadyQuery } from './NewStaffGoalReadyCard.generated';
+import {
+  NewStaffGoalReadyDocument,
+  NewStaffGoalReadyQuery,
+} from './NewStaffGoalReadyCard.generated';
 
 const accountListId = 'account-list-1';
 const goalId = 'goal-1';
@@ -33,8 +41,7 @@ const sentGoal = (figures = sentFigures): SentGoal => ({
   calculations: figures,
 });
 
-// graphql-ergonomock accepts resolver functions in place of field values, but
-// the mocks prop is typed as plain data, so resolvers are cast to the data type.
+// Ergonomock accepts resolver functions as field values; the mocks prop type does not, hence the casts.
 const failingResolver = <T,>(message: string): T =>
   (() => {
     throw new Error(message);
@@ -61,6 +68,7 @@ const userOptionByKey = (
   }) as unknown as NonNullable<UserOptionQuery['userOption']>;
 
 interface TestComponentProps {
+  cache?: ReturnType<typeof createCache>;
   usStaffGroup?: UsStaffGroupEnum;
   userGroupVerified?: boolean;
   goal?: NewStaffGoalReadyQuery['newStaffGoalCalculation'];
@@ -73,6 +81,7 @@ interface TestComponentProps {
 const onCall = jest.fn();
 
 const TestComponent: React.FC<TestComponentProps> = ({
+  cache,
   usStaffGroup = UsStaffGroupEnum.NewStaff,
   userGroupVerified = true,
   goal = sentGoal(),
@@ -95,8 +104,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
               ? failingResolver<SentGoal>('Goal lookup failed')
               : goal,
           },
-          // Answered by key, like the real API, so the reports-disabled check
-          // and the acknowledgement never share a value.
+          // Answered by key, so the reports-disabled check and the acknowledgement never share a value.
           UserOption: {
             userOption: userOptionByKey(userGroupVerified, acknowledged),
           },
@@ -116,12 +124,24 @@ const TestComponent: React.FC<TestComponentProps> = ({
           },
         }}
         onCall={onCall}
+        cache={cache}
       >
         <NewStaffGoalReadyCard accountListId={accountListId} />
       </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>
 );
+
+// The card renders nothing while loading too, so "absent" only proves anything once the response has landed.
+const waitForResponse = (
+  cache: ReturnType<typeof createCache>,
+  query: typeof UserOptionDocument,
+  variables: Record<string, unknown>,
+) =>
+  waitFor(() => expect(cache.readQuery({ query, variables })).not.toBeNull());
+
+const settle = () =>
+  act(() => new Promise<void>((resolve) => setTimeout(resolve, 0)));
 
 describe('NewStaffGoalReadyCard', () => {
   beforeEach(() => {
@@ -144,13 +164,13 @@ describe('NewStaffGoalReadyCard', () => {
   });
 
   it('stays hidden while the acknowledged figures match the goal', async () => {
+    const cache = createCache();
     const { queryByRole } = render(
-      <TestComponent acknowledged={sentFigures} />,
+      <TestComponent cache={cache} acknowledged={sentFigures} />,
     );
 
-    await waitFor(() =>
-      expect(onCall).toHaveGraphqlOperation('UserOption', { key: optionKey }),
-    );
+    await waitForResponse(cache, UserOptionDocument, { key: optionKey });
+    await settle();
     expect(queryByRole('heading')).not.toBeInTheDocument();
   });
 
@@ -189,13 +209,11 @@ describe('NewStaffGoalReadyCard', () => {
   });
 
   it('renders nothing when the staff member has no sent goal', async () => {
-    const { queryByRole } = render(<TestComponent goal={null} />);
+    const cache = createCache();
+    const { queryByRole } = render(<TestComponent cache={cache} goal={null} />);
 
-    await waitFor(() =>
-      expect(onCall).toHaveGraphqlOperation('NewStaffGoalReady', {
-        accountListId,
-      }),
-    );
+    await waitForResponse(cache, NewStaffGoalReadyDocument, { accountListId });
+    await settle();
     expect(queryByRole('heading')).not.toBeInTheDocument();
   });
 
@@ -205,15 +223,23 @@ describe('NewStaffGoalReadyCard', () => {
     await waitFor(() =>
       expect(onCall).toHaveGraphqlOperation('NewStaffGoalReady'),
     );
+    // An error never reaches the cache, so give the rejected response a tick to land.
+    await settle();
+    await settle();
     expect(queryByRole('heading')).not.toBeInTheDocument();
   });
 
   it('does not look up a goal for staff outside the new staff group', async () => {
+    const cache = createCache();
     const { queryByRole } = render(
-      <TestComponent usStaffGroup={UsStaffGroupEnum.SeniorStaff} />,
+      <TestComponent
+        cache={cache}
+        usStaffGroup={UsStaffGroupEnum.SeniorStaff}
+      />,
     );
 
-    await waitFor(() => expect(onCall).toHaveGraphqlOperation('GetUser'));
+    await waitForResponse(cache, GetUserDocument, {});
+    await settle();
     expect(onCall).not.toHaveGraphqlOperation('NewStaffGoalReady');
     expect(queryByRole('heading')).not.toBeInTheDocument();
   });
@@ -231,8 +257,10 @@ describe('NewStaffGoalReadyCard', () => {
   });
 
   it('hides an unsent goal from a goals admin viewing the dashboard', async () => {
+    const cache = createCache();
     const { queryByRole } = render(
       <TestComponent
+        cache={cache}
         goal={{
           ...sentGoal(),
           newStaffCohortAttendee: { id: 'attendee-1', goalSentAt: null },
@@ -240,9 +268,8 @@ describe('NewStaffGoalReadyCard', () => {
       />,
     );
 
-    await waitFor(() =>
-      expect(onCall).toHaveGraphqlOperation('NewStaffGoalReady'),
-    );
+    await waitForResponse(cache, NewStaffGoalReadyDocument, { accountListId });
+    await settle();
     expect(queryByRole('heading')).not.toBeInTheDocument();
   });
 

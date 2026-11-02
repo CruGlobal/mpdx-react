@@ -14,8 +14,7 @@ import {
   useUpdateUserOptionMutation,
   useUserOptionQuery,
 } from 'src/hooks/UserPreference.generated';
-import { useIneligibleByGroup } from 'src/hooks/useIneligibleByGroup';
-import { useReportsDisabled } from 'src/hooks/useReportsDisabled';
+import { useNsGoalCalculatorAccess } from 'src/hooks/useNsGoalCalculatorAccess';
 import {
   NewStaffGoalReadyQuery,
   useNewStaffGoalReadyQuery,
@@ -71,15 +70,11 @@ interface NewStaffGoalReadyCardProps {
 export const NewStaffGoalReadyCard: React.FC<NewStaffGoalReadyCardProps> = ({
   accountListId,
 }) => {
-  const { inNsGoalCalcIneligibleGroup } = useIneligibleByGroup();
-  const { reportsDisabled } = useReportsDisabled();
-  // Same gate as the HR Tools menu entry, so the card never points at a page the user cannot open.
+  // Shares the HR Tools menu's gate, so the card never points at a page the user cannot open.
+  const { canUseNsGoalCalculator } = useNsGoalCalculatorAccess();
   const { data } = useNewStaffGoalReadyQuery({
     variables: { accountListId },
-    skip:
-      reportsDisabled ||
-      process.env.DISABLE_NS_GOAL_CALCULATOR === 'true' ||
-      inNsGoalCalcIneligibleGroup,
+    skip: !canUseNsGoalCalculator,
   });
 
   const goal = data?.newStaffGoalCalculation;

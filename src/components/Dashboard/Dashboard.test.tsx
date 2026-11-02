@@ -153,8 +153,7 @@ describe('Dashboard', () => {
           }>
             mocks={{
               GetUser: { user: { usStaffGroup: UsStaffGroupEnum.NewStaff } },
-              // Answered by key: the verified user group keeps the confirm modal
-              // closed, and the card's acknowledgement is deliberately unset.
+              // Answered by key: verified group keeps the confirm modal closed; the card is unacknowledged.
               UserOption: {
                 userOption: ((_root: unknown, args: { key: string }) =>
                   args.key === 'user_type_verified'
@@ -181,8 +180,7 @@ describe('Dashboard', () => {
       </ThemeProvider>,
     );
 
-    // Three chained requests (user, goal, acknowledgement) feed the card, so
-    // allow longer than the default wait.
+    // Three chained requests feed the card, so allow longer than the default wait.
     expect(
       await findByRole(
         'heading',
