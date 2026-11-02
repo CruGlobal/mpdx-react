@@ -3,9 +3,8 @@ import React, { ReactElement, useEffect } from 'react';
 import { useApolloClient } from '@apollo/client';
 import ExitToAppRoundedIcon from '@mui/icons-material/ExitToAppRounded';
 import { Box, Typography } from '@mui/material';
-import { signOut } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
-import { clearDatadogUser } from 'src/lib/dataDog';
+import { signOutAndClear } from 'src/lib/clearSessionData';
 import { getAppName } from 'src/lib/getAppName';
 import { ensureSessionAndAccountList } from './api/utils/pagePropsHelpers';
 import { StatusPageWrapper } from './styledComponents/StatusPageWrapper';
@@ -16,10 +15,9 @@ const LogoutPage = ({}): ReactElement => {
   const client = useApolloClient();
 
   useEffect(() => {
-    signOut({ callbackUrl: 'signOut' }).then(() => {
-      clearDatadogUser();
-      client.clearStore();
-    });
+    (async () => {
+      await signOutAndClear(client, { callbackUrl: 'signOut' });
+    })();
   }, []);
 
   return (

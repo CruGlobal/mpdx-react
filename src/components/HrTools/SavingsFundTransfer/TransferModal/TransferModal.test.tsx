@@ -2,7 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { render, waitFor, within } from '@testing-library/react';
+import { RenderResult, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
@@ -10,12 +10,14 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { StaffSavingFundProvider } from '../../StaffSavingFund/StaffSavingFundContext';
+import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
 import {
   CreateRecurringTransferMutation,
   CreateTransferMutation,
   UpdateRecurringTransferMutation,
 } from '../TransferMutations.generated';
 import {
+  FundTypeEnum,
   ScheduleEnum,
   TransferModalData,
   TransferTypeEnum,
@@ -66,11 +68,13 @@ const transferDefaultData: TransferModalData['transfer'] = {
 interface ComponentsProps {
   transfer?: TransferModalData['transfer'];
   type?: TransferTypeEnum;
+  funds?: FundFieldsFragment[];
 }
 
 const Components = ({
   transfer = transferDefaultData,
   type,
+  funds = fundsMock,
 }: ComponentsProps) => (
   <SnackbarProvider>
     <ThemeProvider theme={theme}>
@@ -89,7 +93,7 @@ const Components = ({
                   type,
                   transfer,
                 }}
-                funds={fundsMock}
+                funds={funds}
                 lastName={lastName}
                 handleClose={handleClose}
               />
@@ -100,6 +104,21 @@ const Components = ({
     </ThemeProvider>
   </SnackbarProvider>
 );
+
+const enterTransferDetails = (
+  { getByRole }: RenderResult,
+  amount: string,
+): HTMLElement => {
+  userEvent.click(getByRole('combobox', { name: /to account/i }));
+  userEvent.click(getByRole('option', { name: /staff savings/i }));
+
+  const amountField = getByRole('spinbutton', { name: /amount/i });
+  userEvent.clear(amountField);
+  userEvent.type(amountField, amount);
+  userEvent.tab();
+
+  return amountField;
+};
 
 describe('TransferModal', () => {
   it('should render the modal with correct inputs', () => {
@@ -487,6 +506,44 @@ describe('TransferModal', () => {
       ).toBeInTheDocument();
     });
 
+    it('leaves the HR-managed funds out of the To Account options', async () => {
+      const { getByRole, queryByRole } = render(
+        <Components
+          funds={[
+            ...fundsMock,
+            {
+              id: '3',
+              fundType: FundTypeEnum.ReturnTravel,
+              endBalance: 4000,
+              deficitLimit: 0,
+              availableBalance: null,
+            },
+            {
+              id: '4',
+              fundType: FundTypeEnum.ReEntry,
+              endBalance: 3000,
+              deficitLimit: 0,
+              availableBalance: null,
+            },
+          ]}
+        />,
+      );
+
+      userEvent.click(getByRole('combobox', { name: /to account/i }));
+
+      expect(
+        await within(getByRole('listbox')).findByRole('option', {
+          name: /staff savings/i,
+        }),
+      ).toBeInTheDocument();
+      expect(
+        queryByRole('option', { name: /return travel/i }),
+      ).not.toBeInTheDocument();
+      expect(
+        queryByRole('option', { name: /re-entry/i }),
+      ).not.toBeInTheDocument();
+    });
+
     it('should show/hide end date based on schedule selection', async () => {
       const { getByRole, queryByRole, getByLabelText } = render(<Components />);
 
@@ -653,27 +710,336 @@ describe('TransferModal', () => {
       ).toBeInTheDocument();
     });
 
-    it('should show information box when amount exceeds limit', async () => {
-      const { getByRole, findByRole } = render(<Components />);
+    it('should show error and block submission when amount is one cent over the available balance', async () => {
+      const result = render(<Components />);
+      const { getByRole, findByText } = result;
 
-      const toAccount = getByRole('combobox', { name: /to account/i });
+      const amountField = enterTransferDetails(result, '15000.01');
+      expect(amountField).toHaveValue(15000.01);
 
-      userEvent.click(toAccount);
-      userEvent.click(getByRole('option', { name: /staff savings/i }));
+      expect(
+        await findByText(
+          'Amount cannot exceed the available balance of $15,000.00',
+        ),
+      ).toBeInTheDocument();
 
-      const amount = getByRole('spinbutton', { name: /amount/i });
+      // user-event refuses to click a disabled button, so asserting it is
+      // disabled is what guarantees no mutation can fire.
+      await waitFor(() =>
+        expect(getByRole('button', { name: /submit/i })).toBeDisabled(),
+      );
 
-      userEvent.clear(amount);
-      userEvent.type(amount, '20000');
+      expect(mutationSpy).not.toHaveGraphqlOperation('CreateTransfer');
+    });
+
+    it('should fail closed when the source fund is not in the loaded funds', async () => {
+      // If the source fund's balance cannot be resolved, a one-time transfer
+      // must not go through on an unverified balance.
+      const result = render(<Components funds={[fundsMock[1]]} />);
+      const { getByRole, findByText } = result;
+
+      enterTransferDetails(result, '100');
+
+      expect(
+        await findByText(
+          'Unable to verify the available balance for this account',
+        ),
+      ).toBeInTheDocument();
+
+      await waitFor(() =>
+        expect(getByRole('button', { name: /submit/i })).toBeDisabled(),
+      );
+      expect(mutationSpy).not.toHaveGraphqlOperation('CreateTransfer');
+    });
+
+    it('should allow a transfer of exactly the full available balance', async () => {
+      const result = render(<Components />);
+      const { getByRole } = result;
+
+      enterTransferDetails(result, '15000');
+
+      userEvent.click(getByRole('button', { name: /submit/i }));
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('CreateTransfer', {
+          amount: 15000,
+          sourceFundTypeName: 'Staff Account',
+        }),
+      );
+    });
+
+    // SAA stores deficitLimit as a positive magnitude with floor
+    // -deficit_limit.abs (Fund#withdrawal_would_violate_deficit?); legacy
+    // mocks also exist with the negative convention. Both must yield the same
+    // floor: a $1,000 limit on a $15,000 balance makes $16,000 available.
+    it.each([[1000], [-1000]])(
+      'allows transfers down to the deficit limit and blocks beyond it (deficitLimit %p)',
+      async (deficitLimit) => {
+        const fundsWithDeficit = [
+          { ...fundsMock[0], deficitLimit },
+          fundsMock[1],
+        ];
+
+        const result = render(<Components funds={fundsWithDeficit} />);
+        const { getByRole, findByText } = result;
+
+        enterTransferDetails(result, '16500');
+
+        expect(
+          await findByText(
+            'Amount cannot exceed the available balance of $16,000.00',
+          ),
+        ).toBeInTheDocument();
+
+        await waitFor(() =>
+          expect(getByRole('button', { name: /submit/i })).toBeDisabled(),
+        );
+      },
+    );
+
+    it('prefers the API-computed available balance over the local math', async () => {
+      const fundsWithServerValue = [
+        { ...fundsMock[0], availableBalance: 400 },
+        fundsMock[1],
+      ];
+
+      const result = render(<Components funds={fundsWithServerValue} />);
+      const { getByRole, findByText } = result;
+
+      enterTransferDetails(result, '500');
+
+      expect(
+        await findByText(
+          'Amount cannot exceed the available balance of $400.00',
+        ),
+      ).toBeInTheDocument();
+
+      await waitFor(() =>
+        expect(getByRole('button', { name: /submit/i })).toBeDisabled(),
+      );
+    });
+
+    it('hard-blocks a one-time transfer dated today', async () => {
+      const result = render(<Components />);
+      const { getByRole, getByLabelText, findByText } = result;
+
+      // The test clock is frozen at 2020-01-01, so this is exactly today —
+      // the boundary where the future-date exemption must not apply.
+      const transferDate = getByLabelText(/transfer date/i);
+      userEvent.clear(transferDate);
+      userEvent.type(transferDate, '01/01/2020');
+      userEvent.tab();
+
+      enterTransferDetails(result, '20000');
+
+      expect(
+        await findByText(
+          'Amount cannot exceed the available balance of $15,000.00',
+        ),
+      ).toBeInTheDocument();
+      await waitFor(() =>
+        expect(getByRole('button', { name: /submit/i })).toBeDisabled(),
+      );
+    });
+
+    it('does not double-count the edited transfer against the API available balance', async () => {
+      // The API's availableBalance (400) has already netted out this pending
+      // transfer's saved amount (300), so the edit really has 700 to work
+      // with: 800 overshoots by 100 and warns, 600 fits and must not warn.
+      const editedTransfer: TransferModalData['transfer'] = {
+        id: 'transfer-id',
+        transferFrom: 'Staff Account',
+        transferTo: 'Staff Savings',
+        amount: 300,
+        schedule: ScheduleEnum.Monthly,
+        transferDate: DateTime.fromISO('2024-11-01'),
+        endDate: null,
+        note: '',
+        recurringId: 'recurring-id',
+      };
+      const fundsWithServerValue = [
+        { ...fundsMock[0], availableBalance: 400 },
+        fundsMock[1],
+      ];
+
+      const { getByRole, findByRole, queryByRole } = render(
+        <Components
+          transfer={editedTransfer}
+          type={TransferTypeEnum.Edit}
+          funds={fundsWithServerValue}
+        />,
+      );
+
+      const amountField = getByRole('spinbutton', { name: /amount/i });
+      userEvent.clear(amountField);
+      userEvent.type(amountField, '800');
       userEvent.tab();
 
       const alert = await findByRole('alert');
-      expect(alert).toBeInTheDocument();
+      expect(alert).toHaveTextContent(
+        /projected available balance will be\s*-\$100\.00/i,
+      );
+
+      userEvent.clear(amountField);
+      userEvent.type(amountField, '600');
+      userEvent.tab();
+
+      await waitFor(() => expect(queryByRole('alert')).not.toBeInTheDocument());
+    });
+
+    it('warns but does not hard-block a future-dated one-time transfer', async () => {
+      const result = render(<Components />);
+      const { getByRole, getByLabelText, findByRole, queryByText } = result;
+
+      const transferDate = getByLabelText(/transfer date/i);
+      userEvent.clear(transferDate);
+      userEvent.type(transferDate, '12/01/2030');
+      userEvent.tab();
+
+      enterTransferDetails(result, '20000');
+
+      const alert = await findByRole('alert');
+      expect(alert).toHaveTextContent(
+        /greater than your Staff Account account's available balance/i,
+      );
       expect(
-        within(alert).getByText(
-          /this amount will cause your account balance to exceed the deficit limit/i,
-        ),
-      ).toBeInTheDocument();
+        queryByText(/Amount cannot exceed the available balance/i),
+      ).not.toBeInTheDocument();
+      await waitFor(() =>
+        expect(getByRole('button', { name: /submit/i })).not.toBeDisabled(),
+      );
+    });
+
+    it('should allow winding down a recurring transfer whose amount exceeds the balance', async () => {
+      const overBalanceTransfer: TransferModalData['transfer'] = {
+        id: 'transfer-id',
+        transferFrom: 'Staff Account',
+        transferTo: 'Staff Savings',
+        amount: 20000,
+        schedule: ScheduleEnum.Monthly,
+        transferDate: DateTime.fromISO('2024-11-01'),
+        endDate: null,
+        note: '',
+        recurringId: 'recurring-id',
+      };
+
+      const { getByRole, getByLabelText } = render(
+        <Components
+          transfer={overBalanceTransfer}
+          type={TransferTypeEnum.Edit}
+        />,
+      );
+
+      const endDate = getByLabelText(/end date/i);
+      userEvent.type(endDate, '12/01/2025');
+      userEvent.tab();
+
+      userEvent.click(getByRole('button', { name: /submit/i }));
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('UpdateRecurringTransfer', {
+          id: 'recurring-id',
+          amount: 20000,
+        }),
+      );
+    });
+
+    it('should warn but still allow increasing a transfer beyond the available balance when editing', async () => {
+      const transfer: TransferModalData['transfer'] = {
+        id: 'transfer-id',
+        transferFrom: 'Staff Account',
+        transferTo: 'Staff Savings',
+        amount: 500,
+        schedule: ScheduleEnum.Monthly,
+        transferDate: DateTime.fromISO('2024-11-01'),
+        endDate: null,
+        note: '',
+        recurringId: 'recurring-id',
+      };
+
+      const { getByRole, findByRole } = render(
+        <Components transfer={transfer} type={TransferTypeEnum.Edit} />,
+      );
+
+      const amountField = getByRole('spinbutton', { name: /amount/i });
+      userEvent.clear(amountField);
+      userEvent.type(amountField, '16000');
+      userEvent.tab();
+
+      const alert = await findByRole('alert');
+      expect(alert).toHaveTextContent(
+        /greater than your Staff Account account's available balance/i,
+      );
+      expect(alert).toHaveTextContent('-$1,000.00');
+
+      userEvent.click(getByRole('button', { name: /submit/i }));
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('UpdateRecurringTransfer', {
+          id: 'recurring-id',
+          amount: 16000,
+        }),
+      );
+    });
+
+    it('should warn but not hard-block editing a one-time transfer beyond the available balance', async () => {
+      const transfer: TransferModalData['transfer'] = {
+        id: 'transfer-id',
+        transferFrom: 'Staff Account',
+        transferTo: 'Staff Savings',
+        amount: 500,
+        schedule: ScheduleEnum.OneTime,
+        transferDate: DateTime.fromISO('2024-11-01'),
+        endDate: null,
+        note: 'note',
+      };
+
+      const { getByRole, findByRole, queryByText } = render(
+        <Components transfer={transfer} type={TransferTypeEnum.Edit} />,
+      );
+
+      const amountField = getByRole('spinbutton', { name: /amount/i });
+      userEvent.clear(amountField);
+      userEvent.type(amountField, '16000');
+      userEvent.tab();
+
+      expect(await findByRole('alert')).toBeInTheDocument();
+      expect(
+        queryByText(/Amount cannot exceed the available balance/i),
+      ).not.toBeInTheDocument();
+      await waitFor(() =>
+        expect(getByRole('button', { name: /submit/i })).not.toBeDisabled(),
+      );
+    });
+
+    it('should warn but still allow a new recurring transfer over the available balance', async () => {
+      const { getByRole, getByLabelText, findByRole } = render(<Components />);
+
+      userEvent.click(getByRole('combobox', { name: /to account/i }));
+      userEvent.click(getByRole('option', { name: /staff savings/i }));
+
+      const amountField = getByRole('spinbutton', { name: /amount/i });
+      userEvent.clear(amountField);
+      userEvent.type(amountField, '20000');
+
+      userEvent.click(getByRole('radio', { name: /monthly/i }));
+
+      const transferDate = getByLabelText(/transfer date/i);
+      userEvent.clear(transferDate);
+      userEvent.type(transferDate, '12/01/2024');
+      userEvent.tab();
+
+      const alert = await findByRole('alert');
+      expect(alert).toHaveTextContent('-$5,000.00');
+
+      userEvent.click(getByRole('button', { name: /submit/i }));
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('CreateRecurringTransfer', {
+          amount: 20000,
+          sourceFundTypeName: 'Staff Account',
+        }),
+      );
     });
 
     it('should show proper currency symbol in amount field', () => {
@@ -822,8 +1188,8 @@ describe('TransferModal', () => {
     it('should update a transfer', async () => {
       const dataWithValues: TransferModalData['transfer'] = {
         id: 'transfer-id',
-        transferFrom: 'Primary',
-        transferTo: 'Savings',
+        transferFrom: 'Staff Account',
+        transferTo: 'Staff Savings',
         amount: 500,
         schedule: ScheduleEnum.Monthly,
         transferDate: DateTime.fromISO('2024-11-01'),

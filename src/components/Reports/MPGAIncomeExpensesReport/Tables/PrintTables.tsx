@@ -52,7 +52,7 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
       'No expenses data available in the last 12 months',
     ),
     [ReportTypeEnum.Balance]: t(
-      'No balance data available in the last 12 months',
+      'No primary account balance data available in the last 12 months',
     ),
   }[type];
 

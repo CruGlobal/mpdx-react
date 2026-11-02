@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
+import { getRemainingCap } from '../Shared/Helper/getRemainingCap';
 import { useSpouseLink } from '../Shared/useSpouseLink';
 
 export const SpouseComponent: React.FC = () => {
@@ -25,14 +26,13 @@ export const SpouseComponent: React.FC = () => {
     requestData?.latestAdditionalSalaryRequest?.calculations;
   const spouseCalculations =
     requestData?.latestAdditionalSalaryRequest?.spouseCalculations;
-  const { currentSalaryCap, staffAccountBalance } =
+  const remainingCap = getRemainingCap(
     isSpouse && userCalculations
       ? userCalculations
       : spouseCalculations
         ? spouseCalculations
-        : {};
-  const spouseIndividualCap =
-    (currentSalaryCap ?? 0) - (staffAccountBalance ?? 0);
+        : {},
+  );
 
   return (
     <Box>
@@ -56,7 +56,7 @@ export const SpouseComponent: React.FC = () => {
 
       <Typography variant="caption" color="text.secondary">
         {t('Up to their remaining allowable salary of {{amount}}', {
-          amount: currencyFormat(spouseIndividualCap, currency, locale),
+          amount: currencyFormat(remainingCap, currency, locale),
         })}
       </Typography>
     </Box>

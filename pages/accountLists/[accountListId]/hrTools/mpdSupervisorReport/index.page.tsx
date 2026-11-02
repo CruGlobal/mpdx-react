@@ -12,8 +12,10 @@ import {
   Panel,
   useMpdSupervisorReport,
 } from 'src/components/HrTools/MpdSupervisorReport/MpdSupervisorReportContext';
+import { ReportLegendPanel } from 'src/components/HrTools/MpdSupervisorReport/ReportLegend/ReportLegendPanel';
 import { StaffMemberDrawer } from 'src/components/HrTools/MpdSupervisorReport/StaffMemberDrawer/StaffMemberDrawer';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
+import { useCloseLeftPanelWhenOverlaid } from 'src/components/Layouts/useLeftPanelOverlays';
 import { multiPageHeaderHeight } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import {
   MultiPageMenu,
@@ -29,8 +31,10 @@ import { getAppName } from 'src/lib/getAppName';
 
 const MpdSupervisorReportContent: React.FC = () => {
   const { t } = useTranslation();
-  const { isOpen } = useMpdSupervisorReport();
+  const { isOpen, legendOpen } = useMpdSupervisorReport();
   const [panelOpen, setPanelOpen] = useState<Panel | null>(Panel.Filters);
+  // The filters cover most of a small screen, so they start closed there
+  useCloseLeftPanelWhenOverlaid(() => setPanelOpen(null));
 
   const handleNavListToggle = () => {
     setPanelOpen(panelOpen === Panel.Navigation ? null : Panel.Navigation);
@@ -56,10 +60,19 @@ const MpdSupervisorReportContent: React.FC = () => {
         ) : undefined
       }
       leftOpen={panelOpen !== null}
+      onLeftClose={() => setPanelOpen(null)}
       leftWidth="290px"
-      rightPanel={<StaffMemberDrawer />}
-      rightOpen={isOpen}
-      rightWidth="60%"
+      // The right panel holds either the staff member drawer or the legend;
+      // the context keeps them mutually exclusive.
+      rightPanel={
+        isOpen ? (
+          <StaffMemberDrawer />
+        ) : legendOpen ? (
+          <ReportLegendPanel />
+        ) : undefined
+      }
+      rightOpen={isOpen || legendOpen}
+      rightWidth={isOpen ? '60%' : '520px'}
       headerHeight={multiPageHeaderHeight}
       mainContent={
         <MpdSupervisorReport

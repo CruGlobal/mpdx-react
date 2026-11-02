@@ -1,9 +1,11 @@
 import { useMemo } from 'react';
-import { ApolloError } from '@apollo/client';
+import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { DesignationSupportFormType } from 'src/graphql/types.generated';
-import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
+import {
+  UseGoalCalculatorConstantsResult,
+  useGoalCalculatorConstants,
+} from 'src/hooks/useGoalCalculatorConstants';
 import { PdsGoalCalculationFieldsFragment } from '../GoalsList/PdsGoalCalculations.generated';
-import { HcmUserQuery } from '../Shared/HCM.generated';
 import {
   OtherExpensesConstants,
   OtherExpensesTotals,
@@ -35,19 +37,22 @@ export interface PdsSummaryData {
 
 export interface UsePdsSummaryDataResult {
   data: PdsSummaryData | null;
-  loading: boolean;
-  error: ApolloError | undefined;
+  constants: UseGoalCalculatorConstantsResult;
 }
 
 export const usePdsSummaryData = (
   calculation: PdsGoalCalculationFieldsFragment | undefined,
-  hcmUser: HcmUserQuery['hcm'][number] | undefined,
+  hcmUser: HcmQuery['hcm'][number] | undefined,
 ): UsePdsSummaryDataResult => {
-  const { goalMiscConstants, goalGeographicConstantMap, loading, error } =
-    useGoalCalculatorConstants();
+  const calculatorConstants = useGoalCalculatorConstants(
+    calculation?.calculationsYear,
+    { skip: !calculation },
+  );
+  const { goalMiscConstants, goalGeographicConstantMap, unavailable } =
+    calculatorConstants;
 
   const data = useMemo(() => {
-    if (!calculation) {
+    if (!calculation || unavailable) {
       return null;
     }
 
@@ -77,7 +82,7 @@ export const usePdsSummaryData = (
     const otherTotals = calculateOtherExpenses(calculation, otherConstants);
 
     const overallTotal =
-      otherTotals.subtotal +
+      otherTotals.combinedSubtotal +
       otherTotals.attrition +
       otherTotals.creditCardFees +
       otherTotals.assessment;
@@ -91,7 +96,13 @@ export const usePdsSummaryData = (
       overallTotal,
       geographicMultiplier: constants.geographicMultiplier,
     };
-  }, [calculation, hcmUser, goalMiscConstants, goalGeographicConstantMap]);
+  }, [
+    calculation,
+    hcmUser,
+    goalMiscConstants,
+    goalGeographicConstantMap,
+    unavailable,
+  ]);
 
-  return { data, loading, error };
+  return { data, constants: calculatorConstants };
 };

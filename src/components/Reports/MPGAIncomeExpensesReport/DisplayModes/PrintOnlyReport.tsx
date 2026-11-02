@@ -54,7 +54,7 @@ export const PrintOnlyReport: React.FC = () => {
             <PrintTables
               type={ReportTypeEnum.Balance}
               data={balanceData}
-              title={t('Balance')}
+              title={t('Primary Account Balance')}
             />
           </Box>
           <Box mt={2}>

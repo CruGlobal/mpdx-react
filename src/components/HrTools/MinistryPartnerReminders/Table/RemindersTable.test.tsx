@@ -4,28 +4,34 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
+import { DateTime } from 'luxon';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import { mockData } from '../mockData';
+import { ReminderData, mockData } from '../mockData';
 import { RemindersTable, RowValues } from './RemindersTable';
 
 const onSubmit = jest.fn();
 const mutationSpy = jest.fn();
 
-const initialValues: RowValues = {
-  status: Object.fromEntries(mockData.map((row) => [row.id, row.status])),
-};
-
-const TestComponent: React.FC = () => (
+const TestComponent: React.FC<{ data?: ReminderData[] }> = ({
+  data = mockData,
+}) => (
   <ThemeProvider theme={theme}>
     <VirtuosoMockContext.Provider
       value={{ viewportHeight: 300, itemHeight: 100 }}
     >
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <GqlMockedProvider onCall={mutationSpy}>
-          <Formik<RowValues> initialValues={initialValues} onSubmit={onSubmit}>
-            <RemindersTable data={mockData} />
+          <Formik<RowValues>
+            initialValues={{
+              status: Object.fromEntries(
+                data.map((row) => [row.id, row.status]),
+              ),
+            }}
+            onSubmit={onSubmit}
+          >
+            <RemindersTable data={data} />
           </Formik>
         </GqlMockedProvider>
       </LocalizationProvider>
@@ -65,6 +71,46 @@ describe('RemindersTable', () => {
     expect(select[0]).toHaveTextContent('None');
   });
 
+  describe('dates in the partner cell', () => {
+    const partnerName = 'Adamson, Eugene Michael (Mike) and Marilyn Jean';
+
+    it('renders the last gift and skips a missing last reminder', async () => {
+      const { findByText } = render(<TestComponent />);
+
+      const partner = (await findByText(partnerName)).closest(
+        'td',
+      ) as HTMLElement;
+      expect(
+        within(partner).getByText('Last Gift: Aug 13, 2025'),
+      ).toBeInTheDocument();
+      expect(
+        within(partner).queryByText(/Last Reminder:/),
+      ).not.toBeInTheDocument();
+    });
+
+    it('renders the last reminder and skips a missing last gift', async () => {
+      const { findByText } = render(
+        <TestComponent
+          data={[
+            {
+              ...mockData[0],
+              lastGift: null,
+              lastReminder: DateTime.fromISO('2025-09-01'),
+            },
+          ]}
+        />,
+      );
+
+      const partner = (await findByText(partnerName)).closest(
+        'td',
+      ) as HTMLElement;
+      expect(
+        within(partner).getByText('Last Reminder: Sep 1, 2025'),
+      ).toBeInTheDocument();
+      expect(within(partner).queryByText(/Last Gift:/)).not.toBeInTheDocument();
+    });
+  });
+
   it('should change the select value', async () => {
     const { getAllByRole, getByRole } = render(<TestComponent />);
 
@@ -100,18 +146,15 @@ describe('RemindersTable', () => {
     ).toBeInTheDocument();
   });
 
-  it('should render no designation account message when designation error is present', () => {
-    const { getByText } = render(
+  it('should render no designation account message when there is no designation', () => {
+    const { getByText, getByRole } = render(
       <ThemeProvider theme={theme}>
         <VirtuosoMockContext.Provider
           value={{ viewportHeight: 300, itemHeight: 100 }}
         >
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <GqlMockedProvider onCall={mutationSpy}>
-              <RemindersTable
-                data={[]}
-                error={{ message: 'Designation account not found', name: '' }}
-              />
+              <RemindersTable data={[]} noDesignation />
             </GqlMockedProvider>
           </LocalizationProvider>
         </VirtuosoMockContext.Provider>
@@ -121,8 +164,12 @@ describe('RemindersTable', () => {
     expect(getByText('No designation account found')).toBeInTheDocument();
     expect(
       getByText(
-        'This account is not associated with a designation account number',
+        /This account is not associated with a designation account number/,
       ),
     ).toBeInTheDocument();
+    expect(getByRole('link', { name: 'HR@cru.org' })).toHaveAttribute(
+      'href',
+      'mailto:HR@cru.org',
+    );
   });
 });

@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import {
   Box,
   CircularProgress,
@@ -10,10 +10,10 @@ import {
   Theme,
   useMediaQuery,
 } from '@mui/material';
-import { FastField, Field, FieldProps, Form, Formik } from 'formik';
+import { FastField, Field, FieldProps, Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
-import { useTranslation } from 'react-i18next';
+import { TFunction, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { AppealAutocomplete } from 'src/common/Autocompletes/AppealAutocomplete';
 import { DesignationAccountAutocomplete } from 'src/common/Autocompletes/DesignationAccountAutocomplete';
@@ -21,13 +21,13 @@ import { useGetDesignationAccountsQuery } from 'src/components/EditDonationModal
 import { CurrencyAutocomplete } from 'src/components/Shared/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
 import { DonorAccountAutocomplete } from 'src/components/Shared/Autocomplete/DonorAccountAutocomplete/DonorAccountAutocomplete';
 import { CustomDateField } from 'src/components/Shared/DateTimePickers/CustomDateField';
+import { DialogForm } from 'src/components/Shared/Forms/DialogForm';
 import {
   CancelButton,
   SubmitButton,
 } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import { FormTextField } from 'src/components/Shared/styledComponents/FormTextField';
 import { LogFormLabel } from 'src/components/Shared/styledComponents/LogStyling';
-import i18n from 'src/lib/i18n';
 import { requiredDateTime } from 'src/lib/yupHelpers';
 import {
   useAddDonationMutation,
@@ -39,55 +39,57 @@ interface AddDonationProps {
   handleClose: () => void;
 }
 
-const donationSchema = yup.object({
-  amount: yup
-    .number()
-    .typeError('Amount must be a valid number')
-    .required(i18n.t('Amount is required'))
-    .test(
-      'Is amount in valid currency format?',
-      'Amount must be in valid currency format',
-      (amount) => /\$?[0-9][0-9.,]*/.test(amount as unknown as string),
-    )
-    .test(
-      'Is positive?',
-      'Must use a positive number for amount',
-      (value) => parseFloat(value as unknown as string) > 0,
-    ),
-  appealAmount: yup
-    .number()
-    .typeError('Appeal amount must be a valid number')
-    .nullable()
-    .test(
-      'Is appeal amount in valid currency format?',
-      'Appeal amount must be in valid currency format',
-      (amount) =>
-        !amount || /\$?[0-9][0-9.,]*/.test(amount as unknown as string),
-    )
-    .test(
-      'Is positive?',
-      'Must use a positive number for appeal amount',
-      (value) => !value || parseFloat(value as unknown as string) > 0,
-    ),
-  appealId: yup.string().nullable(),
-  currency: yup.string().required(i18n.t('Currency is required')),
-  designationAccountId: yup
-    .string()
-    .required(i18n.t('Designation Account is required')),
-  donationDate: requiredDateTime(i18n.t('Date is required')),
-  donorAccountId: yup.string().required(i18n.t('Partner Account is required')),
-  memo: yup.string().nullable(),
-  motivation: yup.string().nullable(),
-  paymentMethod: yup.string().nullable(),
-});
+const getDonationSchema = (t: TFunction) =>
+  yup.object({
+    amount: yup
+      .number()
+      .typeError('Amount must be a valid number')
+      .required(t('Amount is required'))
+      .test(
+        'Is amount in valid currency format?',
+        'Amount must be in valid currency format',
+        (amount) => /\$?[0-9][0-9.,]*/.test(amount as unknown as string),
+      )
+      .test(
+        'Is positive?',
+        'Must use a positive number for amount',
+        (value) => parseFloat(value as unknown as string) > 0,
+      ),
+    appealAmount: yup
+      .number()
+      .typeError('Appeal amount must be a valid number')
+      .nullable()
+      .test(
+        'Is appeal amount in valid currency format?',
+        'Appeal amount must be in valid currency format',
+        (amount) =>
+          !amount || /\$?[0-9][0-9.,]*/.test(amount as unknown as string),
+      )
+      .test(
+        'Is positive?',
+        'Must use a positive number for appeal amount',
+        (value) => !value || parseFloat(value as unknown as string) > 0,
+      ),
+    appealId: yup.string().nullable(),
+    currency: yup.string().required(t('Currency is required')),
+    designationAccountId: yup
+      .string()
+      .required(t('Designation Account is required')),
+    donationDate: requiredDateTime(t('Date is required')),
+    donorAccountId: yup.string().required(t('Partner Account is required')),
+    memo: yup.string().nullable(),
+    motivation: yup.string().nullable(),
+    paymentMethod: yup.string().nullable(),
+  });
 
-type Attributes = yup.InferType<typeof donationSchema>;
+type Attributes = yup.InferType<ReturnType<typeof getDonationSchema>>;
 
 export const AddDonation = ({
   accountListId,
   handleClose,
 }: AddDonationProps): ReactElement<AddDonationProps> => {
   const { t } = useTranslation();
+  const donationSchema = useMemo(() => getDonationSchema(t), [t]);
   const { enqueueSnackbar } = useSnackbar();
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
@@ -186,7 +188,7 @@ export const AddDonation = ({
         errors,
         touched,
       }): ReactElement => (
-        <Form>
+        <DialogForm>
           <DialogContent dividers>
             <Grid container spacing={1}>
               {/* Amount and Currency Row */}
@@ -541,7 +543,7 @@ export const AddDonation = ({
               {t('Save')}
             </SubmitButton>
           </DialogActions>
-        </Form>
+        </DialogForm>
       )}
     </Formik>
   );

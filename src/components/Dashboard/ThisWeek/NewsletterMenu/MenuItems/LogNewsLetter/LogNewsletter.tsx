@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useMemo, useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import {
   DialogActions,
@@ -14,7 +14,7 @@ import { styled } from '@mui/material/styles';
 import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
-import { useTranslation } from 'react-i18next';
+import { TFunction, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { DateTimeFieldPair } from 'src/components/Shared/DateTimePickers/DateTimeFieldPair';
 import {
@@ -28,7 +28,6 @@ import {
   LogTextField,
 } from 'src/components/Shared/styledComponents/LogStyling';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
-import i18n from 'src/lib/i18n';
 import { nullableDateTime } from 'src/lib/yupHelpers';
 import { useCreateTasksMutation } from '../../../../../Task/Modal/Form/TaskModal.generated';
 import { CloseButton } from '../styledComponents/CloseButton';
@@ -50,22 +49,24 @@ const LogFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
   },
 }));
 
-const taskSchema = yup.object({
-  activityType: yup
-    .mixed<ActivityTypeEnum | 'BOTH'>()
-    .oneOf([...Object.values(ActivityTypeEnum), 'BOTH' as const])
-    .defined(),
-  completedAt: nullableDateTime(),
-  subject: yup.string().required(i18n.t('Subject is required')),
-});
+const getTaskSchema = (t: TFunction) =>
+  yup.object({
+    activityType: yup
+      .mixed<ActivityTypeEnum | 'BOTH'>()
+      .oneOf([...Object.values(ActivityTypeEnum), 'BOTH' as const])
+      .defined(),
+    completedAt: nullableDateTime(),
+    subject: yup.string().required(t('Subject is required')),
+  });
 
-type Attributes = yup.InferType<typeof taskSchema>;
+type Attributes = yup.InferType<ReturnType<typeof getTaskSchema>>;
 
 const LogNewsletter = ({
   accountListId,
   handleClose,
 }: Props): ReactElement<Props> => {
   const { t } = useTranslation();
+  const taskSchema = useMemo(() => getTaskSchema(t), [t]);
 
   const [commentBody, changeCommentBody] = useState('');
 

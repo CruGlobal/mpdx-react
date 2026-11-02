@@ -8,7 +8,9 @@ import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
+  MinistersHousingIneligibilityReasonEnum,
   SalaryRequestStatusEnum,
+  SecaStatusEnum,
   UsStaffGroupEnum,
   UserTypeEnum,
 } from 'src/graphql/types.generated';
@@ -20,6 +22,7 @@ import {
   HcmQuery,
   HcmQueryVariables,
 } from '../Shared/HcmData/Hcm.generated';
+import { mockHcmUnavailable } from '../Shared/HcmData/mockHcmUnavailable';
 import { PayrollDatesQuery } from './EffectiveDateStep/PayrollDates.generated';
 import {
   EffectiveSalaryCalculationQuery,
@@ -36,6 +39,7 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
           preferredName: 'John',
           lastName: 'Doe',
           personNumber: '000123456',
+          secaStatus: SecaStatusEnum.Seca,
           city: 'Miami',
           country: 'US',
           state: 'FL',
@@ -52,13 +56,25 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
         },
         mhaRequest: {
           currentApprovedOverallAmount: 20000,
+          boardApprovedOverallAmount: 20000,
           currentTakenAmount: 7200,
         },
         mhaEit: {
           mhaEligibility: true,
+          ineligibilityReasonCode: null,
+        },
+        mhaBoardApproval: {
+          mhaEligibility: true,
+          ineligibilityReasonCode: null,
+        },
+        mhaNewRequest: {
+          mhaEligibility: true,
+          ineligibilityReasonCode: null,
         },
         mhiEit: {
           mhiEligibility: false,
+          ineligibilityReasonCode:
+            MinistersHousingIneligibilityReasonEnum.NonItalyMha,
         },
       },
       {
@@ -67,6 +83,7 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
           preferredName: 'Jane',
           lastName: 'Doe',
           personNumber: '000789123',
+          secaStatus: SecaStatusEnum.Seca,
           tenure: 1000,
           primaryPhoneNumber: '555-0124',
           emailAddress: 'jane.doe@example.com',
@@ -78,13 +95,25 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
         },
         mhaRequest: {
           currentApprovedOverallAmount: 20000,
+          boardApprovedOverallAmount: 20000,
           currentTakenAmount: 12000,
         },
         mhaEit: {
           mhaEligibility: true,
+          ineligibilityReasonCode: null,
+        },
+        mhaBoardApproval: {
+          mhaEligibility: true,
+          ineligibilityReasonCode: null,
+        },
+        mhaNewRequest: {
+          mhaEligibility: true,
+          ineligibilityReasonCode: null,
         },
         mhiEit: {
           mhiEligibility: false,
+          ineligibilityReasonCode:
+            MinistersHousingIneligibilityReasonEnum.NonItalyMha,
         },
       },
     ],
@@ -114,6 +143,12 @@ export interface SalaryCalculatorTestWrapperProps {
   userType?: UserTypeEnum;
   usStaffGroup?: UsStaffGroupEnum;
   accountGeographicLocation?: string | null;
+  /** How many HCM calls fail with HCM_UNAVAILABLE before it loads */
+  hcmUnavailableCalls?: number;
+  /** How many SalaryCalculation calls fail with HCM_UNAVAILABLE before it loads */
+  calculationUnavailableCalls?: number;
+  /** Makes SalaryCalculation fail with an error other than HCM_UNAVAILABLE */
+  calculationError?: boolean;
 }
 
 export const SalaryCalculatorTestWrapper: React.FC<
@@ -131,6 +166,9 @@ export const SalaryCalculatorTestWrapper: React.FC<
   userType = UserTypeEnum.UsStaff,
   usStaffGroup = UsStaffGroupEnum.SeniorStaff,
   accountGeographicLocation = null,
+  hcmUnavailableCalls = 0,
+  calculationUnavailableCalls = 0,
+  calculationError = false,
 }) => {
   const hcmUserMerged = merge({}, hcmUserMock, hcmUser);
   const hcmSpouseMerged = merge({}, hcmSpouseMock, hcmSpouse);
@@ -191,30 +229,40 @@ export const SalaryCalculatorTestWrapper: React.FC<
                 },
               },
               Hcm: {
-                hcm: hasSpouse
-                  ? [hcmUserMerged, hcmSpouseMerged]
-                  : [hcmUserMerged],
+                hcm: mockHcmUnavailable(
+                  hasSpouse
+                    ? [hcmUserMerged, hcmSpouseMerged]
+                    : [hcmUserMerged],
+                  hcmUnavailableCalls,
+                ),
               },
               SalaryCalculation: {
-                salaryRequest: merge(
-                  {
-                    id: 'salary-request-1',
-                    status: SalaryRequestStatusEnum.InProgress,
-                    effectiveDate: '2025-01-01',
-                    calculations: {
-                      hardCap: 80000,
-                      exceptionCap: null,
-                      combinedCap: 125000,
-                    },
-                    spouseCalculations: {
-                      hardCap: 80000,
-                    },
-                    progressiveApprovalTier: null,
-                    progressiveApprovalTierReason: null,
-                  } satisfies SalaryRequestMock,
-                  salaryRequestMock,
-                  hasSpouse ? undefined : { spouseCalculations: null },
-                ),
+                salaryRequest: calculationError
+                  ? ((() => {
+                      throw new Error('Salary calculation is unavailable');
+                    }) as never)
+                  : (mockHcmUnavailable(
+                      merge(
+                        {
+                          id: 'salary-request-1',
+                          status: SalaryRequestStatusEnum.InProgress,
+                          effectiveDate: '2025-01-01',
+                          calculations: {
+                            hardCap: 80000,
+                            exceptionCap: null,
+                            combinedCap: 125000,
+                          },
+                          spouseCalculations: {
+                            hardCap: 80000,
+                          },
+                          progressiveApprovalTier: null,
+                          progressiveApprovalTierReason: null,
+                        } satisfies SalaryRequestMock,
+                        salaryRequestMock,
+                        hasSpouse ? undefined : { spouseCalculations: null },
+                      ) as never,
+                      calculationUnavailableCalls,
+                    ) as never),
               },
             }}
             onCall={onCall}

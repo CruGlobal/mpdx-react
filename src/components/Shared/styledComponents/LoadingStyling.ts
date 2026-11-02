@@ -8,10 +8,12 @@ export const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
 export const LoadingBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mpdxGrayLight.main,
   height: 300,
-  minWidth: 700,
   margin: 'auto',
   padding: 4,
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
+  [theme.breakpoints.up('md')]: {
+    minWidth: 700,
+  },
 }));

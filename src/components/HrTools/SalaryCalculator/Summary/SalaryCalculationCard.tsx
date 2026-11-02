@@ -48,25 +48,17 @@ export const SalaryCalculationCard: React.FC = () => {
                   {t('Before SECA and 403(b)')}
                 </span>
               </TableCell>
-              <TableCell>{formatCurrency(calcs?.annualBase)}</TableCell>
-              {hasSpouse && (
-                <TableCell>{formatCurrency(spouseCalcs.annualBase)}</TableCell>
-              )}
-            </TableRow>
-
-            <TableRow>
-              <TableCell scope="row">11. {t('Taxes')}</TableCell>
-              <TableCell>{formatCurrency(calcs?.requestedSeca)}</TableCell>
+              <TableCell>{formatCurrency(calculation?.salary)}</TableCell>
               {hasSpouse && (
                 <TableCell>
-                  {formatCurrency(spouseCalcs.requestedSeca)}
+                  {formatCurrency(calculation?.spouseSalary)}
                 </TableCell>
               )}
             </TableRow>
 
             <TableRow>
-              <TableCell scope="row" className="sub-item">
-                a. {t('SECA')}
+              <TableCell scope="row">
+                11. {t('SECA')}
                 <span className="explanation">
                   {t('(If applicable) Line 10 × {{seca}}', {
                     seca: formatDecimal(calcs?.secaEstimatedFraction),
@@ -79,19 +71,6 @@ export const SalaryCalculationCard: React.FC = () => {
                   {formatCurrency(spouseCalcs.requestedSeca)}
                 </TableCell>
               )}
-            </TableRow>
-
-            <TableRow>
-              <TableCell scope="row" className="sub-item">
-                b. {t('State and Local')}
-                <span className="explanation">
-                  {t('(If selected in Step 6) Line 10 × {{taxes}}', {
-                    taxes: formatDecimal(0.05),
-                  })}
-                </span>
-              </TableCell>
-              <TableCell>TBD</TableCell>
-              {hasSpouse && <TableCell>TBD</TableCell>}
             </TableRow>
 
             <TableRow>

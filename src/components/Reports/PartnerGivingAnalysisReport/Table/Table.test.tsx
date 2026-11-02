@@ -4,6 +4,7 @@ import { GridApi } from '@mui/x-data-grid';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
+import matchMediaMock from '__tests__/util/matchMediaMock';
 import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import theme from 'src/theme';
 import { PartnerGivingAnalysisTable } from './Table';
@@ -143,5 +144,50 @@ describe('PartnerGivingAnalysisReportTable', () => {
       'href',
       '/accountLists/account-list-1/reports/partnerGivingAnalysis/01?tab=Donations',
     );
+  });
+
+  describe('column widths', () => {
+    const renderWithApiRef = () => {
+      const apiRef: React.MutableRefObject<GridApi | null> = { current: null };
+      const result = render(
+        <ThemeProvider theme={theme}>
+          <TestRouter router={router}>
+            <ContactPanelProvider>
+              <PartnerGivingAnalysisTable
+                {...defaultProps}
+                apiRef={apiRef}
+                data={mocks.PartnerGivingAnalysis.partnerGivingAnalysis.nodes}
+              />
+            </ContactPanelProvider>
+          </TestRouter>
+        </ThemeProvider>,
+      );
+      return { ...result, apiRef };
+    };
+
+    it('keeps columns at their full width on phones so values are not cut off', async () => {
+      matchMediaMock({ width: '390px' });
+      const { findByRole, apiRef } = renderWithApiRef();
+
+      expect(await findByRole('grid')).toBeInTheDocument();
+      expect(apiRef.current?.getColumn('name').minWidth).toBe(240);
+      expect(apiRef.current?.getColumn('donationPeriodSum').minWidth).toBe(130);
+      expect(apiRef.current?.getColumn('totalDonations').minWidth).toBe(130);
+    });
+
+    it('lets columns shrink to fit on desktop', async () => {
+      matchMediaMock({ width: '1024px' });
+      const { findByRole, apiRef } = renderWithApiRef();
+
+      expect(await findByRole('grid')).toBeInTheDocument();
+      // Desktop keeps the DataGrid default minWidth, below the phone widths
+      expect(apiRef.current?.getColumn('name').minWidth).toBeLessThan(240);
+      expect(
+        apiRef.current?.getColumn('donationPeriodSum').minWidth,
+      ).toBeLessThan(130);
+      expect(apiRef.current?.getColumn('totalDonations').minWidth).toBeLessThan(
+        130,
+      );
+    });
   });
 });

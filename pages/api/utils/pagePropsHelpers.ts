@@ -139,17 +139,18 @@ export const handleUnderscoreAccountListRedirect = async (
       query: GetDefaultAccountDocument,
     });
 
-    if (data.user.defaultAccountList) {
-      return {
-        redirect: {
-          destination: url.replace(
-            '/accountLists/_',
-            `/accountLists/${data.user.defaultAccountList}`,
-          ),
-          permanent: false,
-        },
-      };
-    }
+    const { defaultAccountList } = data.user;
+    return {
+      redirect: {
+        destination: defaultAccountList
+          ? url.replace(
+              '/accountLists/_',
+              `/accountLists/${defaultAccountList}`,
+            )
+          : '/accountLists',
+        permanent: false,
+      },
+    };
   }
 };
 

@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import { ApolloError } from '@apollo/client';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useHcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
@@ -27,6 +28,8 @@ export type ContextType = {
 
   allData: AllData;
   dataLoading: boolean;
+  reportError: ApolloError | undefined;
+  refetchReport: () => void;
   startDate: DateTime;
   endDate: DateTime;
   transactionYears: number[];
@@ -40,6 +43,8 @@ export type ContextType = {
   staffName: string | undefined;
   isSupervisorView: boolean;
   staffAccountId: string | null | undefined;
+  /** The HCM person the report is for, or undefined for the current user */
+  personNumber: string | undefined;
 
   /** Income and expenses totals */
   totals: {
@@ -165,17 +170,24 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
     });
   }, [selectedYear, isYearToDate, startDate, endDate, locale, t]);
 
-  const { data: reportData, loading: reportLoading } = useMpgaTransactionsQuery(
-    {
-      variables: {
-        fundTypes: [FundTypes.Primary],
-        startMonth: startDate.toISODate(),
-        endMonth: endDate.toISODate(),
-        staffAccountId,
-      },
+  const {
+    data: reportData,
+    loading: reportLoading,
+    error: reportError,
+    refetch,
+  } = useMpgaTransactionsQuery({
+    variables: {
+      fundTypes: [FundTypes.Primary],
+      startMonth: startDate.toISODate(),
+      endMonth: endDate.toISODate(),
+      staffAccountId,
     },
-  );
+  });
   const loading = reportLoading || hcmLoading;
+
+  const refetchReport = useCallback(() => {
+    refetch().catch(() => {});
+  }, [refetch]);
 
   const staffName = reportData?.reportsStaffExpenses?.name;
 
@@ -295,6 +307,8 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
       isFutureMonth,
       allData,
       dataLoading: loading,
+      reportError,
+      refetchReport,
       startDate,
       endDate,
       transactionYears,
@@ -303,6 +317,7 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
       staffName,
       isSupervisorView,
       staffAccountId,
+      personNumber,
       totals,
     }),
     [
@@ -314,6 +329,8 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
       isFutureMonth,
       allData,
       loading,
+      reportError,
+      refetchReport,
       startDate,
       endDate,
       transactionYears,
@@ -322,6 +339,7 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
       staffName,
       isSupervisorView,
       staffAccountId,
+      personNumber,
       totals,
     ],
   );

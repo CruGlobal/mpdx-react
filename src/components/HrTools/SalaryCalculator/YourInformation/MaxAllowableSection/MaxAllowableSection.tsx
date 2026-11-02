@@ -21,6 +21,7 @@ import { currencyFormat } from 'src/lib/intlFormat';
 import { amount } from 'src/lib/yupHelpers';
 import { AutosaveCheckbox } from '../../Autosave/AutosaveCheckbox';
 import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
+import { useCaps } from '../../SalaryCalculation/useCaps';
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
 import { EffectiveDateNote } from '../../Shared/EffectiveDateNote';
 import { StepCard, StepTableHead } from '../../Shared/StepCard';
@@ -62,9 +63,7 @@ export const MaxAllowableStep: React.FC = () => {
   const formattedCap = currencyFormat(combinedCap, 'USD', locale, {
     showTrailingZeros: true,
   });
-  const inputCombinedCap =
-    (salaryCalculation?.salaryCap ?? 0) +
-    (salaryCalculation?.spouseSalaryCap ?? 0);
+  const { splitCapExceeded } = useCaps();
 
   // The server checks each person's cap against their own hard cap, so the
   // client limits must use each person's hard cap too
@@ -220,7 +219,7 @@ export const MaxAllowableStep: React.FC = () => {
                   />
                 </Stack>
 
-                {inputCombinedCap > combinedCap && (
+                {splitCapExceeded && (
                   <Alert severity="error">
                     <Trans t={t}>
                       Your combined maximum allowable salary exceeds your

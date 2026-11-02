@@ -16,6 +16,12 @@ import {
 } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { getHousingKind } from 'src/components/Reports/Shared/HousingAllowance/housingAllowance';
+import { MinistersHousingIneligibilityReasonEnum } from 'src/graphql/types.generated';
+import {
+  EligibilityBasis,
+  getIneligibilityReason,
+  getMhiReason,
+} from './eligibilityReasons';
 
 const StyledTable = styled(Table)(({ theme }) => ({
   tableLayout: 'fixed',
@@ -40,50 +46,38 @@ interface EligibilityStatusTableProps {
   userEligible: boolean;
   userCountry?: string | null;
   userMhiEligibility?: boolean;
+  userIneligibilityReasonCode?: MinistersHousingIneligibilityReasonEnum | null;
+  userMhiIneligibilityReasonCode?: MinistersHousingIneligibilityReasonEnum | null;
   spousePreferredName?: string;
   spouseEligible?: boolean;
   spouseCountry?: string | null;
   spouseMhiEligibility?: boolean;
+  spouseIneligibilityReasonCode?: MinistersHousingIneligibilityReasonEnum | null;
+  spouseMhiIneligibilityReasonCode?: MinistersHousingIneligibilityReasonEnum | null;
   compact?: boolean;
+  basis?: EligibilityBasis;
+  // Per-person override of basis for the Reason row
+  userBasis?: EligibilityBasis;
+  spouseBasis?: EligibilityBasis;
 }
-
-const getIneligibilityReason = (
-  t: (key: string) => string,
-  eligible: boolean,
-  country: string | null,
-): string => {
-  if (eligible) {
-    return t('Completed the required IBS courses');
-  }
-  if (getHousingKind(country) === 'MHI') {
-    return t('Must complete an MHI form instead');
-  }
-  return t('Has not completed the required IBS courses');
-};
-
-const getMhiReason = (
-  t: (key: string) => string,
-  eligible: boolean,
-  country: string | null,
-): string => {
-  if (getHousingKind(country) !== 'MHI') {
-    return t('Not applicable');
-  }
-  return eligible
-    ? t('Satisfies the IBS Exception for Italy staff')
-    : t('Does not satisfy the IBS Exception for Italy staff');
-};
 
 export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
   userPreferredName,
   userEligible,
   userCountry,
   userMhiEligibility,
+  userIneligibilityReasonCode,
+  userMhiIneligibilityReasonCode,
   spousePreferredName,
   spouseEligible,
   spouseCountry,
   spouseMhiEligibility,
+  spouseIneligibilityReasonCode,
+  spouseMhiIneligibilityReasonCode,
   compact = false,
+  basis = 'ibs',
+  userBasis = basis,
+  spouseBasis = basis,
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -123,7 +117,13 @@ export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
           <TableRow>
             <TableCell>{showMhiRows ? t('MHA Reason') : t('Reason')}</TableCell>
             <TableCell>
-              {getIneligibilityReason(t, userEligible, userCountry ?? null)}
+              {getIneligibilityReason(
+                t,
+                userEligible,
+                userCountry ?? null,
+                userIneligibilityReasonCode ?? null,
+                userBasis,
+              )}
             </TableCell>
             {hasSpouse && (
               <TableCell>
@@ -131,6 +131,8 @@ export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
                   t,
                   spouseEligible ?? false,
                   spouseCountry ?? null,
+                  spouseIneligibilityReasonCode ?? null,
+                  spouseBasis,
                 )}
               </TableCell>
             )}
@@ -163,6 +165,7 @@ export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
                     t,
                     userMhiEligibility ?? false,
                     userCountry ?? null,
+                    userMhiIneligibilityReasonCode ?? null,
                   )}
                 </TableCell>
                 {hasSpouse && (
@@ -171,6 +174,7 @@ export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
                       t,
                       spouseMhiEligibility ?? false,
                       spouseCountry ?? null,
+                      spouseMhiIneligibilityReasonCode ?? null,
                     )}
                   </TableCell>
                 )}
@@ -190,14 +194,24 @@ export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
                 Any changes will only apply to the approved staff member.
               </Trans>
             )}{' '}
-            <Trans t={t}>
-              Once approved, when you calculate your salary, you will see the
-              approved amount that can be applied to your salary. If you believe
-              this is incorrect, or would like to complete the required IBS
-              courses, please contact Personnel Records at{' '}
-              <Link href="tel:4078262230">(407) 826-2230</Link> or{' '}
-              <Link href="mailto:MHA@cru.org">MHA@cru.org</Link>.
-            </Trans>
+            {basis === 'boardApproval' ? (
+              <Trans t={t}>
+                Once approved, when you calculate your salary, you will see the
+                approved amount that can be applied to your salary. If you
+                believe this is incorrect, please contact Personnel Records at{' '}
+                <Link href="tel:4078262230">(407) 826-2230</Link> or{' '}
+                <Link href="mailto:MHA@cru.org">MHA@cru.org</Link>.
+              </Trans>
+            ) : (
+              <Trans t={t}>
+                Once approved, when you calculate your salary, you will see the
+                approved amount that can be applied to your salary. If you
+                believe this is incorrect, or would like to complete the
+                required IBS courses, please contact Personnel Records at{' '}
+                <Link href="tel:4078262230">(407) 826-2230</Link> or{' '}
+                <Link href="mailto:MHA@cru.org">MHA@cru.org</Link>.
+              </Trans>
+            )}
           </Typography>
         </Box>
       )}

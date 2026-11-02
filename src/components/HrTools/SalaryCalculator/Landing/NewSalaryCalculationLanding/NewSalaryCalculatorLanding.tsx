@@ -12,8 +12,10 @@ import {
 import { styled } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import { NameDisplay } from 'src/components/HrTools/Shared/CalculationReports/NameDisplay/NameDisplay';
+import { HcmUnavailableAlert } from 'src/components/HrTools/Shared/HcmData/HcmUnavailableAlert';
 import Loading from 'src/components/Loading/Loading';
 import { LimitedAccess } from 'src/components/Shared/LimitedAccess/LimitedAccess';
+import { LoadErrorAlert } from 'src/components/Shared/LoadErrorAlert/LoadErrorAlert';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { SalaryInformationCard } from '../../Shared/SalaryInformationCard';
 import { useLandingData } from '../useLandingData';
@@ -37,6 +39,10 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
     salaryData: { currentGrossSalary },
     accountBalance,
     inProgressCalculationId,
+    hcmUnavailable,
+    refetchHcm,
+    loadError,
+    refetchLoadError,
   } = useLandingData();
 
   const [createSalaryCalculation, { loading: creatingCalculation }] =
@@ -114,16 +120,29 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
             </Trans>
           </Typography>
         </Box>
-        <NameDisplay
-          names={names}
-          showContent
-          titleOne={t('Current Gross Salary')}
-          titleTwo={t('Account Balance')}
-          amountOne={currentGrossSalary}
-          amountTwo={accountBalance}
-        />
-        <SalaryInformationCard />
-        {self?.salaryRequestEligible && (
+        {hcmUnavailable ? (
+          <HcmUnavailableAlert refetch={refetchHcm} />
+        ) : loadError ? (
+          <LoadErrorAlert
+            message={t(
+              'Your Salary Calculation could not be loaded. Please try again later.',
+            )}
+            onRetry={refetchLoadError}
+          />
+        ) : (
+          <>
+            <NameDisplay
+              names={names}
+              showContent
+              titleOne={t('Current Gross Salary')}
+              titleTwo={t('Primary Account Balance')}
+              amountOne={currentGrossSalary}
+              amountTwo={accountBalance}
+            />
+            <SalaryInformationCard />
+          </>
+        )}
+        {self?.salaryRequestEligible && !hcmUnavailable && !loadError && (
           <Box sx={{ marginTop: theme.spacing(4) }}>
             {inProgressCalculationId ? (
               <Button

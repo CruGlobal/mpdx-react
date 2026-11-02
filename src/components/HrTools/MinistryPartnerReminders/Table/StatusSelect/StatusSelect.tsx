@@ -27,7 +27,7 @@ export const StatusSelect: React.FC<StatusSelectProps> = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <FormControl size={'small'} sx={{ width: '100%', minWidth: 200 }}>
+    <FormControl size={'small'} sx={{ width: '100%', minWidth: { sm: 200 } }}>
       <Select {...props} value={value} sx={{ backgroundColor: 'common.white' }}>
         {orderedStatuses.map((status) => (
           <MenuItem key={status} value={status}>

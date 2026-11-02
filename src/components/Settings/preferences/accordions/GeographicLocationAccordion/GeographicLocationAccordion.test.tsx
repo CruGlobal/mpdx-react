@@ -11,7 +11,7 @@ import theme from 'src/theme';
 import { UpdateAccountPreferencesDocument } from '../UpdateAccountPreferences.generated';
 import { GeographicLocationAccordion } from './GeographicLocationAccordion';
 
-const label = 'Geographic Location';
+const label = 'Default Location Multiplier';
 const accountListId = 'account-list-1';
 const router = {
   query: { accountListId },
@@ -113,6 +113,21 @@ describe('GeographicLocationAccordion', () => {
 
     expect(getByText(label)).toBeInTheDocument();
     expect(queryByRole('combobox')).not.toBeInTheDocument();
+  });
+
+  it('explains what the location is used for', () => {
+    const { getByText } = render(
+      <Components
+        geographicLocation={'Chicago, IL'}
+        expandedAccordion={PreferenceAccordion.GeographicLocation}
+      />,
+    );
+
+    expect(
+      getByText(
+        "This location is filled in automatically when you start a new calculator in HR Tools. Changing it won't update calculators you've already started or change your salary.",
+      ),
+    ).toBeInTheDocument();
   });
 
   it('allows saving a blank value', async () => {

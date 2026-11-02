@@ -81,6 +81,8 @@ interface CoachingSidebarProps {
   showClose: boolean;
   handleClose: () => void;
   loading: boolean;
+  hasNoAccountBalance?: boolean;
+  balanceLoading?: boolean;
   accountListData:
     | LoadCoachingDetailQuery['coachingAccountList']
     | LoadAccountListCoachingDetailQuery['accountList']
@@ -94,6 +96,8 @@ export const CoachingSidebar: React.FC<CoachingSidebarProps> = ({
   showClose,
   handleClose,
   loading,
+  hasNoAccountBalance,
+  balanceLoading,
   accountListData,
   taskAnalyticsData,
 }) => {
@@ -158,12 +162,21 @@ export const CoachingSidebar: React.FC<CoachingSidebarProps> = ({
         <SectionHeaderText variant="h5" data-testid="Balance">
           {t('Balance:')}{' '}
           {accountListData &&
+            !hasNoAccountBalance &&
+            !balanceLoading &&
             currencyFormat(
               accountListData.balance,
               accountListData.currency,
               locale,
             )}
         </SectionHeaderText>
+        {hasNoAccountBalance && (
+          <Typography>
+            {t(
+              'Your designation is not connected to a staff account, so there is no account balance to show.',
+            )}
+          </Typography>
+        )}
         <Typography>{t('Staff IDs:')}</Typography>
         <Typography data-testid="StaffIds">
           {staffIds.length ? staffIds.join(', ') : t('None')}

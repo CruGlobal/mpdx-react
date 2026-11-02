@@ -1,7 +1,6 @@
 import Head from 'next/head';
 import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import {
   ContactsContext,
   ContactsType,
@@ -21,9 +20,8 @@ import { ContactsWrapper } from './ContactsWrapper';
 
 const Contacts: React.FC = () => {
   const { t } = useTranslation();
-  const { accountListId, filterPanelOpen, viewMode } = useContext(
-    ContactsContext,
-  ) as ContactsType;
+  const { accountListId, filterPanelOpen, setFilterPanelOpen, viewMode } =
+    useContext(ContactsContext) as ContactsType;
   const appName = getAppName();
   const { isOpen } = useContactPanel();
 
@@ -44,6 +42,7 @@ const Contacts: React.FC = () => {
         <SidePanelsLayout
           leftPanel={<ContactsLeftPanel />}
           leftOpen={filterPanelOpen}
+          onLeftClose={() => setFilterPanelOpen(false)}
           leftWidth="290px"
           mainContent={<ContactsMainPanel />}
           rightPanel={<DynamicContactsRightPanel />}
@@ -64,6 +63,6 @@ const ContactsPage: React.FC = () => (
   </ContactsWrapper>
 );
 
+// No getServerSideProps so that client navigation here works offline:
+// RouterGuard and DefaultAccountListRedirect handle the session and "_" checks
 export default ContactsPage;
-
-export const getServerSideProps = ensureSessionAndAccountList;

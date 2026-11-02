@@ -56,6 +56,7 @@ const mockRequest: RequestType = {
   calculations: {
     currentSalaryCap: 50000,
     staffAccountBalance: 10000,
+    availableStaffAccountBalance: 10000,
     ytdAsrAmount: 0,
     grossAnnualSalary: 40000,
     outstandingSalaryRequest: false,
@@ -77,6 +78,10 @@ const mockContextValue = {
   requestData: null,
   loading: false,
   requestError: undefined,
+  hcmLoading: false,
+  hcmUnavailable: false,
+  refetchHcm: jest.fn(),
+  refetchRequest: jest.fn(),
   pageType: PageEnum.New,
   setPageType: jest.fn(),
   pendingPrint: false,

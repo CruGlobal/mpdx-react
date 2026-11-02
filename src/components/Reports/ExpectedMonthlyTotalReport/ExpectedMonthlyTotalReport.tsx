@@ -1,5 +1,6 @@
 import React from 'react';
-import { Box, CircularProgress } from '@mui/material';
+import { Box, CircularProgress, useMediaQuery } from '@mui/material';
+import { Theme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useGetExpectedMonthlyTotalsQuery } from 'pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
 import { EmptyDonationsTable } from 'src/components/Shared/EmptyDonationsTable/EmptyDonationsTable';
@@ -63,6 +64,22 @@ export const ExpectedMonthlyTotalReport: React.FC<Props> = ({
 
   const totalCurrency = currency || 'USD';
 
+  // The fixed-height header has no room for the totals bar next to the title on small screens
+  const isNarrow = useMediaQuery((theme: Theme) =>
+    theme.breakpoints.down('md'),
+  );
+
+  const totalsBar = (
+    <ExpectedMonthlyTotalReportHeader
+      empty={isEmpty}
+      totalDonations={totalDonations}
+      totalLikely={totalLikely}
+      totalUnlikely={totalUnlikely}
+      total={totalAmount}
+      currency={totalCurrency}
+    />
+  );
+
   return (
     <Box>
       <MultiPageHeader
@@ -70,17 +87,16 @@ export const ExpectedMonthlyTotalReport: React.FC<Props> = ({
         onNavListToggle={onNavListToggle}
         title={title}
         headerType={HeaderTypeEnum.Report}
-        rightExtra={
-          <ExpectedMonthlyTotalReportHeader
-            empty={isEmpty}
-            totalDonations={totalDonations}
-            totalLikely={totalLikely}
-            totalUnlikely={totalUnlikely}
-            total={totalAmount}
-            currency={totalCurrency}
-          />
-        }
+        rightExtra={isNarrow ? null : totalsBar}
       />
+      {isNarrow && !isEmpty && (
+        <Box
+          sx={{ maxWidth: '98%', mx: 'auto', px: 0.5, pt: 2 }}
+          data-testid="TotalsBarBelowHeader"
+        >
+          {totalsBar}
+        </Box>
+      )}
       {loading ? (
         <Box
           display="flex"

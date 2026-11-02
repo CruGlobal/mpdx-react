@@ -82,7 +82,7 @@ describe('useApplyGoalAndLocation', () => {
     );
 
     expect(enqueueSnackbar).toHaveBeenCalledWith(
-      'Successfully updated your monthly goal to $16,139 and geographic location to Miami, FL!',
+      'Successfully updated your monthly goal to $16,139 and default location multiplier to Miami, FL!',
       { variant: 'success' },
     );
   });
@@ -131,9 +131,54 @@ describe('useApplyGoalAndLocation', () => {
     );
 
     expect(enqueueSnackbar).toHaveBeenCalledWith(
-      'Successfully updated your monthly goal to $16,139 and geographic location to None!',
+      'Successfully updated your monthly goal to $16,139 and default location multiplier to None!',
       { variant: 'success' },
     );
+  });
+
+  it('writes None when the location is null and no location is saved', async () => {
+    const { result } = renderApplyGoalAndLocation(null, null);
+
+    await waitFor(() =>
+      expect(result.current.geographicLocationChanged).toBe(true),
+    );
+
+    result.current.applyMonthlyGoal();
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateAccountPreferences', {
+        input: {
+          id: 'account-list-1',
+          attributes: {
+            id: 'account-list-1',
+            settings: { geographicLocation: 'None' },
+          },
+        },
+      }),
+    );
+  });
+
+  it('writes None when None is chosen and no location is saved', async () => {
+    const { result } = renderApplyGoalAndLocation('None', null);
+
+    await waitFor(() =>
+      expect(result.current.geographicLocationChanged).toBe(true),
+    );
+  });
+
+  it('does not report a change when None is already saved', async () => {
+    const { result } = renderApplyGoalAndLocation(null, 'None');
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('AccountGeographicLocation'),
+    );
+    expect(result.current.geographicLocationChanged).toBe(false);
+  });
+
+  it('does not report a change before the saved location loads', () => {
+    const { result } = renderApplyGoalAndLocation('None', null);
+
+    expect(result.current.geographicLocationChanged).toBe(false);
   });
 
   it('writes only the location and shows no snackbar when no monthlyGoal is given', async () => {

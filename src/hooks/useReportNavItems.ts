@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
 import { useDeveloperBypass } from './useDeveloperBypass';
+import { useIneligibleByGroup } from './useIneligibleByGroup';
 import { useReportsDisabled } from './useReportsDisabled';
 
 export type NavItems = {
@@ -17,16 +18,19 @@ export function useReportNavItems(): NavItems[] {
   const { data } = useGetUserQuery();
   const { reportsDisabled } = useReportsDisabled();
   const developerBypass = useDeveloperBypass();
+  const { inStaffAccountIneligibleGroup } = useIneligibleByGroup();
 
   const userType = data?.user.userType;
   const usStaff = userType === UserTypeEnum.UsStaff;
-  const globalStaff = userType === UserTypeEnum.GlobalStaff;
   const hybridStaff = userType === UserTypeEnum.HybridStaff;
 
   const hasNoStaffAccount =
     data && typeof data.user.staffAccountId !== 'string';
 
-  const hideReport = (!usStaff && !hybridStaff) || hasNoStaffAccount;
+  const hideReport =
+    (!usStaff && !hybridStaff) ||
+    hasNoStaffAccount ||
+    inStaffAccountIneligibleGroup;
 
   const reportNavItems: NavItems[] = [
     {
@@ -64,7 +68,6 @@ export function useReportNavItems(): NavItems[] {
     {
       id: 'financialAccounts',
       title: t('Responsibility Centers'),
-      hideItem: reportsDisabled ? undefined : !globalStaff && !hybridStaff,
     },
     {
       id: 'expectedMonthlyTotal',
@@ -85,10 +88,10 @@ export function useReportNavItems(): NavItems[] {
     [
       t,
       usStaff,
-      globalStaff,
       hybridStaff,
       reportsDisabled,
       hasNoStaffAccount,
+      inStaffAccountIneligibleGroup,
       developerBypass,
     ],
   );

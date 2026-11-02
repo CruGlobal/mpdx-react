@@ -22,6 +22,7 @@ import { useSnackbar } from 'notistack';
 import { TFunction, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { CustomDateField } from 'src/components/Shared/DateTimePickers/CustomDateField';
+import { DialogForm } from 'src/components/Shared/Forms/DialogForm';
 import {
   CancelButton,
   SubmitButton,
@@ -34,6 +35,8 @@ import {
   dateFormat,
   dateFormatShort,
 } from 'src/lib/intlFormat';
+import { availableBalance, toCents } from '../Helper/availableBalance';
+import { isHrManagedFund } from '../Helper/isHrManagedFund';
 import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
 import {
   useCreateRecurringTransferMutation,
@@ -65,6 +68,20 @@ const getTomorrow = (): DateTime => {
 const minimumTransferDate = (schedule: ScheduleEnum): DateTime =>
   schedule === ScheduleEnum.OneTime ? getToday() : getTomorrow();
 
+// Only a brand-new one-time transfer dated today debits the account
+// immediately — the single case the form hard-blocks (MPDX-10004). Everything
+// else (recurring setups, edits, future-dated one-times) processes later
+// against a future balance, so the form warns instead and SAA enforces the
+// limit when the money actually moves (MPDX-10155).
+const isImmediateOneTime = (
+  schedule: ScheduleEnum | undefined,
+  isExistingTransfer: boolean | undefined,
+  transferDate: DateTime | null | undefined,
+): boolean =>
+  schedule === ScheduleEnum.OneTime &&
+  !isExistingTransfer &&
+  !(transferDate?.isValid && transferDate.startOf('day') > getToday());
+
 const buildDefaultNote = (
   lastName: string,
   transferTo: string,
@@ -92,7 +109,7 @@ const pastDateMessage = (schedule: ScheduleEnum): string =>
     ? i18n.t('Transfer date cannot be in the past')
     : i18n.t('Recurring transfers must start at least one day in the future');
 
-const transferSchema = (locale: string) =>
+const transferSchema = (locale: string, funds: FundFieldsFragment[]) =>
   yup.object({
     transferFrom: yup.string().required(i18n.t('From account is required')),
     transferTo: yup.string().required(i18n.t('To account is required')),
@@ -156,7 +173,44 @@ const transferSchema = (locale: string) =>
     amount: yup
       .number()
       .required(i18n.t('Amount is required'))
-      .min(0.01, i18n.t('Amount must be at least $0.01')),
+      .min(0.01, i18n.t('Amount must be at least $0.01'))
+      .test('within-available-balance', function (value) {
+        const { transferFrom, schedule, isEditing, transferDate } = this
+          .parent as {
+          transferFrom?: string;
+          schedule?: ScheduleEnum;
+          isEditing?: boolean;
+          transferDate?: DateTime | null;
+        };
+        if (typeof value !== 'number' || Number.isNaN(value)) {
+          return true;
+        }
+        if (!isImmediateOneTime(schedule, isEditing, transferDate)) {
+          return true;
+        }
+        const fund = funds.find((fund) => fund.fundType === transferFrom);
+        if (!fund) {
+          return this.createError({
+            message: i18n.t(
+              'Unable to verify the available balance for this account',
+            ),
+          });
+        }
+        const available = availableBalance(fund);
+        if (toCents(value) <= toCents(available)) {
+          return true;
+        }
+        return this.createError({
+          message: i18n.t(
+            'Amount cannot exceed the available balance of {{balance}}',
+            {
+              balance: currencyFormat(Math.max(available, 0), 'USD', locale, {
+                showTrailingZeros: true,
+              }),
+            },
+          ),
+        });
+      }),
     note: yup.string().when('schedule', {
       is: ScheduleEnum.OneTime,
       then: (schema) => schema.trim().required(i18n.t('Note is required')),
@@ -291,7 +345,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
           isEditing: Boolean(data.transfer.id),
           originalStart: data.transfer.transferDate ?? null,
         }}
-        validationSchema={transferSchema(locale)}
+        validationSchema={transferSchema(locale, funds)}
         onSubmit={handleSubmit}
       >
         {({
@@ -309,7 +363,6 @@ export const TransferModal: React.FC<TransferModalProps> = ({
           isValid,
           touched,
           errors,
-          handleSubmit,
           handleChange,
           setFieldValue,
           setFieldTouched,
@@ -320,14 +373,28 @@ export const TransferModal: React.FC<TransferModalProps> = ({
           const locale = useLocale();
 
           const fund = funds.find((f) => f.fundType === transferFrom);
-          const projected = fund ? fund.endBalance - amount : null;
-          const showAlert =
+          // Editing a pending transfer replaces an amount the API-computed
+          // available balance has already netted out, so add the saved amount
+          // back before subtracting the new one. The local fallback nets
+          // nothing, so there is nothing to add back there.
+          const savedAmount =
+            !isNew && typeof fund?.availableBalance === 'number'
+              ? (data.transfer.amount ?? 0)
+              : 0;
+          // What would remain available after this transfer — same figure the
+          // schema's hard-block checks against, so the warning and the block
+          // can never contradict each other.
+          const projected = fund
+            ? availableBalance(fund) + savedAmount - amount
+            : null;
+          const showOverdraftWarning =
             !!fund &&
             projected !== null &&
-            projected < -(fund.deficitLimit ?? 0);
+            !isImmediateOneTime(schedule, !isNew, transferDate) &&
+            toCents(amount) > toCents(availableBalance(fund) + savedAmount);
 
           return (
-            <form onSubmit={handleSubmit} noValidate>
+            <DialogForm noValidate>
               <DialogContent dividers>
                 <Box sx={{ mb: 3 }}>
                   <Typography variant="h6" gutterBottom>
@@ -387,7 +454,9 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                           </InputLabel>
                           <TransferModalSelect
                             notSelected={transferFrom}
-                            funds={funds}
+                            funds={funds.filter(
+                              (f) => !isHrManagedFund(f.fundType),
+                            )}
                             label={t('To Account')}
                             labelId="transferTo"
                             name="transferTo"
@@ -621,22 +690,22 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                   </Box>
                 )}
 
-                {showAlert && (
+                {showOverdraftWarning && (
                   <Alert severity="warning">
                     {t(
-                      "This amount will cause your account balance to exceed the deficit limit. If you proceed, your {{ fund }} account's projected balance will be ",
+                      "This amount is greater than your {{ fund }} account's available balance. If you proceed, the account's projected available balance will be ",
                       {
                         fund: fund.fundType,
                       },
                     )}
                     <strong>
-                      {t('{{ projected }}', {
-                        projected: currencyFormat(projected, 'USD', locale, {
-                          showTrailingZeros: true,
-                        }),
+                      {currencyFormat(projected, 'USD', locale, {
+                        showTrailingZeros: true,
                       })}
                     </strong>
-                    {t(' after the first scheduled payment is processed.')}
+                    {t(
+                      ' after the first scheduled payment is processed. Payments that exceed the available balance may not be processed.',
+                    )}
                   </Alert>
                 )}
               </DialogContent>
@@ -657,7 +726,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                     : t('Submit')}
                 </SubmitButton>
               </DialogActions>
-            </form>
+            </DialogForm>
           );
         }}
       </Formik>

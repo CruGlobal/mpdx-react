@@ -7,7 +7,10 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
-import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
+import {
+  RequiredUserGroupEnum,
+  UserTypeAccess,
+} from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { getAppName } from 'src/lib/getAppName';
 import {
   StaffSavingFundContext,
@@ -39,7 +42,10 @@ export const StaffSavingFundLayout: React.FC<StaffSavingFundLayoutProps> = ({
       <Head>
         <title>{`${appName} | ${pageTitle}`}</title>
       </Head>
-      <UserTypeAccess requireStaffAccount>
+      <UserTypeAccess
+        requireStaffAccount
+        requireUserGroups={RequiredUserGroupEnum.StaffAccount}
+      >
         <StaffSavingFundPageWrapper>
           <SidePanelsLayout
             isScrollBox={false}

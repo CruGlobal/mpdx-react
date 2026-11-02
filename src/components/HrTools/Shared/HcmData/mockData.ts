@@ -1,3 +1,4 @@
+import { MinistersHousingIneligibilityReasonEnum } from 'src/graphql/types.generated';
 import { HcmQuery } from './Hcm.generated';
 
 const johnDoe: HcmQuery['hcm'][number]['staffInfo'] = {
@@ -29,18 +30,34 @@ const janeDoe: HcmQuery['hcm'][number]['staffInfo'] = {
 };
 
 const noMhaAndNoException: HcmQuery['hcm'][number] = {
+  syncedAt: null,
+  outOfSync: false,
   salaryRequestEligible: true,
   designationSupportCalculatorEligible: false,
   staffInfo: johnDoe,
   mhaRequest: {
     currentApprovedOverallAmount: null,
+    boardApprovedOverallAmount: null,
     currentTakenAmount: null,
+    boardApprovedOnDate: null,
   },
   mhaEit: {
     mhaEligibility: true,
+    ineligibilityReasonCode: null,
+  },
+  mhaBoardApproval: {
+    mhaEligibility: false,
+    ineligibilityReasonCode:
+      MinistersHousingIneligibilityReasonEnum.MissingBoardApprovedOnDate,
+  },
+  mhaNewRequest: {
+    mhaEligibility: true,
+    ineligibilityReasonCode: null,
   },
   mhiEit: {
     mhiEligibility: false,
+    ineligibilityReasonCode:
+      MinistersHousingIneligibilityReasonEnum.NonItalyMha,
   },
   asrEit: {
     asrEligibility: true,
@@ -65,6 +82,13 @@ const ineligibleAndNoException: HcmQuery['hcm'][number] = {
   ...noMhaAndNoException,
   mhaEit: {
     mhaEligibility: false,
+    ineligibilityReasonCode:
+      MinistersHousingIneligibilityReasonEnum.NoIbsCertification,
+  },
+  mhaNewRequest: {
+    mhaEligibility: false,
+    ineligibilityReasonCode:
+      MinistersHousingIneligibilityReasonEnum.NoIbsCertification,
   },
 };
 
@@ -72,7 +96,13 @@ const mhaAndNoException: HcmQuery['hcm'][number] = {
   ...noMhaAndNoException,
   mhaRequest: {
     currentApprovedOverallAmount: 15000,
+    boardApprovedOverallAmount: 15000,
     currentTakenAmount: 10000,
+    boardApprovedOnDate: '2026-06-01',
+  },
+  mhaBoardApproval: {
+    mhaEligibility: true,
+    ineligibilityReasonCode: null,
   },
 };
 
@@ -81,8 +111,19 @@ const mhaAndNoException: HcmQuery['hcm'][number] = {
 const italianMhiEligible: HcmQuery['hcm'][number] = {
   ...noMhaAndNoException,
   staffInfo: { ...johnDoe, country: 'IT' },
-  mhaEit: { mhaEligibility: false },
-  mhiEit: { mhiEligibility: true },
+  mhaEit: {
+    mhaEligibility: false,
+    ineligibilityReasonCode: MinistersHousingIneligibilityReasonEnum.ItalyMhi,
+  },
+  mhaBoardApproval: {
+    mhaEligibility: false,
+    ineligibilityReasonCode: MinistersHousingIneligibilityReasonEnum.ItalyMhi,
+  },
+  mhaNewRequest: {
+    mhaEligibility: false,
+    ineligibilityReasonCode: MinistersHousingIneligibilityReasonEnum.ItalyMhi,
+  },
+  mhiEit: { mhiEligibility: true, ineligibilityReasonCode: null },
 };
 
 export const singleNoMhaNoException: HcmQuery['hcm'] = [noMhaAndNoException];

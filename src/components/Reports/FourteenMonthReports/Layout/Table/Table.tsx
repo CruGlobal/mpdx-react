@@ -1,6 +1,7 @@
 import NextLink from 'next/link';
 import React, { useMemo } from 'react';
 import InfoIcon from '@mui/icons-material/Info';
+import SwipeIcon from '@mui/icons-material/Swipe';
 import {
   Box,
   Link,
@@ -47,12 +48,55 @@ const NameTypography = styled(Typography, {
   },
 }));
 
-const PrintableContainer = styled(TableContainer)({
+const PrintableContainer = styled(TableContainer)(({ theme }) => ({
   // First style sets size as landscape
   '@media print': {
     '@page': { size: 'landscape' },
   },
-});
+  // On phones, keep the Partner column pinned while the months scroll sideways
+  [theme.breakpoints.down('sm')]: {
+    '.MuiTableCell-root': {
+      paddingLeft: theme.spacing(1),
+      paddingRight: theme.spacing(1),
+    },
+    '.MuiTableCell-root:first-of-type': {
+      position: 'sticky',
+      left: 0,
+      zIndex: 1,
+      minWidth: 150,
+      backgroundColor: theme.palette.background.paper,
+      boxShadow: `inset -1px 0 0 ${theme.palette.divider}`,
+    },
+    '.MuiTableHead-root .MuiTableCell-root:first-of-type': {
+      zIndex: 3,
+    },
+    '.MuiTableRow-hover:hover .MuiTableCell-root:first-of-type': {
+      backgroundImage: `linear-gradient(${theme.palette.action.hover}, ${theme.palette.action.hover})`,
+    },
+  },
+}));
+
+const ScrollHint = styled(Typography)(({ theme }) => ({
+  display: 'none',
+  alignItems: 'center',
+  gap: theme.spacing(0.5),
+  marginBottom: theme.spacing(1),
+  paddingInline: theme.spacing(1),
+  [theme.breakpoints.down('sm')]: {
+    display: 'flex',
+  },
+  '@media print': {
+    display: 'none',
+  },
+}));
+
+const NameLink = styled(Link)(({ theme }) => ({
+  [theme.breakpoints.down('sm')]: {
+    display: 'inline-block',
+    minHeight: 24,
+    lineHeight: '24px',
+  },
+})) as typeof Link;
 
 const StyledInfoIcon = styled(InfoIcon)({
   '@media print': {
@@ -129,131 +173,139 @@ export const FourteenMonthReportTable: React.FC<
   );
 
   return (
-    <PrintableContainer className="fourteen-month-report">
-      <Table
-        stickyHeader={true}
-        aria-label={t('Fourteen month report table')}
-        data-testid="FourteenMonthReport"
-      >
-        <TableHead
-          isExpanded={isExpanded}
-          salaryCurrency={salaryCurrency}
-          totals={totals}
-          order={order}
-          orderBy={orderBy}
-          onRequestSort={onRequestSort}
-        />
-        <TableBody>
-          {orderedContacts.map((contact) => (
-            <TableRow
-              key={contact.id}
-              hover
-              data-testid="FourteenMonthReportTableRow"
-            >
-              <StyledTableCell>
-                <Box display="flex" flexDirection="column">
-                  <Box display="flex" alignItems="center">
-                    {!isExpanded && <StyledInfoIcon fontSize="small" />}
-                    <NameTypography variant="body1" expanded={isExpanded}>
-                      <Link
-                        component={NextLink}
-                        href={buildContactUrl(contact.id)}
-                        onMouseEnter={preloadContactsRightPanel}
-                      >
-                        {contact.name}
-                      </Link>
-                    </NameTypography>
-                    {(contact.lateBy30Days || contact.lateBy60Days) && (
-                      <Tooltip
-                        title={t('{{daysLate}}+ days late', {
-                          daysLate: contact.lateBy60Days ? '60' : '30',
-                        })}
-                        arrow
-                      >
-                        <CircleBox
-                          lateBy60Days={contact.lateBy60Days}
-                          data-testid={`lateCircle${
-                            contact.lateBy60Days ? '60' : '30'
-                          }`}
-                        />
-                      </Tooltip>
+    <Box>
+      <ScrollHint variant="body2" color="textSecondary">
+        <SwipeIcon fontSize="small" />
+        {t('Scroll sideways to see every month and the 12 month total.')}
+      </ScrollHint>
+      <PrintableContainer className="fourteen-month-report">
+        <Table
+          stickyHeader={true}
+          aria-label={t('Fourteen month report table')}
+          data-testid="FourteenMonthReport"
+        >
+          <TableHead
+            isExpanded={isExpanded}
+            salaryCurrency={salaryCurrency}
+            totals={totals}
+            order={order}
+            orderBy={orderBy}
+            onRequestSort={onRequestSort}
+          />
+          <TableBody>
+            {orderedContacts.map((contact) => (
+              <TableRow
+                key={contact.id}
+                hover
+                data-testid="FourteenMonthReportTableRow"
+              >
+                <StyledTableCell>
+                  <Box display="flex" flexDirection="column">
+                    <Box display="flex" alignItems="center">
+                      {!isExpanded && <StyledInfoIcon fontSize="small" />}
+                      <NameTypography variant="body1" expanded={isExpanded}>
+                        <NameLink
+                          component={NextLink}
+                          href={buildContactUrl(contact.id)}
+                          onMouseEnter={preloadContactsRightPanel}
+                        >
+                          {contact.name}
+                        </NameLink>
+                      </NameTypography>
+                      {(contact.lateBy30Days || contact.lateBy60Days) && (
+                        <Tooltip
+                          title={t('{{daysLate}}+ days late', {
+                            daysLate: contact.lateBy60Days ? '60' : '30',
+                          })}
+                          arrow
+                        >
+                          <CircleBox
+                            lateBy60Days={contact.lateBy60Days}
+                            data-testid={`lateCircle${
+                              contact.lateBy60Days ? '60' : '30'
+                            }`}
+                          />
+                        </Tooltip>
+                      )}
+                    </Box>
+                    {isExpanded && (
+                      <Typography variant="body2" color="textSecondary">
+                        {contact.accountNumbers.join(', ')}
+                      </Typography>
                     )}
                   </Box>
-                  {isExpanded && (
-                    <Typography variant="body2" color="textSecondary">
-                      {contact.accountNumbers.join(', ')}
-                    </Typography>
-                  )}
-                </Box>
-              </StyledTableCell>
+                </StyledTableCell>
+                {isExpanded && (
+                  <>
+                    <StyledTableCell>
+                      {getLocalizedContactStatus(
+                        contact?.status?.toUpperCase(),
+                      )}
+                    </StyledTableCell>
+                    <StyledTableCell data-testid="pledgeAmount">
+                      {contact.pledgeAmount &&
+                        `${numberFormat(
+                          Math.round(contact.pledgeAmount),
+                          locale,
+                        )} ${contact.pledgeCurrency} ${
+                          apiConstants?.pledgeFrequency.find(
+                            ({ key }) => key === contact.pledgeFrequency,
+                          )?.value ?? ''
+                        }`}
+                    </StyledTableCell>
+                    <StyledTableCell>
+                      {numberFormat(Math.round(contact.average), locale)}
+                    </StyledTableCell>
+                    <StyledTableCell>
+                      {numberFormat(Math.round(contact.minimum), locale)}
+                    </StyledTableCell>
+                  </>
+                )}
+                {contact.months.map((month) => (
+                  <StyledTableCell key={month.month} align="center">
+                    {numberFormat(Math.round(month.total), locale)}
+                  </StyledTableCell>
+                ))}
+                <StyledTableCell align="right">
+                  <strong data-testid="totalGivenByContact">
+                    {numberFormat(
+                      Math.round(contact.completeMonthsTotal),
+                      locale,
+                    )}
+                  </strong>
+                </StyledTableCell>
+              </TableRow>
+            ))}
+            <StyledTotalsRow>
+              <StyledTableCell>{t('Totals')}</StyledTableCell>
               {isExpanded && (
                 <>
-                  <StyledTableCell>
-                    {getLocalizedContactStatus(contact?.status?.toUpperCase())}
+                  <StyledTableCell />
+                  <StyledTableCell />
+                  <StyledTableCell data-testid="averageTotal">
+                    {numberFormat(totalAverage, locale)}
                   </StyledTableCell>
-                  <StyledTableCell data-testid="pledgeAmount">
-                    {contact.pledgeAmount &&
-                      `${numberFormat(
-                        Math.round(contact.pledgeAmount),
-                        locale,
-                      )} ${contact.pledgeCurrency} ${
-                        apiConstants?.pledgeFrequency.find(
-                          ({ key }) => key === contact.pledgeFrequency,
-                        )?.value ?? ''
-                      }`}
-                  </StyledTableCell>
-                  <StyledTableCell>
-                    {numberFormat(Math.round(contact.average), locale)}
-                  </StyledTableCell>
-                  <StyledTableCell>
-                    {numberFormat(Math.round(contact.minimum), locale)}
+                  <StyledTableCell data-testid="minimumTotal">
+                    {numberFormat(totalMinimum, locale)}
                   </StyledTableCell>
                 </>
               )}
-              {contact.months.map((month) => (
-                <StyledTableCell key={month.month} align="center">
+              {totals?.map((month) => (
+                <StyledTableCell
+                  key={month.month}
+                  align="center"
+                  data-testid="monthlyTotals"
+                >
                   {numberFormat(Math.round(month.total), locale)}
                 </StyledTableCell>
               ))}
-              <StyledTableCell align="right">
-                <strong data-testid="totalGivenByContact">
-                  {numberFormat(
-                    Math.round(contact.completeMonthsTotal),
-                    locale,
-                  )}
-                </strong>
+              <StyledTableCell align="right" data-testid="overallTotal">
+                {numberFormat(totalCompleteMonths, locale)}
               </StyledTableCell>
-            </TableRow>
-          ))}
-          <StyledTotalsRow>
-            <StyledTableCell>{t('Totals')}</StyledTableCell>
-            {isExpanded && (
-              <>
-                <StyledTableCell />
-                <StyledTableCell />
-                <StyledTableCell data-testid="averageTotal">
-                  {numberFormat(totalAverage, locale)}
-                </StyledTableCell>
-                <StyledTableCell data-testid="minimumTotal">
-                  {numberFormat(totalMinimum, locale)}
-                </StyledTableCell>
-              </>
-            )}
-            {totals?.map((month) => (
-              <StyledTableCell
-                key={month.month}
-                align="center"
-                data-testid="monthlyTotals"
-              >
-                {numberFormat(Math.round(month.total), locale)}
-              </StyledTableCell>
-            ))}
-            <StyledTableCell align="right" data-testid="overallTotal">
-              {numberFormat(totalCompleteMonths, locale)}
-            </StyledTableCell>
-          </StyledTotalsRow>
-        </TableBody>
-      </Table>
-    </PrintableContainer>
+            </StyledTotalsRow>
+          </TableBody>
+        </Table>
+      </PrintableContainer>
+    </Box>
   );
 };

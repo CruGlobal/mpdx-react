@@ -23,7 +23,14 @@ export const ChartFrame: React.FC<ChartFrameProps> = ({
     }}
   >
     {loading ? (
-      <LoadingBox sx={{ width: '100%', height: '100%', minWidth: 0 }}>
+      <LoadingBox
+        sx={(theme) => ({
+          width: '100%',
+          height: '100%',
+          minWidth: 0,
+          [theme.breakpoints.up('md')]: { minWidth: 0 },
+        })}
+      >
         <LoadingIndicator
           data-testid="loading-spinner"
           color="primary"
