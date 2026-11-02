@@ -200,6 +200,27 @@ describe('GoalsTable', () => {
     expect(queryByText('$0.00')).not.toBeInTheDocument();
   });
 
+  it('labels the Send Status column with Ready to Send and Not Ready chips', () => {
+    const { getAllByRole } = renderTable([
+      { ...rows[0], goalStatus: GoalStatusEnum.Complete },
+      {
+        ...rows[0],
+        id: 'not-ready-row',
+        goalStatus: GoalStatusEnum.Incomplete,
+      },
+    ]);
+    expect(getFirstRowCell(getAllByRole, 'Send Status')).toHaveTextContent(
+      'Ready to Send',
+    );
+    const headers = getAllByRole('columnheader').map(
+      (cell) => cell.textContent,
+    );
+    const secondRow = within(getAllByRole('row')[2]).getAllByRole('cell');
+    expect(secondRow[headers.indexOf('Send Status')]).toHaveTextContent(
+      'Not Ready',
+    );
+  });
+
   it('renders a Sent chip with the info color for an already-sent goal', () => {
     const sentRow: StaffGoalRow = {
       ...rows[0],
