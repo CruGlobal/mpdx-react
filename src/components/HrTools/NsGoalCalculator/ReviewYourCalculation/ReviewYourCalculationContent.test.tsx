@@ -1,6 +1,5 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import {
   NsGoalCalculatorTestWrapper,
   defaultGoalCalculation,
@@ -38,9 +37,8 @@ describe('ReviewYourCalculationContent', () => {
     expect(await findByText('Continue')).toBeInTheDocument();
   });
 
-  it('prints when the print button is clicked', async () => {
-    const printSpy = jest.spyOn(window, 'print').mockImplementation(() => {});
-    const { findByRole } = render(
+  it('renders the print button and hides the intro when printing', async () => {
+    const { findByRole, getByText } = render(
       <NsGoalCalculatorTestWrapper>
         <ReviewYourCalculationContent
           goalCalculation={defaultGoalCalculation}
@@ -48,11 +46,11 @@ describe('ReviewYourCalculationContent', () => {
       </NsGoalCalculatorTestWrapper>,
     );
 
-    userEvent.click(
+    expect(
       await findByRole('button', { name: 'Print MPD Goal Calculation' }),
+    ).toHaveClass('print-hidden');
+    expect(getByText(/Please review your MPD Goal Calculation/)).toHaveClass(
+      'print-hidden',
     );
-
-    expect(printSpy).toHaveBeenCalled();
-    printSpy.mockRestore();
   });
 });

@@ -4,6 +4,10 @@ import userEvent from '@testing-library/user-event';
 import { PrintGoalControls } from './PrintGoalControls';
 
 describe('PrintGoalControls', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('renders the printing tips and the print button', () => {
     const { getByRole, getByText } = render(
       <PrintGoalControls buttonLabel="Print Goal" />,
@@ -25,7 +29,6 @@ describe('PrintGoalControls', () => {
     userEvent.click(getByRole('button', { name: 'Print Goal' }));
 
     expect(printSpy).toHaveBeenCalled();
-    printSpy.mockRestore();
   });
 
   it('marks the tips and the button as print-hidden', () => {
