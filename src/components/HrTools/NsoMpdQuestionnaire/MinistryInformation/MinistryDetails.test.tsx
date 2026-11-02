@@ -24,7 +24,7 @@ describe('MinistryDetails', () => {
     ).toBeInTheDocument();
     expect(
       getByRole('textbox', {
-        name: 'What is your expected ministry assignment location?',
+        name: 'What city is your expected ministry assignment in?',
       }),
     ).toBeInTheDocument();
     expect(
@@ -44,7 +44,7 @@ describe('MinistryDetails', () => {
 
     expect(
       getByRole('textbox', {
-        name: 'What is your expected ministry assignment location?',
+        name: 'What city is your expected ministry assignment in?',
       }),
     ).toBeRequired();
   });
@@ -142,7 +142,7 @@ describe('MinistryDetails', () => {
     const { getByText } = render(<TestComponent />);
 
     expect(
-      getByText('What is your expected ministry assignment location?').tagName,
+      getByText('What city is your expected ministry assignment in?').tagName,
     ).toBe('SPAN');
   });
 
