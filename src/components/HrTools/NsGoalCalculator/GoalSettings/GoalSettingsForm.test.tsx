@@ -930,9 +930,10 @@ describe('GoalSettingsForm', () => {
 
       expect(
         getByText(
-          'Email the support goals worksheet for John Doe to john@example.com? This cannot be undone.',
+          'Email the support goals worksheet for John Doe to these addresses. This cannot be undone.',
         ),
       ).toBeInTheDocument();
+      expect(getByText('john@example.com')).toBeInTheDocument();
 
       userEvent.click(getByRole('button', { name: 'Send Worksheet' }));
 
@@ -941,6 +942,7 @@ describe('GoalSettingsForm', () => {
       ).toBeInTheDocument();
       expect(mutationSpy).toHaveGraphqlOperation('SendNewStaffScenarioGoal', {
         id: 'scenario-1',
+        emailAddresses: ['john@example.com'],
       });
     });
 

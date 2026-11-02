@@ -1,8 +1,10 @@
 import i18n from 'src/lib/i18n';
 import {
   SendableScenarioGoal,
+  isValidEmailAddress,
   scenarioGoalRecipients,
   scenarioGoalSendBlockedReason,
+  splitEmailAddresses,
 } from './sendScenarioGoalHelpers';
 
 const t = i18n.t;
@@ -74,23 +76,39 @@ describe('scenarioGoalSendBlockedReason', () => {
     );
   });
 
-  it('blocks when no email address is on the scenario', () => {
+  it('allows sending a scenario with no email address of its own', () => {
     expect(
       scenarioGoalSendBlockedReason(
         { ...sendableGoal, emailAddress: null, spouseEmailAddress: null },
         t,
       ),
-    ).toBe('This scenario goal has no email address to send the worksheet to.');
+    ).toBeNull();
+  });
+});
+
+describe('splitEmailAddresses', () => {
+  it('splits on commas, semicolons, and whitespace and lowercases', () => {
+    expect(
+      splitEmailAddresses(
+        ' A@example.com, b@example.com;c@example.com\nd@x.org ',
+      ),
+    ).toEqual(['a@example.com', 'b@example.com', 'c@example.com', 'd@x.org']);
   });
 
-  it('reports the missing fields before the missing address', () => {
-    expect(
-      scenarioGoalSendBlockedReason(
-        { ...sendableGoal, lastName: null, emailAddress: null },
-        t,
-      ),
-    ).toBe(
-      'A first name, last name, geographic location, and year are required before the worksheet can be emailed.',
-    );
+  it('returns nothing for blank text', () => {
+    expect(splitEmailAddresses(' , ; ')).toEqual([]);
+  });
+});
+
+describe('isValidEmailAddress', () => {
+  it.each(['jane@example.com', 'first.last+tag@sub.example.org'])(
+    'accepts %s',
+    (address) => {
+      expect(isValidEmailAddress(address)).toBe(true);
+    },
+  );
+
+  it.each(['', 'jane', 'jane@', '@example.com'])('rejects "%s"', (address) => {
+    expect(isValidEmailAddress(address)).toBe(false);
   });
 });

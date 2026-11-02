@@ -222,9 +222,10 @@ describe('ScenarioGoals', () => {
 
     expect(
       getByText(
-        'Email the support goals worksheet for John Doe to john@example.com? This cannot be undone.',
+        'Email the support goals worksheet for John Doe to these addresses. This cannot be undone.',
       ),
     ).toBeInTheDocument();
+    expect(getByText('john@example.com')).toBeInTheDocument();
 
     userEvent.click(getByRole('button', { name: 'Send Worksheet' }));
 
@@ -233,6 +234,7 @@ describe('ScenarioGoals', () => {
     ).toBeInTheDocument();
     expect(mutationSpy).toHaveGraphqlOperation('SendNewStaffScenarioGoal', {
       id: 'scenario-1',
+      emailAddresses: ['john@example.com'],
     });
   });
 
@@ -277,22 +279,33 @@ describe('ScenarioGoals', () => {
     ).toBeInTheDocument();
   });
 
-  it('blocks sending a complete scenario goal that has no email address', async () => {
+  it('sends a scenario goal with no address of its own to an entered address', async () => {
     const { findByRole, getByRole, findByText } = renderScenarioGoals({
       NewStaffScenarioGoals: noEmailScenarioGoalMock,
+      SendNewStaffScenarioGoal: {
+        sendNewStaffScenarioGoal: {
+          newStaffGoalCalculation: { id: 'scenario-4' },
+          sentTo: ['recruiter@example.com'],
+        },
+      },
     } as ApolloErgonoMockMap);
 
-    await findByRole('link', { name: 'Jane Roe' });
-    const send = getByRole('button', { name: 'Email Jane Roe' });
-    expect(send).toBeDisabled();
+    userEvent.click(await findByRole('button', { name: 'Email Jane Roe' }));
+    userEvent.type(
+      getByRole('combobox', { name: 'Email addresses' }),
+      'recruiter@example.com{enter}',
+    );
+    userEvent.click(getByRole('button', { name: 'Send Worksheet' }));
 
-    // The tooltip lives on the wrapper span; a disabled button takes no pointer events.
-    await userEvent.hover(send.parentElement as HTMLElement);
     expect(
       await findByText(
-        'This scenario goal has no email address to send the worksheet to.',
+        'Support goals worksheet sent to recruiter@example.com.',
       ),
     ).toBeInTheDocument();
+    expect(mutationSpy).toHaveGraphqlOperation('SendNewStaffScenarioGoal', {
+      id: 'scenario-4',
+      emailAddresses: ['recruiter@example.com'],
+    });
   });
 
   it('links each scenario goal to its calculator page', async () => {

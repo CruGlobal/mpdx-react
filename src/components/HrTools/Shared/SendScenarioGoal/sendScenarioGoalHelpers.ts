@@ -1,6 +1,12 @@
 import { TFunction } from 'react-i18next';
+import * as yup from 'yup';
 
-/** The fields the API's `:send` validation context needs, plus the addresses it sends to. */
+/** Mirrors the API's `MAX_EMAIL_ADDRESSES` for one send. */
+export const MAX_SCENARIO_GOAL_RECIPIENTS = 10;
+
+const emailAddressSchema = yup.string().email().required();
+
+/** The fields the API's `:send` validation context needs, plus the addresses the send dialog starts with. */
 export interface SendableScenarioGoal {
   id: string;
   firstName?: string | null;
@@ -12,7 +18,7 @@ export interface SendableScenarioGoal {
   spouseEmailAddress?: string | null;
 }
 
-/** Mirrors the API's `provided_email_addresses` so the confirmation can name them before sending. */
+/** The scenario's own addresses, normalized like the API's `provided_email_addresses`, to prefill the send dialog. */
 export const scenarioGoalRecipients = (
   goal: SendableScenarioGoal,
 ): string[] => {
@@ -23,10 +29,21 @@ export const scenarioGoalRecipients = (
   return [...new Set(addresses)];
 };
 
+/** Splits typed or pasted text on commas, semicolons, and whitespace into lowercased addresses. */
+export const splitEmailAddresses = (text: string): string[] =>
+  text
+    .split(/[\s,;]+/)
+    .map((address) => address.toLowerCase())
+    .filter(Boolean);
+
+export const isValidEmailAddress = (address: string): boolean =>
+  emailAddressSchema.isValidSync(address);
+
 /**
  * Why the send controls are disabled, or `null` when the worksheet can be
  * emailed. Mirrors the API's `REQUIRED_FOR_SEND` so a click never turns into a
- * server-side validation error.
+ * server-side validation error. Recipients are not checked here because they
+ * are entered in the send dialog.
  */
 export const scenarioGoalSendBlockedReason = (
   goal: SendableScenarioGoal,
@@ -45,12 +62,6 @@ export const scenarioGoalSendBlockedReason = (
   if (required.some(isBlank)) {
     return t(
       'A first name, last name, geographic location, and year are required before the worksheet can be emailed.',
-    );
-  }
-
-  if (!scenarioGoalRecipients(goal).length) {
-    return t(
-      'This scenario goal has no email address to send the worksheet to.',
     );
   }
 

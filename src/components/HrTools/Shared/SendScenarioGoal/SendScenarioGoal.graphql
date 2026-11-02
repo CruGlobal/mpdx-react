@@ -1,5 +1,7 @@
-mutation SendNewStaffScenarioGoal($id: ID!) {
-  sendNewStaffScenarioGoal(input: { id: $id }) {
+mutation SendNewStaffScenarioGoal($id: ID!, $emailAddresses: [String!]!) {
+  sendNewStaffScenarioGoal(
+    input: { id: $id, emailAddresses: $emailAddresses }
+  ) {
     newStaffGoalCalculation {
       id
     }
