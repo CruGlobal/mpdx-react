@@ -11,6 +11,7 @@ import {
   Skeleton,
   SvgIcon,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
@@ -76,6 +77,9 @@ const StyledTimeNavBox = styled(Box)({
   display: 'flex',
   margin: 0,
   gap: theme.spacing(2),
+  [theme.breakpoints.down('sm')]: {
+    alignItems: 'center',
+  },
 });
 
 interface StaffExpenseReportProps {
@@ -95,6 +99,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const isPhone = useMediaQuery(theme.breakpoints.down('sm'));
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [filters, setFilters] = useState<Filters | null>(null);
   const [time, setTime] = useState(DateTime.now().startOf('month'));
@@ -433,25 +438,28 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                 )}
                 {!isFilterDateSelected ? (
                   <>
+                    {/* Icon-only on phones so the labels don't wrap */}
                     <Button
                       sx={{ ml: 'auto', maxHeight: 35 }}
                       variant="contained"
-                      startIcon={<ChevronLeftIcon />}
+                      startIcon={isPhone ? undefined : <ChevronLeftIcon />}
                       size="small"
                       onClick={setPrevMonth}
                       disabled={loading}
+                      aria-label={isPhone ? t('Previous Month') : undefined}
                     >
-                      {t('Previous Month')}
+                      {isPhone ? <ChevronLeftIcon /> : t('Previous Month')}
                     </Button>
                     <Button
                       sx={{ maxHeight: 35 }}
                       variant="contained"
-                      endIcon={<ChevronRightIcon />}
+                      endIcon={isPhone ? undefined : <ChevronRightIcon />}
                       size="small"
                       onClick={setNextMonth}
                       disabled={hasNext || loading}
+                      aria-label={isPhone ? t('Next Month') : undefined}
                     >
-                      {t('Next Month')}
+                      {isPhone ? <ChevronRightIcon /> : t('Next Month')}
                     </Button>
                   </>
                 ) : null}

@@ -16,6 +16,7 @@ import {
   DeepPartialMock,
   GqlMockedProvider,
 } from '__tests__/util/graphqlMocking';
+import matchMediaMock from '__tests__/util/matchMediaMock';
 import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import {
@@ -644,6 +645,63 @@ describe('StaffExpenseReport', () => {
 
     await waitFor(() => expect(prevButton).not.toBeDisabled());
     expect(nextButton).not.toBeDisabled();
+  });
+
+  describe('month buttons on desktop', () => {
+    beforeEach(() => {
+      matchMediaMock({ width: '1024px' });
+    });
+
+    it('shows text labels next to the chevrons', async () => {
+      const { findByRole, getByRole } = render(<TestComponent />);
+
+      const prevButton = await findByRole('button', { name: 'Previous Month' });
+      const nextButton = getByRole('button', { name: 'Next Month' });
+      expect(prevButton).toHaveTextContent('Previous Month');
+      expect(nextButton).toHaveTextContent('Next Month');
+      expect(within(prevButton).getByTestId('ChevronLeftIcon')).toBeVisible();
+      expect(within(nextButton).getByTestId('ChevronRightIcon')).toBeVisible();
+    });
+  });
+
+  describe('month buttons on phones', () => {
+    beforeEach(() => {
+      matchMediaMock({ width: '390px' });
+    });
+
+    it('shows only the chevrons but keeps the button names', async () => {
+      const { findByRole, getByRole, queryByText } = render(<TestComponent />);
+
+      expect(
+        await findByRole('heading', { name: 'January 2020', level: 6 }),
+      ).toBeInTheDocument();
+      expect(queryByText('Previous Month')).not.toBeInTheDocument();
+      expect(queryByText('Next Month')).not.toBeInTheDocument();
+
+      const prevButton = getByRole('button', { name: 'Previous Month' });
+      const nextButton = getByRole('button', { name: 'Next Month' });
+      expect(within(prevButton).getByTestId('ChevronLeftIcon')).toBeVisible();
+      expect(within(nextButton).getByTestId('ChevronRightIcon')).toBeVisible();
+    });
+
+    it('changes the month when the chevrons are clicked', async () => {
+      const { findByText, getByRole } = render(<TestComponent />);
+
+      await findByText('Ending Balance (All Accounts): $4,000.00');
+      userEvent.click(getByRole('button', { name: 'Previous Month' }));
+      expect(
+        getByRole('heading', { name: 'December 2019', level: 6 }),
+      ).toBeInTheDocument();
+
+      // Wait for December to load, since the buttons are disabled meanwhile
+      await waitFor(() =>
+        expect(getByRole('button', { name: 'Next Month' })).toBeEnabled(),
+      );
+      userEvent.click(getByRole('button', { name: 'Next Month' }));
+      expect(
+        getByRole('heading', { name: 'January 2020', level: 6 }),
+      ).toBeInTheDocument();
+    });
   });
 
   it('correctly displays totals for income and expenses', async () => {
