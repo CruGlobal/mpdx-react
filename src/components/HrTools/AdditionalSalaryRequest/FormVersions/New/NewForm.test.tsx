@@ -54,7 +54,7 @@ describe('NewForm', () => {
       expect(getByTestId('amount-one')).toHaveTextContent('$40,000.00');
       // currentSalaryCap: value on backend
       expect(getByTestId('amount-two')).toHaveTextContent('$100,000.00');
-      // cap minus gross salary and ASRs already requested this year
+      // remainingAllowableSalary from the API
       expect(getByTestId('amount-three')).toHaveTextContent('$55,000.00');
     });
 
@@ -86,6 +86,8 @@ describe('NewForm', () => {
       expect(getByTestId('amount-one')).toHaveTextContent('$0.00');
       // currentSalaryCap calculated in backend
       expect(getByTestId('amount-two')).toHaveTextContent('-$40,000.00');
+      // remainingAllowableSalary defaults to 0 when the API leaves it out
+      expect(getByTestId('amount-three')).toHaveTextContent('$0.00');
     });
   });
 

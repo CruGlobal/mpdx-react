@@ -275,6 +275,7 @@ describe('useAdditionalSalaryRequestForm', () => {
         AdditionalSalaryRequest: {
           latestAdditionalSalaryRequest: {
             id: 'test-request-id',
+            status: AsrStatusEnum.InProgress,
             currentYearSalaryNotReceived: 500,
             previousYearSalaryNotReceived: 200,
             additionalSalaryWithinMax: 0,
