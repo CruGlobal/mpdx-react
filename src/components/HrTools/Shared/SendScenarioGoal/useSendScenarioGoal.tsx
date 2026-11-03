@@ -11,7 +11,7 @@ export interface SendScenarioGoalFlow {
 }
 
 /**
- * The pick-recipients-then-email flow behind both send entry points: the
+ * The pick-a-recipient-then-email flow behind both send entry points: the
  * Scenario Goals row action and the scenario's own Goal Settings page.
  */
 export const useSendScenarioGoal = (): SendScenarioGoalFlow => {
@@ -28,21 +28,16 @@ export const useSendScenarioGoal = (): SendScenarioGoalFlow => {
     setIsOpen(true);
   };
 
-  const handleSend = async (emailAddresses: string[]) => {
+  // Throws on a GraphQL error, so the toast below only follows a queued send.
+  const handleSend = async (emailAddress: string) => {
     if (!target) {
       return;
     }
-    const { data } = await sendScenarioGoal({
-      variables: { id: target.id, emailAddresses },
+    await sendScenarioGoal({
+      variables: { id: target.id, emailAddress },
     });
-    const sentTo = data?.sendNewStaffScenarioGoal?.sentTo;
-    if (!sentTo) {
-      return;
-    }
     enqueueSnackbar(
-      t('Support goals worksheet sent to {{recipients}}.', {
-        recipients: sentTo.join(', '),
-      }),
+      t('Support goals worksheet sent to {{emailAddress}}.', { emailAddress }),
       { variant: 'success' },
     );
   };

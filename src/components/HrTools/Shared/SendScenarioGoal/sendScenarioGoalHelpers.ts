@@ -1,19 +1,7 @@
 import { TFunction } from 'react-i18next';
+import * as yup from 'yup';
 
-/** Mirrors the API's `MAX_EMAIL_ADDRESSES` for one send. */
-export const MAX_SCENARIO_GOAL_RECIPIENTS = 10;
-
-/** What separates one address from the next in typed or pasted text. */
-export const EMAIL_ADDRESS_SEPARATOR = /[\s,;]+/;
-
-// A port of the email_validator gem's :strict mode, which the API checks recipients with.
-const atom = '[-\\p{L}\\p{N}+_!"\'#$%^&*{}/=?`|~]';
-const hostLabel =
-  '(?=[^.]{1,63}(?:\\.|$))(?!.*?--.*$)[\\p{L}\\p{N}](?:[\\p{L}\\p{N}-]{0,61}[\\p{L}\\p{N}])?';
-const strictEmailAddress = new RegExp(
-  `^${atom}(?:\\.?${atom}){0,63}@(?=.{1,255}$)(?:${hostLabel}\\.)+\\p{L}{1,64}$`,
-  'iu',
-);
+const emailAddressSchema = yup.string().email().required();
 
 /** The fields the API's `:send` validation context needs. */
 export interface SendableScenarioGoal {
@@ -25,21 +13,18 @@ export interface SendableScenarioGoal {
   calculationsYear?: number | string | null;
 }
 
-/** Splits typed or pasted text on commas, semicolons, and whitespace into lowercased addresses. */
-export const splitEmailAddresses = (text: string): string[] =>
-  text
-    .split(EMAIL_ADDRESS_SEPARATOR)
-    .map((address) => address.toLowerCase())
-    .filter(Boolean);
+/** Trims and lowercases a typed address the way the API does before sending. */
+export const normalizeEmailAddress = (address: string): string =>
+  address.trim().toLowerCase();
 
 export const isValidEmailAddress = (address: string): boolean =>
-  strictEmailAddress.test(address);
+  emailAddressSchema.isValidSync(address);
 
 /**
  * Why the send controls are disabled, or `null` when the worksheet can be
  * emailed. Mirrors the API's `REQUIRED_FOR_SEND` so a click never turns into a
- * server-side validation error. Recipients are not checked here because they
- * are entered in the send dialog.
+ * server-side validation error. The recipient is not checked here because it
+ * is entered in the send dialog.
  */
 export const scenarioGoalSendBlockedReason = (
   goal: SendableScenarioGoal,

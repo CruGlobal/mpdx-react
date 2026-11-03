@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Autocomplete,
-  Box,
-  Chip,
-  DialogActions,
-  DialogContent,
-  TextField,
-} from '@mui/material';
+import { Box, DialogActions, DialogContent, TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import {
   CancelButton,
@@ -16,11 +9,9 @@ import Modal from 'src/components/Shared/Modal/Modal';
 import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
 import { StyledDialogContentText } from 'src/components/Shared/styledComponents/StyledDialogContentText';
 import {
-  EMAIL_ADDRESS_SEPARATOR,
-  MAX_SCENARIO_GOAL_RECIPIENTS,
   SendableScenarioGoal,
   isValidEmailAddress,
-  splitEmailAddresses,
+  normalizeEmailAddress,
 } from './sendScenarioGoalHelpers';
 
 export interface SendScenarioGoalDialogProps {
@@ -30,13 +21,9 @@ export interface SendScenarioGoalDialogProps {
   /** Changes on every request so reopening the same goal starts a fresh form. */
   requestId: number;
   /** A rejection keeps the dialog open; the global Apollo error link already toasts it. */
-  onSend: (emailAddresses: string[]) => Promise<unknown>;
+  onSend: (emailAddress: string) => Promise<unknown>;
   handleClose: () => void;
 }
-
-const mergeAddresses = (existing: string[], added: string[]): string[] => [
-  ...new Set([...existing, ...added]),
-];
 
 interface SendScenarioGoalFormProps {
   goal: SendableScenarioGoal;
@@ -46,7 +33,7 @@ interface SendScenarioGoalFormProps {
   setSending: (sending: boolean) => void;
 }
 
-// Keyed by request so each opening starts with no addresses.
+// Keyed by request so each opening starts with no address.
 const SendScenarioGoalForm: React.FC<SendScenarioGoalFormProps> = ({
   goal,
   onSend,
@@ -55,47 +42,26 @@ const SendScenarioGoalForm: React.FC<SendScenarioGoalFormProps> = ({
   setSending,
 }) => {
   const { t } = useTranslation();
-  const [addresses, setAddresses] = useState<string[]>([]);
-  const [inputValue, setInputValue] = useState('');
+  const [emailAddress, setEmailAddress] = useState('');
+  // Checked only after blur or a send attempt, so a half-typed address isn't flagged mid-keystroke.
+  const [touched, setTouched] = useState(false);
 
-  // Only committed chips are checked, so a half-typed address isn't flagged mid-keystroke.
-  const invalidAddresses = addresses.filter(
-    (address) => !isValidEmailAddress(address),
-  );
-  const tooMany = addresses.length > MAX_SCENARIO_GOAL_RECIPIENTS;
-
-  let helperText = t('Press Enter or type a comma after each address.');
-  if (invalidAddresses.length) {
-    helperText = t('Fix or remove the invalid email addresses: {{addresses}}', {
-      addresses: invalidAddresses.join(', '),
-    });
-  } else if (tooMany) {
-    helperText = t('Enter at most {{max}} email addresses.', {
-      max: MAX_SCENARIO_GOAL_RECIPIENTS,
-    });
-  }
-  const hasError = invalidAddresses.length > 0 || tooMany;
+  const recipient = normalizeEmailAddress(emailAddress);
+  const invalid = touched && !!recipient && !isValidEmailAddress(recipient);
 
   const name =
     [goal.firstName, goal.lastName].filter(Boolean).join(' ') ||
     t('this scenario goal');
 
-  const handleSend = () => {
-    const pending = splitEmailAddresses(inputValue);
-    const recipients = mergeAddresses(addresses, pending);
-    if (pending.length) {
-      setAddresses(recipients);
-      setInputValue('');
-      if (
-        pending.some((address) => !isValidEmailAddress(address)) ||
-        recipients.length > MAX_SCENARIO_GOAL_RECIPIENTS
-      ) {
-        return;
-      }
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    setTouched(true);
+    if (!isValidEmailAddress(recipient)) {
+      return;
     }
 
     setSending(true);
-    onSend(recipients).then(
+    onSend(recipient).then(
       () => {
         setSending(false);
         handleClose();
@@ -105,7 +71,7 @@ const SendScenarioGoalForm: React.FC<SendScenarioGoalFormProps> = ({
   };
 
   return (
-    <>
+    <form noValidate onSubmit={handleSubmit}>
       <DialogContent dividers>
         {sending ? (
           <Box textAlign="center">
@@ -115,59 +81,21 @@ const SendScenarioGoalForm: React.FC<SendScenarioGoalFormProps> = ({
           <>
             <StyledDialogContentText>
               {t(
-                'Email the support goals worksheet for {{name}} to these addresses. This cannot be undone.',
+                'Email the support goals worksheet for {{name}} to this address. This cannot be undone.',
                 { name },
               )}
             </StyledDialogContentText>
-            <Autocomplete
-              multiple
-              freeSolo
-              autoSelect
-              options={[]}
-              value={addresses}
-              inputValue={inputValue}
-              onChange={(_event, newValue) => {
-                setAddresses(
-                  mergeAddresses([], newValue.flatMap(splitEmailAddresses)),
-                );
-              }}
-              onInputChange={(_event, newInputValue, reason) => {
-                // Commit everything before the last separator so pasted lists become chips.
-                const parts = newInputValue.split(EMAIL_ADDRESS_SEPARATOR);
-                const pending = parts.pop() ?? '';
-                if (reason === 'input' && parts.length) {
-                  setAddresses((current) =>
-                    mergeAddresses(current, parts.flatMap(splitEmailAddresses)),
-                  );
-                  setInputValue(pending);
-                } else {
-                  setInputValue(newInputValue);
-                }
-              }}
-              renderValue={(value, getItemProps) =>
-                value.map((address, index) => {
-                  const { key, ...itemProps } = getItemProps({ index });
-                  return (
-                    <Chip
-                      key={key}
-                      {...itemProps}
-                      size="small"
-                      label={address}
-                      color={isValidEmailAddress(address) ? 'default' : 'error'}
-                    />
-                  );
-                })
-              }
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label={t('Email addresses')}
-                  required
-                  error={hasError}
-                  helperText={helperText}
-                  autoFocus
-                />
-              )}
+            <TextField
+              type="email"
+              label={t('Email address')}
+              value={emailAddress}
+              onChange={(event) => setEmailAddress(event.target.value)}
+              onBlur={() => setTouched(true)}
+              required
+              fullWidth
+              error={invalid}
+              helperText={invalid ? t('Enter a valid email address.') : ' '}
+              autoFocus
             />
           </>
         )}
@@ -177,21 +105,18 @@ const SendScenarioGoalForm: React.FC<SendScenarioGoalFormProps> = ({
           {t('Cancel')}
         </CancelButton>
         <SubmitButton
-          type="button"
+          type="submit"
           variant="contained"
-          onClick={handleSend}
-          disabled={
-            sending || hasError || !(addresses.length || inputValue.trim())
-          }
+          disabled={sending || invalid || !recipient}
         >
           {t('Send Worksheet')}
         </SubmitButton>
       </DialogActions>
-    </>
+    </form>
   );
 };
 
-/** Collects the addresses a scenario goal's worksheet is emailed to. */
+/** Collects the address a scenario goal's worksheet is emailed to. */
 export const SendScenarioGoalDialog: React.FC<SendScenarioGoalDialogProps> = ({
   isOpen,
   goal,

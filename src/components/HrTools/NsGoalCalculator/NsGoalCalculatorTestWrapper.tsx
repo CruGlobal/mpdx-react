@@ -56,7 +56,6 @@ const sendScenarioGoalMock: DeepPartialMock<SendNewStaffScenarioGoalMutation> =
   {
     sendNewStaffScenarioGoal: {
       newStaffGoalCalculation: { id: 'scenario-1' },
-      sentTo: ['john@example.com'],
     },
   };
 

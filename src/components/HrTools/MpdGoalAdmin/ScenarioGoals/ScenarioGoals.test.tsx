@@ -131,7 +131,6 @@ const sendScenarioGoalMock: DeepPartialMock<SendNewStaffScenarioGoalMutation> =
   {
     sendNewStaffScenarioGoal: {
       newStaffGoalCalculation: { id: 'scenario-1' },
-      sentTo: ['john@example.com'],
     },
   };
 
@@ -222,12 +221,12 @@ describe('ScenarioGoals', () => {
 
     expect(
       getByText(
-        'Email the support goals worksheet for John Doe to these addresses. This cannot be undone.',
+        'Email the support goals worksheet for John Doe to this address. This cannot be undone.',
       ),
     ).toBeInTheDocument();
     userEvent.type(
-      getByRole('combobox', { name: 'Email addresses' }),
-      'john@example.com{enter}',
+      getByRole('textbox', { name: 'Email address' }),
+      'john@example.com',
     );
 
     userEvent.click(getByRole('button', { name: 'Send Worksheet' }));
@@ -237,7 +236,7 @@ describe('ScenarioGoals', () => {
     ).toBeInTheDocument();
     expect(mutationSpy).toHaveGraphqlOperation('SendNewStaffScenarioGoal', {
       id: 'scenario-1',
-      emailAddresses: ['john@example.com'],
+      emailAddress: 'john@example.com',
     });
   });
 
@@ -252,8 +251,8 @@ describe('ScenarioGoals', () => {
 
     userEvent.click(await findByRole('button', { name: 'Email John Doe' }));
     userEvent.type(
-      getByRole('combobox', { name: 'Email addresses' }),
-      'john@example.com{enter}',
+      getByRole('textbox', { name: 'Email address' }),
+      'john@example.com',
     );
     userEvent.click(getByRole('button', { name: 'Send Worksheet' }));
 
@@ -293,15 +292,14 @@ describe('ScenarioGoals', () => {
       SendNewStaffScenarioGoal: {
         sendNewStaffScenarioGoal: {
           newStaffGoalCalculation: { id: 'scenario-4' },
-          sentTo: ['recruiter@example.com'],
         },
       },
     } as ApolloErgonoMockMap);
 
     userEvent.click(await findByRole('button', { name: 'Email Jane Roe' }));
     userEvent.type(
-      getByRole('combobox', { name: 'Email addresses' }),
-      'recruiter@example.com{enter}',
+      getByRole('textbox', { name: 'Email address' }),
+      'recruiter@example.com',
     );
     userEvent.click(getByRole('button', { name: 'Send Worksheet' }));
 
@@ -312,7 +310,7 @@ describe('ScenarioGoals', () => {
     ).toBeInTheDocument();
     expect(mutationSpy).toHaveGraphqlOperation('SendNewStaffScenarioGoal', {
       id: 'scenario-4',
-      emailAddresses: ['recruiter@example.com'],
+      emailAddress: 'recruiter@example.com',
     });
   });
 

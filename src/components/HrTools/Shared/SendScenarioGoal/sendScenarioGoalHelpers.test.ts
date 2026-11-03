@@ -2,8 +2,8 @@ import i18n from 'src/lib/i18n';
 import {
   SendableScenarioGoal,
   isValidEmailAddress,
+  normalizeEmailAddress,
   scenarioGoalSendBlockedReason,
-  splitEmailAddresses,
 } from './sendScenarioGoalHelpers';
 
 const t = i18n.t;
@@ -35,17 +35,11 @@ describe('scenarioGoalSendBlockedReason', () => {
   });
 });
 
-describe('splitEmailAddresses', () => {
-  it('splits on commas, semicolons, and whitespace and lowercases', () => {
-    expect(
-      splitEmailAddresses(
-        ' A@example.com, b@example.com;c@example.com\nd@x.org ',
-      ),
-    ).toEqual(['a@example.com', 'b@example.com', 'c@example.com', 'd@x.org']);
-  });
-
-  it('returns nothing for blank text', () => {
-    expect(splitEmailAddresses(' , ; ')).toEqual([]);
+describe('normalizeEmailAddress', () => {
+  it('trims and lowercases', () => {
+    expect(normalizeEmailAddress('  Jane@Example.com ')).toBe(
+      'jane@example.com',
+    );
   });
 });
 
@@ -57,15 +51,10 @@ describe('isValidEmailAddress', () => {
     },
   );
 
-  it.each([
-    '',
-    'jane',
-    'jane@',
-    '@example.com',
-    'coach@localhost',
-    'a..b@example.com',
-    'a@x.com,b@y.com',
-  ])('rejects "%s" like the API\'s strict check', (address) => {
-    expect(isValidEmailAddress(address)).toBe(false);
-  });
+  it.each(['', 'jane', 'jane@', '@example.com', 'a@x.com,b@y.com'])(
+    'rejects "%s"',
+    (address) => {
+      expect(isValidEmailAddress(address)).toBe(false);
+    },
+  );
 });

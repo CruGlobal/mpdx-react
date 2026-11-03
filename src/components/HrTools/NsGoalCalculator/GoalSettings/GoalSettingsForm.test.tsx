@@ -930,12 +930,12 @@ describe('GoalSettingsForm', () => {
 
       expect(
         getByText(
-          'Email the support goals worksheet for John Doe to these addresses. This cannot be undone.',
+          'Email the support goals worksheet for John Doe to this address. This cannot be undone.',
         ),
       ).toBeInTheDocument();
       userEvent.type(
-        getByRole('combobox', { name: 'Email addresses' }),
-        'john@example.com{enter}',
+        getByRole('textbox', { name: 'Email address' }),
+        'john@example.com',
       );
 
       userEvent.click(getByRole('button', { name: 'Send Worksheet' }));
@@ -945,7 +945,7 @@ describe('GoalSettingsForm', () => {
       ).toBeInTheDocument();
       expect(mutationSpy).toHaveGraphqlOperation('SendNewStaffScenarioGoal', {
         id: 'scenario-1',
-        emailAddresses: ['john@example.com'],
+        emailAddress: 'john@example.com',
       });
     });
 

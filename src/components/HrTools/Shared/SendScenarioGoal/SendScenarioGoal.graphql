@@ -1,11 +1,7 @@
-mutation SendNewStaffScenarioGoal($id: ID!, $emailAddresses: [String!]!) {
-  sendNewStaffScenarioGoal(
-    input: { id: $id, emailAddresses: $emailAddresses }
-  ) {
+mutation SendNewStaffScenarioGoal($id: ID!, $emailAddress: String!) {
+  sendNewStaffScenarioGoal(input: { id: $id, emailAddress: $emailAddress }) {
     newStaffGoalCalculation {
       id
     }
-    # Delivery is queued, so this is the address list rather than a receipt.
-    sentTo
   }
 }
