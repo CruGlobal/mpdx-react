@@ -54,7 +54,10 @@ export const FinancialInformationSection: React.FC<
     <Section title={t('Financial Information')}>
       <ColumnHeaderRow columns={visibleHeaders} />
 
-      <FieldRow label={t('Annual Requested Salary')}>
+      <FieldRow
+        label={t('Annual Requested Salary')}
+        helperText={t('Leave blank to use the default salary.')}
+      >
         <GoalSettingsNumberField
           name="annualRequestedSalary"
           label={t('Annual Requested Salary')}
