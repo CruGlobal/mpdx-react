@@ -117,6 +117,11 @@ describe('ReportLegendPanel', () => {
     ).toBeInTheDocument();
     expect(getByText('Negative last 3+ months')).toBeInTheDocument();
     expect(
+      getByText(
+        'Staff whose expenses were greater than their income in each of the last three complete months.',
+      ),
+    ).toBeInTheDocument();
+    expect(
       getByText('The current month is never counted.'),
     ).toBeInTheDocument();
   });
