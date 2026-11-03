@@ -93,9 +93,9 @@ describe('NameDisplay', () => {
 });
 
 describe('columnLayout', () => {
-  it('stacks three columns on phones and shrinks the amounts', () => {
+  it('stacks three columns below the md breakpoint and shrinks the amounts', () => {
     expect(columnLayout(3)).toEqual({
-      size: { xs: 12, sm: 4 },
+      size: { xs: 12, md: 4 },
       amountVariant: 'h5',
     });
   });

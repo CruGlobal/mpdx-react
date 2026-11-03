@@ -12,7 +12,7 @@ import { currencyFormat } from 'src/lib/intlFormat';
 
 export const columnLayout = (columns: number) =>
   columns === 3
-    ? { size: { xs: 12, sm: 4 }, amountVariant: 'h5' as const }
+    ? { size: { xs: 12, md: 4 }, amountVariant: 'h5' as const }
     : { size: 6, amountVariant: 'h3' as const };
 
 interface NameDisplayProps {
