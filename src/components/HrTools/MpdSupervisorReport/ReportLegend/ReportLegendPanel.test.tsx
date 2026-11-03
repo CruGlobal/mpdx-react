@@ -100,7 +100,9 @@ describe('ReportLegendPanel', () => {
     // Green is checked first, so red needs payroll below both benchmarks
     expect(getByText(/Payroll was below both benchmarks/)).toBeInTheDocument();
     expect(
-      getByText(/can show green quarters yet still have negative months/),
+      getByText(
+        /can show green quarters while being paid less than the New Staff Monthly Salary/,
+      ),
     ).toBeInTheDocument();
   });
 
