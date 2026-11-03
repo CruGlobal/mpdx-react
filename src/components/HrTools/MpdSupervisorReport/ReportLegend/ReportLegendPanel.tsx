@@ -98,7 +98,7 @@ export const ReportLegendPanel: React.FC = () => {
       'Payroll was below their Monthly Gross Salary but at or above their New Staff Monthly Salary. For interns, payroll was below their Monthly Gross Salary.',
     ),
     [MpdHealthStatusEnum.Red]: t(
-      'Payroll was below their New Staff Monthly Salary, even if they were paid their full Monthly Gross Salary.',
+      'Payroll was below their New Staff Monthly Salary, even if they were paid their full Monthly Gross Salary. Interns are never at risk.',
     ),
     [MpdHealthStatusEnum.Blue]: t(
       "Part-time field staff and volunteers aren't graded against salary benchmarks.",

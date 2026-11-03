@@ -100,7 +100,7 @@ describe('ReportLegendPanel', () => {
     // MPDX-10112: payroll below the New Staff salary is red even at full gross salary
     expect(
       getByText(
-        /Payroll was below their New Staff Monthly Salary, even if they were paid their full Monthly Gross Salary\./,
+        /Payroll was below their New Staff Monthly Salary, even if they were paid their full Monthly Gross Salary\. Interns are never at risk\./,
       ),
     ).toBeInTheDocument();
     expect(

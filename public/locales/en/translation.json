@@ -2482,7 +2482,7 @@
     "Payroll Taxes": "Payroll Taxes",
     "Payroll was at or above their Monthly Gross Salary (within $5) and their New Staff Monthly Salary. For interns, payroll was at or above their Monthly Gross Salary (within $5).": "Payroll was at or above their Monthly Gross Salary (within $5) and their New Staff Monthly Salary. For interns, payroll was at or above their Monthly Gross Salary (within $5).",
     "Payroll was below their Monthly Gross Salary but at or above their New Staff Monthly Salary. For interns, payroll was below their Monthly Gross Salary.": "Payroll was below their Monthly Gross Salary but at or above their New Staff Monthly Salary. For interns, payroll was below their Monthly Gross Salary.",
-    "Payroll was below their New Staff Monthly Salary, even if they were paid their full Monthly Gross Salary.": "Payroll was below their New Staff Monthly Salary, even if they were paid their full Monthly Gross Salary.",
+    "Payroll was below their New Staff Monthly Salary, even if they were paid their full Monthly Gross Salary. Interns are never at risk.": "Payroll was below their New Staff Monthly Salary, even if they were paid their full Monthly Gross Salary. Interns are never at risk.",
     "PDF of Mail Merged Labels": "PDF of Mail Merged Labels",
     "PDS Goal Summary": "PDS Goal Summary",
     "Pending": "Pending",
