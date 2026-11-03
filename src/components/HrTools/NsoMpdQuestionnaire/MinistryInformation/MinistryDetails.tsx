@@ -28,7 +28,7 @@ export const MinistryDetails: React.FC = () => {
         ministryName: yup.string().required(t('Please select a ministry')),
         ministryLocation: yup
           .string()
-          .required(t('Please enter the city of your assignment')),
+          .required(t('Please enter the city of your ministry assignment')),
         geographicLocation: yup
           .string()
           .required(

@@ -162,23 +162,11 @@ describe('FinancialInformationSection', () => {
     ).toBeInTheDocument();
   });
 
-  it('explains that the requested salary is net salary and defaults when blank', () => {
+  it('explains that the requested salary defaults when blank', () => {
     const { getByText } = render(<TestComponent />);
 
     expect(
-      getByText(
-        'Requested salary is the same as net salary or take-home pay. Leave blank to use the default salary.',
-      ),
-    ).toBeInTheDocument();
-  });
-
-  it('notes that a senior staff spouse salary is an HCM estimate', () => {
-    const { getByText } = render(<TestComponent seniorStaff />);
-
-    expect(
-      getByText(
-        "Requested salary is the same as net salary or take-home pay. Jane's pre-filled amount is an estimate from their current HCM salary. Please confirm it in HCM. Leave blank to use the default salary.",
-      ),
+      getByText('Leave blank to use the default salary.'),
     ).toBeInTheDocument();
   });
 });

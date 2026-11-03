@@ -149,7 +149,7 @@ describe('MinistryDetails', () => {
     userEvent.tab();
 
     expect(
-      await findByText('Please enter the city of your assignment'),
+      await findByText('Please enter the city of your ministry assignment'),
     ).toBeInTheDocument();
   });
 

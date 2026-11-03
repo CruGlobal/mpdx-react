@@ -56,16 +56,7 @@ export const FinancialInformationSection: React.FC<
 
       <FieldRow
         label={t('Annual Requested Salary')}
-        helperText={
-          seniorStaff
-            ? t(
-                "Requested salary is the same as net salary or take-home pay. {{spouseName}}'s pre-filled amount is an estimate from their current HCM salary. Please confirm it in HCM. Leave blank to use the default salary.",
-                { spouseName },
-              )
-            : t(
-                'Requested salary is the same as net salary or take-home pay. Leave blank to use the default salary.',
-              )
-        }
+        helperText={t('Leave blank to use the default salary.')}
       >
         <GoalSettingsNumberField
           name="annualRequestedSalary"

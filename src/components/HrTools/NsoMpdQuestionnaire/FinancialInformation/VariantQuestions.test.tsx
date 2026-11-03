@@ -169,7 +169,7 @@ describe('VariantQuestions', () => {
 
       expect(
         await findByText(
-          "Requested salary is the same as net salary or take-home pay. Jane's pre-filled amount is an estimate from their current HCM salary. Please confirm it in HCM. Round to the nearest dollar.",
+          "Requested salary is the same as net salary or take-home pay. Jane's pre-filled amount is estimate from their current salary. Round to the nearest dollar.",
         ),
       ).toBeInTheDocument();
     });
