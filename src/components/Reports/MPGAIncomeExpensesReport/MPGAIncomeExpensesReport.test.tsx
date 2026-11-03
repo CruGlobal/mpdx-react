@@ -126,6 +126,7 @@ const mockData = {
 interface TestComponentProps {
   staffAccountId?: string;
   staffName?: string;
+  personNumber?: string;
   failReportCalls?: number;
   hcmError?: GraphQLError;
 }
@@ -133,6 +134,7 @@ interface TestComponentProps {
 const TestComponent: React.FC<TestComponentProps> = ({
   staffAccountId,
   staffName,
+  personNumber,
   failReportCalls = 0,
   hcmError,
 }) => {
@@ -176,7 +178,10 @@ const TestComponent: React.FC<TestComponentProps> = ({
               }}
               onCall={mutationSpy}
             >
-              <MPGAIncomeExpensesReportProvider staffAccountId={staffAccountId}>
+              <MPGAIncomeExpensesReportProvider
+                staffAccountId={staffAccountId}
+                personNumber={personNumber}
+              >
                 <MPGAIncomeExpensesReport
                   onNavListToggle={onNavListToggle}
                   isNavListOpen={true}
@@ -315,7 +320,24 @@ describe('MPGAIncomeExpensesReport', () => {
       expect(await findByRole('status')).toHaveTextContent(notFoundNote);
     });
 
-    it('keeps the global error toast quiet for that error only', async () => {
+    it('names the staff member rather than you in supervisor view', async () => {
+      const { findByText, queryByText } = render(
+        <TestComponent
+          staffAccountId={staffAccountId}
+          personNumber="000000111"
+          hcmError={hcmPersonNotFound}
+        />,
+      );
+
+      expect(
+        await findByText(
+          "HR no longer has a record for this person, so salary isn't split by person on this report.",
+        ),
+      ).toBeInTheDocument();
+      expect(queryByText(notFoundNote)).not.toBeInTheDocument();
+    });
+
+    it('passes the handled codes to every Hcm read', async () => {
       const { findByText } = render(
         <TestComponent hcmError={hcmPersonNotFound} />,
       );

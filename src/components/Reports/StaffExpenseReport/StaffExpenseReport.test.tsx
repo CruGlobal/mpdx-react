@@ -672,7 +672,7 @@ describe('StaffExpenseReport', () => {
         expect(queryByRole('alert')).not.toBeInTheDocument();
       });
 
-      it('keeps the global error toast quiet for that error only', async () => {
+      it('passes the handled codes to every Hcm read', async () => {
         const { findByText } = render(
           <TestComponent hcmError={hcmPersonNotFound} />,
         );
