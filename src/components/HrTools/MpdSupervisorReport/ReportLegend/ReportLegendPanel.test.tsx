@@ -101,7 +101,7 @@ describe('ReportLegendPanel', () => {
     expect(getByText(/Payroll was below both benchmarks/)).toBeInTheDocument();
     expect(
       getByText(
-        /can show green quarters while being paid less than the New Staff Monthly Salary/,
+        'A staff member whose Monthly Gross Salary is below their New Staff Monthly Salary can show green quarters. Their Monthly Gross Salary is marked red in their details.',
       ),
     ).toBeInTheDocument();
   });
