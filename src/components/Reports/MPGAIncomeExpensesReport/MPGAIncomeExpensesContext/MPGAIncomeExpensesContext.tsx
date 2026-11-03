@@ -2,18 +2,13 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { ApolloError } from '@apollo/client';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { useHcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
-import {
-  HANDLED_HCM_ERROR_CODES,
-  isHcmPersonNotFoundError,
-} from 'src/components/HrTools/Shared/HcmData/hcmPersonNotFound';
 import { useExpenseCategories } from 'src/hooks/useExpenseCategories';
 import { useFilteredFunds } from 'src/hooks/useFilteredFunds';
 import { useGetLastTwelveMonths } from 'src/hooks/useGetLastTwelveMonths';
 import { useLocale } from 'src/hooks/useLocale';
 import { monthYearFormat } from 'src/lib/intlFormat';
-import { HouseholdMember } from '../../Shared/Helpers/household';
 import { transformTransactionDate } from '../../Shared/Helpers/transformTransactionDate';
+import { useReportHcm } from '../../Shared/Helpers/useReportHcm';
 import { Filters } from '../../Shared/SettingsDialog/SettingsDialog';
 import { DateRange } from '../../StaffExpenseReport/Helpers/StaffReportEnum';
 import { FundTypes, Funds } from '../Helper/MPGAReportEnum';
@@ -100,27 +95,16 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
 
   const isSupervisorView = Boolean(staffAccountId);
 
-  // Person numbers tell the reader's payroll from their spouse's. HCM lists the reader first, then
-  // their spouse. Both requests leave together; `loading` below covers them both so salary is not
-  // rendered as one household total and then split.
+  // `loading` below covers HCM and the report together, so salary is not rendered as one household
+  // total and then split.
   const {
-    data: hcmData,
     loading: hcmLoading,
-    error: hcmError,
-  } = useHcmQuery({
-    variables: { personNumber },
+    household,
+    hcmPersonNotFound,
+  } = useReportHcm({
+    personNumber,
     skip: isSupervisorView && !personNumber,
-    context: { suppressErrorCodes: HANDLED_HCM_ERROR_CODES },
   });
-  const hcmPersonNotFound = isHcmPersonNotFoundError(hcmError);
-  const household: HouseholdMember[] = useMemo(
-    () =>
-      hcmData?.hcm.map(({ staffInfo }) => ({
-        personNumber: staffInfo.personNumber,
-        name: staffInfo.preferredName ?? staffInfo.lastName,
-      })) ?? [],
-    [hcmData],
-  );
 
   const [filters, setFilters] = useState<Filters | null>(null);
 

@@ -9,12 +9,8 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { HcmPersonNotFoundAlert } from 'src/components/HrTools/Shared/HcmData/HcmPersonNotFoundAlert';
 import { HANDLED_HCM_ERROR_CODES } from 'src/components/HrTools/Shared/HcmData/hcmPersonNotFound';
-import {
-  HcmSyncBodyStatus,
-  HcmSyncHeaderStatus,
-} from 'src/components/HrTools/Shared/HcmSyncStatus/HcmSyncStatus';
+import { HcmSyncHeaderStatus } from 'src/components/HrTools/Shared/HcmSyncStatus/HcmSyncStatus';
 import { LoadErrorAlert } from 'src/components/Shared/LoadErrorAlert/LoadErrorAlert';
 import {
   HeaderTypeEnum,
@@ -23,6 +19,7 @@ import {
 import { useStaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import { AccountInfoBox } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBox';
 import { AccountInfoBoxSkeleton } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBoxSkeleton';
+import { HcmReportBodyStatus } from '../Shared/HcmReportStatus/HcmReportBodyStatus';
 import { SettingsButtonGroup } from '../Shared/SettingsButtonGroup/SettingsButtonGroup';
 import {
   Filters,
@@ -148,14 +145,11 @@ export const MPGAIncomeExpensesReport: React.FC<
         <Box mt={2}>
           <Container>
             <SimpleScreenOnly>
-              <HcmSyncBodyStatus
+              <HcmReportBodyStatus
                 personNumber={personNumber}
-                skip={isSupervisorView && !personNumber}
-                suppressErrorCodes={HANDLED_HCM_ERROR_CODES}
+                isSupervisorView={isSupervisorView}
+                hcmPersonNotFound={hcmPersonNotFound}
               />
-              {hcmPersonNotFound && (
-                <HcmPersonNotFoundAlert isSupervisorView={isSupervisorView} />
-              )}
             </SimpleScreenOnly>
             <StyledHeaderBox>
               <SimpleScreenOnly>

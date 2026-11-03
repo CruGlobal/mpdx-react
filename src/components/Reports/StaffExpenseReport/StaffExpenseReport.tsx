@@ -16,16 +16,8 @@ import {
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { useHcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
-import { HcmPersonNotFoundAlert } from 'src/components/HrTools/Shared/HcmData/HcmPersonNotFoundAlert';
-import {
-  HANDLED_HCM_ERROR_CODES,
-  isHcmPersonNotFoundError,
-} from 'src/components/HrTools/Shared/HcmData/hcmPersonNotFound';
-import {
-  HcmSyncBodyStatus,
-  HcmSyncHeaderStatus,
-} from 'src/components/HrTools/Shared/HcmSyncStatus/HcmSyncStatus';
+import { HANDLED_HCM_ERROR_CODES } from 'src/components/HrTools/Shared/HcmData/hcmPersonNotFound';
+import { HcmSyncHeaderStatus } from 'src/components/HrTools/Shared/HcmSyncStatus/HcmSyncStatus';
 import { LoadErrorAlert } from 'src/components/Shared/LoadErrorAlert/LoadErrorAlert';
 import {
   HeaderTypeEnum,
@@ -39,7 +31,8 @@ import theme from 'src/theme';
 import { AccountInfoBox } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBox';
 import { AccountInfoBoxSkeleton } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBoxSkeleton';
 import { EmptyTable } from '../../HrTools/Shared/EmptyTable/EmptyTable';
-import { HouseholdMember } from '../Shared/Helpers/household';
+import { HcmReportBodyStatus } from '../Shared/HcmReportStatus/HcmReportBodyStatus';
+import { useReportHcm } from '../Shared/Helpers/useReportHcm';
 import { SettingsButtonGroup } from '../Shared/SettingsButtonGroup/SettingsButtonGroup';
 import {
   Filters,
@@ -111,32 +104,23 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 
   const isSupervisorView = !!staffAccountId;
 
-  // Person numbers tell the reader's payroll from their spouse's. HCM lists the reader first, then
-  // their spouse. Held alongside the report data's own loading so salary is not rendered as one
-  // household total and then split.
+  // Held alongside the report data's own loading so salary is not rendered as one household total
+  // and then split.
   const {
     data: hcmData,
     loading: hcmLoading,
     error: hcmError,
     refetch: refetchHcm,
-  } = useHcmQuery({
-    variables: { personNumber },
+    household,
+    hcmPersonNotFound,
+  } = useReportHcm({
+    personNumber,
     skip: isSupervisorView && !personNumber,
-    context: { suppressErrorCodes: HANDLED_HCM_ERROR_CODES },
   });
   // HCM has no staff group or household for someone it no longer knows, such as staff who have left,
   // so their report loads with the base funds and no salary split. Any other HCM error blocks the
   // report, because retrying can still bring the right fund types and split.
-  const hcmPersonNotFound = isHcmPersonNotFoundError(hcmError);
   const hcmBlocksReport = !!hcmError && !hcmPersonNotFound;
-  const household: HouseholdMember[] = useMemo(
-    () =>
-      hcmData?.hcm.map(({ staffInfo }) => ({
-        personNumber: staffInfo.personNumber,
-        name: staffInfo.preferredName ?? staffInfo.lastName,
-      })) ?? [],
-    [hcmData],
-  );
 
   const usStaffGroup = hcmData?.hcm[0]?.usStaffGroup;
   const hideFunds =
@@ -371,14 +355,11 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       <Box mt={2}>
         <Container>
           <SimpleScreenOnly>
-            <HcmSyncBodyStatus
+            <HcmReportBodyStatus
               personNumber={personNumber}
-              skip={isSupervisorView && !personNumber}
-              suppressErrorCodes={HANDLED_HCM_ERROR_CODES}
+              isSupervisorView={isSupervisorView}
+              hcmPersonNotFound={hcmPersonNotFound}
             />
-            {hcmPersonNotFound && (
-              <HcmPersonNotFoundAlert isSupervisorView={isSupervisorView} />
-            )}
           </SimpleScreenOnly>
           <Box>
             <StyledHeaderBox>
