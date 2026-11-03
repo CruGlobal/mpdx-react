@@ -110,7 +110,7 @@ describe('ReportLegendPanel', () => {
     expect(getByText('Negative last month')).toBeInTheDocument();
     expect(
       getByText(
-        'Staff whose payroll last month was below their New Staff Monthly Salary.',
+        'Staff whose expenses were greater than their income last month.',
       ),
     ).toBeInTheDocument();
     expect(getByText('Negative last 3+ months')).toBeInTheDocument();
@@ -162,7 +162,7 @@ describe('ReportLegendPanel', () => {
 
     expect(
       getByText(
-        'Interns, part-time field staff and volunteers have no New Staff Monthly Salary, so these filters never include them.',
+        'These filters leave out interns, part-time field staff and volunteers.',
       ),
     ).toBeInTheDocument();
   });

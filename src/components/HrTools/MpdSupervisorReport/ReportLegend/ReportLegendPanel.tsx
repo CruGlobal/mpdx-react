@@ -227,7 +227,7 @@ export const ReportLegendPanel: React.FC = () => {
         <Section title={t('Filters')}>
           <Typography variant="body2" sx={{ mb: 1 }}>
             {t(
-              'Interns, part-time field staff and volunteers have no New Staff Monthly Salary, so these filters never include them.',
+              'These filters leave out interns, part-time field staff and volunteers.',
             )}
           </Typography>
           <Box component="dl" sx={{ m: 0 }}>
