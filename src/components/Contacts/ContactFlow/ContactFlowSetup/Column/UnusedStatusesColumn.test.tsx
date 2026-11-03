@@ -5,6 +5,11 @@ import { SnackbarProvider } from 'notistack';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import TestRouter from '__tests__/util/TestRouter';
+import {
+  desktopWidth,
+  getStyleAtWidth,
+  phoneWidth,
+} from '__tests__/util/styleAtWidth';
 import { StatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../../../theme';
 import { UnusedStatusesColumn } from './UnusedStatusesColumn';
@@ -43,5 +48,50 @@ describe('UnusedStatusesColumn', () => {
       }),
     );
     expect(getByText('Unused Statuses')).toBeInTheDocument();
+  });
+
+  describe('column height', () => {
+    const renderColumnContent = (): HTMLElement => {
+      const { getByText } = render(
+        <SnackbarProvider>
+          <DndProvider backend={HTML5Backend}>
+            <ThemeProvider theme={theme}>
+              <TestRouter router={router}>
+                <UnusedStatusesColumn
+                  accountListId={accountListId}
+                  loading={false}
+                  columnWidth={100}
+                  statuses={status}
+                  moveStatus={moveStatus}
+                />
+              </TestRouter>
+            </ThemeProvider>
+          </DndProvider>
+        </SnackbarProvider>,
+      );
+
+      // The scrolling gray area under the header that holds the statuses
+      const content = getByText('Partner - Financial').closest<HTMLElement>(
+        '.MuiCardContent-root',
+      );
+      if (!content) {
+        throw new Error('Column content not found');
+      }
+      return content;
+    };
+
+    it('fits the column to its statuses on phones', () => {
+      const content = renderColumnContent();
+
+      expect(getStyleAtWidth(content, 'height', phoneWidth)).toBe('auto');
+    });
+
+    it('keeps the full screen height on desktop', () => {
+      const content = renderColumnContent();
+
+      expect(getStyleAtWidth(content, 'height', desktopWidth)).toBe(
+        'calc(100vh - 230px)',
+      );
+    });
   });
 });

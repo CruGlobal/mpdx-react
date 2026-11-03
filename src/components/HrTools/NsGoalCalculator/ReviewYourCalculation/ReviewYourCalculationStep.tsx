@@ -24,6 +24,7 @@ export const ReviewYourCalculationStep: React.FC<
         <Button
           variant="contained"
           onClick={handleContinue}
+          className="print-hidden"
           sx={{ alignSelf: 'flex-start' }}
         >
           {t('Continue')}

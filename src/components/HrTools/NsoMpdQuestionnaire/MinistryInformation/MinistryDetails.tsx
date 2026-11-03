@@ -28,7 +28,7 @@ export const MinistryDetails: React.FC = () => {
         ministryName: yup.string().required(t('Please select a ministry')),
         ministryLocation: yup
           .string()
-          .required(t('Please enter an assignment location')),
+          .required(t('Please enter the city of your ministry assignment')),
         geographicLocation: yup
           .string()
           .required(
@@ -73,7 +73,7 @@ export const MinistryDetails: React.FC = () => {
       />
 
       <LabeledField
-        label={t('What is your expected ministry assignment location?')}
+        label={t('What city is your expected ministry assignment in?')}
         required
         error={locationError}
         helperText={locationHelperText}
