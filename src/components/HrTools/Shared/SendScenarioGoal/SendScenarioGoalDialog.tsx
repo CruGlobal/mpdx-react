@@ -20,7 +20,6 @@ import {
   MAX_SCENARIO_GOAL_RECIPIENTS,
   SendableScenarioGoal,
   isValidEmailAddress,
-  scenarioGoalRecipients,
   splitEmailAddresses,
 } from './sendScenarioGoalHelpers';
 
@@ -47,7 +46,7 @@ interface SendScenarioGoalFormProps {
   setSending: (sending: boolean) => void;
 }
 
-// Keyed by request so each opening starts over from the scenario's own addresses.
+// Keyed by request so each opening starts with no addresses.
 const SendScenarioGoalForm: React.FC<SendScenarioGoalFormProps> = ({
   goal,
   onSend,
@@ -56,9 +55,7 @@ const SendScenarioGoalForm: React.FC<SendScenarioGoalFormProps> = ({
   setSending,
 }) => {
   const { t } = useTranslation();
-  const [addresses, setAddresses] = useState(() =>
-    scenarioGoalRecipients(goal),
-  );
+  const [addresses, setAddresses] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState('');
 
   // Only committed chips are checked, so a half-typed address isn't flagged mid-keystroke.
@@ -165,6 +162,7 @@ const SendScenarioGoalForm: React.FC<SendScenarioGoalFormProps> = ({
                 <TextField
                   {...params}
                   label={t('Email addresses')}
+                  required
                   error={hasError}
                   helperText={helperText}
                   autoFocus
@@ -193,7 +191,7 @@ const SendScenarioGoalForm: React.FC<SendScenarioGoalFormProps> = ({
   );
 };
 
-/** Collects the addresses a scenario goal's worksheet is emailed to, prefilled with the scenario's own. */
+/** Collects the addresses a scenario goal's worksheet is emailed to. */
 export const SendScenarioGoalDialog: React.FC<SendScenarioGoalDialogProps> = ({
   isOpen,
   goal,

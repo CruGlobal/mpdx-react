@@ -25,8 +25,6 @@ const defaultGoal: SendableScenarioGoal = {
   lastName: 'Doe',
   geographicLocation: 'Orlando',
   calculationsYear: 2026,
-  emailAddress: 'jane@example.com',
-  spouseEmailAddress: 'john@example.com',
 };
 
 const Harness: React.FC<{ goal: SendableScenarioGoal }> = ({ goal }) => {
@@ -49,7 +47,7 @@ interface TestComponentProps {
 
 const TestComponent: React.FC<TestComponentProps> = ({
   goal = defaultGoal,
-  sentTo = ['jane@example.com', 'john@example.com'],
+  sentTo = ['recruiter@example.com'],
 }) => (
   <ThemeProvider theme={theme}>
     <GqlMockedProvider<{
@@ -87,18 +85,17 @@ beforeEach(() => {
 });
 
 describe('useSendScenarioGoal', () => {
-  it("prefills the scenario's own addresses before anything is sent", async () => {
-    const { dialog, sendButton } = await openDialog();
+  it('starts empty and requires at least one address', async () => {
+    const { dialog, input, sendButton } = await openDialog();
 
     expect(
       within(dialog).getByText(
         'Email the support goals worksheet for Jane Doe to these addresses. This cannot be undone.',
       ),
     ).toBeInTheDocument();
-    expect(within(dialog).getByText('jane@example.com')).toBeInTheDocument();
-    expect(within(dialog).getByText('john@example.com')).toBeInTheDocument();
-    expect(sendButton).toBeEnabled();
-    expect(mutationSpy).not.toHaveGraphqlOperation('SendNewStaffScenarioGoal');
+    expect(within(dialog).queryByRole('button', { name: /@/ })).toBeNull();
+    expect(input).toBeRequired();
+    expect(sendButton).toBeDisabled();
   });
 
   it('sends to the addresses entered and names the ones the server used', async () => {
@@ -106,11 +103,13 @@ describe('useSendScenarioGoal', () => {
       sentTo: ['john@example.com', 'recruiter@example.com'],
     });
 
+    await userEvent.type(input, 'Jane@Example.com{enter}');
+    await userEvent.type(input, 'john@example.com{enter}');
+    await userEvent.type(input, 'Recruiter@Example.com{enter}');
     const janeChip = within(dialog).getByRole('button', {
       name: 'jane@example.com',
     });
     await userEvent.click(within(janeChip).getByTestId('CancelIcon'));
-    await userEvent.type(input, 'Recruiter@Example.com{enter}');
 
     expect(
       within(dialog).queryByText('jane@example.com'),
@@ -137,9 +136,7 @@ describe('useSendScenarioGoal', () => {
   });
 
   it('splits pasted lists into separate addresses', async () => {
-    const { dialog, input } = await openDialog({
-      goal: { ...defaultGoal, emailAddress: null, spouseEmailAddress: null },
-    });
+    const { dialog, input } = await openDialog();
 
     userEvent.paste(input, 'a@example.com, b@example.com;c@example.com ');
 
@@ -150,7 +147,6 @@ describe('useSendScenarioGoal', () => {
 
   it('includes an address that was typed but not yet committed', async () => {
     const { input, sendButton, queryByRole } = await openDialog({
-      goal: { ...defaultGoal, emailAddress: null, spouseEmailAddress: null },
       sentTo: ['coach@example.com'],
     });
 
@@ -164,14 +160,6 @@ describe('useSendScenarioGoal', () => {
       }),
     );
     await waitFor(() => expect(queryByRole('dialog')).not.toBeInTheDocument());
-  });
-
-  it('requires at least one address when the scenario has none', async () => {
-    const { sendButton } = await openDialog({
-      goal: { ...defaultGoal, emailAddress: null, spouseEmailAddress: null },
-    });
-
-    expect(sendButton).toBeDisabled();
   });
 
   it('blocks sending to an invalid address', async () => {
@@ -207,7 +195,7 @@ describe('useSendScenarioGoal', () => {
 
     userEvent.paste(
       input,
-      Array.from({ length: 9 }, (_, i) => `person${i}@example.com`).join(',') +
+      Array.from({ length: 11 }, (_, i) => `person${i}@example.com`).join(',') +
         ',',
     );
 
@@ -268,7 +256,7 @@ describe('useSendScenarioGoal', () => {
     expect(sendButton).toBeEnabled();
   });
 
-  it('starts over from the scenario addresses each time it opens', async () => {
+  it('starts over with no addresses each time it opens', async () => {
     const { dialog, input, getByRole, findByRole } = await openDialog();
 
     await userEvent.type(input, 'coach@example.com{enter}');
@@ -282,6 +270,5 @@ describe('useSendScenarioGoal', () => {
     expect(
       within(reopened).queryByText('coach@example.com'),
     ).not.toBeInTheDocument();
-    expect(within(reopened).getByText('jane@example.com')).toBeInTheDocument();
   });
 });

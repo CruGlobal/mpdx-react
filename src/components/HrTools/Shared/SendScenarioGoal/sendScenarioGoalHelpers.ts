@@ -15,7 +15,7 @@ const strictEmailAddress = new RegExp(
   'iu',
 );
 
-/** The fields the API's `:send` validation context needs, plus the addresses the send dialog starts with. */
+/** The fields the API's `:send` validation context needs. */
 export interface SendableScenarioGoal {
   id: string;
   firstName?: string | null;
@@ -23,20 +23,7 @@ export interface SendableScenarioGoal {
   geographicLocation?: string | null;
   /** An Int once saved, the Select's string while editing. */
   calculationsYear?: number | string | null;
-  emailAddress?: string | null;
-  spouseEmailAddress?: string | null;
 }
-
-/** The scenario's own addresses, normalized like the API's `provided_email_addresses`, to prefill the send dialog. */
-export const scenarioGoalRecipients = (
-  goal: SendableScenarioGoal,
-): string[] => {
-  const addresses = [goal.emailAddress, goal.spouseEmailAddress]
-    .map((address) => address?.trim().toLowerCase())
-    .filter((address): address is string => Boolean(address));
-
-  return [...new Set(addresses)];
-};
 
 /** Splits typed or pasted text on commas, semicolons, and whitespace into lowercased addresses. */
 export const splitEmailAddresses = (text: string): string[] =>

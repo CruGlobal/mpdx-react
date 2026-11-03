@@ -2,7 +2,6 @@ import i18n from 'src/lib/i18n';
 import {
   SendableScenarioGoal,
   isValidEmailAddress,
-  scenarioGoalRecipients,
   scenarioGoalSendBlockedReason,
   splitEmailAddresses,
 } from './sendScenarioGoalHelpers';
@@ -15,48 +14,7 @@ const sendableGoal: SendableScenarioGoal = {
   lastName: 'Doe',
   geographicLocation: 'Orlando',
   calculationsYear: 2026,
-  emailAddress: 'jane@example.com',
-  spouseEmailAddress: null,
 };
-
-describe('scenarioGoalRecipients', () => {
-  it('returns both addresses when the scenario has a spouse', () => {
-    expect(
-      scenarioGoalRecipients({
-        ...sendableGoal,
-        spouseEmailAddress: 'john@example.com',
-      }),
-    ).toEqual(['jane@example.com', 'john@example.com']);
-  });
-
-  it('lowercases and trims the way the API does', () => {
-    expect(
-      scenarioGoalRecipients({
-        ...sendableGoal,
-        emailAddress: '  Jane@Example.com ',
-      }),
-    ).toEqual(['jane@example.com']);
-  });
-
-  it('collapses a shared household address to one recipient', () => {
-    expect(
-      scenarioGoalRecipients({
-        ...sendableGoal,
-        spouseEmailAddress: 'JANE@example.com',
-      }),
-    ).toEqual(['jane@example.com']);
-  });
-
-  it('ignores blank addresses', () => {
-    expect(
-      scenarioGoalRecipients({
-        ...sendableGoal,
-        emailAddress: '   ',
-        spouseEmailAddress: null,
-      }),
-    ).toEqual([]);
-  });
-});
 
 describe('scenarioGoalSendBlockedReason', () => {
   it('returns null when the scenario can be sent', () => {
@@ -74,15 +32,6 @@ describe('scenarioGoalSendBlockedReason', () => {
     ).toBe(
       'A first name, last name, geographic location, and year are required before the worksheet can be emailed.',
     );
-  });
-
-  it('allows sending a scenario with no email address of its own', () => {
-    expect(
-      scenarioGoalSendBlockedReason(
-        { ...sendableGoal, emailAddress: null, spouseEmailAddress: null },
-        t,
-      ),
-    ).toBeNull();
   });
 });
 

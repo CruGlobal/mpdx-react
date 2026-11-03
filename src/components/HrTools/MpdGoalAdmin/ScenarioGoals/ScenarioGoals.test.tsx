@@ -225,7 +225,10 @@ describe('ScenarioGoals', () => {
         'Email the support goals worksheet for John Doe to these addresses. This cannot be undone.',
       ),
     ).toBeInTheDocument();
-    expect(getByText('john@example.com')).toBeInTheDocument();
+    userEvent.type(
+      getByRole('combobox', { name: 'Email addresses' }),
+      'john@example.com{enter}',
+    );
 
     userEvent.click(getByRole('button', { name: 'Send Worksheet' }));
 
@@ -248,6 +251,10 @@ describe('ScenarioGoals', () => {
     });
 
     userEvent.click(await findByRole('button', { name: 'Email John Doe' }));
+    userEvent.type(
+      getByRole('combobox', { name: 'Email addresses' }),
+      'john@example.com{enter}',
+    );
     userEvent.click(getByRole('button', { name: 'Send Worksheet' }));
 
     await waitFor(() =>

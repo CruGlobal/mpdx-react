@@ -933,7 +933,10 @@ describe('GoalSettingsForm', () => {
           'Email the support goals worksheet for John Doe to these addresses. This cannot be undone.',
         ),
       ).toBeInTheDocument();
-      expect(getByText('john@example.com')).toBeInTheDocument();
+      userEvent.type(
+        getByRole('combobox', { name: 'Email addresses' }),
+        'john@example.com{enter}',
+      );
 
       userEvent.click(getByRole('button', { name: 'Send Worksheet' }));
 
