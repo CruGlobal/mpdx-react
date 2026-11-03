@@ -61,7 +61,7 @@ const NavToolList = ({ selectedId, isOpen, toggle }: Props): ReactElement => {
 
   const toolDataTotalCount: { [key: string]: number } = {
     [ToolName.FixCommitmentInfo]: data?.fixCommitmentInfo.totalCount ?? 0,
-    [ToolName.FixMailingAddresses]: data?.fixMailingAddresses.totalCount ?? 0,
+    [ToolName.MailingAddresses]: data?.fixMailingAddresses.totalCount ?? 0,
     [ToolName.FixSendNewsletter]: data?.fixSendNewsletter.totalCount ?? 0,
     [ToolName.FixEmailAddresses]: data?.fixEmailAddresses.totalCount ?? 0,
     [ToolName.FixPhoneNumbers]: data?.fixPhoneNumbers.totalCount ?? 0,
