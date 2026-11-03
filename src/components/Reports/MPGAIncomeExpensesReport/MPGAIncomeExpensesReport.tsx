@@ -9,6 +9,8 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { HcmPersonNotFoundAlert } from 'src/components/HrTools/Shared/HcmData/HcmPersonNotFoundAlert';
+import { HANDLED_HCM_ERROR_CODES } from 'src/components/HrTools/Shared/HcmData/hcmPersonNotFound';
 import {
   HcmSyncBodyStatus,
   HcmSyncHeaderStatus,
@@ -37,10 +39,7 @@ import { PrintOnlyReport } from './DisplayModes/PrintOnlyReport';
 import { ScreenOnlyReport } from './DisplayModes/ScreenOnlyReport';
 import { ExportCsvButton } from './ExportCsvButton/ExportCsvButton';
 import { FundTypes } from './Helper/MPGAReportEnum';
-import {
-  HANDLED_HCM_ERROR_CODES,
-  useMPGAIncomeExpenses,
-} from './MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
+import { useMPGAIncomeExpenses } from './MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { PrintOnly, StyledHeaderBox } from './styledComponents';
 
 const isDateFilterActive = (filters: Filters | null | undefined): boolean =>
@@ -73,6 +72,7 @@ export const MPGAIncomeExpensesReport: React.FC<
     isSupervisorView,
     staffAccountId,
     personNumber,
+    hcmPersonNotFound,
     dataLoading,
     reportError,
     refetchReport,
@@ -153,6 +153,9 @@ export const MPGAIncomeExpensesReport: React.FC<
                 skip={isSupervisorView && !personNumber}
                 suppressErrorCodes={HANDLED_HCM_ERROR_CODES}
               />
+              {hcmPersonNotFound && (
+                <HcmPersonNotFoundAlert isSupervisorView={isSupervisorView} />
+              )}
             </SimpleScreenOnly>
             <StyledHeaderBox>
               <SimpleScreenOnly>

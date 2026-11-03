@@ -3,7 +3,10 @@ import { ApolloError } from '@apollo/client';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useHcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
-import { HCM_PERSON_NOT_FOUND_CODE } from 'src/components/HrTools/Shared/HcmData/hcmPersonNotFound';
+import {
+  HANDLED_HCM_ERROR_CODES,
+  isHcmPersonNotFoundError,
+} from 'src/components/HrTools/Shared/HcmData/hcmPersonNotFound';
 import { useExpenseCategories } from 'src/hooks/useExpenseCategories';
 import { useFilteredFunds } from 'src/hooks/useFilteredFunds';
 import { useGetLastTwelveMonths } from 'src/hooks/useGetLastTwelveMonths';
@@ -46,6 +49,8 @@ export type ContextType = {
   staffAccountId: string | null | undefined;
   /** The HCM person the report is for, or undefined for the current user */
   personNumber: string | undefined;
+  /** HCM has no record of the person, such as staff who have left, so salary is not split by person */
+  hcmPersonNotFound: boolean;
 
   /** Income and expenses totals */
   totals: {
@@ -59,10 +64,6 @@ export type ContextType = {
     other: number;
   };
 };
-
-// HCM has no household for someone it no longer knows, such as staff who have left, so the report
-// loads without a salary split and the global error link does not toast it
-export const HANDLED_HCM_ERROR_CODES = [HCM_PERSON_NOT_FOUND_CODE];
 
 export const MPGAIncomeExpensesContext =
   React.createContext<ContextType | null>(null);
@@ -102,11 +103,16 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
   // Person numbers tell the reader's payroll from their spouse's. HCM lists the reader first, then
   // their spouse. Both requests leave together; `loading` below covers them both so salary is not
   // rendered as one household total and then split.
-  const { data: hcmData, loading: hcmLoading } = useHcmQuery({
+  const {
+    data: hcmData,
+    loading: hcmLoading,
+    error: hcmError,
+  } = useHcmQuery({
     variables: { personNumber },
     skip: isSupervisorView && !personNumber,
     context: { suppressErrorCodes: HANDLED_HCM_ERROR_CODES },
   });
+  const hcmPersonNotFound = isHcmPersonNotFoundError(hcmError);
   const household: HouseholdMember[] = useMemo(
     () =>
       hcmData?.hcm.map(({ staffInfo }) => ({
@@ -324,6 +330,7 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
       isSupervisorView,
       staffAccountId,
       personNumber,
+      hcmPersonNotFound,
       totals,
     }),
     [
@@ -346,6 +353,7 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
       isSupervisorView,
       staffAccountId,
       personNumber,
+      hcmPersonNotFound,
       totals,
     ],
   );

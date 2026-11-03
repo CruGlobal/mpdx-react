@@ -41,6 +41,8 @@ const staffName = 'Jane Doe';
 const hcmPersonNotFound = new GraphQLError('HCM person not found', {
   extensions: { code: 'HCM_PERSON_NOT_FOUND' },
 });
+const notFoundNote =
+  "HR no longer has a record for you, so salary isn't split by person on this report.";
 const hcmUnavailable = new GraphQLError('HCM UserInfo service unavailable', {
   extensions: { code: 'HCM_UNAVAILABLE' },
 });
@@ -305,6 +307,14 @@ describe('MPGAIncomeExpensesReport', () => {
       expect(queryByRole('alert')).not.toBeInTheDocument();
     });
 
+    it('notes that salary is not split by person', async () => {
+      const { findByRole } = render(
+        <TestComponent hcmError={hcmPersonNotFound} />,
+      );
+
+      expect(await findByRole('status')).toHaveTextContent(notFoundNote);
+    });
+
     it('keeps the global error toast quiet for that error only', async () => {
       const { findByText } = render(
         <TestComponent hcmError={hcmPersonNotFound} />,
@@ -331,9 +341,19 @@ describe('MPGAIncomeExpensesReport', () => {
   });
 
   it('still loads the report when HCM is unavailable', async () => {
-    const { findByText } = render(<TestComponent hcmError={hcmUnavailable} />);
+    const { findByText, queryByText } = render(
+      <TestComponent hcmError={hcmUnavailable} />,
+    );
 
     expect(await findByText('Benefits', inGridCell)).toBeVisible();
+    expect(queryByText(notFoundNote)).not.toBeInTheDocument();
+  });
+
+  it('shows no HR record note when HCM loads', async () => {
+    const { findByText, queryByText } = render(<TestComponent />);
+
+    expect(await findByText('Benefits', inGridCell)).toBeVisible();
+    expect(queryByText(notFoundNote)).not.toBeInTheDocument();
   });
 
   describe('supervisor view', () => {
