@@ -79,7 +79,7 @@ const SendScenarioGoalForm: React.FC<SendScenarioGoalFormProps> = ({
           </Box>
         ) : (
           <>
-            <StyledDialogContentText>
+            <StyledDialogContentText sx={{ mb: 2 }}>
               {t(
                 'Email the support goals worksheet for {{name}} to this address. This cannot be undone.',
                 { name },
