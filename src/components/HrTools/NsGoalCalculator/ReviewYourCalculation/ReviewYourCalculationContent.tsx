@@ -38,7 +38,7 @@ export const ReviewYourCalculationContent: React.FC<
       : (goalCalculation.firstName ?? '');
 
   return (
-    <Stack spacing={3}>
+    <Stack spacing={3} sx={{ '@media print': { zoom: 0.6 } }}>
       <Typography variant="h6">{t('Review Your Calculation')}</Typography>
 
       <Typography variant="body1" className="print-hidden">
