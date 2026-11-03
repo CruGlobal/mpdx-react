@@ -18,7 +18,7 @@ export const AboutForm: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
 
-  const { name, primaryAccountBalance } = useFormUserInfo();
+  const { name, primaryAccountBalance, remainingCap } = useFormUserInfo();
   const latestRequest = requestData?.latestAdditionalSalaryRequest;
   const individualCap = latestRequest?.calculations.currentSalaryCap ?? 0;
 
@@ -88,7 +88,7 @@ export const AboutForm: React.FC = () => {
         </Typography>
       </Trans>
       {hcmLoading ? (
-        <NameDisplaySkeleton showContent={!!latestRequest} />
+        <NameDisplaySkeleton showContent={!!latestRequest} columns={3} />
       ) : (
         <NameDisplay
           names={name ?? ''}
@@ -96,6 +96,8 @@ export const AboutForm: React.FC = () => {
           amountOne={primaryAccountBalance}
           titleTwo={t('Your Maximum Allowable Salary (CAP)')}
           amountTwo={individualCap}
+          titleThree={t('Remaining Allowable Salary')}
+          amountThree={remainingCap}
           spouseComponent={<SpouseComponent />}
           showContent={!!latestRequest}
         />
