@@ -16,8 +16,6 @@ import {
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { HANDLED_HCM_ERROR_CODES } from 'src/components/HrTools/Shared/HcmData/hcmPersonNotFound';
-import { HcmSyncHeaderStatus } from 'src/components/HrTools/Shared/HcmSyncStatus/HcmSyncStatus';
 import { LoadErrorAlert } from 'src/components/Shared/LoadErrorAlert/LoadErrorAlert';
 import {
   HeaderTypeEnum,
@@ -32,6 +30,7 @@ import { AccountInfoBox } from '../../HrTools/Shared/AccountInfoBox/AccountInfoB
 import { AccountInfoBoxSkeleton } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBoxSkeleton';
 import { EmptyTable } from '../../HrTools/Shared/EmptyTable/EmptyTable';
 import { HcmReportBodyStatus } from '../Shared/HcmReportStatus/HcmReportBodyStatus';
+import { HcmReportHeaderStatus } from '../Shared/HcmReportStatus/HcmReportHeaderStatus';
 import { useReportHcm } from '../Shared/Helpers/useReportHcm';
 import { SettingsButtonGroup } from '../Shared/SettingsButtonGroup/SettingsButtonGroup';
 import {
@@ -113,10 +112,8 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     refetch: refetchHcm,
     household,
     hcmPersonNotFound,
-  } = useReportHcm({
-    personNumber,
-    skip: isSupervisorView && !personNumber,
-  });
+    hcmStatus,
+  } = useReportHcm({ personNumber, isSupervisorView });
   // HCM has no staff group or household for someone it no longer knows, such as staff who have left,
   // so their report loads with the base funds and no salary split. Any other HCM error blocks the
   // report, because retrying can still bring the right fund types and split.
@@ -337,13 +334,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
           onNavListToggle={onNavListToggle}
           title={title}
           headerType={HeaderTypeEnum.Report}
-          titleExtra={
-            <HcmSyncHeaderStatus
-              personNumber={personNumber}
-              skip={isSupervisorView && !personNumber}
-              suppressErrorCodes={HANDLED_HCM_ERROR_CODES}
-            />
-          }
+          titleExtra={<HcmReportHeaderStatus hcm={hcmStatus} />}
         />
       </SimpleScreenOnly>
       {isSupervisorView && (
@@ -355,11 +346,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       <Box mt={2}>
         <Container>
           <SimpleScreenOnly>
-            <HcmReportBodyStatus
-              personNumber={personNumber}
-              isSupervisorView={isSupervisorView}
-              hcmPersonNotFound={hcmPersonNotFound}
-            />
+            <HcmReportBodyStatus hcm={hcmStatus} />
           </SimpleScreenOnly>
           <Box>
             <StyledHeaderBox>

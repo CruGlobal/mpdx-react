@@ -8,7 +8,17 @@ import { HouseholdMember } from './household';
 
 interface UseReportHcmOptions {
   personNumber: string | undefined;
+  /** Set when a supervisor is viewing someone else's report */
+  isSupervisorView: boolean;
+}
+
+/** What a report's HCM status components need. */
+export interface ReportHcmStatus {
+  personNumber: string | undefined;
+  /** A supervisor view without a person number has no HCM record to load */
   skip: boolean;
+  isSupervisorView: boolean;
+  hcmPersonNotFound: boolean;
 }
 
 /**
@@ -16,13 +26,18 @@ interface UseReportHcmOptions {
  * HCM lists the reader first, then their spouse. A person HCM no longer knows comes back as
  * `hcmPersonNotFound` with no household, and the global error link does not toast it.
  */
-export const useReportHcm = ({ personNumber, skip }: UseReportHcmOptions) => {
+export const useReportHcm = ({
+  personNumber,
+  isSupervisorView,
+}: UseReportHcmOptions) => {
+  const skip = isSupervisorView && !personNumber;
   const result = useHcmQuery({
     variables: { personNumber },
     skip,
     context: { suppressErrorCodes: HANDLED_HCM_ERROR_CODES },
   });
   const { data, error } = result;
+  const hcmPersonNotFound = isHcmPersonNotFoundError(error);
 
   const household: HouseholdMember[] = useMemo(
     () =>
@@ -33,9 +48,10 @@ export const useReportHcm = ({ personNumber, skip }: UseReportHcmOptions) => {
     [data],
   );
 
-  return {
-    ...result,
-    household,
-    hcmPersonNotFound: isHcmPersonNotFoundError(error),
-  };
+  const hcmStatus: ReportHcmStatus = useMemo(
+    () => ({ personNumber, skip, isSupervisorView, hcmPersonNotFound }),
+    [personNumber, skip, isSupervisorView, hcmPersonNotFound],
+  );
+
+  return { ...result, household, hcmPersonNotFound, hcmStatus };
 };

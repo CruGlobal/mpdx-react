@@ -8,7 +8,10 @@ import { useGetLastTwelveMonths } from 'src/hooks/useGetLastTwelveMonths';
 import { useLocale } from 'src/hooks/useLocale';
 import { monthYearFormat } from 'src/lib/intlFormat';
 import { transformTransactionDate } from '../../Shared/Helpers/transformTransactionDate';
-import { useReportHcm } from '../../Shared/Helpers/useReportHcm';
+import {
+  ReportHcmStatus,
+  useReportHcm,
+} from '../../Shared/Helpers/useReportHcm';
 import { Filters } from '../../Shared/SettingsDialog/SettingsDialog';
 import { DateRange } from '../../StaffExpenseReport/Helpers/StaffReportEnum';
 import { FundTypes, Funds } from '../Helper/MPGAReportEnum';
@@ -44,8 +47,8 @@ export type ContextType = {
   staffAccountId: string | null | undefined;
   /** The HCM person the report is for, or undefined for the current user */
   personNumber: string | undefined;
-  /** HCM has no record of the person, such as staff who have left, so salary is not split by person */
-  hcmPersonNotFound: boolean;
+  /** What the report's HCM status components need */
+  hcmStatus: ReportHcmStatus;
 
   /** Income and expenses totals */
   totals: {
@@ -100,11 +103,8 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
   const {
     loading: hcmLoading,
     household,
-    hcmPersonNotFound,
-  } = useReportHcm({
-    personNumber,
-    skip: isSupervisorView && !personNumber,
-  });
+    hcmStatus,
+  } = useReportHcm({ personNumber, isSupervisorView });
 
   const [filters, setFilters] = useState<Filters | null>(null);
 
@@ -314,7 +314,7 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
       isSupervisorView,
       staffAccountId,
       personNumber,
-      hcmPersonNotFound,
+      hcmStatus,
       totals,
     }),
     [
@@ -337,7 +337,7 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
       isSupervisorView,
       staffAccountId,
       personNumber,
-      hcmPersonNotFound,
+      hcmStatus,
       totals,
     ],
   );

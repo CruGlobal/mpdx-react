@@ -9,8 +9,6 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { HANDLED_HCM_ERROR_CODES } from 'src/components/HrTools/Shared/HcmData/hcmPersonNotFound';
-import { HcmSyncHeaderStatus } from 'src/components/HrTools/Shared/HcmSyncStatus/HcmSyncStatus';
 import { LoadErrorAlert } from 'src/components/Shared/LoadErrorAlert/LoadErrorAlert';
 import {
   HeaderTypeEnum,
@@ -20,6 +18,7 @@ import { useStaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAc
 import { AccountInfoBox } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBox';
 import { AccountInfoBoxSkeleton } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBoxSkeleton';
 import { HcmReportBodyStatus } from '../Shared/HcmReportStatus/HcmReportBodyStatus';
+import { HcmReportHeaderStatus } from '../Shared/HcmReportStatus/HcmReportHeaderStatus';
 import { SettingsButtonGroup } from '../Shared/SettingsButtonGroup/SettingsButtonGroup';
 import {
   Filters,
@@ -68,8 +67,7 @@ export const MPGAIncomeExpensesReport: React.FC<
     staffName,
     isSupervisorView,
     staffAccountId,
-    personNumber,
-    hcmPersonNotFound,
+    hcmStatus,
     dataLoading,
     reportError,
     refetchReport,
@@ -130,13 +128,7 @@ export const MPGAIncomeExpensesReport: React.FC<
             onNavListToggle={onNavListToggle}
             headerType={HeaderTypeEnum.Report}
             title={title}
-            titleExtra={
-              <HcmSyncHeaderStatus
-                personNumber={personNumber}
-                skip={isSupervisorView && !personNumber}
-                suppressErrorCodes={HANDLED_HCM_ERROR_CODES}
-              />
-            }
+            titleExtra={<HcmReportHeaderStatus hcm={hcmStatus} />}
           />
         </SimpleScreenOnly>
         {isSupervisorView && (
@@ -145,11 +137,7 @@ export const MPGAIncomeExpensesReport: React.FC<
         <Box mt={2}>
           <Container>
             <SimpleScreenOnly>
-              <HcmReportBodyStatus
-                personNumber={personNumber}
-                isSupervisorView={isSupervisorView}
-                hcmPersonNotFound={hcmPersonNotFound}
-              />
+              <HcmReportBodyStatus hcm={hcmStatus} />
             </SimpleScreenOnly>
             <StyledHeaderBox>
               <SimpleScreenOnly>
