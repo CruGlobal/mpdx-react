@@ -83,6 +83,7 @@ const MainContent: React.FC = () => {
             isSpouse: isSpouse || undefined,
           },
           refetchQueries: ['AdditionalSalaryRequest'],
+          awaitRefetchQueries: true,
         }),
       );
       setPageType(PageEnum.New);
