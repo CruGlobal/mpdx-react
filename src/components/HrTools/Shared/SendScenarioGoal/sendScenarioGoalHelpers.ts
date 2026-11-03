@@ -1,7 +1,4 @@
 import { TFunction } from 'react-i18next';
-import * as yup from 'yup';
-
-const emailAddressSchema = yup.string().email().required();
 
 /** The fields the API's `:send` validation context needs. */
 export interface SendableScenarioGoal {
@@ -16,9 +13,6 @@ export interface SendableScenarioGoal {
 /** Trims and lowercases a typed address the way the API does before sending. */
 export const normalizeEmailAddress = (address: string): string =>
   address.trim().toLowerCase();
-
-export const isValidEmailAddress = (address: string): boolean =>
-  emailAddressSchema.isValidSync(address);
 
 /**
  * Why the send controls are disabled, or `null` when the worksheet can be

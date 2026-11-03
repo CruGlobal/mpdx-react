@@ -1,7 +1,6 @@
 import i18n from 'src/lib/i18n';
 import {
   SendableScenarioGoal,
-  isValidEmailAddress,
   normalizeEmailAddress,
   scenarioGoalSendBlockedReason,
 } from './sendScenarioGoalHelpers';
@@ -41,20 +40,4 @@ describe('normalizeEmailAddress', () => {
       'jane@example.com',
     );
   });
-});
-
-describe('isValidEmailAddress', () => {
-  it.each(['jane@example.com', 'first.last+tag@sub.example.org'])(
-    'accepts %s',
-    (address) => {
-      expect(isValidEmailAddress(address)).toBe(true);
-    },
-  );
-
-  it.each(['', 'jane', 'jane@', '@example.com', 'a@x.com,b@y.com'])(
-    'rejects "%s"',
-    (address) => {
-      expect(isValidEmailAddress(address)).toBe(false);
-    },
-  );
 });

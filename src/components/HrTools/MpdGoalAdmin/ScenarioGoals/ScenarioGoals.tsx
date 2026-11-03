@@ -27,7 +27,7 @@ import { useTranslation } from 'react-i18next';
 import { isCalculationComplete } from 'src/components/HrTools/NsGoalCalculator/GoalSettings/goalSettingsCompletion';
 import { DisabledReasonTooltip } from 'src/components/HrTools/Shared/DisabledReasonTooltip';
 import { SearchField } from 'src/components/HrTools/Shared/SearchField/SearchField';
-import { SendScenarioGoalDialog } from 'src/components/HrTools/Shared/SendScenarioGoal/SendScenarioGoalDialog';
+import { DynamicSendScenarioGoalDialog } from 'src/components/HrTools/Shared/SendScenarioGoal/DynamicSendScenarioGoalDialog';
 import { scenarioGoalSendBlockedReason } from 'src/components/HrTools/Shared/SendScenarioGoal/sendScenarioGoalHelpers';
 import { useSendScenarioGoal } from 'src/components/HrTools/Shared/SendScenarioGoal/useSendScenarioGoal';
 import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
@@ -340,7 +340,9 @@ export const ScenarioGoals: React.FC = () => {
         handleClose={() => setDeleteOpen(false)}
       />
 
-      <SendScenarioGoalDialog {...sendDialogProps} />
+      {sendDialogProps.goal && (
+        <DynamicSendScenarioGoalDialog {...sendDialogProps} />
+      )}
     </>
   );
 };

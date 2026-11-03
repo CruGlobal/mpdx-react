@@ -3,7 +3,7 @@ import { MailOutline } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { DisabledReasonTooltip } from '../DisabledReasonTooltip';
-import { SendScenarioGoalDialog } from './SendScenarioGoalDialog';
+import { DynamicSendScenarioGoalDialog } from './DynamicSendScenarioGoalDialog';
 import {
   SendableScenarioGoal,
   scenarioGoalSendBlockedReason,
@@ -39,7 +39,7 @@ export const SendScenarioGoalButton: React.FC<SendScenarioGoalButtonProps> = ({
           {t('Email Worksheet')}
         </Button>
       </DisabledReasonTooltip>
-      <SendScenarioGoalDialog {...dialogProps} />
+      {dialogProps.goal && <DynamicSendScenarioGoalDialog {...dialogProps} />}
     </>
   );
 };

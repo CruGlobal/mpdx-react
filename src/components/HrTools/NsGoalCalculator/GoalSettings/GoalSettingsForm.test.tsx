@@ -922,14 +922,14 @@ describe('GoalSettingsForm', () => {
     });
 
     it('emails the worksheet for the scenario goal being viewed', async () => {
-      const { findByRole, findByText, getByRole, getByText } = render(
+      const { findByRole, findByText, getByRole } = render(
         <ScenarioTestComponent goalCalculationMock={sendableScenarioMock} />,
       );
 
       userEvent.click(await findByRole('button', { name: 'Email Worksheet' }));
 
       expect(
-        getByText(
+        await findByText(
           'Email the support goals worksheet for John Doe to this address. This cannot be undone.',
         ),
       ).toBeInTheDocument();

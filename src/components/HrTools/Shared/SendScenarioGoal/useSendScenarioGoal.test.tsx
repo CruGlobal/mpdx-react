@@ -3,7 +3,6 @@ import { Button } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { SendNewStaffScenarioGoalMutation } from './SendScenarioGoal.generated';
@@ -67,7 +66,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
 
 const openDialog = async (props: TestComponentProps = {}) => {
   const utils = render(<TestComponent {...props} />);
-  await userEvent.click(utils.getByRole('button', { name: 'Send' }));
+  userEvent.click(utils.getByRole('button', { name: 'Send' }));
   const dialog = await utils.findByRole('dialog');
   return {
     ...utils,
@@ -98,8 +97,8 @@ describe('useSendScenarioGoal', () => {
   it('sends to the address entered and names it in the confirmation', async () => {
     const { input, sendButton, queryByRole } = await openDialog();
 
-    await userEvent.type(input, '  Recruiter@Example.com ');
-    await userEvent.click(sendButton);
+    userEvent.type(input, '  Recruiter@Example.com ');
+    userEvent.click(sendButton);
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('SendNewStaffScenarioGoal', {
@@ -119,7 +118,7 @@ describe('useSendScenarioGoal', () => {
   it('sends when Enter is pressed in the address field', async () => {
     const { input } = await openDialog();
 
-    await userEvent.type(input, 'coach@example.com{enter}');
+    userEvent.type(input, 'coach@example.com{enter}');
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('SendNewStaffScenarioGoal', {
@@ -132,7 +131,7 @@ describe('useSendScenarioGoal', () => {
   it('does not flag an address that is still being typed', async () => {
     const { dialog, input, sendButton } = await openDialog();
 
-    await userEvent.type(input, 'r');
+    userEvent.type(input, 'r');
 
     expect(
       within(dialog).queryByText('Enter a valid email address.'),
@@ -143,11 +142,11 @@ describe('useSendScenarioGoal', () => {
   it('flags an invalid address on blur and blocks sending', async () => {
     const { dialog, input, sendButton } = await openDialog();
 
-    await userEvent.type(input, 'not-an-email');
-    await userEvent.tab();
+    userEvent.type(input, 'not-an-email');
+    userEvent.tab();
 
     expect(
-      within(dialog).getByText('Enter a valid email address.'),
+      await within(dialog).findByText('Enter a valid email address.'),
     ).toBeInTheDocument();
     expect(sendButton).toBeDisabled();
   });
@@ -155,10 +154,10 @@ describe('useSendScenarioGoal', () => {
   it('flags an invalid address submitted with Enter instead of sending', async () => {
     const { dialog, input } = await openDialog();
 
-    await userEvent.type(input, 'a@x.com,b@y.com{enter}');
+    userEvent.type(input, 'a@x.com,b@y.com{enter}');
 
     expect(
-      within(dialog).getByText('Enter a valid email address.'),
+      await within(dialog).findByText('Enter a valid email address.'),
     ).toBeInTheDocument();
     expect(mutationSpy).not.toHaveGraphqlOperation('SendNewStaffScenarioGoal');
   });
@@ -167,28 +166,24 @@ describe('useSendScenarioGoal', () => {
     const utils = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider
-          mocks={
-            {
-              SendNewStaffScenarioGoal: {
-                sendNewStaffScenarioGoal: () => {
-                  throw new Error('Send failed');
-                },
-              },
-            } as ApolloErgonoMockMap
-          }
+          mocks={{
+            SendNewStaffScenarioGoal: () => {
+              throw new Error('Send failed');
+            },
+          }}
           onCall={mutationSpy}
         >
           <Harness goal={defaultGoal} />
         </GqlMockedProvider>
       </ThemeProvider>,
     );
-    await userEvent.click(utils.getByRole('button', { name: 'Send' }));
+    userEvent.click(utils.getByRole('button', { name: 'Send' }));
     const dialog = await utils.findByRole('dialog');
-    await userEvent.type(
+    userEvent.type(
       within(dialog).getByRole('textbox', { name: 'Email address' }),
       'coach@example.com',
     );
-    await userEvent.click(
+    userEvent.click(
       within(dialog).getByRole('button', { name: 'Send Worksheet' }),
     );
 
@@ -206,12 +201,10 @@ describe('useSendScenarioGoal', () => {
   it('starts over with no address each time it opens', async () => {
     const { dialog, input, getByRole, findByRole } = await openDialog();
 
-    await userEvent.type(input, 'coach@example.com');
-    await userEvent.click(
-      within(dialog).getByRole('button', { name: 'Cancel' }),
-    );
+    userEvent.type(input, 'coach@example.com');
+    userEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }));
     // Reopen while the exit transition still has the page hidden behind the old dialog.
-    await userEvent.click(getByRole('button', { name: 'Send', hidden: true }));
+    userEvent.click(getByRole('button', { name: 'Send', hidden: true }));
 
     const reopened = await findByRole('dialog');
     expect(

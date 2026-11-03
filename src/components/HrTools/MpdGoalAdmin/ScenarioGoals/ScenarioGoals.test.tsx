@@ -56,8 +56,6 @@ const scenarioGoalsMock: DeepPartial<NewStaffScenarioGoalsQuery> = {
         createdAt: '2026-08-01T12:00:00Z',
         maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
         calculationsYear: 2026,
-        emailAddress: 'john@example.com',
-        spouseEmailAddress: null,
         age: GoalCalculationAge.ThirtyToThirtyFour,
         tenure: 0,
         assignmentType: GoalCalculationRole.Field,
@@ -75,8 +73,6 @@ const scenarioGoalsMock: DeepPartial<NewStaffScenarioGoalsQuery> = {
         createdAt: '2026-08-15T12:00:00Z',
         maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
         calculationsYear: null,
-        emailAddress: null,
-        spouseEmailAddress: null,
         age: null,
         tenure: null,
         assignmentType: null,
@@ -102,27 +98,6 @@ const manyScenarioGoalsMock: DeepPartial<NewStaffScenarioGoalsQuery> = {
       createdAt: '2026-08-01T12:00:00Z',
       calculations: { monthlyGoal: 1000 },
     })),
-    pageInfo: { endCursor: null, hasNextPage: false },
-  },
-};
-
-// A goal with every required field filled in but nowhere to send the worksheet.
-const noEmailScenarioGoalMock: DeepPartial<NewStaffScenarioGoalsQuery> = {
-  newStaffScenarioGoals: {
-    nodes: [
-      {
-        id: 'scenario-4',
-        firstName: 'Jane',
-        lastName: 'Roe',
-        ministryName: 'Cru Campus',
-        geographicLocation: 'Orlando, FL',
-        createdAt: '2026-08-05T12:00:00Z',
-        calculationsYear: 2026,
-        emailAddress: null,
-        spouseEmailAddress: null,
-        calculations: { monthlyGoal: 2500 },
-      },
-    ],
     pageInfo: { endCursor: null, hasNextPage: false },
   },
 };
@@ -214,13 +189,12 @@ describe('ScenarioGoals', () => {
   });
 
   it('emails the worksheet for a scenario goal from its row', async () => {
-    const { findByRole, findByText, getByRole, getByText } =
-      renderScenarioGoals();
+    const { findByRole, findByText, getByRole } = renderScenarioGoals();
 
     userEvent.click(await findByRole('button', { name: 'Email John Doe' }));
 
     expect(
-      getByText(
+      await findByText(
         'Email the support goals worksheet for John Doe to this address. This cannot be undone.',
       ),
     ).toBeInTheDocument();
@@ -284,34 +258,6 @@ describe('ScenarioGoals', () => {
         'A first name, last name, geographic location, and year are required before the worksheet can be emailed.',
       ),
     ).toBeInTheDocument();
-  });
-
-  it('sends a scenario goal with no address of its own to an entered address', async () => {
-    const { findByRole, getByRole, findByText } = renderScenarioGoals({
-      NewStaffScenarioGoals: noEmailScenarioGoalMock,
-      SendNewStaffScenarioGoal: {
-        sendNewStaffScenarioGoal: {
-          newStaffGoalCalculation: { id: 'scenario-4' },
-        },
-      },
-    } as ApolloErgonoMockMap);
-
-    userEvent.click(await findByRole('button', { name: 'Email Jane Roe' }));
-    userEvent.type(
-      getByRole('textbox', { name: 'Email address' }),
-      'recruiter@example.com',
-    );
-    userEvent.click(getByRole('button', { name: 'Send Worksheet' }));
-
-    expect(
-      await findByText(
-        'Support goals worksheet sent to recruiter@example.com.',
-      ),
-    ).toBeInTheDocument();
-    expect(mutationSpy).toHaveGraphqlOperation('SendNewStaffScenarioGoal', {
-      id: 'scenario-4',
-      emailAddress: 'recruiter@example.com',
-    });
   });
 
   it('links each scenario goal to its calculator page', async () => {
