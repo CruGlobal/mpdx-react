@@ -1,6 +1,6 @@
 import { TFunction } from 'react-i18next';
 
-/** The fields the API's `:send` validation context needs, plus the addresses it sends to. */
+/** The fields the API's `:send` validation context needs. */
 export interface SendableScenarioGoal {
   id: string;
   firstName?: string | null;
@@ -8,25 +8,17 @@ export interface SendableScenarioGoal {
   geographicLocation?: string | null;
   /** An Int once saved, the Select's string while editing. */
   calculationsYear?: number | string | null;
-  emailAddress?: string | null;
-  spouseEmailAddress?: string | null;
 }
 
-/** Mirrors the API's `provided_email_addresses` so the confirmation can name them before sending. */
-export const scenarioGoalRecipients = (
-  goal: SendableScenarioGoal,
-): string[] => {
-  const addresses = [goal.emailAddress, goal.spouseEmailAddress]
-    .map((address) => address?.trim().toLowerCase())
-    .filter((address): address is string => Boolean(address));
-
-  return [...new Set(addresses)];
-};
+/** Trims and lowercases a typed address the way the API does before sending. */
+export const normalizeEmailAddress = (address: string): string =>
+  address.trim().toLowerCase();
 
 /**
  * Why the send controls are disabled, or `null` when the worksheet can be
  * emailed. Mirrors the API's `REQUIRED_FOR_SEND` so a click never turns into a
- * server-side validation error.
+ * server-side validation error. The recipient is not checked here because it
+ * is entered in the send dialog.
  */
 export const scenarioGoalSendBlockedReason = (
   goal: SendableScenarioGoal,
@@ -45,12 +37,6 @@ export const scenarioGoalSendBlockedReason = (
   if (required.some(isBlank)) {
     return t(
       'A first name, last name, geographic location, and year are required before the worksheet can be emailed.',
-    );
-  }
-
-  if (!scenarioGoalRecipients(goal).length) {
-    return t(
-      'This scenario goal has no email address to send the worksheet to.',
     );
   }
 

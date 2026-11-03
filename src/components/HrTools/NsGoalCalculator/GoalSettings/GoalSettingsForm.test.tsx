@@ -922,17 +922,21 @@ describe('GoalSettingsForm', () => {
     });
 
     it('emails the worksheet for the scenario goal being viewed', async () => {
-      const { findByRole, findByText, getByRole, getByText } = render(
+      const { findByRole, findByText, getByRole } = render(
         <ScenarioTestComponent goalCalculationMock={sendableScenarioMock} />,
       );
 
       userEvent.click(await findByRole('button', { name: 'Email Worksheet' }));
 
       expect(
-        getByText(
-          'Email the support goals worksheet for John Doe to john@example.com? This cannot be undone.',
+        await findByText(
+          'Email the support goals worksheet for John Doe to this address. This cannot be undone.',
         ),
       ).toBeInTheDocument();
+      userEvent.type(
+        getByRole('textbox', { name: 'Email address' }),
+        'john@example.com',
+      );
 
       userEvent.click(getByRole('button', { name: 'Send Worksheet' }));
 
@@ -941,6 +945,7 @@ describe('GoalSettingsForm', () => {
       ).toBeInTheDocument();
       expect(mutationSpy).toHaveGraphqlOperation('SendNewStaffScenarioGoal', {
         id: 'scenario-1',
+        emailAddress: 'john@example.com',
       });
     });
 

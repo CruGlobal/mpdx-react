@@ -15,9 +15,6 @@ query NewStaffScenarioGoals(
       lastName
       ministryName
       geographicLocation
-      # Drives the send action's recipient list and its disabled reason.
-      emailAddress
-      spouseEmailAddress
       createdAt
       # Drives the Calculation Status chip; see goalSettingsCompletion.
       maritalStatus
