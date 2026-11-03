@@ -339,7 +339,12 @@ export const DonationTable: React.FC<DonationTableProps> = ({
     {
       field: 'Edit',
       headerName: t('Edit'),
-      width: 40,
+      width: 60,
+      align: 'center',
+      headerAlign: 'center',
+      // Touch screens always show the column menu icon, which crowds out the header text
+      disableColumnMenu: true,
+      sortable: false,
       renderCell: edit,
       hideable: false,
     },
