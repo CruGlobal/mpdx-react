@@ -41,6 +41,12 @@ export const NeedsTable = styled(Table)(({ theme }) => ({
     textAlign: 'right',
     whiteSpace: 'nowrap',
   },
+  // Keeps the summary and the Monthly Needs table on the first printed page
+  '@media print': {
+    '.MuiTableCell-root': {
+      paddingBlock: theme.spacing(0.5),
+    },
+  },
 }));
 
 export interface NeedsWorksheetTableProps {
