@@ -17,6 +17,7 @@ import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useHcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
+import { HCM_PERSON_NOT_FOUND_CODE } from 'src/components/HrTools/Shared/HcmData/hcmPersonNotFound';
 import {
   HcmSyncBodyStatus,
   HcmSyncHeaderStatus,
@@ -82,6 +83,9 @@ const StyledTimeNavBox = styled(Box)({
   },
 });
 
+// The HCM errors this page handles itself, so the global error link does not toast them
+const HANDLED_HCM_ERROR_CODES = [HCM_PERSON_NOT_FOUND_CODE];
+
 interface StaffExpenseReportProps {
   isNavListOpen: boolean;
   onNavListToggle: () => void;
@@ -117,12 +121,13 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   } = useHcmQuery({
     variables: { personNumber },
     skip: isSupervisorView && !personNumber,
+    context: { suppressErrorCodes: HANDLED_HCM_ERROR_CODES },
   });
   // HCM has no staff group or household for someone it no longer knows, such as staff who have left,
   // so their report loads with the base funds and no salary split. Any other HCM error blocks the
   // report, because retrying can still bring the right fund types and split.
   const hcmPersonNotFound = !!hcmError?.graphQLErrors.some(
-    ({ extensions }) => extensions?.code === 'HCM_PERSON_NOT_FOUND',
+    ({ extensions }) => extensions?.code === HCM_PERSON_NOT_FOUND_CODE,
   );
   const hcmBlocksReport = !!hcmError && !hcmPersonNotFound;
   const household: HouseholdMember[] = useMemo(
@@ -353,6 +358,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
             <HcmSyncHeaderStatus
               personNumber={personNumber}
               skip={isSupervisorView && !personNumber}
+              suppressErrorCodes={HANDLED_HCM_ERROR_CODES}
             />
           }
         />
@@ -369,6 +375,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
             <HcmSyncBodyStatus
               personNumber={personNumber}
               skip={isSupervisorView && !personNumber}
+              suppressErrorCodes={HANDLED_HCM_ERROR_CODES}
             />
           </SimpleScreenOnly>
           <Box>

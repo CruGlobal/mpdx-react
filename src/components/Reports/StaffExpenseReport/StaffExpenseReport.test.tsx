@@ -18,7 +18,10 @@ import {
   GqlMockedProvider,
 } from '__tests__/util/graphqlMocking';
 import matchMediaMock from '__tests__/util/matchMediaMock';
-import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
+import {
+  HcmQuery,
+  useHcmQuery,
+} from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import {
   StaffAccountStatusEnum,
@@ -40,7 +43,7 @@ interface TestComponentProps {
   personNumber?: string;
   failReportCall?: FailCall;
   failHcmCall?: FailCall;
-  hcmPersonNotFound?: boolean;
+  hcmError?: GraphQLError;
 }
 
 const salaryCategory = {
@@ -77,6 +80,14 @@ const salaryCategory = {
   breakdownByMonth: [{ month: '2020-01-01', total: -4900 }],
 };
 
+// Records each Hcm read's options, since Apollo merges the page's reads into one request
+jest.mock('src/components/HrTools/Shared/HcmData/Hcm.generated', () => {
+  const actual = jest.requireActual(
+    'src/components/HrTools/Shared/HcmData/Hcm.generated',
+  );
+  return { ...actual, useHcmQuery: jest.fn(actual.useHcmQuery) };
+});
+
 const mutationSpy = jest.fn();
 const onNavListToggle = jest.fn();
 const push = jest.fn();
@@ -90,6 +101,13 @@ const router = {
   isReady: true,
   push,
 };
+
+const hcmPersonNotFound = new GraphQLError('HCM person not found', {
+  extensions: { code: 'HCM_PERSON_NOT_FOUND' },
+});
+const hcmUnavailable = new GraphQLError('HCM UserInfo service unavailable', {
+  extensions: { code: 'HCM_UNAVAILABLE' },
+});
 
 const calls = { report: 0, hcm: 0 };
 beforeEach(() => {
@@ -132,7 +150,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   personNumber,
   failReportCall,
   failHcmCall,
-  hcmPersonNotFound = false,
+  hcmError,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter
@@ -303,11 +321,9 @@ const TestComponent: React.FC<TestComponentProps> = ({
                   },
                 },
                 Hcm: {
-                  hcm: hcmPersonNotFound
+                  hcm: hcmError
                     ? ((() => {
-                        throw new GraphQLError('HCM person not found', {
-                          extensions: { code: 'HCM_PERSON_NOT_FOUND' },
-                        });
+                        throw hcmError;
                       }) as unknown as HcmMock)
                     : failCallsWhen<HcmMock>(
                         failHcmCall,
@@ -596,10 +612,22 @@ describe('StaffExpenseReport', () => {
       expect(calls.hcm).toBe(2);
     });
 
+    it('shows Try Again when HCM is unavailable', async () => {
+      const { findByRole, queryByTestId } = render(
+        <TestComponent hcmError={hcmUnavailable} />,
+      );
+
+      const alert = await findByRole('alert');
+      expect(
+        within(alert).getByRole('button', { name: 'Try Again' }),
+      ).toBeInTheDocument();
+      expect(queryByTestId('overall-balance')).not.toBeInTheDocument();
+    });
+
     describe('because HCM has no record of the person', () => {
       it('loads the report instead of the error', async () => {
         const { findByText, queryByRole } = render(
-          <TestComponent hcmPersonNotFound />,
+          <TestComponent hcmError={hcmPersonNotFound} />,
         );
 
         expect(
@@ -608,8 +636,32 @@ describe('StaffExpenseReport', () => {
         expect(queryByRole('alert')).not.toBeInTheDocument();
       });
 
+      it('keeps the global error toast quiet for that error only', async () => {
+        const { findByText } = render(
+          <TestComponent hcmError={hcmPersonNotFound} />,
+        );
+
+        await findByText('Ending Balance (All Accounts): $4,000.00');
+        expect(mutationSpy).toHaveGraphqlOperation('Hcm');
+        mutationSpy.mock.calls
+          .filter(([{ operation }]) => operation.operationName === 'Hcm')
+          .forEach(([{ operation }]) =>
+            expect(operation.getContext().suppressErrorCodes).toEqual([
+              'HCM_PERSON_NOT_FOUND',
+            ]),
+          );
+        // The merged request carries whichever read's context started it, so every read needs it
+        const hcmReads = jest.mocked(useHcmQuery).mock.calls;
+        expect(hcmReads.length).toBeGreaterThan(0);
+        hcmReads.forEach(([options]) =>
+          expect(options?.context?.suppressErrorCodes).toEqual([
+            'HCM_PERSON_NOT_FOUND',
+          ]),
+        );
+      });
+
       it('requests only the base fund types', async () => {
-        render(<TestComponent hcmPersonNotFound />);
+        render(<TestComponent hcmError={hcmPersonNotFound} />);
 
         await waitFor(() =>
           expect(mutationSpy).toHaveGraphqlOperation('ReportsStaffExpenses', {

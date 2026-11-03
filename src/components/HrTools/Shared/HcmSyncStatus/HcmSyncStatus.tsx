@@ -42,6 +42,11 @@ interface HcmSyncStatusProps {
   effectiveDate?: string | null;
   /** Hides the status until the page knows which HCM data it loads. */
   skip?: boolean;
+  /**
+   * The Hcm error codes the page handles itself. Apollo sends the page's Hcm reads as one request
+   * carrying whichever read's context started it, so this must match the page's own Hcm query.
+   */
+  suppressErrorCodes?: string[];
 }
 
 const HcmSyncStatusContext = createContext<HcmSyncStatusProps | null>(null);
@@ -70,6 +75,7 @@ const useHcmSync = ({
   personNumber,
   effectiveDate,
   skip,
+  suppressErrorCodes,
 }: HcmSyncStatusProps) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -77,6 +83,7 @@ const useHcmSync = ({
   const { data } = useHcmQuery({
     variables: { personNumber, effectiveDate },
     skip,
+    context: { suppressErrorCodes },
   });
   const [refreshing, setRefreshing] = useState(false);
   const [coolingDown, setCoolingDown] = useState(false);
