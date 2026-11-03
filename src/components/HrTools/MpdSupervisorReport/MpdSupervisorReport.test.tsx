@@ -9,6 +9,13 @@ import { SnackbarProvider } from 'notistack';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  desktopWidth,
+  getStyleAtWidth,
+  phoneWidth,
+} from '__tests__/util/styleAtWidth';
+import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
+import { multiPageHeaderHeight } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
@@ -135,6 +142,102 @@ const renderReport = ({
       </ThemeProvider>
     </TestRouter>,
   );
+
+// The box that actually lays an element out, skipping display: contents wrappers
+const layoutParentAtWidth = (element: Element, width: number): Element => {
+  let parent = element.parentElement;
+  while (parent && getStyleAtWidth(parent, 'display', width) === 'contents') {
+    parent = parent.parentElement;
+  }
+  if (!parent) {
+    throw new Error('Element has no layout parent');
+  }
+  return parent;
+};
+
+// jsdom keeps the flex shorthand as written, so read the grow factor from either
+const flexGrowAtWidth = (element: Element, width: number): number => {
+  const grow = getStyleAtWidth(element, 'flex-grow', width);
+  if (grow) {
+    return Number(grow);
+  }
+  const flex = getStyleAtWidth(element, 'flex', width);
+  return flex === 'auto' ? 1 : Number.parseFloat(flex) || 0;
+};
+
+// Whether the element or any wrapper up to the header is display: none
+const isHiddenAtWidth = (
+  element: Element,
+  header: Element,
+  width: number,
+): boolean => {
+  let current: Element | null = element;
+  while (current && current !== header) {
+    if (getStyleAtWidth(current, 'display', width) === 'none') {
+      return true;
+    }
+    current = current.parentElement;
+  }
+  return false;
+};
+
+// A font size in px, from either the rem the theme uses or a px value
+const fontSizePxAtWidth = (element: Element, width: number): number => {
+  const fontSize = getStyleAtWidth(element, 'font-size', width);
+  const size = Number.parseFloat(fontSize);
+  return fontSize.endsWith('rem') ? size * theme.typography.htmlFontSize : size;
+};
+
+// What decides where a button's icon sits inside it
+const buttonBoxAtWidth = (button: Element, width: number) => ({
+  display: getStyleAtWidth(button, 'display', width),
+  alignItems: getStyleAtWidth(button, 'align-items', width),
+  justifyContent: getStyleAtWidth(button, 'justify-content', width),
+  width: getStyleAtWidth(button, 'width', width),
+  height: getStyleAtWidth(button, 'height', width),
+});
+
+// The ticket's case: a supervisor with no staff, so "No staff members found"
+// sits right under the header
+const renderEmptyReportHeader = async () => {
+  const { findByText, getByTestId } = renderReport({
+    managedStaff: managedStaffMock([]),
+  });
+  const emptyState = await findByText('No staff members found');
+  const header = getByTestId('MultiPageHeader');
+  const { getByRole } = within(header);
+
+  const searchField = getByRole('textbox', { name: 'Search name' }).closest(
+    '.MuiTextField-root',
+  );
+  if (!searchField) {
+    throw new Error('Search field not found');
+  }
+
+  // The header's sibling that holds the empty state
+  let listArea: Element = emptyState;
+  while (listArea.parentElement && !listArea.parentElement.contains(header)) {
+    listArea = listArea.parentElement;
+  }
+  if (!listArea.parentElement) {
+    throw new Error('List area not found beside the header');
+  }
+
+  return {
+    header,
+    emptyState,
+    listArea,
+    // In reading order
+    controls: {
+      menuButton: getByRole('button', { name: 'Toggle HR Tools Menu' }),
+      filterButton: getByRole('button', { name: 'Toggle Filters Panel' }),
+      title: getByRole('heading', { name: 'MPD Supervisor Report' }),
+      legendButton: getByRole('button', { name: 'How this report works' }),
+      densityToggle: getByRole('group', { name: 'Row density' }),
+      searchField,
+    },
+  };
+};
 
 describe('MpdSupervisorReport', () => {
   it('renders a row per staff member the query returns', async () => {
@@ -785,5 +888,205 @@ describe('MpdSupervisorReport', () => {
     const { findByText } = renderReport({ panelOpen: Panel.Navigation });
 
     expect(await findByText('John Smith')).toBeInTheDocument();
+  });
+
+  // jsdom can't measure layout, so these read the CSS that applies at each width
+  describe('header layout', () => {
+    it('shows the title and controls in reading order above the list', async () => {
+      const { header, emptyState, controls } = await renderEmptyReportHeader();
+
+      const everything = Array.from(header.querySelectorAll('*'));
+      const positions = Object.values(controls).map((control) =>
+        everything.indexOf(control),
+      );
+      expect(positions).toEqual([...positions].sort((a, b) => a - b));
+      expect(header).not.toContainElement(emptyState);
+      expect(header.compareDocumentPosition(emptyState)).toBe(
+        Node.DOCUMENT_POSITION_FOLLOWING,
+      );
+    });
+
+    it('keeps the title and every control showing, in order, on phones', async () => {
+      const { header, controls } = await renderEmptyReportHeader();
+
+      const hidden = Object.entries(controls)
+        .filter(([, control]) => isHiddenAtWidth(control, header, phoneWidth))
+        .map(([name]) => name);
+      expect(hidden).toEqual([]);
+      // Without a CSS order the controls wrap in reading order
+      const reordered = Object.entries(controls)
+        .filter(([, control]) => getStyleAtWidth(control, 'order', phoneWidth))
+        .map(([name]) => name);
+      expect(reordered).toEqual([]);
+    });
+
+    it('lets the header grow on phones so a wrapped title stays off the list', async () => {
+      const { header } = await renderEmptyReportHeader();
+
+      // An unset height falls back to auto
+      expect(getStyleAtWidth(header, 'height', phoneWidth) || 'auto').toBe(
+        'auto',
+      );
+    });
+
+    it.each([900, desktopWidth])(
+      'keeps the fixed header height at %ipx wide',
+      async (width) => {
+        const { header } = await renderEmptyReportHeader();
+
+        expect(getStyleAtWidth(header, 'height', width)).toBe(
+          multiPageHeaderHeight,
+        );
+      },
+    );
+
+    it('wraps the title and legend button as their own items of the header row on phones', async () => {
+      const { controls } = await renderEmptyReportHeader();
+
+      const headerRow = layoutParentAtWidth(controls.searchField, phoneWidth);
+      expect(getStyleAtWidth(headerRow, 'display', phoneWidth)).toBe('flex');
+      expect(getStyleAtWidth(headerRow, 'flex-wrap', phoneWidth)).toBe('wrap');
+      const lockedInOwnRow = Object.entries(controls)
+        .filter(
+          ([, control]) =>
+            layoutParentAtWidth(control, phoneWidth) !== headerRow,
+        )
+        .map(([name]) => name);
+      expect(lockedInOwnRow).toEqual([]);
+    });
+
+    it.each([600, desktopWidth])(
+      'keeps the title and legend button side by side at %ipx wide',
+      async (width) => {
+        const { controls } = await renderEmptyReportHeader();
+
+        const titleRow = layoutParentAtWidth(controls.title, width);
+        expect(getStyleAtWidth(titleRow, 'display', width)).toBe('flex');
+        expect(layoutParentAtWidth(controls.legendButton, width)).toBe(
+          titleRow,
+        );
+        expect(layoutParentAtWidth(controls.searchField, width)).not.toBe(
+          titleRow,
+        );
+      },
+    );
+
+    it.each([phoneWidth, desktopWidth])(
+      'stacks the header above the list in one column at %ipx wide',
+      async (width) => {
+        const { header, listArea } = await renderEmptyReportHeader();
+
+        const column = layoutParentAtWidth(header, width);
+        expect(layoutParentAtWidth(listArea, width)).toBe(column);
+        expect(getStyleAtWidth(column, 'display', width)).toBe('flex');
+        expect(getStyleAtWidth(column, 'flex-direction', width)).toBe('column');
+        // The page still fills the screen under the nav bar
+        expect(getStyleAtWidth(column, 'height', width)).toBe(
+          `calc(100vh - ${navBarHeight})`,
+        );
+        // A taller header keeps its height instead of squeezing over the list
+        expect(getStyleAtWidth(header, 'flex-shrink', width)).toBe('0');
+      },
+    );
+
+    it.each([phoneWidth, desktopWidth])(
+      'gives the list the space left under the header at %ipx wide',
+      async (width) => {
+        const { listArea } = await renderEmptyReportHeader();
+
+        // A height that subtracts a fixed header leaves a taller header
+        // overflowing the page
+        expect(getStyleAtWidth(listArea, 'height', width)).not.toContain(
+          multiPageHeaderHeight,
+        );
+        expect(flexGrowAtWidth(listArea, width)).toBeGreaterThan(0);
+        // Lets the list shrink to that space so it scrolls inside it
+        expect(getStyleAtWidth(listArea, 'min-height', width)).toBe('0');
+      },
+    );
+
+    it('centers the icon the same way in both menu buttons on phones', async () => {
+      const { header, controls } = await renderEmptyReportHeader();
+      const { menuButton, filterButton } = controls;
+
+      // Inline-block buttons place their icons by the text baseline, which
+      // drops the badge-wrapped filter icon a few pixels below the menu icon
+      const menuBox = buttonBoxAtWidth(menuButton, phoneWidth);
+      expect(['flex', 'inline-flex']).toContain(menuBox.display);
+      expect(menuBox).toMatchObject({
+        alignItems: 'center',
+        justifyContent: 'center',
+      });
+      expect(buttonBoxAtWidth(filterButton, phoneWidth)).toEqual(menuBox);
+
+      // The centered items are the icons themselves
+      const { getByTestId } = within(header);
+      expect(getByTestId('HrToolsMenuIcon').parentElement).toBe(menuButton);
+      expect(
+        getByTestId('FilterIcon').closest('.MuiBadge-root')?.parentElement,
+      ).toBe(filterButton);
+    });
+
+    it('keeps both menu buttons level in the header row on phones', async () => {
+      const { controls } = await renderEmptyReportHeader();
+      const { menuButton, filterButton } = controls;
+
+      const headerRow = layoutParentAtWidth(menuButton, phoneWidth);
+      expect(layoutParentAtWidth(filterButton, phoneWidth)).toBe(headerRow);
+      expect(getStyleAtWidth(headerRow, 'align-items', phoneWidth)).toBe(
+        'center',
+      );
+      // Same height, centered in the same row, so the top edges match too
+      const levelStyles = (button: Element) =>
+        ['height', 'align-self', 'margin-top', 'margin-bottom'].map(
+          (property) => getStyleAtWidth(button, property, phoneWidth),
+        );
+      expect(levelStyles(filterButton)).toEqual(levelStyles(menuButton));
+    });
+
+    it('shrinks the title on phones so it fits on one line beside the menu buttons', async () => {
+      const { controls } = await renderEmptyReportHeader();
+
+      const phoneSize = fontSizePxAtWidth(controls.title, phoneWidth);
+      expect(phoneSize).toBeLessThan(
+        fontSizePxAtWidth(controls.title, desktopWidth),
+      );
+      // Still reads as a heading above the body text
+      expect(phoneSize).toBeGreaterThan(
+        Number.parseFloat(String(theme.typography.body1.fontSize)) *
+          theme.typography.htmlFontSize,
+      );
+    });
+
+    it('shows the whole title on phones instead of cutting it off', async () => {
+      const { controls } = await renderEmptyReportHeader();
+
+      expect(
+        getStyleAtWidth(controls.title, 'text-overflow', phoneWidth),
+      ).not.toBe('ellipsis');
+      expect(
+        getStyleAtWidth(controls.title, 'white-space', phoneWidth),
+      ).not.toBe('nowrap');
+    });
+
+    it.each([600, 900, desktopWidth])(
+      'keeps the desktop menu buttons and title size at %ipx wide',
+      async (width) => {
+        const { controls } = await renderEmptyReportHeader();
+        const { menuButton, filterButton, title } = controls;
+
+        // The shared header button styles
+        [menuButton, filterButton].forEach((button) =>
+          expect(buttonBoxAtWidth(button, width)).toMatchObject({
+            display: 'inline-block',
+            width: '48px',
+            height: '48px',
+          }),
+        );
+        expect(getStyleAtWidth(title, 'font-size', width)).toBe(
+          theme.typography.h5.fontSize,
+        );
+      },
+    );
   });
 });
