@@ -94,16 +94,22 @@ describe('ReportLegendPanel', () => {
     expect(getByText('$2,000.00')).toBeInTheDocument();
   });
 
-  it('matches the API grading order for red and green', async () => {
-    const { getByText } = await openLegend();
+  it('matches the API grading for red and green', async () => {
+    const { getByText, queryByText } = await openLegend();
 
-    // Green is checked first, so red needs payroll below both benchmarks
-    expect(getByText(/Payroll was below both benchmarks/)).toBeInTheDocument();
+    // MPDX-10112: payroll below the New Staff salary is red even at full gross salary
     expect(
       getByText(
-        'A staff member whose Monthly Gross Salary is below their New Staff Monthly Salary can show green quarters. Their Monthly Gross Salary is marked red in their details.',
+        /Payroll was below their New Staff Monthly Salary, even if they were paid their full Monthly Gross Salary\./,
       ),
     ).toBeInTheDocument();
+    expect(
+      getByText(
+        /Payroll was at or above their Monthly Gross Salary \(within \$5\) and their New Staff Monthly Salary\. For interns, payroll was at or above their Monthly Gross Salary \(within \$5\)\./,
+      ),
+    ).toBeInTheDocument();
+    expect(queryByText(/below both benchmarks/)).not.toBeInTheDocument();
+    expect(queryByText(/can show green quarters/)).not.toBeInTheDocument();
   });
 
   it('defines the negative month filters', async () => {
