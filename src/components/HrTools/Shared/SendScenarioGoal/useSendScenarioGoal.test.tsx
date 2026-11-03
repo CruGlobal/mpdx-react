@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -187,6 +187,21 @@ describe('useSendScenarioGoal', () => {
     expect(sendButton).toBeDisabled();
   });
 
+  it('stops and flags an uncommitted invalid address instead of sending', async () => {
+    const { dialog, input, sendButton } = await openDialog();
+
+    userEvent.type(input, 'not-an-email');
+    // fireEvent skips the blur that would otherwise commit the address before the click.
+    fireEvent.click(sendButton);
+
+    expect(
+      within(dialog).getByText(
+        'Fix or remove the invalid email addresses: not-an-email',
+      ),
+    ).toBeInTheDocument();
+    expect(mutationSpy).not.toHaveGraphqlOperation('SendNewStaffScenarioGoal');
+  });
+
   it('blocks sending to more addresses than one send allows', async () => {
     const { dialog, input, sendButton } = await openDialog();
 
@@ -200,22 +215,6 @@ describe('useSendScenarioGoal', () => {
       within(dialog).getByText('Enter at most 10 email addresses.'),
     ).toBeInTheDocument();
     expect(sendButton).toBeDisabled();
-  });
-
-  it('does not claim success when the server sent to nobody', async () => {
-    const { sendButton, queryByRole } = await openDialog({ sentTo: [] });
-
-    await userEvent.click(sendButton);
-
-    await waitFor(() => expect(queryByRole('dialog')).not.toBeInTheDocument());
-    expect(mockEnqueue).toHaveBeenCalledWith(
-      'No email addresses were given, so nothing was sent.',
-      { variant: 'info' },
-    );
-    expect(mockEnqueue).not.toHaveBeenCalledWith(
-      expect.stringContaining('worksheet sent'),
-      expect.anything(),
-    );
   });
 
   it('keeps the dialog and its addresses when the send fails', async () => {

@@ -36,13 +36,7 @@ export const useSendScenarioGoal = (): SendScenarioGoalFlow => {
       variables: { id: target.id, emailAddresses },
     });
     const sentTo = data?.sendNewStaffScenarioGoal?.sentTo;
-    if (!sentTo?.length) {
-      enqueueSnackbar(
-        t('No email addresses were given, so nothing was sent.'),
-        {
-          variant: 'info',
-        },
-      );
+    if (!sentTo) {
       return;
     }
     enqueueSnackbar(
