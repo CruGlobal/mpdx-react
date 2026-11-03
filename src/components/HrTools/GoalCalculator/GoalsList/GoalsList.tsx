@@ -23,6 +23,9 @@ const PlaceholderImage = styled('img')(({ theme }) => ({
   marginTop: theme.spacing(4),
 }));
 
+// 44px tap targets on phones; desktop keeps the default button height
+const buttonSx = { minHeight: { xs: 44, sm: 'auto' } };
+
 export const GoalsList: React.FC = () => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -60,12 +63,13 @@ export const GoalsList: React.FC = () => {
   return (
     <Container>
       <GoalsListWelcome firstName={firstName} />
-      <Stack direction="row" gap={2} pb={3}>
+      <Stack direction={{ xs: 'column', sm: 'row' }} gap={2} pb={3}>
         <Button
           variant="contained"
           onClick={handleCreateGoal}
           disabled={creating}
           startIcon={creating && <CircularProgress size={16} color="inherit" />}
+          sx={buttonSx}
         >
           {t('Create a New Goal')}
         </Button>
@@ -75,6 +79,7 @@ export const GoalsList: React.FC = () => {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={t('Learn About Goalsetting (opens in a new tab)')}
+          sx={buttonSx}
         >
           {t('Learn About Goalsetting')}
         </Button>
