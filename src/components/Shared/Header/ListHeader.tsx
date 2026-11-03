@@ -16,18 +16,37 @@ import { FilterButton } from './styledComponents';
 export const headerHeight = theme.spacing(12);
 
 const HeaderWrap = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'contactPanelOpen',
-})<{ contactPanelOpen?: boolean }>(({}) => ({
-  paddingLeft: theme.spacing(0.5),
-  paddingRight: theme.spacing(0.5),
-  height: headerHeight,
-  display: 'flex',
-  justifyContent: 'space-between',
-  borderBottom: `1px solid ${theme.palette.grey[200]}`,
+  shouldForwardProp: (prop) =>
+    prop !== 'contactPanelOpen' && prop !== 'searchOnOwnRow',
+})<{ contactPanelOpen?: boolean; searchOnOwnRow?: boolean }>(
+  ({ searchOnOwnRow }) => ({
+    paddingLeft: theme.spacing(0.5),
+    paddingRight: theme.spacing(0.5),
+    height: headerHeight,
+    display: 'flex',
+    justifyContent: 'space-between',
+    borderBottom: `1px solid ${theme.palette.grey[200]}`,
+    [theme.breakpoints.down('sm')]: {
+      paddingRight: theme.spacing(2),
+      ...(searchOnOwnRow && {
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        alignContent: 'center',
+        rowGap: theme.spacing(0.5),
+      }),
+    },
+  }),
+);
+
+const phoneSearchRowSx = {
   [theme.breakpoints.down('sm')]: {
-    paddingRight: theme.spacing(2),
+    order: 1,
+    flexBasis: '100%',
+    marginLeft: theme.spacing(1.5),
+    // Short enough to fit under the 48px Actions button in the fixed-height header
+    '& .MuiInputBase-root': { height: 40 },
   },
-}));
+};
 
 const HeaderWrapInner = styled(Box)(({}) => ({
   display: 'flex',
@@ -103,9 +122,23 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
 
   const { t } = useTranslation();
 
+  // On phones the task buttons leave the search box only a sliver of the row,
+  // so it wraps onto its own row below them
+  const searchOnOwnRow = page === PageEnum.Task;
+
   return (
-    <HeaderWrap contactPanelOpen={contactPanelOpen}>
-      <HeaderWrapInner style={{ marginRight: 8 }}>
+    <HeaderWrap
+      contactPanelOpen={contactPanelOpen}
+      searchOnOwnRow={searchOnOwnRow}
+    >
+      <HeaderWrapInner
+        style={{ marginRight: 8 }}
+        sx={
+          searchOnOwnRow
+            ? { display: { xs: 'contents', sm: 'flex' } }
+            : undefined
+        }
+      >
         {contactsView !== TableViewModeEnum.Map && (
           <StyledCheckbox
             name="check all"
@@ -136,6 +169,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
             page === PageEnum.Task ? t('Search Tasks') : t('Search Contacts')
           }
           page={page}
+          sx={searchOnOwnRow ? phoneSearchRowSx : undefined}
         />
         <ItemsShowingText
           data-testid="showing-text"
@@ -146,7 +180,9 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
             : ''}
         </ItemsShowingText>
       </HeaderWrapInner>
-      <HeaderWrapInner style={{ marginLeft: 8 }}>
+      <HeaderWrapInner
+        sx={{ marginLeft: searchOnOwnRow ? { xs: 'auto', sm: 1 } : 1 }}
+      >
         {!!selectedIds.length && (
           <ItemsShowingText
             sx={{ marginRight: 2, display: { xs: 'none', sm: 'block' } }}

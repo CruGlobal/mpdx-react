@@ -20,10 +20,12 @@ import { ContactsMainPanelHeader } from './ContactsMainPanelHeader';
 
 const accountListId = 'account-list-1';
 const setViewMode = jest.fn();
+const replace = jest.fn();
 
 const router = {
   query: { accountListId },
   isReady: true,
+  replace,
 };
 
 interface TestComponentProps {
@@ -144,6 +146,27 @@ describe('ContactsMainPanelHeader', () => {
       expect(
         queryByRole('menuitem', { name: 'View Settings' }),
       ).not.toBeInTheDocument();
+    });
+
+    it('keeps the contact search box working', async () => {
+      const { getByPlaceholderText, findByText } = render(<TestComponent />);
+
+      const searchBox = getByPlaceholderText('Search Contacts');
+      userEvent.hover(searchBox);
+      expect(
+        await findByText('Search by name, phone, email, or partner #'),
+      ).toBeVisible();
+
+      userEvent.type(searchBox, 'Smith');
+      await waitFor(() =>
+        expect(replace).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            query: expect.objectContaining({ searchTerm: 'Smith' }),
+          }),
+          undefined,
+          { shallow: true },
+        ),
+      );
     });
   });
 });
