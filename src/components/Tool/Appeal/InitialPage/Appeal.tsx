@@ -101,7 +101,12 @@ const Appeal = ({
     <Box m={1}>
       <AnimatedCard>
         <CardContent className={classes.cardContent}>
-          <Box display="flex" justifyContent="space-between">
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            columnGap={1}
+            flexWrap={{ xs: 'wrap', sm: 'nowrap' }}
+          >
             <Typography
               variant="h6"
               display="inline"
@@ -114,8 +119,17 @@ const Appeal = ({
                 {name}
               </NextLink>
             </Typography>
-            <Box>
-              <Typography variant="h6" display="inline">
+            <Box
+              ml="auto"
+              display={{ xs: 'flex', sm: 'block' }}
+              alignItems="flex-start"
+              justifyContent="flex-end"
+            >
+              <Typography
+                variant="h6"
+                display="inline"
+                sx={{ minWidth: 0, textAlign: { xs: 'right', sm: 'inherit' } }}
+              >
                 {currencyFormat(given, amountCurrency, locale, {
                   showTrailingZeros: true,
                 })}{' '}
@@ -128,6 +142,7 @@ const Appeal = ({
               <IconButton
                 aria-label={t('Primary Icon')}
                 className={classes.primaryButton}
+                sx={{ flex: 'none' }}
               >
                 {primary ? (
                   <StarIcon className={classes.starPrimary} />
