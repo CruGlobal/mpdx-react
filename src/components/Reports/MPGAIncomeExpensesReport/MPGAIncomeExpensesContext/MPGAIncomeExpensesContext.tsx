@@ -3,6 +3,7 @@ import { ApolloError } from '@apollo/client';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useHcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
+import { HCM_PERSON_NOT_FOUND_CODE } from 'src/components/HrTools/Shared/HcmData/hcmPersonNotFound';
 import { useExpenseCategories } from 'src/hooks/useExpenseCategories';
 import { useFilteredFunds } from 'src/hooks/useFilteredFunds';
 import { useGetLastTwelveMonths } from 'src/hooks/useGetLastTwelveMonths';
@@ -59,6 +60,10 @@ export type ContextType = {
   };
 };
 
+// HCM has no household for someone it no longer knows, such as staff who have left, so the report
+// loads without a salary split and the global error link does not toast it
+export const HANDLED_HCM_ERROR_CODES = [HCM_PERSON_NOT_FOUND_CODE];
+
 export const MPGAIncomeExpensesContext =
   React.createContext<ContextType | null>(null);
 
@@ -100,6 +105,7 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
   const { data: hcmData, loading: hcmLoading } = useHcmQuery({
     variables: { personNumber },
     skip: isSupervisorView && !personNumber,
+    context: { suppressErrorCodes: HANDLED_HCM_ERROR_CODES },
   });
   const household: HouseholdMember[] = useMemo(
     () =>

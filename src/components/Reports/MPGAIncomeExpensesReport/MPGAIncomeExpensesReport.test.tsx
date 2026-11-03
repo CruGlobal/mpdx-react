@@ -4,10 +4,14 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { GraphQLError } from 'graphql';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
+import {
+  HcmQuery,
+  useHcmQuery,
+} from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import {
   StaffExpenseCategoryEnum,
@@ -19,12 +23,27 @@ import { MPGAIncomeExpensesReportProvider } from './MPGAIncomeExpensesContext/MP
 import { MPGAIncomeExpensesReport } from './MPGAIncomeExpensesReport';
 import { MpgaTransactionsQuery } from './MPGATransactions.generated';
 
+// Records each Hcm read's options, since Apollo merges the page's reads into one request
+jest.mock('src/components/HrTools/Shared/HcmData/Hcm.generated', () => {
+  const actual = jest.requireActual(
+    'src/components/HrTools/Shared/HcmData/Hcm.generated',
+  );
+  return { ...actual, useHcmQuery: jest.fn(actual.useHcmQuery) };
+});
+
 const mutationSpy = jest.fn();
 const onNavListToggle = jest.fn();
 
 const title = 'MPGA Report';
 const staffAccountId = '1000000001';
 const staffName = 'Jane Doe';
+
+const hcmPersonNotFound = new GraphQLError('HCM person not found', {
+  extensions: { code: 'HCM_PERSON_NOT_FOUND' },
+});
+const hcmUnavailable = new GraphQLError('HCM UserInfo service unavailable', {
+  extensions: { code: 'HCM_UNAVAILABLE' },
+});
 
 // Twelve positive monthly totals so the category aggregates to income only.
 const generateBreakdown = (base: number) =>
@@ -106,12 +125,14 @@ interface TestComponentProps {
   staffAccountId?: string;
   staffName?: string;
   failReportCalls?: number;
+  hcmError?: GraphQLError;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   staffAccountId,
   staffName,
   failReportCalls = 0,
+  hcmError,
 }) => {
   const reportCalls = useRef(0);
   const reportsStaffExpenses = {
@@ -138,6 +159,13 @@ const TestComponent: React.FC<TestComponentProps> = ({
             }>
               mocks={{
                 ...mockData,
+                ...(hcmError && {
+                  Hcm: {
+                    hcm: (() => {
+                      throw hcmError;
+                    }) as unknown as HcmQuery['hcm'],
+                  },
+                }),
                 MPGATransactions: {
                   reportsStaffExpenses: failReportCalls
                     ? failingReport
@@ -265,6 +293,47 @@ describe('MPGAIncomeExpensesReport', () => {
       await findByRole('alert');
       expect(queryByTestId('account-info')).not.toBeInTheDocument();
     });
+  });
+
+  describe('when HCM has no record of the person', () => {
+    it('loads the report with no error', async () => {
+      const { findByText, queryByRole } = render(
+        <TestComponent hcmError={hcmPersonNotFound} />,
+      );
+
+      expect(await findByText('Benefits', inGridCell)).toBeVisible();
+      expect(queryByRole('alert')).not.toBeInTheDocument();
+    });
+
+    it('keeps the global error toast quiet for that error only', async () => {
+      const { findByText } = render(
+        <TestComponent hcmError={hcmPersonNotFound} />,
+      );
+
+      await findByText('Benefits', inGridCell);
+      expect(mutationSpy).toHaveGraphqlOperation('Hcm');
+      mutationSpy.mock.calls
+        .filter(([{ operation }]) => operation.operationName === 'Hcm')
+        .forEach(([{ operation }]) =>
+          expect(operation.getContext().suppressErrorCodes).toEqual([
+            'HCM_PERSON_NOT_FOUND',
+          ]),
+        );
+      // The merged request carries whichever read's context started it, so every read needs it
+      const hcmReads = jest.mocked(useHcmQuery).mock.calls;
+      expect(hcmReads.length).toBeGreaterThan(0);
+      hcmReads.forEach(([options]) =>
+        expect(options?.context?.suppressErrorCodes).toEqual([
+          'HCM_PERSON_NOT_FOUND',
+        ]),
+      );
+    });
+  });
+
+  it('still loads the report when HCM is unavailable', async () => {
+    const { findByText } = render(<TestComponent hcmError={hcmUnavailable} />);
+
+    expect(await findByText('Benefits', inGridCell)).toBeVisible();
   });
 
   describe('supervisor view', () => {

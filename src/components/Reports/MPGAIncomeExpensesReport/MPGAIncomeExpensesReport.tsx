@@ -37,7 +37,10 @@ import { PrintOnlyReport } from './DisplayModes/PrintOnlyReport';
 import { ScreenOnlyReport } from './DisplayModes/ScreenOnlyReport';
 import { ExportCsvButton } from './ExportCsvButton/ExportCsvButton';
 import { FundTypes } from './Helper/MPGAReportEnum';
-import { useMPGAIncomeExpenses } from './MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
+import {
+  HANDLED_HCM_ERROR_CODES,
+  useMPGAIncomeExpenses,
+} from './MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { PrintOnly, StyledHeaderBox } from './styledComponents';
 
 const isDateFilterActive = (filters: Filters | null | undefined): boolean =>
@@ -134,6 +137,7 @@ export const MPGAIncomeExpensesReport: React.FC<
               <HcmSyncHeaderStatus
                 personNumber={personNumber}
                 skip={isSupervisorView && !personNumber}
+                suppressErrorCodes={HANDLED_HCM_ERROR_CODES}
               />
             }
           />
@@ -147,6 +151,7 @@ export const MPGAIncomeExpensesReport: React.FC<
               <HcmSyncBodyStatus
                 personNumber={personNumber}
                 skip={isSupervisorView && !personNumber}
+                suppressErrorCodes={HANDLED_HCM_ERROR_CODES}
               />
             </SimpleScreenOnly>
             <StyledHeaderBox>
