@@ -4,6 +4,11 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render, waitFor } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  desktopWidth,
+  getStyleAtWidth,
+  phoneWidth,
+} from '__tests__/util/styleAtWidth';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import theme from 'src/theme';
 import AppealProgressBar, { AppealProgressBarProps } from './AppealProgressBar';
@@ -13,25 +18,15 @@ const router = {
   isReady: true,
 };
 
-const Components = ({
-  given,
-  received,
-  committed,
-  amount,
-  amountCurrency,
-}: AppealProgressBarProps) => (
+const desktopWidths = [600, 900, desktopWidth];
+
+const Components = (props: AppealProgressBarProps) => (
   <LocalizationProvider dateAdapter={AdapterLuxon}>
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
         <GqlMockedProvider>
           <AppealsWrapper>
-            <AppealProgressBar
-              given={given}
-              received={received}
-              committed={committed}
-              amount={amount}
-              amountCurrency={amountCurrency}
-            />
+            <AppealProgressBar {...props} />
           </AppealsWrapper>
         </GqlMockedProvider>
       </TestRouter>
@@ -124,5 +119,69 @@ describe('AppealProgressBar', () => {
       expect(getByText(/nz\$200 \(20%\)/i)).toBeInTheDocument();
       expect(getByText(/nz\$300 \(30%\)/i)).toBeInTheDocument();
     });
+  });
+
+  describe('given, received, and committed values', () => {
+    const renderValues = async (centerValuesOnPhones?: boolean) => {
+      const utils = render(
+        <Components
+          given={100}
+          received={200}
+          committed={300}
+          amount={1000}
+          amountCurrency="USD"
+          centerValuesOnPhones={centerValuesOnPhones}
+        />,
+      );
+      const given = await utils.findByText('$100 (10%)');
+      const values = given.parentElement as HTMLElement;
+      return { ...utils, values };
+    };
+
+    it('shows the given, received, and committed values in order on one line', async () => {
+      const { values } = await renderValues();
+
+      expect(values).toHaveTextContent('$100 (10%)/$200 (20%)/$300 (30%)');
+      expect(getStyleAtWidth(values, 'display', phoneWidth)).toBe('flex');
+    });
+
+    it.each([undefined, false])(
+      'right-aligns the values at every width when centerValuesOnPhones is %s',
+      async (centerValuesOnPhones) => {
+        const { values } = await renderValues(centerValuesOnPhones);
+
+        [phoneWidth, ...desktopWidths].forEach((width) => {
+          expect(['end', 'flex-end']).toContain(
+            getStyleAtWidth(values, 'justify-content', width),
+          );
+        });
+      },
+    );
+
+    it('centers the values on phones with centerValuesOnPhones', async () => {
+      const { values } = await renderValues(true);
+
+      expect(getStyleAtWidth(values, 'display', phoneWidth)).toBe('flex');
+      expect(getStyleAtWidth(values, 'justify-content', phoneWidth)).toBe(
+        'center',
+      );
+    });
+
+    it('centers the values just below the sm breakpoint with centerValuesOnPhones', async () => {
+      const { values } = await renderValues(true);
+
+      expect(getStyleAtWidth(values, 'justify-content', 599)).toBe('center');
+    });
+
+    it.each(desktopWidths)(
+      'keeps the values right-aligned at %ipx with centerValuesOnPhones',
+      async (width) => {
+        const { values } = await renderValues(true);
+
+        expect(['end', 'flex-end']).toContain(
+          getStyleAtWidth(values, 'justify-content', width),
+        );
+      },
+    );
   });
 });

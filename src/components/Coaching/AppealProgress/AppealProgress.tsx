@@ -19,7 +19,20 @@ interface Props {
 const CoachingProgressLabelContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   justifyContent: 'space-between',
+  columnGap: theme.spacing(1),
   margin: theme.spacing(2, 2, 0),
+  [theme.breakpoints.down('sm')]: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    textAlign: 'center',
+  },
+}));
+
+// Keeps each amount next to its percentage so long values wrap at the " / "
+const CoachingProgressAmount = styled(Typography)(({ theme }) => ({
+  [theme.breakpoints.down('sm')]: {
+    whiteSpace: 'nowrap',
+  },
 }));
 
 export const AppealProgress = ({
@@ -56,17 +69,17 @@ export const AppealProgress = ({
         </Typography>
         <Typography>
           <MinimalSpacingTooltip title={t('Received')} placement="top" arrow>
-            <Typography display="inline">
+            <CoachingProgressAmount display="inline">
               {currencyFormat(received, currency, locale)} (
               {percentageFormat(received / goal, locale)})
-            </Typography>
+            </CoachingProgressAmount>
           </MinimalSpacingTooltip>
           {' / '}
           <MinimalSpacingTooltip title={t('Committed')} placement="top" arrow>
-            <Typography display="inline">
+            <CoachingProgressAmount display="inline">
               {currencyFormat(pledged, currency, locale)} (
               {percentageFormat(pledged / goal, locale)})
-            </Typography>
+            </CoachingProgressAmount>
           </MinimalSpacingTooltip>
         </Typography>
       </CoachingProgressLabelContainer>
