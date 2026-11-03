@@ -59,6 +59,23 @@ export const getStyleAtWidth = (
   return inlineValue || value;
 };
 
+/**
+ * How many columns an MUI Grid (v2) item spans on a screen `width` pixels
+ * wide. Grid sizes each item with
+ * `width: calc(100% * <columns> / var(--Grid-parent-columns) ...)`, so this
+ * reads <columns> from the width that wins at that screen size. Returns
+ * undefined when the item's width is not column based (e.g. `size="grow"`).
+ */
+export const getGridColumnsAtWidth = (
+  gridItem: Element,
+  width: number,
+): number | undefined => {
+  const match = getStyleAtWidth(gridItem, 'width', width).match(
+    /100% \* (\d+) \//,
+  );
+  return match ? Number(match[1]) : undefined;
+};
+
 /** 390px matches the phone width used in the mobile audit. */
 export const phoneWidth = 390;
 /** Any width at or above MUI's `md` breakpoint counts as desktop. */
