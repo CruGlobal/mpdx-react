@@ -54,6 +54,17 @@ describe('NewForm', () => {
       expect(getByTestId('amount-one')).toHaveTextContent('$40,000.00');
       // currentSalaryCap: value on backend
       expect(getByTestId('amount-two')).toHaveTextContent('$100,000.00');
+      // remainingAllowableSalary from the API
+      expect(getByTestId('amount-three')).toHaveTextContent('$55,000.00');
+    });
+
+    it('shows a three-column skeleton until HCM loads', () => {
+      const { getAllByTestId, queryByTestId } = renderComponent({
+        contextOverrides: { hcmLoading: true },
+      });
+
+      expect(getAllByTestId('name-display-skeleton-column')).toHaveLength(3);
+      expect(queryByTestId('amount-three')).not.toBeInTheDocument();
     });
 
     it('handles missing calculations data gracefully', () => {
@@ -75,6 +86,8 @@ describe('NewForm', () => {
       expect(getByTestId('amount-one')).toHaveTextContent('$0.00');
       // currentSalaryCap calculated in backend
       expect(getByTestId('amount-two')).toHaveTextContent('-$40,000.00');
+      // remainingAllowableSalary defaults to 0 when the API leaves it out
+      expect(getByTestId('amount-three')).toHaveTextContent('$0.00');
     });
   });
 
