@@ -73,7 +73,7 @@ describe('NavToolList', () => {
     ).toHaveTextContent('2');
 
     expect(
-      await findByTestId('fixMailingAddresses-notifications'),
+      await findByTestId('mailingAddresses-notifications'),
     ).toHaveTextContent('2');
 
     expect(

@@ -10,4 +10,8 @@ fragment ContactHeaderAddress on Contact {
     postalCode
     country
   }
+  latestAddressChange {
+    id
+    date
+  }
 }

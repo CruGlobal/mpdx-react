@@ -17,6 +17,10 @@ import {
 } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { useContactPanel } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { StyledCheckbox } from 'src/components/Shared/styledComponents/StyledCheckbox';
+import {
+  AddressChangeBadge,
+  AddressChangeBadgeProps,
+} from '../AddressChangeBadge/AddressChangeBadge';
 import { CelebrationIcons } from '../CelebrationIcons/CelebrationIcons';
 import { ContactPartnershipStatus } from '../ContactPartnershipStatus/ContactPartnershipStatus';
 import { ContactUncompletedTasksCount } from '../ContactUncompletedTasksCount/ContactUncompletedTasksCount';
@@ -47,9 +51,14 @@ export const ListItemButton = styled(ButtonBase)(({ theme }) => ({
 interface Props {
   contact: ContactRowFragment;
   useTopMargin?: boolean;
+  addressChange?: AddressChangeBadgeProps['addressChange'] | null;
 }
 
-export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
+export const ContactRow: React.FC<Props> = ({
+  contact,
+  useTopMargin,
+  addressChange,
+}) => {
   const {
     accountListId,
     isRowChecked: isChecked,
@@ -141,6 +150,11 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
               )
             }
           />
+          {addressChange && (
+            <Box sx={{ mb: 2 }}>
+              <AddressChangeBadge addressChange={addressChange} />
+            </Box>
+          )}
         </Grid>
         <Grid
           size={{

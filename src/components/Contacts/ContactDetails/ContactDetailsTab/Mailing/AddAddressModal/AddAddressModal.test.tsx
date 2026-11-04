@@ -248,8 +248,17 @@ describe('AddAddressModal', () => {
     expect(operation.variables.accountListId).toEqual(accountListId);
     expect(operation.variables.attributes.street).toEqual(newStreet);
 
-    const { operation: operation2 } = mutationSpy.mock.calls[1][0];
-    expect(operation2.variables.primaryAddressId).not.toBeNull();
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ContactPrimaryAddressChange'),
+    );
+
+    // The refetch must follow the primary switch, or it can return the old primary address
+    const operations = mutationSpy.mock.calls.map(
+      ([{ operation }]) => operation.operationName,
+    );
+    expect(operations.indexOf('ContactPrimaryAddressChange')).toBeGreaterThan(
+      operations.indexOf('SetContactPrimaryAddress'),
+    );
   }, 30000);
 
   it('should not set new address as primary if it is unchecked', async () => {
@@ -278,6 +287,6 @@ describe('AddAddressModal', () => {
       }),
     );
 
-    expect(mutationSpy).toHaveBeenCalledTimes(1);
+    expect(mutationSpy).not.toHaveGraphqlOperation('SetContactPrimaryAddress');
   }, 30000);
 });

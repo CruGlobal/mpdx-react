@@ -77,7 +77,7 @@ export const useStyles = makeStyles()(() => ({
 
 export enum ToolName {
   FixCommitmentInfo = 'fixCommitmentInfo',
-  FixMailingAddresses = 'fixMailingAddresses',
+  MailingAddresses = 'mailingAddresses',
   FixSendNewsletter = 'fixSendNewsletter',
   FixEmailAddresses = 'fixEmailAddresses',
   FixPhoneNumbers = 'fixPhoneNumbers',
@@ -100,7 +100,7 @@ const NavMenu: React.FC = () => {
     [ToolName.FixCommitmentInfo]: data?.[ToolName.FixCommitmentInfo] ?? {
       totalCount: 0,
     },
-    [ToolName.FixMailingAddresses]: data?.[ToolName.FixMailingAddresses] ?? {
+    [ToolName.MailingAddresses]: data?.fixMailingAddresses ?? {
       totalCount: 0,
     },
     [ToolName.FixSendNewsletter]: data?.[ToolName.FixSendNewsletter] ?? {

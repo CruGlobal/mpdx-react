@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 
 export interface ToolItem {
   tool: string;
+  subtitle?: string;
   desc: string;
   icon: string;
   id: string;
@@ -61,11 +62,14 @@ export function useToolsNavItems(): ToolsGroup[] {
           url: 'fix/commitmentInfo',
         },
         {
-          tool: t('Fix Mailing Addresses'),
-          desc: t('Set the correct primary mailing address for each contact'),
+          tool: t('Mailing Addresses'),
+          subtitle: t('Confirm and see change history'),
+          desc: t(
+            'Confirm primary mailing addresses and view change history for each contact',
+          ),
           icon: mdiMap,
-          id: 'fixMailingAddresses',
-          url: 'fix/mailingAddresses',
+          id: 'mailingAddresses',
+          url: 'mailingAddresses',
         },
         {
           tool: t('Fix Send Newsletter'),
