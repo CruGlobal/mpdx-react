@@ -52,5 +52,35 @@ describe('EligibleDisplay', () => {
     expect(
       getByText(/our records indicate that you have an approved mha amount/i),
     ).toBeInTheDocument();
+    expect(getByText(/click "update current mha"/i)).toBeInTheDocument();
+  });
+
+  it('should not point to Update Current MHA when a new MHA cannot be requested', () => {
+    const { getByText, queryByText } = render(
+      <TestComponent
+        isPending={false}
+        isEditable={false}
+        canRequestNewMha={false}
+      />,
+    );
+
+    expect(getByText(/click on the "view current mha"/i)).toBeInTheDocument();
+    expect(queryByText(/update current mha/i)).not.toBeInTheDocument();
+  });
+
+  it('should not point to Request New MHA when approved only in HCM and a new MHA cannot be requested', () => {
+    const { getByText, queryByText } = render(
+      <TestComponent
+        isPending={false}
+        isEditable={false}
+        isHcmApprovedOnly
+        canRequestNewMha={false}
+      />,
+    );
+
+    expect(
+      getByText('Our records indicate that you have an approved MHA amount.'),
+    ).toBeInTheDocument();
+    expect(queryByText(/request new mha/i)).not.toBeInTheDocument();
   });
 });

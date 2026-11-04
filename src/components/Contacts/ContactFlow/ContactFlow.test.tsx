@@ -6,7 +6,13 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  desktopWidth,
+  getStyleAtWidth,
+  phoneWidth,
+} from '__tests__/util/styleAtWidth';
 import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
+import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
 import theme from '../../../theme';
 import { ContactFlow } from './ContactFlow';
 import { GetUserOptionsQuery } from './GetUserOptions.generated';
@@ -27,6 +33,42 @@ const mocks = {
     },
   },
 };
+
+const scrollHintText = 'Scroll sideways to see more columns.';
+
+const singleColumnMocks = {
+  UserOption: {
+    userOption: {
+      key: 'flows',
+      value:
+        '[{"name":"UntitledOne","id":"6ced166a-d570-4086-af56-e3eeed8a1f98","statuses":["Appointment Scheduled","Not Interested"],"color":"color-text"}]',
+    },
+  },
+};
+
+interface TestComponentProps {
+  userOptionMocks: {
+    UserOption: { userOption: { key: string; value: string } | null };
+  };
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({ userOptionMocks }) => (
+  <SnackbarProvider>
+    <TestRouter router={router}>
+      <GqlMockedProvider<{ UserOption: UserOptionQuery }>
+        mocks={userOptionMocks}
+      >
+        <ThemeProvider theme={theme}>
+          <ContactsWrapper>
+            <DndProvider backend={HTML5Backend}>
+              <ContactFlow accountListId={accountListId} />
+            </DndProvider>
+          </ContactsWrapper>
+        </ThemeProvider>
+      </GqlMockedProvider>
+    </TestRouter>
+  </SnackbarProvider>
+);
 
 describe('ContactFlow', () => {
   it('Should show loading', async () => {
@@ -114,6 +156,78 @@ describe('ContactFlow', () => {
         getByRole('heading', { name: 'Partner Care' }),
       ).toBeInTheDocument();
       expect(getByRole('heading', { name: 'Archive' })).toBeInTheDocument();
+    });
+  });
+
+  describe('sideways scroll cue', () => {
+    it('shows the scroll hint when there is more than one column', async () => {
+      const { findByTestId, getByText } = render(
+        <TestComponent userOptionMocks={mocks} />,
+      );
+
+      expect(await findByTestId('contactsFlowUntitledTwo')).toBeInTheDocument();
+      expect(getByText(scrollHintText)).toBeInTheDocument();
+    });
+
+    it('shows the scroll hint for the default columns', async () => {
+      const { findByRole, getByText } = render(
+        <TestComponent
+          userOptionMocks={{ UserOption: { userOption: null } }}
+        />,
+      );
+
+      expect(
+        await findByRole('heading', { name: 'Archive' }),
+      ).toBeInTheDocument();
+      expect(getByText(scrollHintText)).toBeInTheDocument();
+    });
+
+    it('does not show the scroll hint when there is only one column', async () => {
+      const { findByTestId, queryByText } = render(
+        <TestComponent userOptionMocks={singleColumnMocks} />,
+      );
+
+      expect(await findByTestId('contactsFlowUntitledOne')).toBeInTheDocument();
+      expect(queryByText(scrollHintText)).not.toBeInTheDocument();
+    });
+
+    it('snaps the board one column at a time on phones', async () => {
+      const { findByTestId, getByTestId } = render(
+        <TestComponent userOptionMocks={mocks} />,
+      );
+
+      // Wait for the saved columns, not the defaults shown while they load
+      const firstColumn = await findByTestId('contactsFlowUntitledOne');
+      const secondColumn = getByTestId('contactsFlowUntitledTwo');
+      expect(
+        getStyleAtWidth(
+          getByTestId('contactsFlow'),
+          'scroll-snap-type',
+          phoneWidth,
+        ),
+      ).toBe('x mandatory');
+      expect(
+        getStyleAtWidth(firstColumn, 'scroll-snap-align', phoneWidth),
+      ).toBe('start');
+      expect(
+        getStyleAtWidth(secondColumn, 'scroll-snap-align', phoneWidth),
+      ).toBe('start');
+    });
+
+    it('does not snap the board on desktop', async () => {
+      const { findByTestId, getByTestId } = render(
+        <TestComponent userOptionMocks={mocks} />,
+      );
+
+      expect(await findByTestId('contactsFlowUntitledOne')).toBeInTheDocument();
+      // An unset scroll-snap-type falls back to its initial value, none
+      expect(
+        getStyleAtWidth(
+          getByTestId('contactsFlow'),
+          'scroll-snap-type',
+          desktopWidth,
+        ) || 'none',
+      ).toBe('none');
     });
   });
 });

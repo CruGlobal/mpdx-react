@@ -18,7 +18,6 @@ import { LocalizationProvider as RawLocalizationProvider } from '@mui/x-date-pic
 import { ErrorBoundary, Provider } from '@rollbar/react';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
-import { SnackbarProvider } from 'notistack';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 import Rollbar from 'rollbar';
 import { Announcements } from 'src/components/Announcements/Announcements';
@@ -33,6 +32,7 @@ import { OfflineIndicator } from 'src/components/OfflineIndicator/OfflineIndicat
 import { RefetchOnReconnect } from 'src/components/RefetchOnReconnect/RefetchOnReconnect';
 import { RouterGuard } from 'src/components/RouterGuard/RouterGuard';
 import { SetupProvider } from 'src/components/Setup/SetupProvider';
+import { AppSnackbarProvider } from 'src/components/Snackbar/AppSnackbarProvider';
 import { SnackbarUtilsConfigurator } from 'src/components/Snackbar/Snackbar';
 import TaskModalProvider from 'src/components/Task/Modal/TaskModalProvider';
 import { UserPreferenceProvider } from 'src/components/User/Preferences/UserPreferenceProvider';
@@ -155,12 +155,12 @@ const AppProviders = React.memo(function AppProviders({
             <StyledEngineProvider injectFirst>
               <CacheProvider value={emotionCache}>
                 <ThemeProvider theme={theme}>
-                  <SnackbarProvider maxSnack={3}>
+                  <AppSnackbarProvider>
                     <GlobalStyles />
                     {children}
                     <Loading />
                     <OfflineIndicator />
-                  </SnackbarProvider>
+                  </AppSnackbarProvider>
                 </ThemeProvider>
               </CacheProvider>
             </StyledEngineProvider>

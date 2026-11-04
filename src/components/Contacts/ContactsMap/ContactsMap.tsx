@@ -87,8 +87,14 @@ export const ContactsMap: React.FC = ({}) => {
       return;
     }
     const oldRight = beacon.style.getPropertyValue('right');
+    const oldWidgetRight = beacon.style.getPropertyValue('--widget-right');
     beacon.style.setProperty('right', '120px', 'important');
-    return () => beacon.style.setProperty('right', oldRight);
+    // helpjuice.css lines the popup up with the button on phones from --widget-right
+    beacon.style.setProperty('--widget-right', '120px');
+    return () => {
+      beacon.style.setProperty('right', oldRight);
+      beacon.style.setProperty('--widget-right', oldWidgetRight);
+    };
   }, []);
 
   const contactBounds = useMemo(() => {

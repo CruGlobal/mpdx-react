@@ -2,7 +2,14 @@ import React, { useState } from 'react';
 import CreateIcon from '@mui/icons-material/Create';
 import HistoryIcon from '@mui/icons-material/History';
 import LocationOn from '@mui/icons-material/LocationOn';
-import { Box, Button, IconButton, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  IconButton,
+  Theme,
+  Typography,
+  useMediaQuery,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -67,6 +74,51 @@ const AddressEditIconContainer = styled(IconButton)(({ theme }) => ({
   margin: theme.spacing(0, 1),
 }));
 
+interface AddAddressButtonProps {
+  placement: 'top' | 'bottom';
+  onHistoryClick: () => void;
+}
+
+// Phones get the button on its own row below the addresses so it can't cover them.
+const AddAddressButton: React.FC<AddAddressButtonProps> = ({
+  placement,
+  onHistoryClick,
+}) => {
+  const { t } = useTranslation();
+  const { setAddAddressModalOpen } = React.useContext(
+    ContactDetailContext,
+  ) as ContactDetailsType;
+  const isSmallScreen = useMediaQuery(
+    (theme: Theme) => theme.breakpoints.down('sm'),
+    { noSsr: true },
+  );
+  const showHere = placement === 'bottom' ? isSmallScreen : !isSmallScreen;
+  if (!showHere) {
+    return null;
+  }
+
+  const button = (
+    <>
+      <AddButton onClick={onHistoryClick} sx={{ mr: 0 }}>
+        <HistoryIcon sx={{ color: 'info.main', mr: 0.5 }} />
+        <AddText variant="subtitle1">{t('History')}</AddText>
+      </AddButton>
+      <AddButton onClick={() => setAddAddressModalOpen(true)}>
+        <AddIcon />
+        <AddText variant="subtitle1">{t('Add Address')}</AddText>
+      </AddButton>
+    </>
+  );
+
+  return isSmallScreen ? (
+    <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>{button}</Box>
+  ) : (
+    <Box sx={{ position: 'relative' }}>
+      <Box sx={{ position: 'absolute', right: 2, top: 2 }}>{button}</Box>
+    </Box>
+  );
+};
+
 interface MailingProp {
   accountListId: string;
   data: ContactMailingFragment;
@@ -103,18 +155,10 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
   const [historyModalOpen, setHistoryModalOpen] = useState(false);
   return (
     <>
-      <Box sx={{ position: 'relative' }}>
-        <Box sx={{ position: 'absolute', right: 2, top: 2 }}>
-          <AddButton onClick={() => setHistoryModalOpen(true)} sx={{ mr: 0 }}>
-            <HistoryIcon sx={{ color: 'info.main', mr: 0.5 }} />
-            <AddText variant="subtitle1">{t('History')}</AddText>
-          </AddButton>
-          <AddButton onClick={() => setAddAddressModalOpen(true)}>
-            <AddIcon />
-            <AddText variant="subtitle1">{t('Add Address')}</AddText>
-          </AddButton>
-        </Box>
-      </Box>
+      <AddAddressButton
+        placement="top"
+        onHistoryClick={() => setHistoryModalOpen(true)}
+      />
       <Box>
         <ContactDetailsMailingMainContainer>
           <ContactDetailsMailingIcon />
@@ -232,6 +276,10 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
           </ContactDetailsMailingTextContainer>
         </ContactDetailsMailingMainContainer>
       </Box>
+      <AddAddressButton
+        placement="bottom"
+        onHistoryClick={() => setHistoryModalOpen(true)}
+      />
       {selectedAddress && (
         <EditContactAddressModal
           contactId={id}

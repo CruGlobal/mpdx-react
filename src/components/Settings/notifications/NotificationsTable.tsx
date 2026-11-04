@@ -207,7 +207,7 @@ export const NotificationsTable: React.FC<NotificationsTableProps> = ({
                   name="notifications"
                   render={() => (
                     <Table
-                      sx={{ minWidth: 700 }}
+                      sx={{ minWidth: { sm: 700 } }}
                       stickyHeader
                       aria-label={t('Notifications table')}
                     >

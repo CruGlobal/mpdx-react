@@ -114,7 +114,7 @@ export const ContactHeaderAddressSection = ({
   }
 
   return (
-    <ContactHeaderSection icon={<LocationIcon />}>
+    <ContactHeaderSection icon={<LocationIcon />} empty>
       <Typography variant="subtitle1">{'N/A'}</Typography>
     </ContactHeaderSection>
   );

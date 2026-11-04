@@ -40,11 +40,19 @@ When a page load fails because there is no network, the worker shows `/offline` 
 - The page is `pages/offline.page.tsx`. It has no data fetching, so Next builds it to static HTML with no user data. Keep it that way, because the worker precaches that HTML (`.next/server/pages/offline.html` in `globPatterns`).
 - `/offline` is in `nonAuthenticatedPages` in `pages/_app.page.tsx`, so it renders without a session.
 - `src/sw/fallbacks.ts` only serves it for page loads (`request.mode === 'navigate'`). Failed API and data requests still fail.
-- Translations are not precached, so the page shows English when offline until MPDX-10176.
+- The page shows in the user's language offline once they have loaded the app online in that language (see Translations below).
+
+### Translations
+
+`public/locales` is not precached (see above). Instead, the second rule in `src/sw/runtimeCaching.ts` caches the translation files i18next asks for (`/locales/<lang>/translation.json`, matched by `src/sw/translations.ts`). That is the user's language plus its fallbacks, such as `en`, so offline the app stays in their language.
+
+- It uses `StaleWhileRevalidate`. The cached copy is used right away, and a fresh copy is fetched in the background. Locale files aren't hashed and Crowdin updates them on every deploy, so new translations show up on the next load.
+- The cache is `mpdx-translations` (`TRANSLATIONS_CACHE` in `src/lib/serviceWorker/cacheNames.ts`). An `ExpirationPlugin` keeps at most 5 files, so switching languages doesn't pile them up.
+- It is on the keep list, so it survives sign-out. Translation files hold no personal data.
 
 ### The keep list and sign-out
 
-`src/lib/clearSessionData.ts` runs when a user signs out, and when impersonation starts or stops. It deletes every cache whose name does not start with a prefix in `KEEP_ON_SIGN_OUT_PREFIXES` (`src/lib/serviceWorker/cacheNames.ts`). Today that list only has `mpdx-precache`.
+`src/lib/clearSessionData.ts` runs when a user signs out, and when impersonation starts or stops. It deletes every cache whose name does not start with a prefix in `KEEP_ON_SIGN_OUT_PREFIXES` (`src/lib/serviceWorker/cacheNames.ts`). Today that list has `mpdx-precache` and `mpdx-translations`.
 
 ### Adding a caching rule
 
@@ -57,7 +65,7 @@ When a page load fails because there is no network, the worker shows `/offline` 
 `yarn start` (`next dev` plus the GraphQL codegen watcher) never registers a worker. That is by design, because `next dev` does not run `serwist build` and `register.ts` only registers in production builds. To test it locally, run `JWT_SECRET=anything yarn build && yarn serve`. `yarn serve` runs `next start`, and the config throws in a production build without `JWT_SECRET`. You can also check the deployed site.
 
 1. Open DevTools, then Application, then Service workers. You should see `/sw.js` as activated.
-2. Open Application, then Cache Storage. You should see only `mpdx-precache-v2-...`.
+2. Open Application, then Cache Storage. You should see `mpdx-precache-v2-...` and `mpdx-translations`, which holds only the languages you loaded.
 3. Sign out and look again. Any other cache should be gone.
 4. In the Network tab, API and page requests should not say "(ServiceWorker)" as a cache hit.
 

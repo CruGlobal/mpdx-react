@@ -38,7 +38,7 @@ const validationErrors = async (values: object): Promise<string[]> => {
 
 describe('getGoalSettingsSchema', () => {
   // The blank defaults are missing every field a goal cannot be calculated
-  // without, which is what makes Save & Share name them.
+  // without, which is what makes Save name them.
   it('rejects the blank defaults for exactly the required fields', async () => {
     expect(await validationErrors(emptyGoalSettingsValues)).toEqual([
       'Age is required',

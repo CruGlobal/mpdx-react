@@ -6,13 +6,13 @@ import React, {
   useCallback,
   useContext,
   useMemo,
-  useState,
 } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
 import { useStepList } from 'src/hooks/useStepList';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { getQueryParam } from 'src/lib/queryParam';
+import { useDrawerOpenState } from '../../Shared/CalculationReports/PanelLayout/useDrawerOpenState';
 import { FormEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
 import { HcmQuery, useHcmQuery } from '../../Shared/HcmData/Hcm.generated';
@@ -128,7 +128,7 @@ export const SalaryCalculatorProvider: React.FC<
     percentComplete,
   } = useStepList(FormEnum.SalaryCalc);
 
-  const [isDrawerOpen, setDrawerOpen] = useState(true);
+  const [isDrawerOpen, setDrawerOpen] = useDrawerOpenState();
   const toggleDrawer = useCallback(() => {
     setDrawerOpen((prev) => !prev);
   }, []);

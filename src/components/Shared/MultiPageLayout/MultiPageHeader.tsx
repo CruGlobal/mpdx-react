@@ -128,7 +128,19 @@ export const MultiPageHeader: FC<MultiPageHeaderProps> = ({
             gap: 3,
           }}
         >
-          <Typography variant="h5">{title}</Typography>
+          <Typography
+            variant="h5"
+            sx={{
+              // The header has a fixed height, so a wrapped title would spill onto the page below
+              [theme.breakpoints.down('sm')]: {
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              },
+            }}
+          >
+            {title}
+          </Typography>
           {titleExtra}
         </Box>
         {rightExtra}

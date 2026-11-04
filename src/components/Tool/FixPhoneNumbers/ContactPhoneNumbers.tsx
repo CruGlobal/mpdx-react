@@ -86,7 +86,7 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
         data-testid="phoneNumbers"
         className={classes.paddingB2}
         size={{
-          xs: 6,
+          xs: 12,
           sm: 4,
         }}
       >
@@ -101,7 +101,7 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
               fontWeight="bold"
               sx={{ display: { xs: 'inline', sm: 'none' } }}
             >
-              {t('Source')}:
+              {t('Source')}:{' '}
             </Typography>
             <Typography display="inline" variant="body2">
               {`${sourceToStr(t, phoneNumber.source)} (${dateFormatShort(
@@ -115,13 +115,13 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
       <Grid
         className={classes.paddingB2}
         size={{
-          xs: 6,
+          xs: 12,
           sm: 2,
         }}
       >
         <Box
           display="flex"
-          justifyContent="center"
+          justifyContent={{ xs: 'flex-start', sm: 'center' }}
           className={classes.paddingX}
         >
           <Typography display="flex" alignItems="center">
@@ -130,9 +130,9 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
                 <Typography
                   variant="body2"
                   fontWeight="bold"
-                  sx={{ display: { xs: 'inline', sm: 'none' } }}
+                  sx={{ display: { xs: 'inline', sm: 'none' }, mr: 0.5 }}
                 >
-                  {t('Source')}:
+                  {t('Primary')}:
                 </Typography>
                 <StarIcon
                   data-testid={`starIcon-${personId}-${phoneNumber.id}`}
@@ -144,9 +144,9 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
                 <Typography
                   variant="body2"
                   fontWeight="bold"
-                  sx={{ display: { xs: 'inline', sm: 'none' } }}
+                  sx={{ display: { xs: 'inline', sm: 'none' }, mr: 0.5 }}
                 >
-                  {t('Source')}:
+                  {t('Primary')}:
                 </Typography>
                 <Tooltip title={t('Set as Primary')} placement="left">
                   <StarOutlineIcon

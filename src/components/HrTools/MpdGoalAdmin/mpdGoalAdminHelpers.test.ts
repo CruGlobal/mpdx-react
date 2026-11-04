@@ -167,6 +167,7 @@ describe('attendeeToRow', () => {
       id: 'row-3',
       accountListId: 'account-list-row-3',
       name: 'Sam Smith',
+      cohortName: 'Fall NSO 2026',
       ministry: 'Campus',
       subministry: 'CMCH01',
       mpdGoal: 4200,
@@ -186,6 +187,13 @@ describe('attendeeToRow', () => {
         goalSentAt: '2026-08-10T15:40:00Z',
       }).goalSentAt,
     ).toBe('2026-08-10T15:40:00Z');
+  });
+
+  it("carries the attendee's own cohort name", () => {
+    expect(
+      attendeeToRow({ ...attendeeComplete, cohortName: 'Spring NSO 2027' })
+        .cohortName,
+    ).toBe('Spring NSO 2027');
   });
 
   it('keeps the goal null when there is no calculation yet', () => {
@@ -236,9 +244,9 @@ describe('familyStatusLabel', () => {
 
 describe('goalStatusLabel', () => {
   it.each([
-    [NewStaffCohortAttendeeGoalStatusEnum.Complete, 'Complete'],
+    [NewStaffCohortAttendeeGoalStatusEnum.Complete, 'Ready to Send'],
     [NewStaffCohortAttendeeGoalStatusEnum.Sent, 'Sent'],
-    [NewStaffCohortAttendeeGoalStatusEnum.Incomplete, 'Incomplete'],
+    [NewStaffCohortAttendeeGoalStatusEnum.Incomplete, 'Not Ready'],
   ])('labels %s as "%s"', (status, label) => {
     expect(goalStatusLabel(status, t)).toBe(label);
   });

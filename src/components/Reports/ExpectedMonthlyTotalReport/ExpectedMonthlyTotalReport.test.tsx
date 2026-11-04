@@ -4,6 +4,7 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import matchMediaMock from '__tests__/util/matchMediaMock';
 import { GetExpectedMonthlyTotalsQuery } from 'pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
 import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import theme from '../../../theme';
@@ -151,5 +152,40 @@ describe('ExpectedMonthlyTotalReport', () => {
     expect(getByTestId('ReportsMenuIcon')).toBeInTheDocument();
     userEvent.click(getByTestId('ReportsMenuIcon'));
     await waitFor(() => expect(onNavListToggle).toHaveBeenCalled());
+  });
+
+  describe('totals bar', () => {
+    it('shows the totals bar in the header on wide screens', async () => {
+      matchMediaMock({ width: '1024px' });
+      const { findByTestId } = render(<TestComponent />);
+
+      expect(
+        (await findByTestId('progressBarWrapper')).closest(
+          '[test-dataid="MultiPageHeader"]',
+        ),
+      ).not.toBeNull();
+    });
+
+    it('shows the totals bar below the header on phones', async () => {
+      matchMediaMock({ width: '390px' });
+      const { findByTestId } = render(<TestComponent />);
+
+      expect(
+        (await findByTestId('progressBarWrapper')).closest(
+          '[test-dataid="MultiPageHeader"]',
+        ),
+      ).toBeNull();
+    });
+
+    it('renders nothing below the header on phones when there are no donations', async () => {
+      matchMediaMock({ width: '390px' });
+      const { findByText, queryByTestId } = render(<TestComponent empty />);
+
+      expect(
+        await findByText('You have no expected donations this month'),
+      ).toBeInTheDocument();
+      expect(queryByTestId('TotalsBarBelowHeader')).not.toBeInTheDocument();
+      expect(queryByTestId('progressBarWrapper')).not.toBeInTheDocument();
+    });
   });
 });

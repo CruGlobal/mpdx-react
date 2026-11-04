@@ -7,13 +7,19 @@ export const RentOwnSkeleton: React.FC = () => {
     <>
       <Skeleton
         variant="rounded"
-        width={mainContentWidth}
+        width="100%"
+        sx={{ maxWidth: mainContentWidth }}
         height={35}
         style={{
           marginBottom: '16px',
         }}
       />
-      <Skeleton variant="rounded" width={mainContentWidth} height={35} />
+      <Skeleton
+        variant="rounded"
+        width="100%"
+        sx={{ maxWidth: mainContentWidth }}
+        height={35}
+      />
     </>
   );
 };

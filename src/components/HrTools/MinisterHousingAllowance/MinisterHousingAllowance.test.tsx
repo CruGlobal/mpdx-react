@@ -169,6 +169,11 @@ describe('MinisterHousingAllowanceReport', () => {
                 ineligibilityReasonCode:
                   MinistersHousingIneligibilityReasonEnum.NoIbsCertification,
               },
+              mhaNewRequest: {
+                mhaEligibility: false,
+                ineligibilityReasonCode:
+                  MinistersHousingIneligibilityReasonEnum.NoIbsCertification,
+              },
             },
           ]}
           mhaRequestsMock={[]}
@@ -190,6 +195,11 @@ describe('MinisterHousingAllowanceReport', () => {
             {
               ...marriedNoMhaNoException[0],
               mhaEit: {
+                mhaEligibility: false,
+                ineligibilityReasonCode:
+                  MinistersHousingIneligibilityReasonEnum.NoIbsCertification,
+              },
+              mhaNewRequest: {
                 mhaEligibility: false,
                 ineligibilityReasonCode:
                   MinistersHousingIneligibilityReasonEnum.NoIbsCertification,
@@ -221,6 +231,7 @@ describe('MinisterHousingAllowanceReport', () => {
               mhaRequest: {
                 ...singleMhaNoException[0].mhaRequest,
                 currentApprovedOverallAmount: 0,
+                boardApprovedOverallAmount: 0,
               },
             },
           ]}
@@ -238,11 +249,57 @@ describe('MinisterHousingAllowanceReport', () => {
       expect(queryByText('Current Board Approved MHA')).not.toBeInTheDocument();
     });
 
-    it('does not show the HCM approved MHA when only an ineligible spouse has one', async () => {
-      const { findByText, findByRole, queryByText } = render(
+    it('shows the board approved MHA when the IBS certification has expired', async () => {
+      const { findByText, getByText, getByRole, queryByTestId } = render(
         <TestComponent
           hcmMock={[
-            marriedNoMhaNoException[0],
+            {
+              ...singleMhaNoException[0],
+              mhaEit: {
+                mhaEligibility: false,
+                ineligibilityReasonCode:
+                  MinistersHousingIneligibilityReasonEnum.IbsCertificationExpired,
+              },
+              mhaRequest: {
+                ...singleMhaNoException[0].mhaRequest,
+                currentApprovedOverallAmount: 0,
+              },
+            },
+          ]}
+          mhaRequestsMock={[]}
+        />,
+      );
+
+      expect(
+        await findByText('Current Board Approved MHA'),
+      ).toBeInTheDocument();
+      expect(getByText('$15,000.00')).toBeInTheDocument();
+      expect(getByText('Approved on: 6/1/2026')).toBeInTheDocument();
+      // The board approval also lets them request a new MHA
+      expect(getByText(/click "request new mha"/i)).toBeInTheDocument();
+      expect(
+        getByRole('button', { name: 'Request New MHA' }),
+      ).toBeInTheDocument();
+      expect(queryByTestId('eligibility-status-table')).not.toBeInTheDocument();
+    });
+
+    it('shows the board approved MHA when only the spouse has one and no IBS certification', async () => {
+      const { findByText, getByRole, queryByRole } = render(
+        <TestComponent
+          hcmMock={[
+            {
+              ...marriedNoMhaNoException[0],
+              mhaEit: {
+                mhaEligibility: false,
+                ineligibilityReasonCode:
+                  MinistersHousingIneligibilityReasonEnum.NoIbsCertification,
+              },
+              mhaNewRequest: {
+                mhaEligibility: false,
+                ineligibilityReasonCode:
+                  MinistersHousingIneligibilityReasonEnum.NoIbsCertification,
+              },
+            },
             {
               ...singleMhaNoException[0],
               staffInfo: marriedNoMhaNoException[1].staffInfo,
@@ -258,53 +315,39 @@ describe('MinisterHousingAllowanceReport', () => {
       );
 
       expect(
-        await findByText(/our records indicate that you have not applied for/i),
+        await findByText('Current Board Approved MHA'),
       ).toBeInTheDocument();
-      // Wait for HCM data so the negative check can't pass before it loads
+      expect(getByRole('cell', { name: 'Jane' })).toBeInTheDocument();
+      expect(queryByRole('cell', { name: 'John' })).not.toBeInTheDocument();
       expect(
-        await findByRole('columnheader', { name: 'Jane' }),
+        getByRole('button', { name: 'Request New MHA' }),
       ).toBeInTheDocument();
-      expect(queryByText('Current Board Approved MHA')).not.toBeInTheDocument();
+      // John has neither; Jane qualifies only through the Board approval
+      expect(
+        getByRole('cell', {
+          name: 'Has not completed the required IBS courses',
+        }),
+      ).toBeInTheDocument();
+      expect(
+        getByRole('cell', { name: 'MHA has been Board approved' }),
+      ).toBeInTheDocument();
     });
 
-    it('does not show the HCM approved MHA when only an ineligible user has one', async () => {
+    it('does not show the HCM approved MHA without a board approval date', async () => {
       const { findByText, findByRole, queryByText } = render(
         <TestComponent
           hcmMock={[
             {
               ...singleMhaNoException[0],
-              mhaEit: {
-                mhaEligibility: false,
-                ineligibilityReasonCode:
-                  MinistersHousingIneligibilityReasonEnum.NoIbsCertification,
+              mhaRequest: {
+                ...singleMhaNoException[0].mhaRequest,
+                boardApprovedOverallAmount: 0,
+                boardApprovedOnDate: null,
               },
-            },
-            marriedNoMhaNoException[1],
-          ]}
-          mhaRequestsMock={[]}
-        />,
-      );
-
-      expect(
-        await findByText(/our records indicate that you have not applied for/i),
-      ).toBeInTheDocument();
-      // Wait for HCM data so the negative check can't pass before it loads
-      expect(
-        await findByRole('columnheader', { name: 'Jane' }),
-      ).toBeInTheDocument();
-      expect(queryByText('Current Board Approved MHA')).not.toBeInTheDocument();
-    });
-
-    it('does not show the HCM approved MHA when ineligible', async () => {
-      const { findByText, findByRole, queryByText } = render(
-        <TestComponent
-          hcmMock={[
-            {
-              ...singleMhaNoException[0],
-              mhaEit: {
+              mhaBoardApproval: {
                 mhaEligibility: false,
                 ineligibilityReasonCode:
-                  MinistersHousingIneligibilityReasonEnum.NoIbsCertification,
+                  MinistersHousingIneligibilityReasonEnum.MissingBoardApprovedOnDate,
               },
             },
           ]}

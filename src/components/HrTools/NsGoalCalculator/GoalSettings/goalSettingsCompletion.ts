@@ -22,13 +22,13 @@ export interface GoalCompletionFields {
 
 /**
  * Whether a goal calculation has the fields required to produce a valid goal.
- * Age, full-time years on staff, and role (field/office) are required for each
- * person on the calculation — both spouses when married — and a calculation
- * year, benefits plan, and marital status are required for the household.
- * Drives the Complete/Incomplete chips on the Scenario Goals table and in the
- * header; the Active Goals table uses the API's own goalStatus, which checks a
- * different set of requirements (see
- * NewStaffCohortAttendeeGoalMissingFieldEnum).
+ * Age and full-time years on staff are required for each person on the
+ * calculation (both spouses when married), and a calculation year, role,
+ * benefits plan, and marital status are required for the household.
+ * Drives the Calculation Complete/Incomplete chips on the Scenario Goals table
+ * and in the header. Must match the calculation inputs in the API's
+ * NewStaffGoalCalculation REQUIRED_FOR_SEND and SPOUSE_REQUIRED_FOR_SEND;
+ * the API alone also requires a name and work location before sending.
  */
 export const isCalculationComplete = (
   calculation: GoalCompletionFields,

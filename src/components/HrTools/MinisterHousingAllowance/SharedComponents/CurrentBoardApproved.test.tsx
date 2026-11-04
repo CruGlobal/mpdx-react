@@ -220,6 +220,7 @@ describe('CurrentBoardApproved Component', () => {
                   isMarried: false,
                   preferredName: 'John',
                   spousePreferredName: '',
+                  userEligibleForMHA: true,
                   userHcmData: {
                     staffInfo: {
                       personNumber: '000123456',
@@ -271,8 +272,8 @@ describe('CurrentBoardApproved Component', () => {
                   isMarried: true,
                   preferredName: 'John',
                   spousePreferredName: 'Jane',
-                  userEligibleForMHA: true,
-                  spouseEligibleForMHA: true,
+                  userBoardApprovedForMHA: true,
+                  spouseBoardApprovedForMHA: true,
                   userApprovedOverallAmount: 2000,
                   spouseApprovedOverallAmount: 800,
                   userTakenAmount: 1200,
@@ -315,8 +316,8 @@ describe('CurrentBoardApproved Component', () => {
                   isMarried: true,
                   preferredName: 'John',
                   spousePreferredName: 'Jane',
-                  userEligibleForMHA: true,
-                  spouseEligibleForMHA: true,
+                  userBoardApprovedForMHA: true,
+                  spouseBoardApprovedForMHA: true,
                   userApprovedOverallAmount: 36600,
                   spouseApprovedOverallAmount: 0,
                   userTakenAmount: 36600,
@@ -341,7 +342,7 @@ describe('CurrentBoardApproved Component', () => {
     expect(queryByText('Approved on: 8/1/2016')).not.toBeInTheDocument();
   });
 
-  it('leaves out the row for an ineligible spouse without a request', () => {
+  it('leaves out the row for a spouse without a board approval when there is no request', () => {
     const { getByRole, queryByRole } = render(
       <ThemeProvider theme={theme}>
         <TestRouter>
@@ -352,8 +353,8 @@ describe('CurrentBoardApproved Component', () => {
                   isMarried: true,
                   preferredName: 'John',
                   spousePreferredName: 'Jane',
-                  userEligibleForMHA: true,
-                  spouseEligibleForMHA: false,
+                  userBoardApprovedForMHA: true,
+                  spouseBoardApprovedForMHA: false,
                   userApprovedOverallAmount: 36600,
                   spouseApprovedOverallAmount: 0,
                   userTakenAmount: 36600,
@@ -378,7 +379,7 @@ describe('CurrentBoardApproved Component', () => {
     expect(queryByRole('cell', { name: 'Jane' })).not.toBeInTheDocument();
   });
 
-  it('leaves out the row for an ineligible user without a request', () => {
+  it('leaves out the row for a user without a board approval when there is no request', () => {
     const { getByRole, queryByRole } = render(
       <ThemeProvider theme={theme}>
         <TestRouter>
@@ -389,8 +390,8 @@ describe('CurrentBoardApproved Component', () => {
                   isMarried: true,
                   preferredName: 'John',
                   spousePreferredName: 'Jane',
-                  userEligibleForMHA: false,
-                  spouseEligibleForMHA: true,
+                  userBoardApprovedForMHA: false,
+                  spouseBoardApprovedForMHA: true,
                   userApprovedOverallAmount: 0,
                   spouseApprovedOverallAmount: 15000,
                   userTakenAmount: 0,
@@ -415,6 +416,29 @@ describe('CurrentBoardApproved Component', () => {
     expect(queryByRole('cell', { name: 'John' })).not.toBeInTheDocument();
   });
 
+  it('hides Update Current MHA when nobody has a current IBS certification', () => {
+    const { queryByText, getByText } = render(
+      <TestComponent
+        contextValue={{
+          isMarried: false,
+          preferredName: 'John',
+          spousePreferredName: '',
+          userEligibleForMHA: false,
+          userBoardApprovedForMHA: true,
+          userHcmData: {
+            staffInfo: {
+              personNumber: '000123456',
+            },
+          } as unknown as HcmData,
+          spouseHcmData: null,
+        }}
+      />,
+    );
+
+    expect(getByText('View Current MHA')).toBeInTheDocument();
+    expect(queryByText('Update Current MHA')).not.toBeInTheDocument();
+  });
+
   it('should hide Update Current MHA button when there is an open request', () => {
     const { queryByText, getByText } = render(
       <TestComponent
@@ -422,6 +446,7 @@ describe('CurrentBoardApproved Component', () => {
           isMarried: false,
           preferredName: 'John',
           spousePreferredName: '',
+          userEligibleForMHA: true,
           userHcmData: {
             staffInfo: {
               personNumber: '000123456',

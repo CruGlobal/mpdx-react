@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
@@ -15,9 +15,11 @@ import {
   GoalCalculationAge,
   GoalCalculationRole,
   MpdGoalBenefitsConstantPlanEnum,
+  NewStaffGoalCalculationSortEnum,
   NewStaffQuestionnaireMaritalStatusEnum,
 } from 'src/graphql/types.generated';
 import theme from 'src/theme';
+import { searchDebounceMs } from '../mpdGoalAdminHelpers';
 import { ScenarioGoals } from './ScenarioGoals';
 import {
   CreateNewStaffScenarioGoalMutation,
@@ -54,8 +56,6 @@ const scenarioGoalsMock: DeepPartial<NewStaffScenarioGoalsQuery> = {
         createdAt: '2026-08-01T12:00:00Z',
         maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
         calculationsYear: 2026,
-        emailAddress: 'john@example.com',
-        spouseEmailAddress: null,
         age: GoalCalculationAge.ThirtyToThirtyFour,
         tenure: 0,
         assignmentType: GoalCalculationRole.Field,
@@ -73,8 +73,6 @@ const scenarioGoalsMock: DeepPartial<NewStaffScenarioGoalsQuery> = {
         createdAt: '2026-08-15T12:00:00Z',
         maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
         calculationsYear: null,
-        emailAddress: null,
-        spouseEmailAddress: null,
         age: null,
         tenure: null,
         assignmentType: null,
@@ -104,32 +102,10 @@ const manyScenarioGoalsMock: DeepPartial<NewStaffScenarioGoalsQuery> = {
   },
 };
 
-// A goal with every required field filled in but nowhere to send the worksheet.
-const noEmailScenarioGoalMock: DeepPartial<NewStaffScenarioGoalsQuery> = {
-  newStaffScenarioGoals: {
-    nodes: [
-      {
-        id: 'scenario-4',
-        firstName: 'Jane',
-        lastName: 'Roe',
-        ministryName: 'Cru Campus',
-        geographicLocation: 'Orlando, FL',
-        createdAt: '2026-08-05T12:00:00Z',
-        calculationsYear: 2026,
-        emailAddress: null,
-        spouseEmailAddress: null,
-        calculations: { monthlyGoal: 2500 },
-      },
-    ],
-    pageInfo: { endCursor: null, hasNextPage: false },
-  },
-};
-
 const sendScenarioGoalMock: DeepPartialMock<SendNewStaffScenarioGoalMutation> =
   {
     sendNewStaffScenarioGoal: {
       newStaffGoalCalculation: { id: 'scenario-1' },
-      sentTo: ['john@example.com'],
     },
   };
 
@@ -159,6 +135,13 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
+afterEach(() => {
+  jest.useRealTimers();
+});
+
+const settleSearch = () =>
+  act(() => jest.advanceTimersByTime(searchDebounceMs));
+
 describe('ScenarioGoals', () => {
   it('shows a loading indicator until the query resolves', async () => {
     const { getByLabelText, findByRole } = renderScenarioGoals();
@@ -178,7 +161,7 @@ describe('ScenarioGoals', () => {
         'Ministry',
         'Campus Division',
         'MPD Goal',
-        'Goal Status',
+        'Calculation Status',
         'Created',
         'Actions',
       ],
@@ -188,26 +171,37 @@ describe('ScenarioGoals', () => {
           'Cru Campus',
           'Orlando, FL',
           '$5,000',
-          'Complete',
+          'Calculation Complete',
           '8/1/2026',
           '',
         ],
-        ['Untitled scenario', '—', '—', '$0', 'Incomplete', '8/15/2026', ''],
+        [
+          'Untitled scenario',
+          '—',
+          '—',
+          '$0',
+          'Calculation Incomplete',
+          '8/15/2026',
+          '',
+        ],
       ],
     });
   });
 
   it('emails the worksheet for a scenario goal from its row', async () => {
-    const { findByRole, findByText, getByRole, getByText } =
-      renderScenarioGoals();
+    const { findByRole, findByText, getByRole } = renderScenarioGoals();
 
     userEvent.click(await findByRole('button', { name: 'Email John Doe' }));
 
     expect(
-      getByText(
-        'Email the support goals worksheet for John Doe to john@example.com? This cannot be undone.',
+      await findByText(
+        'Email the support goals worksheet for John Doe to this address. This cannot be undone.',
       ),
     ).toBeInTheDocument();
+    userEvent.type(
+      getByRole('textbox', { name: 'Email address' }),
+      'john@example.com',
+    );
 
     userEvent.click(getByRole('button', { name: 'Send Worksheet' }));
 
@@ -216,20 +210,24 @@ describe('ScenarioGoals', () => {
     ).toBeInTheDocument();
     expect(mutationSpy).toHaveGraphqlOperation('SendNewStaffScenarioGoal', {
       id: 'scenario-1',
+      emailAddress: 'john@example.com',
     });
   });
 
-  it('does not claim success when sending fails', async () => {
-    const { findByRole, getByRole, queryByRole, queryByText } =
-      renderScenarioGoals({
-        SendNewStaffScenarioGoal: {
-          sendNewStaffScenarioGoal: () => {
-            throw new Error('Send failed');
-          },
+  it('keeps the send dialog open and does not claim success when sending fails', async () => {
+    const { findByRole, getByRole, queryByText } = renderScenarioGoals({
+      SendNewStaffScenarioGoal: {
+        sendNewStaffScenarioGoal: () => {
+          throw new Error('Send failed');
         },
-      });
+      },
+    });
 
     userEvent.click(await findByRole('button', { name: 'Email John Doe' }));
+    userEvent.type(
+      getByRole('textbox', { name: 'Email address' }),
+      'john@example.com',
+    );
     userEvent.click(getByRole('button', { name: 'Send Worksheet' }));
 
     await waitFor(() =>
@@ -237,8 +235,10 @@ describe('ScenarioGoals', () => {
         id: 'scenario-1',
       }),
     );
-    // The dialog only closes once the send settles, so by now a toast would have appeared.
-    await waitFor(() => expect(queryByRole('dialog')).not.toBeInTheDocument());
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Send Worksheet' })).toBeEnabled(),
+    );
+    expect(getByRole('dialog')).toBeInTheDocument();
     expect(
       queryByText('Support goals worksheet sent to john@example.com.'),
     ).not.toBeInTheDocument();
@@ -256,24 +256,6 @@ describe('ScenarioGoals', () => {
     expect(
       await findByText(
         'A first name, last name, geographic location, and year are required before the worksheet can be emailed.',
-      ),
-    ).toBeInTheDocument();
-  });
-
-  it('blocks sending a complete scenario goal that has no email address', async () => {
-    const { findByRole, getByRole, findByText } = renderScenarioGoals({
-      NewStaffScenarioGoals: noEmailScenarioGoalMock,
-    } as ApolloErgonoMockMap);
-
-    await findByRole('link', { name: 'Jane Roe' });
-    const send = getByRole('button', { name: 'Email Jane Roe' });
-    expect(send).toBeDisabled();
-
-    // The tooltip lives on the wrapper span; a disabled button takes no pointer events.
-    await userEvent.hover(send.parentElement as HTMLElement);
-    expect(
-      await findByText(
-        'This scenario goal has no email address to send the worksheet to.',
       ),
     ).toBeInTheDocument();
   });
@@ -300,6 +282,204 @@ describe('ScenarioGoals', () => {
     expect(
       await findByText('No scenario goals yet. Create one to get started.'),
     ).toBeInTheDocument();
+  });
+
+  it('sends the debounced search term to the query', async () => {
+    jest.useFakeTimers();
+    const { findByRole, getByRole, queryByRole } = renderScenarioGoals({
+      NewStaffScenarioGoals: {
+        newStaffScenarioGoals: (_root: unknown, args: { search?: string }) =>
+          args.search
+            ? {
+                nodes: scenarioGoalsMock.newStaffScenarioGoals?.nodes?.slice(
+                  0,
+                  1,
+                ),
+                pageInfo: { endCursor: null, hasNextPage: false },
+              }
+            : scenarioGoalsMock.newStaffScenarioGoals,
+      },
+    });
+
+    await findByRole('link', { name: 'John Doe' });
+    userEvent.type(getByRole('textbox', { name: 'Search' }), 'john');
+    settleSearch();
+
+    // The API does the matching, so the searched result set replaces the full one.
+    await waitFor(() =>
+      expect(
+        queryByRole('link', { name: 'Untitled scenario' }),
+      ).not.toBeInTheDocument(),
+    );
+    expect(mutationSpy).toHaveGraphqlOperation('NewStaffScenarioGoals', {
+      search: 'john',
+    });
+    // Only the settled term reaches the API, not one query per keystroke.
+    expect(mutationSpy).not.toHaveGraphqlOperation('NewStaffScenarioGoals', {
+      search: 'j',
+    });
+  });
+
+  it('treats a whitespace-only search as no search', async () => {
+    jest.useFakeTimers();
+    const { findByRole, getByRole } = renderScenarioGoals();
+
+    await findByRole('link', { name: 'John Doe' });
+    userEvent.type(getByRole('textbox', { name: 'Search' }), '   ');
+    settleSearch();
+
+    expect(getByRole('link', { name: 'John Doe' })).toBeInTheDocument();
+    expect(
+      getByRole('link', { name: 'Untitled scenario' }),
+    ).toBeInTheDocument();
+    expect(mutationSpy).toHaveGraphqlOperation('NewStaffScenarioGoals', {
+      search: null,
+    });
+    const searchTerms = mutationSpy.mock.calls
+      .filter(
+        ([{ operation }]) =>
+          operation.operationName === 'NewStaffScenarioGoals',
+      )
+      .map(([{ operation }]) => operation.variables.search);
+    expect(searchTerms.every((term) => term === null)).toBe(true);
+  });
+
+  it('disables row actions until the typed search settles', async () => {
+    jest.useFakeTimers();
+    const { findByRole, getByRole, queryByRole } = renderScenarioGoals({
+      NewStaffScenarioGoals: {
+        newStaffScenarioGoals: (_root: unknown, args: { search?: string }) =>
+          args.search
+            ? {
+                nodes: scenarioGoalsMock.newStaffScenarioGoals?.nodes?.slice(
+                  0,
+                  1,
+                ),
+                pageInfo: { endCursor: null, hasNextPage: false },
+              }
+            : scenarioGoalsMock.newStaffScenarioGoals,
+      },
+    });
+
+    await findByRole('link', { name: 'John Doe' });
+    const deleteButton = getByRole('button', { name: 'Delete John Doe' });
+    expect(deleteButton).toBeEnabled();
+
+    userEvent.type(getByRole('textbox', { name: 'Search' }), 'john');
+    // The rows on screen may not match the pending search, so acting on them is blocked.
+    expect(deleteButton).toBeDisabled();
+    expect(getByRole('button', { name: 'Email John Doe' })).toBeDisabled();
+
+    settleSearch();
+    await waitFor(() =>
+      expect(
+        queryByRole('link', { name: 'Untitled scenario' }),
+      ).not.toBeInTheDocument(),
+    );
+    expect(getByRole('button', { name: 'Delete John Doe' })).toBeEnabled();
+    expect(getByRole('button', { name: 'Email John Doe' })).toBeEnabled();
+  });
+
+  it('sorts by name A to Z, then Z to A, from the Name header', async () => {
+    const { findByRole, getByRole } = renderScenarioGoals();
+
+    await findByRole('link', { name: 'John Doe' });
+    const nameHeader = getByRole('button', { name: 'Name' });
+
+    userEvent.click(nameHeader);
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('NewStaffScenarioGoals', {
+        sortBy: NewStaffGoalCalculationSortEnum.LastNameAsc,
+      }),
+    );
+
+    userEvent.click(nameHeader);
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('NewStaffScenarioGoals', {
+        sortBy: NewStaffGoalCalculationSortEnum.LastNameDesc,
+      }),
+    );
+  });
+
+  it('returns to the first page when the sort changes', async () => {
+    const sortedNodes = manyScenarioGoalsMock.newStaffScenarioGoals?.nodes?.map(
+      (node) => ({ ...node, firstName: 'Sorted' }),
+    );
+    const { findByRole, getByRole, queryByRole } = renderScenarioGoals({
+      NewStaffScenarioGoals: {
+        newStaffScenarioGoals: (_root: unknown, args: { sortBy?: string }) =>
+          args.sortBy
+            ? {
+                nodes: sortedNodes,
+                pageInfo: { endCursor: null, hasNextPage: false },
+              }
+            : manyScenarioGoalsMock.newStaffScenarioGoals,
+      },
+    });
+
+    await findByRole('link', { name: 'Person 0' });
+    userEvent.click(getByRole('button', { name: 'Go to next page' }));
+    expect(await findByRole('link', { name: 'Person 5' })).toBeInTheDocument();
+
+    userEvent.click(getByRole('button', { name: 'Name' }));
+
+    expect(await findByRole('link', { name: 'Sorted 0' })).toBeInTheDocument();
+    expect(queryByRole('link', { name: 'Sorted 5' })).not.toBeInTheDocument();
+  });
+
+  it('returns to the first page when the search changes', async () => {
+    jest.useFakeTimers();
+    const foundNodes = manyScenarioGoalsMock.newStaffScenarioGoals?.nodes?.map(
+      (node) => ({ ...node, firstName: 'Found' }),
+    );
+    const { findByRole, getByRole, queryByRole } = renderScenarioGoals({
+      NewStaffScenarioGoals: {
+        newStaffScenarioGoals: (_root: unknown, args: { search?: string }) =>
+          args.search
+            ? {
+                nodes: foundNodes,
+                pageInfo: { endCursor: null, hasNextPage: false },
+              }
+            : manyScenarioGoalsMock.newStaffScenarioGoals,
+      },
+    });
+
+    await findByRole('link', { name: 'Person 0' });
+    userEvent.click(getByRole('button', { name: 'Go to next page' }));
+    expect(await findByRole('link', { name: 'Person 5' })).toBeInTheDocument();
+
+    userEvent.type(getByRole('textbox', { name: 'Search' }), 'found');
+    settleSearch();
+
+    expect(await findByRole('link', { name: 'Found 0' })).toBeInTheDocument();
+    expect(queryByRole('link', { name: 'Found 5' })).not.toBeInTheDocument();
+  });
+
+  it('shows a no-matches message when a search returns nothing', async () => {
+    jest.useFakeTimers();
+    const { findByRole, findByText, getByRole, queryByText } =
+      renderScenarioGoals({
+        NewStaffScenarioGoals: {
+          newStaffScenarioGoals: (_root: unknown, args: { search?: string }) =>
+            args.search
+              ? {
+                  nodes: [],
+                  pageInfo: { endCursor: null, hasNextPage: false },
+                }
+              : scenarioGoalsMock.newStaffScenarioGoals,
+        },
+      });
+
+    await findByRole('link', { name: 'John Doe' });
+    userEvent.type(getByRole('textbox', { name: 'Search' }), 'zzz');
+    settleSearch();
+
+    expect(
+      await findByText('No scenario goals match your search.'),
+    ).toBeInTheDocument();
+    expect(
+      queryByText('No scenario goals yet. Create one to get started.'),
+    ).not.toBeInTheDocument();
   });
 
   it('surfaces a query failure instead of an empty list', async () => {

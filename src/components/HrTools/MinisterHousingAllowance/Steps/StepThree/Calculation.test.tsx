@@ -53,6 +53,8 @@ const defaultContext: ContextType = {
   spousePreferredName: '',
   userEligibleForMHA: false,
   spouseEligibleForMHA: false,
+  userBoardApprovedForMHA: false,
+  spouseBoardApprovedForMHA: false,
   userApprovedOverallAmount: null,
   spouseApprovedOverallAmount: null,
   userTakenAmount: null,

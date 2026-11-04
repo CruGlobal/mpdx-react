@@ -1,7 +1,14 @@
 import React, { useMemo } from 'react';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { Box, Button, Divider, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Divider,
+  Theme,
+  Typography,
+  useMediaQuery,
+} from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { DonationTable } from 'src/components/DonationTable/DonationTable';
@@ -23,6 +30,7 @@ export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const isPhone = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
 
   const startDate = time.toISODate();
   const endDate = time.plus({ months: 1 }).minus({ days: 1 }).toISODate();
@@ -58,29 +66,33 @@ export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
       <Box
         sx={{
           display: 'flex',
+          alignItems: { xs: 'center', sm: 'normal' },
           margin: 1,
           gap: 2,
         }}
       >
         <Typography variant="h6">{title}</Typography>
+        {/* Icon-only on phones so the labels don't wrap */}
         <Button
           style={{ marginLeft: 'auto', maxHeight: 35 }}
           variant="contained"
-          startIcon={<ChevronLeftIcon />}
+          startIcon={isPhone ? undefined : <ChevronLeftIcon />}
           size="small"
           onClick={() => setPrevMonth()}
+          aria-label={isPhone ? t('Previous Month') : undefined}
         >
-          {t('Previous Month')}
+          {isPhone ? <ChevronLeftIcon /> : t('Previous Month')}
         </Button>
         <Button
           style={{ maxHeight: 35 }}
           variant="contained"
-          endIcon={<ChevronRightIcon />}
+          endIcon={isPhone ? undefined : <ChevronRightIcon />}
           size="small"
           onClick={() => setNextMonth()}
           disabled={hasNext}
+          aria-label={isPhone ? t('Next Month') : undefined}
         >
-          {t('Next Month')}
+          {isPhone ? <ChevronRightIcon /> : t('Next Month')}
         </Button>
       </Box>
       <Divider style={{ margin: 12 }} variant="middle" />

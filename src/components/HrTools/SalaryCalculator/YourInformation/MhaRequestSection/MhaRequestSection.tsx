@@ -135,6 +135,7 @@ export const MhaRequestSection: React.FC = () => {
             spouseMhiEligibility={spouseMhiEligibility}
             spouseIneligibilityReasonCode={spouseIneligibilityReasonCode}
             spouseMhiIneligibilityReasonCode={spouseMhiIneligibilityReasonCode}
+            basis="boardApproval"
             compact
           />
         )}
