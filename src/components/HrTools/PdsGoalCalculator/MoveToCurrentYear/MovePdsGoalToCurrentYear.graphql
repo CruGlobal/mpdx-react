@@ -1,0 +1,7 @@
+mutation MovePdsGoalToCurrentYear($id: ID!) {
+  moveDesignationSupportCalculationToCurrentYear(input: { id: $id }) {
+    designationSupportCalculation {
+      ...PdsGoalCalculationFields
+    }
+  }
+}

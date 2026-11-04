@@ -1,5 +1,7 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { MovePdsGoalToCurrentYearMutation } from '../MoveToCurrentYear/MovePdsGoalToCurrentYear.generated';
 import { PdsGoalCalculator } from '../PdsGoalCalculator';
 import { PdsGoalCalculatorTestWrapper } from '../PdsGoalCalculatorTestWrapper';
 import { PdsGoalCalculatorLayout } from './PdsGoalCalculatorLayout';
@@ -91,14 +93,91 @@ describe('PdsGoalCalculatorLayout', () => {
       );
 
       expect(
-        await findByText(
-          'This goal uses 2019 rates. To use 2020 rates, create a new goal.',
-        ),
+        await findByText('This goal uses 2019 rates.'),
       ).toBeInTheDocument();
       await waitFor(() =>
         expect(mutationSpy).toHaveGraphqlOperation('GoalCalculatorConstants', {
           year: 2019,
         }),
+      );
+    });
+
+    it('offers to update to the current year rates', async () => {
+      const { findByRole } = render(
+        <PdsGoalCalculatorTestWrapper
+          calculationMock={{ calculationsYear: 2019 }}
+        >
+          <PdsGoalCalculatorLayout
+            sectionListPanel={<div>Section List</div>}
+            mainContent={<div>Main Content</div>}
+          />
+        </PdsGoalCalculatorTestWrapper>,
+      );
+
+      expect(
+        await findByRole('button', { name: 'Update to 2020 rates' }),
+      ).toBeInTheDocument();
+    });
+
+    it("hides the update button when the current year's rates are unavailable", async () => {
+      const mutationSpy = jest.fn();
+      const { findByText, queryByRole } = render(
+        <PdsGoalCalculatorTestWrapper
+          calculationMock={{ calculationsYear: 2019 }}
+          currentYearConstantsMock={{ mpdGoalBenefitsConstants: [] }}
+          onCall={mutationSpy}
+        >
+          <PdsGoalCalculatorLayout
+            sectionListPanel={<div>Section List</div>}
+            mainContent={<div>Main Content</div>}
+          />
+        </PdsGoalCalculatorTestWrapper>,
+      );
+
+      expect(
+        await findByText('This goal uses 2019 rates.'),
+      ).toBeInTheDocument();
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('GoalCalculatorConstants', {
+          year: 2020,
+        }),
+      );
+      expect(
+        queryByRole('button', { name: 'Update to 2020 rates' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('hides the note after moving the goal to the current year', async () => {
+      const { findByRole, queryByText } = render(
+        <PdsGoalCalculatorTestWrapper<{
+          MovePdsGoalToCurrentYear: MovePdsGoalToCurrentYearMutation;
+        }>
+          calculationMock={{ calculationsYear: 2019 }}
+          extraMocks={{
+            MovePdsGoalToCurrentYear: {
+              moveDesignationSupportCalculationToCurrentYear: {
+                designationSupportCalculation: {
+                  id: 'goal-1',
+                  calculationsYear: 2020,
+                },
+              },
+            },
+          }}
+        >
+          <PdsGoalCalculatorLayout
+            sectionListPanel={<div>Section List</div>}
+            mainContent={<div>Main Content</div>}
+          />
+        </PdsGoalCalculatorTestWrapper>,
+      );
+
+      userEvent.click(
+        await findByRole('button', { name: 'Update to 2020 rates' }),
+      );
+      userEvent.click(await findByRole('button', { name: 'Update' }));
+
+      await waitFor(() =>
+        expect(queryByText(/This goal uses/)).not.toBeInTheDocument(),
       );
     });
 

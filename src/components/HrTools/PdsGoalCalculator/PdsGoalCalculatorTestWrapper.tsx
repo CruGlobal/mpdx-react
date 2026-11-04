@@ -1,4 +1,5 @@
 import React from 'react';
+import { Operation } from '@apollo/client';
 import { ThemeProvider } from '@mui/material/styles';
 import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
 import { merge, mergeWith } from 'lodash';
@@ -6,7 +7,11 @@ import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
-import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import {
+  DeepPartialMock,
+  GqlMockedProvider,
+  gqlMock,
+} from '__tests__/util/graphqlMocking';
 import {
   HcmDocument,
   HcmQuery,
@@ -134,6 +139,65 @@ export type GoalCalculatorConstantsMock = DeepPartial<
   GoalCalculatorConstantsQuery['constant']
 >;
 
+export const constantsDefault: GoalCalculatorConstantsMock = {
+  mpdGoalBenefitsConstants: [
+    {
+      size: MpdGoalBenefitsConstantSizeEnum.Single,
+      plan: MpdGoalBenefitsConstantPlanEnum.Select,
+      cost: 1204.45,
+    },
+  ],
+  mpdGoalGeographicConstants: [
+    {
+      location: 'None',
+      percentageMultiplier: 0,
+    },
+    {
+      location: 'Orlando, FL',
+      percentageMultiplier: 0.06,
+    },
+    {
+      location: 'New York, NY',
+      percentageMultiplier: 0.12,
+    },
+  ],
+  mpdGoalMiscConstants: [
+    {
+      category: MpdGoalMiscConstantCategoryEnum.AdditionalRates,
+      label: MpdGoalMiscConstantLabelEnum.EmployerFicaRate,
+      fee: 0.08,
+    },
+    {
+      category: MpdGoalMiscConstantCategoryEnum.AdditionalRates,
+      label: MpdGoalMiscConstantLabelEnum.PartTimeWorkCompensation,
+      fee: 0.17,
+    },
+    {
+      category: MpdGoalMiscConstantCategoryEnum.Rates,
+      label: MpdGoalMiscConstantLabelEnum.AttritionRate,
+      fee: 0.06,
+    },
+    {
+      category: MpdGoalMiscConstantCategoryEnum.AdditionalRates,
+      label: MpdGoalMiscConstantLabelEnum.CreditCardFeeRate,
+      fee: 0.06,
+    },
+    {
+      category: MpdGoalMiscConstantCategoryEnum.Rates,
+      label: MpdGoalMiscConstantLabelEnum.AdminRate,
+      fee: 0.12,
+    },
+  ],
+};
+
+// Arrays in the overrides replace the defaults instead of merging by index
+const buildConstantsMock = (
+  ...overrides: Array<GoalCalculatorConstantsMock | undefined>
+): DeepPartialMock<GoalCalculatorConstantsQuery['constant']> =>
+  mergeWith({}, constantsDefault, ...overrides, (_objValue, srcValue) =>
+    Array.isArray(srcValue) ? srcValue : undefined,
+  );
+
 export interface PdsGoalCalculatorTestWrapperProps<
   TExtraMocks = Record<string, never>,
 > {
@@ -144,6 +208,8 @@ export interface PdsGoalCalculatorTestWrapperProps<
   hcmUserMock?: HcmUserMock | null;
   userMock?: GetUserMock;
   constantsMock?: GoalCalculatorConstantsMock;
+  /** Merged on top of `constantsMock` only for the current year's constants. */
+  currentYearConstantsMock?: GoalCalculatorConstantsMock;
   supportRaisedMock?: number;
   /** The account's currently saved geographic location preference. */
   accountGeographicLocation?: string | null;
@@ -173,6 +239,7 @@ export const PdsGoalCalculatorTestWrapper = <
   hcmUserMock,
   userMock,
   constantsMock,
+  currentYearConstantsMock,
   supportRaisedMock,
   accountGeographicLocation = null,
   extraMocks,
@@ -246,68 +313,16 @@ export const PdsGoalCalculatorTestWrapper = <
                       },
                     }
                   : {}),
-                GoalCalculatorConstants: {
-                  constant: mergeWith(
-                    {},
-                    {
-                      mpdGoalBenefitsConstants: [
-                        {
-                          size: MpdGoalBenefitsConstantSizeEnum.Single,
-                          plan: MpdGoalBenefitsConstantPlanEnum.Select,
-                          cost: 1204.45,
-                        },
-                      ],
-                      mpdGoalGeographicConstants: [
-                        {
-                          location: 'None',
-                          percentageMultiplier: 0,
-                        },
-                        {
-                          location: 'Orlando, FL',
-                          percentageMultiplier: 0.06,
-                        },
-                        {
-                          location: 'New York, NY',
-                          percentageMultiplier: 0.12,
-                        },
-                      ],
-                      mpdGoalMiscConstants: [
-                        {
-                          category:
-                            MpdGoalMiscConstantCategoryEnum.AdditionalRates,
-                          label: MpdGoalMiscConstantLabelEnum.EmployerFicaRate,
-                          fee: 0.08,
-                        },
-                        {
-                          category:
-                            MpdGoalMiscConstantCategoryEnum.AdditionalRates,
-                          label:
-                            MpdGoalMiscConstantLabelEnum.PartTimeWorkCompensation,
-                          fee: 0.17,
-                        },
-                        {
-                          category: MpdGoalMiscConstantCategoryEnum.Rates,
-                          label: MpdGoalMiscConstantLabelEnum.AttritionRate,
-                          fee: 0.06,
-                        },
-                        {
-                          category:
-                            MpdGoalMiscConstantCategoryEnum.AdditionalRates,
-                          label: MpdGoalMiscConstantLabelEnum.CreditCardFeeRate,
-                          fee: 0.06,
-                        },
-                        {
-                          category: MpdGoalMiscConstantCategoryEnum.Rates,
-                          label: MpdGoalMiscConstantLabelEnum.AdminRate,
-                          fee: 0.12,
-                        },
-                      ],
-                    },
-                    constantsMock,
-                    (_objValue, srcValue) =>
-                      Array.isArray(srcValue) ? srcValue : undefined,
-                  ),
-                },
+                GoalCalculatorConstants: currentYearConstantsMock
+                  ? ((({ variables }: Operation) => ({
+                      constant: buildConstantsMock(
+                        constantsMock,
+                        variables.year === currentYearMock.calculationsYear
+                          ? currentYearConstantsMock
+                          : undefined,
+                      ),
+                    })) as unknown as GoalCalculatorConstantsQuery)
+                  : { constant: buildConstantsMock(constantsMock) },
               },
               extraMocks,
             )}
