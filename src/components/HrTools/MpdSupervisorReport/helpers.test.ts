@@ -9,6 +9,7 @@ import {
 } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
+import { missingValue } from '../Shared/helpers/missingValue';
 import {
   userPersonTypeGroups,
   userPersonTypeOptions,
@@ -43,6 +44,12 @@ import {
 import { managedStaffMember } from './mpdSupervisorReportMocks';
 
 const t = ((key: string) => key) as unknown as TFunction;
+
+describe('pendingField', () => {
+  it('is the shared missing-value placeholder', () => {
+    expect(pendingField).toBe(missingValue);
+  });
+});
 
 describe('getInitials', () => {
   it('returns the uppercased first letter of each name', () => {

@@ -7,13 +7,14 @@ import {
   PeopleGroupSupportTypeEnum,
   QuarterlyPayrollHistory,
 } from 'src/graphql/types.generated';
+import { missingValue } from '../Shared/helpers/missingValue';
 import { ManagedStaffQuery } from './ManagedStaff.generated';
 
 export type ManagedStaffMember =
   ManagedStaffQuery['managedStaff']['nodes'][number];
 
 /** Rendered in place of a value `managedStaff` returned as null or empty. */
-export const pendingField = '—';
+export const pendingField = missingValue;
 
 /**
  * The MPDX-10069 warning for a staff member whose Monthly Gross Salary is

@@ -32,6 +32,19 @@ describe('NewSalaryCalculatorLanding', () => {
     expect(await findByTestId('amount-two')).toHaveTextContent('$10,000.00');
   });
 
+  // NameDisplay shows a dash for a missing amount; the landing defaults its amounts to 0 before passing them in
+  it('shows $0.00, not a dash, when there is no Primary fund balance', async () => {
+    const { findByRole, getByTestId } = render(<TestComponent noPrimaryFund />);
+    expect(
+      await findByRole('heading', { name: 'Doe, John and Jane' }),
+    ).toBeInTheDocument();
+
+    await waitFor(() =>
+      expect(getByTestId('amount-two')).toHaveTextContent('$0.00'),
+    );
+    expect(getByTestId('amount-one')).toHaveTextContent('$55,000.00');
+  });
+
   it('renders table with correct cell data', async () => {
     const { getByRole } = render(<TestComponent hasApprovedCalculation />);
 
