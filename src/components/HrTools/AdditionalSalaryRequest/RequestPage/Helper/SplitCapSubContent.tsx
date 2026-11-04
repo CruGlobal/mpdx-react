@@ -34,11 +34,12 @@ export const SplitCapSubContent: React.FC<SplitCapSubContentProps> = ({
         showTrailingZeros: true,
       })
     : '';
-  const remainingFormatted = showBar
-    ? currencyFormat(spouseCap.remainingCap, currency, locale, {
-        showTrailingZeros: true,
-      })
-    : '';
+  const remainingFormatted =
+    showBar && spouseCap.remainingCap !== null
+      ? currencyFormat(spouseCap.remainingCap, currency, locale, {
+          showTrailingZeros: true,
+        })
+      : '-';
 
   const progressValue = showBar
     ? Math.min(

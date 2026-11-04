@@ -31,8 +31,14 @@ const setupContext = (opts: {
   spouseCap: number | null;
   spousePending?: number;
   spouseGross?: number;
+  spouseRemaining?: number | null;
 }) => {
-  const { spouseCap, spousePending = 0, spouseGross = 40000 } = opts;
+  const {
+    spouseCap,
+    spousePending = 0,
+    spouseGross = 40000,
+    spouseRemaining = null,
+  } = opts;
   mockUseAdditionalSalaryRequest.mockReturnValue({
     traditional403bPercentage: 0.12,
     roth403bPercentage: 0.1,
@@ -51,6 +57,7 @@ const setupContext = (opts: {
                 grossAnnualSalary: spouseGross,
                 currentSalaryCap: spouseCap,
                 ytdAsrAmount: spousePending,
+                remainingAllowableSalary: spouseRemaining,
               }
             : null,
       },
@@ -110,11 +117,13 @@ describe('SplitCapSubContent', () => {
     expect(getByText('$42,000.00 / $50,000.00')).toBeInTheDocument();
   });
 
-  it('renders remaining amount in footer', () => {
+  it("renders the API's remaining amount in footer", () => {
     setupContext({
       spouseCap: 50000,
       spousePending: 2000,
       spouseGross: 40000,
+      // cap - total would be 8,000; the API's figure wins
+      spouseRemaining: 7500,
     });
 
     const { getByText } = renderSplitCapSubContent('Jane');
@@ -122,7 +131,21 @@ describe('SplitCapSubContent', () => {
     expect(
       getByText("Remaining in Jane's Max Allowable Salary"),
     ).toBeInTheDocument();
-    expect(getByText('$8,000.00')).toBeInTheDocument();
+    expect(getByText('$7,500.00')).toBeInTheDocument();
+  });
+
+  it('shows a dash in the footer when the API has no remaining amount', () => {
+    setupContext({
+      spouseCap: 50000,
+      spousePending: 2000,
+      spouseGross: 40000,
+      spouseRemaining: null,
+    });
+
+    const { getByText, queryByText } = renderSplitCapSubContent('Jane');
+
+    expect(getByText('-')).toBeInTheDocument();
+    expect(queryByText('$0.00')).not.toBeInTheDocument();
   });
 
   it('renders progress bar with correct value', () => {
@@ -144,6 +167,7 @@ describe('SplitCapSubContent', () => {
       spouseCap: 50000,
       spousePending: 10000,
       spouseGross: 40000,
+      spouseRemaining: 0,
     });
 
     const { getByText, getByRole } = renderSplitCapSubContent('Jane');
