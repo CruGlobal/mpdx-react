@@ -49,7 +49,7 @@ export const mpgaTransactionsMock: MpgaTransactionsQuery = {
             subcategories: [],
           },
           {
-            category: StaffExpenseCategoryEnum.MinistryReimbursement,
+            category: StaffExpenseCategoryEnum.StaffExpense,
             averagePerMonth: -177,
             total: -2124,
             breakdownByMonth: toBreakdown([

@@ -25,12 +25,12 @@ export const ExpensesPieChart: React.FC<ExpensesPieChartProps> = ({
 }) => {
   const { t } = useTranslation();
   const {
-    totals: { ministry, healthcare, assessment, benefits, salary, other },
+    totals: { staffExpense, healthcare, assessment, benefits, salary, other },
     dataLoading,
   } = useMPGAIncomeExpenses();
 
   const data = [
-    { name: t('Ministry'), value: ministry ?? 0 },
+    { name: t('Staff Expenses'), value: staffExpense ?? 0 },
     { name: t('Healthcare'), value: healthcare ?? 0 },
     { name: t('Assessment'), value: assessment ?? 0 },
     { name: t('Benefits'), value: benefits ?? 0 },

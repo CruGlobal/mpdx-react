@@ -54,7 +54,7 @@ export type ContextType = {
   totals: {
     income: number;
     expenses: number;
-    ministry: number;
+    staffExpense: number;
     healthcare: number;
     assessment: number;
     benefits: number;
@@ -259,7 +259,7 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
   }, [incomeData, expenseData, isYearToDate, monthLabels, isFutureMonth]);
 
   const {
-    ministryTotal,
+    staffExpenseTotal,
     healthcareTotal,
     assessmentTotal,
     benefitsTotal,
@@ -274,7 +274,7 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
     () => ({
       income: incomeTotal,
       expenses: expensesTotal,
-      ministry: ministryTotal,
+      staffExpense: staffExpenseTotal,
       healthcare: healthcareTotal,
       assessment: assessmentTotal,
       benefits: benefitsTotal,
@@ -284,7 +284,7 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
     [
       incomeTotal,
       expensesTotal,
-      ministryTotal,
+      staffExpenseTotal,
       healthcareTotal,
       assessmentTotal,
       benefitsTotal,

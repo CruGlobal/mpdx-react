@@ -113,8 +113,8 @@ export const mockData: AllData = {
     },
     {
       id: crypto.randomUUID(),
-      description: 'Ministry Reimbursements',
-      category: StaffExpenseCategoryEnum.MinistryReimbursement,
+      description: 'Staff Expenses',
+      category: StaffExpenseCategoryEnum.StaffExpense,
       monthly: [0, 0, 0, 0, 0, 0, 565, 0, 488, 253, 818, 0],
       average: 177,
       total: 2124,

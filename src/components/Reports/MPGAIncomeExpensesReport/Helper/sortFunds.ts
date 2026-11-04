@@ -11,7 +11,7 @@ const expenseCategoryOrder: StaffExpenseCategoryEnum[] = [
   StaffExpenseCategoryEnum.AdditionalSalary,
   StaffExpenseCategoryEnum.Benefits,
   StaffExpenseCategoryEnum.HealthcareReimbursement,
-  StaffExpenseCategoryEnum.MinistryReimbursement,
+  StaffExpenseCategoryEnum.StaffExpense,
   StaffExpenseCategoryEnum.AccountTransfer,
   StaffExpenseCategoryEnum.Transfer,
   StaffExpenseCategoryEnum.Assessment,
