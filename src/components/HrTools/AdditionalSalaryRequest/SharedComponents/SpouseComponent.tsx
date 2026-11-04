@@ -15,24 +15,17 @@ export const SpouseComponent: React.FC = () => {
   const locale = useLocale();
   const currency = 'USD';
 
-  const { requestData, isSpouse, hasSpouse } = useAdditionalSalaryRequest();
+  const { requestData, hasSpouse } = useAdditionalSalaryRequest();
   const { spouseLinkText, spouseLinkHref } = useSpouseLink();
 
   if (!hasSpouse) {
     return null;
   }
 
-  const userCalculations =
-    requestData?.latestAdditionalSalaryRequest?.calculations;
+  // The other person's numbers, on either person's page: the API builds calculations for whoever the request is for
   const spouseCalculations =
     requestData?.latestAdditionalSalaryRequest?.spouseCalculations;
-  const remainingCap = getRemainingCap(
-    isSpouse && userCalculations
-      ? userCalculations
-      : spouseCalculations
-        ? spouseCalculations
-        : {},
-  );
+  const remainingCap = getRemainingCap(spouseCalculations ?? {});
 
   return (
     <Box>

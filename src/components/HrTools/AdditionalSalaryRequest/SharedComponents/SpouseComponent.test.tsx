@@ -154,12 +154,13 @@ describe('SpouseComponent', () => {
       expect(getByText('Switch back to Jane')).toBeInTheDocument();
     });
 
-    it('uses userCalculations for remaining salary when isSpouse is true', () => {
+    // On the spouse's page, calculations is the spouse and spouseCalculations is the user being switched back to
+    it('uses spouseCalculations for remaining salary when isSpouse is true', () => {
       const { getByText } = renderComponent({ isSpouse: true });
 
-      // 50,000 cap - (30,000 gross + 2,000 YTD ASRs)
+      // 60,000 cap - (45,000 gross + 5,000 YTD ASRs)
       expect(
-        getByText('Up to their remaining allowable salary of $18,000'),
+        getByText('Up to their remaining allowable salary of $10,000'),
       ).toBeInTheDocument();
     });
 

@@ -3,7 +3,11 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  DeepPartialMock,
+  GqlMockedProvider,
+} from '__tests__/util/graphqlMocking';
+import { AsrStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { HcmQuery } from '../../Shared/HcmData/Hcm.generated';
 import { AdditionalSalaryRequestQuery } from '../AdditionalSalaryRequest.generated';
@@ -63,7 +67,7 @@ type AboutFormMocks = {
 };
 
 interface TestWrapperProps {
-  asrMocks?: Partial<AboutFormMocks>;
+  asrMocks?: DeepPartialMock<AboutFormMocks>;
   onCall?: jest.Mock;
 }
 
@@ -121,6 +125,30 @@ describe('AboutForm', () => {
     expect(
       await findByText(/Your Maximum Allowable Salary \(CAP\)/i),
     ).toBeInTheDocument();
+    expect(await findByText('REMAINING ALLOWABLE SALARY')).toBeInTheDocument();
+  });
+
+  // MPDX-10239: after a paid request, its amount was shown as room still left
+  it('shows the remaining salary the API counts after a paid request', async () => {
+    const { findByTestId } = render(
+      <TestWrapper
+        asrMocks={{
+          AdditionalSalaryRequest: {
+            latestAdditionalSalaryRequest: {
+              status: AsrStatusEnum.ApprovedAndPaid,
+              calculations: {
+                currentSalaryCap: 120000,
+                grossAnnualSalary: 60000,
+                ytdAsrAmount: 0,
+                remainingAllowableSalary: 30000,
+              },
+            },
+          },
+        }}
+      />,
+    );
+
+    expect(await findByTestId('amount-three')).toHaveTextContent('$30,000.00');
   });
 
   it('should hide financial data when no request has been created yet', async () => {
@@ -144,6 +172,7 @@ describe('AboutForm', () => {
     expect(
       queryByText(/Your Maximum Allowable Salary \(CAP\)/i),
     ).not.toBeInTheDocument();
+    expect(queryByText('REMAINING ALLOWABLE SALARY')).not.toBeInTheDocument();
   });
 
   it('should link to the Progressive Approvals document', () => {
