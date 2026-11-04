@@ -32,7 +32,7 @@ export const quickFilterLabel = (
 
 /**
  * What a quick filter means, shown as the chip's tooltip. A negative month is
- * one whose payroll fell below the New Staff Monthly Salary (MPDX-10070).
+ * one whose expenses were greater than its income.
  */
 export const quickFilterDescription = (
   t: TFunction,
@@ -41,11 +41,11 @@ export const quickFilterDescription = (
   switch (id) {
     case MpdSupervisorReportQuickFilterEnum.NegativeLastMonth:
       return t(
-        'Staff whose payroll last month was below their New Staff Monthly Salary.',
+        'Staff whose expenses were greater than their income last month.',
       );
     case MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative:
       return t(
-        'Staff whose payroll was below their New Staff Monthly Salary in each of the last three complete months.',
+        'Staff whose expenses were greater than their income in each of the last three complete months.',
       );
     case MpdSupervisorReportQuickFilterEnum.AllPeople:
     default:

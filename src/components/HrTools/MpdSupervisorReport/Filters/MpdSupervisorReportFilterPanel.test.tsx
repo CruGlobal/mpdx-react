@@ -91,7 +91,7 @@ describe('MpdSupervisorReportFilterPanel', () => {
     userEvent.hover(getByRole('button', { name: 'Negative last month' }));
 
     expect(await findByRole('tooltip')).toHaveTextContent(
-      'Staff whose payroll last month was below their New Staff Monthly Salary.',
+      'Staff whose expenses were greater than their income last month.',
     );
   });
 
@@ -101,7 +101,7 @@ describe('MpdSupervisorReportFilterPanel', () => {
     userEvent.hover(getByRole('button', { name: 'Negative last 3+ months' }));
 
     expect(await findByRole('tooltip')).toHaveTextContent(
-      'Staff whose payroll was below their New Staff Monthly Salary in each of the last three complete months.',
+      'Staff whose expenses were greater than their income in each of the last three complete months.',
     );
   });
 

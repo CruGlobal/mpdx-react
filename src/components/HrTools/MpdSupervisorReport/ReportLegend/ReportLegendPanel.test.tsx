@@ -100,7 +100,9 @@ describe('ReportLegendPanel', () => {
     // Green is checked first, so red needs payroll below both benchmarks
     expect(getByText(/Payroll was below both benchmarks/)).toBeInTheDocument();
     expect(
-      getByText(/can show green quarters yet still have negative months/),
+      getByText(
+        'A staff member whose Monthly Gross Salary is below their New Staff Monthly Salary can show green quarters. Their Monthly Gross Salary is marked red in their details.',
+      ),
     ).toBeInTheDocument();
   });
 
@@ -110,10 +112,15 @@ describe('ReportLegendPanel', () => {
     expect(getByText('Negative last month')).toBeInTheDocument();
     expect(
       getByText(
-        'Staff whose payroll last month was below their New Staff Monthly Salary.',
+        'Staff whose expenses were greater than their income last month.',
       ),
     ).toBeInTheDocument();
     expect(getByText('Negative last 3+ months')).toBeInTheDocument();
+    expect(
+      getByText(
+        'Staff whose expenses were greater than their income in each of the last three complete months.',
+      ),
+    ).toBeInTheDocument();
     expect(
       getByText('The current month is never counted.'),
     ).toBeInTheDocument();
@@ -162,7 +169,7 @@ describe('ReportLegendPanel', () => {
 
     expect(
       getByText(
-        'Interns, part-time field staff and volunteers have no New Staff Monthly Salary, so these filters never include them.',
+        'These filters leave out interns, part-time field staff and volunteers.',
       ),
     ).toBeInTheDocument();
   });

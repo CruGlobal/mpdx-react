@@ -186,7 +186,7 @@ export const ReportLegendPanel: React.FC = () => {
           })}
           <Typography variant="body2" color="text.secondary">
             {t(
-              'A staff member whose Monthly Gross Salary is below their New Staff Monthly Salary can show green quarters yet still have negative months. Their Monthly Gross Salary is marked red in their details.',
+              'A staff member whose Monthly Gross Salary is below their New Staff Monthly Salary can show green quarters. Their Monthly Gross Salary is marked red in their details.',
             )}
           </Typography>
         </Section>
@@ -227,7 +227,7 @@ export const ReportLegendPanel: React.FC = () => {
         <Section title={t('Filters')}>
           <Typography variant="body2" sx={{ mb: 1 }}>
             {t(
-              'Interns, part-time field staff and volunteers have no New Staff Monthly Salary, so these filters never include them.',
+              'These filters leave out interns, part-time field staff and volunteers.',
             )}
           </Typography>
           <Box component="dl" sx={{ m: 0 }}>
