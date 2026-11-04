@@ -201,6 +201,27 @@ describe('tasks page', () => {
     });
   });
 
+  describe('search box', () => {
+    it('searches tasks from the search field on phones', async () => {
+      matchMediaMock({ width: '390px' });
+      const mutationSpy = jest.fn();
+      const { findByPlaceholderText } = render(
+        <MocksProviders onCall={mutationSpy}>
+          <Tasks />
+        </MocksProviders>,
+      );
+
+      const searchBox = await findByPlaceholderText('Search Tasks');
+      userEvent.type(searchBox, 'call');
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('Tasks', {
+          tasksFilter: { wildcardSearch: 'call' },
+        }),
+      );
+    });
+  });
+
   it('should render list of tasks', async () => {
     const { getByText } = render(
       <MocksProviders>

@@ -10,7 +10,7 @@ import {
   Theme,
   useMediaQuery,
 } from '@mui/material';
-import { FastField, Field, FieldProps, Form, Formik } from 'formik';
+import { FastField, Field, FieldProps, Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { TFunction, useTranslation } from 'react-i18next';
@@ -21,6 +21,7 @@ import { useGetDesignationAccountsQuery } from 'src/components/EditDonationModal
 import { CurrencyAutocomplete } from 'src/components/Shared/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
 import { DonorAccountAutocomplete } from 'src/components/Shared/Autocomplete/DonorAccountAutocomplete/DonorAccountAutocomplete';
 import { CustomDateField } from 'src/components/Shared/DateTimePickers/CustomDateField';
+import { DialogForm } from 'src/components/Shared/Forms/DialogForm';
 import {
   CancelButton,
   SubmitButton,
@@ -187,7 +188,7 @@ export const AddDonation = ({
         errors,
         touched,
       }): ReactElement => (
-        <Form>
+        <DialogForm>
           <DialogContent dividers>
             <Grid container spacing={1}>
               {/* Amount and Currency Row */}
@@ -542,7 +543,7 @@ export const AddDonation = ({
               {t('Save')}
             </SubmitButton>
           </DialogActions>
-        </Form>
+        </DialogForm>
       )}
     </Formik>
   );

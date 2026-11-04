@@ -23,12 +23,12 @@ export const ScreenOnlyReport: React.FC = () => {
       <Container>
         <Box mt={2} mb={2}>
           <Grid container spacing={2}>
-            <Grid size={7}>
+            <Grid size={{ xs: 12, md: 7 }}>
               <CardSkeleton title={t('Summary')}>
                 <SummaryBarChart aspect={2} width={100} />
               </CardSkeleton>
             </Grid>
-            <Grid size={5}>
+            <Grid size={{ xs: 12, md: 5 }}>
               <CardSkeleton title={t('Expenses Categories')}>
                 <ExpensesPieChart aspect={1.35} width={100} />
               </CardSkeleton>

@@ -158,6 +158,22 @@ describe('VariantQuestions', () => {
       );
     });
 
+    it('explains that the spouse requested salary is net salary', async () => {
+      const { findByText } = render(
+        <TestComponent
+          newStaffQuestionnaire={{
+            variant: NewStaffQuestionnaireVariantEnum.SpouseSeniorStaff,
+          }}
+        />,
+      );
+
+      expect(
+        await findByText(
+          "Requested salary is the same as net salary or take-home pay. Jane's pre-filled amount is estimated from their current salary. Round to the nearest dollar.",
+        ),
+      ).toBeInTheDocument();
+    });
+
     it("interpolates the spouse's first name into the questions", async () => {
       const { findByRole } = render(
         <TestComponent

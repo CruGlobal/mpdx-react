@@ -5,6 +5,7 @@ import theme from 'src/theme';
 import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { useIconPanelItems } from '../Shared/CalculationReports/PanelLayout/useIconPanelItems';
 import { PanelTypeEnum } from '../Shared/CalculationReports/Shared/sharedTypes';
+import { pageContainerSx } from '../Shared/pageContainerSx';
 import { AdditionalSalaryRequestSkeleton } from './AdditionalSalaryRequestSkeleton';
 import { EligibleDisplay } from './MainPages/EligibleDisplay';
 import { useAdditionalSalaryRequest } from './Shared/AdditionalSalaryRequestContext';
@@ -59,7 +60,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
       isSidebarOpen={isDrawerOpen}
       sidebarAriaLabel={t('Additional Salary Request Sections')}
       mainContent={
-        <Container sx={{ ml: { xs: 0, sm: 5 } }}>
+        <Container sx={pageContainerSx}>
           {requestLoading ? (
             <AdditionalSalaryRequestSkeleton />
           ) : (

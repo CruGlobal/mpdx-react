@@ -90,6 +90,7 @@ const useStyles = makeStyles()((theme: Theme) => ({
   contactHeader: {
     '.MuiCardHeader-action': {
       alignSelf: 'center',
+      marginLeft: theme.spacing(1),
     },
   },
   buttonIcon: {
@@ -361,7 +362,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                             <Grid
                               className={classes.paddingB2}
                               size={{
-                                xs: 6,
+                                xs: 12,
                                 sm: 4,
                               }}
                             >
@@ -378,7 +379,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                                       display: { xs: 'inline', sm: 'none' },
                                     }}
                                   >
-                                    {t('Source')}:
+                                    {t('Source')}:{' '}
                                   </Typography>
                                   <Typography display="inline" variant="body2">
                                     {`${sourceToStr(
@@ -395,13 +396,16 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                             <Grid
                               className={classes.paddingB2}
                               size={{
-                                xs: 6,
+                                xs: 12,
                                 sm: 2,
                               }}
                             >
                               <Box
                                 display="flex"
-                                justifyContent="center"
+                                justifyContent={{
+                                  xs: 'flex-start',
+                                  sm: 'center',
+                                }}
                                 className={classes.paddingX}
                               >
                                 <Typography display="flex" alignItems="center">
@@ -412,9 +416,10 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                                         fontWeight="bold"
                                         sx={{
                                           display: { xs: 'inline', sm: 'none' },
+                                          mr: 0.5,
                                         }}
                                       >
-                                        {t('Source')}:
+                                        {t('Primary')}:
                                       </Typography>
                                       <StarIcon
                                         data-testid={`starIcon-${id}-${index}`}
@@ -431,9 +436,10 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                                         fontWeight="bold"
                                         sx={{
                                           display: { xs: 'inline', sm: 'none' },
+                                          mr: 0.5,
                                         }}
                                       >
-                                        {t('Source')}:
+                                        {t('Primary')}:
                                       </Typography>
                                       <Tooltip
                                         title={t('Set as Primary')}
@@ -551,7 +557,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                             fontWeight="bold"
                             sx={{ display: { xs: 'inline', sm: 'none' } }}
                           >
-                            {t('Source')}:
+                            {t('Source')}:{' '}
                           </Typography>
                           <Typography display="inline" variant="body2">
                             {appName}

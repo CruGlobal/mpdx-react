@@ -15,9 +15,9 @@ export const getLocalizedNsoHousing = (
     case NewStaffQuestionnaireNsoHousingEnum.SharedRoom:
       return t('Sharing 2 in hotel/suite dorm room');
     case NewStaffQuestionnaireNsoHousingEnum.CoupleRoom:
-      return t('Married couple in hotel/suite dorm room');
+      return t('Married couple without children in hotel/suite dorm room');
     case NewStaffQuestionnaireNsoHousingEnum.FamilyRoom:
-      return t('Family in hotel/suite dorm room');
+      return t('Family with children in hotel/suite dorm room');
     case NewStaffQuestionnaireNsoHousingEnum.LocalCommuting:
       return t('Virtual / Local / Commuting');
     default:

@@ -7,6 +7,7 @@ import { ConfirmUserGroupModal } from '../Shared/ConfirmUserGroupModal/ConfirmUs
 import Balance from './Balance';
 import DonationHistories from './DonationHistories';
 import MonthlyGoal from './MonthlyGoal/MonthlyGoal';
+import { NewStaffGoalReadyCard } from './NewStaffGoalReadyCard/NewStaffGoalReadyCard';
 import ThisWeek from './ThisWeek';
 import Welcome from './Welcome';
 
@@ -67,6 +68,7 @@ const Dashboard = ({ data, accountListId }: Props): ReactElement => {
               />
             )}
 
+            <NewStaffGoalReadyCard accountListId={accountListId} />
             <Grid container spacing={3} alignItems="stretch">
               <Grid
                 size={{

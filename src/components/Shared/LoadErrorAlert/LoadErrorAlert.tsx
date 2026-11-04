@@ -17,7 +17,12 @@ export const LoadErrorAlert: React.FC<LoadErrorAlertProps> = ({
     <Alert
       severity="error"
       action={
-        <Button color="inherit" size="small" onClick={onRetry}>
+        <Button
+          color="inherit"
+          size="small"
+          onClick={onRetry}
+          sx={{ whiteSpace: 'nowrap' }}
+        >
           {t('Try Again')}
         </Button>
       }

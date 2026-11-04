@@ -163,14 +163,31 @@ export const MPGAIncomeExpensesReport: React.FC<
               <SimpleScreenOnly
                 display="flex"
                 alignItems="center"
-                sx={{ gap: 2, '& > button': { ml: 0 } }}
+                sx={(theme) => ({
+                  gap: 2,
+                  flexWrap: 'wrap',
+                  '& > button': { ml: 0 },
+                  '& .MuiButton-root': { whiteSpace: 'nowrap' },
+                  // On phones each wrapped row of buttons fills the width with full-size tap targets
+                  [theme.breakpoints.down('sm')]: {
+                    '& > *, & .MuiButtonGroup-root > .MuiButton-root': {
+                      flexGrow: 1,
+                    },
+                    '& .MuiButton-root': { minHeight: 44 },
+                  },
+                })}
               >
                 <SettingsButtonGroup
                   isFilterDateSelected={isFilterActive}
                   setFilters={setFilters}
                   handleSettingsClick={handleSettingsClick}
                 />
-                <Divider orientation="vertical" flexItem />
+                {/* The buttons wrap onto a second row on phones, where the divider would dangle */}
+                <Divider
+                  orientation="vertical"
+                  flexItem
+                  sx={{ display: { xs: 'none', sm: 'block' } }}
+                />
                 <ExportCsvButton />
                 <StyledPrintButton
                   startIcon={

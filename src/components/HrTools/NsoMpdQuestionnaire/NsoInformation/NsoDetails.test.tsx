@@ -31,10 +31,14 @@ describe('NsoDetails', () => {
       getByRole('radio', { name: 'Sharing 2 in hotel/suite dorm room' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('radio', { name: 'Married couple in hotel/suite dorm room' }),
+      getByRole('radio', {
+        name: 'Married couple without children in hotel/suite dorm room',
+      }),
     ).toBeInTheDocument();
     expect(
-      getByRole('radio', { name: 'Family in hotel/suite dorm room' }),
+      getByRole('radio', {
+        name: 'Family with children in hotel/suite dorm room',
+      }),
     ).toBeInTheDocument();
     expect(
       getByRole('radio', { name: 'Virtual / Local / Commuting' }),
@@ -48,11 +52,11 @@ describe('NsoDetails', () => {
       'You have a roommate, or your own bedroom in a shared suite.',
     ],
     [
-      'Married couple in hotel/suite dorm room',
+      'Married couple without children in hotel/suite dorm room',
       "You're staying together as a couple or family.",
     ],
     [
-      'Family in hotel/suite dorm room',
+      'Family with children in hotel/suite dorm room',
       "You're staying together as a couple or family.",
     ],
     [
@@ -77,7 +81,9 @@ describe('NsoDetails', () => {
     const { getByRole } = render(<TestComponent onCall={mutationSpy} />);
 
     userEvent.click(
-      getByRole('radio', { name: 'Family in hotel/suite dorm room' }),
+      getByRole('radio', {
+        name: 'Family with children in hotel/suite dorm room',
+      }),
     );
 
     await waitFor(() =>

@@ -15,6 +15,9 @@ import {
 
 export const DEFAULT_ROWS_PER_PAGE = 5;
 
+/** Matches the debounce the contacts search uses, so typing isn't a query per keystroke. */
+export const searchDebounceMs = 500;
+
 export enum MpdGoalAdminTabEnum {
   ActiveGoals = 'active-goals',
   ScenarioGoals = 'scenario-goals',
@@ -64,6 +67,7 @@ export interface StaffGoalRow {
   /** The household's account list, which its Staff Details page is keyed by. */
   accountListId: string;
   name: string;
+  cohortName: string;
   ministry: string;
   /** OneApp sub-ministry, rendered as the table's Campus Division. */
   subministry: string;
@@ -185,6 +189,7 @@ export const attendeeToRow = (attendee: AttendeeNode): StaffGoalRow => ({
   id: attendee.id,
   accountListId: attendee.accountListId,
   name: attendee.displayName,
+  cohortName: attendee.cohortName,
   ministry: attendee.ministry?.name ?? '',
   subministry: attendee.subministry ?? '',
   // Absent until the questionnaire completes; the row still renders.
@@ -218,15 +223,15 @@ export const goalStatusLabel = (
 ): string => {
   switch (status) {
     case NewStaffCohortAttendeeGoalStatusEnum.Complete:
-      return t('Complete');
+      return t('Ready to Send');
     case NewStaffCohortAttendeeGoalStatusEnum.Sent:
       return t('Sent');
     default:
-      return t('Incomplete');
+      return t('Not Ready');
   }
 };
 
-/** Complete is ready to send and Sent is already done; only Incomplete needs action. */
+/** Sent is already done and Ready to Send needs no fixes; only Not Ready needs action. */
 export const goalStatusColor = (
   status: NewStaffCohortAttendeeGoalStatusEnum,
 ): StatusChipColor => {
@@ -240,7 +245,7 @@ export const goalStatusColor = (
   }
 };
 
-/** Sendable means Complete only; an already-sent goal is deliberately excluded. */
+/** Sendable means Ready to Send only; an already-sent goal is deliberately excluded. */
 export const isSendable = (row: {
   goalStatus: NewStaffCohortAttendeeGoalStatusEnum;
 }): boolean => row.goalStatus === NewStaffCohortAttendeeGoalStatusEnum.Complete;

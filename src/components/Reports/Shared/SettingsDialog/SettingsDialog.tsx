@@ -15,11 +15,12 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { Form, Formik } from 'formik';
+import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { TFunction, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { CustomDateField } from 'src/components/Shared/DateTimePickers/CustomDateField';
+import { DialogForm } from 'src/components/Shared/Forms/DialogForm';
 import { Fund, StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import { useReportsStaffExpensesQuery } from '../../StaffExpenseReport/GetStaffExpense.generated';
 import { DateRange } from '../../StaffExpenseReport/Helpers/StaffReportEnum';
@@ -303,7 +304,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
               : (values.selectedDateRange ?? '');
 
           return (
-            <Form>
+            <DialogForm>
               <DialogContent>
                 <TextField
                   select
@@ -497,7 +498,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                   {t('Apply Filters')}
                 </Button>
               </DialogActions>
-            </Form>
+            </DialogForm>
           );
         }}
       </Formik>
