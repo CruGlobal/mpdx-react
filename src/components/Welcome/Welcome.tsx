@@ -29,6 +29,9 @@ const useStyles = makeStyles()((theme: Theme) => ({
     '.MuiTypography-root': {
       color: theme.palette.common.white,
     },
+    [theme.breakpoints.down('sm')]: {
+      alignItems: 'flex-start',
+    },
   },
   subtitle: {
     maxWidth: '450px',

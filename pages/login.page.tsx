@@ -2,7 +2,7 @@ import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import React, { ReactElement, useEffect } from 'react';
 import SubjectIcon from '@mui/icons-material/Subject';
-import { Button, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { getSession, signIn } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
@@ -54,12 +54,15 @@ const Login = ({
       {immediateSignIn && <Loading loading={true} />}
       <Welcome
         title={
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={process.env.NEXT_PUBLIC_MEDIA_LOGO}
-            alt="logo"
-            height={50}
-          />
+          // The top bar already shows the logo on phones
+          <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={process.env.NEXT_PUBLIC_MEDIA_LOGO}
+              alt="logo"
+              height={50}
+            />
+          </Box>
         }
         subtitle={`${appName} is fundraising software from Cru that helps you grow and maintain your ministry
   partners in a quick and easy way.`}

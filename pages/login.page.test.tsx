@@ -5,6 +5,11 @@ import userEvent from '@testing-library/user-event';
 import { getSession, signIn } from 'next-auth/react';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  desktopWidth,
+  getStyleAtWidth,
+  phoneWidth,
+} from '__tests__/util/styleAtWidth';
 import theme from 'src/theme';
 import Login, { LoginProps, getServerSideProps } from './login.page';
 
@@ -187,5 +192,107 @@ describe('Login - OKTA', () => {
     );
 
     expect(getByText(/Don't have an Okta account\?/)).toBeInTheDocument();
+  });
+});
+
+// An element is on screen at a width only if neither it nor any of its
+// parents is hidden with `display: none` at that width.
+const isShownAtWidth = (element: Element, width: number): boolean => {
+  for (
+    let node: Element | null = element;
+    node && node !== document.body;
+    node = node.parentElement
+  ) {
+    if (getStyleAtWidth(node, 'display', width) === 'none') {
+      return false;
+    }
+  }
+  return true;
+};
+
+// Renders the page inside the layout it declares, the same way _app does
+const PageWithLayout = ({ props }: { props: LoginProps }) => (
+  <ThemeProvider theme={theme}>
+    <TestRouter>
+      <Login.layout>
+        <Login {...props} />
+      </Login.layout>
+    </TestRouter>
+  </ThemeProvider>
+);
+
+describe('Login - phone and desktop layout', () => {
+  const oktaProps: LoginProps = {
+    signInAuthProviderId: 'okta',
+    immediateSignIn: false,
+    isOkta: true,
+  };
+
+  const shownLogos = (logos: HTMLElement[], width: number) =>
+    logos.filter((logo) => isShownAtWidth(logo, width));
+
+  it('shows only one logo on phones, in the top bar', () => {
+    const { getAllByAltText } = render(<PageWithLayout props={oktaProps} />);
+    const logos = getAllByAltText('logo');
+
+    [phoneWidth, 599].forEach((width) => {
+      const shown = shownLogos(logos, width);
+      expect(shown).toHaveLength(1);
+      expect(shown[0].closest('header')).not.toBeNull();
+    });
+  });
+
+  it('still shows the big logo in the page content on tablets and desktops', () => {
+    const { getAllByAltText, getByRole } = render(
+      <PageWithLayout props={oktaProps} />,
+    );
+    const logos = getAllByAltText('logo');
+    const contentLogo = logos.find((logo) =>
+      getByRole('main').contains(logo),
+    ) as HTMLElement;
+
+    expect(contentLogo).toHaveAttribute('height', '50');
+    [600, desktopWidth].forEach((width) => {
+      expect(isShownAtWidth(contentLogo, width)).toBe(true);
+      expect(shownLogos(logos, width)).toHaveLength(2);
+    });
+  });
+
+  it('shows the Sign In button on phones and signs in with the provider id', async () => {
+    const { getByRole } = render(<PageWithLayout props={oktaProps} />);
+    const signInButton = getByRole('button', { name: 'Sign In' });
+
+    expect(isShownAtWidth(signInButton, phoneWidth)).toBe(true);
+    expect(isShownAtWidth(signInButton, desktopWidth)).toBe(true);
+
+    userEvent.click(signInButton);
+
+    await waitFor(() => {
+      expect(signIn).toHaveBeenCalledTimes(1);
+      expect(signIn).toHaveBeenCalledWith('okta');
+    });
+  });
+
+  it('signs in with a non-Okta provider id', async () => {
+    process.env.API_OAUTH_VISIBLE_NAME = 'Example Login';
+    const { getByRole } = render(
+      <PageWithLayout
+        props={{
+          signInAuthProviderId: 'apioauth',
+          immediateSignIn: false,
+          isOkta: false,
+        }}
+      />,
+    );
+
+    userEvent.click(
+      getByRole('button', { name: 'Sign In with Example Login' }),
+    );
+
+    await waitFor(() => {
+      expect(signIn).toHaveBeenCalledTimes(1);
+      expect(signIn).toHaveBeenCalledWith('apioauth');
+    });
+    delete process.env.API_OAUTH_VISIBLE_NAME;
   });
 });
