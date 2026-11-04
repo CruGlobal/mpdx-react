@@ -65,13 +65,13 @@ describe('downloadAddressHistory', () => {
     jest.spyOn(document, 'createElement').mockReturnValue(link);
     const removeChild = jest.spyOn(document.body, 'removeChild');
 
-    downloadAddressHistory(
+    downloadAddressHistory({
       changes,
-      'Baggins, Frodo',
-      'user-1',
-      i18n.t,
-      'en-US',
-    );
+      contactName: 'Baggins, Frodo',
+      currentUserId: 'user-1',
+      t: i18n.t,
+      locale: 'en-US',
+    });
 
     expect(setAttribute).toHaveBeenCalledWith(
       'href',

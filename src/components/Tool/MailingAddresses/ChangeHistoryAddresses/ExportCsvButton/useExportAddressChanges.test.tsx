@@ -44,13 +44,13 @@ describe('useExportAddressChanges', () => {
     rerender({ history: lastPage });
 
     await waitFor(() => expect(result.current.exporting).toBe(false));
-    expect(downloadAddressChanges).toHaveBeenCalledWith(
-      lastPage.nodes,
-      undefined,
-      expect.any(Function),
-      expect.any(Function),
-      'en-US',
-    );
+    expect(downloadAddressChanges).toHaveBeenCalledWith({
+      addressChanges: lastPage.nodes,
+      currentUserId: undefined,
+      getStatusLabel: expect.any(Function),
+      t: expect.any(Function),
+      locale: 'en-US',
+    });
   });
 
   it('stops exporting without downloading when fetching a page rejects', async () => {

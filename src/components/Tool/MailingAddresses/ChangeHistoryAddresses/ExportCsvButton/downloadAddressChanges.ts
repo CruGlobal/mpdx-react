@@ -9,13 +9,21 @@ import { StatusEnum } from 'src/graphql/types.generated';
 import { dateFormat } from 'src/lib/intlFormat';
 import { AddressChangeRow } from '../helpers';
 
-export const createAddressChangesCsv = (
-  addressChanges: AddressChangeRow[],
-  currentUserId: string | undefined,
-  getStatusLabel: (status: StatusEnum) => string,
-  t: TFunction,
-  locale: string,
-): string[][] => [
+interface AddressChangesCsvOptions {
+  addressChanges: AddressChangeRow[];
+  currentUserId: string | undefined;
+  getStatusLabel: (status: StatusEnum) => string;
+  t: TFunction;
+  locale: string;
+}
+
+export const createAddressChangesCsv = ({
+  addressChanges,
+  currentUserId,
+  getStatusLabel,
+  t,
+  locale,
+}: AddressChangesCsvOptions): string[][] => [
   [
     t('Date'),
     t('Partner'),
@@ -41,19 +49,9 @@ export const createAddressChangesCsv = (
 ];
 
 export const downloadAddressChanges = (
-  addressChanges: AddressChangeRow[],
-  currentUserId: string | undefined,
-  getStatusLabel: (status: StatusEnum) => string,
-  t: TFunction,
-  locale: string,
+  options: AddressChangesCsvOptions,
 ): void =>
   downloadCsv(
-    createAddressChangesCsv(
-      addressChanges,
-      currentUserId,
-      getStatusLabel,
-      t,
-      locale,
-    ),
-    t('Address Change History'),
+    createAddressChangesCsv(options),
+    options.t('Address Change History'),
   );

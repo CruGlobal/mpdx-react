@@ -207,13 +207,13 @@ export const AddressHistoryModal: React.FC<AddressHistoryModalProps> = ({
           startIcon={<FileDownloadIcon />}
           disabled={!changes.length}
           onClick={() =>
-            downloadAddressHistory(
+            downloadAddressHistory({
               changes,
-              contact?.name ?? '',
-              userData?.user.id,
+              contactName: contact?.name ?? '',
+              currentUserId: userData?.user.id,
               t,
               locale,
-            )
+            })
           }
         >
           <b>{t('Export')}</b>

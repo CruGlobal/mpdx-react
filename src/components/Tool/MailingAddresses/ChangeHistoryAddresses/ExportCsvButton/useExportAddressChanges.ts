@@ -44,13 +44,13 @@ export const useExportAddressChanges = ({
     if (exporting && error) {
       setExporting(false);
     } else if (exporting && history && !history.pageInfo.hasNextPage) {
-      downloadAddressChanges(
-        history.nodes,
-        userData?.user.id,
-        getLocalizedContactStatus,
+      downloadAddressChanges({
+        addressChanges: history.nodes,
+        currentUserId: userData?.user.id,
+        getStatusLabel: getLocalizedContactStatus,
         t,
         locale,
-      );
+      });
       setExporting(false);
     }
   }, [exporting, history, error]);
