@@ -622,7 +622,8 @@ describe('MpdSupervisorReport', () => {
       name: 'Geographic Location',
     });
     await waitFor(() => expect(location).not.toBeDisabled());
-    userEvent.type(location, 'New York');
+    // Click, don't type: typing re-positions the popup per keystroke and times out
+    userEvent.click(location);
     userEvent.click(await findByRole('option', { name: 'New York, NY (12%)' }));
     userEvent.click(getByRole('button', { name: 'Save' }));
 
