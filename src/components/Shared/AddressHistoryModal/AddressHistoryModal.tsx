@@ -26,13 +26,265 @@ import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { dateFormat } from 'src/lib/intlFormat';
-import { useAddressHistoryQuery } from './AddressHistory.generated';
+import {
+  AddressHistoryChangeFragment,
+  AddressHistoryQuery,
+  useAddressHistoryQuery,
+} from './AddressHistory.generated';
 import {
   formatAddress,
   formatChangeMadeBy,
   isAutomaticChange,
 } from './addressHistoryHelpers';
 import { downloadAddressHistory } from './downloadAddressHistory';
+
+type AddressHistoryContact = AddressHistoryQuery['contact'];
+
+interface AddressHistoryTitleProps {
+  titleId: string;
+  contact: AddressHistoryContact | undefined;
+}
+
+const AddressHistoryTitle: React.FC<AddressHistoryTitleProps> = ({
+  titleId,
+  contact,
+}) => {
+  const { t } = useTranslation();
+  const { getLocalizedContactStatus } = useLocalizedConstants();
+
+  return (
+    <DialogTitle component="div" sx={{ pr: 7 }}>
+      <Typography id={titleId} variant="h6" component="h2" fontWeight="bold">
+        {t('Address History')}
+      </Typography>
+      {contact && (
+        <Typography variant="body2" color="text.secondary">
+          {contact.status
+            ? `${contact.name} · ${getLocalizedContactStatus(contact.status)}`
+            : contact.name}
+        </Typography>
+      )}
+    </DialogTitle>
+  );
+};
+
+interface CurrentPrimaryAddressProps {
+  address: NonNullable<AddressHistoryContact['primaryAddress']>;
+}
+
+const CurrentPrimaryAddress: React.FC<CurrentPrimaryAddressProps> = ({
+  address,
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <Box
+      display="flex"
+      gap={2}
+      p={2}
+      borderRadius={1}
+      sx={{ backgroundColor: 'mpdxGrayLight.main' }}
+    >
+      <LocationOnIcon sx={{ color: 'text.secondary' }} />
+      <Box>
+        <Typography
+          variant="caption"
+          fontWeight="bold"
+          color="text.secondary"
+          textTransform="uppercase"
+        >
+          {t('Current primary address')}
+        </Typography>
+        <Typography>{formatAddress(address)}</Typography>
+      </Box>
+    </Box>
+  );
+};
+
+interface AddressHistoryEntryProps {
+  change: AddressHistoryChangeFragment;
+  currentUserId: string | undefined;
+  locale: string;
+}
+
+const AddressHistoryEntry: React.FC<AddressHistoryEntryProps> = ({
+  change,
+  currentUserId,
+  locale,
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <Box
+      display="grid"
+      gridTemplateColumns="110px 24px 1fr"
+      columnGap={2}
+      py={2}
+      borderTop={1}
+      borderColor="divider"
+    >
+      <Typography variant="body2" fontWeight="bold">
+        {dateFormat(DateTime.fromISO(change.date), locale)}
+      </Typography>
+      <Box color="text.secondary">
+        {isAutomaticChange(change.source) ? (
+          <SyncIcon fontSize="small" />
+        ) : (
+          <PersonIcon fontSize="small" />
+        )}
+      </Box>
+      <Box>
+        <Typography variant="body2">{formatAddress(change)}</Typography>
+        {change.previousAddress && (
+          <Typography variant="body2" color="text.secondary">
+            {t('Was:')} {formatAddress(change.previousAddress)}
+          </Typography>
+        )}
+        <Typography variant="caption" color="text.secondary">
+          {formatChangeMadeBy(change, currentUserId, t)}
+        </Typography>
+      </Box>
+    </Box>
+  );
+};
+
+interface AddressHistoryBodyProps {
+  hasData: boolean;
+  loading: boolean;
+  failed: boolean;
+  onRetry: () => void;
+  contact: AddressHistoryContact | undefined;
+  currentUserId: string | undefined;
+  locale: string;
+}
+
+const AddressHistoryBody: React.FC<AddressHistoryBodyProps> = ({
+  hasData,
+  loading,
+  failed,
+  onRetry,
+  contact,
+  currentUserId,
+  locale,
+}) => {
+  const { t } = useTranslation();
+
+  if (loading && !hasData) {
+    return (
+      <Box display="flex" justifyContent="center" p={2}>
+        <CircularProgress data-testid="loading" />
+      </Box>
+    );
+  }
+  if (failed && !hasData) {
+    return (
+      <Alert
+        severity="error"
+        action={
+          <Button color="inherit" size="small" onClick={onRetry}>
+            {t('Retry')}
+          </Button>
+        }
+      >
+        {t('Unable to load address history.')}
+      </Alert>
+    );
+  }
+
+  const changes = contact?.addressChanges ?? [];
+  const primaryAddress = contact?.primaryAddress;
+  // Changes come in logged order, and a start date can date one earlier than the rows below it
+  const oldestChange = changes.map((change) => change.date).sort()[0];
+
+  return (
+    <>
+      {primaryAddress && <CurrentPrimaryAddress address={primaryAddress} />}
+      <Typography variant="body2" color="text.secondary" my={2}>
+        {oldestChange
+          ? t('{{count}} changes since {{date}}', {
+              count: changes.length,
+              date: DateTime.fromISO(oldestChange).toLocaleString(
+                { month: 'short', year: 'numeric' },
+                { locale },
+              ),
+            })
+          : t('No address changes available yet')}
+      </Typography>
+      {changes.map((change) => (
+        <AddressHistoryEntry
+          key={change.id}
+          change={change}
+          currentUserId={currentUserId}
+          locale={locale}
+        />
+      ))}
+    </>
+  );
+};
+
+interface AddressHistoryActionsProps {
+  accountListId: string;
+  contact: AddressHistoryContact | undefined;
+  currentUserId: string | undefined;
+  locale: string;
+  handleClose: () => void;
+}
+
+const AddressHistoryActions: React.FC<AddressHistoryActionsProps> = ({
+  accountListId,
+  contact,
+  currentUserId,
+  locale,
+  handleClose,
+}) => {
+  const { t } = useTranslation();
+  const { pathname } = useRouter();
+  const onMailingAddressesPage = pathname.startsWith(
+    '/accountLists/[accountListId]/tools/mailingAddresses',
+  );
+  const changes = contact?.addressChanges ?? [];
+
+  return (
+    <DialogActions sx={{ px: 3, py: 2 }}>
+      {!onMailingAddressesPage && (
+        <Link
+          component={NextLink}
+          href={`/accountLists/${accountListId}/tools/mailingAddresses?mailingTab=history`}
+          underline="none"
+          fontWeight="bold"
+          variant="body2"
+          textTransform="uppercase"
+          display="flex"
+          alignItems="center"
+          gap={0.5}
+        >
+          {t('See changes for all partners')}
+          <ArrowForwardIcon fontSize="small" />
+        </Link>
+      )}
+      <Box flex={1} />
+      <Button
+        variant="outlined"
+        startIcon={<FileDownloadIcon />}
+        disabled={!changes.length}
+        onClick={() =>
+          downloadAddressHistory({
+            changes,
+            contactName: contact?.name ?? '',
+            currentUserId,
+            t,
+            locale,
+          })
+        }
+      >
+        <b>{t('Export')}</b>
+      </Button>
+      <Button onClick={handleClose} variant="contained">
+        <b>{t('Done')}</b>
+      </Button>
+    </DialogActions>
+  );
+};
 
 interface AddressHistoryModalProps {
   accountListId: string;
@@ -47,12 +299,7 @@ export const AddressHistoryModal: React.FC<AddressHistoryModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const titleId = useId();
-  const { pathname } = useRouter();
-  const onMailingAddressesPage = pathname.startsWith(
-    '/accountLists/[accountListId]/tools/mailingAddresses',
-  );
   const locale = useLocale();
-  const { getLocalizedContactStatus } = useLocalizedConstants();
   const { data: userData } = useGetUserQuery();
   const { data, loading, error, refetch } = useAddressHistoryQuery({
     variables: { accountListId, contactId },
@@ -61,12 +308,8 @@ export const AddressHistoryModal: React.FC<AddressHistoryModalProps> = ({
     refetch().catch(() => {
       // Nothing to add: the error link already reports the failure, and `error` keeps the Alert up
     });
-
   const contact = data?.contact;
-  const changes = contact?.addressChanges ?? [];
-  const primaryAddress = contact?.primaryAddress;
-  // Changes come in logged order, and a start date can date one earlier than the rows below it
-  const oldestChange = changes.map((change) => change.date).sort()[0];
+  const currentUserId = userData?.user.id;
 
   return (
     <Dialog
@@ -76,18 +319,7 @@ export const AddressHistoryModal: React.FC<AddressHistoryModalProps> = ({
       fullWidth
       aria-labelledby={titleId}
     >
-      <DialogTitle component="div" sx={{ pr: 7 }}>
-        <Typography id={titleId} variant="h6" component="h2" fontWeight="bold">
-          {t('Address History')}
-        </Typography>
-        {contact && (
-          <Typography variant="body2" color="text.secondary">
-            {contact.status
-              ? `${contact.name} · ${getLocalizedContactStatus(contact.status)}`
-              : contact.name}
-          </Typography>
-        )}
-      </DialogTitle>
+      <AddressHistoryTitle titleId={titleId} contact={contact} />
       <IconButton
         onClick={handleClose}
         aria-label={t('Close')}
@@ -96,132 +328,23 @@ export const AddressHistoryModal: React.FC<AddressHistoryModalProps> = ({
         <CloseIcon />
       </IconButton>
       <DialogContent dividers>
-        {loading && !data ? (
-          <Box display="flex" justifyContent="center" p={2}>
-            <CircularProgress data-testid="loading" />
-          </Box>
-        ) : error && !data ? (
-          <Alert
-            severity="error"
-            action={
-              <Button color="inherit" size="small" onClick={retry}>
-                {t('Retry')}
-              </Button>
-            }
-          >
-            {t('Unable to load address history.')}
-          </Alert>
-        ) : (
-          <>
-            {primaryAddress && (
-              <Box
-                display="flex"
-                gap={2}
-                p={2}
-                borderRadius={1}
-                sx={{ backgroundColor: 'mpdxGrayLight.main' }}
-              >
-                <LocationOnIcon sx={{ color: 'text.secondary' }} />
-                <Box>
-                  <Typography
-                    variant="caption"
-                    fontWeight="bold"
-                    color="text.secondary"
-                    textTransform="uppercase"
-                  >
-                    {t('Current primary address')}
-                  </Typography>
-                  <Typography>{formatAddress(primaryAddress)}</Typography>
-                </Box>
-              </Box>
-            )}
-            <Typography variant="body2" color="text.secondary" my={2}>
-              {oldestChange
-                ? t('{{count}} changes since {{date}}', {
-                    count: changes.length,
-                    date: DateTime.fromISO(oldestChange).toLocaleString(
-                      { month: 'short', year: 'numeric' },
-                      { locale },
-                    ),
-                  })
-                : t('No address changes available yet')}
-            </Typography>
-            {changes.map((change) => (
-              <Box
-                key={change.id}
-                display="grid"
-                gridTemplateColumns="110px 24px 1fr"
-                columnGap={2}
-                py={2}
-                borderTop={1}
-                borderColor="divider"
-              >
-                <Typography variant="body2" fontWeight="bold">
-                  {dateFormat(DateTime.fromISO(change.date), locale)}
-                </Typography>
-                <Box color="text.secondary">
-                  {isAutomaticChange(change.source) ? (
-                    <SyncIcon fontSize="small" />
-                  ) : (
-                    <PersonIcon fontSize="small" />
-                  )}
-                </Box>
-                <Box>
-                  <Typography variant="body2">
-                    {formatAddress(change)}
-                  </Typography>
-                  {change.previousAddress && (
-                    <Typography variant="body2" color="text.secondary">
-                      {t('Was:')} {formatAddress(change.previousAddress)}
-                    </Typography>
-                  )}
-                  <Typography variant="caption" color="text.secondary">
-                    {formatChangeMadeBy(change, userData?.user.id, t)}
-                  </Typography>
-                </Box>
-              </Box>
-            ))}
-          </>
-        )}
+        <AddressHistoryBody
+          hasData={!!data}
+          loading={loading}
+          failed={!!error}
+          onRetry={retry}
+          contact={contact}
+          currentUserId={currentUserId}
+          locale={locale}
+        />
       </DialogContent>
-      <DialogActions sx={{ px: 3, py: 2 }}>
-        {!onMailingAddressesPage && (
-          <Link
-            component={NextLink}
-            href={`/accountLists/${accountListId}/tools/mailingAddresses?mailingTab=history`}
-            underline="none"
-            fontWeight="bold"
-            variant="body2"
-            textTransform="uppercase"
-            display="flex"
-            alignItems="center"
-            gap={0.5}
-          >
-            {t('See changes for all partners')}
-            <ArrowForwardIcon fontSize="small" />
-          </Link>
-        )}
-        <Box flex={1} />
-        <Button
-          variant="outlined"
-          startIcon={<FileDownloadIcon />}
-          disabled={!changes.length}
-          onClick={() =>
-            downloadAddressHistory(
-              changes,
-              contact?.name ?? '',
-              userData?.user.id,
-              t,
-              locale,
-            )
-          }
-        >
-          <b>{t('Export')}</b>
-        </Button>
-        <Button onClick={handleClose} variant="contained">
-          <b>{t('Done')}</b>
-        </Button>
-      </DialogActions>
+      <AddressHistoryActions
+        accountListId={accountListId}
+        contact={contact}
+        currentUserId={currentUserId}
+        locale={locale}
+        handleClose={handleClose}
+      />
     </Dialog>
   );
 };

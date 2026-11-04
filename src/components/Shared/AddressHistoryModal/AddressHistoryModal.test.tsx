@@ -283,16 +283,16 @@ describe('AddressHistoryModal', () => {
 
     userEvent.click(getByRole('button', { name: 'Export' }));
 
-    expect(downloadAddressHistory).toHaveBeenCalledWith(
-      [
+    expect(downloadAddressHistory).toHaveBeenCalledWith({
+      changes: [
         expect.objectContaining({ street: '111 Street' }),
         expect.objectContaining({ street: '2525 Camp Creek Pkwy' }),
         expect.objectContaining({ street: '1001 Denman St' }),
       ],
-      'Baggins, Frodo',
+      contactName: 'Baggins, Frodo',
       currentUserId,
-      expect.any(Function),
-      'en-US',
-    );
+      t: expect.any(Function),
+      locale: 'en-US',
+    });
   });
 });

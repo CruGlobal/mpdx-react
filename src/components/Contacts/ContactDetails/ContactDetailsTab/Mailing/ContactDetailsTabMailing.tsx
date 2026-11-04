@@ -119,6 +119,19 @@ const AddAddressButton: React.FC<AddAddressButtonProps> = ({
   );
 };
 
+const useAddressHistoryModal = (accountListId: string, contactId: string) => {
+  const [open, setOpen] = useState(false);
+  const historyModal = open ? (
+    <AddressHistoryModal
+      accountListId={accountListId}
+      contactId={contactId}
+      handleClose={() => setOpen(false)}
+    />
+  ) : null;
+
+  return { openHistory: () => setOpen(true), historyModal };
+};
+
 interface MailingProp {
   accountListId: string;
   data: ContactMailingFragment;
@@ -152,13 +165,13 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
 
   const [showContactDetailTabMoreOpen, setShowContactDetailTabMoreOpen] =
     useState(false);
-  const [historyModalOpen, setHistoryModalOpen] = useState(false);
+  const { openHistory, historyModal } = useAddressHistoryModal(
+    accountListId,
+    id,
+  );
   return (
     <>
-      <AddAddressButton
-        placement="top"
-        onHistoryClick={() => setHistoryModalOpen(true)}
-      />
+      <AddAddressButton placement="top" onHistoryClick={openHistory} />
       <Box>
         <ContactDetailsMailingMainContainer>
           <ContactDetailsMailingIcon />
@@ -276,10 +289,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
           </ContactDetailsMailingTextContainer>
         </ContactDetailsMailingMainContainer>
       </Box>
-      <AddAddressButton
-        placement="bottom"
-        onHistoryClick={() => setHistoryModalOpen(true)}
-      />
+      <AddAddressButton placement="bottom" onHistoryClick={openHistory} />
       {selectedAddress && (
         <EditContactAddressModal
           contactId={id}
@@ -302,13 +312,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
           handleClose={() => setEditMailingModalOpen(false)}
         />
       )}
-      {historyModalOpen && (
-        <AddressHistoryModal
-          accountListId={accountListId}
-          contactId={id}
-          handleClose={() => setHistoryModalOpen(false)}
-        />
-      )}
+      {historyModal}
     </>
   );
 };

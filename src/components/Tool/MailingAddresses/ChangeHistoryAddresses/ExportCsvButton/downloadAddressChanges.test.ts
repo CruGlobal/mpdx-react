@@ -12,13 +12,13 @@ const getStatusLabel = () => 'Partner - Financial';
 
 describe('createAddressChangesCsv', () => {
   it('builds a header and a row per change', () => {
-    const rows = createAddressChangesCsv(
-      mockAddressChanges,
+    const rows = createAddressChangesCsv({
+      addressChanges: mockAddressChanges,
       currentUserId,
       getStatusLabel,
-      i18n.t,
-      'en-US',
-    );
+      t: i18n.t,
+      locale: 'en-US',
+    });
 
     expect(rows).toHaveLength(mockAddressChanges.length + 1);
     expect(rows[0]).toEqual([
@@ -42,13 +42,13 @@ describe('createAddressChangesCsv', () => {
   });
 
   it('leaves the previous address blank when there is none', () => {
-    const rows = createAddressChangesCsv(
-      mockAddressChanges,
+    const rows = createAddressChangesCsv({
+      addressChanges: mockAddressChanges,
       currentUserId,
       getStatusLabel,
-      i18n.t,
-      'en-US',
-    );
+      t: i18n.t,
+      locale: 'en-US',
+    });
 
     expect(rows[6][1]).toBe('Doe, John and Jane');
     expect(rows[6][5]).toBe('');
@@ -62,13 +62,13 @@ describe('downloadAddressChanges', () => {
     const click = jest.spyOn(link, 'click').mockImplementation();
     jest.spyOn(document, 'createElement').mockReturnValue(link);
 
-    downloadAddressChanges(
-      mockAddressChanges,
+    downloadAddressChanges({
+      addressChanges: mockAddressChanges,
       currentUserId,
       getStatusLabel,
-      i18n.t,
-      'en-US',
-    );
+      t: i18n.t,
+      locale: 'en-US',
+    });
 
     expect(setAttribute).toHaveBeenCalledWith(
       'download',

@@ -29,13 +29,21 @@ export const createAddressHistoryCsv = (
   ]),
 ];
 
-export const downloadAddressHistory = (
-  changes: AddressHistoryChangeFragment[],
-  contactName: string,
-  currentUserId: string | undefined,
-  t: TFunction,
-  locale: string,
-): void =>
+interface DownloadAddressHistoryOptions {
+  changes: AddressHistoryChangeFragment[];
+  contactName: string;
+  currentUserId: string | undefined;
+  t: TFunction;
+  locale: string;
+}
+
+export const downloadAddressHistory = ({
+  changes,
+  contactName,
+  currentUserId,
+  t,
+  locale,
+}: DownloadAddressHistoryOptions): void =>
   downloadCsv(
     createAddressHistoryCsv(changes, currentUserId, t, locale),
     t('Address History - {{name}}', { name: contactName }),

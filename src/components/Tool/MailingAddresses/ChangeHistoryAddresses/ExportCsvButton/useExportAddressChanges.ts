@@ -17,6 +17,13 @@ interface UseExportAddressChangesProps {
   error: ApolloError | undefined;
 }
 
+type AddressChangeHistory = AddressChangeHistoryQuery['addressChangeHistory'];
+
+const isLastPage = (
+  history: AddressChangeHistory | undefined,
+): history is AddressChangeHistory =>
+  !!history && !history.pageInfo.hasNextPage;
+
 export const useExportAddressChanges = ({
   history,
   fetchMore,
@@ -41,16 +48,19 @@ export const useExportAddressChanges = ({
   });
 
   useEffect(() => {
-    if (exporting && error) {
+    if (!exporting) {
+      return;
+    }
+    if (error) {
       setExporting(false);
-    } else if (exporting && history && !history.pageInfo.hasNextPage) {
-      downloadAddressChanges(
-        history.nodes,
-        userData?.user.id,
-        getLocalizedContactStatus,
+    } else if (isLastPage(history)) {
+      downloadAddressChanges({
+        addressChanges: history.nodes,
+        currentUserId: userData?.user.id,
+        getStatusLabel: getLocalizedContactStatus,
         t,
         locale,
-      );
+      });
       setExporting(false);
     }
   }, [exporting, history, error]);
