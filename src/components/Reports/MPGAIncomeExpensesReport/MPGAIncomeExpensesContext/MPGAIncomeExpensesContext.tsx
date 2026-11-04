@@ -2,14 +2,16 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { ApolloError } from '@apollo/client';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { useHcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { useExpenseCategories } from 'src/hooks/useExpenseCategories';
 import { useFilteredFunds } from 'src/hooks/useFilteredFunds';
 import { useGetLastTwelveMonths } from 'src/hooks/useGetLastTwelveMonths';
 import { useLocale } from 'src/hooks/useLocale';
 import { monthYearFormat } from 'src/lib/intlFormat';
-import { HouseholdMember } from '../../Shared/Helpers/household';
 import { transformTransactionDate } from '../../Shared/Helpers/transformTransactionDate';
+import {
+  ReportHcmStatus,
+  useReportHcm,
+} from '../../Shared/Helpers/useReportHcm';
 import { Filters } from '../../Shared/SettingsDialog/SettingsDialog';
 import { DateRange } from '../../StaffExpenseReport/Helpers/StaffReportEnum';
 import { FundTypes, Funds } from '../Helper/MPGAReportEnum';
@@ -45,6 +47,8 @@ export type ContextType = {
   staffAccountId: string | null | undefined;
   /** The HCM person the report is for, or undefined for the current user */
   personNumber: string | undefined;
+  /** What the report's HCM status components need */
+  hcmStatus: ReportHcmStatus;
 
   /** Income and expenses totals */
   totals: {
@@ -94,21 +98,13 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
 
   const isSupervisorView = Boolean(staffAccountId);
 
-  // Person numbers tell the reader's payroll from their spouse's. HCM lists the reader first, then
-  // their spouse. Both requests leave together; `loading` below covers them both so salary is not
-  // rendered as one household total and then split.
-  const { data: hcmData, loading: hcmLoading } = useHcmQuery({
-    variables: { personNumber },
-    skip: isSupervisorView && !personNumber,
-  });
-  const household: HouseholdMember[] = useMemo(
-    () =>
-      hcmData?.hcm.map(({ staffInfo }) => ({
-        personNumber: staffInfo.personNumber,
-        name: staffInfo.preferredName ?? staffInfo.lastName,
-      })) ?? [],
-    [hcmData],
-  );
+  // `loading` below covers HCM and the report together, so salary is not rendered as one household
+  // total and then split.
+  const {
+    loading: hcmLoading,
+    household,
+    hcmStatus,
+  } = useReportHcm({ personNumber, isSupervisorView });
 
   const [filters, setFilters] = useState<Filters | null>(null);
 
@@ -318,6 +314,7 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
       isSupervisorView,
       staffAccountId,
       personNumber,
+      hcmStatus,
       totals,
     }),
     [
@@ -340,6 +337,7 @@ export const MPGAIncomeExpensesReportProvider: React.FC<Props> = ({
       isSupervisorView,
       staffAccountId,
       personNumber,
+      hcmStatus,
       totals,
     ],
   );
