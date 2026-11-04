@@ -15,7 +15,7 @@ import {
   Theme,
   useMediaQuery,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { alpha, styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
@@ -45,6 +45,7 @@ import { TaskRow } from 'src/components/Task/TaskRow/TaskRow';
 import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useFilterPanelOpen } from 'src/hooks/useFilterPanelOpen';
+import { useHorizontalScrollEdges } from 'src/hooks/useHorizontalScrollEdges';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { getAppName } from 'src/lib/getAppName';
@@ -84,6 +85,24 @@ const TaskMenuButton = styled(Button)(({ theme }) => ({
   marginRight: theme.spacing(1),
   paddingLeft: theme.spacing(1),
   paddingRight: theme.spacing(0.5),
+}));
+
+const TaskFilterTabsRow = styled(Box)({
+  position: 'relative',
+});
+
+// Fades the buttons out at an edge that has more buttons past it, so it's
+// clear the row scrolls sideways
+const TaskFilterTabsFade = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'side',
+})<{ side: 'left' | 'right' }>(({ theme, side }) => ({
+  position: 'absolute',
+  top: 0,
+  bottom: 0,
+  ...(side === 'left' ? { left: 0 } : { right: 0 }),
+  width: theme.spacing(5),
+  pointerEvents: 'none',
+  background: `linear-gradient(to ${side}, ${alpha(theme.palette.common.white, 0)}, ${theme.palette.common.white})`,
 }));
 
 const TaskFilterTabsWrapper = styled(Box)({
@@ -161,6 +180,11 @@ const PageContent: React.FC = () => {
   const [taskType, setTaskType] = useState<TaskFilterTabsTypes>(
     taskFiltersTabs[0].name,
   );
+  const {
+    scrollRef: tabsScrollRef,
+    canScrollLeft: canScrollTabsLeft,
+    canScrollRight: canScrollTabsRight,
+  } = useHorizontalScrollEdges();
 
   const setTaskTypeFilter = (type: TaskFilterTabsTypes): void => {
     setTaskType(type);
@@ -359,28 +383,47 @@ const PageContent: React.FC = () => {
                   buttonGroup={taskButtonGroup}
                 />
                 <Box>
-                  <TaskFilterTabsWrapper>
-                    <TaskCurrentHistoryButtonGroup
-                      variant="outlined"
-                      size="small"
-                      sx={{
-                        // Subtract out one unit of margin for both the top and the bottom
-                        height: `calc(${buttonBarHeight} - ${theme.spacing(2)})`,
-                      }}
+                  <TaskFilterTabsRow>
+                    <TaskFilterTabsWrapper
+                      ref={tabsScrollRef}
+                      data-testid="TaskFilterTabs"
                     >
-                      {taskFiltersTabs.map((tab) => (
-                        <Button
-                          variant={
-                            taskType === tab.name ? 'contained' : 'outlined'
-                          }
-                          onClick={() => setTaskTypeFilter(tab.name)}
-                          key={`btn-${tab.name}`}
-                        >
-                          {tab.uiName}
-                        </Button>
-                      ))}
-                    </TaskCurrentHistoryButtonGroup>
-                  </TaskFilterTabsWrapper>
+                      <TaskCurrentHistoryButtonGroup
+                        variant="outlined"
+                        size="small"
+                        sx={{
+                          // Subtract out one unit of margin for both the top and the bottom
+                          height: `calc(${buttonBarHeight} - ${theme.spacing(2)})`,
+                        }}
+                      >
+                        {taskFiltersTabs.map((tab) => (
+                          <Button
+                            variant={
+                              taskType === tab.name ? 'contained' : 'outlined'
+                            }
+                            onClick={() => setTaskTypeFilter(tab.name)}
+                            key={`btn-${tab.name}`}
+                          >
+                            {tab.uiName}
+                          </Button>
+                        ))}
+                      </TaskCurrentHistoryButtonGroup>
+                    </TaskFilterTabsWrapper>
+                    {canScrollTabsLeft && (
+                      <TaskFilterTabsFade
+                        side="left"
+                        aria-hidden
+                        data-testid="TaskFilterTabsFadeLeft"
+                      />
+                    )}
+                    {canScrollTabsRight && (
+                      <TaskFilterTabsFade
+                        side="right"
+                        aria-hidden
+                        data-testid="TaskFilterTabsFadeRight"
+                      />
+                    )}
+                  </TaskFilterTabsRow>
                   <InfiniteList
                     data-foo="bar"
                     loading={loading}
