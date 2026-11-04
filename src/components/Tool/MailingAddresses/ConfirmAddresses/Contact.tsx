@@ -35,8 +35,8 @@ import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { getAppName } from 'src/lib/getAppName';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { isEditableSource, sourceToStr } from 'src/lib/sourceHelper';
-import theme from '../../../theme';
-import { HandleSingleConfirmProps, emptyAddress } from './FixMailingAddresses';
+import theme from '../../../../theme';
+import { HandleSingleConfirmProps, emptyAddress } from './ConfirmAddresses';
 import { ContactAddressFragment } from './GetInvalidAddresses.generated';
 
 const ContactHeader = styled(CardHeader)(() => ({

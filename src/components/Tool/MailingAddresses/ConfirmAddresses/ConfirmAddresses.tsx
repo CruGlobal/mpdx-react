@@ -15,18 +15,20 @@ import {
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { useRefetchPrimaryAddressChange } from 'src/components/Contacts/AddressChangeBadge/useRefetchPrimaryAddressChange';
 import { DynamicAddAddressModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/DynamicAddAddressModal';
 import { DynamicEditContactAddressModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/DynamicEditContactAddressModal';
 import { useUpdateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/EditContactAddress.generated';
+import { evictAddressChangeHistory } from 'src/components/Shared/AddressHistoryModal/addressHistoryHelpers';
 import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
 import {
   manualSourceValue,
   sourceToStr,
   sourcesMatch,
 } from 'src/lib/sourceHelper';
-import theme from '../../../theme';
-import NoData from '../NoData';
-import { ToolsGridContainer } from '../styledComponents';
+import theme from '../../../../theme';
+import NoData from '../../NoData';
+import { ToolsGridContainer } from '../../styledComponents';
 import Contact from './Contact';
 import {
   ContactAddressFragment,
@@ -119,7 +121,7 @@ enum ModalEnum {
   Edit = 'Edit',
 }
 
-const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
+export const ConfirmAddresses: React.FC<Props> = ({ accountListId }: Props) => {
   const { classes } = useStyles();
   const { t } = useTranslation();
   const [showEditAddressModal, setShowEditAddressModal] = useState(false);
@@ -137,6 +139,8 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
     variables: { accountListId },
   });
   const [updateAddress] = useUpdateContactAddressMutation();
+  const refetchPrimaryAddressChange =
+    useRefetchPrimaryAddressChange(accountListId);
   const { enqueueSnackbar } = useSnackbar();
   const [addressesState, setAddressesState] = useState({});
 
@@ -182,6 +186,7 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
   const handleSingleConfirm = useCallback(
     async ({ id, name }: HandleSingleConfirmProps) => {
       let errorOccurred = false;
+      let anySaved = false;
       const addressesData = addressesState[id]?.addresses || [];
 
       for (let idx = 0; idx < addressesData.length; idx++) {
@@ -197,6 +202,12 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
             },
           },
           update(cache) {
+            anySaved = true;
+            // The server decides whether a primary save logs a change, so drop the history either way. No gc here:
+            // bulk confirm runs this once per contact.
+            if (address.primaryMailingAddress) {
+              evictAddressChangeHistory(cache, { gc: false });
+            }
             if (idx === addressesData.length - 1 && !errorOccurred) {
               cache.evict({ id: `Contact:${id}` });
             }
@@ -208,6 +219,10 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
       }
 
       if (errorOccurred) {
+        // The contact stays listed, and the saves that went through may have moved its primary
+        if (anySaved) {
+          refetchPrimaryAddressChange(id);
+        }
         enqueueSnackbar(t('Error updating contact {{name}}', { name }), {
           variant: 'error',
           autoHideDuration: 7000,
@@ -220,7 +235,14 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
         return { success: true };
       }
     },
-    [addressesState, updateAddress, accountListId, enqueueSnackbar, t],
+    [
+      addressesState,
+      updateAddress,
+      refetchPrimaryAddressChange,
+      accountListId,
+      enqueueSnackbar,
+      t,
+    ],
   );
 
   const handleBulkConfirm = useCallback(async () => {
@@ -371,7 +393,7 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
     <Box className={classes.outer} data-testid="Home">
       <Box className={classes.outer}>
         <ToolsGridContainer container spacing={3}>
-          {loading && !data && (
+          {loading && (
             <Box className={classes.outer}>
               <CircularProgress
                 data-testid="loading"
@@ -382,7 +404,7 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
 
           {!loading && data && (
             <React.Fragment>
-              {!totalContacts && <NoData tool="fixMailingAddresses" />}
+              {!totalContacts && <NoData tool="mailingAddresses" />}
               {!!totalContacts && (
                 <>
                   <Grid size={12}>
@@ -506,5 +528,3 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
     </Box>
   );
 };
-
-export default FixMailingAddresses;
