@@ -1,5 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
+import { gridClasses } from '@mui/x-data-grid';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render, waitFor, within } from '@testing-library/react';
@@ -393,6 +394,67 @@ describe('DonationTable', () => {
         getByRole('gridcell', { name: 'Motivation 1' }),
       ).toBeInTheDocument();
       expect(getByRole('gridcell', { name: 'Memo 1' })).toBeInTheDocument();
+    });
+  });
+
+  describe('Edit column', () => {
+    it('is wide enough to show the full header text', async () => {
+      const { findByRole } = render(<TestComponent />);
+
+      const editHeader = await findByRole('columnheader', { name: 'Edit' });
+      expect(editHeader).toHaveTextContent(/^Edit$/);
+      // 40px of content plus the grid's 10px padding on each side
+      expect(parseFloat(editHeader.style.width)).toBeGreaterThanOrEqual(60);
+    });
+
+    it('does not show a column menu button in the header', async () => {
+      const { findByRole } = render(<TestComponent />);
+
+      // The menu button is hidden until hover on desktop but always visible on touch
+      // screens. It has no accessible name while hidden, so find it by its label.
+      const dateHeader = await findByRole('columnheader', { name: 'Date' });
+      expect(
+        within(dateHeader).getByLabelText('Date column menu'),
+      ).toBeInTheDocument();
+
+      const editHeader = await findByRole('columnheader', { name: 'Edit' });
+      expect(
+        within(editHeader).queryByLabelText('Edit column menu'),
+      ).not.toBeInTheDocument();
+    });
+
+    it('does not sort the table when the header is clicked', async () => {
+      const { findByRole, getAllByRole } = render(<TestComponent />);
+
+      const dateHeader = await findByRole('columnheader', { name: 'Date' });
+      const editHeader = await findByRole('columnheader', { name: 'Edit' });
+      expect(dateHeader).toHaveAttribute('aria-sort', 'descending');
+      expect(within(dateHeader).getByLabelText('Sort')).toBeInTheDocument();
+      expect(
+        within(editHeader).queryByLabelText('Sort'),
+      ).not.toBeInTheDocument();
+
+      userEvent.click(editHeader);
+
+      expect(dateHeader).toHaveAttribute('aria-sort', 'descending');
+      expect(editHeader).not.toHaveAttribute('aria-sort', 'ascending');
+      const dateCells = getAllByRole('gridcell', { name: /\/2023$/ });
+      expect(dateCells[0]).toHaveTextContent('3/2/2023');
+      expect(dateCells[1]).toHaveTextContent('3/1/2023');
+    });
+
+    it('centers the header and the pencil button in every row', async () => {
+      const { findByRole, getAllByRole } = render(<TestComponent />);
+
+      const editHeader = await findByRole('columnheader', { name: 'Edit' });
+      expect(editHeader).toHaveClass(gridClasses['columnHeader--alignCenter']);
+
+      ['donation-1', 'donation-2'].forEach((donationId) => {
+        const editCell = getAllByRole('gridcell').find((cell) =>
+          within(cell).queryByTestId(`edit-${donationId}`),
+        );
+        expect(editCell).toHaveClass(gridClasses['cell--textCenter']);
+      });
     });
   });
 });
