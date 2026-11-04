@@ -151,6 +151,30 @@ describe('AboutForm', () => {
     expect(await findByTestId('amount-three')).toHaveTextContent('$30,000.00');
   });
 
+  // MPDX-10269: the spouse figure comes from the API, not cap - gross - ytd ($10,000 here)
+  it("shows the spouse's remaining salary from the API", async () => {
+    const { findByText } = render(
+      <TestWrapper
+        asrMocks={{
+          AdditionalSalaryRequest: {
+            latestAdditionalSalaryRequest: {
+              spouseCalculations: {
+                currentSalaryCap: 60000,
+                grossAnnualSalary: 45000,
+                ytdAsrAmount: 5000,
+                remainingAllowableSalary: 4000,
+              },
+            },
+          },
+        }}
+      />,
+    );
+
+    expect(
+      await findByText('Up to their remaining allowable salary of $4,000'),
+    ).toBeInTheDocument();
+  });
+
   it('should hide financial data when no request has been created yet', async () => {
     const mutationSpy = jest.fn();
     const { findByText, queryByText } = render(

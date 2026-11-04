@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
-import { getRemainingCap } from '../Shared/Helper/getRemainingCap';
 import { useSpouseLink } from '../Shared/useSpouseLink';
 
 export const SpouseComponent: React.FC = () => {
@@ -23,9 +22,9 @@ export const SpouseComponent: React.FC = () => {
   }
 
   // The other person's numbers, on either person's page: the API builds calculations for whoever the request is for
-  const spouseCalculations =
-    requestData?.latestAdditionalSalaryRequest?.spouseCalculations;
-  const remainingCap = getRemainingCap(spouseCalculations ?? {});
+  const remainingCap =
+    requestData?.latestAdditionalSalaryRequest?.spouseCalculations
+      ?.remainingAllowableSalary;
 
   return (
     <Box>
@@ -47,11 +46,13 @@ export const SpouseComponent: React.FC = () => {
         </Link>
       </Box>
 
-      <Typography variant="caption" color="text.secondary">
-        {t('Up to their remaining allowable salary of {{amount}}', {
-          amount: currencyFormat(remainingCap, currency, locale),
-        })}
-      </Typography>
+      {typeof remainingCap === 'number' && (
+        <Typography variant="caption" color="text.secondary">
+          {t('Up to their remaining allowable salary of {{amount}}', {
+            amount: currencyFormat(remainingCap, currency, locale),
+          })}
+        </Typography>
+      )}
     </Box>
   );
 };
