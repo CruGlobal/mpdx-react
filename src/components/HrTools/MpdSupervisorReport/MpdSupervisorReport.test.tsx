@@ -622,8 +622,7 @@ describe('MpdSupervisorReport', () => {
       name: 'Geographic Location',
     });
     await waitFor(() => expect(location).not.toBeDisabled());
-    // Click, don't type: each keystroke re-positions the open popup, which is
-    // slow in jsdom this deep in the report and pushed the test past 5 s in CI
+    // Click, don't type: typing re-positions the popup per keystroke and times out
     userEvent.click(location);
     userEvent.click(await findByRole('option', { name: 'New York, NY (12%)' }));
     userEvent.click(getByRole('button', { name: 'Save' }));
