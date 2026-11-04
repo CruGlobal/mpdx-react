@@ -7,7 +7,6 @@ import {
   TextField,
   Tooltip,
 } from '@mui/material';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { AccountLists } from 'src/components/Settings/Organization/AccountLists/AccountLists';
@@ -28,7 +27,6 @@ const AccountListsOrganizations = (): ReactElement => {
   >(null);
 
   const [search, setSearch] = useState('');
-  const isNarrowScreen = useMediaQuery('(max-width:600px)');
 
   const { data } = useOrganizationsQuery();
   const organizations = data?.getOrganizations.organizations;
@@ -72,7 +70,12 @@ const AccountListsOrganizations = (): ReactElement => {
           </HeaderAndDropdown>
         )}
         {organizations?.length && (
-          <HeaderAndDropdown>
+          <HeaderAndDropdown
+            sx={{
+              flexDirection: { xs: 'column', sm: 'row' },
+              alignItems: { xs: 'stretch', sm: 'center' },
+            }}
+          >
             <Box>
               {selectedOrganization && (
                 <Tooltip
@@ -88,8 +91,9 @@ const AccountListsOrganizations = (): ReactElement => {
                     }}
                     fullWidth
                     inputProps={{ 'aria-label': 'Search Account Lists' }}
-                    style={{
-                      width: isNarrowScreen ? '150px' : '250px',
+                    sx={{
+                      width: { xs: '100%', sm: 250 },
+                      mb: { xs: 2, sm: 0 },
                     }}
                     InputProps={{
                       startAdornment: (
@@ -104,9 +108,7 @@ const AccountListsOrganizations = (): ReactElement => {
             </Box>
             <Box>
               <OrganizationAutocomplete
-                style={{
-                  width: isNarrowScreen ? '150px' : '350px',
-                }}
+                sx={{ width: { xs: '100%', sm: 350 } }}
                 autoHighlight
                 organizations={organizations}
                 textFieldLabel={t('Filter by Organization')}
