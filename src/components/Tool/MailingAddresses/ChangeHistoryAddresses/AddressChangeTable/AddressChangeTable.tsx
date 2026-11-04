@@ -27,6 +27,7 @@ import {
 import { useContactPanel } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { multiPageHeaderHeight } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
+import { StatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { dateFormat } from 'src/lib/intlFormat';
@@ -43,30 +44,106 @@ const Body = forwardRef<HTMLTableSectionElement>((props, ref) => (
 ));
 Body.displayName = 'Body';
 
-interface AddressChangeTableProps {
-  addressChanges: AddressChangeRow[];
-  loadingMore: boolean;
-  onEndReached: () => void;
+interface AddressChangeCellsProps {
+  addressChange: AddressChangeRow;
+  currentUserId: string | undefined;
+  locale: string;
+  buildContactUrl: ReturnType<typeof useContactPanel>['buildContactUrl'];
+  getStatusLabel: (status: StatusEnum) => string;
   onHistoryClick: (addressChange: AddressChangeRow) => void;
 }
 
-export const AddressChangeTable: React.FC<AddressChangeTableProps> = ({
-  addressChanges,
-  loadingMore,
-  onEndReached,
+const AddressChangeCells: React.FC<AddressChangeCellsProps> = ({
+  addressChange,
+  currentUserId,
+  locale,
+  buildContactUrl,
+  getStatusLabel,
   onHistoryClick,
 }) => {
   const { t } = useTranslation();
-  const locale = useLocale();
-  const { buildContactUrl } = useContactPanel();
-  const { getLocalizedContactStatus } = useLocalizedConstants();
-  const { data: userData } = useGetUserQuery();
-  const currentUserId = userData?.user.id;
 
-  const components: TableVirtuosoProps<
-    AddressChangeRow,
-    unknown
-  >['components'] = useMemo(
+  return (
+    <>
+      <TableCell sx={{ whiteSpace: 'nowrap' }}>
+        {dateFormat(DateTime.fromISO(addressChange.date), locale)}
+      </TableCell>
+      <TableCell>
+        <Link
+          component={NextLink}
+          href={buildContactUrl(addressChange.contactId)}
+          shallow
+          fontWeight="bold"
+        >
+          {addressChange.partnerName}
+        </Link>
+        <Typography variant="body2" color="text.secondary">
+          {[
+            addressChange.donorAccountNumbers &&
+              t('({{donorAccountNumbers}})', {
+                donorAccountNumbers: addressChange.donorAccountNumbers,
+              }),
+            addressChange.partnerStatus &&
+              getStatusLabel(addressChange.partnerStatus),
+          ]
+            .filter(Boolean)
+            .join(' · ')}
+        </Typography>
+      </TableCell>
+      <TableCell>
+        <Typography variant="body2">{formatAddress(addressChange)}</Typography>
+        {addressChange.previousAddress && (
+          <Typography variant="body2" color="text.secondary">
+            {t('Was:')}{' '}
+            <Box component="s">
+              {formatAddress(addressChange.previousAddress)}
+            </Box>
+          </Typography>
+        )}
+      </TableCell>
+      <TableCell>
+        <Box display="flex" gap={1} color="text.secondary">
+          {isAutomaticChange(addressChange.source) ? (
+            <SyncIcon fontSize="small" />
+          ) : (
+            <PersonIcon fontSize="small" />
+          )}
+          <Typography variant="body2">
+            {formatChangeMadeBy(addressChange, currentUserId, t)}
+          </Typography>
+        </Box>
+      </TableCell>
+      <TableCell align="right">
+        <Button
+          size="small"
+          onClick={() => onHistoryClick(addressChange)}
+          sx={{ fontWeight: 'bold' }}
+        >
+          {t('History')}
+        </Button>
+      </TableCell>
+    </>
+  );
+};
+
+const AddressChangeHeaderRow: React.FC = () => {
+  const { t } = useTranslation();
+
+  return (
+    <TableRow>
+      <TableCell sx={{ width: '15%' }}>{t('Date')}</TableCell>
+      <TableCell sx={{ width: '22%' }}>{t('Partner')}</TableCell>
+      <TableCell sx={{ width: '33%' }}>{t('Address')}</TableCell>
+      <TableCell sx={{ width: '20%' }}>{t('Made by')}</TableCell>
+      <TableCell sx={{ width: '10%' }} />
+    </TableRow>
+  );
+};
+
+const useTableComponents = () => {
+  const { t } = useTranslation();
+
+  return useMemo<TableVirtuosoProps<AddressChangeRow, unknown>['components']>(
     () => ({
       Scroller,
       Table: (props) => (
@@ -90,6 +167,27 @@ export const AddressChangeTable: React.FC<AddressChangeTableProps> = ({
     }),
     [t],
   );
+};
+
+interface AddressChangeTableProps {
+  addressChanges: AddressChangeRow[];
+  loadingMore: boolean;
+  onEndReached: () => void;
+  onHistoryClick: (addressChange: AddressChangeRow) => void;
+}
+
+export const AddressChangeTable: React.FC<AddressChangeTableProps> = ({
+  addressChanges,
+  loadingMore,
+  onEndReached,
+  onHistoryClick,
+}) => {
+  const locale = useLocale();
+  const { buildContactUrl } = useContactPanel();
+  const { getLocalizedContactStatus } = useLocalizedConstants();
+  const { data: userData } = useGetUserQuery();
+  const currentUserId = userData?.user.id;
+  const components = useTableComponents();
 
   return (
     <>
@@ -101,77 +199,16 @@ export const AddressChangeTable: React.FC<AddressChangeTableProps> = ({
           height: `calc(100vh - ${navBarHeight} - ${multiPageHeaderHeight} - 360px)`,
           minHeight: 300,
         }}
-        fixedHeaderContent={() => (
-          <TableRow>
-            <TableCell sx={{ width: '15%' }}>{t('Date')}</TableCell>
-            <TableCell sx={{ width: '22%' }}>{t('Partner')}</TableCell>
-            <TableCell sx={{ width: '33%' }}>{t('Address')}</TableCell>
-            <TableCell sx={{ width: '20%' }}>{t('Made by')}</TableCell>
-            <TableCell sx={{ width: '10%' }} />
-          </TableRow>
-        )}
+        fixedHeaderContent={() => <AddressChangeHeaderRow />}
         itemContent={(_, addressChange) => (
-          <>
-            <TableCell sx={{ whiteSpace: 'nowrap' }}>
-              {dateFormat(DateTime.fromISO(addressChange.date), locale)}
-            </TableCell>
-            <TableCell>
-              <Link
-                component={NextLink}
-                href={buildContactUrl(addressChange.contactId)}
-                shallow
-                fontWeight="bold"
-              >
-                {addressChange.partnerName}
-              </Link>
-              <Typography variant="body2" color="text.secondary">
-                {[
-                  addressChange.donorAccountNumbers &&
-                    t('({{donorAccountNumbers}})', {
-                      donorAccountNumbers: addressChange.donorAccountNumbers,
-                    }),
-                  addressChange.partnerStatus &&
-                    getLocalizedContactStatus(addressChange.partnerStatus),
-                ]
-                  .filter(Boolean)
-                  .join(' · ')}
-              </Typography>
-            </TableCell>
-            <TableCell>
-              <Typography variant="body2">
-                {formatAddress(addressChange)}
-              </Typography>
-              {addressChange.previousAddress && (
-                <Typography variant="body2" color="text.secondary">
-                  {t('Was:')}{' '}
-                  <Box component="s">
-                    {formatAddress(addressChange.previousAddress)}
-                  </Box>
-                </Typography>
-              )}
-            </TableCell>
-            <TableCell>
-              <Box display="flex" gap={1} color="text.secondary">
-                {isAutomaticChange(addressChange.source) ? (
-                  <SyncIcon fontSize="small" />
-                ) : (
-                  <PersonIcon fontSize="small" />
-                )}
-                <Typography variant="body2">
-                  {formatChangeMadeBy(addressChange, currentUserId, t)}
-                </Typography>
-              </Box>
-            </TableCell>
-            <TableCell align="right">
-              <Button
-                size="small"
-                onClick={() => onHistoryClick(addressChange)}
-                sx={{ fontWeight: 'bold' }}
-              >
-                {t('History')}
-              </Button>
-            </TableCell>
-          </>
+          <AddressChangeCells
+            addressChange={addressChange}
+            currentUserId={currentUserId}
+            locale={locale}
+            buildContactUrl={buildContactUrl}
+            getStatusLabel={getLocalizedContactStatus}
+            onHistoryClick={onHistoryClick}
+          />
         )}
       />
       {loadingMore && (
