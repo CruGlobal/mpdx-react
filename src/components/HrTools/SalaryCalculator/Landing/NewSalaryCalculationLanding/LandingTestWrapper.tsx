@@ -37,6 +37,8 @@ export interface LandingTestWrapperProps {
   /** Makes LandingSalaryCalculations fail with an error other than HCM_UNAVAILABLE */
   calculationError?: boolean;
   balanceError?: boolean;
+  /** Leaves the Primary fund out of the AccountBalance response */
+  noPrimaryFund?: boolean;
 }
 
 export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
@@ -52,6 +54,7 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
   calculationUnavailableCalls = 0,
   calculationError = false,
   balanceError = false,
+  noPrimaryFund = false,
 }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
@@ -168,7 +171,9 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
                     throw new Error('SAA is unavailable');
                   }) as never)
                 : {
-                    funds: [{ fundType: 'Primary', endBalance: 10000 }],
+                    funds: noPrimaryFund
+                      ? []
+                      : [{ fundType: 'Primary', endBalance: 10000 }],
                   },
             },
             GetUser: {

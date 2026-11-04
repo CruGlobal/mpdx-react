@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react';
 import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
+import { SplitCapSubContent } from '../RequestPage/Helper/SplitCapSubContent';
 import {
   AdditionalSalaryRequestContext,
   AdditionalSalaryRequestType,
@@ -47,12 +48,14 @@ type ComponentProps = {
   spouse?: object;
   isSpouse?: boolean;
   hasSpouse?: boolean;
+  withSplitFooter?: boolean;
 };
 const renderComponent = ({
   requestData = requestDataDefault,
   spouse = spouseDefault,
   isSpouse = false,
   hasSpouse = true,
+  withSplitFooter = false,
 }: ComponentProps) =>
   render(
     <TestRouter router={router}>
@@ -67,7 +70,10 @@ const renderComponent = ({
         }
       >
         <Formik initialValues={defaultCompleteFormValues} onSubmit={jest.fn()}>
-          <SpouseComponent />
+          <>
+            <SpouseComponent />
+            {withSplitFooter && <SplitCapSubContent spouseName="Jane" />}
+          </>
         </Formik>
       </AdditionalSalaryRequestContext.Provider>
     </TestRouter>,
@@ -161,7 +167,18 @@ describe('SpouseComponent', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('shows the same figure as the split footer, so no caption without a spouse cap', () => {
+  it('shows the same figure as the split footer', () => {
+    const { getByText } = renderComponent({ withSplitFooter: true });
+
+    expect(
+      getByText('Up to their remaining allowable salary of $9,000'),
+    ).toBeInTheDocument();
+    expect(
+      getByText("Remaining in Jane's Max Allowable Salary").nextSibling,
+    ).toHaveTextContent('$9,000.00');
+  });
+
+  it('hides the caption without a spouse cap, even when a remaining amount comes back', () => {
     const { getByText, queryByText } = renderWithSpouseCalculations({
       currentSalaryCap: null,
       grossAnnualSalary: 45000,

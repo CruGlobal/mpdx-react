@@ -1,4 +1,4 @@
-import { pendingField } from '../../../MpdSupervisorReport/helpers';
+import { missingValue } from '../../../Shared/helpers/missingValue';
 import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
 import {
   createRenderFormComponent,
@@ -76,7 +76,7 @@ describe('EditForm', () => {
     // currentSalaryCap calculation done in backend
     expect(getByTestId('amount-two')).toHaveTextContent('-$40,000.00');
     // remainingAllowableSalary shows a dash when the API leaves it out
-    expect(getByTestId('amount-three').textContent).toBe(pendingField);
+    expect(getByTestId('amount-three')).toHaveTextContent(missingValue);
   });
 
   it('renders all child components when user exceeds cap', () => {

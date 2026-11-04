@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { pendingField } from '../../../MpdSupervisorReport/helpers';
+import { missingValue } from '../../helpers/missingValue';
 
 export const columnLayout = (columns: number) =>
   columns === 3
@@ -93,7 +93,7 @@ export const NameDisplay: React.FC<NameDisplayProps> = ({
                       ? currencyFormat(amount, currency, locale, {
                           showTrailingZeros: true,
                         })
-                      : pendingField}
+                      : missingValue}
                   </Typography>
                 </Grid>
               ))}

@@ -1,7 +1,7 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import theme from 'src/theme';
-import { pendingField } from '../../../MpdSupervisorReport/helpers';
+import { missingValue } from '../../helpers/missingValue';
 import { NameDisplay, columnLayout } from './NameDisplay';
 
 const titleOne = 'Title One';
@@ -101,7 +101,8 @@ describe('NameDisplay', () => {
     (prop, testId) => {
       const { getByTestId } = renderAmounts({ [prop]: null });
 
-      expect(getByTestId(testId).textContent).toBe(pendingField);
+      expect(getByTestId(testId)).toHaveTextContent(missingValue);
+      expect(getByTestId(testId)).not.toHaveTextContent('$');
     },
   );
 

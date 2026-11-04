@@ -5,7 +5,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { pendingField } from '../../../MpdSupervisorReport/helpers';
+import { missingValue } from '../../../Shared/helpers/missingValue';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { progressiveApprovalsLink } from '../../Shared/pdfLinks';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
@@ -40,7 +40,7 @@ export const SplitCapSubContent: React.FC<SplitCapSubContentProps> = ({
       ? currencyFormat(spouseCap.remainingCap, currency, locale, {
           showTrailingZeros: true,
         })
-      : pendingField;
+      : missingValue;
 
   const progressValue = showBar
     ? Math.min(
