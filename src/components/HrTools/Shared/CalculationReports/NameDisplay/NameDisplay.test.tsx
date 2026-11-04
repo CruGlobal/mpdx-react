@@ -70,6 +70,34 @@ describe('NameDisplay', () => {
     expect(getByTestId('amount-three')).toHaveTextContent('$5,000.00');
   });
 
+  const renderThirdColumn = (amountThree: number | null) =>
+    render(
+      <ThemeProvider theme={theme}>
+        <NameDisplay
+          names="Doe, John"
+          showContent
+          titleOne={titleOne}
+          titleTwo={titleTwo}
+          titleThree="Title Three"
+          amountOne={1000}
+          amountTwo={20000}
+          amountThree={amountThree}
+        />
+      </ThemeProvider>,
+    );
+
+  it('shows a dash, not $0.00, for a missing amount', () => {
+    const { getByTestId } = renderThirdColumn(null);
+
+    expect(getByTestId('amount-three')).toHaveTextContent(/^-$/);
+  });
+
+  it('still shows $0.00 for a real zero', () => {
+    const { getByTestId } = renderThirdColumn(0);
+
+    expect(getByTestId('amount-three')).toHaveTextContent('$0.00');
+  });
+
   it('omits the third column without titleThree', () => {
     const { queryByTestId } = render(
       <TestComponent names="Doe, John" showContent />,

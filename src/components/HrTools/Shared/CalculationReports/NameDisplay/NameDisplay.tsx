@@ -88,9 +88,11 @@ export const NameDisplay: React.FC<NameDisplayProps> = ({
                     sx={{ color: 'primary.main' }}
                     data-testid={testId}
                   >
-                    {currencyFormat(amount || 0, currency, locale, {
-                      showTrailingZeros: true,
-                    })}
+                    {typeof amount === 'number'
+                      ? currencyFormat(amount, currency, locale, {
+                          showTrailingZeros: true,
+                        })
+                      : '-'}
                   </Typography>
                 </Grid>
               ))}
