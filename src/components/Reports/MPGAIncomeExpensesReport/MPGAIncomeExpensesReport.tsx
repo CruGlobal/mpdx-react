@@ -9,10 +9,6 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import {
-  HcmSyncBodyStatus,
-  HcmSyncHeaderStatus,
-} from 'src/components/HrTools/Shared/HcmSyncStatus/HcmSyncStatus';
 import { LoadErrorAlert } from 'src/components/Shared/LoadErrorAlert/LoadErrorAlert';
 import {
   HeaderTypeEnum,
@@ -21,6 +17,8 @@ import {
 import { useStaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import { AccountInfoBox } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBox';
 import { AccountInfoBoxSkeleton } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBoxSkeleton';
+import { HcmReportBodyStatus } from '../Shared/HcmReportStatus/HcmReportBodyStatus';
+import { HcmReportHeaderStatus } from '../Shared/HcmReportStatus/HcmReportHeaderStatus';
 import { SettingsButtonGroup } from '../Shared/SettingsButtonGroup/SettingsButtonGroup';
 import {
   Filters,
@@ -69,7 +67,7 @@ export const MPGAIncomeExpensesReport: React.FC<
     staffName,
     isSupervisorView,
     staffAccountId,
-    personNumber,
+    hcmStatus,
     dataLoading,
     reportError,
     refetchReport,
@@ -130,12 +128,7 @@ export const MPGAIncomeExpensesReport: React.FC<
             onNavListToggle={onNavListToggle}
             headerType={HeaderTypeEnum.Report}
             title={title}
-            titleExtra={
-              <HcmSyncHeaderStatus
-                personNumber={personNumber}
-                skip={isSupervisorView && !personNumber}
-              />
-            }
+            titleExtra={<HcmReportHeaderStatus hcm={hcmStatus} />}
           />
         </SimpleScreenOnly>
         {isSupervisorView && (
@@ -144,10 +137,7 @@ export const MPGAIncomeExpensesReport: React.FC<
         <Box mt={2}>
           <Container>
             <SimpleScreenOnly>
-              <HcmSyncBodyStatus
-                personNumber={personNumber}
-                skip={isSupervisorView && !personNumber}
-              />
+              <HcmReportBodyStatus hcm={hcmStatus} />
             </SimpleScreenOnly>
             <StyledHeaderBox>
               <SimpleScreenOnly>

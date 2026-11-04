@@ -26,6 +26,7 @@ interface TestComponentProps {
   effectiveDate?: string;
   skip?: boolean;
   refreshError?: 'rateLimited' | 'unavailable';
+  suppressErrorCodes?: string[];
 }
 
 const errors = {
@@ -47,6 +48,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   effectiveDate,
   skip,
   refreshError,
+  suppressErrorCodes,
 }) => (
   <ThemeProvider theme={theme}>
     <GqlMockedProvider
@@ -70,11 +72,13 @@ const TestComponent: React.FC<TestComponentProps> = ({
           personNumber={personNumber}
           effectiveDate={effectiveDate}
           skip={skip}
+          suppressErrorCodes={suppressErrorCodes}
         />
         <HcmSyncBodyStatus
           personNumber={personNumber}
           effectiveDate={effectiveDate}
           skip={skip}
+          suppressErrorCodes={suppressErrorCodes}
         />
       </>
     </GqlMockedProvider>
@@ -246,6 +250,28 @@ describe('HcmSyncStatus', () => {
       'HCM_REFRESH_RATE_LIMITED',
       'HCM_UNAVAILABLE',
     ]);
+  });
+
+  it("passes the page's handled error codes to the global error toast", async () => {
+    await renderBody({ suppressErrorCodes: ['HCM_PERSON_NOT_FOUND'] });
+
+    const hcmCall = mutationSpy.mock.calls.find(
+      ([{ operation }]) => operation.operationName === 'Hcm',
+    );
+    expect(hcmCall?.[0].operation.getContext().suppressErrorCodes).toEqual([
+      'HCM_PERSON_NOT_FOUND',
+    ]);
+  });
+
+  it('keeps every error toasting when the page handles none', async () => {
+    await renderBody();
+
+    const hcmCall = mutationSpy.mock.calls.find(
+      ([{ operation }]) => operation.operationName === 'Hcm',
+    );
+    expect(
+      hcmCall?.[0].operation.getContext().suppressErrorCodes,
+    ).toBeUndefined();
   });
 
   it('lets the user try again right away when HCM is unavailable', async () => {

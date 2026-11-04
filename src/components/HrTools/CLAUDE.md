@@ -109,6 +109,9 @@ Other shared pieces worth knowing before you build a local copy:
   with the same code, so pass the `Hcm` query and that query to
   `useHcmUnavailable` (`Shared/HcmData/useHcmUnavailable.ts`) for one
   `hcmUnavailable` flag and a `refetchHcm` that retries only what failed.
+  Pages that handle an HCM error themselves must pass the same
+  `suppressErrorCodes` to their Hcm query and to both HcmSync status
+  components (`HANDLED_HCM_ERROR_CODES` in `Shared/HcmData/hcmPersonNotFound.ts`).
   `StaffInfoCard`,
   `AccountInfoBox`, `EligibilityStatusTable`, `GoalPresentation/`,
   `SummaryHeaderCard`, and `useFormatters` are the other shared leaves. Prefer

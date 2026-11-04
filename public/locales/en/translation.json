@@ -1673,6 +1673,8 @@
     "How the reminder will be sent": "How the reminder will be sent",
     "How this report works": "How this report works",
     "How would you like your Additional Salary Request contributed to your 403(b)?": "How would you like your Additional Salary Request contributed to your 403(b)?",
+    "HR no longer has a record for this person, so salary isn't split by person on this report.": "HR no longer has a record for this person, so salary isn't split by person on this report.",
+    "HR no longer has a record for you, so salary isn't split by person on this report.": "HR no longer has a record for you, so salary isn't split by person on this report.",
     "HR Tools": "HR Tools",
     "HR Tools - {{ title }}": "HR Tools - {{ title }}",
     "HR Tools | Additional Salary Request": "HR Tools | Additional Salary Request",
