@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { FormikProvider, useFormik } from 'formik';
 import theme from 'src/theme';
+import { pendingField } from '../../../MpdSupervisorReport/helpers';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
@@ -144,7 +145,7 @@ describe('SplitCapSubContent', () => {
 
     const { getByText, queryByText } = renderSplitCapSubContent('Jane');
 
-    expect(getByText('-')).toBeInTheDocument();
+    expect(getByText(pendingField)).toBeInTheDocument();
     expect(queryByText('$0.00')).not.toBeInTheDocument();
   });
 

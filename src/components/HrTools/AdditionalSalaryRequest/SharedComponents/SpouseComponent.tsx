@@ -2,10 +2,13 @@ import NextLink from 'next/link';
 import ImportExportIcon from '@mui/icons-material/ImportExport';
 import { Box, Link, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
+import { useSalaryCalculations } from '../Shared/useSalaryCalculations';
 import { useSpouseLink } from '../Shared/useSpouseLink';
 
 export const SpouseComponent: React.FC = () => {
@@ -14,17 +17,17 @@ export const SpouseComponent: React.FC = () => {
   const locale = useLocale();
   const currency = 'USD';
 
-  const { requestData, hasSpouse } = useAdditionalSalaryRequest();
+  const { hasSpouse } = useAdditionalSalaryRequest();
   const { spouseLinkText, spouseLinkHref } = useSpouseLink();
+  const { values } = useFormikContext<CompleteFormValues>();
+  const { spouseCap } = useSalaryCalculations({ values });
 
   if (!hasSpouse) {
     return null;
   }
 
-  // The other person's numbers, on either person's page: the API builds calculations for whoever the request is for
-  const remainingCap =
-    requestData?.latestAdditionalSalaryRequest?.spouseCalculations
-      ?.remainingAllowableSalary;
+  // The other person's room, on either person's page: spouseCalculations is always the other person
+  const remainingCap = spouseCap?.remainingCap;
 
   return (
     <Box>

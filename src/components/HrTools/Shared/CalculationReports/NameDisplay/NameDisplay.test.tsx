@@ -1,6 +1,7 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import theme from 'src/theme';
+import { pendingField } from '../../../MpdSupervisorReport/helpers';
 import { NameDisplay, columnLayout } from './NameDisplay';
 
 const titleOne = 'Title One';
@@ -70,7 +71,11 @@ describe('NameDisplay', () => {
     expect(getByTestId('amount-three')).toHaveTextContent('$5,000.00');
   });
 
-  const renderThirdColumn = (amountThree: number | null) =>
+  const renderAmounts = (amounts: {
+    amountOne?: number | null;
+    amountTwo?: number | null;
+    amountThree?: number | null;
+  }) =>
     render(
       <ThemeProvider theme={theme}>
         <NameDisplay
@@ -81,19 +86,27 @@ describe('NameDisplay', () => {
           titleThree="Title Three"
           amountOne={1000}
           amountTwo={20000}
-          amountThree={amountThree}
+          amountThree={5000}
+          {...amounts}
         />
       </ThemeProvider>,
     );
 
-  it('shows a dash, not $0.00, for a missing amount', () => {
-    const { getByTestId } = renderThirdColumn(null);
+  it.each([
+    ['amountOne', 'amount-one'],
+    ['amountTwo', 'amount-two'],
+    ['amountThree', 'amount-three'],
+  ])(
+    'shows the missing-value dash, not $0.00, for a null %s',
+    (prop, testId) => {
+      const { getByTestId } = renderAmounts({ [prop]: null });
 
-    expect(getByTestId('amount-three')).toHaveTextContent(/^-$/);
-  });
+      expect(getByTestId(testId).textContent).toBe(pendingField);
+    },
+  );
 
   it('still shows $0.00 for a real zero', () => {
-    const { getByTestId } = renderThirdColumn(0);
+    const { getByTestId } = renderAmounts({ amountThree: 0 });
 
     expect(getByTestId('amount-three')).toHaveTextContent('$0.00');
   });

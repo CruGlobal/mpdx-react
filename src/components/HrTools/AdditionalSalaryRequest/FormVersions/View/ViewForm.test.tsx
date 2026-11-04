@@ -1,4 +1,5 @@
 import { AsrStatusEnum } from 'src/graphql/types.generated';
+import { pendingField } from '../../../MpdSupervisorReport/helpers';
 import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
 import { createRenderFormComponent, setupMockContext } from '../testUtils';
 import { ViewForm } from './ViewForm';
@@ -88,7 +89,7 @@ describe('ViewForm', () => {
     // currentSalaryCap calculation done in backend
     expect(getByTestId('amount-two')).toHaveTextContent('-$40,000.00');
     // remainingAllowableSalary shows a dash when the API leaves it out
-    expect(getByTestId('amount-three')).toHaveTextContent(/^-$/);
+    expect(getByTestId('amount-three').textContent).toBe(pendingField);
   });
 
   it('renders all child components when user exceeds cap', () => {

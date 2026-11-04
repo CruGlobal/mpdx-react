@@ -1,6 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
+import { Formik } from 'formik';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import {
@@ -12,6 +13,7 @@ import theme from 'src/theme';
 import { HcmQuery } from '../../Shared/HcmData/Hcm.generated';
 import { AdditionalSalaryRequestQuery } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestProvider } from '../Shared/AdditionalSalaryRequestContext';
+import { defaultCompleteFormValues } from '../Shared/CompleteForm.mock';
 import { AboutForm } from './AboutForm';
 
 const mockHandleContinue = jest.fn();
@@ -80,7 +82,12 @@ const TestWrapper: React.FC<TestWrapperProps> = ({ asrMocks, onCall }) => (
           onCall={onCall}
         >
           <AdditionalSalaryRequestProvider>
-            <AboutForm />
+            <Formik
+              initialValues={defaultCompleteFormValues}
+              onSubmit={jest.fn()}
+            >
+              <AboutForm />
+            </Formik>
           </AdditionalSalaryRequestProvider>
         </GqlMockedProvider>
       </SnackbarProvider>

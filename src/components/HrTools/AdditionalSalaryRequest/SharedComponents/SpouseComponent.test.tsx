@@ -1,9 +1,11 @@
 import { render } from '@testing-library/react';
+import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
 import {
   AdditionalSalaryRequestContext,
   AdditionalSalaryRequestType,
 } from '../Shared/AdditionalSalaryRequestContext';
+import { defaultCompleteFormValues } from '../Shared/CompleteForm.mock';
 import { SpouseComponent } from './SpouseComponent';
 
 const requestDataDefault = {
@@ -26,6 +28,7 @@ const requestDataDefault = {
 };
 
 const spouseDefault = {
+  asrEit: { asrEligibility: true },
   staffInfo: {
     preferredName: 'Jane',
     primaryPhoneNumber: '555-1234',
@@ -63,7 +66,9 @@ const renderComponent = ({
           } as unknown as AdditionalSalaryRequestType
         }
       >
-        <SpouseComponent />
+        <Formik initialValues={defaultCompleteFormValues} onSubmit={jest.fn()}>
+          <SpouseComponent />
+        </Formik>
       </AdditionalSalaryRequestContext.Provider>
     </TestRouter>,
   );
@@ -156,9 +161,24 @@ describe('SpouseComponent', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('shows the same figure as the split footer, so no caption without a spouse cap', () => {
+    const { getByText, queryByText } = renderWithSpouseCalculations({
+      currentSalaryCap: null,
+      grossAnnualSalary: 45000,
+      ytdAsrAmount: 5000,
+      remainingAllowableSalary: 5000,
+    });
+
+    expect(getByText('Request additional salary for Jane')).toBeInTheDocument();
+    expect(
+      queryByText(/Up to their remaining allowable salary/),
+    ).not.toBeInTheDocument();
+  });
+
   it('handles missing spouse name gracefully', () => {
     const { getByText } = renderComponent({
       spouse: {
+        ...spouseDefault,
         staffInfo: {
           preferredName: null,
         },
