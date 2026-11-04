@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { ElectionType403bEnum } from 'src/graphql/types.generated';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
-import { getRemainingCap } from './Helper/getRemainingCap';
 import { getNonBackpayTotal, getTotal } from './Helper/getTotal';
 
 // Tolerance for considering someone "at cap" — small rounding differences
@@ -32,7 +31,7 @@ export interface SalaryCalculations {
   splitAsrType: 'user' | 'spouse' | null;
   /** `true` when the request requires additional approval */
   additionalApproval: boolean;
-  /** Spouse cap figures. `null` when no spouse; otherwise all three fields are present. */
+  /** Spouse cap figures. `null` when no spouse or no spouse cap. */
   spouseCap: {
     /**
      * Spouse's total salary requested this year including their current gross salary and any
@@ -41,8 +40,8 @@ export interface SalaryCalculations {
     requestedAnnualSalary: number;
     /** Spouse's individual salary cap. */
     individualCap: number;
-    /** Spouse's remaining room under cap (cap - total, clamped at 0). */
-    remainingCap: number;
+    /** Spouse's remaining allowable salary from the API. Display only: the split never reads it. */
+    remainingCap: number | null;
   } | null;
 }
 export interface UseSalaryCalculationsProps {
@@ -87,6 +86,9 @@ export const useSalaryCalculations = ({
   const grossAnnualSalary =
     requestData?.latestAdditionalSalaryRequest?.calculations
       .grossAnnualSalary ?? 0;
+  const spouseRemainingCap =
+    requestData?.latestAdditionalSalaryRequest?.spouseCalculations
+      ?.remainingAllowableSalary ?? null;
   const spouseGrossAnnualSalary = spouse
     ? (requestData?.latestAdditionalSalaryRequest?.spouseCalculations
         ?.grossAnnualSalary ?? 0)
@@ -166,11 +168,7 @@ export const useSalaryCalculations = ({
         ? {
             requestedAnnualSalary: spouseRequestedAnnualSalary,
             individualCap: spouseIndividualCap,
-            remainingCap: getRemainingCap({
-              currentSalaryCap: spouseIndividualCap,
-              grossAnnualSalary: spouseGrossAnnualSalary,
-              ytdAsrAmount: spouseTotalThisYear,
-            }),
+            remainingCap: spouseRemainingCap,
           }
         : null;
 
@@ -200,5 +198,6 @@ export const useSalaryCalculations = ({
     spouse,
     requestData,
     spouseGrossAnnualSalary,
+    spouseRemainingCap,
   ]);
 };

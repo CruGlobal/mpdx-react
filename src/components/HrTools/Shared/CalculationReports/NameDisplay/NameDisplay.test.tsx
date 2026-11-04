@@ -1,6 +1,7 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import theme from 'src/theme';
+import { missingValue } from '../../helpers/missingValue';
 import { NameDisplay, columnLayout } from './NameDisplay';
 
 const titleOne = 'Title One';
@@ -68,6 +69,47 @@ describe('NameDisplay', () => {
 
     expect(getByText('TITLE THREE')).toBeInTheDocument();
     expect(getByTestId('amount-three')).toHaveTextContent('$5,000.00');
+  });
+
+  const renderAmounts = (amounts: {
+    amountOne?: number | null;
+    amountTwo?: number | null;
+    amountThree?: number | null;
+  }) =>
+    render(
+      <ThemeProvider theme={theme}>
+        <NameDisplay
+          names="Doe, John"
+          showContent
+          titleOne={titleOne}
+          titleTwo={titleTwo}
+          titleThree="Title Three"
+          amountOne={1000}
+          amountTwo={20000}
+          amountThree={5000}
+          {...amounts}
+        />
+      </ThemeProvider>,
+    );
+
+  it.each([
+    ['amountOne', 'amount-one'],
+    ['amountTwo', 'amount-two'],
+    ['amountThree', 'amount-three'],
+  ])(
+    'shows the missing-value dash, not $0.00, for a null %s',
+    (prop, testId) => {
+      const { getByTestId } = renderAmounts({ [prop]: null });
+
+      expect(getByTestId(testId)).toHaveTextContent(missingValue);
+      expect(getByTestId(testId)).not.toHaveTextContent('$');
+    },
+  );
+
+  it('still shows $0.00 for a real zero', () => {
+    const { getByTestId } = renderAmounts({ amountThree: 0 });
+
+    expect(getByTestId('amount-three')).toHaveTextContent('$0.00');
   });
 
   it('omits the third column without titleThree', () => {

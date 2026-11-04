@@ -54,6 +54,7 @@ fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
     ytdAsrAmount
     staffAccountBalance
     grossAnnualSalary
+    remainingAllowableSalary
   }
 }
 

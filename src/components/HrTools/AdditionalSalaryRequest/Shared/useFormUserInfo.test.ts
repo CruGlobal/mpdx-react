@@ -47,7 +47,7 @@ describe('useFormUserInfo', () => {
     expect(result.current.remainingCap).toBe(5000);
   });
 
-  it('defaults balances to 0 when calculations are undefined', () => {
+  it('defaults balances to 0 and remaining to null when calculations are undefined', () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
       requestData: {
         latestAdditionalSalaryRequest: {
@@ -65,7 +65,7 @@ describe('useFormUserInfo', () => {
 
     expect(result.current.primaryAccountBalance).toBe(0);
     expect(result.current.availableAccountBalance).toBe(0);
-    expect(result.current.remainingCap).toBe(0);
+    expect(result.current.remainingCap).toBeNull();
   });
 
   it('handles undefined user gracefully', () => {

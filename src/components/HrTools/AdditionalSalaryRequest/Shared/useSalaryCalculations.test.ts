@@ -939,7 +939,7 @@ describe('useSalaryCalculations', () => {
   });
 
   describe('spouse cap fields', () => {
-    it('returns spouse total, cap, and remaining when spouse has room', () => {
+    const setupSpouse = (spouseCalculations: object) => {
       mockUseAdditionalSalaryRequest.mockReturnValue({
         traditional403bPercentage: 0.12,
         roth403bPercentage: 0.1,
@@ -947,56 +947,94 @@ describe('useSalaryCalculations', () => {
         requestData: {
           latestAdditionalSalaryRequest: {
             calculations: { grossAnnualSalary: 50000, currentSalaryCap: 60000 },
-            spouseCalculations: {
-              grossAnnualSalary: 40000,
-              currentSalaryCap: 50000,
-              ytdAsrAmount: 2000,
-            },
+            spouseCalculations,
           },
         },
       } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+    };
 
-      const values: CompleteFormValues = { ...baseValues };
-
-      const { result } = renderHook(() => useSalaryCalculations({ values }), {
+    const renderCalculations = (values: CompleteFormValues = baseValues) =>
+      renderHook(() => useSalaryCalculations({ values }), {
         wrapper: ({ children }) => FormikWrapper({ children, values }),
+      }).result.current;
+
+    it("returns spouse total, cap, and the API's remaining when spouse has room", () => {
+      setupSpouse({
+        grossAnnualSalary: 40000,
+        currentSalaryCap: 50000,
+        ytdAsrAmount: 2000,
+        // cap - gross - ytd would be 8000; the API's figure wins
+        remainingAllowableSalary: 7500,
       });
 
-      expect(result.current.spouseCap).toEqual({
+      expect(renderCalculations().spouseCap).toEqual({
         requestedAnnualSalary: 42000, // 40000 + 2000
         individualCap: 50000,
-        remainingCap: 8000, // 50000 - 42000
+        remainingCap: 7500,
       });
     });
 
-    it('clamps spouseRemainingCap at 0 when spouse total exceeds cap', () => {
-      mockUseAdditionalSalaryRequest.mockReturnValue({
-        traditional403bPercentage: 0.12,
-        roth403bPercentage: 0.1,
-        spouse: eligibleSpouse,
-        requestData: {
-          latestAdditionalSalaryRequest: {
-            calculations: { grossAnnualSalary: 50000, currentSalaryCap: 60000 },
-            spouseCalculations: {
-              grossAnnualSalary: 40000,
-              currentSalaryCap: 50000,
-              ytdAsrAmount: 15000,
-            },
-          },
-        },
-      } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
-
-      const values: CompleteFormValues = { ...baseValues };
-
-      const { result } = renderHook(() => useSalaryCalculations({ values }), {
-        wrapper: ({ children }) => FormikWrapper({ children, values }),
+    it("passes the API's 0 through when spouse total exceeds cap", () => {
+      setupSpouse({
+        grossAnnualSalary: 40000,
+        currentSalaryCap: 50000,
+        ytdAsrAmount: 15000,
+        remainingAllowableSalary: 0,
       });
 
-      expect(result.current.spouseCap).toEqual({
+      expect(renderCalculations().spouseCap).toEqual({
         requestedAnnualSalary: 55000,
         individualCap: 50000,
         remainingCap: 0,
       });
+    });
+
+    it('returns a null remaining when the API has none', () => {
+      setupSpouse({
+        grossAnnualSalary: 40000,
+        currentSalaryCap: 50000,
+        ytdAsrAmount: 2000,
+        remainingAllowableSalary: null,
+      });
+
+      expect(renderCalculations().spouseCap).toEqual({
+        requestedAnnualSalary: 42000,
+        individualCap: 50000,
+        remainingCap: null,
+      });
+    });
+
+    it("never uses the API's remaining to decide the split", () => {
+      const values: CompleteFormValues = {
+        ...baseValues,
+        additionalSalaryWithinMax: '15000',
+      };
+      const spouseCalculations = {
+        grossAnnualSalary: 40000,
+        currentSalaryCap: 50000,
+        ytdAsrAmount: 2000,
+      };
+      const splitFields = ({
+        splitAsr,
+        splitAsrType,
+        exceedsCap,
+      }: ReturnType<typeof useSalaryCalculations>) => ({
+        splitAsr,
+        splitAsrType,
+        exceedsCap,
+      });
+
+      setupSpouse({ ...spouseCalculations, remainingAllowableSalary: 0 });
+      const noRoom = splitFields(renderCalculations(values));
+      setupSpouse({ ...spouseCalculations, remainingAllowableSalary: 40000 });
+      const plentyOfRoom = splitFields(renderCalculations(values));
+
+      expect(noRoom).toEqual({
+        splitAsr: true,
+        splitAsrType: 'user',
+        exceedsCap: true,
+      });
+      expect(plentyOfRoom).toEqual(noRoom);
     });
 
     it('returns null for all spouse fields when no spouse', () => {
