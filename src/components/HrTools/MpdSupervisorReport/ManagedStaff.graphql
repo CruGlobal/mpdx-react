@@ -8,6 +8,8 @@ query ManagedStaff(
   $userPersonTypes: [MpdUserPersonTypeEnum!]
   $negativeLastMonth: Boolean
   $negativeThreeMonths: Boolean
+  $negativeThreeMonthsInPastYear: Boolean
+  $expensesOverIncomeThreeMonths: Boolean
 ) {
   managedStaff(
     first: $first
@@ -19,6 +21,8 @@ query ManagedStaff(
     userPersonTypes: $userPersonTypes
     negativeLastMonth: $negativeLastMonth
     negativeThreeMonths: $negativeThreeMonths
+    negativeThreeMonthsInPastYear: $negativeThreeMonthsInPastYear
+    expensesOverIncomeThreeMonths: $expensesOverIncomeThreeMonths
   ) {
     nodes {
       firstName

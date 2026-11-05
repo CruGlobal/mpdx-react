@@ -5,6 +5,8 @@ export enum MpdSupervisorReportQuickFilterEnum {
   AllPeople = 'allPeople',
   NegativeLastMonth = 'negativeLastMonth',
   ThreeMonthsNegative = 'threeMonthsNegative',
+  ThreeMonthsInPastYearNegative = 'threeMonthsInPastYearNegative',
+  ThreeMonthsSpendingOverIncome = 'threeMonthsSpendingOverIncome',
 }
 
 // Order the quick-filter chips are rendered in. Labels are translated at
@@ -13,6 +15,8 @@ export const quickFilterIds: MpdSupervisorReportQuickFilterEnum[] = [
   MpdSupervisorReportQuickFilterEnum.AllPeople,
   MpdSupervisorReportQuickFilterEnum.NegativeLastMonth,
   MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative,
+  MpdSupervisorReportQuickFilterEnum.ThreeMonthsInPastYearNegative,
+  MpdSupervisorReportQuickFilterEnum.ThreeMonthsSpendingOverIncome,
 ];
 
 export const quickFilterLabel = (
@@ -23,7 +27,11 @@ export const quickFilterLabel = (
     case MpdSupervisorReportQuickFilterEnum.NegativeLastMonth:
       return t('Negative last month');
     case MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative:
-      return t('Negative last 3+ months');
+      return t('Negative last 3 months');
+    case MpdSupervisorReportQuickFilterEnum.ThreeMonthsInPastYearNegative:
+      return t('Negative 3+ months in past year');
+    case MpdSupervisorReportQuickFilterEnum.ThreeMonthsSpendingOverIncome:
+      return t('Spending more than income last 3 months');
     case MpdSupervisorReportQuickFilterEnum.AllPeople:
     default:
       return t('All people');
@@ -31,8 +39,8 @@ export const quickFilterLabel = (
 };
 
 /**
- * What a quick filter means, shown as the chip's tooltip. A negative month is
- * one whose expenses were greater than its income.
+ * What a quick filter means, shown as the chip's tooltip. A negative month
+ * ends with the staff account balance below zero.
  */
 export const quickFilterDescription = (
   t: TFunction,
@@ -41,11 +49,19 @@ export const quickFilterDescription = (
   switch (id) {
     case MpdSupervisorReportQuickFilterEnum.NegativeLastMonth:
       return t(
-        'Staff whose expenses were greater than their income last month.',
+        'Staff whose staff account balance was below zero at the end of last month.',
       );
     case MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative:
       return t(
-        'Staff whose expenses were greater than their income in each of the last three complete months.',
+        'Staff whose staff account balance was below zero at the end of each of the last three months.',
+      );
+    case MpdSupervisorReportQuickFilterEnum.ThreeMonthsInPastYearNegative:
+      return t(
+        'Staff whose staff account balance was below zero at the end of at least three of the last 12 months.',
+      );
+    case MpdSupervisorReportQuickFilterEnum.ThreeMonthsSpendingOverIncome:
+      return t(
+        'Staff whose expenses were greater than their income in each of the last three months.',
       );
     case MpdSupervisorReportQuickFilterEnum.AllPeople:
     default:
