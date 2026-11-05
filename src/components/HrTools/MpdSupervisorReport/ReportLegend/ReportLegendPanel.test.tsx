@@ -112,23 +112,49 @@ describe('ReportLegendPanel', () => {
     expect(queryByText(/can show green quarters/)).not.toBeInTheDocument();
   });
 
-  it('defines the negative month filters', async () => {
+  it('defines the balance filters', async () => {
     const { getByText } = await openLegend();
 
     expect(getByText('Negative last month')).toBeInTheDocument();
     expect(
       getByText(
-        'Staff whose expenses were greater than their income last month.',
+        'Staff whose staff account balance was below zero at the end of last month.',
       ),
     ).toBeInTheDocument();
-    expect(getByText('Negative last 3+ months')).toBeInTheDocument();
+    expect(getByText('Negative last 3 months')).toBeInTheDocument();
     expect(
       getByText(
-        'Staff whose expenses were greater than their income in each of the last three complete months.',
+        'Staff whose staff account balance was below zero at the end of each of the last three months.',
+      ),
+    ).toBeInTheDocument();
+    expect(getByText('Negative 3+ months in past year')).toBeInTheDocument();
+    expect(
+      getByText(
+        'Staff whose staff account balance was below zero at the end of at least three of the last 12 months.',
       ),
     ).toBeInTheDocument();
     expect(
-      getByText('The current month is never counted.'),
+      getByText('Spending more than income last 3 months'),
+    ).toBeInTheDocument();
+    expect(
+      getByText(
+        'Staff whose expenses were greater than their income in each of the last three months.',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      getByText(
+        "The current month is never counted. Last month's balance can still change for a few weeks as late items post.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('says quarter colors measure pay, not the balance', async () => {
+    const { getByText } = await openLegend();
+
+    expect(
+      getByText(
+        'Quarter colors measure pay, not the staff account balance. To find staff whose balance is below zero, use the Negative filters.',
+      ),
     ).toBeInTheDocument();
   });
 
