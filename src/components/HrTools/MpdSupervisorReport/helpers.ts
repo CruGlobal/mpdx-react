@@ -9,6 +9,7 @@ import {
 } from 'src/graphql/types.generated';
 import { missingValue } from '../Shared/helpers/missingValue';
 import { ManagedStaffQuery } from './ManagedStaff.generated';
+import { ManagedStaffTeamsQuery } from './ManagedStaffTeams.generated';
 
 export type ManagedStaffMember =
   ManagedStaffQuery['managedStaff']['nodes'][number];
@@ -455,6 +456,36 @@ export const latestQuarterStatus = ({
     (a, b) => b.fiscalYear - a.fiscalYear || b.quarter - a.quarter,
   );
   return latest?.status ?? MpdHealthStatusEnum.Gray;
+};
+
+type TeamOption = ManagedStaffTeamsQuery['managedStaffTeams'][number];
+
+/** The team filter's options: teams with staff in the department, if one is picked. */
+export const teamNamesInDepartment = (
+  teams: TeamOption[],
+  department: string | null,
+): string[] =>
+  teams
+    .filter(
+      ({ departments }) => !department || departments.includes(department),
+    )
+    .map(({ name }) => name)
+    .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+
+/** Past this many teams, the picker waits for a department to narrow them. */
+export const maxTeamPickerCards = 50;
+
+/**
+ * The name-only team cards offered while the report is over the API's row
+ * cap and has no rows to summarise. Empty when there is nothing to choose
+ * between, or too much to show as cards.
+ */
+export const teamPickerNames = (
+  teams: TeamOption[] | undefined,
+  department: string | null,
+): string[] => {
+  const names = teamNamesInDepartment(teams ?? [], department);
+  return names.length >= 2 && names.length <= maxTeamPickerCards ? names : [];
 };
 
 export interface TeamSummaryRow {
