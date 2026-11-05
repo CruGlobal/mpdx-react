@@ -129,9 +129,7 @@ export const SavingsFundTransfer: React.FC<SavingsFundTransferProps> = ({
               {t('to check it out and get started saving for future needs!')}
             </Typography>
             <Typography variant="body1" sx={{ mt: 2 }}>
-              {t(
-                'If you have any questions, please contact Staff Services at ',
-              )}
+              {t('If you have any questions, please contact HR Services at ')}
               <Link
                 href="mailto:HR@cru.org"
                 underline="hover"
