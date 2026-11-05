@@ -18,6 +18,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import {
   MpdSupervisorReportQuickFilterEnum,
   quickFilterDescription,
+  quickFilterIds,
   quickFilterLabel,
 } from '../Filters/mpdSupervisorReportFilters';
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
@@ -126,12 +127,9 @@ export const ReportLegendPanel: React.FC = () => {
     };
   });
 
-  const filters = [
-    MpdSupervisorReportQuickFilterEnum.NegativeLastMonth,
-    MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative,
-    MpdSupervisorReportQuickFilterEnum.ThreeMonthsInPastYearNegative,
-    MpdSupervisorReportQuickFilterEnum.ThreeMonthsSpendingOverIncome,
-  ];
+  const filters = quickFilterIds.filter(
+    (id) => id !== MpdSupervisorReportQuickFilterEnum.AllPeople,
+  );
 
   const newStaff = newStaffSalaryCopy(t);
 
