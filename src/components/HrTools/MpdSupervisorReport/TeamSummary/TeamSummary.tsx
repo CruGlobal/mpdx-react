@@ -191,6 +191,15 @@ export const TeamSummary: React.FC = () => {
     () => summarizeTeams(mergeSpouseRows(data?.managedStaff.nodes ?? [])),
     [data],
   );
+  // Apollo clears the error while new filters load, so keep the last answer
+  // until the API says whether the unfiltered reach still trips the cap.
+  const settledOverCap = !!filterRequiredFromError(error);
+  const [lastOverCap, setLastOverCap] = useState(false);
+  useEffect(() => {
+    if (!loading) {
+      setLastOverCap(settledOverCap);
+    }
+  }, [loading, settledOverCap]);
 
   if (teamsError && !teamsData) {
     return (
@@ -218,7 +227,8 @@ export const TeamSummary: React.FC = () => {
   // The unfiltered reach can trip the row cap while the team-filtered list
   // fits. Either way there are no rows to count, so the cards only name the
   // teams to pick from.
-  const overRowCap = !!filterRequired || !!filterRequiredFromError(error);
+  const overRowCap =
+    !!filterRequired || (loading ? lastOverCap : settledOverCap);
   const pickerNames = teamPickerNames(teamsData?.managedStaffTeams, department);
   const cards = overRowCap
     ? pickerNames.map((name) => ({ name, row: undefined }))

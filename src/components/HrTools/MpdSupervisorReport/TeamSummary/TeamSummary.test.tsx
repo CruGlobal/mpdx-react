@@ -366,6 +366,7 @@ describe('TeamSummary', () => {
       ),
     );
   });
+
   describe('over the row cap', () => {
     const rowCap = (count = 129) =>
       new GraphQLError(`${count} staff are in reach`, {
@@ -520,6 +521,67 @@ describe('TeamSummary', () => {
         'aria-pressed',
         'false',
       );
+    });
+
+    it('keeps the picked team on screen while another filter loads', async () => {
+      let answerDepartment = () => {};
+      const departmentAnswered = new Promise<void>((resolve) => {
+        answerDepartment = resolve;
+      });
+      const { findByRole, getByRole } = renderSummary(cohortTeams, {
+        ManagedStaff: {
+          managedStaff: async (
+            _root: unknown,
+            args: {
+              teamNames?: string[] | null;
+              departments?: string[] | null;
+            },
+          ) => {
+            if (!args.teamNames) {
+              if (args.departments) {
+                await departmentAnswered;
+              }
+              throw rowCap();
+            }
+            return managedStaffMock([campusRed]).managedStaff;
+          },
+        },
+      });
+      const region = await findByRole('region', { name: 'Teams' });
+      userEvent.click(
+        within(region).getByRole('button', { name: 'North Team' }),
+      );
+      await findByRole('button', { name: 'North Team', pressed: true });
+      // The roster's first answer, then the strip's own teamless answer
+      const teamlessAnswers = () =>
+        mutationSpy.mock.calls.filter(
+          ([{ operation }]) =>
+            operation.operationName === 'ManagedStaff' &&
+            !operation.variables.teamNames &&
+            !operation.variables.departments,
+        ).length;
+      await waitFor(() => expect(teamlessAnswers()).toBe(2));
+      await act(async () => {});
+      expect(getByRole('button', { name: 'Teams (3)' })).toBeInTheDocument();
+
+      act(() => {
+        setDepartmentFn('Cohort A');
+      });
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+          teamNames: ['North Team'],
+          departments: ['Cohort A'],
+        }),
+      );
+
+      // The department's teamless request has not answered yet
+      expect(
+        getByRole('button', { name: 'North Team', pressed: true }),
+      ).toBeInTheDocument();
+      answerDepartment();
+      expect(
+        await findByRole('button', { name: 'Teams (2)' }),
+      ).toBeInTheDocument();
     });
   });
 });
