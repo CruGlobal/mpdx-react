@@ -523,6 +523,51 @@ describe('TeamSummary', () => {
       );
     });
 
+    it('keeps the cards up on the first pick until its teamless answer lands', async () => {
+      let teamlessCalls = 0;
+      let answerTeamless = () => {};
+      const teamlessAnswered = new Promise<void>((resolve) => {
+        answerTeamless = resolve;
+      });
+      const { findByRole, getByRole } = renderSummary(cohortTeams, {
+        ManagedStaff: {
+          managedStaff: async (
+            _root: unknown,
+            args: { teamNames?: string[] | null },
+          ) => {
+            if (!args.teamNames) {
+              teamlessCalls += 1;
+              // The first is the roster's; hold the strip's own request
+              if (teamlessCalls > 1) {
+                await teamlessAnswered;
+              }
+              throw rowCap();
+            }
+            return managedStaffMock([campusRed]).managedStaff;
+          },
+        },
+      });
+      const region = await findByRole('region', { name: 'Teams' });
+
+      userEvent.click(
+        within(region).getByRole('button', { name: 'North Team' }),
+      );
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+          teamNames: ['North Team'],
+        }),
+      );
+      await act(async () => {});
+
+      expect(
+        getByRole('button', { name: 'North Team', pressed: true }),
+      ).toBeInTheDocument();
+      answerTeamless();
+      expect(
+        await findByRole('button', { name: 'Teams (3)' }),
+      ).toBeInTheDocument();
+    });
+
     it('keeps the picked team on screen while another filter loads', async () => {
       let answerDepartment = () => {};
       const departmentAnswered = new Promise<void>((resolve) => {

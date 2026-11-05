@@ -192,14 +192,15 @@ export const TeamSummary: React.FC = () => {
     [data],
   );
   // Apollo clears the error while new filters load, so keep the last answer
-  // until the API says whether the unfiltered reach still trips the cap.
+  // until the API says whether the unfiltered reach still trips the cap. While
+  // the query is skipped for the list's own cap, that cap is the answer.
   const settledOverCap = !!filterRequiredFromError(error);
   const [lastOverCap, setLastOverCap] = useState(false);
   useEffect(() => {
     if (!loading) {
-      setLastOverCap(settledOverCap);
+      setLastOverCap(settledOverCap || !!filterRequired);
     }
-  }, [loading, settledOverCap]);
+  }, [loading, settledOverCap, filterRequired]);
 
   if (teamsError && !teamsData) {
     return (
