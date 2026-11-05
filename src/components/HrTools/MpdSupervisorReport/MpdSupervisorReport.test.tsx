@@ -243,7 +243,11 @@ describe('MpdSupervisorReport', () => {
       expect(
         getByRole('heading', { name: /too many to list at once/ }),
       ).toBeInTheDocument();
-      expect(queryByRole('region', { name: 'Teams' })).not.toBeInTheDocument();
+      // The picker's team names do not depend on the pending result
+      expect(getByRole('region', { name: 'Teams' })).toHaveAttribute(
+        'aria-busy',
+        'false',
+      );
       await waitFor(() =>
         expect(
           queryByRole('progressbar', { name: 'Refreshing staff' }),
@@ -286,7 +290,10 @@ describe('MpdSupervisorReport', () => {
       userEvent.click(getByRole('combobox', { name: 'Person type' }));
       userEvent.click(await findByRole('option', { name: 'Employee - Staff' }));
 
-      await findByRole('region', { name: 'Teams' });
+      // The summary's cards, not the picker's: they count the staff
+      expect(await findByRole('button', { name: /Campus/ })).toHaveTextContent(
+        '2 staff',
+      );
       expect(
         queryByRole('heading', { name: /too many to list at once/ }),
       ).not.toBeInTheDocument();
@@ -551,12 +558,47 @@ describe('MpdSupervisorReport', () => {
     );
   });
 
-  it('hides the team summary while the filter guard is showing', async () => {
-    const { findByRole, queryByRole } = renderReport({
+  it('offers the teams to pick from above the filter guard', async () => {
+    const { findByRole, getByRole, getByText } = renderReport({
       mocks: filterGuard(false),
     });
     await findByRole('heading', { name: /too many to list at once/ });
 
+    const region = await findByRole('region', { name: 'Teams' });
+    expect(
+      within(region).getByRole('button', { name: 'Teams (3)' }),
+    ).toBeInTheDocument();
+    expect(
+      within(region).getByRole('button', { name: 'Central Team' }),
+    ).not.toHaveTextContent('staff');
+    expect(
+      getByText(
+        'Pick a team above to list its staff, or use the filters to narrow the list.',
+      ),
+    ).toBeInTheDocument();
+    // The picker comes before the message
+    expect(
+      region.compareDocumentPosition(
+        getByRole('heading', { name: /too many to list at once/ }),
+      ) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
+  it('keeps the filter hint when there are no teams to pick from', async () => {
+    const { findByText, queryByRole } = renderReport({
+      mocks: {
+        ...filterGuard(false),
+        ManagedStaffTeams: managedStaffTeamsMock([
+          { name: 'Central Team', departments: ['US Technology'] },
+        ]),
+      },
+    });
+
+    expect(
+      await findByText(
+        'Search by name, or pick a team, department, employment type, person type or one of the Negative or Spending filters.',
+      ),
+    ).toBeInTheDocument();
     expect(queryByRole('region', { name: 'Teams' })).not.toBeInTheDocument();
   });
 
