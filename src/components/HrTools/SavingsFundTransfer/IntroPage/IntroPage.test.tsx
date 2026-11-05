@@ -6,7 +6,7 @@ import IntroPage from './IntroPage';
 const router = { query: { accountListId: 'account-list-1' } };
 
 describe('IntroPage', () => {
-  it('sends questions to HR Services, not Staff Services', () => {
+  it('sends questions to HR Services with its phone numbers and email, not Staff Services', () => {
     const { getByText, queryByText } = render(
       <TestRouter router={router}>
         <StaffSavingFundProvider>
@@ -16,7 +16,9 @@ describe('IntroPage', () => {
     );
 
     expect(
-      getByText(/please contact HR Services at/, { exact: false }),
+      getByText(
+        /please contact HR Services at \(888\) 278-7233 or \(407\) 826-2287/,
+      ),
     ).toBeInTheDocument();
     expect(getByText('HR@cru.org')).toHaveAttribute(
       'href',
