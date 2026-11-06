@@ -13,6 +13,11 @@ const IconContainer = styled(Box, {
   left: 8,
   transform: transform,
   color: theme.palette.mpdxGrayMedium.main,
+  // Phones have a narrower icon gutter, and every icon centers on its row
+  [theme.breakpoints.down('sm')]: {
+    left: 0,
+    transform: 'translateY(-50%)',
+  },
 }));
 
 interface ModalSectionIconProps {
