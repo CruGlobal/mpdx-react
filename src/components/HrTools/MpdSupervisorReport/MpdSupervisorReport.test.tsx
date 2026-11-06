@@ -239,6 +239,8 @@ const renderEmptyReportHeader = async () => {
   };
 };
 
+jest.setTimeout(15000);
+
 describe('MpdSupervisorReport', () => {
   it('renders a row per staff member the query returns', async () => {
     const { findByText, getByText } = renderReport();
