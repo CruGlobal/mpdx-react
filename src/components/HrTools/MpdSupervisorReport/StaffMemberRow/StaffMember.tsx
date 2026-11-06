@@ -8,7 +8,6 @@ import {
   Collapse,
   Grid,
   IconButton,
-  Stack,
   SxProps,
   Theme,
   Typography,
@@ -61,6 +60,46 @@ const GridQuarter = styled(Grid)(({ theme }) => ({
   gap: theme.spacing(3),
   flexWrap: 'wrap',
   justifyContent: 'flex-end',
+}));
+
+// Below md the rows are too narrow for the page's quarter column headers, so
+// the quarters drop under the name and each chip carries its own label.
+// From md up the cells are display: contents and the chips keep the spacing
+// the old Stack gave them, so desktop renders exactly as before.
+const QuarterStrip = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'row',
+  '& > * + * > .MuiChip-root': { marginLeft: theme.spacing(2) },
+  [theme.breakpoints.down('md')]: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+    gap: theme.spacing(1, 2),
+    width: '100%',
+    '& > * + * > .MuiChip-root': { marginLeft: 0 },
+  },
+  [theme.breakpoints.down('sm')]: {
+    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+  },
+}));
+
+const QuarterCell = styled(Box)(({ theme }) => ({
+  display: 'contents',
+  [theme.breakpoints.down('md')]: {
+    display: 'flex',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    columnGap: theme.spacing(1),
+    minWidth: 0,
+  },
+}));
+
+const QuarterCaption = styled(Typography)(({ theme }) => ({
+  display: 'none',
+  color: theme.palette.text.secondary,
+  fontWeight: 600,
+  [theme.breakpoints.down('md')]: {
+    display: 'block',
+  },
 }));
 
 interface StaffMemberProps {
@@ -146,7 +185,7 @@ export const StaffMember: React.FC<StaffMemberProps> = ({
           }}
         >
           <Grid container>
-            <GridItem size={6}>
+            <GridItem size={{ xs: 12, md: 6 }}>
               {!compact && (
                 <Avatar
                   sx={{ bgcolor: 'mpdxGrayLight.main', color: 'text.primary' }}
@@ -154,7 +193,13 @@ export const StaffMember: React.FC<StaffMemberProps> = ({
                   {getRowInitials(data)}
                 </Avatar>
               )}
-              <Box sx={{ flexGrow: 1, minWidth: 200, ml: compact ? 0 : 1 }}>
+              <Box
+                sx={{
+                  flexGrow: 1,
+                  minWidth: { md: 200 },
+                  ml: compact ? 0 : 1,
+                }}
+              >
                 <Box
                   sx={{
                     display: 'flex',
@@ -181,7 +226,12 @@ export const StaffMember: React.FC<StaffMemberProps> = ({
                 </Box>
               </Box>
             </GridItem>
-            <GridQuarter size={6}>
+            <GridQuarter
+              size={{ xs: 12, md: 6 }}
+              sx={{
+                [theme.breakpoints.down('md')]: { mt: compact ? 0.5 : 1 },
+              }}
+            >
               <FiscalYearQuarters quarters={quarters} />
             </GridQuarter>
           </Grid>
@@ -206,7 +256,7 @@ const FiscalYearQuartersBase: React.FC<FiscalYearQuartersProps> = ({
   const { formatCurrency } = useFormatters();
 
   return (
-    <Stack direction="row" spacing={2}>
+    <QuarterStrip data-testid="quarter-chips">
       {quarters.map(({ fiscalYear, quarter, status, averagePayroll }) => {
         const label = getQuarterLabel(fiscalYear, quarter);
         const amount = quarterAmountLabel({
@@ -217,27 +267,31 @@ const FiscalYearQuartersBase: React.FC<FiscalYearQuartersProps> = ({
         });
 
         return (
-          <QuarterChip
-            key={label}
-            // Health is also conveyed by color, so name it for screen-reader
-            // users (WCAG 1.4.1 — not color alone).
-            label={
-              <>
-                <Box component="span" sx={visuallyHidden as SxProps<Theme>}>
-                  {t('{{label}}, {{status}}', {
-                    label,
-                    status: healthLabel(t, status),
-                  })}
-                </Box>
-                {amount}
-              </>
-            }
-            health={status}
-            size="small"
-          />
+          <QuarterCell key={label}>
+            <QuarterCaption variant="caption" aria-hidden="true">
+              {label}
+            </QuarterCaption>
+            <QuarterChip
+              // Health is also conveyed by color, so name it for screen-reader
+              // users (WCAG 1.4.1 — not color alone).
+              label={
+                <>
+                  <Box component="span" sx={visuallyHidden as SxProps<Theme>}>
+                    {t('{{label}}, {{status}}', {
+                      label,
+                      status: healthLabel(t, status),
+                    })}
+                  </Box>
+                  {amount}
+                </>
+              }
+              health={status}
+              size="small"
+            />
+          </QuarterCell>
         );
       })}
-    </Stack>
+    </QuarterStrip>
   );
 };
 /** The four quarter chips; also shown in the drawer header, which covers the row. */

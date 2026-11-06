@@ -249,6 +249,9 @@ const renderEmptyReportHeader = async () => {
   };
 };
 
+// Rows also label their quarters (shown below md), so match only the headers
+const quarterHeader = { selector: '[data-testid="quarter-headers"] p' };
+
 jest.setTimeout(15000);
 
 describe('MpdSupervisorReport', () => {
@@ -798,19 +801,13 @@ describe('MpdSupervisorReport', () => {
     ).toBeInTheDocument();
   });
 
-  it('labels the quarter columns from the first row', async () => {
-    const { findByText, getByText } = renderReport();
-    await findByText('John Smith');
-
-    expect(getByText('FQ4 25')).toBeInTheDocument();
-    expect(getByText('FQ3 26')).toBeInTheDocument();
-  });
-
-  it('orders the quarter columns newest first', async () => {
+  it('labels the quarter columns from the first row, newest first', async () => {
     const { findByText, getAllByText } = renderReport();
     await findByText('John Smith');
 
-    const headers = getAllByText(/^FQ\d \d\d$/).map((el) => el.textContent);
+    const headers = getAllByText(/^FQ\d \d\d$/, quarterHeader).map(
+      (el) => el.textContent,
+    );
     expect(headers).toEqual(['FQ3 26', 'FQ2 26', 'FQ1 26', 'FQ4 25']);
   });
 
@@ -840,7 +837,7 @@ describe('MpdSupervisorReport', () => {
 
   it('explains a fiscal quarter header on hover', async () => {
     const { findByText, findByRole } = renderReport();
-    const header = await findByText('FQ1 26');
+    const header = await findByText('FQ1 26', quarterHeader);
     // The tooltip describes the header rather than replacing its label
     expect(header).not.toHaveAttribute('aria-label');
 
@@ -864,7 +861,7 @@ describe('MpdSupervisorReport', () => {
       });
     try {
       const { findByText, findByRole } = renderReport();
-      const header = await findByText('FQ4 25');
+      const header = await findByText('FQ4 25', quarterHeader);
 
       act(() => header.focus());
 
@@ -898,7 +895,7 @@ describe('MpdSupervisorReport', () => {
       managedStaff: managedStaffMock([newStaff]),
     });
 
-    userEvent.hover(await findByText('FQ3 25'));
+    userEvent.hover(await findByText('FQ3 25', quarterHeader));
 
     expect(await findByRole('tooltip')).toHaveTextContent(
       'Fiscal quarter 3, FY25: Mar 2025 – May 2025 Partial quarter: payroll started during this quarter.',
