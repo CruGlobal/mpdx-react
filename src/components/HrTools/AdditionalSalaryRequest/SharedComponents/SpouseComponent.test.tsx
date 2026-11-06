@@ -1,9 +1,12 @@
 import { render } from '@testing-library/react';
+import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
+import { SplitCapSubContent } from '../RequestPage/Helper/SplitCapSubContent';
 import {
   AdditionalSalaryRequestContext,
   AdditionalSalaryRequestType,
 } from '../Shared/AdditionalSalaryRequestContext';
+import { defaultCompleteFormValues } from '../Shared/CompleteForm.mock';
 import { SpouseComponent } from './SpouseComponent';
 
 const requestDataDefault = {
@@ -19,11 +22,14 @@ const requestDataDefault = {
       grossAnnualSalary: 45000,
       ytdAsrAmount: 5000,
       staffAccountBalance: 3000,
+      // Differs from cap - gross - ytd ($10,000) so the specs prove the API is the source
+      remainingAllowableSalary: 9000,
     },
   },
 };
 
 const spouseDefault = {
+  asrEit: { asrEligibility: true },
   staffInfo: {
     preferredName: 'Jane',
     primaryPhoneNumber: '555-1234',
@@ -42,12 +48,14 @@ type ComponentProps = {
   spouse?: object;
   isSpouse?: boolean;
   hasSpouse?: boolean;
+  withSplitFooter?: boolean;
 };
 const renderComponent = ({
   requestData = requestDataDefault,
   spouse = spouseDefault,
   isSpouse = false,
   hasSpouse = true,
+  withSplitFooter = false,
 }: ComponentProps) =>
   render(
     <TestRouter router={router}>
@@ -61,7 +69,12 @@ const renderComponent = ({
           } as unknown as AdditionalSalaryRequestType
         }
       >
-        <SpouseComponent />
+        <Formik initialValues={defaultCompleteFormValues} onSubmit={jest.fn()}>
+          <>
+            <SpouseComponent />
+            {withSplitFooter && <SplitCapSubContent spouseName="Jane" />}
+          </>
+        </Formik>
       </AdditionalSalaryRequestContext.Provider>
     </TestRouter>,
   );
@@ -73,28 +86,57 @@ describe('SpouseComponent', () => {
     expect(getByText('Request additional salary for Jane')).toBeInTheDocument();
   });
 
-  it('displays the remaining allowable salary amount', () => {
+  const renderWithSpouseCalculations = (spouseCalculations: object | null) =>
+    renderComponent({
+      requestData: {
+        latestAdditionalSalaryRequest: {
+          ...requestDataDefault.latestAdditionalSalaryRequest,
+          spouseCalculations,
+        },
+      },
+    });
+
+  it('displays the remaining allowable salary amount from the API', () => {
     const { getByText } = renderComponent({});
 
-    // 60,000 cap - (45,000 gross + 5,000 YTD ASRs).
     expect(
-      getByText('Up to their remaining allowable salary of $10,000'),
+      getByText('Up to their remaining allowable salary of $9,000'),
     ).toBeInTheDocument();
   });
 
-  it('displays $0 when the spouse is already over their cap', () => {
-    const { getByText } = renderComponent({
-      requestData: {
-        latestAdditionalSalaryRequest: {
-          ...requestDataDefault.latestAdditionalSalaryRequest,
-          spouseCalculations: {
-            currentSalaryCap: 40000,
-            grossAnnualSalary: 45000,
-            ytdAsrAmount: 5000,
-            staffAccountBalance: 3000,
-          },
-        },
-      },
+  // MPDX-10269: the spouse figure must follow the API after the spouse's own requests
+  it('shows the API amount when the spouse has a paid request this year', () => {
+    const { getByText } = renderWithSpouseCalculations({
+      currentSalaryCap: 60000,
+      grossAnnualSalary: 40000,
+      ytdAsrAmount: 12000,
+      remainingAllowableSalary: 7500,
+    });
+
+    expect(
+      getByText('Up to their remaining allowable salary of $7,500'),
+    ).toBeInTheDocument();
+  });
+
+  it('shows the API amount when the spouse has a pending request', () => {
+    const { getByText } = renderWithSpouseCalculations({
+      currentSalaryCap: 60000,
+      grossAnnualSalary: 40000,
+      ytdAsrAmount: 3000,
+      remainingAllowableSalary: 15000,
+    });
+
+    expect(
+      getByText('Up to their remaining allowable salary of $15,000'),
+    ).toBeInTheDocument();
+  });
+
+  it('displays $0 when the API says the spouse has no room left', () => {
+    const { getByText } = renderWithSpouseCalculations({
+      currentSalaryCap: 40000,
+      grossAnnualSalary: 45000,
+      ytdAsrAmount: 5000,
+      remainingAllowableSalary: 0,
     });
 
     expect(
@@ -102,24 +144,58 @@ describe('SpouseComponent', () => {
     ).toBeInTheDocument();
   });
 
-  it('handles null spouse calculations gracefully', () => {
-    const { getByText } = renderComponent({
-      requestData: {
-        latestAdditionalSalaryRequest: {
-          ...requestDataDefault.latestAdditionalSalaryRequest,
-          spouseCalculations: null,
-        },
-      },
+  it('hides the amount but keeps the link when spouse calculations are null', () => {
+    const { getByText, queryByText } = renderWithSpouseCalculations(null);
+
+    expect(getByText('Request additional salary for Jane')).toBeInTheDocument();
+    expect(
+      queryByText(/Up to their remaining allowable salary/),
+    ).not.toBeInTheDocument();
+  });
+
+  it('hides the amount but keeps the link when the API has no remaining amount', () => {
+    const { getByText, queryByText } = renderWithSpouseCalculations({
+      currentSalaryCap: null,
+      grossAnnualSalary: 45000,
+      ytdAsrAmount: 5000,
+      remainingAllowableSalary: null,
     });
 
+    expect(getByText('Request additional salary for Jane')).toBeInTheDocument();
     expect(
-      getByText('Up to their remaining allowable salary of $0'),
+      queryByText(/Up to their remaining allowable salary/),
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows the same figure as the split footer', () => {
+    const { getByText } = renderComponent({ withSplitFooter: true });
+
+    expect(
+      getByText('Up to their remaining allowable salary of $9,000'),
     ).toBeInTheDocument();
+    expect(
+      getByText("Remaining in Jane's Max Allowable Salary").nextSibling,
+    ).toHaveTextContent('$9,000.00');
+  });
+
+  it('hides the caption without a spouse cap, even when a remaining amount comes back', () => {
+    const { getByText, queryByText } = renderWithSpouseCalculations({
+      currentSalaryCap: null,
+      grossAnnualSalary: 45000,
+      ytdAsrAmount: 5000,
+      remainingAllowableSalary: 5000,
+    });
+
+    expect(getByText('Request additional salary for Jane')).toBeInTheDocument();
+    expect(
+      queryByText(/Up to their remaining allowable salary/),
+    ).not.toBeInTheDocument();
   });
 
   it('handles missing spouse name gracefully', () => {
     const { getByText } = renderComponent({
       spouse: {
+        ...spouseDefault,
         staffInfo: {
           preferredName: null,
         },
@@ -158,9 +234,8 @@ describe('SpouseComponent', () => {
     it('uses spouseCalculations for remaining salary when isSpouse is true', () => {
       const { getByText } = renderComponent({ isSpouse: true });
 
-      // 60,000 cap - (45,000 gross + 5,000 YTD ASRs)
       expect(
-        getByText('Up to their remaining allowable salary of $10,000'),
+        getByText('Up to their remaining allowable salary of $9,000'),
       ).toBeInTheDocument();
     });
 

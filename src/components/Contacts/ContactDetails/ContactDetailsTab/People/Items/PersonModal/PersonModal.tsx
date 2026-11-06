@@ -449,6 +449,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
             <DialogContent
               dividers
               style={{ maxHeight: 'calc(100vh - 200px)' }}
+              sx={{ px: { xs: 1, sm: 3 } }}
             >
               <ContactEditContainer>
                 <ContactPersonContainer>

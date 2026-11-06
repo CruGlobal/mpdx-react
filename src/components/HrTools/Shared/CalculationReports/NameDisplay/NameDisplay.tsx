@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { missingValue } from '../../helpers/missingValue';
 
 export const columnLayout = (columns: number) =>
   columns === 3
@@ -88,9 +89,11 @@ export const NameDisplay: React.FC<NameDisplayProps> = ({
                     sx={{ color: 'primary.main' }}
                     data-testid={testId}
                   >
-                    {currencyFormat(amount || 0, currency, locale, {
-                      showTrailingZeros: true,
-                    })}
+                    {typeof amount === 'number'
+                      ? currencyFormat(amount, currency, locale, {
+                          showTrailingZeros: true,
+                        })
+                      : missingValue}
                   </Typography>
                 </Grid>
               ))}

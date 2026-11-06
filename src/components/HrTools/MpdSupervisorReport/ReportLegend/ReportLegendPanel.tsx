@@ -18,6 +18,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import {
   MpdSupervisorReportQuickFilterEnum,
   quickFilterDescription,
+  quickFilterIds,
   quickFilterLabel,
 } from '../Filters/mpdSupervisorReportFilters';
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
@@ -126,10 +127,9 @@ export const ReportLegendPanel: React.FC = () => {
     };
   });
 
-  const filters = [
-    MpdSupervisorReportQuickFilterEnum.NegativeLastMonth,
-    MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative,
-  ];
+  const filters = quickFilterIds.filter(
+    (id) => id !== MpdSupervisorReportQuickFilterEnum.AllPeople,
+  );
 
   const newStaff = newStaffSalaryCopy(t);
 
@@ -186,6 +186,11 @@ export const ReportLegendPanel: React.FC = () => {
               </Box>
             );
           })}
+          <Typography variant="body2" color="text.secondary">
+            {t(
+              'Quarter colors measure pay, not the staff account balance. To find staff whose balance is below zero, use the Negative filters.',
+            )}
+          </Typography>
         </Section>
 
         <Section title={t('Numbers')}>
@@ -235,7 +240,9 @@ export const ReportLegendPanel: React.FC = () => {
             ))}
           </Box>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            {t('The current month is never counted.')}
+            {t(
+              "The current month is never counted. Last month's balance can still change for a few weeks as late items post.",
+            )}
           </Typography>
         </Section>
 

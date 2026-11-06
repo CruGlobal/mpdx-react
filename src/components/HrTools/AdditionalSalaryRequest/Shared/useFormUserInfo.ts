@@ -12,7 +12,7 @@ export const useFormUserInfo = () => {
   const primaryAccountBalance = staffAccountBalance ?? 0;
   // The Primary balance plus its deficit limit, minus the household's other unpaid ASRs
   const availableAccountBalance = availableStaffAccountBalance ?? 0;
-  const remainingCap = remainingAllowableSalary ?? 0;
+  const remainingCap = remainingAllowableSalary ?? null;
 
   return {
     email,

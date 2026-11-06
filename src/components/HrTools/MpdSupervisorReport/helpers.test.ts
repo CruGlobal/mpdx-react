@@ -9,6 +9,7 @@ import {
 } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
+import { missingValue } from '../Shared/helpers/missingValue';
 import {
   userPersonTypeGroups,
   userPersonTypeOptions,
@@ -34,15 +35,24 @@ import {
   healthColor,
   healthLabel,
   latestQuarterStatus,
+  maxTeamPickerCards,
   mergeSpouseRows,
   missingBenchmarkMessage,
   pendingField,
   quarterAmountLabel,
   summarizeTeams,
+  teamNamesInDepartment,
+  teamPickerNames,
 } from './helpers';
 import { managedStaffMember } from './mpdSupervisorReportMocks';
 
 const t = ((key: string) => key) as unknown as TFunction;
+
+describe('pendingField', () => {
+  it('is the shared missing-value placeholder', () => {
+    expect(pendingField).toBe(missingValue);
+  });
+});
 
 describe('getInitials', () => {
   it('returns the uppercased first letter of each name', () => {
@@ -831,5 +841,71 @@ describe('getRowSpouseName', () => {
     expect(
       getRowSpouseName(managedStaffMember({ ...alice, spouseFirstName: null })),
     ).toBeNull();
+  });
+});
+
+describe('teamNamesInDepartment', () => {
+  const teams = [
+    { name: 'Team 10', departments: ['Cohort A'] },
+    { name: 'Team 9', departments: ['Cohort A', 'Cohort B'] },
+    { name: 'Alpha', departments: ['Cohort B'] },
+    { name: 'Loose', departments: [] },
+  ];
+
+  it('lists every team, in natural order, when no department is picked', () => {
+    expect(teamNamesInDepartment(teams, null)).toEqual([
+      'Alpha',
+      'Loose',
+      'Team 9',
+      'Team 10',
+    ]);
+  });
+
+  it('keeps only the teams with staff in the department', () => {
+    expect(teamNamesInDepartment(teams, 'Cohort A')).toEqual([
+      'Team 9',
+      'Team 10',
+    ]);
+  });
+
+  it('is empty when no team is in the department', () => {
+    expect(teamNamesInDepartment(teams, 'Cohort C')).toEqual([]);
+  });
+});
+
+describe('teamPickerNames', () => {
+  const teamsNamed = (count: number) =>
+    Array.from({ length: count }, (_, index) => ({
+      name: `Team ${index + 1}`,
+      departments: ['Cohort A'],
+    }));
+
+  it("offers the department's teams", () => {
+    expect(
+      teamPickerNames(
+        [...teamsNamed(2), { name: 'Elsewhere', departments: ['Cohort B'] }],
+        'Cohort A',
+      ),
+    ).toEqual(['Team 1', 'Team 2']);
+  });
+
+  it('offers nothing for a single team', () => {
+    expect(teamPickerNames(teamsNamed(1), null)).toEqual([]);
+  });
+
+  it('offers up to the card limit', () => {
+    expect(teamPickerNames(teamsNamed(maxTeamPickerCards), null)).toHaveLength(
+      maxTeamPickerCards,
+    );
+  });
+
+  it('offers nothing past the card limit until a department narrows it', () => {
+    expect(teamPickerNames(teamsNamed(maxTeamPickerCards + 1), null)).toEqual(
+      [],
+    );
+  });
+
+  it('offers nothing before the teams load', () => {
+    expect(teamPickerNames(undefined, null)).toEqual([]);
   });
 });

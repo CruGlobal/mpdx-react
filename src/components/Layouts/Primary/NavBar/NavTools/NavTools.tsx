@@ -5,13 +5,19 @@ import { List } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useSetupContext } from 'src/components/Setup/SetupProvider';
 import { useGetTopBarQuery } from '../../TopBar/GetTopBar.generated';
+import { AddMenuItemsEnum } from '../../TopBar/Items/AddMenu/AddMenu';
 import NotificationMenu from '../../TopBar/Items/NotificationMenu/NotificationMenu';
 import { NavItem } from '../NavItem/NavItem';
 import { AddMenuPanel } from './AddMenuPanel/AddMenuPanel';
 import { ProfileMenuPanel } from './ProfileMenuPanel/ProfileMenuPanel';
 import { SearchMenuPanel } from './SearchMenuPanel/SearchMenuPanel';
 
-export const NavTools: FC = () => {
+interface NavToolsProps {
+  onClose: () => void;
+  onOpenAddDialog: (menuItem: AddMenuItemsEnum) => void;
+}
+
+export const NavTools: FC<NavToolsProps> = ({ onClose, onOpenAddDialog }) => {
   const { data } = useGetTopBarQuery();
   const { t } = useTranslation();
   const { onSetupTour } = useSetupContext();
@@ -24,7 +30,7 @@ export const NavTools: FC = () => {
             <SearchMenuPanel />
           </NavItem>
           <NavItem icon={mdiPlus} title={t('Add')}>
-            <AddMenuPanel />
+            <AddMenuPanel onClose={onClose} onOpenDialog={onOpenAddDialog} />
           </NavItem>
           <NavItem icon={mdiBellOutline} title={t('Notifications')}>
             <NotificationMenu isInDrawer={true} />
