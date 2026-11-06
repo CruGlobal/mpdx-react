@@ -94,6 +94,10 @@ const QuartersContainer = styled(Box)(() => ({
   paddingBottom: theme.spacing(1),
   gap: theme.spacing(2),
   marginBottom: theme.spacing(2),
+  // Each row labels its own quarters below md (FiscalYearQuarters)
+  [theme.breakpoints.down('md')]: {
+    display: 'none',
+  },
 }));
 
 const Quarter = styled(Box)(() => ({
@@ -288,7 +292,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
       <StyledContainer maxWidth={false}>
         <AppliedFilters />
         <TeamSummary />
-        <QuartersContainer>
+        <QuartersContainer data-testid="quarter-headers">
           {quarterHeaders.length > 0 && (
             <HealthColorKey
               sx={{ mr: 'auto', display: { xs: 'none', md: 'flex' } }}
