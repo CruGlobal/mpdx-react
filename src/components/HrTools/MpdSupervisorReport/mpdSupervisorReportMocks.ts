@@ -7,6 +7,7 @@ import {
 } from 'src/graphql/types.generated';
 import { ManagedStaffQuery } from './ManagedStaff.generated';
 import { ManagedStaffDepartmentsQuery } from './ManagedStaffDepartments.generated';
+import { ManagedStaffTeamSummaryQuery } from './ManagedStaffTeamSummary.generated';
 import { ManagedStaffTeamsQuery } from './ManagedStaffTeams.generated';
 import { ManagedStaffMember } from './helpers';
 
@@ -74,6 +75,23 @@ export const managedStaffTeamsMock = (
     { name: 'Unassigned', departments: [] },
   ],
 ): ManagedStaffTeamsQuery => ({ managedStaffTeams });
+
+/** One team's row as the API sends it: every status listed, zero where nobody has it */
+export const teamSummary = (
+  name: string,
+  counts: Partial<Record<MpdHealthStatusEnum, number>> = {},
+): ManagedStaffTeamSummaryQuery['managedStaffTeamSummary'][number] => ({
+  name,
+  staffCount: Object.values(counts).reduce((total, count) => total + count, 0),
+  statusCounts: Object.values(MpdHealthStatusEnum).map((status) => ({
+    status,
+    count: counts[status] ?? 0,
+  })),
+});
+
+export const managedStaffTeamSummaryMock = (
+  managedStaffTeamSummary: ManagedStaffTeamSummaryQuery['managedStaffTeamSummary'] = [],
+): ManagedStaffTeamSummaryQuery => ({ managedStaffTeamSummary });
 
 export const managedStaffDepartmentsMock = (
   managedStaffDepartments: ManagedStaffDepartmentsQuery['managedStaffDepartments'] = [
