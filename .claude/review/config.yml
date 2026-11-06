@@ -101,7 +101,7 @@ risk:
     - { glob: '__tests__/util/**', points: 1, tier: medium }
 
     # ── low (0) — documentation of intent; these never change the score ───────
-    - { glob: '**/*.test.{ts,tsx}', points: 0, tier: low }
+    - { glob: '**/*.test.{ts,tsx}', points: 1, tier: low }
     - { glob: '**/*.snap', points: 0, tier: low }
     - { glob: '__tests__/fixtures/**', points: 0, tier: low }
 
@@ -418,6 +418,9 @@ excluded_paths:
   - 'public/fonts/**'
   - 'src/images/**'
   - '.github/ISSUE_TEMPLATE/**'
+  - '.claude/review/learnings/feedback.jsonl'
+  - '.claude/review/metrics/**'
+  - '.claude/review/index/**'
 
 # ── Deterministic evidence ────────────────────────────────────────────────────
 # ast-grep runs trusted, repo-authored AST rules before the model. Only matches
