@@ -34,15 +34,14 @@ import {
   hasNewStaffSalary,
   healthColor,
   healthLabel,
-  latestQuarterStatus,
   maxTeamPickerCards,
   mergeSpouseRows,
   missingBenchmarkMessage,
   pendingField,
   quarterAmountLabel,
-  summarizeTeams,
   teamNamesInDepartment,
   teamPickerNames,
+  teamSummaryRows,
 } from './helpers';
 import { managedStaffMember } from './mpdSupervisorReportMocks';
 
@@ -487,25 +486,6 @@ const team = (name: string) => ({
   name,
   department: 'US Campus',
 });
-const quarter = (
-  fiscalYear: number,
-  q: number,
-  status: MpdHealthStatusEnum,
-) => ({
-  fiscalYear,
-  quarter: q,
-  averagePayroll: 1000,
-  status,
-});
-const withQuarters = (
-  overrides: Parameters<typeof managedStaffMember>[0],
-  quarters: ReturnType<typeof quarter>[],
-) =>
-  managedStaffMember({
-    ...overrides,
-    quarterlyHealth: { monthlyGrossSalary: 4500, completedQuarters: quarters },
-  });
-
 const john = managedStaffMember({
   firstName: 'John',
   lastName: 'Smith',
@@ -674,133 +654,57 @@ describe('countPeople', () => {
   });
 });
 
-describe('latestQuarterStatus', () => {
-  it('takes the newest completed quarter', () => {
-    const member = withQuarters({}, [
-      quarter(2026, 1, MpdHealthStatusEnum.Green),
-      quarter(2026, 3, MpdHealthStatusEnum.Red),
-      quarter(2025, 4, MpdHealthStatusEnum.Yellow),
-    ]);
-    expect(latestQuarterStatus(member)).toBe(MpdHealthStatusEnum.Red);
+describe('teamSummaryRows', () => {
+  const summary = (
+    name: string,
+    counts: Partial<Record<MpdHealthStatusEnum, number>>,
+  ) => ({
+    name,
+    staffCount: Object.values(counts).reduce(
+      (total, count) => total + count,
+      0,
+    ),
+    statusCounts: Object.entries(counts).map(([status, count]) => ({
+      status: status as MpdHealthStatusEnum,
+      count,
+    })),
   });
 
-  it('is no data without a completed quarter', () => {
-    expect(latestQuarterStatus(withQuarters({}, []))).toBe(
-      MpdHealthStatusEnum.Gray,
-    );
-  });
-});
-
-describe('summarizeTeams', () => {
-  const red = (overrides: Parameters<typeof managedStaffMember>[0]) =>
-    withQuarters(overrides, [quarter(2026, 3, MpdHealthStatusEnum.Red)]);
-  const green = (overrides: Parameters<typeof managedStaffMember>[0]) =>
-    withQuarters(overrides, [quarter(2026, 3, MpdHealthStatusEnum.Green)]);
-
-  it('counts people per latest-quarter status on each of their teams', () => {
-    const rows = mergeSpouseRows([
-      red({
-        personNumber: '1',
-        teams: { employee: [team('Campus'), team('City')], spouse: [] },
-      }),
-      green({
-        personNumber: '2',
-        teams: { employee: [team('City')], spouse: [] },
-      }),
-    ]);
-    expect(summarizeTeams(rows)).toEqual([
-      {
-        name: 'Campus',
-        staffCount: 1,
-        counts: { RED: 1, YELLOW: 0, GREEN: 0, GRAY: 0, BLUE: 0 },
-      },
+  it("keys each team's counts by status, with zero for any status left out", () => {
+    expect(
+      teamSummaryRows([
+        summary('City', {
+          [MpdHealthStatusEnum.Green]: 1,
+          [MpdHealthStatusEnum.Blue]: 2,
+        }),
+      ]),
+    ).toEqual([
       {
         name: 'City',
-        staffCount: 2,
-        counts: { RED: 1, YELLOW: 0, GREEN: 1, GRAY: 0, BLUE: 0 },
+        staffCount: 3,
+        counts: { RED: 0, YELLOW: 0, GREEN: 1, GRAY: 0, BLUE: 2 },
       },
-    ]);
-  });
-
-  it('counts each spouse of a merged pair on their own teams', () => {
-    const rows = mergeSpouseRows([green(john), green(jane)]);
-    expect(rows).toHaveLength(1);
-    const summary = summarizeTeams(rows);
-    expect(summary.find(({ name }) => name === 'Campus')?.staffCount).toBe(2);
-    expect(summary.find(({ name }) => name === 'City')?.staffCount).toBe(1);
-  });
-
-  it('treats a member with no completed quarter as no data', () => {
-    const rows = [
-      withQuarters({ teams: { employee: [team('Campus')], spouse: [] } }, []),
-    ];
-    expect(summarizeTeams(rows)[0].counts.GRAY).toBe(1);
-  });
-
-  it('counts a member whose latest quarter is ungraded as blue', () => {
-    const rows = [
-      withQuarters({ teams: { employee: [team('Campus')], spouse: [] } }, [
-        quarter(2026, 3, MpdHealthStatusEnum.Blue),
-      ]),
-    ];
-    expect(summarizeTeams(rows)[0].counts).toEqual({
-      RED: 0,
-      YELLOW: 0,
-      GREEN: 0,
-      GRAY: 0,
-      BLUE: 1,
-    });
-  });
-
-  it('skips a member on no team', () => {
-    expect(
-      summarizeTeams([green({ teams: { employee: [], spouse: [] } })]),
-    ).toEqual([]);
-  });
-
-  it('breaks a tie on counts alphabetically', () => {
-    const rows = [
-      green({
-        personNumber: '1',
-        staffAccountId: 'a1',
-        teams: { employee: [team('Zeta')], spouse: [] },
-      }),
-      green({
-        personNumber: '2',
-        staffAccountId: 'a2',
-        teams: { employee: [team('Alpha')], spouse: [] },
-      }),
-    ];
-    expect(summarizeTeams(rows).map(({ name }) => name)).toEqual([
-      'Alpha',
-      'Zeta',
     ]);
   });
 
   it('sorts the teams needing the most attention first', () => {
-    const rows = [
-      green({
-        personNumber: '1',
-        teams: { employee: [team('Alpha')], spouse: [] },
+    const rows = teamSummaryRows([
+      summary('Alpha', { [MpdHealthStatusEnum.Green]: 3 }),
+      summary('Beta', { [MpdHealthStatusEnum.Yellow]: 1 }),
+      summary('Gamma', {
+        [MpdHealthStatusEnum.Red]: 1,
+        [MpdHealthStatusEnum.Green]: 5,
       }),
-      withQuarters(
-        {
-          personNumber: '2',
-          staffAccountId: 'a2',
-          teams: { employee: [team('Beta')], spouse: [] },
-        },
-        [quarter(2026, 3, MpdHealthStatusEnum.Yellow)],
-      ),
-      red({
-        personNumber: '3',
-        teams: { employee: [team('Gamma')], spouse: [] },
-      }),
-    ];
-    expect(summarizeTeams(rows).map(({ name }) => name)).toEqual([
-      'Gamma',
-      'Beta',
-      'Alpha',
     ]);
+    expect(rows.map(({ name }) => name)).toEqual(['Gamma', 'Beta', 'Alpha']);
+  });
+
+  it('breaks a tie on counts alphabetically', () => {
+    const rows = teamSummaryRows([
+      summary('Zeta', { [MpdHealthStatusEnum.Green]: 1 }),
+      summary('Alpha', { [MpdHealthStatusEnum.Green]: 1 }),
+    ]);
+    expect(rows.map(({ name }) => name)).toEqual(['Alpha', 'Zeta']);
   });
 });
 

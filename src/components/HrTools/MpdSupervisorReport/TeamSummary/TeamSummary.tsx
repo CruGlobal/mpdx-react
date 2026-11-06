@@ -1,11 +1,11 @@
 import React, { useEffect, useId, useMemo, useState } from 'react';
-import { ApolloError } from '@apollo/client';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Alert, Box, ButtonBase, Collapse, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { omit } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
-import { useManagedStaffQuery } from '../ManagedStaff.generated';
+import { useManagedStaffTeamSummaryQuery } from '../ManagedStaffTeamSummary.generated';
 import { useManagedStaffTeamsQuery } from '../ManagedStaffTeams.generated';
 import {
   filterRequiredFromError,
@@ -14,10 +14,10 @@ import {
 import { healthStatusLabel } from '../ReportLegend/legendCopy';
 import {
   TeamSummaryRow,
+  fitsTeamPicker,
   healthColor,
-  mergeSpouseRows,
-  summarizeTeams,
   teamPickerNames,
+  teamSummaryRows,
 } from '../helpers';
 
 const gradedStatuses = [
@@ -33,7 +33,7 @@ const badgeStatuses = [
 
 interface TeamCardProps {
   name: string;
-  /** Omitted over the row cap, when there are no rows to count */
+  /** Omitted when the reach is too large for the API to count */
   team?: TeamSummaryRow;
   selected: boolean;
   onToggle: () => void;
@@ -139,11 +139,11 @@ const TeamCard: React.FC<TeamCardProps> = ({
 };
 
 /**
- * How each team is doing, for supervisors with several teams. The cards come
+ * How each team is doing, for supervisors with several teams. The counts come
  * from the report's other filters but never its team filter, so every team
  * stays comparable while one is selected; a card toggles that team's filter.
- * Over the API's row cap there are no rows to count, so the cards just name
- * the teams in the picked department, to make picking one a single click.
+ * When the reach is too large for the API to count, the cards just name the
+ * teams in the picked department, to make picking one a single click.
  */
 export const TeamSummary: React.FC = () => {
   const { t } = useTranslation();
@@ -164,43 +164,29 @@ export const TeamSummary: React.FC = () => {
   const cardsId = useId();
   const [open, setOpen] = useState(true);
 
-  // Identical to the roster query while no team is selected, so Apollo serves
-  // it from the same cache entry; with a team selected it is the one extra
-  // request that keeps the other teams' counts whole.
-  const { data, error, loading, fetchMore } = useManagedStaffQuery({
+  const summaryVariables = useMemo(
+    () => omit(queryVariables, ['first', 'after', 'teamNames']),
+    [queryVariables],
+  );
+  const { data, error, loading } = useManagedStaffTeamSummaryQuery({
     context: { suppressErrorCodes: ['FILTER_REQUIRED'] },
-    variables: { ...queryVariables, teamNames: null },
-    skip: teamCount < 2 || (!!filterRequired && !staffLoading),
+    variables: summaryVariables,
+    skip: teamCount < 2,
   });
-  const pageInfo = data?.managedStaff.pageInfo;
-  // Every page must be in before the counts mean anything. A page that fails
-  // just hides the strip; the list's own alert reports the failure.
-  const [pageError, setPageError] = useState<ApolloError | undefined>();
-  useEffect(() => {
-    setPageError(undefined);
-  }, [queryVariables]);
-  useEffect(() => {
-    if (pageInfo?.hasNextPage && pageInfo.endCursor && !pageError) {
-      fetchMore({ variables: { after: pageInfo.endCursor } }).catch(
-        (fetchError: ApolloError) => setPageError(fetchError),
-      );
-    }
-  }, [pageInfo?.hasNextPage, pageInfo?.endCursor, pageError, fetchMore]);
-  const loadingPages = !!pageInfo?.hasNextPage;
   const summary = useMemo(
-    () => summarizeTeams(mergeSpouseRows(data?.managedStaff.nodes ?? [])),
+    () => teamSummaryRows(data?.managedStaffTeamSummary ?? []),
     [data],
   );
-  // Apollo clears the error while new filters load, so keep the last answer
-  // until the API says whether the unfiltered reach still trips the cap. While
-  // the query is skipped for the list's own cap, that cap is the answer.
-  const settledOverCap = !!filterRequiredFromError(error);
-  const [lastOverCap, setLastOverCap] = useState(false);
+
+  // Only a roster without a team says whether the reach trips the row cap, so
+  // a picked team keeps the last answer.
+  const [reachOverRowCap, setReachOverRowCap] = useState(false);
   useEffect(() => {
-    if (!loading) {
-      setLastOverCap(settledOverCap || !!filterRequired);
+    if (!team && !staffLoading) {
+      setReachOverRowCap(!!filterRequired);
     }
-  }, [loading, settledOverCap, filterRequired]);
+  }, [team, staffLoading, filterRequired]);
+  const overRowCap = !!filterRequired || (!!team && reachOverRowCap);
 
   if (teamsError && !teamsData) {
     return (
@@ -225,25 +211,25 @@ export const TeamSummary: React.FC = () => {
     );
   }
 
-  // The unfiltered reach can trip the row cap while the team-filtered list
-  // fits. Either way there are no rows to count, so the cards only name the
-  // teams to pick from.
-  const overRowCap =
-    !!filterRequired || (loading ? lastOverCap : settledOverCap);
-  const pickerNames = teamPickerNames(teamsData?.managedStaffTeams, department);
-  const cards = overRowCap
-    ? pickerNames.map((name) => ({ name, row: undefined }))
+  const tooManyToCount = !!filterRequiredFromError(error);
+  const cards: Array<{ name: string; row?: TeamSummaryRow }> = tooManyToCount
+    ? teamPickerNames(teamsData?.managedStaffTeams, department).map((name) => ({
+        name,
+      }))
     : summary.map((row) => ({ name: row.name, row }));
 
+  // Over the row cap the cards are how a team gets picked, so they follow the
+  // picker's limits; under it they show every team in the results.
   if (
-    overRowCap
+    tooManyToCount
       ? cards.length === 0
-      : teamCount < 2 || !data || loadingPages || pageError || !cards.length
+      : teamCount < 2 ||
+        !data ||
+        (overRowCap ? !fitsTeamPicker(cards.length) : !cards.length)
   ) {
     return null;
   }
-  // The picker's names never wait on the rows
-  const busy = loading && !overRowCap;
+  const busy = loading && !tooManyToCount;
 
   return (
     <Box
