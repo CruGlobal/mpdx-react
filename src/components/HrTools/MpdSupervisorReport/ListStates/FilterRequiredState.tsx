@@ -7,6 +7,8 @@ import { FilterRequired } from '../MpdSupervisorReportContext';
 interface FilterRequiredStateProps {
   filterRequired: FilterRequired;
   loading?: boolean;
+  /** Whether the team cards are offered above the message */
+  teamPickerShown?: boolean;
   /** Opens the filter panel; omitted while it is already open */
   onOpenFilters?: () => void;
 }
@@ -18,6 +20,7 @@ interface FilterRequiredStateProps {
 export const FilterRequiredState: React.FC<FilterRequiredStateProps> = ({
   filterRequired: { count, filtered },
   loading = false,
+  teamPickerShown = false,
   onOpenFilters,
 }) => {
   const { t } = useTranslation();
@@ -42,9 +45,13 @@ export const FilterRequiredState: React.FC<FilterRequiredStateProps> = ({
         <Typography color="text.secondary" sx={{ mt: 1 }}>
           {filtered
             ? t('Add another filter or search by name to narrow the list.')
-            : t(
-                'Search by name, or pick a team, department, employment type, person type or one of the Negative or Spending filters.',
-              )}
+            : teamPickerShown
+              ? t(
+                  'Pick a team above to list its staff, or use the filters to narrow the list.',
+                )
+              : t(
+                  'Search by name, or pick a team, department, employment type, person type or one of the Negative or Spending filters.',
+                )}
         </Typography>
       </Box>
       <Box sx={{ height: 4, mt: 2 }}>
