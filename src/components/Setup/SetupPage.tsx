@@ -20,7 +20,7 @@ const PageBackground = styled('div')(({ theme }) => ({
 
 const PageCard = styled(Card)(({ theme }) => ({
   marginInline: 'auto',
-  maxWidth: theme.spacing(75),
+  maxWidth: `min(${theme.spacing(75)}, calc(100% - ${theme.spacing(4)}))`,
 }));
 
 const PageContent = styled(CardContent)(({ theme }) => ({
@@ -43,14 +43,22 @@ const HeaderWrapper = styled('div')(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'space-around',
   gap: theme.spacing(1),
+  [theme.breakpoints.down('sm')]: {
+    flexDirection: 'column',
+  },
 }));
 
-const HeaderTypography = styled(Typography)({
+const HeaderTypography = styled(Typography)(({ theme }) => ({
   fontSize: '2.75rem',
   fontWeight: 'bold',
   flex: 1,
+  minWidth: 0,
+  overflowWrap: 'break-word',
   textAlign: 'center',
-});
+  [theme.breakpoints.down('sm')]: {
+    fontSize: '2rem',
+  },
+}));
 
 interface SetupPageProps {
   title: ReactNode;
