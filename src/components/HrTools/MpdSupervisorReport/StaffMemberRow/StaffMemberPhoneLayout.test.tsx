@@ -43,20 +43,27 @@ const isHiddenAtWidth = (element: Element, stop: Element, width: number) => {
   return false;
 };
 
+// The box between name and stop that keeps the name column from shrinking on desktop
+const findMinWidthBox = (name: Element, stop: Element) => {
+  let current: Element | null = name;
+  while (current && current !== stop) {
+    if (getStyleAtWidth(current, 'min-width', desktopWidth) === '200px') {
+      return current;
+    }
+    current = current.parentElement;
+  }
+  return null;
+};
+
 const getRowParts = (name: HTMLElement, strip: HTMLElement) => {
   const nameItem = name.closest('.MuiGrid-root');
   const quarterItem = strip.closest('.MuiGrid-root');
-  // The box that keeps the name column from shrinking on desktop
-  let nameBox: Element | null = name;
-  while (
-    nameBox &&
-    nameBox !== nameItem &&
-    getStyleAtWidth(nameBox, 'min-width', desktopWidth) !== '200px'
-  ) {
-    nameBox = nameBox.parentElement;
-  }
-  if (!nameItem || !quarterItem || !nameBox || nameBox === nameItem) {
+  if (!nameItem || !quarterItem) {
     throw new Error('Row layout not found');
+  }
+  const nameBox = findMinWidthBox(name, nameItem);
+  if (!nameBox) {
+    throw new Error('Name box not found');
   }
   return { nameItem, quarterItem, nameBox };
 };
