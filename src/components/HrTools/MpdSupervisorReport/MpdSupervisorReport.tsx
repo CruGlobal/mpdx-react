@@ -20,7 +20,6 @@ import {
   NavListButton,
   NavMenuIcon,
   StickyHeader,
-  multiPageHeaderHeight,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { getHeaderTitleAccess } from 'src/components/Shared/MultiPageLayout/helpers';
 import { NavFilterIcon } from 'src/components/Shared/styledComponents/NavFilterIcon';
@@ -45,9 +44,16 @@ import {
   teamPickerNames,
 } from './helpers';
 
+const PageBox = styled(Box)(() => ({
+  height: `calc(100vh - ${navBarHeight})`,
+  display: 'flex',
+  flexDirection: 'column',
+}));
+
 const StyledContainer = styled(Container)(({ theme }) => ({
   padding: theme.spacing(2),
-  height: `calc(100vh - ${navBarHeight} - ${multiPageHeaderHeight})`,
+  flex: 1,
+  minHeight: 0,
   display: 'flex',
   flexDirection: 'column',
   overflow: 'hidden',
@@ -67,7 +73,17 @@ const TitleBox = styled(Box)(() => ({
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(2),
+  // On phones the title and legend button wrap as separate header items
+  [theme.breakpoints.down('sm')]: {
+    display: 'contents',
+  },
 }));
+
+// IconButton's own flex centering, so the badge-wrapped filter icon sits level
+// with the menu icon on phones
+const phoneNavButtonSx = {
+  [theme.breakpoints.down('sm')]: { display: 'inline-flex' },
+};
 
 const QuartersContainer = styled(Box)(() => ({
   display: 'flex',
@@ -162,12 +178,22 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
   );
 
   return (
-    <>
-      <StickyHeader p={2} data-testid="MultiPageHeader">
+    <PageBox>
+      <StickyHeader
+        p={2}
+        data-testid="MultiPageHeader"
+        sx={{
+          flexShrink: 0,
+          // The fixed height only fits one row, so a wrapped header grows
+          // instead of covering the list
+          [theme.breakpoints.down('md')]: { height: 'auto' },
+        }}
+      >
         <StickyHeaderInner>
           <NavListButton
             panelOpen={panelOpen === Panel.Navigation}
             onClick={onNavListToggle}
+            sx={phoneNavButtonSx}
           >
             <NavMenuIcon
               titleAccess={getHeaderTitleAccess(HeaderTypeEnum.HrTools, t)}
@@ -180,6 +206,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
             onClick={onFilterListToggle}
             // The badge count would otherwise join the icon's title in the name
             aria-label={getHeaderTitleAccess(HeaderTypeEnum.Filters, t)}
+            sx={phoneNavButtonSx}
           >
             {/* Keeps the applied filters countable while the panel is closed */}
             <Badge badgeContent={activeFilterCount} color="primary">
@@ -187,8 +214,26 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
             </Badge>
           </NavListButton>
           <TitleBox>
-            <Box display="flex" alignItems="center" gap={1.5}>
-              <Typography variant="h5">{title}</Typography>
+            <Box
+              display={{ xs: 'contents', sm: 'flex' }}
+              alignItems="center"
+              gap={1.5}
+            >
+              <Typography
+                variant="h5"
+                sx={{
+                  // Half the row keeps the title beside the menu buttons and
+                  // pushes the legend button and density toggle onto the next
+                  // row; the h6 size fits the title on one line there
+                  [theme.breakpoints.down('sm')]: {
+                    flexGrow: 1,
+                    flexBasis: '50%',
+                    fontSize: theme.typography.h6.fontSize,
+                  },
+                }}
+              >
+                {title}
+              </Typography>
               <ReportLegendButton />
             </Box>
             {!filterRequired && allPagesLoaded && (
@@ -346,6 +391,6 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
           )}
         </Box>
       </StyledContainer>
-    </>
+    </PageBox>
   );
 };
