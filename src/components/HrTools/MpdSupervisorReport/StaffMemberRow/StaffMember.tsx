@@ -55,12 +55,24 @@ const GridItem = styled(Grid)(({ theme }) => ({
   gap: theme.spacing(2),
 }));
 
-const GridQuarter = styled(Grid)(({ theme }) => ({
+const GridQuarter = styled(Grid, {
+  shouldForwardProp: (prop) => prop !== 'compact',
+})<{ compact: boolean }>(({ theme, compact }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(3),
   flexWrap: 'wrap',
   justifyContent: 'flex-end',
+  // Stacked under the name below md
+  [theme.breakpoints.down('md')]: {
+    marginTop: theme.spacing(compact ? 0.5 : 1),
+  },
+}));
+
+// The 200px floor only applies beside the quarters; stacked, a long name wraps
+const NameColumn = styled(Box)(({ theme }) => ({
+  flexGrow: 1,
+  [theme.breakpoints.up('md')]: { minWidth: 200 },
 }));
 
 // Below md the rows are too narrow for the page's quarter column headers, so
@@ -185,13 +197,7 @@ export const StaffMember: React.FC<StaffMemberProps> = ({
                   {getRowInitials(data)}
                 </Avatar>
               )}
-              <Box
-                sx={{
-                  flexGrow: 1,
-                  minWidth: { md: 200 },
-                  ml: compact ? 0 : 1,
-                }}
-              >
+              <NameColumn sx={{ ml: compact ? 0 : 1 }}>
                 <Box
                   sx={{
                     display: 'flex',
@@ -216,14 +222,9 @@ export const StaffMember: React.FC<StaffMemberProps> = ({
                     compact={compact}
                   />
                 </Box>
-              </Box>
+              </NameColumn>
             </GridItem>
-            <GridQuarter
-              size={{ xs: 12, md: 6 }}
-              sx={{
-                [theme.breakpoints.down('md')]: { mt: compact ? 0.5 : 1 },
-              }}
-            >
+            <GridQuarter size={{ xs: 12, md: 6 }} compact={compact}>
               <FiscalYearQuarters quarters={quarters} />
             </GridQuarter>
           </Grid>
