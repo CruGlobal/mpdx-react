@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement } from 'react';
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import EditIcon from '@mui/icons-material/Edit';
 import ListIcon from '@mui/icons-material/FormatListBulleted';
@@ -7,10 +7,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import { List } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import {
-  AddMenuItemsEnum,
-  renderDialog,
-} from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
+import { AddMenuItemsEnum } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
 import { preloadAddDonation } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/AddDonation/DynamicAddDonation';
 import { preloadCreateContact } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateContact/DynamicCreateContact';
 import { preloadCreateMultipleContacts } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/DynamicCreateMultipleContacts';
@@ -26,10 +23,15 @@ type MenuContent = {
   onMouseEnter: () => void;
 };
 
-export const AddMenuPanel = (): ReactElement => {
-  const [selectedMenuItem, changeSelectedMenuItem] =
-    useState<AddMenuItemsEnum | null>(null);
-  const [dialogOpen, changeDialogOpen] = useState(false);
+interface AddMenuPanelProps {
+  onClose: () => void;
+  onOpenDialog: (menuItem: AddMenuItemsEnum) => void;
+}
+
+export const AddMenuPanel = ({
+  onClose,
+  onOpenDialog,
+}: AddMenuPanelProps): ReactElement => {
   const { openTaskModal, preloadTaskModal } = useTaskModal();
   const theme = useTheme();
   const { t } = useTranslation();
@@ -39,8 +41,7 @@ export const AddMenuPanel = (): ReactElement => {
       text: t('Add Contact'),
       icon: PersonIcon,
       onClick: () => {
-        changeSelectedMenuItem(AddMenuItemsEnum.NewContact);
-        changeDialogOpen(true);
+        onOpenDialog(AddMenuItemsEnum.NewContact);
       },
       onMouseEnter: preloadCreateContact,
     },
@@ -48,8 +49,7 @@ export const AddMenuPanel = (): ReactElement => {
       text: t('Add Multiple Contacts'),
       icon: PeopleIcon,
       onClick: () => {
-        changeSelectedMenuItem(AddMenuItemsEnum.MultipleContacts);
-        changeDialogOpen(true);
+        onOpenDialog(AddMenuItemsEnum.MultipleContacts);
       },
       onMouseEnter: preloadCreateMultipleContacts,
     },
@@ -57,8 +57,7 @@ export const AddMenuPanel = (): ReactElement => {
       text: t('Add Donation'),
       icon: CardGiftcardIcon,
       onClick: () => {
-        changeSelectedMenuItem(AddMenuItemsEnum.AddDonation);
-        changeDialogOpen(true);
+        onOpenDialog(AddMenuItemsEnum.AddDonation);
       },
       onMouseEnter: preloadAddDonation,
     },
@@ -88,25 +87,25 @@ export const AddMenuPanel = (): ReactElement => {
   };
 
   return (
-    <>
-      <List disablePadding data-testid="AddMenuPanelForNavBar">
-        {addMenuContent.map(
-          ({ text, icon: Icon, onClick, onMouseEnter }, index) => (
-            <LeafListItem
-              key={index}
-              disableGutters
-              onClick={onClick}
-              onMouseEnter={onMouseEnter}
-            >
-              <LeafButton style={style}>
-                <Icon size={18} style={iconStyle} />
-                <Title>{text}</Title>
-              </LeafButton>
-            </LeafListItem>
-          ),
-        )}
-      </List>
-      {renderDialog(selectedMenuItem, dialogOpen, changeDialogOpen)}
-    </>
+    <List disablePadding data-testid="AddMenuPanelForNavBar">
+      {addMenuContent.map(
+        ({ text, icon: Icon, onClick, onMouseEnter }, index) => (
+          <LeafListItem
+            key={index}
+            disableGutters
+            onClick={() => {
+              onClick();
+              onClose();
+            }}
+            onMouseEnter={onMouseEnter}
+          >
+            <LeafButton style={style}>
+              <Icon size={18} style={iconStyle} />
+              <Title>{text}</Title>
+            </LeafButton>
+          </LeafListItem>
+        ),
+      )}
+    </List>
   );
 };
