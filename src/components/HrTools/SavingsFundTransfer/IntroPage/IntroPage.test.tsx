@@ -15,11 +15,10 @@ describe('IntroPage', () => {
       </TestRouter>,
     );
 
-    expect(
-      getByText(
-        /please contact HR Services at \(888\) 278-7233 or \(407\) 826-2287/,
-      ),
-    ).toBeInTheDocument();
+    const contactLine = getByText(/please email HR Services at/);
+    expect(contactLine).toHaveTextContent(
+      'please email HR Services at HR@cru.org, or call (888) 278-7233 or (407) 826-2287.',
+    );
     expect(getByText('HR@cru.org')).toHaveAttribute(
       'href',
       'mailto:HR@cru.org',
