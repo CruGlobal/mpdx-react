@@ -456,6 +456,18 @@ context:
   enabled: false
   manifest: context/repositories.json
 
+# Review engine: agent-review (the default) | code-review.
+# code_review keys: effort low|medium|high|xhigh|max, model opus|sonnet|haiku,
+# replaces and always are lists of agent ids; max_findings is optional (an integer >= 1 or all).
+# CI ignores this and runs agent-review's own reviewers, and only a local review can approve.
+engine:
+  name: code-review
+  code_review:
+    effort: xhigh
+    model: opus
+    replaces: [architecture]
+    always: [security, testing, standards]
+
 # Advisory rollout: reviews post normally but never block merges. Still
 # label-gated. Move to `enforce` only once these gates pass.
 rollout:
