@@ -99,9 +99,9 @@ risk:
     - { glob: 'scripts/**/*.ts', points: 1, tier: medium }
     # Shared test infrastructure: a broken helper breaks every suite that uses it.
     - { glob: '__tests__/util/**', points: 1, tier: medium }
+    - { glob: '**/*.test.{ts,tsx}', points: 1, tier: medium }
 
     # ── low (0) — documentation of intent; these never change the score ───────
-    - { glob: '**/*.test.{ts,tsx}', points: 1, tier: low }
     - { glob: '**/*.snap', points: 0, tier: low }
     - { glob: '__tests__/fixtures/**', points: 0, tier: low }
 
