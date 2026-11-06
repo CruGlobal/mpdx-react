@@ -560,5 +560,52 @@ describe('TeamSummary', () => {
           .map((card) => card.textContent),
       ).toEqual(['North Team', 'South Team']);
     });
+
+    it('keeps the names up while a new filter loads', async () => {
+      let answerDepartment = () => {};
+      const departmentAnswered = new Promise<void>((resolve) => {
+        answerDepartment = resolve;
+      });
+      const { findByRole, getByRole } = renderSummary(
+        [
+          { name: 'North Team', departments: ['Cohort A'] },
+          { name: 'South Team', departments: ['Cohort A'] },
+        ],
+        {
+          ManagedStaff: {
+            managedStaff: () => {
+              throw filterRequired(1200);
+            },
+          },
+          ManagedStaffTeamSummary: {
+            managedStaffTeamSummary: async (
+              _root: unknown,
+              args: SummaryArgs,
+            ) => {
+              if (args.departments) {
+                await departmentAnswered;
+              }
+              throw filterRequired(1200);
+            },
+          },
+        },
+      );
+      await findByRole('region', { name: 'Teams' });
+
+      act(() => {
+        setDepartmentFn('Cohort A');
+      });
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+          departments: ['Cohort A'],
+        }),
+      );
+      await act(async () => {});
+
+      // The department's summary has not answered yet
+      expect(getByRole('region', { name: 'Teams' })).toBeInTheDocument();
+      answerDepartment();
+      expect(await findByRole('region', { name: 'Teams' })).toBeInTheDocument();
+    });
   });
 });

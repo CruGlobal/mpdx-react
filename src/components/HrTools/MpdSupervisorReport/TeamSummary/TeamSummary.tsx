@@ -177,6 +177,16 @@ export const TeamSummary: React.FC = () => {
     () => teamSummaryRows(data?.managedStaffTeamSummary ?? []),
     [data],
   );
+  // Apollo clears the error while new filters load, so keep the last answer
+  // until the API says whether the reach is still too large to count.
+  const settledTooManyToCount = !!filterRequiredFromError(error);
+  const [lastTooManyToCount, setLastTooManyToCount] = useState(false);
+  useEffect(() => {
+    if (!loading) {
+      setLastTooManyToCount(settledTooManyToCount);
+    }
+  }, [loading, settledTooManyToCount]);
+  const tooManyToCount = loading ? lastTooManyToCount : settledTooManyToCount;
 
   // Only a roster without a team says whether the reach trips the row cap, so
   // a picked team keeps the last answer.
@@ -211,7 +221,6 @@ export const TeamSummary: React.FC = () => {
     );
   }
 
-  const tooManyToCount = !!filterRequiredFromError(error);
   const cards: Array<{ name: string; row?: TeamSummaryRow }> = tooManyToCount
     ? teamPickerNames(teamsData?.managedStaffTeams, department).map((name) => ({
         name,

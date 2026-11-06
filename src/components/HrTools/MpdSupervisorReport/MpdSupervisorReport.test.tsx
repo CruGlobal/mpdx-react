@@ -408,7 +408,7 @@ describe('MpdSupervisorReport', () => {
         queryByRole('heading', { name: /too many to list at once/ }),
       ).not.toBeInTheDocument();
       await act(() => new Promise((resolve) => setTimeout(resolve, 100)));
-      // The summary shares the list's request instead of sending its own after it
+      // The cards count through their own query, so the list is asked for once
       expect(
         managedStaffOperations().filter(
           ({ variables }) => variables.userPersonTypes,
