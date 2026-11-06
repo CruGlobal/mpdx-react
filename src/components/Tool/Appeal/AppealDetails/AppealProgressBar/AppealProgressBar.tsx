@@ -36,6 +36,7 @@ export interface AppealProgressBarProps {
   committed: number;
   amount: number;
   amountCurrency: string;
+  centerValuesOnPhones?: boolean;
 }
 
 const AppealProgressBar = ({
@@ -44,6 +45,7 @@ const AppealProgressBar = ({
   committed,
   amount,
   amountCurrency,
+  centerValuesOnPhones = false,
 }: AppealProgressBarProps): ReactElement => {
   const { classes } = useStyles();
   const locale = useLocale();
@@ -62,7 +64,12 @@ const AppealProgressBar = ({
 
   return (
     <>
-      <Box display="flex" justifyContent="end">
+      <Box
+        display="flex"
+        justifyContent={
+          centerValuesOnPhones ? { xs: 'center', sm: 'end' } : 'end'
+        }
+      >
         <Tooltip title="Given" placement="top" arrow>
           <Typography
             variant="body2"
