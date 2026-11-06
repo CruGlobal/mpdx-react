@@ -1,6 +1,13 @@
 import React, { useEffect, useId, useMemo, useState } from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Alert, Box, ButtonBase, Collapse, Typography } from '@mui/material';
+import {
+  Alert,
+  Box,
+  ButtonBase,
+  Collapse,
+  Typography,
+  useMediaQuery,
+} from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { omit } from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -30,6 +37,13 @@ const badgeStatuses = [
   MpdHealthStatusEnum.Blue,
   MpdHealthStatusEnum.Gray,
 ];
+
+// Two rows of cards plus a sliver of a third, so the cut shows there is more.
+// Match these to the card heights when the cards change. On a phone a card
+// with four or five statuses wraps its badges and grows to about 107px.
+const countedCardsMaxHeight = 200;
+const countedCardsPhoneMaxHeight = 250;
+const nameOnlyCardsMaxHeight = 120;
 
 interface TeamCardProps {
   name: string;
@@ -147,6 +161,8 @@ const TeamCard: React.FC<TeamCardProps> = ({
  */
 export const TeamSummary: React.FC = () => {
   const { t } = useTranslation();
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down('sm'));
   const {
     queryVariables,
     team,
@@ -198,6 +214,32 @@ export const TeamSummary: React.FC = () => {
   }, [team, staffLoading, filterRequired]);
   const overRowCap = !!filterRequired || (!!team && reachOverRowCap);
 
+  const cards: Array<{ name: string; row?: TeamSummaryRow }> = tooManyToCount
+    ? teamPickerNames(teamsData?.managedStaffTeams, department).map((name) => ({
+        name,
+      }))
+    : summary.map((row) => ({ name: row.name, row }));
+
+  // Scroll only the cards box: the page around it must not move. The box is
+  // state, not a ref, because it remounts while a new filter loads.
+  const [cardsBox, setCardsBox] = useState<HTMLDivElement | null>(null);
+  const cardOrder = cards.map(({ name }) => name).join('\n');
+  useEffect(() => {
+    const picked = cardsBox?.querySelector<HTMLElement>(
+      '[aria-pressed="true"]',
+    );
+    if (!cardsBox || !picked) {
+      return;
+    }
+    const top = picked.offsetTop;
+    const bottom = top + picked.offsetHeight;
+    if (top < cardsBox.scrollTop) {
+      cardsBox.scrollTop = top;
+    } else if (bottom > cardsBox.scrollTop + cardsBox.clientHeight) {
+      cardsBox.scrollTop = bottom - cardsBox.clientHeight;
+    }
+  }, [cardsBox, team, cardOrder]);
+
   if (teamsError && !teamsData) {
     return (
       <Alert
@@ -220,12 +262,6 @@ export const TeamSummary: React.FC = () => {
       </Alert>
     );
   }
-
-  const cards: Array<{ name: string; row?: TeamSummaryRow }> = tooManyToCount
-    ? teamPickerNames(teamsData?.managedStaffTeams, department).map((name) => ({
-        name,
-      }))
-    : summary.map((row) => ({ name: row.name, row }));
 
   // Over the row cap the cards are how a team gets picked, so they follow the
   // picker's limits; under it they show every team in the results.
@@ -274,7 +310,22 @@ export const TeamSummary: React.FC = () => {
         </ButtonBase>
       </Typography>
       <Collapse in={open} id={cardsId}>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+        <Box
+          ref={setCardsBox}
+          sx={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 1,
+            // The offset parent, so a card's offsetTop is within the box
+            position: 'relative',
+            maxHeight: tooManyToCount
+              ? nameOnlyCardsMaxHeight
+              : isPhone
+                ? countedCardsPhoneMaxHeight
+                : countedCardsMaxHeight,
+            overflowY: 'auto',
+          }}
+        >
           {cards.map(({ name, row }) => (
             <TeamCard
               key={name}
