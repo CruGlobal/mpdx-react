@@ -1,3 +1,4 @@
+import { missingValue } from '../../../Shared/helpers/missingValue';
 import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
 import {
   createRenderFormComponent,
@@ -34,6 +35,15 @@ describe('EditForm', () => {
     expect(getByText('Doe, John')).toBeInTheDocument();
   });
 
+  it('shows a three-column skeleton until HCM loads', () => {
+    const { getAllByTestId, queryByTestId } = renderComponent({
+      contextOverrides: { hcmLoading: true },
+    });
+
+    expect(getAllByTestId('name-display-skeleton-column')).toHaveLength(3);
+    expect(queryByTestId('amount-three')).not.toBeInTheDocument();
+  });
+
   it('displays financial balances from context', () => {
     const { getByTestId } = renderComponent();
 
@@ -41,6 +51,8 @@ describe('EditForm', () => {
     expect(getByTestId('amount-one')).toHaveTextContent('$40,000.00');
     // currentSalaryCap: value in backend
     expect(getByTestId('amount-two')).toHaveTextContent('$100,000.00');
+    // remainingAllowableSalary from the API
+    expect(getByTestId('amount-three')).toHaveTextContent('$55,000.00');
   });
 
   it('handles missing calculations gracefully', () => {
@@ -63,6 +75,8 @@ describe('EditForm', () => {
     expect(getByTestId('amount-one')).toHaveTextContent('$0.00');
     // currentSalaryCap calculation done in backend
     expect(getByTestId('amount-two')).toHaveTextContent('-$40,000.00');
+    // remainingAllowableSalary shows a dash when the API leaves it out
+    expect(getByTestId('amount-three')).toHaveTextContent(missingValue);
   });
 
   it('renders all child components when user exceeds cap', () => {

@@ -18,6 +18,7 @@ import * as yup from 'yup';
 import { DesignationAccountAutocomplete } from 'src/common/Autocompletes/DesignationAccountAutocomplete';
 import { CurrencyAutocomplete } from 'src/components/Shared/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
 import { DonorAccountAutocomplete } from 'src/components/Shared/Autocomplete/DonorAccountAutocomplete/DonorAccountAutocomplete';
+import { DialogForm } from 'src/components/Shared/Forms/DialogForm';
 import {
   CancelButton,
   DeleteButton,
@@ -169,13 +170,12 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
           setFieldTouched,
           handleChange,
           handleBlur,
-          handleSubmit,
           isSubmitting,
           isValid,
           errors,
           touched,
         }): ReactElement => (
-          <form onSubmit={handleSubmit} noValidate>
+          <DialogForm noValidate>
             <DialogContent dividers>
               <FormFieldsGridContainer>
                 <Grid size={12}>
@@ -370,7 +370,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                 aria-labelledby={t('Remove donation confirmation')}
               />
             </DialogActions>
-          </form>
+          </DialogForm>
         )}
       </Formik>
     </Modal>

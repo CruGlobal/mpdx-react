@@ -18,6 +18,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import {
   MpdSupervisorReportQuickFilterEnum,
   quickFilterDescription,
+  quickFilterIds,
   quickFilterLabel,
 } from '../Filters/mpdSupervisorReportFilters';
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
@@ -92,12 +93,14 @@ export const ReportLegendPanel: React.FC = () => {
 
   const colorExplanations: Record<MpdHealthStatusEnum, string> = {
     [MpdHealthStatusEnum.Green]: t(
-      'Payroll was at or above their Monthly Gross Salary (within $5).',
+      'Payroll was at or above their Monthly Gross Salary (within $5) and their New Staff Monthly Salary. For interns, payroll was at or above their Monthly Gross Salary (within $5).',
     ),
     [MpdHealthStatusEnum.Yellow]: t(
       'Payroll was below their Monthly Gross Salary but at or above their New Staff Monthly Salary. For interns, payroll was below their Monthly Gross Salary.',
     ),
-    [MpdHealthStatusEnum.Red]: t('Payroll was below both benchmarks.'),
+    [MpdHealthStatusEnum.Red]: t(
+      'Payroll was below their New Staff Monthly Salary, even if they were paid their full Monthly Gross Salary. Interns are never at risk.',
+    ),
     [MpdHealthStatusEnum.Blue]: t(
       "Part-time field staff and volunteers aren't graded against salary benchmarks.",
     ),
@@ -124,10 +127,9 @@ export const ReportLegendPanel: React.FC = () => {
     };
   });
 
-  const filters = [
-    MpdSupervisorReportQuickFilterEnum.NegativeLastMonth,
-    MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative,
-  ];
+  const filters = quickFilterIds.filter(
+    (id) => id !== MpdSupervisorReportQuickFilterEnum.AllPeople,
+  );
 
   const newStaff = newStaffSalaryCopy(t);
 
@@ -186,7 +188,7 @@ export const ReportLegendPanel: React.FC = () => {
           })}
           <Typography variant="body2" color="text.secondary">
             {t(
-              'A staff member whose Monthly Gross Salary is below their New Staff Monthly Salary can show green quarters yet still have negative months. Their Monthly Gross Salary is marked red in their details.',
+              'Quarter colors measure pay, not the staff account balance. To find staff whose balance is below zero, use the Negative filters.',
             )}
           </Typography>
         </Section>
@@ -227,7 +229,7 @@ export const ReportLegendPanel: React.FC = () => {
         <Section title={t('Filters')}>
           <Typography variant="body2" sx={{ mb: 1 }}>
             {t(
-              'Interns, part-time field staff and volunteers have no New Staff Monthly Salary, so these filters never include them.',
+              'These filters leave out interns, part-time field staff and volunteers.',
             )}
           </Typography>
           <Box component="dl" sx={{ m: 0 }}>
@@ -238,7 +240,9 @@ export const ReportLegendPanel: React.FC = () => {
             ))}
           </Box>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            {t('The current month is never counted.')}
+            {t(
+              "The current month is never counted. Last month's balance can still change for a few weeks as late items post.",
+            )}
           </Typography>
         </Section>
 

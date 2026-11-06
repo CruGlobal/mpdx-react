@@ -13,6 +13,11 @@ import { ContactFlowSetupColumn } from 'src/components/Contacts/ContactFlow/Cont
 import { UnusedStatusesColumn } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/Column/UnusedStatusesColumn';
 import { ContactFlowSetupDragLayer } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/DragLayer/ContactFlowSetupDragLayer';
 import { ContactFlowSetupHeader } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/Header/ContactFlowSetupHeader';
+import {
+  FlowsScrollHint,
+  flowsBoardSnapSx,
+  flowsColumnSnapSx,
+} from 'src/components/Contacts/ContactFlow/FlowsScrollHint/FlowsScrollHint';
 import { getDefaultFlowOptions } from 'src/components/Contacts/ContactFlow/contactFlowDefaultOptions';
 import {
   FlowOption,
@@ -168,6 +173,7 @@ const ContactFlowSetupPage: React.FC = () => {
               updateOptions={updateOptions}
               resetColumnsMessage={resetColumnsMessage}
             />
+            <FlowsScrollHint />
             {flowOptions && (
               <Box
                 display="grid"
@@ -180,6 +186,8 @@ const ContactFlowSetupPage: React.FC = () => {
                 overflow="auto"
                 style={{ overflowX: 'auto' }}
                 gridAutoColumns="300px"
+                sx={flowsBoardSnapSx}
+                data-testid="flowsSetupBoard"
               >
                 {flowOptions.map((column, idx) => (
                   <Box
@@ -187,6 +195,7 @@ const ContactFlowSetupPage: React.FC = () => {
                     minWidth={300}
                     p={2}
                     key={`flow-column-${column.id ?? idx}`}
+                    sx={flowsColumnSnapSx}
                   >
                     <ContactFlowSetupColumn
                       index={idx}
@@ -207,7 +216,12 @@ const ContactFlowSetupPage: React.FC = () => {
                     />
                   </Box>
                 ))}
-                <StickyBox width={'100%'} minWidth={250} p={2}>
+                <StickyBox
+                  width={'100%'}
+                  minWidth={250}
+                  p={2}
+                  sx={flowsColumnSnapSx}
+                >
                   <UnusedStatusesColumn
                     accountListId={accountListId}
                     columnWidth={columnWidth}

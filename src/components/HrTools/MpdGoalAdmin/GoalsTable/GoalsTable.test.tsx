@@ -164,6 +164,24 @@ describe('GoalsTable', () => {
     );
   });
 
+  it("shows each row's cohort in a Cohort column after Name", () => {
+    const { getAllByRole } = renderTable([
+      { ...rows[0], cohortName: 'Fall NSO 2026' },
+      { ...rows[1], cohortName: 'Spring NSO 2027' },
+    ]);
+    const headers = getAllByRole('columnheader').map(
+      (cell) => cell.textContent,
+    );
+    expect(headers.indexOf('Cohort')).toBe(headers.indexOf('Name') + 1);
+    const cohortCells = getAllByRole('row')
+      .slice(1)
+      .map(
+        (row) => within(row).getAllByRole('cell')[headers.indexOf('Cohort')],
+      );
+    expect(cohortCells[0]).toHaveTextContent('Fall NSO 2026');
+    expect(cohortCells[1]).toHaveTextContent('Spring NSO 2027');
+  });
+
   it('shows the OneApp sub-ministry under Campus Division', () => {
     const { getAllByRole } = renderTable([
       { ...rows[0], subministry: 'CMCH01' },
@@ -198,6 +216,27 @@ describe('GoalsTable', () => {
     const { getByText, queryByText } = renderTable();
     expect(getByText('—')).toBeInTheDocument();
     expect(queryByText('$0.00')).not.toBeInTheDocument();
+  });
+
+  it('labels the Send Status column with Ready to Send and Not Ready chips', () => {
+    const { getAllByRole } = renderTable([
+      { ...rows[0], goalStatus: GoalStatusEnum.Complete },
+      {
+        ...rows[0],
+        id: 'not-ready-row',
+        goalStatus: GoalStatusEnum.Incomplete,
+      },
+    ]);
+    expect(getFirstRowCell(getAllByRole, 'Send Status')).toHaveTextContent(
+      'Ready to Send',
+    );
+    const headers = getAllByRole('columnheader').map(
+      (cell) => cell.textContent,
+    );
+    const secondRow = within(getAllByRole('row')[2]).getAllByRole('cell');
+    expect(secondRow[headers.indexOf('Send Status')]).toHaveTextContent(
+      'Not Ready',
+    );
   });
 
   it('renders a Sent chip with the info color for an already-sent goal', () => {
@@ -277,7 +316,7 @@ describe('GoalsTable', () => {
     expect(ctx.selectedRowIds.has('row-3')).toBe(true);
   });
 
-  it('blocks the row action for a goal that is not Complete', async () => {
+  it('blocks the row action for a goal that is not Ready to Send', async () => {
     const { getAllByRole, findByRole } = await renderLoadedTable();
     const button = getAllByRole('button', { name: /Actions for/ })[1];
     expect(button).toBeDisabled();

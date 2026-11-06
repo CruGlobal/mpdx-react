@@ -94,28 +94,67 @@ describe('ReportLegendPanel', () => {
     expect(getByText('$2,000.00')).toBeInTheDocument();
   });
 
-  it('matches the API grading order for red and green', async () => {
-    const { getByText } = await openLegend();
+  it('matches the API grading for red and green', async () => {
+    const { getByText, queryByText } = await openLegend();
 
-    // Green is checked first, so red needs payroll below both benchmarks
-    expect(getByText(/Payroll was below both benchmarks/)).toBeInTheDocument();
+    // MPDX-10112: payroll below the New Staff salary is red even at full gross salary
     expect(
-      getByText(/can show green quarters yet still have negative months/),
+      getByText(
+        /Payroll was below their New Staff Monthly Salary, even if they were paid their full Monthly Gross Salary\. Interns are never at risk\./,
+      ),
     ).toBeInTheDocument();
+    expect(
+      getByText(
+        /Payroll was at or above their Monthly Gross Salary \(within \$5\) and their New Staff Monthly Salary\. For interns, payroll was at or above their Monthly Gross Salary \(within \$5\)\./,
+      ),
+    ).toBeInTheDocument();
+    expect(queryByText(/below both benchmarks/)).not.toBeInTheDocument();
+    expect(queryByText(/can show green quarters/)).not.toBeInTheDocument();
   });
 
-  it('defines the negative month filters', async () => {
+  it('defines the balance filters', async () => {
     const { getByText } = await openLegend();
 
     expect(getByText('Negative last month')).toBeInTheDocument();
     expect(
       getByText(
-        'Staff whose payroll last month was below their New Staff Monthly Salary.',
+        'Staff whose staff account balance was below zero at the end of last month.',
       ),
     ).toBeInTheDocument();
-    expect(getByText('Negative last 3+ months')).toBeInTheDocument();
+    expect(getByText('Negative last 3 months')).toBeInTheDocument();
     expect(
-      getByText('The current month is never counted.'),
+      getByText(
+        'Staff whose staff account balance was below zero at the end of each of the last three months.',
+      ),
+    ).toBeInTheDocument();
+    expect(getByText('Negative 3+ months in past year')).toBeInTheDocument();
+    expect(
+      getByText(
+        'Staff whose staff account balance was below zero at the end of at least three of the last 12 months.',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      getByText('Spending more than income last 3 months'),
+    ).toBeInTheDocument();
+    expect(
+      getByText(
+        'Staff whose expenses were greater than their income in each of the last three months.',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      getByText(
+        "The current month is never counted. Last month's balance can still change for a few weeks as late items post.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('says quarter colors measure pay, not the balance', async () => {
+    const { getByText } = await openLegend();
+
+    expect(
+      getByText(
+        'Quarter colors measure pay, not the staff account balance. To find staff whose balance is below zero, use the Negative filters.',
+      ),
     ).toBeInTheDocument();
   });
 
@@ -162,7 +201,7 @@ describe('ReportLegendPanel', () => {
 
     expect(
       getByText(
-        'Interns, part-time field staff and volunteers have no New Staff Monthly Salary, so these filters never include them.',
+        'These filters leave out interns, part-time field staff and volunteers.',
       ),
     ).toBeInTheDocument();
   });

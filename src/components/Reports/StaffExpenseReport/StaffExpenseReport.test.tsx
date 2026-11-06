@@ -9,6 +9,7 @@ import {
   within,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { GraphQLError } from 'graphql';
 import { Settings } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
@@ -16,7 +17,11 @@ import {
   DeepPartialMock,
   GqlMockedProvider,
 } from '__tests__/util/graphqlMocking';
-import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
+import matchMediaMock from '__tests__/util/matchMediaMock';
+import {
+  HcmQuery,
+  useHcmQuery,
+} from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import {
   StaffAccountStatusEnum,
@@ -38,6 +43,7 @@ interface TestComponentProps {
   personNumber?: string;
   failReportCall?: FailCall;
   failHcmCall?: FailCall;
+  hcmError?: GraphQLError;
 }
 
 const salaryCategory = {
@@ -74,6 +80,14 @@ const salaryCategory = {
   breakdownByMonth: [{ month: '2020-01-01', total: -4900 }],
 };
 
+// Records each Hcm read's options, since Apollo merges the page's reads into one request
+jest.mock('src/components/HrTools/Shared/HcmData/Hcm.generated', () => {
+  const actual = jest.requireActual(
+    'src/components/HrTools/Shared/HcmData/Hcm.generated',
+  );
+  return { ...actual, useHcmQuery: jest.fn(actual.useHcmQuery) };
+});
+
 const mutationSpy = jest.fn();
 const onNavListToggle = jest.fn();
 const push = jest.fn();
@@ -87,6 +101,16 @@ const router = {
   isReady: true,
   push,
 };
+
+const hcmPersonNotFound = new GraphQLError('HCM person not found', {
+  extensions: { code: 'HCM_PERSON_NOT_FOUND' },
+});
+const hcmUnavailable = new GraphQLError('HCM UserInfo service unavailable', {
+  extensions: { code: 'HCM_UNAVAILABLE' },
+});
+
+const notFoundNote =
+  "HR no longer has a record for you, so salary isn't split by person on this report.";
 
 const calls = { report: 0, hcm: 0 };
 beforeEach(() => {
@@ -129,6 +153,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   personNumber,
   failReportCall,
   failHcmCall,
+  hcmError,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter
@@ -299,29 +324,33 @@ const TestComponent: React.FC<TestComponentProps> = ({
                   },
                 },
                 Hcm: {
-                  hcm: failCallsWhen<HcmMock>(
-                    failHcmCall,
-                    'hcm',
-                    'HCM is unavailable',
-                    [
-                      {
-                        usStaffGroup,
-                        outOfSync: false,
-                        staffInfo: {
-                          personNumber: '000000111',
-                          preferredName: 'Alex',
-                        },
-                      },
-                      {
-                        usStaffGroup,
-                        outOfSync: false,
-                        staffInfo: {
-                          personNumber: '000000222',
-                          preferredName: 'Jordan',
-                        },
-                      },
-                    ],
-                  ),
+                  hcm: hcmError
+                    ? ((() => {
+                        throw hcmError;
+                      }) as unknown as HcmMock)
+                    : failCallsWhen<HcmMock>(
+                        failHcmCall,
+                        'hcm',
+                        'HCM is unavailable',
+                        [
+                          {
+                            usStaffGroup,
+                            outOfSync: false,
+                            staffInfo: {
+                              personNumber: '000000111',
+                              preferredName: 'Alex',
+                            },
+                          },
+                          {
+                            usStaffGroup,
+                            outOfSync: false,
+                            staffInfo: {
+                              personNumber: '000000222',
+                              preferredName: 'Jordan',
+                            },
+                          },
+                        ],
+                      ),
                 },
               }}
               onCall={mutationSpy}
@@ -350,6 +379,13 @@ describe('StaffExpenseReport', () => {
     expect(
       await findByText('Ending Balance (All Accounts): $4,000.00'),
     ).toBeInTheDocument();
+  });
+
+  it('shows no HR record note when HCM loads', async () => {
+    const { findByText, queryByText } = render(<TestComponent />);
+
+    await findByText('Ending Balance (All Accounts): $4,000.00');
+    expect(queryByText(notFoundNote)).not.toBeInTheDocument();
   });
 
   it('shows a skeleton for the overall balance while loading', async () => {
@@ -585,6 +621,91 @@ describe('StaffExpenseReport', () => {
       expect(queryByRole('alert')).not.toBeInTheDocument();
       expect(calls.hcm).toBe(2);
     });
+
+    it('shows Try Again when HCM is unavailable', async () => {
+      const { findByRole, queryByTestId, queryByText } = render(
+        <TestComponent hcmError={hcmUnavailable} />,
+      );
+
+      const alert = await findByRole('alert');
+      expect(
+        within(alert).getByRole('button', { name: 'Try Again' }),
+      ).toBeInTheDocument();
+      expect(queryByTestId('overall-balance')).not.toBeInTheDocument();
+      expect(queryByText(notFoundNote)).not.toBeInTheDocument();
+    });
+
+    describe('because HCM has no record of the person', () => {
+      it('notes that salary is not split by person', async () => {
+        const { findByRole } = render(
+          <TestComponent hcmError={hcmPersonNotFound} />,
+        );
+
+        expect(await findByRole('status')).toHaveTextContent(notFoundNote);
+      });
+
+      it('names the staff member rather than you in supervisor view', async () => {
+        const { findByText, queryByText } = render(
+          <TestComponent
+            staffAccountId={staffAccountId}
+            personNumber={personNumber}
+            hcmError={hcmPersonNotFound}
+          />,
+        );
+
+        expect(
+          await findByText(
+            "HR no longer has a record for this person, so salary isn't split by person on this report.",
+          ),
+        ).toBeInTheDocument();
+        expect(queryByText(notFoundNote)).not.toBeInTheDocument();
+      });
+
+      it('loads the report instead of the error', async () => {
+        const { findByText, queryByRole } = render(
+          <TestComponent hcmError={hcmPersonNotFound} />,
+        );
+
+        expect(
+          await findByText('Ending Balance (All Accounts): $4,000.00'),
+        ).toBeInTheDocument();
+        expect(queryByRole('alert')).not.toBeInTheDocument();
+      });
+
+      it('passes the handled codes to every Hcm read', async () => {
+        const { findByText } = render(
+          <TestComponent hcmError={hcmPersonNotFound} />,
+        );
+
+        await findByText('Ending Balance (All Accounts): $4,000.00');
+        expect(mutationSpy).toHaveGraphqlOperation('Hcm');
+        mutationSpy.mock.calls
+          .filter(([{ operation }]) => operation.operationName === 'Hcm')
+          .forEach(([{ operation }]) =>
+            expect(operation.getContext().suppressErrorCodes).toEqual([
+              'HCM_PERSON_NOT_FOUND',
+            ]),
+          );
+        // The merged request carries whichever read's context started it, so every read needs it
+        const hcmReads = jest.mocked(useHcmQuery).mock.calls;
+        expect(hcmReads.length).toBeGreaterThan(0);
+        hcmReads.forEach(([options]) =>
+          expect(options?.context?.suppressErrorCodes).toEqual([
+            'HCM_PERSON_NOT_FOUND',
+          ]),
+        );
+      });
+
+      it('requests only the base fund types', async () => {
+        render(<TestComponent hcmError={hcmPersonNotFound} />);
+
+        await waitFor(() =>
+          expect(mutationSpy).toHaveGraphqlOperation('ReportsStaffExpenses', {
+            fundTypes: ['Primary', 'Savings', 'Staff Conference Savings'],
+          }),
+        );
+      });
+    });
   });
 
   it('shows a zero overall balance when the report has no funds', async () => {
@@ -644,6 +765,63 @@ describe('StaffExpenseReport', () => {
 
     await waitFor(() => expect(prevButton).not.toBeDisabled());
     expect(nextButton).not.toBeDisabled();
+  });
+
+  describe('month buttons on desktop', () => {
+    beforeEach(() => {
+      matchMediaMock({ width: '1024px' });
+    });
+
+    it('shows text labels next to the chevrons', async () => {
+      const { findByRole, getByRole } = render(<TestComponent />);
+
+      const prevButton = await findByRole('button', { name: 'Previous Month' });
+      const nextButton = getByRole('button', { name: 'Next Month' });
+      expect(prevButton).toHaveTextContent('Previous Month');
+      expect(nextButton).toHaveTextContent('Next Month');
+      expect(within(prevButton).getByTestId('ChevronLeftIcon')).toBeVisible();
+      expect(within(nextButton).getByTestId('ChevronRightIcon')).toBeVisible();
+    });
+  });
+
+  describe('month buttons on phones', () => {
+    beforeEach(() => {
+      matchMediaMock({ width: '390px' });
+    });
+
+    it('shows only the chevrons but keeps the button names', async () => {
+      const { findByRole, getByRole, queryByText } = render(<TestComponent />);
+
+      expect(
+        await findByRole('heading', { name: 'January 2020', level: 6 }),
+      ).toBeInTheDocument();
+      expect(queryByText('Previous Month')).not.toBeInTheDocument();
+      expect(queryByText('Next Month')).not.toBeInTheDocument();
+
+      const prevButton = getByRole('button', { name: 'Previous Month' });
+      const nextButton = getByRole('button', { name: 'Next Month' });
+      expect(within(prevButton).getByTestId('ChevronLeftIcon')).toBeVisible();
+      expect(within(nextButton).getByTestId('ChevronRightIcon')).toBeVisible();
+    });
+
+    it('changes the month when the chevrons are clicked', async () => {
+      const { findByText, getByRole } = render(<TestComponent />);
+
+      await findByText('Ending Balance (All Accounts): $4,000.00');
+      userEvent.click(getByRole('button', { name: 'Previous Month' }));
+      expect(
+        getByRole('heading', { name: 'December 2019', level: 6 }),
+      ).toBeInTheDocument();
+
+      // Wait for December to load, since the buttons are disabled meanwhile
+      await waitFor(() =>
+        expect(getByRole('button', { name: 'Next Month' })).toBeEnabled(),
+      );
+      userEvent.click(getByRole('button', { name: 'Next Month' }));
+      expect(
+        getByRole('heading', { name: 'January 2020', level: 6 }),
+      ).toBeInTheDocument();
+    });
   });
 
   it('correctly displays totals for income and expenses', async () => {

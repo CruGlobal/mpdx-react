@@ -111,7 +111,181 @@ const MocksProviders: React.FC<MocksProvidersProps> = ({
   );
 };
 
+// jsdom doesn't lay anything out, so every element reports 0 for its widths and
+// scroll position. Report the sizes a browser would measure for the tab row (the
+// element that scrolls the task filter tabs) and leave every other element alone.
+const tabRowMetrics = { scrollWidth: 0, clientWidth: 0, scrollLeft: 0 };
+type TabRowMetric = keyof typeof tabRowMetrics;
+const tabRowMetricNames: TabRowMetric[] = [
+  'scrollWidth',
+  'clientWidth',
+  'scrollLeft',
+];
+const elementMetricDescriptors = tabRowMetricNames.map((name) => ({
+  name,
+  inherited: Object.getOwnPropertyDescriptor(Element.prototype, name),
+  own: Object.getOwnPropertyDescriptor(HTMLElement.prototype, name),
+}));
+
+const isTabRow = (element: Element): boolean =>
+  element.getAttribute('data-testid') === 'TaskFilterTabs';
+
+const mockTabRowMetrics = (
+  metrics: Pick<typeof tabRowMetrics, 'scrollWidth' | 'clientWidth'>,
+) => {
+  Object.assign(tabRowMetrics, metrics, { scrollLeft: 0 });
+  elementMetricDescriptors.forEach(({ name, inherited }) => {
+    Object.defineProperty(HTMLElement.prototype, name, {
+      configurable: true,
+      get(this: HTMLElement) {
+        return isTabRow(this)
+          ? tabRowMetrics[name]
+          : inherited?.get?.call(this);
+      },
+      set(this: HTMLElement, value: number) {
+        if (isTabRow(this)) {
+          tabRowMetrics[name] = value;
+        } else {
+          inherited?.set?.call(this, value);
+        }
+      },
+    });
+  });
+};
+
+const restoreTabRowMetrics = () => {
+  elementMetricDescriptors.forEach(({ name, own }) => {
+    if (own) {
+      Object.defineProperty(HTMLElement.prototype, name, own);
+    } else {
+      Reflect.deleteProperty(HTMLElement.prototype, name);
+    }
+  });
+};
+
+const scrollTabRow = (tabRow: HTMLElement, scrollLeft: number) => {
+  act(() => {
+    tabRow.scrollLeft = scrollLeft;
+    tabRow.dispatchEvent(new Event('scroll'));
+  });
+};
+
 describe('tasks page', () => {
+  describe('filter tabs scroll cue', () => {
+    afterEach(() => {
+      restoreTabRowMetrics();
+    });
+
+    it('fades the right edge on phones while more tabs are past it', async () => {
+      matchMediaMock({ width: '390px' });
+      mockTabRowMetrics({ scrollWidth: 620, clientWidth: 390 });
+      const { findByTestId, queryByTestId } = render(
+        <MocksProviders>
+          <Tasks />
+        </MocksProviders>,
+      );
+
+      expect(await findByTestId('TaskFilterTabsFadeRight')).toBeInTheDocument();
+      expect(queryByTestId('TaskFilterTabsFadeLeft')).not.toBeInTheDocument();
+    });
+
+    it('fades both edges in the middle and only the left edge at the end', async () => {
+      matchMediaMock({ width: '390px' });
+      mockTabRowMetrics({ scrollWidth: 620, clientWidth: 390 });
+      const { findByTestId, getByTestId, queryByTestId } = render(
+        <MocksProviders>
+          <Tasks />
+        </MocksProviders>,
+      );
+      const tabRow = await findByTestId('TaskFilterTabs');
+      expect(getByTestId('TaskFilterTabsFadeRight')).toBeInTheDocument();
+
+      scrollTabRow(tabRow, 115);
+      expect(getByTestId('TaskFilterTabsFadeLeft')).toBeInTheDocument();
+      expect(getByTestId('TaskFilterTabsFadeRight')).toBeInTheDocument();
+
+      scrollTabRow(tabRow, 230);
+      expect(getByTestId('TaskFilterTabsFadeLeft')).toBeInTheDocument();
+      expect(queryByTestId('TaskFilterTabsFadeRight')).not.toBeInTheDocument();
+
+      scrollTabRow(tabRow, 0);
+      expect(queryByTestId('TaskFilterTabsFadeLeft')).not.toBeInTheDocument();
+      expect(getByTestId('TaskFilterTabsFadeRight')).toBeInTheDocument();
+    });
+
+    it('shows no fade when the tabs fit, so desktop looks the same', async () => {
+      mockTabRowMetrics({ scrollWidth: 900, clientWidth: 900 });
+      const { findByRole, findByText, queryByTestId } = render(
+        <MocksProviders>
+          <Tasks />
+        </MocksProviders>,
+      );
+
+      expect(
+        await findByRole('button', { name: 'No Due Date' }),
+      ).toBeInTheDocument();
+      expect(await findByText('Test Subject')).toBeInTheDocument();
+      expect(queryByTestId('TaskFilterTabsFadeLeft')).not.toBeInTheDocument();
+      expect(queryByTestId('TaskFilterTabsFadeRight')).not.toBeInTheDocument();
+    });
+
+    it('keeps the fades hidden from screen readers and out of the way of taps', async () => {
+      matchMediaMock({ width: '390px' });
+      mockTabRowMetrics({ scrollWidth: 620, clientWidth: 390 });
+      const { findByTestId, getByTestId } = render(
+        <MocksProviders>
+          <Tasks />
+        </MocksProviders>,
+      );
+      scrollTabRow(await findByTestId('TaskFilterTabs'), 115);
+
+      const leftFade = getByTestId('TaskFilterTabsFadeLeft');
+      const rightFade = getByTestId('TaskFilterTabsFadeRight');
+      expect(leftFade).toHaveAttribute('aria-hidden', 'true');
+      expect(rightFade).toHaveAttribute('aria-hidden', 'true');
+      expect(leftFade).toHaveStyle('pointer-events: none');
+      expect(rightFade).toHaveStyle('pointer-events: none');
+    });
+
+    it('still switches the filter when a tab behind the fade is clicked', async () => {
+      matchMediaMock({ width: '390px' });
+      mockTabRowMetrics({ scrollWidth: 620, clientWidth: 390 });
+      const mutationSpy = jest.fn();
+      const { findByRole, findByTestId } = render(
+        <MocksProviders onCall={mutationSpy}>
+          <Tasks />
+        </MocksProviders>,
+      );
+      expect(await findByTestId('TaskFilterTabsFadeRight')).toBeInTheDocument();
+
+      // No Due Date is the last tab, so on a phone it starts past the right edge
+      const noDueDateTab = await findByRole('button', { name: 'No Due Date' });
+      userEvent.click(noDueDateTab);
+
+      await waitFor(() =>
+        expect(noDueDateTab).toHaveClass('MuiButton-contained'),
+      );
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('Tasks', {
+          tasksFilter: { completed: false, dateRange: 'no_date' },
+        }),
+      );
+    });
+
+    it('fades the right edge on the tasks page for a contact too', async () => {
+      matchMediaMock({ width: '390px' });
+      mockTabRowMetrics({ scrollWidth: 620, clientWidth: 390 });
+      const { findByTestId, queryByTestId } = render(
+        <MocksProviders routerHasContactId>
+          <Tasks />
+        </MocksProviders>,
+      );
+
+      expect(await findByTestId('TaskFilterTabsFadeRight')).toBeInTheDocument();
+      expect(queryByTestId('TaskFilterTabsFadeLeft')).not.toBeInTheDocument();
+    });
+  });
+
   describe('filter panel', () => {
     it('opens from the saved preference on larger screens', async () => {
       const { getByTestId } = render(
@@ -198,6 +372,27 @@ describe('tasks page', () => {
 
       userEvent.click(getByRole('button', { name: /Log Task/ }));
       expect(openTaskModal).toHaveBeenCalledWith({ view: TaskModalEnum.Log });
+    });
+  });
+
+  describe('search box', () => {
+    it('searches tasks from the search field on phones', async () => {
+      matchMediaMock({ width: '390px' });
+      const mutationSpy = jest.fn();
+      const { findByPlaceholderText } = render(
+        <MocksProviders onCall={mutationSpy}>
+          <Tasks />
+        </MocksProviders>,
+      );
+
+      const searchBox = await findByPlaceholderText('Search Tasks');
+      userEvent.type(searchBox, 'call');
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('Tasks', {
+          tasksFilter: { wildcardSearch: 'call' },
+        }),
+      );
     });
   });
 

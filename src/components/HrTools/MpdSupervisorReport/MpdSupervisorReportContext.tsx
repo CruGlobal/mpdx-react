@@ -202,6 +202,14 @@ export const MpdSupervisorReportProvider: React.FC<{
       negativeThreeMonths:
         activeQuickFilter ===
           MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative || null,
+      negativeThreeMonthsInPastYear:
+        activeQuickFilter ===
+          MpdSupervisorReportQuickFilterEnum.ThreeMonthsInPastYearNegative ||
+        null,
+      expensesOverIncomeThreeMonths:
+        activeQuickFilter ===
+          MpdSupervisorReportQuickFilterEnum.ThreeMonthsSpendingOverIncome ||
+        null,
     }),
     [
       debouncedSearch,

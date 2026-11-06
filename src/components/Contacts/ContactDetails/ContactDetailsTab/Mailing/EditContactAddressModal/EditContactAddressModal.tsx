@@ -17,6 +17,7 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { AddressLocationSelect } from 'src/common/Selects/AddressLocationSelect';
+import { DialogForm } from 'src/components/Shared/Forms/DialogForm';
 import {
   CancelButton,
   DeleteButton,
@@ -193,12 +194,11 @@ export const EditContactAddressModal: React.FC<
             primaryMailingAddress,
           },
           handleChange,
-          handleSubmit,
           isSubmitting,
           isValid,
           setFieldValue,
         }): ReactElement => (
-          <form onSubmit={handleSubmit} noValidate>
+          <DialogForm noValidate>
             <DialogContent dividers>
               <ContactEditContainer>
                 {editingDisabled && (
@@ -441,7 +441,7 @@ export const EditContactAddressModal: React.FC<
                 {t('Save')}
               </SubmitButton>
             </DialogActions>
-          </form>
+          </DialogForm>
         )}
       </Formik>
     </Modal>

@@ -1,3 +1,5 @@
+import { AsrStatusEnum } from 'src/graphql/types.generated';
+import { missingValue } from '../../../Shared/helpers/missingValue';
 import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
 import { createRenderFormComponent, setupMockContext } from '../testUtils';
 import { ViewForm } from './ViewForm';
@@ -41,6 +43,29 @@ describe('ViewForm', () => {
     expect(getByTestId('amount-one')).toHaveTextContent('$40,000.00');
     // currentSalaryCap: value in the backend
     expect(getByTestId('amount-two')).toHaveTextContent('$100,000.00');
+    // remainingAllowableSalary from the API
+    expect(getByTestId('amount-three')).toHaveTextContent('$55,000.00');
+  });
+
+  // MPDX-10239: the card left a submitted request's own amount out of what was used
+  it('shows the remaining salary the API counts for a submitted request', () => {
+    const { getByTestId } = renderComponent({
+      contextOverrides: {
+        requestData: {
+          latestAdditionalSalaryRequest: {
+            status: AsrStatusEnum.Pending,
+            calculations: {
+              currentSalaryCap: 100000,
+              grossAnnualSalary: 40000,
+              ytdAsrAmount: 5000,
+              remainingAllowableSalary: 15000,
+            },
+          },
+        },
+      },
+    });
+
+    expect(getByTestId('amount-three')).toHaveTextContent('$15,000.00');
   });
 
   it('handles missing calculations gracefully', () => {
@@ -63,6 +88,8 @@ describe('ViewForm', () => {
     expect(getByTestId('amount-one')).toHaveTextContent('$0.00');
     // currentSalaryCap calculation done in backend
     expect(getByTestId('amount-two')).toHaveTextContent('-$40,000.00');
+    // remainingAllowableSalary shows a dash when the API leaves it out
+    expect(getByTestId('amount-three')).toHaveTextContent(missingValue);
   });
 
   it('renders all child components when user exceeds cap', () => {

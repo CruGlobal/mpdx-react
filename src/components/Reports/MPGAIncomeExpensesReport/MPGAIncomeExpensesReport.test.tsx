@@ -429,4 +429,55 @@ describe('MPGAIncomeExpensesReport', () => {
       ).toBeInTheDocument();
     }, 30000);
   });
+
+  // jsdom cannot measure widths or apply the breakpoint media queries, so these
+  // tests check the plain styles that let the row fit on a phone.
+  describe('toolbar', () => {
+    // The toolbar row has no role of its own, so reach it through Print.
+    const getToolbar = (printButton: HTMLElement) =>
+      printButton.parentElement as HTMLElement;
+
+    it('wraps the buttons onto a second row when they do not fit', () => {
+      const { getByRole } = render(<TestComponent />);
+      const toolbar = getToolbar(getByRole('button', { name: 'Print' }));
+
+      expect(toolbar).toContainElement(
+        getByRole('button', { name: 'Report Settings' }),
+      );
+      expect(toolbar).toContainElement(
+        getByRole('button', { name: 'Export CSV' }),
+      );
+      expect(toolbar).toHaveStyle({ flexWrap: 'wrap' });
+    });
+
+    it('keeps each button label on one line', () => {
+      const { getByRole } = render(<TestComponent />);
+
+      ['Report Settings', 'Export CSV', 'Print'].forEach((name) =>
+        expect(getByRole('button', { name })).toHaveStyle({
+          whiteSpace: 'nowrap',
+        }),
+      );
+    });
+
+    it('still has the divider between Report Settings and Export CSV', () => {
+      const { getByRole } = render(<TestComponent />);
+      const toolbar = getToolbar(getByRole('button', { name: 'Print' }));
+
+      expect(within(toolbar).getByRole('separator')).toHaveAttribute(
+        'aria-orientation',
+        'vertical',
+      );
+    });
+
+    it('opens the Export CSV menu from the toolbar', async () => {
+      const { getByRole, findByRole } = render(<TestComponent />);
+
+      userEvent.click(getByRole('button', { name: 'Export CSV' }));
+
+      expect(
+        await findByRole('menuitem', { name: 'Income Report' }),
+      ).toBeInTheDocument();
+    });
+  });
 });

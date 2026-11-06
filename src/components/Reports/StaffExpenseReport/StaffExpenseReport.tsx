@@ -11,15 +11,11 @@ import {
   Skeleton,
   SvgIcon,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { useHcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
-import {
-  HcmSyncBodyStatus,
-  HcmSyncHeaderStatus,
-} from 'src/components/HrTools/Shared/HcmSyncStatus/HcmSyncStatus';
 import { LoadErrorAlert } from 'src/components/Shared/LoadErrorAlert/LoadErrorAlert';
 import {
   HeaderTypeEnum,
@@ -33,7 +29,9 @@ import theme from 'src/theme';
 import { AccountInfoBox } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBox';
 import { AccountInfoBoxSkeleton } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBoxSkeleton';
 import { EmptyTable } from '../../HrTools/Shared/EmptyTable/EmptyTable';
-import { HouseholdMember } from '../Shared/Helpers/household';
+import { HcmReportBodyStatus } from '../Shared/HcmReportStatus/HcmReportBodyStatus';
+import { HcmReportHeaderStatus } from '../Shared/HcmReportStatus/HcmReportHeaderStatus';
+import { useReportHcm } from '../Shared/Helpers/useReportHcm';
 import { SettingsButtonGroup } from '../Shared/SettingsButtonGroup/SettingsButtonGroup';
 import {
   Filters,
@@ -76,6 +74,9 @@ const StyledTimeNavBox = styled(Box)({
   display: 'flex',
   margin: 0,
   gap: theme.spacing(2),
+  [theme.breakpoints.down('sm')]: {
+    alignItems: 'center',
+  },
 });
 
 interface StaffExpenseReportProps {
@@ -95,32 +96,28 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const isPhone = useMediaQuery(theme.breakpoints.down('sm'));
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [filters, setFilters] = useState<Filters | null>(null);
   const [time, setTime] = useState(DateTime.now().startOf('month'));
 
   const isSupervisorView = !!staffAccountId;
 
-  // Person numbers tell the reader's payroll from their spouse's. HCM lists the reader first, then
-  // their spouse. Held alongside the report data's own loading so salary is not rendered as one
-  // household total and then split.
+  // Held alongside the report data's own loading so salary is not rendered as one household total
+  // and then split.
   const {
     data: hcmData,
     loading: hcmLoading,
     error: hcmError,
     refetch: refetchHcm,
-  } = useHcmQuery({
-    variables: { personNumber },
-    skip: isSupervisorView && !personNumber,
-  });
-  const household: HouseholdMember[] = useMemo(
-    () =>
-      hcmData?.hcm.map(({ staffInfo }) => ({
-        personNumber: staffInfo.personNumber,
-        name: staffInfo.preferredName ?? staffInfo.lastName,
-      })) ?? [],
-    [hcmData],
-  );
+    household,
+    hcmPersonNotFound,
+    hcmStatus,
+  } = useReportHcm({ personNumber, isSupervisorView });
+  // HCM has no staff group or household for someone it no longer knows, such as staff who have left,
+  // so their report loads with the base funds and no salary split. Any other HCM error blocks the
+  // report, because retrying can still bring the right fund types and split.
+  const hcmBlocksReport = !!hcmError && !hcmPersonNotFound;
 
   const usStaffGroup = hcmData?.hcm[0]?.usStaffGroup;
   const hideFunds =
@@ -157,15 +154,14 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       staffAccountId,
       ...getStaffExpenseMonthRange(filters, time),
     },
-    // Without HCM data the fund types and salary split would be wrong
-    skip: hcmLoading || !!hcmError,
+    skip: hcmLoading || hcmBlocksReport,
   });
 
-  const loadError = hcmError ?? reportError;
+  const loadError = (hcmBlocksReport ? hcmError : undefined) ?? reportError;
 
   const refetchReport = () => {
     // The report reloads on its own once HCM succeeds
-    (hcmError ? refetchHcm() : refetch()).catch(() => {});
+    (hcmBlocksReport ? refetchHcm() : refetch()).catch(() => {});
   };
 
   const { data: accountData } = useStaffAccountQuery({
@@ -338,12 +334,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
           onNavListToggle={onNavListToggle}
           title={title}
           headerType={HeaderTypeEnum.Report}
-          titleExtra={
-            <HcmSyncHeaderStatus
-              personNumber={personNumber}
-              skip={isSupervisorView && !personNumber}
-            />
-          }
+          titleExtra={<HcmReportHeaderStatus hcm={hcmStatus} />}
         />
       </SimpleScreenOnly>
       {isSupervisorView && (
@@ -355,10 +346,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       <Box mt={2}>
         <Container>
           <SimpleScreenOnly>
-            <HcmSyncBodyStatus
-              personNumber={personNumber}
-              skip={isSupervisorView && !personNumber}
-            />
+            <HcmReportBodyStatus hcm={hcmStatus} />
           </SimpleScreenOnly>
           <Box>
             <StyledHeaderBox>
@@ -433,25 +421,28 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                 )}
                 {!isFilterDateSelected ? (
                   <>
+                    {/* Icon-only on phones so the labels don't wrap */}
                     <Button
                       sx={{ ml: 'auto', maxHeight: 35 }}
                       variant="contained"
-                      startIcon={<ChevronLeftIcon />}
+                      startIcon={isPhone ? undefined : <ChevronLeftIcon />}
                       size="small"
                       onClick={setPrevMonth}
                       disabled={loading}
+                      aria-label={isPhone ? t('Previous Month') : undefined}
                     >
-                      {t('Previous Month')}
+                      {isPhone ? <ChevronLeftIcon /> : t('Previous Month')}
                     </Button>
                     <Button
                       sx={{ maxHeight: 35 }}
                       variant="contained"
-                      endIcon={<ChevronRightIcon />}
+                      endIcon={isPhone ? undefined : <ChevronRightIcon />}
                       size="small"
                       onClick={setNextMonth}
                       disabled={hasNext || loading}
+                      aria-label={isPhone ? t('Next Month') : undefined}
                     >
-                      {t('Next Month')}
+                      {isPhone ? <ChevronRightIcon /> : t('Next Month')}
                     </Button>
                   </>
                 ) : null}

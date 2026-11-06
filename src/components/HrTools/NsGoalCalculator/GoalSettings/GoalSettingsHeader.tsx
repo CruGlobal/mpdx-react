@@ -114,9 +114,9 @@ export const GoalSettingsHeader: React.FC<GoalSettingsHeaderProps> = ({
         {isScenario ? (
           <StatusChip color="info" label={t('Scenario Only')} />
         ) : isComplete ? (
-          <StatusChip color="success" label={t('Complete')} />
+          <StatusChip color="success" label={t('Calculation Complete')} />
         ) : (
-          <StatusChip color="warning" label={t('Incomplete')} />
+          <StatusChip color="warning" label={t('Calculation Incomplete')} />
         )}
       </Stack>
       <Stack

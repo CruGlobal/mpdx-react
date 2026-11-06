@@ -15,6 +15,7 @@ import {
   PanelTypeEnum,
 } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { StepsList } from '../../Shared/CalculationReports/StepsList/StepsList';
+import { pageContainerSx } from '../../Shared/pageContainerSx';
 import { mainContentWidth } from '../MinisterHousingAllowance';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
@@ -25,8 +26,6 @@ import { Calculation } from '../Steps/StepThree/Calculation';
 import { RentOwn } from '../Steps/StepTwo/RentOwn';
 
 const permissionDeniedWidth = theme.spacing(100);
-const containerSx = { ml: { xs: 0, sm: 5 } };
-
 export interface FormValues {
   rentOrOwn: MhaRentOrOwnEnum | undefined;
 }
@@ -93,7 +92,7 @@ export const RequestPage: React.FC = () => {
       percentComplete={0}
       backHref={`/accountLists/${accountListId}/hrTools/mhaCalculator`}
       mainContent={
-        <Container sx={containerSx}>
+        <Container sx={pageContainerSx}>
           <Stack direction="column" width="100%" maxWidth={mainContentWidth}>
             <Calculation
               boardApprovedAt={boardDate}
@@ -112,7 +111,7 @@ export const RequestPage: React.FC = () => {
       percentComplete={0}
       backHref={`/accountLists/${accountListId}/hrTools/mhaCalculator`}
       mainContent={
-        <Container sx={containerSx}>
+        <Container sx={pageContainerSx}>
           <Stack
             direction="column"
             width="100%"
@@ -130,7 +129,7 @@ export const RequestPage: React.FC = () => {
       percentComplete={0}
       backHref={`/accountLists/${accountListId}/hrTools/mhaCalculator`}
       mainContent={
-        <Container sx={containerSx}>
+        <Container sx={pageContainerSx}>
           <Stack
             direction="column"
             width="100%"
@@ -163,7 +162,7 @@ export const RequestPage: React.FC = () => {
           onSubmit={() => handleNextStep()}
         >
           {({ values }) => (
-            <Container sx={containerSx}>
+            <Container sx={pageContainerSx}>
               <Stack
                 direction="column"
                 width="100%"

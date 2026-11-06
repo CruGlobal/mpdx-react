@@ -81,28 +81,39 @@ describe('MpdSupervisorReportFilterPanel', () => {
       getByRole('button', { name: 'Negative last month' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('button', { name: 'Negative last 3+ months' }),
+      getByRole('button', { name: 'Negative last 3 months' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('button', { name: 'Negative 3+ months in past year' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('button', { name: 'Spending more than income last 3 months' }),
     ).toBeInTheDocument();
   });
 
-  it('explains the Negative last month filter', async () => {
+  it.each([
+    [
+      'Negative last month',
+      'Staff whose staff account balance was below zero at the end of last month.',
+    ],
+    [
+      'Negative last 3 months',
+      'Staff whose staff account balance was below zero at the end of each of the last three months.',
+    ],
+    [
+      'Negative 3+ months in past year',
+      'Staff whose staff account balance was below zero at the end of at least three of the last 12 months.',
+    ],
+    [
+      'Spending more than income last 3 months',
+      'Staff whose expenses were greater than their income in each of the last three months.',
+    ],
+  ])('explains the %s filter', async (chip, description) => {
     const { getByRole, findByRole } = renderFilterPanel();
 
-    userEvent.hover(getByRole('button', { name: 'Negative last month' }));
+    userEvent.hover(getByRole('button', { name: chip }));
 
-    expect(await findByRole('tooltip')).toHaveTextContent(
-      'Staff whose payroll last month was below their New Staff Monthly Salary.',
-    );
-  });
-
-  it('explains the Negative last 3+ months filter', async () => {
-    const { getByRole, findByRole } = renderFilterPanel();
-
-    userEvent.hover(getByRole('button', { name: 'Negative last 3+ months' }));
-
-    expect(await findByRole('tooltip')).toHaveTextContent(
-      'Staff whose payroll was below their New Staff Monthly Salary in each of the last three complete months.',
-    );
+    expect(await findByRole('tooltip')).toHaveTextContent(description);
   });
 
   it('does not show a tooltip for the All people filter', () => {
@@ -134,13 +145,13 @@ describe('MpdSupervisorReportFilterPanel', () => {
     // 'All people' chip is active by default (filled variant)
     const allPeopleChip = getByRole('button', { name: 'All people' });
     const threeMonthsChip = getByRole('button', {
-      name: 'Negative last 3+ months',
+      name: 'Negative last 3 months',
     });
 
-    // Click the 3+ months chip to make it active
+    // Click the 3 months chip to make it active
     userEvent.click(threeMonthsChip);
 
-    // After click, 'Negative last 3+ months' should be filled (active)
+    // After click, 'Negative last 3 months' should be filled (active)
     // We can't easily check MUI variant in RTL, so we check re-render with a consumer
     // that reads context. Instead we verify the chip is still rendered and clickable.
     expect(threeMonthsChip).toBeInTheDocument();
@@ -210,7 +221,7 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
   it('clicking a quick-filter chip updates activeQuickFilter in context', async () => {
     const { getByRole, getByTestId } = renderWithConsumer();
     const threeMonthsChip = getByRole('button', {
-      name: 'Negative last 3+ months',
+      name: 'Negative last 3 months',
     });
     userEvent.click(threeMonthsChip);
     expect(getByTestId('activeQuickFilter').textContent).toBe(
@@ -218,11 +229,23 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
     );
   });
 
+  it.each([
+    ['Negative 3+ months in past year', 'threeMonthsInPastYearNegative'],
+    [
+      'Spending more than income last 3 months',
+      'threeMonthsSpendingOverIncome',
+    ],
+  ])('clicking %s updates activeQuickFilter in context', (chip, filterId) => {
+    const { getByRole, getByTestId } = renderWithConsumer();
+    userEvent.click(getByRole('button', { name: chip }));
+    expect(getByTestId('activeQuickFilter').textContent).toBe(filterId);
+  });
+
   it('clicking All people chip sets activeQuickFilter back to allPeople', async () => {
     const { getByRole, getByTestId } = renderWithConsumer();
 
-    // First switch to negative last 3+ months
-    userEvent.click(getByRole('button', { name: 'Negative last 3+ months' }));
+    // First switch to negative last 3 months
+    userEvent.click(getByRole('button', { name: 'Negative last 3 months' }));
     expect(getByTestId('activeQuickFilter').textContent).toBe(
       'threeMonthsNegative',
     );

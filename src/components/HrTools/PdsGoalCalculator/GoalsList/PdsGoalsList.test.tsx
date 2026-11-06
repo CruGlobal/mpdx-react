@@ -2,6 +2,11 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
+  desktopWidth,
+  getStyleAtWidth,
+  phoneWidth,
+} from '__tests__/util/styleAtWidth';
+import {
   MpdGoalMiscConstantCategoryEnum,
   MpdGoalMiscConstantLabelEnum,
 } from 'src/graphql/types.generated';
@@ -9,6 +14,16 @@ import { PdsGoalCalculatorTestWrapper } from '../PdsGoalCalculatorTestWrapper';
 import { PdsGoalsList } from './PdsGoalsList';
 
 const mutationSpy = jest.fn();
+
+// The button row and the card info rows have no role, so they are found as
+// the parent element of a button or label
+const getParent = (element: HTMLElement): HTMLElement => {
+  const parent = element.parentElement;
+  if (!parent) {
+    throw new Error(`No parent element for "${element.textContent}"`);
+  }
+  return parent;
+};
 
 type FindByRole = ReturnType<typeof render>['findByRole'];
 
@@ -226,5 +241,78 @@ describe('PdsGoalsList', () => {
     await waitFor(() =>
       expect(findByRole('button', { name: 'Create' })).resolves.toBeEnabled(),
     );
+  });
+
+  describe('layout', () => {
+    const renderList = () =>
+      render(
+        <PdsGoalCalculatorTestWrapper withProvider={false}>
+          <PdsGoalsList />
+        </PdsGoalCalculatorTestWrapper>,
+      );
+
+    it('stacks the Create a New Goal button full width on phone widths', () => {
+      const { getByRole } = renderList();
+
+      const button = getByRole('button', { name: 'Create a New Goal' });
+      const buttonRow = getParent(button);
+      expect(getStyleAtWidth(buttonRow, 'display', phoneWidth)).toBe('flex');
+      expect(getStyleAtWidth(buttonRow, 'flex-direction', phoneWidth)).toBe(
+        'column',
+      );
+      // A column flex container stretches its children to full width unless
+      // the container or the child overrides the alignment or the width
+      expect(
+        getStyleAtWidth(buttonRow, 'align-items', phoneWidth) || 'stretch',
+      ).toBe('stretch');
+      expect(
+        getStyleAtWidth(button, 'align-self', phoneWidth) || 'auto',
+      ).toMatch(/^(auto|stretch)$/);
+      expect(getStyleAtWidth(button, 'width', phoneWidth)).toBe('');
+    });
+
+    it('keeps the Create a New Goal button in a row on desktop widths', () => {
+      const { getByRole } = renderList();
+
+      const buttonRow = getParent(
+        getByRole('button', { name: 'Create a New Goal' }),
+      );
+      expect(getStyleAtWidth(buttonRow, 'display', desktopWidth)).toBe('flex');
+      // An unset flex-direction is the CSS default, row
+      expect(
+        getStyleAtWidth(buttonRow, 'flex-direction', desktopWidth) || 'row',
+      ).toBe('row');
+    });
+
+    it('makes the Create a New Goal button at least 44px tall only on phone widths', () => {
+      const { getByRole } = renderList();
+
+      const button = getByRole('button', { name: 'Create a New Goal' });
+      expect(
+        parseFloat(getStyleAtWidth(button, 'min-height', phoneWidth)),
+      ).toBeGreaterThanOrEqual(44);
+      // '' or 'auto' both leave MUI's default button height in place
+      expect(
+        getStyleAtWidth(button, 'min-height', desktopWidth) || 'auto',
+      ).toBe('auto');
+      expect(getStyleAtWidth(button, 'height', desktopWidth)).toBe('');
+    });
+
+    it("stacks each goal card's Last Updated label above its date only on phone widths", async () => {
+      const { findAllByText } = renderList();
+
+      const labels = await findAllByText('Last Updated');
+      expect(labels).not.toHaveLength(0);
+      labels.forEach((label) => {
+        const row = getParent(label);
+        expect(getStyleAtWidth(row, 'flex-direction', phoneWidth)).toBe(
+          'column',
+        );
+        // An unset flex-direction is the CSS default, row
+        expect(
+          getStyleAtWidth(row, 'flex-direction', desktopWidth) || 'row',
+        ).toBe('row');
+      });
+    });
   });
 });
