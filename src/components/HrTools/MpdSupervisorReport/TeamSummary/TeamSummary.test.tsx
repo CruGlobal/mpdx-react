@@ -336,6 +336,138 @@ describe('TeamSummary', () => {
     ).toBeInTheDocument();
   });
 
+  // MPDX-10301: a coordinator with 19 teams lost most of the screen to cards
+  describe('with more teams than fit in two rows', () => {
+    const names = Array.from(
+      { length: 19 },
+      (_, index) => `Team ${String.fromCharCode(65 + index)}`,
+    );
+    const manyTeams = names.map((name) => ({
+      name,
+      departments: ['Cohort A'],
+    }));
+    const teamSummaries = (red: string[] = []) =>
+      names.map((name) =>
+        teamSummary(name, {
+          [red.includes(name)
+            ? MpdHealthStatusEnum.Red
+            : MpdHealthStatusEnum.Green]: 1,
+        }),
+      );
+    const card = (name: string) => new RegExp(`^${name}`);
+    const cardsBox = (region: HTMLElement) =>
+      within(region).getByRole('button', { name: card(names[0]) })
+        .parentElement as HTMLElement;
+
+    // jsdom has no layout: one 80px card per row, 8px apart, in a 200px box
+    beforeEach(() => {
+      jest
+        .spyOn(HTMLElement.prototype, 'offsetTop', 'get')
+        .mockImplementation(function (this: HTMLElement) {
+          const siblings = Array.from(this.parentElement?.children ?? []);
+          return siblings.indexOf(this) * 88;
+        });
+      jest
+        .spyOn(HTMLElement.prototype, 'offsetHeight', 'get')
+        .mockReturnValue(80);
+      jest.spyOn(Element.prototype, 'clientHeight', 'get').mockReturnValue(200);
+    });
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('caps the counted cards at about two rows and scrolls the rest', async () => {
+      const { findByRole } = renderSummary(manyTeams, {
+        ManagedStaffTeamSummary: managedStaffTeamSummaryMock(teamSummaries()),
+      });
+
+      expect(
+        cardsBox(await findByRole('region', { name: 'Teams' })),
+      ).toHaveStyle({ maxHeight: '200px', overflowY: 'auto' });
+    });
+
+    it('caps the name-only cards at about two of their shorter rows', async () => {
+      const { findByRole } = renderSummary(manyTeams, {
+        ManagedStaff: {
+          managedStaff: () => {
+            throw filterRequired(1200);
+          },
+        },
+        ManagedStaffTeamSummary: {
+          managedStaffTeamSummary: () => {
+            throw filterRequired(1200);
+          },
+        },
+      });
+
+      expect(
+        cardsBox(await findByRole('region', { name: 'Teams' })),
+      ).toHaveStyle({ maxHeight: '110px', overflowY: 'auto' });
+    });
+
+    it('scrolls a team picked from the filters into view', async () => {
+      const { findByRole } = renderSummary(manyTeams, {
+        ManagedStaffTeamSummary: managedStaffTeamSummaryMock(teamSummaries()),
+      });
+      const box = cardsBox(await findByRole('region', { name: 'Teams' }));
+
+      act(() => {
+        setTeamFn(names[18]);
+      });
+
+      // The last card's bottom edge meets the box's bottom edge
+      await waitFor(() => expect(box.scrollTop).toBe(18 * 88 + 80 - 200));
+
+      act(() => {
+        setTeamFn(names[1]);
+      });
+
+      await waitFor(() => expect(box.scrollTop).toBe(88));
+    });
+
+    it('leaves the scroll alone when the picked team is already in view', async () => {
+      const { findByRole } = renderSummary(manyTeams, {
+        ManagedStaffTeamSummary: managedStaffTeamSummaryMock(teamSummaries()),
+      });
+      const box = cardsBox(await findByRole('region', { name: 'Teams' }));
+      box.scrollTop = 88;
+
+      act(() => {
+        setTeamFn(names[2]);
+      });
+
+      await findByRole('button', { name: card(names[2]), pressed: true });
+      await act(async () => {});
+      expect(box.scrollTop).toBe(88);
+    });
+
+    it('keeps the picked team in view when new filters reorder the cards', async () => {
+      const { findByRole, getByRole } = renderSummary(manyTeams, {
+        ManagedStaffTeamSummary: {
+          managedStaffTeamSummary: (_root: unknown, args: SummaryArgs) =>
+            // Every other team turns red, so the picked one sorts last
+            teamSummaries(args.departments ? names.slice(1) : []),
+        },
+      });
+      await findByRole('region', { name: 'Teams' });
+      act(() => {
+        setTeamFn(names[0]);
+      });
+      await findByRole('button', { name: card(names[0]), pressed: true });
+
+      act(() => {
+        setDepartmentFn('Cohort A');
+      });
+
+      // The cards remount once the department's counts arrive
+      await waitFor(() => {
+        const box = cardsBox(getByRole('region', { name: 'Teams' }));
+        expect(box.lastElementChild).toHaveAttribute('aria-pressed', 'true');
+        expect(box.scrollTop).toBe(18 * 88 + 80 - 200);
+      });
+    });
+  });
+
   describe('over the row cap', () => {
     const rosterOverCap: ApolloErgonoMockMap = {
       ManagedStaff: {
