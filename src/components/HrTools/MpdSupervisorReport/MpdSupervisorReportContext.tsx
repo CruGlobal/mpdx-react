@@ -249,7 +249,7 @@ export const MpdSupervisorReportProvider: React.FC<{
     activeQuickFilter,
   ]);
 
-  // The spouse merge and team summary need the whole result, so the rest of
+  // The spouse merge needs the whole result, so the rest of
   // it is fetched without waiting for the list to be scrolled. A failed page
   // is left for the inline Retry rather than retried in a loop.
   useEffect(() => {

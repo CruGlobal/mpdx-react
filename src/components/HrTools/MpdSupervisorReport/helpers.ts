@@ -9,6 +9,7 @@ import {
 } from 'src/graphql/types.generated';
 import { missingValue } from '../Shared/helpers/missingValue';
 import { ManagedStaffQuery } from './ManagedStaff.generated';
+import { ManagedStaffTeamSummaryQuery } from './ManagedStaffTeamSummary.generated';
 import { ManagedStaffTeamsQuery } from './ManagedStaffTeams.generated';
 
 export type ManagedStaffMember =
@@ -448,16 +449,6 @@ export const getRowInitials = ({
 export const countPeople = (rows: StaffRow[]): number =>
   rows.reduce((total, row) => total + (row.partner ? 2 : 1), 0);
 
-/** Status of the newest completed quarter; Gray when none has completed. */
-export const latestQuarterStatus = ({
-  quarterlyHealth,
-}: Pick<ManagedStaffMember, 'quarterlyHealth'>): MpdHealthStatusEnum => {
-  const [latest] = [...(quarterlyHealth?.completedQuarters ?? [])].sort(
-    (a, b) => b.fiscalYear - a.fiscalYear || b.quarter - a.quarter,
-  );
-  return latest?.status ?? MpdHealthStatusEnum.Gray;
-};
-
 type TeamOption = ManagedStaffTeamsQuery['managedStaffTeams'][number];
 
 /** The team filter's options: teams with staff in the department, if one is picked. */
@@ -475,17 +466,21 @@ export const teamNamesInDepartment = (
 /** Past this many teams, the picker waits for a department to narrow them. */
 export const maxTeamPickerCards = 50;
 
+/** Whether this many team cards are worth offering as a picker. */
+export const fitsTeamPicker = (count: number): boolean =>
+  count >= 2 && count <= maxTeamPickerCards;
+
 /**
- * The name-only team cards offered while the report is over the API's row
- * cap and has no rows to summarise. Empty when there is nothing to choose
- * between, or too much to show as cards.
+ * The name-only team cards offered when the reach is too large for the API to
+ * count. Empty when there is nothing to choose between, or too much to show as
+ * cards.
  */
 export const teamPickerNames = (
   teams: TeamOption[] | undefined,
   department: string | null,
 ): string[] => {
   const names = teamNamesInDepartment(teams ?? [], department);
-  return names.length >= 2 && names.length <= maxTeamPickerCards ? names : [];
+  return fitsTeamPicker(names.length) ? names : [];
 };
 
 export interface TeamSummaryRow {
@@ -503,46 +498,27 @@ const emptyCounts = (): Record<MpdHealthStatusEnum, number> => ({
 });
 
 /**
- * How each team in the rows is doing: people per latest-quarter status. A
- * person on several teams counts toward each; a merged partner counts on their
- * own teams. Worst teams first: most at risk, then most needing attention.
+ * Each team's people per newest-quarter status, as the API counts them. Worst
+ * teams first: most at risk, then most needing attention.
  */
-export const summarizeTeams = (rows: StaffRow[]): TeamSummaryRow[] => {
-  const teams = new Map<string, TeamSummaryRow>();
-  const add = (member: ManagedStaffMember, teamNames: string[]) => {
-    const status = latestQuarterStatus(member);
-    for (const name of new Set(teamNames)) {
-      const team = teams.get(name) ?? {
-        name,
-        staffCount: 0,
-        counts: emptyCounts(),
-      };
-      team.staffCount += 1;
-      team.counts[status] += 1;
-      teams.set(name, team);
-    }
-  };
-  for (const row of rows) {
-    const { partner, ...member } = row;
-    add(
-      member,
-      member.teams.employee.map(({ name }) => name),
+export const teamSummaryRows = (
+  teams: ManagedStaffTeamSummaryQuery['managedStaffTeamSummary'],
+): TeamSummaryRow[] =>
+  teams
+    .map(({ name, staffCount, statusCounts }) => {
+      const counts = emptyCounts();
+      for (const { status, count } of statusCounts) {
+        counts[status] = count;
+      }
+      return { name, staffCount, counts };
+    })
+    .sort(
+      (a, b) =>
+        b.counts[MpdHealthStatusEnum.Red] - a.counts[MpdHealthStatusEnum.Red] ||
+        b.counts[MpdHealthStatusEnum.Yellow] -
+          a.counts[MpdHealthStatusEnum.Yellow] ||
+        a.name.localeCompare(b.name),
     );
-    if (partner) {
-      add(
-        partner,
-        partner.teams.employee.map(({ name }) => name),
-      );
-    }
-  }
-  return [...teams.values()].sort(
-    (a, b) =>
-      b.counts[MpdHealthStatusEnum.Red] - a.counts[MpdHealthStatusEnum.Red] ||
-      b.counts[MpdHealthStatusEnum.Yellow] -
-        a.counts[MpdHealthStatusEnum.Yellow] ||
-      a.name.localeCompare(b.name),
-  );
-};
 
 export const getLocalizedSupportType = (
   t: TFunction,

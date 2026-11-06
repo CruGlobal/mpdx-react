@@ -22,6 +22,7 @@ import theme from 'src/theme';
 import { MpdSupervisorReportFilterPanel } from './Filters/MpdSupervisorReportFilterPanel';
 import { UpdateStaffGeographicLocationMutation } from './GeographicLocationSelect/UpdateStaffGeographicLocation.generated';
 import { ManagedStaffQuery } from './ManagedStaff.generated';
+import { ManagedStaffTeamSummaryQuery } from './ManagedStaffTeamSummary.generated';
 import { ManagedStaffTeamsQuery } from './ManagedStaffTeams.generated';
 import { MpdSupervisorReport } from './MpdSupervisorReport';
 import {
@@ -32,7 +33,9 @@ import { StaffMemberDrawer } from './StaffMemberDrawer/StaffMemberDrawer';
 import {
   managedStaffMember,
   managedStaffMock,
+  managedStaffTeamSummaryMock,
   managedStaffTeamsMock,
+  teamSummary,
 } from './mpdSupervisorReportMocks';
 
 const onNavListToggle = jest.fn();
@@ -104,6 +107,7 @@ const renderReport = ({
             <GqlMockedProvider<{
               ManagedStaff: ManagedStaffQuery;
               ManagedStaffTeams: ManagedStaffTeamsQuery;
+              ManagedStaffTeamSummary: ManagedStaffTeamSummaryQuery;
               GoalCalculatorConstants: GoalCalculatorConstantsQuery;
               UpdateStaffGeographicLocation: UpdateStaffGeographicLocationMutation;
             }>
@@ -111,6 +115,12 @@ const renderReport = ({
                 {
                   ManagedStaff: managedStaff,
                   ManagedStaffTeams: managedStaffTeamsMock(),
+                  ManagedStaffTeamSummary: managedStaffTeamSummaryMock([
+                    teamSummary('Campus', { [MpdHealthStatusEnum.Green]: 2 }),
+                    teamSummary('Central Team', {
+                      [MpdHealthStatusEnum.Red]: 1,
+                    }),
+                  ]),
                   GoalCalculatorConstants: geographicConstants,
                   UpdateStaffGeographicLocation: {
                     updateManagedStaffGeographicLocation: {
@@ -348,11 +358,6 @@ describe('MpdSupervisorReport', () => {
       expect(
         getByRole('heading', { name: /too many to list at once/ }),
       ).toBeInTheDocument();
-      // The picker's team names do not depend on the pending result
-      expect(getByRole('region', { name: 'Teams' })).toHaveAttribute(
-        'aria-busy',
-        'false',
-      );
       await waitFor(() =>
         expect(
           queryByRole('progressbar', { name: 'Refreshing staff' }),
@@ -395,7 +400,7 @@ describe('MpdSupervisorReport', () => {
       userEvent.click(getByRole('combobox', { name: 'Person type' }));
       userEvent.click(await findByRole('option', { name: 'Employee - Staff' }));
 
-      // The summary's cards, not the picker's: they count the staff
+      // The cards keep counting the staff once the list fits
       expect(await findByRole('button', { name: /Campus/ })).toHaveTextContent(
         '2 staff',
       );
@@ -403,7 +408,7 @@ describe('MpdSupervisorReport', () => {
         queryByRole('heading', { name: /too many to list at once/ }),
       ).not.toBeInTheDocument();
       await act(() => new Promise((resolve) => setTimeout(resolve, 100)));
-      // The summary shares the list's request instead of sending its own after it
+      // The cards count through their own query, so the list is asked for once
       expect(
         managedStaffOperations().filter(
           ({ variables }) => variables.userPersonTypes,
@@ -663,7 +668,7 @@ describe('MpdSupervisorReport', () => {
     );
   });
 
-  it('offers the teams to pick from above the filter guard', async () => {
+  it('offers the teams with their counts above the filter guard', async () => {
     const { findByRole, getByRole, getByText } = renderReport({
       mocks: filterGuard(false),
     });
@@ -671,11 +676,11 @@ describe('MpdSupervisorReport', () => {
 
     const region = await findByRole('region', { name: 'Teams' });
     expect(
-      within(region).getByRole('button', { name: 'Teams (3)' }),
+      within(region).getByRole('button', { name: 'Teams (2)' }),
     ).toBeInTheDocument();
     expect(
-      within(region).getByRole('button', { name: 'Central Team' }),
-    ).not.toHaveTextContent('staff');
+      within(region).getByRole('button', { name: /Central Team/ }),
+    ).toHaveTextContent('At risk (1)');
     expect(
       getByText(
         'Pick a team above to list its staff, or use the filters to narrow the list.',
