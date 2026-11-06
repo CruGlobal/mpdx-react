@@ -1,6 +1,13 @@
-import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useId, useMemo, useState } from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Alert, Box, ButtonBase, Collapse, Typography } from '@mui/material';
+import {
+  Alert,
+  Box,
+  ButtonBase,
+  Collapse,
+  Typography,
+  useMediaQuery,
+} from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { omit } from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -32,9 +39,11 @@ const badgeStatuses = [
 ];
 
 // Two rows of cards plus a sliver of a third, so the cut shows there is more.
-// Match these to the card heights when the cards change.
+// Match these to the card heights when the cards change. On a phone a card
+// with four or five statuses wraps its badges and grows to about 107px.
 const countedCardsMaxHeight = 200;
-const nameOnlyCardsMaxHeight = 110;
+const countedCardsPhoneMaxHeight = 250;
+const nameOnlyCardsMaxHeight = 120;
 
 interface TeamCardProps {
   name: string;
@@ -152,6 +161,8 @@ const TeamCard: React.FC<TeamCardProps> = ({
  */
 export const TeamSummary: React.FC = () => {
   const { t } = useTranslation();
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down('sm'));
   const {
     queryVariables,
     team,
@@ -209,23 +220,25 @@ export const TeamSummary: React.FC = () => {
       }))
     : summary.map((row) => ({ name: row.name, row }));
 
-  // Scroll only the cards box: the page around it must not move
-  const cardsRef = useRef<HTMLDivElement>(null);
+  // Scroll only the cards box: the page around it must not move. The box is
+  // state, not a ref, because it remounts while a new filter loads.
+  const [cardsBox, setCardsBox] = useState<HTMLDivElement | null>(null);
   const cardOrder = cards.map(({ name }) => name).join('\n');
   useEffect(() => {
-    const box = cardsRef.current;
-    const picked = box?.querySelector<HTMLElement>('[aria-pressed="true"]');
-    if (!box || !picked) {
+    const picked = cardsBox?.querySelector<HTMLElement>(
+      '[aria-pressed="true"]',
+    );
+    if (!cardsBox || !picked) {
       return;
     }
     const top = picked.offsetTop;
     const bottom = top + picked.offsetHeight;
-    if (top < box.scrollTop) {
-      box.scrollTop = top;
-    } else if (bottom > box.scrollTop + box.clientHeight) {
-      box.scrollTop = bottom - box.clientHeight;
+    if (top < cardsBox.scrollTop) {
+      cardsBox.scrollTop = top;
+    } else if (bottom > cardsBox.scrollTop + cardsBox.clientHeight) {
+      cardsBox.scrollTop = bottom - cardsBox.clientHeight;
     }
-  }, [team, cardOrder]);
+  }, [cardsBox, team, cardOrder]);
 
   if (teamsError && !teamsData) {
     return (
@@ -298,7 +311,7 @@ export const TeamSummary: React.FC = () => {
       </Typography>
       <Collapse in={open} id={cardsId}>
         <Box
-          ref={cardsRef}
+          ref={setCardsBox}
           sx={{
             display: 'flex',
             flexWrap: 'wrap',
@@ -307,7 +320,9 @@ export const TeamSummary: React.FC = () => {
             position: 'relative',
             maxHeight: tooManyToCount
               ? nameOnlyCardsMaxHeight
-              : countedCardsMaxHeight,
+              : isPhone
+                ? countedCardsPhoneMaxHeight
+                : countedCardsMaxHeight,
             overflowY: 'auto',
           }}
         >

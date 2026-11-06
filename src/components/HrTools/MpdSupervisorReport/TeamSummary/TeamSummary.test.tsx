@@ -7,6 +7,7 @@ import { GraphQLError } from 'graphql';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import matchMediaMock from '__tests__/util/matchMediaMock';
 import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { ManagedStaffQuery } from '../ManagedStaff.generated';
@@ -386,6 +387,17 @@ describe('TeamSummary', () => {
       ).toHaveStyle({ maxHeight: '200px', overflowY: 'auto' });
     });
 
+    it('gives phones a taller cap, where the badges wrap onto a second line', async () => {
+      matchMediaMock({ width: '390px' });
+      const { findByRole } = renderSummary(manyTeams, {
+        ManagedStaffTeamSummary: managedStaffTeamSummaryMock(teamSummaries()),
+      });
+
+      expect(
+        cardsBox(await findByRole('region', { name: 'Teams' })),
+      ).toHaveStyle({ maxHeight: '250px', overflowY: 'auto' });
+    });
+
     it('caps the name-only cards at about two of their shorter rows', async () => {
       const { findByRole } = renderSummary(manyTeams, {
         ManagedStaff: {
@@ -402,7 +414,7 @@ describe('TeamSummary', () => {
 
       expect(
         cardsBox(await findByRole('region', { name: 'Teams' })),
-      ).toHaveStyle({ maxHeight: '110px', overflowY: 'auto' });
+      ).toHaveStyle({ maxHeight: '120px', overflowY: 'auto' });
     });
 
     it('scrolls a team picked from the filters into view', async () => {
