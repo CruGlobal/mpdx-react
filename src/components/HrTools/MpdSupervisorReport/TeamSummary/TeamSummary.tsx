@@ -17,6 +17,7 @@ import {
   healthColor,
   mergeSpouseRows,
   summarizeTeams,
+  teamPickerNames,
 } from '../helpers';
 
 const gradedStatuses = [
@@ -31,18 +32,24 @@ const badgeStatuses = [
 ];
 
 interface TeamCardProps {
-  team: TeamSummaryRow;
+  name: string;
+  /** Omitted over the row cap, when there are no rows to count */
+  team?: TeamSummaryRow;
   selected: boolean;
   onToggle: () => void;
 }
 
-const TeamCard: React.FC<TeamCardProps> = ({ team, selected, onToggle }) => {
+const TeamCard: React.FC<TeamCardProps> = ({
+  name,
+  team,
+  selected,
+  onToggle,
+}) => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const graded = gradedStatuses.reduce(
-    (total, status) => total + team.counts[status],
-    0,
-  );
+  const graded = team
+    ? gradedStatuses.reduce((total, status) => total + team.counts[status], 0)
+    : 0;
 
   return (
     <ButtonBase
@@ -65,41 +72,45 @@ const TeamCard: React.FC<TeamCardProps> = ({ team, selected, onToggle }) => {
     >
       <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 1 }}>
         <Typography variant="subtitle2" noWrap>
-          {team.name}
+          {name}
         </Typography>
-        <Typography variant="caption" color="text.secondary" noWrap>
-          {t('{{count}} staff', { count: team.staffCount })}
-        </Typography>
+        {team && (
+          <Typography variant="caption" color="text.secondary" noWrap>
+            {t('{{count}} staff', { count: team.staffCount })}
+          </Typography>
+        )}
       </Box>
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-        {badgeStatuses
-          .filter((status) => team.counts[status] > 0)
-          .map((status) => {
-            const { bg, color } = healthColor(theme, status);
-            return (
-              <Typography
-                key={status}
-                variant="caption"
-                sx={{
-                  px: 0.75,
-                  borderRadius: 3,
-                  bgcolor: bg,
-                  color,
-                  fontWeight: 600,
-                  lineHeight: 1.8,
-                }}
-              >
-                {/* `total`, not `count`: the status word never changes with the number */}
-                {t('{{status}} ({{total}})', {
-                  status: healthStatusLabel(t, status),
-                  total: team.counts[status],
-                })}
-              </Typography>
-            );
-          })}
-      </Box>
+      {team && (
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+          {badgeStatuses
+            .filter((status) => team.counts[status] > 0)
+            .map((status) => {
+              const { bg, color } = healthColor(theme, status);
+              return (
+                <Typography
+                  key={status}
+                  variant="caption"
+                  sx={{
+                    px: 0.75,
+                    borderRadius: 3,
+                    bgcolor: bg,
+                    color,
+                    fontWeight: 600,
+                    lineHeight: 1.8,
+                  }}
+                >
+                  {/* `total`, not `count`: the status word never changes with the number */}
+                  {t('{{status}} ({{total}})', {
+                    status: healthStatusLabel(t, status),
+                    total: team.counts[status],
+                  })}
+                </Typography>
+              );
+            })}
+        </Box>
+      )}
       {/* The counts above already say it, so the bar is decoration */}
-      {graded > 0 && (
+      {team && graded > 0 && (
         <Box
           aria-hidden
           sx={{
@@ -131,11 +142,19 @@ const TeamCard: React.FC<TeamCardProps> = ({ team, selected, onToggle }) => {
  * How each team is doing, for supervisors with several teams. The cards come
  * from the report's other filters but never its team filter, so every team
  * stays comparable while one is selected; a card toggles that team's filter.
+ * Over the API's row cap there are no rows to count, so the cards just name
+ * the teams in the picked department, to make picking one a single click.
  */
 export const TeamSummary: React.FC = () => {
   const { t } = useTranslation();
-  const { queryVariables, team, setTeam, filterRequired, staffLoading } =
-    useMpdSupervisorReport();
+  const {
+    queryVariables,
+    team,
+    setTeam,
+    department,
+    filterRequired,
+    staffLoading,
+  } = useMpdSupervisorReport();
   const {
     data: teamsData,
     error: teamsError,
@@ -172,6 +191,16 @@ export const TeamSummary: React.FC = () => {
     () => summarizeTeams(mergeSpouseRows(data?.managedStaff.nodes ?? [])),
     [data],
   );
+  // Apollo clears the error while new filters load, so keep the last answer
+  // until the API says whether the unfiltered reach still trips the cap. While
+  // the query is skipped for the list's own cap, that cap is the answer.
+  const settledOverCap = !!filterRequiredFromError(error);
+  const [lastOverCap, setLastOverCap] = useState(false);
+  useEffect(() => {
+    if (!loading) {
+      setLastOverCap(settledOverCap || !!filterRequired);
+    }
+  }, [loading, settledOverCap, filterRequired]);
 
   if (teamsError && !teamsData) {
     return (
@@ -197,27 +226,33 @@ export const TeamSummary: React.FC = () => {
   }
 
   // The unfiltered reach can trip the row cap while the team-filtered list
-  // fits; there is nothing to summarise then.
+  // fits. Either way there are no rows to count, so the cards only name the
+  // teams to pick from.
+  const overRowCap =
+    !!filterRequired || (loading ? lastOverCap : settledOverCap);
+  const pickerNames = teamPickerNames(teamsData?.managedStaffTeams, department);
+  const cards = overRowCap
+    ? pickerNames.map((name) => ({ name, row: undefined }))
+    : summary.map((row) => ({ name: row.name, row }));
+
   if (
-    teamCount < 2 ||
-    filterRequired ||
-    filterRequiredFromError(error) ||
-    !data ||
-    loadingPages ||
-    pageError ||
-    summary.length === 0
+    overRowCap
+      ? cards.length === 0
+      : teamCount < 2 || !data || loadingPages || pageError || !cards.length
   ) {
     return null;
   }
+  // The picker's names never wait on the rows
+  const busy = loading && !overRowCap;
 
   return (
     <Box
       component="section"
       aria-label={t('Teams')}
-      aria-busy={loading}
+      aria-busy={busy}
       sx={{
         mb: 2,
-        opacity: loading ? 0.6 : 1,
+        opacity: busy ? 0.6 : 1,
         transition: 'opacity 150ms',
       }}
     >
@@ -233,7 +268,7 @@ export const TeamSummary: React.FC = () => {
           aria-controls={cardsId}
           sx={{ font: 'inherit', gap: 0.5, borderRadius: 1 }}
         >
-          {t('Teams ({{total}})', { total: summary.length })}
+          {t('Teams ({{total}})', { total: cards.length })}
           <ExpandMoreIcon
             fontSize="small"
             sx={{
@@ -245,12 +280,13 @@ export const TeamSummary: React.FC = () => {
       </Typography>
       <Collapse in={open} id={cardsId}>
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-          {summary.map((row) => (
+          {cards.map(({ name, row }) => (
             <TeamCard
-              key={row.name}
+              key={name}
+              name={name}
               team={row}
-              selected={team === row.name}
-              onToggle={() => setTeam(team === row.name ? null : row.name)}
+              selected={team === name}
+              onToggle={() => setTeam(team === name ? null : name)}
             />
           ))}
         </Box>

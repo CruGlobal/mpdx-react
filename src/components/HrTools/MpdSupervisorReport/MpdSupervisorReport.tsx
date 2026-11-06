@@ -30,6 +30,7 @@ import theme from 'src/theme';
 import { AppliedFilters } from './ListStates/AppliedFilters';
 import { EmptyStaffState } from './ListStates/EmptyStaffState';
 import { FilterRequiredState } from './ListStates/FilterRequiredState';
+import { useManagedStaffTeamsQuery } from './ManagedStaffTeams.generated';
 import { Panel, useMpdSupervisorReport } from './MpdSupervisorReportContext';
 import { HealthColorKey } from './ReportLegend/HealthColorKey';
 import { ReportLegendButton } from './ReportLegend/ReportLegendButton';
@@ -41,6 +42,7 @@ import {
   buildQuarterChips,
   getQuarterLabel,
   getQuarterMonthRange,
+  teamPickerNames,
 } from './helpers';
 
 const StyledContainer = styled(Container)(({ theme }) => ({
@@ -118,7 +120,12 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
     loadedCount,
     expandedRows,
     toggleRow,
+    department,
   } = useMpdSupervisorReport();
+  // Shares TeamSummary's cache entry; says whether it is offering team cards
+  const { data: teamsData } = useManagedStaffTeamsQuery();
+  const teamPickerShown =
+    teamPickerNames(teamsData?.managedStaffTeams, department).length > 0;
   const allPagesLoaded = !hasNextPage || !!loadMoreError;
 
   // Every row covers the same four quarters, so the first one labels the header.
@@ -296,6 +303,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
             <FilterRequiredState
               filterRequired={filterRequired}
               loading={staffLoading}
+              teamPickerShown={teamPickerShown}
               // The toggle would close an already-open panel
               onOpenFilters={
                 panelOpen === Panel.Filters ? undefined : onFilterListToggle
