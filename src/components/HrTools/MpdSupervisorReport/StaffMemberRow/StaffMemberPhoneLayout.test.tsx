@@ -77,6 +77,9 @@ describe.each([RowDensityEnum.Comfortable, RowDensityEnum.Compact])(
         expect(getGridColumnsAtWidth(quarterItem, width)).toBe(12);
         // A long name wraps instead of pushing past the card
         expect(getStyleAtWidth(nameBox, 'min-width', width)).not.toBe('200px');
+        expect(getStyleAtWidth(quarterItem, 'margin-top', width)).toBe(
+          density === RowDensityEnum.Compact ? '4px' : '8px',
+        );
       },
     );
 
