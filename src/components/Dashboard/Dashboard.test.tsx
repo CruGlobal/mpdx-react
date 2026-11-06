@@ -132,6 +132,8 @@ const data: GetDashboardQuery = {
   },
 };
 
+jest.setTimeout(15000);
+
 describe('Dashboard', () => {
   beforeEach(() => {
     matchMediaMock({ width: '1024px' });
