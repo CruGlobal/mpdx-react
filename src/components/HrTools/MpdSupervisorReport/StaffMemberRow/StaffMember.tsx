@@ -8,6 +8,7 @@ import {
   Collapse,
   Grid,
   IconButton,
+  Stack,
   SxProps,
   Theme,
   Typography,
@@ -64,33 +65,24 @@ const GridQuarter = styled(Grid)(({ theme }) => ({
 
 // Below md the rows are too narrow for the page's quarter column headers, so
 // the quarters drop under the name and each chip carries its own label.
-// From md up the cells are display: contents and the chips keep the spacing
-// the old Stack gave them, so desktop renders exactly as before.
-const QuarterStrip = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'row',
-  '& > * + * > .MuiChip-root': { marginLeft: theme.spacing(2) },
+const quarterGridSx = {
   [theme.breakpoints.down('md')]: {
     display: 'grid',
     gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
     gap: theme.spacing(1, 2),
     width: '100%',
-    '& > * + * > .MuiChip-root': { marginLeft: 0 },
   },
   [theme.breakpoints.down('sm')]: {
     gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
   },
-}));
+};
 
 const QuarterCell = styled(Box)(({ theme }) => ({
-  display: 'contents',
-  [theme.breakpoints.down('md')]: {
-    display: 'flex',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    columnGap: theme.spacing(1),
-    minWidth: 0,
-  },
+  display: 'flex',
+  alignItems: 'center',
+  flexWrap: 'wrap',
+  columnGap: theme.spacing(1),
+  minWidth: 0,
 }));
 
 const QuarterCaption = styled(Typography)(({ theme }) => ({
@@ -256,7 +248,14 @@ const FiscalYearQuartersBase: React.FC<FiscalYearQuartersProps> = ({
   const { formatCurrency } = useFormatters();
 
   return (
-    <QuarterStrip data-testid="quarter-chips">
+    // useFlexGap: the label wrappers must not change the chips' spacing
+    <Stack
+      direction="row"
+      spacing={2}
+      useFlexGap
+      data-testid="quarter-chips"
+      sx={quarterGridSx}
+    >
       {quarters.map(({ fiscalYear, quarter, status, averagePayroll }) => {
         const label = getQuarterLabel(fiscalYear, quarter);
         const amount = quarterAmountLabel({
@@ -291,7 +290,7 @@ const FiscalYearQuartersBase: React.FC<FiscalYearQuartersProps> = ({
           </QuarterCell>
         );
       })}
-    </QuarterStrip>
+    </Stack>
   );
 };
 /** The four quarter chips; also shown in the drawer header, which covers the row. */

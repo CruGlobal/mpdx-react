@@ -145,25 +145,16 @@ describe('FiscalYearQuarters', () => {
   );
 
   it.each(desktopWidths)(
-    'keeps the old single row of chips at %ipx',
+    'keeps the chips in one row with the column headers labeling them at %ipx',
     (width) => {
       const { getByTestId } = renderQuarters();
       const strip = getByTestId('quarter-chips');
-      const chips = Array.from(strip.querySelectorAll('.MuiChip-root'));
 
       expect(getStyleAtWidth(strip, 'display', width)).toBe('flex');
       expect(getStyleAtWidth(strip, 'flex-direction', width)).toBe('row');
-      expect(getStyleAtWidth(strip, 'gap', width)).toBe('');
-      // The spacing the old Stack spacing={2} put on every chip after the first
-      expect(
-        chips.map((chip) => getStyleAtWidth(chip, 'margin-left', width)),
-      ).toEqual(['', '16px', '16px', '16px']);
-      chips.forEach((chip) => {
-        expect(getStyleAtWidth(chip, 'min-width', width)).toBe('80px');
-        expect(getStyleAtWidth(chip.parentElement!, 'display', width)).toBe(
-          'contents',
-        );
-      });
+      expect(getStyleAtWidth(strip, 'flex-wrap', width)).not.toBe('wrap');
+      expect(getStyleAtWidth(strip, 'grid-template-columns', width)).toBe('');
+      expect(strip.querySelectorAll('.MuiChip-root')).toHaveLength(4);
       within(strip)
         .getAllByText(quarterLabel)
         .forEach((caption) => {
