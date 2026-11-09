@@ -139,6 +139,7 @@ jobs:
       # LFS objects are content-addressed, so the cache is keyed on the commit's object ids
       - name: LFS cache key
         id: lfs
+        shell: bash # pipefail, so a failed listing can't produce a key
         run: echo "key=lfs-$(git lfs ls-files --long | cut -d ' ' -f 1 | sort | sha256sum | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
       - name: Restore LFS cache
         uses: actions/cache@v6

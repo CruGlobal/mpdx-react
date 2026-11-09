@@ -7,6 +7,20 @@ const Sequencer = require('@jest/test-sequencer').default;
 
 const TIMINGS_PATH = path.join(__dirname, 'timings.json');
 
+/** @param {unknown} value */
+const isTimingsMap = (value) => {
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+  if (Array.isArray(value)) {
+    return false;
+  }
+  const values = Object.values(value);
+  return (
+    values.length > 0 && values.every((ms) => Number.isInteger(ms) && ms >= 0)
+  );
+};
+
 /**
  * @param {string} file
  * @returns {Record<string, number> | null} file path -> milliseconds, or null when unusable
@@ -18,12 +32,7 @@ const loadTimings = (file) => {
   } catch {
     return null;
   }
-  if (!timings || typeof timings !== 'object' || Array.isArray(timings)) {
-    return null;
-  }
-  const values = Object.values(timings);
-  const valid = values.every((ms) => Number.isInteger(ms) && ms >= 0);
-  return values.length > 0 && valid ? timings : null;
+  return isTimingsMap(timings) ? timings : null;
 };
 
 /**
