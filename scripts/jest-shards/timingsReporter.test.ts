@@ -16,7 +16,12 @@ const results = {
 describe('TimingsReporter', () => {
   const originalFile = process.env.JEST_TIMINGS_FILE;
   afterEach(() => {
-    process.env.JEST_TIMINGS_FILE = originalFile;
+    if (originalFile === undefined) {
+      delete process.env.JEST_TIMINGS_FILE;
+    } else {
+      process.env.JEST_TIMINGS_FILE = originalFile;
+    }
+    jest.restoreAllMocks();
   });
 
   it('writes each file runtime in milliseconds, keyed by path from rootDir', () => {
@@ -41,6 +46,5 @@ describe('TimingsReporter', () => {
     new TimingsReporter({ rootDir: '/repo' }).onRunComplete(new Set(), results);
 
     expect(writeFile).not.toHaveBeenCalled();
-    writeFile.mockRestore();
   });
 });

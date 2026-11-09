@@ -4,6 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 const Sequencer = require('@jest/test-sequencer').default;
+const { repoPath } = require('./repoPath');
 
 const TIMINGS_PATH = path.join(__dirname, 'timings.json');
 
@@ -78,11 +79,7 @@ const planShards = (weights, shardCount) => {
 };
 
 /** @param {{ path: string, context: { config: { rootDir: string } } }} test */
-const relativePath = (test) =>
-  path
-    .relative(test.context.config.rootDir, test.path)
-    .split(path.sep)
-    .join('/');
+const relativePath = (test) => repoPath(test.context.config.rootDir, test.path);
 
 class DurationSequencer extends Sequencer {
   /** @param {unknown} [readTimings] overridable in specs; Jest passes nothing (29.0) or options (29.7+) */

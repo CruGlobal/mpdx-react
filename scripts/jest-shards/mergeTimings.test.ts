@@ -13,6 +13,22 @@ describe('mergeTimings', () => {
     expect(merged).toEqual({ 'src/a.test.ts': 13, 'src/b.test.ts': 200 });
     expect(Object.keys(merged)).toEqual(['src/a.test.ts', 'src/b.test.ts']);
   });
+
+  it('keeps earlier times for test files no run measured, and drops deleted ones', () => {
+    const merged = mergeTimings(
+      [{ 'src/measured.test.ts': 50 }],
+      {
+        'src/measured.test.ts': 10,
+        'src/unmeasured.test.ts': 20,
+        'src/deleted.test.ts': 30,
+      },
+      (file) => file !== 'src/deleted.test.ts',
+    );
+    expect(merged).toEqual({
+      'src/measured.test.ts': 50,
+      'src/unmeasured.test.ts': 20,
+    });
+  });
 });
 
 describe('readTimingFiles', () => {

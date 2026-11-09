@@ -1,6 +1,6 @@
 // Writes this run's per-file test durations (ms) to $JEST_TIMINGS_FILE for mergeTimings.js.
 const fs = require('fs');
-const path = require('path');
+const { repoPath } = require('./repoPath');
 
 class TimingsReporter {
   /** @param {{ rootDir: string }} globalConfig */
@@ -21,7 +21,7 @@ class TimingsReporter {
       results.testResults
         .filter(({ perfStats }) => perfStats.runtime > 0)
         .map(({ testFilePath, perfStats }) => [
-          path.relative(this.rootDir, testFilePath).split(path.sep).join('/'),
+          repoPath(this.rootDir, testFilePath),
           perfStats.runtime,
         ]),
     );
