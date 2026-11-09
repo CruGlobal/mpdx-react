@@ -4,8 +4,8 @@ import {
   ProgressiveApprovalTierReasonEnum,
   UserPersonTypeEnum,
 } from 'src/graphql/types.generated';
-import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
 import {
+  HcmLoaded,
   SalaryCalculatorTestWrapper,
   SalaryCalculatorTestWrapperProps,
 } from '../../SalaryCalculatorTestWrapper';
@@ -84,10 +84,6 @@ If this is correct, please provide reasoning for why Jane's Salary should exceed
         userPersonType: UserPersonTypeEnum.EmployeeStaffNonRmoSpouse,
       },
     };
-
-    // HCM loads after the calculation, so wait for it before checking the card
-    const HcmLoaded: React.FC = () =>
-      useSalaryCalculator().hcmUser ? <span>HCM loaded</span> : null;
 
     const renderSosa = (requestedYtdGross: number, hcmUser?: typeof sosaUser) =>
       render(

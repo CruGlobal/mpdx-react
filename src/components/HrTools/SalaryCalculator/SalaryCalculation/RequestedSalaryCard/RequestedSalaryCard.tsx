@@ -50,6 +50,31 @@ export const estimateRequestedSalary = (
   );
 };
 
+const SosaHardCapAlert: React.FC = () => {
+  const { t } = useTranslation();
+  const { calculation } = useSalaryCalculator();
+  const { formatCurrency } = useFormatters();
+
+  const ytdGross = formatCurrency(calculation?.calculations.requestedYtdGross);
+  const hardCap = formatCurrency(calculation?.calculations.hardCap);
+
+  return (
+    <Alert severity="error" sx={{ mt: 2 }}>
+      <Trans t={t}>
+        Your request cannot be submitted. With SECA, 403(b) and any additional
+        salary this year, your gross salary for the year would be{' '}
+        {{ gross: ytdGross }}. That is above the {{ cap: hardCap }} SOSA salary
+        limit for your location, and approvals cannot raise this limit.
+        <br />
+        <br />
+        Please lower your requested salary, or contact{' '}
+        <Link href="mailto:payroll@cru.org">payroll@cru.org</Link> with any
+        questions.
+      </Trans>
+    </Alert>
+  );
+};
+
 export const RequestedSalaryCard: React.FC = () => {
   const { t } = useTranslation();
   const {
@@ -129,11 +154,6 @@ export const RequestedSalaryCard: React.FC = () => {
     }
     return () => markValid('over-cap');
   }, [blockOnCap, markValid, markInvalid]);
-
-  const ytdGross = formatCurrency(
-    salaryCalculation?.calculations.requestedYtdGross,
-  );
-  const hardCap = formatCurrency(salaryCalculation?.calculations.hardCap);
 
   const minimumSalaryValue =
     salaryCalculation?.calculations.minimumRequestedSalary;
@@ -286,22 +306,7 @@ export const RequestedSalaryCard: React.FC = () => {
           </TableBody>
         </Table>
 
-        {blockOnCap && (
-          <Alert severity="error" sx={{ mt: 2 }}>
-            <Trans t={t}>
-              Your request cannot be submitted. With SECA, 403(b) and any
-              additional salary this year, your gross salary for the year would
-              be {{ gross: ytdGross }}. That is above the {{ cap: hardCap }}{' '}
-              SOSA salary limit for your location, and approvals cannot raise
-              this limit.
-              <br />
-              <br />
-              Please lower your requested salary, or contact{' '}
-              <Link href="mailto:payroll@cru.org">payroll@cru.org</Link> with
-              any questions.
-            </Trans>
-          </Alert>
-        )}
+        {blockOnCap && <SosaHardCapAlert />}
       </CardContent>
     </StepCard>
   );
