@@ -125,6 +125,7 @@ describe('loadTimings', () => {
     ['is not JSON', write('{oops')],
     ['is empty', write('{}')],
     ['is an array', write('[1, 2]')],
+    ['is null', write('null')],
     ['has a negative time', write('{"a.test.ts": -1}')],
     ['has a string time', write('{"a.test.ts": "12"}')],
   ])('returns null when the file %s', (_, file) => {
@@ -202,10 +203,8 @@ describe('DurationSequencer', () => {
     defaultSort.mockRestore();
   });
 
-  it('has a usable committed timings file', () => {
-    const committed = loadTimings(
-      path.join(__dirname, 'timings.json'),
-    ) as Record<string, number>;
-    expect(Object.keys(committed).length).toBeGreaterThan(0);
+  it('reads a usable committed timings file by default', () => {
+    const committed = new DurationSequencer().readTimings();
+    expect(Object.keys(committed ?? {}).length).toBeGreaterThan(0);
   });
 });

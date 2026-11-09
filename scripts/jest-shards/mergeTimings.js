@@ -69,21 +69,36 @@ const readTimingFiles = (dir) =>
     .filter((file) => file.endsWith('.json'))
     .map((file) => JSON.parse(fs.readFileSync(path.join(dir, file), 'utf8')));
 
-if (require.main === module) {
-  const runs = process.argv.slice(2).flatMap(readTimingFiles);
+/**
+ * @param {string[]} dirs folders gh run download wrote to
+ * @param {string} timingsPath
+ * @returns {number} exit code
+ */
+const refreshTimings = (dirs, timingsPath) => {
+  const runs = dirs.flatMap(readTimingFiles);
   if (runs.length === 0) {
     process.stderr.write(
       'No timing files found. Pass the folder gh run download wrote to.\n',
     );
-    process.exit(1);
+    return 1;
   }
-  const merged = mergeTimings(runs, readPrevious(TIMINGS_PATH));
+  const merged = mergeTimings(runs, readPrevious(timingsPath));
   const measured = new Set(runs.flatMap((timings) => Object.keys(timings)));
   const kept = Object.keys(merged).filter((file) => !measured.has(file));
-  fs.writeFileSync(TIMINGS_PATH, `${JSON.stringify(merged, null, 2)}\n`);
+  fs.writeFileSync(timingsPath, `${JSON.stringify(merged, null, 2)}\n`);
   process.stdout.write(
     `Wrote ${Object.keys(merged).length} test files from ${runs.length} timing files; ${kept.length} kept their earlier time because no run measured them.\n`,
   );
+  return 0;
+};
+
+if (require.main === module) {
+  process.exitCode = refreshTimings(process.argv.slice(2), TIMINGS_PATH);
 }
 
-module.exports = { mergeTimings, readPrevious, readTimingFiles };
+module.exports = {
+  mergeTimings,
+  readPrevious,
+  readTimingFiles,
+  refreshTimings,
+};
