@@ -48,8 +48,7 @@ jobs:
         with:
           node-version-file: .tool-versions
       - name: 📦 Install Dependencies
-        # Download packages from the registry instead of git-lfs to save git-lfs bandwidth
-        run: yarn cache clean && yarn install
+        uses: ./.github/actions/yarn-install
 
       - name: 📈 Run GraphQL Codegen
         uses: nick-fields/retry@v4
@@ -74,8 +73,7 @@ jobs:
         with:
           node-version-file: .tool-versions
       - name: 📦 Install Dependencies
-        # Download packages from the registry instead of git-lfs to save git-lfs bandwidth
-        run: yarn cache clean && yarn install
+        uses: ./.github/actions/yarn-install
 
       - name: 📈 Run GraphQL Codegen
         uses: nick-fields/retry@v4
@@ -95,8 +93,7 @@ jobs:
         with:
           node-version-file: .tool-versions
       - name: 📦 Install Dependencies
-        # Download packages from the registry instead of git-lfs to save git-lfs bandwidth
-        run: yarn cache clean && yarn install
+        uses: ./.github/actions/yarn-install
 
       - name: 📈 Run GraphQL Codegen
         uses: nick-fields/retry@v4
@@ -116,8 +113,10 @@ jobs:
         with:
           node-version-file: .tool-versions
       - name: 📦 Install Dependencies
-        # Download packages from the registry instead of git-lfs to save git-lfs bandwidth
-        run: yarn cache clean && yarn install
+        uses: ./.github/actions/yarn-install
+        with:
+          # One job saves the cache on a miss; the others would race it for the same key
+          save-cache: true
 
       - name: 💅 Prettier Check
         run: yarn prettier:check
@@ -142,8 +141,7 @@ jobs:
         with:
           node-version-file: .tool-versions
       - name: 📦 Install Dependencies
-        # Download packages from the registry instead of git-lfs to save git-lfs bandwidth
-        run: yarn cache clean && yarn install
+        uses: ./.github/actions/yarn-install
 
       - name: 🌐 Extract Translations
         run: yarn extract
@@ -169,8 +167,7 @@ jobs:
         with:
           node-version-file: .tool-versions
       - name: 📦 Install Dependencies
-        # Download packages from the registry instead of git-lfs to save git-lfs bandwidth
-        run: yarn cache clean && yarn install
+        uses: ./.github/actions/yarn-install
 
       - name: 📈 Run GraphQL Codegen
         uses: nick-fields/retry@v4
