@@ -59,6 +59,19 @@ jobs:
           max_attempts: 2
       - name: 🧪 Test (chunk ${{ matrix.chunk }})
         run: yarn test:coverage --ci --shard ${{ matrix.chunk }}
+        env:
+          JEST_TIMINGS_FILE: ${{ runner.temp }}/jest-timings.json
+      # Refresh scripts/jest-shards/timings.json from these with scripts/jest-shards/mergeTimings.js
+      - name: Upload test timings
+        # A failing test still records its chunk's timings
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: jest-timings-${{ strategy.job-index }}
+          path: ${{ runner.temp }}/jest-timings.json
+          retention-days: 14
+          # Reruns upload under the same name
+          overwrite: true
       - name: Codecov
         uses: codecov/codecov-action@v3
         with:
@@ -125,8 +138,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      # LFS objects are content-addressed, so the cache is keyed on the commit's object ids
+      - name: LFS cache key
+        id: lfs
+        shell: bash # pipefail, so a failed listing fails the step instead of producing a key
+        run: |
+          oids=$(git lfs ls-files --long | cut -d ' ' -f 1 | sort)
+          test -n "$oids"
+          echo "key=lfs-$(sha256sum <<< "$oids" | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+      - name: Restore LFS cache
+        id: lfs-cache
+        uses: actions/cache/restore@v6
         with:
-          lfs: true
+          path: .git/lfs/objects
+          key: ${{ steps.lfs.outputs.key }}
+      - name: Pull LFS files
+        # fsck re-hashes every object against its id, so the check below sees the committed files
+        run: |
+          git lfs pull
+          git lfs fsck --objects
+      # Saved before the check so a failing check doesn't throw away verified objects
+      - name: Save LFS cache
+        if: steps.lfs-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: .git/lfs/objects
+          key: ${{ steps.lfs-cache.outputs.cache-primary-key }}
       - uses: actions/setup-node@v7
         with:
           node-version-file: .tool-versions
