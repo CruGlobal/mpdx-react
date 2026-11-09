@@ -29,7 +29,6 @@ import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalcula
 import { EffectiveDateNote } from '../../Shared/EffectiveDateNote';
 import { StepCard, StepTableHead } from '../../Shared/StepCard';
 import { orientSalaryRequest } from '../../Shared/orientSalaryRequest';
-import { useCaps } from '../useCaps';
 import { useSosaBlockOverCap } from '../useSosaBlockOverCap';
 
 /**
@@ -60,7 +59,6 @@ export const RequestedSalaryCard: React.FC = () => {
   } = useSalaryCalculator();
   const { formatCurrency } = useFormatters();
   const locale = useLocale();
-  const { overCapPerson } = useCaps();
   const { isUserSosa, blockOnCap } = useSosaBlockOverCap();
   const { markValid, markInvalid } = useAutosaveForm();
 
@@ -122,7 +120,7 @@ export const RequestedSalaryCard: React.FC = () => {
     );
   };
 
-  // Disable the Continue button while the saved gross exceeds the SOSA cap.
+  // Disable the Continue button while the saved gross exceeds the SOSA hard cap.
   useEffect(() => {
     if (blockOnCap) {
       markInvalid('over-cap');
@@ -131,6 +129,11 @@ export const RequestedSalaryCard: React.FC = () => {
     }
     return () => markValid('over-cap');
   }, [blockOnCap, markValid, markInvalid]);
+
+  const ytdGross = formatCurrency(
+    salaryCalculation?.calculations.requestedYtdGross,
+  );
+  const hardCap = formatCurrency(salaryCalculation?.calculations.hardCap);
 
   const minimumSalaryValue =
     salaryCalculation?.calculations.minimumRequestedSalary;
@@ -286,15 +289,16 @@ export const RequestedSalaryCard: React.FC = () => {
         {blockOnCap && (
           <Alert severity="error" sx={{ mt: 2 }}>
             <Trans t={t}>
-              Your request requires additional approvals and cannot be submitted
-              online. SOSA staff can have requests exceeding the{' '}
-              {{ cap: overCapPerson?.effectiveCap }} cap approved for certain
-              geographic locations with the appropriate levels of approval.
+              Your request cannot be submitted. With SECA, 403(b) and any
+              additional salary this year, your gross salary for the year would
+              be {{ gross: ytdGross }}. That is above the {{ cap: hardCap }}{' '}
+              SOSA salary limit for your location, and approvals cannot raise
+              this limit.
               <br />
               <br />
-              Please contact{' '}
-              <Link href="mailto:payroll@cru.org">payroll@cru.org</Link> for
-              further assistance.
+              Please lower your requested salary, or contact{' '}
+              <Link href="mailto:payroll@cru.org">payroll@cru.org</Link> with
+              any questions.
             </Trans>
           </Alert>
         )}
