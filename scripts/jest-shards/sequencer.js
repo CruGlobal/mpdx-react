@@ -125,7 +125,11 @@ class DurationSequencer extends Sequencer {
     return tests
       .map((test) => ({ test, file: relativePath(test) }))
       .sort((a, b) => order(a.file, b.file))
-      .map(({ test }) => test);
+      .map(({ test, file }) => {
+        // Jest's scheduler reads the duration the default sort would have set
+        test.duration = weights.get(file);
+        return test;
+      });
   }
 }
 

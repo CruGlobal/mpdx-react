@@ -39,6 +39,25 @@ describe('TimingsReporter', () => {
     });
   });
 
+  it('warns instead of failing the run when the file cannot be written', () => {
+    process.env.JEST_TIMINGS_FILE = path.join(
+      os.tmpdir(),
+      'no-such-dir',
+      'jest-timings.json',
+    );
+    const stderr = jest.spyOn(process.stderr, 'write').mockReturnValue(true);
+
+    expect(() =>
+      new TimingsReporter({ rootDir: '/repo' }).onRunComplete(
+        new Set(),
+        results,
+      ),
+    ).not.toThrow();
+    expect(stderr).toHaveBeenCalledWith(
+      expect.stringContaining('Could not write test timings'),
+    );
+  });
+
   it('writes nothing when JEST_TIMINGS_FILE is not set', () => {
     delete process.env.JEST_TIMINGS_FILE;
     const writeFile = jest.spyOn(fs, 'writeFileSync');

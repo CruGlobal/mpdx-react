@@ -25,7 +25,13 @@ class TimingsReporter {
           perfStats.runtime,
         ]),
     );
-    fs.writeFileSync(file, `${JSON.stringify(timings, null, 2)}\n`);
+    try {
+      fs.writeFileSync(file, `${JSON.stringify(timings, null, 2)}\n`);
+    } catch (error) {
+      process.stderr.write(
+        `Could not write test timings to ${file}: ${error}\n`,
+      );
+    }
   }
 }
 

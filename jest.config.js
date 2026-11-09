@@ -43,6 +43,7 @@ const customJestConfig = {
     '__tests__/extensions/**/*.{js,jsx,ts,tsx}',
     'lighthouse/**/*.mjs',
     'scripts/**/*.ts',
+    'scripts/jest-shards/*.js',
     '!pages/api/**',
     '!**/*.generated.ts',
     '!**/*.mock.*',

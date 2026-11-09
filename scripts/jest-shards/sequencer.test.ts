@@ -172,10 +172,9 @@ describe('DurationSequencer', () => {
     });
 
     expect(relative(first)).toEqual(['b.test.ts']);
-    expect(relative(await sequencer.sort([...second].reverse()))).toEqual([
-      'c.test.ts',
-      'a.test.ts',
-    ]);
+    const sorted = await sequencer.sort([...second].reverse());
+    expect(relative(sorted)).toEqual(['c.test.ts', 'a.test.ts']);
+    expect(sorted.map((test) => test.duration)).toEqual([15, 10]);
   });
 
   it("falls back to Jest's own split when there are no timings", async () => {

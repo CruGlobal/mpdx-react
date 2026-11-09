@@ -147,7 +147,8 @@ jobs:
           test -n "$oids"
           echo "key=lfs-$(sha256sum <<< "$oids" | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
       - name: Restore LFS cache
-        uses: actions/cache@v6
+        id: lfs-cache
+        uses: actions/cache/restore@v6
         with:
           path: .git/lfs/objects
           key: ${{ steps.lfs.outputs.key }}
@@ -156,6 +157,13 @@ jobs:
         run: |
           git lfs pull
           git lfs fsck --objects
+      # Saved before the check so a failing check doesn't throw away verified objects
+      - name: Save LFS cache
+        if: steps.lfs-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: .git/lfs/objects
+          key: ${{ steps.lfs-cache.outputs.cache-primary-key }}
       - uses: actions/setup-node@v7
         with:
           node-version-file: .tool-versions
