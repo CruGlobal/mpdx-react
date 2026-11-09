@@ -58,7 +58,18 @@ jobs:
           retry_wait_seconds: 60
           max_attempts: 2
       - name: 🧪 Test (chunk ${{ matrix.chunk }})
-        run: yarn test:coverage --ci --shard ${{ matrix.chunk }}
+        run: yarn test:coverage --ci --shard ${{ matrix.chunk }} --reporters default --reporters ./scripts/jest-shards/timingsReporter.js
+        env:
+          JEST_TIMINGS_FILE: ${{ runner.temp }}/jest-timings.json
+      # Refresh scripts/jest-shards/timings.json from these with scripts/jest-shards/mergeTimings.js
+      - name: Upload test timings
+        uses: actions/upload-artifact@v7
+        with:
+          name: jest-timings-${{ strategy.job-index }}
+          path: ${{ runner.temp }}/jest-timings.json
+          retention-days: 14
+          # Reruns upload under the same name
+          overwrite: true
       - name: Codecov
         uses: codecov/codecov-action@v3
         with:

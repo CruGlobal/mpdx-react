@@ -109,6 +109,17 @@ it('loads contact data', async () => {
 yarn test ComponentName.test.tsx  # Run specific test file
 ```
 
+### CI Test Chunks
+
+CI runs Jest in 12 chunks (`--shard`). `scripts/jest-shards/sequencer.js` splits them by each file's
+time in `scripts/jest-shards/timings.json`, so the chunks finish together. New test files get the
+average time until the next refresh. When the chunks drift apart, refresh it from a recent CI run:
+
+```bash
+gh run download <run-id> -p 'jest-timings-*' -D /tmp/jest-timings/<run-id>
+node scripts/jest-shards/mergeTimings.js /tmp/jest-timings
+```
+
 ## Code Standards
 
 ### File Naming Conventions
