@@ -99,9 +99,9 @@ risk:
     - { glob: 'scripts/**/*.ts', points: 1, tier: medium }
     # Shared test infrastructure: a broken helper breaks every suite that uses it.
     - { glob: '__tests__/util/**', points: 1, tier: medium }
+    - { glob: '**/*.test.{ts,tsx}', points: 1, tier: medium }
 
     # ── low (0) — documentation of intent; these never change the score ───────
-    - { glob: '**/*.test.{ts,tsx}', points: 0, tier: low }
     - { glob: '**/*.snap', points: 0, tier: low }
     - { glob: '__tests__/fixtures/**', points: 0, tier: low }
 
@@ -418,6 +418,9 @@ excluded_paths:
   - 'public/fonts/**'
   - 'src/images/**'
   - '.github/ISSUE_TEMPLATE/**'
+  - '.claude/review/learnings/feedback.jsonl'
+  - '.claude/review/metrics/**'
+  - '.claude/review/index/**'
 
 # ── Deterministic evidence ────────────────────────────────────────────────────
 # ast-grep runs trusted, repo-authored AST rules before the model. Only matches
@@ -452,6 +455,18 @@ ci:
 context:
   enabled: false
   manifest: context/repositories.json
+
+# Review engine: agent-review (the default) | code-review.
+# code_review keys: effort low|medium|high|xhigh|max, model opus|sonnet|haiku,
+# replaces and always are lists of agent ids; max_findings is optional (an integer >= 1 or all).
+# CI ignores this and runs agent-review's own reviewers, and only a local review can approve.
+engine:
+  name: code-review
+  code_review:
+    effort: xhigh
+    model: opus
+    replaces: [architecture]
+    always: [security, testing, standards]
 
 # Advisory rollout: reviews post normally but never block merges. Still
 # label-gated. Move to `enforce` only once these gates pass.
