@@ -6,6 +6,7 @@ import {
   UserPersonTypeEnum,
 } from 'src/graphql/types.generated';
 import { SalaryCalculationQuery } from '../SalaryCalculatorContext/SalaryCalculation.generated';
+import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { SalaryCalculatorTestWrapper } from '../SalaryCalculatorTestWrapper';
 import { useSosaBlockOverCap } from './useSosaBlockOverCap';
 
@@ -15,21 +16,29 @@ const sosaUser = {
 
 const withGross = (
   requestedYtdGross: number,
+  progressiveApprovalTierReason: ProgressiveApprovalTierReasonEnum | null = ProgressiveApprovalTierReasonEnum.OverUserCap,
 ): DeepPartial<SalaryCalculationQuery['salaryRequest']> => ({
   calculations: { effectiveCap: 75000, hardCap: 90000, requestedYtdGross },
-  progressiveApprovalTierReason: ProgressiveApprovalTierReasonEnum.OverUserCap,
+  progressiveApprovalTierReason,
 });
 
 const renderUseSosaBlockOverCap = (
   props: Parameters<typeof SalaryCalculatorTestWrapper>[0],
 ) =>
-  renderHook(() => useSosaBlockOverCap(), {
-    wrapper: ({ children }) => (
-      <SalaryCalculatorTestWrapper {...props}>
-        {children}
-      </SalaryCalculatorTestWrapper>
-    ),
-  });
+  // hcmUser loads after the calculation, so tests can wait for both
+  renderHook(
+    () => ({
+      ...useSosaBlockOverCap(),
+      hcmUser: useSalaryCalculator().hcmUser,
+    }),
+    {
+      wrapper: ({ children }) => (
+        <SalaryCalculatorTestWrapper {...props}>
+          {children}
+        </SalaryCalculatorTestWrapper>
+      ),
+    },
+  );
 
 describe('useSosaBlockOverCap', () => {
   it('blocks when a SOSA user is over their hard cap', async () => {
@@ -37,6 +46,16 @@ describe('useSosaBlockOverCap', () => {
       hasSpouse: false,
       hcmUser: sosaUser,
       salaryRequestMock: withGross(90001),
+    });
+
+    await waitFor(() => expect(result.current.blockOnCap).toBe(true));
+  });
+
+  it('blocks a SOSA user over their hard cap whatever the approval reason', async () => {
+    const { result } = renderUseSosaBlockOverCap({
+      hasSpouse: false,
+      hcmUser: sosaUser,
+      salaryRequestMock: withGross(90001, null),
     });
 
     await waitFor(() => expect(result.current.blockOnCap).toBe(true));
@@ -70,7 +89,8 @@ describe('useSosaBlockOverCap', () => {
       salaryRequestMock: withGross(90001),
     });
 
-    await waitFor(() => expect(result.current.isUserSosa).toBe(false));
+    await waitFor(() => expect(result.current.hcmUser).toBeTruthy());
+    expect(result.current.isUserSosa).toBe(false);
     expect(result.current.blockOnCap).toBe(false);
   });
 });
