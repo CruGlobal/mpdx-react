@@ -19,6 +19,8 @@ const customJestConfig = {
   testRegex: '.+\\.test\\.m?[jt]sx?$',
   globalSetup: '<rootDir>/__tests__/util/globalSetup.ts',
   setupFilesAfterEnv: ['<rootDir>/__tests__/util/setup.ts'],
+  // Splits `--shard` runs by measured test time (scripts/jest-shards/timings.json)
+  testSequencer: '<rootDir>/scripts/jest-shards/sequencer.js',
   transform: {
     '\\.(gql|graphql)$': '@graphql-tools/jest-transform',
   },
