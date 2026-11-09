@@ -37,7 +37,8 @@ const loadTimings = (file) => {
 };
 
 /**
- * Files missing from the timings (new tests) weigh the mean of the known ones.
+ * Files missing from the timings (new tests) weigh the mean of the known ones. Every weight is
+ * at least 1, so zero-time files still spread across shards.
  * @param {string[]} files
  * @param {Record<string, number>} timings
  * @returns {Map<string, number>}
@@ -47,7 +48,10 @@ const weighFiles = (files, timings) => {
   const total = known.reduce((sum, file) => sum + timings[file], 0);
   const fallback = known.length ? Math.round(total / known.length) : 1;
   return new Map(
-    files.map((file) => [file, file in timings ? timings[file] : fallback]),
+    files.map((file) => [
+      file,
+      Math.max(1, file in timings ? timings[file] : fallback),
+    ]),
   );
 };
 
@@ -82,14 +86,10 @@ const planShards = (weights, shardCount) => {
 const relativePath = (test) => repoPath(test.context.config.rootDir, test.path);
 
 class DurationSequencer extends Sequencer {
-  /** @param {unknown} [readTimings] overridable in specs; Jest passes nothing (29.0) or options (29.7+) */
-  constructor(readTimings) {
+  constructor() {
     super();
-    /** @type {() => Record<string, number> | null} */
-    this.readTimings =
-      typeof readTimings === 'function'
-        ? /** @type {() => Record<string, number> | null} */ (readTimings)
-        : () => loadTimings(TIMINGS_PATH);
+    /** @type {() => Record<string, number> | null} replaced in specs */
+    this.readTimings = () => loadTimings(TIMINGS_PATH);
     /** @type {Map<string, number> | null} */
     this.weights = null;
   }
@@ -122,7 +122,10 @@ class DurationSequencer extends Sequencer {
       return super.sort(tests);
     }
     const order = longestFirst(weights);
-    return [...tests].sort((a, b) => order(relativePath(a), relativePath(b)));
+    return tests
+      .map((test) => ({ test, file: relativePath(test) }))
+      .sort((a, b) => order(a.file, b.file))
+      .map(({ test }) => test);
   }
 }
 

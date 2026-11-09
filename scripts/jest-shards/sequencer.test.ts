@@ -34,6 +34,18 @@ describe('weighFiles', () => {
     );
   });
 
+  it('weighs zero-millisecond files as 1 so they still spread across shards', () => {
+    const weights = weighFiles(['a', 'b', 'c'], { a: 0, b: 0, c: 0 });
+    expect(weights).toEqual(
+      new Map([
+        ['a', 1],
+        ['b', 1],
+        ['c', 1],
+      ]),
+    );
+    expect(planShards(weights, 3)).toEqual([['a'], ['b'], ['c']]);
+  });
+
   it('weighs every file the same when none are known', () => {
     expect(weighFiles(['a', 'b'], { gone: 5 })).toEqual(
       new Map([
@@ -143,11 +155,12 @@ describe('DurationSequencer', () => {
 
   it('splits by the committed timings and sorts each shard longest first', async () => {
     const tests = makeTests(['a.test.ts', 'b.test.ts', 'c.test.ts']);
-    const sequencer = new DurationSequencer(() => ({
+    const sequencer = new DurationSequencer();
+    sequencer.readTimings = () => ({
       'a.test.ts': 10,
       'b.test.ts': 30,
       'c.test.ts': 15,
-    }));
+    });
 
     const first = await sequencer.shard(tests, {
       shardIndex: 1,
@@ -168,7 +181,8 @@ describe('DurationSequencer', () => {
   it("falls back to Jest's own split when there are no timings", async () => {
     const tests = makeTests(files(30));
     const options = { shardIndex: 2, shardCount: 3 };
-    const sequencer = new DurationSequencer(() => null);
+    const sequencer = new DurationSequencer();
+    sequencer.readTimings = () => null;
 
     expect(await sequencer.shard(tests, options)).toEqual(
       await new DefaultSequencer().shard(tests, options),
@@ -184,7 +198,7 @@ describe('DurationSequencer', () => {
       .spyOn(DefaultSequencer.prototype, 'sort')
       .mockReturnValue(tests);
 
-    expect(await new DurationSequencer(() => null).sort(tests)).toBe(tests);
+    expect(await new DurationSequencer().sort(tests)).toBe(tests);
     expect(defaultSort).toHaveBeenCalledWith(tests);
     defaultSort.mockRestore();
   });

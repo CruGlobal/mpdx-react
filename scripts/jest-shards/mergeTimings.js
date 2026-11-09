@@ -3,6 +3,7 @@
 // median of what those runs measured. Files no run measured keep their earlier time while
 // the test file still exists, so a missing artifact can't reset them to the average.
 //
+//   rm -rf /tmp/jest-timings
 //   gh run download <run-id> -p 'jest-timings-*' -D /tmp/jest-timings/<run-id>
 //   node scripts/jest-shards/mergeTimings.js /tmp/jest-timings
 const fs = require('fs');
@@ -42,18 +43,21 @@ const mergeTimings = (
   const merged = new Map(
     Object.entries(previous).filter(([file]) => exists(file)),
   );
-  observed.forEach((times, file) => merged.set(file, median(times)));
+  observed.forEach((times, file) => {
+    if (exists(file)) {
+      merged.set(file, median(times));
+    }
+  });
   return Object.fromEntries([...merged].sort(([a], [b]) => (a < b ? -1 : 1)));
 };
 
-/** @returns {Record<string, number>} */
-const readPrevious = () => {
-  try {
-    return JSON.parse(fs.readFileSync(TIMINGS_PATH, 'utf8'));
-  } catch {
-    return {};
-  }
-};
+/**
+ * Only a missing file starts empty; a broken one throws rather than losing its times.
+ * @param {string} file
+ * @returns {Record<string, number>}
+ */
+const readPrevious = (file) =>
+  fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : {};
 
 /**
  * @param {string} dir
@@ -67,7 +71,7 @@ const readTimingFiles = (dir) =>
 
 if (require.main === module) {
   const runs = process.argv.slice(2).flatMap(readTimingFiles);
-  const merged = mergeTimings(runs, readPrevious());
+  const merged = mergeTimings(runs, readPrevious(TIMINGS_PATH));
   const measured = new Set(runs.flatMap((timings) => Object.keys(timings)));
   const kept = Object.keys(merged).filter((file) => !measured.has(file));
   fs.writeFileSync(TIMINGS_PATH, `${JSON.stringify(merged, null, 2)}\n`);
@@ -76,4 +80,4 @@ if (require.main === module) {
   );
 }
 
-module.exports = { mergeTimings, readTimingFiles };
+module.exports = { mergeTimings, readPrevious, readTimingFiles };

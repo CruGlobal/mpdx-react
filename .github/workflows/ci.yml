@@ -58,7 +58,7 @@ jobs:
           retry_wait_seconds: 60
           max_attempts: 2
       - name: 🧪 Test (chunk ${{ matrix.chunk }})
-        run: yarn test:coverage --ci --shard ${{ matrix.chunk }} --reporters default --reporters ./scripts/jest-shards/timingsReporter.js
+        run: yarn test:coverage --ci --shard ${{ matrix.chunk }}
         env:
           JEST_TIMINGS_FILE: ${{ runner.temp }}/jest-timings.json
       # Refresh scripts/jest-shards/timings.json from these with scripts/jest-shards/mergeTimings.js

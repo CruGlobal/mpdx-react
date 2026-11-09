@@ -21,6 +21,8 @@ const customJestConfig = {
   setupFilesAfterEnv: ['<rootDir>/__tests__/util/setup.ts'],
   // Splits `--shard` runs by measured test time (scripts/jest-shards/timings.json)
   testSequencer: '<rootDir>/scripts/jest-shards/sequencer.js',
+  // Writes per-file times for timings.json when JEST_TIMINGS_FILE is set (CI)
+  reporters: ['default', '<rootDir>/scripts/jest-shards/timingsReporter.js'],
   transform: {
     '\\.(gql|graphql)$': '@graphql-tools/jest-transform',
   },
