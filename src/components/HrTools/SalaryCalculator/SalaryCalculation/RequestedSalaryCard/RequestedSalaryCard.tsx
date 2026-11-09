@@ -63,8 +63,8 @@ const SosaHardCapAlert: React.FC = () => {
       <Trans t={t}>
         Your request cannot be submitted. With SECA, 403(b) and any additional
         salary this year, your gross salary for the year would be{' '}
-        {{ gross: ytdGross }}. That is above the {{ cap: hardCap }} SOSA salary
-        limit for your location, and approvals cannot raise this limit.
+        {{ gross: ytdGross }}. That is above your {{ cap: hardCap }} SOSA salary
+        limit, and approvals cannot raise this limit.
         <br />
         <br />
         Please lower your requested salary, or contact{' '}

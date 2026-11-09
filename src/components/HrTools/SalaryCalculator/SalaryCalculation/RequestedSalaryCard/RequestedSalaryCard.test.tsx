@@ -329,7 +329,7 @@ As you set your salary level, the amount you receive should reflect the amount o
       );
 
       expect(await findByRole('alert')).toHaveTextContent(
-        'Your request cannot be submitted. With SECA, 403(b) and any additional salary this year, your gross salary for the year would be $90,001.00. That is above the $90,000.00 SOSA salary limit for your location, and approvals cannot raise this limit.Please lower your requested salary, or contact payroll@cru.org with any questions.',
+        'Your request cannot be submitted. With SECA, 403(b) and any additional salary this year, your gross salary for the year would be $90,001.00. That is above your $90,000.00 SOSA salary limit, and approvals cannot raise this limit.Please lower your requested salary, or contact payroll@cru.org with any questions.',
       );
       expect(getByRole('textbox', { name: 'Requested salary' })).toBeInvalid();
     });
