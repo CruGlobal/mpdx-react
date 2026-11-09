@@ -71,6 +71,12 @@ const readTimingFiles = (dir) =>
 
 if (require.main === module) {
   const runs = process.argv.slice(2).flatMap(readTimingFiles);
+  if (runs.length === 0) {
+    process.stderr.write(
+      'No timing files found. Pass the folder gh run download wrote to.\n',
+    );
+    process.exit(1);
+  }
   const merged = mergeTimings(runs, readPrevious(TIMINGS_PATH));
   const measured = new Set(runs.flatMap((timings) => Object.keys(timings)));
   const kept = Object.keys(merged).filter((file) => !measured.has(file));
