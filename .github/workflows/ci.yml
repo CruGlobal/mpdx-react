@@ -136,8 +136,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      # LFS objects are content-addressed, so the cache is keyed on the commit's object ids
+      - name: LFS cache key
+        id: lfs
+        run: echo "key=lfs-$(git lfs ls-files --long | cut -d ' ' -f 1 | sort | sha256sum | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+      - name: Restore LFS cache
+        uses: actions/cache@v6
         with:
-          lfs: true
+          path: .git/lfs/objects
+          key: ${{ steps.lfs.outputs.key }}
+      - name: Pull LFS files
+        # fsck re-hashes every object against its id, so the check below sees the committed files
+        run: |
+          git lfs pull
+          git lfs fsck --objects
       - uses: actions/setup-node@v7
         with:
           node-version-file: .tool-versions
