@@ -5,6 +5,7 @@ import {
   UserPersonTypeEnum,
 } from 'src/graphql/types.generated';
 import {
+  HcmLoaded,
   SalaryCalculatorTestWrapper,
   SalaryCalculatorTestWrapperProps,
 } from '../../SalaryCalculatorTestWrapper';
@@ -83,29 +84,52 @@ If this is correct, please provide reasoning for why Jane's Salary should exceed
         userPersonType: UserPersonTypeEnum.EmployeeStaffNonRmoSpouse,
       },
     };
-    const overCapMock = {
-      progressiveApprovalTier: {
-        tier: ProgressiveApprovalTierEnum.VicePresident,
-      },
-    };
 
-    it('renders nothing when the SOSA user is over their effective cap', async () => {
-      const { queryByRole } = render(
-        <TestComponent hcmUser={sosaUser} salaryRequestMock={overCapMock} />,
+    const renderSosa = (requestedYtdGross: number, hcmUser?: typeof sosaUser) =>
+      render(
+        <SalaryCalculatorTestWrapper
+          hasSpouse={false}
+          hcmUser={hcmUser}
+          salaryRequestMock={{
+            calculations: {
+              effectiveCap: 75000,
+              hardCap: 90000,
+              requestedYtdGross,
+            },
+            progressiveApprovalTier: {
+              tier: ProgressiveApprovalTierEnum.VicePresident,
+            },
+            progressiveApprovalTierReason:
+              ProgressiveApprovalTierReasonEnum.OverUserCap,
+          }}
+        >
+          <HcmLoaded />
+          <ApprovalProcessCard />
+        </SalaryCalculatorTestWrapper>,
       );
 
-      await waitFor(() =>
-        expect(queryByRole('textbox')).not.toBeInTheDocument(),
-      );
+    it('renders the card when the SOSA user is over their effective cap but within their hard cap', async () => {
+      const { findByText, getByRole } = renderSosa(82000, sosaUser);
+
+      expect(await findByText('HCM loaded')).toBeInTheDocument();
+      expect(
+        getByRole('textbox', { name: 'Additional info' }),
+      ).toBeInTheDocument();
     });
 
-    it('renders the card when the user is not SOSA, even if over cap', async () => {
-      const { findByRole } = render(
-        <TestComponent salaryRequestMock={overCapMock} />,
-      );
+    it('renders nothing when the SOSA user is over their hard cap', async () => {
+      const { findByText, queryByRole } = renderSosa(90001, sosaUser);
 
+      expect(await findByText('HCM loaded')).toBeInTheDocument();
+      expect(queryByRole('textbox')).not.toBeInTheDocument();
+    });
+
+    it('renders the card when the user is not SOSA, even if over their hard cap', async () => {
+      const { findByText, getByRole } = renderSosa(90001);
+
+      expect(await findByText('HCM loaded')).toBeInTheDocument();
       expect(
-        await findByRole('textbox', { name: 'Additional info' }),
+        getByRole('textbox', { name: 'Additional info' }),
       ).toBeInTheDocument();
     });
   });

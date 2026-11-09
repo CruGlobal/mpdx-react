@@ -28,7 +28,10 @@ import {
   EffectiveSalaryCalculationQuery,
   SalaryCalculationQuery,
 } from './SalaryCalculatorContext/SalaryCalculation.generated';
-import { SalaryCalculatorProvider } from './SalaryCalculatorContext/SalaryCalculatorContext';
+import {
+  SalaryCalculatorProvider,
+  useSalaryCalculator,
+} from './SalaryCalculatorContext/SalaryCalculatorContext';
 
 const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
   mocks: {
@@ -274,3 +277,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
     </ThemeProvider>
   );
 };
+
+/** Renders once HCM data loads, which comes after the calculation, so tests can wait for both */
+export const HcmLoaded: React.FC = () =>
+  useSalaryCalculator().hcmUser ? <span>HCM loaded</span> : null;

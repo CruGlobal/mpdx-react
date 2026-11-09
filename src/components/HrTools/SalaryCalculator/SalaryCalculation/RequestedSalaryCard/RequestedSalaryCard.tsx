@@ -29,7 +29,6 @@ import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalcula
 import { EffectiveDateNote } from '../../Shared/EffectiveDateNote';
 import { StepCard, StepTableHead } from '../../Shared/StepCard';
 import { orientSalaryRequest } from '../../Shared/orientSalaryRequest';
-import { useCaps } from '../useCaps';
 import { useSosaBlockOverCap } from '../useSosaBlockOverCap';
 
 /**
@@ -51,6 +50,31 @@ export const estimateRequestedSalary = (
   );
 };
 
+const SosaHardCapAlert: React.FC = () => {
+  const { t } = useTranslation();
+  const { calculation } = useSalaryCalculator();
+  const { formatCurrency } = useFormatters();
+
+  const ytdGross = formatCurrency(calculation?.calculations.requestedYtdGross);
+  const hardCap = formatCurrency(calculation?.calculations.hardCap);
+
+  return (
+    <Alert severity="error" sx={{ mt: 2 }}>
+      <Trans t={t}>
+        Your request cannot be submitted. With SECA, 403(b) and any additional
+        salary this year, your gross salary for the year would be{' '}
+        {{ gross: ytdGross }}. That is above your {{ cap: hardCap }} SOSA salary
+        limit, and approvals cannot raise this limit.
+        <br />
+        <br />
+        Please lower your requested salary, or contact{' '}
+        <Link href="mailto:payroll@cru.org">payroll@cru.org</Link> with any
+        questions.
+      </Trans>
+    </Alert>
+  );
+};
+
 export const RequestedSalaryCard: React.FC = () => {
   const { t } = useTranslation();
   const {
@@ -60,7 +84,6 @@ export const RequestedSalaryCard: React.FC = () => {
   } = useSalaryCalculator();
   const { formatCurrency } = useFormatters();
   const locale = useLocale();
-  const { overCapPerson } = useCaps();
   const { isUserSosa, blockOnCap } = useSosaBlockOverCap();
   const { markValid, markInvalid } = useAutosaveForm();
 
@@ -122,7 +145,7 @@ export const RequestedSalaryCard: React.FC = () => {
     );
   };
 
-  // Disable the Continue button while the saved gross exceeds the SOSA cap.
+  // Disable the Continue button while the saved gross exceeds the SOSA hard cap.
   useEffect(() => {
     if (blockOnCap) {
       markInvalid('over-cap');
@@ -283,21 +306,7 @@ export const RequestedSalaryCard: React.FC = () => {
           </TableBody>
         </Table>
 
-        {blockOnCap && (
-          <Alert severity="error" sx={{ mt: 2 }}>
-            <Trans t={t}>
-              Your request requires additional approvals and cannot be submitted
-              online. SOSA staff can have requests exceeding the{' '}
-              {{ cap: overCapPerson?.effectiveCap }} cap approved for certain
-              geographic locations with the appropriate levels of approval.
-              <br />
-              <br />
-              Please contact{' '}
-              <Link href="mailto:payroll@cru.org">payroll@cru.org</Link> for
-              further assistance.
-            </Trans>
-          </Alert>
-        )}
+        {blockOnCap && <SosaHardCapAlert />}
       </CardContent>
     </StepCard>
   );
