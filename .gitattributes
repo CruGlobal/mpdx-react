@@ -1,1 +1,4 @@
 .yarn/**/*.zip filter=lfs diff=lfs merge=lfs -text
+
+# agent-review appends a line per fixed or dismissed finding; keep both sides on a local merge.
+.claude/review/learnings/feedback.jsonl merge=union
