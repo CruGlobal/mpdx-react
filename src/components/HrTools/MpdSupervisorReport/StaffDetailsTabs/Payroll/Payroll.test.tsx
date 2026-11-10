@@ -106,7 +106,7 @@ describe('StaffTabPayroll', () => {
     });
   });
 
-  it('renders a dash for null fields and an empty cell for a missing month or CAP', async () => {
+  it('renders a dash for null fields and an empty cell for a missing month', async () => {
     const { findByRole } = render(
       <TestComponent
         payrollHistory={[
@@ -123,7 +123,28 @@ describe('StaffTabPayroll', () => {
 
     expect(await findByRole('table')).toHaveTableStructure({
       columnHeaders,
-      cells: [['', '—', '$500.00', '—', '']],
+      cells: [['', '—', '$500.00', '—', '—']],
+    });
+  });
+
+  it('renders a dash, not 0%, for a month with payroll but no CAP', async () => {
+    const { findByRole } = render(
+      <TestComponent
+        payrollHistory={[
+          {
+            month: '2023-01',
+            payroll: 3000,
+            asrAndReimbursements: 0,
+            percentMaxPay: 80,
+            percentOfCap: null,
+          },
+        ]}
+      />,
+    );
+
+    expect(await findByRole('table')).toHaveTableStructure({
+      columnHeaders,
+      cells: [['Jan 2023', '$3,000.00', '$0.00', '80.0%', '—']],
     });
   });
 

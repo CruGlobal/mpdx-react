@@ -102,7 +102,7 @@ export const StaffTabPayroll: React.FC<StaffTabPayrollProps> = ({
                     <TableCell align="right">
                       {payroll.percentOfCap === null ||
                       payroll.percentOfCap === undefined
-                        ? ''
+                        ? pendingField
                         : formatPercentage(payroll.percentOfCap, 1)}
                     </TableCell>
                   </TableRow>
