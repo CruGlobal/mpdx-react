@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import CreateIcon from '@mui/icons-material/Create';
+import HistoryIcon from '@mui/icons-material/History';
 import LocationOn from '@mui/icons-material/LocationOn';
 import {
   Box,
@@ -12,6 +13,8 @@ import {
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { AddressChangeBadge } from 'src/components/Contacts/AddressChangeBadge/AddressChangeBadge';
+import { AddressHistoryModal } from 'src/components/Shared/AddressHistoryModal/AddressHistoryModal';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat';
 import { sourceToStr } from 'src/lib/sourceHelper';
@@ -73,10 +76,14 @@ const AddressEditIconContainer = styled(IconButton)(({ theme }) => ({
 
 interface AddAddressButtonProps {
   placement: 'top' | 'bottom';
+  onHistoryClick: () => void;
 }
 
 // Phones get the button on its own row below the addresses so it can't cover them.
-const AddAddressButton: React.FC<AddAddressButtonProps> = ({ placement }) => {
+const AddAddressButton: React.FC<AddAddressButtonProps> = ({
+  placement,
+  onHistoryClick,
+}) => {
   const { t } = useTranslation();
   const { setAddAddressModalOpen } = React.useContext(
     ContactDetailContext,
@@ -91,10 +98,16 @@ const AddAddressButton: React.FC<AddAddressButtonProps> = ({ placement }) => {
   }
 
   const button = (
-    <AddButton onClick={() => setAddAddressModalOpen(true)}>
-      <AddIcon />
-      <AddText variant="subtitle1">{t('Add Address')}</AddText>
-    </AddButton>
+    <>
+      <AddButton onClick={onHistoryClick} sx={{ mr: 0 }}>
+        <HistoryIcon sx={{ color: 'info.main', mr: 0.5 }} />
+        <AddText variant="subtitle1">{t('History')}</AddText>
+      </AddButton>
+      <AddButton onClick={() => setAddAddressModalOpen(true)}>
+        <AddIcon />
+        <AddText variant="subtitle1">{t('Add Address')}</AddText>
+      </AddButton>
+    </>
   );
 
   return isSmallScreen ? (
@@ -104,6 +117,19 @@ const AddAddressButton: React.FC<AddAddressButtonProps> = ({ placement }) => {
       <Box sx={{ position: 'absolute', right: 2, top: 2 }}>{button}</Box>
     </Box>
   );
+};
+
+const useAddressHistoryModal = (accountListId: string, contactId: string) => {
+  const [open, setOpen] = useState(false);
+  const historyModal = open ? (
+    <AddressHistoryModal
+      accountListId={accountListId}
+      contactId={contactId}
+      handleClose={() => setOpen(false)}
+    />
+  ) : null;
+
+  return { openHistory: () => setOpen(true), historyModal };
 };
 
 interface MailingProp {
@@ -117,7 +143,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { addresses, id } = data;
+  const { addresses, id, latestAddressChange } = data;
   const {
     editingAddressId,
     setEditingAddressId,
@@ -139,9 +165,13 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
 
   const [showContactDetailTabMoreOpen, setShowContactDetailTabMoreOpen] =
     useState(false);
+  const { openHistory, historyModal } = useAddressHistoryModal(
+    accountListId,
+    id,
+  );
   return (
     <>
-      <AddAddressButton placement="top" />
+      <AddAddressButton placement="top" onHistoryClick={openHistory} />
       <Box>
         <ContactDetailsMailingMainContainer>
           <ContactDetailsMailingIcon />
@@ -193,6 +223,9 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                   )}
                   )
                 </Typography>
+                {latestAddressChange && (
+                  <AddressChangeBadge addressChange={latestAddressChange} />
+                )}
               </>
             )}
             {/* Show More Section */}
@@ -256,7 +289,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
           </ContactDetailsMailingTextContainer>
         </ContactDetailsMailingMainContainer>
       </Box>
-      <AddAddressButton placement="bottom" />
+      <AddAddressButton placement="bottom" onHistoryClick={openHistory} />
       {selectedAddress && (
         <EditContactAddressModal
           contactId={id}
@@ -279,6 +312,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
           handleClose={() => setEditMailingModalOpen(false)}
         />
       )}
+      {historyModal}
     </>
   );
 };

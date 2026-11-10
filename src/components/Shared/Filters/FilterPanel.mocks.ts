@@ -119,6 +119,23 @@ export const filterPanelSlidersMock = gqlMock<FilterPanelGroupFragment>(
     },
   },
 );
+export const filterPanelAddressChangedMock = gqlMock<FilterPanelGroupFragment>(
+  FilterPanelGroupFragmentDoc,
+  {
+    mocks: {
+      name: 'Contact Location',
+      featured: true,
+      filters: [
+        {
+          __typename: 'DaterangeFilter',
+          filterKey: 'address_changed',
+          title: 'Address Changed',
+          options: [],
+        },
+      ],
+    },
+  },
+);
 export const filterPanelTagsMock = gqlMock<FilterPanelGroupFragment>(
   FilterPanelGroupFragmentDoc,
   {

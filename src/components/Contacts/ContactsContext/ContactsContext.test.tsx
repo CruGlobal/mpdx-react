@@ -40,6 +40,7 @@ interface TestWrapper {
   contactId?: string[];
   contactView?: string;
   savedFilter?: string;
+  filters?: string;
   children: JSX.Element;
 }
 
@@ -47,13 +48,14 @@ const TestWrapper: React.FC<TestWrapper> = ({
   contactId,
   contactView = 'list',
   savedFilter,
+  filters,
   children,
 }) => {
   return (
     <ThemeProvider theme={theme}>
       <TestRouter
         router={{
-          query: { accountListId, contactId },
+          query: { accountListId, contactId, filters },
           pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
           isReady: true,
           push,
@@ -246,6 +248,47 @@ describe('ContactsPageContext', () => {
 
     userEvent.click(getByRole('button', { name: 'List Button' }));
     expect(getByTestId('active-filters')).toHaveTextContent('{}');
+  });
+
+  it('only loads address changes in the list while filtering by address changed', async () => {
+    const { findByRole } = render(
+      <TestWrapper
+        filters={encodeURIComponent(
+          JSON.stringify({
+            addressChanged: { min: '2026-01-01', max: '2026-10-20' },
+          }),
+        )}
+      >
+        <InnerComponent />
+      </TestWrapper>,
+    );
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('Contacts', {
+        includeAddressChange: true,
+      }),
+    );
+
+    userEvent.click(await findByRole('button', { name: 'Map Button' }));
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('Contacts', {
+        includeAddressChange: false,
+      }),
+    );
+  });
+
+  it('does not load address changes without the address changed filter', async () => {
+    render(
+      <TestWrapper>
+        <InnerComponent />
+      </TestWrapper>,
+    );
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('Contacts', {
+        includeAddressChange: false,
+      }),
+    );
   });
 
   it('Saved Filters with correct JSON', async () => {

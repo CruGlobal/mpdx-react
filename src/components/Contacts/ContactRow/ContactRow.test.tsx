@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Settings } from 'luxon';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
@@ -68,7 +69,16 @@ const openTaskModal = jest.fn();
 const toggleSelectionById = jest.fn();
 const isRowChecked = jest.fn();
 
-const Components = () => (
+const addressChange = {
+  id: 'change-1',
+  date: '2026-08-03',
+  source: 'Siebel',
+  createdByUser: null,
+};
+
+const Components: React.FC<{ showAddressChange?: boolean }> = ({
+  showAddressChange,
+}) => (
   <TestRouter router={router}>
     <GqlMockedProvider>
       <ThemeProvider theme={theme}>
@@ -82,7 +92,10 @@ const Components = () => (
           }
         >
           <ContactPanelProvider>
-            <ContactRow contact={contact} />
+            <ContactRow
+              contact={contact}
+              addressChange={showAddressChange ? addressChange : undefined}
+            />
           </ContactPanelProvider>
         </ContactsContext.Provider>
       </ThemeProvider>
@@ -90,7 +103,14 @@ const Components = () => (
   </TestRouter>
 );
 
+const nowMillis = Settings.now;
+afterEach(() => {
+  Settings.now = nowMillis;
+});
+
 beforeEach(() => {
+  // The address change chip leaves the year off for changes in the current year
+  Settings.now = () => new Date(2026, 9, 21).valueOf();
   (useTaskModal as jest.Mock).mockReturnValue({
     openTaskModal,
     preloadTaskModal: jest.fn(),
@@ -154,5 +174,17 @@ describe('ContactsRow', () => {
       'href',
       `/accountLists/${accountListId}/contacts/${contact.id}`,
     );
+  });
+
+  it('shows the latest address change when asked to', () => {
+    const { getByText } = render(<Components showAddressChange />);
+
+    expect(getByText('Address changed Aug 3 · automatic')).toBeInTheDocument();
+  });
+
+  it('hides the latest address change by default', () => {
+    const { queryByText } = render(<Components />);
+
+    expect(queryByText(/Address changed/)).not.toBeInTheDocument();
   });
 });
