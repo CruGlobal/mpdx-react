@@ -86,6 +86,7 @@ interface TestComponentProps {
   splitAsr?: boolean;
   submitting?: boolean;
   geographicLocation?: string;
+  acknowledgement?: string;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -102,6 +103,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   splitAsr,
   submitting,
   geographicLocation,
+  acknowledgement,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
@@ -124,6 +126,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 splitAsr={splitAsr}
                 submitting={submitting}
                 geographicLocation={geographicLocation}
+                acknowledgement={acknowledgement}
               />
             </MinisterHousingAllowanceProvider>
           </FormikWrapper>
@@ -355,6 +358,44 @@ describe('ConfirmationModal', () => {
       expect(
         within(submitButton).queryByRole('progressbar'),
       ).not.toBeInTheDocument();
+    });
+  });
+
+  describe('acknowledgement', () => {
+    const acknowledgement = 'I understand what this request does.';
+
+    it('keeps the submit button disabled until the box is checked', async () => {
+      const { findByRole, getByRole } = render(
+        <TestComponent
+          pageType={PageEnum.New}
+          acknowledgement={acknowledgement}
+        />,
+      );
+
+      const checkbox = await findByRole('checkbox', { name: acknowledgement });
+      const submitButton = getByRole('button', { name: /YES, CONTINUE/i });
+      expect(checkbox).not.toBeChecked();
+      expect(submitButton).toBeDisabled();
+
+      userEvent.click(checkbox);
+      expect(submitButton).toBeEnabled();
+
+      userEvent.click(submitButton);
+      expect(handleConfirm).toHaveBeenCalled();
+
+      userEvent.click(checkbox);
+      expect(submitButton).toBeDisabled();
+    });
+
+    it('shows no checkbox without an acknowledgement', async () => {
+      const { findByRole, queryByRole } = render(
+        <TestComponent pageType={PageEnum.New} />,
+      );
+
+      expect(
+        await findByRole('button', { name: /YES, CONTINUE/i }),
+      ).toBeEnabled();
+      expect(queryByRole('checkbox')).not.toBeInTheDocument();
     });
   });
 });

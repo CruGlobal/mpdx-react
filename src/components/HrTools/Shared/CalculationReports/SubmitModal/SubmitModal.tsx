@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ChevronRight } from '@mui/icons-material';
 import {
   Alert,
   Box,
   Button,
+  Checkbox,
   CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControlLabel,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { ApprovalProcess } from 'src/components/HrTools/AdditionalSalaryRequest/SubmitModalAccordions/ApprovalProcess/ApprovalProcess';
@@ -31,6 +33,8 @@ interface SubmitModalProps {
   disableSubmit?: boolean;
   submitting?: boolean;
   geographicLocation?: string;
+  /** Label of a checkbox the user must check before the submit button enables */
+  acknowledgement?: string;
 }
 
 export const SubmitModal: React.FC<SubmitModalProps> = ({
@@ -49,8 +53,10 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
   disableSubmit,
   submitting,
   geographicLocation,
+  acknowledgement,
 }) => {
   const { t } = useTranslation();
+  const [acknowledged, setAcknowledged] = useState(false);
 
   const {
     title: defaultTitle,
@@ -102,6 +108,22 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
             )}
           </Alert>
         )}
+        {acknowledgement && (
+          <FormControlLabel
+            sx={{
+              mt: 2,
+              alignItems: 'flex-start',
+              '& .MuiFormControlLabel-label': { mt: 1 },
+            }}
+            control={
+              <Checkbox
+                checked={acknowledged}
+                onChange={(event) => setAcknowledged(event.target.checked)}
+              />
+            }
+            label={acknowledgement}
+          />
+        )}
       </DialogContent>
       <DialogActions>
         <Button
@@ -115,7 +137,11 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
           <Button
             onClick={handleConfirm}
             color={isError ? 'error' : 'primary'}
-            disabled={disableSubmit || submitting}
+            disabled={
+              disableSubmit ||
+              submitting ||
+              (!!acknowledgement && !acknowledged)
+            }
             aria-busy={submitting}
             startIcon={
               submitting ? <CircularProgress size={20} color="inherit" /> : null

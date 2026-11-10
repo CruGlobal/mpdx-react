@@ -12,6 +12,11 @@ import { useApplyGoalAndLocation } from 'src/hooks/useApplyGoalAndLocation';
 import { useCaps } from '../SalaryCalculation/useCaps';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { useDeleteSalaryCalculation } from '../Shared/useDeleteSalaryCalculation';
+import {
+  MHA_WOULD_END_CODE,
+  MhaEndPerson,
+  mhaEndPeopleFromError,
+} from './MhaEndWarning';
 import { useSubmitSalaryCalculationMutation } from './SubmitSalaryCalculation.generated';
 import { useSubmitDialogContent } from './useSubmitDialogContent';
 
@@ -98,7 +103,9 @@ export const SubmitButton: React.FC<ButtonProps> = (props) => {
   const [submit, { loading: submitting }] =
     useSubmitSalaryCalculationMutation();
   const [submitDialogOpen, setSubmitDialogOpen] = useState(false);
-  const { title, content, subContent } = useSubmitDialogContent();
+  const [mhaEndPeople, setMhaEndPeople] = useState<MhaEndPerson[] | null>(null);
+  const { title, content, subContent, acknowledgement } =
+    useSubmitDialogContent(mhaEndPeople);
 
   const {
     applyMonthlyGoal,
@@ -108,19 +115,36 @@ export const SubmitButton: React.FC<ButtonProps> = (props) => {
 
   const handleSubmit = async () => {
     if (calculation) {
-      await submit({
-        variables: {
-          input: {
-            id: calculation.id,
+      try {
+        await submit({
+          variables: {
+            input: mhaEndPeople
+              ? { id: calculation.id, confirmMhaEnd: true }
+              : { id: calculation.id },
           },
-        },
-      });
+          context: { suppressErrorCodes: [MHA_WOULD_END_CODE] },
+        });
+      } catch (error) {
+        // The global Apollo error link already toasts other errors; stay open to retry.
+        const people = mhaEndPeopleFromError(error);
+        if (people) {
+          setMhaEndPeople(people);
+        }
+        return;
+      }
       handleNextStep();
 
       if (geographicLocationChanged) {
         applyMonthlyGoal();
       }
     }
+  };
+
+  const handleClose = () => {
+    setSubmitDialogOpen(false);
+    // confirmMhaEnd stops MHA for whoever the request ends it for when it is sent, so a
+    // confirmation must not outlive the warning the user saw.
+    setMhaEndPeople(null);
   };
 
   if (!calculation) {
@@ -141,11 +165,12 @@ export const SubmitButton: React.FC<ButtonProps> = (props) => {
       {submitDialogOpen && (
         <SubmitModal
           formTitle={t('Salary Calculation Form')}
-          handleClose={() => setSubmitDialogOpen(false)}
+          handleClose={handleClose}
           handleConfirm={handleSubmit}
           overrideTitle={title}
           overrideContent={content}
           overrideSubContent={subContent}
+          acknowledgement={acknowledgement}
           submitting={submitting}
           geographicLocation={
             geographicLocationChanged ? normalizedGeographicLocation : undefined

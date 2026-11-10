@@ -1,5 +1,6 @@
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { GraphQLError } from 'graphql';
 import { AutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
 import {
   SalaryCalculatorTestWrapper,
@@ -176,6 +177,9 @@ describe('SubmitButton', () => {
         input: { id: 'salary-request-1' },
       }),
     );
+    expect(mutationSpy).not.toHaveGraphqlOperation('SubmitSalaryCalculation', {
+      input: { confirmMhaEnd: true },
+    });
   });
 
   it('disables the modal buttons and shows a spinner while submitting', async () => {
@@ -250,5 +254,146 @@ describe('SubmitButton', () => {
         ),
       ).not.toBeInTheDocument(),
     );
+  });
+
+  describe('when the request would end MHA', () => {
+    const jane = {
+      personNumber: '100001',
+      name: 'Jane Doe',
+      reason: 'ZERO_AMOUNT',
+      currentTakenAmount: 12000,
+    };
+    const john = {
+      personNumber: '100002',
+      name: 'John Doe',
+      reason: 'NO_HOUSING_TYPE',
+      currentTakenAmount: 7200,
+    };
+    const mhaWouldEnd = (people: object[]) =>
+      new GraphQLError('This request would end MHA', {
+        extensions: {
+          code: 'MHA_WOULD_END',
+          effectiveDate: '2026-11-16',
+          people,
+        },
+      });
+    const acknowledgement =
+      'I understand that MHA will stop and I still want to submit this request.';
+    const janeWarning =
+      "Jane Doe won't get MHA starting with the paycheck on 11/25/2026. This request sets their MHA to $0.";
+
+    const renderAndSubmit = async (submitError: GraphQLError) => {
+      const utils = render(
+        <TestComponent
+          onCall={mutationSpy}
+          submitError={submitError}
+          salaryRequestMock={{ effectiveDate: '2026-11-16' }}
+          payrollDates={[
+            { startDate: '2026-11-16', regularProcessDate: '2026-11-25' },
+          ]}
+        />,
+      );
+      const { findByRole } = utils;
+      userEvent.click(await findByRole('button', { name: 'Continue' }));
+      userEvent.click(await findByRole('button', { name: 'Continue' }));
+      userEvent.click(await findByRole('button', { name: 'Continue' }));
+      userEvent.click(await findByRole('button', { name: 'Submit' }));
+      userEvent.click(await findByRole('button', { name: 'Yes, Continue' }));
+      return utils;
+    };
+
+    it('warns who will stop getting MHA and stays on the submit step', async () => {
+      const { findByText, getByRole } = await renderAndSubmit(
+        mhaWouldEnd([jane]),
+      );
+
+      expect(await findByText(janeWarning)).toBeInTheDocument();
+      expect(
+        getByRole('heading', {
+          name: 'This request will stop MHA. Do you still want to submit it?',
+        }),
+      ).toBeInTheDocument();
+
+      userEvent.click(getByRole('button', { name: 'GO BACK' }));
+      expect(getByRole('button', { name: 'Submit' })).toBeInTheDocument();
+    });
+
+    it('keeps confirm disabled until the box is checked', async () => {
+      const { findByRole, getByRole } = await renderAndSubmit(
+        mhaWouldEnd([jane]),
+      );
+
+      const checkbox = await findByRole('checkbox', { name: acknowledgement });
+      const confirmButton = getByRole('button', { name: 'Yes, Continue' });
+      expect(confirmButton).toBeDisabled();
+
+      userEvent.click(checkbox);
+      expect(confirmButton).toBeEnabled();
+    });
+
+    it('resubmits with confirmMhaEnd once confirmed, then advances', async () => {
+      const { findByRole, getByRole, queryByText } = await renderAndSubmit(
+        mhaWouldEnd([jane]),
+      );
+
+      userEvent.click(await findByRole('checkbox', { name: acknowledgement }));
+      userEvent.click(getByRole('button', { name: 'Yes, Continue' }));
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('SubmitSalaryCalculation', {
+          input: { id: 'salary-request-1', confirmMhaEnd: true },
+        }),
+      );
+      await waitFor(() => expect(queryByText('Back')).not.toBeInTheDocument());
+    });
+
+    it('lists both people when the request ends MHA for both', async () => {
+      const { findByText, getByText } = await renderAndSubmit(
+        mhaWouldEnd([jane, john]),
+      );
+
+      expect(await findByText(janeWarning)).toBeInTheDocument();
+      expect(
+        getByText(
+          "John Doe won't get MHA starting with the paycheck on 11/25/2026. They do not have a current board approval for MHA.",
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it('asks again after the user goes back instead of confirming', async () => {
+      const { findByRole, getByRole, queryByRole } = await renderAndSubmit(
+        mhaWouldEnd([jane]),
+      );
+
+      await findByRole('checkbox', { name: acknowledgement });
+      userEvent.click(getByRole('button', { name: 'GO BACK' }));
+      userEvent.click(getByRole('button', { name: 'Submit' }));
+
+      expect(
+        await findByRole('heading', {
+          name: 'Are you ready to submit your Salary Calculation Form?',
+        }),
+      ).toBeInTheDocument();
+      expect(queryByRole('checkbox')).not.toBeInTheDocument();
+    });
+
+    it('shows no MHA warning when the submit fails for another reason', async () => {
+      const { getByRole, queryByRole } = await renderAndSubmit(
+        new GraphQLError('Something went wrong', {
+          extensions: { code: 'INTERNAL_SERVER_ERROR' },
+        }),
+      );
+
+      const confirmButton = getByRole('button', { name: 'Yes, Continue' });
+      await waitFor(() => expect(confirmButton).toBeEnabled());
+      expect(mutationSpy).toHaveGraphqlOperation('SubmitSalaryCalculation');
+
+      expect(
+        getByRole('heading', {
+          name: 'Are you ready to submit your Salary Calculation Form?',
+        }),
+      ).toBeInTheDocument();
+      expect(queryByRole('checkbox')).not.toBeInTheDocument();
+    });
   });
 });

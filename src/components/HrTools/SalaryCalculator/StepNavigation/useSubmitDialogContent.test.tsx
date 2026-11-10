@@ -4,7 +4,9 @@ import {
   ProgressiveApprovalTierReasonEnum,
 } from 'src/graphql/types.generated';
 import { progressiveApprovalsLink } from '../../AdditionalSalaryRequest/Shared/pdfLinks';
+import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { SalaryCalculatorTestWrapper } from '../SalaryCalculatorTestWrapper';
+import { MhaEndPerson, MhaEndReasonEnum } from './MhaEndWarning';
 import { useSubmitDialogContent } from './useSubmitDialogContent';
 
 describe('useSubmitDialogContent', () => {
@@ -32,6 +34,7 @@ describe('useSubmitDialogContent', () => {
     expect(result.current.subContent).toBe(
       'Your request will be sent to HR Services.',
     );
+    expect(result.current.acknowledgement).toBeUndefined();
   });
 
   it('returns standard submit content when tier is DivisionHead', async () => {
@@ -129,6 +132,48 @@ describe('useSubmitDialogContent', () => {
     );
     expect(result.current.subContent).toContain(
       "We'll forward your request to them and get back to you with their decision",
+    );
+  });
+
+  it('returns the MHA warning over approval content when the request would end MHA', async () => {
+    const people: MhaEndPerson[] = [
+      {
+        personNumber: '100001',
+        name: 'Jane Doe',
+        reason: MhaEndReasonEnum.ZeroAmount,
+      },
+    ];
+    const { result } = renderHook(
+      () => ({
+        calculation: useSalaryCalculator().calculation,
+        dialog: useSubmitDialogContent(people),
+      }),
+      {
+        wrapper: ({ children }) => (
+          <SalaryCalculatorTestWrapper
+            salaryRequestMock={{
+              progressiveApprovalTier: {
+                tier: ProgressiveApprovalTierEnum.VicePresident,
+              },
+            }}
+          >
+            {children}
+          </SalaryCalculatorTestWrapper>
+        ),
+      },
+    );
+
+    await waitFor(() =>
+      expect(result.current.calculation?.progressiveApprovalTier).toBeTruthy(),
+    );
+    expect(result.current.dialog.title).toBe(
+      'This request will stop MHA. Do you still want to submit it?',
+    );
+    expect(result.current.dialog.content).toBe(
+      'You are submitting a request that stops Ministry Housing Allowance (MHA).',
+    );
+    expect(result.current.dialog.acknowledgement).toBe(
+      'I understand that MHA will stop and I still want to submit this request.',
     );
   });
 });
