@@ -6,7 +6,7 @@ import {
 import { progressiveApprovalsLink } from '../../AdditionalSalaryRequest/Shared/pdfLinks';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { SalaryCalculatorTestWrapper } from '../SalaryCalculatorTestWrapper';
-import { MhaEndPerson, MhaEndReasonEnum } from './MhaEndWarning';
+import { MhaEnd, MhaEndReasonEnum } from './MhaEndWarning';
 import { useSubmitDialogContent } from './useSubmitDialogContent';
 
 describe('useSubmitDialogContent', () => {
@@ -136,17 +136,20 @@ describe('useSubmitDialogContent', () => {
   });
 
   it('returns the MHA warning over approval content when the request would end MHA', async () => {
-    const people: MhaEndPerson[] = [
-      {
-        personNumber: '100001',
-        name: 'Jane Doe',
-        reason: MhaEndReasonEnum.ZeroAmount,
-      },
-    ];
+    const mhaEnd: MhaEnd = {
+      people: [
+        {
+          personNumber: '100001',
+          name: 'Jane Doe',
+          reason: MhaEndReasonEnum.ZeroAmount,
+        },
+      ],
+      effectiveDate: '2026-11-16',
+    };
     const { result } = renderHook(
       () => ({
         calculation: useSalaryCalculator().calculation,
-        dialog: useSubmitDialogContent(people),
+        dialog: useSubmitDialogContent(mhaEnd),
       }),
       {
         wrapper: ({ children }) => (
@@ -170,7 +173,7 @@ describe('useSubmitDialogContent', () => {
       'This request will stop MHA. Do you still want to submit it?',
     );
     expect(result.current.dialog.content).toBe(
-      'You are submitting a request that stops Ministry Housing Allowance (MHA).',
+      "You are submitting a request that stops Minister's Housing Allowance (MHA).",
     );
     expect(result.current.dialog.acknowledgement).toBe(
       'I understand that MHA will stop and I still want to submit this request.',

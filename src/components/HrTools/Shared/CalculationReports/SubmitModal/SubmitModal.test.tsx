@@ -397,5 +397,50 @@ describe('ConfirmationModal', () => {
       ).toBeEnabled();
       expect(queryByRole('checkbox')).not.toBeInTheDocument();
     });
+
+    it('moves focus to the box when it appears in the open dialog', async () => {
+      const { findByRole, rerender } = render(
+        <TestComponent pageType={PageEnum.New} />,
+      );
+      const submitButton = await findByRole('button', {
+        name: /YES, CONTINUE/i,
+      });
+      userEvent.click(submitButton);
+      expect(submitButton).toHaveFocus();
+
+      rerender(
+        <TestComponent
+          pageType={PageEnum.New}
+          acknowledgement={acknowledgement}
+        />,
+      );
+
+      expect(
+        await findByRole('checkbox', { name: acknowledgement }),
+      ).toHaveFocus();
+    });
+
+    it('clears the check when the acknowledgement changes', async () => {
+      const newAcknowledgement = 'I understand what this other request does.';
+      const { findByRole, getByRole, rerender } = render(
+        <TestComponent
+          pageType={PageEnum.New}
+          acknowledgement={acknowledgement}
+        />,
+      );
+      userEvent.click(await findByRole('checkbox', { name: acknowledgement }));
+
+      rerender(
+        <TestComponent
+          pageType={PageEnum.New}
+          acknowledgement={newAcknowledgement}
+        />,
+      );
+
+      expect(
+        getByRole('checkbox', { name: newAcknowledgement }),
+      ).not.toBeChecked();
+      expect(getByRole('button', { name: /YES, CONTINUE/i })).toBeDisabled();
+    });
   });
 });

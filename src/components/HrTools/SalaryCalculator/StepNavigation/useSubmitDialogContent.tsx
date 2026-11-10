@@ -11,7 +11,7 @@ import theme from 'src/theme';
 import { progressiveApprovalsLink } from '../../AdditionalSalaryRequest/Shared/pdfLinks';
 import { useCaps } from '../SalaryCalculation/useCaps';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
-import { MhaEndPerson, MhaEndWarning } from './MhaEndWarning';
+import { MhaEnd, MhaEndWarning } from './MhaEndWarning';
 
 interface DialogContent {
   title: string;
@@ -21,20 +21,25 @@ interface DialogContent {
 }
 
 export const useSubmitDialogContent = (
-  mhaEndPeople?: MhaEndPerson[] | null,
+  mhaEnd?: MhaEnd | null,
 ): DialogContent => {
   const { t } = useTranslation();
   const { calculation } = useSalaryCalculator();
   const { combinedGross } = useCaps();
   const { formatCurrency } = useFormatters();
 
-  if (mhaEndPeople) {
+  if (mhaEnd) {
     return {
       title: t('This request will stop MHA. Do you still want to submit it?'),
       content: t(
-        'You are submitting a request that stops Ministry Housing Allowance (MHA).',
+        "You are submitting a request that stops Minister's Housing Allowance (MHA).",
       ),
-      subContent: <MhaEndWarning people={mhaEndPeople} />,
+      subContent: (
+        <MhaEndWarning
+          people={mhaEnd.people}
+          effectiveDate={mhaEnd.effectiveDate}
+        />
+      ),
       acknowledgement: t(
         'I understand that MHA will stop and I still want to submit this request.',
       ),

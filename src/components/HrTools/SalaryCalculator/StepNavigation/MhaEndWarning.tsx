@@ -33,14 +33,18 @@ const isMhaEndPerson = (person: unknown): person is MhaEndPerson => {
   );
 };
 
+export interface MhaEnd {
+  people: MhaEndPerson[];
+  /** The request's effective date the server checked (ISO 8601), or null when it sent none */
+  effectiveDate: string | null;
+}
+
 /**
- * Returns who the request would end MHA for when `error` is an MHA_WOULD_END error, or null for
- * any other error. The list is empty when the error names nobody it can read, which still means
- * MHA would end.
+ * Returns who the request would end MHA for, and from which effective date, when `error` is an
+ * MHA_WOULD_END error, or null for any other error. `people` is empty when the error names nobody
+ * it can read, which still means MHA would end.
  */
-export const mhaEndPeopleFromError = (
-  error: unknown,
-): MhaEndPerson[] | null => {
+export const mhaEndFromError = (error: unknown): MhaEnd | null => {
   if (!(error instanceof ApolloError)) {
     return null;
   }
@@ -51,56 +55,72 @@ export const mhaEndPeopleFromError = (
     return null;
   }
   const people = graphQLError.extensions?.people;
-  return Array.isArray(people)
-    ? people.filter(isMhaEndPerson).map(({ personNumber, name, reason }) => ({
-        personNumber,
-        name,
-        reason,
-      }))
-    : [];
+  const effectiveDate = graphQLError.extensions?.effectiveDate;
+  return {
+    people: Array.isArray(people)
+      ? people.filter(isMhaEndPerson).map(({ personNumber, name, reason }) => ({
+          personNumber,
+          name,
+          reason,
+        }))
+      : [],
+    effectiveDate: typeof effectiveDate === 'string' ? effectiveDate : null,
+  };
 };
 
-interface MhaEndWarningProps {
-  people: MhaEndPerson[];
-}
-
-export const MhaEndWarning: React.FC<MhaEndWarningProps> = ({ people }) => {
+export const MhaEndWarning: React.FC<MhaEnd> = ({ people, effectiveDate }) => {
   const { t } = useTranslation();
-  const paycheckDate = useEffectivePaycheckDate();
+  const paycheckDate = useEffectivePaycheckDate(effectiveDate);
 
   if (!people.length) {
     return null;
   }
 
-  const reasonText = (reason: string): string | null => {
+  const warningText = (name: string, reason: string): string => {
+    if (paycheckDate) {
+      const options = { name, date: paycheckDate };
+      switch (reason) {
+        case MhaEndReasonEnum.ZeroAmount:
+          return t(
+            "{{name}} won't get MHA starting with the paycheck on {{date}}. This request sets their MHA to $0.",
+            options,
+          );
+        case MhaEndReasonEnum.NoHousingType:
+          return t(
+            "{{name}} won't get MHA starting with the paycheck on {{date}}. They do not have a current board approval for MHA.",
+            options,
+          );
+        default:
+          return t(
+            "{{name}} won't get MHA starting with the paycheck on {{date}}.",
+            options,
+          );
+      }
+    }
+
     switch (reason) {
       case MhaEndReasonEnum.ZeroAmount:
-        return t('This request sets their MHA to $0.');
+        return t(
+          "{{name}} won't get MHA once this request takes effect. This request sets their MHA to $0.",
+          { name },
+        );
       case MhaEndReasonEnum.NoHousingType:
-        return t('They do not have a current board approval for MHA.');
+        return t(
+          "{{name}} won't get MHA once this request takes effect. They do not have a current board approval for MHA.",
+          { name },
+        );
       default:
-        return null;
+        return t("{{name}} won't get MHA once this request takes effect.", {
+          name,
+        });
     }
   };
 
   return (
     <Box component="ul" sx={{ m: 0, mt: 1, pl: 3 }}>
-      {people.map(({ personNumber, name, reason }) => {
-        const why = reasonText(reason);
-        return (
-          <li key={personNumber}>
-            {paycheckDate
-              ? t(
-                  "{{name}} won't get MHA starting with the paycheck on {{date}}.",
-                  { name, date: paycheckDate },
-                )
-              : t("{{name}} won't get MHA once this request takes effect.", {
-                  name,
-                })}
-            {why && ` ${why}`}
-          </li>
-        );
-      })}
+      {people.map(({ personNumber, name, reason }) => (
+        <li key={personNumber}>{warningText(name, reason)}</li>
+      ))}
     </Box>
   );
 };

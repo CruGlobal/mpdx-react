@@ -1,12 +1,35 @@
-import { render, waitFor, within } from '@testing-library/react';
+import { act, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GraphQLError } from 'graphql';
+import { SubmitModal } from 'src/components/HrTools/Shared/CalculationReports/SubmitModal/SubmitModal';
 import { AutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
 import {
   SalaryCalculatorTestWrapper,
   SalaryCalculatorTestWrapperProps,
 } from '../SalaryCalculatorTestWrapper';
 import { DiscardButton, StepNavigation, SubmitButton } from './StepNavigation';
+
+// Delegates to the real modal. A click drops the promise handleConfirm returns, so tests that
+// need its rejection call it from the mock's props.
+jest.mock(
+  'src/components/HrTools/Shared/CalculationReports/SubmitModal/SubmitModal',
+  () => {
+    const actual = jest.requireActual<
+      typeof import('src/components/HrTools/Shared/CalculationReports/SubmitModal/SubmitModal')
+    >(
+      'src/components/HrTools/Shared/CalculationReports/SubmitModal/SubmitModal',
+    );
+    return {
+      __esModule: true,
+      ...actual,
+      SubmitModal: jest.fn(actual.SubmitModal),
+    };
+  },
+);
+
+const mockedSubmitModal = SubmitModal as jest.MockedFunction<
+  typeof SubmitModal
+>;
 
 jest.mock('src/components/Shared/Autosave/AutosaveForm', () => {
   const actual = jest.requireActual<
@@ -282,14 +305,16 @@ describe('SubmitButton', () => {
     const janeWarning =
       "Jane Doe won't get MHA starting with the paycheck on 11/25/2026. This request sets their MHA to $0.";
 
-    const renderAndSubmit = async (submitError: GraphQLError) => {
+    const renderAndOpenSubmit = async (submitError: GraphQLError) => {
       const utils = render(
         <TestComponent
           onCall={mutationSpy}
           submitError={submitError}
-          salaryRequestMock={{ effectiveDate: '2026-11-16' }}
+          // A cached date that differs from the error's, so the warning has to use the server's
+          salaryRequestMock={{ effectiveDate: '2026-12-01' }}
           payrollDates={[
             { startDate: '2026-11-16', regularProcessDate: '2026-11-25' },
+            { startDate: '2026-12-01', regularProcessDate: '2026-12-10' },
           ]}
         />,
       );
@@ -298,7 +323,14 @@ describe('SubmitButton', () => {
       userEvent.click(await findByRole('button', { name: 'Continue' }));
       userEvent.click(await findByRole('button', { name: 'Continue' }));
       userEvent.click(await findByRole('button', { name: 'Submit' }));
-      userEvent.click(await findByRole('button', { name: 'Yes, Continue' }));
+      return utils;
+    };
+
+    const renderAndSubmit = async (submitError: GraphQLError) => {
+      const utils = await renderAndOpenSubmit(submitError);
+      userEvent.click(
+        await utils.findByRole('button', { name: 'Yes, Continue' }),
+      );
       return utils;
     };
 
@@ -318,6 +350,19 @@ describe('SubmitButton', () => {
       expect(getByRole('button', { name: 'Submit' })).toBeInTheDocument();
     });
 
+    it('keeps the global error toast from covering the warning', async () => {
+      const { findByText } = await renderAndSubmit(mhaWouldEnd([jane]));
+
+      await findByText(janeWarning);
+      const submitCall = mutationSpy.mock.calls.find(
+        ([{ operation }]) =>
+          operation.operationName === 'SubmitSalaryCalculation',
+      );
+      expect(submitCall?.[0].operation.getContext().suppressErrorCodes).toEqual(
+        ['MHA_WOULD_END'],
+      );
+    });
+
     it('keeps confirm disabled until the box is checked', async () => {
       const { findByRole, getByRole } = await renderAndSubmit(
         mhaWouldEnd([jane]),
@@ -329,6 +374,14 @@ describe('SubmitButton', () => {
 
       userEvent.click(checkbox);
       expect(confirmButton).toBeEnabled();
+    });
+
+    it('moves focus from the disabled confirm button to the box', async () => {
+      const { findByRole } = await renderAndSubmit(mhaWouldEnd([jane]));
+
+      expect(
+        await findByRole('checkbox', { name: acknowledgement }),
+      ).toHaveFocus();
     });
 
     it('resubmits with confirmMhaEnd once confirmed, then advances', async () => {
@@ -377,17 +430,20 @@ describe('SubmitButton', () => {
       expect(queryByRole('checkbox')).not.toBeInTheDocument();
     });
 
-    it('shows no MHA warning when the submit fails for another reason', async () => {
-      const { getByRole, queryByRole } = await renderAndSubmit(
+    it('passes on a submit failure for another reason and shows no MHA warning', async () => {
+      const { findByRole, getByRole, queryByRole } = await renderAndOpenSubmit(
         new GraphQLError('Something went wrong', {
           extensions: { code: 'INTERNAL_SERVER_ERROR' },
         }),
       );
+      await findByRole('button', { name: 'Yes, Continue' });
+      const handleConfirm = mockedSubmitModal.mock.lastCall?.[0].handleConfirm;
 
-      const confirmButton = getByRole('button', { name: 'Yes, Continue' });
-      await waitFor(() => expect(confirmButton).toBeEnabled());
+      // Rollbar reports unhandled rejections, so the failure must not be swallowed
+      await act(async () => {
+        await expect(handleConfirm?.()).rejects.toThrow('Something went wrong');
+      });
       expect(mutationSpy).toHaveGraphqlOperation('SubmitSalaryCalculation');
-
       expect(
         getByRole('heading', {
           name: 'Are you ready to submit your Salary Calculation Form?',

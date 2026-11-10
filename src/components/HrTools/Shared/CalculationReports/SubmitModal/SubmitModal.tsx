@@ -57,6 +57,13 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const [acknowledged, setAcknowledged] = useState(false);
+  // A check only counts for the acknowledgement the user read
+  const [prevAcknowledgement, setPrevAcknowledgement] =
+    useState(acknowledgement);
+  if (prevAcknowledgement !== acknowledgement) {
+    setPrevAcknowledgement(acknowledgement);
+    setAcknowledged(false);
+  }
 
   const {
     title: defaultTitle,
@@ -116,7 +123,9 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
               '& .MuiFormControlLabel-label': { mt: 1 },
             }}
             control={
+              // The submit button disables until this is checked, so focus must not stay on it
               <Checkbox
+                autoFocus
                 checked={acknowledged}
                 onChange={(event) => setAcknowledged(event.target.checked)}
               />

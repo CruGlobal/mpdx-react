@@ -1,12 +1,15 @@
 import { useEffectiveDateOptions } from '../EffectiveDateStep/useEffectiveDateOptions';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 
-export const useEffectivePaycheckDate = (): string | null => {
+/** Uses `effectiveDate` when given, and the calculation's effective date otherwise */
+export const useEffectivePaycheckDate = (
+  effectiveDate?: string | null,
+): string | null => {
   const { calculation } = useSalaryCalculator();
   const dateOptions = useEffectiveDateOptions();
+  const date = effectiveDate ?? calculation?.effectiveDate;
 
   return (
-    dateOptions?.find((option) => option.value === calculation?.effectiveDate)
-      ?.shortLabel ?? null
+    dateOptions?.find((option) => option.value === date)?.shortLabel ?? null
   );
 };

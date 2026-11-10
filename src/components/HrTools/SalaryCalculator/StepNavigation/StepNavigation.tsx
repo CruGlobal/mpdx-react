@@ -12,11 +12,7 @@ import { useApplyGoalAndLocation } from 'src/hooks/useApplyGoalAndLocation';
 import { useCaps } from '../SalaryCalculation/useCaps';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { useDeleteSalaryCalculation } from '../Shared/useDeleteSalaryCalculation';
-import {
-  MHA_WOULD_END_CODE,
-  MhaEndPerson,
-  mhaEndPeopleFromError,
-} from './MhaEndWarning';
+import { MHA_WOULD_END_CODE, MhaEnd, mhaEndFromError } from './MhaEndWarning';
 import { useSubmitSalaryCalculationMutation } from './SubmitSalaryCalculation.generated';
 import { useSubmitDialogContent } from './useSubmitDialogContent';
 
@@ -103,9 +99,9 @@ export const SubmitButton: React.FC<ButtonProps> = (props) => {
   const [submit, { loading: submitting }] =
     useSubmitSalaryCalculationMutation();
   const [submitDialogOpen, setSubmitDialogOpen] = useState(false);
-  const [mhaEndPeople, setMhaEndPeople] = useState<MhaEndPerson[] | null>(null);
+  const [mhaEnd, setMhaEnd] = useState<MhaEnd | null>(null);
   const { title, content, subContent, acknowledgement } =
-    useSubmitDialogContent(mhaEndPeople);
+    useSubmitDialogContent(mhaEnd);
 
   const {
     applyMonthlyGoal,
@@ -118,18 +114,18 @@ export const SubmitButton: React.FC<ButtonProps> = (props) => {
       try {
         await submit({
           variables: {
-            input: mhaEndPeople
+            input: mhaEnd
               ? { id: calculation.id, confirmMhaEnd: true }
               : { id: calculation.id },
           },
           context: { suppressErrorCodes: [MHA_WOULD_END_CODE] },
         });
       } catch (error) {
-        // The global Apollo error link already toasts other errors; stay open to retry.
-        const people = mhaEndPeopleFromError(error);
-        if (people) {
-          setMhaEndPeople(people);
+        const refusedMhaEnd = mhaEndFromError(error);
+        if (!refusedMhaEnd) {
+          throw error;
         }
+        setMhaEnd(refusedMhaEnd);
         return;
       }
       handleNextStep();
@@ -144,7 +140,7 @@ export const SubmitButton: React.FC<ButtonProps> = (props) => {
     setSubmitDialogOpen(false);
     // confirmMhaEnd stops MHA for whoever the request ends it for when it is sent, so a
     // confirmation must not outlive the warning the user saw.
-    setMhaEndPeople(null);
+    setMhaEnd(null);
   };
 
   if (!calculation) {
