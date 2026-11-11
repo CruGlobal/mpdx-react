@@ -57,7 +57,7 @@ export const CapHealthLegendSection: React.FC = () => {
       ))}
       <Typography variant="body2" color="text.secondary">
         {t(
-          "Staff get no badge and match none of these filters without a Personal CAP, in their first payroll month, or when last month's figures aren't in yet. The current month is never graded.",
+          "Staff get no badge and match none of these filters without a Personal CAP, when last month was their first payroll month, or when last month's figures aren't in yet. The current month is never graded.",
         )}
       </Typography>
     </Box>

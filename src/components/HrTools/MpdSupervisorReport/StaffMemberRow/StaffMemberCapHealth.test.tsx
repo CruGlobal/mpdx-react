@@ -58,6 +58,19 @@ describe('StaffMember CAP health badge', () => {
     ).toBeInTheDocument();
   });
 
+  it('names the grade and the gross salary warning together', () => {
+    const { getByRole } = renderRow({
+      capHealth: MpdCapHealthEnum.NeedsAttention,
+      percentOfCap: 41,
+      newStaffMonthlySalary: 2500,
+      quarterlyHealth: { monthlyGrossSalary: 2000, completedQuarters: [] },
+    });
+
+    expect(getByRole('button')).toHaveAccessibleName(
+      /^View details for Brooke Butler, Needs Attention\. Monthly Gross Salary/,
+    );
+  });
+
   it('is left off for staff with no Personal CAP', () => {
     const { queryByTestId } = renderRow({
       capHealth: null,
