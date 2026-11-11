@@ -24,14 +24,12 @@ export enum MpdGoalAdminTabEnum {
   MpdCoaches = 'mpd-coaches',
 }
 
-const isMpdGoalAdminTab = (value: string): value is MpdGoalAdminTabEnum =>
-  (Object.values(MpdGoalAdminTabEnum) as string[]).includes(value);
-
 /** The tab lives in the URL so Goal Settings can link back to the one it came from. */
 export const parseMpdGoalAdminTab = (
   value: string | undefined,
 ): MpdGoalAdminTabEnum =>
-  value && isMpdGoalAdminTab(value) ? value : MpdGoalAdminTabEnum.ActiveGoals;
+  Object.values(MpdGoalAdminTabEnum).find((tab) => tab === value) ??
+  MpdGoalAdminTabEnum.ActiveGoals;
 
 /** `cohortId` round-trips through Goal Settings so returning reselects the cohort. */
 export const mpdGoalAdminUrl = (
