@@ -19,24 +19,36 @@ const chipFor = (text: string, getByText: (text: string) => HTMLElement) =>
 
 describe('MonthEndBalances', () => {
   it.each([
-    [MpdHealthStatusEnum.Yellow, 6100, '$6,100', 'Below buffer', 'Yellow'],
-    [MpdHealthStatusEnum.Blue, 1200, '$1,200', 'Not graded', 'Blue'],
-    [MpdHealthStatusEnum.Gray, null, '-', 'No data', 'Gray'],
-  ])(
-    'colors and names a %s month',
-    (status, endBalance, amount, label, color) => {
-      const { getByText } = renderBalances([
-        { month: '2026-10', endBalance, status },
-      ]);
-      const chip = chipFor(amount, getByText);
-
-      expect(chip).toHaveTextContent(`Oct 2026, ${label}${amount}`);
-      expect(chip).toHaveStyle({
-        backgroundColor:
-          theme.palette[`chip${color}Light` as 'chipGrayLight'].main,
-      });
+    {
+      status: MpdHealthStatusEnum.Yellow,
+      endBalance: 6100,
+      amount: '$6,100',
+      label: 'Below buffer',
+      background: theme.palette.chipYellowLight.main,
     },
-  );
+    {
+      status: MpdHealthStatusEnum.Blue,
+      endBalance: 1200,
+      amount: '$1,200',
+      label: 'Not graded',
+      background: theme.palette.chipBlueLight.main,
+    },
+    {
+      status: MpdHealthStatusEnum.Gray,
+      endBalance: null,
+      amount: '-',
+      label: 'No data',
+      background: theme.palette.chipGrayLight.main,
+    },
+  ])('colors and names a $status month', (row) => {
+    const { getByText } = renderBalances([
+      { month: '2026-10', endBalance: row.endBalance, status: row.status },
+    ]);
+    const chip = chipFor(row.amount, getByText);
+
+    expect(chip).toHaveTextContent(`Oct 2026, ${row.label}${row.amount}`);
+    expect(chip).toHaveStyle({ backgroundColor: row.background });
+  });
 
   it('says a gray month with an amount is not graded yet, not no data', () => {
     const { getByText } = renderBalances([
