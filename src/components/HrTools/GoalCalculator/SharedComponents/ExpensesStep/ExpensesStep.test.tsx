@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { gqlMock } from '__tests__/util/graphqlMocking';
 import {
   MpdGoalMiscConstantCategoryEnum,
@@ -67,6 +68,24 @@ describe('ExpensesStep', () => {
     const { getByRole } = render(<TestComponent />);
 
     expect(getByRole('heading', { name: 'Instructions' })).toBeInTheDocument();
+  });
+
+  it('prints the page when the Print button is clicked', () => {
+    const print = jest.spyOn(window, 'print').mockImplementation(() => {});
+    const { getByRole } = render(<TestComponent />);
+
+    userEvent.click(getByRole('button', { name: 'Print' }));
+    expect(print).toHaveBeenCalled();
+    print.mockRestore();
+  });
+
+  it('renders the print-only budget table', async () => {
+    const { findByRole } = render(<TestComponent />);
+
+    // Hidden on screen, so the query must include hidden elements
+    expect(
+      await findByRole('cell', { name: 'Categories Total', hidden: true }),
+    ).toBeInTheDocument();
   });
 
   it('renders GoalCalculatorGrid for each category', () => {
