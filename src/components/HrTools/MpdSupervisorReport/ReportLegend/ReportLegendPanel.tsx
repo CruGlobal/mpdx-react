@@ -76,6 +76,25 @@ const Term: React.FC<TermProps> = ({ term, children }) => (
   </>
 );
 
+/** What the quarter colors do not measure, and which filters find what. */
+const ColorNotes: React.FC = () => {
+  const { t } = useTranslation();
+  return (
+    <>
+      <Typography variant="body2" color="text.secondary">
+        {t(
+          'Quarter colors measure pay, not the staff account balance. To find staff whose balance is below zero, use the Negative filters.',
+        )}
+      </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+        {t(
+          'To list staff whose newest quarter is red, use the Below New Staff Monthly Salary filter.',
+        )}
+      </Typography>
+    </>
+  );
+};
+
 // Illustrative amounts for the sample chips, one per status
 const sampleAmounts: Record<MpdHealthStatusEnum, number | null> = {
   [MpdHealthStatusEnum.Green]: 4250,
@@ -187,16 +206,7 @@ export const ReportLegendPanel: React.FC = () => {
               </Box>
             );
           })}
-          <Typography variant="body2" color="text.secondary">
-            {t(
-              'Quarter colors measure pay, not the staff account balance. To find staff whose balance is below zero, use the Negative filters.',
-            )}
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            {t(
-              'To list staff whose newest quarter is red, use the Below New Staff Monthly Salary filter.',
-            )}
-          </Typography>
+          <ColorNotes />
         </Section>
 
         <Section title={t('Numbers')}>

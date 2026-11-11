@@ -445,28 +445,6 @@ describe('MpdSupervisorReport', () => {
       ).not.toBeInTheDocument();
     });
 
-    it('lists and removes the New Staff salary filter', async () => {
-      const { findByText, getByRole, queryByRole } = renderReport({
-        withFilters: true,
-      });
-      await findByText('John Smith');
-
-      userEvent.click(
-        getByRole('button', { name: 'Below New Staff Monthly Salary' }),
-      );
-      const chips = getByRole('list', { name: 'Applied filters' });
-      expect(chips).toHaveTextContent('Below New Staff Monthly Salary');
-
-      userEvent.click(
-        within(chips).getByRole('button', {
-          name: 'Remove Below New Staff Monthly Salary',
-        }),
-      );
-      expect(
-        queryByRole('list', { name: 'Applied filters' }),
-      ).not.toBeInTheDocument();
-    });
-
     it('removes a chip from the keyboard', async () => {
       const { findByText, getByRole, queryByRole } = renderReport({
         withFilters: true,

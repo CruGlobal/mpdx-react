@@ -1,5 +1,6 @@
 import { TFunction } from 'react-i18next';
 import { MpdUserPersonTypeEnum } from 'src/graphql/types.generated';
+import { ManagedStaffQueryVariables } from '../ManagedStaff.generated';
 
 export enum MpdSupervisorReportQuickFilterEnum {
   AllPeople = 'allPeople',
@@ -77,6 +78,37 @@ export const quickFilterDescription = (
       return null;
   }
 };
+
+type QuickFilterVariables = Pick<
+  ManagedStaffQueryVariables,
+  | 'negativeLastMonth'
+  | 'negativeThreeMonths'
+  | 'negativeThreeMonthsInPastYear'
+  | 'expensesOverIncomeThreeMonths'
+  | 'belowNewStaffMonthlySalary'
+>;
+
+/**
+ * The API flags for the active quick filter: true for its own flag and null for
+ * the rest, since false would filter on them.
+ */
+export const quickFilterVariables = (
+  id: MpdSupervisorReportQuickFilterEnum,
+): QuickFilterVariables => ({
+  negativeLastMonth:
+    id === MpdSupervisorReportQuickFilterEnum.NegativeLastMonth || null,
+  negativeThreeMonths:
+    id === MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative || null,
+  negativeThreeMonthsInPastYear:
+    id === MpdSupervisorReportQuickFilterEnum.ThreeMonthsInPastYearNegative ||
+    null,
+  expensesOverIncomeThreeMonths:
+    id === MpdSupervisorReportQuickFilterEnum.ThreeMonthsSpendingOverIncome ||
+    null,
+  belowNewStaffMonthlySalary:
+    id === MpdSupervisorReportQuickFilterEnum.BelowNewStaffMonthlySalary ||
+    null,
+});
 
 export const ALL_TYPES = 'all';
 

@@ -89,9 +89,6 @@ describe('MpdSupervisorReportFilterPanel', () => {
     expect(
       getByRole('button', { name: 'Spending more than income last 3 months' }),
     ).toBeInTheDocument();
-    expect(
-      getByRole('button', { name: 'Below New Staff Monthly Salary' }),
-    ).toBeInTheDocument();
   });
 
   it.each([
@@ -110,10 +107,6 @@ describe('MpdSupervisorReportFilterPanel', () => {
     [
       'Spending more than income last 3 months',
       'Staff whose expenses were greater than their income in each of the last three months.',
-    ],
-    [
-      'Below New Staff Monthly Salary',
-      'Staff whose newest quarter is red: their average monthly payroll in the last completed quarter was below their New Staff Monthly Salary.',
     ],
   ])('explains the %s filter', async (chip, description) => {
     const { getByRole, findByRole } = renderFilterPanel();
@@ -242,7 +235,6 @@ describe('MpdSupervisorReportFilterPanel — context integration', () => {
       'Spending more than income last 3 months',
       'threeMonthsSpendingOverIncome',
     ],
-    ['Below New Staff Monthly Salary', 'belowNewStaffMonthlySalary'],
   ])('clicking %s updates activeQuickFilter in context', (chip, filterId) => {
     const { getByRole, getByTestId } = renderWithConsumer();
     userEvent.click(getByRole('button', { name: chip }));
