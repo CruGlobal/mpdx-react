@@ -22,12 +22,12 @@ const renderLegend = () =>
 
 // MPDX-10323
 describe('ReportLegendPanel health badge', () => {
-  it('explains the health badge and each grade', () => {
+  it('explains who gets a health badge and each grade', () => {
     const { getByRole } = renderLegend();
 
     const section = getByRole('region', { name: 'Health badge' });
     expect(section).toHaveTextContent(
-      "The badge beside each name grades last month's payroll as a percent of their Personal CAP, the % of Personal CAP on the Payroll tab. It is separate from the quarter colors.",
+      "Supported staff get a badge beside their name after their first paycheck. It grades last month's payroll as a percent of their Personal CAP, the % of Personal CAP on the Payroll tab, and is separate from the quarter colors.",
     );
     expect(
       within(section)
@@ -35,7 +35,7 @@ describe('ReportLegendPanel health badge', () => {
         .map((badge) => badge.textContent),
     ).toEqual(['Healthy', 'On Track', 'Needs Attention']);
     expect(section).toHaveTextContent(
-      "Staff get no badge and match none of these filters without a Personal CAP, when last month was their first payroll month, or when last month's figures aren't in yet. The current month is never graded.",
+      "Staff who aren't supported, such as volunteers, Staff Emeritus and department-funded staff, get no badge and match none of these filters. Neither do supported staff without a Personal CAP, when last month was their first payroll month, or when last month's figures aren't in yet. A couple shares one Personal CAP, so both get a badge when either is supported. The current month is never graded.",
     );
   });
 
@@ -56,7 +56,7 @@ describe('ReportLegendPanel health badge', () => {
     ]);
   });
 
-  it('lists the health chips with the filters, which still grade interns', () => {
+  it('lists the health chips with the filters, apart from the Negative and Spending rule', () => {
     const { getByRole } = renderLegend();
 
     const filters = getByRole('heading', { name: 'Filters' })
