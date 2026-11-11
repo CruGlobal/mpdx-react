@@ -17,6 +17,7 @@ import { styled } from '@mui/material/styles';
 import { visuallyHidden } from '@mui/utils';
 import { useTranslation } from 'react-i18next';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
+import { MpdCapHealthEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { RowDensityEnum } from '../MpdSupervisorReportContext';
 import {
@@ -34,6 +35,7 @@ import {
   healthLabel,
   quarterAmountLabel,
 } from '../helpers';
+import { CapHealthBadge } from './CapHealthBadge';
 import { GrossSalaryMarker } from './GrossSalaryMarker';
 import { QuarterChip } from './QuarterChip';
 import { QuickGlance } from './QuickGlance';
@@ -88,6 +90,14 @@ const quarterGridSx = {
     gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
   },
 };
+
+// Wraps so a badge after a long name drops to its own line on a phone
+const NameLine = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  flexWrap: 'wrap',
+  gap: theme.spacing(1),
+}));
 
 const QuarterCell = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -219,6 +229,8 @@ export const StaffMember: React.FC<StaffMemberProps> = ({
                     team={team}
                     spouse={spouse}
                     grossWarning={grossWarning}
+                    capHealth={data.capHealth}
+                    percentOfCap={data.percentOfCap}
                     compact={compact}
                   />
                 </Box>
@@ -307,6 +319,8 @@ interface StaffInfoProps {
   spouse?: string | null;
   /** Set when Monthly Gross Salary is below New Staff Monthly Salary */
   grossWarning: string | null;
+  capHealth?: MpdCapHealthEnum | null;
+  percentOfCap?: number | null;
   /** Puts the details on the same line as the name */
   compact?: boolean;
 }
@@ -318,6 +332,8 @@ const StaffInfoBase: React.FC<StaffInfoProps> = ({
   team,
   spouse,
   grossWarning,
+  capHealth,
+  percentOfCap,
   compact = false,
 }) => {
   const { t } = useTranslation();
@@ -332,7 +348,7 @@ const StaffInfoBase: React.FC<StaffInfoProps> = ({
           columnGap: compact ? 1.5 : 0,
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <NameLine>
           <Typography
             variant={compact ? 'body1' : 'h6'}
             fontWeight={compact ? 600 : undefined}
@@ -342,7 +358,8 @@ const StaffInfoBase: React.FC<StaffInfoProps> = ({
           {grossWarning && (
             <GrossSalaryMarker warning={grossWarning} focusable={false} />
           )}
-        </Box>
+          <CapHealthBadge capHealth={capHealth} percentOfCap={percentOfCap} />
+        </NameLine>
         <Typography
           variant="body2"
           sx={{ color: 'text.secondary' }}

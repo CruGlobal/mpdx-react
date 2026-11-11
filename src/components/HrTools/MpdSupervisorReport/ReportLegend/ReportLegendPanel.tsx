@@ -24,6 +24,7 @@ import {
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
 import { QuarterChip } from '../StaffMemberRow/QuarterChip';
 import { YearMonth, getQuarterMonthRange } from '../helpers';
+import { CapHealthLegendSection } from './CapHealthLegendSection';
 import {
   healthStatusLabel,
   healthStatusOrder,
@@ -193,6 +194,7 @@ export const ReportLegendPanel: React.FC = () => {
             )}
           </Typography>
         </Section>
+        <CapHealthLegendSection />
 
         <Section title={t('Numbers')}>
           <Box component="dl" sx={{ m: 0 }}>
@@ -228,7 +230,7 @@ export const ReportLegendPanel: React.FC = () => {
         <Section title={t('Filters')}>
           <Typography variant="body2" sx={{ mb: 1 }}>
             {t(
-              'These filters leave out interns, part-time field staff and volunteers.',
+              'The Negative and Spending filters leave out interns, part-time field staff and volunteers.',
             )}
           </Typography>
           <Box component="dl" sx={{ m: 0 }}>

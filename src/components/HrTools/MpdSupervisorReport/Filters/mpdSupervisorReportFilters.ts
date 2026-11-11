@@ -1,5 +1,8 @@
 import { TFunction } from 'react-i18next';
-import { MpdUserPersonTypeEnum } from 'src/graphql/types.generated';
+import {
+  MpdCapHealthEnum,
+  MpdUserPersonTypeEnum,
+} from 'src/graphql/types.generated';
 
 export enum MpdSupervisorReportQuickFilterEnum {
   AllPeople = 'allPeople',
@@ -7,6 +10,9 @@ export enum MpdSupervisorReportQuickFilterEnum {
   ThreeMonthsNegative = 'threeMonthsNegative',
   ThreeMonthsInPastYearNegative = 'threeMonthsInPastYearNegative',
   ThreeMonthsSpendingOverIncome = 'threeMonthsSpendingOverIncome',
+  CapHealthy = 'capHealthy',
+  CapOnTrack = 'capOnTrack',
+  CapNeedsAttention = 'capNeedsAttention',
 }
 
 // Order the quick-filter chips are rendered in. Labels are translated at
@@ -17,12 +23,72 @@ export const quickFilterIds: MpdSupervisorReportQuickFilterEnum[] = [
   MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative,
   MpdSupervisorReportQuickFilterEnum.ThreeMonthsInPastYearNegative,
   MpdSupervisorReportQuickFilterEnum.ThreeMonthsSpendingOverIncome,
+  MpdSupervisorReportQuickFilterEnum.CapHealthy,
+  MpdSupervisorReportQuickFilterEnum.CapOnTrack,
+  MpdSupervisorReportQuickFilterEnum.CapNeedsAttention,
 ];
+
+const capHealthByQuickFilter: Partial<
+  Record<MpdSupervisorReportQuickFilterEnum, MpdCapHealthEnum>
+> = {
+  [MpdSupervisorReportQuickFilterEnum.CapHealthy]: MpdCapHealthEnum.Healthy,
+  [MpdSupervisorReportQuickFilterEnum.CapOnTrack]: MpdCapHealthEnum.OnTrack,
+  [MpdSupervisorReportQuickFilterEnum.CapNeedsAttention]:
+    MpdCapHealthEnum.NeedsAttention,
+};
+
+/** The health grade a quick filter asks the API for, or null for other chips. */
+export const capHealthForQuickFilter = (
+  id: MpdSupervisorReportQuickFilterEnum,
+): MpdCapHealthEnum | null => capHealthByQuickFilter[id] ?? null;
+
+/** A health grade's name, shared by the row badge and its filter chip. */
+export const capHealthLabel = (
+  t: TFunction,
+  capHealth: MpdCapHealthEnum,
+): string => {
+  switch (capHealth) {
+    case MpdCapHealthEnum.Healthy:
+      return t('Healthy');
+    case MpdCapHealthEnum.OnTrack:
+      return t('On Track');
+    case MpdCapHealthEnum.NeedsAttention:
+      return t('Needs Attention');
+  }
+};
+
+/**
+ * What a health grade means. The cutoffs must match the API's
+ * Reports::CapHealth::GRADES, which grades the rows and filters them.
+ */
+export const capHealthDescription = (
+  t: TFunction,
+  capHealth: MpdCapHealthEnum,
+): string => {
+  switch (capHealth) {
+    case MpdCapHealthEnum.Healthy:
+      return t(
+        'Staff whose payroll last month was 65% or more of their Personal CAP.',
+      );
+    case MpdCapHealthEnum.OnTrack:
+      return t(
+        'Staff whose payroll last month was 50% to under 65% of their Personal CAP.',
+      );
+    case MpdCapHealthEnum.NeedsAttention:
+      return t(
+        'Staff whose payroll last month was under 50% of their Personal CAP.',
+      );
+  }
+};
 
 export const quickFilterLabel = (
   t: TFunction,
   id: MpdSupervisorReportQuickFilterEnum,
 ): string => {
+  const capHealth = capHealthForQuickFilter(id);
+  if (capHealth) {
+    return capHealthLabel(t, capHealth);
+  }
   switch (id) {
     case MpdSupervisorReportQuickFilterEnum.NegativeLastMonth:
       return t('Negative last month');
@@ -46,6 +112,10 @@ export const quickFilterDescription = (
   t: TFunction,
   id: MpdSupervisorReportQuickFilterEnum,
 ): string | null => {
+  const capHealth = capHealthForQuickFilter(id);
+  if (capHealth) {
+    return capHealthDescription(t, capHealth);
+  }
   switch (id) {
     case MpdSupervisorReportQuickFilterEnum.NegativeLastMonth:
       return t(

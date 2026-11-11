@@ -14,7 +14,10 @@ import {
 } from 'src/graphql/types.generated';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
 import { useLocalStorage } from 'src/hooks/useLocalStorage';
-import { MpdSupervisorReportQuickFilterEnum } from './Filters/mpdSupervisorReportFilters';
+import {
+  MpdSupervisorReportQuickFilterEnum,
+  capHealthForQuickFilter,
+} from './Filters/mpdSupervisorReportFilters';
 import {
   ManagedStaffQueryVariables,
   useManagedStaffQuery,
@@ -210,6 +213,7 @@ export const MpdSupervisorReportProvider: React.FC<{
         activeQuickFilter ===
           MpdSupervisorReportQuickFilterEnum.ThreeMonthsSpendingOverIncome ||
         null,
+      capHealth: capHealthForQuickFilter(activeQuickFilter),
     }),
     [
       debouncedSearch,
