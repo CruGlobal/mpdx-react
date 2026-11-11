@@ -5,10 +5,11 @@ requests, savings-fund transfers, questionnaires, and admin/supervisor reports.
 This file captures the cross-tool "why" — rules and seams you can't see from any
 single form's code. It loads whenever you touch anything under `HrTools/`.
 
-Follow the root `CLAUDE.md` and `.claude/rules/code-review.md` for the usual
-conventions (named exports, i18n, Formik/Yup, `GqlMockedProvider`, Luxon dates).
-The financial-reporting review agent triggers on this tree — money math here is
-load-bearing.
+Follow the root `CLAUDE.md`, `.claude/review/rules/standards.md` and
+`.claude/review/rules/testing.md` for the usual conventions (named exports,
+i18n, Formik/Yup, `GqlMockedProvider`, Luxon dates). The financial review agent
+(`.claude/review/rules/financial.md`) triggers on this tree, because money math
+here is load-bearing.
 
 ## How the tools are reached
 
