@@ -67,3 +67,9 @@ export const geographicLocationNotApplicable = (t: TFunction): string =>
   t(
     "The geographic location only adjusts the New Staff Monthly Salary, which interns, part-time field staff and volunteers aren't measured against.",
   );
+
+/** What a dash means anywhere in the report: a value it doesn't have. */
+export const missingValueCopy = (t: TFunction): string =>
+  t(
+    "A value the report doesn't have, such as no payroll in a quarter that can't be graded or no Personal CAP to measure pay against.",
+  );
