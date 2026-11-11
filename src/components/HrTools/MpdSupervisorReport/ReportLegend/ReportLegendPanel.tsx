@@ -27,6 +27,7 @@ import { YearMonth, getQuarterMonthRange } from '../helpers';
 import {
   healthStatusLabel,
   healthStatusOrder,
+  missingValueCopy,
   newStaffSalaryCopy,
 } from './legendCopy';
 
@@ -205,9 +206,7 @@ export const ReportLegendPanel: React.FC = () => {
                 'The quarter in which payroll started. Open the staff member to see each of its months graded on its own.',
               )}
             </Term>
-            <Term term={t('- (dash)')}>
-              {t("No payroll in a quarter that can't be graded.")}
-            </Term>
+            <Term term={t('- (dash)')}>{missingValueCopy(t)}</Term>
             <Term term={t('Geographic location')}>
               {t(
                 "Sets the cost-of-living multiplier in the New Staff Monthly Salary. It is stored on the staff member's own MPDX account list, so it can only be set for staff who have one; until then the report shows no location.",
