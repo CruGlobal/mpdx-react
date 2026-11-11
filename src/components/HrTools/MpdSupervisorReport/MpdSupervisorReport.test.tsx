@@ -824,7 +824,7 @@ describe('MpdSupervisorReport', () => {
     expect(key).toHaveTextContent('Below buffer');
     expect(key).toHaveTextContent('Below $0');
     expect(key).toHaveTextContent('No data');
-    expect(key).not.toHaveTextContent('At risk');
+    expect(key).not.toHaveTextContent('Below New Staff salary');
   });
 
   it('labels the How this report works button in the header', async () => {

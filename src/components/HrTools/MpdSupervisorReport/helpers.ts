@@ -134,11 +134,11 @@ export const healthLabel = (
 ): string => {
   switch (health) {
     case MpdHealthStatusEnum.Green:
-      return t('on track');
+      return t('full salary');
     case MpdHealthStatusEnum.Red:
-      return t('at risk');
+      return t('below New Staff salary');
     case MpdHealthStatusEnum.Yellow:
-      return t('needs attention');
+      return t('below salary');
     case MpdHealthStatusEnum.Blue:
       return t('ungraded');
     case MpdHealthStatusEnum.Gray:

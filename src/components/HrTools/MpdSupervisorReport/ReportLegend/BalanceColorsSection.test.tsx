@@ -45,7 +45,7 @@ describe('BalanceColorsSection', () => {
       ['Below $0', 'The balance was below zero.'],
       [
         'Not graded',
-        'No one on the staff account is a supported employee, so it has no buffer. This includes department-funded staff, Staff Emeritus and volunteers. A volunteer or Staff Emeritus who shares a staff account with a supported employee is graded with them.',
+        'No one on the staff account is a supported employee, so it has no buffer. This includes department-funded staff, Staff Emeritus and volunteers. Anyone who shares a staff account with a supported employee is graded with them.',
       ],
       [
         'No data',

@@ -151,7 +151,9 @@ describe('FiscalYearQuarters', () => {
         // The chip already names its quarter and health for screen readers
         expect(caption).toHaveAttribute('aria-hidden', 'true');
       });
-      expect(within(strip).getByText('FQ3 26, on track')).toBeInTheDocument();
+      expect(
+        within(strip).getByText('FQ3 26, full salary'),
+      ).toBeInTheDocument();
     },
   );
 

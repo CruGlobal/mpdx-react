@@ -77,9 +77,12 @@ describe('ReportLegendPanel', () => {
   it('explains each quarter chip color beside a sample chip', async () => {
     const { getByText, getAllByText } = await openLegend();
 
-    ['On track', 'Needs attention', 'At risk', 'Ungraded'].forEach((label) =>
-      expect(getByText(label)).toBeInTheDocument(),
-    );
+    [
+      'Full salary',
+      'Below salary',
+      'Below New Staff salary',
+      'Ungraded',
+    ].forEach((label) => expect(getByText(label)).toBeInTheDocument());
     // Sample chips use the row chip's amount formatting
     expect(getByText('$4,250.00')).toBeInTheDocument();
     expect(getAllByText('-').length).toBeGreaterThan(0);
@@ -101,7 +104,7 @@ describe('ReportLegendPanel', () => {
     // MPDX-10112: payroll below the New Staff salary is red even at full gross salary
     expect(
       getByText(
-        /Payroll was below their New Staff Monthly Salary, even if they were paid their full Monthly Gross Salary\. Interns are never at risk\./,
+        /Payroll was below their New Staff Monthly Salary, even if they were paid their full Monthly Gross Salary\. Interns are never graded against the New Staff salary\./,
       ),
     ).toBeInTheDocument();
     expect(
@@ -203,7 +206,7 @@ describe('ReportLegendPanel', () => {
     ).toBeInTheDocument();
   });
 
-  it('explains what needs attention means for interns', async () => {
+  it('explains what below salary means for interns', async () => {
     const { getByText } = await openLegend();
 
     expect(
