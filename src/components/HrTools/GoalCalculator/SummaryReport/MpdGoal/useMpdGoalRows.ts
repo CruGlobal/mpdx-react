@@ -1,10 +1,10 @@
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useGoalCalculator } from 'src/components/HrTools/GoalCalculator/Shared/GoalCalculatorContext';
+import { calculateNewStaffReferenceTotals } from 'src/components/HrTools/GoalCalculator/Shared/calculateNewStaffReference';
 import {
   GoalTotals,
   calculateCategoryEnumTotal,
-  calculateGoalSubtotals,
 } from 'src/components/HrTools/GoalCalculator/Shared/calculateTotals';
 import { getNewStaffBudgetCategory } from 'src/components/HrTools/GoalCalculator/Shared/getNewStaffBudgetCategory';
 import { safeProgressRatio } from 'src/components/HrTools/Shared/helpers/safeProgressRatio';
@@ -116,44 +116,13 @@ export const useMpdGoalRows = (supportRaised: number) => {
     [locale],
   );
 
-  const newStaffReference = useMemo<GoalTotals>(() => {
-    const goalCalculation = goalCalculationResult.data?.goalCalculation;
-    const calculations = goalCalculation?.newStaffCalculations;
-
-    const grossMonthlySalary = calculations?.totalSalary ?? 0;
-    const benefitsCharge = calculations?.benefitsCharge ?? 0;
-
-    // Sum the ministry-expense lines from the per-category references (reimbursable medical
-    // included) so the reference subtotals foot against the amounts shown on lines 3A–3J.
-    const ministryExpensesTotal = ministryExpenseLines
-      .flatMap((line) => line.categories)
-      .reduce(
-        (sum, category) =>
-          sum + getNewStaffBudgetCategory(goalCalculation, category),
-        0,
-      );
-
-    return {
-      monthlyBudget: calculations?.salary ?? 0,
-      netMonthlySalary: calculations?.salary ?? 0,
-      taxesPercentage: calculations?.secaRate ?? 0,
-      taxes: calculations?.seca ?? 0,
-      salaryPreIra: calculations?.salarySubtotal ?? 0,
-      rothContributionPercentage: calculations?.contribution403bPercentage ?? 0,
-      traditionalContributionPercentage: 0,
-      rothContribution: calculations?.totalContributing403bAmount ?? 0,
-      traditionalContribution: 0,
-      // The client-entered categories above are folded into ministryExpensesTotal, so the server's
-      // goal subtotal (which excludes them) is no longer accurate. Re-calculate the totals client-side.
-      ...calculateGoalSubtotals({
-        grossMonthlySalary,
-        ministryExpensesTotal,
-        benefitsCharge,
-        adminRate: calculations?.adminRate ?? 0,
-        attritionRate: calculations?.attritionRate ?? 0,
-      }),
-    };
-  }, [goalCalculationResult.data, ministryExpenseLines]);
+  const newStaffReference = useMemo(
+    () =>
+      calculateNewStaffReferenceTotals(
+        goalCalculationResult.data?.goalCalculation,
+      ),
+    [goalCalculationResult.data],
+  );
 
   const goalCalculation = goalCalculationResult.data?.goalCalculation;
   const rows = useMemo((): MpdGoalRow[] => {
