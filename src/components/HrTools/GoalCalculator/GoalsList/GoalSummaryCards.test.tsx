@@ -10,6 +10,7 @@ import {
 } from '__tests__/util/styleAtWidth';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
+import { missingValue } from '../../Shared/helpers/missingValue';
 import { CurrentMonthlyGoalQuery } from '../CalculatorSettings/GoalReferenceCards/CurrentMonthlyGoal.generated';
 import {
   constantsMock,
@@ -40,14 +41,20 @@ const goals = [
   makeGoal('goal-3', 'Partnership Goal', noPaychecks),
 ];
 
+const failingConstants = (() => {
+  throw new Error('Could not load the constants');
+}) as unknown as GoalCalculatorConstantsQuery['constant'];
+
 interface TestComponentProps {
   goals?: ListGoalCalculationFragment[];
   currentMonthlyGoal?: number | null;
+  constants?: GoalCalculatorConstantsQuery['constant'];
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   goals,
   currentMonthlyGoal = 6000,
+  constants = constantsMock,
 }) => (
   <TestRouter router={{ query: { accountListId: 'account-list-1' } }}>
     <ThemeProvider theme={theme}>
@@ -59,7 +66,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
           CurrentMonthlyGoal: {
             accountList: { settings: { monthlyGoal: currentMonthlyGoal } },
           },
-          GoalCalculatorConstants: { constant: constantsMock },
+          GoalCalculatorConstants: { constant: constants },
         }}
       >
         <GoalSummaryCards goals={goals} />
@@ -113,7 +120,10 @@ describe('GoalSummaryCards', () => {
   it('shows the newest goal next to the monthly goal', async () => {
     const utils = render(<TestComponent goals={goals} />);
 
-    const calculatedGoalCard = await findCalculatedGoalCard(utils);
+    const calculatedGoalCard = utils.getByRole('region', {
+      name: 'Calculated Monthly Goal',
+    });
+    expect(calculatedGoalCard).not.toHaveTextContent('$');
     expect(
       await within(calculatedGoalCard).findByText('$16,139'),
     ).toBeVisible();
@@ -141,6 +151,58 @@ describe('GoalSummaryCards', () => {
     );
   });
 
+  it('shows the newest primary goal when there are two', async () => {
+    const withPrimaries = goals.map((goal) => ({
+      ...goal,
+      primary: goal.id !== 'goal-1',
+    }));
+    const utils = render(<TestComponent goals={withPrimaries} />);
+
+    expect(await findCalculatedGoalCard(utils)).toHaveTextContent(
+      'From your goal: Annual Giving Goal',
+    );
+  });
+
+  it('skips read-only goals', async () => {
+    const withReadOnly = [
+      makeGoal('goal-0', 'New Staff Goal', { readOnly: true, primary: true }),
+      ...goals,
+    ];
+    const utils = render(<TestComponent goals={withReadOnly} />);
+
+    expect(await findCalculatedGoalCard(utils)).toHaveTextContent(
+      'From your goal: Monthly Support Goal',
+    );
+  });
+
+  it('shows only the monthly goal when every goal is read-only', async () => {
+    const { findByRole, queryByRole } = render(
+      <TestComponent goals={[makeGoal('goal-0', null, { readOnly: true })]} />,
+    );
+
+    expect(
+      await findByRole('region', { name: 'Current Monthly Goal' }),
+    ).toBeInTheDocument();
+    expect(
+      queryByRole('region', { name: 'Calculated Monthly Goal' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ['fail to load', failingConstants],
+    [
+      'are not set up for the year',
+      { ...constantsMock, mpdGoalBenefitsConstants: [] },
+    ],
+  ])('shows a dash when the constants %s', async (_, constants) => {
+    const utils = render(<TestComponent goals={goals} constants={constants} />);
+
+    const calculatedGoalCard = await findCalculatedGoalCard(utils);
+    expect(
+      await within(calculatedGoalCard).findByText(missingValue),
+    ).toBeVisible();
+  });
+
   it('names an unnamed goal', async () => {
     const utils = render(<TestComponent goals={[makeGoal('goal-1', null)]} />);
 
@@ -152,10 +214,8 @@ describe('GoalSummaryCards', () => {
   it('stacks the cards on phone widths only', async () => {
     const utils = render(<TestComponent goals={goals} />);
 
-    const cardRow = (await findCalculatedGoalCard(utils)).parentElement;
-    if (!cardRow) {
-      throw new Error('The card has no parent element');
-    }
+    await findCalculatedGoalCard(utils);
+    const cardRow = utils.getByTestId('GoalSummaryCards');
     expect(getStyleAtWidth(cardRow, 'flex-direction', phoneWidth)).toBe(
       'column',
     );

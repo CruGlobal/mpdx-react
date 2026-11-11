@@ -53,16 +53,19 @@ const TestComponent: React.FC<TestComponentProps> = ({
                   {
                     name: 'Annual Giving Goal',
                     primary: false,
+                    readOnly: false,
                     updatedAt: '2019-11-01T12:00:00Z',
                   },
                   {
                     name: 'Monthly Support Goal',
                     primary: false,
+                    readOnly: false,
                     updatedAt: '2019-12-01T12:00:00Z',
                   },
                   {
                     name: 'Partnership Goal',
                     primary: false,
+                    readOnly: false,
                     updatedAt: '2019-10-01T12:00:00Z',
                   },
                 ],
@@ -135,13 +138,13 @@ describe('GoalsList', () => {
   });
 
   it('shows the most recently updated goal next to the monthly goal', async () => {
-    const { findByRole } = render(<TestComponent />);
+    const { findByRole, getByRole } = render(<TestComponent />);
 
     expect(
       await findByRole('region', { name: 'Calculated Monthly Goal' }),
     ).toHaveTextContent('From your goal: Monthly Support Goal');
     expect(
-      await findByRole('region', { name: 'Current Monthly Goal' }),
+      getByRole('region', { name: 'Current Monthly Goal' }),
     ).toBeInTheDocument();
   });
 
