@@ -709,7 +709,7 @@ describe('MpdSupervisorReport', () => {
 
     expect(
       await findByText(
-        'Search by name, or pick a team, department, employment type, person type or one of the Negative or Spending filters.',
+        'Search by name, or pick a team, department, employment type, person type or one of the Negative, Spending or health filters.',
       ),
     ).toBeInTheDocument();
     expect(queryByRole('region', { name: 'Teams' })).not.toBeInTheDocument();
