@@ -27,7 +27,7 @@ describe('ReportLegendPanel health badge', () => {
 
     const section = getByRole('region', { name: 'Health badge' });
     expect(section).toHaveTextContent(
-      "Staff get a badge once they've had a full month of pay. It grades last month's payroll as a percent of their Personal CAP, the % of Personal CAP on the Payroll tab, and is separate from the quarter colors.",
+      "Staff get a badge starting their second month of pay. It grades last month's payroll as a percent of their Personal CAP, the % of Personal CAP on the Payroll tab, and is separate from the quarter colors.",
     );
     expect(
       within(section)
@@ -35,7 +35,7 @@ describe('ReportLegendPanel health badge', () => {
         .map((badge) => badge.textContent),
     ).toEqual(['Healthy', 'On Track', 'Needs Attention']);
     expect(section).toHaveTextContent(
-      "Volunteers, Staff Emeritus and other non-workers get no badge and match none of these filters, even when they're supported. Neither do department-funded and other unsupported staff. Supported staff get no badge without a Personal CAP, when last month was their first payroll month, or when last month's figures aren't in yet. A couple shares one Personal CAP, so both get a badge when either one is supported staff. The current month is never graded.",
+      "Volunteers, Staff Emeritus and other non-workers get no badge unless their spouse is supported staff. Neither do department-funded and other unsupported staff. Supported staff get no badge without a Personal CAP, when last month was their first payroll month, or when last month's figures aren't in yet. A couple shares one Personal CAP, so both get a badge when either one is supported staff. The current month is never graded.",
     );
   });
 
