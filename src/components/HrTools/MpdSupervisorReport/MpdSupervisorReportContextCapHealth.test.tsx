@@ -64,6 +64,7 @@ describe('MpdSupervisorReportContext CAP health filter', () => {
         negativeThreeMonths: null,
         negativeThreeMonthsInPastYear: null,
         expensesOverIncomeThreeMonths: null,
+        belowNewStaffMonthlySalary: null,
       }),
     );
     expect(context.queryVariables.capHealth).toBe(grade);
