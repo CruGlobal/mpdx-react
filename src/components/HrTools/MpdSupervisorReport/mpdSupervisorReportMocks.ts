@@ -23,6 +23,8 @@ const baseMember: ManagedStaffMember = {
   spousePersonNumber: '10000002',
   spouseStaffAccountId: '1000000002',
   newStaffMonthlySalary: 2500,
+  percentOfCap: null,
+  capHealth: null,
   geographicLocation: 'Orlando, FL',
   department: 'US Campus',
   assignmentCategoryGroup: MpdAssignmentCategoryGroupEnum.FullTime,

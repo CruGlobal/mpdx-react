@@ -226,7 +226,7 @@ describe('ReportLegendPanel', () => {
 
     expect(
       getByText(
-        'These filters leave out interns, part-time field staff and volunteers.',
+        'The Negative and Spending filters leave out interns, part-time field staff and volunteers.',
       ),
     ).toBeInTheDocument();
   });

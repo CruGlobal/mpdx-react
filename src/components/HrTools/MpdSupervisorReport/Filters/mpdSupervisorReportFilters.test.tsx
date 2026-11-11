@@ -21,6 +21,7 @@ const noFlags = {
   negativeThreeMonthsInPastYear: null,
   expensesOverIncomeThreeMonths: null,
   belowNewStaffMonthlySalary: null,
+  capHealth: null,
 };
 
 describe('quickFilterVariables', () => {
