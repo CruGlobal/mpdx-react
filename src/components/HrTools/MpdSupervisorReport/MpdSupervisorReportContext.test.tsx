@@ -664,7 +664,7 @@ describe('managed staff query variables', () => {
     );
   });
 
-  it('omits every balance flag while All people is selected', async () => {
+  it('omits every quick filter flag while All people is selected', async () => {
     renderConsumer();
 
     await waitFor(() =>
@@ -673,6 +673,7 @@ describe('managed staff query variables', () => {
         negativeThreeMonths: null,
         negativeThreeMonthsInPastYear: null,
         expensesOverIncomeThreeMonths: null,
+        belowNewStaffMonthlySalary: null,
       }),
     );
   });
@@ -691,6 +692,7 @@ describe('managed staff query variables', () => {
         negativeThreeMonths: null,
         negativeThreeMonthsInPastYear: null,
         expensesOverIncomeThreeMonths: null,
+        belowNewStaffMonthlySalary: null,
       }),
     );
   });
@@ -709,6 +711,7 @@ describe('managed staff query variables', () => {
         negativeThreeMonths: true,
         negativeThreeMonthsInPastYear: null,
         expensesOverIncomeThreeMonths: null,
+        belowNewStaffMonthlySalary: null,
       }),
     );
   });
@@ -727,6 +730,7 @@ describe('managed staff query variables', () => {
         negativeThreeMonths: null,
         negativeThreeMonthsInPastYear: true,
         expensesOverIncomeThreeMonths: null,
+        belowNewStaffMonthlySalary: null,
       }),
     );
   });
@@ -745,6 +749,26 @@ describe('managed staff query variables', () => {
         negativeThreeMonths: null,
         negativeThreeMonthsInPastYear: null,
         expensesOverIncomeThreeMonths: true,
+        belowNewStaffMonthlySalary: null,
+      }),
+    );
+  });
+
+  it('sends belowNewStaffMonthlySalary for the New Staff salary filter', async () => {
+    renderConsumer();
+    act(() => {
+      consumerResult.setActiveQuickFilter(
+        MpdSupervisorReportQuickFilterEnum.BelowNewStaffMonthlySalary,
+      );
+    });
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        negativeLastMonth: null,
+        negativeThreeMonths: null,
+        negativeThreeMonthsInPastYear: null,
+        expensesOverIncomeThreeMonths: null,
+        belowNewStaffMonthlySalary: true,
       }),
     );
   });

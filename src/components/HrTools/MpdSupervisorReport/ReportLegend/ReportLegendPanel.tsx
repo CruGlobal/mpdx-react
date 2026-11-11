@@ -192,6 +192,11 @@ export const ReportLegendPanel: React.FC = () => {
               'Quarter colors measure pay, not the staff account balance. To find staff whose balance is below zero, use the Negative filters.',
             )}
           </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            {t(
+              'To list staff whose newest quarter is red, use the Below New Staff Monthly Salary filter.',
+            )}
+          </Typography>
         </Section>
 
         <Section title={t('Numbers')}>

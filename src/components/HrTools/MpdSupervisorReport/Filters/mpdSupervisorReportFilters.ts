@@ -7,6 +7,7 @@ export enum MpdSupervisorReportQuickFilterEnum {
   ThreeMonthsNegative = 'threeMonthsNegative',
   ThreeMonthsInPastYearNegative = 'threeMonthsInPastYearNegative',
   ThreeMonthsSpendingOverIncome = 'threeMonthsSpendingOverIncome',
+  BelowNewStaffMonthlySalary = 'belowNewStaffMonthlySalary',
 }
 
 // Order the quick-filter chips are rendered in. Labels are translated at
@@ -17,6 +18,7 @@ export const quickFilterIds: MpdSupervisorReportQuickFilterEnum[] = [
   MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative,
   MpdSupervisorReportQuickFilterEnum.ThreeMonthsInPastYearNegative,
   MpdSupervisorReportQuickFilterEnum.ThreeMonthsSpendingOverIncome,
+  MpdSupervisorReportQuickFilterEnum.BelowNewStaffMonthlySalary,
 ];
 
 export const quickFilterLabel = (
@@ -32,6 +34,8 @@ export const quickFilterLabel = (
       return t('Negative 3+ months in past year');
     case MpdSupervisorReportQuickFilterEnum.ThreeMonthsSpendingOverIncome:
       return t('Spending more than income last 3 months');
+    case MpdSupervisorReportQuickFilterEnum.BelowNewStaffMonthlySalary:
+      return t('Below New Staff Monthly Salary');
     case MpdSupervisorReportQuickFilterEnum.AllPeople:
     default:
       return t('All people');
@@ -40,7 +44,8 @@ export const quickFilterLabel = (
 
 /**
  * What a quick filter means, shown as the chip's tooltip. A negative month
- * ends with the staff account balance below zero.
+ * ends with the staff account balance below zero. Below New Staff Monthly
+ * Salary matches the red rule for the newest completed quarter.
  */
 export const quickFilterDescription = (
   t: TFunction,
@@ -62,6 +67,10 @@ export const quickFilterDescription = (
     case MpdSupervisorReportQuickFilterEnum.ThreeMonthsSpendingOverIncome:
       return t(
         'Staff whose expenses were greater than their income in each of the last three months.',
+      );
+    case MpdSupervisorReportQuickFilterEnum.BelowNewStaffMonthlySalary:
+      return t(
+        'Staff whose newest quarter is red: their average monthly payroll in the last completed quarter was below their New Staff Monthly Salary.',
       );
     case MpdSupervisorReportQuickFilterEnum.AllPeople:
     default:

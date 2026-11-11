@@ -210,6 +210,9 @@ export const MpdSupervisorReportProvider: React.FC<{
         activeQuickFilter ===
           MpdSupervisorReportQuickFilterEnum.ThreeMonthsSpendingOverIncome ||
         null,
+      belowNewStaffMonthlySalary:
+        activeQuickFilter ===
+          MpdSupervisorReportQuickFilterEnum.BelowNewStaffMonthlySalary || null,
     }),
     [
       debouncedSearch,
