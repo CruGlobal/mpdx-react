@@ -1,7 +1,9 @@
 import React, { useId } from 'react';
 import {
+  Alert,
   Box,
   Divider,
+  Skeleton,
   Table,
   TableBody,
   TableCell,
@@ -30,12 +32,51 @@ const sampleBalances: Record<MpdHealthStatusEnum, number | null> = {
   [MpdHealthStatusEnum.Gray]: null,
 };
 
+/** The buffer for each household type, from the API. */
+const BufferTable: React.FC = () => {
+  const { t } = useTranslation();
+  const locale = useLocale();
+  const { data, error } = useMpdBalanceBuffersQuery();
+
+  if (error) {
+    return (
+      <Alert severity="error" sx={{ my: 1 }}>
+        {t('Could not load the recommended buffers.')}
+      </Alert>
+    );
+  }
+  if (!data) {
+    return (
+      <Skeleton
+        data-testid="buffers-loading"
+        variant="rounded"
+        width={160}
+        height={96}
+        sx={{ my: 1 }}
+      />
+    );
+  }
+  return (
+    <Table size="small" sx={{ my: 1, width: 'auto' }}>
+      <TableBody>
+        {data.mpdBalanceBuffers.map(({ householdType, amount }) => (
+          <TableRow key={householdType}>
+            <TableCell sx={{ fontWeight: 'bold', pl: 0 }}>
+              {householdTypeLabel(t, householdType)}
+            </TableCell>
+            <TableCell>{formatWholeDollars(amount, locale)}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+};
+
 /** The legend's explanation of the row's month-end balance chips and buffers. */
 export const BalanceColorsSection: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
   const headingId = useId();
-  const { data } = useMpdBalanceBuffersQuery();
 
   const explanations: Record<MpdHealthStatusEnum, string> = {
     [MpdHealthStatusEnum.Green]: t(
@@ -46,9 +87,11 @@ export const BalanceColorsSection: React.FC = () => {
     ),
     [MpdHealthStatusEnum.Red]: t('The balance was below zero.'),
     [MpdHealthStatusEnum.Blue]: t(
-      'Part-time field staff and volunteers have no buffer to measure against.',
+      'No one on the staff account is a supported employee, so it has no buffer. This includes department-funded staff, Staff Emeritus and volunteers. A volunteer or Staff Emeritus married to a supported employee is graded with their spouse.',
     ),
-    [MpdHealthStatusEnum.Gray]: t('No balance has synced for that month.'),
+    [MpdHealthStatusEnum.Gray]: t(
+      'No balance has synced for that month (shown as a dash), or the month is before their first payroll (the amount still shows).',
+    ),
   };
 
   return (
@@ -90,20 +133,7 @@ export const BalanceColorsSection: React.FC = () => {
       <Typography variant="subtitle2" component="h4" sx={{ mt: 2 }}>
         {t('Recommended buffers')}
       </Typography>
-      {data && (
-        <Table size="small" sx={{ my: 1, width: 'auto' }}>
-          <TableBody>
-            {data.mpdBalanceBuffers.map(({ householdType, amount }) => (
-              <TableRow key={householdType}>
-                <TableCell sx={{ fontWeight: 'bold', pl: 0 }}>
-                  {householdTypeLabel(t, householdType)}
-                </TableCell>
-                <TableCell>{formatWholeDollars(amount, locale)}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      )}
+      <BufferTable />
       <Typography variant="body2" color="text.secondary">
         {t(
           'Family is married with children. Couple is married without children, or a single parent. Single includes staff whose spouse is not on staff (SOSA). Marriage and children come from HR records.',

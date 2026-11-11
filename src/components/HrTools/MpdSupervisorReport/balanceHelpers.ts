@@ -6,9 +6,9 @@ import {
 import { currencyFormat, monthYearFormat } from 'src/lib/intlFormat';
 
 /**
- * A month-end balance's status in words, for the color key, the team cards
- * and screen readers. The API grades each month against the household's
- * buffer: below $0, below the buffer, or at or above it.
+ * A month-end balance's status in words, for the color key, the legend and
+ * the team cards. The API grades each month against the household's buffer:
+ * below $0, below the buffer, or at or above it.
  */
 export const balanceStatusLabel = (
   t: TFunction,
@@ -27,6 +27,21 @@ export const balanceStatusLabel = (
     default:
       return t('No data');
   }
+};
+
+/**
+ * The status for one balance chip. GRAY with an amount is a month before the
+ * first payroll, which has a balance but is not graded yet.
+ */
+export const balanceChipStatusLabel = (
+  t: TFunction,
+  status: MpdHealthStatusEnum,
+  endBalance: number | null | undefined,
+): string => {
+  if (status === MpdHealthStatusEnum.Gray && typeof endBalance === 'number') {
+    return t('Not graded yet, before their first payroll');
+  }
+  return balanceStatusLabel(t, status);
 };
 
 export const householdTypeLabel = (

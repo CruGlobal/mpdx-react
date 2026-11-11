@@ -155,8 +155,9 @@ describe('FiscalYearQuarters', () => {
     },
   );
 
+  // The drawer has no column headers, so its captions show at every width
   it.each(desktopWidths)(
-    'keeps the chips in one row with the column headers labeling them at %ipx',
+    'keeps the chips in one row, each still labeled, at %ipx',
     (width) => {
       const { getByTestId } = renderQuarters();
       const strip = getByTestId('quarter-chips');
@@ -169,7 +170,7 @@ describe('FiscalYearQuarters', () => {
       within(strip)
         .getAllByText(quarterLabel)
         .forEach((caption) => {
-          expect(isHiddenAtWidth(caption, strip, width)).toBe(true);
+          expect(isHiddenAtWidth(caption, strip, width)).toBe(false);
         });
     },
   );

@@ -362,15 +362,26 @@ export const getLocalizedUserPersonTypeName = (
  */
 export type StaffRow = ManagedStaffMember & { partner?: ManagedStaffMember };
 
+/** Whether two people's household, buffer and month grades all match. */
+const sameBalanceGrades = (
+  a: ManagedStaffMember,
+  b: ManagedStaffMember,
+): boolean =>
+  a.householdType === b.householdType &&
+  a.balanceBuffer === b.balanceBuffer &&
+  a.monthEndBalances.length === b.monthEndBalances.length &&
+  a.monthEndBalances.every(
+    ({ status }, index) => status === b.monthEndBalances[index].status,
+  );
+
 /**
  * Fold each couple present in the list into one row, keeping the earlier
- * position. Two rows pair only when they share a staff account and a grading
- * group: the API builds every health figure from the staff account and the
- * person's grading group, so such a pair carries identical benchmarks and
- * quarters, and a joint account only ever belongs to a couple (HCM does not
- * always carry the spouse link). Spouses who hold separate staff accounts, or
- * who are graded differently, have their own health each, so they stay on
- * their own rows and name each other via `getRowSpouseName`.
+ * position. A merged row shows only the first person's grades, so two rows
+ * pair only when they share a staff account (a joint account only ever
+ * belongs to a couple; HCM does not always carry the spouse link), a grading
+ * group, and the same household type, buffer and month statuses, which the
+ * API sends per person. Any other spouses stay on their own rows and name
+ * each other via `getRowSpouseName`.
  */
 export const mergeSpouseRows = (nodes: ManagedStaffMember[]): StaffRow[] => {
   const paired = new Set<string>();
@@ -385,7 +396,8 @@ export const mergeSpouseRows = (nodes: ManagedStaffMember[]): StaffRow[] => {
         !paired.has(other.personNumber) &&
         other.staffAccountId === node.staffAccountId &&
         gradingGroup(other.userPersonType) ===
-          gradingGroup(node.userPersonType),
+          gradingGroup(node.userPersonType) &&
+        sameBalanceGrades(node, other),
     );
     if (partner) {
       paired.add(node.personNumber);
@@ -498,8 +510,8 @@ const emptyCounts = (): Record<MpdHealthStatusEnum, number> => ({
 });
 
 /**
- * Each team's people per newest-quarter status, as the API counts them. Worst
- * teams first: most at risk, then most needing attention.
+ * Each team's people per status of last month's balance, as the API counts
+ * them. Worst teams first: most at risk, then most needing attention.
  */
 export const teamSummaryRows = (
   teams: ManagedStaffTeamSummaryQuery['managedStaffTeamSummary'],

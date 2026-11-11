@@ -5,6 +5,7 @@ import {
 } from 'src/graphql/types.generated';
 import {
   balanceAmountLabel,
+  balanceChipStatusLabel,
   balanceMonthHeaders,
   balanceMonthLabel,
   balanceStatusLabel,
@@ -24,6 +25,26 @@ describe('balanceStatusLabel', () => {
     [MpdHealthStatusEnum.Gray, 'No data'],
   ])('names %s as %s', (status, label) => {
     expect(balanceStatusLabel(t, status)).toBe(label);
+  });
+});
+
+describe('balanceChipStatusLabel', () => {
+  it('says a gray month with an amount is not graded yet', () => {
+    expect(balanceChipStatusLabel(t, MpdHealthStatusEnum.Gray, 1200)).toBe(
+      'Not graded yet, before their first payroll',
+    );
+  });
+
+  it('keeps no data for a gray month with no amount', () => {
+    expect(balanceChipStatusLabel(t, MpdHealthStatusEnum.Gray, null)).toBe(
+      'No data',
+    );
+  });
+
+  it('uses the status label for every other color', () => {
+    expect(balanceChipStatusLabel(t, MpdHealthStatusEnum.Blue, 1200)).toBe(
+      'Not graded',
+    );
   });
 });
 

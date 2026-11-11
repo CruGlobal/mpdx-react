@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import {
   balanceAmountLabel,
+  balanceChipStatusLabel,
   balanceMonthLabel,
-  balanceStatusLabel,
 } from '../balanceHelpers';
 import { ManagedStaffMember } from '../helpers';
 import { ChipCaption, ChipCell, chipGridSx } from './ChipGrid';
@@ -44,7 +44,7 @@ const MonthEndBalancesBase: React.FC<MonthEndBalancesProps> = ({
                   <Box component="span" sx={visuallyHidden as SxProps<Theme>}>
                     {t('{{label}}, {{status}}', {
                       label,
-                      status: balanceStatusLabel(t, status),
+                      status: balanceChipStatusLabel(t, status, endBalance),
                     })}
                   </Box>
                   {balanceAmountLabel(endBalance, locale)}

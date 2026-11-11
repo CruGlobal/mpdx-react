@@ -141,9 +141,7 @@ export const ReportLegendPanel: React.FC = () => {
 
   const colorExplanations = quarterColorExplanations(t);
 
-  // Derived from the same helper as the column-header tooltips, so the legend
-  // and the headers can't disagree about the fiscal calendar. The year only
-  // picks month names, so any year will do.
+  // The year only picks month names, so any year will do.
   const monthName = ({ year, month }: YearMonth) =>
     new Intl.DateTimeFormat(locale, { month: 'long' }).format(
       new Date(year, month - 1, 1),

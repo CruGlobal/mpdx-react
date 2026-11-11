@@ -41,7 +41,12 @@ const FiscalYearQuartersBase: React.FC<FiscalYearQuartersProps> = ({
 
         return (
           <ChipCell key={label}>
-            <ChipCaption variant="caption" aria-hidden="true">
+            <ChipCaption
+              variant="caption"
+              aria-hidden="true"
+              // The drawer has no column headers, so label every width
+              sx={{ display: 'block' }}
+            >
               {label}
             </ChipCaption>
             <QuarterChip

@@ -4,7 +4,8 @@ import theme from 'src/theme';
 
 // Below md the rows are too narrow for the page's column headers, so the chips
 // drop under the name and each one carries its own caption. Shared by the
-// row's balance chips and the drawer header's quarter chips.
+// row's balance chips and the drawer header's quarter chips, which show their
+// captions at every width.
 export const chipGridSx = {
   [theme.breakpoints.down('md')]: {
     display: 'grid',
