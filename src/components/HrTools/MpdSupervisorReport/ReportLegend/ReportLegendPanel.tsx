@@ -24,6 +24,7 @@ import {
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
 import { QuarterChip } from '../StaffMemberRow/QuarterChip';
 import { YearMonth, getQuarterMonthRange } from '../helpers';
+import { CapHealthLegendSection } from './CapHealthLegendSection';
 import {
   healthStatusLabel,
   healthStatusOrder,
@@ -104,6 +105,10 @@ const sampleAmounts: Record<MpdHealthStatusEnum, number | null> = {
   [MpdHealthStatusEnum.Gray]: null,
 };
 
+const filters = quickFilterIds.filter(
+  (id) => id !== MpdSupervisorReportQuickFilterEnum.AllPeople,
+);
+
 /** The "How this report works" legend, shown in the report's right panel. */
 export const ReportLegendPanel: React.FC = () => {
   const { t } = useTranslation();
@@ -146,10 +151,6 @@ export const ReportLegendPanel: React.FC = () => {
       }),
     };
   });
-
-  const filters = quickFilterIds.filter(
-    (id) => id !== MpdSupervisorReportQuickFilterEnum.AllPeople,
-  );
 
   const newStaff = newStaffSalaryCopy(t);
 
@@ -208,6 +209,7 @@ export const ReportLegendPanel: React.FC = () => {
           })}
           <ColorNotes />
         </Section>
+        <CapHealthLegendSection />
 
         <Section title={t('Numbers')}>
           <Box component="dl" sx={{ m: 0 }}>
@@ -243,7 +245,7 @@ export const ReportLegendPanel: React.FC = () => {
         <Section title={t('Filters')}>
           <Typography variant="body2" sx={{ mb: 1 }}>
             {t(
-              'These filters leave out interns, part-time field staff and volunteers.',
+              'The Negative and Spending filters leave out interns, part-time field staff and volunteers.',
             )}
           </Typography>
           <Box component="dl" sx={{ m: 0 }}>
