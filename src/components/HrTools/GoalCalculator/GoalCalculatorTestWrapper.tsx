@@ -19,6 +19,7 @@ import {
   GoalCalculatorConstantsQuery,
 } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
+import { CurrentMonthlyGoalQuery } from './CalculatorSettings/GoalReferenceCards/CurrentMonthlyGoal.generated';
 import {
   GoalCalculationDocument,
   GoalCalculationQuery,
@@ -341,14 +342,19 @@ interface MockedGoalCalculatorTestWrapperProps {
   constantsByYear?: Record<number, GoalCalculatorConstantsQuery['constant']>;
   /** The account's currently saved geographic location preference. */
   accountGeographicLocation?: string | null;
+  /** The monthly goal saved in the account's MPDX settings. */
+  currentMonthlyGoal?: number | null;
+  /** Make the CurrentMonthlyGoal query fail. */
+  currentMonthlyGoalError?: boolean;
   children?: React.ReactNode;
 }
 
 interface NoMocksGoalCalculatorTestWrapperProps {
   /**
    * Skip the `GqlMockedProvider` entirely (the test supplies its own Apollo
-   * provider). `onCall`, `readOnly`, `goalCalculation`, `constantsByYear`, and
-   * `accountGeographicLocation` only configure the mocked provider, so they
+   * provider). `onCall`, `readOnly`, `goalCalculation`, `constantsByYear`,
+   * `accountGeographicLocation`, `currentMonthlyGoal`, and `currentMonthlyGoalError` only configure the
+   * mocked provider, so they
    * are disallowed here — they would silently no-op.
    */
   noMocks: true;
@@ -357,6 +363,8 @@ interface NoMocksGoalCalculatorTestWrapperProps {
   goalCalculation?: never;
   constantsByYear?: never;
   accountGeographicLocation?: never;
+  currentMonthlyGoal?: never;
+  currentMonthlyGoalError?: never;
   children?: React.ReactNode;
 }
 
@@ -373,6 +381,8 @@ export const GoalCalculatorTestWrapper: React.FC<
   goalCalculation = goalCalculationMock,
   constantsByYear,
   accountGeographicLocation = null,
+  currentMonthlyGoal = 6000,
+  currentMonthlyGoalError = false,
   children,
 }) => {
   const content = <GoalCalculatorProvider>{children}</GoalCalculatorProvider>;
@@ -394,6 +404,7 @@ export const GoalCalculatorTestWrapper: React.FC<
               GoalCalculation: GoalCalculationQuery;
               GoalCalculatorConstants: GoalCalculatorConstantsQuery;
               AccountGeographicLocation: AccountGeographicLocationQuery;
+              CurrentMonthlyGoal: CurrentMonthlyGoalQuery;
             }>
               mocks={{
                 GoalCalculation: {
@@ -412,6 +423,16 @@ export const GoalCalculatorTestWrapper: React.FC<
                       geographicLocation: accountGeographicLocation,
                     },
                   },
+                },
+                CurrentMonthlyGoal: {
+                  // A throwing resolver makes the mocked query fail
+                  accountList: (currentMonthlyGoalError
+                    ? () => {
+                        throw new Error('Could not load the monthly goal');
+                      }
+                    : {
+                        settings: { monthlyGoal: currentMonthlyGoal },
+                      }) as CurrentMonthlyGoalQuery['accountList'],
                 },
               }}
               onCall={onCall}

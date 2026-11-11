@@ -7,6 +7,7 @@ import { GoalCalculatorGrid } from '../SharedComponents/GoalCalculatorGrid/GoalC
 import { SectionPage } from '../SharedComponents/SectionPage';
 import { InformationCategory } from './Categories/InformationCategory/InformationCategory';
 import { SettingsCategory } from './Categories/SettingsCategory/SettingsCategory';
+import { GoalReferenceCards } from './GoalReferenceCards/GoalReferenceCards';
 import { SettingsSectionList } from './SettingsSectionList';
 
 export const SettingsStep: React.FC = () => {
@@ -21,6 +22,7 @@ export const SettingsStep: React.FC = () => {
       sectionListPanel={<SettingsSectionList />}
       mainContent={
         <SectionPage>
+          <GoalReferenceCards />
           <GoalCalculatorSection
             title={t('Settings')}
             subtitle={t('What do you want to call this goal?')}

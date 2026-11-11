@@ -85,6 +85,23 @@ describe('GoalCalculator', () => {
     expect(within(heading).queryByRole('button')).not.toBeInTheDocument();
   });
 
+  describe('settings step', () => {
+    it('shows the current goal and New Staff Reference goal before calculating', async () => {
+      const { findByRole, getByRole } = render(
+        <TestComponent
+          selectedStepId={GoalCalculatorStepEnum.CalculatorSettings}
+        />,
+      );
+
+      expect(
+        await findByRole('region', { name: 'Current Monthly Goal' }),
+      ).toBeInTheDocument();
+      expect(
+        getByRole('region', { name: 'New Staff Reference Goal' }),
+      ).toBeInTheDocument();
+    });
+  });
+
   describe('reports step', () => {
     it('renders custom section list and main content', async () => {
       const { getByRole, findByRole } = render(
