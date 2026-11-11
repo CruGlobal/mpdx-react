@@ -1,0 +1,85 @@
+import React, { useId, useMemo } from 'react';
+import { Skeleton, Stack, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
+import {
+  StyledCard,
+  StyledHeaderValue,
+} from '../../../Shared/SummaryHeaderCard';
+import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
+import { calculateNewStaffReferenceTotals } from '../../Shared/calculateNewStaffReference';
+import { useCurrentMonthlyGoalQuery } from './CurrentMonthlyGoal.generated';
+
+interface ReferenceCardProps {
+  title: string;
+  caption: string;
+  /** The formatted value, or undefined while it loads */
+  value: string | undefined;
+}
+
+const ReferenceCard: React.FC<ReferenceCardProps> = ({
+  title,
+  caption,
+  value,
+}) => {
+  const titleId = useId();
+
+  return (
+    <StyledCard role="region" aria-labelledby={titleId}>
+      <Typography id={titleId} variant="h5">
+        {title}
+      </Typography>
+      <StyledHeaderValue variant="h2" component="p">
+        {value ?? <Skeleton width={160} />}
+      </StyledHeaderValue>
+      <Typography variant="body2" color="text.secondary" whiteSpace="normal">
+        {caption}
+      </Typography>
+    </StyledCard>
+  );
+};
+
+export const GoalReferenceCards: React.FC = () => {
+  const { t } = useTranslation();
+  const locale = useLocale();
+  const accountListId = useAccountListId() ?? '';
+  const { goalCalculationResult } = useGoalCalculator();
+  const { data: currentGoalData } = useCurrentMonthlyGoalQuery({
+    variables: { accountListId },
+  });
+
+  const formatGoal = (amount: number) =>
+    currencyFormat(amount, 'USD', locale, { fractionDigits: 0 });
+
+  const goalCalculation = goalCalculationResult.data?.goalCalculation;
+  const newStaffReferenceGoal = useMemo(
+    () => calculateNewStaffReferenceTotals(goalCalculation).overallTotal,
+    [goalCalculation],
+  );
+
+  const formatCurrentGoal = (): string | undefined => {
+    if (!currentGoalData) {
+      return undefined;
+    }
+    const monthlyGoal = currentGoalData.accountList.settings?.monthlyGoal;
+    // A goal of 0 is not a real goal, so treat it like a blank one
+    return monthlyGoal ? formatGoal(monthlyGoal) : t('Not set');
+  };
+
+  return (
+    <Stack direction={{ xs: 'column', sm: 'row' }} gap={{ xs: 2, sm: 4 }}>
+      <ReferenceCard
+        title={t('Current Monthly Goal')}
+        caption={t('From your MPDX settings')}
+        value={formatCurrentGoal()}
+      />
+      <ReferenceCard
+        title={t('New Staff Reference Goal')}
+        caption={t('Based on the information in this goal')}
+        value={goalCalculation ? formatGoal(newStaffReferenceGoal) : undefined}
+      />
+    </Stack>
+  );
+};
