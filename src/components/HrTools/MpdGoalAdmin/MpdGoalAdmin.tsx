@@ -26,6 +26,7 @@ import { CohortBar } from './CohortBar/CohortBar';
 import { GoalsSentBanner } from './GoalsSentBanner/GoalsSentBanner';
 import { GoalsTable } from './GoalsTable/GoalsTable';
 import { GoalsTableToolbar } from './GoalsTableToolbar/GoalsTableToolbar';
+import { MpdCoaches } from './MpdCoaches/MpdCoaches';
 import { useMpdGoalAdmin } from './MpdGoalAdminContext';
 import { ScenarioGoals } from './ScenarioGoals/ScenarioGoals';
 import { MpdGoalAdminTabEnum } from './mpdGoalAdminHelpers';
@@ -81,6 +82,38 @@ const ActiveGoalsContent: React.FC = () => {
   );
 };
 
+/** The Active Goals tab: the cohort picker and table, or why there are none. */
+const ActiveGoalsTab: React.FC = () => {
+  const { t } = useTranslation();
+  const { noVisibleCohorts } = useMpdGoalAdmin();
+
+  return (
+    <>
+      <Typography variant="h6">{t('Active MPD Goals')}</Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        {t('Manage goals for staff who are in a training group')}
+      </Typography>
+      {/* An empty cohort dropdown reads as broken, so hide it too. */}
+      {noVisibleCohorts ? (
+        <NullStateBox role="status" data-testid="no-visible-cohorts">
+          <Icon path={mdiAccountGroup} size={1.5} />
+          <Typography variant="h5">{t('No Trainings Available')}</Typography>
+          <Typography>
+            {t(
+              'None of the current training cohorts include staff in your ministry.',
+            )}
+          </Typography>
+        </NullStateBox>
+      ) : (
+        <>
+          <CohortBar />
+          <ActiveGoalsContent />
+        </>
+      )}
+    </>
+  );
+};
+
 interface MpdGoalAdminProps {
   navListOpen: boolean;
   onNavListToggle: () => void;
@@ -91,7 +124,13 @@ export const MpdGoalAdmin: React.FC<MpdGoalAdminProps> = ({
   onNavListToggle,
 }) => {
   const { t } = useTranslation();
-  const { activeTab, setActiveTab, noVisibleCohorts } = useMpdGoalAdmin();
+  const { activeTab, setActiveTab, isGoalsAdmin } = useMpdGoalAdmin();
+  // Only the MPD Goals team keeps the coach list, so a coordinator's
+  // hand-edited URL falls back to the default tab.
+  const tab =
+    activeTab === MpdGoalAdminTabEnum.MpdCoaches && !isGoalsAdmin
+      ? MpdGoalAdminTabEnum.ActiveGoals
+      : activeTab;
 
   return (
     <>
@@ -110,7 +149,7 @@ export const MpdGoalAdmin: React.FC<MpdGoalAdminProps> = ({
       </StickyHeader>
 
       <Tabs
-        value={activeTab}
+        value={tab}
         onChange={(_event, value) => setActiveTab(value)}
         sx={{ px: 3, borderBottom: 1, borderColor: 'divider' }}
       >
@@ -122,38 +161,18 @@ export const MpdGoalAdmin: React.FC<MpdGoalAdminProps> = ({
           value={MpdGoalAdminTabEnum.ScenarioGoals}
           label={t('Scenario Goals')}
         />
+        {isGoalsAdmin && (
+          <Tab
+            value={MpdGoalAdminTabEnum.MpdCoaches}
+            label={t('MPD Coaches')}
+          />
+        )}
       </Tabs>
 
       <ContentBox>
-        {activeTab === MpdGoalAdminTabEnum.ActiveGoals ? (
-          <>
-            <Typography variant="h6">{t('Active MPD Goals')}</Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              {t('Manage goals for staff who are in a training group')}
-            </Typography>
-            {/* An empty cohort dropdown reads as broken, so hide it too. */}
-            {noVisibleCohorts ? (
-              <NullStateBox role="status" data-testid="no-visible-cohorts">
-                <Icon path={mdiAccountGroup} size={1.5} />
-                <Typography variant="h5">
-                  {t('No Trainings Available')}
-                </Typography>
-                <Typography>
-                  {t(
-                    'None of the current training cohorts include staff in your ministry.',
-                  )}
-                </Typography>
-              </NullStateBox>
-            ) : (
-              <>
-                <CohortBar />
-                <ActiveGoalsContent />
-              </>
-            )}
-          </>
-        ) : (
-          <ScenarioGoals />
-        )}
+        {tab === MpdGoalAdminTabEnum.ActiveGoals && <ActiveGoalsTab />}
+        {tab === MpdGoalAdminTabEnum.ScenarioGoals && <ScenarioGoals />}
+        {tab === MpdGoalAdminTabEnum.MpdCoaches && <MpdCoaches />}
       </ContentBox>
     </>
   );

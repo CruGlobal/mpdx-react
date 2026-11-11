@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
@@ -185,6 +185,50 @@ describe('MpdGoalAdmin', () => {
       undefined,
       { shallow: true },
     );
+  });
+
+  it('shows the MPD Coaches tab to the MPD Goals team', async () => {
+    const { findByRole } = renderMain();
+
+    expect(
+      await findByRole('tab', { name: 'MPD Coaches' }),
+    ).toBeInTheDocument();
+  });
+
+  // Coordinators assign from the coach list but only the MPD Goals team keeps it.
+  it('hides the MPD Coaches tab from a coordinator', async () => {
+    const { findByRole, queryByRole } = renderMain({
+      GetUser: coordinatorUserMock,
+    });
+
+    expect(
+      await findByRole('tab', { name: 'Scenario Goals' }),
+    ).toBeInTheDocument();
+    await waitFor(() =>
+      expect(
+        queryByRole('tab', { name: 'MPD Coaches' }),
+      ).not.toBeInTheDocument(),
+    );
+  });
+
+  it('renders the MPD Coaches tab from the URL', async () => {
+    const { findByRole } = renderMain({}, { tab: 'mpd-coaches' });
+
+    expect(
+      await findByRole('button', { name: 'Add Coach' }),
+    ).toBeInTheDocument();
+  });
+
+  it('shows a coordinator the active goals for a hand-edited MPD Coaches URL', async () => {
+    const { findByText, queryByRole } = renderMain(
+      { GetUser: coordinatorUserMock },
+      { tab: 'mpd-coaches' },
+    );
+
+    expect(await findByText('Active MPD Goals')).toBeInTheDocument();
+    expect(
+      queryByRole('button', { name: 'Add Coach' }),
+    ).not.toBeInTheDocument();
   });
 
   it('renders the scenario goals tab from the URL', async () => {

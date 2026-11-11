@@ -36,6 +36,7 @@ describe('parseMpdGoalAdminTab', () => {
   it.each([
     ['scenario-goals', MpdGoalAdminTabEnum.ScenarioGoals],
     ['active-goals', MpdGoalAdminTabEnum.ActiveGoals],
+    ['mpd-coaches', MpdGoalAdminTabEnum.MpdCoaches],
   ])('parses "%s" as %s', (value, tab) => {
     expect(parseMpdGoalAdminTab(value)).toBe(tab);
   });
