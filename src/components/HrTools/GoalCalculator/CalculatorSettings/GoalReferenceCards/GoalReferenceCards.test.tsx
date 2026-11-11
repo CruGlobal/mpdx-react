@@ -1,6 +1,8 @@
 import React from 'react';
 import { render, within } from '@testing-library/react';
+import { missingValue } from '../../../Shared/helpers/missingValue';
 import { GoalCalculatorTestWrapper } from '../../GoalCalculatorTestWrapper';
+import { GoalCalculationQuery } from '../../Shared/GoalCalculation.generated';
 import { GoalReferenceCards } from './GoalReferenceCards';
 
 interface TestComponentProps {
@@ -20,7 +22,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
   </GoalCalculatorTestWrapper>
 );
 
-// Waits for both cards to finish loading so no query resolves after the test ends
+// Waits for the reference card's value, which needs the slower goal calculation query, so no query
+// resolves after the test ends
 const renderCards = async (props: TestComponentProps = {}) => {
   const utils = render(<TestComponent {...props} />);
   const referenceCard = await utils.findByRole('region', {
@@ -57,7 +60,25 @@ describe('GoalReferenceCards', () => {
       currentMonthlyGoalError: true,
     });
 
-    expect(await within(currentGoalCard).findByText('—')).toBeVisible();
+    expect(
+      await within(currentGoalCard).findByText(missingValue),
+    ).toBeVisible();
+  });
+
+  it('shows a dash, not a loading placeholder, when the goal calculation fails to load', async () => {
+    const failingGoalCalculation = (() => {
+      throw new Error('Could not load the goal calculation');
+    }) as unknown as GoalCalculationQuery['goalCalculation'];
+    const { findByRole } = render(
+      <GoalCalculatorTestWrapper goalCalculation={failingGoalCalculation}>
+        <GoalReferenceCards />
+      </GoalCalculatorTestWrapper>,
+    );
+
+    const referenceCard = await findByRole('region', {
+      name: 'New Staff Reference Goal',
+    });
+    expect(await within(referenceCard).findByText(missingValue)).toBeVisible();
   });
 
   it("shows the New Staff Reference goal for the goal's household", async () => {

@@ -63,11 +63,8 @@ export const GoalReferenceCards: React.FC = () => {
   );
 
   const formatCurrentGoal = (): string | undefined => {
-    if (currentGoalError) {
-      return missingValue;
-    }
     if (!currentGoalData) {
-      return undefined;
+      return currentGoalError ? missingValue : undefined;
     }
     const monthlyGoal = currentGoalData.accountList.settings?.monthlyGoal;
     // A goal of 0 is not a real goal, so treat it like a blank one
