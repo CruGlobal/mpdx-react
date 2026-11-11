@@ -35,14 +35,25 @@ describe('ReportLegendPanel health badge', () => {
         .map((badge) => badge.textContent),
     ).toEqual(['Healthy', 'On Track', 'Needs Attention']);
     expect(section).toHaveTextContent(
-      'Staff whose payroll last month was 65% or more of their Personal CAP.',
+      "Staff get no badge and match none of these filters without a Personal CAP, in their first payroll month, or when last month's figures aren't in yet. The current month is never graded.",
     );
-    expect(section).toHaveTextContent(
-      'Staff whose payroll last month was under 50% of their Personal CAP.',
-    );
-    expect(section).toHaveTextContent(
-      'Staff with no Personal CAP get no badge and match none of these filters. The current month is never graded.',
-    );
+  });
+
+  // The sample badges are hidden from screen readers, so each description
+  // must name its grade itself
+  it('names the grade in each description', () => {
+    const { getByRole } = renderLegend();
+
+    const section = getByRole('region', { name: 'Health badge' });
+    expect(
+      within(section)
+        .getAllByTestId('cap-health-description')
+        .map((description) => description.textContent),
+    ).toEqual([
+      'Healthy: Staff whose payroll last month was 65% or more of their Personal CAP.',
+      'On Track: Staff whose payroll last month was 50% to under 65% of their Personal CAP.',
+      'Needs Attention: Staff whose payroll last month was under 50% of their Personal CAP.',
+    ]);
   });
 
   it('lists the health chips with the filters, which still grade interns', () => {

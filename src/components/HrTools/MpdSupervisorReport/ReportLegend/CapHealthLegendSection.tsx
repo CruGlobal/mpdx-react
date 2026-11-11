@@ -1,8 +1,12 @@
 import React, { useId } from 'react';
-import { Box, Divider, Typography } from '@mui/material';
+import { Box, Divider, SxProps, Theme, Typography } from '@mui/material';
+import { visuallyHidden } from '@mui/utils';
 import { useTranslation } from 'react-i18next';
 import { MpdCapHealthEnum } from 'src/graphql/types.generated';
-import { capHealthDescription } from '../Filters/mpdSupervisorReportFilters';
+import {
+  capHealthDescription,
+  capHealthLabel,
+} from '../Filters/mpdSupervisorReportFilters';
 import { CapHealthBadge } from '../StaffMemberRow/CapHealthBadge';
 
 const grades = [
@@ -42,14 +46,18 @@ export const CapHealthLegendSection: React.FC = () => {
           <Box aria-hidden sx={{ flexShrink: 0, width: 128 }}>
             <CapHealthBadge capHealth={grade} />
           </Box>
-          <Typography variant="body2">
+          <Typography variant="body2" data-testid="cap-health-description">
+            {/* The sample badge is hidden, so screen readers hear the grade here */}
+            <Box component="span" sx={visuallyHidden as SxProps<Theme>}>
+              {`${capHealthLabel(t, grade)}: `}
+            </Box>
             {capHealthDescription(t, grade)}
           </Typography>
         </Box>
       ))}
       <Typography variant="body2" color="text.secondary">
         {t(
-          'Staff with no Personal CAP get no badge and match none of these filters. The current month is never graded.',
+          "Staff get no badge and match none of these filters without a Personal CAP, in their first payroll month, or when last month's figures aren't in yet. The current month is never graded.",
         )}
       </Typography>
     </Box>

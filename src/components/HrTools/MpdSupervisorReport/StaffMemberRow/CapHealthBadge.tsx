@@ -1,5 +1,5 @@
 import React from 'react';
-import { Chip, Tooltip } from '@mui/material';
+import { Chip, Tooltip, darken } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
@@ -17,11 +17,12 @@ const quarterColor: Record<MpdCapHealthEnum, MpdHealthStatusEnum> = {
   [MpdCapHealthEnum.NeedsAttention]: MpdHealthStatusEnum.Red,
 };
 
-// Outlined so it never reads as another filled quarter chip
+// Outlined so it never reads as another filled quarter chip. Its text sits on
+// the white card, so the chip hue is darkened to pass WCAG AA (4.5:1).
 const BadgeChip = styled(Chip, {
   shouldForwardProp: (prop) => prop !== 'capHealth',
 })<{ capHealth: MpdCapHealthEnum }>(({ capHealth }) => {
-  const { color } = healthColor(theme, quarterColor[capHealth]);
+  const color = darken(healthColor(theme, quarterColor[capHealth]).color, 0.5);
   return {
     height: 22,
     fontWeight: 600,
@@ -30,6 +31,9 @@ const BadgeChip = styled(Chip, {
     '& .MuiChip-label': { paddingInline: theme.spacing(1) },
   };
 });
+
+// Floored so a percent just under a cutoff never shows as the next grade's
+const floorToTenth = (percent: number) => Math.floor(percent * 10) / 10;
 
 interface CapHealthBadgeProps {
   capHealth: MpdCapHealthEnum | null | undefined;
@@ -62,8 +66,9 @@ export const CapHealthBadge: React.FC<CapHealthBadgeProps> = ({
   }
   return (
     <Tooltip
+      describeChild
       title={t('{{percent}} of Personal CAP last month', {
-        percent: formatPercentage(percentOfCap, 1),
+        percent: formatPercentage(floorToTenth(percentOfCap), 1),
       })}
     >
       {badge}

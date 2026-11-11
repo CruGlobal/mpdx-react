@@ -15,10 +15,11 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { visuallyHidden } from '@mui/utils';
-import { useTranslation } from 'react-i18next';
+import { TFunction, useTranslation } from 'react-i18next';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import { MpdCapHealthEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
+import { capHealthLabel } from '../Filters/mpdSupervisorReportFilters';
 import { RowDensityEnum } from '../MpdSupervisorReportContext';
 import {
   QuarterChipData,
@@ -116,6 +117,29 @@ const QuarterCaption = styled(Typography)(({ theme }) => ({
   },
 }));
 
+// The marker and badge inside are not focusable, so the row's own name
+// carries the gross salary warning and the health grade for keyboard and
+// screen-reader users.
+const rowActionLabel = (
+  t: TFunction,
+  names: string,
+  grossWarning: string | null,
+  capHealth: MpdCapHealthEnum | null | undefined,
+): string => {
+  const name = capHealth
+    ? t('{{label}}, {{status}}', {
+        label: names,
+        status: capHealthLabel(t, capHealth),
+      })
+    : names;
+  return grossWarning
+    ? t('View details for {{name}}. {{warning}}', {
+        name,
+        warning: grossWarning,
+      })
+    : t('View details for {{name}}', { name });
+};
+
 interface StaffMemberProps {
   data: StaffRow;
   /** Compact drops the avatar and puts the name and details on one line */
@@ -179,16 +203,7 @@ export const StaffMember: React.FC<StaffMemberProps> = ({
           </Box>
         )}
         <CardActionArea
-          // The marker inside is not focusable, so the row's own name carries
-          // the gross salary warning for keyboard and screen-reader users.
-          aria-label={
-            grossWarning
-              ? t('View details for {{name}}. {{warning}}', {
-                  name: names,
-                  warning: grossWarning,
-                })
-              : t('View details for {{name}}', { name: names })
-          }
+          aria-label={rowActionLabel(t, names, grossWarning, data.capHealth)}
           onClick={onClick}
           sx={{
             flex: 1,

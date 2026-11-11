@@ -44,6 +44,20 @@ describe('StaffMember CAP health badge', () => {
     },
   );
 
+  // The row's aria-label replaces its contents, so it must name the grade too
+  it('names the grade in the row button for screen readers', () => {
+    const { getByRole } = renderRow({
+      capHealth: MpdCapHealthEnum.NeedsAttention,
+      percentOfCap: 41,
+    });
+
+    expect(
+      getByRole('button', {
+        name: 'View details for Brooke Butler, Needs Attention',
+      }),
+    ).toBeInTheDocument();
+  });
+
   it('is left off for staff with no Personal CAP', () => {
     const { queryByTestId } = renderRow({
       capHealth: null,
