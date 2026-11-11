@@ -24,6 +24,7 @@ import {
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
 import { QuarterChip } from '../StaffMemberRow/QuarterChip';
 import { YearMonth, getQuarterMonthRange } from '../helpers';
+import { CapHealthLegendSection } from './CapHealthLegendSection';
 import {
   healthStatusLabel,
   healthStatusOrder,
@@ -76,6 +77,25 @@ const Term: React.FC<TermProps> = ({ term, children }) => (
   </>
 );
 
+/** What the quarter colors do not measure, and which filters find what. */
+const ColorNotes: React.FC = () => {
+  const { t } = useTranslation();
+  return (
+    <>
+      <Typography variant="body2" color="text.secondary">
+        {t(
+          'Quarter colors measure pay, not the staff account balance. To find staff whose balance is below zero, use the Negative filters.',
+        )}
+      </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+        {t(
+          'To list staff whose newest quarter is red, use the Below New Staff Monthly Salary filter.',
+        )}
+      </Typography>
+    </>
+  );
+};
+
 // Illustrative amounts for the sample chips, one per status
 const sampleAmounts: Record<MpdHealthStatusEnum, number | null> = {
   [MpdHealthStatusEnum.Green]: 4250,
@@ -84,6 +104,10 @@ const sampleAmounts: Record<MpdHealthStatusEnum, number | null> = {
   [MpdHealthStatusEnum.Blue]: 2000,
   [MpdHealthStatusEnum.Gray]: null,
 };
+
+const filters = quickFilterIds.filter(
+  (id) => id !== MpdSupervisorReportQuickFilterEnum.AllPeople,
+);
 
 /** The "How this report works" legend, shown in the report's right panel. */
 export const ReportLegendPanel: React.FC = () => {
@@ -127,10 +151,6 @@ export const ReportLegendPanel: React.FC = () => {
       }),
     };
   });
-
-  const filters = quickFilterIds.filter(
-    (id) => id !== MpdSupervisorReportQuickFilterEnum.AllPeople,
-  );
 
   const newStaff = newStaffSalaryCopy(t);
 
@@ -187,12 +207,9 @@ export const ReportLegendPanel: React.FC = () => {
               </Box>
             );
           })}
-          <Typography variant="body2" color="text.secondary">
-            {t(
-              'Quarter colors measure pay, not the staff account balance. To find staff whose balance is below zero, use the Negative filters.',
-            )}
-          </Typography>
+          <ColorNotes />
         </Section>
+        <CapHealthLegendSection />
 
         <Section title={t('Numbers')}>
           <Box component="dl" sx={{ m: 0 }}>
@@ -228,7 +245,7 @@ export const ReportLegendPanel: React.FC = () => {
         <Section title={t('Filters')}>
           <Typography variant="body2" sx={{ mb: 1 }}>
             {t(
-              'These filters leave out interns, part-time field staff and volunteers.',
+              'The Negative and Spending filters leave out interns, part-time field staff and volunteers.',
             )}
           </Typography>
           <Box component="dl" sx={{ m: 0 }}>

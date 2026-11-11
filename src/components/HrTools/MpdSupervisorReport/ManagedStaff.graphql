@@ -10,6 +10,8 @@ query ManagedStaff(
   $negativeThreeMonths: Boolean
   $negativeThreeMonthsInPastYear: Boolean
   $expensesOverIncomeThreeMonths: Boolean
+  $belowNewStaffMonthlySalary: Boolean
+  $capHealth: MpdCapHealthEnum
 ) {
   managedStaff(
     first: $first
@@ -23,6 +25,8 @@ query ManagedStaff(
     negativeThreeMonths: $negativeThreeMonths
     negativeThreeMonthsInPastYear: $negativeThreeMonthsInPastYear
     expensesOverIncomeThreeMonths: $expensesOverIncomeThreeMonths
+    belowNewStaffMonthlySalary: $belowNewStaffMonthlySalary
+    capHealth: $capHealth
   ) {
     nodes {
       firstName
@@ -52,6 +56,8 @@ query ManagedStaff(
         }
       }
       newStaffMonthlySalary
+      percentOfCap
+      capHealth
       quarterlyHealth {
         monthlyGrossSalary
         startingQuarter {

@@ -60,7 +60,7 @@ export const StaffTabPayroll: React.FC<StaffTabPayrollProps> = ({
               <TableCell align="right">
                 {t('Reimbursement / Additional Salary')}
               </TableCell>
-              <TableCell align="right">{t('% Max Pay')}</TableCell>
+              <TableCell align="right">{t('% of Monthly Salary')}</TableCell>
               <TableCell align="right">{t('% of Personal CAP')}</TableCell>
             </TableRow>
           </TableHead>
