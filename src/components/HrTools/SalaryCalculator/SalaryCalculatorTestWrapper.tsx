@@ -1,4 +1,5 @@
 import { ThemeProvider } from '@emotion/react';
+import { GraphQLError } from 'graphql';
 import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
 import { merge } from 'lodash';
 import { SnackbarProvider } from 'notistack';
@@ -32,6 +33,10 @@ import {
   SalaryCalculatorProvider,
   useSalaryCalculator,
 } from './SalaryCalculatorContext/SalaryCalculatorContext';
+import {
+  SubmitSalaryCalculationMutation,
+  SubmitSalaryCalculationMutationVariables,
+} from './StepNavigation/SubmitSalaryCalculation.generated';
 
 const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
   mocks: {
@@ -152,6 +157,8 @@ export interface SalaryCalculatorTestWrapperProps {
   calculationUnavailableCalls?: number;
   /** Makes SalaryCalculation fail with an error other than HCM_UNAVAILABLE */
   calculationError?: boolean;
+  /** Makes SubmitSalaryCalculation fail with this error unless its input sets `confirmMhaEnd` */
+  submitError?: GraphQLError;
 }
 
 export const SalaryCalculatorTestWrapper: React.FC<
@@ -172,6 +179,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
   hcmUnavailableCalls = 0,
   calculationUnavailableCalls = 0,
   calculationError = false,
+  submitError,
 }) => {
   const hcmUserMerged = merge({}, hcmUserMock, hcmUser);
   const hcmSpouseMerged = merge({}, hcmSpouseMock, hcmSpouse);
@@ -196,6 +204,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
             StaffAccount: StaffAccountQuery;
             GetUser: GetUserQuery;
             AccountGeographicLocation: AccountGeographicLocationQuery;
+            SubmitSalaryCalculation: SubmitSalaryCalculationMutation;
           }>
             mocks={{
               StaffAccount: {
@@ -266,6 +275,17 @@ export const SalaryCalculatorTestWrapper: React.FC<
                       ) as never,
                       calculationUnavailableCalls,
                     ) as never),
+              },
+              SubmitSalaryCalculation: {
+                submitSalaryRequest: ((
+                  _root: unknown,
+                  { input }: SubmitSalaryCalculationMutationVariables,
+                ) => {
+                  if (submitError && !input.confirmMhaEnd) {
+                    throw submitError;
+                  }
+                  return {};
+                }) as never,
               },
             }}
             onCall={onCall}

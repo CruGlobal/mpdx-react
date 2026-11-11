@@ -38,6 +38,26 @@ describe('useEffectivePaycheckDate', () => {
     await waitFor(() => expect(result.current).toBe('6/10/2026'));
   });
 
+  it('uses the effective date it is given over the calculation one', async () => {
+    const { result } = renderHook(
+      () => useEffectivePaycheckDate('2026-12-01'),
+      {
+        wrapper: wrapperWith({
+          salaryRequestMock: {
+            status: SalaryRequestStatusEnum.InProgress,
+            effectiveDate: '2026-06-01',
+          },
+          payrollDates: [
+            { startDate: '2026-06-01', regularProcessDate: '2026-06-10' },
+            { startDate: '2026-12-01', regularProcessDate: '2026-12-10' },
+          ],
+        }),
+      },
+    );
+
+    await waitFor(() => expect(result.current).toBe('12/10/2026'));
+  });
+
   it('returns null when the effective date is not in the payroll dates list', async () => {
     const { result } = renderHook(() => useEffectivePaycheckDate(), {
       wrapper: wrapperWith({
