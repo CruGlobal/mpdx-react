@@ -54,6 +54,13 @@ query ManagedStaff(
         }
       }
       newStaffMonthlySalary
+      householdType
+      balanceBuffer
+      monthEndBalances {
+        month
+        endBalance
+        status
+      }
       quarterlyHealth {
         monthlyGrossSalary
         startingQuarter {

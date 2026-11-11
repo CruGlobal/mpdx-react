@@ -8,34 +8,27 @@ import {
   Collapse,
   Grid,
   IconButton,
-  Stack,
-  SxProps,
-  Theme,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { visuallyHidden } from '@mui/utils';
 import { useTranslation } from 'react-i18next';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
+import { useLocale } from 'src/hooks/useLocale';
 import theme from 'src/theme';
 import { RowDensityEnum } from '../MpdSupervisorReportContext';
+import { formatWholeDollars, householdTypeLabel } from '../balanceHelpers';
 import {
-  QuarterChipData,
   StaffRow,
-  buildQuarterChips,
   getLocalizedAssignmentCategoryGroup,
   getLocalizedUserPersonTypeName,
-  getQuarterLabel,
   getRowInitials,
   getRowName,
   getRowSpouseName,
   getRowTeamNames,
   grossSalaryWarning,
-  healthLabel,
-  quarterAmountLabel,
 } from '../helpers';
 import { GrossSalaryMarker } from './GrossSalaryMarker';
-import { QuarterChip } from './QuarterChip';
+import { MonthEndBalances } from './MonthEndBalances';
 import { QuickGlance } from './QuickGlance';
 
 const StyledCard = styled(Card, {
@@ -55,7 +48,7 @@ const GridItem = styled(Grid)(({ theme }) => ({
   gap: theme.spacing(2),
 }));
 
-const GridQuarter = styled(Grid, {
+const GridBalances = styled(Grid, {
   shouldForwardProp: (prop) => prop !== 'compact',
 })<{ compact: boolean }>(({ theme, compact }) => ({
   display: 'flex',
@@ -69,41 +62,10 @@ const GridQuarter = styled(Grid, {
   },
 }));
 
-// The 200px floor only applies beside the quarters; stacked, a long name wraps
+// The 200px floor only applies beside the balances; stacked, a long name wraps
 const NameColumn = styled(Box)(({ theme }) => ({
   flexGrow: 1,
   [theme.breakpoints.up('md')]: { minWidth: 200 },
-}));
-
-// Below md the rows are too narrow for the page's quarter column headers, so
-// the quarters drop under the name and each chip carries its own label.
-const quarterGridSx = {
-  [theme.breakpoints.down('md')]: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
-    gap: theme.spacing(1, 2),
-    width: '100%',
-  },
-  [theme.breakpoints.down('sm')]: {
-    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-  },
-};
-
-const QuarterCell = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  flexWrap: 'wrap',
-  columnGap: theme.spacing(1),
-  minWidth: 0,
-}));
-
-const QuarterCaption = styled(Typography)(({ theme }) => ({
-  display: 'none',
-  color: theme.palette.text.secondary,
-  fontWeight: 600,
-  [theme.breakpoints.down('md')]: {
-    display: 'block',
-  },
 }));
 
 interface StaffMemberProps {
@@ -126,16 +88,20 @@ export const StaffMember: React.FC<StaffMemberProps> = ({
   const { t } = useTranslation();
   const compact = density === RowDensityEnum.Compact;
   const { formatCurrency } = useFormatters();
+  const locale = useLocale();
   const { staffAccountId, assignmentCategoryGroup, userPersonType, partner } =
     data;
   const grossWarning = grossSalaryWarning(t, formatCurrency, data);
 
   const names = getRowName(data);
-
-  const quarters = useMemo(
-    () => buildQuarterChips(data.quarterlyHealth),
-    [data.quarterlyHealth],
-  );
+  const { householdType, balanceBuffer } = data;
+  const buffer =
+    householdType && typeof balanceBuffer === 'number'
+      ? t('{{household}} buffer {{amount}}', {
+          household: householdTypeLabel(t, householdType),
+          amount: formatWholeDollars(balanceBuffer, locale),
+        })
+      : null;
 
   // A member can be on several teams; a merged pair shows both spouses' teams.
   // No team means no segment at all rather than a placeholder.
@@ -218,15 +184,16 @@ export const StaffMember: React.FC<StaffMemberProps> = ({
                     }
                     team={team}
                     spouse={spouse}
+                    buffer={buffer}
                     grossWarning={grossWarning}
                     compact={compact}
                   />
                 </Box>
               </NameColumn>
             </GridItem>
-            <GridQuarter size={{ xs: 12, md: 6 }} compact={compact}>
-              <FiscalYearQuarters quarters={quarters} />
-            </GridQuarter>
+            <GridBalances size={{ xs: 12, md: 6 }} compact={compact}>
+              <MonthEndBalances balances={data.monthEndBalances} />
+            </GridBalances>
           </Grid>
         </CardActionArea>
       </Box>
@@ -239,64 +206,6 @@ export const StaffMember: React.FC<StaffMemberProps> = ({
   );
 };
 
-interface FiscalYearQuartersProps {
-  quarters: QuarterChipData[];
-}
-const FiscalYearQuartersBase: React.FC<FiscalYearQuartersProps> = ({
-  quarters,
-}) => {
-  const { t } = useTranslation();
-  const { formatCurrency } = useFormatters();
-
-  return (
-    // useFlexGap: the label wrappers must not change the chips' spacing
-    <Stack
-      direction="row"
-      spacing={2}
-      useFlexGap
-      data-testid="quarter-chips"
-      sx={quarterGridSx}
-    >
-      {quarters.map(({ fiscalYear, quarter, status, averagePayroll }) => {
-        const label = getQuarterLabel(fiscalYear, quarter);
-        const amount = quarterAmountLabel({
-          t,
-          status,
-          averagePayroll,
-          formatCurrency,
-        });
-
-        return (
-          <QuarterCell key={label}>
-            <QuarterCaption variant="caption" aria-hidden="true">
-              {label}
-            </QuarterCaption>
-            <QuarterChip
-              // Health is also conveyed by color, so name it for screen-reader
-              // users (WCAG 1.4.1 — not color alone).
-              label={
-                <>
-                  <Box component="span" sx={visuallyHidden as SxProps<Theme>}>
-                    {t('{{label}}, {{status}}', {
-                      label,
-                      status: healthLabel(t, status),
-                    })}
-                  </Box>
-                  {amount}
-                </>
-              }
-              health={status}
-              size="small"
-            />
-          </QuarterCell>
-        );
-      })}
-    </Stack>
-  );
-};
-/** The four quarter chips; also shown in the drawer header, which covers the row. */
-export const FiscalYearQuarters = React.memo(FiscalYearQuartersBase);
-
 interface StaffInfoProps {
   names: string;
   staffAccountID: string;
@@ -305,6 +214,8 @@ interface StaffInfoProps {
   team: string;
   /** The spouse's name when they are not merged into this row */
   spouse?: string | null;
+  /** The household's balance buffer, when the member is graded against one */
+  buffer?: string | null;
   /** Set when Monthly Gross Salary is below New Staff Monthly Salary */
   grossWarning: string | null;
   /** Puts the details on the same line as the name */
@@ -317,6 +228,7 @@ const StaffInfoBase: React.FC<StaffInfoProps> = ({
   userPersonType,
   team,
   spouse,
+  buffer,
   grossWarning,
   compact = false,
 }) => {
@@ -354,6 +266,7 @@ const StaffInfoBase: React.FC<StaffInfoProps> = ({
           {userPersonType && ` · ${userPersonType}`}
           {team && ` · ${team}`}
           {spouse && ` · ${t('Spouse: {{name}}', { name: spouse })}`}
+          {buffer && ` · ${buffer}`}
         </Typography>
       </Box>
     </Box>

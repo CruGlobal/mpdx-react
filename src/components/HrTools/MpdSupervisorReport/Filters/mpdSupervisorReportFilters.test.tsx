@@ -88,7 +88,7 @@ describe('Below New Staff Monthly Salary chip', () => {
     userEvent.hover(getByRole('button', { name: chipName }));
 
     expect(await findByRole('tooltip')).toHaveTextContent(
-      'Staff whose newest quarter is red: their average monthly payroll in the last completed quarter was below their New Staff Monthly Salary.',
+      'Staff whose average monthly payroll in the last completed quarter was below their New Staff Monthly Salary. Their newest quarter is red in their details.',
     );
   });
 

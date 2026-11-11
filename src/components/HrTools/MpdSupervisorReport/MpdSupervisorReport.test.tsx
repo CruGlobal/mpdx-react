@@ -249,8 +249,8 @@ const renderEmptyReportHeader = async () => {
   };
 };
 
-// Rows also label their quarters (shown below md), so match only the headers
-const quarterHeader = { selector: '[data-testid="quarter-headers"] p' };
+// Rows also label their months (shown below md), so match only the headers
+const monthHeader = { selector: '[data-testid="month-headers"] p' };
 
 jest.setTimeout(15000);
 
@@ -648,7 +648,7 @@ describe('MpdSupervisorReport', () => {
     expect(queryByText('Jane Smith')).not.toBeInTheDocument();
     // The couple shares a row, so the header says so
     expect(
-      await findByText('Showing 2 of 2 in one row · sorted by MPD health'),
+      await findByText('Showing 2 of 2 in one row · sorted by lowest balance'),
     ).toBeInTheDocument();
   });
 
@@ -683,7 +683,7 @@ describe('MpdSupervisorReport', () => {
     ).toBeInTheDocument();
     expect(
       within(region).getByRole('button', { name: /Central Team/ }),
-    ).toHaveTextContent('At risk (1)');
+    ).toHaveTextContent('Below $0 (1)');
     expect(
       getByText(
         'Pick a team above to list its staff, or use the filters to narrow the list.',
@@ -743,7 +743,7 @@ describe('MpdSupervisorReport', () => {
     const { findByText } = renderReport();
 
     expect(
-      await findByText('Showing 2 of 2 · sorted by MPD health'),
+      await findByText('Showing 2 of 2 · sorted by lowest balance'),
     ).toBeInTheDocument();
   });
 
@@ -797,21 +797,21 @@ describe('MpdSupervisorReport', () => {
 
     expect(await findByText('No staff members found')).toBeInTheDocument();
     expect(
-      getByText('Showing 0 of 0 · sorted by MPD health'),
+      getByText('Showing 0 of 0 · sorted by lowest balance'),
     ).toBeInTheDocument();
   });
 
-  it('labels the quarter columns from the first row, newest first', async () => {
+  it('labels the month columns from the first row, newest first', async () => {
     const { findByText, getAllByText } = renderReport();
     await findByText('John Smith');
 
-    const headers = getAllByText(/^FQ\d \d\d$/, quarterHeader).map(
+    const headers = getAllByText(/^\w{3} \d{4}$/, monthHeader).map(
       (el) => el.textContent,
     );
-    expect(headers).toEqual(['FQ3 26', 'FQ2 26', 'FQ1 26', 'FQ4 25']);
+    expect(headers).toEqual(['Oct 2026', 'Sep 2026', 'Aug 2026', 'Jul 2026']);
   });
 
-  it('shows the chip color key beside the quarter columns', async () => {
+  it('shows the balance color key beside the month columns', async () => {
     const { findByText, getByRole, queryByRole } = renderReport();
     // The key only makes sense once there are chips to decode
     expect(
@@ -820,10 +820,11 @@ describe('MpdSupervisorReport', () => {
     await findByText('John Smith');
 
     const key = getByRole('list', { name: 'Chip colors' });
-    expect(key).toHaveTextContent('On track');
-    expect(key).toHaveTextContent('Needs attention');
-    expect(key).toHaveTextContent('At risk');
+    expect(key).toHaveTextContent('At or above buffer');
+    expect(key).toHaveTextContent('Below buffer');
+    expect(key).toHaveTextContent('Below $0');
     expect(key).toHaveTextContent('No data');
+    expect(key).not.toHaveTextContent('At risk');
   });
 
   it('labels the How this report works button in the header', async () => {
@@ -835,20 +836,20 @@ describe('MpdSupervisorReport', () => {
     ).toHaveTextContent('How this report works');
   });
 
-  it('explains a fiscal quarter header on hover', async () => {
+  it('explains a month header on hover', async () => {
     const { findByText, findByRole } = renderReport();
-    const header = await findByText('FQ1 26', quarterHeader);
+    const header = await findByText('Oct 2026', monthHeader);
     // The tooltip describes the header rather than replacing its label
     expect(header).not.toHaveAttribute('aria-label');
 
     userEvent.hover(header);
 
     expect(await findByRole('tooltip')).toHaveTextContent(
-      'Fiscal quarter 1, FY26: Sep 2025 – Nov 2025',
+      'Staff account balance at the end of October 2026',
     );
   });
 
-  it('explains a fiscal quarter header on keyboard focus', async () => {
+  it('explains a month header on keyboard focus', async () => {
     // jsdom has no :focus-visible, so MUI's Tooltip would never open on focus.
     // Treat the focused element as focus-visible, as a browser does for keyboard focus.
     const matches = Element.prototype.matches;
@@ -861,45 +862,16 @@ describe('MpdSupervisorReport', () => {
       });
     try {
       const { findByText, findByRole } = renderReport();
-      const header = await findByText('FQ4 25', quarterHeader);
+      const header = await findByText('Jul 2026', monthHeader);
 
       act(() => header.focus());
 
       expect(await findByRole('tooltip')).toHaveTextContent(
-        'Fiscal quarter 4, FY25: Jun 2025 – Aug 2025',
+        'Staff account balance at the end of July 2026',
       );
     } finally {
       matchesSpy.mockRestore();
     }
-  });
-
-  it('marks the starting quarter header as partial', async () => {
-    const baseHealth = managedStaffMember().quarterlyHealth;
-    const newStaff = managedStaffMember({
-      quarterlyHealth: {
-        ...baseHealth,
-        startingQuarter: {
-          fiscalYear: 2025,
-          quarter: 3,
-          months: [
-            {
-              month: '2025-05',
-              payroll: 3000,
-              status: MpdHealthStatusEnum.Green,
-            },
-          ],
-        },
-      },
-    });
-    const { findByText, findByRole } = renderReport({
-      managedStaff: managedStaffMock([newStaff]),
-    });
-
-    userEvent.hover(await findByText('FQ3 25', quarterHeader));
-
-    expect(await findByRole('tooltip')).toHaveTextContent(
-      'Fiscal quarter 3, FY25: Mar 2025 – May 2025 Partial quarter: payroll started during this quarter.',
-    );
   });
 
   // The card and the drawer both display the same name, so the drawer is

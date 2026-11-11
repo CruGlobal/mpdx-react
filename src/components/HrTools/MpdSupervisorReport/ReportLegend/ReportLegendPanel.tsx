@@ -11,6 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
@@ -24,6 +25,7 @@ import {
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
 import { QuarterChip } from '../StaffMemberRow/QuarterChip';
 import { YearMonth, getQuarterMonthRange } from '../helpers';
+import { BalanceColorsSection } from './BalanceColorsSection';
 import {
   healthStatusLabel,
   healthStatusOrder,
@@ -76,14 +78,14 @@ const Term: React.FC<TermProps> = ({ term, children }) => (
   </>
 );
 
-/** What the quarter colors do not measure, and which filters find what. */
+/** Where the quarter colors show, and which filter finds red quarters. */
 const ColorNotes: React.FC = () => {
   const { t } = useTranslation();
   return (
     <>
       <Typography variant="body2" color="text.secondary">
         {t(
-          'Quarter colors measure pay, not the staff account balance. To find staff whose balance is below zero, use the Negative filters.',
+          "Quarter colors measure pay, not the staff account balance. They show at the top of each staff member's details.",
         )}
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
@@ -104,6 +106,27 @@ const sampleAmounts: Record<MpdHealthStatusEnum, number | null> = {
   [MpdHealthStatusEnum.Gray]: null,
 };
 
+/** What each quarter color means, for the staff details' pay chips. */
+const quarterColorExplanations = (
+  t: TFunction,
+): Record<MpdHealthStatusEnum, string> => ({
+  [MpdHealthStatusEnum.Green]: t(
+    'Payroll was at or above their Monthly Gross Salary (within $5) and their New Staff Monthly Salary. For interns, payroll was at or above their Monthly Gross Salary (within $5).',
+  ),
+  [MpdHealthStatusEnum.Yellow]: t(
+    'Payroll was below their Monthly Gross Salary but at or above their New Staff Monthly Salary. For interns, payroll was below their Monthly Gross Salary.',
+  ),
+  [MpdHealthStatusEnum.Red]: t(
+    'Payroll was below their New Staff Monthly Salary, even if they were paid their full Monthly Gross Salary. Interns are never at risk.',
+  ),
+  [MpdHealthStatusEnum.Blue]: t(
+    "Part-time field staff and volunteers aren't graded against salary benchmarks.",
+  ),
+  [MpdHealthStatusEnum.Gray]: t(
+    "The quarter can't be graded: a benchmark is missing, or the quarter is before or includes their first payroll (shown as Partial).",
+  ),
+});
+
 /** The "How this report works" legend, shown in the report's right panel. */
 export const ReportLegendPanel: React.FC = () => {
   const { t } = useTranslation();
@@ -111,23 +134,7 @@ export const ReportLegendPanel: React.FC = () => {
   const locale = useLocale();
   const { closeLegend } = useMpdSupervisorReport();
 
-  const colorExplanations: Record<MpdHealthStatusEnum, string> = {
-    [MpdHealthStatusEnum.Green]: t(
-      'Payroll was at or above their Monthly Gross Salary (within $5) and their New Staff Monthly Salary. For interns, payroll was at or above their Monthly Gross Salary (within $5).',
-    ),
-    [MpdHealthStatusEnum.Yellow]: t(
-      'Payroll was below their Monthly Gross Salary but at or above their New Staff Monthly Salary. For interns, payroll was below their Monthly Gross Salary.',
-    ),
-    [MpdHealthStatusEnum.Red]: t(
-      'Payroll was below their New Staff Monthly Salary, even if they were paid their full Monthly Gross Salary. Interns are never at risk.',
-    ),
-    [MpdHealthStatusEnum.Blue]: t(
-      "Part-time field staff and volunteers aren't graded against salary benchmarks.",
-    ),
-    [MpdHealthStatusEnum.Gray]: t(
-      "The quarter can't be graded: a benchmark is missing, or the quarter is before or includes their first payroll (shown as Partial).",
-    ),
-  };
+  const colorExplanations = quarterColorExplanations(t);
 
   // Derived from the same helper as the column-header tooltips, so the legend
   // and the headers can't disagree about the fiscal calendar. The year only
@@ -172,13 +179,14 @@ export const ReportLegendPanel: React.FC = () => {
         </IconButton>
       </PanelHeader>
       <PanelContent>
-        <Typography variant="body2" color="text.secondary">
-          {t(
-            "Each chip is a staff member's average monthly payroll for a fiscal quarter, graded against two benchmarks: their Monthly Gross Salary and their New Staff Monthly Salary. Interns are graded against their Monthly Gross Salary only, and part-time field staff and volunteers aren't graded.",
-          )}
-        </Typography>
+        <BalanceColorsSection />
 
-        <Section title={t('Colors')}>
+        <Section title={t('Quarter colors (staff details)')}>
+          <Typography variant="body2" sx={{ mb: 1 }}>
+            {t(
+              "Each quarter chip in a staff member's details is their average monthly payroll for a fiscal quarter, graded against two benchmarks: their Monthly Gross Salary and their New Staff Monthly Salary. Interns are graded against their Monthly Gross Salary only, and part-time field staff and volunteers aren't graded.",
+            )}
+          </Typography>
           {healthStatusOrder.map((status) => {
             const amount = sampleAmounts[status];
             return (
@@ -211,6 +219,11 @@ export const ReportLegendPanel: React.FC = () => {
 
         <Section title={t('Numbers')}>
           <Box component="dl" sx={{ m: 0 }}>
+            <Term term={t('Month amount')}>
+              {t(
+                'The staff account balance at the end of the month, rounded to the dollar.',
+              )}
+            </Term>
             <Term term={t('Quarter amount')}>
               {t(
                 "Average monthly payroll across the quarter's three months. A month with no payroll counts as $0.",
@@ -234,7 +247,7 @@ export const ReportLegendPanel: React.FC = () => {
             </Term>
             <Term term={t('Sort order')}>
               {t(
-                'Staff with the highest share of red quarters come first, then the highest share of yellow, then those furthest below their benchmarks. Ungraded staff come next, and staff with no data are listed last, each sorted alphabetically by last name.',
+                'Lowest balance at the end of last month first, across all staff. Staff with no balance for that month are listed last. Ties are sorted alphabetically by last name.',
               )}
             </Term>
           </Box>
@@ -292,7 +305,7 @@ export const ReportLegendPanel: React.FC = () => {
           </Table>
           <Typography variant="body2">
             {t(
-              'The report shows the last four completed quarters, newest first; the current quarter appears once it ends.',
+              "Each staff member's details show the last four completed quarters, newest first; the current quarter appears once it ends.",
             )}
           </Typography>
         </Section>
