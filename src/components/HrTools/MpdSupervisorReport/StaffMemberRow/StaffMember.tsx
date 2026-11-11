@@ -15,9 +15,11 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { visuallyHidden } from '@mui/utils';
-import { useTranslation } from 'react-i18next';
+import { TFunction, useTranslation } from 'react-i18next';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
+import { MpdCapHealthEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
+import { capHealthLabel } from '../Filters/mpdSupervisorReportFilters';
 import { RowDensityEnum } from '../MpdSupervisorReportContext';
 import {
   QuarterChipData,
@@ -34,6 +36,7 @@ import {
   healthLabel,
   quarterAmountLabel,
 } from '../helpers';
+import { CapHealthBadge } from './CapHealthBadge';
 import { GrossSalaryMarker } from './GrossSalaryMarker';
 import { QuarterChip } from './QuarterChip';
 import { QuickGlance } from './QuickGlance';
@@ -89,6 +92,14 @@ const quarterGridSx = {
   },
 };
 
+// Wraps so a badge after a long name drops to its own line on a phone
+const NameLine = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  flexWrap: 'wrap',
+  gap: theme.spacing(1),
+}));
+
 const QuarterCell = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -105,6 +116,29 @@ const QuarterCaption = styled(Typography)(({ theme }) => ({
     display: 'block',
   },
 }));
+
+// The marker and badge inside are not focusable, so the row's own name
+// carries the gross salary warning and the health grade for keyboard and
+// screen-reader users.
+const rowActionLabel = (
+  t: TFunction,
+  names: string,
+  grossWarning: string | null,
+  capHealth: MpdCapHealthEnum | null | undefined,
+): string => {
+  const name = capHealth
+    ? t('{{label}}, {{status}}', {
+        label: names,
+        status: capHealthLabel(t, capHealth),
+      })
+    : names;
+  return grossWarning
+    ? t('View details for {{name}}. {{warning}}', {
+        name,
+        warning: grossWarning,
+      })
+    : t('View details for {{name}}', { name });
+};
 
 interface StaffMemberProps {
   data: StaffRow;
@@ -169,16 +203,7 @@ export const StaffMember: React.FC<StaffMemberProps> = ({
           </Box>
         )}
         <CardActionArea
-          // The marker inside is not focusable, so the row's own name carries
-          // the gross salary warning for keyboard and screen-reader users.
-          aria-label={
-            grossWarning
-              ? t('View details for {{name}}. {{warning}}', {
-                  name: names,
-                  warning: grossWarning,
-                })
-              : t('View details for {{name}}', { name: names })
-          }
+          aria-label={rowActionLabel(t, names, grossWarning, data.capHealth)}
           onClick={onClick}
           sx={{
             flex: 1,
@@ -219,6 +244,8 @@ export const StaffMember: React.FC<StaffMemberProps> = ({
                     team={team}
                     spouse={spouse}
                     grossWarning={grossWarning}
+                    capHealth={data.capHealth}
+                    percentOfCap={data.percentOfCap}
                     compact={compact}
                   />
                 </Box>
@@ -307,6 +334,8 @@ interface StaffInfoProps {
   spouse?: string | null;
   /** Set when Monthly Gross Salary is below New Staff Monthly Salary */
   grossWarning: string | null;
+  capHealth?: MpdCapHealthEnum | null;
+  percentOfCap?: number | null;
   /** Puts the details on the same line as the name */
   compact?: boolean;
 }
@@ -318,6 +347,8 @@ const StaffInfoBase: React.FC<StaffInfoProps> = ({
   team,
   spouse,
   grossWarning,
+  capHealth,
+  percentOfCap,
   compact = false,
 }) => {
   const { t } = useTranslation();
@@ -332,7 +363,7 @@ const StaffInfoBase: React.FC<StaffInfoProps> = ({
           columnGap: compact ? 1.5 : 0,
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <NameLine>
           <Typography
             variant={compact ? 'body1' : 'h6'}
             fontWeight={compact ? 600 : undefined}
@@ -342,7 +373,8 @@ const StaffInfoBase: React.FC<StaffInfoProps> = ({
           {grossWarning && (
             <GrossSalaryMarker warning={grossWarning} focusable={false} />
           )}
-        </Box>
+          <CapHealthBadge capHealth={capHealth} percentOfCap={percentOfCap} />
+        </NameLine>
         <Typography
           variant="body2"
           sx={{ color: 'text.secondary' }}
