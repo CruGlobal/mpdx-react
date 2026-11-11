@@ -54,7 +54,7 @@ const columnHeaders = [
   'Month',
   'Payroll',
   'Reimbursement / Additional Salary',
-  '% of Paycheck',
+  '% of Monthly Salary',
   '% of Personal CAP',
 ];
 
