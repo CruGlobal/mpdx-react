@@ -1,6 +1,7 @@
 import React from 'react';
 import { Autocomplete, Box, CircularProgress, TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { noMpdCoachesMessage } from 'src/components/HrTools/Shared/AssignCoach/coachHelpers';
 import { filterOptionsByWords } from 'src/components/Shared/Autocomplete/filterOptionsByWords';
 import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
 import { GoalSettingsAttendee } from '../goalSettingsSectionProps';
@@ -55,9 +56,7 @@ export const GoalSettingsCoachField: React.FC<GoalSettingsCoachFieldProps> = ({
         getOptionKey={(option) => option.id}
         getOptionLabel={(option) => option.name}
         isOptionEqualToValue={(option, selected) => option.id === selected.id}
-        noOptionsText={t(
-          'No coaches are available for this cohort. Coach eligibility comes from OneApp.',
-        )}
+        noOptionsText={noMpdCoachesMessage(t)}
         fullWidth
         // Removing the coach is a first-class action here, so the clear button
         // stays put instead of appearing only on hover.

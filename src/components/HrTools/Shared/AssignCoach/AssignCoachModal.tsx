@@ -20,7 +20,7 @@ import {
   SubmitButton,
 } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/Shared/Modal/Modal';
-import { AssignCoachOption } from './coachHelpers';
+import { AssignCoachOption, noMpdCoachesMessage } from './coachHelpers';
 
 interface AssignCoachModalProps {
   /** Name shown in the modal title, e.g. the staff member the coach is for. */
@@ -151,11 +151,7 @@ export const AssignCoachModal: React.FC<AssignCoachModalProps> = ({
                   )}
                 </Alert>
               ) : noCoaches ? (
-                <Alert severity="info">
-                  {t(
-                    'No coaches are available to assign for this cohort. Coach eligibility comes from OneApp, so make a coach eligible there and then reopen this window.',
-                  )}
-                </Alert>
+                <Alert severity="info">{noMpdCoachesMessage(t)}</Alert>
               ) : (
                 <Autocomplete
                   autoHighlight

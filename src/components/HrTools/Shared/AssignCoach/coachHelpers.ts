@@ -31,3 +31,9 @@ export const coachToOption = (
   id: coach.id,
   name: coachLabel(coach, t),
 });
+
+/** Both coach pickers say the same thing when the MPD Goals team has added nobody yet. */
+export const noMpdCoachesMessage = (t: TFunction): string =>
+  t(
+    'No MPD coaches have been added yet. An MPD admin can add coaches on the MPD Coaches tab.',
+  );
