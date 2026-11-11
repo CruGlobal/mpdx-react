@@ -38,7 +38,8 @@ export const CapHealthLegendSection: React.FC = () => {
           key={grade}
           sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, mb: 1 }}
         >
-          <Box aria-hidden sx={{ flexShrink: 0 }}>
+          {/* One width for every sample so the descriptions line up */}
+          <Box aria-hidden sx={{ flexShrink: 0, width: 128 }}>
             <CapHealthBadge capHealth={grade} />
           </Box>
           <Typography variant="body2">
