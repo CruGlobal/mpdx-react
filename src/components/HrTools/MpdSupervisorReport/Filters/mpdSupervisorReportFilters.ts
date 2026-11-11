@@ -42,6 +42,26 @@ export const capHealthForQuickFilter = (
   id: MpdSupervisorReportQuickFilterEnum,
 ): MpdCapHealthEnum | null => capHealthByQuickFilter[id] ?? null;
 
+/**
+ * The roster query's quick-filter variables. A flag is sent only when its chip
+ * is active; false would filter on it.
+ */
+export const quickFilterVariables = (
+  id: MpdSupervisorReportQuickFilterEnum,
+) => ({
+  negativeLastMonth:
+    id === MpdSupervisorReportQuickFilterEnum.NegativeLastMonth || null,
+  negativeThreeMonths:
+    id === MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative || null,
+  negativeThreeMonthsInPastYear:
+    id === MpdSupervisorReportQuickFilterEnum.ThreeMonthsInPastYearNegative ||
+    null,
+  expensesOverIncomeThreeMonths:
+    id === MpdSupervisorReportQuickFilterEnum.ThreeMonthsSpendingOverIncome ||
+    null,
+  capHealth: capHealthForQuickFilter(id),
+});
+
 /** A health grade's name, shared by the row badge and its filter chip. */
 export const capHealthLabel = (
   t: TFunction,

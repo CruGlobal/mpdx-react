@@ -16,7 +16,7 @@ import { useDebouncedValue } from 'src/hooks/useDebounce';
 import { useLocalStorage } from 'src/hooks/useLocalStorage';
 import {
   MpdSupervisorReportQuickFilterEnum,
-  capHealthForQuickFilter,
+  quickFilterVariables,
 } from './Filters/mpdSupervisorReportFilters';
 import {
   ManagedStaffQueryVariables,
@@ -198,22 +198,7 @@ export const MpdSupervisorReportProvider: React.FC<{
       departments: department ? [department] : null,
       assignmentCategoryGroup: employmentType,
       userPersonTypes: userPersonTypes.length ? userPersonTypes : null,
-      // Send the flag only when its chip is active; false would filter on it.
-      negativeLastMonth:
-        activeQuickFilter ===
-          MpdSupervisorReportQuickFilterEnum.NegativeLastMonth || null,
-      negativeThreeMonths:
-        activeQuickFilter ===
-          MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative || null,
-      negativeThreeMonthsInPastYear:
-        activeQuickFilter ===
-          MpdSupervisorReportQuickFilterEnum.ThreeMonthsInPastYearNegative ||
-        null,
-      expensesOverIncomeThreeMonths:
-        activeQuickFilter ===
-          MpdSupervisorReportQuickFilterEnum.ThreeMonthsSpendingOverIncome ||
-        null,
-      capHealth: capHealthForQuickFilter(activeQuickFilter),
+      ...quickFilterVariables(activeQuickFilter),
     }),
     [
       debouncedSearch,
@@ -257,7 +242,10 @@ export const MpdSupervisorReportProvider: React.FC<{
   // it is fetched without waiting for the list to be scrolled. A failed page
   // is left for the inline Retry rather than retried in a loop.
   useEffect(() => {
-    if (pageInfo?.hasNextPage && !loading && !loadMoreError) {
+    if (!pageInfo?.hasNextPage || loading) {
+      return;
+    }
+    if (!loadMoreError) {
       setWantsNextPage(true);
     }
   }, [pageInfo?.hasNextPage, pageInfo?.endCursor, loading, loadMoreError]);

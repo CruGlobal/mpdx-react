@@ -86,6 +86,10 @@ const sampleAmounts: Record<MpdHealthStatusEnum, number | null> = {
   [MpdHealthStatusEnum.Gray]: null,
 };
 
+const filters = quickFilterIds.filter(
+  (id) => id !== MpdSupervisorReportQuickFilterEnum.AllPeople,
+);
+
 /** The "How this report works" legend, shown in the report's right panel. */
 export const ReportLegendPanel: React.FC = () => {
   const { t } = useTranslation();
@@ -128,10 +132,6 @@ export const ReportLegendPanel: React.FC = () => {
       }),
     };
   });
-
-  const filters = quickFilterIds.filter(
-    (id) => id !== MpdSupervisorReportQuickFilterEnum.AllPeople,
-  );
 
   const newStaff = newStaffSalaryCopy(t);
 
