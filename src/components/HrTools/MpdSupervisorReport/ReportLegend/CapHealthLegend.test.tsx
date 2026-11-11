@@ -35,7 +35,7 @@ describe('ReportLegendPanel health badge', () => {
         .map((badge) => badge.textContent),
     ).toEqual(['Healthy', 'On Track', 'Needs Attention']);
     expect(section).toHaveTextContent(
-      "Staff who aren't supported, such as volunteers, Staff Emeritus and department-funded staff, get no badge and match none of these filters. Neither do supported staff without a Personal CAP, when last month was their first payroll month, or when last month's figures aren't in yet. A couple shares one Personal CAP, so both get a badge when either is supported. The current month is never graded.",
+      "Volunteers, Staff Emeritus and other non-workers get no badge and match none of these filters, even when they're supported. Neither do department-funded and other unsupported staff. Supported staff get no badge without a Personal CAP, when last month was their first payroll month, or when last month's figures aren't in yet. A couple shares one Personal CAP, so both get a badge when either one is supported staff. The current month is never graded.",
     );
   });
 
