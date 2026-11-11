@@ -36,6 +36,9 @@ export const createCache = () =>
         },
         merge: true,
       },
+      // Settings have no id, and queries select different fields of them, so
+      // merge so that one query's settings don't clobber another's.
+      AccountListSettings: { merge: true },
       CoachingAccountList: {
         fields: {
           contacts: paginationFieldPolicy,
