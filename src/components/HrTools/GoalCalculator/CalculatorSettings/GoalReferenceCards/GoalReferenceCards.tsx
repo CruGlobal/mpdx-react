@@ -3,11 +3,13 @@ import { Skeleton, Stack, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
+import { getAppName } from 'src/lib/getAppName';
 import { currencyFormat } from 'src/lib/intlFormat';
 import {
   StyledCard,
   StyledHeaderValue,
 } from '../../../Shared/SummaryHeaderCard';
+import { missingValue } from '../../../Shared/helpers/missingValue';
 import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
 import { calculateNewStaffReferenceTotals } from '../../Shared/calculateNewStaffReference';
 import { useCurrentMonthlyGoalQuery } from './CurrentMonthlyGoal.generated';
@@ -15,7 +17,7 @@ import { useCurrentMonthlyGoalQuery } from './CurrentMonthlyGoal.generated';
 interface ReferenceCardProps {
   title: string;
   caption: string;
-  /** The formatted value, or undefined while it loads */
+  /** The formatted value, or undefined while it loads (a failed load shows missingValue) */
   value: string | undefined;
 }
 
@@ -44,11 +46,12 @@ const ReferenceCard: React.FC<ReferenceCardProps> = ({
 export const GoalReferenceCards: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const accountListId = useAccountListId() ?? '';
+  const accountListId = useAccountListId();
   const { goalCalculationResult } = useGoalCalculator();
-  const { data: currentGoalData } = useCurrentMonthlyGoalQuery({
-    variables: { accountListId },
-  });
+  const { data: currentGoalData, error: currentGoalError } =
+    useCurrentMonthlyGoalQuery({
+      variables: { accountListId },
+    });
 
   const formatGoal = (amount: number) =>
     currencyFormat(amount, 'USD', locale, { fractionDigits: 0 });
@@ -60,6 +63,9 @@ export const GoalReferenceCards: React.FC = () => {
   );
 
   const formatCurrentGoal = (): string | undefined => {
+    if (currentGoalError) {
+      return missingValue;
+    }
     if (!currentGoalData) {
       return undefined;
     }
@@ -68,17 +74,26 @@ export const GoalReferenceCards: React.FC = () => {
     return monthlyGoal ? formatGoal(monthlyGoal) : t('Not set');
   };
 
+  const formatReferenceGoal = (): string | undefined => {
+    if (goalCalculation) {
+      return formatGoal(newStaffReferenceGoal);
+    }
+    return goalCalculationResult.error ? missingValue : undefined;
+  };
+
   return (
     <Stack direction={{ xs: 'column', sm: 'row' }} gap={{ xs: 2, sm: 4 }}>
       <ReferenceCard
         title={t('Current Monthly Goal')}
-        caption={t('From your MPDX settings')}
+        caption={t('From your {{appName}} settings', {
+          appName: getAppName(),
+        })}
         value={formatCurrentGoal()}
       />
       <ReferenceCard
         title={t('New Staff Reference Goal')}
         caption={t('Based on the information in this goal')}
-        value={goalCalculation ? formatGoal(newStaffReferenceGoal) : undefined}
+        value={formatReferenceGoal()}
       />
     </Stack>
   );

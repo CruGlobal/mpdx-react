@@ -123,5 +123,11 @@ describe('cache', () => {
         variables,
       })?.accountList.settings?.monthlyGoal,
     ).toBe(6000);
+    expect(
+      cache.readQuery<AccountGeographicLocationQuery>({
+        query: AccountGeographicLocationDocument,
+        variables,
+      })?.accountList.settings?.geographicLocation,
+    ).toBe('Orlando, FL');
   });
 });
