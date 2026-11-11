@@ -467,8 +467,8 @@ engine:
     replaces: [architecture]
     always: [security, testing, standards]
 
-# Where reviews run: local | local-and-ci (the default). Leave this key out for local-and-ci.
-# Uncomment it only for local: plugin 1.0.0 cannot load a config that has it.
+# Where reviews run: local | local-and-ci (the default). This repo runs reviews only
+# locally, so no CI workflow reviews its PRs.
 reviews_run: local
 
 # Reports approve by default (`advisory`). Set `shadow` to post advice only. This repo is
