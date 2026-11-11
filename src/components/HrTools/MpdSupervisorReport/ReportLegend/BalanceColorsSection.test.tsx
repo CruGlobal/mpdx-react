@@ -45,7 +45,7 @@ describe('BalanceColorsSection', () => {
       ['Below $0', 'The balance was below zero.'],
       [
         'Not graded',
-        'No one on the staff account is a supported employee, so it has no buffer. This includes department-funded staff, Staff Emeritus and volunteers. A volunteer or Staff Emeritus married to a supported employee is graded with their spouse.',
+        'No one on the staff account is a supported employee, so it has no buffer. This includes department-funded staff, Staff Emeritus and volunteers. A volunteer or Staff Emeritus who shares a staff account with a supported employee is graded with them.',
       ],
       [
         'No data',
@@ -108,7 +108,7 @@ describe('BalanceColorsSection', () => {
 
     expect(
       getByText(
-        'Each row shows the staff account balance at the end of the last four complete months, newest first. The report lists the lowest balance at the end of last month first.',
+        'Each row shows the staff account balance at the end of the last four complete months, newest first. The report lists the lowest balance at the end of last month first. Staff with No data for last month are listed last.',
       ),
     ).toBeInTheDocument();
   });

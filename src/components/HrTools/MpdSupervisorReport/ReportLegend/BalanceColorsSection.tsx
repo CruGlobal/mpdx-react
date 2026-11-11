@@ -87,7 +87,7 @@ export const BalanceColorsSection: React.FC = () => {
     ),
     [MpdHealthStatusEnum.Red]: t('The balance was below zero.'),
     [MpdHealthStatusEnum.Blue]: t(
-      'No one on the staff account is a supported employee, so it has no buffer. This includes department-funded staff, Staff Emeritus and volunteers. A volunteer or Staff Emeritus married to a supported employee is graded with their spouse.',
+      'No one on the staff account is a supported employee, so it has no buffer. This includes department-funded staff, Staff Emeritus and volunteers. A volunteer or Staff Emeritus who shares a staff account with a supported employee is graded with them.',
     ),
     [MpdHealthStatusEnum.Gray]: t(
       'No balance has synced for that month (shown as a dash), or the month is before their first payroll (the amount still shows).',
@@ -108,7 +108,7 @@ export const BalanceColorsSection: React.FC = () => {
       </Typography>
       <Typography variant="body2" sx={{ mb: 1 }}>
         {t(
-          'Each row shows the staff account balance at the end of the last four complete months, newest first. The report lists the lowest balance at the end of last month first.',
+          'Each row shows the staff account balance at the end of the last four complete months, newest first. The report lists the lowest balance at the end of last month first. Staff with No data for last month are listed last.',
         )}
       </Typography>
       {healthStatusOrder.map((status) => (

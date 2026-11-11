@@ -216,7 +216,7 @@ describe('ReportLegendPanel', () => {
 
     expect(
       getByText(
-        'Lowest balance at the end of last month first, across all staff. Staff with no balance for that month are listed last. Ties are sorted alphabetically by last name.',
+        'Lowest balance at the end of last month first, across all staff. Staff with No data for that month are listed last. Ties are sorted alphabetically by last name.',
       ),
     ).toBeInTheDocument();
   });
