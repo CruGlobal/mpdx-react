@@ -112,7 +112,7 @@ describe('ReportLegendPanel', () => {
     expect(queryByText(/can show green quarters/)).not.toBeInTheDocument();
   });
 
-  it('defines the balance filters', async () => {
+  it('defines the quick filters', async () => {
     const { getByText } = await openLegend();
 
     expect(getByText('Negative last month')).toBeInTheDocument();
@@ -141,6 +141,12 @@ describe('ReportLegendPanel', () => {
         'Staff whose expenses were greater than their income in each of the last three months.',
       ),
     ).toBeInTheDocument();
+    expect(getByText('Below New Staff Monthly Salary')).toBeInTheDocument();
+    expect(
+      getByText(
+        'Staff whose newest quarter is red: their average monthly payroll in the last completed quarter was below their New Staff Monthly Salary.',
+      ),
+    ).toBeInTheDocument();
     expect(
       getByText(
         "The current month is never counted. Last month's balance can still change for a few weeks as late items post.",
@@ -154,6 +160,16 @@ describe('ReportLegendPanel', () => {
     expect(
       getByText(
         'Quarter colors measure pay, not the staff account balance. To find staff whose balance is below zero, use the Negative filters.',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('points red quarters to the New Staff salary filter', async () => {
+    const { getByText } = await openLegend();
+
+    expect(
+      getByText(
+        'To list staff whose newest quarter is red, use the Below New Staff Monthly Salary filter.',
       ),
     ).toBeInTheDocument();
   });
