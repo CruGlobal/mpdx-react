@@ -3,6 +3,7 @@ import {
   MpdCapHealthEnum,
   MpdUserPersonTypeEnum,
 } from 'src/graphql/types.generated';
+import { ManagedStaffQueryVariables } from '../ManagedStaff.generated';
 
 export enum MpdSupervisorReportQuickFilterEnum {
   AllPeople = 'allPeople',
@@ -10,6 +11,7 @@ export enum MpdSupervisorReportQuickFilterEnum {
   ThreeMonthsNegative = 'threeMonthsNegative',
   ThreeMonthsInPastYearNegative = 'threeMonthsInPastYearNegative',
   ThreeMonthsSpendingOverIncome = 'threeMonthsSpendingOverIncome',
+  BelowNewStaffMonthlySalary = 'belowNewStaffMonthlySalary',
   CapHealthy = 'capHealthy',
   CapOnTrack = 'capOnTrack',
   CapNeedsAttention = 'capNeedsAttention',
@@ -23,6 +25,7 @@ export const quickFilterIds: MpdSupervisorReportQuickFilterEnum[] = [
   MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative,
   MpdSupervisorReportQuickFilterEnum.ThreeMonthsInPastYearNegative,
   MpdSupervisorReportQuickFilterEnum.ThreeMonthsSpendingOverIncome,
+  MpdSupervisorReportQuickFilterEnum.BelowNewStaffMonthlySalary,
   MpdSupervisorReportQuickFilterEnum.CapHealthy,
   MpdSupervisorReportQuickFilterEnum.CapOnTrack,
   MpdSupervisorReportQuickFilterEnum.CapNeedsAttention,
@@ -41,26 +44,6 @@ const capHealthByQuickFilter: Partial<
 export const capHealthForQuickFilter = (
   id: MpdSupervisorReportQuickFilterEnum,
 ): MpdCapHealthEnum | null => capHealthByQuickFilter[id] ?? null;
-
-/**
- * The roster query's quick-filter variables. A flag is sent only when its chip
- * is active; false would filter on it.
- */
-export const quickFilterVariables = (
-  id: MpdSupervisorReportQuickFilterEnum,
-) => ({
-  negativeLastMonth:
-    id === MpdSupervisorReportQuickFilterEnum.NegativeLastMonth || null,
-  negativeThreeMonths:
-    id === MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative || null,
-  negativeThreeMonthsInPastYear:
-    id === MpdSupervisorReportQuickFilterEnum.ThreeMonthsInPastYearNegative ||
-    null,
-  expensesOverIncomeThreeMonths:
-    id === MpdSupervisorReportQuickFilterEnum.ThreeMonthsSpendingOverIncome ||
-    null,
-  capHealth: capHealthForQuickFilter(id),
-});
 
 /** A health grade's name, shared by the row badge and its filter chip. */
 export const capHealthLabel = (
@@ -118,6 +101,8 @@ export const quickFilterLabel = (
       return t('Negative 3+ months in past year');
     case MpdSupervisorReportQuickFilterEnum.ThreeMonthsSpendingOverIncome:
       return t('Spending more than income last 3 months');
+    case MpdSupervisorReportQuickFilterEnum.BelowNewStaffMonthlySalary:
+      return t('Below New Staff Monthly Salary');
     case MpdSupervisorReportQuickFilterEnum.AllPeople:
     default:
       return t('All people');
@@ -126,7 +111,8 @@ export const quickFilterLabel = (
 
 /**
  * What a quick filter means, shown as the chip's tooltip. A negative month
- * ends with the staff account balance below zero.
+ * ends with the staff account balance below zero. Below New Staff Monthly
+ * Salary matches the red rule for the newest completed quarter.
  */
 export const quickFilterDescription = (
   t: TFunction,
@@ -153,11 +139,48 @@ export const quickFilterDescription = (
       return t(
         'Staff whose expenses were greater than their income in each of the last three months.',
       );
+    case MpdSupervisorReportQuickFilterEnum.BelowNewStaffMonthlySalary:
+      return t(
+        'Staff whose newest quarter is red: their average monthly payroll in the last completed quarter was below their New Staff Monthly Salary.',
+      );
     case MpdSupervisorReportQuickFilterEnum.AllPeople:
     default:
       return null;
   }
 };
+
+type QuickFilterVariables = Pick<
+  ManagedStaffQueryVariables,
+  | 'negativeLastMonth'
+  | 'negativeThreeMonths'
+  | 'negativeThreeMonthsInPastYear'
+  | 'expensesOverIncomeThreeMonths'
+  | 'belowNewStaffMonthlySalary'
+  | 'capHealth'
+>;
+
+/**
+ * The API flags for the active quick filter: true for its own flag (or its
+ * health grade) and null for the rest. False would filter on a flag.
+ */
+export const quickFilterVariables = (
+  id: MpdSupervisorReportQuickFilterEnum,
+): QuickFilterVariables => ({
+  negativeLastMonth:
+    id === MpdSupervisorReportQuickFilterEnum.NegativeLastMonth || null,
+  negativeThreeMonths:
+    id === MpdSupervisorReportQuickFilterEnum.ThreeMonthsNegative || null,
+  negativeThreeMonthsInPastYear:
+    id === MpdSupervisorReportQuickFilterEnum.ThreeMonthsInPastYearNegative ||
+    null,
+  expensesOverIncomeThreeMonths:
+    id === MpdSupervisorReportQuickFilterEnum.ThreeMonthsSpendingOverIncome ||
+    null,
+  belowNewStaffMonthlySalary:
+    id === MpdSupervisorReportQuickFilterEnum.BelowNewStaffMonthlySalary ||
+    null,
+  capHealth: capHealthForQuickFilter(id),
+});
 
 export const ALL_TYPES = 'all';
 

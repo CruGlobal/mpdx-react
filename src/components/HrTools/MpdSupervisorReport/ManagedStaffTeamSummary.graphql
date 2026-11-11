@@ -7,6 +7,7 @@ query ManagedStaffTeamSummary(
   $negativeThreeMonths: Boolean
   $negativeThreeMonthsInPastYear: Boolean
   $expensesOverIncomeThreeMonths: Boolean
+  $belowNewStaffMonthlySalary: Boolean
   $capHealth: MpdCapHealthEnum
 ) {
   managedStaffTeamSummary(
@@ -18,6 +19,7 @@ query ManagedStaffTeamSummary(
     negativeThreeMonths: $negativeThreeMonths
     negativeThreeMonthsInPastYear: $negativeThreeMonthsInPastYear
     expensesOverIncomeThreeMonths: $expensesOverIncomeThreeMonths
+    belowNewStaffMonthlySalary: $belowNewStaffMonthlySalary
     capHealth: $capHealth
   ) {
     name

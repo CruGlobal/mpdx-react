@@ -242,10 +242,10 @@ export const MpdSupervisorReportProvider: React.FC<{
   // it is fetched without waiting for the list to be scrolled. A failed page
   // is left for the inline Retry rather than retried in a loop.
   useEffect(() => {
-    if (!pageInfo?.hasNextPage || loading) {
+    if (loading || loadMoreError) {
       return;
     }
-    if (!loadMoreError) {
+    if (pageInfo?.hasNextPage) {
       setWantsNextPage(true);
     }
   }, [pageInfo?.hasNextPage, pageInfo?.endCursor, loading, loadMoreError]);

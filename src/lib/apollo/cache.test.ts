@@ -1,10 +1,18 @@
 import { InMemoryCache } from '@apollo/client';
 import { gqlMock } from '__tests__/util/graphqlMocking';
 import {
+  CurrentMonthlyGoalDocument,
+  CurrentMonthlyGoalQuery,
+} from 'src/components/HrTools/GoalCalculator/CalculatorSettings/GoalReferenceCards/CurrentMonthlyGoal.generated';
+import {
   GetNotificationsDocument,
   GetNotificationsQuery,
   GetNotificationsQueryVariables,
 } from 'src/components/Layouts/Primary/TopBar/Items/NotificationMenu/GetNotificationsQuery.generated';
+import {
+  AccountGeographicLocationDocument,
+  AccountGeographicLocationQuery,
+} from 'src/hooks/AccountGeographicLocation.generated';
 import { createCache } from './cache';
 
 const variables: GetNotificationsQueryVariables = {
@@ -77,5 +85,49 @@ describe('cache', () => {
 
     // Ensure that the last value written wins
     expect(readCache(cache)?.userNotifications.unreadCount).toBe(0);
+  });
+
+  it('merges account list settings selected by different queries', () => {
+    const cache = createCache();
+    const variables = { accountListId: 'account-list-1' };
+
+    cache.writeQuery<CurrentMonthlyGoalQuery>({
+      query: CurrentMonthlyGoalDocument,
+      variables,
+      data: {
+        accountList: {
+          __typename: 'AccountList',
+          id: 'account-list-1',
+          settings: { __typename: 'AccountListSettings', monthlyGoal: 6000 },
+        },
+      },
+    });
+    cache.writeQuery<AccountGeographicLocationQuery>({
+      query: AccountGeographicLocationDocument,
+      variables,
+      data: {
+        accountList: {
+          __typename: 'AccountList',
+          id: 'account-list-1',
+          settings: {
+            __typename: 'AccountListSettings',
+            geographicLocation: 'Orlando, FL',
+          },
+        },
+      },
+    });
+
+    expect(
+      cache.readQuery<CurrentMonthlyGoalQuery>({
+        query: CurrentMonthlyGoalDocument,
+        variables,
+      })?.accountList.settings?.monthlyGoal,
+    ).toBe(6000);
+    expect(
+      cache.readQuery<AccountGeographicLocationQuery>({
+        query: AccountGeographicLocationDocument,
+        variables,
+      })?.accountList.settings?.geographicLocation,
+    ).toBe('Orlando, FL');
   });
 });

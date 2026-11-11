@@ -30,6 +30,15 @@ import {
   managedStaffMock,
 } from './mpdSupervisorReportMocks';
 
+// Every quick-filter flag the report sends, unset
+const noQuickFlags = {
+  negativeLastMonth: null,
+  negativeThreeMonths: null,
+  negativeThreeMonthsInPastYear: null,
+  expensesOverIncomeThreeMonths: null,
+  belowNewStaffMonthlySalary: null,
+};
+
 const mutationSpy = jest.fn();
 const sampleMember = managedStaffMember();
 
@@ -669,10 +678,7 @@ describe('managed staff query variables', () => {
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
-        negativeLastMonth: null,
-        negativeThreeMonths: null,
-        negativeThreeMonthsInPastYear: null,
-        expensesOverIncomeThreeMonths: null,
+        ...noQuickFlags,
       }),
     );
   });
@@ -687,10 +693,8 @@ describe('managed staff query variables', () => {
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        ...noQuickFlags,
         negativeLastMonth: true,
-        negativeThreeMonths: null,
-        negativeThreeMonthsInPastYear: null,
-        expensesOverIncomeThreeMonths: null,
       }),
     );
   });
@@ -705,10 +709,8 @@ describe('managed staff query variables', () => {
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
-        negativeLastMonth: null,
+        ...noQuickFlags,
         negativeThreeMonths: true,
-        negativeThreeMonthsInPastYear: null,
-        expensesOverIncomeThreeMonths: null,
       }),
     );
   });
@@ -723,10 +725,8 @@ describe('managed staff query variables', () => {
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
-        negativeLastMonth: null,
-        negativeThreeMonths: null,
+        ...noQuickFlags,
         negativeThreeMonthsInPastYear: true,
-        expensesOverIncomeThreeMonths: null,
       }),
     );
   });
@@ -741,9 +741,7 @@ describe('managed staff query variables', () => {
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
-        negativeLastMonth: null,
-        negativeThreeMonths: null,
-        negativeThreeMonthsInPastYear: null,
+        ...noQuickFlags,
         expensesOverIncomeThreeMonths: true,
       }),
     );

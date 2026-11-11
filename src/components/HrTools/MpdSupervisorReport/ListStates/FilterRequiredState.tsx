@@ -50,7 +50,7 @@ export const FilterRequiredState: React.FC<FilterRequiredStateProps> = ({
                   'Pick a team above to list its staff, or use the filters to narrow the list.',
                 )
               : t(
-                  'Search by name, or pick a team, department, employment type, person type or one of the Negative, Spending or health filters.',
+                  'Search by name, or pick a team, department, employment type, person type or one of the Negative, Spending, New Staff salary or health filters.',
                 )}
         </Typography>
       </Box>
