@@ -7,6 +7,8 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { AppliedFilters } from '../ListStates/AppliedFilters';
 import { MpdSupervisorReportProvider } from '../MpdSupervisorReportContext';
+import { TeamSummary } from '../TeamSummary/TeamSummary';
+import { managedStaffTeamsMock } from '../mpdSupervisorReportMocks';
 import { MpdSupervisorReportFilterPanel } from './MpdSupervisorReportFilterPanel';
 import {
   MpdSupervisorReportQuickFilterEnum,
@@ -59,10 +61,20 @@ describe('Below New Staff Monthly Salary chip', () => {
     render(
       <TestRouter>
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider onCall={mutationSpy}>
+          <GqlMockedProvider
+            mocks={{
+              // Two teams, so the team summary loads and its variables can be checked
+              ManagedStaffTeams: managedStaffTeamsMock([
+                { name: 'Campus', departments: ['US Campus'] },
+                { name: 'City', departments: ['US City'] },
+              ]),
+            }}
+            onCall={mutationSpy}
+          >
             <MpdSupervisorReportProvider>
               <AppliedFilters />
               <MpdSupervisorReportFilterPanel onClose={jest.fn()} />
+              <TeamSummary />
             </MpdSupervisorReportProvider>
           </GqlMockedProvider>
         </ThemeProvider>
@@ -88,6 +100,11 @@ describe('Below New Staff Monthly Salary chip', () => {
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
         ...noFlags,
+        belowNewStaffMonthlySalary: true,
+      }),
+    );
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaffTeamSummary', {
         belowNewStaffMonthlySalary: true,
       }),
     );

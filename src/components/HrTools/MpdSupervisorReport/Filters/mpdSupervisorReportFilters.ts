@@ -90,7 +90,7 @@ type QuickFilterVariables = Pick<
 
 /**
  * The API flags for the active quick filter: true for its own flag and null for
- * the rest, since false would filter on them.
+ * the rest.
  */
 export const quickFilterVariables = (
   id: MpdSupervisorReportQuickFilterEnum,
