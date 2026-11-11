@@ -27,7 +27,7 @@ describe('ReportLegendPanel health badge', () => {
 
     const section = getByRole('region', { name: 'Health badge' });
     expect(section).toHaveTextContent(
-      "Staff get a badge starting their second month of pay. It grades last month's payroll as a percent of their Personal CAP, the % of Personal CAP on the Payroll tab, and is separate from the quarter colors.",
+      "Staff get a badge starting their second month of pay. It grades last month's payroll as a percent of their Personal CAP, the % of Personal CAP on the Payroll tab, and is separate from the balance colors.",
     );
     expect(
       within(section)

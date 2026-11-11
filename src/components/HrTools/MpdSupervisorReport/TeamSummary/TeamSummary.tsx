@@ -18,7 +18,7 @@ import {
   filterRequiredFromError,
   useMpdSupervisorReport,
 } from '../MpdSupervisorReportContext';
-import { healthStatusLabel } from '../ReportLegend/legendCopy';
+import { balanceStatusLabel } from '../balanceHelpers';
 import {
   TeamSummaryRow,
   fitsTeamPicker,
@@ -115,7 +115,7 @@ const TeamCard: React.FC<TeamCardProps> = ({
                 >
                   {/* `total`, not `count`: the status word never changes with the number */}
                   {t('{{status}} ({{total}})', {
-                    status: healthStatusLabel(t, status),
+                    status: balanceStatusLabel(t, status),
                     total: team.counts[status],
                   })}
                 </Typography>

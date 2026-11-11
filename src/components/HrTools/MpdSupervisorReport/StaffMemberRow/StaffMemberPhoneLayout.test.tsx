@@ -11,7 +11,8 @@ import theme from 'src/theme';
 import { RowDensityEnum } from '../MpdSupervisorReportContext';
 import { buildQuarterChips } from '../helpers';
 import { managedStaffMember } from '../mpdSupervisorReportMocks';
-import { FiscalYearQuarters, StaffMember } from './StaffMember';
+import { FiscalYearQuarters } from './FiscalYearQuarters';
+import { StaffMember } from './StaffMember';
 
 // MPDX-10302: at 390px the quarter chips overlapped the avatar and name.
 // jsdom can't measure layout, so these read the CSS that applies at each width.
@@ -72,12 +73,12 @@ describe.each([RowDensityEnum.Comfortable, RowDensityEnum.Compact])(
   'StaffMember phone layout (%s)',
   (density) => {
     it.each([phoneWidth, tabletWidth])(
-      'stacks the quarters under the name at %ipx',
+      'stacks the balances under the name at %ipx',
       (width) => {
         const { getByText, getByTestId } = renderRow(density);
         const { nameItem, quarterItem, nameBox } = getRowParts(
           getByText('Brooke Butler'),
-          getByTestId('quarter-chips'),
+          getByTestId('balance-chips'),
         );
 
         expect(getGridColumnsAtWidth(nameItem, width)).toBe(12);
@@ -91,12 +92,12 @@ describe.each([RowDensityEnum.Comfortable, RowDensityEnum.Compact])(
     );
 
     it.each(desktopWidths)(
-      'keeps the name and quarters side by side at %ipx',
+      'keeps the name and balances side by side at %ipx',
       (width) => {
         const { getByText, getByTestId } = renderRow(density);
         const { nameItem, quarterItem, nameBox } = getRowParts(
           getByText('Brooke Butler'),
-          getByTestId('quarter-chips'),
+          getByTestId('balance-chips'),
         );
 
         expect(getGridColumnsAtWidth(nameItem, width)).toBe(6);
@@ -108,7 +109,7 @@ describe.each([RowDensityEnum.Comfortable, RowDensityEnum.Compact])(
   },
 );
 
-// Shared by the row and the drawer header, which is full width on phones
+// The drawer header, which is full width on phones
 describe('FiscalYearQuarters', () => {
   const renderQuarters = () =>
     render(
@@ -150,12 +151,15 @@ describe('FiscalYearQuarters', () => {
         // The chip already names its quarter and health for screen readers
         expect(caption).toHaveAttribute('aria-hidden', 'true');
       });
-      expect(within(strip).getByText('FQ3 26, on track')).toBeInTheDocument();
+      expect(
+        within(strip).getByText('FQ3 26, full salary'),
+      ).toBeInTheDocument();
     },
   );
 
+  // The drawer has no column headers, so its captions show at every width
   it.each(desktopWidths)(
-    'keeps the chips in one row with the column headers labeling them at %ipx',
+    'keeps the chips in one row, each still labeled, at %ipx',
     (width) => {
       const { getByTestId } = renderQuarters();
       const strip = getByTestId('quarter-chips');
@@ -168,8 +172,42 @@ describe('FiscalYearQuarters', () => {
       within(strip)
         .getAllByText(quarterLabel)
         .forEach((caption) => {
-          expect(isHiddenAtWidth(caption, strip, width)).toBe(true);
+          expect(isHiddenAtWidth(caption, strip, width)).toBe(false);
         });
     },
   );
+});
+
+describe('MonthEndBalances on the row', () => {
+  it.each([phoneWidth, tabletWidth])(
+    'labels each balance chip with its month at %ipx',
+    (width) => {
+      const { getByTestId } = renderRow(RowDensityEnum.Comfortable);
+      const strip = getByTestId('balance-chips');
+      const captions = within(strip).getAllByText(/^\w{3} \d{4}$/);
+
+      expect(captions.map((caption) => caption.textContent)).toEqual([
+        'Oct 2026',
+        'Sep 2026',
+        'Aug 2026',
+        'Jul 2026',
+      ]);
+      captions.forEach((caption) => {
+        expect(isHiddenAtWidth(caption, strip, width)).toBe(false);
+        expect(caption).toHaveAttribute('aria-hidden', 'true');
+      });
+      expect(getStyleAtWidth(strip, 'display', width)).toBe('grid');
+    },
+  );
+
+  it('hides the captions where the column headers label the chips', () => {
+    const { getByTestId } = renderRow(RowDensityEnum.Comfortable);
+    const strip = getByTestId('balance-chips');
+
+    within(strip)
+      .getAllByText(/^\w{3} \d{4}$/)
+      .forEach((caption) => {
+        expect(isHiddenAtWidth(caption, strip, desktopWidth)).toBe(true);
+      });
+  });
 });
