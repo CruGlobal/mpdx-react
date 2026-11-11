@@ -34,7 +34,7 @@ export const CapHealthLegendSection: React.FC = () => {
       </Typography>
       <Typography variant="body2" sx={{ mb: 1 }}>
         {t(
-          "The badge beside each name grades last month's payroll as a percent of their Personal CAP, the % of Personal CAP on the Payroll tab. It is separate from the quarter colors.",
+          "Supported staff get a badge beside their name after their first paycheck. It grades last month's payroll as a percent of their Personal CAP, the % of Personal CAP on the Payroll tab, and is separate from the quarter colors.",
         )}
       </Typography>
       {grades.map((grade) => (
@@ -57,7 +57,7 @@ export const CapHealthLegendSection: React.FC = () => {
       ))}
       <Typography variant="body2" color="text.secondary">
         {t(
-          "Staff get no badge and match none of these filters without a Personal CAP, when last month was their first payroll month, or when last month's figures aren't in yet. The current month is never graded.",
+          "Staff who aren't supported, such as volunteers, Staff Emeritus and department-funded staff, get no badge and match none of these filters. Neither do supported staff without a Personal CAP, when last month was their first payroll month, or when last month's figures aren't in yet. A couple shares one Personal CAP, so both get a badge when either is supported. The current month is never graded.",
         )}
       </Typography>
     </Box>
