@@ -28,7 +28,7 @@ const ReferenceCard: React.FC<ReferenceCardProps> = ({
 
   return (
     <StyledCard role="region" aria-labelledby={titleId}>
-      <Typography id={titleId} variant="h5">
+      <Typography id={titleId} variant="h5" whiteSpace="normal">
         {title}
       </Typography>
       <StyledHeaderValue variant="h2" component="p">
