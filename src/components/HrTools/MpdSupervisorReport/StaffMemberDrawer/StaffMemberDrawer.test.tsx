@@ -525,6 +525,7 @@ describe('StaffMemberDrawer', () => {
           payroll: 3000,
           asrAndReimbursements: 700,
           percentMaxPay: 80,
+          percentOfCap: 72.5,
         },
       ],
     });
@@ -533,14 +534,9 @@ describe('StaffMemberDrawer', () => {
     userEvent.click(getByRole('tab', { name: 'Payroll' }));
 
     const table = await within(getByRole('tabpanel')).findByRole('table');
+    // Column headers are covered in Payroll.test.tsx
     expect(table).toHaveTableStructure({
-      columnHeaders: [
-        'Month',
-        'Payroll',
-        'Reimbursement / Additional Salary',
-        '% Max Pay',
-      ],
-      cells: [['Jan 2023', '$3,000.00', '$700.00', '80.0%']],
+      cells: [['Jan 2023', '$3,000.00', '$700.00', '80.0%', '72.5%']],
     });
   });
 

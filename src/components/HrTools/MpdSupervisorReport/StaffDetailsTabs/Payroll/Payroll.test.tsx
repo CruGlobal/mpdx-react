@@ -14,12 +14,14 @@ const mockPayrollHistory: PayrollHistory = [
     payroll: 3000,
     asrAndReimbursements: 700,
     percentMaxPay: 80,
+    percentOfCap: 72.5,
   },
   {
     month: '2023-02',
     payroll: 3200,
     asrAndReimbursements: 550,
     percentMaxPay: 85,
+    percentOfCap: 77.1,
   },
 ];
 
@@ -53,6 +55,7 @@ const columnHeaders = [
   'Payroll',
   'Reimbursement / Additional Salary',
   '% Max Pay',
+  '% of Personal CAP',
 ];
 
 describe('StaffTabPayroll', () => {
@@ -70,8 +73,8 @@ describe('StaffTabPayroll', () => {
     expect(await findByRole('table')).toHaveTableStructure({
       columnHeaders,
       cells: [
-        ['Feb 2023', '$3,200.00', '$550.00', '85.0%'],
-        ['Jan 2023', '$3,000.00', '$700.00', '80.0%'],
+        ['Feb 2023', '$3,200.00', '$550.00', '85.0%', '77.1%'],
+        ['Jan 2023', '$3,000.00', '$700.00', '80.0%', '72.5%'],
       ],
     });
   });
@@ -112,6 +115,7 @@ describe('StaffTabPayroll', () => {
             payroll: null,
             asrAndReimbursements: 500,
             percentMaxPay: null,
+            percentOfCap: null,
           },
         ]}
       />,
@@ -119,7 +123,28 @@ describe('StaffTabPayroll', () => {
 
     expect(await findByRole('table')).toHaveTableStructure({
       columnHeaders,
-      cells: [['', '—', '$500.00', '—']],
+      cells: [['', '—', '$500.00', '—', '—']],
+    });
+  });
+
+  it('renders a dash, not 0%, for a month with payroll but no CAP', async () => {
+    const { findByRole } = render(
+      <TestComponent
+        payrollHistory={[
+          {
+            month: '2023-01',
+            payroll: 3000,
+            asrAndReimbursements: 0,
+            percentMaxPay: 80,
+            percentOfCap: null,
+          },
+        ]}
+      />,
+    );
+
+    expect(await findByRole('table')).toHaveTableStructure({
+      columnHeaders,
+      cells: [['Jan 2023', '$3,000.00', '$0.00', '80.0%', '—']],
     });
   });
 
@@ -132,6 +157,7 @@ describe('StaffTabPayroll', () => {
             payroll: 3000,
             asrAndReimbursements: null,
             percentMaxPay: 80,
+            percentOfCap: 42.3,
           },
         ]}
       />,
@@ -139,7 +165,7 @@ describe('StaffTabPayroll', () => {
 
     expect(await findByRole('table')).toHaveTableStructure({
       columnHeaders,
-      cells: [['Jan 2023', '$3,000.00', '—', '80.0%']],
+      cells: [['Jan 2023', '$3,000.00', '—', '80.0%', '42.3%']],
     });
   });
 
@@ -152,6 +178,7 @@ describe('StaffTabPayroll', () => {
             payroll: 0,
             asrAndReimbursements: 0,
             percentMaxPay: 0,
+            percentOfCap: 0,
           },
         ]}
       />,
@@ -159,7 +186,7 @@ describe('StaffTabPayroll', () => {
 
     expect(await findByRole('table')).toHaveTableStructure({
       columnHeaders,
-      cells: [['Jan 2023', '$0.00', '$0.00', '0.0%']],
+      cells: [['Jan 2023', '$0.00', '$0.00', '0.0%', '0.0%']],
     });
   });
 });

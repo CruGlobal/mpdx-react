@@ -158,6 +158,14 @@ describe('ReportLegendPanel', () => {
     ).toBeInTheDocument();
   });
 
+  it('explains a dash as any value the report does not have', async () => {
+    const { getByText } = await openLegend();
+
+    expect(
+      getByText(/no Personal CAP to measure pay against/),
+    ).toBeInTheDocument();
+  });
+
   it('explains the New Staff Monthly Salary formula without mentioning debt', async () => {
     const { getByText, queryByText } = await openLegend();
 
