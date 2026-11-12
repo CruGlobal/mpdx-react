@@ -10,13 +10,16 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
 import { coachLabel } from '../../Shared/AssignCoach/coachHelpers';
-import { AddMpdCoachModal } from './AddMpdCoachModal';
+import {
+  DynamicAddMpdCoachModal,
+  preloadAddMpdCoachModal,
+} from './DynamicAddMpdCoachModal';
 import {
   useNewStaffMpdCoachesQuery,
   useRemoveNewStaffMpdCoachMutation,
 } from './MpdCoaches.generated';
 import { MpdCoachRow, MpdCoachesTable } from './MpdCoachesTable';
-import { evictAssignableCoaches } from './mpdCoachesCache';
+import { evictCoachLists } from './mpdCoachesCache';
 
 const CoachList: React.FC<{
   onRemove: (coach: MpdCoachRow) => void;
@@ -25,7 +28,8 @@ const CoachList: React.FC<{
   const { data, loading, error } = useNewStaffMpdCoachesQuery();
   const coaches = data?.newStaffMpdCoaches ?? [];
 
-  if (error) {
+  // A failed background refetch keeps the loaded table instead of replacing it.
+  if (error && !data) {
     return <Alert severity="error">{error.message}</Alert>;
   }
   if (loading && !data) {
@@ -66,7 +70,7 @@ export const MpdCoaches: React.FC = () => {
       variables: { id: removeTarget.id },
       update: (cache) => {
         cache.evict({ id: `NewStaffMpdCoach:${removeTarget.id}` });
-        evictAssignableCoaches(cache);
+        evictCoachLists(cache);
         cache.gc();
       },
     });
@@ -96,6 +100,7 @@ export const MpdCoaches: React.FC = () => {
           variant="contained"
           startIcon={<AddIcon />}
           onClick={() => setAdding(true)}
+          onMouseEnter={preloadAddMpdCoachModal}
         >
           {t('Add Coach')}
         </Button>
@@ -120,7 +125,9 @@ export const MpdCoaches: React.FC = () => {
         handleClose={() => setRemoveOpen(false)}
       />
 
-      {adding && <AddMpdCoachModal handleClose={() => setAdding(false)} />}
+      {adding && (
+        <DynamicAddMpdCoachModal handleClose={() => setAdding(false)} />
+      )}
     </>
   );
 };

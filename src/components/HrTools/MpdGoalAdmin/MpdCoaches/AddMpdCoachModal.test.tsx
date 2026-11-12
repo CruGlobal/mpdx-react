@@ -76,10 +76,6 @@ const searchFor = async (
   );
 };
 
-beforeEach(() => {
-  jest.clearAllMocks();
-});
-
 describe('AddMpdCoachModal', () => {
   it('asks for a name before searching', () => {
     const { getByRole, getByText } = renderModal();
@@ -126,6 +122,22 @@ describe('AddMpdCoachModal', () => {
         'No one found. A coach has to sign in to MPDX once before they can be added.',
       ),
     ).toBeInTheDocument();
+  });
+
+  it('says the search failed instead of that nobody exists', async () => {
+    const utils = renderModal({
+      NewStaffMpdCoachCandidates: {
+        newStaffMpdCoachCandidates: () => {
+          throw new Error('Search failed');
+        },
+      },
+    });
+    await searchFor(utils, 'dana');
+
+    expect(
+      await utils.findByText('The search failed. Please try again.'),
+    ).toBeInTheDocument();
+    expect(utils.queryByText(/No one found/)).not.toBeInTheDocument();
   });
 
   it('keeps Save disabled until someone is picked', () => {

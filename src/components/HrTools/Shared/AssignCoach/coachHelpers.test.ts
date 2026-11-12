@@ -1,10 +1,5 @@
 import i18n from 'src/lib/i18n';
-import {
-  coachLabel,
-  coachName,
-  coachToOption,
-  noMpdCoachesMessage,
-} from './coachHelpers';
+import { coachLabel, coachName, coachToOption } from './coachHelpers';
 
 const t = i18n.t;
 
@@ -56,13 +51,5 @@ describe('coachToOption', () => {
   it('labels the option exactly as the table cell labels the same coach', () => {
     const nameless = coach('coach-8', null, null, null);
     expect(coachToOption(nameless, t).name).toBe(coachLabel(nameless, t));
-  });
-});
-
-describe('noMpdCoachesMessage', () => {
-  it('points to the MPD Coaches tab', () => {
-    expect(noMpdCoachesMessage(t)).toBe(
-      'No MPD coaches have been added yet. An MPD admin can add coaches on the MPD Coaches tab.',
-    );
   });
 });

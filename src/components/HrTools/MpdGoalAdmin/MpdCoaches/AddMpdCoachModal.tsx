@@ -15,19 +15,17 @@ import {
 } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/Shared/Modal/Modal';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
+import { coachLabel } from '../../Shared/AssignCoach/coachHelpers';
 import { searchDebounceMs } from '../mpdGoalAdminHelpers';
 import {
   NewStaffMpdCoachCandidatesQuery,
   useAddNewStaffMpdCoachMutation,
   useNewStaffMpdCoachCandidatesQuery,
 } from './MpdCoaches.generated';
-import { evictAssignableCoaches } from './mpdCoachesCache';
+import { evictCoachLists } from './mpdCoachesCache';
 
 type Candidate =
   NewStaffMpdCoachCandidatesQuery['newStaffMpdCoachCandidates'][number];
-
-const candidateName = (candidate: Candidate): string =>
-  `${candidate.firstName} ${candidate.lastName}`;
 
 /** Department and person number tell apart two people with the same name. */
 const candidateDetails = (candidate: Candidate): string =>
@@ -47,15 +45,28 @@ export const AddMpdCoachModal: React.FC<AddMpdCoachModalProps> = ({
   const search = useDebouncedValue(inputValue, searchDebounceMs).trim();
   const searchPending = inputValue.trim() !== search;
 
-  const { data, loading } = useNewStaffMpdCoachCandidatesQuery({
+  const { data, loading, error } = useNewStaffMpdCoachCandidatesQuery({
     variables: { search },
     skip: !search,
   });
   const [addCoach, { loading: saving }] = useAddNewStaffMpdCoachMutation({
     refetchQueries: ['NewStaffMpdCoaches'],
-    update: evictAssignableCoaches,
+    update: evictCoachLists,
   });
   const options = search ? (data?.newStaffMpdCoachCandidates ?? []) : [];
+  const candidateName = (candidate: Candidate) => coachLabel(candidate, t);
+
+  const noOptionsText = () => {
+    if (!search) {
+      return t('Type a name or person number to search');
+    }
+    if (error) {
+      return t('The search failed. Please try again.');
+    }
+    return t(
+      'No one found. A coach has to sign in to MPDX once before they can be added.',
+    );
+  };
 
   const handleSave = async () => {
     if (!selected) {
@@ -101,13 +112,7 @@ export const AddMpdCoachModal: React.FC<AddMpdCoachModalProps> = ({
           isOptionEqualToValue={(option, value) => option.id === value.id}
           loading={!!search && (loading || searchPending)}
           loadingText={t('Searching…')}
-          noOptionsText={
-            search
-              ? t(
-                  'No one found. A coach has to sign in to MPDX once before they can be added.',
-                )
-              : t('Type a name or person number to search')
-          }
+          noOptionsText={noOptionsText()}
           renderOption={({ key, ...props }, candidate) => (
             <li key={key} {...props}>
               <Box>

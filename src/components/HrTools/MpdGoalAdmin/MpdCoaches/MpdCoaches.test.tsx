@@ -58,10 +58,6 @@ const renderCoaches = (mocks: ApolloErgonoMockMap = {}) =>
     </ThemeProvider>,
   );
 
-beforeEach(() => {
-  jest.clearAllMocks();
-});
-
 describe('MpdCoaches', () => {
   it('lists each coach with their email, who added them and when', async () => {
     const { findByRole } = renderCoaches();
@@ -126,6 +122,24 @@ describe('MpdCoaches', () => {
     expect(await findByRole('row', { name: /Lee Park/ })).toBeInTheDocument();
   });
 
+  it('keeps the row when removing fails', async () => {
+    const { findByRole, getByRole } = renderCoaches({
+      RemoveNewStaffMpdCoach: {
+        removeNewStaffMpdCoach: () => {
+          throw new Error('Remove failed');
+        },
+      },
+    });
+
+    userEvent.click(await findByRole('button', { name: 'Remove Dana Reed' }));
+    userEvent.click(getByRole('button', { name: 'Yes' }));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('RemoveNewStaffMpdCoach'),
+    );
+    expect(await findByRole('row', { name: /Dana Reed/ })).toBeInTheDocument();
+  });
+
   it('removes nobody when the confirmation is declined', async () => {
     const { findByRole, getByRole } = renderCoaches();
 
@@ -137,10 +151,12 @@ describe('MpdCoaches', () => {
   });
 
   it('opens the add coach search', async () => {
-    const { findByRole, getByRole } = renderCoaches();
+    const { findByRole } = renderCoaches();
 
     userEvent.click(await findByRole('button', { name: 'Add Coach' }));
 
-    expect(getByRole('dialog', { name: 'Add MPD Coach' })).toBeInTheDocument();
+    expect(
+      await findByRole('dialog', { name: 'Add MPD Coach' }),
+    ).toBeInTheDocument();
   });
 });
