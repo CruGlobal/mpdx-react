@@ -99,6 +99,12 @@ describe('getSolidMonthlySupport', () => {
     expect(getSolidMonthlySupport(contact)).toBe(0);
   });
 
+  it('leaves out a monthly partner who started giving 5 months ago', () => {
+    const contact = buildContact({ gifts: [0, ...monthly(100, 5)] });
+
+    expect(getSolidMonthlySupport(contact)).toBe(0);
+  });
+
   it('leaves out a weekly partner who missed more than 2 months', () => {
     const contact = buildContact({
       pledgeAmount: 25,

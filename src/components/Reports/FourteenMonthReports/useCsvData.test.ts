@@ -252,7 +252,13 @@ describe('useCsvData', () => {
 
     // Quarterly: $1,100 / 12 = $92. Annual: $900 / 12 = $75.
     expect(result.current[0]).toEqual(['Solid Monthly Support', 167]);
-    expect(result.current[1]).toEqual(['Currency', 'USD', '$']);
+
+    // The rest of the file matches the partner currency export
+    const { result: donorResult } = renderHook(
+      () => useCsvData(mockTables(), FourteenMonthReportCurrencyType.Donor),
+      {},
+    );
+    expect(result.current.slice(1)).toEqual(donorResult.current);
   });
 
   it('leaves Solid Monthly Support off the partner currency export', () => {
