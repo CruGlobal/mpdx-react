@@ -24,6 +24,11 @@ fi
 
 yarn lint:ts
 
+if ! git rev-parse --verify -q origin/main >/dev/null; then
+  echo "origin/main not found, skipping nearby tests (CI runs the full suite)"
+  exit 0
+fi
+
 # Only the tests beside changed files: related-test discovery fans out to thousands here, and CI runs the full suite.
 tests=$(git diff --name-only --diff-filter=AMR origin/main...HEAD -- '*.ts' '*.tsx' | while read -r file; do
   case "$file" in
