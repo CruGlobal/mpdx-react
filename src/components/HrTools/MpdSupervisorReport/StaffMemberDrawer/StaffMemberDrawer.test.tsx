@@ -123,8 +123,8 @@ describe('StaffMemberDrawer', () => {
   it('keeps the quarter chips in view in the drawer header', () => {
     const { getByText } = renderDrawer();
     openMember(memberWithSpouse);
-    expect(getByText('FQ3 26, on track')).toBeInTheDocument();
-    expect(getByText('FQ2 26, at risk')).toBeInTheDocument();
+    expect(getByText('FQ3 26, full salary')).toBeInTheDocument();
+    expect(getByText('FQ2 26, below New Staff salary')).toBeInTheDocument();
     // FQ2's average is the only $2,200.00 in the drawer
     expect(getByText('$2,200.00')).toBeInTheDocument();
   });

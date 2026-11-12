@@ -1,6 +1,7 @@
 import {
   MpdAssignmentCategoryGroupEnum,
   MpdHealthStatusEnum,
+  MpdHouseholdTypeEnum,
   MpdUserPersonTypeEnum,
   PeopleGroupSupportTypeEnum,
   SecaStatusEnum,
@@ -9,6 +10,7 @@ import { ManagedStaffQuery } from './ManagedStaff.generated';
 import { ManagedStaffDepartmentsQuery } from './ManagedStaffDepartments.generated';
 import { ManagedStaffTeamSummaryQuery } from './ManagedStaffTeamSummary.generated';
 import { ManagedStaffTeamsQuery } from './ManagedStaffTeams.generated';
+import { MpdBalanceBuffersQuery } from './ReportLegend/MpdBalanceBuffers.generated';
 import { ManagedStaffMember } from './helpers';
 
 const baseMember: ManagedStaffMember = {
@@ -35,6 +37,15 @@ const baseMember: ManagedStaffMember = {
     employee: [{ id: 'team-1', name: 'Campus' }],
     spouse: [],
   },
+  householdType: MpdHouseholdTypeEnum.Couple,
+  balanceBuffer: 8000,
+  // Newest first, as the API sends them
+  monthEndBalances: [
+    { month: '2026-10', endBalance: -850, status: MpdHealthStatusEnum.Red },
+    { month: '2026-09', endBalance: 6100, status: MpdHealthStatusEnum.Yellow },
+    { month: '2026-08', endBalance: 9200, status: MpdHealthStatusEnum.Green },
+    { month: '2026-07', endBalance: null, status: MpdHealthStatusEnum.Gray },
+  ],
   quarterlyHealth: {
     monthlyGrossSalary: 4500,
     completedQuarters: [
@@ -65,6 +76,14 @@ const baseMember: ManagedStaffMember = {
     ],
   },
 };
+
+export const mpdBalanceBuffersMock = (): MpdBalanceBuffersQuery => ({
+  mpdBalanceBuffers: [
+    { householdType: MpdHouseholdTypeEnum.Family, amount: 10000 },
+    { householdType: MpdHouseholdTypeEnum.Couple, amount: 8000 },
+    { householdType: MpdHouseholdTypeEnum.Single, amount: 5000 },
+  ],
+});
 
 export const managedStaffMember = (
   overrides: Partial<ManagedStaffMember> = {},

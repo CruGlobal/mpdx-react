@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -8,6 +8,7 @@ import {
   getStyleAtWidth,
   phoneWidth,
 } from '__tests__/util/styleAtWidth';
+import { CurrentMonthlyGoalQuery } from '../CalculatorSettings/GoalReferenceCards/CurrentMonthlyGoal.generated';
 import { GoalCalculationsQuery } from './GoalCalculations.generated';
 import { GoalsList } from './GoalsList';
 
@@ -39,22 +40,43 @@ const TestComponent: React.FC<TestComponentProps> = ({
       query: { accountListId: 'account-list-1' },
     }}
   >
-    <GqlMockedProvider<{ GoalCalculations: GoalCalculationsQuery }>
+    <GqlMockedProvider<{
+      GoalCalculations: GoalCalculationsQuery;
+      CurrentMonthlyGoal: CurrentMonthlyGoalQuery;
+    }>
       mocks={{
         GoalCalculations: {
           goalCalculations: {
             nodes: noGoals
               ? []
               : [
-                  { name: 'Monthly Support Goal' },
-                  { name: 'Annual Giving Goal' },
-                  { name: 'Partnership Goal' },
+                  {
+                    name: 'Annual Giving Goal',
+                    primary: false,
+                    readOnly: false,
+                    updatedAt: '2019-11-01T12:00:00Z',
+                  },
+                  {
+                    name: 'Monthly Support Goal',
+                    primary: false,
+                    readOnly: false,
+                    updatedAt: '2019-12-01T12:00:00Z',
+                  },
+                  {
+                    name: 'Partnership Goal',
+                    primary: false,
+                    readOnly: false,
+                    updatedAt: '2019-10-01T12:00:00Z',
+                  },
                 ],
             pageInfo: {
               endCursor,
               hasNextPage,
             },
           },
+        },
+        CurrentMonthlyGoal: {
+          accountList: { settings: { monthlyGoal: 6000 } },
         },
       }}
       onCall={mutationSpy}
@@ -100,6 +122,30 @@ describe('GoalsList', () => {
     const { findByRole } = render(<TestComponent noGoals />);
 
     expect(await findByRole('img')).toBeInTheDocument();
+  });
+
+  it('shows the monthly goal from MPDX settings when there are no goals', async () => {
+    const { findByRole, queryByRole } = render(<TestComponent noGoals />);
+
+    const currentGoalCard = await findByRole('region', {
+      name: 'Current Monthly Goal',
+    });
+    expect(await within(currentGoalCard).findByText('$6,000')).toBeVisible();
+    expect(await findByRole('img')).toBeInTheDocument();
+    expect(
+      queryByRole('region', { name: 'Calculated Monthly Goal' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows the most recently updated goal next to the monthly goal', async () => {
+    const { findByRole, getByRole } = render(<TestComponent />);
+
+    expect(
+      await findByRole('region', { name: 'Calculated Monthly Goal' }),
+    ).toHaveTextContent('From your goal: Monthly Support Goal');
+    expect(
+      getByRole('region', { name: 'Current Monthly Goal' }),
+    ).toBeInTheDocument();
   });
 
   it('disables the create button while creating a goal', async () => {

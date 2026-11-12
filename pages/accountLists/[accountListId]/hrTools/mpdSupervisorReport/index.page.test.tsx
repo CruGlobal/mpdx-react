@@ -11,6 +11,8 @@ import {
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
+import { ManagedStaffQuery } from 'src/components/HrTools/MpdSupervisorReport/ManagedStaff.generated';
+import { managedStaffMock } from 'src/components/HrTools/MpdSupervisorReport/mpdSupervisorReportMocks';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
@@ -33,11 +35,13 @@ const Components: React.FC<ComponentProps> = ({
       <TestRouter>
         <GqlMockedProvider<{
           GetUser: GetUserQuery;
+          ManagedStaff: ManagedStaffQuery;
         }>
           mocks={{
             GetUser: {
               user: { userType, usStaffGroup, supervisesStaff },
             },
+            ManagedStaff: managedStaffMock(),
           }}
           onCall={mutationSpy}
         >
