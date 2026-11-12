@@ -18,6 +18,8 @@ export interface CoachAssignment {
   value: AssignCoachOption | null;
   coachName: string;
   options: AssignCoachOption[];
+  /** Coaches the list returned, apart from the assigned coach that seeds `options`. */
+  listedCount: number;
   /** True while the coach list is loading. */
   loading: boolean;
   /** True while an assignment is saving. */
@@ -130,7 +132,6 @@ export const useCoachAssignment = (
     value,
     coachName: coach ? coachLabel(coach, t) : '',
     options,
-    /** Coaches the list returned, apart from the assigned coach that seeds `options`. */
     listedCount: loadedOptions.length,
     loading,
     assigning,
