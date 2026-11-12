@@ -63,8 +63,9 @@ export const BudgetPrintTable: React.FC<BudgetPrintTableProps> = ({
   } = useGoalCalculator();
   const goalCalculation = data?.goalCalculation;
 
+  // Cents on every amount so the right-aligned column lines up
   const formatAmount = (amount: number) =>
-    currencyFormat(amount, 'USD', locale);
+    currencyFormat(amount, 'USD', locale, { showTrailingZeros: true });
 
   const categories = family.primaryBudgetCategories
     .map((category) => ({
