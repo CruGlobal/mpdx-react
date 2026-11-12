@@ -1,73 +1,6 @@
-import { DateTime } from 'luxon';
 import { StatusEnum } from 'src/graphql/types.generated';
-import { Contact } from './Layout/Table/TableHead/TableHead';
-import {
-  calculateSolidMonthlySupport,
-  getSolidMonthlySupport,
-} from './monthlyEquivalents';
-
-interface BuildContactOptions {
-  pledgeAmount?: number | null;
-  pledgeFrequency?: string | null;
-  status?: string;
-  pledgeCurrency?: string;
-  giftCurrency?: string;
-  // Rate the gifts were converted to the report currency at
-  rate?: number;
-  // Month totals in the gift currency, newest first, starting with the current month
-  gifts: number[];
-}
-
-const buildContact = ({
-  pledgeAmount = 100,
-  pledgeFrequency = '1.0',
-  status = StatusEnum.PartnerFinancial,
-  pledgeCurrency = 'USD',
-  giftCurrency = 'USD',
-  rate = 1,
-  gifts,
-}: BuildContactOptions): Contact => {
-  const totals = [...gifts, ...Array(14).fill(0)].slice(0, 14);
-  return {
-    id: 'contact-1',
-    name: 'Test Contact',
-    total: totals.reduce((sum, total) => sum + total, 0),
-    average: 0,
-    minimum: 0,
-    completeMonthsTotal: 0,
-    accountNumbers: [],
-    lateBy30Days: false,
-    lateBy60Days: false,
-    pledgeAmount,
-    pledgeCurrency,
-    pledgeFrequency,
-    status,
-    months: totals.map((total, index) => {
-      const month = DateTime.fromISO('2020-12-01')
-        .minus({ months: index })
-        .toISODate()!;
-      return {
-        month,
-        total: total * rate,
-        salaryCurrencyTotal: total * rate,
-        donations:
-          total > 0
-            ? [
-                {
-                  amount: total,
-                  date: month,
-                  paymentMethod: null,
-                  currency: giftCurrency,
-                },
-              ]
-            : [],
-      };
-    }),
-  };
-};
-
-const monthly = (amount: number, count: number): number[] =>
-  Array(count).fill(amount);
+import { getSolidMonthlySupport } from './monthlyEquivalents';
+import { buildContact, monthly } from './monthlyEquivalentsTestContact';
 
 describe('getSolidMonthlySupport', () => {
   it('counts a monthly partner who never missed at their commitment', () => {
@@ -114,6 +47,38 @@ describe('getSolidMonthlySupport', () => {
   it('leaves out a monthly partner who missed more than 2 months', () => {
     const contact = buildContact({
       gifts: [0, ...monthly(100, 9), 0, 0, 0],
+    });
+
+    expect(getSolidMonthlySupport(contact, 'USD')).toBe(0);
+  });
+
+  // MPDX-10193 review #10: a gift that slips from the 31st to the 1st empties one month
+  // and doubles up the next
+  it('still counts a monthly partner whose gifts slipped across month ends', () => {
+    const contact = buildContact({
+      gifts: [
+        0,
+        100,
+        [100, 100],
+        0,
+        100,
+        [100, 100],
+        0,
+        100,
+        [100, 100],
+        0,
+        100,
+        100,
+        100,
+      ],
+    });
+
+    expect(getSolidMonthlySupport(contact, 'USD')).toBe(100);
+  });
+
+  it('lets one extra gift make up for only one empty month next to it', () => {
+    const contact = buildContact({
+      gifts: [0, [100, 100], 0, 0, 0, 0, ...monthly(100, 7)],
     });
 
     expect(getSolidMonthlySupport(contact, 'USD')).toBe(0);
@@ -262,29 +227,5 @@ describe('getSolidMonthlySupport', () => {
     });
 
     expect(getSolidMonthlySupport(contact, 'USD')).toBe(0);
-  });
-});
-
-describe('calculateSolidMonthlySupport', () => {
-  it('adds up every contact', () => {
-    const contacts = [
-      buildContact({ gifts: [0, ...monthly(100, 12)] }),
-      buildContact({
-        pledgeAmount: 1200,
-        pledgeFrequency: '12.0',
-        gifts: [0, 1200],
-      }),
-      buildContact({ gifts: [0, ...monthly(100, 9), 0, 0, 0] }),
-      buildContact({
-        status: StatusEnum.PartnerPray,
-        gifts: [0, ...monthly(100, 12)],
-      }),
-    ];
-
-    expect(calculateSolidMonthlySupport(contacts, 'USD')).toBe(200);
-  });
-
-  it('is 0 with no contacts', () => {
-    expect(calculateSolidMonthlySupport([], 'USD')).toBe(0);
   });
 });

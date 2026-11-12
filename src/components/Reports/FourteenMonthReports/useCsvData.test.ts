@@ -5,6 +5,7 @@ import {
   FourteenMonthReportCurrencyType,
 } from './FourteenMonthReport';
 import { Contact } from './Layout/Table/TableHead/TableHead';
+import { buildContact, monthly } from './monthlyEquivalentsTestContact';
 import { useCsvData } from './useCsvData';
 
 const mockContact = (mocks?: Partial<Contact>): Contact => ({
@@ -260,6 +261,26 @@ describe('useCsvData', () => {
       {},
     );
     expect(result.current.slice(2)).toEqual(donorResult.current);
+  });
+
+  it('names the partners Solid Monthly Support could not convert', () => {
+    const contact = buildContact({
+      name: 'Euro Partner',
+      pledgeCurrency: 'EUR',
+      gifts: [0, ...monthly(100, 12)],
+    });
+    const tables = [{ ...mockTables()[0], orderedContacts: [contact] }];
+    const { result } = renderHook(
+      () => useCsvData(tables, FourteenMonthReportCurrencyType.Salary),
+      {},
+    );
+
+    expect(result.current[0]).toEqual([
+      'Solid Monthly Support',
+      0,
+      'USD',
+      'Not counted, no gift on the report was in their commitment currency: Euro Partner',
+    ]);
   });
 
   it('leaves Solid Monthly Support off the partner currency export', () => {

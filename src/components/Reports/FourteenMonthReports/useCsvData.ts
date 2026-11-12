@@ -149,11 +149,22 @@ export const useCsvData = (
     }
     // One row per currency table: each table's amounts are in its own currency
     const solidMonthlySupportRows = currencyTables.map(
-      ({ currency, orderedContacts }) => [
-        t('Solid Monthly Support'),
-        calculateSolidMonthlySupport(orderedContacts, currency),
-        currency,
-      ],
+      ({ currency, orderedContacts }) => {
+        const { amount, unconvertedPartners } = calculateSolidMonthlySupport(
+          orderedContacts,
+          currency,
+        );
+        const row = [t('Solid Monthly Support'), amount, currency];
+        return unconvertedPartners.length
+          ? [
+              ...row,
+              t(
+                'Not counted, no gift on the report was in their commitment currency: {{names}}',
+                { names: unconvertedPartners.join(', ') },
+              ),
+            ]
+          : row;
+      },
     );
     return [...solidMonthlySupportRows, ...tablesCsvData];
   }, [currencyTables, currencyType, tablesCsvData, t]);
