@@ -1,6 +1,8 @@
 import React from 'react';
 import { render, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { gqlMock } from '__tests__/util/graphqlMocking';
+import { desktopWidth, getStyleAtWidth } from '__tests__/util/styleAtWidth';
 import {
   MpdGoalMiscConstantCategoryEnum,
   PrimaryBudgetCategoryEnum,
@@ -63,10 +65,88 @@ const reimbursableFamily = gqlMock<BudgetFamilyFragment>(
 );
 
 describe('ExpensesStep', () => {
+  afterEach(() => jest.restoreAllMocks());
+
   it('renders with instructions', () => {
     const { getByRole } = render(<TestComponent />);
 
     expect(getByRole('heading', { name: 'Instructions' })).toBeInTheDocument();
+  });
+
+  it('prints the page when the Print button is clicked', () => {
+    const print = jest.spyOn(window, 'print').mockImplementation(() => {});
+    const { getByRole } = render(<TestComponent />);
+
+    userEvent.click(getByRole('button', { name: 'Print' }));
+    expect(print).toHaveBeenCalled();
+  });
+
+  it('disables Print until the budget has loaded', () => {
+    const { getByRole } = render(
+      <GoalCalculatorTestWrapper>
+        <ExpensesStep instructions={<h1>Instructions</h1>} family={undefined} />
+      </GoalCalculatorTestWrapper>,
+    );
+
+    expect(getByRole('button', { name: 'Print' })).toBeDisabled();
+  });
+
+  it('keeps the page spacing between instruction blocks', () => {
+    const { getByRole } = render(
+      <GoalCalculatorTestWrapper>
+        <ExpensesStep
+          instructions={
+            <>
+              <h1>Instructions</h1>
+              <h2>Header</h2>
+            </>
+          }
+          family={goalCalculationMock.ministryFamily}
+        />
+      </GoalCalculatorTestWrapper>,
+    );
+
+    expect(
+      getStyleAtWidth(
+        getByRole('heading', { name: 'Header' }),
+        'margin-top',
+        desktopWidth,
+      ),
+    ).toBe('32px');
+  });
+
+  // A flex wrapper would not wrap around the floated Print button and would narrow the cards
+  it('keeps the instructions in normal flow beside the floated Print button', () => {
+    const { getByTestId } = render(<TestComponent />);
+
+    expect(
+      getStyleAtWidth(
+        getByTestId('ExpensesStepInstructions'),
+        'display',
+        desktopWidth,
+      ),
+    ).not.toBe('flex');
+  });
+
+  it("titles the print-only table with the current step's title", async () => {
+    const { findByRole } = render(<TestComponent />);
+
+    expect(
+      await findByRole('heading', {
+        name: 'Calculator Settings',
+        level: 2,
+        hidden: true,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it('renders the print-only budget table', async () => {
+    const { findByRole } = render(<TestComponent />);
+
+    // Hidden on screen, so the query must include hidden elements
+    expect(
+      await findByRole('cell', { name: 'Categories Total', hidden: true }),
+    ).toBeInTheDocument();
   });
 
   it('renders GoalCalculatorGrid for each category', () => {
