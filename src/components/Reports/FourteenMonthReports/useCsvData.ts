@@ -1,10 +1,16 @@
 import { useMemo } from 'react';
 import { DateTime } from 'luxon';
-import { useTranslation } from 'react-i18next';
+import { TFunction, useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
-import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
+import { PledgeFrequencyEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
+import { FourteenMonthReportCurrencyType } from './FourteenMonthReport';
+import {
+  calculateSolidMonthlySupport,
+  getCommittedMonthlyEquivalent,
+  getInHandMonthlyEquivalent,
+} from './monthlyEquivalents';
 import type { CurrencyTable } from './FourteenMonthReport';
 
 export type CsvData = (string | number)[][];
@@ -15,17 +21,43 @@ const formatMonth = (month: string, locale: string): string =>
     year: '2-digit',
   });
 
+// The table's Solid Monthly Support, then any partners it could not convert
+const getSolidMonthlySupportRow = (
+  { currency, orderedContacts }: CurrencyTable,
+  t: TFunction,
+): (string | number)[] => {
+  const { amount, unconvertedPartners } = calculateSolidMonthlySupport(
+    orderedContacts,
+    currency,
+  );
+  const row = [t('Solid Monthly Support'), amount, currency];
+  if (!unconvertedPartners.length) {
+    return row;
+  }
+  return [
+    ...row,
+    t(
+      'Not counted, no exchange rate for their commitment currency: {{names}}',
+      { names: unconvertedPartners.join('; ') },
+    ),
+  ];
+};
+
 /*
- * Return the data for a CSV export of the provided currency tables.
+ * Return the data for a CSV export of the provided currency tables. The salary
+ * currency export starts with the Solid Monthly Support total.
  */
-export const useCsvData = (currencyTables: CurrencyTable[]): CsvData => {
+export const useCsvData = (
+  currencyTables: CurrencyTable[],
+  currencyType: FourteenMonthReportCurrencyType,
+): CsvData => {
   const { t } = useTranslation();
   const locale = useLocale();
   const apiConstants = useApiConstants();
   const { getLocalizedContactStatus, getLocalizedPledgeFrequency } =
     useLocalizedConstants();
 
-  const csvData = useMemo(
+  const tablesCsvData = useMemo(
     () =>
       currencyTables.flatMap(({ currency, orderedContacts, totals }) => {
         // Each table starts with two rows of headers
@@ -54,43 +86,20 @@ export const useCsvData = (currencyTables: CurrencyTable[]): CsvData => {
 
         // Then one row for each contact
         const csvBody = orderedContacts.map((contact) => {
-          const numMonthsForMonthlyEquivalent = Math.max(
-            4,
-            parseInt(contact.pledgeFrequency ?? '4'),
-          );
-
           const pledgedMonthlyEquivalent =
-            contact.status?.toUpperCase() === StatusEnum.PartnerFinancial &&
-            contact.pledgeAmount &&
-            contact.pledgeFrequency
-              ? Math.round(
-                  contact.pledgeAmount / parseFloat(contact.pledgeFrequency),
-                )
+            getCommittedMonthlyEquivalent(contact) ?? '';
+
+          const inHand = getInHandMonthlyEquivalent(contact, 4);
+          const inHandMonthlyEquivalent = inHand?.amount ?? '';
+          const numMonthsForMonthlyEquivalent = inHand?.numMonths ?? 0;
+
+          const inHandDateRange =
+            inHand && inHandMonthlyEquivalent
+              ? `${formatMonth(
+                  inHand.months[inHand.months.length - 1].month,
+                  locale,
+                )} - ${formatMonth(inHand.months[0].month, locale)}`
               : '';
-
-          // Consider the numMonthsForMonthlyEquivalent most recent months, skipping the
-          // first month because it is the current month and monthly partners may not
-          // have given yet.
-          const inHandMonths = contact.months.slice(
-            1,
-            numMonthsForMonthlyEquivalent + 1,
-          );
-
-          const inHandMonthlyEquivalent =
-            contact.status?.toUpperCase() === StatusEnum.PartnerFinancial &&
-            contact.pledgeFrequency
-              ? Math.round(
-                  inHandMonths.reduce((sum, month) => sum + month.total, 0) /
-                    numMonthsForMonthlyEquivalent,
-                )
-              : '';
-
-          const inHandDateRange = inHandMonthlyEquivalent
-            ? `${formatMonth(
-                inHandMonths[inHandMonths.length - 1].month,
-                locale,
-              )} - ${formatMonth(inHandMonths[0].month, locale)}`
-            : '';
 
           const pledgeFrequency = apiConstants?.pledgeFrequency?.find(
             ({ key }) => key === contact.pledgeFrequency,
@@ -155,6 +164,17 @@ export const useCsvData = (currencyTables: CurrencyTable[]): CsvData => {
       }),
     [currencyTables, apiConstants],
   );
+
+  const csvData = useMemo(() => {
+    if (currencyType !== FourteenMonthReportCurrencyType.Salary) {
+      return tablesCsvData;
+    }
+    // One row per currency table: each table's amounts are in its own currency
+    const solidMonthlySupportRows = currencyTables.map((table) =>
+      getSolidMonthlySupportRow(table, t),
+    );
+    return [...solidMonthlySupportRows, ...tablesCsvData];
+  }, [currencyTables, currencyType, tablesCsvData, t]);
 
   return csvData;
 };
