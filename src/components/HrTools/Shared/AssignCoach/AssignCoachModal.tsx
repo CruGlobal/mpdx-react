@@ -153,7 +153,7 @@ export const AssignCoachModal: React.FC<AssignCoachModalProps> = ({
               ) : noCoaches ? (
                 <Alert severity="info">
                   {t(
-                    'No coaches are available to assign for this cohort. Coach eligibility comes from OneApp, so make a coach eligible there and then reopen this window.',
+                    'No MPD coaches have been added yet. An MPD admin can add coaches on the MPD Coaches tab.',
                   )}
                 </Alert>
               ) : (
