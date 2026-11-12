@@ -56,7 +56,7 @@ export const MpdCoachesTable: React.FC<MpdCoachesTableProps> = ({
                 <TableCell>
                   <IconButton
                     size="small"
-                    aria-label={t('Remove {{name}}', { name })}
+                    aria-label={t('Remove {{label}}', { label: name })}
                     onClick={() => onRemove(coach)}
                   >
                     <DeleteOutlineIcon fontSize="small" />

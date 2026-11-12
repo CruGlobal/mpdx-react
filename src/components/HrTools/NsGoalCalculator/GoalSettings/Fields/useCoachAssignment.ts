@@ -54,7 +54,7 @@ export const useCoachAssignment = (
   const [assignFailed, setAssignFailed] = useState(false);
   const [removeFailed, setRemoveFailed] = useState(false);
 
-  // Lazy: most visits to Staff Details never open the list, and it costs an OneApp lookup.
+  // Lazy: most visits to Staff Details never open the list.
   const [loadCoaches, { data, loading, error, refetch, called }] =
     useNewStaffCohortAttendeeAssignableCoachesLazyQuery();
   const [assignCoach, { loading: assigning }] =
@@ -130,6 +130,8 @@ export const useCoachAssignment = (
     value,
     coachName: coach ? coachLabel(coach, t) : '',
     options,
+    /** Coaches the list returned, apart from the assigned coach that seeds `options`. */
+    listedCount: loadedOptions.length,
     loading,
     assigning,
     listError: error,
@@ -137,8 +139,8 @@ export const useCoachAssignment = (
     removing,
     assignFailed,
     removeFailed,
-    // Eligibility can't change while the page is open, so reopening the list
-    // reuses the first lookup; Try Again is the only way to fetch it again.
+    // Reopening the list reuses the first fetch; Try Again is the only way to
+    // fetch it again while the page is open.
     loadCoaches: () => {
       if (!called) {
         loadCoaches({ variables: { attendeeId: attendee.id } });

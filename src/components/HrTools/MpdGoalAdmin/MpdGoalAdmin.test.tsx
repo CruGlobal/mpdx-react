@@ -197,13 +197,15 @@ describe('MpdGoalAdmin', () => {
 
   // Coordinators assign from the coach list but only the MPD Goals team keeps it.
   it('hides the MPD Coaches tab from a coordinator', async () => {
-    const { findByRole, queryByRole } = renderMain({
+    const { findAllByText, findByRole, queryByRole } = renderMain({
       GetUser: coordinatorUserMock,
     });
 
     expect(
       await findByRole('tab', { name: 'Scenario Goals' }),
     ).toBeInTheDocument();
+    // Cohorts are held back until GetUser loads, so a cohort name means the role is known.
+    expect(await findAllByText('Fall NSO 2026')).not.toHaveLength(0);
     await waitFor(() =>
       expect(
         queryByRole('tab', { name: 'MPD Coaches' }),
@@ -220,12 +222,13 @@ describe('MpdGoalAdmin', () => {
   });
 
   it('shows a coordinator the active goals for a hand-edited MPD Coaches URL', async () => {
-    const { findByText, queryByRole } = renderMain(
+    const { findAllByText, findByText, queryByRole } = renderMain(
       { GetUser: coordinatorUserMock },
       { tab: 'mpd-coaches' },
     );
 
     expect(await findByText('Active MPD Goals')).toBeInTheDocument();
+    expect(await findAllByText('Fall NSO 2026')).not.toHaveLength(0);
     expect(
       queryByRole('button', { name: 'Add Coach' }),
     ).not.toBeInTheDocument();

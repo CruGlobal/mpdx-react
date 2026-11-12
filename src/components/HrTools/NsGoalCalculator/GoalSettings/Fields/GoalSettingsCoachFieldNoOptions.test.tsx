@@ -2,9 +2,11 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import {
   assignableCoachesMock,
+  failedAssignableCoachesMock,
   noAssignableCoachesMock,
 } from 'src/components/HrTools/MpdGoalAdmin/mpdGoalAdminMocks';
 import theme from 'src/theme';
@@ -22,15 +24,22 @@ const attendee: GoalSettingsAttendee = {
   canEditCoach: true,
 };
 
-const renderField = (coaches: NewStaffCohortAttendeeAssignableCoachesQuery) =>
+const renderField = (
+  coaches: NewStaffCohortAttendeeAssignableCoachesQuery | ApolloErgonoMockMap,
+  household: GoalSettingsAttendee = attendee,
+) =>
   render(
     <ThemeProvider theme={theme}>
       <GqlMockedProvider<{
         NewStaffCohortAttendeeAssignableCoaches: NewStaffCohortAttendeeAssignableCoachesQuery;
       }>
-        mocks={{ NewStaffCohortAttendeeAssignableCoaches: coaches }}
+        mocks={
+          {
+            NewStaffCohortAttendeeAssignableCoaches: coaches,
+          } as ApolloErgonoMockMap
+        }
       >
-        <GoalSettingsCoachField attendee={attendee} subjectName="John Doe" />
+        <GoalSettingsCoachField attendee={household} subjectName="John Doe" />
       </GqlMockedProvider>
     </ThemeProvider>,
   );
@@ -47,6 +56,39 @@ describe('GoalSettingsCoachField empty picker text', () => {
         'No MPD coaches have been added yet. An MPD admin can add coaches on the MPD Coaches tab.',
       ),
     ).toBeInTheDocument();
+  });
+
+  // The assigned coach seeds the options, so it must not hide an empty MPD list.
+  it('points to the MPD Coaches tab when only the assigned coach is known', async () => {
+    const { getByRole, findByText } = renderField(noAssignableCoachesMock, {
+      ...attendee,
+      coach: {
+        id: 'coach-9',
+        firstName: 'Amy',
+        lastName: 'Wilson',
+        email: null,
+      },
+    });
+
+    userEvent.click(getByRole('button', { name: 'Open' }));
+    userEvent.type(getByRole('combobox', { name: 'Coach' }), 'zzz');
+
+    expect(
+      await findByText(/No MPD coaches have been added yet/),
+    ).toBeInTheDocument();
+  });
+
+  it('says the list failed instead of that no coach was added', async () => {
+    const { getByRole, findByText, queryByText } = renderField(
+      failedAssignableCoachesMock,
+    );
+
+    userEvent.click(getByRole('button', { name: 'Open' }));
+
+    expect(
+      await findByText('The list of coaches could not be loaded.'),
+    ).toBeInTheDocument();
+    expect(queryByText(/have been added yet/)).not.toBeInTheDocument();
   });
 
   it('says nobody matches when the typed name fits no listed coach', async () => {
