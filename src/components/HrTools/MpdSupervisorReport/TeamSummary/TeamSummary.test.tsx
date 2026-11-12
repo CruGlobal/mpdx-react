@@ -34,7 +34,7 @@ const twoTeams: ManagedStaffTeamsQuery['managedStaffTeams'] = [
   { name: 'City', departments: ['US City'] },
 ];
 
-// City first, so the cards must sort Campus (at risk) ahead of it
+// City first, so the cards must sort Campus (below $0) ahead of it
 const twoTeamSummary = [
   teamSummary('City', {
     [MpdHealthStatusEnum.Yellow]: 1,
@@ -125,12 +125,12 @@ describe('TeamSummary', () => {
     expect(cards).toHaveLength(2);
     expect(cards[0]).toHaveTextContent('Campus');
     expect(cards[0]).toHaveTextContent('1 staff');
-    expect(cards[0]).toHaveTextContent('At risk (1)');
+    expect(cards[0]).toHaveTextContent('Below $0 (1)');
     expect(cards[1]).toHaveTextContent('City');
     expect(cards[1]).toHaveTextContent('2 staff');
-    expect(cards[1]).toHaveTextContent('Needs attention (1)');
-    expect(cards[1]).toHaveTextContent('On track (1)');
-    expect(cards[1]).not.toHaveTextContent('At risk');
+    expect(cards[1]).toHaveTextContent('Below buffer (1)');
+    expect(cards[1]).toHaveTextContent('At or above buffer (1)');
+    expect(cards[1]).not.toHaveTextContent('Below $0');
   });
 
   it('takes the counts from the API, not from the staff rows', async () => {
@@ -144,7 +144,7 @@ describe('TeamSummary', () => {
     const region = await findByRole('region', { name: 'Teams' });
     expect(
       within(region).getByRole('button', { name: /Campus/ }),
-    ).toHaveTextContent('At risk (3)');
+    ).toHaveTextContent('Below $0 (3)');
     expect(
       within(region).getByRole('button', { name: /City/ }),
     ).toHaveTextContent('2 staff');
@@ -167,7 +167,7 @@ describe('TeamSummary', () => {
     const city = within(region).getByRole('button', { name: /City/ });
     expect(city).toHaveTextContent('4 staff');
     expect(city).toHaveTextContent(
-      /At risk \(1\).*Needs attention \(1\).*On track \(1\).*Ungraded \(1\)/,
+      /Below \$0 \(1\).*Below buffer \(1\).*At or above buffer \(1\).*Not graded \(1\)/,
     );
   });
 
@@ -523,11 +523,11 @@ describe('TeamSummary', () => {
       const cards = within(region).getAllByRole('button', { pressed: false });
       expect(cards[0]).toHaveTextContent('North Team');
       expect(cards[0]).toHaveTextContent('2 staff');
-      expect(cards[0]).toHaveTextContent('At risk (2)');
+      expect(cards[0]).toHaveTextContent('Below $0 (2)');
       expect(cards[1]).toHaveTextContent('East Team');
-      expect(cards[1]).toHaveTextContent('Needs attention (1)');
+      expect(cards[1]).toHaveTextContent('Below buffer (1)');
       expect(cards[2]).toHaveTextContent('South Team');
-      expect(cards[2]).toHaveTextContent('On track (3)');
+      expect(cards[2]).toHaveTextContent('At or above buffer (3)');
     });
 
     it("offers only the picked department's teams", async () => {
@@ -548,7 +548,7 @@ describe('TeamSummary', () => {
         within(getByRole('region', { name: 'Teams' })).getByRole('button', {
           name: /South Team/,
         }),
-      ).toHaveTextContent('On track (3)');
+      ).toHaveTextContent('At or above buffer (3)');
     });
 
     it('offers nothing when the department has one team', async () => {
@@ -666,7 +666,7 @@ describe('TeamSummary', () => {
         name: /North Team/,
         pressed: true,
       });
-      expect(pressed).toHaveTextContent('At risk (2)');
+      expect(pressed).toHaveTextContent('Below $0 (2)');
 
       userEvent.click(pressed);
 

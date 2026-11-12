@@ -11,6 +11,7 @@ import {
   useCreateGoalCalculationMutation,
   useGoalCalculationsQuery,
 } from './GoalCalculations.generated';
+import { GoalSummaryCards } from './GoalSummaryCards';
 import { GoalsListWelcome } from './GoalsListWelcome';
 
 const Container = styled(Box)(({ theme }) => ({
@@ -63,6 +64,9 @@ export const GoalsList: React.FC = () => {
   return (
     <Container>
       <GoalsListWelcome firstName={firstName} />
+      <Box pb={3}>
+        <GoalSummaryCards goals={loading ? undefined : goals} />
+      </Box>
       <Stack direction={{ xs: 'column', sm: 'row' }} gap={2} pb={3}>
         <Button
           variant="contained"
