@@ -51,7 +51,7 @@ const getConversionRate = (
       converted += total;
     }),
   );
-  return amount > 0 ? converted / amount : null;
+  return amount > 0 && converted > 0 ? converted / amount : null;
 };
 
 // The rate other contacts on the report got for a currency, worked out once per currency
@@ -104,11 +104,13 @@ export const getInHandMonthlyEquivalent = (
   return { amount: Math.round(total / numMonths), months, numMonths };
 };
 
-// Whole extra months of the commitment given in each month. Without a committed amount
-// in the report's currency there is nothing to measure against, so none.
+// Extra months of the commitment given in each month, to the nearest month, so a doubled
+// month still counts when the partner gives a little under their commitment or the
+// month's exchange rate was a little low. Without a committed amount in the report's
+// currency there is nothing to measure against, so none.
 const getExtraMonths = (contact: Contact, committed: number | null): number[] =>
   contact.months.map(({ total }) =>
-    committed ? Math.max(0, Math.floor(total / committed + 1e-9) - 1) : 0,
+    committed ? Math.max(0, Math.round(total / committed) - 1) : 0,
   );
 
 /*
