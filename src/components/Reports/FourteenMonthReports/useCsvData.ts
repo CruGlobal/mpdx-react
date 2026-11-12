@@ -37,8 +37,8 @@ const getSolidMonthlySupportRow = (
   return [
     ...row,
     t(
-      'Not counted, no gift on the report was in their commitment currency: {{names}}',
-      { names: unconvertedPartners.join(', ') },
+      'Not counted, no exchange rate for their commitment currency: {{names}}',
+      { names: unconvertedPartners.join('; ') },
     ),
   ];
 };

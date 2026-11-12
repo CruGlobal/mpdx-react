@@ -1,6 +1,6 @@
 import { StatusEnum } from 'src/graphql/types.generated';
 import { getSolidMonthlySupport } from './monthlyEquivalents';
-import { buildContact, monthly } from './monthlyEquivalentsTestContact';
+import { buildContact, monthly } from './monthlyEquivalents.mock';
 
 describe('getSolidMonthlySupport', () => {
   it('counts a monthly partner who never missed at their commitment', () => {
@@ -79,6 +79,63 @@ describe('getSolidMonthlySupport', () => {
   it('lets one extra gift make up for only one empty month next to it', () => {
     const contact = buildContact({
       gifts: [0, [100, 100], 0, 0, 0, 0, ...monthly(100, 7)],
+    });
+
+    expect(getSolidMonthlySupport(contact, 'USD')).toBe(0);
+  });
+
+  // MPDX-10193 review #25: a late gift lands in the newer month
+  it('pairs an empty month with the newer month first on a run of late gifts', () => {
+    const contact = buildContact({
+      gifts: [0, 200, 0, 200, 0, 100, 200, 0, 200, 0, 100, 0, 100],
+    });
+
+    // $1,100 over 12 months, with one month missed
+    expect(getSolidMonthlySupport(contact, 'USD')).toBe(92);
+  });
+
+  it('lets a double gift in the current month make up for last month', () => {
+    const contact = buildContact({
+      gifts: [200, 0, 0, 0, ...monthly(100, 9)],
+    });
+
+    // $900 over 12 months, with two months missed
+    expect(getSolidMonthlySupport(contact, 'USD')).toBe(75);
+  });
+
+  // MPDX-10193 review #27: an extra gift is measured by amount, not by count
+  it('leaves out a partner who splits each gift in two and missed 4 months', () => {
+    const contact = buildContact({
+      gifts: [
+        0,
+        [50, 50],
+        0,
+        [50, 50],
+        0,
+        [50, 50],
+        0,
+        [50, 50],
+        0,
+        ...Array(4).fill([50, 50]),
+      ],
+    });
+
+    expect(getSolidMonthlySupport(contact, 'USD')).toBe(0);
+  });
+
+  // MPDX-10193 review #26: a 5-week month is a weekly partner's normal pattern
+  it('leaves out a weekly partner who stopped 3 months ago after a 5-week month', () => {
+    const contact = buildContact({
+      pledgeAmount: 25,
+      pledgeFrequency: '0.23',
+      gifts: [
+        0,
+        0,
+        0,
+        0,
+        Array(5).fill(25),
+        ...Array(8).fill(Array(4).fill(25)),
+      ],
     });
 
     expect(getSolidMonthlySupport(contact, 'USD')).toBe(0);
