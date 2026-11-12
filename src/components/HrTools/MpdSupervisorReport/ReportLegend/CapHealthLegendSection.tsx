@@ -34,7 +34,7 @@ export const CapHealthLegendSection: React.FC = () => {
       </Typography>
       <Typography variant="body2" sx={{ mb: 1 }}>
         {t(
-          "Staff get a badge starting their second month of pay. It grades last month's payroll as a percent of their Personal CAP, the % of Personal CAP on the Payroll tab, and is separate from the quarter colors.",
+          "Staff get a badge starting their second month of pay. It grades last month's payroll as a percent of their Personal CAP, the % of Personal CAP on the Payroll tab, and is separate from the balance colors.",
         )}
       </Typography>
       {grades.map((grade) => (

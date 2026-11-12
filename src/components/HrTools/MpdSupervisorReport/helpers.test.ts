@@ -155,9 +155,9 @@ describe('getQuarterMonthRange', () => {
 
 describe('healthLabel', () => {
   it.each([
-    [MpdHealthStatusEnum.Green, 'on track'],
-    [MpdHealthStatusEnum.Red, 'at risk'],
-    [MpdHealthStatusEnum.Yellow, 'needs attention'],
+    [MpdHealthStatusEnum.Green, 'full salary'],
+    [MpdHealthStatusEnum.Red, 'below New Staff salary'],
+    [MpdHealthStatusEnum.Yellow, 'below salary'],
     [MpdHealthStatusEnum.Gray, 'no data'],
     [MpdHealthStatusEnum.Blue, 'ungraded'],
   ])('maps %s to "%s"', (health, expected) => {
