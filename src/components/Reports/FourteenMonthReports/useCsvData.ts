@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { DateTime } from 'luxon';
-import { useTranslation } from 'react-i18next';
+import { TFunction, useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { PledgeFrequencyEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
@@ -20,6 +20,28 @@ const formatMonth = (month: string, locale: string): string =>
     month: 'short',
     year: '2-digit',
   });
+
+// The table's Solid Monthly Support, then any partners it could not convert
+const getSolidMonthlySupportRow = (
+  { currency, orderedContacts }: CurrencyTable,
+  t: TFunction,
+): (string | number)[] => {
+  const { amount, unconvertedPartners } = calculateSolidMonthlySupport(
+    orderedContacts,
+    currency,
+  );
+  const row = [t('Solid Monthly Support'), amount, currency];
+  if (!unconvertedPartners.length) {
+    return row;
+  }
+  return [
+    ...row,
+    t(
+      'Not counted, no gift on the report was in their commitment currency: {{names}}',
+      { names: unconvertedPartners.join(', ') },
+    ),
+  ];
+};
 
 /*
  * Return the data for a CSV export of the provided currency tables. The salary
@@ -148,23 +170,8 @@ export const useCsvData = (
       return tablesCsvData;
     }
     // One row per currency table: each table's amounts are in its own currency
-    const solidMonthlySupportRows = currencyTables.map(
-      ({ currency, orderedContacts }) => {
-        const { amount, unconvertedPartners } = calculateSolidMonthlySupport(
-          orderedContacts,
-          currency,
-        );
-        const row = [t('Solid Monthly Support'), amount, currency];
-        return unconvertedPartners.length
-          ? [
-              ...row,
-              t(
-                'Not counted, no gift on the report was in their commitment currency: {{names}}',
-                { names: unconvertedPartners.join(', ') },
-              ),
-            ]
-          : row;
-      },
+    const solidMonthlySupportRows = currencyTables.map((table) =>
+      getSolidMonthlySupportRow(table, t),
     );
     return [...solidMonthlySupportRows, ...tablesCsvData];
   }, [currencyTables, currencyType, tablesCsvData, t]);

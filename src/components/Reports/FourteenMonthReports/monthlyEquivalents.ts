@@ -152,12 +152,12 @@ const getContactSolidMonthlySupport = (
     contact,
     SOLID_MONTHLY_SUPPORT_MONTHS,
   );
-  if (
-    commitment === null ||
-    inHand === null ||
-    missedTooManyMonths(contact, inHand.numMonths)
-  ) {
-    return { amount: 0, unconverted: false };
+  const notCounted = { amount: 0, unconverted: false };
+  if (commitment === null || inHand === null) {
+    return notCounted;
+  }
+  if (missedTooManyMonths(contact, inHand.numMonths)) {
+    return notCounted;
   }
   const rate = getCommitmentRate(contact, currency, reportContacts);
   if (rate === null) {
