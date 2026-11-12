@@ -75,7 +75,7 @@ describe('AssignCoachModal', () => {
     const { getByRole, queryByRole } = render(<TestComponent coaches={[]} />);
 
     expect(getByRole('alert')).toHaveTextContent(
-      'No coaches are available to assign for this cohort. Coach eligibility comes from OneApp, so make a coach eligible there and then reopen this window.',
+      'No MPD coaches have been added yet. An MPD admin can add coaches on the MPD Coaches tab.',
     );
     expect(queryByRole('combobox', { name: 'Coach' })).not.toBeInTheDocument();
   });
@@ -104,7 +104,7 @@ describe('AssignCoachModal', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('reports a failed coach list instead of blaming OneApp eligibility', () => {
+  it('reports a failed coach list instead of calling the coach list empty', () => {
     const { getByRole, queryByRole, queryByText } = render(
       <TestComponent
         coaches={[]}
@@ -115,7 +115,7 @@ describe('AssignCoachModal', () => {
     expect(getByRole('alert')).toHaveTextContent(
       'The list of coaches could not be loaded, so no coach can be assigned yet. Try again, and contact the help desk if it keeps failing.',
     );
-    expect(queryByText(/OneApp/)).not.toBeInTheDocument();
+    expect(queryByText(/have been added yet/)).not.toBeInTheDocument();
     expect(queryByRole('combobox', { name: 'Coach' })).not.toBeInTheDocument();
     expect(queryByRole('button', { name: 'Save' })).not.toBeInTheDocument();
   });
