@@ -2,6 +2,7 @@ import React from 'react';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { gqlMock } from '__tests__/util/graphqlMocking';
+import { desktopWidth, getStyleAtWidth } from '__tests__/util/styleAtWidth';
 import {
   MpdGoalMiscConstantCategoryEnum,
   PrimaryBudgetCategoryEnum,
@@ -64,6 +65,8 @@ const reimbursableFamily = gqlMock<BudgetFamilyFragment>(
 );
 
 describe('ExpensesStep', () => {
+  afterEach(() => jest.restoreAllMocks());
+
   it('renders with instructions', () => {
     const { getByRole } = render(<TestComponent />);
 
@@ -76,7 +79,40 @@ describe('ExpensesStep', () => {
 
     userEvent.click(getByRole('button', { name: 'Print' }));
     expect(print).toHaveBeenCalled();
-    print.mockRestore();
+  });
+
+  it('disables Print until the budget has loaded', () => {
+    const { getByRole } = render(
+      <GoalCalculatorTestWrapper>
+        <ExpensesStep instructions={<h1>Instructions</h1>} family={undefined} />
+      </GoalCalculatorTestWrapper>,
+    );
+
+    expect(getByRole('button', { name: 'Print' })).toBeDisabled();
+  });
+
+  it('keeps the page spacing between instruction blocks', () => {
+    const { getByRole } = render(
+      <GoalCalculatorTestWrapper>
+        <ExpensesStep
+          instructions={
+            <>
+              <h1>Instructions</h1>
+              <h2>Header</h2>
+            </>
+          }
+          family={goalCalculationMock.ministryFamily}
+        />
+      </GoalCalculatorTestWrapper>,
+    );
+
+    expect(
+      getStyleAtWidth(
+        getByRole('heading', { name: 'Header' }),
+        'margin-top',
+        desktopWidth,
+      ),
+    ).toBe('32px');
   });
 
   it('renders the print-only budget table', async () => {

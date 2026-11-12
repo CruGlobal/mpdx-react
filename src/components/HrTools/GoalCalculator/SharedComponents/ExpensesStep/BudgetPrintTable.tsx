@@ -16,7 +16,7 @@ import { BudgetFamilyFragment } from '../../Shared/GoalCalculation.generated';
 import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
 import {
   calculateCategoryTotal,
-  hasStaffSpouse,
+  calculateFamilyTotal,
 } from '../../Shared/calculateTotals';
 
 const AmountRow: React.FC<{
@@ -59,6 +59,7 @@ export const BudgetPrintTable: React.FC<BudgetPrintTableProps> = ({
   const {
     goalCalculationResult: { data },
     goalTotals: { monthlyBudget },
+    isMarried,
   } = useGoalCalculator();
   const goalCalculation = data?.goalCalculation;
 
@@ -71,17 +72,20 @@ export const BudgetPrintTable: React.FC<BudgetPrintTableProps> = ({
       total: calculateCategoryTotal(category),
     }))
     .filter((category) => category.total !== 0);
-  const categoriesTotal = categories.reduce(
-    (sum, category) => sum + category.total,
-    0,
-  );
+  // The Categories Total, not a lump-sum family direct input
+  const categoriesTotal = calculateFamilyTotal({
+    ...family,
+    directInput: null,
+  });
 
-  const spouseFirstName = hasStaffSpouse(goalCalculation?.familySize)
-    ? goalCalculation?.spouseFirstName
-    : null;
-  const names = spouseFirstName
-    ? `${goalCalculation?.firstName} ${t('and')} ${spouseFirstName} ${goalCalculation?.lastName}`
-    : `${goalCalculation?.firstName} ${goalCalculation?.lastName}`;
+  const firstName = goalCalculation?.firstName ?? '';
+  const lastName = goalCalculation?.lastName ?? '';
+  const spouseFirstName = isMarried ? goalCalculation?.spouseFirstName : null;
+  const names = (
+    spouseFirstName
+      ? `${firstName} ${t('and')} ${spouseFirstName} ${lastName}`
+      : `${firstName} ${lastName}`
+  ).trim();
 
   return (
     <>
@@ -91,7 +95,7 @@ export const BudgetPrintTable: React.FC<BudgetPrintTableProps> = ({
       {goalCalculation && (
         <>
           <Typography variant="subtitle1">{goalCalculation.name}</Typography>
-          <Typography variant="body2">{names}</Typography>
+          {names && <Typography variant="body2">{names}</Typography>}
         </>
       )}
       <Typography variant="body2" gutterBottom>

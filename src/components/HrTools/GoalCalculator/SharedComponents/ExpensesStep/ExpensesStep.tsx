@@ -1,6 +1,6 @@
 import React from 'react';
 import PrintIcon from '@mui/icons-material/Print';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import {
   SimplePrintOnly,
@@ -50,11 +50,13 @@ export const ExpensesStep: React.FC<ExpensesStepProps> = ({
                   variant="outlined"
                   endIcon={<PrintIcon />}
                   onClick={() => window.print()}
+                  disabled={!family}
                   sx={{ float: 'right', ml: 2 }}
                 >
                   {t('Print')}
                 </Button>
-                {instructions}
+                {/* Keeps SectionPage's spacing between instruction blocks */}
+                <Stack spacing={4}>{instructions}</Stack>
               </Box>
               {family?.primaryBudgetCategories.map((category) => {
                 const maxTotal =

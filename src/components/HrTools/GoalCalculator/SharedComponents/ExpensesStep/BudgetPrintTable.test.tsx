@@ -72,21 +72,24 @@ const emptyFamily: BudgetFamilyFragment = {
 interface TestComponentProps {
   family?: BudgetFamilyFragment;
   single?: boolean;
+  blankNames?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   family = householdFamily,
   single = false,
+  blankNames = false,
 }) => (
   <GoalCalculatorTestWrapper
-    goalCalculation={
-      single
-        ? {
-            ...goalCalculationMock,
-            familySize: MpdGoalBenefitsConstantSizeEnum.Single,
-          }
-        : goalCalculationMock
-    }
+    goalCalculation={{
+      ...goalCalculationMock,
+      ...(single && { familySize: MpdGoalBenefitsConstantSizeEnum.Single }),
+      ...(blankNames && {
+        firstName: null,
+        spouseFirstName: null,
+        lastName: null,
+      }),
+    }}
   >
     <BudgetPrintTable title="Household Expenses" family={family} />
   </GoalCalculatorTestWrapper>
@@ -114,6 +117,13 @@ describe('BudgetPrintTable', () => {
 
     expect(await findByText('John Doe')).toBeInTheDocument();
     expect(queryByText(/Jane/)).not.toBeInTheDocument();
+  });
+
+  it('leaves out the names line when the Information step has no names', async () => {
+    const { findByText, queryByText } = render(<TestComponent blankNames />);
+
+    expect(await findByText('Initial Goal Name')).toBeInTheDocument();
+    expect(queryByText(/null|undefined/)).not.toBeInTheDocument();
   });
 
   it('lists each category total followed by its line items', async () => {
@@ -151,15 +161,11 @@ describe('BudgetPrintTable', () => {
     const { findByRole, getByRole } = render(<TestComponent />);
 
     expect(
-      getRowCells(
-        (await findByRole('cell', { name: 'Categories Total' })).closest('tr')!,
-      ),
+      getRowCells(await findByRole('row', { name: /^Categories Total/ })),
     ).toEqual(['Categories Total', '$1,850']);
     await waitFor(() =>
       expect(
-        getRowCells(
-          getByRole('cell', { name: 'Monthly Budget' }).closest('tr')!,
-        ),
+        getRowCells(getByRole('row', { name: /^Monthly Budget/ })),
       ).toEqual(['Monthly Budget', '$5,500']),
     );
   });
