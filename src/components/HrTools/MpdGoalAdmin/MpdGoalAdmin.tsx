@@ -151,6 +151,9 @@ export const MpdGoalAdmin: React.FC<MpdGoalAdminProps> = ({
       <Tabs
         value={tab}
         onChange={(_event, value) => setActiveTab(value)}
+        variant="scrollable"
+        scrollButtons="auto"
+        allowScrollButtonsMobile
         sx={{ px: 3, borderBottom: 1, borderColor: 'divider' }}
       >
         <Tab
