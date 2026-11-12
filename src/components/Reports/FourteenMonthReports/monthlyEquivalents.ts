@@ -36,7 +36,7 @@ export const getCommittedMonthlyEquivalent = (
 const getGiftConversionRate = (contact: Contact): number | null => {
   let amount = 0;
   let converted = 0;
-  contact.months.forEach(({ donations, salaryCurrencyTotal }) => {
+  contact.months.forEach(({ donations, total }) => {
     if (donations.length === 0) {
       return;
     }
@@ -44,7 +44,7 @@ const getGiftConversionRate = (contact: Contact): number | null => {
       return;
     }
     amount += donations.reduce((sum, gift) => sum + gift.amount, 0);
-    converted += salaryCurrencyTotal;
+    converted += total;
   });
   return amount > 0 ? converted / amount : null;
 };

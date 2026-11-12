@@ -244,21 +244,22 @@ describe('useCsvData', () => {
     ]);
   });
 
-  it('puts Solid Monthly Support at the top of the salary currency export', () => {
+  it('puts Solid Monthly Support for each currency at the top of the salary currency export', () => {
     const { result } = renderHook(
       () => useCsvData(mockTables(), FourteenMonthReportCurrencyType.Salary),
       {},
     );
 
     // Quarterly: $1,100 / 12 = $92. Annual: $900 / 12 = $75.
-    expect(result.current[0]).toEqual(['Solid Monthly Support', 167]);
+    expect(result.current[0]).toEqual(['Solid Monthly Support', 167, 'USD']);
+    expect(result.current[1]).toEqual(['Solid Monthly Support', 0, 'CAD']);
 
     // The rest of the file matches the partner currency export
     const { result: donorResult } = renderHook(
       () => useCsvData(mockTables(), FourteenMonthReportCurrencyType.Donor),
       {},
     );
-    expect(result.current.slice(1)).toEqual(donorResult.current);
+    expect(result.current.slice(2)).toEqual(donorResult.current);
   });
 
   it('leaves Solid Monthly Support off the partner currency export', () => {

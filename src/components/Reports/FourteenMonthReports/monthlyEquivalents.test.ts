@@ -204,6 +204,30 @@ describe('getSolidMonthlySupport', () => {
     expect(getSolidMonthlySupport(contact, 'PHP')).toBe(5600);
   });
 
+  it('converts at the rate of months whose gifts were all in the commitment currency', () => {
+    const contact = buildContact({
+      rate: 56,
+      gifts: [0, ...monthly(100, 12)],
+    });
+    // A month with an extra gift in another currency, converted at a different rate
+    contact.months[1] = {
+      ...contact.months[1],
+      total: 100 * 56 + 50 * 41,
+      salaryCurrencyTotal: 100 * 56 + 50 * 41,
+      donations: [
+        ...contact.months[1].donations,
+        {
+          amount: 50,
+          date: '2020-11-01',
+          paymentMethod: null,
+          currency: 'CAD',
+        },
+      ],
+    };
+
+    expect(getSolidMonthlySupport(contact, 'PHP')).toBe(5600);
+  });
+
   it('counts nothing when no gift was in the commitment currency', () => {
     const contact = buildContact({
       pledgeCurrency: 'CAD',

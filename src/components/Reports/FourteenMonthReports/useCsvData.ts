@@ -147,16 +147,16 @@ export const useCsvData = (
     if (currencyType !== FourteenMonthReportCurrencyType.Salary) {
       return tablesCsvData;
     }
-    const solidMonthlySupport = currencyTables.reduce(
-      (total, { currency, orderedContacts }) =>
-        total + calculateSolidMonthlySupport(orderedContacts, currency),
-      0,
+    // One row per currency table: each table's amounts are in its own currency
+    const solidMonthlySupportRows = currencyTables.map(
+      ({ currency, orderedContacts }) => [
+        t('Solid Monthly Support'),
+        calculateSolidMonthlySupport(orderedContacts, currency),
+        currency,
+      ],
     );
-    return [
-      [t('Solid Monthly Support'), solidMonthlySupport],
-      ...tablesCsvData,
-    ];
-  }, [currencyTables, currencyType, tablesCsvData]);
+    return [...solidMonthlySupportRows, ...tablesCsvData];
+  }, [currencyTables, currencyType, tablesCsvData, t]);
 
   return csvData;
 };
