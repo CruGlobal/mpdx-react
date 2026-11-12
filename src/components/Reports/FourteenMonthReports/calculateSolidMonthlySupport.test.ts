@@ -1,6 +1,6 @@
 import { StatusEnum } from 'src/graphql/types.generated';
 import { calculateSolidMonthlySupport } from './monthlyEquivalents';
-import { buildContact, monthly } from './monthlyEquivalentsTestContact';
+import { buildContact, monthly } from './monthlyEquivalents.mock';
 
 describe('calculateSolidMonthlySupport', () => {
   it('adds up every contact', () => {

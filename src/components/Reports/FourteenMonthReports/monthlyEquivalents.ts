@@ -54,20 +54,32 @@ const getConversionRate = (
   return amount > 0 ? converted / amount : null;
 };
 
+// The rate other contacts on the report got for a currency, worked out once per currency
+type ReportRate = (giftCurrency: string) => number | null;
+
+const makeReportRate = (reportContacts: Contact[]): ReportRate => {
+  const rates = new Map<string, number | null>();
+  return (giftCurrency) => {
+    if (!rates.has(giftCurrency)) {
+      rates.set(giftCurrency, getConversionRate(reportContacts, giftCurrency));
+    }
+    return rates.get(giftCurrency) ?? null;
+  };
+};
+
 // The rate to convert the commitment to the report's currency at: the contact's own
 // gifts' rate, else the rate other contacts on the report got for that currency
 const getCommitmentRate = (
   contact: Contact,
   currency: string,
-  reportContacts: Contact[],
+  reportRate: ReportRate,
 ): number | null => {
   const { pledgeCurrency } = contact;
   if (!pledgeCurrency || pledgeCurrency === currency) {
     return 1;
   }
   return (
-    getConversionRate([contact], pledgeCurrency) ??
-    getConversionRate(reportContacts, pledgeCurrency)
+    getConversionRate([contact], pledgeCurrency) ?? reportRate(pledgeCurrency)
   );
 };
 
@@ -92,45 +104,44 @@ export const getInHandMonthlyEquivalent = (
   return { amount: Math.round(total / numMonths), months, numMonths };
 };
 
-// Gifts in each month beyond the partner's usual number per month
-const getExtraGifts = (contact: Contact, frequency: number): number[] => {
-  const giftsPerMonth = Math.max(1, Math.floor(1 / frequency));
-  return contact.months.map(({ total, donations }) => {
-    if (total <= 0) {
-      return 0;
-    }
-    const gifts = donations.filter((gift) => gift.amount > 0).length;
-    return Math.max(0, gifts - giftsPerMonth);
-  });
-};
+// Whole extra months of the commitment given in each month. Without a committed amount
+// in the report's currency there is nothing to measure against, so none.
+const getExtraMonths = (contact: Contact, committed: number | null): number[] =>
+  contact.months.map(({ total }) =>
+    committed ? Math.max(0, Math.floor(total / committed + 1e-9) - 1) : 0,
+  );
 
 /*
  * Only partners who give monthly or more often are expected to give every month. An
- * empty month next to a month with more gifts than the partner's usual number counts as
- * given: a gift that slips from the 31st to the 1st empties one month and doubles up the
- * next. Each extra gift makes up for one empty month.
+ * empty month next to a month that holds at least one extra month of the commitment
+ * counts as given: a gift that slips from the 31st to the 1st empties one month and
+ * doubles the next. Each extra month of giving makes up for one empty month.
  */
-const missedTooManyMonths = (contact: Contact, numMonths: number): boolean => {
-  const frequency = parseFloat(contact.pledgeFrequency ?? '');
-  if (frequency > 1) {
+const missedTooManyMonths = (
+  contact: Contact,
+  numMonths: number,
+  committed: number | null,
+): boolean => {
+  if (parseFloat(contact.pledgeFrequency ?? '') > 1) {
     return false;
   }
   // Includes the current month and the oldest month, so gifts that slipped across the
   // window's edges still count
-  const extraGifts = getExtraGifts(contact, frequency);
+  const extraMonths = getExtraMonths(contact, committed);
   let missedMonths = 0;
   // contact.months is newest first, and the current month (index 0) is outside the window
   for (let index = 1; index <= numMonths; index++) {
     if ((contact.months[index]?.total ?? 0) > 0) {
       continue;
     }
-    const neighbor = [index + 1, index - 1].find(
-      (other) => (extraGifts[other] ?? 0) > 0,
+    // A late gift lands in the newer month, so try that one first
+    const neighbor = [index - 1, index + 1].find(
+      (other) => (extraMonths[other] ?? 0) > 0,
     );
     if (neighbor === undefined) {
       missedMonths++;
     } else {
-      extraGifts[neighbor]--;
+      extraMonths[neighbor]--;
     }
   }
   return missedMonths > MAX_MISSED_MONTHS;
@@ -145,7 +156,7 @@ interface ContactSolidMonthlySupport {
 const getContactSolidMonthlySupport = (
   contact: Contact,
   currency: string,
-  reportContacts: Contact[],
+  reportRate: ReportRate,
 ): ContactSolidMonthlySupport => {
   const commitment = getCommitment(contact);
   const inHand = getInHandMonthlyEquivalent(
@@ -156,15 +167,16 @@ const getContactSolidMonthlySupport = (
   if (commitment === null || inHand === null) {
     return notCounted;
   }
-  if (missedTooManyMonths(contact, inHand.numMonths)) {
+  const rate = getCommitmentRate(contact, currency, reportRate);
+  const committed = rate === null ? null : commitment * rate;
+  if (missedTooManyMonths(contact, inHand.numMonths, committed)) {
     return notCounted;
   }
-  const rate = getCommitmentRate(contact, currency, reportContacts);
-  if (rate === null) {
+  if (committed === null) {
     return { amount: 0, unconverted: true };
   }
   return {
-    amount: Math.min(Math.round(commitment * rate), inHand.amount),
+    amount: Math.min(Math.round(committed), inHand.amount),
     unconverted: false,
   };
 };
@@ -177,25 +189,28 @@ const getContactSolidMonthlySupport = (
 export const getSolidMonthlySupport = (
   contact: Contact,
   currency: string,
-): number => getContactSolidMonthlySupport(contact, currency, [contact]).amount;
+): number =>
+  getContactSolidMonthlySupport(contact, currency, makeReportRate([contact]))
+    .amount;
 
 export interface SolidMonthlySupport {
   amount: number;
-  // Financial partners counted at 0 because no gift on the report was in their
-  // commitment currency, so it could not be converted
+  // Financial partners counted at 0 because no exchange rate for their commitment
+  // currency could be worked out from the report's gifts
   unconvertedPartners: string[];
 }
 
 export const calculateSolidMonthlySupport = (
   contacts: Contact[],
   currency: string,
-): SolidMonthlySupport =>
-  contacts.reduce<SolidMonthlySupport>(
+): SolidMonthlySupport => {
+  const reportRate = makeReportRate(contacts);
+  return contacts.reduce<SolidMonthlySupport>(
     (total, contact) => {
       const { amount, unconverted } = getContactSolidMonthlySupport(
         contact,
         currency,
-        contacts,
+        reportRate,
       );
       return {
         amount: total.amount + amount,
@@ -206,3 +221,4 @@ export const calculateSolidMonthlySupport = (
     },
     { amount: 0, unconvertedPartners: [] },
   );
+};
