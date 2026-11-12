@@ -1,0 +1,38 @@
+query NewStaffMpdCoaches {
+  newStaffMpdCoaches {
+    id
+    userId
+    firstName
+    lastName
+    email
+    addedByName
+    createdAt
+  }
+}
+
+query NewStaffMpdCoachCandidates($search: String!) {
+  newStaffMpdCoachCandidates(search: $search) {
+    id
+    userId
+    firstName
+    lastName
+    personNumber
+    department
+    email
+    listed
+  }
+}
+
+mutation AddNewStaffMpdCoach($userId: ID!) {
+  addNewStaffMpdCoach(input: { userId: $userId }) {
+    newStaffMpdCoach {
+      id
+    }
+  }
+}
+
+mutation RemoveNewStaffMpdCoach($id: ID!) {
+  removeNewStaffMpdCoach(input: { id: $id }) {
+    id
+  }
+}

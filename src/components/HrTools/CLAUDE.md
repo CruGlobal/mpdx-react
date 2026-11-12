@@ -232,6 +232,10 @@ has a distinct `Complete` mutation, and the request forms autosave a draft but
   result set means a click mid-search would otherwise send the ids the preceding
   search returned. Mutation failures toast through the global Apollo error link;
   only the blob fetch needs its own message.
+  The **MPD Coaches** tab (`MpdCoaches/MpdCoaches.graphql`) is the coach list the
+  Assign Coach pickers offer. Only `isGoalsAdmin` sees it; a coordinator's
+  hand-edited `?tab=mpd-coaches` falls back to Active Goals. Add and remove
+  evict the cached picker and candidate-search root fields (`evictCoachLists`).
 - **MpdSupervisorReport** — `managedStaff` refuses to grade more than its row
   cap and answers with a `FILTER_REQUIRED` GraphQL error (`count`, `filtered`
   in `extensions`). The context turns it into `filterRequired` guidance and

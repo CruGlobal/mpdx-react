@@ -21,15 +21,15 @@ export const searchDebounceMs = 500;
 export enum MpdGoalAdminTabEnum {
   ActiveGoals = 'active-goals',
   ScenarioGoals = 'scenario-goals',
+  MpdCoaches = 'mpd-coaches',
 }
 
 /** The tab lives in the URL so Goal Settings can link back to the one it came from. */
 export const parseMpdGoalAdminTab = (
   value: string | undefined,
 ): MpdGoalAdminTabEnum =>
-  value === MpdGoalAdminTabEnum.ScenarioGoals
-    ? MpdGoalAdminTabEnum.ScenarioGoals
-    : MpdGoalAdminTabEnum.ActiveGoals;
+  Object.values(MpdGoalAdminTabEnum).find((tab) => tab === value) ??
+  MpdGoalAdminTabEnum.ActiveGoals;
 
 /** `cohortId` round-trips through Goal Settings so returning reselects the cohort. */
 export const mpdGoalAdminUrl = (

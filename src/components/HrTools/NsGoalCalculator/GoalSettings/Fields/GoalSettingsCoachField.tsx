@@ -27,6 +27,18 @@ export const GoalSettingsCoachField: React.FC<GoalSettingsCoachFieldProps> = ({
   const coach = useCoachAssignment(attendee);
   const busy = coach.loading || coach.assigning;
 
+  const noOptionsText = () => {
+    if (coach.listError) {
+      return t('The list of coaches could not be loaded.');
+    }
+    if (coach.listedCount) {
+      return t('No coaches match your search.');
+    }
+    return t(
+      'No MPD coaches have been added yet. An MPD admin can add coaches on the MPD Coaches tab.',
+    );
+  };
+
   if (!attendee.canEditCoach) {
     // An invite-sourced coaching grant is enough to read this, so the goals team may have assigned nobody.
     return attendee.coach ? (
@@ -55,9 +67,7 @@ export const GoalSettingsCoachField: React.FC<GoalSettingsCoachFieldProps> = ({
         getOptionKey={(option) => option.id}
         getOptionLabel={(option) => option.name}
         isOptionEqualToValue={(option, selected) => option.id === selected.id}
-        noOptionsText={t(
-          'No coaches are available for this cohort. Coach eligibility comes from OneApp.',
-        )}
+        noOptionsText={noOptionsText()}
         fullWidth
         // Removing the coach is a first-class action here, so the clear button
         // stays put instead of appearing only on hover.
