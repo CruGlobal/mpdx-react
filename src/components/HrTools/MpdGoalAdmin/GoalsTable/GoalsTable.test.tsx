@@ -407,7 +407,7 @@ describe('GoalsTable', () => {
     ]);
   });
 
-  it('explains the empty picker when the cohort has no assignable coaches', async () => {
+  it('explains the empty picker when no MPD coaches have been added', async () => {
     const { getByRole, findByRole, queryByRole } = await renderWithCoaches(
       noAssignableCoachesMock,
     );
@@ -415,12 +415,12 @@ describe('GoalsTable', () => {
 
     const dialog = await findByRole('dialog');
     expect(within(dialog).getByRole('alert')).toHaveTextContent(
-      'No coaches are available to assign for this cohort.',
+      'No MPD coaches have been added yet. An MPD admin can add coaches on the MPD Coaches tab.',
     );
     expect(queryByRole('combobox', { name: 'Coach' })).not.toBeInTheDocument();
   });
 
-  it('reports a failed coach list instead of blaming OneApp eligibility', async () => {
+  it('reports a failed coach list instead of calling the coach list empty', async () => {
     const { getByRole, findByRole, queryByText, queryByRole } =
       await renderWithCoaches(failedAssignableCoachesMock);
     userEvent.click(getByRole('button', { name: 'Assign Coach' }));
@@ -429,7 +429,7 @@ describe('GoalsTable', () => {
     expect(within(dialog).getByRole('alert')).toHaveTextContent(
       'The list of coaches could not be loaded, so no coach can be assigned yet.',
     );
-    expect(queryByText(/OneApp/)).not.toBeInTheDocument();
+    expect(queryByText(/have been added yet/)).not.toBeInTheDocument();
     // Nothing can be picked, so there is no Save button left to sit dead.
     expect(queryByRole('button', { name: 'Save' })).not.toBeInTheDocument();
     expect(
