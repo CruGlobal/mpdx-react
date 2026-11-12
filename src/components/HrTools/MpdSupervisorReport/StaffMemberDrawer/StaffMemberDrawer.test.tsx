@@ -17,6 +17,7 @@ import {
   useMpdSupervisorReport,
 } from '../MpdSupervisorReportContext';
 import { MonthlyPayrollSummaryQuery } from '../StaffDetailsTabs/MonthlySummary/MonthlyPayrollSummary.generated';
+import { mockMonthlySummary } from '../StaffDetailsTabs/MonthlySummary/monthlySummaryMocks';
 import { MonthlyPayrollHistoryQuery } from '../StaffDetailsTabs/Payroll/MonthlyPayrollHistory.generated';
 import { ManagedStaffMember } from '../helpers';
 import { managedStaffMember } from '../mpdSupervisorReportMocks';
@@ -122,8 +123,8 @@ describe('StaffMemberDrawer', () => {
   it('keeps the quarter chips in view in the drawer header', () => {
     const { getByText } = renderDrawer();
     openMember(memberWithSpouse);
-    expect(getByText('FQ3 26, on track')).toBeInTheDocument();
-    expect(getByText('FQ2 26, at risk')).toBeInTheDocument();
+    expect(getByText('FQ3 26, full salary')).toBeInTheDocument();
+    expect(getByText('FQ2 26, below New Staff salary')).toBeInTheDocument();
     // FQ2's average is the only $2,200.00 in the drawer
     expect(getByText('$2,200.00')).toBeInTheDocument();
   });
@@ -453,36 +454,18 @@ describe('StaffMemberDrawer', () => {
   });
 
   it('shows the Monthly Summary tab and its panel content by default', async () => {
-    const { getByRole } = renderDrawer({
-      monthlySummary: [
-        {
-          month: '2023-01',
-          contributions: 4000,
-          expenses: 3500,
-          net: 500,
-          endBalance: 10000,
-        },
-      ],
-    });
+    const { getByRole } = renderDrawer({ monthlySummary: mockMonthlySummary });
     openMember(memberWithSpouse);
     expect(getByRole('tab', { name: 'Monthly Summary' })).toHaveAttribute(
       'aria-selected',
       'true',
     );
 
-    const table = await within(getByRole('tabpanel')).findByRole('table');
-    expect(table).toHaveTableStructure({
-      columnHeaders: [
-        'Month',
-        'Contributions',
-        'Expenses',
-        'Net',
-        'End Balance',
-      ],
-      cells: [
-        ['Jan 2023', '$4,000.00', '($3,500.00)', '$500.00', '$10,000.00'],
-      ],
-    });
+    const panel = within(getByRole('tabpanel'));
+    expect(await panel.findByRole('cell', { name: 'Jan 2023' })).toBeVisible();
+    expect(
+      panel.getByRole('columnheader', { name: '% of Goal' }),
+    ).toBeVisible();
   });
 
   it('selects another tab when clicked', async () => {

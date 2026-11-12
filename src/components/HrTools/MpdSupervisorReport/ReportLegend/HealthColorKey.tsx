@@ -2,16 +2,17 @@ import React from 'react';
 import { Box, Typography } from '@mui/material';
 import { SxProps, Theme, useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { balanceStatusLabel } from '../balanceHelpers';
 import { healthColor } from '../helpers';
-import { healthStatusLabel, healthStatusOrder } from './legendCopy';
+import { healthStatusOrder } from './legendCopy';
 
 interface HealthColorKeyProps {
   sx?: SxProps<Theme>;
 }
 
 /**
- * The always-visible one-line key to the chip colours, shown beside the
- * quarter column headers. The full explanation lives in ReportLegendPopover.
+ * The always-visible one-line key to the balance chip colors, shown beside
+ * the month column headers. The full explanation lives in ReportLegendPanel.
  */
 export const HealthColorKey: React.FC<HealthColorKeyProps> = ({ sx }) => {
   const { t } = useTranslation();
@@ -53,7 +54,7 @@ export const HealthColorKey: React.FC<HealthColorKeyProps> = ({ sx }) => {
               }}
             />
             <Typography variant="caption" color="text.secondary">
-              {healthStatusLabel(t, status)}
+              {balanceStatusLabel(t, status)}
             </Typography>
           </Box>
         );

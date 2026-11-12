@@ -57,9 +57,9 @@ const renderReport = () =>
     </TestRouter>,
   );
 
-// MPDX-10302: below md each row labels its own quarters, and the column
+// MPDX-10302: below md each row labels its own months, and the column
 // headers no longer fit or line up with anything
-describe('MpdSupervisorReport quarter column headers', () => {
+describe('MpdSupervisorReport month column headers', () => {
   it.each([
     [phoneWidth, 'none'],
     [768, 'none'],
@@ -70,7 +70,7 @@ describe('MpdSupervisorReport quarter column headers', () => {
     await findByText('John Smith');
 
     expect(
-      getStyleAtWidth(getByTestId('quarter-headers'), 'display', width),
+      getStyleAtWidth(getByTestId('month-headers'), 'display', width),
     ).toBe(display);
   });
 });

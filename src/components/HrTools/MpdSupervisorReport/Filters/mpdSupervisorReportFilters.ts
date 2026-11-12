@@ -141,7 +141,7 @@ export const quickFilterDescription = (
       );
     case MpdSupervisorReportQuickFilterEnum.BelowNewStaffMonthlySalary:
       return t(
-        'Staff whose newest quarter is red: their average monthly payroll in the last completed quarter was below their New Staff Monthly Salary.',
+        'Staff whose average monthly payroll in the last completed quarter was below their New Staff Monthly Salary. Their newest quarter is red in their details.',
       );
     case MpdSupervisorReportQuickFilterEnum.AllPeople:
     default:

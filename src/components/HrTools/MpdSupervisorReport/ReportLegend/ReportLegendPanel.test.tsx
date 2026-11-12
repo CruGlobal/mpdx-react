@@ -64,6 +64,7 @@ describe('ReportLegendPanel', () => {
 
     [
       'Colors',
+      'Quarter colors (staff details)',
       'Numbers',
       'Filters',
       'New Staff Monthly Salary (the goal)',
@@ -73,12 +74,15 @@ describe('ReportLegendPanel', () => {
     );
   });
 
-  it('explains each chip color beside a sample chip', async () => {
+  it('explains each quarter chip color beside a sample chip', async () => {
     const { getByText, getAllByText } = await openLegend();
 
-    ['On track', 'Needs attention', 'At risk', 'No data', 'Ungraded'].forEach(
-      (label) => expect(getByText(label)).toBeInTheDocument(),
-    );
+    [
+      'Full salary',
+      'Below salary',
+      'Below New Staff salary',
+      'Ungraded',
+    ].forEach((label) => expect(getByText(label)).toBeInTheDocument());
     // Sample chips use the row chip's amount formatting
     expect(getByText('$4,250.00')).toBeInTheDocument();
     expect(getAllByText('-').length).toBeGreaterThan(0);
@@ -100,7 +104,7 @@ describe('ReportLegendPanel', () => {
     // MPDX-10112: payroll below the New Staff salary is red even at full gross salary
     expect(
       getByText(
-        /Payroll was below their New Staff Monthly Salary, even if they were paid their full Monthly Gross Salary\. Interns are never at risk\./,
+        /Payroll was below their New Staff Monthly Salary, even if they were paid their full Monthly Gross Salary\. Interns are never graded against the New Staff salary\./,
       ),
     ).toBeInTheDocument();
     expect(
@@ -144,7 +148,7 @@ describe('ReportLegendPanel', () => {
     expect(getByText('Below New Staff Monthly Salary')).toBeInTheDocument();
     expect(
       getByText(
-        'Staff whose newest quarter is red: their average monthly payroll in the last completed quarter was below their New Staff Monthly Salary.',
+        'Staff whose average monthly payroll in the last completed quarter was below their New Staff Monthly Salary. Their newest quarter is red in their details.',
       ),
     ).toBeInTheDocument();
     expect(
@@ -154,12 +158,12 @@ describe('ReportLegendPanel', () => {
     ).toBeInTheDocument();
   });
 
-  it('says quarter colors measure pay, not the balance', async () => {
+  it('says quarter colors measure pay and live in the staff details', async () => {
     const { getByText } = await openLegend();
 
     expect(
       getByText(
-        'Quarter colors measure pay, not the staff account balance. To find staff whose balance is below zero, use the Negative filters.',
+        "Quarter colors measure pay, not the staff account balance. They show at the top of each staff member's details.",
       ),
     ).toBeInTheDocument();
   });
@@ -192,17 +196,17 @@ describe('ReportLegendPanel', () => {
     expect(queryByText(/debt/i)).not.toBeInTheDocument();
   });
 
-  it('says in the intro that interns are graded on gross salary only', async () => {
+  it('says interns are graded on gross salary only in the quarter colors', async () => {
     const { getByText } = await openLegend();
 
     expect(
       getByText(
-        /Interns are graded against their Monthly Gross Salary only, and part-time field staff and volunteers aren't graded\./,
+        /^Each quarter chip in a staff member's details .* Interns are graded against their Monthly Gross Salary only, and part-time field staff and volunteers aren't graded\./,
       ),
     ).toBeInTheDocument();
   });
 
-  it('explains what needs attention means for interns', async () => {
+  it('explains what below salary means for interns', async () => {
     const { getByText } = await openLegend();
 
     expect(
@@ -210,12 +214,12 @@ describe('ReportLegendPanel', () => {
     ).toBeInTheDocument();
   });
 
-  it('sorts ungraded staff after graded staff and before no data', async () => {
+  it('sorts by the lowest balance at the end of last month', async () => {
     const { getByText } = await openLegend();
 
     expect(
       getByText(
-        /Ungraded staff come next, and staff with no data are listed last/,
+        'Lowest balance at the end of last month first, across all staff. Staff with No data for that month are listed last. Ties are sorted alphabetically by last name.',
       ),
     ).toBeInTheDocument();
   });
