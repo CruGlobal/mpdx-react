@@ -29,8 +29,11 @@ export const REFRESH_COOLDOWN = Duration.fromObject({ minutes: 3 });
 /** Refresh failures this component explains itself; the global error link toasts any other. */
 const HANDLED_ERROR_CODES = ['HCM_REFRESH_RATE_LIMITED', 'HCM_UNAVAILABLE'];
 
-/** The background sync revisits everyone well inside this, so older data means it has stalled. */
-const STALE_AFTER = Duration.fromObject({ hours: 24 });
+/**
+ * Matches the API's Hcm::UserInfoSnapshot::MAX_AGE. Past it a read fetches from HCM, so the API only
+ * serves older data when HCM could not be reached.
+ */
+const STALE_AFTER = Duration.fromObject({ hours: 36 });
 
 interface HcmSyncStatusProps {
   /**

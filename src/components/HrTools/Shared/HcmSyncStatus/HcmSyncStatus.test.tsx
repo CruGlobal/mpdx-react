@@ -117,7 +117,15 @@ describe('HcmSyncStatus', () => {
     expect(await findByRole('tooltip')).toHaveTextContent('Sep 30, 2026');
   });
 
-  it('marks data the sync has not reached in over a day', async () => {
+  it('does not mark data inside the API snapshot window of 36 hours', async () => {
+    const { body } = await renderBody({ syncedAt: '2026-09-29T09:00:00Z' });
+
+    expect(body.getByText(/^Synced from HCM/)).toHaveStyle({
+      color: theme.palette.text.secondary,
+    });
+  });
+
+  it('marks data older than the API snapshot window of 36 hours', async () => {
     const { body } = await renderBody({ syncedAt: '2026-09-28T12:00:00Z' });
 
     expect(body.getByText('Synced from HCM 2 days ago')).toHaveStyle({
