@@ -91,6 +91,7 @@ describe('ExpensesStep', () => {
     expect(getByRole('button', { name: 'Print' })).toBeDisabled();
   });
 
+  // Padding, not margin: a margin would collapse with the blocks' own margins (40px on main became 32px)
   it('keeps the page spacing between instruction blocks', () => {
     const { getByRole } = render(
       <GoalCalculatorTestWrapper>
@@ -109,7 +110,7 @@ describe('ExpensesStep', () => {
     expect(
       getStyleAtWidth(
         getByRole('heading', { name: 'Header' }),
-        'margin-top',
+        'padding-top',
         desktopWidth,
       ),
     ).toBe('32px');

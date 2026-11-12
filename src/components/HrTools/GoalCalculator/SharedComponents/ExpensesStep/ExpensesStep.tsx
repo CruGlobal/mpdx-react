@@ -56,10 +56,11 @@ export const ExpensesStep: React.FC<ExpensesStepProps> = ({
                   {t('Print')}
                 </Button>
                 {/* Block layout, not flex, so the instructions wrap around the floated button.
-                    The margin keeps SectionPage's spacing between instruction blocks. */}
+                    Padding, not margin, so SectionPage's spacing adds to the blocks' own
+                    margins instead of collapsing with them. */}
                 <Box
                   data-testid="ExpensesStepInstructions"
-                  sx={{ '& > * + *': { mt: 4 } }}
+                  sx={{ '& > * + *': { pt: 4 } }}
                 >
                   {instructions}
                 </Box>
