@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor, within } from '@testing-library/react';
+import { render, within } from '@testing-library/react';
 import { gqlMock } from '__tests__/util/graphqlMocking';
 import {
   BudgetFamilyCategoryEnum,
@@ -158,16 +158,26 @@ describe('BudgetPrintTable', () => {
   });
 
   it('shows the categories total and the household monthly budget', async () => {
-    const { findByRole, getByRole } = render(<TestComponent />);
+    const { findByRole } = render(<TestComponent />);
 
     expect(
       getRowCells(await findByRole('row', { name: /^Categories Total/ })),
     ).toEqual(['Categories Total', '$1,850']);
-    await waitFor(() =>
-      expect(
-        getRowCells(getByRole('row', { name: /^Monthly Budget/ })),
-      ).toEqual(['Monthly Budget', '$5,500']),
+    expect(
+      getRowCells(
+        await findByRole('row', { name: /^Monthly Budget \$5,500$/ }),
+      ),
+    ).toEqual(['Monthly Budget', '$5,500']);
+  });
+
+  it('totals the categories even when the family has a lump-sum amount', async () => {
+    const { findByRole } = render(
+      <TestComponent family={{ ...householdFamily, directInput: 9999 }} />,
     );
+
+    expect(
+      getRowCells(await findByRole('row', { name: /^Categories Total/ })),
+    ).toEqual(['Categories Total', '$1,850']);
   });
 
   it('does not show a monthly budget for ministry expenses', async () => {

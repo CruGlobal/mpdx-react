@@ -1,6 +1,6 @@
 import React from 'react';
 import PrintIcon from '@mui/icons-material/Print';
-import { Box, Button, Stack } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import {
   SimplePrintOnly,
@@ -55,8 +55,14 @@ export const ExpensesStep: React.FC<ExpensesStepProps> = ({
                 >
                   {t('Print')}
                 </Button>
-                {/* Keeps SectionPage's spacing between instruction blocks */}
-                <Stack spacing={4}>{instructions}</Stack>
+                {/* Block layout, not flex, so the instructions wrap around the floated button.
+                    The margin keeps SectionPage's spacing between instruction blocks. */}
+                <Box
+                  data-testid="ExpensesStepInstructions"
+                  sx={{ '& > * + *': { mt: 4 } }}
+                >
+                  {instructions}
+                </Box>
               </Box>
               {family?.primaryBudgetCategories.map((category) => {
                 const maxTotal =

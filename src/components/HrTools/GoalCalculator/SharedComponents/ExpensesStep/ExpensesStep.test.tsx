@@ -115,6 +115,31 @@ describe('ExpensesStep', () => {
     ).toBe('32px');
   });
 
+  // A flex wrapper would not wrap around the floated Print button and would narrow the cards
+  it('keeps the instructions in normal flow beside the floated Print button', () => {
+    const { getByTestId } = render(<TestComponent />);
+
+    expect(
+      getStyleAtWidth(
+        getByTestId('ExpensesStepInstructions'),
+        'display',
+        desktopWidth,
+      ),
+    ).not.toBe('flex');
+  });
+
+  it("titles the print-only table with the current step's title", async () => {
+    const { findByRole } = render(<TestComponent />);
+
+    expect(
+      await findByRole('heading', {
+        name: 'Calculator Settings',
+        level: 2,
+        hidden: true,
+      }),
+    ).toBeInTheDocument();
+  });
+
   it('renders the print-only budget table', async () => {
     const { findByRole } = render(<TestComponent />);
 
