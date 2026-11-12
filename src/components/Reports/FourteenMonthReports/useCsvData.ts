@@ -147,8 +147,10 @@ export const useCsvData = (
     if (currencyType !== FourteenMonthReportCurrencyType.Salary) {
       return tablesCsvData;
     }
-    const solidMonthlySupport = calculateSolidMonthlySupport(
-      currencyTables.flatMap(({ orderedContacts }) => orderedContacts),
+    const solidMonthlySupport = currencyTables.reduce(
+      (total, { currency, orderedContacts }) =>
+        total + calculateSolidMonthlySupport(orderedContacts, currency),
+      0,
     );
     return [
       [t('Solid Monthly Support'), solidMonthlySupport],

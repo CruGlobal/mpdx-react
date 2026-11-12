@@ -13,9 +13,7 @@ interface InHandMonthlyEquivalent {
 const isFinancialPartner = (contact: Contact): boolean =>
   contact.status?.toUpperCase() === StatusEnum.PartnerFinancial;
 
-export const getCommittedMonthlyEquivalent = (
-  contact: Contact,
-): number | null => {
+const getCommitment = (contact: Contact): number | null => {
   if (!isFinancialPartner(contact)) {
     return null;
   }
@@ -23,7 +21,48 @@ export const getCommittedMonthlyEquivalent = (
   if (!pledgeAmount || !pledgeFrequency) {
     return null;
   }
-  return Math.round(pledgeAmount / parseFloat(pledgeFrequency));
+  return pledgeAmount / parseFloat(pledgeFrequency);
+};
+
+export const getCommittedMonthlyEquivalent = (
+  contact: Contact,
+): number | null => {
+  const commitment = getCommitment(contact);
+  return commitment === null ? null : Math.round(commitment);
+};
+
+// The rate the contact's gifts in their commitment currency were converted to the report
+// currency at, from the months whose gifts were all in that currency
+const getGiftConversionRate = (contact: Contact): number | null => {
+  let amount = 0;
+  let converted = 0;
+  contact.months.forEach(({ donations, salaryCurrencyTotal }) => {
+    if (donations.length === 0) {
+      return;
+    }
+    if (donations.some((gift) => gift.currency !== contact.pledgeCurrency)) {
+      return;
+    }
+    amount += donations.reduce((sum, gift) => sum + gift.amount, 0);
+    converted += salaryCurrencyTotal;
+  });
+  return amount > 0 ? converted / amount : null;
+};
+
+// The committed monthly equivalent in the report's currency
+const getCommittedInCurrency = (
+  contact: Contact,
+  currency: string,
+): number | null => {
+  const commitment = getCommitment(contact);
+  if (commitment === null) {
+    return null;
+  }
+  if (!contact.pledgeCurrency || contact.pledgeCurrency === currency) {
+    return Math.round(commitment);
+  }
+  const rate = getGiftConversionRate(contact);
+  return rate === null ? null : Math.round(commitment * rate);
 };
 
 /*
@@ -60,12 +99,15 @@ const missedTooManyMonths = (
 };
 
 /*
- * The In Hand Monthly Equivalent over 12 months, capped at the commitment. Gifts above
- * the commitment and gifts from anyone who is not a financial partner are special
- * gifts and are left out.
+ * The In Hand Monthly Equivalent over 12 months, capped at the commitment, in the
+ * report's currency. Gifts above the commitment and gifts from anyone who is not a
+ * financial partner are special gifts and are left out.
  */
-export const getSolidMonthlySupport = (contact: Contact): number => {
-  const committed = getCommittedMonthlyEquivalent(contact);
+export const getSolidMonthlySupport = (
+  contact: Contact,
+  currency: string,
+): number => {
+  const committed = getCommittedInCurrency(contact, currency);
   const inHand = getInHandMonthlyEquivalent(
     contact,
     SOLID_MONTHLY_SUPPORT_MONTHS,
@@ -79,8 +121,11 @@ export const getSolidMonthlySupport = (contact: Contact): number => {
   return Math.min(committed, inHand.amount);
 };
 
-export const calculateSolidMonthlySupport = (contacts: Contact[]): number =>
+export const calculateSolidMonthlySupport = (
+  contacts: Contact[],
+  currency: string,
+): number =>
   contacts.reduce(
-    (total, contact) => total + getSolidMonthlySupport(contact),
+    (total, contact) => total + getSolidMonthlySupport(contact, currency),
     0,
   );

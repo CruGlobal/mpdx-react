@@ -10,7 +10,11 @@ interface BuildContactOptions {
   pledgeAmount?: number | null;
   pledgeFrequency?: string | null;
   status?: string;
-  // Month totals, newest first, starting with the current month
+  pledgeCurrency?: string;
+  giftCurrency?: string;
+  // Rate the gifts were converted to the report currency at
+  rate?: number;
+  // Month totals in the gift currency, newest first, starting with the current month
   gifts: number[];
 }
 
@@ -18,6 +22,9 @@ const buildContact = ({
   pledgeAmount = 100,
   pledgeFrequency = '1.0',
   status = StatusEnum.PartnerFinancial,
+  pledgeCurrency = 'USD',
+  giftCurrency = 'USD',
+  rate = 1,
   gifts,
 }: BuildContactOptions): Contact => {
   const totals = [...gifts, ...Array(14).fill(0)].slice(0, 14);
@@ -32,17 +39,30 @@ const buildContact = ({
     lateBy30Days: false,
     lateBy60Days: false,
     pledgeAmount,
-    pledgeCurrency: 'USD',
+    pledgeCurrency,
     pledgeFrequency,
     status,
-    months: totals.map((total, index) => ({
-      month: DateTime.fromISO('2020-12-01')
+    months: totals.map((total, index) => {
+      const month = DateTime.fromISO('2020-12-01')
         .minus({ months: index })
-        .toISODate()!,
-      total,
-      salaryCurrencyTotal: total,
-      donations: [],
-    })),
+        .toISODate()!;
+      return {
+        month,
+        total: total * rate,
+        salaryCurrencyTotal: total * rate,
+        donations:
+          total > 0
+            ? [
+                {
+                  amount: total,
+                  date: month,
+                  paymentMethod: null,
+                  currency: giftCurrency,
+                },
+              ]
+            : [],
+      };
+    }),
   };
 };
 
@@ -53,19 +73,19 @@ describe('getSolidMonthlySupport', () => {
   it('counts a monthly partner who never missed at their commitment', () => {
     const contact = buildContact({ gifts: [0, ...monthly(100, 12)] });
 
-    expect(getSolidMonthlySupport(contact)).toBe(100);
+    expect(getSolidMonthlySupport(contact, 'USD')).toBe(100);
   });
 
   it('ignores the current month', () => {
     const contact = buildContact({ gifts: [500, ...monthly(100, 12)] });
 
-    expect(getSolidMonthlySupport(contact)).toBe(100);
+    expect(getSolidMonthlySupport(contact, 'USD')).toBe(100);
   });
 
   it('ignores the oldest, partial month', () => {
     const contact = buildContact({ gifts: [0, ...monthly(100, 12), 900] });
 
-    expect(getSolidMonthlySupport(contact)).toBe(100);
+    expect(getSolidMonthlySupport(contact, 'USD')).toBe(100);
   });
 
   it('leaves gifts above the commitment out', () => {
@@ -73,13 +93,13 @@ describe('getSolidMonthlySupport', () => {
       gifts: [0, 400, ...monthly(100, 11)],
     });
 
-    expect(getSolidMonthlySupport(contact)).toBe(100);
+    expect(getSolidMonthlySupport(contact, 'USD')).toBe(100);
   });
 
   it('averages in a partner who gave less than their commitment', () => {
     const contact = buildContact({ gifts: [0, ...monthly(50, 12)] });
 
-    expect(getSolidMonthlySupport(contact)).toBe(50);
+    expect(getSolidMonthlySupport(contact, 'USD')).toBe(50);
   });
 
   it('still counts a monthly partner who missed exactly 2 months, at their average', () => {
@@ -88,7 +108,7 @@ describe('getSolidMonthlySupport', () => {
     });
 
     // $1,000 over 12 months
-    expect(getSolidMonthlySupport(contact)).toBe(83);
+    expect(getSolidMonthlySupport(contact, 'USD')).toBe(83);
   });
 
   it('leaves out a monthly partner who missed more than 2 months', () => {
@@ -96,13 +116,13 @@ describe('getSolidMonthlySupport', () => {
       gifts: [0, ...monthly(100, 9), 0, 0, 0],
     });
 
-    expect(getSolidMonthlySupport(contact)).toBe(0);
+    expect(getSolidMonthlySupport(contact, 'USD')).toBe(0);
   });
 
   it('leaves out a monthly partner who started giving 5 months ago', () => {
     const contact = buildContact({ gifts: [0, ...monthly(100, 5)] });
 
-    expect(getSolidMonthlySupport(contact)).toBe(0);
+    expect(getSolidMonthlySupport(contact, 'USD')).toBe(0);
   });
 
   it('leaves out a weekly partner who missed more than 2 months', () => {
@@ -112,7 +132,7 @@ describe('getSolidMonthlySupport', () => {
       gifts: [0, 0, 0, 0, ...monthly(108, 9)],
     });
 
-    expect(getSolidMonthlySupport(contact)).toBe(0);
+    expect(getSolidMonthlySupport(contact, 'USD')).toBe(0);
   });
 
   it('counts a weekly partner at their monthly equivalent', () => {
@@ -123,7 +143,7 @@ describe('getSolidMonthlySupport', () => {
     });
 
     // $25 / 0.23 months, rounded
-    expect(getSolidMonthlySupport(contact)).toBe(109);
+    expect(getSolidMonthlySupport(contact, 'USD')).toBe(109);
   });
 
   it('counts a quarterly partner at their monthly equivalent', () => {
@@ -133,7 +153,7 @@ describe('getSolidMonthlySupport', () => {
       gifts: [0, 450, 0, 0, 450, 0, 0, 450, 0, 0, 450, 0, 0],
     });
 
-    expect(getSolidMonthlySupport(contact)).toBe(150);
+    expect(getSolidMonthlySupport(contact, 'USD')).toBe(150);
   });
 
   it('counts an annual partner at their monthly equivalent', () => {
@@ -143,7 +163,7 @@ describe('getSolidMonthlySupport', () => {
       gifts: [0, 0, 0, 0, 0, 0, 1200],
     });
 
-    expect(getSolidMonthlySupport(contact)).toBe(100);
+    expect(getSolidMonthlySupport(contact, 'USD')).toBe(100);
   });
 
   it('averages in a quarterly partner who missed a gift', () => {
@@ -153,7 +173,44 @@ describe('getSolidMonthlySupport', () => {
       gifts: [0, 450, 0, 0, 0, 0, 0, 450, 0, 0, 450, 0, 0],
     });
 
-    expect(getSolidMonthlySupport(contact)).toBe(113);
+    expect(getSolidMonthlySupport(contact, 'USD')).toBe(113);
+  });
+
+  it('counts an every-2-months partner who gave on schedule', () => {
+    const contact = buildContact({
+      pledgeAmount: 200,
+      pledgeFrequency: '2.0',
+      gifts: [0, 200, 0, 200, 0, 200, 0, 200, 0, 200, 0, 200, 0],
+    });
+
+    expect(getSolidMonthlySupport(contact, 'USD')).toBe(100);
+  });
+
+  it('converts a commitment in another currency at the rate its gifts were converted', () => {
+    const contact = buildContact({
+      rate: 56,
+      gifts: [0, ...monthly(100, 12)],
+    });
+
+    expect(getSolidMonthlySupport(contact, 'PHP')).toBe(5600);
+  });
+
+  it('leaves out gifts above a commitment in another currency', () => {
+    const contact = buildContact({
+      rate: 56,
+      gifts: [0, 400, ...monthly(100, 11)],
+    });
+
+    expect(getSolidMonthlySupport(contact, 'PHP')).toBe(5600);
+  });
+
+  it('counts nothing when no gift was in the commitment currency', () => {
+    const contact = buildContact({
+      pledgeCurrency: 'CAD',
+      gifts: [0, ...monthly(100, 12)],
+    });
+
+    expect(getSolidMonthlySupport(contact, 'USD')).toBe(0);
   });
 
   it('counts nothing for a contact who is not a financial partner', () => {
@@ -162,7 +219,7 @@ describe('getSolidMonthlySupport', () => {
       gifts: [0, ...monthly(100, 12)],
     });
 
-    expect(getSolidMonthlySupport(contact)).toBe(0);
+    expect(getSolidMonthlySupport(contact, 'USD')).toBe(0);
   });
 
   it('counts nothing for a financial partner with no commitment amount', () => {
@@ -171,7 +228,7 @@ describe('getSolidMonthlySupport', () => {
       gifts: [0, ...monthly(100, 12)],
     });
 
-    expect(getSolidMonthlySupport(contact)).toBe(0);
+    expect(getSolidMonthlySupport(contact, 'USD')).toBe(0);
   });
 
   it('counts nothing for a financial partner with no commitment frequency', () => {
@@ -180,7 +237,7 @@ describe('getSolidMonthlySupport', () => {
       gifts: [0, ...monthly(100, 12)],
     });
 
-    expect(getSolidMonthlySupport(contact)).toBe(0);
+    expect(getSolidMonthlySupport(contact, 'USD')).toBe(0);
   });
 });
 
@@ -200,10 +257,10 @@ describe('calculateSolidMonthlySupport', () => {
       }),
     ];
 
-    expect(calculateSolidMonthlySupport(contacts)).toBe(200);
+    expect(calculateSolidMonthlySupport(contacts, 'USD')).toBe(200);
   });
 
   it('is 0 with no contacts', () => {
-    expect(calculateSolidMonthlySupport([])).toBe(0);
+    expect(calculateSolidMonthlySupport([], 'USD')).toBe(0);
   });
 });
