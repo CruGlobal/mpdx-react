@@ -71,7 +71,7 @@ export interface MpdGoalAdminContextValue {
   saveTrainingCosts: (cohortId: string, costs: TrainingCosts) => Promise<void>;
   /** Resolves with the count the server actually sent, which can be lower than asked. */
   runAndSend: (attendeeIds: string[]) => Promise<number>;
-  /** Coaches OneApp says may take the selected cohort; legitimately empty for some. */
+  /** The MPD coach list; legitimately empty until the MPD Goals team adds someone. */
   assignableCoaches: AssignCoachOption[];
   /** True while the coach list is in flight, so the picker waits before saying "none". */
   assignableCoachesLoading: boolean;
