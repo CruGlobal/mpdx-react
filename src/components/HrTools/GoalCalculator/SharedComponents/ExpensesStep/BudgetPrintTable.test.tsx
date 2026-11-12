@@ -126,16 +126,17 @@ describe('BudgetPrintTable', () => {
     expect(queryByText(/null|undefined/)).not.toBeInTheDocument();
   });
 
+  // Whole amounts keep their cents so the column lines up with amounts like $50.25 (#2273 review #28)
   it('lists each category total followed by its line items', async () => {
     const { findByRole, getAllByRole } = render(<TestComponent />);
 
     await findByRole('cell', { name: 'Housing' });
     const rows = getAllByRole('row').slice(1).map(getRowCells);
     expect(rows.slice(0, 4)).toEqual([
-      ['Housing', '$1,250'],
-      ['Rent', '$1,200'],
-      ['Repairs', '$50'],
-      ['Food', '$600'],
+      ['Housing', '$1,250.00'],
+      ['Rent', '$1,200.00'],
+      ['Repairs', '$50.00'],
+      ['Food', '$600.00'],
     ]);
   });
 
@@ -162,12 +163,12 @@ describe('BudgetPrintTable', () => {
 
     expect(
       getRowCells(await findByRole('row', { name: /^Categories Total/ })),
-    ).toEqual(['Categories Total', '$1,850']);
+    ).toEqual(['Categories Total', '$1,850.00']);
     expect(
       getRowCells(
-        await findByRole('row', { name: /^Monthly Budget \$5,500$/ }),
+        await findByRole('row', { name: /^Monthly Budget \$5,500\.00$/ }),
       ),
-    ).toEqual(['Monthly Budget', '$5,500']);
+    ).toEqual(['Monthly Budget', '$5,500.00']);
   });
 
   it('totals the categories even when the family has a lump-sum amount', async () => {
@@ -177,7 +178,7 @@ describe('BudgetPrintTable', () => {
 
     expect(
       getRowCells(await findByRole('row', { name: /^Categories Total/ })),
-    ).toEqual(['Categories Total', '$1,850']);
+    ).toEqual(['Categories Total', '$1,850.00']);
   });
 
   it('does not show a monthly budget for ministry expenses', async () => {
