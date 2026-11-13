@@ -1,5 +1,10 @@
 import React from 'react';
 import { render } from '@testing-library/react';
+import {
+  desktopWidth,
+  getGridColumnsAtWidth,
+  phoneWidth,
+} from '__tests__/util/styleAtWidth';
 import { NameDisplaySkeleton } from './NameDisplaySkeleton';
 
 describe('NameDisplaySkeleton', () => {
@@ -21,5 +26,16 @@ describe('NameDisplaySkeleton', () => {
     expect(
       queryByTestId('name-display-skeleton-amounts'),
     ).not.toBeInTheDocument();
+  });
+
+  it('stacks the two default columns on a phone, like the loaded card', () => {
+    const { getAllByTestId } = render(<NameDisplaySkeleton showContent />);
+    const columns = getAllByTestId('name-display-skeleton-column');
+
+    expect(columns).toHaveLength(2);
+    columns.forEach((column) => {
+      expect(getGridColumnsAtWidth(column, phoneWidth)).toBe(12);
+      expect(getGridColumnsAtWidth(column, desktopWidth)).toBe(6);
+    });
   });
 });
