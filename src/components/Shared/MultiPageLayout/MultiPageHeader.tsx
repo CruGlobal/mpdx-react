@@ -1,4 +1,4 @@
-import React, { FC, ReactNode } from 'react';
+import React, { FC, ReactNode, useEffect, useRef } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Box, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -16,7 +16,14 @@ export enum HeaderTypeEnum {
   MpdxTools = 'mpdxTools',
 }
 
-export const multiPageHeaderHeight = theme.spacing(10);
+const baseHeaderHeight = theme.spacing(10);
+const headerHeightVariable = '--multi-page-header-height';
+
+/**
+ * The header's height, for calc() heights of the content under it. On phones the header grows
+ * when the title wraps or the extras need their own row, and it keeps this value up to date.
+ */
+export const multiPageHeaderHeight = `var(${headerHeightVariable}, ${baseHeaderHeight})`;
 
 interface MultiPageHeaderProps {
   isNavListOpen: boolean;
@@ -33,7 +40,7 @@ export const StickyHeader = styled(Box)(() => ({
   top: 0,
   borderBottom: '1px solid',
   borderBottomColor: theme.palette.grey[200],
-  height: multiPageHeaderHeight,
+  height: baseHeaderHeight,
   zIndex: '700',
   background: theme.palette.common.white,
   '@media print': {
@@ -78,13 +85,40 @@ export const MultiPageHeader: FC<MultiPageHeaderProps> = ({
 
   const titleAccess = getHeaderTitleAccess(headerType, t);
 
+  const headerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!header || typeof ResizeObserver === 'undefined') {
+      return;
+    }
+
+    const rootStyle = document.documentElement.style;
+    const observer = new ResizeObserver(() => {
+      rootStyle.setProperty(headerHeightVariable, `${header.offsetHeight}px`);
+    });
+    observer.observe(header);
+    return () => {
+      observer.disconnect();
+      rootStyle.removeProperty(headerHeightVariable);
+    };
+  }, []);
+
   return (
-    <StickyHeader p={2} test-dataid="MultiPageHeader">
+    <StickyHeader
+      ref={headerRef}
+      p={2}
+      test-dataid="MultiPageHeader"
+      sx={{ [theme.breakpoints.down('sm')]: { height: 'auto' } }}
+    >
       <Box
         display="flex"
         justifyContent="space-between"
         alignItems="center"
-        sx={{ lineHeight: 1.1 }}
+        sx={{
+          lineHeight: 1.1,
+          flexWrap: { xs: 'wrap', sm: 'nowrap' },
+          rowGap: 1,
+        }}
       >
         <NavListButton
           panelOpen={isNavListOpen}
@@ -131,11 +165,10 @@ export const MultiPageHeader: FC<MultiPageHeaderProps> = ({
           <Typography
             variant="h5"
             sx={{
-              // The header has a fixed height, so a wrapped title would spill onto the page below
+              // The h6 size fits most titles on one line on phones, and a
+              // longer one wraps instead of being cut off
               [theme.breakpoints.down('sm')]: {
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
+                fontSize: theme.typography.h6.fontSize,
               },
             }}
           >
@@ -143,7 +176,24 @@ export const MultiPageHeader: FC<MultiPageHeaderProps> = ({
           </Typography>
           {titleExtra}
         </Box>
-        {rightExtra}
+        {rightExtra && (
+          <Box
+            sx={{
+              // Lays out as if unwrapped, except on phones, where the extras
+              // get their own row, lined up with the title past the menu button
+              display: 'contents',
+              [theme.breakpoints.down('sm')]: {
+                display: 'flex',
+                alignItems: 'center',
+                flexBasis: '100%',
+                paddingLeft: theme.spacing(7),
+                '&:empty': { display: 'none' },
+              },
+            }}
+          >
+            {rightExtra}
+          </Box>
+        )}
       </Box>
     </StickyHeader>
   );

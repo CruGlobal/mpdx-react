@@ -8,12 +8,13 @@ import { StaffSavingFundLayout } from 'src/components/HrTools/StaffSavingFund/St
 export const StaffSavingFundPage: React.FC = () => {
   const { t } = useTranslation();
 
-  const title = t('HR Tools | Savings Fund Transfer');
-
   return (
     <StaffSavingFundProvider>
-      <StaffSavingFundLayout pageTitle={title} selectedMenuId="staffSavingFund">
-        <IntroPage title={title} />
+      <StaffSavingFundLayout
+        pageTitle={t('HR Tools | Savings Fund Transfer')}
+        selectedMenuId="staffSavingFund"
+      >
+        <IntroPage title={t('Savings Fund Transfer')} />
       </StaffSavingFundLayout>
     </StaffSavingFundProvider>
   );
