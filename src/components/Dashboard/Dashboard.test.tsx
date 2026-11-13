@@ -5,6 +5,7 @@ import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import matchMediaMock from '__tests__/util/matchMediaMock';
+import { getStyleAtWidth } from '__tests__/util/styleAtWidth';
 import {
   afterTestResizeObserver,
   beforeTestResizeObserver,
@@ -321,5 +322,33 @@ describe('Dashboard', () => {
         expect(queryByText('Is this your user group?')).not.toBeInTheDocument();
       });
     });
+  });
+
+  it('leaves room at the end of the page so View Activity Detail can scroll clear of the help button', async () => {
+    const { container, findByRole } = render(
+      <ThemeProvider theme={theme}>
+        <SnackbarProvider>
+          <GqlMockedProvider>
+            <Dashboard accountListId="abc" data={data} />
+          </GqlMockedProvider>
+        </SnackbarProvider>
+      </ThemeProvider>,
+    );
+
+    // The dashboard ends the page, so its last block's bottom padding is the room at the end
+    const pageEnd = container.lastElementChild;
+    if (!pageEnd) {
+      throw new Error('The dashboard rendered nothing');
+    }
+    expect(pageEnd).toContainElement(
+      await findByRole('link', { name: 'View Activity Detail' }),
+    );
+    // The help button covers about 76px at the bottom of phones and 176px from 600px up
+    const getEndRoom = (width: number) =>
+      parseFloat(getStyleAtWidth(pageEnd, 'padding-bottom', width)) || 0;
+    expect(getEndRoom(360)).toBeGreaterThanOrEqual(76);
+    expect(getEndRoom(390)).toBeGreaterThanOrEqual(76);
+    expect(getEndRoom(768)).toBeGreaterThanOrEqual(176);
+    expect(getEndRoom(1280)).toBeGreaterThanOrEqual(176);
   });
 });

@@ -1,5 +1,6 @@
 import { Box, Stack, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { helpButtonSpace } from 'src/components/Helpjuice/helpButtonSpace';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { multiPageHeaderHeight } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import theme from 'src/theme';
@@ -17,11 +18,16 @@ export const PrintableStack = styled(Stack)({
 
 export const MainContent = styled('div')(({ theme }) => ({
   padding: theme.spacing(4),
+  ...helpButtonSpace(theme),
   width: '100%',
   '@media screen': {
     height: `calc(100vh - ${navBarHeight} - ${multiPageHeaderHeight})`,
     overflow: 'scroll',
     position: 'relative',
+  },
+  // The help button doesn't print, so printouts don't need the room for it
+  '@media print': {
+    paddingBottom: theme.spacing(4),
   },
 }));
 
