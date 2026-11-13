@@ -25,7 +25,7 @@ import { getHeaderTitleAccess } from 'src/components/Shared/MultiPageLayout/help
 import { NavFilterIcon } from 'src/components/Shared/styledComponents/NavFilterIcon';
 import { useLocale } from 'src/hooks/useLocale';
 import theme from 'src/theme';
-import { DownloadCsvButton } from './DownloadCsvButton/DownloadCsvButton';
+import { HeaderActions } from './HeaderActions/HeaderActions';
 import { AppliedFilters } from './ListStates/AppliedFilters';
 import { EmptyStaffState } from './ListStates/EmptyStaffState';
 import { FilterRequiredState } from './ListStates/FilterRequiredState';
@@ -33,7 +33,6 @@ import { useManagedStaffTeamsQuery } from './ManagedStaffTeams.generated';
 import { Panel, useMpdSupervisorReport } from './MpdSupervisorReportContext';
 import { HealthColorKey } from './ReportLegend/HealthColorKey';
 import { ReportLegendButton } from './ReportLegend/ReportLegendButton';
-import { RowDensityToggle } from './RowDensityToggle/RowDensityToggle';
 import { StaffMember } from './StaffMemberRow/StaffMember';
 import { TeamSummary } from './TeamSummary/TeamSummary';
 import { balanceMonthHeaders } from './balanceHelpers';
@@ -242,8 +241,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
               </Typography>
             )}
           </TitleBox>
-          <RowDensityToggle />
-          <DownloadCsvButton />
+          <HeaderActions />
           <TextField
             value={search}
             onChange={(event) => setSearch(event.target.value)}
