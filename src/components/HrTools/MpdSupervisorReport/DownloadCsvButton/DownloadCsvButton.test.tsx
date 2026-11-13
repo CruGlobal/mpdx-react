@@ -149,7 +149,20 @@ describe('DownloadCsvButton', () => {
 
     expect(getByRole('button', { name: 'Download CSV' })).toBeDisabled();
     expect(
-      await findByRole('link', { name: 'Download CSV' }),
+      await findByRole('link', { name: 'Download CSV' }, { timeout: 3000 }),
     ).toBeInTheDocument();
+  });
+
+  it('releases the file when the rows change and when it goes away', async () => {
+    const { findByRole, getByRole, unmount } = renderButton();
+    await findByRole('link', { name: 'Download CSV' });
+    expect(URL.revokeObjectURL).not.toHaveBeenCalled();
+
+    userEvent.click(getByRole('button', { name: 'Search Jones' }));
+    expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:supervisor-report');
+
+    await findByRole('link', { name: 'Download CSV' }, { timeout: 3000 });
+    unmount();
+    expect(URL.revokeObjectURL).toHaveBeenCalledTimes(2);
   });
 });

@@ -6,7 +6,10 @@ import { buildURI } from 'react-csv/lib/core';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
-import { buildSupervisorReportCsv } from './supervisorReportCsv';
+import {
+  SupervisorReportCsv,
+  buildSupervisorReportCsv,
+} from './supervisorReportCsv';
 
 /** Downloads the rows on screen, in screen order, once every page is in. */
 export const DownloadCsvButton: React.FC = () => {
@@ -33,17 +36,22 @@ export const DownloadCsvButton: React.FC = () => {
     [ready, staffMembers, t, locale],
   );
 
-  // A blob URL cannot be built on the server, so it waits for an effect
-  const [href, setHref] = useState<string | null>(null);
+  // A blob URL cannot be built on the server, so it waits for an effect. It is
+  // kept with the rows it holds so a render with new rows never links the old file.
+  const [file, setFile] = useState<{
+    csv: SupervisorReportCsv;
+    href: string;
+  } | null>(null);
   useEffect(() => {
     if (!csv) {
-      setHref(null);
+      setFile(null);
       return;
     }
-    const uri = buildURI(csv, true);
-    setHref(uri);
-    return () => URL.revokeObjectURL(uri);
+    const href = buildURI(csv, true);
+    setFile({ csv, href });
+    return () => URL.revokeObjectURL(href);
   }, [csv]);
+  const href = file?.csv === csv ? file.href : null;
 
   const buttonProps = {
     variant: 'outlined',
