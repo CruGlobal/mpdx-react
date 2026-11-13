@@ -15,8 +15,22 @@ const TaskCompleteButton = styled(IconButton)(({ theme }) => ({
   height: theme.spacing(2),
   width: theme.spacing(2),
   backgroundColor: theme.palette.common.white,
+  // Keeps the tap area below inside the button, behind the check icon
+  isolation: 'isolate',
   '&:hover': {
     backgroundColor: theme.palette.mpdxGreen.main,
+  },
+  // Invisible 44px tap area centered on the small circle. It sits behind the
+  // check icon so hovering the circle still shows the icon's due date title.
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    width: 44,
+    height: 44,
+    transform: 'translate(-50%, -50%)',
+    zIndex: -1,
   },
 }));
 
