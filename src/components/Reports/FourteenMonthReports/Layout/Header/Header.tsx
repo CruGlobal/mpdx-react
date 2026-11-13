@@ -26,16 +26,13 @@ interface FourteenMonthReportHeaderProps {
 const StickyHeader = styled(Box)(({}) => ({
   position: 'sticky',
   top: 0,
-  // On phones the title and actions wrap to two rows, so let the header grow
+  // When the title and actions don't fit on one row (phones, tablets, or a narrow report next to
+  // the open Reports menu) they wrap to two rows, so let the header grow instead of fixing its height
   minHeight: 96,
-  [theme.breakpoints.up('sm')]: {
-    height: 96,
-  },
   '@media print': {
     position: 'static',
     paddingTop: '1rem',
     paddingBottom: '1rem',
-    height: 'auto',
     minHeight: 'auto',
   },
 }));
