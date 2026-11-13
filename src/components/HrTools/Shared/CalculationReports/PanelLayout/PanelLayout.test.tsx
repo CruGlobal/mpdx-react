@@ -4,8 +4,10 @@ import MenuOpenSharp from '@mui/icons-material/MenuOpenSharp';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import mediaQuery, { MediaValues } from 'css-mediaquery';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { getStyleAtWidth } from '__tests__/util/styleAtWidth';
 import theme from 'src/theme';
 import { PanelTypeEnum } from '../Shared/sharedTypes';
 import { IconPanelItem, PanelLayout, PanelLayoutProps } from './PanelLayout';
@@ -49,6 +51,53 @@ const TestComponent: React.FC<TestComponentProps> = (props) => (
     </TestRouter>
   </ThemeProvider>
 );
+
+const getMainContent = (container: HTMLElement): HTMLElement => {
+  const mainContent = container.querySelector<HTMLElement>('.main-content');
+  if (!mainContent) {
+    throw new Error('No main content element');
+  }
+  return mainContent;
+};
+
+// The help button covers about 76px at the bottom of phones and 176px from 600px up
+const getEndRoom = (element: Element, width: number): number =>
+  parseFloat(getStyleAtWidth(element, 'padding-bottom', width)) || 0;
+
+// jsdom can't parse some selectors MUI writes, so treat those as not matching
+const safeMatches = (element: Element, selector: string): boolean => {
+  try {
+    return element.matches(selector);
+  } catch {
+    return false;
+  }
+};
+
+const isMediaRule = (rule: CSSRule): rule is CSSMediaRule =>
+  'media' in rule && 'cssRules' in rule;
+
+const isStyleRule = (rule: CSSRule): rule is CSSStyleRule =>
+  'selectorText' in rule && 'style' in rule;
+
+// getStyleAtWidth only checks screens, so this works out which value of `property` wins for
+// `element` when it is printed. Later rules win, as Emotion writes one class per element.
+const getPrintStyle = (element: Element, property: string): string => {
+  const media: Partial<MediaValues> = { type: 'print', width: '816px' };
+  let value = '';
+  const visit = (rules: CSSRuleList): void => {
+    Array.from(rules).forEach((rule) => {
+      if (isMediaRule(rule)) {
+        if (mediaQuery.match(rule.media.mediaText, media)) {
+          visit(rule.cssRules);
+        }
+      } else if (isStyleRule(rule) && safeMatches(element, rule.selectorText)) {
+        value = rule.style.getPropertyValue(property) || value;
+      }
+    });
+  };
+  Array.from(document.styleSheets).forEach((sheet) => visit(sheet.cssRules));
+  return value;
+};
 
 describe('PanelLayout', () => {
   it('renders main content and sidebar title for Empty panel type', () => {
@@ -242,5 +291,41 @@ describe('PanelLayout', () => {
     expect(getByTestId('main-content')).toBeInTheDocument();
     // With empty icons array, no icon buttons should render
     expect(queryAllByRole('button')).toHaveLength(0);
+  });
+
+  describe('end of the main content', () => {
+    it.each([PanelTypeEnum.Empty, PanelTypeEnum.Other])(
+      'leaves room for the help button on %s pages so the last control can scroll clear of it',
+      (panelType) => {
+        const { container, getByRole } = render(
+          <TestComponent
+            panelType={panelType}
+            mainContent={<button>Continue</button>}
+          />,
+        );
+
+        const mainContent = getMainContent(container);
+        expect(mainContent).toContainElement(
+          getByRole('button', { name: 'Continue' }),
+        );
+        expect(getEndRoom(mainContent, 360)).toBeGreaterThanOrEqual(76);
+        expect(getEndRoom(mainContent, 390)).toBeGreaterThanOrEqual(76);
+        expect(getEndRoom(mainContent, 768)).toBeGreaterThanOrEqual(176);
+        expect(getEndRoom(mainContent, 1280)).toBeGreaterThanOrEqual(176);
+      },
+    );
+
+    it('leaves out the help button room when printed, since the button does not print', () => {
+      const { container } = render(
+        <TestComponent panelType={PanelTypeEnum.Other} />,
+      );
+
+      // jsdom drops a padding shorthand, so no padding-bottom reads as 0 (the 32px from padding)
+      const printRoom =
+        parseFloat(
+          getPrintStyle(getMainContent(container), 'padding-bottom'),
+        ) || 0;
+      expect(printRoom).toBeLessThan(76);
+    });
   });
 });
