@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Box, Theme, useMediaQuery } from '@mui/material';
+import { Box } from '@mui/material';
 import {
   GridApi,
   GridColDef,
@@ -41,16 +41,11 @@ export const createTableRow = (data: Row, t: TFunction): TableData => ({
   lastDonationCurrency: data.lastDonationCurrency ?? null,
 });
 
-// Flex columns shrink to fit a phone screen and cut off their values, so on
-// phones keep each column at its full width and let the grid scroll sideways
-const useFullWidthColumnsOnPhones = (columns: GridColDef[]): GridColDef[] => {
-  const isMobile = useMediaQuery((theme: Theme) =>
-    theme.breakpoints.down('sm'),
-  );
-  return isMobile
-    ? columns.map((column) => ({ ...column, minWidth: column.width }))
-    : columns;
-};
+// Flex columns shrink to fit a screen that is too narrow and cut off their
+// values, so keep each column at its full width and let the grid scroll
+// sideways. On wide screens the flex columns still stretch to fill the space.
+const withFullWidthColumns = (columns: GridColDef[]): GridColDef[] =>
+  columns.map((column) => ({ ...column, minWidth: column.width }));
 
 const CustomFooter: React.FC = () => {
   return (
@@ -86,7 +81,7 @@ export const PartnerGivingAnalysisTable: React.FC<
     totalDonations,
   } = usePopulateTableRows(onSelectOne, isRowChecked);
 
-  const columns = useFullWidthColumnsOnPhones([
+  const columns = withFullWidthColumns([
     {
       field: 'checkbox',
       headerName: '',
