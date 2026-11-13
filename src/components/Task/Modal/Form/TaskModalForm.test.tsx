@@ -7,6 +7,11 @@ import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  desktopWidth,
+  getGridColumnsAtWidth,
+  phoneWidth,
+} from '__tests__/util/styleAtWidth';
 import { AssigneeOptionsQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
 import { ActivityTypeEnum, PhaseEnum } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
@@ -593,5 +598,43 @@ describe('TaskModalForm', () => {
         'Follow Up In Person',
       );
     });
+  });
+
+  // On phones the year and AM/PM were cut off when the fields sat side by side.
+  // jsdom can't measure layout, so these read the Grid width CSS at each width.
+  describe.each([
+    { state: 'open', task: mockTask, date: 'Due Date', time: 'Due Time' },
+    {
+      state: 'completed',
+      task: mockCompletedTask,
+      date: 'Completed Date',
+      time: 'Completed Time',
+    },
+  ])('date and time fields for $state task', ({ task, date, time }) => {
+    // How many of the 12 grid columns the date and time fields span
+    const renderColumns = (width: number) => {
+      const { getByLabelText } = render(<TestComponent task={task} />);
+      return [date, time].map((label) => {
+        const gridItem = getByLabelText(label).closest('.MuiGrid-root');
+        if (!gridItem) {
+          throw new Error(`Grid item for ${label} not found`);
+        }
+        return getGridColumnsAtWidth(gridItem, width);
+      });
+    };
+
+    it.each([360, phoneWidth])(
+      `stacks ${date} on top of ${time} at %ipx`,
+      (width) => {
+        expect(renderColumns(width)).toEqual([12, 12]);
+      },
+    );
+
+    it.each([768, desktopWidth])(
+      `keeps ${date} and ${time} side by side at %ipx`,
+      (width) => {
+        expect(renderColumns(width)).toEqual([6, 6]);
+      },
+    );
   });
 });
