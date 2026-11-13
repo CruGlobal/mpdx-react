@@ -196,7 +196,7 @@ const Contact = ({
         <Grid container alignItems="center">
           <Grid
             size={{
-              xs: 6,
+              xs: 12,
               sm: 5,
               md: 4,
             }}
@@ -211,7 +211,7 @@ const Contact = ({
                   }}
                 />
               )}
-              <Box display="flex" flexDirection="column" ml={2}>
+              <Box display="flex" flexDirection="column" ml={2} minWidth={0}>
                 {contact.primaryPerson?.firstName &&
                   contact.primaryPerson?.lastName && (
                     <Typography variant="subtitle1">
@@ -223,7 +223,10 @@ const Contact = ({
                     href={`mailto:${contact.primaryPerson.primaryEmailAddress.email}`}
                     target="_blank"
                   >
-                    <Typography variant="body2">
+                    <Typography
+                      variant="body2"
+                      sx={{ overflowWrap: 'anywhere' }}
+                    >
                       {contact.primaryPerson?.primaryEmailAddress.email}
                     </Typography>
                   </Link>
@@ -238,7 +241,7 @@ const Contact = ({
           </Grid>
           <Grid
             size={{
-              xs: 6,
+              xs: 12,
               sm: 4,
               md: 4,
             }}
