@@ -256,6 +256,24 @@ describe('GoalsList', () => {
       });
     });
 
+    it('leaves room at the end so the last View link can scroll clear of the help button', async () => {
+      const { container, findAllByRole } = render(<TestComponent />);
+
+      const page = container.firstElementChild;
+      if (!page) {
+        throw new Error('The goals list rendered nothing');
+      }
+      const viewLinks = await findAllByRole('link', { name: 'View' });
+      expect(page).toContainElement(viewLinks[viewLinks.length - 1]);
+      // The help button covers about 76px at the bottom of phones and 176px from 600px up
+      const getEndRoom = (width: number) =>
+        parseFloat(getStyleAtWidth(page, 'padding-bottom', width)) || 0;
+      expect(getEndRoom(360)).toBeGreaterThanOrEqual(76);
+      expect(getEndRoom(phoneWidth)).toBeGreaterThanOrEqual(76);
+      expect(getEndRoom(768)).toBeGreaterThanOrEqual(176);
+      expect(getEndRoom(desktopWidth)).toBeGreaterThanOrEqual(176);
+    });
+
     it("stacks each goal card's Last Updated label above its date only on phone widths", async () => {
       const { findAllByText } = render(<TestComponent />);
 

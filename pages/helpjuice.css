@@ -1,3 +1,4 @@
+/* src/components/Helpjuice/helpButtonSpace.ts leaves room for the button at the end of pages, so keep it in sync */
 #helpjuice-widget {
   bottom: 160px !important;
   --right-position: 80px;
