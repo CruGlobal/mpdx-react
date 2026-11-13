@@ -949,11 +949,11 @@ describe('MpdSupervisorReport', () => {
     });
 
     it.each([900, desktopWidth])(
-      'keeps the fixed header height at %ipx wide',
+      'keeps at least the standard header height at %ipx wide, growing when wrapped',
       async (width) => {
         const { header } = await renderEmptyReportHeader();
-
-        expect(getStyleAtWidth(header, 'height', width)).toBe(
+        expect(getStyleAtWidth(header, 'height', width)).toBe('auto');
+        expect(getStyleAtWidth(header, 'min-height', width)).toBe(
           multiPageHeaderHeight,
         );
       },
