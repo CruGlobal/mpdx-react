@@ -25,7 +25,7 @@ export const ContactUncompletedTasksCount: React.FC<
   const { openTaskModal, preloadTaskModal } = useTaskModal();
 
   return (
-    <Box display="flex" alignItems="center" px={5}>
+    <Box display="flex" alignItems="center" px={{ xs: 0.5, sm: 5 }}>
       <IconButton
         aria-label={t('Log Task')}
         onClick={() =>
