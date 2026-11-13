@@ -91,6 +91,26 @@ const renderBody = async (props: TestComponentProps = {}) => {
   return { ...result, body };
 };
 
+// Finds the row that holds both the sync text and Refresh, and the row's piece holding each one.
+const syncRowParts = (status: HTMLElement) => {
+  const text = within(status).getByText('Synced from HCM 3 hr. ago');
+  const refresh = within(status).getByRole('button', { name: 'Refresh' });
+  let row = refresh.parentElement;
+  while (row && !row.contains(text)) {
+    row = row.parentElement;
+  }
+  if (!row) {
+    throw new Error('The sync text and Refresh are not in one row');
+  }
+  const pieces = Array.from(row.children) as HTMLElement[];
+  const textGroup = pieces.find((piece) => piece.contains(text));
+  const refreshSlot = pieces.find((piece) => piece.contains(refresh));
+  if (!textGroup || !refreshSlot) {
+    throw new Error('The sync text or Refresh is missing from the row');
+  }
+  return { text, refresh, row, textGroup, refreshSlot };
+};
+
 describe('HcmSyncStatus', () => {
   beforeEach(() => {
     Settings.now = () => now.toMillis();
@@ -286,5 +306,75 @@ describe('HcmSyncStatus', () => {
       ),
     );
     expect(body.getByRole('button', { name: 'Refresh' })).toBeEnabled();
+  });
+
+  // A 360px phone can be too narrow for the sync text and Refresh on one line. jsdom does no
+  // layout, so these check the CSS that keeps the row inside the screen.
+  describe('on a narrow phone', () => {
+    it('lets Refresh drop under the sync text when they do not fit on one line', async () => {
+      const { findByTestId } = render(<TestComponent />);
+
+      const { row, text, refresh } = syncRowParts(
+        await findByTestId('HcmSyncBodyStatus'),
+      );
+
+      expect(text).toBeVisible();
+      expect(refresh).toHaveTextContent('Refresh');
+      expect(row).toHaveStyle({ display: 'flex', flexWrap: 'wrap' });
+    });
+
+    it('lets the sync text shrink and trail off rather than push Refresh off the screen', async () => {
+      const { findByTestId } = render(<TestComponent />);
+
+      const { textGroup, text } = syncRowParts(
+        await findByTestId('HcmSyncBodyStatus'),
+      );
+
+      expect(textGroup).toHaveStyle({ minWidth: '0' });
+      expect(text).toHaveStyle({
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+      });
+    });
+
+    it('keeps Refresh spaced from the sync text without indenting it when it drops', async () => {
+      const { findByTestId } = render(<TestComponent />);
+
+      const { row, refreshSlot } = syncRowParts(
+        await findByTestId('HcmSyncBodyStatus'),
+      );
+
+      const rowStyle = getComputedStyle(row);
+      expect(rowStyle.columnGap).not.toMatch(/^(0px)?$/);
+      expect(rowStyle.rowGap).not.toMatch(/^(0px)?$/);
+      expect(getComputedStyle(refreshSlot).marginLeft).toMatch(/^(0(px)?)?$/);
+    });
+
+    it('keeps the HCM info icon beside the sync text when Refresh drops', async () => {
+      const { findByTestId } = render(<TestComponent />);
+
+      const { textGroup, refreshSlot } = syncRowParts(
+        await findByTestId('HcmSyncBodyStatus'),
+      );
+
+      expect(
+        within(textGroup).getByTestId('HcmInfoTooltip'),
+      ).toBeInTheDocument();
+      expect(
+        within(refreshSlot).queryByTestId('HcmInfoTooltip'),
+      ).not.toBeInTheDocument();
+    });
+
+    it('fits the header row the same way when the header is tight', async () => {
+      const { findByTestId } = render(<TestComponent />);
+
+      const { row, textGroup } = syncRowParts(
+        await findByTestId('HcmSyncHeaderStatus'),
+      );
+
+      expect(row).toHaveStyle({ flexWrap: 'wrap' });
+      expect(textGroup).toHaveStyle({ minWidth: '0' });
+    });
   });
 });
