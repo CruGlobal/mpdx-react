@@ -74,3 +74,19 @@ describe('MpdSupervisorReport month column headers', () => {
     ).toBe(display);
   });
 });
+
+describe('MpdSupervisorReport header', () => {
+  beforeEach(() => {
+    URL.createObjectURL = jest.fn(() => 'blob:supervisor-report');
+    URL.revokeObjectURL = jest.fn();
+  });
+
+  it('offers the loaded rows as a CSV download', async () => {
+    const { findByRole } = renderReport();
+
+    expect(await findByRole('link', { name: 'Download CSV' })).toHaveAttribute(
+      'href',
+      'blob:supervisor-report',
+    );
+  });
+});

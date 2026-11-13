@@ -25,6 +25,7 @@ import { getHeaderTitleAccess } from 'src/components/Shared/MultiPageLayout/help
 import { NavFilterIcon } from 'src/components/Shared/styledComponents/NavFilterIcon';
 import { useLocale } from 'src/hooks/useLocale';
 import theme from 'src/theme';
+import { DownloadCsvButton } from './DownloadCsvButton/DownloadCsvButton';
 import { AppliedFilters } from './ListStates/AppliedFilters';
 import { EmptyStaffState } from './ListStates/EmptyStaffState';
 import { FilterRequiredState } from './ListStates/FilterRequiredState';
@@ -242,6 +243,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
             )}
           </TitleBox>
           <RowDensityToggle />
+          <DownloadCsvButton />
           <TextField
             value={search}
             onChange={(event) => setSearch(event.target.value)}

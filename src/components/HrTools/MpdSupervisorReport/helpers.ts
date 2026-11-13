@@ -54,6 +54,9 @@ export const grossSalaryWarning = (
  * Build avatar initials from a person's first and last name.
  * Returns the uppercased first letter of each (e.g. "Jane Doe" -> "JD").
  */
+// Floored so a percent just under a cutoff never shows as the next grade's
+export const floorToTenth = (percent: number) => Math.floor(percent * 10) / 10;
+
 export const getInitials = (firstName?: string, lastName?: string): string =>
   ((firstName?.[0] ?? '') + (lastName?.[0] ?? '')).toUpperCase();
 
