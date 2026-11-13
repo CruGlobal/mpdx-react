@@ -17,6 +17,14 @@ const StyledDataGrid = styled(DataGrid)({
     '.MuiDataGrid-actionsCell': {
       opacity: 0,
       transition: 'opacity 0.2s ease-in-out',
+      // Touch users can't hover, so show the actions whenever a touchscreen is
+      // available. Disabled actions can't be tapped, so they stay hidden.
+      '@media (any-pointer: coarse)': {
+        opacity: 1,
+        '.Mui-disabled': {
+          visibility: 'hidden',
+        },
+      },
     },
   },
   '.MuiDataGrid-row:hover .MuiDataGrid-cell[data-field="actions"]': {
