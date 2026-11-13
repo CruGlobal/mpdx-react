@@ -5,6 +5,12 @@ import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import {
+  desktopWidth,
+  getStyleAtWidth,
+  phoneWidth,
+} from '__tests__/util/styleAtWidth';
+import { multiPageHeaderHeight } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import {
   GetUserDocument,
   GetUserQuery,
 } from 'src/components/User/GetUser.generated';
@@ -257,4 +263,37 @@ describe('DesignationAccountsReport', () => {
     userEvent.click(getByTestId('ReportsMenuIcon'));
     await waitFor(() => expect(onNavListToggle).toHaveBeenCalled());
   });
+
+  it.each([phoneWidth, desktopWidth])(
+    'fits the account list under the header at %ipx wide',
+    async (width) => {
+      const { findByTestId } = render(
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<{
+            GetUser: GetUserQuery;
+            DesignationAccounts: DesignationAccountsQuery;
+          }>
+            mocks={mocks}
+          >
+            <DesignationAccountsReport
+              accountListId={accountListId}
+              isNavListOpen={true}
+              title={title}
+              onNavListToggle={onNavListToggle}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>,
+      );
+
+      // The header grows on phones, so the list height has to follow it
+      // instead of taking off a fixed amount
+      expect(
+        getStyleAtWidth(
+          await findByTestId('DesignationAccountsScrollBox'),
+          'height',
+          width,
+        ),
+      ).toContain(multiPageHeaderHeight);
+    },
+  );
 });

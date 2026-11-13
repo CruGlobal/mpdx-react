@@ -7,6 +7,7 @@ import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
+  multiPageHeaderHeight,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { useIneligibleByGroup } from 'src/hooks/useIneligibleByGroup';
 import { useLocale } from 'src/hooks/useLocale';
@@ -24,7 +25,8 @@ interface Props {
 }
 
 const ScrollBox = styled(Box)(({}) => ({
-  height: 'calc(100vh - 160px)',
+  // Follows the page header, which grows on phones
+  height: `calc(100vh - 80px - ${multiPageHeaderHeight})`,
   overflowY: 'auto',
 }));
 

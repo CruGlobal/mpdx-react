@@ -5,6 +5,12 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  desktopWidth,
+  getStyleAtWidth,
+  phoneWidth,
+} from '__tests__/util/styleAtWidth';
+import { multiPageHeaderHeight } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import theme from 'src/theme';
 import { FinancialAccounts } from './FinancialAccounts';
 import { FinancialAccountsQuery } from './FinancialAccounts.generated';
@@ -149,4 +155,23 @@ describe('FinancialAccounts', () => {
       }),
     );
   });
+
+  it.each([phoneWidth, desktopWidth])(
+    'fits the account list under the header at %ipx wide',
+    async (width) => {
+      const { findByTestId } = render(
+        <Components mocks={FinancialAccountsMock} />,
+      );
+
+      // The header grows on phones, so the list height has to follow it
+      // instead of taking off a fixed amount
+      expect(
+        getStyleAtWidth(
+          await findByTestId('FinancialAccountsScrollBox'),
+          'height',
+          width,
+        ),
+      ).toContain(multiPageHeaderHeight);
+    },
+  );
 });
