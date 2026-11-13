@@ -9,6 +9,11 @@ import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import {
+  desktopWidth,
+  getGridColumnsAtWidth,
+  phoneWidth,
+} from '__tests__/util/styleAtWidth';
+import {
   ActivityTypeEnum,
   NotificationTimeUnitEnum,
   NotificationTypeEnum,
@@ -479,6 +484,36 @@ describe('TaskModalCompleteForm', () => {
       );
       expect(getByRole('textbox', { name: /^Choose time/ })).toHaveValue(
         '12:00 AM',
+      );
+    });
+
+    // On phones the year and AM/PM were cut off when the fields sat side by side.
+    // jsdom can't measure layout, so these read the Grid width CSS at each width.
+    describe('layout', () => {
+      // How many of the 12 grid columns the date and time fields span
+      const renderColumns = (width: number) => {
+        const { getByLabelText } = render(<Components />);
+        return ['Completed Date', 'Completed Time'].map((label) => {
+          const gridItem = getByLabelText(label).closest('.MuiGrid-root');
+          if (!gridItem) {
+            throw new Error(`Grid item for ${label} not found`);
+          }
+          return getGridColumnsAtWidth(gridItem, width);
+        });
+      };
+
+      it.each([360, phoneWidth])(
+        'stacks Completed Date on top of Completed Time at %ipx',
+        (width) => {
+          expect(renderColumns(width)).toEqual([12, 12]);
+        },
+      );
+
+      it.each([768, desktopWidth])(
+        'keeps Completed Date and Completed Time side by side at %ipx',
+        (width) => {
+          expect(renderColumns(width)).toEqual([6, 6]);
+        },
       );
     });
   });
