@@ -10,8 +10,8 @@ import { managedStaffMock } from '../mpdSupervisorReportMocks';
 import { HeaderActions } from './HeaderActions';
 
 describe('HeaderActions', () => {
-  it('shows the row density toggle and the CSV download', () => {
-    const { getByRole } = render(
+  it('shows the row density toggle and the CSV download', async () => {
+    const { findByRole, getByRole } = render(
       <TestRouter>
         <ThemeProvider theme={theme}>
           <GqlMockedProvider<{ ManagedStaff: ManagedStaffQuery }>
@@ -27,5 +27,9 @@ describe('HeaderActions', () => {
 
     expect(getByRole('group', { name: 'Row density' })).toBeInTheDocument();
     expect(getByRole('button', { name: 'Download CSV' })).toBeInTheDocument();
+    // The download turns into a link once the rows load
+    expect(
+      await findByRole('link', { name: 'Download CSV' }),
+    ).toBeInTheDocument();
   });
 });

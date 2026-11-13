@@ -44,27 +44,33 @@ const SearchProbe: React.FC = () => {
   );
 };
 
+// Each file gets its own URL, so a test can tell the old file from the new one
 jest.mock('react-csv/lib/core', () => ({
-  buildURI: jest.fn(() => 'blob:supervisor-report'),
+  buildURI: jest.fn((rows: unknown[]) => `blob:${rows.length - 1}-rows`),
 }));
+
+const alice = managedStaffMember({
+  firstName: 'Alice',
+  lastName: 'Jones',
+  personNumber: '10000003',
+  staffAccountId: '1000000003',
+});
+
+// Searching by name narrows the rows, as the API does
+const searchableStaff: ApolloErgonoMockMap = {
+  ManagedStaff: {
+    managedStaff: (_root: unknown, args: { name?: string | null }) =>
+      managedStaffMock(args.name ? [alice] : [managedStaffMember(), alice])
+        .managedStaff,
+  },
+};
 
 const renderButton = (mocks: ApolloErgonoMockMap = {}) =>
   render(
     <TestRouter>
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<{ ManagedStaff: ManagedStaffQuery }>
-          mocks={{
-            ManagedStaff: managedStaffMock([
-              managedStaffMember(),
-              managedStaffMember({
-                firstName: 'Alice',
-                lastName: 'Jones',
-                personNumber: '10000003',
-                staffAccountId: '1000000003',
-              }),
-            ]),
-            ...mocks,
-          }}
+          mocks={{ ...searchableStaff, ...mocks }}
         >
           <MpdSupervisorReportProvider>
             <DownloadCsvButton />
@@ -81,7 +87,7 @@ describe('DownloadCsvButton', () => {
     const { findByRole } = renderButton();
 
     const link = await findByRole('link', { name: 'Download CSV' });
-    expect(link).toHaveAttribute('href', 'blob:supervisor-report');
+    expect(link).toHaveAttribute('href', 'blob:2-rows');
     // A short label keeps the header row roomy beside the filter panel
     expect(link).toHaveTextContent(/^CSV$/);
     expect(link).toHaveAttribute(
@@ -96,10 +102,13 @@ describe('DownloadCsvButton', () => {
     ]);
   });
 
-  it('is disabled while the report loads', () => {
-    const { getByRole } = renderButton();
+  it('is disabled while the report loads', async () => {
+    const { findByRole, getByRole } = renderButton();
 
     expect(getByRole('button', { name: 'Download CSV' })).toBeDisabled();
+    expect(
+      await findByRole('link', { name: 'Download CSV' }),
+    ).toBeInTheDocument();
   });
 
   it('is disabled when nobody matches', async () => {
@@ -151,7 +160,7 @@ describe('DownloadCsvButton', () => {
     expect(getByRole('button', { name: 'Download CSV' })).toBeDisabled();
   });
 
-  it('is disabled while a typed search waits to run, so the file never holds the old search', async () => {
+  it('is disabled while a typed search waits to run, then links a file of the new rows', async () => {
     const { findByRole, getByRole } = renderButton();
     await findByRole('link', { name: 'Download CSV' });
 
@@ -160,20 +169,26 @@ describe('DownloadCsvButton', () => {
     expect(getByRole('button', { name: 'Download CSV' })).toBeDisabled();
     expect(
       await findByRole('link', { name: 'Download CSV' }, { timeout: 3000 }),
-    ).toBeInTheDocument();
+    ).toHaveAttribute('href', 'blob:1-rows');
+    const rows = (buildURI as jest.Mock).mock.calls.at(-1)[0];
+    expect(rows.map((row: string[]) => row[0])).toEqual([
+      'Name',
+      'Alice Jones',
+    ]);
   });
 
-  it('releases the file when the rows change and when it goes away', async () => {
+  it('releases each file when the rows change and when it goes away', async () => {
     const { findByRole, getByRole, unmount } = renderButton();
     await findByRole('link', { name: 'Download CSV' });
     expect(URL.revokeObjectURL).not.toHaveBeenCalled();
 
     userEvent.click(getByRole('button', { name: 'Search Jones' }));
-    expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:supervisor-report');
+    expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:2-rows');
 
     await findByRole('link', { name: 'Download CSV' }, { timeout: 3000 });
     unmount();
     expect(URL.revokeObjectURL).toHaveBeenCalledTimes(2);
+    expect(URL.revokeObjectURL).toHaveBeenLastCalledWith('blob:1-rows');
   });
 
   it('is disabled when a refresh failed, so it never exports the rows under the error', async () => {

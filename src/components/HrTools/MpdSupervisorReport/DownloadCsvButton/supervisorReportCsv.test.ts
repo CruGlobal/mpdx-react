@@ -1,4 +1,5 @@
 import { TFunction } from 'i18next';
+import { joiner } from 'react-csv/lib/core';
 import {
   MpdCapHealthEnum,
   MpdHealthStatusEnum,
@@ -146,5 +147,16 @@ describe('buildSupervisorReportCsv', () => {
     });
 
     expect(build([row])[1].slice(5)).toEqual([-851, 851, 0, '']);
+  });
+
+  it('doubles quotes inside text so react-csv writes each cell whole', () => {
+    const row = managedStaffMember({
+      firstName: 'Robert "Bob"',
+      teams: { employee: [{ id: 'team-1', name: 'The "A" Team' }], spouse: [] },
+    });
+
+    expect(joiner(build([row])).split('\n')[1]).toMatch(
+      /^"Robert ""Bob"" Smith","1000000001","The ""A"" Team",/,
+    );
   });
 });

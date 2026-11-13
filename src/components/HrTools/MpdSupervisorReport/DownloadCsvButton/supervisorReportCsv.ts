@@ -14,6 +14,11 @@ const wholeDollars = (amount: number) =>
 
 export type SupervisorReportCsv = (string | number)[][];
 
+// react-csv wraps each cell in quotes but leaves quotes inside it alone, so a
+// name with a quote would split its cell and shift the columns after it
+const escapeQuotes = (cell: string | number) =>
+  typeof cell === 'string' ? cell.replace(/"/g, '""') : cell;
+
 /**
  * The report's rows as CSV cells, a header row first. Numbers stay plain
  * (no $ or %) so a spreadsheet can sort and sum them; blank means no value.
@@ -49,5 +54,5 @@ export const buildSupervisorReportCsv = (
     ),
   ]);
 
-  return [header, ...body];
+  return [header, ...body].map((row) => row.map(escapeQuotes));
 };
