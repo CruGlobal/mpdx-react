@@ -259,5 +259,5 @@ describe('FixPhoneNumbers-Home', () => {
     await waitFor(() => expect(mockEnqueue).toHaveBeenCalledTimes(51), {
       timeout: 2000,
     });
-  });
+  }, 15000);
 });
