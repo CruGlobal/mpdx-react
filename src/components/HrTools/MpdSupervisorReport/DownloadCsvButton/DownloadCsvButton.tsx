@@ -18,14 +18,17 @@ export const DownloadCsvButton: React.FC = () => {
   const {
     staffMembers,
     staffLoading,
+    staffError,
     hasNextPage,
     loadMoreError,
     searchPending,
   } = useMpdSupervisorReport();
-  // A failed page would leave the file short of what the filters match, and a
-  // pending search would hand over the rows of the previous one
+  // A failed page would leave the file short of what the filters match, a
+  // failed refresh leaves stale rows under its error, and a pending search
+  // would hand over the rows of the previous one
   const ready =
     !staffLoading &&
+    !staffError &&
     !hasNextPage &&
     !loadMoreError &&
     !searchPending &&

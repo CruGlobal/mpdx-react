@@ -32,8 +32,14 @@ const Settled: React.FC = () => {
 
 // Stands in for the header's search box
 const SearchProbe: React.FC = () => {
-  const { setSearch } = useMpdSupervisorReport();
-  return <button onClick={() => setSearch('Jones')}>Search Jones</button>;
+  const { setSearch, refetchStaff, staffError } = useMpdSupervisorReport();
+  return (
+    <>
+      <button onClick={() => setSearch('Jones')}>Search Jones</button>
+      <button onClick={refetchStaff}>Refresh</button>
+      {staffError && <span>refresh failed</span>}
+    </>
+  );
 };
 
 jest.mock('react-csv/lib/core', () => ({
@@ -164,5 +170,26 @@ describe('DownloadCsvButton', () => {
     await findByRole('link', { name: 'Download CSV' }, { timeout: 3000 });
     unmount();
     expect(URL.revokeObjectURL).toHaveBeenCalledTimes(2);
+  });
+
+  it('is disabled when a refresh failed, so it never exports the rows under the error', async () => {
+    let calls = 0;
+    const { findByRole, findByText, getByRole } = renderButton({
+      ManagedStaff: {
+        managedStaff: () => {
+          calls += 1;
+          if (calls > 1) {
+            throw new Error('Refresh failed');
+          }
+          return managedStaffMock([managedStaffMember()]).managedStaff;
+        },
+      },
+    });
+    await findByRole('link', { name: 'Download CSV' });
+
+    userEvent.click(getByRole('button', { name: 'Refresh' }));
+
+    await findByText('refresh failed');
+    expect(getByRole('button', { name: 'Download CSV' })).toBeDisabled();
   });
 });
