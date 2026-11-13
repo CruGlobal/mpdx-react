@@ -19,16 +19,18 @@ export const DownloadCsvButton: React.FC = () => {
     staffMembers,
     staffLoading,
     staffError,
+    filterRequired,
     hasNextPage,
     loadMoreError,
     searchPending,
   } = useMpdSupervisorReport();
   // A failed page would leave the file short of what the filters match, a
-  // failed refresh leaves stale rows under its error, and a pending search
-  // would hand over the rows of the previous one
+  // failed or refused refresh leaves stale rows the screen no longer lists,
+  // and a pending search would hand over the rows of the previous one
   const ready =
     !staffLoading &&
     !staffError &&
+    !filterRequired &&
     !hasNextPage &&
     !loadMoreError &&
     !searchPending &&
@@ -60,7 +62,9 @@ export const DownloadCsvButton: React.FC = () => {
     variant: 'outlined',
     size: 'small',
     startIcon: <GetAppIcon />,
-    children: t('Download CSV'),
+    // Short so the header title stays on two lines beside the filter panel
+    children: t('CSV'),
+    'aria-label': t('Download CSV'),
   } as const;
 
   return href ? (

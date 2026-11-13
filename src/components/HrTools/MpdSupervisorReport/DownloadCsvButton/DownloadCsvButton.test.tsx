@@ -32,12 +32,14 @@ const Settled: React.FC = () => {
 
 // Stands in for the header's search box
 const SearchProbe: React.FC = () => {
-  const { setSearch, refetchStaff, staffError } = useMpdSupervisorReport();
+  const { setSearch, refetchStaff, staffError, filterRequired } =
+    useMpdSupervisorReport();
   return (
     <>
       <button onClick={() => setSearch('Jones')}>Search Jones</button>
       <button onClick={refetchStaff}>Refresh</button>
       {staffError && <span>refresh failed</span>}
+      {filterRequired && <span>filter required</span>}
     </>
   );
 };
@@ -80,6 +82,8 @@ describe('DownloadCsvButton', () => {
 
     const link = await findByRole('link', { name: 'Download CSV' });
     expect(link).toHaveAttribute('href', 'blob:supervisor-report');
+    // A short label keeps the header title on two lines beside the filter panel
+    expect(link).toHaveTextContent(/^CSV$/);
     expect(link).toHaveAttribute(
       'download',
       'mpdx-supervisor-report-2020-01-01.csv',
@@ -190,6 +194,33 @@ describe('DownloadCsvButton', () => {
     userEvent.click(getByRole('button', { name: 'Refresh' }));
 
     await findByText('refresh failed');
+    expect(getByRole('button', { name: 'Download CSV' })).toBeDisabled();
+  });
+
+  it('is disabled when a refresh asks for a narrower filter, so it never exports the hidden rows', async () => {
+    let calls = 0;
+    const { findByRole, findByText, getByRole } = renderButton({
+      ManagedStaff: {
+        managedStaff: () => {
+          calls += 1;
+          if (calls > 1) {
+            throw new GraphQLError('228 staff are in reach', {
+              extensions: {
+                code: 'FILTER_REQUIRED',
+                count: 228,
+                filtered: false,
+              },
+            });
+          }
+          return managedStaffMock([managedStaffMember()]).managedStaff;
+        },
+      },
+    });
+    await findByRole('link', { name: 'Download CSV' });
+
+    userEvent.click(getByRole('button', { name: 'Refresh' }));
+
+    await findByText('filter required');
     expect(getByRole('button', { name: 'Download CSV' })).toBeDisabled();
   });
 });
