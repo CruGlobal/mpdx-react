@@ -1,8 +1,10 @@
 import { useRouter } from 'next/router';
 import { HomeSharp } from '@mui/icons-material';
 import {
+  Box,
   Grid,
   Skeleton,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -10,13 +12,16 @@ import {
   TableHead,
   TableRow,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
+import { dateFormatShort } from 'src/lib/intlFormat';
 import { StatusCard } from '../../Shared/CalculationReports/StatusCard/StatusCard';
+import { useFormatters } from '../../Shared/useFormatters';
 import { useDuplicateMinistryHousingAllowanceRequestMutation } from '../MinisterHousingAllowance.generated';
 import {
   HcmData,
@@ -77,12 +82,7 @@ const PersonRow: React.FC<PersonRowProps> = ({
   showLastUpdated,
 }) => {
   const { t } = useTranslation();
-  const locale = useLocale();
-
-  const formatAmount = (amount: number | null) =>
-    currencyFormat(Number(amount), 'USD', locale, {
-      showTrailingZeros: true,
-    });
+  const { formatCurrency } = useFormatters();
 
   return (
     <TableRow>
@@ -91,7 +91,7 @@ const PersonRow: React.FC<PersonRowProps> = ({
         <Grid container direction="column">
           <Grid>
             <Typography sx={{ color: 'primary.main', fontWeight: 'bold' }}>
-              {formatAmount(approvedAmount)}
+              {formatCurrency(approvedAmount)}
             </Typography>
           </Grid>
           {showApprovedOn && (
@@ -103,7 +103,7 @@ const PersonRow: React.FC<PersonRowProps> = ({
         <Grid container direction="column">
           <Grid>
             <Typography sx={{ color: 'primary.main', fontWeight: 'bold' }}>
-              {formatAmount(takenAmount)}
+              {formatCurrency(takenAmount)}
             </Typography>
           </Grid>
           {showLastUpdated && (
@@ -112,6 +112,85 @@ const PersonRow: React.FC<PersonRowProps> = ({
         </Grid>
       </TableCell>
     </TableRow>
+  );
+};
+
+interface AmountLineProps {
+  label: string;
+  amount: number | null;
+  dateLabel: string;
+  date?: string | null;
+  showDate: boolean;
+}
+
+// Label (and its date) on the left, amount on the right
+const AmountLine: React.FC<AmountLineProps> = ({
+  label,
+  amount,
+  dateLabel,
+  date,
+  showDate,
+}) => {
+  const { formatCurrency } = useFormatters();
+
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'baseline',
+        gap: 2,
+      }}
+    >
+      <Box>
+        <Typography>{label}</Typography>
+        {showDate && <DateLine label={dateLabel} date={date} />}
+      </Box>
+      <Typography
+        sx={{ color: 'primary.main', fontWeight: 'bold', whiteSpace: 'nowrap' }}
+      >
+        {formatCurrency(amount)}
+      </Typography>
+    </Box>
+  );
+};
+
+// Phones stack each person instead of squeezing three table columns
+const PersonBlock: React.FC<PersonRowProps> = ({
+  name,
+  approvedAmount,
+  approvedOn,
+  showApprovedOn,
+  takenAmount,
+  lastUpdated,
+  showLastUpdated,
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <Stack
+      spacing={1}
+      sx={{
+        p: 2,
+        '&:not(:last-of-type)': { borderBottom: 1, borderColor: 'divider' },
+      }}
+    >
+      <Typography sx={{ fontSize: 20 }}>{name}</Typography>
+      <AmountLine
+        label={t('Approved by Board')}
+        amount={approvedAmount}
+        dateLabel={t('Approved on')}
+        date={approvedOn}
+        showDate={showApprovedOn}
+      />
+      <AmountLine
+        label={t('Claimed in Salary')}
+        amount={takenAmount}
+        dateLabel={t('Last updated')}
+        date={lastUpdated}
+        showDate={showLastUpdated}
+      />
+    </Stack>
   );
 };
 
@@ -127,6 +206,8 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const router = useRouter();
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [duplicateMHA] = useDuplicateMinistryHousingAllowanceRequestMutation();
 
@@ -202,6 +283,34 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
     setTimeout(() => window.print(), 500);
   };
 
+  const Person = isPhone ? PersonBlock : PersonRow;
+  const people = (
+    <>
+      {showUserRow && (
+        <Person
+          name={preferredName}
+          approvedAmount={userApprovedOverallAmount}
+          approvedOn={userApprovedOn}
+          showApprovedOn={!isHcmOnly || !!userApprovedOn}
+          takenAmount={userTakenAmount}
+          lastUpdated={lastUpdated}
+          showLastUpdated={!isHcmOnly}
+        />
+      )}
+      {showSpouseRow && (
+        <Person
+          name={spousePreferredName ? spousePreferredName : 'N/A'}
+          approvedAmount={spouseApprovedOverallAmount}
+          approvedOn={spouseApprovedOn}
+          showApprovedOn={!isHcmOnly || !!spouseApprovedOn}
+          takenAmount={spouseTakenAmount}
+          lastUpdated={lastUpdated}
+          showLastUpdated={!isHcmOnly}
+        />
+      )}
+    </>
+  );
+
   return (
     <StatusCard
       formType={t('MHA Request')}
@@ -220,54 +329,35 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
       handlePrint={handlePrint}
       styling={{ p: 0 }}
     >
-      <TableContainer sx={{ padding: 0 }}>
-        <Table
-          sx={{
-            '& .MuiTableRow-root:last-child td': {
-              border: 0,
-            },
-            width: '100%',
-          }}
-        >
-          <TableHead>
-            <TableRow sx={{ backgroundColor: 'grey.100' }}>
-              <TableCell sx={{ fontSize: 16, fontWeight: 'bold' }}>
-                {t('Spouse')}
-              </TableCell>
-              <TableCell sx={{ fontSize: 16, fontWeight: 'bold' }}>
-                {t('MHA Approved by Board')}
-              </TableCell>
-              <TableCell sx={{ fontSize: 16, fontWeight: 'bold' }}>
-                {t('MHA Claimed in Salary')}
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {showUserRow && (
-              <PersonRow
-                name={preferredName}
-                approvedAmount={userApprovedOverallAmount}
-                approvedOn={userApprovedOn}
-                showApprovedOn={!isHcmOnly || !!userApprovedOn}
-                takenAmount={userTakenAmount}
-                lastUpdated={lastUpdated}
-                showLastUpdated={!isHcmOnly}
-              />
-            )}
-            {showSpouseRow && (
-              <PersonRow
-                name={spousePreferredName ? spousePreferredName : 'N/A'}
-                approvedAmount={spouseApprovedOverallAmount}
-                approvedOn={spouseApprovedOn}
-                showApprovedOn={!isHcmOnly || !!spouseApprovedOn}
-                takenAmount={spouseTakenAmount}
-                lastUpdated={lastUpdated}
-                showLastUpdated={!isHcmOnly}
-              />
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      {isPhone ? (
+        <Box>{people}</Box>
+      ) : (
+        <TableContainer sx={{ padding: 0 }}>
+          <Table
+            sx={{
+              '& .MuiTableRow-root:last-child td': {
+                border: 0,
+              },
+              width: '100%',
+            }}
+          >
+            <TableHead>
+              <TableRow sx={{ backgroundColor: 'grey.100' }}>
+                <TableCell sx={{ fontSize: 16, fontWeight: 'bold' }}>
+                  {t('Spouse')}
+                </TableCell>
+                <TableCell sx={{ fontSize: 16, fontWeight: 'bold' }}>
+                  {t('MHA Approved by Board')}
+                </TableCell>
+                <TableCell sx={{ fontSize: 16, fontWeight: 'bold' }}>
+                  {t('MHA Claimed in Salary')}
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>{people}</TableBody>
+          </Table>
+        </TableContainer>
+      )}
     </StatusCard>
   );
 };
