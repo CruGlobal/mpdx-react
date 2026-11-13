@@ -62,7 +62,7 @@ export const DownloadCsvButton: React.FC = () => {
     variant: 'outlined',
     size: 'small',
     startIcon: <GetAppIcon />,
-    // Short so the header title stays on two lines beside the filter panel
+    // Short so the header row keeps room beside the filter panel
     children: t('CSV'),
     'aria-label': t('Download CSV'),
   } as const;

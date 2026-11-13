@@ -82,7 +82,7 @@ describe('DownloadCsvButton', () => {
 
     const link = await findByRole('link', { name: 'Download CSV' });
     expect(link).toHaveAttribute('href', 'blob:supervisor-report');
-    // A short label keeps the header title on two lines beside the filter panel
+    // A short label keeps the header row roomy beside the filter panel
     expect(link).toHaveTextContent(/^CSV$/);
     expect(link).toHaveAttribute(
       'download',
