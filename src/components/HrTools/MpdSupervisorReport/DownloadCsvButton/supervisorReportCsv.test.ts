@@ -122,4 +122,29 @@ describe('buildSupervisorReportCsv', () => {
       'Ben Smith',
     ]);
   });
+
+  it('rounds half dollars away from zero like the screen', () => {
+    const row = managedStaffMember({
+      monthEndBalances: [
+        {
+          month: '2026-10',
+          endBalance: -850.5,
+          status: MpdHealthStatusEnum.Red,
+        },
+        {
+          month: '2026-09',
+          endBalance: 850.5,
+          status: MpdHealthStatusEnum.Red,
+        },
+        { month: '2026-08', endBalance: -0.4, status: MpdHealthStatusEnum.Red },
+        {
+          month: '2026-07',
+          endBalance: null,
+          status: MpdHealthStatusEnum.Gray,
+        },
+      ],
+    });
+
+    expect(build([row])[1].slice(5)).toEqual([-851, 851, 0, '']);
+  });
 });

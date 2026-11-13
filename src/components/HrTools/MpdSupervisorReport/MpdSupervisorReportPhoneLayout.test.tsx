@@ -23,6 +23,10 @@ import {
   managedStaffTeamsMock,
 } from './mpdSupervisorReportMocks';
 
+jest.mock('react-csv/lib/core', () => ({
+  buildURI: jest.fn(() => 'blob:supervisor-report'),
+}));
+
 const renderReport = () =>
   render(
     <TestRouter>
@@ -76,11 +80,6 @@ describe('MpdSupervisorReport month column headers', () => {
 });
 
 describe('MpdSupervisorReport header', () => {
-  beforeEach(() => {
-    URL.createObjectURL = jest.fn(() => 'blob:supervisor-report');
-    URL.revokeObjectURL = jest.fn();
-  });
-
   it('offers the loaded rows as a CSV download', async () => {
     const { findByRole } = renderReport();
 

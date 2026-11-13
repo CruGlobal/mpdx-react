@@ -1,6 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { GraphQLError } from 'graphql';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { buildURI } from 'react-csv/lib/core';
@@ -29,6 +30,12 @@ const Settled: React.FC = () => {
   return staffLoading && !filterRequired ? null : <span>settled</span>;
 };
 
+// Stands in for the header's search box
+const SearchProbe: React.FC = () => {
+  const { setSearch } = useMpdSupervisorReport();
+  return <button onClick={() => setSearch('Jones')}>Search Jones</button>;
+};
+
 jest.mock('react-csv/lib/core', () => ({
   buildURI: jest.fn(() => 'blob:supervisor-report'),
 }));
@@ -54,6 +61,7 @@ const renderButton = (mocks: ApolloErgonoMockMap = {}) =>
           <MpdSupervisorReportProvider>
             <DownloadCsvButton />
             <Settled />
+            <SearchProbe />
           </MpdSupervisorReportProvider>
         </GqlMockedProvider>
       </ThemeProvider>
@@ -61,17 +69,14 @@ const renderButton = (mocks: ApolloErgonoMockMap = {}) =>
   );
 
 describe('DownloadCsvButton', () => {
-  beforeEach(() => {
-    URL.revokeObjectURL = jest.fn();
-  });
-
   it('links to a dated CSV of the loaded rows', async () => {
     const { findByRole } = renderButton();
 
     const link = await findByRole('link', { name: 'Download CSV' });
     expect(link).toHaveAttribute('href', 'blob:supervisor-report');
-    expect(link.getAttribute('download')).toMatch(
-      /^mpdx-supervisor-report-\d{4}-\d{2}-\d{2}\.csv$/,
+    expect(link).toHaveAttribute(
+      'download',
+      'mpdx-supervisor-report-2020-01-01.csv',
     );
     const rows = (buildURI as jest.Mock).mock.calls.at(-1)[0];
     expect(rows.map((row: string[]) => row[0])).toEqual([
@@ -136,7 +141,15 @@ describe('DownloadCsvButton', () => {
     expect(getByRole('button', { name: 'Download CSV' })).toBeDisabled();
   });
 
-  afterEach(() => {
-    (buildURI as jest.Mock).mockClear();
+  it('is disabled while a typed search waits to run, so the file never holds the old search', async () => {
+    const { findByRole, getByRole } = renderButton();
+    await findByRole('link', { name: 'Download CSV' });
+
+    userEvent.click(getByRole('button', { name: 'Search Jones' }));
+
+    expect(getByRole('button', { name: 'Download CSV' })).toBeDisabled();
+    expect(
+      await findByRole('link', { name: 'Download CSV' }),
+    ).toBeInTheDocument();
   });
 });

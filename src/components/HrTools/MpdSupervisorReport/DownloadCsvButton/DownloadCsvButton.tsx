@@ -12,11 +12,21 @@ import { buildSupervisorReportCsv } from './supervisorReportCsv';
 export const DownloadCsvButton: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { staffMembers, staffLoading, hasNextPage, loadMoreError } =
-    useMpdSupervisorReport();
-  // A failed page would leave the file short of what the filters match
+  const {
+    staffMembers,
+    staffLoading,
+    hasNextPage,
+    loadMoreError,
+    searchPending,
+  } = useMpdSupervisorReport();
+  // A failed page would leave the file short of what the filters match, and a
+  // pending search would hand over the rows of the previous one
   const ready =
-    !staffLoading && !hasNextPage && !loadMoreError && staffMembers.length > 0;
+    !staffLoading &&
+    !hasNextPage &&
+    !loadMoreError &&
+    !searchPending &&
+    staffMembers.length > 0;
 
   const csv = useMemo(
     () => (ready ? buildSupervisorReportCsv(staffMembers, t, locale) : null),

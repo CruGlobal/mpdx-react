@@ -197,8 +197,9 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
                 variant="h5"
                 sx={{
                   // Half the row keeps the title beside the menu buttons and
-                  // pushes the legend button and density toggle onto the next
-                  // row; the h6 size fits the title on one line there
+                  // pushes the legend button, density toggle and CSV download
+                  // onto the next row; the h6 size fits the title on one line
+                  // there
                   [theme.breakpoints.down('sm')]: {
                     flexGrow: 1,
                     flexBasis: '50%',

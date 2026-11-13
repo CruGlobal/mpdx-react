@@ -8,6 +8,10 @@ import {
   getRowTeamNames,
 } from '../helpers';
 
+// Half dollars round away from zero, as the screen's currency format does
+const wholeDollars = (amount: number) =>
+  Math.sign(amount) * Math.round(Math.abs(amount)) || 0;
+
 export type SupervisorReportCsv = (string | number)[][];
 
 /**
@@ -41,7 +45,7 @@ export const buildSupervisorReportCsv = (
     row.capHealth ? capHealthLabel(t, row.capHealth) : '',
     typeof row.percentOfCap === 'number' ? floorToTenth(row.percentOfCap) : '',
     ...row.monthEndBalances.map(({ endBalance }) =>
-      typeof endBalance === 'number' ? Math.round(endBalance) : '',
+      typeof endBalance === 'number' ? wholeDollars(endBalance) : '',
     ),
   ]);
 
