@@ -1,0 +1,25 @@
+# Pre-existing findings, baselined not fixed: 12 false hits in vendored .yarn/releases bundles, 7 fake test JWTs
+# (RouterGuard.test.tsx, auth/helpers.test.ts), 6 Additional Salary Request form field keys, and the public Help Scout Beacon ID in next.config.js.
+0ae6e094642c8c6b733d5cf2fe1bcb2925188dde:.yarn/releases/yarn-3.3.0.cjs:generic-api-key:190
+16fe89f32bbf4f9273897383608ee4dad6af6927:src/components/Reports/AdditionalSalaryRequest/Shared/useCompleteFormCategories.tsx:generic-api-key:43
+29c41d648c5d09fb4f87ae8e6eae425be62821ee:.yarn/releases/yarn-3.2.0-rc.6.cjs:generic-api-key:127
+32a18ea309884b87ad7ca5f956a95c38474eff08:src/components/Reports/AdditionalSalaryRequest/Shared/useCompleteFormCategories.tsx:generic-api-key:43
+378a455a9685f5d276dad23f00f141b1bfa98f25:next.config.js:generic-api-key:46
+3cbc572b5a189e25d0c9f95519dd78fc8cde3a59:src/components/Reports/AdditionalSalaryRequest/Shared/useAdditionalSalaryRequestForm.ts:generic-api-key:27
+4a75d90da9000f1a2b55982efe36f502574e34b7:src/components/RouterGuard/RouterGuard.test.tsx:jwt:112
+4a75d90da9000f1a2b55982efe36f502574e34b7:src/components/RouterGuard/RouterGuard.test.tsx:jwt:91
+57ed19d6b66d6808dffc8ef800260c8560fa9ee2:src/components/Reports/AdditionalSalaryRequest/Shared/useAdditionalSalaryRequestForm.ts:generic-api-key:37
+5e56b9aa65f7a2ac8da5b822b056cd887cac3ca0:.yarn/releases/yarn-3.8.6.cjs:generic-api-key:127
+6d1b166764d875a5119f6b781db04a7c6bbf32c7:.yarn/releases/yarn-3.2.3.cjs:generic-api-key:127
+711482c3900a03a777f55e82f3a1077f85edacd7:src/components/Reports/AdditionalSalaryRequest/Shared/useCompleteFormCategories.tsx:generic-api-key:43
+76a836d34d3ced9b3bf378656fe51e7c477a33fd:src/components/Reports/AdditionalSalaryRequest/Shared/useAdditionalSalaryRequestForm.ts:generic-api-key:38
+829173bf1d8978c58f2c83f8efb11c7727d154ec:src/components/Reports/AdditionalSalaryRequest/Shared/useAdditionalSalaryRequestForm.ts:generic-api-key:27
+873ea46d218e548cc34dcbf96c5c553075b2c4e2:src/components/RouterGuard/RouterGuard.test.tsx:jwt:113
+88af89364fc459a1c1e3af1e9d8aa94230903f40:src/components/Reports/AdditionalSalaryRequest/Shared/useAdditionalSalaryRequestForm.ts:generic-api-key:38
+8ee598bac46d38285d5f3f9a889f7c938a7e124c:.yarn/releases/yarn-3.2.3.cjs:generic-api-key:127
+bd50f021b1d5524f30cdd1ff7043f3cd8cb7968b:.yarn/releases/yarn-3.2.0-rc.6.cjs:generic-api-key:127
+c92a518909f6850c39ea29b3eb46737e2161628b:pages/api/auth/helpers.test.ts:jwt:17
+c92a518909f6850c39ea29b3eb46737e2161628b:pages/api/auth/helpers.test.ts:jwt:8
+cc702974201b35843ebe77edcfc085193f3848e2:.yarn/releases/yarn-3.1.0.cjs:generic-api-key:92
+ce645e9d4fb2f7f198a2f1a40b4a693b09eedffc:src/components/Reports/AdditionalSalaryRequest/Shared/useAdditionalSalaryRequestForm.ts:generic-api-key:27
+da764df74f0b0f7fd184bf3d67a3ba1ea89d3889:.yarn/releases/yarn-3.2.2.cjs:generic-api-key:127
