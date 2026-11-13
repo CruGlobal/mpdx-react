@@ -14,6 +14,7 @@ import {
 } from '__tests__/util/styleAtWidth';
 import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
+import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import useTaskModal from '../../../hooks/useTaskModal';
 import {
@@ -203,20 +204,40 @@ describe('ContactsRow', () => {
 });
 
 // On phones the name was cut to 8 to 10 letters while the row had empty
-// space. jsdom can't measure layout, so these read the CSS that applies at
-// each screen width.
+// space. On tablets the status column was so narrow that the status, pledge
+// and late notice wrapped onto 4 or 5 lines. jsdom can't measure layout, so
+// these read the CSS that applies at each screen width.
 describe('ContactRow layout', () => {
   const longName = 'Anderson-Whitfield, Christopher and Elizabeth';
   const longNameContact = gqlMock<ContactRowFragment>(ContactRowFragmentDoc, {
     mocks: { ...contactMock, name: longName, pledgeAmount: 100 },
   });
+  // The kind of row the tablet ticket called out: a financial partner with a
+  // pledge, a frequency and a late notice
+  const latePartnerContact = gqlMock<ContactRowFragment>(
+    ContactRowFragmentDoc,
+    {
+      mocks: {
+        ...contactMock,
+        name: longName,
+        status: StatusEnum.PartnerFinancial,
+        pledgeAmount: 100,
+        pledgeFrequency: PledgeFrequencyEnum.Monthly,
+        pledgeReceived: true,
+        // Tests pin today to 2020-01-01, so this is more than 60 days late
+        lateAt: '2019-10-01',
+        pledgeStartDate: null,
+      },
+    },
+  );
 
   // 599px is the widest screen before MUI's sm breakpoint
   const phoneWidths = [360, phoneWidth, 599];
-  const tabletWidths = [600, 768];
+  // 899px is the widest screen before MUI's md breakpoint
+  const tabletWidths = [600, 768, 899];
 
-  const renderRow = () => {
-    const utils = render(<Components contactRow={longNameContact} />);
+  const renderRow = (contactRow: ContactRowFragment = longNameContact) => {
+    const utils = render(<Components contactRow={contactRow} />);
     const name = utils.getByText(longName);
     const nameItem = name.closest('.MuiGrid-root');
     const statusItem = utils.getByText(/CA\$100/).closest('.MuiGrid-root');
@@ -330,17 +351,60 @@ describe('ContactRow layout', () => {
     });
   });
 
-  it.each(tabletWidths)(
-    'keeps the name and status side by side at %ipx',
-    (width) => {
-      const { nameItem, statusItem, row } = renderRow();
+  describe.each(tabletWidths)('at %ipx', (width) => {
+    it('gives the status column room for its text', () => {
+      const { statusItem, row } = renderRow(latePartnerContact);
 
-      expect(getGridColumnsAtWidth(nameItem, width)).toBe(10);
-      expect(getGridColumnsAtWidth(statusItem, width)).toBe(2);
+      // It used to get 2 of 12 columns (about 95px at 768px)
+      expect(getGridColumnsAtWidth(statusItem, width)).toBeGreaterThanOrEqual(
+        4,
+      );
       expect(isHiddenAtWidth(statusItem, row, width)).toBe(false);
+    });
+
+    it('keeps the name and status side by side with the name wider', () => {
+      const { nameItem, statusItem } = renderRow(latePartnerContact);
+      const nameColumns = getGridColumnsAtWidth(nameItem, width) ?? 0;
+      const statusColumns = getGridColumnsAtWidth(statusItem, width) ?? 0;
+
+      // Together they fill one 12 column line, so status never drops below
+      expect(nameColumns + statusColumns).toBe(12);
+      // The name still needs room for full names and addresses
+      expect(nameColumns).toBeGreaterThanOrEqual(statusColumns);
       expect(getStyleAtWidth(nameItem, 'padding-right', width)).toBe('16px');
-    },
-  );
+    });
+
+    it('still ends a name that does not fit with "..."', () => {
+      const { name } = renderRow(latePartnerContact);
+
+      expect(getStyleAtWidth(name, 'text-overflow', width)).toBe('ellipsis');
+      expect(getStyleAtWidth(name, 'white-space', width)).toBe('nowrap');
+      expect(getStyleAtWidth(name, 'overflow', width)).toMatch(/clip|hidden/);
+    });
+
+    it('still shows the address under the name', () => {
+      const { getByText, nameItem, row } = renderRow(latePartnerContact);
+      const address = getByText('1111 Test Street Any City, TT Test');
+
+      expect(nameItem).toContainElement(address);
+      expect(isHiddenAtWidth(address, row, width)).toBe(false);
+    });
+
+    it('shows the status, pledge and late notice in the status column', () => {
+      const { getByText, statusItem, row } = renderRow(latePartnerContact);
+      const statusText = [
+        getByText('Partner - Financial'),
+        getByText(/CA\$100/),
+        getByText(/Monthly/),
+        getByText(/days late/),
+      ];
+
+      statusText.forEach((element) => {
+        expect(statusItem).toContainElement(element);
+        expect(isHiddenAtWidth(element, row, width)).toBe(false);
+      });
+    });
+  });
 
   it('keeps the desktop layout', () => {
     const { nameItem, statusItem, row, buttons } = renderRow();

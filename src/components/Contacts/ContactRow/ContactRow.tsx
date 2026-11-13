@@ -109,7 +109,7 @@ export const ContactRow: React.FC<Props> = ({
           sx={{ pr: { xs: 1, sm: 2 } }}
           size={{
             xs: 12,
-            sm: 10,
+            sm: 7,
             md: 6,
           }}
         >
@@ -161,6 +161,7 @@ export const ContactRow: React.FC<Props> = ({
           sx={{ display: { xs: 'none', sm: 'block' } }}
           size={{
             xs: 2,
+            sm: 5,
             md: 6,
           }}
         >

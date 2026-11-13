@@ -157,8 +157,16 @@ const SyncRow: React.FC<{ sync: HcmSync }> = ({ sync }) => {
   const { syncedAt, stale, refreshing, coolingDown, refresh } = sync;
 
   return (
-    <Stack direction="row" alignItems="center" spacing={1.5}>
-      <Stack direction="row" alignItems="center">
+    // On narrow phones Refresh wraps under the sync text instead of running past the edge
+    <Stack
+      direction="row"
+      alignItems="center"
+      flexWrap="wrap"
+      useFlexGap
+      columnGap={1.5}
+      rowGap={1}
+    >
+      <Stack direction="row" alignItems="center" minWidth={0}>
         {syncedAt && (
           <Tooltip
             title={syncedAt.toLocaleString(DateTime.DATETIME_MED, { locale })}

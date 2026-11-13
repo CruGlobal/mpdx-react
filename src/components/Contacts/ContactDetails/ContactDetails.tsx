@@ -3,10 +3,11 @@ import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import { Box, Tab } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { alpha, styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useContactPanel } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useHorizontalScrollEdges } from 'src/hooks/useHorizontalScrollEdges';
 import theme from '../../../theme';
 import {
   ContactDetailContext,
@@ -42,10 +43,29 @@ const TabPanelNoBottomPadding = styled(TabPanel)(({ theme }) => ({
 }));
 
 const ContactTabsWrapper = styled(Box)(({}) => ({
+  position: 'relative',
   width: '100%',
   backgroundColor: 'transparent',
   boxShadow: 'none',
   borderBottom: '1px solid #DCDCDC',
+}));
+
+// Fades the tabs out at an edge that has more tabs past it, so it's clear the
+// row scrolls sideways. Matches the Tasks page tab row. From the sm breakpoint
+// up, MUI shows its scroll arrow buttons instead, so the fades are hidden there.
+const ContactTabsFade = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'side',
+})<{ side: 'left' | 'right' }>(({ theme, side }) => ({
+  position: 'absolute',
+  top: 0,
+  bottom: 0,
+  ...(side === 'left' ? { left: 0 } : { right: 0 }),
+  width: theme.spacing(5),
+  pointerEvents: 'none',
+  background: `linear-gradient(to ${side}, ${alpha(theme.palette.common.white, 0)}, ${theme.palette.common.white})`,
+  [theme.breakpoints.up('sm')]: {
+    display: 'none',
+  },
 }));
 
 const ContactTabs = styled(TabList)(({}) => ({
@@ -76,6 +96,11 @@ export const ContactDetails: React.FC = () => {
   const [contactDetailsLoaded, setContactDetailsLoaded] = useState(false);
   const accountListId = useAccountListId();
   const { openContactId: contactId } = useContactPanel();
+  const {
+    scrollRef: tabsScrollRef,
+    canScrollLeft: canScrollTabsLeft,
+    canScrollRight: canScrollTabsRight,
+  } = useHorizontalScrollEdges();
 
   const { selectedTabKey, handleTabChange: handleChange } = React.useContext(
     ContactDetailContext,
@@ -98,6 +123,7 @@ export const ContactDetails: React.FC = () => {
             variant="scrollable"
             scrollButtons="auto"
             TabIndicatorProps={{ children: <span /> }}
+            slotProps={{ scroller: { ref: tabsScrollRef } }}
           >
             <ContactTab value={ContactDetailTabEnum.Tasks} label={t('Tasks')} />
             <ContactTab
@@ -121,6 +147,20 @@ export const ContactDetails: React.FC = () => {
               onMouseEnter={preloadContactNotesTab}
             />
           </ContactTabs>
+          {canScrollTabsLeft && (
+            <ContactTabsFade
+              side="left"
+              aria-hidden
+              data-testid="ContactTabsFadeLeft"
+            />
+          )}
+          {canScrollTabsRight && (
+            <ContactTabsFade
+              side="right"
+              aria-hidden
+              data-testid="ContactTabsFadeRight"
+            />
+          )}
         </ContactTabsWrapper>
         <TabPanelNoBottomPadding value={ContactDetailTabEnum.Tasks}>
           {contactId && accountListId && (
